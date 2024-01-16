@@ -1,10 +1,9 @@
-FROM hmctspublic.azurecr.io/base/node:20-alpine as base
-# COPY package.json yarn.lock ./
-COPY package.json ./
+FROM hmctspublic.azurecr.io/base/node:18-alpine as base
+COPY package.json yarn.lock ./
 
 FROM base as build
 USER root
-# RUN apk add autoconf automake gcc make g++ zlib-dev nasm git
+RUN apk add autoconf automake gcc make g++ zlib-dev nasm
 USER hmcts
 COPY --chown=hmcts:hmcts . .
 RUN yarn install
