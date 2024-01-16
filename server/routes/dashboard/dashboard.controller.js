@@ -151,7 +151,7 @@
       }
 
       // Create JWT
-      jwtToken = jwt.sign(apiUserObj, secretsConfig.get('secrets.juror-digital-vault.bureau-jwtKey'), { expiresIn: secretsConfig.get('secrets.juror-digital-vault.bureau-jwtTTL') });
+      jwtToken = jwt.sign(apiUserObj, secretsConfig.get('secrets.juror.bureau-jwtKey'), { expiresIn: secretsConfig.get('secrets.juror.bureau-jwtTTL') });
 
       // Create a date range based in current date - a date range is not required for the API to return the historic values
       apiDates = {
@@ -262,7 +262,7 @@
           }
 
           // Process Smart Survey satisfaction totals
-          
+
           surveyTotals.responsesTotal = response.surveyResponseData.responsesTotal;
           surveyTotals.verySatisfiedTotal = response.surveyResponseData.verySatisfiedTotal;
           surveyTotals.satisfiedTotal = response.surveyResponseData.satisfiedTotal;
@@ -284,7 +284,7 @@
 
           surveyTotals.satifiedAndVerySatisfiedPercent = (surveyTotals.verySatisfiedPercent + surveyTotals.satisfiedPercent);
           surveyTotals.completedFeedbackPercent = getPercentageValue(dashboardData.responseMethod.onlineTotal, surveyTotals.responsesTotal);
-          
+
           // Get data direct from the Smart Survey API for the user satisfaction chart
           //getSmartSurveyData(res, app, dashboardData);
 
@@ -420,7 +420,7 @@
       }
 
       // Create JWT
-      jwtToken = jwt.sign(apiUserObj, secretsConfig.get('secrets.juror-digital-vault.bureau-jwtKey'), { expiresIn: secretsConfig.get('secrets.juror-digital-vault.bureau-jwtTTL') });
+      jwtToken = jwt.sign(apiUserObj, secretsConfig.get('secrets.juror.bureau-jwtKey'), { expiresIn: secretsConfig.get('secrets.juror.bureau-jwtTTL') });
 
       // Clear session data
       delete req.session.formFields;
@@ -593,18 +593,18 @@
 
     responseSent = false;
 
-    smartSurveyParams = '?api_token=' + secretsConfig.get('secrets.juror-digital-vault.bureau-smartSurveyToken') + '&api_token_secret=' + secretsConfig.get('secrets.juror-digital-vault.bureau-smartSurveyTokenSecret');
+    smartSurveyParams = '?api_token=' + secretsConfig.get('secrets.juror.bureau-smartSurveyToken') + '&api_token_secret=' + secretsConfig.get('secrets.juror.bureau-smartSurveyTokenSecret');
 
     if (requireV1Survey === true){
       smartSurveyExportObj
-        .get(require('request-promise'), app, config.smartSurveyIdV1, secretsConfig.get('secrets.juror-digital-vault.bureau-smartSurveyToken'), secretsConfig.get('secrets.juror-digital-vault.bureau-smartSurveyTokenSecret'), smartSurveyParams)
+        .get(require('request-promise'), app, config.smartSurveyIdV1, secretsConfig.get('secrets.juror.bureau-smartSurveyToken'), secretsConfig.get('secrets.juror.bureau-smartSurveyTokenSecret'), smartSurveyParams)
         .then(successExportIdV1)
         .catch(errorCB);
     }
 
     if (requireV2Survey === true){
       smartSurveyExportObj
-        .get(require('request-promise'), app, config.smartSurveyIdV2, secretsConfig.get('secrets.juror-digital-vault.bureau-smartSurveyToken'), secretsConfig.get('secrets.juror-digital-vault.bureau-smartSurveyTokenSecret'), smartSurveyParams)
+        .get(require('request-promise'), app, config.smartSurveyIdV2, secretsConfig.get('secrets.juror.bureau-smartSurveyToken'), secretsConfig.get('secrets.juror.bureau-smartSurveyTokenSecret'), smartSurveyParams)
         .then(successExportIdV2)
         .catch(errorCB);
     }
@@ -746,7 +746,7 @@
       , smartSurveyParams;
 
 
-    smartSurveyParams = '?api_token=' + secretsConfig.get('secrets.juror-digital-vault.bureau-smartSurveyToken') + '&api_token_secret=' + secretsConfig.get('secrets.juror-digital-vault.bureau-smartSurveyTokenSecret');
+    smartSurveyParams = '?api_token=' + secretsConfig.get('secrets.juror.bureau-smartSurveyToken') + '&api_token_secret=' + secretsConfig.get('secrets.juror.bureau-smartSurveyTokenSecret');
 
     if (surveyTotals.surveyDataError === false){
 
@@ -757,7 +757,7 @@
       });
 
       smartSurveyResponseObj
-        .get(require('request-promise'), app, surveyId, exportId, secretsConfig.get('secrets.juror-digital-vault.bureau-smartSurveyToken'), secretsConfig.get('secrets.juror-digital-vault.bureau-smartSurveyTokenSecret'), smartSurveyParams)
+        .get(require('request-promise'), app, surveyId, exportId, secretsConfig.get('secrets.juror.bureau-smartSurveyToken'), secretsConfig.get('secrets.juror.bureau-smartSurveyTokenSecret'), smartSurveyParams)
         .then(successCB)
         .catch(errorCB);
 

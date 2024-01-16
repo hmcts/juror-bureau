@@ -82,7 +82,7 @@
     sessionExpires = 10 * (60 * 60);
 
     sessionConfig = {
-      secret: secretsConfig.get('secrets.juror-digital-vault.bureau-sessionSecret'),
+      secret: secretsConfig.get('secrets.juror.bureau-sessionSecret'),
       resave: false,
       saveUninitialized: false,
       maxAge: sessionExpires,

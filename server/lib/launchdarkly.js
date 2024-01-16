@@ -10,7 +10,7 @@ module.exports.LaunchDarkly = class LaunchDarkly {
     console.log('Opening a LaunchDarkly connection...');
 
     LaunchDarkly.instance = launchDarklySdk
-      .init(secretsConfig.get('secrets.juror-digital-vault.launchDarklyKey'));
+      .init(secretsConfig.get('secrets.juror.launchDarklyKey'));
 
     LaunchDarkly.instance.once('ready', () => {
       console.log('Launchdarkly is on and ready to read flag statuses.');

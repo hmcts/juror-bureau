@@ -121,7 +121,7 @@
         }
 
         // Create JWT
-        jwtToken = jwt.sign(apiUserObj, secretsConfig.get('secrets.juror-digital-vault.bureau-jwtKey'), { expiresIn: secretsConfig.get('secrets.juror-digital-vault.bureau-jwtTTL') });
+        jwtToken = jwt.sign(apiUserObj, secretsConfig.get('secrets.juror.bureau-jwtKey'), { expiresIn: secretsConfig.get('secrets.juror.bureau-jwtTTL') });
 
         console.log('Calling deferral-excusal API - excuse codes');
 
@@ -155,12 +155,12 @@
 
         successCB = function(response){
           var parsedData;
-          
+
           //dashboardData.weekLabels = getWeekLabelsFromDates(dashboardDates.startDate, dashboardDates.endDate);
           dashboardData.weekLabels = getWeekLabelsFromData(dateSelectionType, dateSelectionYear, response.deferralExcusalValues);
 
           parsedData = parseDashboardData(response.deferralExcusalValues.deferralStats, response.deferralExcusalValues.excusalStats, dashboardData.weekLabels, req.session.deferralExcusalSelection, req.session.bureauCourtSelection, req.session.selectedReasons, req.session.reasonsList, dateSelectionType, dateSelectionYear);
-          
+
           dashboardData.deferTotals = JSON.stringify(parsedData.deferralExcusalTotals);
           dashboardData.chartData = JSON.stringify(parsedData.chartDatasets);
 
@@ -359,7 +359,7 @@
       delete req.session.errors;
 
       // Create JWT
-      jwtToken = jwt.sign(apiUserObj, secretsConfig.get('secrets.juror-digital-vault.bureau-jwtKey'), { expiresIn: secretsConfig.get('secrets.juror-digital-vault.bureau-jwtTTL') });
+      jwtToken = jwt.sign(apiUserObj, secretsConfig.get('secrets.juror.bureau-jwtKey'), { expiresIn: secretsConfig.get('secrets.juror.bureau-jwtTTL') });
 
       dashboardObj
         .post(require('request-promise'), app, jwtToken, apiParams)

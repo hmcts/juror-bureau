@@ -62,7 +62,7 @@
 
     this.latestLog = logstashOutput;
 
-    this.jwtToken = jwt.sign({}, secretsConfig.get('secrets.juror-digital-vault.bureau-jwtNoAuthKey'), { expiresIn: secretsConfig.get('secrets.juror-digital-vault.bureau-jwtTTL')});
+    this.jwtToken = jwt.sign({}, secretsConfig.get('secrets.juror.bureau-jwtNoAuthKey'), { expiresIn: secretsConfig.get('secrets.juror.bureau-jwtTTL')});
 
     options = {
       url: urljoin(config.apiEndpoint, 'auth/bureau/log'),

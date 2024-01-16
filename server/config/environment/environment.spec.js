@@ -57,7 +57,7 @@
         , secretsConfig = require('config');
 
       expect(config.logConsole).to.equal('trace');
-      expect(secretsConfig.get('secrets.juror-digital-vault.bureau-sessionSecret'))
+      expect(secretsConfig.get('secrets.juror.bureau-sessionSecret'))
         .to.equal('[super-secret-key][super-secret-key][super-secret-key]');
     });
 

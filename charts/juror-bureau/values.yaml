@@ -4,7 +4,7 @@ nodejs:
   ingressHost: juror-bureau.{{ .Values.global.environment }}.apps.hmcts.net
   aadIdentityName: juror
   keyVaults:
-    juror-digital-vault:
+    juror:
       secrets:
         - name: bureau-sessionSecret
         - name: bureau-jwtKey

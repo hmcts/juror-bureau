@@ -23,7 +23,7 @@
       //
       // It will have an empty body to begin with
       if (typeof req.session.authToken === 'undefined') {
-        authComponent.createJWTToken(req, {}, secretsConfig.get('secrets.juror-digital-vault.bureau-jwtNoAuthKey'));
+        authComponent.createJWTToken(req, {}, secretsConfig.get('secrets.juror.bureau-jwtNoAuthKey'));
       }
 
       // Render login page with any errors
