@@ -8012,9 +8012,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"juror-bureau-front-end@workspace:.":
+"juror-bureau@workspace:.":
   version: 0.0.0-use.local
-  resolution: "juror-bureau-front-end@workspace:."
+  resolution: "juror-bureau@workspace:."
   dependencies:
     "@fengyuanchen/datepicker": ^0.6.4
     "@hmcts/properties-volume": 1.0.0
