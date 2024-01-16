@@ -1,0 +1,56 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_title %}
+  {{ serviceName }} - juror record - reassign - select a court
+{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {% set selectCourtError = undefined %}
+  {% if errors.items["courtNameOrLocation"][0].details %}
+    {% set selectCourtError = {
+      text: errors.items["courtNameOrLocation"][0].details
+    } %}
+  {% endif %}
+
+  <form method="POST" action="{{ submit }}">
+    {{ govukRadios({
+      name: "courtNameOrLocation",
+      fieldset: {
+        legend: {
+          text: "Select a court to reassign to",
+          isPageHeading: true,
+          classes: "govuk-fieldset__legend--l"
+        }
+      },
+      items: courts,
+      errorMessage: selectCourtError
+    }) }}
+
+    <input type="hidden" name="_csrf" value="{{ csrftoken }}"/>
+
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Continue",
+        attributes: {
+          id: "continueButton"
+        }
+      }) }}
+
+      <a id="cancelAnchor" class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+    </div>
+  </form>
+
+  {% if transferUrl %}
+    {{ govukInsetText({
+      html: 'To move to a court not shown above, you must <a class="govuk-link" href="' + transferUrl + '">transfer them</a> instead.'
+    }) }}
+  {% endif %}
+
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "../layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_title %}{{ serviceName }} - run police check{% endblock %}
+  
+{% block page_identifier %}juror record - run police check{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half govuk-!-padding-bottom-8">
+
+      <form action="{{ submitUrl }}" method="post" id="runPoliceCheckForm">
+
+        <h1 class="govuk-heading-l">Run a police check on this juror</h1>
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Run police check",
+            type: "submit",
+            attributes: {
+              id: "runPoliceCheckButton"
+            }
+          }) }}
+
+          <a class="govuk-link" id="cancelAnchor" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

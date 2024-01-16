@@ -1,0 +1,59 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "custom-components/deferral-available-pools-week/macro.njk" import deferralAvailablePoolsWeek %}
+
+{% block page_title %}{{ serviceName }} - process response{% endblock %}
+
+{% block page_identifier %}process - what to do{% endblock %}
+
+{% block beforeContent %}
+  {% include "includes/back-link.njk" %}
+{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {% if errors
+    .items["deferralPoolSelect"][0]
+    .details %}
+    {% set selectPoolError = errors
+      .items["deferralPoolSelect"][0]
+      .details %}
+  {% endif %}
+
+  <form action="{{ processUrl }}" method="POST" id="deferralForm">
+
+    <div class="{% if errors.count > 0 %}govuk-form-group--error{% endif %}">
+
+      <h1 class="govuk-heading-l">Select a pool for this date</h1>
+
+      {% if selectPoolError %}
+        <p id="selectPoolError" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span> {{ selectPoolError }}
+        </p>
+      {% endif %}
+
+      {{ deferralAvailablePoolsWeek({
+        name: "deferralDateAndPool",
+        deferralPoolWeek: deferralPoolsSummary,
+        url: url
+      }) }}
+
+    </div>
+
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Continue",
+        attributes: {
+          id: "continueButton"
+        }
+      }) }}
+
+      <a href="{{ cancelUrl }}" class="govuk-link" id="cancelAnchor">Cancel</a>
+    </div>
+
+    <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+  </form>
+{% endblock %}

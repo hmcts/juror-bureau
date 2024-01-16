@@ -1,0 +1,103 @@
+<section class="modal-content deferral-section">
+
+  {#
+  <div class="modal-title-aside">
+    <a href="#" class="close-modal" id="deferralCancelBtn">cancel</a>
+  </div>
+
+  <h3 class="modal-title font-large no-bold">Deferral</h3>
+  #}
+
+  <form>
+
+    <div class="govuk-form-group" id="deferralGroup">
+      <fieldset class="govuk-fieldset" aria-describedby="deferralHint">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h1 class="govuk-fieldset__heading">
+            Deferral
+          </h1>
+        </legend>
+        {#
+        <div id="deferralHint" class="govuk-hint">
+          Select an option
+        </div>
+        #}
+        <span class="govuk-error-message error-message-decision"></span>
+
+        <div class="govuk-radios govuk-radios--inline">
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="acceptDeferral-Yes" name="acceptDeferral" data-target="deferralReasonExpanded" type="radio" value="Yes">
+            <label class="govuk-label govuk-radios__label" for="acceptDeferral-Yes">
+              Accept deferral
+            </label>
+          </div>
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="acceptDeferral-No" name="acceptDeferral" data-target="deferralReasonExpanded" type="radio" value="No">
+            <label class="govuk-label govuk-radios__label"  for="acceptDeferral-No">
+              Refuse deferral
+            </label>
+          </div>
+        </div>
+
+        <br/>
+
+        <div class="govuk-form-group" id="deferralReasonGroup">
+          <label class="govuk-label" for="deferralReason">Reason for deferral request</label>
+          <span class="govuk-error-message error-message-reason"></span>
+          <select class="govuk-select" name="deferralReason" id="deferralReason">
+            <option value="" class="u-hide--small" selected data-title="Select reason">Select a reason...</option>
+            {% for reason in deferralReasons %}
+              <option value="{{ reason.excusalCode }}" data-title="{{ reason.description }}">{{ reason.excusalCode }} - {{ reason.description }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+      </fieldset>
+    </div>
+
+    <div class="govuk-body" id="deferralReasonExpanded">
+      
+      <div class="govuk-form-group hidden-deferral-reject" id="deferralDateGroup" hidden>
+
+        <hr class="clear hidden-deferral-reject">
+
+        <div class="govuk-form-group">
+          <h1 class="govuk-label-wrapper"><label class="govuk-label govuk-label--s" for="deferralDate">
+              Defer until
+            </label>
+          </h1>
+          <div id="deferralDateHint" class="govuk-hint">
+            {% if deferralDates %}
+              <div class="govuk-!-font-weight-bold">
+              <p>Available dates: <span class="jd-label-blue">{{deferralDates}}</span></p>
+              </div>
+            {% endif %}
+          </div>
+          <span class="govuk-error-message error-message-date"></span>
+          <div class="input-icon-group">
+            <input type="text" class="govuk-input" name="deferralDate" aria-describedby="deferralDateHint" id="deferralDate" data-toggle="datepicker">
+            <div class="jd-datepicker icon-item" id="deferralTrigger">
+              <span class="icon icon-calendar"></span>
+            </div>
+        </div>
+
+      </div>
+      
+    </div>
+
+    <div class="govuk-form-group">
+      <span class="govuk-error-message error-message-submit"></span>
+      <div class="govuk-button-group">
+        <button id="deferralMarkComplete" class="govuk-button modal-save-button" data-module="govuk-button" value="Mark as completed" disabled >Mark as completed</button>
+        <a id="deferralCancelBtn" class="govuk-link close-modal" href="#">Cancel</a>
+      </div>
+    </div>
+
+
+    <input type="hidden" name="jurorNumber" id="jurorNumber" value="{{ response.jurorNumber }}">
+    <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+    <input type="hidden" name="version" id="version" value="{{ version }}">
+
+  </form>
+
+</section>

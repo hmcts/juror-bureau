@@ -1,0 +1,59 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% from "../../custom-components/summary-item/macro.njk" import summaryItem %}
+
+{% set currentApp = "Pool management" %}
+
+{% block page_identifier %}Request a Pool{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+
+      <form action="{{ submitUrl }}" method="post" id="request-pool">
+
+        <p class="govuk-body">
+          <h3 class="govuk-heading-s">Number of deferred jurors available</h3>
+          <span class="govuk-body-m">{{ bureauDeferrals if bureauDeferrals else courtDeferrals }}</span>
+        </p>
+
+        {{ govukInput({
+          label: {
+            text: "Number of deferred jurors to include in this pool",
+            classes: "govuk-label--s"
+          },
+          id: "numberOfDeferrals",
+          name: "numberOfDeferrals",
+          type: "number",
+          classes: "govuk-input--width-3"
+        }) }}
+
+        <div class="govuk-button-group">
+
+          {{ govukButton({
+            text: "Continue",
+            type: "submit",
+            attributes: {
+              id: "continueButton"
+            }
+          }) }}
+
+          <a class="govuk-link" href="{{ cancelUrl }}" id="cancelAnchor">Cancel</a>
+
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+
+      </form>
+
+    </div>
+  </div>
+{% endblock %}

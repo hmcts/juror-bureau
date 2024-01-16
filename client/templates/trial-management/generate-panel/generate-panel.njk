@@ -1,0 +1,92 @@
+{% extends "../../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+
+{% block page_title %}
+    {{ serviceName }} - generate a panel
+{% endblock %}
+
+{% block page_identifier %}
+    Generate a panel
+{% endblock %}
+
+{% if errors.items["jurorType"] %}
+  {% set jurorTypeError = {"text": errors.items['jurorType'][0].details} %}
+{% endif %}
+{% if errors.items["noJurors"] %}
+  {% set noJurorsError = {"text": errors.items['noJurors'][0].details} %}
+{% endif %}
+
+{% block content %}
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">
+          Generate a panel
+      </h1>
+    </div>
+  </div>
+  <form method="post" action="{{ processUrl }}" id="generatePanelForm">
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-half">
+
+        {{ govukRadios({
+          fieldset: {
+            legend: {
+              text: "Which jurors do you want to generate a panel from?",
+              classes: "govuk-!-font-weight-bold"
+            }
+          },
+          classes: "govuk-radios",
+          name: "jurorType",
+          items: [
+            {
+              value: "availablePools",
+              text: "All available jurors"
+            },
+            {
+              value: "specificPools",
+              text: "Jurors from one or more specific pools"
+            }
+          ],
+          value: panelDetails.jurorType,
+          errorMessage: jurorTypeError
+        }) }}
+
+        {{ govukInput({
+          label: {
+            text: "Number of jurors needed on this panel"
+          },
+          id: "noJurors",
+          name: "noJurors",
+          classes: "govuk-input--width-3",
+          value: panelDetails.noJurors,
+          type: "number",
+          errorMessage: noJurorsError
+        }) }}
+
+      </div>
+    </div>
+
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Continue",
+        type: "submit",
+        attributes: {
+          id: "saveButton"
+        }
+      }) }}
+      <a class="govuk-link govuk-link--no-visited-state" id="cancelAnchor" href="{{ cancelUrl }}">
+        Cancel
+      </a>
+    </div>
+
+    <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+  </form>
+{% endblock %}
+
+

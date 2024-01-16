@@ -1,0 +1,192 @@
+{% if canEdit %}
+<section>
+  <form class="edit-form" id="eligibility-form">
+
+    <div class="govuk-form-group jd-edit-panel govuk-body" id="residencyGroup">
+      <fieldset class="govuk-fieldset" aria-describedby="residencyHint">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h1 class="govuk-fieldset__heading">
+            Residency
+          </h1>
+        </legend>
+
+        <div id="residencyHint" class="govuk-hint">
+          Since you turned 13, has your main address been in the UK, Channel Islands or Isle of Man for any period of at least 5 years?
+        </div>
+
+        <div class="govuk-radios govuk-radios--conditional" data-module="govuk-radios">
+          <span class="govuk-error-message" id="residencyErrorMessage"></span>
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="residency-Yes" name="residency" type="radio" value="Yes" {% if eligibilityDetails.residency %} checked{% endif %}>
+            <label class="govuk-label govuk-radios__label" for="residency-Yes">
+              Yes
+            </label>
+          </div>
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="residency-No" name="residency" type="radio" value="No" data-aria-controls="residencyDetailsGroupConditional" {% if not eligibilityDetails.residency %} checked{% endif %}>
+            <label class="govuk-label govuk-radios__label" for="residency-No">
+              No
+            </label>
+          </div>
+          <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="residencyDetailsGroupConditional">
+            <div class="govuk-form-group" id="residencyDetailsGroup">
+              <label class="govuk-label" for="residencyDetailsl">
+                Provide details
+              </label>
+              <span class="govuk-error-message" id="residencyDetailsErrorMessage"></span>
+              <textarea class="jd-textarea govuk-!-width-three-quarters govuk-body" name="residencyDetails" id="residencyDetails" rows="3" maxlength="1000" spellcheck="false">{{ response.residencyDetail }}</textarea>
+            </div>
+          </div>
+        </div>
+
+      </fieldset>
+    </div>
+
+    <hr>
+
+    <div class="govuk-form-group jd-edit-panel govuk-body" id="mentalHealthActGroup">
+      <fieldset class="govuk-fieldset" aria-describedby="mentalHealthHint">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h1 class="govuk-fieldset__heading">
+            Mental health
+          </h1>
+        </legend>
+
+        <div id="mentalHealthHint" class="govuk-hint">
+          Are you being detained, looked after or treated under the Mental Health Act?<br/>
+          Has it been decided that you 'lack mental capacity'?
+        </div>
+
+        <div class="govuk-radios govuk-radios--conditional" data-module="govuk-radios">
+          <span class="govuk-error-message" id="mentalHealthActErrorMessage"></span>
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="mentalHealthAct-Yes" name="mentalHealthAct" type="radio" value="Yes" data-aria-controls="mentalHealthActDetailsGroupConditional" {% if eligibilityDetails.mentalHealthAct %} checked{% endif %}>
+            <label class="govuk-label govuk-radios__label" for="mentalHealthAct-Yes">
+              Yes
+            </label>
+          </div>
+          <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="mentalHealthActDetailsGroupConditional">
+            <div class="govuk-form-group" id="mentalHealthActDetailsGroup">
+              <label class="govuk-label" for="mentalHealthActDetails">
+                Provide details
+              </label>
+              <span class="govuk-error-message" id="mentalHealthActDetailsErrorMessage"></span>
+              <textarea class="jd-textarea govuk-!-width-three-quarters govuk-body" name="mentalHealthActDetails" id="mentalHealthActDetails" rows="3" maxlength="2020" spellcheck="false">{{ response.mentalHealthActDetails }}</textarea>
+            </div>
+          </div>
+
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="mentalHealthAct-No" name="mentalHealthAct" type="radio" value="No" {% if not eligibilityDetails.mentalHealthAct %} checked{% endif %}>
+            <label class="govuk-label govuk-radios__label" for="mentalHealthAct-No">
+              No
+            </label>
+          </div>
+          
+        </div>
+
+      </fieldset>
+    </div>
+
+    <hr>
+
+    <div class="govuk-form-group jd-edit-panel govuk-body" id="bailGroup">
+      <fieldset class="govuk-fieldset" aria-describedby="bailHint">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h1 class="govuk-fieldset__heading">
+            Bail
+          </h1>
+        </legend>
+
+        <div id="bailHint" class="govuk-hint">
+          Are you currently on bail for a criminal offence?
+        </div>
+
+        <div class="govuk-radios govuk-radios--conditional" data-module="govuk-radios">
+          <span class="govuk-error-message" id="bailErrorMessage"></span>
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="bail-Yes" name="bail" type="radio" value="Yes" data-aria-controls="bailDetailsGroupConditional" {% if eligibilityDetails.bail %} checked{% endif %}>
+            <label class="govuk-label govuk-radios__label" for="bail-Yes">
+              Yes
+            </label>
+          </div>
+          <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="bailDetailsGroupConditional">
+            <div class="govuk-form-group" id="bailDetailsGroup">
+              <label class="govuk-label" for="bailDetails">
+                Provide details
+              </label>
+              <span class="govuk-error-message" id="bailDetailsErrorMessage"></span>
+              <textarea class="jd-textarea govuk-!-width-three-quarters govuk-body" name="bailDetails" id="bailDetails" rows="3" maxlength="1000" spellcheck="false">{{ response.bailDetails }}</textarea>
+            </div>
+          </div>
+
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="bail-No" name="bail" type="radio" value="No" {% if not eligibilityDetails.bail %} checked{% endif %}>
+            <label class="govuk-label govuk-radios__label" for="bail-No">
+              No
+            </label>
+          </div>
+          
+        </div>
+
+      </fieldset>
+    </div>
+
+    <hr>
+
+    <div class="govuk-form-group jd-edit-panel govuk-body" id="convictionsGroup">
+      <fieldset class="govuk-fieldset" aria-describedby="convictionsHint">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h1 class="govuk-fieldset__heading">
+            Convictions
+          </h1>
+        </legend>
+
+        <div id="convictionsHint" class="govuk-hint">
+          Have you been found guilty of a criminal offence?
+        </div>
+
+        <div class="govuk-radios govuk-radios--conditional" data-module="govuk-radios">
+          <span class="govuk-error-message" id="convictionsErrorMessage"></span>
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="convictions-Yes" name="convictions" type="radio" value="Yes" data-aria-controls="convictionsDetailsGroupConditional" {% if eligibilityDetails.convictions %} checked{% endif %}>
+            <label class="govuk-label govuk-radios__label" for="convictions-Yes">
+              Yes
+            </label>
+          </div>
+          <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="convictionsDetailsGroupConditional">
+            <div class="govuk-form-group" id="convictionsDetailsGroup">
+              <label class="govuk-label" for="convictionsDetails">
+                Provide details
+              </label>
+              <span class="govuk-error-message" id="convictionsDetailsErrorMessage"></span>
+              <textarea class="jd-textarea govuk-!-width-three-quarters govuk-body" name="convictionsDetails" id="convictionsDetails" rows="3" maxlength="1000" spellcheck="false">{{ response.convictionsDetails }}</textarea>
+            </div>
+          </div>
+
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="convictions-No" name="convictions" type="radio" value="No" {% if not eligibilityDetails.convictions %} checked{% endif %}>
+            <label class="govuk-label govuk-radios__label" for="convictions-No">
+              No
+            </label>
+          </div>
+          
+        </div>
+
+      </fieldset>
+    </div>
+
+    <hr><br>
+
+    <div class="govuk-button-group jd-save-cancel-button-group">
+      <button id="eligibilitySaveButton" class="govuk-button edit-action edit-save" data-target="eligibility" data-module="govuk-button">Save</button>
+      <a id="eligibilityCancelButton" class="govuk-link edit-action edit-cancel" data-target="eligibility" href="#">Cancel</a>
+    </div>
+
+
+    <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+    <input type="hidden" name="jurorNumber" value="{{ response.jurorNumber }}">
+    <input type="hidden" name="version" value="{{ response.version }}">
+    
+  </form>
+</section>
+{% endif %}

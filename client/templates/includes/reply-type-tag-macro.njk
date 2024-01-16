@@ -1,0 +1,29 @@
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+
+{% macro replyTypeTag(params) %}
+
+  {# set the reply type style #}
+  {% if params.replyType == "DECEASED" and params.hasModAccess  %}
+    {% set replyTypeClass = "mod-tag-grey" %}
+  {% elif params.replyType == "AUTO PROCESSED" %}
+    {% set replyTypeClass = "govuk-tag--green" %}
+  {% elif params.replyType == "DEFERRAL" %}
+    {% set replyTypeClass = "govuk-tag--red" %}
+  {% elif params.replyType == "EXCUSAL" %}
+    {% set replyTypeClass = "govuk-tag--purple" %}
+  {% elif params.replyType == "INELIGIBLE" %}
+    {% set replyTypeClass = "govuk-tag--pink" %}
+  {% elif params.replyType == "NEEDS REVIEW" %}
+    {% set replyTypeClass = "govuk-tag--yellow" %}
+  {% else %}
+    {% set replyTypeClass = "govuk-tag--grey" %}
+  {% endif %}
+
+  {% if params.replyType %}
+    {{govukTag({
+      text: params.replyType,
+      classes: replyTypeClass
+    })}}
+  {% endif %}
+
+{% endmacro %}

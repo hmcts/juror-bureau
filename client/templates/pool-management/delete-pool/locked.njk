@@ -1,0 +1,21 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set currentApp = "Pool management" %}
+
+{% block page_identifier %}Delete Pool{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">The pool cannot be deleted</h1>
+
+      <p class="govuk-body">Someone is in this pool record, so it cannot be deleted. Ask your colleagues to come out of the record and try again.</p>
+
+      <a id="cancelLink" class="govuk-link" href="{{ cancelUrl }}">Go back</a>
+    </div>
+  </div>
+
+{% endblock %}

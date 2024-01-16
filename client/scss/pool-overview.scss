@@ -1,0 +1,126 @@
+.after-header {
+  display: flex;
+  margin: -20px 0 20px;
+  justify-content: space-between;
+  align-items: flex-end;
+
+  &__pool-record {
+    &-label {
+      font-size: 24px;
+      color: govuk-colour("dark-grey");
+    }
+
+    &-number {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+  }
+}
+
+.court-details-wrapper {
+  .court-details {
+    width: 100%;
+    background-color: govuk-colour("blue");
+    left: 0;
+    color: govuk-colour("white");
+    font-size: 19px;
+    padding: 14px 0 16px;
+
+    &__grid {
+      display: grid;
+      gap: 20px;
+
+      .column {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+    }
+  }
+
+  @include govuk-media-query($from: desktop) {
+    height: 89px;
+  
+    .court-details {
+      position: absolute;
+
+      &__grid {
+        grid-template-columns: repeat(4, auto);
+
+        .column {
+          gap: 20px;
+        }
+      }
+    }
+  }
+}
+
+.pool-values {
+  @extend .govuk-grid-column-full;
+  @include govuk-responsive-padding(6, "top");
+  @include govuk-responsive-padding(6, "bottom");
+  display: grid;
+  gap: 30px;
+  text-align: center;
+    
+  .label {
+    font-size: 19px;
+  }
+
+  &__bureau-summoning {
+    display: flex;
+    flex-direction: column;
+    padding-right: 16px;
+  }
+
+  &__jurors-confirmed {
+    color: govuk-colour("blue");
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__chart {
+    padding: 0 50px;
+    border-right: none;
+  }
+
+  &__summary {
+    display: flex;
+    flex-direction: column;
+    padding-left: 20px;
+  }
+
+  @include govuk-media-query($from: desktop) {
+    justify-content: start;
+    grid-template-columns: repeat(4, auto);
+    align-items: flex-end;
+    text-align: left;
+    gap: 0;
+    
+    &__chart {
+      padding: 0 92px;
+      border-right: solid 1px $govuk-border-colour;
+    }
+  }
+}
+
+.additional-stats {
+  display: grid;
+  gap: 20px;
+
+  &__row {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.summon-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.pool-members-table-wrapper {
+  margin-top: 10px;
+}

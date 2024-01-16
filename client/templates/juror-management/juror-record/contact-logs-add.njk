@@ -1,0 +1,122 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
+
+{% block page_title %}
+  {{ serviceName }} - juror record - add contact log
+{% endblock %}
+
+{% block page_identifier %}juror record - add contact log{% endblock %}
+
+{% set currentApp = "Juror management" %}
+
+{% block beforeContent %}
+  {% include "includes/back-link.njk" %}
+{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {% set nameParts = [juror.commonDetails.title, juror.commonDetails.firstName, juror.commonDetails.lastName] %}
+
+  {% set enquiryTypeError = undefined %}
+  {% if errors.items["enquiryType"] %}
+    {% set enquiryTypeError = {"text": errors.items["enquiryType"][0].details} %}
+  {% endif %}
+
+  {% set repeatEnquiryError = undefined %}
+  {% if errors.items["repeatEnquiry"] %}
+    {% set repeatEnquiryError = {"text": errors.items["repeatEnquiry"][0].details} %}
+  {% endif %}
+
+  {% set notesError = undefined %}
+  {% if errors.items["notes"] %}
+    {% set notesError = {"text": errors.items["notes"][0].details} %}
+  {% endif %}
+
+  <div class="after-header">
+    <div class="after-header__pool-record">
+      <span class="after-header__pool-record-label">
+        {{ nameParts | join(' ') | capitalizeFully }}
+      </span>
+      <div class="after-header__pool-record-number">
+        <h1 class="govuk-heading-l govuk-!-margin-0">
+          Log contact
+        </h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form id="jurorNotesForm" action="{{ actionUrl }}" method="post">
+
+        {{ govukSelect({
+          id: "enquiryType",
+          name: "enquiryType",
+          label: {
+            text: "Select the type of enquiry made",
+            classes: "govuk-!-font-weight-bold"
+          },
+          items: enquiryTypes,
+          errorMessage: enquiryTypeError
+        }) }}
+
+        {{ govukRadios({
+          name: "repeatEnquiry",
+          idPrefix: "repeatEnquiry-",
+          classes: "govuk-radios--inline govuk-radios--small",
+          fieldset: {
+            legend: {
+              text: "Has the juror enquired about this before?",
+              classes: "govuk-fieldset__legend--s"
+            }
+          },
+          items: [
+            {
+              value: "true",
+              text: "Yes",
+              id: "yes"
+            },
+            {
+              value: "false",
+              text: "No",
+              id: "no"
+            }
+          ],
+          errorMessage: repeatEnquiryError
+        }) }}
+
+        {{ govukCharacterCount({
+          name: "notes",
+          id: "notes",
+          maxlength: 2000,
+          rows: 10,
+          label: {
+            text: "Add notes"
+          },
+          errorMessage: notesError
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Save",
+            attributes: {
+              id: "saveButton"
+            }
+          }) }}
+
+          <a id="cancelAnchor" class="govuk-link" href="{{ backLinkUrl.url }}">Cancel</a>
+        </div>
+
+        <input type="hidden" id="jurorNumber" name="jurorNumber" value="{{ juror.commonDetails.jurorNumber }}">
+        <input type="hidden" id="_csrf" name="_csrf" value="{{ csrftoken }}" >
+      </form>
+    </div>
+  </div>
+
+{% endblock %}

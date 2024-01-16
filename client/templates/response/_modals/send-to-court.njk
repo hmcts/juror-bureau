@@ -1,0 +1,45 @@
+<section class="modal-content send-to-court-section">
+
+  <form>
+
+    <div class="govuk-form-group" id="sendToCourtGroup">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h1 class="govuk-fieldset__heading">
+            PDF sent to court
+          </h1>
+        </legend>
+
+        <br/>
+        <span class="govuk-error-message error-message-decision"></span>
+
+        <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+          <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" id="sendToCourtConfirmed" name="sendToCourtConfirmed" type="checkbox" value="sendToCourtConfirmed">
+            <label class="govuk-label govuk-checkboxes__label" for="sendToCourtConfirmed">
+              PDF sent to court
+            </label>
+          </div>
+        </div>
+
+      </fieldset>
+    </div>
+
+    <br/>
+
+    <div class="govuk-form-group">
+      <span class="govuk-error-message error-message-submit"></span>
+      <div class="govuk-button-group">
+        <button id="sendToCourtComplete" class="govuk-button modal-save-button" data-module="govuk-button" value="Confirm" disabled>Confirm</button>
+        <a id="sendToCourtCancelBtn" class="govuk-link close-modal" href="#">Cancel</a>
+      </div>
+    </div>
+
+
+    <input type="hidden" name="jurorNumber" id="jurorNumber" value="{{ response.jurorNumber }}">
+    <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+    <input type="hidden" name="version" id="version" value="{{ version }}">
+
+  </form>
+
+</section>

@@ -1,0 +1,168 @@
+{% if canEdit %}
+<section>
+  <form class="edit-form" id="reasonable-adjustments-form">
+
+    <div class="govuk-form-group jd-edit-panel govuk-body">
+
+      <fieldset class="govuk-fieldset" aria-describedby="reasonableAdjustmentsHint">
+
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h1 class="govuk-fieldset__heading">
+            Reasonable adjustments
+          </h1>
+        </legend>
+        <div id="reasonableAdjustmentsHint" class="govuk-hint">
+          Disability or impairment
+        </div>
+
+        {# govuk-checkboxes--small #}
+        <div class="govuk-checkboxes " data-module="govuk-checkboxes">
+
+          {#
+          <div class="form-group">
+            <label class="block-label selection-button-checkbox" for="assistanceType-mobility" data-target="limitedMobilityGroup">
+              <input type="checkbox" name="assistanceType" id="assistanceType-mobility" value="Limited mobility"{{ response.specialNeeds | checkArr('code', 'L', ' checked') }}>
+              Limited mobility
+            </label>
+            <textarea class="form-control u-hide" name="limitedMobility" id="limitedMobility" maxlength="1">L</textarea>
+          </div>
+          #}
+          <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" name="assistanceType" id="assistanceType-mobility" type="checkbox" value="Limited mobility"{{ response.specialNeeds | checkArr('code', 'L', ' checked') }}>
+            <label class="govuk-label govuk-checkboxes__label" for="assistanceType-mobility">
+              Limited mobility
+            </label>
+            <textarea class="form-control u-hide" name="limitedMobility" id="limitedMobility" maxlength="1">L</textarea>
+          </div>
+
+          {#
+          <div class="form-group">
+            <label class="block-label selection-button-checkbox" for="assistanceType-hearing" data-target="hearingImpairmentGroup">
+              <input type="checkbox" name="assistanceType" id="assistanceType-hearing" value="Hearing impairment"{{ response.specialNeeds | checkArr('code', 'H', ' checked') }}>
+              Hearing impairment
+            </label>
+            <textarea class="form-control u-hide" name="hearingImpairment" id="hearingImpairment" maxlength="1">H</textarea>
+          </div>
+          #}
+          <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" name="assistanceType" id="assistanceType-hearing" type="checkbox" value="Hearing impairment"{{ response.specialNeeds | checkArr('code', 'H', ' checked') }}>
+            <label class="govuk-label govuk-checkboxes__label" for="assistanceType-hearing">
+              Hearing impairment
+            </label>
+            <textarea class="form-control u-hide" name="hearingImpairment" id="hearingImpairment" maxlength="1">H</textarea>
+          </div>
+
+          {#
+          <div class="form-group">
+            <label class="block-label selection-button-checkbox" for="assistanceType-diabetes" data-target="diabetesGroup">
+              <input type="checkbox" name="assistanceType" id="assistanceType-diabetes" value="Diabetes"{{ response.specialNeeds | checkArr('code', 'I', ' checked') }}>
+              Diabetes
+            </label>
+            <textarea class="form-control u-hide" name="diabetes" id="diabetes" maxlength="1">I</textarea>
+          </div>
+          #}
+          <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" name="assistanceType" id="assistanceType-diabetes" type="checkbox" value="Diabetes"{{ response.specialNeeds | checkArr('code', 'I', ' checked') }}>
+            <label class="govuk-label govuk-checkboxes__label" for="assistanceType-diabetes">
+              Diabetes
+            </label>
+            <textarea class="form-control u-hide" name="diabetes" id="diabetes" maxlength="1">I</textarea>
+          </div>
+
+          {#
+          <div class="form-group">
+            <label class="block-label selection-button-checkbox" for="assistanceType-sight" data-target="sightImpairmentGroup">
+              <input type="checkbox" name="assistanceType" id="assistanceType-sight" value="Severe sight impairment"{{ response.specialNeeds | checkArr('code', 'V', ' checked') }}>
+              Severe sight impairment
+            </label>
+            <textarea class="form-control u-hide" name="sightImpairment" id="sightImpairment" maxlength="1">V</textarea>
+          </div>
+          #}
+          <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" name="assistanceType" id="assistanceType-sight" type="checkbox" value="Severe sight impairment"{{ response.specialNeeds | checkArr('code', 'V', ' checked') }}>
+            <label class="govuk-label govuk-checkboxes__label" for="assistanceType-sight">
+              Severe sight impairment
+            </label>
+            <textarea class="form-control u-hide" name="sightImpairment" id="sightImpairment" maxlength="1">V</textarea>
+          </div>
+
+          {#
+          <div class="form-group">
+            <label class="block-label selection-button-checkbox" for="assistanceType-learningDisability" data-target="learningDisabilityGroup">
+              <input type="checkbox" name="assistanceType" id="assistanceType-learningDisability" value="Learning disability"{{ response.specialNeeds | checkArr('code', 'R', ' checked') }}>
+              Learning disability
+            </label>
+            <textarea class="form-control u-hide" name="learningDisability" id="learningDisability" maxlength="1">R</textarea>
+          </div>
+          #}
+          <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" name="assistanceType" id="assistanceType-learningDisability" type="checkbox" value="Learning disability"{{ response.specialNeeds | checkArr('code', 'R', ' checked') }}>
+            <label class="govuk-label govuk-checkboxes__label" for="assistanceType-learningDisability">
+              Learning disability
+            </label>
+            <textarea class="form-control u-hide" name="learningDisability" id="learningDisability" maxlength="1">R</textarea>
+          </div>
+
+          {#
+          <div class="form-group">
+            <label class="block-label selection-button-checkbox" for="assistanceType-other" data-target="otherGroup">
+              <input type="checkbox" name="assistanceType" id="assistanceType-other" value="Other"{{ response.specialNeeds | checkArr('code', 'O', ' checked') }}>
+              Other
+            </label>
+
+            <div class="form-group{{ response.specialNeeds | checkArr('code', 'O', '', ' js-hidden') }}" id="otherGroup">
+              <br>
+              <label class="form-label u-hide" for="other">Tell us about this</label>
+              <span class="error-message" id="otherErrorMessage"></span>
+              <textarea class="form-control" name="other" id="other" maxlength="1000">{{ response.specialNeeds | getArr('code', 'O', 'detail') }}</textarea>
+            </div>
+          </div>
+          #}
+
+          <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" id="assistanceType-other" name="assistanceType" type="checkbox" value="Other" data-aria-controls="otherGroupDetails" {{ response.specialNeeds | checkArr('code', 'O', ' checked') }} >
+            <label class="govuk-label govuk-checkboxes__label" for="assistanceType-other">
+              Other
+            </label>
+          </div>
+          <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="otherGroupDetails">
+            <div class="govuk-form-group" id="otherGroup">
+              <label class="govuk-label" for="other">
+                Details of other disability or impairment
+              </label>
+              <span class="govuk-error-message" id="otherErrorMessage"></span>
+              <textarea class="jd-textarea govuk-body govuk-!-width-three-quarters" name="other" id="other" rows="3" maxlength="1000">{{ response.specialNeeds | getArr('code', 'O', 'detail') }}</textarea>
+            </div>
+          </div>
+
+        </div>
+
+        <br/>
+
+        <div class="govuk-form-group" id="specialArrangementsGroup">
+          <label class="govuk-label" for="cjsEmployerDetails">
+            Special arrangements
+          </label>
+          <span class="govuk-error-message" id="specialArrangementsErrorMessage"></span>
+          {#class="govuk-textarea govuk-body"#}
+          <textarea class="jd-textarea govuk-!-width-three-quarters govuk-body" name="specialArrangements" id="specialArrangements" spellcheck="false" rows="3" maxlength="1000">{{ response.specialNeedsArrangements }}</textarea>
+        </div>
+
+      </fieldset>
+
+      <br/>
+
+      <div class="govuk-button-group jd-save-cancel-button-group">
+        <button id="reasonableAdjustmentsSaveButton" class="govuk-button edit-save" data-target="reasonable-adjustments" data-module="govuk-button">Save</button>
+        <a id="reasonableAdjustmentsCancelButton" class="govuk-link edit-cancel" data-target="reasonable-adjustments" href="#">Cancel</a>
+      </div>
+
+    </div>
+
+    <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+    <input type="hidden" name="jurorNumber" value="{{ response.jurorNumber }}">
+    <input type="hidden" name="version" value="{{ response.version }}">
+    
+  </form>
+</section>
+{% endif %}

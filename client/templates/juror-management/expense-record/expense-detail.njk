@@ -1,0 +1,215 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{% from "custom-components/mod-large-tag/macro.njk" import modLargeTag %}
+
+{% block page_title %}{{ serviceName }} - juror-management - unpaid attendance - expense record{% endblock %}
+{% block page_identifier %}juror-management - unpaid attendance - expense record{% endblock %}
+
+{% set currentApp = "Jurors" %}
+
+{% block beforeContent %}
+    <a href="{{ backLinkUrl }}" class="govuk-back-link">Back</a>
+{% endblock %}
+
+{% block content %}
+
+  <div class="after-header">
+    <div>
+      <span class="govuk-caption-l">Expenses audit number</span>
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-3">{{data.auditNumber}}</h1>
+        {{ govukTag({
+          text: "For approval" if status === 'forApproval' else "Approved",
+          classes: "govuk-tag--blue" if status === 'forApproval' else "govuk-tag"
+        }) }}
+    </div>
+
+    <span>
+      <form method="post" id="buttons">
+      {% if status === "forApproval" %}
+        {{ govukButton({
+          text: "Approve expenses",
+          attributes: {
+            id: "approveExpenseButton",
+            formAction: approveUrl
+          }
+        }) }}
+      {% endif %}
+      {{ govukButton({
+        text: "Edit expenses",
+        href: '#',
+        classes: "govuk-button--secondary govuk-!-margin-left-3",
+        attributes: {
+          id: "editExpensesButton"
+        }
+      }) }}
+      {{ govukButton({
+        text: "Print audit report",
+        href: '#',
+        classes: "govuk-button--secondary govuk-!-margin-left-3",
+        attributes: {
+          id: "printAuditReportButton"
+        }
+      }) }}
+      <input type="hidden" name="_csrf" id="csrfToken" value="{{ csrftoken }}">
+      <input type="hidden" name="name" id="name" value="{{ data.name }}">
+      </form>
+    </span>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              text: "Juror number"
+            },
+            value: {
+              html: '<a href=' + url("juror-record.overview.get", { jurorNumber: data.jurorNumber }) + ' class="govuk-link">' + data.jurorNumber + '</a>'
+            }
+          },
+          {
+            key: {
+              text: "Juror name"
+            },
+            value: {
+              text: data.name
+            }
+          },
+          {
+            key: {
+              text: "Juror's address"
+            },
+            value: {
+              html: data.address1 + "<br>" + data.address4 + "<br>" + data.addressPostcode
+            }
+          },
+          {
+            key: {
+              text: "Method of payment"
+            },
+            value: {
+              text: data.methodOfPayment
+            }
+          },
+                    {
+            key: {
+              text: "Account number"
+            },
+            value: {
+              text: data.accountNumber
+            }
+          },
+          {
+            key: {
+              text: "Sort code"
+            },
+            value: {
+              text: data.sortCode
+            }
+          },
+          {
+            key: {
+              text: "Account holder's name"
+            },
+            value: {
+              text: data.accountHolderName
+            }
+          }
+        ]
+      }) }}
+    </div>
+    <div class="govuk-grid-column-one-half">
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              text: "Attendance dates"
+            },
+            value: {
+              text: data.firstDate | dateFilter("YYYY-MM-DD", "ddd D MMM YYYY") + " to " + data.lastDate | dateFilter("YYYY-MM-DD", "ddd D MMM YYYY")
+            }
+          },
+          {
+            key: {
+              text: "Submitted by"
+            },
+            value: {
+              text: data.submittedBy
+            }
+          },
+          {
+            key: {
+              text: "Date submitted"
+            },
+            value: {
+              text: data.dateSubmitted | dateFilter("YYYY-MM-DD", "ddd D MMM YYYY")
+            }
+          }
+        ]
+      }) }}
+    </div>
+  </div>
+
+  {{ modLargeTag({
+    id: "totalForApprovalTag" if status === "forApproval" else "totalApprovedTag",
+    colour: "blue" if status === "forApproval",
+    layout: "inline",
+    label: "Total for approval" if status === "forApproval" else "Total approved",
+    value: data.total
+  })}}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third">
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              text: "Mileage"
+            },
+            value: {
+              text: "3 Miles"
+            }
+          }
+        ]
+      }) }}
+    </div>
+  </div>
+
+  {% include "./_partials/expenses-table.njk" %}
+
+  {% if status === "forApproval"%}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-third">
+        {{ govukSummaryList({
+          rows: [
+            {
+              key: {
+                text: "Total amount"
+              },
+              value: {
+                text: data.total,
+                classes: "mod-summary-list-align__right"
+              }
+            },
+            {
+              key: {
+                text: "Balance to pay"
+              },
+              value: {
+                text: data.balanceToPay,
+                classes: "mod-summary-list-align__right"
+              }
+            }
+          ]
+        }) }}
+      </div>
+    </div>
+  {% endif %}
+
+{% endblock %}

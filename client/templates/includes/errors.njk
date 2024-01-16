@@ -1,0 +1,39 @@
+{% if errors.count > 0 %}
+
+  <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
+    <h2 class="govuk-error-summary__title" id="error-summary-title">
+      There is a problem
+    </h2>
+    <div class="govuk-error-summary__body">
+
+      {% if errors.message.length > 0 %}
+        <p class="govuk-error-message">{{ errors.message }}</p>
+      {% endif %}
+
+      <ul class="govuk-list govuk-error-summary__list">
+        {% for key, messages in errors.items %}
+
+        {% if messages[0].summaryLink != undefined %}
+          {% set hrefValue = messages[0].summaryLink %}
+        {% else %}
+          {% set hrefValue = key %}
+        {% endif %}
+
+        <li>
+          <a href="#{{ hrefValue }}">
+            {% if messages[0]|isString %}
+              {{ messages[0] }}
+            {% elif messages[0].summary %}
+              {{ messages[0].summary }}
+            {% else %}
+              {{ messages[0].details }}
+            {% endif %}
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+
+    </div>
+  </div>
+
+{% endif %}

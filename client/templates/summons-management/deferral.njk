@@ -1,0 +1,197 @@
+{% extends "../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "custom-components/deferral-available-pools-week/macro.njk" import deferralAvailablePoolsWeek %}
+
+{% block page_title %}{{ serviceName }} - process response{% endblock %}
+
+{% block page_identifier %}process - what to do{% endblock %}
+
+{% set currentApp = "Summons replies" %}
+
+{% block beforeContent %}
+    <a href="{{ backLinkUrl }}" class="govuk-back-link">Back</a>
+{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+
+    {% set deferralReasonError = undefined %}
+    {% if errors.items['deferralReason'] %}
+      {% set deferralReasonError = {
+        text: errors
+          .items['deferralReason'][0]
+          .details
+      } %}
+    {% endif %}
+    {% set deferralDateError = undefined %}
+    {% if errors.items['deferralDate'] %}
+      {% set deferralDateError = {
+        text: errors
+          .items['deferralDate'][0]
+          .details
+      } %}
+    {% endif %}  
+  
+  {# setup date picker html #}
+  {% set otherDeferralDateHTML %}
+      {{ datePicker({
+      id: "deferralDate",
+      label: {
+        text: "Date to defer to",
+        classes: "govuk-label--s"
+      },
+      dateMin: minDate,
+      dateMax: maxDate,
+      hint: dateHint,
+      dateError: deferralDateError.text,
+      dateValue: deferralSelections.deferralDate
+      }) }}
+  {% endset %}
+
+  {% if noPools == "true" %}
+  <form method="post" action="{{ processUrl }}" id="deferralPoolSelect">
+    {% include "./_partials/deferral-no-available-pools.njk" %}
+    <input type="hidden" name="deferralReason" value="{{ deferralSelectedReason }}">
+    <input type="hidden" name="sendToDeferralMaintence" value="true">
+  </form>
+  {% else %}
+
+    {# Setup reason dropdown values / selected item #}
+    {% set reasonList = [{value: "", text: "Select a reason...", selected: true}] %}
+    {% for reason in deferralReasons %}
+
+      {% if (reason.excusalCode === deferralSelections.deferralReason) %}
+        {% set codeSelected = true %}
+      {% else %}
+        {% set codeSelected = false %}
+      {% endif %}
+      
+      {% set reasonList = (reasonList.push({value: reason.excusalCode, text: reason.excusalCode + " - " + reason.description, selected: codeSelected }), reasonList) %}
+    {% endfor %}
+              
+  <h1 class="govuk-heading-l">Defer this juror</h1>
+  <form action="{{ processUrl }}" method="POST" id="deferralForm">
+    {% if otherDateSearch === "false" %}
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-0">
+          <span class="govuk-caption-xl">{{ nameDetails.headerNameRender }}</span>
+          {# deferral reason dropdown #}
+          {{ govukSelect({
+            id: "deferralReason",
+            name: "deferralReason",
+            label: {
+              text: "Reason for the deferral request",
+              classes: "govuk-body govuk-!-font-weight-bold"
+            },
+            items: reasonList,
+            errorMessage: deferralReasonError
+          }) }}
+        </div>
+      </div>
+    {% endif %}
+    <div class="govuk-grid-row">
+      {% if otherDateSearch === "false" %}<hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">{% endif %}
+      <div class="govuk-grid-column-two-thirds">
+          {% if otherDateSearch === "false" %}
+            {# deferralPoolsSummary #}
+            <h2 class="govuk-heading-m">Select a date to defer to</h2>
+            <p class="govuk-body">These are weeks when the juror is available, in order of preference.</p>
+            {% set weeks = [] %}
+            {% set numberOfWeeks = deferralPoolSummary | length %}
+            {% set counter = 1 %}
+
+            {% for week in deferralPoolsSummary %}
+              {% set displayDate = week.weekCommencing | dateFilter('', 'dddd DD MMMM YYYY', texts.INTERFACE.HTML_LANG) %}
+              <span class="govuk-caption-m">
+                {% if counter == '1' %}First choice{%endif%}
+                {% if counter == '2' %}Second choice{%endif%}
+                {% if counter == '3' %}Third choice{%endif%}
+              </span>
+              {# show the pool dates if any #}
+              {{ deferralAvailablePoolsWeek ({
+                  name: 'deferralOption',
+                  idPrefix: 'deferralOption-' + counter,
+                  deferralPoolWeek: week,
+                  value: deferralSelections.deferralOption,
+                  url: url,
+                  headerClass: "govuk-fieldset__legend--s"
+              }) }}
+
+              {% set counter = counter + 1  %}
+            {% endfor %}
+
+            {{ govukRadios({
+              name: "deferralOption",
+              idPrefix: "deferralOption-Dif",
+              items: [
+                  { divider: "or" },
+                  { value: "otherDate",
+                    text: "Choose a different date",
+                    conditional: {html: otherDeferralDateHTML}
+                  }],
+              value: deferralSelections.deferralOption
+            }) }}
+
+          {% else %}
+            {# Show dates for the other date option #}
+            <h2 class="govuk-heading-m">Select a pool for this date</h2>
+         
+              {% for week in deferralPoolsSummary %}
+                {# show the pool dates if any #}
+              
+                {{ deferralAvailablePoolsWeek ({
+                    name: "deferralOption",
+                    deferralPoolWeek: week,
+                    value: deferralSelections.deferralOption,
+                    url: url,
+                    headerClass: 'govuk-fieldset__legend--s'
+                }) }}
+              {% endfor %}
+
+            <input type="hidden" name="deferralReason" id="deferralReason" value="{{ deferralSelectedReason }}">
+
+          {% endif %}
+      </div>
+    </div>
+
+    {# Submit form #}
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Continue"
+      }) }}
+
+      <a href="{{ cancelUrl }}" class="govuk-link--no-visited-state" id="cancelAnchor">Cancel</a>
+    </div>
+
+    <input type="hidden" name="jurorNumber" id="jurorNumber" value="{{ jurorNumber }}">
+    <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+    <input type="hidden" name="version" id="version" value="{{ version }}">
+  </form>
+{% endif %}
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function(){
+
+      const datePickers = []
+        .slice
+        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
+      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
+
+    });
+  </script>
+
+{% endblock %}

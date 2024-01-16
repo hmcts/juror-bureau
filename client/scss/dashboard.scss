@@ -1,0 +1,88 @@
+#dashboardForm {
+  .error-summary {
+    margin-top: 0;
+  }
+}
+
+.dashboard-dates-old {
+  div {
+    input {
+      font-size: large;
+      width: 150px;
+    }
+  }
+}
+
+.dashboard-date input {
+  width: 175px;
+}
+
+.dashboard-year select {
+  width: 100px;
+  margin-left: 20px;
+  margin-bottom: 20px;
+}
+
+.dashboard-dropdown {
+  display: flex;
+  align-items: center;
+}
+
+.dashboard-dropdown select {
+  min-width: 130px;
+  float: right;
+  //margin-bottom: 30px;
+}
+.dashboard-dropdown label {
+  min-width: 170px;
+  width: 230px;
+}
+
+.canvas-div {
+  width: 80%;
+}
+
+.canvas-bar-div {
+  width: 80%;
+}
+
+.canvas-deferral-div {
+  width: 110%;
+  height: 650px;
+}
+
+.chart-centre {
+  text-align: center;
+}
+
+.dashboard-reasons-list {
+  //background-color: orange;
+  border: 1px solid black;
+  width: 400px;
+  height: 205px;
+  margin-bottom: 10px;
+  overflow-y: scroll;
+}
+
+.dashboard-guidance {
+  border-color: #f1f4f7;
+  border-width: 1px;
+  border-style: none none none solid;
+  background-color: white;
+  padding-right: 10px;
+  padding-top: 5px;
+  padding-left: 15px;
+  margin-bottom: 5px;
+}
+
+.dashboard-select-button {
+    display: block;
+    width: 100px;
+    color: govuk-colour("blue");
+    margin-bottom: 10px;
+}
+
+hr.thickLine {
+  border: 1px solid black;
+}
+

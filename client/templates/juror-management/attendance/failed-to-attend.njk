@@ -1,0 +1,67 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_title %}{{ serviceName }} - juror-management - update - failed to attend{% endblock %}
+{% block page_identifier %}juror-management - update - failed to attend{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {% set failedToAttendError = undefined %}
+  {% if errors.items["failed-to-attend"] %}
+    {% set failedToAttendError = { text: errors.items["failed-to-attend"][0].details } %}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+
+      <span class="govuk-caption-l">Failed to attend</span>
+      <h1 class="govuk-heading-l">{{ jurorName }}</h1>
+
+      <div class="govuk-body">
+        <p>You can change this juror’s status to ‘Failed to attend’ if this juror has not:</p>
+
+        <ul>
+          <li>turned up at court at all</li>
+          <li>given a reasonable reason</li>
+        </ul>
+
+        <p>This will complete their service and they will not be expected at court again.</p>
+      </div>
+
+      <form method="POST">
+        
+        {{ govukCheckboxes({
+          name: "failed-to-attend",
+          items: [
+            {
+              value: "failed",
+              text: "Tick to confirm the juror has failed to attend at any point and has not given a reasonable reason"
+            }
+          ],
+          errorMessage: failedToAttendError
+        }) }}
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Change status to ‘Failed to attend’",
+            classes: "govuk-button--warning",
+            attributes: {
+              id: "submitButton"
+            }
+          }) }}
+          <a class="govuk-link" id="cancelAnchor" href="{{ url('juror-record.attendance.get', { jurorNumber: jurorNumber }) }}">
+            Cancel
+          </a>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+{% endblock %}

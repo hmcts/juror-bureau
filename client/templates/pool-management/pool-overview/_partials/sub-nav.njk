@@ -1,0 +1,26 @@
+{% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
+
+<div class="govuk-grid-column-full">
+  {{ mojSubNavigation({
+    label: "Sub navigation",
+    items: [{
+      text: "Jurors",
+      href: url('pool-overview.get', {
+        poolNumber: poolDetails.poolNumber
+      }),
+      active: currentTab === "jurors",
+      attributes: {
+        id: "overviewTab"
+      }
+    }, {
+      text: "History",
+      href: url('pool-overview.history.get', {
+        poolNumber: poolDetails.poolNumber
+      }),
+      active: currentTab === "history",
+      attributes: {
+        id: "historyTab"
+      }
+    }]
+  }) }}
+</div>

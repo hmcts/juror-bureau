@@ -1,0 +1,87 @@
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{% if jurors | length > 0 %}
+
+  {% set jurorRows = [] %}
+
+  {% for juror in jurors %}
+    {% set notes = "" %}
+    {% if juror.notes %}
+      {% if 'SJO Comments' in juror.notes %}
+        {% set notes = juror.notes.split('SJO Comments')[0] + "<br /><br /><strong>SJO Comments</strong><br />" + juror.notes.split('SJO Comments')[1] 
+          if juror.notes.split('SJO Comments')[0] !== '' 
+          else "<strong>SJO Comments</strong><br />" + juror.notes.split('SJO Comments')[1] %}
+      {% else %}
+        {% set notes = juror.notes %}
+      {% endif %}
+    {% endif %}
+
+    {% if juror['pending_juror_status'].description === "Queued" %}
+      {% if pendingLink %}
+        {% set status = "<a class='govuk-link' href=" + pendingLink + juror['juror_number'] + ">Pending approval</a>" %}
+      {% else %}
+        {% set status = "Pending approval" %}
+      {% endif %}
+    {% else %}
+      {% if juror['pending_juror_status'].description === "Authorised" %}
+        {% set status = "Approved" %}
+      {% else %}
+        {% set status = juror['pending_juror_status'].description | capitalizeFully %}
+      {% endif%}
+    {% endif %}
+
+    {% set jurorRows = (jurorRows.push(
+      [
+        {
+          text: juror['juror_number']
+        },
+        {
+          text: juror['first_name'] | capitalizeFully
+        },
+        {
+          text: juror['last_name'] | capitalizeFully
+        },
+        {
+          html: notes
+        },
+        {
+          text: juror.postcode
+        },
+        {
+          html: status,
+          classes: 'not-pending-table-cell' if juror['pending_juror_status'].description != "Queued" else ''
+        }
+      ]
+    ), jurorRows) %}
+
+  {% endfor %}
+
+  {{ govukTable({
+    head: [
+      {
+        text: "Juror number"
+      },
+      {
+        text: "First name"
+      },
+      {
+        text: "Last name"
+      },
+      {
+        text: "Notes"
+      },
+      {
+        text: "Postcode"
+      },
+      {
+        text: "Status"
+      }
+    ],
+    rows: jurorRows
+  }) }}
+
+{% else %}
+
+  <p class="govuk-body">There are no pending jurors to approve.</p>
+
+{% endif %}

@@ -1,0 +1,21 @@
+{% if params.layout === "inline" %}
+  {% set className = "mod-large-tag-inline" %}
+{% else %}
+  {% set className = "mod-large-tag" %}
+{% endif %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <div {%- if params.id %} id="{{ params.id }}"{% endif %} class="mod-large-tag {{'mod-large-tag__' + params.colour if params.colour}} {{'mod-large-tag-inline' if params.layout !== 'inline'}} {{params.classes if params.classes}}">
+      <span {%- if params.id %} id="{{ params.id + '-label' }}"{% endif %} class="{{className}}__label">{{ params.label }}</span>
+      {% if params.layout !== "inline" %} <br> {% endif %}
+      <span {%- if params.id %} id="{{ params.id + '-value' }}"{% endif %} class="{{className}}__value">{{ params.value }}</span>
+      {% if params.action %}
+        {% if params.layout !== "inline" %} <br> {% endif %}
+        <span {%- if params.id %} id="{{ params.id + '-link' }}"{% endif %}>
+          <a href="{{params.action.href}}" class="{{className}}__link">{{ params.action.text }}<a/>
+        </span>
+      {% endif %}
+    </div>
+  </div>
+</div>

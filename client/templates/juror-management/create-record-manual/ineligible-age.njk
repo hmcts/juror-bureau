@@ -1,0 +1,75 @@
+{% extends "../../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_title %}
+  {{ serviceName }} - {{ subServiceName }}
+{% endblock %}
+
+{% block page_identifier %}{{ pageIdentifier }}{% endblock %}
+
+{% if currentAppModule %}
+  {% set currentApp = currentAppModule %}
+{% endif %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+  
+  {% set confirmIneligibleAgeError = undefined %}
+  {% if errors.items["confirmIneligibleAge"] %}
+    {% set confirmIneligibleAgeError = {text: errors.items["confirmIneligibleAge"][0].details } %}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+
+      <form method="post" action="{{ postUrl }}" id="ineligibleAgeForm" >
+
+        <h1 class="govuk-heading-xl">Check the date of birth</h1>
+
+        <p class="govuk-body govuk-!-margin-bottom-5">You entered the juror's date of birth as {{ dob }}.</p>
+            
+        <p class="govuk-body">This makes them {{ yearsOld }} years old and ineligible for jury service.</p>
+
+        {{ govukRadios({
+          name: "confirmIneligibleAge",
+          fieldset: {
+            legend: {
+              text: formTitle,
+              isPageHeading: true,
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          errorMessage: confirmIneligibleAgeError,
+          items: [
+            {
+              value: formOptions[0].value,
+              text: formOptions[0].text
+            },
+            {
+              value: formOptions[1].value,
+              text: formOptions[1].text
+            }
+          ]
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            type: "submit",
+            attributes: {
+              id: "continueButton"
+            }
+          }) }}
+
+          <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+        <input type="hidden" id="csrfToken" name="_csrf" value="{{ csrftoken }}">
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "./layouts/default.njk" %}
+
+{% block page_title %}
+  Sign in - Juror Digital
+{% endblock %}
+
+{% block page_identifier %}Login{% endblock %}
+
+{% block content %}
+<div class="container-small">
+  <h1 class="heading-large">Sign in</h1>
+
+  <p>Enter the same login credentials that you use to log in to your computer</p>
+
+  <form action="{{ url('login.post') }}" method="post" id="login">
+    <div class="form-group {% if errors.items['userID'] %}error{% endif %}">
+      <label class="form-label-bold" for="userID">User ID</label>
+      {% if errors.items['userID'] %}<span class="error-message" id="userIDError">
+        {{ errors.items['userID'][0]['details'] }}
+      </span>{% endif %}
+      <input class="form-control" id="userID" name="userID" type="text" autofocus="autofocus">
+    </div>
+
+    <div class="form-group {% if errors.items['password'] %}error{% endif %}">
+      <label class="form-label-bold" for="password">Password</label>
+      {% if errors.items['password'] %}<span class="error-message" id="passwordError">
+        {{ errors.items['password'][0]['details'] }}
+      </span>{% endif %}
+      <input class="form-control" id="password" name="password" type="password">
+    </div>
+
+    <div class="form-group">
+      <input class="button" type="submit" value="Sign in">
+      <input type="hidden" name="_csrf" value="{{csrftoken}}">
+    </div>
+
+  </form>
+
+</div>
+
+{% endblock %}

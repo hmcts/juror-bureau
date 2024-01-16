@@ -1,0 +1,31 @@
+{% extends "./govuk_template.njk" %}
+
+
+{% block head %}
+  {% include "../includes/head.njk" %}
+{% endblock %}
+
+
+{% block cookie_message %}
+  <p>{{cookieText | safe }}</p>
+{% endblock %}
+
+{#
+{% block proposition_header %}
+   {% include "includes/propositional_navigation.njk" %}
+{% endblock %}
+#}
+{#
+{% block header_class %}
+  with-proposition
+{% endblock %}
+#}
+
+{% block nav_header %}
+  {# {% include "../includes/header_navigation.njk" %} #}
+{% endblock %}
+
+
+{% block body_end %}
+  {% include "../includes/scripts.njk" %}
+{% endblock %}

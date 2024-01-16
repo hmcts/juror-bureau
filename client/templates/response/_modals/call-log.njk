@@ -1,0 +1,28 @@
+<section class="modal-content call-log-add-section">
+  
+  <div class="govuk-form-group govuk-body">
+    <h1 class="govuk-label-wrapper"><label class="govuk-label govuk-label--l" for="more-detail">
+        Log a call
+      </label>
+    </h1>
+    <div id="notes-hint" class="govuk-hint">
+      Provide notes for the call
+    </div>
+
+    <textarea class="jd-textarea govuk-body" id="notes" name="notes" rows="7" maxlength="2000" aria-describedby="notes-hint"></textarea>
+
+    <div class="govuk-form-group text-center">
+      <span class="govuk-error-message error-message-submit"></span>
+      <div class="govuk-button-group">
+        <button id="callLogSaveButton" class="govuk-button modal-save-button" data-module="govuk-button">Save</button>
+        <a id="callLogCancelButton" class="govuk-link close-modal" href="#">Cancel</a>
+      </div>
+    </div>
+
+  </div>
+  
+  
+  <input type="hidden" name="jurorNumber" id="jurorNumber" value="{{ response.jurorNumber }}">
+  <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+
+</section>

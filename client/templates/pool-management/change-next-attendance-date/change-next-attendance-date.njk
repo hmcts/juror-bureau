@@ -1,0 +1,69 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+
+{% block page_title %}{{ serviceName }} - Change next attendance date{% endblock %}
+  
+{% block content %}
+
+{% set _submitUrl = processUrl %}
+{% set _cancelUrl = cancelUrl %}
+
+<div class="govuk-grid-row">
+
+  <form action="{{ _submitUrl }}" method="post" id="changeNextAttendanceDateForm">
+
+    <div class="govuk-grid-column-one-half">
+
+      {% include "includes/errors.njk" %}
+
+      {% set dateError = undefined %}
+      {% if errors.items["attendanceDate"] %}
+        {% set dateError = errors.items["attendanceDate"][0].details %}
+      {% endif %}
+
+      {{ datePicker({
+        id: 'attendanceDate',
+        label: {
+          text: "Enter date next due at court",
+          classes: "govuk-label--l"
+        },
+        hint: 'Use dd/mm/yyyy format. For example, 31/01/2023.',
+        dateMin: minDate,
+        dateMax: maxDate,
+        dateValue: formDetails.attendanceDate,
+        dateError: dateError
+      }) }}
+
+      <div class="govuk-button-group">
+        {{ govukButton({
+        text: "Continue",
+        type: "submit" 
+        }) }}
+        <a class="govuk-link" href="{{ _cancelUrl }}">Cancel</a>
+      </div>
+
+    </div>
+
+    <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+
+  </form>
+
+</div>
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      const datePickers = []
+        .slice
+        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
+      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
+    });
+  </script>
+{% endblock %}

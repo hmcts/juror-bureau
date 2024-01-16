@@ -1,0 +1,97 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "custom-components/time-input-12-hour/macro.njk" import timeInput12Hour %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - juror-management - dismiss-jurors - check-out{% endblock %}
+{% block page_identifier %}juror-management - dismiss-jurors - check-out{% endblock %}
+
+{% block content %}
+
+  {% set jurors = [] %}
+  {% for juror in notCheckedOut %}
+    {% set jurors = (jurors.push([
+      { html: '<a href="#">' + juror.jurorNumber + "</a>" },
+      { text: juror.firstName },
+      { text: juror.lastName },
+      { text: juror.checkedIn or "-" }
+    ]), jurors) %}
+  {% endfor %}
+
+  {% include "includes/errors.njk" %}
+
+  <form action="{{ url('juror-management.dismiss-jurors.check-out.post') }}" method="POST">
+
+    {{ govukTable({
+      caption: "Some jurors have not been checked out",
+      captionClasses: "govuk-table__caption--l",
+      classes: "govuk-!-width-one-half",
+      head: [
+        {
+          text: "Juror number"
+        },
+        {
+          text: "First name"
+        },
+        {
+          text: "Last name"
+        },
+        {
+          text: "Checked in"
+        }
+      ],
+      rows: jurors
+    }) }}
+
+    {{ timeInput12Hour({
+      id: "checkOutTime",
+      name: "checkOutTime",
+      fieldset: {
+        legend: {
+          text: "Enter check out time",
+          classes: "govuk-fieldset__legend--m"
+        }
+      },
+      hint: {
+        text: "This will be applied to all jurors in this list."
+      },
+      items: {
+        hour: {
+          value: checkOutTime.hour,
+          attributes: {
+            minLength: "1",
+            maxLength: "2"
+          }
+        },
+        minute: {
+          value: checkOutTime.minute,
+          attributes: {
+            minLength: "1",
+            maxLength: "2"
+          }
+        },
+        period: {
+          value: checkOutTime.period
+        }
+      },
+      errors: errors.items
+    }) }}
+
+    {{ csrfProtection(csrftoken) }}
+
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Continue",
+        type: "submit"
+      }) }}
+
+      <a class="govuk-link" href="{{ url('juror-management.dismiss-jurors.jurors.get') }}">
+        Back to select jurors
+      </a>
+    </div>
+
+  </form>
+
+{% endblock %}

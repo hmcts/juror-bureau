@@ -1,0 +1,38 @@
+{% extends "../layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_title %}{{ serviceName }} - {{"transfer jurors" if bulkUpdate else "update juror"}}{% endblock %}
+  
+{% block page_identifier %}Transfer to another court{% endblock %}
+
+{% block content %}
+
+  {% set _submitUrl = processUrl %}
+  {% set _cancelUrl = cancelUrl %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half govuk-!-padding-bottom-8">
+
+      <form action="{{ _submitUrl }}" method="post" id="confirmCourtTransfer">
+
+        <h1 class="govuk-heading-l">Transfer to {{ receivingCourt }}</h1>
+
+        <p class="govuk-body govuk-!-padding-bottom-5">Juror or jurors will be transferred to a new pool at this court for staff there to manage. You must tell the new court about this.</p>
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            type: "submit" 
+          }) }}
+
+          <a class="govuk-link" href="{{ _cancelUrl }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

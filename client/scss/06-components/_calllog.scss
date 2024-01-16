@@ -1,0 +1,55 @@
+.sidebar-navigation--logs .value {
+  background-color: $panel-colour;
+}
+
+.call-logs {
+  position: relative;
+
+  .button--call-log-add {
+    float: right;
+    text-align: center;
+    width: 126px;
+  }
+
+  .call-log-table {
+    margin-top: 24px;
+
+    tr[data-row="summary"] {
+      background-color: $panel-colour;
+
+      span {
+        display: inline-block;
+        margin-right: 15px;
+      }
+    }
+
+    td {
+      border: none;
+      padding: 10px 20px 6px;
+    }
+
+    tr[data-row="note"] {
+      td {
+        padding: 16px 20px 40px;
+      }
+    }
+  }
+
+}
+
+
+.call-log-add-section {
+  p.error-message {
+    display: none;
+  }
+
+  &.show-error {
+    p.error-message {
+      display: block;
+    }
+
+    textarea {
+      margin-top: 3px;
+    }
+  }
+}

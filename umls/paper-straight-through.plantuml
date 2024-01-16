@@ -1,0 +1,77 @@
+@startuml paper-straight-through
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant SubmitResponsePage <</signature>>
+participant ProcessReplyPage <</process>>
+participant ResponseDetailsPage <</details>>
+participant InboxPage <</inbox>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant PaperReplyController <<paper-reply.controller.js>>
+participant SubmitPaperResponseObject <<paper-response.post()>>
+participant UpdateStatusObject <<updateStatus.put()>>
+
+''' TEMPLATES
+participant StraightThroughTemplate <<paper-reply/straight-through.njk>>
+participant GenericErrorTemplate <<_errors/generic.njk>>
+participant ResponseDetailsTemplate <<response/details.njk>>
+participant InboxTemplate <<inbox/index.njk>>
+
+''' FILTERS AND VALIDATORS
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+''' JOURNEY FLOW
+Actor -> SubmitResponsePage : submit the response
+
+SubmitResponsePage -> PaperReplyController : call page controller
+
+PaperReplyController -> SubmitPaperResponseObject : build request object
+SubmitPaperResponseObject -> BackendController : send backend request
+
+SubmitPaperResponseObject <- BackendController : ok response
+PaperReplyController <- SubmitPaperResponseObject : resolve request
+
+PaperReplyController -> StraightThroughTemplate : request and build template
+PaperReplyController <- StraightThroughTemplate : return HTML
+ProcessReplyPage <- PaperReplyController : return HTML
+Actor <- ProcessReplyPage : render HTML
+
+Actor -> ProcessReplyPage : click process reply now
+
+ProcessReplyPage -> PaperReplyController : call page controller
+
+alt Skip processing for now
+    PaperReplyController -> ResponseDetailsTemplate : request and build template
+    PaperReplyController <- ResponseDetailsTemplate : return HTML
+    ResponseDetailsPage <- PaperReplyController : return HTML
+    Actor <-- ResponseDetailsPage : render the response details
+end
+
+PaperReplyController -> UpdateStatusObject : build request object
+UpdateStatusObject -> BackendController : send backend request
+UpdateStatusObject <- BackendController : ok response
+PaperReplyController <- UpdateStatusObject : resolve request
+
+alt Failed to process the response
+    UpdateStatusObject <- BackendController : error response
+    PaperReplyController <- UpdateStatusObject : resolve request
+
+    PaperReplyController -> GenericErrorTemplate : request and build template
+    PaperReplyController <- GenericErrorTemplate : return HTML
+    GenericErrorPage <- PaperReplyController : return HTML
+    Actor <-- GenericErrorPage : render the error page
+end
+
+InboxPage <- PaperReplyController : redirect to inbox page
+Actor <- InboxPage : redirect to inbox page
+
+@enduml

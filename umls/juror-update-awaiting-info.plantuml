@@ -1,0 +1,79 @@
+@startuml juror-update-awaiting-info
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant AwaitingInformationPage <</awaiting-information>>
+participant SummonsResponsePage <</response>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant AwaitingInformationController <<detail.controller.js>>
+participant SummonsResponseController <<digital|paper>>
+participant UpdatePaperStatusObject <<updateStatus.put()>>
+participant UpdateDigitalStatusObject <<responseObject.post()>>
+
+''' TEMPLATES
+participant AwaitingInformationTemplate <<response/process/awaiting-information.njk>>
+participant SummonsResponseTemplate <<response/details.njk>>
+
+''' FILTERS AND VALIDATORS
+participant AwaitingInformationValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+''' JOURNEY FLOW
+Actor -> SummonsResponsePage : awaiting juror information
+
+SummonsResponsePage -> AwaitingInformationController : call page controller
+
+AwaitingInformationController -> AwaitingInformationTemplate : request and build template
+AwaitingInformationController <- AwaitingInformationTemplate : return HTML
+AwaitingInformationPage <- AwaitingInformationController : return HTML
+Actor <- AwaitingInformationPage : render HTML
+
+Actor -> AwaitingInformationPage : select what information they are waiting for
+AwaitingInformationPage -> AwaitingInformationController
+AwaitingInformationController -> AwaitingInformationValidator : validate the radio selection
+
+alt No radio selection
+    AwaitingInformationController <-- AwaitingInformationValidator : error response
+    AwaitingInformationPage <-- AwaitingInformationController : error response
+    Actor <-- AwaitingInformationPage : render error message
+end
+
+
+AwaitingInformationController <- AwaitingInformationValidator : valid selection
+
+alt Updating a paper summons
+    AwaitingInformationController -> UpdatePaperStatusObject : build request object
+    UpdatePaperStatusObject -> BackendController : send backend request
+    UpdatePaperStatusObject <- BackendController : ok response
+    AwaitingInformationController <- UpdatePaperStatusObject : resolve request
+end
+
+alt Updating a digital summons
+    AwaitingInformationController -> UpdateDigitalStatusObject : build request object
+    UpdateDigitalStatusObject -> BackendController : send backend request
+    UpdateDigitalStatusObject <- BackendController : ok response
+    AwaitingInformationController <- UpdateDigitalStatusObject : resolve request
+end
+
+SummonsResponseController <- AwaitingInformationController : redirect to summons details
+
+SummonsResponseController -> SummonsResponseTemplate : request and build template
+SummonsResponseController <- SummonsResponseTemplate : return HTML
+SummonsResponsePage <- SummonsResponseController : return HTML
+Actor <- SummonsResponsePage : render HTML
+
+alt Failed to update the summons response
+    AwaitingInformationController <-- BackendController : error response
+    AwaitingInformationPage <-- AwaitingInformationController : error response
+    Actor <-- AwaitingInformationPage : render error message
+end
+
+@enduml

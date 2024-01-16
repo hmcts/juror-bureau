@@ -1,0 +1,57 @@
+<section class="modal-content awaiting-information-section">
+
+  <form class="govuk-form">
+
+    <div class="govuk-form-group" id="awaitingInformationGroup">
+
+      <div class="govuk-error-message error-message-decision"></div>
+      
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h1 class="govuk-fieldset__heading">
+            Awaiting information
+          </h1>
+        </legend>
+        <div class="govuk-radios">
+
+          <div class="govuk-error-message error-message-decision"></div>
+
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="awaitingJuror" name="awaitingInformation" type="radio" value="AWAITING_CONTACT">
+            <label class="govuk-label govuk-radios__label" for="awaitingJuror" data-label="Awaiting juror">
+              Awaiting juror
+            </label>
+          </div>
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="awaitingCourt" name="awaitingInformation" type="radio" value="AWAITING_COURT_REPLY">
+            <label class="govuk-label govuk-radios__label" for="awaitingCourt" data-label="Awaiting court reply">
+              Awaiting court reply
+            </label>
+          </div>
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="awaitingTranslation" name="awaitingInformation" type="radio" value="AWAITING_TRANSLATION">
+            <label class="govuk-label govuk-radios__label" for="awaitingTranslation" data-label="Awaiting translation">
+              Awaiting translation
+            </label>
+          </div>
+        </div>
+
+      </fieldset>
+    </div>
+
+    <div class="govuk-form-group">
+      <span class="govuk-error-message error-message-submit"></span>
+      <div class="govuk-button-group">
+        <button id="awaitingInformationMarkComplete" class="govuk-button modal-save-button" data-module="govuk-button" value="Update reply status" disabled >Update reply status</button>
+        <a id="awaitingInformationCancelBtn" class="govuk-link close-modal" href="#">Cancel</a>
+      </div>
+    </div>
+
+    <input type="hidden" name="jurorNumber" id="jurorNumber" value="{{ response.jurorNumber }}">
+    <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+    <input type="hidden" name="version" id="version" value="{{ version }}">
+
+  </form>
+
+  <br class="clear">
+</section>

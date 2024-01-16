@@ -1,0 +1,62 @@
+{% extends "../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_title %}
+  {{ serviceName }} - response details - call log{% endblock %}
+
+{% block page_identifier %}response details - call log{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {% if errors.items["callNotes"] %}
+    {% set callLogError = {"text": errors.items['callNotes'][0].details} %}
+  {% else %}
+    {% set callLogError = undefined %}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form action="/response/{{jurorNumber}}/call-log" method="POST" class="disable-empty" id="callLogForm">
+        
+        {% set labelHTML %}
+          <span class="govuk-caption-l">{{ jurorName }}</span>
+          <h1 class="govuk-heading-xl">Log a call</h1>
+        {% endset %}
+
+        {{ govukCharacterCount({
+          name: "callNotes",
+          id: "callNotes",
+          maxlength: 2000,
+          rows: 10,
+          label: {
+            html: labelHTML,
+            isPageHeading: true
+          },
+          errorMessage: callLogError,
+          value: callNotes
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Save"
+          }) }}
+
+          <a class="govuk-link" href="/response/{{jurorNumber}}#callLog">Cancel</a>
+        </div>
+
+        <input type="hidden" name="jurorNumber" id="jurorNumber" value="{{ jurorNumber }}">
+        <input type="hidden" name="jurorName" id="jurorName" value="{{ jurorName }}">
+        <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+
+      </form>
+      
+    </div>
+  </div>
+
+{% endblock %}
+
+

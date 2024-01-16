@@ -1,0 +1,5 @@
+{% if attendanceStatus === "Unconfirmed" %}
+  {% include "./unconfirmed/unconfirmed.njk" %}
+{% elif attendanceStatus === "Confirmed" %}
+    {% include "./confirmed/confirmed.njk" %}
+{% endif %}

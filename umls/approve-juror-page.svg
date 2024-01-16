@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="255px" preserveAspectRatio="none" style="width:1210px;height:255px;background:#FFFFFF;" version="1.1" viewBox="0 0 1210 255" width="1210px" zoomAndPan="magnify"><defs/><g><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="30" x2="30" y1="52.9766" y2="248.8398"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="236" x2="236" y1="52.9766" y2="248.8398"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="526" x2="526" y1="52.9766" y2="248.8398"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="849" x2="849" y1="52.9766" y2="248.8398"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1133" x2="1133" y1="52.9766" y2="248.8398"/><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="51" x="5" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="37" x="12" y="42.0234">Actor</text><rect fill="#B0C4DE" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="341" x="66" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="327" x="73" y="25.5352">«/juror-management/manage-jurors/approve»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="125" x="174" y="42.0234">ApproveJurorPage</text><rect fill="#FFFFE0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="218" x="417" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="204" x="424" y="25.5352">«manage-jurors.controller.js»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="165" x="443.5" y="42.0234">ManageJurorsController</text><rect fill="#E6E6FA" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="408" x="645" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="394" x="652" y="25.5352">«juror-management/manage-jurors/approve-jurors.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="122" x="788" y="42.0234">ApproveTemplate</text><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="141" x="1063" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="127" x="1070" y="42.0234">BackendController</text><polygon fill="#181818" points="224.5,80.2871,234.5,84.2871,224.5,88.2871" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="30.5" x2="230.5" y1="84.2871" y2="84.2871"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="81" x="93" y="79.5449">request page</text><polygon fill="#181818" points="514,109.5977,524,113.5977,514,117.5977" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="236.5" x2="520" y1="113.5977" y2="113.5977"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="121" x="320.75" y="108.8555">call page controller</text><line style="stroke:#181818;stroke-width:2.0;" x1="37.5" x2="47.5" y1="137.9082" y2="147.9082"/><line style="stroke:#181818;stroke-width:2.0;" x1="37.5" x2="47.5" y1="147.9082" y2="137.9082"/><line style="stroke:#181818;stroke-width:2.0;" x1="1115.5" x2="1125.5" y1="137.9082" y2="147.9082"/><line style="stroke:#181818;stroke-width:2.0;" x1="1115.5" x2="1125.5" y1="147.9082" y2="137.9082"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="42.5" x2="1120.5" y1="142.9082" y2="142.9082"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="224" x="470" y="138.166">backend not currently implemented</text><polygon fill="#181818" points="837,168.2188,847,172.2188,837,176.2188" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="526" x2="843" y1="172.2188" y2="172.2188"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="603" y="167.4766">request and build template</text><polygon fill="#181818" points="537,197.5293,527,201.5293,537,205.5293" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="531" x2="848" y1="201.5293" y2="201.5293"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="648.5" y="196.7871">return HTML</text><polygon fill="#181818" points="41.5,226.8398,31.5,230.8398,41.5,234.8398" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="35.5" x2="525" y1="230.8398" y2="230.8398"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="238.25" y="226.0977">render HTML</text><!--MD5=[84e431ebf2b3716a4043596d355dd1ed]
+@startuml approve-juror-page
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant ApproveJurorPage <</juror-management/manage-jurors/approve>> #lightsteelblue
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant ManageJurorsController <<manage-jurors.controller.js>> #lightyellow
+
+''' TEMPLATES
+participant ApproveTemplate <<juror-management/manage-jurors/approve-jurors.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> ApproveJurorPage : request page
+
+ApproveJurorPage -> ManageJurorsController : call page controller
+
+Actor x- -x BackendController : backend not currently implemented
+' // TODO use data access object
+' // TODO hit backend
+' // TODO handle response
+
+ManageJurorsController -> ApproveTemplate : request and build template
+ManageJurorsController <- ApproveTemplate : return HTML
+Actor <- ManageJurorsController : render HTML
+
+@end
+
+@startuml approve-juror-page
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+participant ApproveJurorPage <</juror-management/manage-jurors/approve>> #lightsteelblue
+
+participant ManageJurorsController <<manage-jurors.controller.js>> #lightyellow
+
+participant ApproveTemplate <<juror-management/manage-jurors/approve-jurors.njk>> #lavender
+
+participant BackendController
+
+Actor -> ApproveJurorPage : request page
+
+ApproveJurorPage -> ManageJurorsController : call page controller
+
+Actor x- -x BackendController : backend not currently implemented
+
+ManageJurorsController -> ApproveTemplate : request and build template
+ManageJurorsController <- ApproveTemplate : return HTML
+Actor <- ManageJurorsController : render HTML
+
+@end
+
+PlantUML version 1.2022.7(Mon Aug 22 18:01:30 BST 2022)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

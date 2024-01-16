@@ -1,0 +1,83 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{% block page_title %}{{ serviceName }} - Confirm Atendance{% endblock %}
+  
+{% block page_identifier %}Confirm attendance{% endblock %}
+
+{% block content %}
+
+  {% set _submitUrl = processUrl %}
+  {% set _cancelUrl = cancelUrl %}
+  {% set jurorsCheckedIn = checkedIn%}
+  {% set jurorsNotCheckedIn = [] %}
+  {% for juror in notCheckedIn %}
+  {% set jurorsNotCheckedIn = (jurorsNotCheckedIn.push(
+    [
+      {html: '<a href="'+url('juror-record.overview.get', { jurorNumber: juror.jurorNumber })+'" class="govuk-body govuk-link">'+juror.jurorNumber+'</a>'}, 
+      {text: juror.firstName}, 
+      {text: juror.lastName}
+    ]
+  ), jurorsNotCheckedIn) %}
+  {% endfor %}
+
+  <div class="govuk-grid-row">
+    <form action="{{ _submitUrl }}" method="post" id="confirmCourtTransfer">
+
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">Confirm attendance list</h1>
+
+        <span class="govuk-!-font-size-48 govuk-!-font-weight-bold">
+          {{ jurorsCheckedIn }}
+        </span>
+        <p class="govuk-body">
+          jurors attended court today
+        </p>
+
+        <span class="govuk-!-font-size-48 govuk-!-font-weight-bold">
+          {{jurorsNotCheckedIn|length}}
+        </span>
+        <p class="govuk-body">
+          jurors were due to attend today but were not checked in
+        </p>
+
+      </div>
+
+      <div class="govuk-grid-column-one-half">
+        {{ govukTable({
+          firstCellIsHeader: true,
+          head: [
+            {
+              text: "Juror number"
+            },
+            {
+              text: "First name"
+            },
+            {
+              text: "Last name"
+            }
+          ],
+          rows: jurorsNotCheckedIn
+        }) }}
+      </div>
+
+      <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Confirm attendance list is correct",
+            type: "submit" 
+          }) }}
+          <a class="govuk-link" href="{{ _cancelUrl }}">Back to attendance list</a>
+        </div>
+      </div>
+      
+      <input type="hidden" name="attendanceDate" value="{{ attendanceDate }}">
+      <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+
+    </form>
+
+  </div>
+
+{% endblock %}

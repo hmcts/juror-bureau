@@ -1,0 +1,75 @@
+{% extends "../../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_title %}
+  {{ serviceName }} - paper response - reply types
+{% endblock %}
+
+{% block page_identifier %}paper response - reply types{% endblock %}
+
+{% block beforeContent %}
+  {% if backLinkUrl %}
+    {% include "includes/back-link.njk" %}
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <span class="govuk-caption-l">Enter summons reply</span>
+      <h1 class="govuk-heading-l">Reply types</h1>
+
+      <form method="post" action="{{ postUrl }}" >
+
+        {{ govukRadios({
+          name: "deferralValue",
+          fieldset: {
+            legend: {
+              text: "What's the juror's response?",
+              isPageHeading: false,
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          items: [
+            {
+              value: "can-serve",
+              text: "Can serve on date shown in summons",
+              checked: deferralValue === "can-serve"
+            },
+            {
+              value: "deferral-request",
+              text: "Deferral request",
+              checked: deferralValue === "deferral-request"
+            },
+            {
+              value: "excusal-request",
+              text: "Excusal request",
+              checked: deferralValue === "excusal-request"
+            }
+          ]
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            attributes: {
+              id: "continueButton"
+            }
+          }) }}
+          <a id="replytypesCancelBtn" class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+    </div>
+  </div>
+
+
+
+{% endblock %}

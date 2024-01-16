@@ -1,0 +1,97 @@
+{% extends "../../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+
+{% block page_title %}
+    {{ serviceName }} - generate a panel - select pools
+{% endblock %}
+
+{% block page_identifier %}
+    Generate a panel - select pools
+{% endblock %}
+
+{% block beforeContent %}
+  {% if backLinkUrl %}
+    {% include "includes/back-link.njk" %}
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">
+          Select jurors from one or more pools
+      </h1>
+    </div>
+  </div>
+
+  {% if pools.length === 0 %}
+    <div class="govuk-grid-column-full govuk-body">
+      There are no available pools.
+    </div>
+  {% else %}
+
+  <form method="post" action="{{ processUrl }}" id="selectPoolsForm">
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+
+        <table class="govuk-table">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header" scope="col"></th>
+              <th class="govuk-table__header" scope="col">Pool number</th>
+              <th class="govuk-table__header" scope="col">Available jurors</th>
+              <th class="govuk-table__header" scope="col">Service start date</th>
+              <th class="govuk-table__header" scope="col">Court</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            {% for pool in pools %}
+            <tr class="govuk-table__row govuk-table__row--selected">
+              <td class="govuk-table__cell">
+                <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
+                  <input type="checkbox" class="govuk-checkboxes__input" id="select-{{pool.pool_number}}" name="selectedPools" value="{{pool.pool_number}}">
+                  <label class="govuk-label govuk-checkboxes__label" for="{{pool.pool_number}}">
+                    <span class="govuk-visually-hidden">Select {{pool.pool_number}}</span>
+                  </label>
+                </div>
+              </td>
+              <td class="govuk-table__cell jd-middle-align"><a href={{url('pool-overview.get', { poolNumber: pool.pool_number })}}>{{pool.pool_number}}</a></td>
+              <td class="govuk-table__cell jd-middle-align">{{pool.available_jurors}}</td>
+              <td class="govuk-table__cell jd-middle-align">{{pool.service_start_date | makeDate | dateFilter(null, "ddd D MMM YYYY")}}</td>
+              <td class="govuk-table__cell jd-middle-align">{{pool.court_location | capitalizeFully}} ({{ pool.court_location_code }})</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Continue",
+        type: "submit",
+        attributes: {
+          id: "saveButton"
+        }
+      }) }}
+      <a class="govuk-link govuk-link--no-visited-state" id="cancelAnchor" href="{{ cancelUrl }}">
+        Cancel
+      </a>
+    </div>
+
+    <input type="hidden" name="noJurorsRequired" value="{{ noJurorsRequired }}">
+    <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+  </form>
+
+  {% endif %}
+
+{% endblock %}
+
+

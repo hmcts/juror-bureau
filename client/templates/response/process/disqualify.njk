@@ -1,0 +1,74 @@
+{% extends "../../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{% block page_title %}
+  {{ serviceName }} - process - disqualification{% endblock %}
+
+{% block page_identifier %}process - disqualification{% endblock %}
+
+{% block content %}
+
+  {% include "../../includes/errors.njk" %}
+
+  {% if errors.items["disqualifyReason"] %}
+    {% set disqualifyError = {"text": errors.items['disqualifyReason'][0].details} %}
+  {% else %}
+    {% set disqualifyError = undefined %}
+  {% endif %}
+
+  {# Setup reason radio button items #}
+  {% set reasonList = [] %}
+  {% for reason in disqualifyReasons %}
+
+    {% if reason.disqualifyCode === disqualifyDetails.disqualifyReason %}
+      {% set reasonSelected = "checked" %}
+    {% else %}
+      {% set reasonSelected = undefined %}
+    {% endif %}
+
+    {% set reasonList = (reasonList.push({value: reason.disqualifyCode, text: reason.disqualifyCode + " - " + reason.description, checked: reasonSelected }), reasonList) %}
+  {% endfor %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form action="/response/{{jurorNumber}}/disqualify" method="post" id="disqualifyForm">
+        
+        <h1 class="govuk-heading-xl">
+          <span class="govuk-caption-xl">{{ replyDetails.jurorName }}</span>
+          Disqualification
+        </h1>
+
+        {{ govukRadios({
+          idPrefix: "disqualifyReason",
+          name: "disqualifyReason",
+          fieldset: {
+            legend: {
+              text: "Select why the juror is disqualified",
+              classes: "govuk-body govuk-!-font-weight-bold"
+            }
+          },
+          errorMessage: disqualifyError,
+          items: reasonList
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Confirm"
+          }) }}
+          <a class="govuk-link" href="../../response/{{jurorNumber}}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="jurorNumber" id="jurorNumber" value="{{ jurorNumber }}">
+        <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+        <input type="hidden" name="version" id="version" value="{{ replyDetails.version }}">
+
+      </form>
+      
+    </div>
+  </div>
+
+{% endblock %}
+
+

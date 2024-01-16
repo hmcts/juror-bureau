@@ -1,0 +1,22 @@
+{% from "moj/components/primary-navigation/macro.njk" import mojPrimaryNavigation %}
+
+{% set navBarElements =
+  [
+    {
+      text: "Trials",
+      href: url("trial-management.trials.get"),
+      active: nav === "trials",
+      attributes: {
+        id: "trialsAnchor"
+      }
+    }
+  ]
+%}
+
+{{ mojPrimaryNavigation({
+  label: "Trial management navigation",
+  attributes: {
+    id: "trialManagementNav"
+  },
+  items: navBarElements
+}) }}

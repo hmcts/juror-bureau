@@ -1,0 +1,18 @@
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
+{% set backUrl = undefined %}
+{% if backLinkUrl.built === true %}
+  {% set backUrl = backLinkUrl.url %}
+{% else %}
+  {% set backUrl = url(backLinkUrl) %}
+{% endif %}
+
+{% if backLinkUrl %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backUrl,
+    attributes: {
+      id: "backLinkAnchor"
+    }
+  }) }}
+{% endif %}

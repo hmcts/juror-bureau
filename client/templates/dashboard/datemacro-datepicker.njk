@@ -1,0 +1,54 @@
+{% macro dashboardDatepicker(params) %}
+
+{% set inputErrClass = "" %}
+{% set groupErrClass = "" %}
+{% if params.monthError %}
+  {% set inputMonthErrClass = "govuk-input--error" %}
+  {% set groupErrClass = "govuk-form-group--error" %}
+{% endif %}
+{% if params.yearError %}
+  {% set inputYearErrClass = "govuk-input--error" %}
+  {% set groupErrClass = "govuk-form-group--error" %}
+{% endif %}
+{% if params.dateError %}
+  {% set inputMonthErrClass = "govuk-input--error" %}
+  {% set inputYearErrClass = "govuk-input--error" %}
+  {% set groupErrClass = "govuk-form-group--error" %}
+{% endif %}
+
+<div class="govuk-form-group {{ groupErrClass }}">
+  <h1 class="govuk-label-wrapper">
+    <label class="govuk-label" for="{{params.prefix}}Date">
+      {{params.label}}
+    </label>
+  </h1>
+
+  {% if params.monthError %}
+    <span id="passport-issued-error" class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span> {{params.monthError}}
+    </span>
+  {% endif %}
+
+  {% if params.yearError %}
+    <span id="passport-issued-error" class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span> {{params.yearError}}
+    </span>
+  {% endif %}
+
+  {% if params.dateError %}
+    <span id="passport-issued-error" class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span> {{params.dateError}}
+    </span>
+  {% endif %}
+
+  <div class="govuk-date-input__item">
+    <div class="govuk-form-group">
+
+      <input class="govuk-body" type="date" name="{{params.prefix}}Date" id="{{params.prefix}}Date" value="{{params.dateValue}}">
+
+    </div>
+  </div>
+  
+</div>
+
+{% endmacro %}

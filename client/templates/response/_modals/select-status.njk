@@ -1,0 +1,63 @@
+<section class="modal-content awaiting-information-section">
+
+  {#
+  <h3 class="modal-title font-large no-bold">Select Status</h3>
+  <h3 class="modal-title no-bold">This response has already been marked as 'awaiting information' in Juror, please check the details recorded and select a suitable status.</h3>
+  #}
+  
+  <form>
+
+    <div class="govuk-form-group" id="awaitingInformationGroup">
+      <fieldset class="govuk-fieldset" aria-describedby="selectStatusHint">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h1 class="govuk-fieldset__heading">
+            Select status
+          </h1>
+        </legend>
+        <div id="selectStatusHint" class="govuk-hint">
+          This response has already been marked as 'awaiting information' in Juror, please check the details recorded and select a suitable status.
+        </div>
+
+        <div class="govuk-error-message error-message-decision"></div>
+
+        <div class="govuk-radios">
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="awaitingJuror" name="awaitingInformation" type="radio" value="AWAITING_CONTACT">
+            <label class="govuk-label govuk-radios__label" for="awaitingJuror" data-label="Awaiting juror">
+              Awaiting juror
+            </label>
+          </div>
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="awaitingCourt" name="awaitingInformation" type="radio" value="AWAITING_COURT_REPLY">
+            <label class="govuk-label govuk-radios__label" for="awaitingCourt" data-label="Awaiting court reply">
+              Awaiting court reply
+            </label>
+          </div>
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="awaitingTranslation" name="awaitingInformation" type="radio" value="AWAITING_TRANSLATION">
+            <label class="govuk-label govuk-radios__label" for="awaitingTranslation" data-label="Awaiting translation">
+              Awaiting translation
+            </label>
+          </div>
+        </div>
+
+      </fieldset>
+    </div>
+
+    <br/>
+
+    <div class="govuk-form-group">
+      <span class="govuk-error-message error-message-submit"></span>
+      <div class="govuk-button-group">
+        <button id="awaitingInformationMarkComplete" class="govuk-button modal-save-button" data-module="govuk-button" value="Update reply status">Update reply status</button>
+      </div>
+    </div>
+
+
+    <input type="hidden" name="jurorNumber" id="jurorNumber" value="{{ response.jurorNumber }}">
+    <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+    <input type="hidden" name="version" id="version" value="{{ version }}">
+
+  </form>
+
+</section>

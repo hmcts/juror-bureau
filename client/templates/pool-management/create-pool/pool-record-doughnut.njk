@@ -1,0 +1,76 @@
+{% macro poolRecordDoughnut(params) %}
+
+  {% set availableColour = '#1D70B8' %}
+  {% set requiredColour = '#B1B4B6' %}
+  {% set surplusColour = '#D53880' %}
+  {% set unresolvedColour = '#F3F2F1' %}
+  {% set unavailableColour = '#B58840' %}
+
+  <div class="pool-record-chart">
+    <div class="pool-record-chart__chart-canvas">
+      <div class="total">
+        <span class="number">{{ params.values.total }}</span>
+        <span class="legend">summoned</span>
+      </div>
+      <canvas id="{{params.id}}Chart" name="{{params.id}}Chart" width="155" height="155"></canvas>
+    </div>
+    <div class="pool-record-chart__legend">
+      <div class="legend">
+        <div class="bullet required"></div>Required <span class="amount">{{ params.values.required }}</span>
+      </div>
+      <div class="divider"></div>
+      <div class="legend">
+        <div class="bullet available"></div>Available <span class="amount">{{ params.values.available }}</span>
+      </div>
+      <div class="legend">
+        <div class="bullet unavailable"></div>Unavailable <span class="amount">{{ params.values.unavailable }}</span>
+      </div>
+      <div class="legend">
+        <div class="bullet unresolved"></div>Unresolved <span class="amount">{{ params.values.unresolved }}</span>
+      </div>
+      <div class="divider"></div>
+      <div class="legend">
+        <div class="bullet surplus"></div>Surplus <span class="amount">{{ params.values.surplus }}</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // to maintain the colours structure this "indexing" order cannot be changed
+    // when using the macro, values can be send in any order the developer feels like because they get organised here
+    var statsObject = {
+      Required: "{{params.values.required}}",
+      Available: "{{params.values.available}}",
+      Surplus: "{{params.values.surplus}}",
+      Unresolved: "{{params.values.unresolved}}",
+      Unavailable: "{{params.values.unavailable}}"
+    }
+
+    var valueArr = Object.values(statsObject);
+    var ctx = document
+      .getElementById('{{params.id}}Chart')
+      .getContext('2d');
+
+    var dbChart = new Chart(ctx, {
+      type: 'doughnut',
+      options: {
+        tooltips: {
+          enabled: false
+        },
+        cutoutPercentage: '70'
+      },
+      data: {
+        datasets: [
+          {
+            data: valueArr,
+            backgroundColor: [
+              '{{availableColour}}', '{{requiredColour}}', '{{surplusColour}}', '{{unresolvedColour}}', '{{unavailableColour}}'
+            ],
+            borderWidth: 0
+          }
+        ]
+      }
+    });
+  </script>
+
+{% endmacro %}

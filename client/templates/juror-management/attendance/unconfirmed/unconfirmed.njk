@@ -1,0 +1,225 @@
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+
+{% from "custom-components/time-input-12-hour/macro.njk" import timeInput12Hour %}
+
+{% set checkInHtml %}
+<div>
+  <form id="checkInForm">
+    <div id="checkInTimeErrorContainer" class="govuk-!-margin-bottom-5">
+      {{ timeInput12Hour({
+        id: "checkInTime",
+        name: "checkInTime",
+        fieldset: {
+          legend: {
+            text: "Enter check in time",
+            classes: "govuk-fieldset__legend--s"
+          }
+        },
+        items: {
+          hour: {
+            value: checkInTime.hour,
+            attributes: {
+              minLength: "1",
+              maxLength: "2"
+            }
+          },
+          minute: {
+            value: checkInTime.minute,
+            attributes: {
+              minLength: "1",
+              maxLength: "2"
+            }
+          },
+          period: {
+            value: checkInTime.period
+          }
+        },
+        errors: errors.items
+      }) }}
+    </div>
+
+    <div id="checkInJurorNumberContainer" class="govuk-form-group">
+      <span class="govuk-label">Enter juror number, or click in this field and scan a barcode</span>
+
+      <p id="checkInJnErrorMessageContainer"></p>
+      <div class="mod-flex mod-gap-x-2">
+        <input class="govuk-input govuk-!-width-one-third" id="checkInJurorNumber" name="checkInJurorNumber" type="number" maxLength="9" minLength="9">
+
+        {{ govukButton({
+          text: "Check in juror",
+          classes: "govuk-!-margin-bottom-1",
+          type: "submit"
+        }) }}
+      </div>
+    </div>
+    <input type="hidden" name="_csrf" id="csrfToken" value="{{ csrftoken }}"/>
+  </form>
+</div>
+{% endset %}
+
+{% set checkOutHtml %}
+<div>
+  <form id="checkOutForm">
+    <div id="checkOutTimeErrorContainer" class="govuk-!-margin-bottom-5">
+      {{ timeInput12Hour({
+        id: "checkOutTime",
+        name: "checkOutTime",
+        fieldset: {
+          legend: {
+            text: "Enter check out time",
+            classes: "govuk-fieldset__legend--s"
+          }
+        },
+        items: {
+          hour: {
+            value: checkOutTime.hour,
+            attributes: {
+              minLength: "1",
+              maxLength: "2"
+            }
+          },
+          minute: {
+            value: checkOutTime.minute,
+            attributes: {
+              minLength: "1",
+              maxLength: "2"
+            }
+          },
+          period: {
+            value: checkOutTime.period
+          }
+        },
+        errors: errors.items
+      }) }}
+    </div>
+    <div id="checkOutJurorNumberContainer" class="govuk-form-group">
+      <span class="govuk-label">Enter juror number, or click in this field and scan a barcode</span>
+      <p id="checkOutJnErrorMessageContainer"></p>
+
+      <div class="mod-flex mod-gap-x-2 govuk-!-margin-bottom-3">
+        <input class="govuk-input govuk-!-width-one-third" id="checkOutJurorNumber" name="checkOutJurorNumber" type="number" maxLength="9" minLength="9">
+
+        {{ govukButton({
+          text: "Check out juror",
+          classes: "govuk-!-margin-bottom-1",
+          type: "submit"
+        }) }}
+      </div>
+    </div>
+    <h3 class="govuk-heading-s">or</h3>
+    {{ govukButton({
+      text: "Check out all jurors",
+      classes: "govuk-button--secondary govuk-!-margin-bottom-1",
+      type: "button",
+      id: "checkOutAllJurors"
+    }) }}
+    <input type="hidden" name="_csrf" id="checkOutcsrfToken" value="{{ csrftoken }}"/>
+  </form>
+</div>
+{% endset %}
+
+<div class="govuk-grid-row govuk-!-margin-top-5">
+  <div class="govuk-grid-column-full">
+
+    {{ govukRadios({
+      name: "checkInOrCheckOut",
+      fieldset: {
+        legend: {
+          text: "Record attendance",
+          classes: "govuk-fieldset__legend--m"
+        }
+      },
+      items: [
+        {
+          value: "checkIn",
+          text: "Check in",
+          conditional: {
+            html: checkInHtml
+          }
+        },
+        {
+          value: "checkOut",
+          text: "Check out",
+          conditional: {
+            html: checkOutHtml
+          }
+        }
+      ]
+    }) }}
+
+  </div>
+</div>
+
+{% set checkInFailedHtml %}
+  <b class="mod-red-text">Juror number</b>
+  <ul class="govuk-list mod-red-text" id="checkInFailedList">
+    {% for row in failedCheckIn %}
+      <li>{{ row.jurorNumber }} - {{ row.firstName }} {{ row.lastName }}</li>
+    {% endfor %}
+  </ul>
+
+  <p class="govuk-body">
+    This was due to a problem with the service. Try again.<br>
+    If problem persists, contact support.
+  </p>
+{% endset %}
+
+{% set checkOutFailedHtml %}
+  <b class="mod-red-text">Juror number</b>
+  <ul class="govuk-list mod-red-text" id="checkOutFailedList">
+    {% for row in failedCheckOut %}
+      <li>{{ row.jurorNumber }} - {{ row.firstName }} {{ row.lastName }}</li>
+    {% endfor %}
+  </ul>
+
+  <p class="govuk-body">
+    This was due to a problem with the service. Try again.<br>
+    If problem persists, contact support.
+  </p>
+{% endset %}
+
+{{ govukDetails({
+  summaryText: "Check in failed for one or more jurors",
+  html: checkInFailedHtml,
+  classes: "mod-details-error " + ("mod-hidden" if failedCheckIn.length === 0),
+  attributes: {
+    id: "checkInFailedSummary"
+  }
+}) }}
+
+{{ govukDetails({
+  summaryText: "Check out failed for one or more jurors",
+  html: checkOutFailedHtml,
+  classes: "mod-details-error " + ("mod-hidden" if failedCheckOut.length === 0),
+  attributes: {
+    id: "checkOutFailedSummary"
+  }
+}) }}
+
+<hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full govuk-body">
+    <b>
+      <span id="listedJurors">{{ listedJurors.length }}</span> jurors listed as attending
+    </b>
+    <table class="govuk-table {% if listedJurors.length === 0 %}js-hidden{% endif %}" data-module="moj-sortable-table" id="attendanceTable">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header" aria-sort="ascending">Juror number</th>
+          <th scope="col" class="govuk-table__header" aria-sort="none">First name</th>
+          <th scope="col" class="govuk-table__header" aria-sort="none">Last name</th>
+          <th scope="col" class="govuk-table__header" aria-sort="none">Status</th>
+          <th scope="col" class="govuk-table__header" aria-sort="none">Checked in</th>
+          <th scope="col" class="govuk-table__header" aria-sort="none">Checked out</th>
+          <th scope="col" class="govuk-table__header"></th>
+        </tr>
+      </thead>
+      {% include "./table-rows.njk" %}
+    </table>
+  </div>
+</div>

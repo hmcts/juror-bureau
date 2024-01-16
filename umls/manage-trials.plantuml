@@ -1,0 +1,87 @@
+@startuml manage-trials
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant HomePage <</homepgae>>
+participant ManageTrialsPage <</trial-management/trials>>
+participant TrialDetailPage <</trial-management/trials/:trialNumber/:locationCode/detail>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant TrialManagementController <<trial-management.controller.js>> #lightyellow
+participant TrialsListObject <<trialsListObject.get()>> #lightyellow
+participant TrialDetailsObject <<trialDetailsObject.get()>> #lightyellow
+
+''' TEMPLATES
+participant TrialsTemplate <<trial-management/trials.njk>> #lavender
+participant TrialDetailTemplate <<trial-management/trial-detail.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> HomePage : Open apps tray and click 'trial management'
+
+HomePage -> TrialManagementController : call page controller
+
+TrialManagementController -> TrialsListObject : build request object
+TrialsListObject -> BackendController : send backend request
+TrialsListObject <- BackendController : ok response
+TrialManagementController <- TrialsListObject : resolve request
+
+alt Failed to fetch tirals
+    TrialsListObject <-- BackendController : error response
+    TrialManagementController <-- TrialsListObject : reject requestObject
+    TrialManagementController -> ErrorTemplate : request and build template
+    TrialManagementController <- ErrorTemplate : return HTML
+    GenericErrorPage <- TrialManagementController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+TrialManagementController -> TrialsTemplate : request and build template
+TrialManagementController <- TrialsTemplate : return HTML
+ManageTrialsPage <- TrialManagementController : return HTML
+Actor <- ManageTrialsPage : render HTML
+
+Actor -> ManageTrialsPage : click on any sortable table header or active/all radio button
+
+ManageTrialsPage -> TrialManagementController : call page controller
+
+TrialManagementController -> TrialsListObject : build request object
+TrialsListObject -> BackendController : send backend request with given query params
+TrialsListObject <- BackendController : ok response
+TrialManagementController <- TrialsListObject : resolve request
+
+TrialManagementController -> TrialsTemplate : request and build template
+TrialManagementController <- TrialsTemplate : return HTML
+ManageTrialsPage <- TrialManagementController : return HTML
+Actor <- ManageTrialsPage : render HTML
+
+Actor -> ManageTrialsPage : click on any trial number link
+
+ManageTrialsPage -> TrialManagementController : call page controller
+
+TrialManagementController -> TrialDetailsObject : build request object
+TrialDetailsObject -> BackendController : send backend request
+TrialDetailsObject <- BackendController : ok response
+TrialManagementController <- TrialDetailsObject : resolve request
+
+alt Failed to fetch trial details
+    TrialDetailsObject <-- BackendController : error response
+    TrialManagementController <-- TrialDetailsObject : reject requestObject
+    TrialManagementController -> TrialsTemplate : request and build template
+    TrialManagementController <- TrialsTemplate : return HTML
+    ManageTrialsPage <- TrialManagementController : return HTML
+    Actor <- ManageTrialsPage : render HTML
+end
+
+TrialManagementController -> TrialDetailTemplate : request and build template
+TrialManagementController <- TrialDetailTemplate : return HTML
+TrialDetailPage <- TrialManagementController : return HTML
+Actor <- TrialDetailPage : render HTML
+
+@enduml

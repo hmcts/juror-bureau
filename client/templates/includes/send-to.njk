@@ -1,0 +1,62 @@
+<section class="modal-content send-to-section">
+
+  <label class="govuk-label" for="sendToUser">
+  {% if responses.length > 1 %}
+    <h3 class="govuk-heading-m">Send {{responses.length}} responses to…</h3>
+  {% else %}
+    <h3 class="govuk-heading-m">Send to…</h3>
+  {% endif %}
+  </label>
+
+  <form>
+    <div class="govuk-form-group" id="sendToGroup">
+      <span class="govuk-error-messagee error-message-decision"></span>
+
+      <select class="govuk-select" name="sendToUser" id="sendToUser">
+        <option value="" class="u-hide--small" selected>Select a recipient</option>
+
+        {% if (responses.length > 1) %}
+          {% set continue = true %}
+          {% for response in responses %}
+            {% if (continue and (not 'AWAITING_' in  response.processingStatus) and (not response.urgent) and (not response.superUrgent)) %}
+              <option value="backlog" data-title="The backlog">New Replies</option>
+              {% set continue = false %}
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          {% if (responses.length == 1) and (('AWAITING_' in  responses[0].processingStatus) or responses[0].urgent or responses[0].superUrgent) %}
+          {% elif authentication.staff.rank > 0 %}
+            <option value="backlog" data-title="The backlog">New Replies</option>
+          {% endif %}
+        {% endif %}
+
+        {% for staffMember in staffMembers %}
+          <option value="{{ staffMember.login }}" data-title="{{ staffMember.name }}">{{ staffMember.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <br/>
+
+    <div class="govuk-form-group">
+      <span class="govuk-error-message error-message-submit govuk-error-message"></span>
+      <div class="govuk-button-group">
+        <button id="sendToMarkComplete" class="govuk-button" data-module="govuk-button" disabled>
+          Send
+        </button>
+        <a id="sendToCancelBtn" class="govuk-link close-modal" href="#">Cancel</a>
+      </div>
+    </div>
+
+    {% for response in responses %}
+    <input type="hidden" name="version" id="version_{{ response.jurorNumber }}" value="{{ response.version }}">
+    <input type="hidden" name="jurorNumber" id="jurorNumber_{{ response.jurorNumber }}" value="{{ response.jurorNumber }}">
+    <input type="hidden" name="assignedTo" id="assignedTo_{{ response.jurorNumber }}" value="{{ response.assignedStaffMember.login }}">
+    {% endfor %}
+
+    <input type="hidden" name="isMulti" id="isMulti" value="false">
+    <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+  </form>
+
+  {#<br class="clear">#}
+</section>

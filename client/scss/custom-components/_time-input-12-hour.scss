@@ -1,0 +1,46 @@
+.time-input-12-hour {
+  @include govuk-clearfix;
+  // font-size: 0 removes whitespace caused by inline-block
+  font-size: 0;
+
+  &__container {
+    display: grid;
+    grid-template-columns:
+      minmax(40px, 50px) 20px minmax(50px, 60px) minmax(300px, 300px);
+    grid-template-rows: auto auto;
+    gap: 0px 0px;
+    grid-template-areas:
+      "hour .       minute ."
+      "hour divider minute period";
+    align-items: stretch;
+  }
+
+  &__period {
+    margin-left: 10px;
+    grid-area: period;
+    display: inline-block;
+    position: relative;
+    height: auto;
+  }
+
+  &__divider {
+    grid-area: divider;
+    display: inline-block;
+    margin: 0 govuk-spacing(1);
+    font-weight: bold;
+    justify-self: center;
+    align-self: center;
+  }
+
+  &__hour {
+    grid-area: hour;
+    display: inline-block;
+    margin-bottom: 0;
+  }
+
+  &__minute {
+    grid-area: minute;
+    display: inline-block;
+    margin-bottom: 0;
+  }
+}

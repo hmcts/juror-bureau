@@ -1,0 +1,9 @@
+{% if hasModAccess %}
+  <div class="current-app{{ '__with-name' if currentApp }}">
+    <div class="current-app__container">
+      <h3 class="govuk-heading-s current-app__container-title">{{currentApp}}</h3>
+    </div>
+  </div>
+{% else %}
+  <div class="current-app"></div>
+{% endif %}

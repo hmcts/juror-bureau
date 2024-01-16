@@ -1,0 +1,352 @@
+{% extends "../layouts/default-dashboard.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% from "./chartmacro-doughnut.njk" import dashboardChartDoughnut %}
+{% from "./chartmacro-autoProcessed.njk" import dashboardAutoProcessed %}
+{% from "./chartmacro-stacked.njk" import dashboardChartStacked %}
+{% from "./datemacro-monthyear.njk" import dashboardDateMonthYear %}
+
+{% block page_title %}
+  Dashboard - Juror Digital
+{% endblock %}
+
+{% block page_identifier %}Dashboard{% endblock %}
+
+{% block content %}
+
+  {# Heading #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <h1 class="govuk-heading-xl">
+        <span class="govuk-caption-xl">Dashboard</span>
+        Reply to a jury summons
+        
+        <p class="govuk-body-l"><br/>This dashboard shows information about how the Reply to a jury summons service is currently performing.</p>
+
+      </h1>
+
+      <hr class="thickLine"/>
+
+    </div>
+  </div>
+
+  {# Historic metrics #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <p class="govuk-body-l" >These figures are since July 2018 when the service launched.</p>
+    </div>
+
+    {% if dashboardData.historicTotals == null %}
+      <div class="govuk-grid-column-full govuk-error-message govuk-!-font-size-24">
+        <p>Error retrieving dashboard data</p>
+      </div>
+    {% else %}
+    
+      {% if dashboardData.historicTotals.summonsesSent %}
+        <div class="govuk-grid-column-one-third">
+        <span id="totalSummonsesSentLabel" class="govuk-body-xl govuk-!-font-weight-bold">Total summonses sent</span><br/>
+        <p id="totalSummonsesSentValue" class="govuk-heading-xl">{{ dashboardData.historicTotals.summonsesSentFormatted }}</p>
+        </div>
+
+        <div class="govuk-grid-column-one-third">
+        <span id="totalOnlineRepliesLabel" class="govuk-body-xl govuk-!-font-weight-bold">Number of online replies</span><br/>
+        <p id="totalOnlineRepliesValue" class="govuk-heading-xl">{{ dashboardData.historicTotals.onlineRepliesFormatted }}</p>
+        </div>
+
+        <div class="govuk-grid-column-one-third">
+        <span id="digitalTakeUpLabel" class="govuk-body-xl govuk-!-font-weight-bold">Digital take-up</span><br/>
+        <p id="digitalTakeUpValue" class="govuk-heading-xl">{{ dashboardData.historicTotals.digitalTakeUpPercent }}%</p>
+        </div>
+      {% endif %}
+
+    {% endif %}
+
+  </div>
+
+  <hr class="thickLine"/>
+
+  {# Date Range selection / submit #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <form action="{{ url('dashboard.post') }}" method="post">
+
+        <p class="govuk-body-l" >These figures are since September 2019 when more detailed reporting was implemented. If you require data before September 2019 please <a href="mailto:Andrew.Singletonbisby@justice.gov.uk" class="govuk-link">contact the product manager</a>, Andrew Singleton Bisby.</p>
+
+        <h2 class="govuk-heading-m">Select a monthly date range</h2>
+
+        {% set startMonthError = null %}
+        {% set startYearError = null %}
+        {% set startDaterError = null %}
+        {% if errors.items['startMonth'] %}
+          {% set startMonthError = errors.items['startMonth'][0].summary %}
+        {% endif %}
+        {% if errors.items['startYear'] %}
+          {% set startYearError = errors.items['startYear'][0].summary %}
+        {% endif %}
+        {% if errors.items['startDate'] %}
+          {% set startDateError = errors.items['startDate'][0].summary %}
+        {% endif %}
+
+        {% set endMonthError = null %}
+        {% set endYearError = null %}
+        {% set endDateError = null %}
+        {% if errors.items['endMonth'] %}
+          {% set endMonthError = errors.items['endMonth'][0].summary %}
+        {% endif %}
+        {% if errors.items['endYear'] %}
+          {% set endYearError = errors.items['endYear'][0].summary %}
+        {% endif %}
+        {% if errors.items['endDate'] %}
+          {% set endDateError = errors.items['endDate'][0].summary %}
+        {% endif %}
+
+        <div class="govuk-grid-row">
+          
+            <div class="govuk-grid-column-one-quarter">
+
+              {{ dashboardDateMonthYear({
+                id: "startDate",
+                label: "From",
+                prefix: "start",
+                monthValue: dashboardDates.startMonth,
+                yearValue: dashboardDates.startYear,
+                yearList: dashboardYears,
+                monthError: startMonthError,
+                yearError: startYearError,
+                dateError: startDateError
+              }) }}
+
+            </div>
+
+            <div class="govuk-grid-column-one-quarter">
+
+              {{ dashboardDateMonthYear({
+                id: "endDate",
+                label: "To",
+                prefix: "end",
+                monthValue: dashboardDates.endMonth,
+                yearValue: dashboardDates.endYear,
+                yearList: dashboardYears,
+                monthError: endMonthError,
+                yearError: endYearError,
+                dateError: endDateError
+              }) }}
+
+            </div>
+
+        </div>
+
+        <button class="govuk-button govuk-body-l" data-module="govuk-button" id="submitButton">
+          Submit
+        </button>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+
+        {{ dashboardData.cumulativeTotals.summonedTotal }}
+        {{ dashboardData.cumulativeTotals.responsesTotal }}
+
+      </form>
+      
+    </div>
+
+  </div>
+
+  {# Separator #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <br/>
+      <hr>
+    </div>
+  </div>
+
+   
+  {% if dashboardData.summonsesSent %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <p class="govuk-body-l">Showing data from {{ dashboardDates.startDateDisplay }} to {{ dashboardDates.endDateDisplay }}</p>
+    </div>
+  </div>
+
+  <br/>
+
+  {# Row 1 #}
+  <div class="govuk-grid-row">
+
+    {# Number of summonses sent #}
+    <div class="govuk-grid-column-one-half">
+      {{ dashboardChartDoughnut({
+        id: "numberOfSummonses",
+        chartHeading: "Number of summonses sent",
+        labels: ["Replied", "Not replied"],
+        values: [dashboardData.summonsesSent.repliedCount, dashboardData.summonsesSent.notRepliedCount],
+        valuesFormatted: [dashboardData.summonsesSent.repliedFormatted, dashboardData.summonsesSent.notRepliedFormatted],
+        valuesPerc: [dashboardData.summonsesSent.repliedPercent, dashboardData.summonsesSent.notRepliedPercent],
+        showSubTotals: true,
+        showTotal: true,
+        totalFormatted: dashboardData.summonsesSent.totalSentFormatted
+      }) }}
+    </div>
+
+    {# How did the citizen respond #}
+    <div class="govuk-grid-column-one-half">
+      {{ dashboardChartDoughnut({
+        id: "responseTypes",
+        chartHeading: "How did the citizen respond?",
+        labels: ["Online (Total)", "Online (Welsh)", "By post"],
+        values: [dashboardData.responseMethod.onlineTotal,dashboardData.responseMethod.onlineWelsh,dashboardData.responseMethod.byPost],
+        valuesFormatted: [dashboardData.responseMethod.onlineTotalFormatted, dashboardData.responseMethod.onlineWelshFormatted, dashboardData.responseMethod.byPostFormatted],
+        valuesPerc: [dashboardData.responseMethod.onlinePercent,dashboardData.responseMethod.onlineWelshPercent,dashboardData.responseMethod.byPostPercent],
+        showSubTotals: true,
+        showTotal: false
+      }) }}
+    </div>
+
+  </div>
+
+  {# Separator #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <br>
+      <hr>
+    </div>
+  </div>
+
+  {# Row 2 #}
+  <div class="govuk-grid-row">
+
+    {# Who replied to the summons online #}
+    <div class="govuk-grid-column-one-half">
+      {{ dashboardChartDoughnut({
+        id: "whoRespondedOnline",
+        chartHeading: "Who replied to the summons online?",
+        labels: ["Juror", "Third party"],
+        values: [dashboardData.responseType.jurorCount, dashboardData.responseType.thirdPartyCount],
+        valuesFormatted: [dashboardData.responseType.jurorFormatted, dashboardData.responseType.thirdPartyFormatted],
+        valuesPerc: [dashboardData.responseType.jurorPercent, dashboardData.responseType.thirdPartyPercent],
+        showSubTotals: true,
+        showTotal: false
+      }) }}
+    </div>
+
+    {# How many online replies were automatically processed? #}
+    <div class="govuk-grid-column-one-half">
+      {{ dashboardAutoProcessed({
+        id: "automaticallyProcessed",
+        chartHeading: "How many online replies were automatically processed?",
+        labels: ["Automatically processed"],
+        values: [dashboardData.automaticallyProcessed.automaticCount, dashboardData.automaticallyProcessed.manualCount],
+        valuesFormatted: [dashboardData.automaticallyProcessed.automaticFormatted, dashboardData.automaticallyProcessed.manualFormatted],
+        valuesPerc: [dashboardData.automaticallyProcessed.automaticPercent, dashboardData.automaticallyProcessed.manualPercent],
+        showSubTotals: true,
+        showTotal: false
+      }) }}
+    </div>
+
+  </div>
+
+  {# Separator #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <br>
+      <hr>
+    </div>
+  </div>
+
+  {# When were replies received bar chart #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      {{ dashboardChartStacked({
+        id: "whenReceived",
+        chartHeading: "When were replies received?",
+        labels: dashboardData.timeReceived.labels,
+        valuesDigital: [dashboardData.timeReceived.within7DaysDigital, dashboardData.timeReceived.within14DaysDigital, dashboardData.timeReceived.within21DaysDigital, dashboardData.timeReceived.over21DaysDigital],
+        valuesDigitalFormatted: ["0", "0", "0", "0"],
+        valuesPaper: [dashboardData.timeReceived.within7DaysPaper, dashboardData.timeReceived.within14DaysPaper, dashboardData.timeReceived.within21DaysPaper, dashboardData.timeReceived.over21DaysPaper],
+        valuesPaperFormatted: ["0", "0", "0", "0"],
+        showSubTotals: true,
+        showTotal: false
+      }) }}
+
+    </div>
+  </div>
+
+  {# Separator #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <br>
+      <br>
+      <hr>
+    </div>
+  </div>
+  
+  {# Levels of citizen satisfaction #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <div class="govuk-heading-l">Levels of citizen satisfaction</div>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+
+    <div class="govuk-grid-column-one-half">
+      <span id="percCompletingFeedbackLabel" class="govuk-body-xl govuk-!-font-weight-bold">Percentage of citizens completing a feedback form</span></br>
+      <p id="percCompletingFeedbackValue" class="govuk-body-xl">{{surveyData.completedFeedbackPercent}}%</p>
+    </div>
+    <div class="govuk-grid-column-one-half">
+      <span id="percSatisfiedVerySatisfiedLabel" class="govuk-body-xl govuk-!-font-weight-bold">Percentage of citizens 'Very satisfied or satisfied'</span></br>
+      <p id="percSatisfiedVerySatisfiedValue" class="govuk-body-xl">{{surveyData.satifiedAndVerySatisfiedPercent}}%</p>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+        {% if surveyData.responsesTotal > 0%}
+          {{ dashboardChartDoughnut({
+            id: "satisfaction",
+            chartHeading: "",
+            labels: ["Very satisfied", "Satisfied", "Neither satisfied or dissatisfied", "Dissatisfied", "Very dissatisfied"],
+            values: [surveyData.verySatisfiedTotal, surveyData.satisfiedTotal, surveyData.neitherTotal, surveyData.dissatisfiedTotal, surveyData.veryDissatisfiedTotal],
+            valuesFormatted: [surveyData.verySatisfiedFormatted, surveyData.satisfiedFormatted, surveyData.neitherFormatted, surveyData.dissatisfiedFormatted, surveyData.veryDissatisfiedFormatted],
+            valuesPerc: [surveyData.verySatisfiedPercent, surveyData.satisfiedPercent, surveyData.neitherPercent, surveyData.dissatisfiedPercent, surveyData.veryDissatisfiedPercent],
+            showSubTotals: false,
+            showTotal: false
+          }) }}
+        {% else %}
+          <br />
+          <div class="column-full font-large bold" id="smartSurveyErrorMEssage">
+          {% if surveyData.surveyDataError %}
+            <p>No Smart Survey data retrieved</p>
+          {% else %}
+            <p>No Smart Survey data retrieved</p>
+          {% endif %}
+          </div>
+
+        {% endif %}
+     
+    </div>
+  </div>
+
+  {# Separator #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <br>
+      <hr>
+    </div>
+  </div>
+
+  {% else %}
+
+    {% if errors %}
+      <div class="govuk-grid-column-full govuk-error-message govuk-!-font-size-24">
+        <p>{{errors.message}}</p>
+      </div>
+    {% endif %}
+
+  {% endif %}
+
+{% endblock %}

@@ -1,0 +1,22 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+<div class="mod-filter {{ params.classes }}"
+  {% for attribute, value in params.attributes %} {{ attribute }}="{{ value }}" {% endfor %}>
+  <h2 class="mod-filter__heading govuk-heading-m">{{ params.heading.text }}</h2>
+
+  <div class="mod-filter__options">
+    {{ params.optionsHtml | safe }}
+  </div>
+
+  <div class="mod-filter__actions govuk-button-group">
+    {{ govukButton({
+      text: "Apply filters",
+      attributes: {
+        id: "applyFiltersButton"
+      }
+    }) }}
+
+    <a href="{{ params.clearUrl }}" class="govuk-body govuk-link" id="clearFiltersLink">Clear filters</a>
+  </div>
+
+</div>

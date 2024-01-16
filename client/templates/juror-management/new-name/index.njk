@@ -1,0 +1,115 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_title %}
+  {{ serviceName }} - juror record - approve or reject name change
+{% endblock %}
+
+{% block page_identifier %}juror record - details - approve or reject name change{% endblock %}
+
+{# define errors if any #}
+{% set decisionError = undefined %}
+{% if errors.items["decision"] %}
+  {% set decisionError = { text: errors.items["decision"][0].details } %}
+{% endif %}
+
+{% set approveMessageError = undefined %}
+{% if errors.items["approve-message"] %}
+  {% set approveMessageError = { text: errors.items["approve-message"][0].details } %}
+{% endif %}
+
+{% set rejectMessageError = undefined %}
+{% if errors.items["reject-message"] %}
+  {% set rejectMessageError = { text: errors.items["reject-message"][0].details } %}
+{% endif %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+
+      <h1 class="govuk-label--l">Approve or reject name change</h1>
+
+      <p class="govuk-body govuk-!-margin-top-6 govuk-!-margin-bottom-6">
+        The juror has notified us of a change to their name. You should only approve this if you’ve seen proof of the name change.
+      </p>
+
+      <form action="{{ url('juror-record.details.new-name.post', { jurorNumber: jurorNumber }) }}" method="POST">
+
+        {% set approveMessageHtml %}
+          {{ govukInput({
+            id: "approve-message",
+            name: "approveMessage",
+            autocomplete: "none",
+            value: decision.notes if decision.decision === "APPROVE",
+            errorMessage: approveMessageError,
+            label: {
+              text: "What evidence did the juror provide for their change of name?"
+            }
+          }) }}
+        {% endset %}
+
+        {% set rejectMessageHtml %}
+          {{ govukInput({
+            id: "reject-message",
+            name: "rejectMessage",
+            autocomplete: "none",
+            value: decision.notes if decision.decision === "REJECT",
+            errorMessage: rejectMessageError,
+            label: {
+              text: "Why did you reject the juror’s name change?"
+            }
+          }) }}
+        {% endset %}
+        
+        {{ govukRadios({
+          name: "decision",
+          fieldset: {
+            legend: {
+              text: "Select your decision",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          errorMessage: decisionError,
+          items: [
+            {
+              value: "APPROVE", 
+              text: "Approve",
+              checked: decision.decision === "APPROVE",
+              conditional: {
+                html: approveMessageHtml
+              }
+            },
+            {
+              value: "REJECT",
+              text: "Reject",
+              checked: decision.decision === "REJECT",
+              conditional: {
+                html: rejectMessageHtml
+              }
+            }
+          ]
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            attributes: {
+              id: "continueButton"
+            }
+          }) }}
+
+          <a class="govuk-link" id="cancelAnchor" href="{{ url('juror-record.details.get', { jurorNumber: jurorNumber }) }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" id="csrftoken" value="{{ csrftoken }}" />
+      </form>
+
+    </div>
+  </div>
+{% endblock %}

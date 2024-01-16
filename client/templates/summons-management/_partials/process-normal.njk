@@ -1,0 +1,30 @@
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{{ govukRadios({
+  name: "processActionType",
+  fieldset: {
+    legend: {
+      text: "How do you want to process this reply?",
+      classes: "govuk-fieldset__legend--l"
+    }
+  },
+  items: [
+    {
+      value: "responded",
+      text: "Mark as responded"
+    },
+    {
+      value: "deferral",
+      text: "Deferral request"
+    },
+    {
+      value: "excusal",
+      text: "Excusal - grant or refuse"
+    },
+    {
+      value: "disqualify",
+      text: "Disqualify"
+    }
+  ],
+  errorMessage: processActionTypeError
+}) }}

@@ -1,0 +1,69 @@
+{% extends "../../../layouts/default.njk" %}
+
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set currentApp = "Pool management" %}
+
+{% block page_identifier %}Request a Pool{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      {% set poolNumberError = undefined %}
+      {% if errors.items["poolNumber"] %}
+        {% set poolNumberError = { text: errors.items["poolNumber"][0].details } %}
+      {% endif %}
+
+      <h1 class="govuk-heading-l">Change pool number</h1>
+
+      <h3 class="govuk-heading-s">Pools for {{ courtName | capitalize }} ({{ courtCode }})</h3>
+
+      {{ govukSummaryList({
+        classes: "govuk-!-width-one-third",
+        rows: poolNumbers,
+        attributes: {
+          id: "poolNumbers"
+        }
+      }) }}
+
+      <form action="{{ url('request-pool.change-pool-number.post') }}" method="post" id="changePoolNumber">
+
+        {{ govukInput({
+          label: {
+            text: "Pool number",
+            classes: "govuk-body"
+          },
+          classes: "govuk-input--width-10",
+          id: "poolNumber",
+          name: "poolNumber",
+          type: "number",
+          errorMessage: poolNumberError
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+              text: "Change",
+              type: "submit",
+              attributes: {
+                id: "changeButton"
+              }
+            }) }}
+
+          <a id="cancelAnchor" class="govuk-link" href="{{ url('request-pool.check-details.get') }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

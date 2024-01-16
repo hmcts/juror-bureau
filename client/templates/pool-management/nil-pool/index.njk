@@ -1,0 +1,111 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "../../custom-components/summary-item/macro.njk" import summaryItem %}
+
+{% set currentApp = "Pool management" %}
+
+{% block page_identifier %}Create Nil Pool{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      {% set poolTypeError = undefined %}
+      {% if errors.items["poolType"] %}
+        {% set poolTypeError = {
+          text: errors
+            .items["poolType"][0]
+            .details
+        } %}
+      {% endif %}
+
+      <h1 class="govuk-heading-l">Create a nil pool</h1>
+
+      <form action="{{ url('nil-pool.post') }}" method="post" id="nilPoolDetails">
+        {{ summaryItem({
+          label: {
+            text: "Court name",
+            classes: "govuk-label--s"
+          },
+          value: poolDetails.courtName | capitalizeFully,
+          id: "selectedCourtName",
+          name: "selectedCourtCode",
+          classes: "govuk-!-width-one-half",
+          action: {
+            href: url("nil-pool.change-court.get"),
+            text: "Change"
+          }
+        }) }}
+
+        {{ summaryItem({
+          label: {
+            text: "Service start date",
+            classes: "govuk-label--s"
+          },
+          value: poolDetails.attendanceDate | dateFilter(null, "dddd DD MMMM YYYY"),
+          id: "attendanceDate",
+          name: "attendanceDate",
+          classes: "govuk-!-width-one-half",
+          action: {
+            href: url("nil-pool.change-attendance-date.get"),
+            text: "Change"
+          }
+        }) }}
+
+        {{ govukRadios({
+          idPrefix: "poolType",
+          name: "poolType",
+          fieldset: {
+            legend: {
+              text: "Pool type",
+              classes: "govuk-!-font-weight-bold"
+            }
+          },
+          items: [
+            {
+              value: "CRO",
+              text: "Crown court",
+              checked: poolDetails.poolType === "CRO"
+            },
+            {
+              value: "CIV",
+              text: "Civil court",
+              checked: poolDetails.poolType === "CIV"
+            },
+            {
+              value: "HGH",
+              text: "High court",
+              checked: poolDetails.poolType === "HGH"
+            }
+          ],
+          errorMessage: poolTypeError
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            type: "submit",
+            attributes: {
+              id: "continueButton"
+            }
+          }) }}
+
+          <a class="govuk-link" href="{{ url('pool-management.get') }}" id="cancelAnchor">Cancel</a>
+        </div>
+
+        <input type="hidden" name="selectedCourtCode" value="{{ poolDetails.courtCode }}">
+        <input type="hidden" name="selectedCourtName" value="{{ poolDetails.courtName }}">
+        <input type="hidden" name="attendanceDate" value="{{ poolDetails.attendanceDate }}">
+        <input type="hidden" name="attendanceTime" value="{{ poolDetails.attendanceTime }}">
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

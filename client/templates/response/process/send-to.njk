@@ -1,0 +1,155 @@
+{% extends "../../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+
+{% set currentApp = "Summons replies" %}
+
+{% block page_title %}
+  {{ serviceName }} - process - send to{% endblock %}
+
+{% block page_identifier %}process - send to{% endblock %}
+
+{% block content %}
+
+  {% include "../../includes/errors.njk" %}
+
+  {% if errors.items["sendToOfficer"] %}
+    {% set sendToError = {"text": errors.items['sendToOfficer'][0].details} %}
+  {% else %}
+    {% set sendToError = undefined %}
+  {% endif %}
+
+  {# set default url for the cancel button #}
+  {% set cancelUrl = "/inbox" %}
+  {% set postUrl = "" %}
+  {% if source == "search" %}
+    {% set cancelUrl = "/search" %}
+    {% set postUrl = "/staff/assign-multi" %}
+  {% endif %}
+  {% if source == "response" %}
+    {% set cancelUrl = "../../response/" + responses[0].jurorNumber %}
+    {% set postUrl = "/staff/assign" %}
+  {% endif %}
+
+  {# Initialise values for single/multi response assignment #}
+  {% if (responses.length > 1) %}
+    {% set headingText = "Send " + responses.length + " replies to a colleague" %}
+  {% else %}
+    {% set headingText = "Send this reply to a colleague" %}
+    {% set replyListHeadingText = "Reply from" %}
+  {% endif %}
+
+  {# Setup recipient dropdown list #}
+  {% set sendToList = [{value: "", text: "", selected: true}] %}
+
+  {% if (responses.length > 1) %}
+    {% set continue = true %}
+    {% for response in responses %}
+      {% if (continue and (not 'AWAITING_' in  response.processingStatus) and (not response.urgent) and (not response.superUrgent)) %}
+        {% set sendToList = (sendToList.push({value: "backlog", text: "Return to unassigned replies", selected: false }), sendToList) %}
+        {#<option value="backlog" data-title="The backlog">Return to unassigned replies</option>#}
+        {% set continue = false %}
+      {% endif %}
+    {% endfor %}
+  {% else %}
+    {% if (responses.length == 1) and (('AWAITING_' in  responses[0].processingStatus) or responses[0].urgent or responses[0].superUrgent) %}
+    {% elif authentication.staff.rank > 0 %}
+      {% set sendToList = (sendToList.push({value: "backlog", text: "Return to unassigned replies", selected: false }), sendToList) %}
+      {#<option value="backlog" data-title="The backlog">Return to unassigned replies</option>#}
+    {% endif %}
+  {% endif %}
+
+  {% for staffMember in staffMembers %}
+    {% set sendToList = (sendToList.push({value: staffMember.login, text: staffMember.name, selected: false }), sendToList) %}
+  {% endfor %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      
+      {% if source === "search" %}
+        {% set postUrl = "/staff/assign-multi" %}
+      {% else %}
+        {% set postUrl = "/staff/assign" %}
+      {% endif %}
+
+      <form action="{{postUrl}}" method="post" id="sendToForm">
+
+        <span class="govuk-caption-xl">{{ nameDetails.headerNameRender }}</span>
+        <h1 class="govuk-heading-xl">{{ headingText }}</h1>
+
+        {% if (responses.length == 1) %}
+          <p class="govuk-body govuk-!-font-weight-bold">{{replyListHeadingText}}</p>
+          <ul class="govuk-list">
+            {% if source == "search" %}
+              {% for response in responses %}
+                <li>{{ response.jurorNameDisplay }}</li>
+              {% endfor %}
+            {% else %}
+              {% for responseName in responseNames %}
+                <li>{{ responseName.headerNameRender }}</li>
+              {% endfor %}
+            {% endif %}
+          </ul>
+          <br/>
+        {% endif %}
+
+        <div class="sendToSelect">
+          {{ govukSelect({
+            id: "sendToOfficer",
+            name: "sendToOfficer",
+            label: {
+              text: "Select an officer to send to",
+              classes: "govuk-body govuk-!-font-weight-bold"
+            },
+            items: sendToList,
+            errorMessage: sendToError
+          }) }}
+        </div>
+
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Send"
+          }) }}
+          <a class="govuk-link" href="{{cancelUrl}}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+        <input type="hidden" name="isMulti" id="isMulti" value="false">
+
+        {% for response in responses %}
+          <input type="hidden" name="version" id="version_{{ response.jurorNumber }}" value="{{ response.version }}">
+          <input type="hidden" name="jurorNumber" id="jurorNumber_{{ response.jurorNumber }}" value="{{ response.jurorNumber }}">
+          <input type="hidden" name="assignedTo" id="assignedTo_{{ response.jurorNumber }}" value="{{ response.assignedStaffMember.login }}">
+        {% endfor %}
+
+      </form>
+      
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+  
+  <script src="{{ assetPath }}js/accessible-autocomplete.min.js"></script>
+
+  <script type="text/javascript">
+
+
+    $(document).ready(function(){
+      accessibleAutocomplete.enhanceSelectElement({
+        selectElement: document.querySelector('#sendToOfficer'),
+        showAllValues: true,
+        dropdownArrow: () => ''
+      })
+
+    });
+
+
+  </script>
+
+{% endblock %}

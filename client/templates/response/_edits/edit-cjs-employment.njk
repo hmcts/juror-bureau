@@ -1,0 +1,156 @@
+{% if canEdit %}
+<section>
+  <form class="edit-form" id="cjs-employment-form">
+
+    {#
+    <div class="section-heading">
+      <div class="edit-actions">
+        <a href="#" class="edit-action edit-cancel" data-target="cjs-employment">cancel</a>
+        <a href="#" class="edit-action edit-save" data-target="cjs-employment">save</a>
+      </div>
+
+      <h3 class="heading-small">CJS employee</h3>
+    </div>
+    #}
+
+    <div class="govuk-form-group jd-edit-panel govuk-body " id="cjsEmployedGroup">
+
+      <fieldset class="govuk-fieldset" aria-describedby="cjsEmploymentHint">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h1 class="govuk-fieldset__heading">
+            CJS Employment
+          </h1>
+        </legend>
+        <div id="cjsEmploymentHint" class="govuk-hint">
+          Have you worked in the criminal justice system in the last 5 years?
+        </div>
+
+        {#govuk-radios--small#}
+
+        <div class="govuk-radios govuk-radios--conditional" data-module="govuk-radios">
+
+          <span class="govuk-error-message" id="cjsEmployedErrorMessage"></span>
+          
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="cjsEmployed-Yes" name="cjsEmployed" type="radio" value="Yes" {% if response.cjsEmployments.length > 0 %} checked{% endif %} data-aria-controls="cjsEmploymentOptions">
+            <label class="govuk-label govuk-radios__label" for="cjsEmployed-Yes">
+              Yes
+            </label>
+          </div>
+
+
+          
+          <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="cjsEmploymentOptions">
+
+            <div class="govuk-form-group">
+              <fieldset class="govuk-fieldset" aria-describedby="employmentOrganisationsHint">
+
+                <div id="employmentOrganisationsHint" class="govuk-hint">
+                  Organisations
+                </div>
+
+                <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
+                  <div class="govuk-checkboxes__item">
+                    <input class="govuk-checkboxes__input" id="cjsEmployer-police" name="cjsEmployer" type="checkbox" value="Police Force" data-aria-controls="cjsPoliceDetailsGroupConditional" {{ response.cjsEmployments | checkCjsEmployer('Police Force', ' checked') }}>
+                    <label class="govuk-label govuk-checkboxes__label" for="cjsEmployer-police">
+                      Police Force
+                    </label>
+                  </div>
+                  <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="cjsPoliceDetailsGroupConditional">
+                    <div class="govuk-form-group" id="cjsPoliceDetailsGroup">
+                      <label class="govuk-label" for="cjsPoliceDetails">
+                       Details of Police Force employmnet
+                      </label>
+                      <span class="govuk-error-message" id="cjsPoliceDetailsErrorMessage"></span>
+                      <textarea class="jd-textarea govuk-!-width-three-quarters govuk-body" id="cjsPoliceDetails" name="cjsPoliceDetails" spellcheck="false" maxlength="1000">{{ response.cjsEmployments | getCjsEmployer('Police Force', 'details') }}</textarea>
+                    </div>
+                  </div>
+
+                  <div class="govuk-checkboxes__item">
+                    <input class="govuk-checkboxes__input" id="cjsEmployer-prison" name="cjsEmployer" type="checkbox" value="HM Prison Service" data-aria-controls="cjsPrisonDetailsGroupConditional" {{ response.cjsEmployments | checkCjsEmployer('HM Prison Service', ' checked') }}>
+                    <label class="govuk-label govuk-checkboxes__label" for="cjsEmployer-prison">
+                      HM Prison Service
+                    </label>
+                  </div>
+                  <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="cjsPrisonDetailsGroupConditional">
+                    <div class="govuk-form-group" id="cjsPrisonDetailsGroup">
+                      <label class="govuk-label" for="cjsPrisonDetails">
+                        Details of HM Prison Service employment
+                      </label>
+                      <span class="govuk-error-message" id="cjsPrisonDetailsErrorMessage"></span>
+                      <textarea class="jd-textarea govuk-!-width-three-quarters govuk-body" id="cjsPrisonDetails" name="cjsPrisonDetails" spellcheck="false" maxlength="1000">{{ response.cjsEmployments | getCjsEmployer('HM Prison Service', 'details') }}</textarea>
+                    </div>
+                  </div>
+
+                  <div class="govuk-checkboxes__item">
+                    <input class="govuk-checkboxes__input" id="cjsEmployer-nca" name="cjsEmployer" type="checkbox" value="National Crime Agency" {{ response.cjsEmployments | checkCjsEmployer('National Crime Agency', ' checked') }}/>
+                    <label class="govuk-label govuk-checkboxes__label" for="cjsEmployer-nca">
+                      the National Crime Agency
+                    </label>
+                  </div>
+
+                  <div class="govuk-checkboxes__item">
+                    <input class="govuk-checkboxes__input" id="cjsEmployer-judiciary" name="cjsEmployer" type="checkbox" value="Judiciary" {{ response.cjsEmployments | checkCjsEmployer('Judiciary', ' checked') }}/>
+                    <label class="govuk-label govuk-checkboxes__label" for="cjsEmployer-judiciary">
+                      the Judiciary
+                    </label>
+                  </div>
+  
+                  <div class="govuk-checkboxes__item">
+                    <input class="govuk-checkboxes__input" id="cjsEmployer-hmcts" name="cjsEmployer" type="checkbox" value="HMCTS" {{ response.cjsEmployments | checkCjsEmployer('HMCTS', ' checked') }}/>
+                    <label class="govuk-label govuk-checkboxes__label" for="cjsEmployer-hmcts">
+                      HMCTS
+                    </label>
+                  </div>
+
+                  <div class="govuk-checkboxes__item">
+                    <input class="govuk-checkboxes__input" id="cjsEmployer-other" name="cjsEmployer" type="checkbox" value="Other" data-aria-controls="cjsEmployerDetailsGroupConditional" {{ response.cjsEmployments | checkCjsEmployer('Other', ' checked') }} />
+                    <label class="govuk-label govuk-checkboxes__label" for="cjsEmployer-other">
+                      Other
+                    </label>
+                  </div>
+                  <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="cjsEmployerDetailsGroupConditional">
+                    <div class="govuk-form-group" id="cjsEmployerDetailsGroup">
+                      <label class="govuk-label" for="cjsEmployerDetails">
+                        Details of other CJS employment
+                      </label>
+                      <span class="govuk-error-message" id="cjsEmployerDetailsErrorMessage"></span>
+                      <textarea class="jd-textarea govuk-!-width-three-quarters govuk-body" id="cjsEmployerDetails" name="cjsEmployerDetails" spellcheck="false" maxlength="1000">{{ response.cjsEmployments | getCjsEmployer('Other', 'details') }}</textarea>
+                    </div>
+                  </div>
+
+                </div>
+
+              </fieldset>
+            </div>
+
+          </div>
+
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="cjsEmployed-No" name="cjsEmployed" type="radio" value="No" {% if response.cjsEmployments.length === 0 %} checked{% endif %}>
+            <label class="govuk-label govuk-radios__label" for="cjsEmployed-No">
+              No
+            </label>
+          </div>
+          
+        </div>
+
+      </fieldset>
+
+      <br/><br/>
+
+      <div class="govuk-button-group jd-save-cancel-button-group">
+        <button id="cjsEmploymentSaveButton" class="govuk-button edit-save" data-target="cjs-employment" data-module="govuk-button">Save</button>
+        <a id="cjsEmploymentCancelButton" class="govuk-link edit-cancel" data-target="cjs-employment" href="#">Cancel</a>
+      </div>
+
+    </div>
+
+
+    <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+    <input type="hidden" name="jurorNumber" value="{{ response.jurorNumber }}">
+    <input type="hidden" name="version" value="{{ response.version }}">
+    
+  </form>
+</section>
+{% endif %}

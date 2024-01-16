@@ -1,0 +1,18 @@
+#!groovy
+
+@Library("Infrastructure")
+
+String type = "nodejs"
+String product = "juror"
+String component = "public"
+
+def branchesToSync = []
+
+def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
+
+withPipeline(type, product, component) {
+  // loadVaultSecrets(secrets)
+  enableSlackNotifications('#juror-build-notices')
+  // syncBranchesWithMaster(branchesToSync)
+}
+

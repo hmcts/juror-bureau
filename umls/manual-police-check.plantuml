@@ -1,0 +1,65 @@
+@startuml manual-police-check
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant JurorRecordOverviewPage <</juror-management/record/:jurorNumber/overview>>
+participant ManualPoliceCheckPage <</juror-management/juror/:jurorNumber/run-police-check>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant JurorRecordController <<juror-record.controller.js>> #lightyellow
+participant PoliceCheckController <<juror-police-check.controller.js>> #lightyellow
+participant ManualPoliceCheckObject <<manualPoliceCheck.patch()>> #lightyellow
+
+''' TEMPLATES
+participant ManualPoliceCheckTemplate <<juror-management/run-police-check.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> JurorRecordOverviewPage : click run police check link
+
+JurorRecordOverviewPage -> JurorRecordController : call page controller
+
+JurorRecordController -> PoliceCheckController : call police check controller
+
+PoliceCheckController -> ManualPoliceCheckTemplate : request and build template
+PoliceCheckController <- ManualPoliceCheckTemplate : return HTML
+ManualPoliceCheckPage <- PoliceCheckController : return HTML
+Actor <- ManualPoliceCheckPage : render HTML
+
+Actor -> ManualPoliceCheckPage : click run police check button
+
+ManualPoliceCheckPage -> PoliceCheckController : call page conrtoller
+
+PoliceCheckController -> ManualPoliceCheckObject : build request object
+ManualPoliceCheckObject -> BackendController : send backend request
+ManualPoliceCheckObject <- BackendController : ok response
+PoliceCheckController <- ManualPoliceCheckObject : resolve request
+
+alt Failed to run police check
+    ManualPoliceCheckObject <-- BackendController : error response
+    PoliceCheckController <-- ManualPoliceCheckObject : reject requestObject
+    PoliceCheckController -> ErrorTemplate : request and build template
+    PoliceCheckController <- ErrorTemplate : return HTML
+    GenericErrorPage <- PoliceCheckController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+JurorRecordController <- PoliceCheckController : call juror record controller
+JurorRecordOverviewPage <- JurorRecordController : return HTML
+Actor <- JurorRecordOverviewPage : render HTML
+
+
+
+
+
+
+
+
+    

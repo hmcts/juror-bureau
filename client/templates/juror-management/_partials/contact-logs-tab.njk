@@ -1,0 +1,49 @@
+{% from "moj/components/timeline/macro.njk" import mojTimeline %}
+
+<section>
+  <div class="mod-juror-record__title govuk-body">
+    <h2 id="jurorDetailsLabel" class="govuk-heading-m">Contact log</h2>
+    {{ govukButton({
+      text: "Log new contact",
+      classes: "govuk-button--secondary",
+      href: url('juror-record.contact-log.get', {
+        jurorNumber: juror.commonDetails.jurorNumber
+      }),
+      attributes: {
+        id: "logContactButton"
+      }
+    }) }}
+  </div>
+
+  {# Temp html records #}
+  {% set logs = [] %}
+  {% set contactHtml = undefined %}
+  {% for contactLog in contactLogs %}
+    {% set contactHtml %}
+      {{ govukTag({
+        text: contactLog.enquiryType,
+        classes: "govuk-tag--grey govuk-body"
+      }) }}
+      <p class="govuk-body">{{ contactLog.notes }}</p>
+    {% endset %}
+    {% set logs = (logs.push({
+      label: {
+        text: "Contact report"
+      },
+      html: contactHtml,
+      datetime: {
+        timestamp: contactLog.logDate,
+        type: "datetime"
+      },
+      byline: {
+        text: contactLog.username
+      }
+    }), logs) %}
+  {% endfor %}
+
+  <div class="govuk-grid-column-two-thirds">
+    {{ mojTimeline({
+      items: logs
+    }) }}
+  </div>
+</section>

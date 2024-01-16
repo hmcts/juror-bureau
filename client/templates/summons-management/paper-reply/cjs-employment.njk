@@ -1,0 +1,280 @@
+{% extends "../../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
+
+{% block page_title %}
+  {{ serviceName }} - paper response - cjs employment
+{% endblock %}
+
+{% block page_identifier %}paper response - cjs employment{% endblock %}
+
+{% block beforeContent %}
+  {% if backLinkUrl %}
+    {% include "includes/back-link.njk" %}
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {# define errors for each text box #}
+  {% set policeForceDetailsError = undefined %}
+  {% if errors.items["cjsSystemPoliceDetails"] %}
+    {% set policeForceDetailsError = { text: errors.items["cjsSystemPoliceDetails"][0].details } %}
+  {% endif %}
+  {% set prisonDetailsError = undefined %}
+  {% if errors.items["cjsSystemHmPrisonDetails"] %}
+    {% set prisonDetailsError = { text: errors.items["cjsSystemHmPrisonDetails"][0].details } %}
+  {% endif %}
+  {% set ncaDetailsError = undefined %}
+  {% if errors.items["cjsSystemNationalCrimeDetails"] %}
+    {% set ncaDetailsError = { text: errors.items["cjsSystemNationalCrimeDetails"][0].details } %}
+  {% endif %}
+  {% set judiciaryDetailsError = undefined %}
+  {% if errors.items["cjsSystemJudiciaryDetails"] %}
+    {% set judiciaryDetailsError = { text: errors.items["cjsSystemJudiciaryDetails"][0].details } %}
+  {% endif %}
+  {% set hmctsDetailsError = undefined %}
+  {% if errors.items["cjsSystemCourtsDetails"] %}
+    {% set hmctsDetailsError = { text: errors.items["cjsSystemCourtsDetails"][0].details } %}
+  {% endif %}
+  {% set otherDetailsError = undefined %}
+  {% if errors.items["cjsSystemOtherDetails"] %}
+    {% set otherDetailsError = { text: errors.items["cjsSystemOtherDetails"][0].details } %}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <span class="govuk-caption-l">Enter summons reply</span>
+      <h1 class="govuk-heading-l">CJS employment</h1>
+
+      <form method="post" action="{{ postUrl }}" >
+        {% if (cjsSystemOptionsPoliceChecked === 'yes' or cjsSystemOptionsPoliceChecked === true) %}
+          {% set cjsSystemOptionsPoliceChecked = true %}
+        {% else %}
+          {% set cjsSystemOptionsPoliceChecked = false %}
+        {% endif %}
+
+        {% if cjsSystemOptionsPrisonChecked === 'yes' or cjsSystemOptionsPrisonChecked === true %}
+          {% set cjsSystemOptionsPrisonChecked = true %}
+        {% else %}
+          {% set cjsSystemOptionsPrisonChecked = false %}
+        {% endif %}
+
+        {% if cjsSystemOptionsCrimeChecked === 'yes' or cjsSystemOptionsCrimeChecked === true %}
+          {% set cjsSystemOptionsCrimeChecked = true %}
+        {% else %}
+          {% set cjsSystemOptionsCrimeChecked = false %}
+        {% endif %}
+
+        {% if cjsSystemOptionsJudiciaryChecked === 'yes' or cjsSystemOptionsJudiciaryChecked === true %}
+          {% set cjsSystemOptionsJudiciaryChecked = true %}
+        {% else %}
+          {% set cjsSystemOptionsJudiciaryChecked = false %}
+        {% endif %}
+
+        {% if cjsSystemOptionsCourtsChecked === 'yes' or cjsSystemOptionsCourtsChecked === true %}
+          {% set cjsSystemOptionsCourtsChecked = true %}
+        {% else %}
+          {% set cjsSystemOptionsCourtsChecked = false %}
+        {% endif %}
+
+        {% if cjsSystemOptionsOtherChecked === 'yes' or cjsSystemOptionsOtherChecked === true %}
+          {% set cjsSystemOptionsOtherChecked = true %}
+        {% else %}
+          {% set cjsSystemOptionsOtherChecked = false %}
+        {% endif %}
+
+        {% set cjsSystemPoliceDetailsHTML %}
+          {{ govukCharacterCount({
+            name: "cjsSystemPoliceDetails",
+            id: "cjsSystemPoliceDetails",
+            maxlength: 2000,
+            label: {
+              text: "Which police force?"
+            },
+            value: cjsEmploymentValues['police force'],
+            errorMessage: policeForceDetailsError
+          }) }}
+        {% endset %}
+
+        {% set cjsSystemHmPrisonDetailsHTML %}
+          {{ govukCharacterCount({
+            name: "cjsSystemHmPrisonDetails",
+            id: "cjsSystemHmPrisonDetails",
+            maxlength: 2000,
+            label: {
+              text: "Which part of HM Prison Service?"
+            },
+            value: cjsEmploymentValues['hm prison service'],
+            errorMessage: prisonDetailsError
+          }) }}
+        {% endset %}
+
+        {% set cjsSystemNationalCrimeDetailsHTML %}
+          {{ govukCharacterCount({
+            name: "cjsSystemNationalCrimeDetails",
+            id: "cjsSystemNationalCrimeDetails",
+            maxlength: 2000,
+            label: {
+              text: "Which part of the National Crime Agency?"
+            },
+            value: cjsEmploymentValues['national crime agency'],
+            errorMessage: ncaDetailsError
+          }) }}
+        {% endset %}
+
+        {% set cjsSystemJudiciaryDetailsHTML %}
+          {{ govukCharacterCount({
+            name: "cjsSystemJudiciaryDetails",
+            id: "cjsSystemJudiciaryDetails",
+            maxlength: 2000,
+            label: {
+              text: "Which part of the Judiciary?"
+            },
+            value: cjsEmploymentValues['judiciary'],
+            errorMessage: judiciaryDetailsError
+          }) }}
+        {% endset %}
+
+        {% set cjsSystemCourtsDetailsHTML %}
+          {{ govukCharacterCount({
+            name: "cjsSystemCourtsDetails",
+            id: "cjsSystemCourtsDetails",
+            maxlength: 2000,
+            label: {
+              text: "Which part of HM Courts & Tribunal Service?"
+            },
+            value: cjsEmploymentValues['hmcts'],
+            errorMessage: hmctsDetailsError
+          }) }}
+        {% endset %}
+
+        {% set cjsSystemOtherDetailsHTML %}
+          {{ govukCharacterCount({
+            name: "cjsSystemOtherDetails",
+            id: "cjsSystemOtherDetails",
+            maxlength: 2000,
+            label: {
+              text: "Which part of the criminal justice system has the juror worked in?"
+            },
+            value: cjsEmploymentValues['other'],
+            errorMessage: otherDetailsError
+          }) }}
+        {% endset %}
+
+        {% set cjsSystemOptionsHTML %}
+          {{ govukCheckboxes({
+            name: "cjsSystemOptions",
+            items: [
+              {
+                id: "cjsSystemOptionsPolice",
+                name: "cjsSystemOptionsPolice",
+                value: "police force",
+                text: "Police force",
+                conditional: {
+                  html: cjsSystemPoliceDetailsHTML
+                },
+                checked: cjsSystemOptionsPoliceChecked
+              },
+              {
+                id: "cjsSystemOptionsPrison",
+                name: "cjsSystemOptionsPrison",
+                value: "hm prison service",
+                text: "HM Prison Service",
+                conditional: {
+                  html: cjsSystemHmPrisonDetailsHTML
+                },
+                checked: cjsSystemOptionsPrisonChecked
+              },
+              {
+                id: "cjsSystemOptionsCrime",
+                name: "cjsSystemOptionsCrime",
+                value: "national crime agency",
+                text: "National Crime Agency",
+                conditional: {
+                  html: cjsSystemNationalCrimeDetailsHTML
+                },
+                checked: cjsSystemOptionsCrimeChecked
+              },
+              {
+                id: "cjsSystemOptionsJudiciary",
+                name: "cjsSystemOptionsJudiciary",
+                value: "judiciary",
+                text: "Judiciary",
+                conditional: {
+                  html: cjsSystemJudiciaryDetailsHTML
+                },
+                checked: cjsSystemOptionsJudiciaryChecked
+              },
+              {
+                id: "cjsSystemOptionsCourts",
+                name: "cjsSystemOptionsCourts",
+                value: "hm courts and tribunal service",
+                text: "HM Courts & Tribunal Service",
+                conditional: {
+                  html: cjsSystemCourtsDetailsHTML
+                },
+                checked: cjsSystemOptionsCourtsChecked
+              },
+              {
+                id: "cjsSystemOptionsOther",
+                name: "cjsSystemOptionsOther",
+                value: "other",
+                text: "Other",
+                conditional: {
+                  html: cjsSystemOtherDetailsHTML
+                },
+                checked: cjsSystemOptionsOtherChecked
+              }
+            ]
+          }) }}
+        {% endset %}
+
+        {{ govukRadios({
+          name: "cjsEmploymentResponse",
+          fieldset: {
+            legend: {
+              text: "Has the juror worked in the criminal justice system in the last 5 years?",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          items: [
+            {
+              value: "yes",
+              text: "Yes",
+              checked: cjsEmploymentChecked !== undefined and cjsEmploymentChecked.value === "yes",
+              conditional: {
+                html: cjsSystemOptionsHTML
+              }
+            },
+            {
+              value: "no",
+              text: "No",
+              checked: cjsEmploymentChecked !== undefined and cjsEmploymentChecked.value === "no"
+            }
+          ]
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            attributes: {
+              id: "continueButton"
+            }
+          }) }}
+          <a id="cjsEmploymentCancelBtn" class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+
+      </form>
+    </div>
+  </div>
+
+{% endblock %}

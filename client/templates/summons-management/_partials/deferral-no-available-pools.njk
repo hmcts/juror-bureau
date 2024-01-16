@@ -1,0 +1,17 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">There are no active pools for this date</h1>
+        <p>You can put the juror in deferral maintenance for this date.</p>
+        <div class="govuk-button-group govuk-!-margin-top-8">
+            {{ govukButton({
+                text: "Put in deferral maintenance",
+                type: "done"
+                }) }}
+                <a class="govuk-link govuk-link--no-visited-state" href="{{ cancelUrl }}">Cancel</a>
+            <input type="hidden" name="deferralDateAndPool" value="{{ selectedDeferralDate }}">
+            <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+        </div>
+    </div>
+</div>

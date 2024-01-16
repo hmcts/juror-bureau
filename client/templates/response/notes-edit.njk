@@ -1,0 +1,64 @@
+{% extends "../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_title %}
+  {{ serviceName }} - response details - notes
+{% endblock %}
+
+{% block page_identifier %}response details - notes{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {# username error #}
+  {% if errors.items["notes"] %}
+    {% set notesError = {"text": errors.items['notes'][0].details} %}
+  {% else %}
+    {% set notesError = undefined %}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form action="/response/{{jurorNumber}}/notes/edit" method="POST" class="disable-empty" id="notesForm">
+        
+        {% set labelHTML %}
+          <span class="govuk-caption-l">{{jurorName}}</span>
+          <h1 class="govuk-heading-xl">Notes</h1>
+        {% endset %}
+
+        {{ govukCharacterCount({
+          name: "notes",
+          id: "notes",
+          maxlength: 2000,
+          rows: 10,
+          label: {
+            html: labelHTML,
+            isPageHeading: true
+          },
+          errorMessage: notesError,
+          value: notesText
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Save"
+          }) }}
+
+          <a class="govuk-link" href="/response/{{jurorNumber}}#logContent">Cancel</a>
+        </div>
+
+        <input type="hidden" name="jurorNumber" id="jurorNumber" value="{{ jurorNumber }}">
+        <input type="hidden" name="notesVersion" id="notesVersion" value="{{ notesVersion }}">
+        <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+
+      </form>
+      
+    </div>
+  </div>
+
+{% endblock %}
+
+

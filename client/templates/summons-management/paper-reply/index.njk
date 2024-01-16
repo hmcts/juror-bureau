@@ -1,0 +1,289 @@
+{% extends "../../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "../../custom-components/summary-item/macro.njk" import summaryItem %}
+{% from "../../pool-management/_common/attendance-date-macro.njk" import attendanceDatepicker %}
+{% from "../../custom-components/date-picker/macro.njk" import datePicker %}
+
+{% block page_title %}
+  {{ serviceName }} - paper response - juror details
+{% endblock %}
+
+{% block page_identifier %}paper response - juror details{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+  {% set addressParts = [details.address.part1, details.address.part2, details.address.part3, details.address.part4, details.address.part5, details.address.part6] %}
+  {% set jurorAddress = addressParts | buildRecordAddress | capitalizeFully + "<br>" + details.postcode %}
+
+  <span class="govuk-caption-l">Enter summons reply</span>
+  <h1 class="govuk-heading-l">Juror details</h1>
+
+  {% set dateOfBirthError = undefined %}
+  {% if errors.items["dateOfBirth"] %}
+    {% set dateOfBirthError = { text: errors.items["dateOfBirth"][0].details } %}
+  {% endif %}
+
+  {% set emailAddressError = undefined %}
+  {% if errors.items["emailAddress"] %}
+    {% set emailAddressError = { text: errors.items["emailAddress"][0].details } %}
+  {% endif %}
+
+  {% set primaryPhoneError = undefined %}
+  {% if errors.items["primaryPhone"] %}
+    {% set primaryPhoneError = { text: errors.items["primaryPhone"][0].details } %}
+  {% endif %}
+
+  {% set secondaryPhoneError = undefined %}
+  {% if errors.items["secondaryPhone"] %}
+    {% set secondaryPhoneError = { text: errors.items["secondaryPhone"][0].details } %}
+  {% endif %}
+
+  {% set thirdPartyDetailsError = undefined %}
+  {% if errors.items["otherDetails"] %}
+    {% set thirdPartyDetailsError = { text: errors.items["otherDetails"][0].details } %}
+  {% endif %}
+
+  <form method="post" action="{{ postUrl }}" id="jurorDetailsForm" >
+
+    <!-- Add or fix juror name -->
+    <div class="mod-juror-record__title govuk-body">
+      <h2 class="govuk-heading-m">Name</h2>
+      <div class="flex mod-flex mod-gap-x-4">
+        {% if isCourtUser or isTeamLeader %}
+          <a id="fixNameAnchor" href="{{ url(editNameRoute if editNameRoute else 'paper-reply.edit-name.get', {
+              id: details.jurorNumber,
+              type: replyMethod
+            }) }}?action=fix" class="govuk-link">
+            Fix error in current name
+          </a>
+        {% endif %}
+        <a id="newNameAnchor" href="{{ url(editNameRoute if editNameRoute else 'paper-reply.edit-name.get', {
+            id: details.jurorNumber,
+            type: replyMethod
+          }) }}?action=new" class="govuk-link">
+          Enter a new name
+        </a>
+      </div>
+    </div>
+    <div class="govuk-!-width-one-half">
+      <div>
+        <div role="label" class="govuk-label--s govuk-!-margin-bottom-2">Current</div>
+
+        {% set jurorName = [details.title, details.firstName, details.lastName] | join(' ') | capitalizeFully %}
+        <p class="govuk-body">{{ jurorName }}</p>
+        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+      </div>
+
+      {% if details.pendingFirstName %}
+        {% set pendingName = [details.pendingTitle, details.pendingFirstName, details.pendingLastName] %}
+        <div>
+          <div role="label" class="govuk-label--s govuk-!-margin-bottom-2">Pending approval</div>
+          <p class="govuk-body">{{ pendingName | join(' ') | capitalizeFully }}</p>
+          <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- change address --> 
+    <div class="mod-juror-record__title govuk-body">
+      <h2 class="govuk-heading-m">Address</h2>
+      <div class="flex mod-flex mod-gap-x-4">
+        <a 
+          id="addressChangeAnchor" 
+          href="{{ 
+            url(editAddressRoute if editAddressRoute else 'paper-reply.edit-address.get', 
+              { id: details.jurorNumber, type: summonType }) }}" 
+          class="govuk-link">
+          Change
+        </a>
+      </div>
+    </div>
+    <div class="govuk-!-width-one-half">
+      <div>
+        <p class="govuk-body">{{ jurorAddress | safe }}</p>
+        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+      </div>
+    </div>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-half">
+
+        {{ datePicker({
+          id: "dateOfBirth",
+          label: {
+              text: "Date of birth",
+              classes: "govuk-body govuk-!-font-weight-bold"
+          },
+          dateValue: details.dateOfBirth,
+          dateMax: dateMax,
+          dateError: dateOfBirthError.text
+        }) }}
+
+        {{ govukInput({
+          label: {
+            text: "Main phone - UK only (optional)"
+          },
+          classes: "govuk-!-width-one-half",
+          id: "primaryPhone",
+          name: "primaryPhone",
+          value: details.primaryPhone,
+          errorMessage: primaryPhoneError
+        }) }}
+
+        {{ govukInput({
+          label: {
+            text: "Alternative phone (optional)"
+          },
+          classes: "govuk-!-width-one-half",
+          id: "secondaryPhone",
+          name: "secondaryPhone",
+          value: details.secondaryPhone,
+          errorMessage: secondaryPhoneError
+        }) }}
+
+        {{ govukInput({
+          label: {
+            text: "Email (optional)"
+          },
+          id: "emailAddress",
+          name: "emailAddress",
+          type: "email",
+          attributes: {
+            maxlength: "254",
+            spellcheck: "false"
+          },
+          autocomplete: "off",
+          value: details.emailAddress,
+          errorMessage: emailAddressError
+        }) }}
+
+        {% if not noWelsh %}
+          {{ govukCheckboxes({
+            name: "welsh",
+            fieldset: {
+              legend: {
+                text: "Tick box if juror should get communications in Welsh (optional)",
+                classes: "govuk-fieldset__legend--m"
+              }
+            },
+            items: [
+              {
+                value: "true",
+                text: "Yes, send Welsh language communications",
+                checked: details.welsh
+              }
+            ]
+          }) }}
+        {% endif %}
+
+        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+        <h2 class="govuk-heading-m">If a third party replied on behalf of the juror, enter details</h2>
+        {{ govukInput({
+          id: "relationship",
+          name: "relationship",
+          type: "text",
+          label: {
+          text: "Relationship to juror",
+            attributes: {
+            "aria-label": "Enter the third party’s relationship with the juror"
+            }
+          },
+          value: details.thirdParty.relationship
+        }) }}
+
+        {% set otherDetailsHTML %}
+          {{ govukCharacterCount({
+            name: "otherDetails",
+            id: "otherDetails",
+            maxlength: 2000,
+            label: {
+              text: "Provide details"
+            },
+            value: details.thirdParty.thirdPartyReason,
+            errorMessage: thirdPartyDetailsError
+          }) }}
+        {% endset %}
+
+        {{ govukRadios({
+          name: "thirdPartyReason",
+          fieldset: {
+            legend: {
+              text: "Select reason why this person completed the summons reply on behalf of the juror",
+              isPageHeading: false,
+              classes: "govuk-fieldset__legend--s"
+            }
+          },
+          items: [
+            {
+              value: "Juror is not there",
+              text: "Juror is not there",
+              checked: details.thirdParty.thirdPartyReason === "Juror is not there"
+            },
+            {
+              value: "Juror is unable to reply by themselves",
+              text: "Juror is unable to reply by themselves",
+              checked: details.thirdParty.thirdPartyReason === "Juror is unable to reply by themselves"
+            },
+            {
+              value: "Deceased",
+              text: "Juror is deceased",
+              checked: details.thirdParty.thirdPartyReason === "Deceased"
+            },
+            {
+              value: "other",
+              text: "Other",
+              conditional: {
+                html: otherDetailsHTML
+              },
+              checked: details.otherThirdPartyReason
+            }
+          ]
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            attributes: {
+              id: "continueButton"
+            }
+          }) }}
+          <a id="replytypesCancelBtn" class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+
+      </div>
+    </div>
+  </form>
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+  <script type="text/javascript">
+    // clear otherdetails when other option is clicked.
+    $(document).ready(function(){
+      $('#thirdPartyReason-4').mousedown(function(e){
+        if(document.querySelector('input[name="thirdPartyReason"]:checked').value !== 'other') {
+          document.getElementById('otherDetails').value = '';
+        }
+      })
+    });
+    
+    $(document).ready(function () {
+      const datePickers = []
+        .slice
+        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
+      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
+    });
+  </script>
+{% endblock %}

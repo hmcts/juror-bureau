@@ -1,0 +1,63 @@
+{% extends "./layouts/default.njk" %}
+
+{% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
+
+{% block page_title %}
+  {{ serviceName }} - Your work - Completed
+{% endblock %}
+
+{% block page_identifier %}your work - completed{% endblock %}
+
+{% set currentApp = "Summons replies" %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <h1 class="govuk-heading-xl">Your work</h1>
+
+      {% include "includes/responses_navigation.njk" %}
+
+      {% if responses.counts.completed > 0 %}
+
+        <table class="govuk-table" data-module="moj-sortable-table">
+
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header" aria-sort="none">Juror number</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none">Juror name</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none">Court</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none">Date received</th>
+              <th scope="col" class="govuk-table__header" aria-sort="ascending">Date and time completed</th>
+            </tr>
+          </thead>
+
+          <tbody class="govuk-table__body">
+            {% for response in responses.items %}
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell">
+                  <a href="/response/{{ response.jurorNumber }}" class="govuk-link">{{ response.jurorNumber }}</a>
+                </td>
+                <td class="govuk-table__cell">{{ response.firstName }} {{ response.lastName }}</td>
+                <td class="govuk-table__cell">{{ response.courtName }}</td>
+                <td class="govuk-table__cell"  data-sort-value="{{response.receivedAt | dateFilter('DD/MM/YYYY', 'YYYYMMDD')}}">
+                  {{response.receivedAt | dateFilter("DD/MM/YYYY", "D MMM YYYY")}}
+                </td>
+                <td class="govuk-table__cell {% if response.slaOverdue %}jd-response-overdue{% endif %}" {% if response.slaOverdue %}title="Overdue"{% endif %} data-sort-value="{{(response.completedAt + ' ' + response.completedAtTime) | dateFilter("DD/MM/YYYY hh:mm", "YYYYMMDD hh:mm")}}">
+                  {{(response.completedAt + ' ' + response.completedAtTime) | dateFilter("DD/MM/YYYY hh:mm", "h:mma on D MMM YYYY")}}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+
+        </table> 
+
+      {% else %}
+        <p class="govuk-body">You have no completed replies.</p>
+      {% endif %}
+
+    </div>
+  </div>
+
+{% endblock %}

@@ -1,0 +1,60 @@
+form {
+
+  .form-group {
+    &--inline {
+      width: auto;
+    }
+  }
+
+  label[for="deferralDate"] {
+    pointer-events: none;
+  }
+}
+
+.form-group-close {
+  margin-bottom: 15px;
+}
+
+.block-label-center {
+  display: inline-block;
+  @media (min-width: 641px) {
+    float: none;
+  }
+}
+
+.input-icon-group {
+  input {
+    width: 25%;
+  }
+
+  .icon-item {
+    background-color: $panel-colour;
+    cursor: pointer;
+    display: inline-block;
+    left: -3px;
+    padding: 0 5px;
+    position: relative;
+    top: 6px;
+
+    .icon {
+      position: relative;
+      top: 3px;
+    }
+  }
+
+  @media screen and (min-width: 641px) {
+    .icon-item {
+      left: -4px;
+      padding: 2px 5px 1px 5px;
+      top: 5px;
+    }
+  }
+}
+
+textarea.modal-textarea {
+  border: 2px solid $color-black;
+  height: 141px;
+  margin: 32px auto 0;
+  max-width: 540px;
+  width: 80%;
+}

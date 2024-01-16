@@ -1,0 +1,60 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+
+    <table class="govuk-table" data-module="moj-sortable-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header" aria-sort="ascending">Date</th>
+          <th scope="col" class="govuk-table__header govuk-table__header--numeric" aria-sort="none">Checked in</th>
+          <th scope="col" class="govuk-table__header govuk-table__header--numeric" aria-sort="none">Checked out</th>
+          <th scope="col" class="govuk-table__header govuk-table__header--numeric" aria-sort="none">Hours</th>
+          <th scope="col" class="govuk-table__header govuk-table__header--numeric" aria-sort="none">Travel time</th>
+          <th scope="col" class="govuk-table__header govuk-table__header--numeric" aria-sort="none">Attendance</th>
+          <th scope="col" class="govuk-table__header"></th>{# 🤷 this column needs to exist in case we need to show a print document link #}
+          <th scope="col" class="govuk-table__header"></th>
+        </tr>
+      </thead>
+
+      <tbody class="govuk-table__body">
+
+        {% for day in attendance["juror_attendance_response_data"] %}
+          {% set attendanceDate = day["attendance_date"] | makeDate %}
+
+          <tr class="govuk-table__row {% if day['attendance_type'] === 'ABSENT' %}mod-highlight-table-row__grey{% endif %}">
+            <td class="govuk-table__cell" data-sort-value="{{ attendanceDate | dateFilter(null, "DD/MM/YYYY") }}">
+              {{ attendanceDate | dateFilter(null, "ddd D MMM YYYY") }}
+            </td>
+            <td class="govuk-table__cell govuk-table__cell--numeric">
+              {{ day["check_in_time"] | timeArrayToString | convert24to12 if day["check_in_time"] else "-" }}
+            </td>
+            <td class="govuk-table__cell govuk-table__cell--numeric">
+              {{ day["check_out_time"] | timeArrayToString | convert24to12 if day["check_out_time"] else "-" }}
+            </td>
+            <td class="govuk-table__cell govuk-table__cell--numeric">
+              {{ day["hours"] if day["hours"] else "-" }}
+            </td>
+            <td class="govuk-table__cell govuk-table__cell--numeric">
+              {{ day["travel_time"] if day["travel_time"] else "-" }}
+            </td>
+            <td class="govuk-table__cell govuk-table__cell--numeric">
+              {{ day["attendance_type"] | attendanceType }}
+            </td>
+            <td class="govuk-table__cell">
+              {% if day["attendance_type"] === "ABSENT" %}
+                <a href="#" class="govuk-link">Print FTA letter</a>
+              {% endif %}
+            </td>
+            <td class="govuk-table__cell govuk-table__cell--numeric">
+              <a class="govuk-link" href="{{ url('juror-record.attendance.change-times.get', { jurorNumber:  juror.commonDetails.jurorNumber}) }}?date={{ makeDate | dateFilter(null, "YYYY-MM-DD")}}">
+                Change
+                <span class="govuk-visually-hidden"> the juror attendance times</span>
+              </a>
+            </td>
+          </tr>
+
+        {% endfor %}
+      </tbody>
+    </table>
+
+  </div>
+</div>

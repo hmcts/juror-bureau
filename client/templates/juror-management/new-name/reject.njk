@@ -1,0 +1,42 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block beforeContent %}
+  {% include "includes/back-link.njk" %}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <form action="{{ postUrl }}" method="POST">
+
+        <span role="heading" aria-level="1" class="govuk-label--l">Confirm you want to reject this name change</span>
+
+        <p class="govuk-body govuk-!-margin-top-6">
+          Their name change request will be removed from their juror record.  Their original name will continue to be used.
+        </p>
+
+        <p class="govuk-body govuk-!-margin-top-6 govuk-!-margin-bottom-6">
+          If you need to, you can add a new name again to the juror’s details in the juror record.
+        </p>
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Reject name change",
+            type: "submit",
+            attributes: {
+              id: "rejectNameChangeButton"
+            }
+          }) }}
+
+          <a class="govuk-link" id="cancelAnchor" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+
+    </div>
+  </div>
+{% endblock %}

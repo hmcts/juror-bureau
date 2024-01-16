@@ -1,0 +1,48 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+
+{% block page_title %}
+  {{ serviceName }} - {{ subServiceName}}
+{% endblock %}
+
+{% block page_identifier %}{{ pageIdentifier }}{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form id="jurorNotesForm" action="{{ postUrl }}" method="post">
+
+        {{ govukTextarea({
+          name: "notes",
+          id: "notes",
+          label: {
+              text: "Notes (optional)",
+              classes: "govuk-label--l",
+              isPageHeading: true
+          },
+          hint: {
+              text: "These can only be seen by internal staff at HMCTS. The public cannot request to view them."
+          },
+          value: formFields.notes
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            attributes: {
+              id: "continueButton"
+            }
+          }) }}
+
+          <a id="cancelAnchor" class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+        <input type="hidden" id="_csrf" name="_csrf" value="{{ csrftoken }}" >
+      </form>
+    </div>
+  </div>
+
+{% endblock %}

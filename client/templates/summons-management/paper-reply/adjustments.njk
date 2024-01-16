@@ -1,0 +1,96 @@
+{% extends "../../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{% block page_title %}
+  {{ serviceName }} - paper response - reasonable adjustments
+{% endblock %}
+
+{% block page_identifier %}paper response - reasonable adjustments{% endblock %}
+
+{% block beforeContent %}
+  {% if backLinkUrl %}
+    {% include "includes/back-link.njk" %}
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+  {% set assistanceTypeDetailsError = undefined %}
+  {% if errors.items["assistanceTypeDetails"] %}
+    {% set assistanceTypeDetailsError = { text: errors.items["assistanceTypeDetails"][0].details } %}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <span class="govuk-caption-l">Enter summons reply</span>
+      <h1 class="govuk-heading-l">Reasonable adjustments</h1>
+
+      <form method="post" action="{{ postUrl }}" >
+        {% set adjustmentsReasonHTML %}
+          {{ govukSelect({
+            id: "adjustmentsReason",
+            name: "adjustmentsReason",
+            label: {
+              text: "Select reason"
+            },
+            items: reasons
+          }) }}
+
+          {{ govukCharacterCount({
+            name: "assistanceTypeDetails",
+            id: "assistanceTypeDetails",
+            maxlength: 2000,
+            classes: "govuk-!-width-two-thirds",
+            label: {
+              text: "What help does the juror need at court?"
+            },
+            value: assistanceTypeDetails,
+            errorMessage: assistanceTypeDetailsError
+          }) }}
+        {% endset %}
+
+        {{ govukRadios({
+          name: "adjustmentsResponse",
+          fieldset: {
+            legend: {
+              text: "Will the juror need extra support or facilities at court?",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          items: [
+            {
+              value: "yes",
+              text: "Yes",
+              checked: adjustmentsResponse.checked === true and adjustmentsResponse.value === "yes",
+              conditional: {
+                html: adjustmentsReasonHTML
+              }
+            },
+            {
+              value: "no",
+              text: "No",
+              checked: adjustmentsResponse.checked === true and adjustmentsResponse.value === "no"
+            }
+          ]
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            attributes: {
+              id: "continueButton"
+            }
+          }) }}
+          <a id="adjustmentsCancelBtn" class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+    </div>
+  </div>
+{% endblock %}

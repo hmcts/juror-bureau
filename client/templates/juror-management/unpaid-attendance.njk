@@ -1,0 +1,131 @@
+{% extends "layouts/default.njk" %}
+
+{% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "custom-components/macros/arrows.njk" import leftArrowSVG %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
+
+{% block page_title %}{{ serviceName }} - juror-management - unpaid attendance{% endblock %}
+{% block page_identifier %}juror-management - unpaid attendance{% endblock %}
+
+{% set currentApp = "Jurors" %}
+{% set nav = "unpaid-attendance" %}
+
+{% set filterByDate %}
+  <div class="filter-by-date">
+    <div class="additional-stats__row">
+      
+      {% set unpaidAttendanceFromDateError = undefined %}
+      {% set unpaidAttendanceToDateError = undefined %}
+      
+      {% if errors.items["unpaidAttendanceFromDate"] %}
+        {% set unpaidAttendanceFromDateError = errors.items["unpaidAttendanceFromDate"][0].details %}
+      {% endif %}
+      {% if errors.items["unpaidAttendanceToDate"] %}
+        {% set unpaidAttendanceToDateError = errors.items["unpaidAttendanceToDate"][0].details %}
+      {% endif %}
+
+      {{ datePicker({
+        id: "filterStartDate",
+        label: {
+          text: "Date from"
+        },
+        hint: "Use dd/mm/yyyy format.",
+        dateValue: filters.filterStartDate,
+        dateError: unpaidAttendanceFromDateError
+      }) }}
+
+      {{ datePicker({
+        id: "filterEndDate",
+        label: {
+          text: "Date to"
+        },
+        hint: "Use dd/mm/yyyy format.",
+        dateMin: filters.filterStartDate,
+        dateValue: filters.filterEndDate,
+        dateError: unpaidAttendanceToDateError
+      }) }}
+
+      <div class="govuk-button-group">
+        {{ govukButton({
+          type: "submit",
+          text: "Apply filter",
+          classes: "moj-search__button"
+        }) }}
+        <a class="govuk-link" href="{{ pageUrls.clearFilter }}">Clear filter</a>
+      </div>
+    </div>
+
+  </div>
+{% endset %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-l" id="attendanceDate">Unpaid Attendance</h1>
+      {% include "includes/errors.njk" %}
+
+      <form class="mod-filter-form" id="unpaidAttendanceForm" method="post">
+        {{ govukDetails({
+            summaryText: "Filter by date",
+            html: filterByDate,
+            id: "filterByDate"
+        }) }}
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+
+      {% if errors.items["selectedJurors"] %}
+        <div class="error-allocation">
+        <p class="govuk-error-message">{{ errors.items['selectedJurors'][0].details }}</p>
+        </div>
+      {% endif %}
+
+      {% if errors.items["selectedJurors"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
+
+            <span class="govuk-body govuk-!-font-weight-bold">
+              Showing {{totalAttendance}} jurors with unpaid attendance
+            </span>
+   {% if totalAttendance > 0 %}
+            {{ modSortableTable({
+              id: "unpaidAttendanceTable",
+              head: unpaidAttendanceList.head,
+              rows: unpaidAttendanceList.rows,
+              url: urlPrefix
+            }) }}
+
+            {{ govukPagination({
+              previous: {
+                href: pageItems.prev
+              },
+              next: {
+                href: pageItems.next
+              },
+              items: pageItems.items
+            }) }} 
+
+      {% endif %}
+
+      <input type="hidden" name="_csrf" id="csrfToken" value="{{ csrftoken }}">
+
+    </div>
+  </div>
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      const datePickers = []
+        .slice
+        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
+      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
+    });
+  </script>
+{% endblock %}

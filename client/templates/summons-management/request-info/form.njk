@@ -1,0 +1,200 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_title %}{{ serviceName }} - request juror info by post{% endblock %}
+
+{% block page_identifier %}juror - request info by post{% endblock %}
+
+{% set currentApp = "Summons replies" %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+  
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      {% set fieldsetContents %}
+        {{ govukCheckboxes({
+          name: "info-jurorDetails",
+          fieldset: {
+            legend: {
+              text: "Juror details",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          items: [
+            {
+              value: "DATE_OF_BIRTH",
+              text: "Date of birth",
+              checked: requestInfo['info-jurorDetails'].includes('DATE_OF_BIRTH') if requestInfo['info-jurorDetails']
+            },
+            {
+              value: "TELEPHONE_NO",
+              text: "Telephone number",
+              checked: requestInfo['info-jurorDetails'].includes('TELEPHONE_NO') if requestInfo['info-jurorDetails']
+            }
+          ]
+        }) }}
+
+        {{ govukCheckboxes({
+          name: "info-eligibility",
+          fieldset: {
+            legend: {
+              text: "Eligibility",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          items: [
+            {
+              value: "RESIDENCY",
+              html: '<span class="govuk-!-font-weight-bold">Residency</span>',
+              hint: {
+                text: "Have they lived in the UK, Channel Islands or Isle of Man for more than five consecutive years, since their 13th birthday?"
+              },
+              checked: requestInfo['info-eligibility'].includes('RESIDENCY') if requestInfo['info-eligibility']
+            },
+            {
+              value: "MENTAL_HEALTH_ACT",
+              html: '<span class="govuk-!-font-weight-bold">Mental Health Act</span>',
+              hint: {
+                text: "Are they detained (sectioned) or likely to be detained under the Mental Health Act 1983?"
+              },
+              checked: requestInfo['info-eligibility'].includes('MENTAL_HEALTH_ACT') if requestInfo['info-eligibility']
+            },
+            {
+              value: "MENTAL_CAPACITY_ACT",
+              html: '<span class="govuk-!-font-weight-bold">Mental Capacity Act</span>',
+              hint: {
+                text: "Do they lack capacity as stated in the Mental Capacity Act 2005?"
+              },
+              checked: requestInfo['info-eligibility'].includes('MENTAL_CAPACITY_ACT') if requestInfo['info-eligibility']
+            },
+            {
+              value: "BAIL",
+              html: '<span class="govuk-!-font-weight-bold">Bail</span>',
+              hint: {
+                text: "Are they on bail for a criminal offence"
+              },
+              checked: requestInfo['info-eligibility'].includes('BAIL') if requestInfo['info-eligibility']
+            },
+            {
+              value: "CONVICTIONS",
+              html: '<span class="govuk-!-font-weight-bold">Convictions</span>',
+              hint: {
+                text: "Have they been found guilty of a criminal offence and been given a prison sentence, community order or suspended prison sentence?"
+              },
+              checked: requestInfo['info-eligibility'].includes('CONVICTIONS') if requestInfo['info-eligibility']
+            }
+          ]
+        }) }}
+
+        {{ govukCheckboxes({
+          name: "info-replyType",
+          fieldset: {
+            legend: {
+              text: "Reply type",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          items: [
+            {
+              value: "SERVE_ON_DATE",
+              text: "Can the juror serve on the date shown in summons?",
+              checked: requestInfo['info-replyType'].includes('SERVE_ON_DATE') if requestInfo['info-replyType']
+            }
+          ]
+        }) }}
+
+        {{ govukCheckboxes({
+          name: "info-cjsEmployment",
+          fieldset: {
+            legend: {
+              text: "CJS employment",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          items: [
+            {
+              value: "CJS_EMPLOYMENT_5_YEARS",
+              text: "Has the juror worked in the criminal justice system in the last 5 years?",
+              checked: requestInfo['info-cjsEmployment'].includes('CJS_EMPLOYMENT_5_YEARS') if requestInfo['info-cjsEmployment']
+            }
+          ]
+        }) }}
+
+        {{ govukCheckboxes({
+          name: "info-reasonableAdjustments",
+          fieldset: {
+            legend: {
+              text: "Reasonable adjustments",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          items: [
+            {
+              value: "DISABILITY_OR_IMPAIRMENT",
+              text: "Does the juror have a disability or impairment that means they’ll need extra support or facilities at court?",
+              checked: requestInfo['info-reasonableAdjustments'].includes('DISABILITY_OR_IMPAIRMENT') if requestInfo['info-reasonableAdjustments']
+            }
+          ]
+        }) }}
+
+        {{ govukCheckboxes({
+          name: "info-signature",
+          fieldset: {
+            legend: {
+              text: "Signature",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          items: [
+            {
+              value: "SIGNATURE",
+              text: "The juror needs to sign their summons reply",
+              checked: requestInfo['info-signature'].includes('SIGNATURE') if requestInfo['info-signature']
+            }
+          ]
+        }) }}
+      {% endset %}
+
+      <form id="jurorInformationForm" action="#" method="POST">
+        <div class="govuk-form-group {% if errors.count > 0%}govuk-form-group--error{% endif %}">
+          <fieldset class="govuk-fieldset" role="group" aria-describedby="information information-error">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+              <span class="govuk-caption-l">{{ response.jurorName }}</span>
+              <h1 class="govuk-fieldset__heading">What information do you need from the juror?</h1>
+            </legend>
+
+            {% if errors.count > 0 %}
+              <p id="information-error" class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span> {{ errors.items["requestInfo"][0].details }}
+              </p>
+            {% endif %}
+            
+            {{ fieldsetContents | safe }}
+
+          </fieldset>
+        </div>
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            type: "submit",
+            text: "Continue",
+            attributes: {
+              id: "continueButton"
+            }
+          }) }}
+
+          <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+        <input type="hidden" id="csrfToken" name="_csrf" value="{{ csrftoken }}" />
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

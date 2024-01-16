@@ -1,0 +1,106 @@
+<div class="govuk-grid-row tabs" id="replyTabs">
+
+  {% if (response.excusalReason or response.deferralReason or response.deferralDate) %}
+    {% set deferralExcusalIndcator = true %}
+  {% else %}
+    {% set deferralExcusalIndcator = undefined %}
+  {% endif %}
+
+  <div class="govuk-grid-column-one-quarter">
+    <nav class="moj-side-navigation sidebar-navigation compact">
+      <ul class="moj-side-navigation__list font-small">
+        <li id="juror-details-section-menu-item" class="moj-side-navigation__item" data-target="jurorDetails" data-tabs="replyTabs">
+          <a href="#juror-details-section">Juror details
+            {% if importantNavItems.jurorDetails %}
+              <span id="jurorDetailsIndicator" class="jd-details-menu-indicator  jd-right-align">
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="5" r="5" fill="#1D70B8"/></svg>
+              </span>
+            {% endif %}
+          </a>
+        </li>
+        <li id="eligibility-section-menu-item" class="moj-side-navigation__item" data-target="eligibility" data-tabs="replyTabs">
+          <a href="#eligibility-section">Eligibility
+            {% if importantNavItems.eligibility %}
+              <span id="eligibilityIndicator" class="jd-details-menu-indicator  jd-right-align">
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="5" r="5" fill="#1D70B8"/></svg>
+              </span>
+            {% endif %}
+          </a>
+        </li>
+        <li id="deferral-excusal-section-menu-item" class="moj-side-navigation__item" data-target="deferralExcusal" data-tabs="replyTabs">
+          <a href="#deferral-excusal-section">Deferral or excusal
+            {% if importantNavItems.deferralExcusal %}
+              <span id="deferralExcusalIndicator" class="jd-details-menu-indicator  jd-right-align">
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="5" r="5" fill="#1D70B8"/></svg>
+              </span>
+            {% endif %}
+          </a>
+        </li>
+        <li id="cjs-employment-section-menu-item" class="moj-side-navigation__item" data-target="cjsEmployment" data-tabs="replyTabs">
+          <a href="#cjs-employment-section">CJS employment
+            {% if importantNavItems.cjsEmployment %}
+              <span id="cjsEmploymentIndicator" class="jd-details-menu-indicator  jd-right-align">
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="5" r="5" fill="#1D70B8"/></svg>
+              </span>
+            {% endif %}
+          </a>
+        </li>
+        <li id="adjustments-section-menu-item" class="moj-side-navigation__item" data-target="reasonable-adjustments" data-tabs="replyTabs">
+          <a href="#adjustments-section">Reasonable adjustments
+            {% if importantNavItems.adjustments %}
+              <span id="reasonableAdjustmentsIndicator" class="jd-details-menu-indicator  jd-right-align">
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="5" r="5" fill="#1D70B8"/></svg>
+              </span>
+            {% endif %}
+          </a>
+        </li>
+        {% if hasModAccess and method === "paper" %}
+          <li id="signature-section-menu-item" class="moj-side-navigation__item" data-target="signature" data-tabs="replyTabs">
+            <a href="#adjustments-section">Signature
+              {% if importantNavItems.signature %}
+                <span id="signatureIndicator" class="jd-details-menu-indicator  jd-right-align">
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="5" r="5" fill="#1D70B8"/></svg>
+                </span>
+              {% endif %}
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+
+
+  {#
+  {% include "./_partials/update.njk" %}
+  #}
+   
+  </div>
+
+  <div class="govuk-grid-column-three-quarters">
+    <div class="tab-content active" id="jurorDetails" data-tabs="replyTabs">
+      {% include "./_partials/juror-details.njk" %}
+    </div>
+
+    <div class="tab-content" id="eligibility" data-tabs="replyTabs">
+      {% include "./_partials/eligibility.njk" %}
+    </div>
+
+    <div class="tab-content" id="deferralExcusal" data-tabs="replyTabs">
+      {% include "./_partials/deferral-excusal.njk" %}
+    </div>
+
+    <div class="tab-content" id="cjsEmployment" data-tabs="replyTabs">
+      {% include "./_partials/cjs-employment.njk" %}
+    </div>
+
+    <div class="tab-content" id="reasonable-adjustments" data-tabs="replyTabs">
+      {% include "./_partials/reasonable-adjustments.njk" %}
+    </div>
+
+    {% if hasModAccess and method === "paper" %}
+      <div class="tab-content" id="signature" data-tabs="replyTabs">
+        {% include "summons-management/_partials/signature.njk" %}
+      </div>
+    {% endif %}
+  </div>
+
+</div>

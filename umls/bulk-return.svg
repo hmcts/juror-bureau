@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="1454px" preserveAspectRatio="none" style="width:4554px;height:1454px;background:#FFFFFF;" version="1.1" viewBox="0 0 4554 1454" width="4554px" zoomAndPan="magnify"><defs/><g><rect fill="none" height="60.6211" style="stroke:#000000;stroke-width:1.5;" width="4528" x="20" y="99.2871"/><rect fill="none" height="134.5527" style="stroke:#000000;stroke-width:1.5;" width="4377" x="20" y="261.8398"/><rect fill="none" height="105.2422" style="stroke:#000000;stroke-width:1.5;" width="4377" x="20" y="615.5664"/><rect fill="none" height="431.6582" style="stroke:#000000;stroke-width:1.5;" width="4237" x="10" y="734.8086"/><rect fill="none" height="75.9316" style="stroke:#000000;stroke-width:1.5;" width="1922" x="2315" y="993.6035"/><rect fill="none" height="75.9316" style="stroke:#000000;stroke-width:1.5;" width="2479" x="20" y="1083.5352"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="55" x2="55" y1="52.9766" y2="1447.2617"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="260" x2="260" y1="52.9766" y2="1447.2617"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="612" x2="612" y1="52.9766" y2="1447.2617"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1007" x2="1007" y1="52.9766" y2="1447.2617"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1441" x2="1441" y1="52.9766" y2="1447.2617"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1864" x2="1864" y1="52.9766" y2="1447.2617"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="2195" x2="2195" y1="52.9766" y2="1447.2617"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="2407" x2="2407" y1="52.9766" y2="1447.2617"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="2628" x2="2628" y1="52.9766" y2="1447.2617"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="2951" x2="2951" y1="52.9766" y2="1447.2617"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="3327" x2="3327" y1="52.9766" y2="1447.2617"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="3692" x2="3692" y1="52.9766" y2="1447.2617"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="3963" x2="3963" y1="52.9766" y2="1447.2617"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="4144" x2="4144" y1="52.9766" y2="1447.2617"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="4312" x2="4312" y1="52.9766" y2="1447.2617"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="4467" x2="4467" y1="52.9766" y2="1447.2617"/><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="51" x="30" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="37" x="37" y="42.0234">Actor</text><rect fill="#B0C4DE" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="339" x="91" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="325" x="98" y="25.5352">«/trial-management/trials/:trialNumber/detail»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="105" x="208" y="42.0234">JuryDetailsPage</text><rect fill="#B0C4DE" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="344" x="440" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="330" x="447" y="25.5352">«/trial-management/trials/:trialNumber/return»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="75" x="574.5" y="42.0234">ReturnPost</text><rect fill="#B0C4DE" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="427" x="794" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="413" x="801" y="25.5352">«/trial-management/trials/:trialNumber/return/attendance»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="159" x="928" y="42.0234">HandleAttendancePage</text><rect fill="#B0C4DE" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="421" x="1231" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="407" x="1238" y="25.5352">«/trial-management/trials/:trialNumber/return/check-out»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="100" x="1391.5" y="42.0234">CheckOutPage</text><rect fill="#B0C4DE" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="404" x="1662" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="390" x="1669" y="25.5352">«/trial-management/trials/:trialNumber/return/confirm»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="135" x="1796.5" y="42.0234">ReturnConfirmPage</text><rect fill="#FFFFE0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="239" x="2076" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="225" x="2083" y="25.5352">«trial-management.controller.js»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="190" x="2100.5" y="42.0234">TrialManagementController</text><rect fill="#FFFFE0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="164" x="2325" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="150" x="2332" y="25.5352">«returns.controller.js»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="116" x="2349" y="42.0234">ReturnController</text><rect fill="#E6E6FA" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="258" x="2499" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="244" x="2506" y="25.5352">«trial-management/trial-detail.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="141" x="2557.5" y="42.0234">TrialDetailsTemplate</text><rect fill="#E6E6FA" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="369" x="2767" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="355" x="2774" y="25.5352">«trial-management/returns/return-attendance.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="190" x="2856.5" y="42.0234">HandleAttendanceTemplate</text><rect fill="#E6E6FA" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="363" x="3146" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="349" x="3153" y="25.5352">«trial-management/returns/return-check-out.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="131" x="3262" y="42.0234">CheckOutTemplate</text><rect fill="#E6E6FA" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="346" x="3519" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="332" x="3526" y="25.5352">«trial-management/returns/confirm-return.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="166" x="3609" y="42.0234">ReturnConfirmTemplate</text><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="177" x="3875" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="163" x="3882" y="42.0234">CheckOutTimeValidator</text><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="165" x="4062" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="151" x="4069" y="42.0234">CheckInTimeValidator</text><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="150" x="4237" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="136" x="4244" y="42.0234">JurorSelectValidator</text><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="141" x="4397" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="127" x="4404" y="42.0234">BackendController</text><polygon fill="#181818" points="248.5,80.2871,258.5,84.2871,248.5,88.2871" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="55.5" x2="254.5" y1="84.2871" y2="84.2871"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="81" x="117.5" y="79.5449">request page</text><path d="M20,99.2871 L369,99.2871 L369,106.5977 L359,116.5977 L20,116.5977 L20,99.2871 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="60.6211" style="stroke:#000000;stroke-width:1.5;" width="4528" x="20" y="99.2871"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="304" x="35" y="112.8555">TrialDetails : Trial details standard page load</text><ellipse cx="260" cy="121.8477" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.5;"/><line style="stroke:#181818;stroke-width:2.0;" x1="4449.5" x2="4459.5" y1="117.5977" y2="127.5977"/><line style="stroke:#181818;stroke-width:2.0;" x1="4449.5" x2="4459.5" y1="127.5977" y2="117.5977"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="264.5" x2="4454.5" y1="122.5977" y2="122.5977"/><polygon fill="#181818" points="66.5,147.9082,56.5,151.9082,66.5,155.9082" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="60.5" x2="2194.5" y1="151.9082" y2="151.9082"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="1085.5" y="147.166">render HTML</text><polygon fill="#181818" points="600,184.2188,610,188.2188,600,192.2188" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="55.5" x2="606" y1="188.2188" y2="188.2188"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="100" x="283.75" y="183.4766">POST from form</text><polygon fill="#181818" points="2395,213.5293,2405,217.5293,2395,221.5293" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="612" x2="2401" y1="217.5293" y2="217.5293"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="121" x="1449" y="212.7871">call page controller</text><polygon fill="#181818" points="4300,242.8398,4310,246.8398,4300,250.8398" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2407" x2="4306" y1="246.8398" y2="246.8398"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="147" x="3286" y="242.0977">ensure juror is selected</text><path d="M20,261.8398 L82,261.8398 L82,269.1504 L72,279.1504 L20,279.1504 L20,261.8398 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="134.5527" style="stroke:#000000;stroke-width:1.5;" width="4377" x="20" y="261.8398"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="35" y="275.4082">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="110" x="97" y="274.4746">[No jurors selected]</text><polygon fill="#181818" points="2418,296.4609,2408,300.4609,2418,304.4609" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2412" x2="4311" y1="300.4609" y2="300.4609"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="113" x="3303" y="295.7188">no jurors selected</text><polygon fill="#181818" points="271.5,325.7715,261.5,329.7715,271.5,333.7715" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="265.5" x2="2406" y1="329.7715" y2="329.7715"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="145" x="1261.25" y="325.0293">redirect to details page</text><ellipse cx="260" cy="358.332" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.5;"/><polygon fill="#181818" points="277,355.082,267,359.082,277,363.082" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="275" x2="2627" y1="359.082" y2="359.082"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="105" x="1391.75" y="354.3398">render with error</text><polygon fill="#181818" points="66.5,384.3926,56.5,388.3926,66.5,392.3926" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="60.5" x2="2194.5" y1="388.3926" y2="388.3926"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="1085.5" y="383.6504">render HTML</text><polygon fill="#181818" points="2418,420.7031,2408,424.7031,2418,428.7031" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2412" x2="4311" y1="424.7031" y2="424.7031"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="57" x="3331" y="419.9609">validated</text><ellipse cx="1007" cy="453.2637" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.5;"/><polygon fill="#181818" points="1024,450.0137,1014,454.0137,1024,458.0137" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1022" x2="2406" y1="454.0137" y2="454.0137"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="172" x="1621.25" y="449.2715">redirect to attendance page</text><polygon fill="#181818" points="2939.5,479.3242,2949.5,483.3242,2939.5,487.3242" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2407" x2="2945.5" y1="483.3242" y2="483.3242"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="2594.75" y="478.582">request and build template</text><polygon fill="#181818" points="2418,508.6348,2408,512.6348,2418,516.6348" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2412" x2="2950.5" y1="512.6348" y2="512.6348"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="2640.25" y="507.8926">return HTML</text><polygon fill="#181818" points="66.5,537.9453,56.5,541.9453,66.5,545.9453" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="60.5" x2="2406" y1="541.9453" y2="541.9453"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="1191.25" y="537.2031">render HTML</text><polygon fill="#181818" points="995.5,567.2559,1005.5,571.2559,995.5,575.2559" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="55.5" x2="1001.5" y1="571.2559" y2="571.2559"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="100" x="481.5" y="566.5137">POST from form</text><polygon fill="#181818" points="2395,596.5664,2405,600.5664,2395,604.5664" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1007.5" x2="2401" y1="600.5664" y2="600.5664"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="121" x="1646.75" y="595.8242">call page controller</text><path d="M20,615.5664 L82,615.5664 L82,622.877 L72,632.877 L20,632.877 L20,615.5664 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="105.2422" style="stroke:#000000;stroke-width:1.5;" width="4377" x="20" y="615.5664"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="35" y="629.1348">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="112" x="97" y="628.2012">[No option selected]</text><polygon fill="#181818" points="2418,650.1875,2408,654.1875,2418,658.1875" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2412" x2="4311" y1="654.1875" y2="654.1875"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="113" x="3303" y="649.4453">no jurors selected</text><ellipse cx="1007" cy="682.748" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.5;"/><polygon fill="#181818" points="1024,679.498,1014,683.498,1024,687.498" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="1022" x2="2950.5" y1="683.498" y2="683.498"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="105" x="1927" y="678.7559">render with error</text><polygon fill="#181818" points="66.5,708.8086,56.5,712.8086,66.5,716.8086" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="60.5" x2="2194.5" y1="712.8086" y2="712.8086"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="1085.5" y="708.0664">render HTML</text><path d="M10,734.8086 L72,734.8086 L72,742.1191 L62,752.1191 L10,752.1191 L10,734.8086 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="431.6582" style="stroke:#000000;stroke-width:1.5;" width="4237" x="10" y="734.8086"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="25" y="748.377">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="162" x="87" y="747.4434">[Confirm service is selected]</text><ellipse cx="1441" cy="772.6797" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.5;"/><polygon fill="#181818" points="1458,769.4297,1448,773.4297,1458,777.4297" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1456" x2="2406" y1="773.4297" y2="773.4297"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="165" x="1841.75" y="768.6875">redirect to check out page</text><polygon fill="#181818" points="3315.5,798.7402,3325.5,802.7402,3315.5,806.7402" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2407" x2="3321.5" y1="802.7402" y2="802.7402"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="2782.75" y="797.998">request and build template</text><polygon fill="#181818" points="2418,828.0508,2408,832.0508,2418,836.0508" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2412" x2="3326.5" y1="832.0508" y2="832.0508"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="2828.25" y="827.3086">return HTML</text><polygon fill="#181818" points="66.5,857.3613,56.5,861.3613,66.5,865.3613" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="60.5" x2="2406" y1="861.3613" y2="861.3613"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="1191.25" y="856.6191">render HTML</text><polygon fill="#181818" points="1429.5,886.6719,1439.5,890.6719,1429.5,894.6719" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="55.5" x2="1435.5" y1="890.6719" y2="890.6719"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="100" x="698.5" y="885.9297">POST from form</text><polygon fill="#181818" points="2395,915.9824,2405,919.9824,2395,923.9824" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1441.5" x2="2401" y1="919.9824" y2="919.9824"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="121" x="1863.75" y="915.2402">call page controller</text><polygon fill="#181818" points="3951.5,945.293,3961.5,949.293,3951.5,953.293" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2407" x2="3957.5" y1="949.293" y2="949.293"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="220" x="3075.25" y="944.5508">validate check out time form fields</text><polygon fill="#181818" points="2418,974.6035,2408,978.6035,2418,982.6035" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2412" x2="3962.5" y1="978.6035" y2="978.6035"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="102" x="3134.25" y="973.8613">validation result</text><path d="M2315,993.6035 L2377,993.6035 L2377,1000.9141 L2367,1010.9141 L2315,1010.9141 L2315,993.6035 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="75.9316" style="stroke:#000000;stroke-width:1.5;" width="1922" x="2315" y="993.6035"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="2330" y="1007.1719">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="236" x="2392" y="1006.2383">[Some jurors do not have a check in time]</text><polygon fill="#181818" points="4132.5,1028.2246,4142.5,1032.2246,4132.5,1036.2246" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2407" x2="4138.5" y1="1032.2246" y2="1032.2246"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="220" x="3165.75" y="1027.4824">validate check out time form fields</text><polygon fill="#181818" points="2418,1057.5352,2408,1061.5352,2418,1065.5352" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2412" x2="4143.5" y1="1061.5352" y2="1061.5352"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="102" x="3224.75" y="1056.793">validation result</text><path d="M20,1083.5352 L82,1083.5352 L82,1090.8457 L72,1100.8457 L20,1100.8457 L20,1083.5352 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="75.9316" style="stroke:#000000;stroke-width:1.5;" width="2479" x="20" y="1083.5352"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="35" y="1097.1035">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="130" x="97" y="1096.1699">[Either validation fails]</text><ellipse cx="1441" cy="1121.4063" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.5;"/><polygon fill="#181818" points="1458,1118.1563,1448,1122.1563,1458,1126.1563" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="1456" x2="2406" y1="1122.1563" y2="1122.1563"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="105" x="1871.75" y="1117.4141">render with error</text><polygon fill="#181818" points="66.5,1147.4668,56.5,1151.4668,66.5,1155.4668" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="60.5" x2="2406" y1="1151.4668" y2="1151.4668"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="1191.25" y="1146.7246">render HTML</text><polygon fill="#181818" points="1875,1190.7773,1865,1194.7773,1875,1198.7773" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1869" x2="2406" y1="1194.7773" y2="1194.7773"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="201" x="2035" y="1190.0352">redirect directly to confirmation</text><polygon fill="#181818" points="2395,1220.0879,2405,1224.0879,2395,1228.0879" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1864" x2="2401" y1="1224.0879" y2="1224.0879"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="87" x="2092" y="1219.3457">call controller</text><polygon fill="#181818" points="3680,1249.3984,3690,1253.3984,3680,1257.3984" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2407" x2="3686" y1="1253.3984" y2="1253.3984"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="2965" y="1248.6563">request and build template</text><polygon fill="#181818" points="2418,1278.709,2408,1282.709,2418,1286.709" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2412" x2="3691" y1="1282.709" y2="1282.709"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="3010.5" y="1277.9668">return HTML</text><polygon fill="#181818" points="66.5,1308.0195,56.5,1312.0195,66.5,1316.0195" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="60.5" x2="2406" y1="1312.0195" y2="1312.0195"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="1191.25" y="1307.2773">render HTML</text><polygon fill="#181818" points="1852,1337.3301,1862,1341.3301,1852,1345.3301" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="55.5" x2="1858" y1="1341.3301" y2="1341.3301"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="100" x="909.75" y="1336.5879">POST from form</text><polygon fill="#181818" points="2395,1366.6406,2405,1370.6406,2395,1374.6406" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1864" x2="2401" y1="1370.6406" y2="1370.6406"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="87" x="2092" y="1365.8984">call controller</text><line style="stroke:#181818;stroke-width:2.0;" x1="62.5" x2="72.5" y1="1394.9512" y2="1404.9512"/><line style="stroke:#181818;stroke-width:2.0;" x1="62.5" x2="72.5" y1="1404.9512" y2="1394.9512"/><line style="stroke:#181818;stroke-width:2.0;" x1="4449.5" x2="4459.5" y1="1394.9512" y2="1404.9512"/><line style="stroke:#181818;stroke-width:2.0;" x1="4449.5" x2="4459.5" y1="1404.9512" y2="1394.9512"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="67.5" x2="4454.5" y1="1399.9512" y2="1399.9512"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="189" x="2167" y="1395.209">No backend handled currently</text><ellipse cx="260" cy="1428.5117" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.5;"/><polygon fill="#181818" points="277,1425.2617,267,1429.2617,277,1433.2617" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="275" x2="2406" y1="1429.2617" y2="1429.2617"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="195" x="1236.25" y="1424.5195">Redirect with success message</text><!--MD5=[8541d0d210adbd0f38c9ad379b113ea3]
+@startuml bulk-return
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant JuryDetailsPage <</trial-management/trials/:trialNumber/detail>> #lightsteelblue
+participant ReturnPost <</trial-management/trials/:trialNumber/return>> #lightsteelblue
+participant HandleAttendancePage <</trial-management/trials/:trialNumber/return/attendance>> #lightsteelblue
+participant CheckOutPage <</trial-management/trials/:trialNumber/return/check-out>> #lightsteelblue
+participant ReturnConfirmPage <</trial-management/trials/:trialNumber/return/confirm>> #lightsteelblue
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant TrialManagementController <<trial-management.controller.js>> #lightyellow
+participant ReturnController <<returns.controller.js>> #lightyellow
+
+''' TEMPLATES
+participant TrialDetailsTemplate <<trial-management/trial-detail.njk>> #lavender
+participant HandleAttendanceTemplate <<trial-management/returns/return-attendance.njk>> #lavender
+participant CheckOutTemplate <<trial-management/returns/return-check-out.njk>> #lavender
+participant ReturnConfirmTemplate <<trial-management/returns/confirm-return.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant CheckOutTimeValidator
+participant CheckInTimeValidator
+participant JurorSelectValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+Actor -> JuryDetailsPage : request page
+
+group TrialDetails : Trial details standard page load
+  JuryDetailsPage o- -x BackendController
+  Actor <- TrialManagementController : render HTML
+end
+
+Actor -> ReturnPost : POST from form
+ReturnPost -> ReturnController : call page controller
+ReturnController -> JurorSelectValidator : ensure juror is selected
+
+alt No jurors selected
+  ReturnController <- - JurorSelectValidator : no jurors selected
+  JuryDetailsPage <- - ReturnController : redirect to details page
+  JuryDetailsPage o<- - TrialDetailsTemplate : render with error
+  Actor <- - TrialManagementController : render HTML
+end
+
+ReturnController <- JurorSelectValidator : validated
+HandleAttendancePage o<- ReturnController : redirect to attendance page
+ReturnController -> HandleAttendanceTemplate : request and build template
+ReturnController <- HandleAttendanceTemplate : return HTML
+Actor <- ReturnController : render HTML
+
+Actor -> HandleAttendancePage : POST from form
+HandleAttendancePage -> ReturnController : call page controller
+
+alt No option selected
+  ReturnController <- - JurorSelectValidator : no jurors selected
+  HandleAttendancePage o<- - HandleAttendanceTemplate : render with error
+  Actor <- - TrialManagementController : render HTML
+end
+
+alt Confirm service is selected
+  CheckOutPage o<- ReturnController : redirect to check out page
+  ReturnController -> CheckOutTemplate : request and build template
+  ReturnController <- CheckOutTemplate : return HTML
+  Actor <- ReturnController : render HTML
+
+  Actor -> CheckOutPage : POST from form
+  CheckOutPage -> ReturnController : call page controller
+  ReturnController -> CheckOutTimeValidator : validate check out time form fields
+  ReturnController <- CheckOutTimeValidator : validation result
+
+  alt Some jurors do not have a check in time
+    ReturnController -> CheckInTimeValidator : validate check out time form fields
+    ReturnController <- CheckInTimeValidator : validation result
+  end
+
+  alt Either validation fails
+    CheckOutPage o<- - ReturnController : render with error
+    Actor <- - ReturnController : render HTML
+  end
+end
+
+ReturnConfirmPage <- ReturnController : redirect directly to confirmation
+ReturnConfirmPage -> ReturnController : call controller
+ReturnController -> ReturnConfirmTemplate : request and build template
+ReturnController <- ReturnConfirmTemplate : return HTML
+Actor <- ReturnController : render HTML
+
+Actor -> ReturnConfirmPage : POST from form
+ReturnConfirmPage -> ReturnController : call controller
+
+Actor x<- ->x BackendController : No backend handled currently
+' // TODO Hit data access object
+' // TODO Hit backend
+' // TODO Handle response
+
+JuryDetailsPage o<- ReturnController : Redirect with success message
+
+@end
+
+@startuml bulk-return
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+participant JuryDetailsPage <</trial-management/trials/:trialNumber/detail>> #lightsteelblue
+participant ReturnPost <</trial-management/trials/:trialNumber/return>> #lightsteelblue
+participant HandleAttendancePage <</trial-management/trials/:trialNumber/return/attendance>> #lightsteelblue
+participant CheckOutPage <</trial-management/trials/:trialNumber/return/check-out>> #lightsteelblue
+participant ReturnConfirmPage <</trial-management/trials/:trialNumber/return/confirm>> #lightsteelblue
+
+participant TrialManagementController <<trial-management.controller.js>> #lightyellow
+participant ReturnController <<returns.controller.js>> #lightyellow
+
+participant TrialDetailsTemplate <<trial-management/trial-detail.njk>> #lavender
+participant HandleAttendanceTemplate <<trial-management/returns/return-attendance.njk>> #lavender
+participant CheckOutTemplate <<trial-management/returns/return-check-out.njk>> #lavender
+participant ReturnConfirmTemplate <<trial-management/returns/confirm-return.njk>> #lavender
+
+participant CheckOutTimeValidator
+participant CheckInTimeValidator
+participant JurorSelectValidator
+
+participant BackendController
+
+
+Actor -> JuryDetailsPage : request page
+
+group TrialDetails : Trial details standard page load
+  JuryDetailsPage o- -x BackendController
+  Actor <- TrialManagementController : render HTML
+end
+
+Actor -> ReturnPost : POST from form
+ReturnPost -> ReturnController : call page controller
+ReturnController -> JurorSelectValidator : ensure juror is selected
+
+alt No jurors selected
+  ReturnController <- - JurorSelectValidator : no jurors selected
+  JuryDetailsPage <- - ReturnController : redirect to details page
+  JuryDetailsPage o<- - TrialDetailsTemplate : render with error
+  Actor <- - TrialManagementController : render HTML
+end
+
+ReturnController <- JurorSelectValidator : validated
+HandleAttendancePage o<- ReturnController : redirect to attendance page
+ReturnController -> HandleAttendanceTemplate : request and build template
+ReturnController <- HandleAttendanceTemplate : return HTML
+Actor <- ReturnController : render HTML
+
+Actor -> HandleAttendancePage : POST from form
+HandleAttendancePage -> ReturnController : call page controller
+
+alt No option selected
+  ReturnController <- - JurorSelectValidator : no jurors selected
+  HandleAttendancePage o<- - HandleAttendanceTemplate : render with error
+  Actor <- - TrialManagementController : render HTML
+end
+
+alt Confirm service is selected
+  CheckOutPage o<- ReturnController : redirect to check out page
+  ReturnController -> CheckOutTemplate : request and build template
+  ReturnController <- CheckOutTemplate : return HTML
+  Actor <- ReturnController : render HTML
+
+  Actor -> CheckOutPage : POST from form
+  CheckOutPage -> ReturnController : call page controller
+  ReturnController -> CheckOutTimeValidator : validate check out time form fields
+  ReturnController <- CheckOutTimeValidator : validation result
+
+  alt Some jurors do not have a check in time
+    ReturnController -> CheckInTimeValidator : validate check out time form fields
+    ReturnController <- CheckInTimeValidator : validation result
+  end
+
+  alt Either validation fails
+    CheckOutPage o<- - ReturnController : render with error
+    Actor <- - ReturnController : render HTML
+  end
+end
+
+ReturnConfirmPage <- ReturnController : redirect directly to confirmation
+ReturnConfirmPage -> ReturnController : call controller
+ReturnController -> ReturnConfirmTemplate : request and build template
+ReturnController <- ReturnConfirmTemplate : return HTML
+Actor <- ReturnController : render HTML
+
+Actor -> ReturnConfirmPage : POST from form
+ReturnConfirmPage -> ReturnController : call controller
+
+Actor x<- ->x BackendController : No backend handled currently
+
+JuryDetailsPage o<- ReturnController : Redirect with success message
+
+@end
+
+PlantUML version 1.2022.7(Mon Aug 22 18:01:30 BST 2022)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

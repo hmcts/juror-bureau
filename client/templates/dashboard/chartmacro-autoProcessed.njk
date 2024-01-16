@@ -1,0 +1,138 @@
+{% macro dashboardAutoProcessed(params) %}
+
+  {% set chartHeading = "" %}
+
+  {% set chartColourA = '#28a197' %} {# Turqouse #}
+  {% set chartColourB = '#5694ca' %} {# Blue #}
+  {% set chartColourC = '#b1b4b6' %} {# Mid Grey #}
+  {% set chartColourD = '#f47738' %} {# Orange #}
+  {% set chartColourE = '#d4351c' %} {# Red #}
+
+  {% if params.labels.length == 1 %}
+    {% set chartColourA = '#5694ca' %} {# Blue #}
+    {% set chartColourB = '#f3f2f1' %} {# Light Grey #}
+  {% endif %}
+
+  {% if params.labels.length == 2 %}
+    {% set chartColourA = '#5694ca' %} {# Blue #}
+    {% set chartColourB = '#f499be' %} {# Pink #}
+  {% endif %}
+
+  {% if params.values.length == 3 %}
+    {% set chartColourA = '#5694ca' %} {# Blue #}
+    {% set chartColourB = '#85994b' %} {# Light Green #}
+    {% set chartColourC = '#f499be' %} {# Pink #}
+  {% endif %}
+
+  {% if params.chartHeading %}
+    {% set chartHeading = params.chartHeading %}
+  {% endif %}
+
+  <div {%- if params.id %} id="{{params.id}}Details"{% endif %} class="govuk-details {%- if params.classes %} {{ params.classes }}{% endif %}" {%- for attribute, value in params.attributes %} {{attribute}}="{{value}}"{% endfor %}>
+    
+    <div class="govuk-heading-l" id="chartHeading">
+      {{ chartHeading }}
+      {% if params.showTotal %}
+        <p id="formattedTotal">{{ params.totalFormatted }}</p>
+      {% else %}
+      <p>&nbsp;</p>
+      {% endif %}
+    </div>
+    
+    {% for i in range(0, params.labels.length) -%}
+      <div class="govuk-grid-column-one-half">
+        <p class="govuk-!-font-weight-bold" id="label{{ i + 1  }}">{{ params.labels[i] }}</p>
+        <p class="govuk-!-font-weight-bold" id="formattedValue{{ i + 1 }}">{{ params.valuesFormatted[i] }}</p>
+      </div>
+    {%- endfor %}
+
+  </div>
+
+  <div class="govuk-grid-column-full">
+    <div class="canvas-div">
+      <canvas class="dashboard-chart" id="{{params.id}}Chart" name="{{params.id}}Chart"/>
+    </div>
+  </div>
+
+  {% if params.guidanceText %}
+    <p class="govuk-body-m" id="guidanceText">{{ params.guidanceText }}</p>
+  {% endif %}
+
+  
+  <script>
+    var labelArr =  ("{{params.labels}}").split(",");
+    var legendArr =  ("{{params.labels}}").split(",");
+    var valueArr =  [("{{params.values}}").split(",")[0], 0];
+    var valueArrFormatted =  ("{{params.valuesFormatted}}").split(",");
+    var percArr =  ("{{params.valuesPerc}}").split(",");
+    var can = document.getElementById('{{params.id}}Chart')
+    var ctx = document.getElementById('{{params.id}}Chart').getContext('2d');
+    var arrLength = labelArr.length;
+    for (var i = 0; i < arrLength; i++) {
+        legendArr[i] = labelArr[i];
+    }
+
+    Chart.defaults.global.defaultFontSize = 15;
+
+    var dbChart = new Chart(ctx, {
+        type: 'doughnut',
+        options: {
+          legend: {
+            display: true,
+            position: 'left',
+            labels: {
+              fontStyle: 'bold',
+              fontColor: '#000'
+            }
+          }
+        },
+        data: {
+            labels: legendArr,
+            datasets: [{
+                data: valueArr,
+                backgroundColor: [
+                    '{{chartColourA}}',
+                    '{{chartColourB}}',
+                    '{{chartColourC}}',
+                    '{{chartColourD}}',
+                    '{{chartColourE}}',
+                ],
+                borderColor: [
+                    'rgba(255, 255, 255, 1)',
+                    'rgba(255, 255, 255, 1)',
+                    'rgba(255, 255, 255, 1)',
+                    'rgba(255, 255, 255, 1)',
+                    'rgba(255, 255, 255, 1)',
+                ],
+                borderWidth: 5
+            }],
+            
+        },
+        plugins: [{
+            beforeInit: function(chart) {
+              chart.data.labels.forEach(function(e, i, a) {
+                  if (/\n/.test(e)) {
+                    a[i] = e.split(/\n/);
+                  }
+              });
+            }
+        }]
+
+    });
+
+    function addCommas(nStr)
+    {
+        nStr += '';
+        x = nStr.split('.');
+        x1 = x[0];
+        x2 = x.length > 1 ? '.' + x[1] : '';
+        var rgx = /(\d+)(\d{3})/;
+        while (rgx.test(x1)) {
+            x1 = x1.replace(rgx, '$1' + ',' + '$2');
+        }
+        return x1 + x2;
+    }
+  </script>
+  
+
+{% endmacro %}

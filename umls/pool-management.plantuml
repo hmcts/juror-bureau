@@ -1,0 +1,59 @@
+@startuml pool-management
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant Page <</pool-management>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant PoolManagementController <<pool-management.controller.js>>
+participant CourtsObject <<fetchCourts.get()>>
+participant PoolRequestsObject <<poolRequests.get()>>
+
+''' TEMPLATES
+participant PageTemplate <<pool-management/index.njk>>
+
+''' FILTERS AND VALIDATORS
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+
+''' JOURNEY FLOW
+Actor -> Page : request page
+
+Page -> PoolManagementController : call page controller
+
+PoolManagementController -> CourtsObject : call requestObject
+CourtsObject -> BackendController : fetchData
+alt Backend returns an error
+  CourtsObject <-- BackendController : error response
+end
+CourtsObject <- BackendController : returnData
+PoolManagementController <- CourtsObject : resolve requestObject call
+alt Backend returns an error
+  PoolManagementController <-- CourtsObject : reject requestObject call
+end
+
+PoolManagementController -> PoolRequestsObject : call requestObject
+PoolRequestsObject -> BackendController : fetchData
+alt Backend returns an error
+  PoolRequestsObject <-- BackendController : error response
+end
+PoolRequestsObject <- BackendController : returnData
+PoolManagementController <- PoolRequestsObject : resolve requestObject call
+alt Backend returns an error
+  PoolManagementController <-- PoolRequestsObject : reject requestObject call
+end
+
+PoolManagementController -> PageTemplate : request and build template
+
+PoolManagementController <- PageTemplate : return HTML
+
+Actor <- PoolManagementController : render HTML
+
+@enduml

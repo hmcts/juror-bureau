@@ -1,0 +1,143 @@
+@startuml juror-update-reassign
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant JurorUpdatePage <</update>>
+participant SelectCourtPage <</reassign/select-court>>
+participant AvailablePoolsPage <</reassign/pools>>
+participant JurorRecordOverviewPage <</overview>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant JurorUpdateController <<juror-update.controller.js>>
+participant JurorReassignController <<reassign.controller.js>>
+participant JurorRecordObject <<record.get()>>
+participant FetchCourtsObject <<fetchCourts.get()>>
+participant AvailabePoolsObject <<availablePools.get()>>
+participant JurorReassignObject <<reassignJuror.put()>>
+
+
+''' TEMPLATES
+' participant ExcusalTemplate <<summons-management/excusal.njk>>
+participant JurorUpdateTemplate <<juror-management/update-juror-record.njk>>
+participant SelectCourtTemplate <<juror-management/select-court.njk>>
+participant AvailablePoolsTemplate <<juror-management/pools.njk>>
+participant GenericErrorTemplate <<_errors/generic.njk>>
+
+''' FILTERS AND VALIDATORS
+participant JurorUpdateValidator
+participant SelectCourtValidator
+participant SelectPoolValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+Actor -> JurorUpdatePage : update juror record
+
+JurorUpdatePage -> JurorUpdateController : call page controller
+
+JurorUpdateController -> JurorRecordObject : build request object
+JurorRecordObject -> BackendController : send backend request
+JurorRecordObject <- BackendController : ok response
+JurorUpdateController <- JurorRecordObject : resolve request
+
+JurorUpdateController -> JurorUpdateTemplate : request and build template
+JurorUpdateController <- JurorUpdateTemplate : return HTML
+JurorUpdatePage <- JurorUpdateController : return HTML
+Actor <- JurorUpdatePage : render HTML
+
+alt Failed to retrieve juror record details
+    JurorRecordObject <-- BackendController : error response
+    JurorUpdateController <-- JurorRecordObject : reject requestObject
+    JurorUpdatePage <-- JurorUpdateController : error response
+    Actor <-- JurorUpdatePage : render error message
+end
+
+Actor -> JurorUpdatePage : Select reassign to a different pool
+JurorUpdatePage -> JurorUpdateController : call page controller
+JurorUpdateController -> JurorUpdateValidator : validate selection
+JurorUpdateController <- JurorUpdateValidator : selection is valid
+
+alt Update selection is missing
+    JurorUpdateController <-- JurorUpdateValidator : decision is missing
+    JurorUpdatePage <-- JurorUpdateController : error response
+    Actor <-- JurorUpdatePage : render error message
+end
+
+JurorReassignController -> AvailabePoolsObject : build request object
+AvailabePoolsObject -> BackendController : send backend request
+AvailabePoolsObject <- BackendController : ok response
+JurorReassignController <- AvailabePoolsObject : resolve request
+
+JurorReassignController -> AvailablePoolsTemplate : request and build template
+JurorReassignController <- AvailablePoolsTemplate : return HTML
+AvailablePoolsPage <- JurorReassignController : return HTML
+Actor <- AvailablePoolsPage : render HTML
+
+alt Failed to fetch available pools for reassigning a juror
+    AvailabePoolsObject <- BackendController : error response
+    JurorReassignController <- AvailabePoolsObject : reject requestObject
+    
+    JurorReassignController -> GenericErrorTemplate : request and build template
+    JurorReassignController <- GenericErrorTemplate : return HTML
+    GenericErrorPage <- JurorReassignController : return HTML
+    Actor <- GenericErrorPage : render HTML
+end
+
+Actor -> SelectCourtPage : Select court to reassign to
+SelectCourtPage -> JurorReassignController : call page controller
+JurorReassignController -> SelectCourtValidator : validate selection
+JurorReassignController <- SelectCourtValidator : selection is valid
+
+alt Court to transfer to is missing
+    JurorReassignController <-- SelectCourtValidator : Court is missing
+    SelectCourtPage <-- JurorReassignController : error response
+    Actor <-- SelectCourtPage : render error message
+end
+
+JurorReassignController -> AvailablePoolsPage : request and build template
+JurorReassignController <- AvailablePoolsPage : return HTML
+AvailablePoolsPage <- JurorReassignController : return HTML
+Actor <- AvailablePoolsPage : render HTML
+
+alt Refetch all the available pools
+end
+
+Actor -> AvailablePoolsPage : select a pool to transfer to
+AvailablePoolsPage -> JurorReassignController : call page controller
+JurorReassignController -> SelectPoolValidator : validate selection
+JurorReassignController <- SelectPoolValidator : selection is valid
+
+alt Pool selection is empty
+    JurorReassignController <-- SelectPoolValidator : Pool is missing
+    AvailablePoolsPage <- JurorReassignController : error response
+    Actor <-- AvailablePoolsPage : render error message
+end
+
+JurorReassignController -> JurorReassignObject : build request object
+JurorReassignObject -> BackendController : send backend request
+JurorReassignObject <- BackendController : ok response
+JurorReassignController <- JurorReassignObject : resolve request
+
+JurorReassignController -> JurorRecordController
+JurorRecordPage <- JurorRecordController : redirect to juror record page
+Actor <- JurorRecordPage : render updated juror record page and display reassigned banner
+
+alt Failed to reassign juror
+    JurorReassignObject <-- BackendController : error response
+    JurorReassignController <-- JurorReassignObject : reject requestObject
+    
+    JurorReassignController -> GenericErrorTemplate : request and build template
+    JurorReassignController <- GenericErrorTemplate : return HTML
+    GenericErrorPage <- JurorReassignController : return HTML
+    Actor <- GenericErrorPage : render HTML
+end
+
+@enduml
+
+

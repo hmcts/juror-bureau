@@ -1,0 +1,21 @@
+<section>
+  <div class="mod-juror-record__title govuk-body">
+    <h2 id="jurorDetailsLabel" class="govuk-heading-m">Juror notes</h2>
+    {{ govukButton({
+      text: "Add or edit notes",
+      classes: "govuk-button--secondary",
+      href: url('juror-record.notes-edit.get', {
+        jurorNumber: juror.commonDetails.jurorNumber
+      }),
+      attributes: {
+        id: "addNotesButton"
+      }
+    }) }}
+  </div>
+
+  <div class="govuk-grid-column-two-thirds">
+    <div class="mod-overflow-break-word">
+      <p class="govuk-body"> {{ juror.notes | striptags(true) | escape | nl2br}}</p>
+    </div>
+  </div>
+</section>

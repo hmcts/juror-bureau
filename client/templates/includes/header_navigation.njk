@@ -1,0 +1,36 @@
+<div class="moj-primary-navigation">
+  <div class="moj-primary-navigation__container">
+    <div class="moj-primary-navigation__nav">
+      <nav class="moj-primary-navigation" aria-label="Primary navigation">
+
+        <ul class="moj-primary-navigation__list">
+          {% if authentication %}
+            <li id="inbox" class="moj-primary-navigation__item">
+              <a class="moj-primary-navigation__link" href="/inbox" {% if currentUrl == '/inbox' or currentUrl == '/pending' or currentUrl == '/completed' or currentUrl.indexOf('response') !== -1 %}aria-current="page"{% endif %}>
+                Your work{% if workCount > 0 %} <span id="inboxMenu" class="moj-notification-badge jd-badge-blue">{{ workCount }}</span>{% endif %}
+              </a>
+            </li>
+            <li id="search" class="moj-primary-navigation__item">
+              <a class="moj-primary-navigation__link" href="/search" {% if currentUrl == '/search' %}aria-current="page"{% endif %}>Search</a>
+            </li>
+
+            {% if authentication.staff.rank > 0 %}
+              <li id="new-replies" class="moj-primary-navigation__item" >
+                <a class="moj-primary-navigation__link" href="/new-replies" {% if currentUrl == '/new-replies' %}aria-current="page"{% endif %}>Assign Replies</a>
+              </li>
+              <li id="staff" class="moj-primary-navigation__item">
+                <a class="moj-primary-navigation__link" href="/staff" {% if currentUrl.indexOf('staff') !== -1 %}aria-current="page"{% endif %}>Manage team</a>
+              </li>
+            {% endif %}
+
+          {% else %}
+            {# sign in page - no navigation menu #}
+          {% endif %}
+        </ul>
+
+      </nav>
+
+    </div>
+  </div>
+
+</div>

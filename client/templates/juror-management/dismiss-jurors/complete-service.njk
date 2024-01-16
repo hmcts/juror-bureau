@@ -1,0 +1,58 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - juror-management - complete-service{% endblock %}
+{% block page_identifier %}juror-management - complete-service{% endblock %}
+
+{% block content %}
+
+  {% set dateError = undefined %}
+  {% if errors.items["completionDate"] %}
+    {% set dateError = errors.items["completionDate"][0].details %}
+  {% endif %}
+
+  {% include "includes/errors.njk" %}
+
+  <form action="{{ url('juror-management.dismiss-jurors.complete-service.post') }}" method="POST">
+
+    <h1 class="govuk-heading-l">Complete service</h1>
+
+    {{ datePicker({
+      id: "completionDate",
+      label: {
+        text: "Enter a completion date"
+      },
+      hint: "Use dd/mm/yyyy format. For example, 31/01/2023.",
+      dateMax: dateLimit | dateFilter(null, "DD/MM/YYYY"),
+      dateValue: today | dateFilter(null, "DD/MM/YYYY"),
+      dateError: dateError
+    }) }}
+
+    {{ csrfProtection(csrftoken) }}
+
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Complete service",
+        type: "submit"
+      }) }}
+
+      <a class="govuk-link" href="{{ url('juror-management.dismiss-jurors.pools.get') }}">Cancel</a>
+    </div>
+
+  </form>
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      const datePicker = $('[data-module="ds-datepicker"]');
+      new DSDatePicker(datePicker[0]).init();
+    });
+  </script>
+{% endblock %}

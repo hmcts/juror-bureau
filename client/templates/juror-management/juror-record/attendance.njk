@@ -1,0 +1,100 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+
+{% block page_title %}
+  {{ serviceName }} - juror record - attendance
+{% endblock %}
+
+{% block page_identifier %}juror record - attendance{% endblock %}
+
+{% set currentApp = "Juror management" %}
+
+{% block beforeContent %}
+  {% include "includes/back-link.njk" %}
+
+  {% if failedToAttend %}
+    {{ mojBanner({
+      type: "success",
+      html: "Juror record updated: <b>"
+        + ("Failed to attend" if failedToAttend.status === "failed-to-attend" else "Responded")
+        + "</b>",
+      iconFallbackText: "Success"
+    }) }}
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  {% set currentName = [juror.commonDetails.title, juror.commonDetails.firstName, juror.commonDetails.lastName] %}
+
+  {% include "../_partials/heading.njk" %}
+
+  <div class="mod-juror-record__title govuk-body">
+    <h2 id="jurorDetailsLabel" class="govuk-heading-m">Attendance</h2>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% set nextDate = "-" %}
+      {% if attendance["next_date"] %}
+        {% set nextDate = attendance["next_date"] | makeDate | dateFilter(null, "dddd D MMMM YYYY") %}
+      {% endif %}
+      {% if attendance["on_call"] === true %}
+        {% set nextDate = "On call" %}
+      {% endif %}
+
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              text: "Next due at court"
+            },
+            value: {
+              text: nextDate
+            },
+            actions: {
+              items: [
+                {
+                  href: url('juror-record.attendance.change-attendance-date.get', { jurorNumber: juror.commonDetails.jurorNumber }),
+                  text: "Change",
+                  visuallyHiddenText: "next due at court date"
+                }
+              ]
+            }
+          },
+          {
+            key: {
+              text: "Attendances"
+            },
+            value: {
+              text: attendance.attendances
+            }
+          },
+          {
+            key: {
+              text: "Absences"
+            },
+            value: {
+              text: attendance.absences
+            },
+            actions: {
+              items: [
+                {
+                  href: "#",
+                  text: "Print show cause letter"
+                } if attendance.absences > 0
+              ]
+            }
+          }
+        ]
+      }) }}
+    </div>
+  </div>
+
+  {% if attendance["juror_attendance_response_data"].length %}
+    {% include "./_partials/attendance-table.njk" %}
+  {% endif %}
+{% endblock %}

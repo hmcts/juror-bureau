@@ -1,0 +1,75 @@
+{% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
+
+{% set todoMenuHTML %}
+  <span id="todoMenu">To do{% if responses.counts.todo > 0 %} <span id="todoCount" class="moj-notification-badge jd-badge-blue">{{ responses.counts.todo }}</span>{% endif %}</a></span>
+{% endset %}
+{% set awaitingMenuHTML %}
+  <span id="awaitingMenu">Awaiting information{% if responses.counts.pending > 0 %} <span id="awaitingCount" class="moj-notification-badge jd-badge-blue">{{ responses.counts.pending }}</span>{% endif %}</a></span>
+{% endset %}
+{% set completedMenuHTML %}
+  <span id="completedMenu">Completed{% if responses.counts.completed > 0 %} <span id="completedCount" class="moj-notification-badge jd-badge-blue">{{ responses.counts.completed }}</span>{% endif %}</a></span>
+{% endset %}
+
+{% if activeUrl == '/inbox' %}
+  {% set todoMenuActive = true %}
+{% else %}
+  {% set todoMenuActive = false %}
+{% endif %}
+
+{% if activeUrl == '/pending' %}
+  {% set awaitingMenuActive = true %}
+{% else %}
+  {% set awaitingMenuActive = false %}
+{% endif %}
+
+{% if activeUrl == '/completed' %}
+  {% set completedMenuActive = true %}
+{% else %}
+  {% set completedMenuActive = false %}
+{% endif %}
+
+
+{{ mojSubNavigation({
+  label: 'Sub navigation',
+  items: [{
+    html: todoMenuHTML,
+    href: url('inbox.todo.get'),
+    active: todoMenuActive,
+    id: 'todoNavItem'
+  }, {
+    html: awaitingMenuHTML,
+    href: url('inbox.pending.get'),
+    active: awaitingMenuActive
+  }, {
+    html: completedMenuHTML,
+    href: url('inbox.completed.get'),
+    active: completedMenuActive
+  }]
+}) }}
+
+{#
+<nav class="sidebar-navigation">
+  <ul>
+    <li class="{% if activeUrl == '/inbox' %}active{% endif %}" id="todoNavItem">
+      <a href="{{ url('inbox.todo.get') }}">
+        <span class="value">{{ responses.counts.todo }}</span>
+        To do
+      </a>
+    </li>
+
+    <li class="{% if activeUrl == '/pending' %}active{% endif %}" id="pendingNavItem">
+      <a href="{{ url('inbox.pending.get') }}">
+        <span class="value">{{ responses.counts.pending }}</span>
+        Replies pending
+      </a>
+    </li>
+
+    <li class="{% if activeUrl == '/completed' %}active{% endif %}" id="completedNavItem">
+      <a href="{{ url('inbox.completed.get') }}">
+        <span class="value">{{ responses.counts.completed }}</span>
+        Completed today
+      </a>
+    </li>
+  </ul>
+</nav>
+#}

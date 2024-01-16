@@ -1,0 +1,103 @@
+{% extends "../../../layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+
+{% set currentApp = "Pool management" %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {% set noRequestedError = undefined %}
+  {% if errors.items["noOfJurors"] %}
+    {% set noRequestedError = { text: errors.items["noOfJurors"][0].details } %}
+  {% endif %}
+
+  {% set reasonForChangeError = undefined %}
+  {% if errors.items["reasonForChange"] %}
+    {% set reasonForChangeError = { text: errors.items["reasonForChange"][0].details } %}
+  {% endif %}
+
+  {% if postError %}
+    {{ mojBanner({
+      type: 'warning',
+      text: postError,
+      iconFallbackText: 'Warning'
+    }) }}
+  {% endif %}
+
+  {# we need to define some custom text #}
+  {% set inputTitle = "Number of jurors requested" %}
+  {% set inputHint = "The number of jurors that the court requires from the bureau" %}
+  {% if authentication.owner !== "400" %}
+    {% set inputTitle = "Pool capacity" %}
+    {% set inputHint = "The total amount of jurors required for service" %}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <span class="govuk-caption-l">Pool {{ poolNumber }}</span>
+      <h1 class="govuk-heading-l">Edit pool</h1>
+
+      <form method="post" action="{{ url('pool-management.edit-pool.post', { poolNumber: poolNumber }) }}" id="editPoolForm">
+
+        {{ govukInput({
+          label: {
+            text: inputTitle,
+            classes: "govuk-label--s"
+          },
+          hint: {
+            text: inputHint
+          },
+          classes: "govuk-input--width-5",
+          id: "noOfJurors",
+          name: "noOfJurors",
+          type: "number",
+          value: noRequested if authentication.owner === "400" else totalRequired,
+          attributes: {
+            min: "0"
+          },
+          errorMessage: noRequestedError
+        }) }}
+
+        {{ govukCharacterCount({
+          label: {
+            text: "Reason for change",
+            classes: "govuk-label--s"
+          },
+          classes: "govuk-!-width-three-quarters",
+          id: "reasonForChange",
+          name: "reasonForChange",
+          value: reasonForChange,
+          maxlength: 80,
+          errorMessage: reasonForChangeError
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Save changes",
+            type: "submit",
+            attributes: {
+              id: "saveChangesButton"
+            }
+          }) }}
+
+          <a id="cancelAnchor" class="govuk-link" href="{{ url('pool-overview.get', { poolNumber: poolNumber }) }}">Cancel</a>
+        </div>
+
+        <input id="csrfToken" type="hidden" name="_csrf" value="{{ csrftoken }}">
+        <input id="poolNumber" type="hidden" name="poolNumber" value="{{ poolNumber }}">
+        <input id="noRequired" type="hidden" name="noRequired" value="{{ noRequired }}">
+        {% if authentication.owner !== "400" %}
+          <input id="noRequested" type="hidden" name="noRequested" value="{{ noRequested }}">
+        {% endif %}
+
+      </form>
+
+    </div>
+  </div>
+{% endblock %}

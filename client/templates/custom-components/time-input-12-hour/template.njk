@@ -1,0 +1,141 @@
+{% from "govuk/components/error-message/macro.njk" import govukErrorMessage -%}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/hint/macro.njk" import govukHint %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{#- a record of other elements that we need to associate with the input using
+   aria-describedby – for example hints or error messages -#}
+{% set describedBy = params.fieldset.describedBy if params.fieldset.describedBy else 
+  "" %}
+
+{% set timeError = undefined %}
+{% if params.errors[params.id] or params.errors[params.id+"Hour"] or params.errors[params.id+"Minute"] or params.errors[params.id+"Period"]%}
+  {% set timeErrorHtml %}
+  {% if params.errors[params.id + "Hour"] %}
+    <span class="govuk-error-message" id="{{params.id}}HourErrorMessage">
+      {{ params.errors[params.id+"Hour"][0].details }}
+    </span>
+  {% endif %}
+  {% if params.errors[params.id + "Minute"] %}
+    <span class="govuk-error-message" id="{{params.id}}MinuteErrorMessage">
+      {{ params.errors[params.id+"Minute"][0].details }}
+    </span>
+  {% endif %}
+  {% if params.errors[params.id] %}
+    <span class="govuk-error-message" id="{{params.id}}TimeErrorMessage">
+      {{ params.errors[params.id][0].details }}
+    </span>
+  {% endif %}
+  {% if params.errors[params.id + "Period"] %}
+    <span class="govuk-error-message" id="{{params.id}}PeriodErrorMessage">
+      {{ params.errors[params.id+"Period"][0].details }}
+    </span>
+  {% endif %}
+  {% endset %}
+  {% set timeError = {
+    html: timeErrorHtml
+  } %}
+{% endif %}
+
+{% set innerHtml %}
+
+{% if params.hint %}
+  {% set hintId = params.id + "-hint" %}
+  {% set describedBy = describedBy + " " + hintId if describedBy else 
+    hintId %}
+  {{ govukHint({
+    id: hintId,
+    classes: params.hint.classes,
+    attributes: params.hint.attributes,
+    html: params.hint.html,
+    text: params.hint.text
+  }) | indent(2) | trim }}
+{% endif %}
+
+{% if timeError %}
+  {% set errorId = params.id + "-error" %}
+  {% set describedBy = describedBy + " " + errorId if describedBy else 
+    errorId %}
+  {{ govukErrorMessage({
+    id: errorId,
+    classes: timeError.classes,
+    attributes: timeError.attributes,
+    html: timeError.html,
+    text: timeError.text,
+    visuallyHiddenText: timeError.visuallyHiddenText
+  }) | indent(2) | trim }}
+{% endif %}
+
+<div class="time-input-12-hour {%- if params.classes %} {{ params.classes }}{% endif %}"
+  {%- for attribute, value in params.attributes %} {{attribute}}="{{value}}"{% endfor %}
+  {%- if params.id %} id="{{ params.id }}"{% endif %}>
+  <div class="time-input-12-hour__container">
+    <div class="govuk-body time-input-12-hour__divider"> : </div>
+    <div class="time-input-12-hour__hour">
+      {{ govukInput({
+        label: {
+          text: "Hour"
+        },
+        id: params.items.hour.id if params.items.hour.id else params.id + "Hour",
+        name: params.items.hour.name if params.items.hour.name else params.name + "Hour",
+        classes: "govuk-input--width-2 " + (params.items.hour.classes if params.items.hour.classes) + ("govuk-input--error" if params.errors[params.id] or params.errors[params.id+"Hour"]),
+        attributes: params.items.hour.attributes,
+        value: params.items.hour.value if params.items.hour.value else ""
+      }) }}
+    </div>
+    <div class="time-input-12-hour__minute">
+      {{ govukInput({
+        label: {
+          text: "Minute"
+        },
+        id: params.items.minute.id if params.items.minute.id else params.id + "Minute",
+        name: params.items.minute.name if params.items.minute.name else params.name + "Minute",
+        classes: "govuk-input--width-2 " + (params.items.minute.classes if params.items.minute.classes) + ("govuk-input--error" if params.errors[params.id] or params.errors[params.id+"Minute"]),
+        attributes: params.items.minute.attributes,
+        value: params.items.minute.value if params.items.minute.value else ""
+      }) }}
+    </div>
+    <div class="time-input-12-hour__period">
+      <fieldset class="govuk-fieldset">
+        <div class="govuk-radios govuk-radios--small govuk-radios--inline" data-module="govuk-radios">
+          <div class="govuk-radios__item govuk-!-margin-right-0">
+            <input class="govuk-radios__input" 
+              id="{% if params.items.period.id %}{{ params.items.period.id }}{% else %}{{params.id}}-am{% endif %}" 
+              name="{% if params.items.period.name %}{{params.items.period.name}}{% else %}{{params.id}}Period{% endif %}" 
+              type="radio" 
+              value="am"
+              {% if params.items.period.value === 'am'%}checked{% endif %}>
+            <label class="govuk-label govuk-radios__label" 
+              for="{% if params.items.period.id %}{{ params.items.period.id }}{% else %}{{params.id}}-am{% endif %}">
+              am
+            </label>
+          </div>
+          <div class="govuk-radios__item govuk-!-margin-right-0" >
+            <input class="govuk-radios__input" 
+              id="{% if params.items.period.id %}{{ params.items.period.id }}{% else %}{{params.id}}-pm{% endif %}" 
+              name="{% if params.items.period.name %}{{params.items.period.name}}{% else %}{{params.id}}Period{% endif %}" 
+              type="radio" 
+              value="pm"
+              {%- if params.items.period.value === 'pm'%}checked{% endif %}>
+            <label class="govuk-label govuk-radios__label" 
+              for="{% if params.items.period.id %}{{ params.items.period.id }}{% else %}{{params.id}}-pm{% endif %}">
+              pm
+            </label>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+  </div>
+</div>
+{% endset %}
+
+<div class="govuk-form-group {%- if timeError %} govuk-form-group--error{% endif %} {%- if params.formGroup.classes %} {{ params.formGroup.classes }}{% endif %}">
+  {% if params.fieldset %}
+    {% call govukFieldset({describedBy: describedBy, classes: params.fieldset.classes, role: 'group', attributes: params.fieldset.attributes, legend: params.fieldset.legend}) %}
+    {{ innerHtml | trim | safe }}
+    {% endcall %}
+  {% else %}
+    {{ innerHtml | trim | safe }}
+  {% endif %}
+</div>

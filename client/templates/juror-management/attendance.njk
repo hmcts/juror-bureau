@@ -1,0 +1,75 @@
+{% extends "layouts/default.njk" %}
+
+{% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "custom-components/macros/arrows.njk" import leftArrowSVG %}
+
+{% block page_title %}{{ serviceName }} - juror-management - attendance{% endblock %}
+{% block page_identifier %}juror-management - attendance{% endblock %}
+
+{% set currentApp = "Jurors" %}
+
+{% block beforeContent %}
+  {{ mojSubNavigation({
+    label: "Jurors attendance navigation",
+    classes: "govuk-!-margin-bottom-5",
+    items: [{
+      text: "Jurors in waiting",
+      href: "#",
+      active: true
+    }, {
+      text: "Jurors on a trial",
+      href: "#"
+    }]
+  }) }}
+
+  <div class="govuk-error-summary js-hidden" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
+    <h2 class="govuk-error-summary__title" id="error-summary-title">
+      There is a problem
+    </h2>
+    <div class="govuk-error-summary__body">
+      <ul id="errors-list" class="govuk-list govuk-error-summary__list">
+      </ul>
+    </div>
+  </div>
+
+  <a href="?date={{ yesterdayRaw }}" class="govuk-body govuk-link govuk-!-font-weight-bold govuk-link--no-visited-state govuk-link--no-underline">
+    {{ leftArrowSVG() }} {{ yesterday }}
+  </a>
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <span class="govuk-caption-l">Jurors in waiting</span>
+      <h1 class="govuk-heading-l" id="attendanceDate">{{ selectedDate }}</h1>
+    </div>
+    <div class="govuk-grid-column-one-half">
+      <div class="govuk-button-group mod-flex mod-justify-end">
+        {{ govukButton({
+          text: "Print attendance list",
+          classes: "govuk-button--secondary"
+        }) }}
+        {% if attendanceStatus === "Unconfirmed" %}
+          {{ govukButton({
+            text: "Confirm attendance",
+            classes: "govuk-button--secondary",
+            href: url('juror-management.attendance.confirm-attendance.get')
+          }) }}
+        {% endif %}
+      </div>
+    </div>
+    <div class="govuk-grid-column-full">
+      {{ govukTag({
+        text: attendanceStatus,
+        classes: "govuk-tag--blue" if attendanceStatus === "Confirmed" else "govuk-tag--grey"
+      }) }}
+    </div>
+  </div>
+
+  {% if status === "in-waiting" %}
+    {% include "./attendance/in-waiting.njk" %}
+  {% elif status === "in-trial" %}
+  {% endif %}
+{% endblock %}

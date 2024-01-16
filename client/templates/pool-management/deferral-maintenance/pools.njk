@@ -1,0 +1,56 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set currentApp = "Pool management" %}
+{% block page_identifier %}Deferral Maintenance - active pools{% endblock %}
+{% block page_title %}
+  {{ serviceName }} - Deferral maintenance - active pools
+{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <form id="poolNumber" action="{{ url('pool-management.deferral-maintenance.process.post', { locationCode: locationCode }) }}" method="POST">
+
+        <div class="{% if errors.count > 0%}govuk-form-group--error{% endif %}">
+          <h1 class="govuk-heading-l">Choose an active pool to add selected jurors to</h1>
+
+          {% if errors.count > 0 %}
+            <p id="information-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span>
+              {{ errors.items["poolNumber"][0].details }}
+            </p>
+          {% endif %}
+
+          {% include "./_partials/pools-table.njk" %}
+        </div>
+
+        <input type="hidden" id="csrftoken" name="_csrf" value="{{ csrftoken }}"/>
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+              text: "Continue",
+              attributes: {
+                id: "continueButton"
+              }
+            }) }}
+
+          <a id="cancelAnchor" class="govuk-link"
+              href="{{ url('pool-management.deferral-maintenance.filter.get', { locationCode: locationCode }) }}">
+              Cancel
+            </a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

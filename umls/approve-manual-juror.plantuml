@@ -1,0 +1,65 @@
+@startuml approve-manual-juror
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant ApproveJurorPage <</juror-management/manage-jurors/approve>> #lightsteelblue
+participant ApproveRejectPage <</juror-management/manage-jurors/approve/:jurorNumber>> #lightsteelblue
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant ManageJurorsController <<manage-jurors.controller.js>> #lightyellow
+
+''' TEMPLATES
+participant ApproveRejectTemplate <<juror-management/manage-jurors/approve-or-reject.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant ApproveCreateJurorValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> ApproveJurorPage : request page
+
+group ApproveJurorPage : Approve juror standard page load
+  ApproveJurorPage o--> BackendController
+  ApproveJurorPage <-- BackendController
+  Actor <- ApproveJurorPage : render HTML
+end
+
+Actor -> ApproveRejectPage : GET link from page
+
+ApproveRejectPage o-> ManageJurorsController : call page controller
+ManageJurorsController -> ApproveRejectTemplate : request and build template
+ManageJurorsController <- ApproveRejectTemplate : return HTML
+Actor o<- ManageJurorsController : render HTML
+
+Actor -> ApproveRejectPage : POST from form
+
+ApproveRejectPage -> ManageJurorsController : call page controller
+ManageJurorsController -> ApproveCreateJurorValidator : validate form input
+
+alt No option selected
+  ManageJurorsController <-- ApproveCreateJurorValidator : no option selected
+  ManageJurorsController --> ApproveRejectTemplate : request and build template 
+  ManageJurorsController <-- ApproveRejectTemplate : return HTML with error
+  Actor o<-- ApproveRejectPage : render HTML
+end
+
+alt Reject selected with no comment
+  ManageJurorsController <-- ApproveCreateJurorValidator : no option selected
+  ManageJurorsController --> ApproveRejectTemplate : request and build template 
+  ManageJurorsController <-- ApproveRejectTemplate : return HTML with error
+  Actor o<-- ApproveRejectPage : render HTML
+end
+
+ManageJurorsController <- ApproveCreateJurorValidator : valid input
+
+Actor x--x BackendController : backend not currently implemented
+' // TODO use data access object
+' // TODO hit backend
+' // TODO handle response
+
+ApproveJurorPage o<- ManageJurorsController : redirect with success message

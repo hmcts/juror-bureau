@@ -1,0 +1,53 @@
+#addStaffBtn {
+  margin: 0 0 20px;
+
+  @media all and (min-width: 641px) {
+    margin: 85px 0 0;
+  }
+}
+
+.staff-image-box {
+  background-color: $color-table-closed-row-even;
+  margin: 30px 0 15px;
+  position: relative;
+
+  img, h2 {
+    display: block;
+    margin: 0;
+    padding: 0;
+  }
+
+  img {
+    height: 60px;
+    width: 60px;
+  }
+
+  h2 {
+    font-size: $font-size-small;
+    left: 80px;
+    top: 50%;
+    position: absolute;
+    transform: translateY(-50%);
+  }
+}
+
+.staff-right-col > .form-group,
+.staff-right-col > .court-group {
+  border-bottom: 1px solid $border-colour;
+  margin-left: 20px;
+  padding-bottom: 30px;
+}
+
+.staff-right-col > .court-group {
+  padding-bottom: 15px;
+
+  .form-group {
+    margin-bottom: 15px;
+  }
+}
+
+@media (min-width: 641px) {
+  .staff-right-col > .form-group > .form-control {
+    width: 70%;
+  }
+}

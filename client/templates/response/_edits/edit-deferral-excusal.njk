@@ -1,0 +1,101 @@
+{% if canEdit %}
+<section>
+  <form class="edit-form" id="deferral-excusal-form">
+
+    <div class="govuk-form-group jd-edit-panel govuk-body" id="confirmedDateGroup">
+
+      <fieldset class="govuk-fieldset" aria-describedby="contact-hint">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h1 class="govuk-fieldset__heading">
+            Deferral or excusal
+          </h1>
+        </legend>
+
+        <div class="govuk-radios govuk-radios--conditional" data-module="govuk-radios">
+
+          <span class="govuk-error-message" id="confirmedDateErrorMessage"></span>
+
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" name="confirmedDate" id="confirmedDates" type="radio" value="Yes" data-aria-controls="conditional-contact" {% if dateConfirmed %} checked{% endif %}>
+            <label class="govuk-label govuk-radios__label" for="confirmedDates">
+              I can do jury service on the date shown
+            </label>
+          </div>
+
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" name="confirmedDate" id="changeDates" type="radio" value="Change" data-aria-controls="deferralReasonGroupConditional" {% if response.deferralReason %} checked{% endif %}>
+            <label class="govuk-label govuk-radios__label" for="changeDates">
+              I need to change the date of my jury service
+            </label>
+          </div>
+          <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="deferralReasonGroupConditional">
+            <div class="govuk-form-group" id="deferralReasonGroup">
+
+              {% if response.deferralDate %}
+                <div id="deferralDates" class="govuk-body jd-response-defer-date-list">
+                  <label class="govuk-label" for="deferralReason">Available dates:</label>
+                  {% for date in response.deferralDate.split(',') %}
+                    {% if loop.index == 1 %}
+                      {% set dateLabel = "First choice" %}
+                    {% elif loop.index == 2 %}
+                      {% set dateLabel = "Second choice" %}
+                    {% elif loop.index == 3 %}
+                      {% set dateLabel = "Third choice" %}
+                    {% else %}
+                      {% set dateLabel %}
+                        Date {{loop.index}}
+                      {% endset %}
+                    {% endif %}
+                    <span class="govuk-!-font-weight-bold">{{dateLabel }}</span><span class="jd-right-align">{{ date }}</span>
+                    {#<span id="date{{loop.index}}" class="date">{{ date }}</span>#}
+                  {% endfor %}
+                </div>
+              {% endif %}
+
+              <label class="govuk-label" for="deferralReason">
+                Deferral reason
+              </label>
+              <span class="govuk-error-message" id="deferralReasonErrorMessage"></span>
+              <textarea class="jd-textarea govuk-body form-control govuk-!-width-three-quarters" name="deferralReason" id="deferralReason" spellcheck="false" rows="3" maxlength="1000">{{ response.deferralReason }}</textarea>
+            </div>
+          </div>
+
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" type="radio" name="confirmedDate" id="declineDates" value="No" data-aria-controls="excusalReasonGroupConditional" {% if response.excusalReason %} checked{% endif %} />
+            <label class="govuk-label govuk-radios__label" for="excusalReason">
+              I can’t do jury service and would like to be excused
+            </label>
+          </div>
+          <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="excusalReasonGroupConditional">
+            <div class="govuk-form-group" id="excusalReasonGroup">
+              <label class="govuk-label" for="contact-by-text">
+                Excusal reason
+              </label>
+              <span class="govuk-error-message" id="excusalReasonErrorMessage"></span>
+              <textarea class="jd-textarea govuk-body form-control govuk-!-width-three-quarters" name="excusalReason" id="excusalReason" spellcheck="false" rows="3" maxlength="1000">{{ response.excusalReason }}</textarea>
+          </div>
+          
+        </div>
+
+      </fieldset>
+
+      <br/>
+
+      <div class="govuk-button-group jd-save-cancel-button-group">
+        <button id="deferralExcusalSaveButton" class="govuk-button edit-save" data-target="deferral-excusal" data-module="govuk-button">Save</button>
+        <a id="deferralExcusalCancelButton" class="govuk-link edit-cancel" data-target="deferral-excusal" href="#">Cancel</a>
+      </div>
+
+
+    </div>
+
+
+    <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+    <input type="hidden" name="jurorNumber" value="{{ response.jurorNumber }}">
+    <input type="hidden" name="version" value="{{ response.version }}">
+    <input type="hidden" name="deferralDates" value="{{ response.deferralDate }}">
+
+  </form>
+</section>
+
+{% endif %}

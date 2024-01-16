@@ -1,0 +1,24 @@
+<div class="govuk-form-group {{ params.class }} {% if params.errorMessage %}govuk-form-group--error{% endif %}">
+  <label class="govuk-label {{ params.label.class }}" for="{{ params.id }}">{{ params.label.text }}</label>
+  <p id="event-name-error" class="govuk-error-message">
+    {{ params.errorMessage.text }}
+  </p>
+  <div id="ac-{{ params.id }}" name="ac-{{ params.name }}" data-content="{{ params.data }}"></div>
+</div>
+
+<script src="{{ assetPath if assetPath else '/' }}js/accessible-autocomplete.min.js"></script>
+<script type="text/javascript">
+  document.addEventListener('DOMContentLoaded', function() {
+    var el = $('#ac-{{ params.id }}')
+
+    if (typeof el[0] !== 'undefined') {
+      accessibleAutocomplete({
+        element: el[0],
+        id: '{{ params.id }}',
+        name: '{{ params.name }}',
+        displayMenu: 'overlay',
+        source: el.data('content').split(','),
+      });
+    }
+  });
+</script>

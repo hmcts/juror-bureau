@@ -1,0 +1,75 @@
+{% extends "layouts/default.njk" %}
+
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{% block page_title %}{{ serviceName }}- juror-management - approve jurors{% endblock %}
+{% block page_identifier %}juror-management - approve jurors{% endblock %}
+
+{% set currentApp = "Jurors" %}
+
+{% block content %}
+
+  {% if bannerMessage %}
+    {{ mojBanner({
+      type: "success",
+      text: bannerMessage,
+      iconFallbackText: "Success"
+    }) }}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <h1 class="govuk-heading-l">Approve jurors</h1>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <fieldset class="govuk-fieldset">
+          <div class="govuk-radios govuk-radios--small govuk-radios--inline" data-module="govuk-radios">
+            <div class="govuk-radios__item govuk-!-margin-right-0">
+                <input
+                    class="govuk-radios__input" 
+                    name="filterApproval" 
+                    id="filterApprovalPending"
+                    type="radio" 
+                    value="active"
+                    {% if status === 'pending' %}checked{% endif %}
+                    onclick="window.location.href = '{{url('juror-management.manage-jurors.approve.get')}}?status=pending';"
+                >
+              <label 
+                  class="govuk-label govuk-radios__label" 
+                  for="filterApprovalPending"
+              >
+              Pending approval only
+              </label>
+            </div>
+            <div class="govuk-radios__item govuk-!-margin-right-0" >
+                <input 
+                    class="govuk-radios__input" 
+                    name="filterApproval" 
+                    id="filterApprovalAll"
+                    type="radio" 
+                    value="all"
+                    {% if status === 'all' %}checked{% endif %}
+                    onclick="window.location.href = '{{url('juror-management.manage-jurors.approve.get')}}?status=all';"
+                >
+                <label 
+                    class="govuk-label govuk-radios__label" 
+                    for="filterApprovalAll"
+                >
+                Show all
+                </label>
+            </div>
+          </div>
+      </fieldset>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {% include "./pending-approval.njk" %}
+    </div>
+  </div>
+{% endblock %}

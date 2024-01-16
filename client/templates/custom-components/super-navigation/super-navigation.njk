@@ -1,0 +1,86 @@
+{% from "../mod-search/macro.njk" import modSearch %}
+
+<li class="moj-header__navigation-item moj-header__navigation-item--with-children">
+  <div class="moj-header__navigation-toggle-wrapper">
+    <button type="button" class="moj-header__navigation-toggle-button" id="apps-button" data-text-for-hide="Hide Apps menu" data-text-for-show="Show Apps menu" data-apps-button>
+      <span class="moj-header__navigation-toggle-button-inner">
+        Apps
+      </span>
+    </button>
+  </div>
+  <div class="moj-header__navigation-dropdown-menu" hidden="hidden" data-apps-dropdown>
+    <div class="govuk-main-wrapper govuk-width-container">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-quarter">
+          <h3 class="govuk-body-l">Applications</h3>
+        </div>
+        <div class="govuk-grid-column-three-quarters">
+          <ul class="govuk-list govuk-list--spaced">
+            <li>
+              <a href="{{ url('pool-management.get') }}" class="govuk-link govuk-!-font-weight-bold">Pool management</a>
+            </li>
+            <li>
+              <a href="{{ url('inbox.todo.get') }}" class="govuk-link govuk-!-font-weight-bold">Summons management</a>
+            </li>
+            <li>
+              <a href="{{ url('juror-management.manage-jurors.approve.get') if isSJO else url('juror-management.manage-jurors.in-waiting.get') }}" class="govuk-link govuk-!-font-weight-bold">Juror management</a>
+            </li>
+            <li>
+              <a href="#" class="govuk-link govuk-!-font-weight-bold">Expense management</a>
+            </li>
+            <li>
+              <a href="{{ url('trial-management.trials.get') }}" class="govuk-link govuk-!-font-weight-bold">Trial management</a>
+            </li>
+            <li>
+              <a href="{{ url('reports.get') }}" class="govuk-link govuk-!-font-weight-bold">Reporting</a>
+            </li>
+            {% if isSJO %}
+              <li>
+                <a href="{{ url('sjo-tasks.uncomplete-service.get') }}" class="govuk-link govuk-!-font-weight-bold">SJO Tasks</a>
+              </li>
+            {% endif %}
+            <li>
+              <a href="#" class="govuk-link govuk-!-font-weight-bold">Administration</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>           
+</li>
+<li class="moj-header__navigation-item moj-header__navigation-item--with-children" style="width: 50px">
+  <div class="moj-header__navigation-toggle-wrapper">
+    <button type="button" aria-label="Show super nav search" class="moj-header__navigation-toggle-search" id="search-button" data-text-for-hide="Hide Search menu" data-text-for-show="Show Search menu" data-search-button>
+      <span class="moj-header__navigation-toggle-search-inner">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </span>
+    </button>
+  </div>
+  <div class="moj-header__navigation-dropdown-menu" hidden="hidden" data-search-dropdown>
+    <div class="govuk-main-wrapper govuk-width-container">
+
+      {{ modSearch({
+        action: url('juror-record.search.post'),
+        method: "post",
+        classes: "govuk-!-width-one-half",
+        input: {
+          id: "super-nav-search",
+          name: "super-nav-search"
+        },
+        button: {
+          text: "Search"
+        },
+        label: {
+          text: "Search for a juror record",
+          classes: "govuk-!-font-weight-bold govuk-!-font-size-24"
+        },
+        hint: {
+          text: "Search for a juror record by using their juror number or using a barcode scan"
+        },
+        csrf: csrftoken
+      }) }}
+    </div>
+  </div>           
+</li>

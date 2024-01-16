@@ -1,0 +1,93 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import "govukButton" %}
+
+{% block page_title %}
+  {{ serviceName }} - {{ subServiceName }}
+{% endblock %}
+
+{% block page_identifier %}{{ pageIdentifier }}{% endblock %}
+
+{% block beforeContent %}
+
+  {{ govukBackLink({
+    text: "Back",
+    href: backLinkUrl,
+    attributes: {
+      id: "backLinkAnchor"
+    }
+  }) }}
+
+{% endblock %}
+
+{% block content %}
+
+  {% set heading %}
+    <span class='govuk-caption-xl'> {{ subServiceName }} </span>
+    <h1 class='govuk-fieldset__legend--xl govuk-!-margin-top-1'> {{ pageIdentifier }} </h1>
+  {% endset %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+
+      <form action="{{ postUrl }}" method="POST">
+
+        {% call govukFieldset({
+          legend: {
+            html: heading
+          }
+        }) %}
+
+          {{ govukInput({
+            label: {
+              text: 'Main phone - UK only (optional)'
+            },
+            id: "mainPhone",
+            name: "mainPhone",
+            classes: "govuk-!-width-one-half",
+            value: formFields.mainPhone
+          }) }}
+
+          {{ govukInput({
+            label: {
+              text: 'Alternative phone (optional)'
+            },
+            id: "alternativePhone",
+            name: "alternativePhone",
+            classes: "govuk-!-width-one-half",
+            value: formFields.alternativePhone
+          }) }}
+
+          {{ govukInput({
+            label: {
+              text: "Email (optional)"
+            },
+            id: "emailAddress",
+            name: "emailAddress",
+            classes: "govuk-!-width-three-quarters",
+            value: formFields.emailAddress
+          }) }}
+
+        {% endcall %}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            attributes: {
+              id: "continueButton"
+            }
+          }) }}
+
+          <a id="cancelAnchor" class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

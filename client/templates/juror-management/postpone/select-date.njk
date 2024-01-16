@@ -1,0 +1,70 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+
+{% block page_title %}{{ serviceName }} - process - postpone{% endblock %}
+{% block page_identifier %}Update Juror Record - Postpone{% endblock %}
+
+{% block beforeContent %}
+  {% include "includes/back-link.njk" %}
+{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {% set posponeToDateError = undefined %}
+  {% if errors.items["postponeTo"] %}
+    {% set postponeToDateError = errors.items["postponeTo"][0].details %}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      {% set processUrl = url("juror.update.postpone-date.post", { jurorNumber: jurorNumber }) %}
+      <form action="{{ processUrl }}" method="POST" class="disable-empty" id="deferralForm">
+
+        <h1 class="govuk-label--l govuk-!-margin-top-0">Enter a new service start date</h1>
+
+        {{ datePicker({
+          id: "postponeTo",
+          hint: "Use dd/mm/yyyy format. For example, 31/01/2023.",
+          dateValue: postponeToDate if postponeToDate else originalDate | dateFilter(null, "DD/MM/YYYY"),
+          dateMin: originalDate | dateFilter(null, "DD/MM/YYYY"),
+          dateError: postponeToDateError
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            attributes: {
+              id: "continueButton"
+            }
+          }) }}
+
+          {% set cancelUrl = url("juror-record.overview.get", { jurorNumber: jurorNumber }) %}
+          <a class="govuk-link govuk-link--no-visited-state" id="cancelAnchor" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+      </form>
+      
+    </div>
+  </div>
+                  
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      const datePickers = []
+        .slice
+        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
+      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
+    });
+  </script>
+{% endblock %}

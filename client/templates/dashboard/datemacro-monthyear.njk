@@ -1,0 +1,92 @@
+{% macro dashboardDateMonthYear(params) %}
+
+{% set inputErrClass = "" %}
+{% set groupErrClass = "" %}
+{% if params.monthError %}
+  {% set inputMonthErrClass = "govuk-input--error" %}
+  {% set groupErrClass = "govuk-form-group--error" %}
+{% endif %}
+{% if params.yearError %}
+  {% set inputYearErrClass = "govuk-input--error" %}
+  {% set groupErrClass = "govuk-form-group--error" %}
+{% endif %}
+{% if params.dateError %}
+  {% set inputMonthErrClass = "govuk-input--error" %}
+  {% set inputYearErrClass = "govuk-input--error" %}
+  {% set groupErrClass = "govuk-form-group--error" %}
+{% endif %}
+
+
+<div class="govuk-form-group {{ groupErrClass }}">
+  <h1 class="govuk-label-wrapper">
+    <label class="govuk-label govuk-label--s" for="{{params.id}}">
+      {{params.label}}
+    </label>
+  </h1>
+
+  {% if params.monthError %}
+    <span id="passport-issued-error" class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span> {{params.monthError}}
+    </span>
+  {% endif %}
+
+  {% if params.yearError %}
+    <span id="passport-issued-error" class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span> {{params.yearError}}
+    </span>
+  {% endif %}
+
+  {% if params.dateError %}
+    <span id="passport-issued-error" class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span> {{params.dateError}}
+    </span>
+  {% endif %}
+
+  <div class="govuk-date-input" id="{{params.id}}">
+    <div class="govuk-date-input__item">
+      <div class="govuk-form-group ">
+        {#
+        <label class="govuk-label govuk-date-input__label" for="{{params.prefix}}Month">
+          Month
+        </label>
+        #}
+
+        {# Month dropdown #}
+        <select class="govuk-select" id="{{params.prefix}}Month" name="{{params.prefix}}Month">
+          <option value="" {% if params.monthValue == '' %}selected{% endif %}></option>
+          <option value="01" {% if params.monthValue == '01' %}selected{% endif %}>January</option>
+          <option value="02" {% if params.monthValue == '02' %}selected{% endif %}>February</option>
+          <option value="03" {% if params.monthValue == '03' %}selected{% endif %}>March</option>
+          <option value="04" {% if params.monthValue == '04' %}selected{% endif %}>April</option>
+          <option value="05" {% if params.monthValue == '05' %}selected{% endif %}>May</option>
+          <option value="06" {% if params.monthValue == '06' %}selected{% endif %}>June</option>
+          <option value="07" {% if params.monthValue == '07' %}selected{% endif %}>July</option>
+          <option value="08" {% if params.monthValue == '08' %}selected{% endif %}>August</option>
+          <option value="09" {% if params.monthValue == '09' %}selected{% endif %}>September</option>
+          <option value="10" {% if params.monthValue == '10' %}selected{% endif %}>October</option>
+          <option value="11" {% if params.monthValue == '11' %}selected{% endif %}>November</option>
+          <option value="12" {% if params.monthValue == '12' %}selected{% endif %}>December</option>
+        </select>
+      </div>
+    </div>
+    <div class="govuk-date-input__item">
+      <div class="govuk-form-group">
+        {#
+        <label class="govuk-label govuk-date-input__label" for="{{params.prefix}}Year">
+          Year
+        </label>
+        #}
+
+        {# Year dropdown #}
+        <select class="govuk-select" id="{{params.prefix}}Year" name="{{params.prefix}}Year">
+          <option value="" {% if params.yearValue == "" %}selected{% endif %}></option>
+          {% for year in params.yearList -%}
+            <option value="{{ year }}" {% if params.yearValue == year %}selected{% endif %}>{{ year }}</option>
+          {%- endfor %}
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endmacro %}

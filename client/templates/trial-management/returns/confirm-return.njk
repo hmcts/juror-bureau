@@ -1,0 +1,68 @@
+{% extends "layouts/default-dashboard.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+
+{% set currentApp = "Trial management" %}
+
+{% block page_identifier %}Return panel members{% endblock %}
+
+{% block beforeContent %}
+    {% include "includes/back-link.njk" %}
+{% endblock %}
+
+{% block content %}
+{% set jurorPlural = "" if 1 == selectedJurors.length else "s" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-l">Return panel members</h1>
+      <form method="post">
+
+        {% if isPanel %}
+          <p class="govuk-body govuk-!-padding-bottom-5">You're returning {{selectedJurors.length}} panel member{{jurorPlural}} to the list of jurors in waiting.</p>
+        {% elif handleAttendance == 'confirm' %}
+          <p class="govuk-body govuk-!-padding-bottom-5">You're returning {{selectedJurors.length}} juror{{jurorPlural}} and confirming their attendance for today.</p>
+        {% elif handleAttendance == 'return' %}
+          <p class="govuk-body govuk-!-padding-bottom-5">You're returning {{selectedJurors.length}} juror{{jurorPlural}}.</p>
+          <p class="govuk-body govuk-!-padding-bottom-5">You have not confirmed their attendance yet. You'll need to do this separately.</p>
+        {% elif handleAttendance == 'complete' %}
+          <p class="govuk-body govuk-!-padding-bottom-5">You're returning {{selectedJurors.length}} juror{{jurorPlural}} and confirming their attendance for today.</p>
+        {% endif %}
+
+        {% if checkInTime %}
+          <p class="govuk-heading-s">Check in</p>
+          <p class="govuk-body govuk-!-padding-bottom-5">A check in time of <strong>{{checkInTime}}</strong> will be applied to any juror{{jurorPlural}} without a check in time.
+        {% endif %}
+        {% if checkOutTime %}
+          <p class="govuk-heading-s">Check out</p>
+          <p class="govuk-body govuk-!-padding-bottom-5">A check out time of <strong>{{checkOutTime}}</strong> will be applied to all juror{{jurorPlural}}.
+        {% endif %}
+
+        {% if handleAttendance == 'confirm' or handleAttendance == 'return'%}
+          {{ govukInsetText({
+            text: "They'll be returned to the list of jurors in waiting, to continue their service."
+          }) }}
+        {% elif handleAttendance == 'complete' %}
+          {{ govukInsetText({
+            text: "Their service will be completed."
+          }) }}
+        {% endif %}        
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Return",
+            type: "submit",
+            attributes: {
+              id: "returnJurorsButton",
+              formAction: formActions.returnUrl
+            }
+          }) }}
+          <a id="cancelLink" class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+    </div>
+  </div>
+
+{% endblock %}

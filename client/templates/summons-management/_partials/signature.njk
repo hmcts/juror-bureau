@@ -1,0 +1,40 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+<section class="detail-section {% if hasModAccess %}mod-reply-section{% endif %}" id="signature-section">
+
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-full">
+
+      <div class="mod-reply-section__title">
+        <h2 class="govuk-heading-m">Signature
+          {{ govukTag({
+            text: "Section complete" if response.signed === true else "incomplete",
+            classes: "govuk-tag" if response.signed === true else "govuk-tag--grey"
+          }) }}
+        </h2>
+        {% if isAddChangeVisible %}
+          <div class="govuk-body">
+            <a id="signatureEdit" class="govuk-link" href="{{ url('summons.update-signature.get', { id: response.jurorNumber, type: method }) }}">Add or change</a>
+          </div>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+
+  <div class="show-details-container" id="view-signature">
+    {{ govukSummaryList({
+      rows: [
+        {
+          key: {
+            text: "Has the juror signed?"
+          },
+          value: {
+            text: "Yes" if response.signed else "Required",
+            classes: "mod-reply-section__required" if response.signed !== true
+          }
+        }
+      ]
+    }) }}
+  </div>
+</section>

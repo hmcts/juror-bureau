@@ -1,0 +1,82 @@
+  {% from "govuk/components/table/macro.njk" import govukTable %}
+
+  {% if data.expenses | length > 0%}
+
+    {% set tableRows = [] %}
+    {% for expense in data.expenses %}
+        {% set tableRows = (tableRows.push(
+          [
+            {
+              html: '<a href=' + url("juror-management.unpaid-attendance.expense-record.detail.get", { auditNumber: expense.auditNumber }) + ' class="govuk-link">' + expense.auditNumber + '</a>'
+            },
+            {
+              text: expense.attendanceFrom | dateFilter("YYYY-MM-DD", "ddd DD MMM YYYY"),
+              attributes: {
+                "data-sort-value": expense.attendanceFrom 
+              }
+            },
+            {
+              text: expense.attendanceTo | dateFilter("YYYY-MM-DD", "ddd DD MMM YYYY"),
+              attributes: {
+                "data-sort-value": expense.attendanceTo 
+              }
+            },
+            {
+              text: expense.dateSubmitted | dateFilter("YYYY-MM-DD", "ddd DD MMM YYYY"),
+              attributes: {
+                "data-sort-value": expense.submittedDate 
+              }
+            },
+            {
+              text: expense.total,
+              format: "numeric"
+            }
+          ]
+        ), tableRows) %}
+    {% endfor %}
+
+    {{ govukTable({
+      attributes: {
+        'data-module': 'moj-sortable-table'
+      },
+      head: [
+        {
+          text: "Audit number",
+          attributes: {
+            "aria-sort": "ascending"
+          }
+        },
+        {
+          text: "Attendance from",
+          attributes: {
+            "aria-sort": "none"
+          }
+        },
+        {
+          text: "Attendance to",
+          attributes: {
+            "aria-sort": "none"
+          }
+        },
+        {
+          text: "Submitted",
+          attributes: {
+            "aria-sort": "none"
+          }
+        },
+        {
+          text: "Total to approve",
+          attributes: {
+            "aria-sort": "none"
+          },
+          format: "numeric"
+        }
+      ],
+      rows: tableRows
+    }) }}
+
+  {% else %}
+
+    <p class="govuk-body">There are no results</p>
+
+  {% endif %}

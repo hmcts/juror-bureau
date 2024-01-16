@@ -1,0 +1,47 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
+{% block page_title %}{{ serviceName }} - Confirm next attendance date{% endblock %}
+
+{% block beforeContent %}
+  {% include "../../includes/back-link.njk" %}
+{% endblock %}
+  
+{% block content %}
+
+{% set _submitUrl = processUrl %}
+{% set _cancelUrl = cancelUrl %}
+
+<div class="govuk-grid-row">
+
+  <form action="{{ _submitUrl }}" method="post" id="confirmNextAttendanceDateForm">
+
+    <div class="govuk-grid-column-one-half">
+
+      {% include "includes/errors.njk" %}
+
+      <h1 class="govuk-heading-l">Confirm date next due at court</h1>
+
+      <p class="govuk-body">{{ noJurors }} jurors will be next due to attend on:</p>
+      
+      <p class="govuk-body">{{ attendanceDate }}</p>
+
+      <div class="govuk-button-group">
+        {{ govukButton({
+        text: "Continue",
+        type: "submit" 
+        }) }}
+        <a class="govuk-link" href="{{ _cancelUrl }}">Cancel</a>
+      </div>
+
+    </div>
+
+    <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+
+  </form>
+
+</div>
+
+{% endblock %}

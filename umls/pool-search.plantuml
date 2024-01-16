@@ -1,0 +1,58 @@
+@startuml pool-search
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant Page <</search>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant PoolSearchController <<pool-search.controller.js>>
+participant PoolSearchObject <<PoolSearchObject.post()>>
+
+''' TEMPLATES
+participant IndexTemplate <<pool-search/index.njk>>
+
+''' FILTERS AND VALIDATORS
+participant DateValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+
+''' JOURNEY FLOW
+Actor -> Page : request page
+
+Page -> PoolSearchController : call page controller
+
+PoolSearchController -> IndexTemplate : request and build template
+PoolSearchController <- IndexTemplate : return HTML
+Actor <- PoolSearchController : render HTML
+
+alt Search Criteria has invalid date
+  PoolSearchController <-- DateValidator : error response
+  Page <-- PoolSearchController : error response
+  Actor <-- Page : render error message
+end
+
+Page -> PoolSearchObject : search pools with criteria
+PoolSearchObject -> BackendController : send backend request
+PoolSearchObject <- BackendController : ok response
+PoolSearchController <- PoolSearchObject : resolve request
+
+alt Backend returns an error
+  PoolSearchObject <-- BackendController : error response
+  PoolSearchController <-- PoolSearchObject : reject requestObject
+  Page <-- PoolSearchController : error response
+  Actor <-- Page : render error message
+end
+
+PoolSearchController -> IndexTemplate : request and build template
+PoolSearchController <- IndexTemplate : return HTML
+
+Actor <- PoolSearchController : render HTML
+
+@enduml

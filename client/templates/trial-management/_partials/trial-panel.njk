@@ -1,0 +1,111 @@
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set panelMembers = trial.panelledJurors %}
+
+<h2 class="govuk-heading-m">{{ "Jury" if trial.is_jury_empanelled else "Panel" }}</h2>
+
+  <form method="post" id="panelledJurorsForm" >
+
+    {{ govukButton({
+      text: "Return panel members",
+      classes: "govuk-button--secondary govuk-!-margin-bottom-4",
+      attributes: {
+        id: "returnPanelButton",
+        formAction: formActions.returnUrl
+      }
+    }) }}
+
+    {% if errors.items["selectedJurors"] %}<div class="error-allocation">
+      <p class="govuk-error-message">{{ errors.items['selectedJurors'][0].details }}</p>
+      </div>
+    {% endif %}
+    {% if errors.items["selectedJurors"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
+
+      <div class="govuk-body"> <span id="checkedJurors"></span> of selected <span id="totalJurors"></span> </div>
+
+      <table class="govuk-table" data-module="moj-sortable-table" data-multi-select-checkbox="#select-all" id="panelledJurors" name="panelledJurors">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header" >
+              <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox" onclick="selectAll()">
+                <input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check" id="selectAllCheckbox" name="selectAllCheckbox"/>
+                <label class="govuk-label govuk-checkboxes__label">
+                  <span class="govuk-visually-hidden">Select All</span>
+                </label>
+              </div>
+            </th>
+            <th scope="col" class="govuk-table__header" aria-sort="ascending">Juror number</th>
+            <th scope="col" class="govuk-table__header" aria-sort="none">First name</th>
+            <th scope="col" class="govuk-table__header" aria-sort="none">Last name</th>
+            <th scope="col" class="govuk-table__header" aria-sort="none">Status</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+      
+        {% for member in panelMembers %}
+          {# This might need updating if we need to return Not Used or Challenged jurors manually #}
+          {% if not trial.is_jury_empanelled or member.juror_status === 'Juror' %}
+          <tr class="govuk-table__row govuk-table__row--selected">
+            <td class="govuk-table__cell">
+              <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox" onclick="checkSet()">
+                <input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check" id="select-{{ member.juror_number }}" name="selectedJurors" value="{{ member.juror_number }}">
+                <label class="govuk-label govuk-checkboxes__label" for="select-{{ member.juror_number }}">
+                  <span class="govuk-visually-hidden">Select {{ member.first_name }} {{ member.last_name }}</span>
+                </label>
+              </div>
+            </td>
+            <td id="{{member.juror_number}}" class="govuk-table__cell jd-middle-align"><a href={{url('juror-record.overview.get', { jurorNumber: member.juror_number }) }}>{{ member.juror_number }}</a></td>
+            <td id="{{member.juror_number}}-urgent" class="govuk-table__cell jd-middle-align">{{ member.first_name  | capitalize }}</td>
+            <td id="{{member.juror_number}}-standard" class="govuk-table__cell jd-middle-align">{{ member.last_name  | capitalize }}</td>
+            <td id="{{member.juror_number}}-total" class="govuk-table__cell jd-middle-align">{{ member.juror_status | capitalize }}</td>
+          </tr> 
+          {% endif %}
+
+        {% endfor %}
+
+      </tbody>
+    </table>
+
+    {% if errors.items["selectedJurors"] %}</div>{% endif %}
+
+    <input type="hidden" name="trialNumber" id="poolNumber" value="{{ trial.trialNumber }}">
+    <input type="hidden" name="_csrf" id="csrfToken" value="{{ csrftoken }}">
+  </form>
+
+  <script>
+
+    let allChecked = false;
+    let chkbxs = document.getElementsByName('selectedJurors');
+    document.getElementById("totalJurors").innerHTML = chkbxs.length;
+    document.getElementById("checkedJurors").innerHTML = 0;
+
+    function selectAll() {
+
+      if (allChecked) {
+        allChecked = false;
+        for(var i = 0; i < chkbxs.length; i++){
+          if (chkbxs[i].type=='checkbox')
+          chkbxs[i].checked = false;   
+        }
+        document.getElementById("checkedJurors").innerHTML = $('input:checkbox:checked').length;
+      } else {
+        allChecked = true;
+        for(var i = 0; i <chkbxs.length; i++){
+          if (chkbxs[i].type=='checkbox')
+          chkbxs[i].checked = true;  
+        }
+        document.getElementById("checkedJurors").innerHTML = $('input:checkbox:checked').length - 1;
+      }
+      
+    };
+
+    function checkSet() {
+      document.getElementById("checkedJurors").innerHTML = $('input:checkbox:checked').length;
+      if (chkbxs.length > document.getElementsByName('selectedJurors:checked').length) {
+        document.getElementsByName('selectAllCheckbox')[0].checked = false;
+        allChecked = false;
+      }
+    }
+  
+  </script>

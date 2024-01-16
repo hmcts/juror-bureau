@@ -1,0 +1,27 @@
+@startuml sequence-general
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+participant Actor
+participant SummonsResponse <</summons-replies/response>>
+participant SummonsProcess <</summons-replies/process>>
+participant SummonsProcessController <<process-reply.controller.js>>
+participant ProcessingActionValidator <<summons-management.js>>
+participant ProcessingActionController
+
+Actor -> SummonsResponse : enter summons response details
+
+SummonsResponse -> SummonsProcessController : call page controller
+SummonsProcess <- SummonsProcessController : render processing actions form
+
+SummonsProcess -> SummonsProcessController : select options and post
+SummonsProcessController -> ProcessingActionValidator : validate the option selected
+
+alt No option selected
+  SummonsProcessController <- ProcessingActionValidator
+  SummonsProcess <- SummonsProcessController : render processing actions form with errors 
+end
+
+SummonsProcessController -> ProcessingActionController : continue processing the summons
+
+@enduml

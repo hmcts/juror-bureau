@@ -1,0 +1,34 @@
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{{ govukRadios({
+  name: "processActionType",
+  fieldset: {
+    legend: {
+      text: "How do you want to process this reply?",
+      classes: "govuk-fieldset__legend--l"
+    }
+  },
+  items: [
+    {
+      value: "deferral",
+      text: "Defer juror"
+    },
+    {
+      value: "excusal",
+      text: "Excusal - grant or refuse"
+    },
+    {
+      value: "disqualify",
+      text: "Disqualify"
+    },
+    {
+      value: "postpone",
+      text: "Postpone"
+    },
+    {
+      value: "reassign",
+      text: "Re-assign to an active pool"
+    }
+  ],
+  errorMessage: processActionTypeError
+}) }}

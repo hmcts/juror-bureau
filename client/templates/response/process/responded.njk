@@ -1,0 +1,73 @@
+{% extends "../../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+
+{% block page_title %}
+  {{ serviceName }} - process - responded{% endblock %}
+
+{% block page_identifier %}process - responded{% endblock %}
+
+{% set currentApp = "Summons replies" %}
+
+{% block beforeContent %}
+  {% if hasModAccess %}
+    <a href="{{ backUrl }}" class="govuk-back-link">Back</a>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+
+  {% include "../../includes/errors.njk" %}
+
+  {% if errors.items["responded"] %}
+    {% set respondedError = {"text": errors.items['responded'][0].details} %}
+  {% else %}
+    {% set respondedError = undefined %}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form action="{{ postUrl }}" method="post" id="respondedForm">
+
+        <h1 class="govuk-heading-xl">
+          {% if hasModAccess %}
+            Mark as responded
+          {% else %}
+            <span class="govuk-caption-xl">{{ replyDetails.jurorName }}</span>
+            Responded
+          {% endif %}
+        </h1>
+
+        {{ govukCheckboxes({
+          idPrefix: "responded",
+          name: "responded",
+          items: [
+            {
+              value: "responded",
+              text: "Mark juror as 'responded'",
+              checked: false
+            }
+          ],
+          errorMessage: respondedError
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Confirm"
+          }) }}
+          <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="jurorNumber" id="jurorNumber" value="{{ jurorNumber }}">
+        <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+        <input type="hidden" name="version" id="version" value="{{ replyDetails.version }}">
+
+      </form>
+      
+    </div>
+  </div>
+
+{% endblock %}
+
+

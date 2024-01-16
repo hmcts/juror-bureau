@@ -1,0 +1,65 @@
+{# Displays available pools for a week. If none exist, shows deferral maintenance option #}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+
+{% set poolRowList = [] %}
+{% for poolRow in params.deferralPoolWeek.deferralOptions %}
+    {% set poolRowUrl %}
+        <a href="{{ params.url('pool-overview.get', { poolNumber: poolRow.poolNumber }) }}">{{ poolRow.poolNumber }}</a>
+    {% endset %}
+
+    {% set poolRowDate = poolRow.serviceStartDate | dateFilter("YYYY-MM-DD", "ddd DD MMM") %}
+
+    {% if poolRow.utilisationDescription == "IN_MAINTENANCE" %}
+        {% set poolRowUtilisationText = " JURORS IN MAINTENANCE" %}
+        {% set poolRowUtilisationClass = "govuk-tag--grey" %}
+    {% else %}
+        {% set poolRowUtilisationText = " JURORS " + poolRow.utilisationDescription %}
+        {% set poolRowUtilisationClass = "govuk-tag--pink" if poolRow.utilisationDescription == "SURPLUS" else "govuk-tag--blue" %}
+    {% endif %}
+
+    {% set poolRowText = "Add to pool " + poolRowUrl %}
+    {% set poolRowOutput %}
+        {{ poolRowText | safe }}
+        <span class="govuk-!-margin-left-4 govuk-!-margin-right-4">
+            {{poolRowDate}}
+        </span>
+        {{govukTag({
+            text: poolRow.utilisation + poolRowUtilisationText,
+            classes: poolRowUtilisationClass
+        })}}
+    {% endset %}
+    {% if poolRow.poolNumber %}
+        {% set poolRowList = (poolRowList.push({
+                value: poolRow.serviceStartDate + '_' + poolRow.poolNumber, 
+                text: poolRowOutput | safe
+            }), poolRowList) %}
+    {% else %}
+        {% set poolRowOutput %}
+        <span class='govuk-!-margin-right-4'>Send to deferral maintenance for this date</span>
+        {{govukTag({
+            text: poolRow.utilisation + poolRowUtilisationText,
+            classes: poolRowUtilisationClass
+        }) }}
+        {% endset %}
+        {% set poolRowList = (poolRowList.push({
+                value: params.deferralPoolWeek.weekCommencing, 
+                text: poolRowOutput | safe
+            }), poolRowList) %}
+    {% endif %}
+{% endfor %}
+
+{{ govukRadios({
+        name: params.name,
+        idPrefix: params.idPrefix if params.idPrefix else params.name,
+        fieldset: {
+            legend: {
+            text: params.deferralPoolWeek.weekCommencing | dateFilter("YYYY-MM-DD", "dddd D MMMM YYYY"),
+            classes: params.headerClass
+            }
+        },
+        items: poolRowList,
+        value: params.value,
+        errorMessage: params.errorMessage
+}) }}
