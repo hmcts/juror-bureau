@@ -29,6 +29,6 @@ data "azurerm_key_vault" "juror" {
 
 resource "azurerm_key_vault_secret" "redis_connection_string" {
   name         = "${var.component}-redisConnection"
-  value        = "rediss://:${urlencode(module.juror-bureau.access_key)}@${module.juror-public-redis.host_name}:${module.juror-public-redis.redis_port}"
+  value        = "rediss://:${urlencode(module.juror-bureau-redis.access_key)}@${module.juror-public-redis.host_name}:${module.juror-public-redis.redis_port}"
   key_vault_id = data.azurerm_key_vault.juror.id
 }
