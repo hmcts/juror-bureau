@@ -4,15 +4,14 @@
 
 String type = "nodejs"
 String product = "juror"
-String component = "public"
+String component = "bureau"
 
-def branchesToSync = []
+def branchesToSync = ['demo', 'ithc', 'perftest']
 
 def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 
 withPipeline(type, product, component) {
-  // loadVaultSecrets(secrets)
   enableSlackNotifications('#juror-build-notices')
-  // syncBranchesWithMaster(branchesToSync)
+  syncBranchesWithMaster(branchesToSync)
 }
 
