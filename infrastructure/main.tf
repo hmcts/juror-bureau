@@ -7,7 +7,7 @@ locals {
   vaultName    = "${var.product}-${var.env}"
 }
 
-module "juror-public-redis" {
+module "juror-bureau-redis" {
   source                        = "git@github.com:hmcts/cnp-module-redis?ref=master"
   product                       = "${var.product}-${var.component}-redis-cache"
   location                      = var.location
@@ -29,6 +29,6 @@ data "azurerm_key_vault" "juror" {
 
 resource "azurerm_key_vault_secret" "redis_connection_string" {
   name         = "${var.component}-redisConnection"
-  value        = "rediss://:${urlencode(module.juror-public-redis.access_key)}@${module.juror-public-redis.host_name}:${module.juror-public-redis.redis_port}"
+  value        = "rediss://:${urlencode(module.juror-bureau.access_key)}@${module.juror-public-redis.host_name}:${module.juror-public-redis.redis_port}"
   key_vault_id = data.azurerm_key_vault.juror.id
 }
