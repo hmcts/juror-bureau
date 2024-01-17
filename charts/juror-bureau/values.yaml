@@ -1,7 +1,7 @@
 nodejs:
   image: 'sdshmctspublic.azurecr.io/juror/public:latest'
   applicationPort: 3000
-  ingressHost: juror-bureau.{{ .Values.global.environment }}.apps.hmcts.net
+  ingressHost: juror.{{ .Values.global.environment }}.apps.hmcts.net
   aadIdentityName: juror
   keyVaults:
     juror:
