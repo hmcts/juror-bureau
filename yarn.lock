@@ -2265,7 +2265,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chokidar@npm:>=3.0.0 <4.0.0, chokidar@npm:^3.3.0, chokidar@npm:^3.5.1":
+"chokidar@npm:>=3.0.0 <4.0.0, chokidar@npm:^3.5.1":
   version: 3.5.3
   resolution: "chokidar@npm:3.5.3"
   dependencies:
@@ -8049,7 +8049,7 @@ __metadata:
     moment-business: ^3.0.1
     named-routes: ^2.0.6
     nsp: ^3.1.0
-    nunjucks: 3.2.2
+    nunjucks: 3.2.4
     nunjucks-async-loader: 1.1.5
     open: 0.0.5
     pdfmake: ^0.1.34
@@ -9622,20 +9622,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nunjucks@npm:3.2.2":
-  version: 3.2.2
-  resolution: "nunjucks@npm:3.2.2"
+"nunjucks@npm:3.2.4":
+  version: 3.2.4
+  resolution: "nunjucks@npm:3.2.4"
   dependencies:
     a-sync-waterfall: ^1.0.0
     asap: ^2.0.3
-    chokidar: ^3.3.0
     commander: ^5.1.0
-  dependenciesMeta:
+  peerDependencies:
+    chokidar: ^3.3.0
+  peerDependenciesMeta:
     chokidar:
       optional: true
   bin:
     nunjucks-precompile: bin/precompile
-  checksum: 8ca0239107513c224d37dc2d2b8078410256cc8bbe2b5a6cf14a8b1d359a4489348fa6e6b2080c78568c2d862aec0a5f273b58aa579fb3e0c401b07e96fae91a
+  checksum: 8b902a9deb9ff0f5c9ebbd2c7f96dfe5800bf42bdfc91d8f829fc0440ec1f87901593e20479f5ba1bddcc9f2472b16a5e932be5863dcdec0899a27c01a03df32
   languageName: node
   linkType: hard
 
