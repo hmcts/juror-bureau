@@ -1,0 +1,47 @@
+{% extends "../../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_title %}
+  {{ serviceName }} - {{ subServiceName }}
+{% endblock %}
+
+{% block page_identifier %}{{ pageIdentifier }}{% endblock %}
+
+{% block beforeContent %}
+
+  {{ govukBackLink({
+    text: "Back",
+    href: changeUrl,
+    attributes: {
+      id: "backLinkAnchor"
+    }
+  }) }}
+
+{% endblock %}
+
+{% block content %}
+
+  {% set outsideCatchmentArea = "Juror's postcode is outside the catchment area of this court" %}
+  {% set noCatchmentArea = "Juror's postcode is not in any court catchment area" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+
+      <h1 class="govuk-heading-l">{{ outsideCatchmentArea if catchmentAreas > 0 else noCatchmentArea }}</h1>
+
+      <div class="govuk-button-group">
+        {{ govukButton({
+          text: "Create juror record anyway",
+          href: continueUrl,
+          attributes: {
+            id: "continueButton"
+          }
+        }) }}
+        <a class="govuk-link" href="{{ changeUrl }}">Check or change postcode</a>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

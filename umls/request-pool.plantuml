@@ -1,0 +1,183 @@
+@startuml request-pool
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant PoolManagement <</pool-management>>
+participant Page <</pool-management/request-pool>>
+participant "Step 1" <</select-court>>
+participant "Step 2" <</pool-details>>
+participant "Step 2.1" <</select-court>>
+participant "Step 2.2" <</change-attendance-date>>
+participant "Step 2.3" <</change-attendance-time>>
+participant "Step 2.4" <</change-deferrals>>
+participant "Step 3" <</check-details>>
+participant "Step 3.1" <</change-pool-number>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant PoolManagementController <<pool-management.controller.js>>
+participant RequestPoolController <<request-pool.controller.js>>
+participant MatchCourtObject <<matchUserCourt()>>
+participant CreatePoolRequestObj <<createPoolRequest.post()>>
+
+''' TEMPLATES
+participant SelectCourtTemplate <<select-court.njk>>
+participant PoolDetailsTemplate <<pool-details/index.njk>>
+participant CheckDetailsTemplate <<check-details.njk>>
+participant ChangeDateTemplate <<change-attendance-date.njk>>
+participant ChangeTimeTemplate <<change-attendance-time.njk>>
+participant ChangeDeferralsTemplate <<change-deferrals.njk>>
+participant ChangePoolNumberTemplate <<change-pool-number.njk>>
+
+''' FILTERS AND VALIDATORS
+participant CourtValidator
+participant DateValidator
+participant TimeValidator
+participant DeferralsValidator
+participant PoolNumberValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+
+''' JOURNEY FLOW
+Actor -> Page : request page
+
+Page -> RequestPoolController : call page controller
+RequestPoolController -> SelectCourtTemplate : request and build template
+"Step 1" <- SelectCourtTemplate : return html
+Actor <- "Step 1" : render html
+
+"Step 1" -> RequestPoolController : call page controller
+RequestPoolController -> PoolDetailsTemplate : request and build template
+"Step 2" <- PoolDetailsTemplate : return html
+Actor <- "Step 2" : render html
+
+alt Change court location
+  "Step 2" -> RequestPoolController : call page controller
+  RequestPoolController -> SelectCourtTemplate : request and build template
+  "Step 2.1" <- SelectCourtTemplate : return html
+  Actor <- "Step 2.1" : render html
+  Actor -> "Step 2.1" : select a new court
+  "Step 2.1" -> RequestPoolController : call page controller
+  RequestPoolController -> CourtValidator : validate selected court
+  RequestPoolController <- CourtValidator : selected court is valid
+  RequestPoolController -> PoolDetailsTemplate : request and build template
+  "Step 2" <- PoolDetailsTemplate : return html
+  Actor <- "Step 2" : render html
+
+  alt Selected court is not valid
+    RequestPoolController <-- CourtValidator : error response
+    "Step 2.1" <-- RequestPoolController : error response
+    Actor <-- "Step 2.1" : render error message
+  end
+end
+
+alt Change attendance date
+  "Step 2" -> RequestPoolController : call page controller
+  RequestPoolController -> ChangeDateTemplate : request and build template
+  "Step 2.2" <- ChangeDateTemplate : return html
+  Actor <- "Step 2.2" : render html
+  Actor -> "Step 2.2" : select a new attendance date
+  "Step 2.2" -> RequestPoolController : call page controller
+  RequestPoolController -> DateValidator : validate selected date
+  RequestPoolController <- DateValidator : selected date is valid
+  RequestPoolController -> PoolDetailsTemplate : request and build template
+  "Step 2" <- PoolDetailsTemplate : return html
+  Actor <- "Step 2" : render html
+
+  alt Selected date is not valid
+    RequestPoolController <-- DateValidator : error response
+    "Step 2.2" <-- RequestPoolController : error response
+    Actor <-- "Step 2.2" : render error message
+  end
+end
+
+alt Change attendance time
+  "Step 2" -> RequestPoolController : call page controller
+  RequestPoolController -> ChangeTimeTemplate : request and build template
+  "Step 2.3" <- ChangeTimeTemplate : return html
+  Actor <- "Step 2.3" : render html
+  Actor -> "Step 2.3" : select a new attendance time
+  "Step 2.3" -> RequestPoolController : call page controller
+  RequestPoolController -> TimeValidator : validate selected time
+  RequestPoolController <- TimeValidator : selected time is valid
+  RequestPoolController -> PoolDetailsTemplate : request and build template
+  "Step 2" <- PoolDetailsTemplate : return html
+  Actor <- "Step 2" : render html
+
+  alt Selected time is not valid
+    RequestPoolController <-- TimeValidator : error response
+    "Step 2.3" <-- RequestPoolController : error response
+    Actor <-- "Step 2.3" : render error message
+  end
+end
+
+alt Change deferrals
+  "Step 2" -> RequestPoolController : call page controller
+  RequestPoolController -> ChangeDeferralsTemplate : request and build template
+  "Step 2.4" <- ChangeDeferralsTemplate : return html
+  Actor <- "Step 2.4" : render html
+  Actor -> "Step 2.4" : enter number of deferrals
+  "Step 2.4" -> RequestPoolController : call page controller
+  RequestPoolController -> DeferralsValidator : validate selected time
+  RequestPoolController <- DeferralsValidator : selected number of deferrals is valid
+  RequestPoolController -> PoolDetailsTemplate : request and build template
+  "Step 2" <- PoolDetailsTemplate : return html
+  Actor <- "Step 2" : render html
+
+  alt Selected number of deferrals is not valid
+    RequestPoolController <-- DeferralsValidator : error response
+    "Step 2.4" <-- RequestPoolController : error response
+    Actor <-- "Step 2.4" : render error message
+  end
+end
+
+"Step 2" -> RequestPoolController : call page controller
+RequestPoolController -> CheckDetailsTemplate : request and build template
+"Step 3" <- CheckDetailsTemplate : return html
+Actor <- RequestPoolController : render html
+
+alt Change pool number
+  "Step 3" -> RequestPoolController : call page controller
+  RequestPoolController -> ChangePoolNumberTemplate : request and build template
+  "Step 3.1" <- ChangePoolNumberTemplate : return html
+  Actor <- "Step 3.1" : render html
+  Actor -> "Step 3.1" : enter a new pool number
+  "Step 3.1" -> RequestPoolController : call page controller
+  RequestPoolController -> PoolNumberValidator : validate selected time
+  RequestPoolController <- PoolNumberValidator : pool number is valid
+  RequestPoolController -> PoolDetailsTemplate : request and build template
+  "Step 3" <- PoolDetailsTemplate : return html
+  Actor <- "Step 3" : render html
+
+  alt Selected pool number is not valid
+    RequestPoolController <-- PoolNumberValidator : error response
+    "Step 3.1" <-- RequestPoolController : error response
+    Actor <-- "Step 3.1" : render error message
+  end
+end
+
+"Step 3" -> RequestPoolController : call page controller
+RequestPoolController -> CreatePoolRequestObj : call requestObject
+CreatePoolRequestObj -> BackendController : post data
+
+RequestPoolController <- CreatePoolRequestObj : resolve requestObject
+PoolManagement <- RequestPoolController
+PoolManagement -> PoolManagementController : call page controller
+PoolManagementController -> "PoolManagementTemplate" : request and build template
+PoolManagement <- "PoolManagementTemplate" : return html
+Actor <- PoolManagement : render html
+
+alt Backend returns an error
+  CreatePoolRequestObj <-- BackendController : error response
+  RequestPoolController <-- CreatePoolRequestObj : reject requestObject
+  "Step 3" <-- RequestPoolController : error response
+  Actor <-- "Step 3" : render error message
+end
+
+@enduml

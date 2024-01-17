@@ -1,0 +1,151 @@
+@startuml bulk-reassign
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant PoolOverviewPage <</pool-management/pool-overview/:poolnumber>>
+participant SelectPoolPage <</pool-management/:poolNumber/reassign-jurors>>
+participant SelectCourtPage <</pool-management/:poolNumber/select-court>>
+participant ValidateMovementPage <</pool-management/:poolNumber/reassign>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant PoolOverviewController <<pool-overview.controller.js>> #lightyellow
+participant ReassignController <<reassign.controller.js>> #lightyellow
+participant AvailablePoolsObject <<availablePools.get()>> #lightyellow
+participant ValidateMovementObject <<validateMovement.get()>> #lightyellow
+participant ReassignJurorObject <<reassignJuror.put()>> #lightyellow
+
+''' TEMPLATES
+participant PoolOverviewTemplate <<pool-management/pool-overview/index.njk>> #lavender
+participant SelectPoolTemplate <<juror-management/reassign/pools.njk>> #lavender
+participant ChangeCourtTemplate <<pool-management/_common/select-court.njk>> #lavender
+participant ValidateMovementTemplate <<pool-management/movement/bulk-validate.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant JurorSelectValidator
+participant JurorBulkReassignValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> PoolOverviewPage : select jurors and click reassign
+
+PoolOverviewPage -> PoolOverviewController : call page controller
+
+alt No jurors selected from pool
+  PoolOverviewPage <- PoolOverviewController : error response
+  Actor <- PoolOverviewPage: render error message
+end
+
+PoolOverviewController -> ReassignController : call reassign conrtoller
+
+ReassignController -> AvailablePoolsObject : build request object
+AvailablePoolsObject -> BackendController : send backend request
+AvailablePoolsObject <- BackendController : ok response
+ReassignController <- AvailablePoolsObject : resolve request
+
+alt Failed to available pools
+    AvailablePoolsObject <-- BackendController : error response
+    ReassignController <-- AvailablePoolsObject : reject requestObject
+    ReassignController -> ErrorTemplate : request and build template
+    ReassignController <- ErrorTemplate : return HTML
+    GenericErrorPage <- ReassignController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+ReassignController -> SelectPoolTemplate : request and build template
+ReassignController <- SelectPoolTemplate : return HTML
+SelectPoolPage <- ReassignController : return HTML
+Actor <- SelectPoolPage : render HTML
+
+Actor -> SelectPoolPage : click change court link
+
+SelectPoolPage -> ReassignController : call page conrtoller
+
+ReassignController -> ChangeCourtTemplate : request and build template
+ReassignController <- ChangeCourtTemplate : return HTML
+SelectCourtPage <- ReassignController : return HTML
+Actor <- SelectCourtPage : render HTML
+
+Actor -> SelectCourtPage : enter loc code and select court
+
+SelectCourtPage -> ReassignController : call page conrtoller
+
+alt No/Invalid court selected
+  SelectPoolPage <- ReassignController : error response
+  Actor <- SelectPoolPage: render error message
+end
+
+ReassignController -> AvailablePoolsObject : build request object
+AvailablePoolsObject -> BackendController : send backend request
+AvailablePoolsObject <- BackendController : ok response
+ReassignController <- AvailablePoolsObject : resolve request
+
+ReassignController -> SelectPoolTemplate : request and build template
+ReassignController <- SelectPoolTemplate : return HTML
+SelectPoolPage <- ReassignController : return HTML
+Actor <- SelectPoolPage : render HTML
+
+Actor -> SelectPoolPage : select a pool from the list
+
+SelectPoolPage -> ReassignController : call page controller
+
+alt No pool selected from list
+  SelectPoolPage <- ReassignController : error response
+  Actor <- SelectPoolPage: render error message
+end
+
+ReassignController -> ValidateMovementObject : build request object
+ValidateMovementObject -> BackendController : send backend request
+ValidateMovementObject <- BackendController : ok response
+ReassignController <- ValidateMovementObject : resolve request
+
+alt Failed to validate movement
+    ValidateMovementObject <-- BackendController : error response
+    ReassignController <-- ValidateMovementObject : reject requestObject
+    ReassignController -> ErrorTemplate : request and build template
+    ReassignController <- ErrorTemplate : return HTML
+    GenericErrorPage <- ReassignController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+ReassignController -> ValidateMovementTemplate : request and build template
+ReassignController <- ValidateMovementTemplate : return HTML
+ValidateMovementPage <- ReassignController : return HTML
+Actor <- ValidateMovementPage : render HTML
+
+Actor -> ValidateMovementPage : continue with reassignment
+
+ValidateMovementPage -> ReassignController : call page controller
+
+ReassignController -> ReassignJurorObject : build request object
+ReassignJurorObject -> BackendController : send backend request
+ReassignJurorObject <- BackendController : ok response
+ReassignController <- ReassignJurorObject : resolve request
+
+alt Failed to reassign jurors
+    ReassignJurorObject <-- BackendController : error response
+    ReassignController <-- ReassignJurorObject : reject requestObject
+    ReassignController -> ErrorTemplate : request and build template
+    ReassignController <- ErrorTemplate : return HTML
+    GenericErrorPage <- ReassignController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+ReassignController -> PoolOverviewController : call pool overview controller
+PoolOverviewController -> PoolOverviewTemplate : request and build template
+PoolOverviewController <- PoolOverviewTemplate : return HTML
+PoolOverviewPage <- PoolOverviewController : return HTML
+Actor <- PoolOverviewPage : render HTML
+
+
+
+
+
+
+
+    

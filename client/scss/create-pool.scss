@@ -1,0 +1,8 @@
+.mod-postcode-checkboxes {
+    display: grid;
+    grid-template-columns: max-content max-content max-content;
+  
+    > div {
+      margin-right: 50px;
+    }
+  }

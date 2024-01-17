@@ -1,0 +1,45 @@
+{% extends "../../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_title %}
+  {{ serviceName }} - paper response - inelegible age
+{% endblock %}
+
+{% block page_identifier %}paper response - inelegible age{% endblock %}
+
+{% set currentApp = "Summons replies" %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+
+      <form method="post" action="{{ postUrl }}" id="ineligibleAgeConfirm" >
+
+        <h1 class="govuk-heading-xl">Check the date of birth</h1>
+
+        <p class="govuk-body govuk-!-margin-bottom-5">You entered the juror’s date of birth as {{ dob }}.</p>
+            
+        <p class="govuk-body">This makes them {{ yearsOld }} years old and ineligible for jury service.</p>
+
+        <h2 class="govuk-heading-m  govuk-!-margin-bottom-6">Is their date of birth correct?</h2>
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+              text: "Yes - disqualify juror",
+              type: "submit",
+              attributes: {
+              id: "disqualifyButton"
+            }
+          }) }}
+
+          <a class="govuk-link" href="{{ backLinkUrl.url }}">No - change date</a>
+        </div>
+        <input type="hidden" id="csrfToken" name="_csrf" value="{{ csrftoken }}">
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

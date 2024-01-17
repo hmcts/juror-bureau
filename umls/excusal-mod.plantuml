@@ -1,0 +1,82 @@
+@startuml excusal-mod
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant ProcessReplyPage <</process>>
+participant ExcusalPage <</excusal>>
+participant SummonsInboxPage <</inbox>>
+
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant SummonsManagementController <<summons-management.controller.js>>
+participant ExcusalCodesObject <<excusal.get()>>
+participant ExcusalObject <<excusalObject.put()>>
+participant InboxController <<inbox.controller.js>>
+
+''' TEMPLATES
+participant ExcusalTemplate <<summons-management/excusal.njk>>
+
+''' FILTERS AND VALIDATORS
+participant ExcusalValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+
+''' JOURNEY FLOW
+Actor -> ProcessReplyPage : grant or refuse excusal
+
+ProcessReplyPage -> SummonsManagementController : call page controller
+
+SummonsManagementController -> ExcusalCodesObject : build request object
+ExcusalCodesObject -> BackendController : send backend request
+ExcusalCodesObject <- BackendController : ok response
+SummonsManagementController <- ExcusalCodesObject : resolve request
+
+SummonsManagementController -> ExcusalTemplate : request and build template
+SummonsManagementController <- ExcusalTemplate : return HTML
+ExcusalPage <- SummonsManagementController : return HTML
+Actor <- ExcusalPage : render HTML
+
+alt Failed to retrieve excusal codes
+    ExcusalCodesObject <-- BackendController : error response
+    SummonsManagementController <-- ExcusalCodesObject : reject requestObject
+    ProcessReplyPage <-- SummonsManagementController : redirect to process reply page
+    Actor <-- ProcessReplyPage : redirect to process reply page
+end
+
+Actor -> ExcusalPage : enter excusal reason and decision
+
+ExcusalPage -> SummonsManagementController : call page controller
+
+SummonsManagementController -> ExcusalValidator : validate reason and decision
+SummonsManagementController <- ExcusalValidator : reason and decision are valid
+
+alt Excusal reason or decision is invalid or missing
+    SummonsManagementController <-- ExcusalValidator : reason or decision is invalid or missing
+    ExcusalPage <-- SummonsManagementController : error response
+    Actor <-- ExcusalPage : render error message
+end
+
+SummonsManagementController -> ExcusalObject : build request object
+ExcusalObject -> BackendController : send backend request
+ExcusalObject <- BackendController : ok response
+SummonsManagementController <- ExcusalObject : resolve request
+
+SummonsManagementController -> InboxController : redirect to inbox
+SummonsInboxPage <- InboxController : redirect to inbox
+Actor <- SummonsInboxPage : redirect to inbox
+
+alt Failed to process excusal
+    ExcusalObject <-- BackendController : error response
+    SummonsManagementController <-- ExcusalObject : reject requestBody
+    ExcusalPage <-- SummonsManagementController : error response
+    Actor <-- ExcusalPage : render error message
+end
+
+@enduml

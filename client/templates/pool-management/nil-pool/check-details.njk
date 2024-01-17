@@ -1,0 +1,113 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% set currentApp = "Pool management" %}
+
+{% block page_identifier %}Create Nil Pool{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <h1 class="govuk-heading-l">Check nil pool details</h1>
+
+      <form action="{{ url('nil-pool.check-details.post') }}" method="post" id="checkDetailsForm">
+
+        {{ govukSummaryList({
+          classes: "govuk-!-width-three-quarters",
+          attributes: {
+            id: "nilPoolDetails"
+          },
+          rows: [
+            {
+              key: {
+                text: "Nil pool details",
+                classes: "govuk-heading-m"
+              },
+              actions: {
+                items: [
+                  {
+                    href: "/pool-management/nil-pool",
+                    text: "Change"
+                  }
+                ]
+              }
+            },
+            {
+              key: {
+                text: "Court name"
+              },
+              value: {
+                text: (poolDetails.courtName | capitalizeFully) + " (" + poolDetails.courtCode + ")"
+              }
+            },
+            {
+              key: {
+                text: "Attendance date"
+              },
+              value: {
+                text: poolDetails.attendanceDate | dateFilter(null, "dddd DD MMMM YYYY")
+              }
+            },
+            {
+              key: {
+                text: "Pool type"
+              },
+              value: {
+                text: poolDetails.poolType | transformPoolType
+              }
+            }
+          ]
+        }) }}
+
+        {{ govukSummaryList({
+          classes: "govuk-!-width-three-quarters",
+          attributes: {
+            id: "poolNumber"
+          },
+          rows: [
+            {
+              key: {
+                text: "Pool number",
+                classes: "govuk-heading-m"
+              }
+            },
+            {
+              key: {
+                text: "Pool number"
+              },
+              value: {
+                text: poolDetails.poolNumber
+              }
+            }
+          ]
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Create nil pool",
+            type: "submit",
+            attributes: {
+              id: "createNilPoolButton"
+            }
+          }) }}
+
+          <a class="govuk-link" href="{{ url('pool-management.get') }}" id="cancelAnchor">Cancel</a>
+        </div>
+
+        <input type="hidden" name="attendanceDate" value="{{ poolDetails.attendanceDate }}">
+        <input type="hidden" name="attendanceTime" value="{{ poolDetails.attendanceTime }}">
+        <input type="hidden" name="courtCode" value="{{ poolDetails.courtCode }}">
+        <input type="hidden" name="locationName" value="{{ poolDetails.locationName }}">
+        <input type="hidden" name="poolNumber" value="{{ poolDetails.poolNumber }}">
+        <input type="hidden" name="poolType" value="{{ poolDetails.poolType }}">
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+
+      </form>
+
+    </div>
+  </div>
+{% endblock %}

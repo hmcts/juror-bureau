@@ -1,0 +1,126 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set currentApp = "Senior Jury Officer tasks" %}
+
+{% block page_identifier %}Uncomplete service{% endblock %}
+
+{% block page_title %}
+  Senior Jury Officer tasks - Uncomplete service
+{% endblock %}
+
+{% set searchByJurorError = undefined %}
+{% if errors.items["searchByJuror"] %}
+  {% set searchByJurorError = {"text": errors.items['searchByJuror'][0].details} %}
+{% endif %}
+
+{% set searchByPoolError = undefined %}
+{% if errors.items["searchByPool"] %}
+  {% set searchByPoolError = {"text": errors.items['searchByPool'][0].details} %}
+{% endif %}
+
+{% set jurorHTML %}
+  {{ govukInput({
+    id: "searchByJuror",
+    name: "searchByJuror",
+    classes: "govuk-!-width-one-half",
+    value: tmpFields.searchByJuror,
+    label: {
+      text: "Enter juror name, number or postcode"
+    },
+    errorMessage: searchByJurorError
+  }) }}
+{% endset %}
+
+{% set poolHTML %}
+  {{ govukInput({
+    id: "searchByPool",
+    name: "searchByPool",
+    classes: "govuk-!-width-one-half",
+    value: tmpFields.searchByPool,
+    label: {
+      text: "Enter pool number"
+    },
+    errorMessage: searchByPoolError
+  }) }}
+{% endset %}
+
+{% block content %}
+
+  {% if uncompleteConfirmed %}
+
+    {% set jurorText = " juror." %}
+    {% if uncompleteConfirmed > 1 %}
+      {% set jurorText = " jurors." %}
+    {% endif %}
+
+    {{ mojBanner({
+      type: "success",
+      html: "Service uncompleted for " + uncompleteConfirmed + jurorText,
+      iconFallbackText: "Success"
+    }) }}
+  {% endif %}
+
+  {% include "../../includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <form action="{{ postUrl }}" method="POST" id="searchCompletedJurorsForm">
+      
+        <h1 class="govuk-heading-xl">Uncomplete service</h1>
+        
+        {% set searchCompletedJurorsError = undefined %}
+        {% if errors.items["searchCompletedJurors"] %}
+          {% set searchCompletedJurorsError = {"text": errors.items['searchCompletedJurors'][0].details} %}
+        {% endif %}
+
+        {{ govukRadios({
+          fieldset: {
+            legend: {
+              text: "Search for completed jurors by",
+              classes: "govuk-fieldset__legend--m"
+              }
+            },
+            name: "searchCompletedJurors",
+            errorMessage: searchCompletedJurorsError,
+            items: [
+              {
+                value: "juror",
+                text: "Juror",
+                checked: tmpFields.searchCompletedJurors === "juror",
+                conditional: {
+                  html: jurorHTML
+                }
+              },
+              {
+                value: "pool",
+                text: "Pool",
+                checked: tmpFields.searchCompletedJurors === "pool",
+                conditional: {
+                  html: poolHTML
+                }
+              }]
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            type: "submit",
+            attributes: {
+              id: "continueButton"
+            }
+          }) }}
+          <a href="{{ cancelUrl }}" class="govuk-link" id="cancelAnchor">Cancel</a>
+        </div>
+        
+        <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+      </form>
+    </div>
+  </div>
+
+{% endblock %}

@@ -1,0 +1,212 @@
+{% extends "../layouts/default.njk" %}
+
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "../includes/reply-type-tag-macro.njk" import replyTypeTag %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+
+{% block page_title %}
+  {{ serviceName }} - response details
+{% endblock %}
+
+{% block page_identifier %}response details{% endblock %}
+
+{% set currentApp = "Summons replies" %}
+
+{% block beforeContent %}
+  {# back link #}
+  {% if hasModAccess === false %}
+    <a href="#" class="govuk-back-link link-back--static {% if nav.lastPage === 'search' %}link-search{% elseif response.rawProcessingStatus === 'TODO' %}link-inbox{%elseif response.rawProcessingStatus === 'CLOSED' %}link-complete{% else %}link-pending{% endif %}">Back</a>
+  {% endif %}
+
+  {% if hasModAccess and (response.rawProcessingStatus === 'CLOSED' or response.processingStatus === 'Closed') %}
+    <div class="govuk-!-margin-top-3">
+      {% set bannerMessageHtml %}
+        Summons reply processed on {{ response.completedAt | dateFilter('DD/MM/YYYY', 'D MMMM YYYY') }} by {{ response.assignedStaffMember.name | isAutoProcessed }}: <b>{{ processedBannerMessage }}</b>
+      {% endset %}
+
+      {{ mojBanner({
+        type: 'success',
+        html: bannerMessageHtml,
+        iconFallbackText: 'Success'
+      }) }}
+    </div>
+  {% endif %}
+
+  {% if hasModAccess
+    and method === "paper"
+    and (response.jurorDetailsComplete === false or response.eligibilityComplete === false or response.signed !== true)
+    and not (response.rawProcessingStatus === 'CLOSED' or response.processingStatus === 'Closed' or thirdPartyDetails.reason === 'Deceased') %}
+    {{ mojBanner({
+      type: 'information',
+      text: 'Summons reply is missing essential information - reply cannot be processed until this information is entered.',
+      iconFallbackText: 'Information',
+      classes: 'govuk-!-margin-top-3'
+    }) }}
+  {% endif %}
+
+  {% if hasModAccess and response.isLateSummons %}
+    <div class="govuk-!-margin-top-3">
+      {{ mojBanner({
+        type: "warning",
+        text: "Juror’s service start date has passed - process as a priority.",
+        iconFallbackText: "Warning"
+      }) }}
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+
+  {# set alert badge - as displayed on To do list #}
+  {% if (response.rawProcessingStatus !== 'CLOSED') %}
+    {% if hasModAccess and response.isLateSummons %}
+      {% set urgencyBadge = undefined %}
+    {% elif response.superUrgent %}
+      {% set urgencyBadge = "Super Urgent" if hasModAccess and method === "paper" else "Send to court" %}
+    {% elif response.urgent %}
+      {% set urgencyBadge = "Urgent" %}
+    {% elif response.slaOverdue %}
+      {% set urgencyBadge = "Overdue" %}
+    {% else %}
+      {% set urgencyBadge = undefined %}
+    {% endif %}
+  {% endif %}
+
+  {# details header #}
+  <div class="govuk-grid-row govuk-body">
+    {% if hasModAccess %}
+      <div class="govuk-grid-column-full govuk-!-margin-bottom-2">
+        <div class="govuk-grid-column-one-third">
+            {{ govukTag({
+              text: "Summons reply",
+              classes: "govuk-tag--purple"
+            }) }}
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="govuk-grid-column-full">
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">
+          {{ nameDetails.headerNameRender }}
+          {% if urgencyBadge %}
+            <span class="moj-badge moj-badge--red">{{urgencyBadge}}</span>
+          {% endif %}
+        </h1>
+      </div>
+
+      <div class="govuk-grid-column-one-third">
+        <div class="jd-right-align">
+
+          {# More actions / Process reply dropdown menus #}
+          {% include "./_partials/update-header.njk" %}
+
+        </div> {# float right #}
+      </div> {# col #}
+    </div>
+
+    <div class="govuk-grid-column-full">
+      <div class="govuk-grid-column-one-third">
+        {% if hasModAccess %}
+          <a href="{{ url('juror-record.overview.get', { jurorNumber: response.jurorNumber }) }}" class="govuk-link">View juror's record</a>
+        {% endif %}
+      </div>
+    </div>
+
+  </div> {# row #}
+
+  {# details banner #}
+  {% if hasModAccess %}
+    {% include "summons-management/_common/details-banner-new.njk" %}
+  {% else %}
+    <div class="govuk-body jd-response-details-banner-blue detail-info">
+      <div class="govuk-grid-row jd-response-details-banner-row">
+        <div class="govuk-grid-column-one-half">
+          <div class="govuk-grid-column-one-third">
+            <div class="govuk-!-font-weight-bold">Reply status</div><strong class="govuk-tag govuk-tag--blue">{{ processingStatusDisp }}</strong>
+          </div>
+          <div class="govuk-grid-column-two-thirds">
+            <div class="govuk-!-font-weight-bold">Reply type</div>
+
+            {{replyTypeTag({
+              replyType: replyType
+            })}}
+
+          </div>
+        </div>
+      </div>
+
+      <hr class="govuk-section-break govuk-section-break--visible">
+
+      <div class="govuk-grid-row jd-response-details-banner-row">
+
+        <div class="govuk-grid-column-one-half">
+          <div class="govuk-grid-column-one-third">
+            <div id="jurorNumLabel" class="govuk-!-font-weight-bold">Juror number</div>
+            <span id="jurorNum">{{ response.jurorNumber }}</span>  {# class="juror-number" #}
+          </div>
+          <div class="govuk-grid-column-one-third">
+            <div id="recordStatusLabel "class="govuk-!-font-weight-bold">Record status</div>
+            <span id="recordStatus">{{ response.statusRender }}</span>
+          </div>
+          <div class="govuk-grid-column-one-third">
+            <div id="replyReceivedLabel" class="govuk-!-font-weight-bold">Reply received</div>
+            <span id="replyReceived" class="{% if response.slaOverdue %}jd-response-overdue-details-banner{% endif %}">{{ response.dateReceived | dateFilter("DD/MM/YYYY", "D MMM YYYY")}}</span>
+          </div>
+        </div>
+        <div class="govuk-grid-column-one-half">
+          <div class="govuk-grid-column-one-third">
+            <div id="poolNumberLabel" class="govuk-!-font-weight-bold">Pool number</div>
+            <span id="poolNumber">{{ response.poolNumber }}<span>
+          </div>
+          <div class="govuk-grid-column-one-third">
+            <div id="startDateLabel" class="govuk-!-font-weight-bold">Court start date</div>
+            <span id="startDate">{% if response.hearingDate == null %}{{ response.poolDate | dateFilter("DD/MM/YYYY", "D MMM YYYY")}}{% else %}{{response.hearingDate | dateFilter("DD/MM/YYYY", "D MMM YYYY")}}{% endif %}</span>
+          </div>
+          <div class="govuk-grid-column-one-third">
+            <div id="courtNameLabel" class="govuk-!-font-weight-bold">Court name</div>
+            <span id="courtName">{{ response.courtName }}</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  {% endif %}
+
+  <input name="poolStatus" id="poolStatus" class="u-hide" value="{{poolStatus}}"/>
+  <input name="processingStatus" id="processingStatus" class="u-hide" value="{{processingStatus}}"/>
+
+  {# reply / logs menu #}
+  <nav class="moj-sub-navigation tabs sub-nav-tabs" id="responseTabs">
+    <ul class="moj-sub-navigation__list detail-tabs hidden-no-js">
+      <li class="moj-sub-navigation__item" data-target="replyContent" data-tabs="responseTabs">
+        <a id="menuItemReply" class="moj-sub-navigation__link"  href="#replyContent" >Juror's reply</a>
+      </li>
+      <li class="moj-sub-navigation__item" data-target="logContent" data-tabs="responseTabs">
+        <a id="menuItemLogs"  class="moj-sub-navigation__link"  href="#logContent">{{ "Notes and logs" if hasModAccess else "Logs" }}
+        {% if (response.notes.length > 1) or (response.phoneLogs.length > 0) or (response.changeLog.length > 0) %}
+          <span id="logsMenuIndicator" class="jd-logs-menu-indicator  jd-right-align">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="5" r="5" fill="#1D70B8"/></svg>
+          </span>
+        {% endif %}
+        </a>
+      </li>
+    </ul>
+
+    <hr class="show-no-js">
+
+    <div class="tab-content active" id="replyContent" data-tabs="responseTabs">
+      {% include "./reply.njk" %}
+    </div>
+
+    <div class="tab-content" id="logContent" data-tabs="responseTabs">
+      {% include "./log.njk" %}
+    </div>
+  </nav>
+
+  <div id="modal" class="modal"></div>
+
+  <hr />
+
+{% endblock %}

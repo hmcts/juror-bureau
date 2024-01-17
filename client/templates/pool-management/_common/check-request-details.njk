@@ -1,0 +1,167 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set currentApp = "Pool management" %}
+
+{% block page_identifier %}{{ pageIdentifier }}{% endblock %}
+
+{% block content %}
+
+  {% set _submitUrl = submitUrl %}
+  {% set _cancelUrl = cancelUrl %}
+  {% set _changeUrl = changeUrl %}
+  {% set _changePoolNumberUrl = changePoolNumberUrl if changePoolNumberUrl %} {# only if there is url to change the pool number #}
+
+  {% set timeString = (+poolDetails.attendanceTime.hour) if (+poolDetails.attendanceTime.hour) < 12 else (+poolDetails.attendanceTime.hour - 12) %}
+  {% set timeString = (timeString + ':' + (+poolDetails.attendanceTime.minute)) if (+poolDetails.attendanceTime.minute !== 0) else timeString %}
+  {% set timeString = timeString + ('am' if (+poolDetails.attendanceTime.hour) < 12 else 'pm') %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <form action="{{ _submitUrl }}" method="post" id="checkDetailsForm">
+
+        <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+
+        {{ govukSummaryList({
+          classes: "govuk-!-width-three-quarters",
+          attributes: {
+            id: "requestDetails"
+          },
+          rows: [
+            {
+              key: {
+                text: "Request details",
+                classes: "govuk-heading-m"
+              },
+              actions: {
+                items: [
+                  {
+                    href: _changeUrl,
+                    text: "Change"
+                  }
+                ]
+              }
+            },
+            {
+              key: {
+                text: "Court name"
+              },
+              value: {
+                text: (poolDetails.courtName + " (" + poolDetails.courtCode + ")") | capitalizeFully
+              }
+            },
+            {
+              key: {
+                text: "Attendance date"
+              },
+              value: {
+                text: poolDetails.attendanceDate | dateFilter(null, "dddd DD MMMM YYYY")
+              }
+            },
+            {
+              key: {
+                text: "Attendance time"
+              },
+              value: {
+                text: timeString
+              }
+            } if isCourt else null,
+            {
+              key: {
+                text: "Pool type"
+              },
+              value: {
+                text: poolDetails.poolType | transformPoolType
+              }
+            },
+            {
+              key: {
+                text: "Number of jurors required in total"
+              },
+              value: {
+                text: poolDetails.numberOfJurorsRequired
+              }
+            },
+            {
+              key: {
+                text: "Number of court deferrals to include in this pool"
+              },
+              value: {
+                text: poolDetails.numberOfCourtDeferrals
+              }
+            },
+            {
+              key: {
+                text: "Number of additional jurors to be requested"
+              },
+              value: {
+                text: poolDetails.numberOfJurorsRequired - poolDetails.numberOfCourtDeferrals
+              }
+            }
+          ]
+        }) }}
+
+        {% set changePoolNumber = [] %}
+        {% if authentication.owner === '400' and changePoolNumberUrl %}
+          {% set changePoolNumber = (
+            changePoolNumber.push(
+              { href: _changePoolNumberUrl, text: "Change" }
+            ), changePoolNumber
+          ) %}
+        {% endif %}
+
+        {{ govukSummaryList({
+          classes: "govuk-!-width-three-quarters",
+          attributes: {
+            id: "poolNumber"
+          },
+          rows: [
+            {
+              key: {
+                text: "Pool number",
+                classes: "govuk-heading-m"
+              }
+            },
+            {
+              key: {
+                text: "Pool number"
+              },
+              value: {
+                text: poolDetails.poolNumber
+              },
+              actions: {
+                items: changePoolNumber
+              }
+            }
+          ]
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: buttonLabel,
+            type: "submit",
+            attributes: {
+              id: "confirmButton"
+            }
+          }) }}
+
+          <a class="govuk-link" href="{{ _cancelUrl }}" id="cancelAnchor">Cancel</a>
+        </div>
+
+        <input type="hidden" name="courtCode" id="courtCode" value="{{ poolDetails.courtCode }}">
+        <input type="hidden" name="attendanceDate" id="attendanceDate" value="{{ poolDetails.attendanceDate }}">
+        <input type="hidden" name="poolType" id="poolType" value="{{ poolDetails.poolType }}">
+        <input type="hidden" name="poolNumber" id="poolNumber" value="{{ poolDetails.poolNumber }}">
+        <input type="hidden" name="numberRequested" id="numberRequested" value="{{ poolDetails.numberOfJurorsRequired }}">
+        <input type="hidden" name="deferralsUsed" id="deferralsUsed" value="{{ poolDetails.numberOfCourtDeferrals }}">
+        <input type="hidden" name="_csrf" id="csrf" value="{{ csrftoken }}">
+
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

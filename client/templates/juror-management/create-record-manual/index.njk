@@ -1,0 +1,106 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import "govukButton" %}
+
+{% block page_title %}
+  {{ serviceName }} - Create juror record
+{% endblock %}
+
+{% block page_identifier %}Select pool{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {% if multiCourt %}
+    {% set availablePoolsHeader = [
+      {
+        key: {
+          text: "Select an existing pool at " + court.locationName | capitalizeFully + " (" + court.locationCode + ")",
+          classes: "govuk-label--m govuk-summary-list-mod"
+        },
+        value: {
+          classes: "mod-no-width"
+        },
+        actions: {
+          items: [
+            {
+              href: changeCourtUrl,
+              text: "Change court",
+              visuallyHiddenText: "change court"
+            }
+          ]
+        }
+      }]%}
+  {% else %}
+    {% set availablePoolsHeader = [{
+        key: {
+          text: "Select an existing pool at " + court.locationName | capitalizeFully + " (" + court.locationCode + ")",
+          classes: "govuk-label--m"
+        },
+        value: {
+          classes: "mod-no-width"
+        }
+    }]%}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <form action="{{ postUrl }}" method="POST">
+
+        {% if errors.count > 0 %}<div class="govuk-form-group--error">{% endif %}
+          <div class="govuk-label--l" role="heading" aria-level="1">Select a pool to add this new juror to</div>
+
+          {% if errors.count > 0 %}
+            <p id="information-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span>
+              {{ errors.items["poolNumber"][0].details }}
+            </p>
+          {% endif %}
+
+          <div class="govuk-radios govuk-!-margin-top-7 govuk-!-margin-bottom-5" data-module="govuk-radios">
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="new-pool" name="poolNumber" type="radio" value="new-pool" {{'checked' if selectedPoolNumber === 'new-pool' else ''}}>
+              <label class="govuk-label govuk-radios__label" for="new-pool">
+                Create a pool to add the juror to
+              </label>
+            </div>
+          </div>
+
+          <div class="govuk-label--m">Or</div>
+
+          {{ govukSummaryList({
+            classes: "govuk-!-width-two-thirds",
+            rows: availablePoolsHeader
+          }) }}
+
+          {% if pools.length === 0 %}
+            <p class="govuk-body">This court has no active pools</p>
+          {% else %}
+            {% include "pool-management/deferral-maintenance/_partials/pools-table.njk" %}
+          {% endif %}
+        {% if errors.count > 0 %}
+        </div>
+        {% endif %}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            attributes: {
+              id: "continueButton"
+            }
+          }) }}
+
+          <a id="cancelAnchor" class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}"/>
+
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

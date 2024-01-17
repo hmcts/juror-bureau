@@ -1,0 +1,200 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "custom-components/autocomplete/macro.njk" import modAutocomplete %}
+
+{% block head %}
+  {% include "../../includes/head.njk" %}
+  <link rel="stylesheet" href="{{ assetPath }}css/style.css" media="print"/>
+{% endblock %}
+
+{% set currentApp = "Pool management" %}
+
+{% block page_identifier %}Pool management - summoning progress{% endblock %}
+
+{% block page_title %}
+  {{ serviceName }} - Pool management - summoning progress
+{% endblock %}
+
+{% set isSummoningProgress = true %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    {% set courtNameError = undefined %}
+    {% set poolType = undefined %}
+    {% if errors.items['courtNameOrLocation'] %}
+      {% set courtNameError = {
+        text: errors
+          .items['courtNameOrLocation'][0]
+          .details
+      } %}
+    {% endif %}
+    {% if errors.items['poolType'] %}
+      {% set poolTypeError = {
+        text: errors
+          .items['poolType'][0]
+          .details
+      } %}
+    {% endif %}    
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Summoning progress</h1>
+    <p class="govuk-body">Check summoning progress for a court over the next 8 weeks</p>
+  </div>
+</div>
+
+<hr class="govuk-section-break govuk-section-break--visible">
+
+<form method="post" action="{{ url('summoning-progress.post') }}" id="summoningProgressForm">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third">
+      {{ modAutocomplete({
+        label: {
+          text: "Court name or location code",
+          class: "govuk-!-margin-top-4"
+        },
+        name: "courtNameOrLocation",
+        id: "courtNameOrLocation",
+        data: courts,
+        errorMessage: courtNameError
+      }) }}
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ govukRadios({
+        classes: "govuk-radios--inline",
+        idPrefix: "poolType",
+        name: "poolType",
+        fieldset: {
+          legend: {
+              text: "Court type",
+              classes: "govuk-!-font-weight-bold"
+          }
+        },
+        items: [
+          {
+            value: "CRO",
+            text: "Crown court",
+            checked: query.poolType === "CRO"
+          },
+          {
+            value: "CIV",
+            text: "Civil court",
+            checked: query.poolType === "CIV"
+          },
+          {
+            value: "HGH",
+            text: "High court",
+            checked: query.poolType === "HGH"
+          }
+        ],
+        errorMessage: poolTypeError
+      }) }}
+      <div class="govuk-button-group">
+        {{ govukButton({
+          text: "Search",
+          type: "search"
+        }) }}
+        <a class="govuk-link" href="{{ url('summoning-progress.get') }}">Clear</a>
+      </div>
+      <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+    </div>
+  </div>
+</form>
+
+{% if summoningProgressList === 'notFound' %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <hr class="govuk-section-break govuk-section-break--visible">
+      <h2 class="govuk-heading-m govuk-!-margin-top-4">There are no matching results</h2>
+      <p class="govuk-body">Try again by:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>selecting a court from the list</li>
+        <li>checking the court type</li>
+      </ul>
+    </div>
+  </div>
+  {% elif summoningProgressList.statsByWeek %}
+  <hr class="govuk-section-break govuk-section-break--visible">
+
+  <div class="govuk-grid-row govuk-!-margin-top-4">
+    <div class="govuk-grid-column-two-thirds">
+      <h2 class="govuk-heading-m">{{courtNameLong}} - {{poolType | transformPoolType}}</h2>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <div class="govuk-button-group jd-right-align">
+        {{ govukButton({
+          text: "Refresh",
+          classes: "govuk-button--secondary",
+          attributes: {
+            id: "refreshButton"
+          }
+        }) }}
+        {{ govukButton({
+          text: "Print",
+          classes: "govuk-button--secondary",
+          attributes: {
+            id: "printButton"
+          }
+        }) }}
+      </div>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {% include "./table/summoning-progress-table.njk" %}
+    </div>
+  </div>
+
+  {% endif %}
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script src="{{ assetPath if assetPath else '/' }}js/accessible-autocomplete.min.js"></script>
+  <script type="application/javascript">
+    $(document).ready(function() {
+      document.getElementById("courtNameOrLocation").value = "{{ query.locCode }}";
+      document.getElementById("courtNameOrLocation").focus();
+      document.getElementById('courtNameOrLocation').click();
+      document.getElementById("courtNameOrLocation").blur();
+
+      document.getElementById("printButton").addEventListener("click", function () {
+        window.print();
+      });
+
+      document.getElementById("refreshButton").addEventListener("click", function () {
+        window.location.reload();
+      });
+    });
+  </script>
+
+  <script type="application/javascript" defer>
+    $(document).ready(function() {
+      let barChartChildren = document.getElementsByClassName("barChart-component");
+      for (element of barChartChildren) {
+        if (element.classList.contains("summoning-progress-barChart-bar")) {
+          element.style.width = element.getAttribute("data-percentage") + "%";
+        } else {
+          element.style.left = element.getAttribute("data-position") + "%";
+          element.style.borderTop = "12px solid #1D70B8";
+        }
+      }
+    });
+  </script>
+{% endblock %}
+

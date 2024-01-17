@@ -1,0 +1,66 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+
+{% set currentApp = "Pool management" %}
+
+{% block page_identifier %}Request a Pool{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      {% set dateError = undefined %}
+      {% if errors.items["attendanceDate"] %}
+        {% set dateError = errors.items["attendanceDate"][0].details[0] %}
+      {% endif %}
+
+      <form action="{{ url(submitUrl) }}" method="post" id="changeAttendanceDate">
+
+        <h1 class="govuk-heading-l">Change the service start date for this pool</h1>
+
+        {{ datePicker({
+          id: "attendanceDate",
+          label: {
+            text: "Enter a new service start date"
+          },
+          dateMin: "" | makeDate | dateFilter(null, "DD/MM/YYYY"),
+          dateValue: attendanceDate | dateFilter(null, "DD/MM/YYYY"),
+          dateError: dateError
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Change",
+            type: "submit" 
+          }) }}
+
+          <a class="govuk-link" href="{{ url(cancelUrl) }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      const datePickers = []
+        .slice
+        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
+      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
+    });
+  </script>
+{% endblock %}

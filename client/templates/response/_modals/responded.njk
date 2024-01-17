@@ -1,0 +1,46 @@
+<section class="modal-content responded-section">
+
+  <form>
+
+    <div class="govuk-form-group" id="respondedGroup">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h1 class="govuk-fieldset__heading">
+            Responded
+          </h1>
+        </legend>
+
+        <br/>
+        <span class="govuk-error-message error-message-decision"></span>
+
+        <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+          <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" id="responded" name="responded" type="checkbox" value="responded">
+            <label class="govuk-label govuk-checkboxes__label" for="responded">
+              Accept juror as responded
+            </label>
+          </div>
+        </div>
+
+      </fieldset>
+    </div>
+
+    <br/>
+
+    <div class="govuk-form-group">
+      <span class="govuk-error-message error-message-submit"></span>
+      <div class="govuk-button-group">
+        <button id="respondedMarkComplete" class="govuk-button modal-save-button" data-module="govuk-button" value="Mark as completed" disabled >Mark as completed</button>
+        <a id="respondedCancelBtn" class="govuk-link close-modal" href="#">Cancel</a>
+      </div>
+    </div>
+
+
+    <input type="hidden" name="jurorNumber" id="jurorNumber" value="{{ response.jurorNumber }}">
+    <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+    <input type="hidden" name="version" id="version" value="{{ version }}">
+
+  </form>
+
+  <br class="clear">
+</section>

@@ -1,0 +1,76 @@
+{% extends "../../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{% block page_title %}You cannot move some of these jurors{% endblock %}
+
+{% block content %}
+
+  {# Setup movement problems table data #}
+  {% set tableData = [] %}
+  {% for juror in notResponded %}
+    {% set tableData = (tableData.push(
+      [
+        {html: '<a href="'+url('juror-record.overview.get', { jurorNumber: juror.jurorNumber })+'" class="govuk-body govuk-link">'+juror.jurorNumber+'</a>'}, 
+        {text: juror.firstName}, 
+        {text: juror.lastName},
+        {text: juror.status}
+      ]
+      ), tableData) %}
+  {% endfor %}
+
+  {% include "includes/errors.njk" %}
+
+  <form method="POST" id="completeServiceForm">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l govuk-!-margin-bottom-6">
+          You cannot complete service for one or more jurors
+        </h1>
+        <p class="govuk-body govuk-!-margin-bottom-6">
+          You can only complete service for jurors with a status of 'responded'.
+        </p>
+        <p class="govuk-body govuk-!-margin-bottom-6">
+          The following have a different status so you cannot complete their service yet.
+        </p>
+        <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-7">
+          {{ govukTable({
+            firstCellIsHeader: true,
+            head: [
+              {
+              text: "Juror number"
+              },
+              {
+              text: "First name"
+              },
+              {
+              text: "Last name"
+              }
+            ],
+            rows: tableData
+          }) }}
+        </div>
+      </div>
+    </div>
+
+    {# Submit form #}
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Continue with responded jurors only",
+        attributes: {
+          formAction: confirmUrl
+        }
+      }) }}
+      <a href="{{ cancelUrl }}" class="govuk-link--no-visited-state" id="cancelAnchor">
+        Cancel and go back
+      </a>
+    </div>
+
+    {% for jurorId in selectedJurors %}
+      <input type="hidden" class="govuk-checkboxes__input select-check juror-select-check" id="select-{{ jurorId }}" name="selectedJurors" value="{{ jurorId }}">
+    {% endfor %}
+    <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+    <input type="hidden" name="version" id="version" value="{{ version }}">
+  </form>
+{% endblock %}

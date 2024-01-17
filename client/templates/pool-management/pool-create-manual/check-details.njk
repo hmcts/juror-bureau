@@ -1,0 +1,97 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_identifier %}Create a pool for court use only{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <form action="{{ submitUrl }}" method="post" id="checkDetailsForm">
+
+        <h1 class="govuk-heading-l">Check pool details</h1>
+
+        {% set poolInfo = [
+          {
+            key: {
+              text: "Pool details",
+              classes: "govuk-heading-m"
+            },
+            actions: {
+              items: [
+                {
+                  href: changeUrl,
+                  text: "Change"
+                }
+              ]
+            }
+          }
+        ] %}
+
+        {% if multiCourt %}
+          {% set poolInfo = (poolInfo.push(
+            {
+              key: {
+                text: "Court name"
+              },
+              value: {
+                text: (poolDetails.courtName + " (" + poolDetails.courtLocCode + ")") | capitalizeFully
+              }
+            }
+          ), poolInfo) %}
+        {% endif %}
+
+        {% set poolInfo = (poolInfo.push(
+          {
+            key: {
+              text: "Service start date"
+            },
+            value: {
+              text: poolDetails.serviceStartDate | dateFilter(null, "dddd DD MMMM YYYY")
+            }
+          },
+          {
+            key: {
+              text: "Pool type"
+            },
+            value: {
+              text: poolDetails.poolType | transformPoolType
+            }
+          }
+        )
+        , poolInfo) %}
+
+        {{ govukSummaryList({
+          classes: "govuk-!-width-three-quarters",
+          attributes: {
+            id: "poolDetails"
+          },
+          rows: poolInfo
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Create active pool",
+            type: "submit",
+            attributes: {
+              id: "confirmButton"
+            }
+          }) }}
+
+          <a class="govuk-link" href="{{ cancelUrl }}" id="cancelAnchor">Cancel</a>
+        </div>
+
+        <input type="hidden" name="courtLocCode" id="courtLocCode" value="{{ poolDetails.courtLocCode }}">
+        <input type="hidden" name="attendanceDate" id="attendanceDate" value="{{ poolDetails.serviceStartDate }}">
+        <input type="hidden" name="poolType" id="poolType" value="{{ poolDetails.poolType }}">
+        <input type="hidden" name="_csrf" id="csrf" value="{{ csrftoken }}">
+
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

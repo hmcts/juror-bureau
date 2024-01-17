@@ -1,0 +1,101 @@
+@startuml additional-summons
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant PoolOverview <</pool-overview>>
+participant AdditionalSummons <</additional-summons>>
+participant ChangeDeferralsAmount <</change-deferrals>>
+participant ChangeCatchmentArea <</change-catchment-area>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant AdditionalSummonsController <<additional-summons.controller.js>>
+participant PoolSummaryObject <<poolSummaryObject.get()>>
+participant PostcodesObject <<postcodesObject.get()>>
+
+''' TEMPLATES
+participant ChangeDeferralsTemplate <<change-deferrals.njk>>
+participant SelectCourtTemplate <<select-court.njk>>
+participant AdditionalSummonsTemplate <<additional-summons.njk>>
+participant PoolOverviewTemplate <<pool-overview.njk>>
+
+''' FILTERS AND VALIDATORS
+participant SummonsAmountValidator
+participant PostcodesValidator
+participant DeferralAmountValidator
+participant CatchmentAreaValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+
+''' JOURNEY FLOW
+Actor -> PoolOverview : request page
+
+PoolOverview -> AdditionalSummonsController : call additional summons controller
+
+AdditionalSummonsController -> BackendController : fetch pool-summary, postcodes & deferrals available
+AdditionalSummonsController <- BackendController : response OK
+
+AdditionalSummonsController -> AdditionalSummonsTemplate : request and build template
+AdditionalSummonsController <- AdditionalSummonsTemplate : return html
+Actor <- AdditionalSummonsController : render html
+
+
+alt Change deferrals to include amount
+  AdditionalSummons -> AdditionalSummonsController : call additional summons controller
+  AdditionalSummonsController -> ChangeDeferralsTemplate : request and build template
+  AdditionalSummonsController <- ChangeDeferralsTemplate : return html
+  Actor <- AdditionalSummonsController : render html
+  ChangeDeferralsAmount -> ChangeDeferralsController : post new deferral amount
+  ChangeDeferralsController -> DeferralAmountValidator : validate the new deferral amount
+
+  alt Invalid amount of deferrals
+    ChangeDeferralsController <-- DeferralAmountValidator : invalid amount
+    Actor <-- ChangeDeferralsController : render error message
+  end
+
+  ChangeDeferralsController <- DeferralAmountValidator : valid amount
+  AdditionalSummonsController <- ChangeDeferralsController
+  Actor <- AdditionalSummonsController : render html
+end
+
+alt Change the catchment area
+  AdditionalSummons -> AdditionalSummonsController : call additional summons controller
+  AdditionalSummonsController -> SelectCourtTemplate : request and build template
+  AdditionalSummonsController <- SelectCourtTemplate : return html
+  Actor <- AdditionalSummonsController : render html
+  ChangeCatchmentArea -> ChangeCatchmentAreaController : post new catchment area
+  ChangeCatchmentAreaController -> CatchmentAreaValidator : validate the new catchment area
+
+  alt Invalid catchment area
+    ChangeCatchmentAreaController <-- CatchmentAreaValidator : invalid catchment area
+    Actor <-- ChangeCatchmentAreaController : render error message
+  end
+
+  ChangeCatchmentAreaController <- CatchmentAreaValidator : valid amount
+  AdditionalSummonsController <- ChangeCatchmentAreaController
+  Actor <- AdditionalSummonsController : render html
+end
+
+
+AdditionalSummons -> AdditionalSummonsController : post additional summons form
+
+AdditionalSummonsController -> BackendController : post selected postcodes and citizens amount
+AdditionalSummonsController <- BackendController : response OK
+
+AdditionalSummonsController -> PoolOverviewTemplate : request and build template
+AdditionalSummonsController <- PoolOverviewTemplate : return html
+Actor <- AdditionalSummonsController : render html
+
+alt Backend returns an error
+  AdditionalSummonsObject <-- BackendController : error response
+  AdditionalSummonsController <-- AdditionalSummonsObject : reject requestObject
+  Actor <-- AdditionalSummonsController : render error message
+end
+
+@enduml

@@ -1,0 +1,79 @@
+@startuml request-info
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant ResponseDetailsPage <</response/{id}/paper>>
+participant RequestInfoPage <</request-info>>
+participant ConfirmLetterPage <</request-info/letter>>
+
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant RequestInfoController <<request-info.controller.js>>
+participant RequestInfoObject <<RequestInfoObject.post()>>
+participant SummonsManagementController <<summons-management.controller.js>>
+
+''' TEMPLATES
+participant FormTemplate <<request-info/form.njk>>
+participant SendLetterTemplate <<request-info/send-letter.njk>>
+
+''' FILTERS AND VALIDATORS
+participant SummonsValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+
+''' JOURNEY FLOW
+Actor -> ResponseDetailsPage : request juror info by post
+
+ResponseDetailsPage -> RequestInfoController : call page controller
+
+RequestInfoController -> FormTemplate : request and build template
+RequestInfoController <- FormTemplate : return HTML
+RequestInfoPage <- RequestInfoController : return HTML
+Actor <- RequestInfoPage : render HTML
+
+Actor -> RequestInfoPage : confirm information to request
+
+RequestInfoPage -> RequestInfoController : call page controller
+
+RequestInfoController -> SummonsValidator : validate request for information
+RequestInfoController <- SummonsValidator : request is valid
+
+RequestInfoController -> SendLetterTemplate : request and build template
+RequestInfoController <- SendLetterTemplate : return HTML
+ConfirmLetterPage <- RequestInfoController: return HTML
+Actor <- ConfirmLetterPage : render HTML
+
+alt Request for information is invalid
+    RequestInfoController <-- SummonsValidator : error response
+    RequestInfopage <-- RequestInfoController : error response
+    Actor <-- RequestInfoPage : render error message
+end
+
+Actor -> ConfirmLetterPage : user clicks 'done'
+ConfirmLetterPage -> RequestInfoController : call page controller
+
+alt Automatic letter generation
+    RequestInfoController -> RequestInfoObject : build request object
+    RequestInfoObject -> BackendController : send backend request
+    RequestInfoObject <- BackendController : created response
+    RequestInfoController <- RequestInfoObject : resolve request
+
+    RequestInfoController -> SummonsManagementController : redirect response details page
+    ResponseDetailsPage <- SummonsManagementController : redirect to response details page
+    Actor <- ResponseDetailsPage : redirect to response details page
+end
+
+alt Manual letter is required
+    RequestInfoController -> SummonsManagementController : redirect response details page
+    ResponseDetailsPage <- SummonsManagementController : redirect to response details page
+    Actor <- ResponseDetailsPage : redirect to response details page    
+end
+
+@enduml

@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="2777px" preserveAspectRatio="none" style="width:5464px;height:2777px;background:#FFFFFF;" version="1.1" viewBox="0 0 5464 2777" width="5464px" zoomAndPan="magnify"><defs/><g><rect fill="none" height="785.9844" style="stroke:#000000;stroke-width:1.5;" width="5447" x="10" y="99.2871"/><rect fill="none" height="105.2422" style="stroke:#000000;stroke-width:1.5;" width="5427" x="20" y="211.5293"/><rect fill="none" height="105.2422" style="stroke:#000000;stroke-width:1.5;" width="3916" x="20" y="389.3926"/><rect fill="none" height="105.2422" style="stroke:#000000;stroke-width:1.5;" width="5427" x="20" y="567.2559"/><rect fill="none" height="75.9316" style="stroke:#000000;stroke-width:1.5;" width="5008" x="81" y="1016.5137"/><rect fill="none" height="163.8633" style="stroke:#000000;stroke-width:1.5;" width="5427" x="20" y="1252.998"/><rect fill="none" height="75.9316" style="stroke:#000000;stroke-width:1.5;" width="4507" x="789" y="1636.0352"/><rect fill="none" height="163.8633" style="stroke:#000000;stroke-width:1.5;" width="5427" x="20" y="1813.8984"/><rect fill="none" height="149.5078" style="stroke:#000000;stroke-width:1.5;" width="2208" x="20" y="2133.3145"/><rect fill="none" height="105.2422" style="stroke:#000000;stroke-width:1.5;" width="5427" x="20" y="2560.6172"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="55" x2="55" y1="52.9766" y2="2770.791"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="274" x2="274" y1="52.9766" y2="2770.791"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="628" x2="628" y1="52.9766" y2="2770.791"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1005" x2="1005" y1="52.9766" y2="2770.791"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1412" x2="1412" y1="52.9766" y2="2770.791"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1804" x2="1804" y1="52.9766" y2="2770.791"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="2111" x2="2111" y1="52.9766" y2="2770.791"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="2359" x2="2359" y1="52.9766" y2="2770.791"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="2591" x2="2591" y1="52.9766" y2="2770.791"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="2784" x2="2784" y1="52.9766" y2="2770.791"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="2966" x2="2966" y1="52.9766" y2="2770.791"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="3151" x2="3151" y1="52.9766" y2="2770.791"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="3333" x2="3333" y1="52.9766" y2="2770.791"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="3502" x2="3502" y1="52.9766" y2="2770.791"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="3759" x2="3759" y1="52.9766" y2="2770.791"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="4081" x2="4081" y1="52.9766" y2="2770.791"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="4397" x2="4397" y1="52.9766" y2="2770.791"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="4743" x2="4743" y1="52.9766" y2="2770.791"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="5004" x2="5004" y1="52.9766" y2="2770.791"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="5187" x2="5187" y1="52.9766" y2="2770.791"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="5366" x2="5366" y1="52.9766" y2="2770.791"/><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="51" x="30" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="37" x="37" y="42.0234">Actor</text><rect fill="#B0C4DE" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="366" x="91" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="352" x="98" y="25.5352">«/pool-management/pool-overview/:poolnumber»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="125" x="211.5" y="42.0234">PoolOverviewPage</text><rect fill="#B0C4DE" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="322" x="467" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="308" x="474" y="25.5352">«/pool-management/:poolNumber/transfer»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="91" x="582.5" y="42.0234">TransferPage</text><rect fill="#B0C4DE" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="412" x="799" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="398" x="806" y="25.5352">«/pool-management/:poolNumber/transfer/select-court»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="170" x="920" y="42.0234">TransferSelectCourtPage</text><rect fill="#B0C4DE" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="382" x="1221" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="368" x="1228" y="25.5352">«/pool-management/:poolNumber/transfer/confirm»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="186" x="1319" y="42.0234">TransferCourtConfirmPage</text><rect fill="#B0C4DE" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="382" x="1613" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="368" x="1620" y="25.5352">«/pool-management/:poolNumber/transfer/confirm»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="154" x="1727" y="42.0234">TransferContinuePage</text><rect fill="#FFFFE0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="213" x="2005" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="199" x="2012" y="25.5352">«pool-overview.controller.js»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="162" x="2030.5" y="42.0234">PoolOverviewController</text><rect fill="#FFFFE0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="262" x="2228" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="248" x="2235" y="25.5352">«juror-update.transfer.controller.js»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="162" x="2278" y="42.0234">JurorTransferController</text><rect fill="#FFFFE0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="183" x="2500" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="169" x="2507" y="25.5352">«poolSummaryObj.get()»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="138" x="2522.5" y="42.0234">PoolSummaryObject</text><rect fill="#FFFFE0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="182" x="2693" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="168" x="2700" y="25.5352">«poolMembersObj.get()»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="137" x="2715.5" y="42.0234">PoolMembersObject</text><rect fill="#FFFFE0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="162" x="2885" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="148" x="2892" y="25.5352">«fetchAllCourts.get()»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="145" x="2893.5" y="42.0234">FetchAllCourtsObject</text><rect fill="#FFFFE0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="188" x="3057" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="174" x="3064" y="25.5352">«validateMovement.get()»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="170" x="3066" y="42.0234">ValidateMovementObject</text><rect fill="#FFFFE0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="157" x="3255" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="143" x="3262" y="25.5352">«jurorTransfer.put()»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="136" x="3265.5" y="42.0234">JurorTransferObject</text><rect fill="#E6E6FA" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="160" x="3422" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="146" x="3429" y="25.5352">«_errors/generic.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="99" x="3452.5" y="42.0234">ErrorTemplate</text><rect fill="#E6E6FA" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="334" x="3592" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="320" x="3599" y="25.5352">«pool-management/pool-overview/index.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="156" x="3681" y="42.0234">PoolOverviewTemplate</text><rect fill="#E6E6FA" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="290" x="3936" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="276" x="3943" y="25.5352">«juror-management/transfer-court.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="161" x="4000.5" y="42.0234">TransferCourtTemplate</text><rect fill="#E6E6FA" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="322" x="4236" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="308" x="4243" y="25.5352">«pool-management/validate-movement.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="190" x="4302" y="42.0234">ValidateMovementTemplate</text><rect fill="#E6E6FA" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="351" x="4568" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="337" x="4575" y="25.5352">«juror-management/transfer-court-confirm.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="217" x="4635" y="42.0234">TransferCourtConfirmTemplate</text><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="150" x="4929" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="136" x="4936" y="42.0234">JurorSelectValidator</text><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="197" x="5089" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="183" x="5096" y="42.0234">JurorBulkTransferValidator</text><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="141" x="5296" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="127" x="5303" y="42.0234">BackendController</text><polygon fill="#181818" points="262,80.2871,272,84.2871,262,88.2871" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="55.5" x2="268" y1="84.2871" y2="84.2871"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="81" x="124.25" y="79.5449">request page</text><path d="M10,99.2871 L147,99.2871 L147,106.5977 L137,116.5977 L10,116.5977 L10,99.2871 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="785.9844" style="stroke:#000000;stroke-width:1.5;" width="5447" x="10" y="99.2871"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="92" x="25" y="112.8555">PoolOverview</text><ellipse cx="273.5" cy="137.1582" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.5;"/><polygon fill="#181818" points="2099.5,133.9082,2109.5,137.9082,2099.5,141.9082" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="278" x2="2105.5" y1="137.9082" y2="137.9082"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="121" x="1132.25" y="133.166">call page controller</text><polygon fill="#181818" points="2579.5,163.2188,2589.5,167.2188,2579.5,171.2188" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2111.5" x2="2585.5" y1="167.2188" y2="167.2188"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="114" x="2294.5" y="162.4766">call requestObject</text><polygon fill="#181818" points="5354.5,192.5293,5364.5,196.5293,5354.5,200.5293" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2591.5" x2="5360.5" y1="196.5293" y2="196.5293"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="95" x="3931.5" y="191.7871">fetch pool data</text><path d="M20,211.5293 L82,211.5293 L82,218.8398 L72,228.8398 L20,228.8398 L20,211.5293 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="105.2422" style="stroke:#000000;stroke-width:1.5;" width="5427" x="20" y="211.5293"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="35" y="225.0977">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="147" x="97" y="224.1641">[Backend returns an error]</text><polygon fill="#181818" points="2602.5,246.1504,2592.5,250.1504,2602.5,254.1504" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2596.5" x2="5365.5" y1="250.1504" y2="250.1504"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="91" x="3933.5" y="245.4082">error response</text><polygon fill="#181818" points="2122.5,275.4609,2112.5,279.4609,2122.5,283.4609" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2116.5" x2="2590.5" y1="279.4609" y2="279.4609"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="153" x="2275" y="274.7188">reject requestObject call</text><polygon fill="#181818" points="66.5,304.7715,56.5,308.7715,66.5,312.7715" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="60.5" x2="2110.5" y1="308.7715" y2="308.7715"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="182" x="992.5" y="304.0293">redirect to pool management</text><polygon fill="#181818" points="2602.5,341.082,2592.5,345.082,2602.5,349.082" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2596.5" x2="5365.5" y1="345.082" y2="345.082"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="67" x="3945.5" y="340.3398">returnData</text><polygon fill="#181818" points="2122.5,370.3926,2112.5,374.3926,2122.5,378.3926" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2116.5" x2="2590.5" y1="374.3926" y2="374.3926"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="163" x="2270" y="369.6504">resolve requestObject call</text><path d="M20,389.3926 L82,389.3926 L82,396.7031 L72,406.7031 L20,406.7031 L20,389.3926 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="105.2422" style="stroke:#000000;stroke-width:1.5;" width="3916" x="20" y="389.3926"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="35" y="402.9609">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="98" x="97" y="402.0273">[Pool isn't active]</text><polygon fill="#181818" points="3747,424.0137,3757,428.0137,3747,432.0137" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2111.5" x2="3753" y1="428.0137" y2="428.0137"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="2850.75" y="423.2715">request and build template</text><polygon fill="#181818" points="2122.5,453.3242,2112.5,457.3242,2122.5,461.3242" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2116.5" x2="3758" y1="457.3242" y2="457.3242"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="2896.25" y="452.582">return HTML</text><polygon fill="#181818" points="66.5,482.6348,56.5,486.6348,66.5,490.6348" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="60.5" x2="2110.5" y1="486.6348" y2="486.6348"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="1043.5" y="481.8926">render HTML</text><polygon fill="#181818" points="2772,518.9453,2782,522.9453,2772,526.9453" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2111.5" x2="2778" y1="522.9453" y2="522.9453"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="114" x="2390.75" y="518.2031">call requestObject</text><polygon fill="#181818" points="5354.5,548.2559,5364.5,552.2559,5354.5,556.2559" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2784" x2="5360.5" y1="552.2559" y2="552.2559"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="150" x="4000.25" y="547.5137">fetch pool member data</text><path d="M20,567.2559 L82,567.2559 L82,574.5664 L72,584.5664 L20,584.5664 L20,567.2559 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="105.2422" style="stroke:#000000;stroke-width:1.5;" width="5427" x="20" y="567.2559"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="35" y="580.8242">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="147" x="97" y="579.8906">[Backend returns an error]</text><polygon fill="#181818" points="2795,601.877,2785,605.877,2795,609.877" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2789" x2="5365.5" y1="605.877" y2="605.877"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="91" x="4029.75" y="601.1348">error response</text><polygon fill="#181818" points="2122.5,631.1875,2112.5,635.1875,2122.5,639.1875" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2116.5" x2="2783" y1="635.1875" y2="635.1875"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="153" x="2371.25" y="630.4453">reject requestObject call</text><polygon fill="#181818" points="66.5,660.498,56.5,664.498,66.5,668.498" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="60.5" x2="2110.5" y1="664.498" y2="664.498"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="182" x="992.5" y="659.7559">redirect to pool management</text><polygon fill="#181818" points="2795,696.8086,2785,700.8086,2795,704.8086" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2789" x2="5365.5" y1="700.8086" y2="700.8086"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="67" x="4041.75" y="696.0664">returnData</text><polygon fill="#181818" points="2122.5,726.1191,2112.5,730.1191,2122.5,734.1191" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2116.5" x2="2783" y1="730.1191" y2="730.1191"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="163" x="2366.25" y="725.377">resolve requestObject call</text><line style="stroke:#000000;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="10" x2="5457" y1="739.1191" y2="739.1191"/><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="88" x="15" y="749.7539">[with no errors]</text><polygon fill="#181818" points="3747,770.3848,3757,774.3848,3747,778.3848" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2111.5" x2="3753" y1="774.3848" y2="774.3848"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="2850.75" y="769.6426">request and build template</text><polygon fill="#181818" points="2122.5,799.6953,2112.5,803.6953,2122.5,807.6953" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2116.5" x2="3758" y1="803.6953" y2="803.6953"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="2896.25" y="798.9531">return HTML</text><line style="stroke:#000000;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="10" x2="5457" y1="812.6953" y2="812.6953"/><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="64" x="15" y="823.3301">[with error]</text><polygon fill="#181818" points="3747,843.9609,3757,847.9609,3747,851.9609" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2111.5" x2="3753" y1="847.9609" y2="847.9609"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="293" x="2788.75" y="843.2188">request and build template with error message</text><polygon fill="#181818" points="2122.5,873.2715,2112.5,877.2715,2122.5,881.2715" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2116.5" x2="3758" y1="877.2715" y2="877.2715"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="2896.25" y="872.5293">return HTML</text><polygon fill="#181818" points="66.5,909.582,56.5,913.582,66.5,917.582" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="60.5" x2="2110.5" y1="913.582" y2="913.582"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="1043.5" y="908.8398">render HTML</text><polygon fill="#181818" points="616,938.8926,626,942.8926,616,946.8926" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="55.5" x2="622" y1="942.8926" y2="942.8926"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="100" x="291.75" y="938.1504">POST from form</text><polygon fill="#181818" points="2099.5,968.2031,2109.5,972.2031,2099.5,976.2031" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="628" x2="2105.5" y1="972.2031" y2="972.2031"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="121" x="1309.25" y="967.4609">call page controller</text><polygon fill="#181818" points="4992,997.5137,5002,1001.5137,4992,1005.5137" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2111.5" x2="4998" y1="1001.5137" y2="1001.5137"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="147" x="3484.25" y="996.7715">ensure juror is selected</text><path d="M81,1016.5137 L143,1016.5137 L143,1023.8242 L133,1033.8242 L81,1033.8242 L81,1016.5137 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="75.9316" style="stroke:#000000;stroke-width:1.5;" width="5008" x="81" y="1016.5137"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="96" y="1030.082">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="110" x="158" y="1029.1484">[No jurors selected]</text><polygon fill="#181818" points="2122.5,1051.1348,2112.5,1055.1348,2122.5,1059.1348" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2116.5" x2="5003" y1="1055.1348" y2="1055.1348"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="113" x="3501.25" y="1050.3926">no jurors selected</text><ellipse cx="273.5" cy="1083.6953" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.5;"/><polygon fill="#181818" points="290.5,1080.4453,280.5,1084.4453,290.5,1088.4453" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="288.5" x2="3758" y1="1084.4453" y2="1084.4453"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="105" x="1964" y="1079.7031">render with error</text><polygon fill="#181818" points="2122.5,1116.7559,2112.5,1120.7559,2122.5,1124.7559" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2116.5" x2="5003" y1="1120.7559" y2="1120.7559"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="57" x="3529.25" y="1116.0137">validated</text><polygon fill="#181818" points="1016,1146.0664,1006,1150.0664,1016,1154.0664" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1010" x2="2110.5" y1="1150.0664" y2="1150.0664"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="48" x="1534.25" y="1145.3242">redirect</text><ellipse cx="1004.5" cy="1178.627" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.5;"/><polygon fill="#181818" points="2347,1175.377,2357,1179.377,2347,1183.377" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1009" x2="2353" y1="1179.377" y2="1179.377"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="121" x="1621.5" y="1174.6348">call page controller</text><polygon fill="#181818" points="2954,1204.6875,2964,1208.6875,2954,1212.6875" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2359" x2="2960" y1="1208.6875" y2="1208.6875"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="114" x="2605.5" y="1203.9453">call requestObject</text><polygon fill="#181818" points="5354.5,1233.998,5364.5,1237.998,5354.5,1241.998" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2966" x2="5360.5" y1="1237.998" y2="1237.998"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="100" x="4116.25" y="1233.2559">fetch court data</text><path d="M20,1252.998 L82,1252.998 L82,1260.3086 L72,1270.3086 L20,1270.3086 L20,1252.998 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="163.8633" style="stroke:#000000;stroke-width:1.5;" width="5427" x="20" y="1252.998"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="35" y="1266.5664">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="147" x="97" y="1265.6328">[Backend returns an error]</text><polygon fill="#181818" points="2977,1287.6191,2967,1291.6191,2977,1295.6191" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2971" x2="5365.5" y1="1291.6191" y2="1291.6191"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="91" x="4120.75" y="1286.877">error response</text><polygon fill="#181818" points="2370,1316.9297,2360,1320.9297,2370,1324.9297" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2364" x2="2965" y1="1320.9297" y2="1320.9297"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="153" x="2586" y="1316.1875">reject requestObject call</text><polygon fill="#181818" points="3490,1346.2402,3500,1350.2402,3490,1354.2402" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2359" x2="3496" y1="1350.2402" y2="1350.2402"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="166" x="2847.5" y="1345.498">request and built template</text><polygon fill="#181818" points="2370,1375.5508,2360,1379.5508,2370,1383.5508" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2364" x2="3501" y1="1379.5508" y2="1379.5508"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="2891.5" y="1374.8086">return HTML</text><polygon fill="#181818" points="66.5,1404.8613,56.5,1408.8613,66.5,1412.8613" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="60.5" x2="2358" y1="1408.8613" y2="1408.8613"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="1167.25" y="1404.1191">render HTML</text><polygon fill="#181818" points="2977,1441.1719,2967,1445.1719,2977,1449.1719" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2971" x2="5365.5" y1="1445.1719" y2="1445.1719"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="67" x="4132.75" y="1440.4297">returnData</text><polygon fill="#181818" points="4069,1470.4824,4079,1474.4824,4069,1478.4824" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2359" x2="4075" y1="1474.4824" y2="1474.4824"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="3135.5" y="1469.7402">request and build template</text><polygon fill="#181818" points="2370,1499.793,2360,1503.793,2370,1507.793" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2364" x2="4080" y1="1503.793" y2="1503.793"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="3181" y="1499.0508">return HTML</text><polygon fill="#181818" points="66.5,1529.1035,56.5,1533.1035,66.5,1537.1035" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="60.5" x2="2358" y1="1533.1035" y2="1533.1035"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="1167.25" y="1528.3613">render HTML</text><polygon fill="#181818" points="993,1558.4141,1003,1562.4141,993,1566.4141" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="55.5" x2="999" y1="1562.4141" y2="1562.4141"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="100" x="480.25" y="1557.6719">POST from form</text><polygon fill="#181818" points="2347,1587.7246,2357,1591.7246,2347,1595.7246" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1005" x2="2353" y1="1591.7246" y2="1591.7246"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="121" x="1621.5" y="1586.9824">call page controller</text><polygon fill="#181818" points="5175.5,1617.0352,5185.5,1621.0352,5175.5,1625.0352" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2359" x2="5181.5" y1="1621.0352" y2="1621.0352"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="83" x="3731.75" y="1616.293">validate form</text><path d="M789,1636.0352 L851,1636.0352 L851,1643.3457 L841,1653.3457 L789,1653.3457 L789,1636.0352 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="75.9316" style="stroke:#000000;stroke-width:1.5;" width="4507" x="789" y="1636.0352"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="804" y="1649.6035">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="128" x="866" y="1648.6699">[Court validation fails]</text><polygon fill="#181818" points="2370,1670.6563,2360,1674.6563,2370,1678.6563" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2364" x2="5186.5" y1="1674.6563" y2="1674.6563"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="120" x="3713.25" y="1669.9141">data validationfails</text><ellipse cx="1004.5" cy="1703.2168" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.5;"/><polygon fill="#181818" points="1021.5,1699.9668,1011.5,1703.9668,1021.5,1707.9668" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="1019.5" x2="2358" y1="1703.9668" y2="1703.9668"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="177" x="1593.5" y="1699.2246">redirect to select court page</text><polygon fill="#181818" points="2370,1736.2773,2360,1740.2773,2370,1744.2773" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2364" x2="5186.5" y1="1740.2773" y2="1740.2773"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="124" x="3711.25" y="1735.5352">validation succeeds</text><polygon fill="#181818" points="3139,1765.5879,3149,1769.5879,3139,1773.5879" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2359" x2="3145" y1="1769.5879" y2="1769.5879"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="153" x="2678.5" y="1764.8457">validate juror movement</text><polygon fill="#181818" points="5354.5,1794.8984,5364.5,1798.8984,5354.5,1802.8984" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="3151" x2="5360.5" y1="1798.8984" y2="1798.8984"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="129" x="4194.25" y="1794.1563">fetch validation data</text><path d="M20,1813.8984 L82,1813.8984 L82,1821.209 L72,1831.209 L20,1831.209 L20,1813.8984 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="163.8633" style="stroke:#000000;stroke-width:1.5;" width="5427" x="20" y="1813.8984"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="35" y="1827.4668">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="147" x="97" y="1826.5332">[Backend returns an error]</text><polygon fill="#181818" points="3162,1848.5195,3152,1852.5195,3162,1856.5195" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="3156" x2="5365.5" y1="1852.5195" y2="1852.5195"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="91" x="4213.25" y="1847.7773">error response</text><polygon fill="#181818" points="2370,1877.8301,2360,1881.8301,2370,1885.8301" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2364" x2="3150" y1="1881.8301" y2="1881.8301"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="153" x="2678.5" y="1877.0879">reject requestObject call</text><polygon fill="#181818" points="3490,1907.1406,3500,1911.1406,3490,1915.1406" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2359" x2="3496" y1="1911.1406" y2="1911.1406"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="166" x="2847.5" y="1906.3984">request and built template</text><polygon fill="#181818" points="2370,1936.4512,2360,1940.4512,2370,1944.4512" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2364" x2="3501" y1="1940.4512" y2="1940.4512"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="2891.5" y="1935.709">return HTML</text><polygon fill="#181818" points="66.5,1965.7617,56.5,1969.7617,66.5,1973.7617" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="60.5" x2="2358" y1="1969.7617" y2="1969.7617"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="1167.25" y="1965.0195">render HTML</text><polygon fill="#181818" points="3162,2002.0723,3152,2006.0723,3162,2010.0723" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="3156" x2="5365.5" y1="2006.0723" y2="2006.0723"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="67" x="4225.25" y="2001.3301">returnData</text><polygon fill="#181818" points="4385,2055.6934,4395,2059.6934,4385,2063.6934" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2359" x2="4391" y1="2059.6934" y2="2059.6934"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="3293.5" y="2054.9512">request and build template</text><polygon fill="#181818" points="2370,2085.0039,2360,2089.0039,2370,2093.0039" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2364" x2="4396" y1="2089.0039" y2="2089.0039"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="3339" y="2084.2617">return HTML</text><polygon fill="#181818" points="66.5,2114.3145,56.5,2118.3145,66.5,2122.3145" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="60.5" x2="2358" y1="2118.3145" y2="2118.3145"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="1167.25" y="2113.5723">render HTML</text><path d="M20,2133.3145 L82,2133.3145 L82,2140.625 L72,2150.625 L20,2150.625 L20,2133.3145 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="149.5078" style="stroke:#000000;stroke-width:1.5;" width="2208" x="20" y="2133.3145"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="35" y="2146.8828">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="178" x="97" y="2145.9492">[Continue with available jurors]</text><polygon fill="#181818" points="1792,2167.9355,1802,2171.9355,1792,2175.9355" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="55.5" x2="1798" y1="2171.9355" y2="2171.9355"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="100" x="879.75" y="2167.1934">POST from form</text><ellipse cx="2111" cy="2200.4961" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.5;"/><polygon fill="#181818" points="2094,2197.2461,2104,2201.2461,2094,2205.2461" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1804" x2="2100" y1="2201.2461" y2="2201.2461"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="121" x="1897.25" y="2196.5039">call page controller</text><line style="stroke:#000000;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="20" x2="2228" y1="2210.2461" y2="2210.2461"/><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="93" x="25" y="2220.8809">[Cancel transfer]</text><polygon fill="#181818" points="1792,2241.5117,1802,2245.5117,1792,2249.5117" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="55.5" x2="1798" y1="2245.5117" y2="2245.5117"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="76" x="891.75" y="2240.7695">Cancel form</text><ellipse cx="273.5" cy="2274.0723" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.5;"/><polygon fill="#181818" points="290.5,2270.8223,280.5,2274.8223,290.5,2278.8223" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="288.5" x2="1803" y1="2274.8223" y2="2274.8223"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="48" x="1015" y="2270.0801">redirect</text><polygon fill="#181818" points="1423,2307.1328,1413,2311.1328,1423,2315.1328" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1417" x2="2358" y1="2311.1328" y2="2311.1328"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="48" x="1861.5" y="2306.3906">redirect</text><polygon fill="#181818" points="2347,2336.4434,2357,2340.4434,2347,2344.4434" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1412" x2="2353" y1="2340.4434" y2="2340.4434"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="121" x="1825" y="2335.7012">call page controller</text><polygon fill="#181818" points="4731.5,2365.7539,4741.5,2369.7539,4731.5,2373.7539" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2359" x2="4737.5" y1="2369.7539" y2="2369.7539"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="3466.75" y="2365.0117">request and build template</text><polygon fill="#181818" points="2370,2395.0645,2360,2399.0645,2370,2403.0645" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2364" x2="4742.5" y1="2399.0645" y2="2399.0645"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="3512.25" y="2394.3223">return HTML</text><polygon fill="#181818" points="66.5,2424.375,56.5,2428.375,66.5,2432.375" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="60.5" x2="2358" y1="2428.375" y2="2428.375"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="1167.25" y="2423.6328">render HTML</text><polygon fill="#181818" points="1400,2453.6855,1410,2457.6855,1400,2461.6855" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="55.5" x2="1406" y1="2457.6855" y2="2457.6855"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="85" x="691.25" y="2452.9434">POST confirm</text><ellipse cx="2111" cy="2486.2461" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.5;"/><polygon fill="#181818" points="2094,2482.9961,2104,2486.9961,2094,2490.9961" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1412" x2="2100" y1="2486.9961" y2="2486.9961"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="121" x="1701.25" y="2482.2539">call page controller</text><polygon fill="#181818" points="3321.5,2512.3066,3331.5,2516.3066,3321.5,2520.3066" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2111.5" x2="3327.5" y1="2516.3066" y2="2516.3066"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="114" x="2665.5" y="2511.5645">call requestObject</text><polygon fill="#181818" points="5354.5,2541.6172,5364.5,2545.6172,5354.5,2549.6172" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="3333.5" x2="5360.5" y1="2545.6172" y2="2545.6172"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="111" x="4294.5" y="2540.875">Post transfer data</text><path d="M20,2560.6172 L82,2560.6172 L82,2567.9277 L72,2577.9277 L20,2577.9277 L20,2560.6172 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="105.2422" style="stroke:#000000;stroke-width:1.5;" width="5427" x="20" y="2560.6172"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="35" y="2574.1855">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="147" x="97" y="2573.252">[Backend returns an error]</text><polygon fill="#181818" points="3344.5,2595.2383,3334.5,2599.2383,3344.5,2603.2383" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="3338.5" x2="5365.5" y1="2599.2383" y2="2599.2383"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="91" x="4304.5" y="2594.4961">error response</text><polygon fill="#181818" points="2122.5,2624.5488,2112.5,2628.5488,2122.5,2632.5488" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2116.5" x2="3332.5" y1="2628.5488" y2="2628.5488"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="153" x="2646" y="2623.8066">reject requestObject call</text><polygon fill="#181818" points="66.5,2653.8594,56.5,2657.8594,66.5,2661.8594" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="60.5" x2="2110.5" y1="2657.8594" y2="2657.8594"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="182" x="992.5" y="2653.1172">redirect to pool management</text><polygon fill="#181818" points="3344.5,2690.1699,3334.5,2694.1699,3344.5,2698.1699" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="3338.5" x2="5365.5" y1="2694.1699" y2="2694.1699"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="67" x="4316.5" y="2689.4277">returnData</text><polygon fill="#181818" points="2122.5,2719.4805,2112.5,2723.4805,2122.5,2727.4805" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2116.5" x2="3332.5" y1="2723.4805" y2="2723.4805"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="163" x="2641" y="2718.7383">resolve requestObject call</text><polygon fill="#181818" points="66.5,2748.791,56.5,2752.791,66.5,2756.791" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="60.5" x2="2110.5" y1="2752.791" y2="2752.791"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="156" x="1005.5" y="2748.0488">redirect to pool overview</text><!--MD5=[1a6e9375932fe50b157f0a4d9bb3ab1d]
+@startuml bulk-transfer
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant PoolOverviewPage <</pool-management/pool-overview/:poolnumber>> #lightsteelblue
+participant TransferPage <</pool-management/:poolNumber/transfer>> #lightsteelblue
+participant TransferSelectCourtPage <</pool-management/:poolNumber/transfer/select-court>> #lightsteelblue
+participant TransferCourtConfirmPage <</pool-management/:poolNumber/transfer/confirm>> #lightsteelblue
+participant TransferContinuePage <</pool-management/:poolNumber/transfer/confirm>> #lightsteelblue
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant PoolOverviewController <<pool-overview.controller.js>> #lightyellow
+participant JurorTransferController <<juror-update.transfer.controller.js>> #lightyellow
+participant PoolSummaryObject <<poolSummaryObj.get()>> #lightyellow
+participant PoolMembersObject <<poolMembersObj.get()>> #lightyellow
+participant FetchAllCourtsObject <<fetchAllCourts.get()>> #lightyellow
+participant ValidateMovementObject <<validateMovement.get()>> #lightyellow
+participant JurorTransferObject <<jurorTransfer.put()>> #lightyellow
+
+''' TEMPLATES
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+participant PoolOverviewTemplate <<pool-management/pool-overview/index.njk>> #lavender
+participant TransferCourtTemplate <<juror-management/transfer-court.njk>> #lavender
+participant ValidateMovementTemplate <<pool-management/validate-movement.njk>> #lavender
+participant TransferCourtConfirmTemplate <<juror-management/transfer-court-confirm.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant JurorSelectValidator
+participant JurorBulkTransferValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> PoolOverviewPage : request page
+group PoolOverview
+  PoolOverviewPage o-> PoolOverviewController : call page controller
+  PoolOverviewController -> PoolSummaryObject : call requestObject
+  PoolSummaryObject -> BackendController : fetch pool data
+
+  alt Backend returns an error
+    PoolSummaryObject <- - BackendController : error response
+    PoolOverviewController <- - PoolSummaryObject : reject requestObject call
+    Actor <- - PoolOverviewController : redirect to pool management
+  end
+
+  PoolSummaryObject <- BackendController : returnData
+  PoolOverviewController <- PoolSummaryObject : resolve requestObject call
+
+  alt Pool isn't active
+    PoolOverviewController - -> PoolOverviewTemplate : request and build template
+    PoolOverviewController <- - PoolOverviewTemplate : return HTML
+    Actor <- - PoolOverviewController : render HTML
+  end
+    
+  PoolOverviewController -> PoolMembersObject : call requestObject
+  PoolMembersObject -> BackendController : fetch pool member data
+
+  alt Backend returns an error
+    PoolMembersObject <- - BackendController : error response
+    PoolOverviewController <- - PoolMembersObject : reject requestObject call
+    Actor <- - PoolOverviewController : redirect to pool management
+  end
+
+  PoolMembersObject <- BackendController : returnData
+  PoolOverviewController <- PoolMembersObject : resolve requestObject call
+else with no errors
+  PoolOverviewController -> PoolOverviewTemplate : request and build template
+  PoolOverviewController <- PoolOverviewTemplate : return HTML
+else with error
+  PoolOverviewController -> PoolOverviewTemplate : request and build template with error message
+  PoolOverviewController <- PoolOverviewTemplate : return HTML
+end
+Actor <- PoolOverviewController : render HTML
+
+Actor -> TransferPage : POST from form
+TransferPage -> PoolOverviewController : call page controller
+PoolOverviewController -> JurorSelectValidator : ensure juror is selected
+
+alt No jurors selected
+  PoolOverviewController <- - JurorSelectValidator : no jurors selected
+  PoolOverviewPage o<- - PoolOverviewTemplate : render with error
+end
+
+PoolOverviewController <- JurorSelectValidator : validated
+PoolOverviewController -> TransferSelectCourtPage : redirect
+TransferSelectCourtPage o-> JurorTransferController : call page controller
+JurorTransferController -> FetchAllCourtsObject : call requestObject
+FetchAllCourtsObject -> BackendController : fetch court data
+
+alt Backend returns an error
+  FetchAllCourtsObject <- - BackendController : error response
+  JurorTransferController <- - FetchAllCourtsObject : reject requestObject call
+  JurorTransferController - -> ErrorTemplate : request and built template
+  JurorTransferController <- - ErrorTemplate : return HTML
+  Actor <- - JurorTransferController : render HTML
+end
+
+FetchAllCourtsObject <- BackendController : returnData
+JurorTransferController -> TransferCourtTemplate : request and build template
+JurorTransferController <- TransferCourtTemplate : return HTML
+Actor <- JurorTransferController : render HTML
+
+Actor -> TransferSelectCourtPage : POST from form
+TransferSelectCourtPage -> JurorTransferController : call page controller
+JurorTransferController -> JurorBulkTransferValidator : validate form
+
+alt Court validation fails
+  JurorTransferController <- - JurorBulkTransferValidator : data validationfails
+  TransferSelectCourtPage o<- - JurorTransferController : redirect to select court page
+end
+
+JurorTransferController <- JurorBulkTransferValidator : validation succeeds
+JurorTransferController -> ValidateMovementObject : validate juror movement
+ValidateMovementObject -> BackendController : fetch validation data
+
+alt Backend returns an error
+  ValidateMovementObject <- - BackendController : error response
+  JurorTransferController <- - ValidateMovementObject : reject requestObject call
+  JurorTransferController - -> ErrorTemplate : request and built template
+  JurorTransferController <- - ErrorTemplate : return HTML
+  Actor <- - JurorTransferController : render HTML
+end
+
+ValidateMovementObject <- BackendController : returnData
+
+alt Some jurors cannot be moved
+  JurorTransferController -> ValidateMovementTemplate : request and build template
+  JurorTransferController <- ValidateMovementTemplate : return HTML
+  Actor <- JurorTransferController : render HTML
+
+  alt Continue with available jurors
+    Actor -> TransferContinuePage : POST from form
+    TransferContinuePage ->o PoolOverviewController : call page controller
+  else Cancel transfer
+    Actor -> TransferContinuePage : Cancel form
+    PoolOverviewPage o<- TransferContinuePage : redirect
+end
+
+TransferCourtConfirmPage <- JurorTransferController : redirect
+
+TransferCourtConfirmPage -> JurorTransferController : call page controller
+JurorTransferController -> TransferCourtConfirmTemplate : request and build template
+JurorTransferController <- TransferCourtConfirmTemplate : return HTML
+Actor <- JurorTransferController : render HTML
+
+Actor -> TransferCourtConfirmPage : POST confirm
+TransferCourtConfirmPage ->o PoolOverviewController : call page controller
+PoolOverviewController -> JurorTransferObject : call requestObject
+JurorTransferObject -> BackendController : Post transfer data
+
+alt Backend returns an error
+  JurorTransferObject <- - BackendController : error response
+  PoolOverviewController <- - JurorTransferObject : reject requestObject call
+  Actor <- - PoolOverviewController : redirect to pool management
+end
+
+JurorTransferObject <- BackendController : returnData
+PoolOverviewController <- JurorTransferObject : resolve requestObject call
+Actor <- PoolOverviewController : redirect to pool overview
+@end
+
+@startuml bulk-transfer
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+participant PoolOverviewPage <</pool-management/pool-overview/:poolnumber>> #lightsteelblue
+participant TransferPage <</pool-management/:poolNumber/transfer>> #lightsteelblue
+participant TransferSelectCourtPage <</pool-management/:poolNumber/transfer/select-court>> #lightsteelblue
+participant TransferCourtConfirmPage <</pool-management/:poolNumber/transfer/confirm>> #lightsteelblue
+participant TransferContinuePage <</pool-management/:poolNumber/transfer/confirm>> #lightsteelblue
+
+participant PoolOverviewController <<pool-overview.controller.js>> #lightyellow
+participant JurorTransferController <<juror-update.transfer.controller.js>> #lightyellow
+participant PoolSummaryObject <<poolSummaryObj.get()>> #lightyellow
+participant PoolMembersObject <<poolMembersObj.get()>> #lightyellow
+participant FetchAllCourtsObject <<fetchAllCourts.get()>> #lightyellow
+participant ValidateMovementObject <<validateMovement.get()>> #lightyellow
+participant JurorTransferObject <<jurorTransfer.put()>> #lightyellow
+
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+participant PoolOverviewTemplate <<pool-management/pool-overview/index.njk>> #lavender
+participant TransferCourtTemplate <<juror-management/transfer-court.njk>> #lavender
+participant ValidateMovementTemplate <<pool-management/validate-movement.njk>> #lavender
+participant TransferCourtConfirmTemplate <<juror-management/transfer-court-confirm.njk>> #lavender
+
+participant JurorSelectValidator
+participant JurorBulkTransferValidator
+
+participant BackendController
+
+Actor -> PoolOverviewPage : request page
+group PoolOverview
+  PoolOverviewPage o-> PoolOverviewController : call page controller
+  PoolOverviewController -> PoolSummaryObject : call requestObject
+  PoolSummaryObject -> BackendController : fetch pool data
+
+  alt Backend returns an error
+    PoolSummaryObject <- - BackendController : error response
+    PoolOverviewController <- - PoolSummaryObject : reject requestObject call
+    Actor <- - PoolOverviewController : redirect to pool management
+  end
+
+  PoolSummaryObject <- BackendController : returnData
+  PoolOverviewController <- PoolSummaryObject : resolve requestObject call
+
+  alt Pool isn't active
+    PoolOverviewController - -> PoolOverviewTemplate : request and build template
+    PoolOverviewController <- - PoolOverviewTemplate : return HTML
+    Actor <- - PoolOverviewController : render HTML
+  end
+    
+  PoolOverviewController -> PoolMembersObject : call requestObject
+  PoolMembersObject -> BackendController : fetch pool member data
+
+  alt Backend returns an error
+    PoolMembersObject <- - BackendController : error response
+    PoolOverviewController <- - PoolMembersObject : reject requestObject call
+    Actor <- - PoolOverviewController : redirect to pool management
+  end
+
+  PoolMembersObject <- BackendController : returnData
+  PoolOverviewController <- PoolMembersObject : resolve requestObject call
+else with no errors
+  PoolOverviewController -> PoolOverviewTemplate : request and build template
+  PoolOverviewController <- PoolOverviewTemplate : return HTML
+else with error
+  PoolOverviewController -> PoolOverviewTemplate : request and build template with error message
+  PoolOverviewController <- PoolOverviewTemplate : return HTML
+end
+Actor <- PoolOverviewController : render HTML
+
+Actor -> TransferPage : POST from form
+TransferPage -> PoolOverviewController : call page controller
+PoolOverviewController -> JurorSelectValidator : ensure juror is selected
+
+alt No jurors selected
+  PoolOverviewController <- - JurorSelectValidator : no jurors selected
+  PoolOverviewPage o<- - PoolOverviewTemplate : render with error
+end
+
+PoolOverviewController <- JurorSelectValidator : validated
+PoolOverviewController -> TransferSelectCourtPage : redirect
+TransferSelectCourtPage o-> JurorTransferController : call page controller
+JurorTransferController -> FetchAllCourtsObject : call requestObject
+FetchAllCourtsObject -> BackendController : fetch court data
+
+alt Backend returns an error
+  FetchAllCourtsObject <- - BackendController : error response
+  JurorTransferController <- - FetchAllCourtsObject : reject requestObject call
+  JurorTransferController - -> ErrorTemplate : request and built template
+  JurorTransferController <- - ErrorTemplate : return HTML
+  Actor <- - JurorTransferController : render HTML
+end
+
+FetchAllCourtsObject <- BackendController : returnData
+JurorTransferController -> TransferCourtTemplate : request and build template
+JurorTransferController <- TransferCourtTemplate : return HTML
+Actor <- JurorTransferController : render HTML
+
+Actor -> TransferSelectCourtPage : POST from form
+TransferSelectCourtPage -> JurorTransferController : call page controller
+JurorTransferController -> JurorBulkTransferValidator : validate form
+
+alt Court validation fails
+  JurorTransferController <- - JurorBulkTransferValidator : data validationfails
+  TransferSelectCourtPage o<- - JurorTransferController : redirect to select court page
+end
+
+JurorTransferController <- JurorBulkTransferValidator : validation succeeds
+JurorTransferController -> ValidateMovementObject : validate juror movement
+ValidateMovementObject -> BackendController : fetch validation data
+
+alt Backend returns an error
+  ValidateMovementObject <- - BackendController : error response
+  JurorTransferController <- - ValidateMovementObject : reject requestObject call
+  JurorTransferController - -> ErrorTemplate : request and built template
+  JurorTransferController <- - ErrorTemplate : return HTML
+  Actor <- - JurorTransferController : render HTML
+end
+
+ValidateMovementObject <- BackendController : returnData
+
+alt Some jurors cannot be moved
+  JurorTransferController -> ValidateMovementTemplate : request and build template
+  JurorTransferController <- ValidateMovementTemplate : return HTML
+  Actor <- JurorTransferController : render HTML
+
+  alt Continue with available jurors
+    Actor -> TransferContinuePage : POST from form
+    TransferContinuePage ->o PoolOverviewController : call page controller
+  else Cancel transfer
+    Actor -> TransferContinuePage : Cancel form
+    PoolOverviewPage o<- TransferContinuePage : redirect
+end
+
+TransferCourtConfirmPage <- JurorTransferController : redirect
+
+TransferCourtConfirmPage -> JurorTransferController : call page controller
+JurorTransferController -> TransferCourtConfirmTemplate : request and build template
+JurorTransferController <- TransferCourtConfirmTemplate : return HTML
+Actor <- JurorTransferController : render HTML
+
+Actor -> TransferCourtConfirmPage : POST confirm
+TransferCourtConfirmPage ->o PoolOverviewController : call page controller
+PoolOverviewController -> JurorTransferObject : call requestObject
+JurorTransferObject -> BackendController : Post transfer data
+
+alt Backend returns an error
+  JurorTransferObject <- - BackendController : error response
+  PoolOverviewController <- - JurorTransferObject : reject requestObject call
+  Actor <- - PoolOverviewController : redirect to pool management
+end
+
+JurorTransferObject <- BackendController : returnData
+PoolOverviewController <- JurorTransferObject : resolve requestObject call
+Actor <- PoolOverviewController : redirect to pool overview
+@end
+
+PlantUML version 1.2022.7(Mon Aug 22 18:01:30 BST 2022)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

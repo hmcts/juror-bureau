@@ -1,0 +1,271 @@
+$button-pipe-colour: darken($govuk-border-colour, 20%);
+$pseudo-underline-height: 3px;
+$navbar-height: 50px;
+
+@mixin prefixed-transform($translateY: 0, $rotate: 0, $scale: 1) {
+  -webkit-transform: translateY($translateY) rotate($rotate) scale($scale);
+  -ms-transform: translateY($translateY) rotate($rotate) scale($scale);
+  transform: translateY($translateY) rotate($rotate) scale($scale);
+}
+
+@mixin chevron($colour) {
+  @include prefixed-transform($rotate: 45deg, $translateY: -35%);
+  border-bottom: 2px solid $colour;
+  border-right: 2px solid $colour;
+  content: "";
+  display: inline-block;
+  height: 8px;
+  margin: 0 10px 0 2px;
+  vertical-align: middle;
+  width: 8px;
+}
+
+@mixin pseudo-underline($left: govuk-spacing(4), $right: govuk-spacing(4)) {
+  background: none;
+  bottom: 0;
+  content: "";
+  height: $pseudo-underline-height;
+  left: $left;
+  position: absolute;
+  right: $right;
+  top: auto;
+}
+
+@mixin button-pipes($border-left, $border-right) {
+  border-left: $border-left;
+  border-right: $border-right;
+}
+
+@mixin focus-and-focus-visible {
+  &:focus {
+    @content;
+  }
+
+  &:focus-visible {
+    @content;
+  }
+}
+
+@mixin focus-not-focus-visible {
+  & {
+    @content;
+  }
+
+  &:focus:not(:focus-visible) {
+    @content;
+  }
+}
+
+.moj-header {
+  padding-top: 0;
+  // the designers opted to leave this bar out
+  // moj-design system shows on their header component though
+  border-bottom: 0;
+  
+  &__container {
+    // same with above... the container as a position of relative
+    // and for the dropdown menu to work it cannot have that position relative
+    position: unset;
+  }
+
+  &__content {
+    padding-bottom: 0;
+    height: $navbar-height;
+  }
+  
+  // service name styling
+  &__link {
+    padding-top: 10px;
+    margin-left: 0;
+  }
+  
+  &__navigation {
+
+    &-item--without-children {
+      margin-top: 8px;
+    }
+
+    &-toggle-wrapper {
+      position: relative;
+    }
+
+    &-toggle-button {
+      font-size: 16px;
+      font-weight: 700;
+      position: relative;
+      height: govuk-spacing(8);
+      margin-top: -3px; // hard coded to align the button with the top of the header
+      padding: govuk-spacing(2) 0;
+      color: govuk-colour("white");
+      background: none;
+      outline: none;
+      border: none;
+      cursor: pointer;
+
+      &-inner {
+        @include button-pipes(0, 0);
+        padding: govuk-spacing(1) govuk-spacing(6);
+
+        @include govuk-media-query($from: desktop) {
+          @include button-pipes(1px solid $button-pipe-colour, 1px solid $button-pipe-colour);
+          display: inline;
+          padding: govuk-spacing(1) govuk-spacing(6);
+          
+          &:before {
+            @include chevron(govuk-colour("white"));
+          }
+        }
+      }
+      
+      &:after {
+        @include pseudo-underline($left: govuk-spacing(6), $right: govuk-spacing(6));
+      }
+
+      @include focus-and-focus-visible {
+        background: $govuk-focus-colour;
+        color: $govuk-text-colour;
+
+        &:after {
+          background: govuk-colour("black");
+        }
+
+        .moj-header__navigation-toggle-button-inner {
+          @include button-pipes(1px solid $button-pipe-colour, 1px solid $button-pipe-colour);
+          border-color: $govuk-focus-colour;
+          &:before {
+            @include chevron($govuk-text-colour);
+          }
+        }
+      }
+
+      @include focus-not-focus-visible {
+        color: govuk-colour("white");
+        background: none;
+
+        &:hover:not(.moj-header__navigation-open-button):not(:focus-visible) {
+          color: $govuk-border-colour;
+          
+          &:after {
+            background: $govuk-border-colour;
+          }
+          
+          .moj-header__navigation-toggle-button-inner {
+            &:before {
+              @include chevron($govuk-border-colour);
+            }
+          }
+        }
+
+        &:after {
+          background: none;
+        }
+
+        .moj-header__navigation-toggle-button-inner {
+          @include govuk-media-query($until: desktop) {
+            @include button-pipes(0, 0);
+          }
+
+          @include button-pipes(1px solid $button-pipe-colour, 1px solid $button-pipe-colour);
+          &:before {
+            @include chevron(govuk-colour("white"));
+          }
+        }
+      }
+    }
+
+    &-toggle-search {
+      font-size: 16px;
+      font-weight: 700;
+      position: relative;
+      height: govuk-spacing(8);
+      width: govuk-spacing(8);
+      margin-top: -3px; // hard coded to align the button with the top of the header
+      padding: govuk-spacing(2) 0;
+      color: govuk-colour("white");
+      background: none;
+      outline: none;
+      border: none;
+      cursor: pointer;
+
+      &-inner {
+        width: 50px;
+
+        svg {
+          width: 20px;
+          height: 20px;
+          margin-bottom: -6px;
+        }
+      }
+
+      &:hover {
+        color: $govuk-border-colour;
+      }
+
+      @include focus-not-focus-visible {
+        color: govuk-colour("white");
+        background: none;
+      }
+
+      @include focus-and-focus-visible {
+        background: $govuk-focus-colour;
+        color: $govuk-text-colour;
+      }
+    }
+
+    &-open-button {
+      @include focus-not-focus-visible {
+        background-color: govuk-colour("light-grey");
+        color: $govuk-link-colour;
+        
+        .moj-header__navigation-toggle-button-inner {
+          &:before {
+            @include chevron($govuk-link-colour);
+            @include prefixed-transform($rotate: 225deg, $translateY: 1px);
+          }
+          
+          color: $govuk-link-colour;
+          border-color: govuk-colour("light-grey");
+        }
+        
+        &:after {
+          background: $govuk-link-colour;
+        }
+      }
+      
+      @include focus-and-focus-visible {
+        .moj-header__navigation-toggle-button-inner {
+          color: $govuk-text-colour;
+          &:before {
+            @include prefixed-transform($rotate: 225deg, $translateY: 1px);
+          }
+          
+          border-color: $govuk-focus-colour;
+        }
+      }
+
+      .moj-header__navigation-toggle-button-inner {
+        border-color: govuk-colour("light-grey");
+      }
+    }
+
+    &-dropdown-menu {
+      position: absolute;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: auto;
+      color: $govuk-text-colour;
+      background-color: govuk-colour("light-grey");
+
+      ul {
+        @include govuk-media-query($until: desktop) {
+          column-count: 1;
+        }
+
+        @include govuk-media-query($from: desktop) {
+          column-count: 4;
+        }
+      }
+    }
+  }
+}

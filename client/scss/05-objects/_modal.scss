@@ -1,0 +1,59 @@
+.modal {
+  background-color: $color-modal-fade;
+  display: none;
+  height: 100%;
+  left: 0;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 120;
+
+  .modal-content {
+    background-color: $page-colour;
+    border: 2px solid $focus-colour;
+    box-shadow: 2px 4px 5px 0 $color-modal-shadow;
+    left: 50%;
+    margin: 0;
+    max-height: 80%;
+    overflow-y: auto;
+    padding: 20px;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 48.61%;
+  }
+
+  .modal-title {
+    margin-bottom: 0;
+    margin-top: 20px;
+
+    .icon {
+      left: -8px;
+      position: relative;
+      top: 5px;
+    }
+  }
+
+  h3.modal-title {
+    margin-bottom: 30px;
+    margin-top: 10px;
+  }
+
+  .modal-title-aside {
+    float: right;
+    margin-top: 10px;
+
+    .close-modal {
+      color: $black;
+
+      &:hover, &:active, &:visited {
+        color: inherit;
+      }
+    }
+  }
+
+  hr {
+    margin-bottom: 30px;
+  }
+}

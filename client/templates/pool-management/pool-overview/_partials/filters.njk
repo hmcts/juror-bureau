@@ -1,0 +1,177 @@
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "custom-components/mod-filter/macro.njk" import modFilter %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+
+{% set filterOptionsHtml %}
+
+{{ govukInput({
+  label: {
+    text: "Juror number"
+  },
+  id: "jurorNumber",
+  name: "jurorNumber",
+  value: appliedFilters.jurorNumber
+}) }}
+
+{{ govukInput({
+  label: {
+    text: "First name"
+  },
+  id: "firstName",
+  name: "firstName",
+  value: appliedFilters.firstName
+}) }}
+
+{{ govukInput({
+  label: {
+    text: "Last name"
+  },
+  id: "lastName",
+  name: "lastName",
+  value: appliedFilters.lastName
+}) }}
+
+{{ govukCheckboxes({
+  name: "attendance",
+  classes: "govuk-checkboxes--small",
+  fieldset: {
+    legend: {
+      text: "Attendance",
+      classes: "govuk-fieldset__legend--s"
+    }
+  },
+  values: appliedFilters.attendance,
+  items: [
+    {
+      value: "in attendance",
+      text: "In attendance"
+    },
+    {
+      value: "on call",
+      text: "On call"
+    },
+    {
+      value: "other",
+      text: "Other"
+    },
+    {
+      value: "on trial",
+      text: "On a trial"
+    }
+  ]
+}) }}
+
+{{ govukCheckboxes({
+  name: "checkedIn",
+  classes: "govuk-checkboxes--small",
+  fieldset: {
+    legend: {
+      text: "Checked in",
+      classes: "govuk-fieldset__legend--s"
+    }
+  },
+  values: appliedFilters.checkedIn,
+  items: [
+    {
+      value: "today",
+      text: "Checked in today"
+    }
+  ]
+}) }}
+
+{{ govukCheckboxes({
+  name: "nextDueAtCourt",
+  classes: "govuk-checkboxes--small",
+  fieldset: {
+    legend: {
+      text: "Next due at court",
+      classes: "govuk-fieldset__legend--s"
+    }
+  },
+  values: appliedFilters.nextDueAtCourt,
+  items: [
+    {
+      value: "set",
+      text: "Date set"
+    },
+    {
+      value: "notSet",
+      text: "No date set"
+    }
+  ]
+}) }}
+
+{{ govukCheckboxes({
+  name: "status",
+  classes: "govuk-checkboxes--small",
+  fieldset: {
+    legend: {
+      text: "Status",
+      classes: "govuk-fieldset__legend--s"
+    }
+  },
+  values: appliedFilters.status,
+  items: [
+    {
+      value: "responded",
+      text: "Responded"
+    },
+    {
+      value: "panelled",
+      text: "Panelled"
+    },
+    {
+      value: "juror",
+      text: "Juror"
+    },
+    {
+      value: "completed",
+      text: "Completed"
+    },
+    {
+      value: "failed to attend",
+      text: "Failed to attend"
+    },
+    {
+      value: "deferred",
+      text: "Deferred"
+    },
+    {
+      value: "excused",
+      text: "Excused"
+    },
+    {
+      value: "postponed",
+      text: "Postponed"
+    },
+    {
+      value: "disqualified",
+      text: "Disqualified"
+    },
+    {
+      value: "deceased",
+      text: "Deceased"
+    }
+  ]
+}) }}
+
+{% endset %}
+
+<form action="{{ url('pool-overview.filter.post', { poolNumber: poolDetails.poolNumber }) }}?showFilter=true" method="POST">
+  {{ modFilter({
+    heading: {
+      text: "Filter"
+    },
+    classes: "js-hidden",
+    attributes: {
+      id: "pool-overview-filter",
+      "aria-hidden": true
+    },
+    optionsHtml: filterOptionsHtml,
+    clearUrl: url('pool-overview.get', { poolNumber: poolDetails.poolNumber }) + "?showFilter=true"
+  }) }}
+
+  <input type="hidden" name="poolNumber" id="poolNumber" value="{{ poolDetails.poolNumber }}">
+  <input type="hidden" id="csrftoken" name="_csrf" value="{{ csrftoken }}"/>
+</form>

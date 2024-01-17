@@ -1,0 +1,77 @@
+@startuml juror-update-deceased
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant JurorRecordPage <</record>>
+participant JurorUpdatePage <</update>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant JurorRecordController <<juror-record.controller.js>>
+participant JurorUpdateController <<juror-update.controller.js>>
+participant JurorRecordObject <<record.get()>>
+participant JurorDeceasedObject <<jurorDeceasedObject.post()>>
+
+''' TEMPLATES
+participant JurorRecordUpdateTemplate <<juror-management/update-juror-record.njk>>
+
+''' FILTERS AND VALIDATORS
+participant JurorRecordUpdateValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+''' JOURNEY FLOW
+Actor -> JurorUpdatePage : update juror record
+
+JurorUpdatePage -> JurorUpdateController : call page controller
+
+JurorUpdateController -> JurorRecordObject : build request object
+JurorRecordObject -> BackendController : send backend request
+JurorRecordObject <- BackendController : ok response
+JurorUpdateController <- JurorRecordObject : resolve request
+
+JurorUpdateController -> JurorRecordUpdateTemplate : request and build template
+JurorUpdateController <- JurorRecordUpdateTemplate : return HTML
+JurorUpdatePage <- JurorUpdateController : return HTML
+Actor <- JurorUpdatePage : render HTML
+
+alt Failed to retrieve juror record details
+    JurorRecordObject <-- BackendController : error response
+    JurorUpdateController <-- JurorRecordObject : reject requestObject
+    JurorUpdatePage <-- JurorUpdateController : error response
+    Actor <-- JurorUpdatePage : render error message
+end
+
+Actor -> JurorUpdatePage : Select deceased and enter comment
+JurorUpdatePage -> JurorUpdateController : call page controller
+JurorUpdateController -> JurorRecordUpdateValidator : validate selection and comment
+JurorUpdateController <- JurorRecordUpdateValidator : selection and comment are valid
+
+alt Deceased selection or comment is invalid or missing
+    JurorUpdateController <-- JurorRecordUpdateValidator : reason or decision is invalid or missing
+    JurorUpdatePage <-- JurorUpdateController : error response
+    Actor <-- JurorUpdatePage : render error message
+end
+
+JurorUpdateController -> JurorDeceasedObject : build request object
+JurorDeceasedObject -> BackendController : send backend request
+JurorDeceasedObject <- BackendController : ok response
+JurorUpdateController <- JurorDeceasedObject : resolve request
+
+JurorUpdateController -> JurorRecordController : redirect to inbox
+JurorRecordPage <- JurorRecordController : redirect to inbox
+Actor <- JurorRecordPage : redirect to updated juror record and display deceased banner
+
+alt Failed to process deceased juror
+    JurorDeceasedObject <-- BackendController : error response
+    JurorUpdateController <-- JurorDeceasedObject : reject requestBody
+    JurorUpdatePage <-- JurorUpdateController : error response
+    Actor <-- JurorUpdatePage : render error message
+end
+
+@enduml

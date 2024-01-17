@@ -1,0 +1,174 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_title %}
+  {{ serviceName }} - {{ subServiceName }}
+{% endblock %}
+
+{% block page_identifier %}{{ pageIdentifier }}{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <form action="{{ _submitUrl }}" method="post" id="checkDetailsForm">
+
+        <h1 class="govuk-heading-l">{{ pageIdentifier }}</h1>
+
+        {{ govukSummaryList({
+          classes: "govuk-!-width-two-thirds",
+          attributes: {
+            id: "jurorDetails"
+          },
+          rows: [
+            {
+              key: {
+                text: "Juror details",
+                classes: "govuk-heading-m"
+              }
+            },
+            {
+              key: {
+                text: "Date of birth"
+              },
+              value: {
+                text: formFields.jurorDob
+              },
+              actions: {
+                items: [{
+                    href: changeUrls.jurorDob,
+                    text: "Change"
+              }]}
+            },
+            {
+              key: {
+                text: "Name"
+              },
+              value: {
+                text: formFields.jurorName
+              },
+              actions: {
+                items: [{
+                    href: changeUrls.jurorName,
+                    text: "Change"
+              }]}
+            },
+            {
+              key: {
+                text: "Address"
+              },
+              value: {
+                html: formFields.jurorAddress
+              },
+              actions: {
+                items: [{
+                    href: changeUrls.jurorAddress,
+                    text: "Change"
+              }]}
+            },
+            {
+              key: {
+                text: "Main phone"
+              },
+              value: {
+                text: jurorDetails.jurorContact.mainPhone if jurorDetails.jurorContact.mainPhone else "-"
+              },
+              actions: {
+                items: [{
+                    href: changeUrls.jurorContact,
+                    text: "Change"
+              }]}
+            },
+            {
+              key: {
+                text: "Alternative phone"
+              },
+              value: {
+                text: jurorDetails.jurorContact.alternativePhone if jurorDetails.jurorContact.alternativePhone else "-"
+              },
+              actions: {
+                items: [{
+                    href: changeUrls.jurorContact,
+                    text: "Change"
+              }]}
+            },
+            {
+              key: {
+                text: "Email"
+              },
+              value: {
+                text: jurorDetails.jurorContact.emailAddress if jurorDetails.jurorContact.emailAddress else "-"
+              },
+              actions: {
+                items: [{
+                    href: changeUrls.jurorContact,
+                    text: "Change"
+              }]}
+            },
+            {
+              key: {
+                text: "Notes"
+              },
+              value: {
+                text: jurorDetails.notes if jurorDetails.notes else "-"
+              },
+              actions: {
+                items: [{
+                    href: changeUrls.notes,
+                    text: "Change"
+              }]}
+            }
+          ]
+        }) }}
+
+        {{ govukSummaryList({
+          classes: "govuk-!-width-two-thirds",
+          attributes: {
+            id: "poolDetails"
+          },
+          rows: [
+            {
+              key: {
+                text: "Pool details",
+                classes: "govuk-heading-m"
+              }
+            },
+            {
+              key: {
+                text: "Pool number"
+              },
+              value: {
+                text: formFields.poolNumber
+              },
+              actions: {
+                items: [{
+                    href: changeUrls.poolNumber,
+                    text: "Change"
+              }]}
+            }
+          ]
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Create juror record",
+            type: 'submit',
+            attributes: {
+              id: "createButton"
+            }
+          }) }}
+
+          <a id="cancelAnchor" class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" id="csrf" value="{{ csrftoken }}">
+
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

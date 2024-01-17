@@ -1,0 +1,77 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_title %}{{ serviceName }} - {{"complete service"}}{% endblock %}
+  
+{% block page_identifier %}Complete service{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {% set _submitUrl = submitUrl %}
+  {% set _cancelUrl = cancelUrl %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <form action="{{ _submitUrl }}" method="post" id="selectCourt">
+
+        <h1 class="govuk-heading-l">Complete service</h1>
+        
+        {% set dateError = undefined %}
+        {% if errors.items["jurorCompletionDate"] %}
+          {% set dateError = errors.items["jurorCompletionDate"][0].details %}
+        {% endif %}
+
+        <div class="datepicker-controls-group govuk-!-padding-bottom-0" id="datesGroup">
+          {{ datePicker({
+            id: 'completionDate',
+            label: {
+              text: 'Enter a completion date',
+              classes: "govuk-label--s"
+            },
+            hint: 'Use dd/mm/yyyy format. For example, 31/01/2023',
+            dateValue: defaultCompletionDate,
+            dateMin: minCompletionDate,
+            dateMax: maxCompletionDate,
+            dateError: dateError
+          }) }}
+        </div>
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Complete service",
+            type: "submit" 
+          }) }}
+
+          <a class="govuk-link" href="{{ _cancelUrl }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}
+
+
+{% block body_end %}
+  {{ super() }}
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function(){
+
+      const datePickers = []
+        .slice
+        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
+      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
+
+    });
+  </script>
+
+{% endblock %}

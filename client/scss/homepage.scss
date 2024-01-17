@@ -1,0 +1,19 @@
+.homepage-inverse-header {
+    background-color: govuk-colour("blue");
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+@media (min-width: 48.0625em) {
+    .homepage-inverse-header {
+        padding-top: 75px;
+        padding-bottom: 75px;
+    }
+}
+
+.homepage-inverse-header__title {
+    color: #fff;
+}
+
+.homepage-search-column {
+    max-width: 600px;
+}

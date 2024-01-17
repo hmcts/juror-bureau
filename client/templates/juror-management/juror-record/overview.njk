@@ -1,0 +1,258 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+
+{% block page_title %}
+  {{ serviceName }} - juror record - overview
+{% endblock %}
+
+{% block page_identifier %}juror record - overview{% endblock %}
+
+{% set currentApp = "Juror management" %}
+
+{% block beforeContent %}
+  {% include "includes/back-link.njk" %}
+{% endblock %}
+
+{% block content %}
+  {% set currentName = [juror.commonDetails.title, juror.commonDetails.firstName, juror.commonDetails.lastName] %}
+
+  {% if availableMessage %}
+    {% if bannerMessage.isWarning === true %}
+      {{ mojBanner({
+        type: "warning",
+        html: bannerMessage.text,
+        iconFallbackText: "Warning"
+      }) }}
+    {% else %}
+      {% if bannerMessage.showUpdateOnly %}
+        {% set bannerHtmlMessage %}
+          Juror record updated
+        {% endset %}
+      {% else %}
+        {% set bannerHtmlMessage %}
+          Juror record updated: <b>{{ bannerMessage | safe }}</b>
+        {% endset %}
+      {% endif %}
+
+      {{ mojBanner({
+        type: "success",
+        html: bannerHtmlMessage,
+        iconFallbackText: "Success"
+      }) }}
+    {% endif %}
+  {% endif %}
+
+  {% include "../_partials/heading.njk" %}
+
+  {% set policeCheckStatus =
+    {
+      key: {
+        text: "Police check"
+      },
+      value: {
+        text: juror.commonDetails.policeCheck | capitalize,
+        classes: "mod-red-text" if juror.commonDetails.policeCheck === "Failed"
+      }
+    }
+  %}
+ 
+  {% if isCourtUser %}
+    {% if juror.commonDetails.policeCheck === "Not Checked" %}
+      {% set policeCheckStatus =
+        {
+          key: {
+            text: "Police check"
+          },
+          value: {
+            html: "
+            <p class='govuk-body'>" + juror.commonDetails.policeCheck | capitalize + "
+              <br>
+              <a href='" + url('juror-record.police-check.get', { jurorNumber: juror.commonDetails.jurorNumber }) + "' class='govuk-link govuk-link--no-visited-state'>
+                Run a police check
+              </a>
+            </p>"
+          }
+        }
+      %} 
+    {% elif juror.commonDetails.policeCheck === "Not Checked - There was a problem"%}
+      {% set policeCheckStatus =
+      {
+        key: {
+          text: "Police check"
+        },
+        value: {
+          html: " 
+          <p class='govuk-body'>Not checked - <span class='mod-red-text'>there was a problem.</span> </p> 
+          <p class='govuk-body'> Check name and 
+            <a href='" + url('juror-record.police-check.get', { jurorNumber: juror.commonDetails.jurorNumber }) + "' class='govuk-link govuk-link--no-visited-state'>try again</a>. 
+            if problem persists, raise an incident following your usual process.
+          </p>"
+        }
+      }
+    %}
+    {% endif %}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <div class="mod-juror-record__title">
+        <h2 id="overviewLabel" class="govuk-heading-m">Overview</h2>
+      </div>
+      {# Next service date attributes are hardcoded and hidden behind a specific query param until backend for this data has been implemented #}
+      {{ govukSummaryList({
+        classes: "govuk-!-width-two-thirds govuk-!-margin-bottom-9",
+        rows: [
+          {
+            key: {
+              text: "Next due at court"
+            },
+            value: {
+              text: "Today"
+            },
+            actions: {
+              items: [
+                {
+                  href: "#",
+                  text: "Change",
+                  visuallyHiddenText: "nextCourtDate"
+                }
+              ]
+            }
+          },
+          {
+            key: {
+              text: "Checked in today"
+            },
+            value: {
+              text: "9:30am"
+            }
+          },
+          {
+            key: {
+              text: "Location"
+            },
+            value: {
+              text: "Assembly room"
+            }
+          },
+          {
+            key: {
+              text: "Attendances"
+            },
+            value: {
+              text: "1"
+            }
+          },
+          {
+            key: {
+              text: "Absences"
+            },
+            value: {
+              text: "0"
+            }
+          },
+          {
+            key: {
+              text: "Trials"
+            },
+            value: {
+              text: "0"
+            }
+          },
+          {
+            key: {
+              text: "Number of deferrals"
+            },
+            value: {
+              text: juror.commonDetails.noDeferrals or "0"
+            }
+          }
+        ] if showServiceAttributes === "true" else [
+          {
+            key: {
+              text: "Number of deferrals"
+            },
+            value: {
+              text: juror.commonDetails.noDeferrals or "0"
+            }
+          }
+        ]
+      }) }}
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <div class="mod-juror-record__title">
+        <h2 id="checksLabel" class="govuk-heading-m">Checks</h2>
+      </div>
+      {{ govukSummaryList({
+        classes: "govuk-!-width-two-thirds govuk-!-margin-bottom-9",
+        rows: [
+          policeCheckStatus
+        ]
+      }) }}
+    </div>
+  </div>
+
+  {% if jurorStatus === 'Deferred' %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <div class="mod-juror-record__title">
+          <h2 id="deferralLabel" class="govuk-heading-m">Deferral</h2>
+          <a id="changeJurorDetailsAnchor" href="{{ url('juror-record.deferral-edit.get', {
+            jurorNumber: juror.commonDetails.jurorNumber
+            }) }}" class="govuk-link">Change</a>
+        </div>
+        {{ govukSummaryList({
+          classes: "govuk-!-width-two-thirds govuk-!-margin-bottom-9",
+          rows: [
+            {
+              key: {
+                text: "Deferred to"
+              },
+              value: {
+                text: juror.commonDetails.deferralDate | makeDate | dateFilter(null, "dddd DD MMMM YYYY")
+              }
+            },
+            {
+              key: {
+                text: "Deferral reason"
+              },
+              value: {
+                text: juror.commonDetails.excusalDescription
+              }
+            }
+          ]
+        }) }}
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      {% if jurorStatus === "Postponed" %}
+        {% set poolUrlHtml %}
+          <a href="#">In deferral maintenance</a>
+        {% endset %}
+      {% else %}
+        {% set poolUrlHtml %}
+          <a href="{{ url('pool-overview.get', { poolNumber: juror.commonDetails.poolNumber }) }}">{{ juror.commonDetails.poolNumber }}</a>
+        {% endset %}
+      {% endif %}
+
+      <div class="mod-juror-record__title">
+        <h2 id="summonsLabel" class="govuk-heading-m">Pool details</h2>
+      </div>
+      {{ govukSummaryList({
+        classes: "govuk-!-width-two-thirds govuk-!-margin-bottom-9",
+        rows: poolDetails
+      }) }}
+
+    </div>
+  </div>
+{% endblock %}

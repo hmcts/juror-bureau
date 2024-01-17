@@ -1,0 +1,18 @@
+$font-size-toy: 12px;
+$font-size-xsmall: 16px;
+$font-size-body: 19px;
+$font-size-small: 24px;
+$font-size-large: 26px;
+$font-size-xlarge: 36px;
+
+.font-large {
+  font-size: 28px;
+}
+
+.heading-small {
+  font-size: $font-size-large;
+}
+
+.heading-xsmall {
+  font-size: $font-size-xsmall
+}

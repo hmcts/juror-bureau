@@ -1,0 +1,113 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_identifier %} Empanel Jury {% endblock %}
+
+{% block beforeContent %}
+
+  {{ govukBackLink({
+    text: "Back",
+    href: backLinkUrl,
+    attributes: {
+      id: "backLinkAnchor"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <form action="{{ submitUrl }}" method="post" id="juryEmpanelSelectForm">
+      
+      {% if tmpErrors %}
+        <div class="govuk-form-group--error">
+      {% endif %}
+
+        <div class="govuk-!-margin-bottom-7">
+          <span class="trial-detail__header-label">{{ trialNumber }}</span>
+          <div class="trial-detail__header-number">
+            <h1 class="govuk-heading-l govuk-!-margin-bottom-0">Empanel jury</h1>
+          </div>
+        </div>
+        <p class="govuk-body">For each person, select whether they are:</p>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>a juror (empanelled)</li>
+          <li>not used</li>
+          <li>challenged</li>
+        </ul>
+        <p class="govuk-body">When you confirm, anyone not used or challenged will be returned to the ‘jurors in waiting’ list.</p>
+
+        {% if tmpErrors %}
+        <p id="jury-selection-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span> You must select {{ requiredNumberOfJurors }} jurors to serve on the jury
+        </p>
+        {% endif %}
+
+        {% for juror in jurors %}
+
+          {% set optionSelected = 'juror' %}
+          
+          {% if tmpBody[juror.juror_number] === 'unused' %}
+            {% set optionSelected = 'unused' %}
+          {% elif tmpBody[juror.juror_number] === 'challenged' %}
+            {% set optionSelected = 'challenged' %}
+          {% endif %}
+
+          <div class="trial-managment juror-option">
+            <h3 class="govuk-heading-m govuk-!-margin-bottom-2">{{ juror.first_name }} {{ juror.last_name }}</h3>
+            <p class="govuk-body"><a href="{{ url('juror-record.overview.get', { jurorNumber: juror.juror_number }) }}" class="govuk-link">{{ juror.juror_number }}</a></p>
+            {{ govukRadios({
+              classes: "govuk-radios--small",
+              name: juror.juror_number,
+              items: [
+                {
+                  value: "juror",
+                  checked: optionSelected === "juror",
+                  text: "Juror"
+                },
+                {
+                  value: "unused",
+                  checked: optionSelected === "unused",
+                  text: "Not used"
+                },
+                {
+                  value: "challenged",
+                  checked: optionSelected === "challenged",
+                  text: "Challenged"
+                }
+              ]
+            }) }}
+          </div>
+
+        {% endfor %}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            type: "submit" 
+          }) }}
+
+          <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="requiredNumberOfJurors" value="{{ requiredNumberOfJurors }}">
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+        
+        {% if tmpErrors %}
+        </div>
+        {% endif %}
+      
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

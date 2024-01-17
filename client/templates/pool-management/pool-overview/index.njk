@@ -1,0 +1,172 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{% from "./pool-record-doughnut.njk" import poolRecordDoughnut %}
+
+{% block page_identifier %}Pool Overview for pool {{ poolDetails.poolNumber }}{% endblock %}
+
+{% block page_title %}
+  {{ serviceName }} - Pool overview for pool {{ poolDetails.poolNumber }}
+{% endblock %}
+
+{% set currentApp = "Pool management" %}
+
+{% block beforeContent %}
+  {% include "includes/back-link.njk" %}
+
+  {% if error %}
+    {{ mojBanner({
+      type: "warning",
+      html: error.message,
+      iconFallbackText: "Warning"
+    }) }}
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+
+{% include "includes/errors.njk" %}
+
+  {% if errors.items["selectedJurors"] %}
+    {% set selectedJurorsError = {"text": errors.items['selectedJurors'][0].details} %}
+  {% else %}
+    {% set selectedJurorsError = undefined %}
+  {% endif %}
+
+{% if availableSuccessMessage %}
+    {{ mojBanner({
+      type: "success",
+      html: successBanner,
+      iconFallbackText: "Success"
+    }) }}
+  {% endif %}
+
+  {% set additionalPoolStats %}
+  <div class="additional-stats">
+    <div class="additional-stats__row">
+      <span class="govuk-!-font-weight-bold">Required pool size {{ errors.items['selectedJurors'][0].summary }}</span>
+      <span>{{ poolSummary.requiredPoolSize }}</span>
+    </div>
+    <div class="additional-stats__row">
+      <span class="govuk-!-font-weight-bold">Court supply</span>
+      <span>{{ additionalStatistics.courtSupply }}</span>
+    </div>
+    <div class="additional-stats__row">
+      <span class="govuk-!-font-weight-bold">Requested from bureau</span>
+      <span>{{ bureauSummoning.required }}</span>
+    </div>
+    <div class="additional-stats__row">
+      <span class="govuk-!-font-weight-bold">Bureau supply {{ formError.message.summary }}</span>
+      <span>{{ bureauSummoning.confirmed }}</span>
+    </div>
+  </div>
+  {% endset %}
+
+  <div class="after-header">
+    <div class="after-header__pool-record">
+      <span class="after-header__pool-record-label">Pool record</span>
+      <div class="after-header__pool-record-number">
+        <h1 class="govuk-heading-l govuk-!-margin-0">{{ poolDetails.poolNumber }}</h1>
+        {% if isNil === false %}
+          {{ govukTag({
+            text: "Active" if poolDetails.isActive else "Requested",
+            classes: "" if poolDetails.isActive else "govuk-tag--blue" 
+          }) }}
+        {% endif %}
+      </div>
+    </div>
+
+    <span>
+      {% if authentication.owner === "400" and poolDetails.isActive === false and isNil === false %}
+        {{ govukButton({
+          text: "Summon jurors",
+          href: url('summon-citizens.get', {
+            poolNumber: poolDetails.poolNumber
+          }),
+          isStartButton: false,
+          attributes: {
+            id: "summonCitizensButton"
+          }
+        }) }}
+      {% elif authentication.owner === "400" and poolDetails.isActive === true and isNil === false %}
+        {{ govukButton({
+          text: "Summon jurors",
+          href: url('pool.additional-summons.get', {
+            poolNumber: poolDetails.poolNumber
+          }),
+          isStartButton: false,
+          attributes: {
+            id: "summonCitizensButton"
+          }
+        }) }}
+      {% endif %}
+      {% if isNil === false and poolDetails.isActive %}
+        {{ govukButton({
+          text: "Edit pool",
+          href: url('pool-management.edit-pool.get', {
+            poolNumber: poolDetails.poolNumber
+          }),
+          classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+          attributes: {
+            id: "editPoolButton"
+          }
+        }) }}
+      {% endif %}
+      {% if authentication.owner === "400" and isNil %}
+        {{ govukButton({
+          text: "Convert to an active pool",
+          href: url('nil-pool.convert.form.get', {
+            poolNumber: poolDetails.poolNumber
+          }),
+          classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+          attributes: {
+            id: "convertToActivePoolButton"
+          }
+        }) }}
+      {% endif %}
+      {% if (authentication.owner === "400" and poolDetails.isActive) or poolDetails.isActive === false %}
+        {{ govukButton({
+          text: "Delete pool" if (poolDetails.isActive or bureauSummoning.required === 0) else "Delete pool request",
+          href: url('pool-management.delete-pool.get'),
+          classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+          attributes: {
+            id: "deletePoolButton"
+          }
+        }) }}
+      {% endif %}
+    </span>
+  </div>
+
+  <div class="court-details-wrapper">
+    <div class="court-details">
+      <div class="govuk-width-container">
+        <div class="court-details__grid">
+          <div class="column">
+            <span class="govuk-!-font-weight-bold">Court name</span>
+            <span>{{ poolDetails.courtName }}</span>
+          </div>
+          <div class="column">
+            <span class="govuk-!-font-weight-bold">Court location code</span>
+            <span>{{ poolDetails.locCode }}</span>
+          </div>
+          <div class="column">
+            <span class="govuk-!-font-weight-bold">Court start date</span>
+            <span>{{ poolDetails.courtStartDate }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if isNil %}
+    {% include "./nil-pool-summary.njk" %}
+  {% else %}
+    {% include "./pool-summary.njk" %}
+  {% endif %}
+
+{% endblock %}

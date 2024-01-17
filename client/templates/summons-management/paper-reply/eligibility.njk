@@ -1,0 +1,165 @@
+{% extends "../../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{% block page_title %}
+  {{ serviceName }} - paper response - eligibility
+{% endblock %}
+
+{% block page_identifier %}paper response - eligibility{% endblock %}
+
+{% block beforeContent %}
+  {% if backLinkUrl%}
+    {% include "includes/back-link.njk" %}
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+
+      <span class="govuk-caption-l">Enter Summons reply</span>
+      <h1 class="govuk-heading-l">Eligibility</h1>
+
+      <form method="post" action="{{ postUrl }}" >
+        {# livedConsecutive #}
+        {{ govukRadios({
+          classes: "govuk-radios--inline govuk-!-width-three-quarters",
+          name: "livedConsecutive",
+          fieldset: {
+            legend: {
+              text: "Have they lived in the UK, Channel Islands or Isle of Man for more than five consecutive years, since their 13th birthday?",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          items: [
+            {
+              value: "yes",
+              text: "Yes",
+              checked: livedConsecutive === "yes"
+            },
+            {
+              value: "no",
+              text: "No",
+              checked: livedConsecutive === "no"
+            }
+          ]
+        }) }}
+
+        {# mentalHealthAct #}
+        {{ govukRadios({
+          classes: "govuk-radios--inline",
+          name: "mentalHealthAct",
+          fieldset: {
+            legend: {
+              text: "Are they detained (sectioned) or likely to be detained under the Mental Health Act 1983?",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          items: [
+            {
+              value: "yes",
+              text: "Yes",
+              checked: mentalHealthAct === "yes"
+            },
+            {
+              value: "no",
+              text: "No",
+              checked: mentalHealthAct === "no"
+            }
+          ]
+        }) }}
+
+        {# mentalHealthCapacity #}
+        {{ govukRadios({
+          classes: "govuk-radios--inline",
+          name: "mentalHealthCapacity",
+          fieldset: {
+            legend: {
+              text: "Do they lack capacity as stated in the Mental Capacity Act?",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          items: [
+            {
+              value: "yes",
+              text: "Yes",
+              checked: mentalHealthCapacity === "yes"
+            },
+            {
+              value: "no",
+              text: "No",
+              checked: mentalHealthCapacity === "no"
+            }
+          ]
+        }) }}
+
+        {# onBail #}
+        {{ govukRadios({
+          classes: "govuk-radios--inline",
+          name: "onBail",
+          fieldset: {
+            legend: {
+              text: "Are they on bail for a criminal offence?",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+            items: [
+            {
+              value: "yes",
+              text: "Yes",
+              checked: onBail === "yes"
+            },
+            {
+              value: "no",
+              text: "No",
+              checked: onBail === "no"
+            }
+          ]
+        }) }}
+
+        {# convicted #}
+        {{ govukRadios({
+          classes: "govuk-radios--inline ",
+          name: "convicted",
+          fieldset: {
+            legend: {
+              text: "Have they been found guilty of a criminal offence and been given a prison sentence, community order or suspended prison sentence?",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          items: [
+            {
+              value: "yes",
+              text: "Yes",
+              checked: convicted === "yes"
+            },
+            {
+              value: "no",
+              text: "No",
+              checked: convicted === "no"
+            }
+          ]
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            attributes: {
+              id: "continueButton"
+            }
+          }) }}
+          <a id="eligibilityCancelBtn" class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+    </div>
+  </div>
+
+{% endblock %}
+

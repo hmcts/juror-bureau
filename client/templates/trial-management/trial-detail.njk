@@ -1,0 +1,149 @@
+{% extends "layouts/default.njk" %}
+
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+
+
+{% block page_title %}{{ serviceName }} - trial-management - trials{% endblock %}
+{% block page_identifier %}trial-management - trials{% endblock %}
+
+{% set currentApp = "Trials" %}
+
+{% block content %}
+{{errors.message}}
+  {% include "includes/errors.njk" %}
+
+  {% if successBanner %}
+    {{ mojBanner({
+      type: "success",
+      html: successBanner,
+      iconFallbackText: "Success"
+    }) }}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half trial-detail__header">
+      <span class="trial-detail__header-label">Trial</span>
+      <div class="trial-detail__header-number">
+        <h1 class="govuk-heading-l govuk-!-margin-bottom-0">{{ trial.trial_number }}</h1>
+          {{ govukTag({
+            text: "Active" if trial.is_active else "Inactive",
+            classes: "govuk-tag--blue" if trial.is_active else "govuk-tag--grey"
+          }) }}
+      </div>
+    </div>
+    <div class="govuk-grid-column-one-half">
+      <div class="govuk-button-group mod-flex mod-justify-end">
+        {% if trial.panelledJurors | length > 0 %}
+          {{ govukButton({
+            text: "Print panel list",
+            classes: "govuk-button--secondary",
+            href: '#'
+          }) }}
+
+          {{ govukButton({
+            text: "Print ballot cards",
+            classes: "govuk-button--secondary",
+            href: '#'
+          }) }}
+
+          {{ govukButton({
+            text: "Empanel jury",
+            classes: "govuk-button--secondary",
+            href: url('trial-management.empanel.get', {trialNumber: trial.trial_number, locationCode: locationCode})
+          }) if not trial.is_jury_empanelled }}
+        {% else %}
+          {{ govukButton({
+            text: "Generate panel",
+            classes: "govuk-button--secondary",
+            href: url('trial-management.generate-panel.get', {trialNumber: trial.trial_number, locationCode: locationCode})
+          }) }}
+
+          {{ govukButton({
+            text: "Edit trial",
+            classes: "govuk-button--secondary",
+            href: '#',
+            disabled: true
+          }) }}
+            {# Due to the trial BE being implemented, the stub edit trial code no longer works
+            href: url('trial-management.edit-trial.get', {trialNumber: trial.trial_number, locationCode: locationCode})
+          }) }} #}
+        {% endif %}
+        
+        {{ govukButton({
+          text: "End trial",
+          classes: "govuk-button--secondary",
+          href: "#"
+        }) }}
+      </div>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half govuk-body">
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              text: "Defendants" if trial.trial_type === "Criminal" else "Respondents"
+            },
+            value: {
+              text: trial.defendants
+            }
+          },
+          {
+            key: {
+              text: "Trial type"
+            },
+            value: {
+              text: trial.trial_type | capitalizeFully
+            }
+          },
+          {
+            key: {
+              text: "Trial start date"
+            },
+            value: {
+              text: trial.start_date | makeDate | dateFilter("YYYY,MM,DD", "ddd D MMM YYYY")
+            }
+          },
+          {
+            key: {
+              text: "Judge"
+            },
+            value: {
+              text: trial.judge.description
+            }
+          },
+          {
+            key: {
+              text: "Courtroom"
+            },
+            value: {
+              text: trial.courtroom.description | capitalizeFully
+            }
+          },
+          {
+            key: {
+              text: "Protected?"
+            },
+            value: {
+              text: "Yes" if trial.protected else "No"
+            }
+          }
+        ]
+      }) }}
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {% if trial.panelledJurors | length > 0 %}
+        {% include "./_partials/trial-panel.njk" %}
+      {% endif %}
+    </div>
+  </div>
+
+{% endblock %}

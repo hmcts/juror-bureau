@@ -1,0 +1,57 @@
+@startuml delete-pool
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant Page <</delete-pool>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant DeletePoolController <<delete-pool.controller.js>>
+participant DeletePoolObject <<deletePoolObject.delete()>>
+
+''' TEMPLATES
+participant ConfirmTemplate <<delete-pool/confirm.njk>>
+participant HasMembersTemplate <<delete-pool/has-members.njk>>
+participant PoolManagementTemplate <<pool-management/index.njk>>
+
+''' FILTERS AND VALIDATORS
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+
+''' JOURNEY FLOW
+Actor -> Page : request page
+
+Page -> DeletePoolController : call page controller
+
+DeletePoolController -> ConfirmTemplate : request and build template
+DeletePoolController <- ConfirmTemplate : return HTML
+
+alt Pool has members
+  DeletePoolController -> HasMembersTemplate : request and build template
+  DeletePoolController <- HasMembersTemplate : return HTML
+end
+
+Actor <- DeletePoolController : render HTML
+
+Page -> DeletePoolObject : confirm deletion
+DeletePoolObject -> BackendController : send backend request
+DeletePoolObject <- BackendController : ok response
+DeletePoolController <- DeletePoolObject : resolve request
+
+alt Backend returns an error
+  DeletePoolObject <-- BackendController : error response
+  DeletePoolController <-- DeletePoolObject : reject request
+end
+
+DeletePoolController -> PoolManagementTemplate : request and build template
+DeletePoolController <- PoolManagementTemplate : return HTML
+
+Actor <- DeletePoolController : render HTML
+
+@enduml

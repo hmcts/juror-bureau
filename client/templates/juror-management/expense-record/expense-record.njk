@@ -1,0 +1,131 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% from "custom-components/mod-large-tag/macro.njk" import modLargeTag %}
+
+{% block page_title %}{{ serviceName }} - juror-management - unpaid attendance - expense record{% endblock %}
+{% block page_identifier %}juror-management - unpaid attendance - expense record{% endblock %}
+
+{% set currentApp = "Jurors" %}
+
+{% block beforeContent %}
+    <a href="{{ backLinkUrl }}" class="govuk-back-link">Back</a>
+{% endblock %}
+
+{% block content %}
+
+  <div class="mod-expense-record-header">
+    <div>
+      <span class="govuk-caption-l">Expenses</span>
+    </div>
+
+    <div>
+      <a href="{{ setExpensesUrl }}" class="govuk-body govuk-link">Add or change default expenses</a>
+    </div>
+  </div>
+  <div class="mod-expense-record-header">
+    <div>
+        <h1 class="govuk-heading-l govuk-!-margin-bottom-3">{{data.name}}</h1>
+    </div>
+
+    <div>
+      <a href="#" class="govuk-body govuk-link">Add or change bank details</a>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              text: "Juror number"
+            },
+            value: {
+              html: '<a href=' + url("juror-record.overview.get", { jurorNumber: data.jurorNumber }) + ' class="govuk-link">' + data.jurorNumber + '</a>'
+            }
+          },
+          {
+            key: {
+              text: "Pool number"
+            },
+            value: {
+              text: data.poolNumber
+            }
+          }
+        ]
+      }) }}
+    </div>
+  </div>
+
+  {% include "./_partials/sub-nav.njk" %}
+
+  {% if currentTab === "draft" %}
+    {{ modLargeTag({
+      id: "draftTotalTag",
+      colour: "grey",
+      label: "Total in draft",
+      value: data.total
+    })}}
+  {% elif currentTab === "forApproval" %}
+    {{ modLargeTag({
+      id: "forApprovalTotalTag",
+      colour: "blue",
+      label: "Total for approval",
+      value: data.total
+    })}}
+  {% elif currentTab === "approved" %}
+    {{ modLargeTag({
+      id: "approvedTotalTag",
+      label: "Total approved",
+      value: data.total
+    })}}
+  {% endif %}
+
+  {% if currentTab === "draft" %}
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-half">
+        <span>
+          {{ govukButton({
+            text: "Submit for approval",
+            href: '#',
+            attributes: {
+              id: "submitApprovalButton"
+            }
+          }) }}
+          {{ govukButton({
+            text: "Preview audit report",
+            href: '#',
+            classes: "govuk-button--secondary govuk-!-margin-left-3",
+            attributes: {
+              id: "previewAuditReportButton"
+            }
+          }) }}
+          {{ govukButton({
+            text: "Add a non-attendance day",
+            href: '#',
+            classes: "govuk-button--secondary govuk-!-margin-left-3",
+            attributes: {
+              id: "nonAttendanceDayButton"
+            }
+          }) }}
+        </span>
+      </div>
+    </div>
+
+    {% include "./_partials/expenses-table.njk" %}
+
+  {% elif currentTab === "forApproval" %}
+
+    {% include "./_partials/for-approval-table.njk" %}
+
+  {% elif currentTab === "approved" %}
+
+    {% include "./_partials/approved-table.njk" %}
+  
+  {% endif %}
+  
+{% endblock %}

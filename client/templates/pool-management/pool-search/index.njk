@@ -1,0 +1,267 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "custom-components/autocomplete/macro.njk" import modAutocomplete %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+
+{% block page_title %}
+  {{ serviceName }} - Pool management - search
+{% endblock %}
+
+{% block page_identifier %}pool management - search{% endblock %}
+
+{% set currentApp = "Pool management" %}
+
+{% set isPoolSearch = true %}
+
+{% set advancedSearch %}
+  <div class="advanced-search">
+    <div class="additional-stats__row">
+      <span class="govuk-!-font-weight-bold govuk-!-margin-bottom-4">Pool status</span>
+      {{ govukCheckboxes({
+        name: "poolStatus",
+        items: [
+          {
+            value: "REQUESTED",
+            text: "Requested",
+            checked: advancedFields.afRequested
+          },
+          {
+            value: "ACTIVE",
+            text: "Active",
+            checked: advancedFields.afActive
+          },
+          {
+            value: "COMPLETED",
+            text: "Completed",
+            checked: advancedFields.afCompleted
+          }
+        ]
+      }) }}
+    </div>
+
+    <div class="additional-stats__row">
+      <span class="govuk-!-font-weight-bold govuk-!-margin-bottom-4">Pool stage</span>
+      {{ govukCheckboxes({
+        name: "poolStage",
+        items: [
+          {
+            value: "BUREAU",
+            text: "With the Bureau",
+            checked: advancedFields.afBureau
+          },
+          {
+            value: "COURT",
+            text: "At court",
+            checked: advancedFields.afCourt
+          }
+        ]
+      }) }}
+    </div>
+
+    <div class="additional-stats__row">
+      <span class="govuk-!-font-weight-bold govuk-!-margin-bottom-4">Pool type</span>
+      {{ govukCheckboxes({
+        name: "poolType",
+        items: [
+          {
+            value: "CRO",
+            text: "Crown court",
+            checked: advancedFields.afCrown
+          },
+          {
+            value: "CIV",
+            text: "Civil court",
+            checked: advancedFields.afCivil
+          },
+          {
+            value: "HGH",
+            text: "High Court",
+            checked: advancedFields.afHigh
+          }
+        ]
+      }) }}
+      <p class="govuk-body">For coroner's courts, you'll need to use a <a href="#" class="govuk-link">different search</a>.</p>
+    </div>
+
+  </div>
+{% endset %}
+
+{% block content %}
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      {% set dateError = undefined %}
+      {% if errors.items["serviceStartDate"] %}
+        {% set dateError = errors.items["serviceStartDate"][0].details %}
+      {% endif %}
+
+      {% set poolNumberError = undefined %}
+      {% if errors.items["poolNumber"] %}
+        {% set poolNumberError = { html: errors.items["poolNumber"][0].details } %}
+      {% endif %}
+
+      <form method="post" action="{{ url('pool-search.post') }}" id="poolSearchForm">
+        {% call govukFieldset({
+          legend: {
+            text: "Search for pools",
+            classes: "govuk-fieldset__legend--l",
+            isPageHeading: true
+          }
+        }) %}
+
+          {{ govukInput({
+            label: {
+              text: 'Pool number'
+            },
+            classes: 'govuk-!-width-one-third',
+            id: "poolNumber",
+            name: "poolNumber",
+            type: "text",
+            errorMessage: poolNumberError,
+            value: query.poolNumber
+          }) }}
+
+          {{ modAutocomplete({
+            label: {
+              text: "Court name or location code"
+            },
+            class: 'govuk-!-width-one-third',
+            name: "courtNameOrLocation",
+            id: "courtNameOrLocation",
+            data: courts
+          }) }}
+
+          {{ datePicker({
+            id: "serviceStartDate",
+            label: {
+              text: "Service start date"
+            },
+            hint: "Use dd/mm/yyyy format. For example, 31/01/2023.",
+            dateError: dateError,
+            dateValue: query.date | dateFilter(null, "DD/MM/YYYY") if query.date
+          }) }}
+
+          {{ govukDetails({
+            summaryText: "Advanced search",
+            html: advancedSearch,
+            id: "advancedSearch"
+          }) }}
+
+        {% endcall %}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            type: "submit"
+          }) }}
+          <a class="govuk-link" href="{{ url('pool-search.get') }}">Clear search</a>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+    </div>
+  </div>
+
+  {% if resultsCount === 0 %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <hr class="govuk-section-break govuk-section-break--visible">
+        <h2 class="govuk-heading-m govuk-!-margin-top-4">There are no matching results</h2>
+        <p class="govuk-body">Improve your search by:</p>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>double-checking your spelling</li>
+        </ul>
+      </div>
+    </div>
+  {% elif resultsCount > 0 %}
+    <div class="govuk-grid-row">
+      <hr>
+      <div class="govuk-grid-column-full">
+        <h3 class="govuk-heading-s govuk-!-margin-top-4">{{ resultsCount }} results</h3>
+        {{ govukTable({
+          attributes: {
+            'data-module': 'moj-sortable-table'
+          },
+          head: [
+            {
+              text: "Pool number",
+              attributes: {
+                "aria-sort": "ascending"
+              }
+            },
+            {
+              text: "Court name",
+              attributes: {
+                "aria-sort": "none"
+              }
+            },
+            {
+              text: "Pool stage",
+              attributes: {
+                "aria-sort": "none"
+              }
+            },
+            {
+              text: "Pool status",
+              attributes: {
+                "aria-sort": "none"
+              }
+            },
+            {
+              text: "Pool type",
+              attributes: {
+                "aria-sort": "none"
+              },
+              format: "date"
+            },
+            {
+              text: "Service start date",
+              attributes: {
+                "aria-sort": "none"
+              },
+              format: "date"
+            }
+          ],
+          rows: searchPoolList
+        }) }}
+
+        {{ govukPagination({
+          previous: {
+            href: pageItems.prev
+          },
+          next: {
+            href: pageItems.next
+          },
+          items: pageItems.items
+        }) }}
+      </div>
+    </div>
+  {% endif %}
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script src="{{ assetPath }}js/ds-datepicker.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      document.getElementById("courtNameOrLocation").value = "{{ query.locCode }}";
+      document.getElementById("courtNameOrLocation").focus();
+      document.getElementById('courtNameOrLocation').click();
+      document.getElementById("courtNameOrLocation").blur();
+
+      document.querySelectorAll('[data-module="ds-datepicker"]')
+        .forEach(datePicker => new DSDatePicker(datePicker).init());
+    });
+  </script>
+{% endblock %}

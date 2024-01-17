@@ -1,0 +1,144 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+
+{% block page_title %}{{ serviceName }}- juror-management - approve expenses{% endblock %}
+{% block page_identifier %}juror-management - approve expenses{% endblock %}
+
+{% set bacsAndChequeHtml %}
+  <span id="bacsAndChequeTab">BACS and cheque{% if jurorApprovalCount > 0 %} <span id="jurorApprovalCount" class="moj-notification-badge jd-badge-blue">{{ jurorApprovalCount }}</span>{% endif %}</a></span>
+{% endset %}
+
+{% set currentApp = "Jurors" %}
+{% set nav = "approve-expenses" %}
+
+{% block beforeContent %}
+  <div class="govuk-!-margin-top-5">
+    {% if bannerMessage %}
+    {{ mojBanner({
+      type: "success",
+      text: bannerMessage,
+      iconFallbackText: "Success"
+    }) }}
+  {% endif %}
+  </div>
+{% endblock %}
+
+{% block content %}
+{% include "includes/errors.njk" %}
+  
+
+  {% set filterByDate %}
+  <div class="filter-by-date">
+    <div class="additional-stats__row">
+      
+      {% set approveExpensesFromDateError = undefined %}
+      {% set approveExpensesToDateError = undefined %}
+      {% set toggle = false %}
+      {% if errors.items["approveExpensesFromDate"] %}
+        {% set approveExpensesFromDateError = errors.items["approveExpensesFromDate"][0].details %}
+      {% endif %}
+      {% if errors.items["approveExpensesToDate"] %}
+        {% set approveExpensesToDateError = errors.items["approveExpensesToDate"][0].details %}
+      {% endif %}
+       {% if errors.items["approveExpensesFromDate"] or errors.items["approveExpensesToDate"]%}
+        {% set toggle = true %}
+      {% endif %}
+      {% if tmpBody%}
+        {% set toggle = true %}
+      {% endif %}
+
+      {{ datePicker({
+        id: "filterStartDate",
+        label: {
+          text: "Date from"
+        },
+        hint: "Use dd/mm/yyyy format.",
+        dateValue: tmpBody.filterStartDate,
+        dateError: approveExpensesFromDateError
+      }) }}
+
+      {{ datePicker({
+        id: "filterEndDate",
+        label: {
+          text: "Date to"
+        },
+        hint: "Use dd/mm/yyyy format.",
+        dateMin: filters.filterStartDate,
+        dateValue: tmpBody.filterEndDate,
+        dateError: approveExpensesToDateError
+      }) }}
+
+      <div class="govuk-button-group">
+        {{ govukButton({
+          type: "submit",
+          text: "Apply filter",
+          classes: "moj-search__button"
+        }) }}
+        <a class="govuk-link" href="{{ pageUrls.clearFilter }}">Clear filter</a>
+      </div>
+    </div>
+
+  </div>
+{% endset %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <h1 class="govuk-heading-l">Approve expenses</h1>
+      <form action="{{ processUrl }}" class="mod-filter-form" id="unpaidAttendanceForm" method="post">
+        {{ govukDetails({
+            summaryText: "Filter by date",
+            html: filterByDate,
+            id: "filterByDate",
+            open: toggle
+        }) }}
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ mojSubNavigation({
+        label: "Approve expenses navigation",
+        items: [{
+          html: bacsAndChequeHtml,
+          href: url('juror-management.approve-expenses.bacs-and-cheque.get'),
+          active: currentTab === "bacs-and-cheque"
+        },
+        {
+          text: "Cash",
+          href: url('juror-management.approve-expenses.cash.get'),
+          active: currentTab === "cash"
+        }]
+      }) }}
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {% if currentTab === "bacs-and-cheque" %}
+        {% include "./approve-expenses/bacs-and-cheque.njk" %}
+      {% elif currentTab === "cash" %}
+        {% include "./approve-expenses/cash.njk" %}
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      const datePickers = []
+        .slice
+        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
+      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
+    });
+  </script>
+{% endblock %}

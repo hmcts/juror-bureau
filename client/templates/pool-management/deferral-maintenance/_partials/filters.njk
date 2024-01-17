@@ -1,0 +1,60 @@
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "custom-components/mod-filter/macro.njk" import modFilter %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+
+{% set filterOptionsHtml %}
+
+{{ govukInput({
+  label: {
+    text: "Juror number"
+  },
+  id: "jurorNumber",
+  name: "jurorNumber",
+  value: data.filters.jurorNumber
+}) }}
+
+{{ govukInput({
+  label: {
+    text: "First name"
+  },
+  id: "firstName",
+  name: "firstName",
+  value: data.filters.firstName
+}) }}
+
+{{ govukInput({
+  label: {
+    text: "Last name"
+  },
+  id: "lastName",
+  name: "lastName",
+  value: data.filters.lastName
+}) }}
+
+{{ datePicker({
+  id: "deferredTo",
+  label: {
+    text: "Date deferred to",
+    classes: "govuk-label--s"
+  },
+  dateValue: data.filters.deferredTo
+}) }}
+
+{% endset %}
+
+<form action="{{ url('pool-management.deferral-maintenance.filter.post', { locationCode: data.court.locationCode }) }}?showFilter=true" method="POST">
+  {{ modFilter({
+    heading: {
+      text: "Filter"
+    },
+    classes: "js-hidden",
+    attributes: {
+      id: "deferral-maintenance-filter",
+      "aria-hidden": true
+    },
+    optionsHtml: filterOptionsHtml,
+    clearUrl: url('pool-management.deferral-maintenance.filter.get', { locationCode: data.court.locationCode }) + "?showFilter=true"
+  }) }}
+
+  <input type="hidden" id="csrftoken" name="_csrf" value="{{ csrftoken }}"/>
+</form>

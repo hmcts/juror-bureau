@@ -1,0 +1,112 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "../../custom-components/time-input/macro.njk" import timeInput %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set currentApp = "Pool management" %}
+
+{% block page_identifier %}Request a Pool{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {% set _submitUrl = url(submitUrl) %}
+  {% set _cancelUrl = url(cancelUrl) %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      {% set attendanceTimeError = undefined %}
+      {% if errors.items["attendanceTime"] or errors.items["attendanceTimeHour"] or errors.items["attendanceTimeMinute"] %}
+        {% set attendanceTimeErrorHtml %}
+        {% if errors.items["attendanceTimeHour"] %}
+          <span class="govuk-error-message" id="attendanceTimeHourErrorMessage">
+            {{ errors.items["attendanceTimeHour"][0].details }}
+          </span>
+        {% endif %}
+        {% if errors.items["attendanceTimeMinute"] %}
+          <span class="govuk-error-message" id="attendanceMinuteErrorMessage">
+            {{ errors.items["attendanceTimeMinute"][0].details }}
+          </span>
+        {% endif %}
+        {% if errors.items["attendanceTime"] %}
+          <span class="govuk-error-message" id="attendanceTimeErrorMessage">
+            {{ errors.items["attendanceTime"][0].details }}
+          </span>
+        {% endif %}
+        {% endset %}
+        {% set attendanceTimeError = {
+          html: attendanceTimeErrorHtml
+        } %}
+      {% endif %}
+
+      {% set attendanceTimeHourClass = undefined %}
+      {% if errors.items["attendanceTimeHour"] %}
+        {% set attendanceTimeHourClass = "govuk-input--error" %}
+      {% endif %}
+
+      {% set attendanceTimeMinuteClass = undefined %}
+      {% if errors.items["attendanceTimeMinute"] %}
+        {% set attendanceTimeMinuteClass = "govuk-input--error" %}
+      {% endif %}
+
+      <form action="{{ _submitUrl }}" method="post" id="changeAttendanceTime">
+
+        <h1 class="govuk-heading-l">Change the attendance time for this pool</h1>
+
+        {{ timeInput({
+          id: "attendanceTime",
+          name: "attendanceTime",
+          fieldset: {
+            legend: {
+              text: "Attendance time",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          hint: {
+            text: "Use the 24 hour clock. For example, 9:00 or 14:00"
+          },
+          items: {
+            hour: {
+              id: "attendanceTimeHour",
+              name: "attendanceTimeHour",
+              classes: attendanceTimeHourClass,
+              value: attendanceTime.hour,
+              attributes: {
+                minLength: "1",
+                maxLength: "2"
+              }
+            },
+            minute: {
+              id: "attendanceTimeMinute",
+              name: "attendanceTimeMinute",
+              classes: attendanceTimeMinuteClass,
+              value: attendanceTime.minute,
+              attributes: {
+                minLength: "1",
+                maxLength: "2"
+              }
+            }
+          },
+          errorMessage: attendanceTimeError
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Change",
+            type: "submit" 
+          }) }}
+
+          <a class="govuk-link" href="{{ _cancelUrl }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

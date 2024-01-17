@@ -1,0 +1,373 @@
+;(function(){
+  'use strict';
+
+  var _ = require('lodash')
+    , moment = require('moment');
+
+  module.exports = {
+    prettify: function(str, upperFirst) {
+      var bUpperFirst = (typeof upperFirst === 'undefined')
+        , tmpStr = str
+          .replace(/([A-Z]+)/g, ' $1')
+          .replace(/([A-Z][a-z])/g, ' $1')
+          .replace(/\s\s+/g, ' ')
+          .toLowerCase();
+
+      if (bUpperFirst) {
+        return tmpStr.charAt(0).toUpperCase() + tmpStr.slice(1);
+      }
+      return tmpStr;
+    },
+
+    isString: function(obj) {
+      return typeof obj === 'string';
+    },
+
+    changelogKeyName: function(str) {
+      var result = str
+        , replacementMap = {
+          'L': 'Limited Mobility',
+          'H': 'Hearing Impairment',
+          'I': 'Diabetes',
+          'V': 'Visual Impairment',
+          'R': 'Learning Disability',
+          'O': 'Other Adjustment',
+          'Other': 'Other CJS',
+          'third PartyF Name': 'Third Party First Name',
+          'third PartyL Name': 'Third Party Last Name',
+        };
+
+      if (typeof str === 'undefined' || !str) {
+        return;
+      }
+
+      result = result.replace(/([A-Z][a-z])/g, ' $1');
+
+      result = replacementMap[result] || result;
+
+      return result.charAt(0).toUpperCase() + result.slice(1);
+    },
+
+    changelogValue: function(str) {
+      var result = str
+        , replacementMap = {
+          'L': 'Yes',
+          'H': 'Yes',
+          'I': 'Yes',
+          'V': 'Yes',
+          'R': 'Yes',
+          'true': 'Yes',
+          'false': 'No',
+        };
+
+      if (typeof str === 'undefined' || !str) {
+        return;
+      }
+
+      result = replacementMap[result] || result;
+      return result;
+    },
+
+    checkCjsEmployer: function(employerList, employer, outputMatch, outputNoMatch) {
+      var matched = _.find(employerList, { employer: employer });
+
+      return (typeof matched !== 'undefined') ? outputMatch : outputNoMatch;
+    },
+
+    getCjsEmployer: function(employerList, employer, returnKey) {
+      var matched = _.find(employerList, { employer: employer });
+
+      if (typeof matched === 'undefined') {
+        return;
+      }
+
+      if (typeof returnKey !== 'undefined') {
+        return (Object.prototype.hasOwnProperty.call(matched, returnKey)) ? matched[returnKey] : null;
+      }
+
+      return matched;
+    },
+
+    checkArr: function(arr, key, value, outputMatch, outputNoMatch) {
+      var matched = _.find(arr, function(o) {
+        return o[key] === value;
+      });
+
+      return (typeof matched !== 'undefined') ? outputMatch : outputNoMatch;
+    },
+
+    getArr: function(arr, key, value, returnKey) {
+      var matched = _.find(arr, function(o) {
+        return o[key] === value;
+      });
+
+      if (typeof matched === 'undefined') {
+        return;
+      }
+
+      if (typeof returnKey !== 'undefined') {
+        return (Object.prototype.hasOwnProperty.call(matched, returnKey)) ? matched[returnKey] : null;
+      }
+
+      return matched;
+    },
+
+    dateFilter:function(date, sourceFormat, outputFormat) {
+      var result,
+        errs = [],
+        args = [],
+        mnt = null,
+        dateFilterDefaultFormat = 'DD/MM/YYYY';
+      let inputFormat;
+
+      if (typeof date === 'string') {
+        if (/\d\d[-/]\d\d[-/]\d\d\d\d/.exec(date)) {
+          inputFormat = 'DD/MM/YYYY';
+        }
+      }
+
+      if (date && date.length === 3) {
+        date[1] = date[1] - 1;
+      }
+
+      Array.prototype.push.apply(args, arguments);
+      try {
+        mnt = moment(date, inputFormat);
+      } catch (err) {
+        errs.push(err);
+      }
+      if (mnt) {
+        try {
+          if (dateFilterDefaultFormat!==null) {
+            result = mnt.format(outputFormat || dateFilterDefaultFormat);
+          } else {
+            result = mnt.format(outputFormat);
+          }
+        } catch (err) {
+          errs.push(err);
+        }
+      }
+
+      if (errs.length) {
+        return errs.join('\n');
+      }
+      return result;
+    },
+
+    capitalise:function(str) {
+      var result = str;
+
+      if (typeof str === 'string'){
+        result = str.toUpperCase();
+      }
+
+      return result;
+    },
+
+    replyTypeSort:function(replyType) {
+      var result = '0';
+
+      if (typeof replyType === 'string'){
+        switch (replyType.toUpperCase()) {
+        case 'INELIGIBLE':
+          result = '4';
+          break;
+        case 'EXCUSAL':
+          result = '3';
+          break;
+        case 'DEFERRAL':
+          result = '2';
+          break;
+        case 'NEEDS REVIEW':
+          result = '1';
+          break;
+        default:
+          result='0';
+        }
+      }
+
+      return result;
+    },
+
+    translateDate: function(dateValue, sourceFormat, displayFormat, lang) {
+
+      var mnt = require('moment')
+        , returnValue;
+
+      // Set defaults
+      returnValue = dateValue;
+      mnt.locale('en-gb');
+
+      if (lang === 'en'){
+        lang = 'en-gb';
+      }
+
+      try {
+        mnt.locale(lang);
+        returnValue = mnt(dateValue, sourceFormat).format(displayFormat);
+      } catch (ex){
+        console.error(ex);
+      }
+
+      mnt.locale('en-gb');
+      return returnValue;
+
+    },
+
+    capitalizeFully: function(string) {
+      var parts
+        , capitalizedParts;
+
+      if (!string) return;
+
+      parts = string.split(' ');
+
+      capitalizedParts = parts.map(function(part) {
+        return part.trim().charAt(0).toUpperCase() + part.trim().slice(1).toLowerCase();
+      });
+
+      return capitalizedParts.join(' ');
+    },
+
+    transformPoolType: function(poolType) {
+      var poolTypes = {
+        CRO: 'Crown court',
+        COR: 'Coroner’s court',
+        CIV: 'Civil court',
+        HGH: 'High court',
+      };
+
+      return poolTypes[poolType];
+    },
+
+    // I dont like this... needs improvement
+    buildRecordAddress: function(lines) {
+      return lines.filter(function(x, i) {
+        return (typeof x !== 'undefined' && x !== null && x !== '' && i < lines.length);
+      }).join('<br> ');
+    },
+
+    /**
+     * just a date builder from an array or empty data
+     * @param {number[]} date An array of numbers representing a date
+     * @returns {date} The formated date
+     */
+    makeDate: function(date) {
+      if (!date || !date.length || !(date instanceof Array)) {
+        return new Date();
+      }
+
+      return new Date(date);
+    },
+
+    console: function(obj) {
+      return JSON.stringify(obj);
+    },
+
+    /**
+     *
+     * @param {string} name The name of the officer that processed the response or AUTO
+     * @returns {string} With System if AUTO or the officer's name
+     */
+    isAutoProcessed: function(name) {
+      if (!name || name.toLowerCase() === 'auto') return 'System';
+      return name;
+    },
+
+    /**
+     *
+     * @param {string} time The time to be converted (10:00am or 2:30pm)
+     * @returns {number | undefined} the converted time (1000 or 1430)
+     */
+    convertAmPmToLong: function(time) {
+      let period = time.match(/(am|pm)/g);
+      let digits = time.match(/\d+/g);
+      let finalTime;
+
+      if (!period || !digits) return;
+      period = period[0];
+
+      if (digits[0] === '12') {
+        digits[0] = '0';
+      }
+
+      switch (period) {
+      case 'am':
+        finalTime = +digits.join('');
+        break;
+      case 'pm':
+        digits[0] = +digits[0] + 12;
+        finalTime = +digits.join('');
+        break;
+      }
+
+      return finalTime;
+    },
+
+    timeArrayToString: function(timeArray) {
+      if (typeof timeArray === 'string') return timeArray;
+
+      let period = 'am';
+
+      if (timeArray[0] > 12 && timeArray[0] <= 24) {
+        period = 'pm';
+      }
+
+      if (timeArray[1].toString().length === 1) {
+        timeArray[1] = '0' + timeArray[1];
+      }
+
+      return timeArray.join(':') + period;
+    },
+
+    convert12to24: function(time12) {
+      const [time, period] = time12.split(/(?=[APap])/);
+      let [hours, minutes] = time.split(':');
+
+      hours = parseInt(hours, 10);
+      minutes = parseInt(minutes, 10);
+
+      if (period.toLowerCase() === 'pm' && hours !== 12) {
+        hours += 12;
+      } else if (period.toLowerCase() === 'am' && hours === 12) {
+        hours = 0;
+      }
+
+      if (minutes.toString().length === 1) minutes = `0${minutes}`;
+
+      return `${hours}:${minutes}`;
+    },
+
+    convert24to12: function(time24) {
+      let [hours, minutes] = time24.split(':');
+
+      hours = parseInt(hours, 10);
+      minutes = parseInt(minutes, 10);
+
+      const period = hours >= 12 ? 'pm' : 'am';
+
+      if (hours > 12) {
+        hours -= 12;
+      } else if (hours === 0) {
+        hours = 12;
+      }
+
+      if (minutes.toString().length === 1) minutes = `0${minutes}`;
+
+      return `${hours}:${minutes}${period}`;
+    },
+
+    attendanceType: function(type) {
+      switch (type) {
+      case 'FULL_DAY':
+        return 'Full day';
+      case 'HALF_DAY':
+        return 'Half day';
+      case 'ABSENT':
+        return 'Absent';
+      };
+    },
+
+  };
+
+})();

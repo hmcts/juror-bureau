@@ -1,0 +1,38 @@
+{% from "moj/components/primary-navigation/macro.njk" import mojPrimaryNavigation %}
+
+{% set navBarElements =
+  ([
+    {
+      text: "Approve jurors",
+      href: "#",
+      active: nav === "approve",
+      attributes: {
+        id: "approveAnchor"
+      }
+    },
+    {
+      text: "Uncomplete service",
+      href: url("sjo-tasks.uncomplete-service.get"),
+      active: nav === "uncomplete",
+      attributes: {
+        id: "uncompleteService"
+      }
+    },
+    {
+      text: "Undo an FTA",
+      href: "#",
+      active: nav === "undoFTA",
+      attributes: {
+        id: "expensesAnchor"
+      }
+    }
+  ])
+%}
+
+{{ mojPrimaryNavigation({
+  label: "SJO tasks navigation",
+  attributes: {
+    id: "jurorManagementNav"
+  },
+  items: navBarElements
+}) }}

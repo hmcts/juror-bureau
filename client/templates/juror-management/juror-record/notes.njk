@@ -1,0 +1,78 @@
+{% extends "layouts/default.njk" %}
+
+{% from "moj/components/side-navigation/macro.njk" import mojSideNavigation %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+
+{% block page_title %}
+  {{ serviceName }} - juror record - notes and logs
+{% endblock %}
+
+{% block page_identifier %}juror record - notes and logs{% endblock %}
+
+{% set currentApp = "Juror management" %}
+
+{% block beforeContent %}
+  {% include "includes/back-link.njk" %}
+{% endblock %}
+
+{% block content %}
+  {% set currentName = [juror.commonDetails.title, juror.commonDetails.firstName, juror.commonDetails.lastName] %}
+
+  {% include "../_partials/heading.njk" %}
+
+  {% set notesTab %}
+    <span class="mod-log-left-nav-item">
+      <span>Notes</span>
+      {% if (juror.notes.length) %}
+        <span id="notesIndicator" class="jd-details-menu-indicator  jd-right-align">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="5" r="5" fill="#1D70B8"/></svg>
+        </span>
+      {% endif %}
+    </span>
+  {% endset %}
+
+  {% set contactLogTab %}
+    <span class="mod-log-left-nav-item">
+      <span>Contact log</span>
+      <span id="contactLogIndicator" class="moj-notification-badge jd-badge-blue">{{ contactLogs.length }}</span>
+    </span>
+  {% endset %}
+
+  <div class="govuk-grid-row tabs" id="notesTabs">
+    <div class="govuk-grid-column-one-quarter">
+      {{ mojSideNavigation({
+        label: "Side navigation",
+        items: [{
+          html: notesTab,
+          href: "#notesTab",
+          attributes: {
+            "data-tabs": "notesTabs",
+            "data-target": "notesTab",
+            "data-title": "Notes",
+            id: "notesTabAnchor"
+          }
+        }, {
+          html: contactLogTab,
+          href: "#contactLogTab",
+          attributes: {
+            "data-tabs": "notesTabs",
+            "data-target": "contactLogTab",
+            "data-title": "Contact log",
+            id: "contactLogTabAnchor"
+          }
+        }]
+      }) }}
+    </div>
+
+    <div class="govuk-grid-column-three-quarters">
+      <div class="tab-content active" id="notesTab" data-tabs="notesTabs">
+        {% include "../_partials/notes-tab.njk" %}
+      </div>
+
+      <div class="tab-content" id="contactLogTab" data-tabs="notesTabs">
+        {% include "../_partials/contact-logs-tab.njk" %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

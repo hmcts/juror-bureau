@@ -1,0 +1,45 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_title %}{{ serviceName }} - send letter{% endblock %}
+
+{% block page_identifier %}juror - send letter{% endblock %}
+
+{% set currentApp = "Summons replies" %}
+
+{% block beforeContent %}
+  {% include "includes/back-link.njk" %}
+{% endblock %}
+
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      {% if manual === true %}
+        {% include "./_partials/manual.njk" %}
+      {% else %}
+        {% include "./_partials/auto.njk" %}
+      {% endif %}
+    
+      <form method="POST" action="{{ submitUrl }}">
+        {{ govukButton({
+          name: "doneButton",
+          attributes: {
+            id: "doneButton"
+          },
+          text: "Done"
+        }) }}
+
+        <input type="hidden" name="manual" id="manual" value="{{ manual }}" />
+        <input type="hidden" name="_csrf" id="csrfToken" value="{{ csrftoken }}" />
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

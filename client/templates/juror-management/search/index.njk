@@ -1,0 +1,85 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "../../custom-components/mod-search/macro.njk" import modSearch %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{% block content %}
+
+  <h1 class="govuk-heading-xl">Search for a juror record</h1>
+
+  <div class="govuk-grid-row">
+    {{ modSearch({
+      classes: "govuk-grid-column-one-half",
+      action: url('juror-record.search.post'),
+      method: "post",
+      input: {
+        id: "search",
+        name: "search"
+      },
+      button: {
+        text: "Search"
+      },
+      label: {
+        text: "Search for a juror record",
+        classes: "govuk-!-font-weight-bold govuk-!-font-size-24"
+      },
+      hint: {
+        text: "Search for a juror record by using their juror number or using a barcode scan"
+      },
+      csrf: csrftoken,
+      value: query
+    }) }}
+  </div>
+
+  <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+  {% if jurorRecords.length === 0 %}
+    <h2>There are no matching results</h2>
+    <p class="govuk-body">Improve your search by:</p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>double-checking your spelling</li>
+      <li>searching by the complete juror number only</li>
+    </ul>
+  {% else %}
+    <h2>{{ jurorRecords.length }} results for "{{ query }}"</h2>
+
+    {{ govukTable({
+      attributes: {
+        "data-module": "moj-sortable-table"
+      },
+      head: [
+        {
+          text: "Juror number",
+          attributes: {
+            "aria-sort": "ascending"
+          }
+        },
+        {
+          text: "Juror name",
+          attributes: {
+            "aria-sort": "none"
+          }
+        },
+        {
+          text: "Juror's postcode",
+          attributes: {
+            "aria-sort": "none"
+          }
+        },
+        {
+          text: "Pool number",
+          attributes: {
+            "aria-sort": "none"
+          }
+        },
+        {
+          text: "Court name",
+          attributes: {
+            "aria-sort": "none"
+          }
+        }
+      ],
+      rows: jurorRecords
+    }) }}
+  {% endif %}
+{% endblock %}

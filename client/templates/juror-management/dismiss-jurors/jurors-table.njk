@@ -1,0 +1,58 @@
+<div class="govuk-caption-m">
+  <span id="total-checked-jurors">{{ totalCheckedJurors }}</span> of <span id="total-jurors-count">{{ totalJurors }}</span> selected
+</div>
+
+<table class="govuk-table" data-module="moj-sortable-table">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header mod-padding-block--0">
+        <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
+          <input type="checkbox" class="govuk-checkboxes__input" id="check-all-jurors"
+            aria-label="check-all-jurors" {% if totalCheckedJurors === totalJurors %}checked{% endif %}/>
+          <label class="govuk-label govuk-checkboxes__label" for="jurors-all">
+            <span class="govuk-visually-hidden">Select all jurors</span>
+          </label>
+        </div>
+      </th>
+      <th scope="col" class="govuk-table__header jd-middle-align mod-padding-block--0" aria-sort="none">Juror number</th>
+      <th scope="col" class="govuk-table__header jd-middle-align mod-padding-block--0" aria-sort="none">First name</th>
+      <th scope="col" class="govuk-table__header jd-middle-align mod-padding-block--0" aria-sort="none">Last name</th>
+      <th scope="col" class="govuk-table__header jd-middle-align mod-padding-block--0" aria-sort="none">Attending?</th>
+      <th scope="col" class="govuk-table__header jd-middle-align mod-padding-block--0" aria-sort="none">Checked in</th>
+      <th scope="col" class="govuk-table__header jd-middle-align mod-padding-block--0" aria-sort="none">Next due at court</th>
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric jd-middle-align mod-padding-block--0" aria-sort="none">Service start date</th>
+    </tr>
+  </thead>
+
+  <tbody class="govuk-table__body">
+    {% for juror in jurors %}
+
+      <tr class="govuk-table__row govuk-table__row--selected">
+        <td class="govuk-table__cell mod-padding-block--0">
+          <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
+            <input type="checkbox" class="govuk-checkboxes__input"
+              id="juror-{{ juror.jurorNumber }}" {% if juror.checked %}checked{% endif %}
+              aria-label="check-juror-{{ juror.jurorNumber }}" name="checked-jurors"/>
+            <label class="govuk-label govuk-checkboxes__label" for="juror-{{ juror.jurorNumber }}">
+              <span class="govuk-visually-hidden">Select juror {{ juror.jurorNumber }}</span>
+            </label>
+          </div>
+        </td>
+        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ juror.jurorNumber }}">
+          <a href="#" class="govuk-link">{{ juror.jurorNumber }}</a>
+        </td>
+        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ juror.firstName }}">{{ juror.firstName }}</td>
+        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ juror.lastName }}">{{ juror.lastName }}</td>
+        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ juror.attending }}">{{ juror.attending }}</td>
+        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ juror.checkedIn or "-" }}">{{ juror.checkedIn or "-" }}</td>
+        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ juror.nextDueAtCourt }}">
+          {{ juror.nextDueAtCourt | dateFilter("YYYY/MM/DD", "ddd D MMM YYYY") }}
+        </td>
+        <td class="govuk-table__cell govuk-table__cell--numeric jd-middle-align mod-padding-block--0" data-sort-value="{{ juror.serviceStartDate }}">
+          {{ juror.serviceStartDate | dateFilter("YYYY/MM/DD", "ddd D MMM YYYY") }}
+        </td>
+      </tr>
+
+    {% endfor %}
+  </tbody>
+</table>

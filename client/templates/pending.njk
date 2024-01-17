@@ -1,0 +1,88 @@
+{% extends "./layouts/default.njk" %}
+
+{% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
+{% from "moj/components/badge/macro.njk" import mojBadge %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+
+{% block page_title %}
+  {{ serviceName }} - Your work - Awaiting information
+{% endblock %}
+
+{% block page_identifier %}your work - awaiting information{% endblock %}
+
+{% set currentApp = "Summons replies" %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <h1 class="govuk-heading-xl">Your work</h1>
+
+      {% include "includes/responses_navigation.njk" %}
+
+      {% if responses.counts.pending > 0 %}
+
+        <table class="govuk-table" data-module="moj-sortable-table">
+
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header" aria-sort="none">Juror number</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none">Juror name</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none">Court</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none">Reply status</th>
+              <th scope="col" class="govuk-table__header" aria-sort="ascending">Date received</th>
+              <th scope="col" class="govuk-table__header" aria-sort="descending">Alerts</th>
+            </tr>
+          </thead>
+
+          <tbody class="govuk-table__body">
+            {% for response in responses.items %}
+
+              {# setup the status html #}
+              {% if response.processingStatus %}
+                {% set statusHTML %}
+                  {{govukTag({
+                    text: response.processingStatus.toUpperCase(),
+                    classes: "govuk-tag--blue"
+                  })}}
+                {% endset %}
+              {% endif %}
+
+              {# setup the alert html #}
+              {% if response.alert.alertText %}
+                {% set alertHTML %}
+                  {{ mojBadge({
+                    text: response.alert.alertText,
+                    classes: 'moj-badge--red'
+                  }) }}
+                {% endset %}
+              {% else %}
+                {% set alertHTML = '' %}
+              {% endif %}
+
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell">
+                  <a href="/response/{{ response.jurorNumber }}" class="govuk-link">{{ response.jurorNumber }}</a>
+                </td>
+                <td class="govuk-table__cell" data-sort-value="{{ response.firstName }} {{ response.lastName }}">{{ response.firstName }} {{ response.lastName }}</td>
+                <td class="govuk-table__cell">{{ response.courtName }}</td>
+                <td class="govuk-table__cell" data-sort-value="{{response.processingStatus | capitalise}}">{{ statusHTML | safe }}</td>
+                <td class="govuk-table__cell" data-sort-value="{{response.receivedAt | dateFilter('DD/MM/YYYY', 'YYYYMMDD')}}">
+                  {{response.receivedAt | dateFilter("DD/MM/YYYY", "D MMM YYYY")}}
+                </td>
+                <td class="govuk-table__cell" data-sort-value="{{response.alert.alertSort}}">{{ alertHTML | safe }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+
+        </table> 
+
+      {% else %}
+        <p class="govuk-body">You have no replies awaiting information.</p>
+      {% endif %}
+
+    </div>
+  </div>
+
+{% endblock %}

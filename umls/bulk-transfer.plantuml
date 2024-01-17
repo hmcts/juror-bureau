@@ -1,0 +1,164 @@
+@startuml bulk-transfer
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant PoolOverviewPage <</pool-management/pool-overview/:poolnumber>> #lightsteelblue
+participant TransferPage <</pool-management/:poolNumber/transfer>> #lightsteelblue
+participant TransferSelectCourtPage <</pool-management/:poolNumber/transfer/select-court>> #lightsteelblue
+participant TransferCourtConfirmPage <</pool-management/:poolNumber/transfer/confirm>> #lightsteelblue
+participant TransferContinuePage <</pool-management/:poolNumber/transfer/confirm>> #lightsteelblue
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant PoolOverviewController <<pool-overview.controller.js>> #lightyellow
+participant JurorTransferController <<juror-update.transfer.controller.js>> #lightyellow
+participant PoolSummaryObject <<poolSummaryObj.get()>> #lightyellow
+participant PoolMembersObject <<poolMembersObj.get()>> #lightyellow
+participant FetchAllCourtsObject <<fetchAllCourts.get()>> #lightyellow
+participant ValidateMovementObject <<validateMovement.get()>> #lightyellow
+participant JurorTransferObject <<jurorTransfer.put()>> #lightyellow
+
+''' TEMPLATES
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+participant PoolOverviewTemplate <<pool-management/pool-overview/index.njk>> #lavender
+participant TransferCourtTemplate <<juror-management/transfer-court.njk>> #lavender
+participant ValidateMovementTemplate <<pool-management/validate-movement.njk>> #lavender
+participant TransferCourtConfirmTemplate <<juror-management/transfer-court-confirm.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant JurorSelectValidator
+participant JurorBulkTransferValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> PoolOverviewPage : request page
+group PoolOverview
+  PoolOverviewPage o-> PoolOverviewController : call page controller
+  PoolOverviewController -> PoolSummaryObject : call requestObject
+  PoolSummaryObject -> BackendController : fetch pool data
+
+  alt Backend returns an error
+    PoolSummaryObject <-- BackendController : error response
+    PoolOverviewController <-- PoolSummaryObject : reject requestObject call
+    Actor <-- PoolOverviewController : redirect to pool management
+  end
+
+  PoolSummaryObject <- BackendController : returnData
+  PoolOverviewController <- PoolSummaryObject : resolve requestObject call
+
+  alt Pool isn't active
+    PoolOverviewController --> PoolOverviewTemplate : request and build template
+    PoolOverviewController <-- PoolOverviewTemplate : return HTML
+    Actor <-- PoolOverviewController : render HTML
+  end
+    
+  PoolOverviewController -> PoolMembersObject : call requestObject
+  PoolMembersObject -> BackendController : fetch pool member data
+
+  alt Backend returns an error
+    PoolMembersObject <-- BackendController : error response
+    PoolOverviewController <-- PoolMembersObject : reject requestObject call
+    Actor <-- PoolOverviewController : redirect to pool management
+  end
+
+  PoolMembersObject <- BackendController : returnData
+  PoolOverviewController <- PoolMembersObject : resolve requestObject call
+else with no errors
+  PoolOverviewController -> PoolOverviewTemplate : request and build template
+  PoolOverviewController <- PoolOverviewTemplate : return HTML
+else with error
+  PoolOverviewController -> PoolOverviewTemplate : request and build template with error message
+  PoolOverviewController <- PoolOverviewTemplate : return HTML
+end
+Actor <- PoolOverviewController : render HTML
+
+Actor -> TransferPage : POST from form
+TransferPage -> PoolOverviewController : call page controller
+PoolOverviewController -> JurorSelectValidator : ensure juror is selected
+
+alt No jurors selected
+  PoolOverviewController <-- JurorSelectValidator : no jurors selected
+  PoolOverviewPage o<-- PoolOverviewTemplate : render with error
+  Actor <-- PoolOverviewController : render HTML
+end
+
+PoolOverviewController <- JurorSelectValidator : validated
+PoolOverviewController -> TransferSelectCourtPage : redirect
+TransferSelectCourtPage o-> JurorTransferController : call page controller
+JurorTransferController -> FetchAllCourtsObject : call requestObject
+FetchAllCourtsObject -> BackendController : fetch court data
+
+alt Backend returns an error
+  FetchAllCourtsObject <-- BackendController : error response
+  JurorTransferController <-- FetchAllCourtsObject : reject requestObject call
+  JurorTransferController --> ErrorTemplate : request and build template
+  JurorTransferController <-- ErrorTemplate : return HTML
+  Actor <-- JurorTransferController : render HTML
+end
+
+FetchAllCourtsObject <- BackendController : returnData
+JurorTransferController -> TransferCourtTemplate : request and build template
+JurorTransferController <- TransferCourtTemplate : return HTML
+Actor <- JurorTransferController : render HTML
+
+Actor -> TransferSelectCourtPage : POST from form
+TransferSelectCourtPage -> JurorTransferController : call page controller
+JurorTransferController -> JurorBulkTransferValidator : validate form
+
+alt Court validation fails
+  JurorTransferController <-- JurorBulkTransferValidator : data validationfails
+  TransferSelectCourtPage o<-- JurorTransferController : redirect to select court page
+end
+
+JurorTransferController <- JurorBulkTransferValidator : validation succeeds
+JurorTransferController -> ValidateMovementObject : validate juror movement
+ValidateMovementObject -> BackendController : fetch validation data
+
+alt Backend returns an error
+  ValidateMovementObject <-- BackendController : error response
+  JurorTransferController <-- ValidateMovementObject : reject requestObject call
+  JurorTransferController --> ErrorTemplate : request and built template
+  JurorTransferController <-- ErrorTemplate : return HTML
+  Actor <-- JurorTransferController : render HTML
+end
+
+ValidateMovementObject <- BackendController : returnData
+
+alt Some jurors cannot be moved
+  JurorTransferController -> ValidateMovementTemplate : request and build template
+  JurorTransferController <- ValidateMovementTemplate : return HTML
+  Actor <- JurorTransferController : render HTML
+
+  alt Continue with available jurors
+    Actor -> TransferContinuePage : POST from form
+    TransferContinuePage ->o PoolOverviewController : call page controller
+  else Cancel transfer
+    Actor -> TransferContinuePage : Cancel form
+    PoolOverviewPage o<- TransferContinuePage : redirect to pool overview
+end
+
+TransferCourtConfirmPage <- JurorTransferController : redirect
+
+TransferCourtConfirmPage -> JurorTransferController : call page controller
+JurorTransferController -> TransferCourtConfirmTemplate : request and build template
+JurorTransferController <- TransferCourtConfirmTemplate : return HTML
+Actor <- JurorTransferController : render HTML
+
+Actor -> TransferCourtConfirmPage : POST confirm
+TransferCourtConfirmPage ->o PoolOverviewController : call page controller
+PoolOverviewController -> JurorTransferObject : call requestObject
+JurorTransferObject -> BackendController : Post transfer data
+
+alt Backend returns an error
+  JurorTransferObject <-- BackendController : error response
+  PoolOverviewController <-- JurorTransferObject : reject requestObject call
+  Actor <-- PoolOverviewController : redirect to pool management
+end
+
+JurorTransferObject <- BackendController : returnData
+PoolOverviewController <- JurorTransferObject : resolve requestObject call
+Actor <- PoolOverviewController : redirect to pool overview

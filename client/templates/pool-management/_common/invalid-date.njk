@@ -1,0 +1,50 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set currentApp = "Pool management" %}
+
+{% block page_identifier %}Request a Pool{% endblock %}
+
+{% block content %}
+
+  {# the reasoning behind these two sets is simple...
+    we want to redirect the user to where they came from #}
+  {% if invalidDate.redirectedFrom === "request-pool.change-attendance-date.post" %}
+    {% set continueToUrl = "request-pool.pool-details.get" %}
+    {% set goBackToUrl = "request-pool.change-attendance-date.get" %}
+  {% endif %}
+
+  {% if invalidDate.redirectedFrom === "request-pool.pool-details.post" %}
+    {% set continueToUrl = "request-pool.check-details.get" %}
+    {% set goBackToUrl = "request-pool.pool-details.get" %}
+  {% endif %}
+
+  {% if invalidDate.redirectedFrom === "nil-pool.change-attendance-date.post" %}
+    {% set continueToUrl = "nil-pool.get" %}
+    {% set goBackToUrl = "nil-pool.change-attendance-date.get" %}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <h1 class="govuk-heading-l">{{ invalidDate.title }}</h1>
+
+      <p class="govuk-body">{{ invalidDate.reason }}</p>
+
+      <div class="govuk-button-group">
+        {{ govukButton({
+            text: "Continue",
+            type: "submit",
+            href: url(continueToUrl)
+          }) }}
+
+        <a class="govuk-link" href="{{ url(goBackToUrl) }}">Go back</a>
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,121 @@
+{% extends "../../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+
+{% set currentApp = "Summons replies" %}
+
+{% block page_title %}
+  {{ serviceName }} - paper response - check if court can accommodate
+{% endblock %}
+{% block page_identifier %}paper response - check if court can accommodate{% endblock %}
+
+{% set jurorInfo = 'Juror information\n\nName: ' + jurorDetails.name.headerNameRender
+    + '\nJuror number: ' + jurorNumber
+    + '\nMain phone: ' + jurorDetails.phone.current
+    + '\nEmail: ' + jurorDetails.email.current
+    + '\n\nDisabilities or impairments\nType: ' + jurorDetails.specialNeeds[0].assistanceType
+    + '\nDetail: ' + jurorDetails.specialNeeds[0].assistanceTypeDetails + '\n' %}
+
+{% block content %}
+  {% include "includes/errors.njk" %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <h1 class="govuk-heading-m">How to ask the court if they can accommodate reasonable adjustments for this juror {{ response.jurorNumber }}</h1>
+      <ol class="govuk-list govuk-list--number">
+        <li class="govuk-!-margin-bottom-5">Create a ticket in Optic.</li>
+        <li class="govuk-!-margin-bottom-5">Copy and paste the juror information below into the Optic ticket</li>
+        <li class="govuk-!-margin-bottom-5">Submit the Optic ticket.</li>
+        <li class="govuk-!-margin-bottom-5">Enter the Optic reference number here and save.</li>
+      </ol>
+
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+      <h2 class="govuk-heading-s">Juror Information</h2>
+
+      <div class="govuk-label--s">Name</div>
+      <div class="govuk-body">{{ jurorDetails.name.headerNameRender }}</div>
+
+      <div class="govuk-label--s">Juror number</div>
+      <div class="govuk-body">{{ jurorNumber }}</div>
+
+      <div class="govuk-label--s">Main phone</div>
+      <div class="govuk-body">{{ jurorDetails.phone.current }}</div>
+
+      <div class="govuk-label--s">Email</div>
+      <div class="govuk-body">{{ jurorDetails.email.current }}</div>
+
+      <div class="govuk-label--s">Disabilities or impairments</div>
+      <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-0">
+        <li>{{ jurorDetails.specialNeeds[0].assistanceType }}</li>
+      </ul>
+      <div class="govuk-body">{{ jurorDetails.specialNeeds[0].assistanceTypeDetails }}</div>
+
+      <input type="hidden" id="jurorInfo" value="{{ jurorInfo }}"/>
+      {{ govukButton({
+        text: "Copy juror information",
+        classes: "govuk-button--secondary",
+        attributes: {
+          id: "copyInfo"
+        }
+      }) }}
+
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+      <h2 class="govuk-heading-s">Optic ticket number</h2>
+
+      <form action="{{ url('response.check-can-accommodate.post', { id: jurorNumber }) }}" method="POST" id="processCreateOpticReference">
+
+        {% set opticReferenceError = undefined %}
+        {% if errors.items["opticReference"] %}
+          {% set opticReferenceError = { text: errors.items["opticReference"][0].details } %}
+        {% endif %}
+
+        {{ govukInput({
+          label: {
+            text: "Enter Optic reference",
+            attributes: {
+              "aria-label": "Optic ticket number"
+            }
+          },
+          hint: {
+            text: "This will be an 8 digit number - for example, 37540739"
+          },
+          classes: "govuk-!-width-one-half",
+          id: "opticReference",
+          name: "opticReference",
+          errorMessage: opticReferenceError
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Save",
+            type: "submit",
+            attributes: {
+              id: "saveButton"
+            }
+          }) }}
+          <a id="cancelAnchor" class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}"/>
+        <input type="hidden" value="{{ poolNumber }}" id="poolNumber"/>
+
+      </form>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    document.getElementById('copyInfo').addEventListener('click', function(){
+      navigator.clipboard.writeText(document.getElementById('jurorInfo').value)
+        .then(() => {
+          console.log('%cOK: %cJuror information copied.', 'color: #00703c; font-weight: bold; font-size: 1.3rem', 'color: white; font-size: 1.3rem');
+        })
+        .catch(() => {
+          alert('We were unable to copy the juror information. Please select and copy manually.')
+          console.error('Unable to copy the juror information.')
+        });
+    });
+  </script>
+
+{% endblock %}

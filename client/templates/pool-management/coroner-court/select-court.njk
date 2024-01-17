@@ -1,0 +1,78 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "custom-components/autocomplete/macro.njk" import modAutocomplete %}
+
+{% set currentApp = "Pool management" %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {% set courtNameError = undefined %}
+  {% set jurorsRequestedError = undefined %}
+
+  {% if errors.items["courtNameOrLocation"] %}
+    {% set courtNameError = {
+      text: errors.items["courtNameOrLocation"][0].details
+    } %}
+  {% endif %}
+
+  {% if errors.items["jurorsRequested"] %}
+    {% set jurorsRequestedError = {
+      text: errors.items["jurorsRequested"][0].details
+    } %}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-l">Create a coroner court pool</h1>
+
+      <form action="{{ url('coroner-pool.select-court.post') }}" method="POST">
+        {{ modAutocomplete({
+          label: {
+            text: "Court name or location code",
+            class: "govuk-label--s"
+          },
+          name: "courtNameOrLocation",
+          id: "courtNameOrLocation",
+          data: courts,
+          class: "govuk-!-width-one-third",
+          errorMessage: courtNameError
+        }) }}
+
+        {{ govukInput({
+          label: {
+            text: "Jurors requested",
+            classes: "govuk-label--s"
+          },
+          hint: {
+            text: "The number of jurors requested must be between 30 and 250."
+          },
+          id: "jurorsRequested",
+          name: "jurorsRequested",
+          value: jurorsRequested,
+          classes: "govuk-input--width-3",
+          type: "number",
+          errorMessage: jurorsRequestedError
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            type: "submit",
+            attributes: {
+              id: "continueButton"
+            }
+          }) }}
+
+          <a id="cancelAnchor" class="govuk-link" href="/pool-management">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+
+    </div>
+  </div>
+{% endblock %}

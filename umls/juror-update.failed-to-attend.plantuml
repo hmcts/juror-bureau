@@ -1,0 +1,30 @@
+@startuml sequence-general
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+participant Actor
+participant JurorRecord <</juror-management/juror/{jurorNumber}/*>>
+participant UpdateJurorRecord <</juror-management/juror/{jurorNumber}/update>>
+participant UpdateJurorRecordController <<juror-update.controller.js>>
+participant JurorRecordFailedToAttend <</juror-management/juror/{jurorNumber}/failed-to-attend>>
+participant JurorRecordFailedToAttendController <<juror-update.failed-to-attend.js>>
+participant BackendApi
+
+Actor -> JurorRecord : enter the juror record page
+
+JurorRecord -> UpdateJurorRecordController : call page update juror controller
+UpdateJurorRecord <- UpdateJurorRecordController : render the update actions form
+UpdateJurorRecord -> UpdateJurorRecordController : select "Change juror status to 'Failed to attend'"
+UpdateJurorRecordController -> JurorRecordFailedToAttendController : call the failed to attend controller
+JurorRecordFailedToAttend <- JurorRecordFailedToAttendController : render the failed to attend form
+JurorRecordFailedToAttend -> JurorRecordFailedToAttendController : tick checkbox and post the form
+
+alt Checkbox not ticked
+  JurorRecordFailedToAttend <- JurorRecordFailedToAttendController : render error message
+end
+
+JurorRecordFailedToAttendController -> BackendApi : send an api request
+JurorRecordFailedToAttendController <- BackendApi : 2xx response
+JurorRecord <- JurorRecordFailedToAttendController : redirect and render the juror record page
+
+@enduml

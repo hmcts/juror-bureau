@@ -1,0 +1,40 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_title %}
+  {{ serviceName }} - paper response - process straight through
+{% endblock %}
+
+{% block page_identifier %}paper response - process straight through{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <h1 class="govuk-heading-l">Do you want to process this summons reply as responded now?</h1>
+
+      <p class="govuk-body">The juror’s answers mean this is a straight-through reply. So you can process it as responded now, or return later.</p>
+
+      {% set postUrl = url("paper-reply.straight-through.post", { id: response }) %}
+      <form method="POST" action="{{ postUrl }}">
+
+        <input type="hidden" name="response" value="{{ response }}"/>
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}" />
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Yes, process now",
+            attributes: {
+              id: "continueButton"
+            }
+          }) }}
+          <a class="govuk-link" id="cancelAnchor" href="{{ postUrl }}?action=skip">No, skip and process later</a>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

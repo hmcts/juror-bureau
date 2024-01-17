@@ -1,0 +1,32 @@
+@startuml approve-juror-page
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant ApproveJurorPage <</juror-management/manage-jurors/approve>> #lightsteelblue
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant ManageJurorsController <<manage-jurors.controller.js>> #lightyellow
+
+''' TEMPLATES
+participant ApproveTemplate <<juror-management/manage-jurors/approve-jurors.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> ApproveJurorPage : request page
+
+ApproveJurorPage -> ManageJurorsController : call page controller
+
+Actor x--x BackendController : backend not currently implemented
+' // TODO use data access object
+' // TODO hit backend
+' // TODO handle response
+
+ManageJurorsController -> ApproveTemplate : request and build template
+ManageJurorsController <- ApproveTemplate : return HTML
+Actor <- ManageJurorsController : render HTML
+

@@ -1,0 +1,45 @@
+<tr class="govuk-table__row" id="{{ row.jurorNumber }}-row"
+  {% if row.checkInTime === "Fail" or row.checkOutTime === "Fail" %}data-failed="true"{% endif %}
+  data-kind="{{ row.kind }}">
+  <td class="govuk-table__cell" data-sort-value="{{ row.jurorNumber }}" id="{{ row.jurorNumber }}-jurorNumber" data-kind="jurorNumber">
+    <a href="{{ url('juror-record.overview.get', { jurorNumber: row.jurorNumber }) }}"
+      class="govuk-link"
+      id="{{ row.jurorNumber }}-jurorRecordLink">{{ row.jurorNumber }}</a>
+  </td>
+  <td class="govuk-table__cell" data-sort-value="{{ row.firstName }}" id="{{ row.jurorNumber }}-firstName" data-kind="firstName">
+    {{ row.firstName }}
+  </td>
+  <td class="govuk-table__cell" data-sort-value="{{ row.lastName }}" id="{{ row.jurorNumber }}-lastName" data-kind="lastName">
+    {{ row.lastName }}
+  </td>
+  <td class="govuk-table__cell" data-sort-value="{{ row.status }}" id="{{ row.jurorNumber }}-status">
+    {{ row.jurorStatus }}
+  </td>
+  <td class="govuk-table__cell {% if row.checkInTime === "Fail" %}mod-red-text{% endif %}"
+    data-sort-value="{{ "0000" if row.checkInTime === "Fail" else row.checkInTime | timeArrayToString | convertAmPmToLong }}"
+    id="{{ row.jurorNumber }}-checkInTime">
+    {% if row.checkInTime === "Fail" %}
+      Fail
+    {% else %}
+      {{ row.checkInTime | timeArrayToString | convert24to12 }}
+    {% endif %}
+  </td>
+  <td class="govuk-table__cell {% if row.checkInTime === "Fail" or row.checkOutTime === "Fail" %}mod-red-text{% endif %}"
+    data-sort-value="{{row.checkOutTime | timeArrayToString | convertAmPmToLong if row.checkOutTime and row.checkOutTime !== "Fail" else "0000"}}"
+    id="{{ row.jurorNumber }}-checkOutTime">
+    {% if row.checkOutTime %}
+      {{ row.checkOutTime | timeArrayToString | convert24to12 }}
+    {% elif row.checkInTime === "Fail" %}
+      -
+    {% else %}
+      <a href="#" class="govuk-link" id="{{ row.jurorNumber }}-recordCheckOut">Record time</a>
+    {% endif %}
+  </td>
+  <td class="govuk-table__cell" id="{{ row.jurorNumber }}-change">
+    {% if row.checkInTime === "Fail" or row.checkOutTime === "Fail" %}
+      -
+    {% else %}
+      <a href="{{ url('juror-management.attendance.change-times.get', { jurorNumber: row.jurorNumber }) }}" class="govuk-link" id="{{ row.jurorNumber }}-changeLink">Change</a>
+    {% endif %}
+  </td>
+</tr>

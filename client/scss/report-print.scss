@@ -1,0 +1,98 @@
+$report-border: 1px solid #b1b4b6;
+
+.print-header {
+  width: 100%;
+  border-bottom: $report-border;
+  font-size: 24px;
+  padding-bottom: 1rem;
+  position: fixed;
+  display: none;
+
+  > * {
+    font-size: 24px;
+  }
+}
+
+@page {
+  size: A4;
+}
+
+@media print {
+  * {
+    font-family: helvetica, arial, sans-serif;
+    font-size: 11px;
+  }
+
+  body > *:not(main) > div, .govuk-skip-link, .back-button, [name="print-button"], [name="print-button-pdf"] {
+    display: none;
+  }
+
+  .print-header {
+    display: block;
+    top: 0;
+  }
+
+  .title {
+    margin-block: 4rem -1rem;
+    font-size: 30px;
+  }
+
+  [name="info-columns"] {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+
+    > div {
+      flex-grow: 1;
+    }
+  }
+
+  [name="info-column"] {
+    > div {
+      :first-child {
+        font-weight: bold;
+        max-width: 50%;
+      }
+
+      :last-child {
+        text-align: left;
+      }
+
+      display: flex;
+      justify-content: space-between;
+      padding-block: 1rem;
+      border-bottom: $report-border;
+    }
+  }
+
+  table {
+    width: 100%;
+
+    button {
+      all: unset;
+      font-weight: bold;
+    }
+
+    thead {
+      th {
+        padding: 1rem 0;
+        text-align: left;
+        border-bottom: $report-border;
+      }
+    }
+
+    tbody {
+      tr {
+        > :last-child {
+          max-width: 150px;
+        }
+      }
+
+      td {
+        padding-block: 1rem;
+        border-bottom: $report-border;
+        vertical-align: top;
+      }
+    }
+  }
+}

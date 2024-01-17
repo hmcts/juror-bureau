@@ -1,0 +1,146 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+
+{% set currentApp = "Pool management" %}
+
+{% block beforeContent %}
+
+  {% if coronerCourtPoolFailed %}
+    <div class="govuk-!-margin-top-4">
+      {{ mojBanner({
+        type: "warning",
+        text: "Something went wrong when trying to create the pool. Please try again or contact an administrator.",
+        iconFallbackText: "Warning"
+      }) }}
+    </div>
+  {% endif %}
+
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <h1 class="govuk-label--l">Check your pool details</h1>
+
+      {{ govukSummaryList({
+        classes: "govuk-!-width-three-quarters",
+        attributes: {
+          id: "requestDetails"
+        },
+        rows: [
+          {
+            key: {
+              text: "Request details",
+              classes: "govuk-heading-m"
+            },
+            actions: {
+              items: [
+                {
+                  href: url('coroner-pool.select-court.get'),
+                  text: "Change"
+                }
+              ]
+            }
+          },
+          {
+            key: {
+              text: "Court name"
+            },
+            value: {
+              text: requestDetails.selectedCourt.locationName | capitalizeFully
+            }
+          },
+          {
+            key: {
+              text: "Jurors requested"
+            },
+            value: {
+              text: requestDetails.jurorsRequested
+            }
+          }
+        ]
+      }) }}
+
+      {{ govukSummaryList({
+        classes: "govuk-!-width-three-quarters",
+        attributes: {
+          id: "requestedBy"
+        },
+        rows: [
+          {
+            key: {
+              text: "Requested by",
+              classes: "govuk-heading-m"
+            },
+            actions: {
+              items: [
+                {
+                  href: url('coroner-pool.details.get'),
+                  text: "Change"
+                }
+              ]
+            }
+          },
+          {
+            key: {
+              text: "Name"
+            },
+            value: {
+              text: requestDetails.requesterName
+            }
+          },
+          {
+            key: {
+              text: "Email"
+            },
+            value: {
+              text: requestDetails.requesterEmail
+            }
+          },
+          {
+            key: {
+              text: "Phone"
+            },
+            value: {
+              text: requestDetails.requesterPhone or "-"
+            }
+          },
+          {
+            key: {
+              text: "Date requested"
+            },
+            value: {
+              text: requestedDate | dateFilter('YYYY-MM-DD', 'D MMMM YYYY')
+            }
+          }
+        ]
+      }) }}
+
+      <form action="{{ url('coroner-pool.check-details.post') }}" method="POST">
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Create pool",
+            type: "submit",
+            attributes: {
+              id: "createPoolButton"
+            }
+          }) }}
+
+          <a id="cancelAnchor" class="govuk-link" href="/pool-management">Cancel</a>
+        </div>
+
+        <input type="hidden" id="courtCode" name="courtCode" value="{{ requestDetails.selectedCourt.locationCode }}" >
+        <input type="hidden" id="noRequested" name="noRequested" value="{{ requestDetails.jurorsRequested }}" >
+        <input type="hidden" id="name" name="name" value="{{ requestDetails.requesterName }}" >
+        <input type="hidden" id="emailAddress" name="emailAddress" value="{{ requestDetails.requesterEmail }}" >
+        <input type="hidden" id="phone" name="phone" value="{{ requestDetails.requesterPhone }}" >
+        <input type="hidden" id="requestDate" name="requestDate" value="{{ requestedDate }}" >
+        <input type="hidden" id="csrfToken" name="_csrf" value="{{ csrftoken }}">
+      </form>
+    </div>
+  </div>
+{% endblock %}

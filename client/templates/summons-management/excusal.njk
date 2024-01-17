@@ -1,0 +1,111 @@
+{% extends "../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_title %}{{ serviceName }} - process response{% endblock %}
+
+{% block page_identifier %}process - what to do{% endblock %}
+
+{% set currentApp = "Summons replies" %}
+
+{% block beforeContent %}
+  {% include "includes/back-link.njk" %}
+{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+  
+  {% if errors.items["excusalCode"] %}
+    {% set excusalCodeError = {"text": errors.items['excusalCode'][0].details} %}
+  {% else %}
+    {% set excusalCodeError = undefined %}
+  {% endif %}
+
+  {% if errors.items["excusalDecision"] %}
+    {% set excusalDecisionError = {"text": errors.items['excusalDecision'][0].details} %}
+  {% else %}
+    {% set excusalDecisionError = undefined %}
+  {% endif %}
+
+  {# Set decision radio values #}
+  {% set radioGrantChecked = undefined %}
+  {% set radioRefuseChecked = undefined %}
+  {% if excusalDetails.excusalDecision === "GRANT" %}
+    {% set radioGrantChecked = 'checked="checked"' %}
+  {% endif %}
+  {% if excusalDetails.excusalDecision === "REFUSE" %}
+    {% set radioRefuseChecked = 'checked="checked"' %}
+  {% endif %}
+
+  {# Setup reason dropdown values / selected item #}
+  {% if not sortedReasons%}
+    {% set reasonList = [{value: "", text: "Select a reason...", selected: true}] %}
+    {% for reason in excusalReasons %}
+
+      {% if (reason.excusalCode === excusalDetails.excusalCode) %}
+        {% set codeSelected = true %}
+      {% else %}
+        {% set codeSelected = false %}
+      {% endif %}
+      
+      {% set reasonList = (reasonList.push({value: reason.excusalCode, text: reason.excusalCode + " - " + reason.description, selected: codeSelected }), reasonList) %}
+    {% endfor %}
+  {% endif %}
+
+  <h1 class="govuk-heading-l">Grant or refuse an excusal</h1>
+  
+  <form action="{{ processUrl }}" method="POST" id="excusalForm">
+    
+    {{ govukSelect({
+      id: "excusalCode",
+      name: "excusalCode",
+      label: {
+        text: "Reason for excusal request",
+        classes: "govuk-label--s govuk-!-margin-bottom-3"
+      },
+      items: sortedReasons or reasonList,
+      errorMessage: excusalCodeError
+    }) }}
+
+    {{ govukRadios({
+      id: "excusalDecision",
+      name: "excusalDecision",
+      fieldset: {
+        legend: {
+          text: "Select your decision",
+          classes: "govuk-label--s govuk-!-margin-bottom-3"
+        }
+      },
+      items: [
+        {
+          value: "GRANT",
+          text: "Grant excusal",
+          checked: radioGrantChecked
+        },
+        {
+          value: "REFUSE",
+          text: "Refuse excusal",
+          checked: radioRefuseChecked
+        }
+      ],
+      errorMessage: excusalDecisionError
+    }) }}
+
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Continue",
+        type: "submit",
+        attributes: {
+          id: "continueButton"
+        }
+      }) }}
+      <a href="{{ cancelUrl }}" class="govuk-link" id="cancelAnchor">Cancel</a>
+    </div>
+
+    <input type="hidden" name="_csrf" id="csrfToken" value="{{ csrftoken }}">
+  </form>
+
+{% endblock %}

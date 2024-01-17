@@ -1,0 +1,103 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
+
+{% block page_title %}{{ serviceName }} - trial-management - trials{% endblock %}
+{% block page_identifier %}trial-management - trials{% endblock %}
+
+{% set currentApp = "Trials" %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Trials</h1>
+    </div>
+    <div class="govuk-grid-column-one-half">
+      <div class="govuk-button-group mod-flex mod-justify-end">
+        {{ govukButton({
+          text: "Create a trial",
+          href: url('trial-management.create-trial.get')
+        }) }}
+
+        {{ govukButton({
+          text: "Print list",
+          classes: "govuk-button--secondary"
+        }) }}
+      </div>
+    </div>
+    <div class="govuk-grid-column-full">
+        <fieldset class="govuk-fieldset">
+            <div class="govuk-radios govuk-radios--small govuk-radios--inline" data-module="govuk-radios">
+            <div class="govuk-radios__item govuk-!-margin-right-0">
+                <input
+                    class="govuk-radios__input" 
+                    id="activeTrialsRadio" 
+                    name="activeTrialsRadio" 
+                    type="radio" 
+                    value="active"
+                    {% if isActive === 'true' %}checked{% endif %}
+                    onclick="window.location.href = '{{url('trial-management.trials.get')}}';"
+                >
+              <label 
+                  class="govuk-label govuk-radios__label" 
+                  for="activeTrialsRadio"
+              >
+              Active trials
+              </label>
+            </div>
+            <div class="govuk-radios__item govuk-!-margin-right-0" >
+                <input 
+                    class="govuk-radios__input" 
+                    id="allTrialsRadio" 
+                    name="allTrialsRadio" 
+                    type="radio" 
+                    value="all"
+                    {% if isActive === 'false' %}checked{% endif %}
+                    onclick="window.location.href = '{{url('trial-management.trials.get')}}?isActive=false';"
+                >
+                <label 
+                    class="govuk-label govuk-radios__label" 
+                    for="allTrialsRadio"
+                >
+                All trials
+                </label>
+            </div>
+            </div>
+        </fieldset>
+
+    </div>
+  </div>
+
+  {% if isActive === "false" %}
+    {% set urlPrefix =  "?isActive=false" %}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full govuk-body">
+      {% if trials.rows | length === 0 %}
+        <p class="govuk-body">There are no results to display.</p>
+      {% else %}
+        {{ modSortableTable({
+          id: "trialsTable",
+          head: trials.head,
+          rows: trials.rows,
+          url: urlPrefix
+        }) }}
+
+        {{ govukPagination({
+          previous: {
+            href: pagination.prev
+          },
+          next: {
+            href: pagination.next
+          },
+          items: pagination.items
+        }) }}
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
+

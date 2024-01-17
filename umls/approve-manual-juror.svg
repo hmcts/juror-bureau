@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="817px" preserveAspectRatio="none" style="width:1929px;height:817px;background:#FFFFFF;" version="1.1" viewBox="0 0 1929 817" width="1929px" zoomAndPan="magnify"><defs/><g><rect fill="none" height="74.6211" style="stroke:#000000;stroke-width:1.5;" width="1913" x="10" y="99.2871"/><rect fill="none" height="134.5527" style="stroke:#000000;stroke-width:1.5;" width="1762" x="10" y="422.3926"/><rect fill="none" height="134.5527" style="stroke:#000000;stroke-width:1.5;" width="1762" x="10" y="570.9453"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="45" x2="45" y1="52.9766" y2="810.4297"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="251" x2="251" y1="52.9766" y2="810.4297"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="652" x2="652" y1="52.9766" y2="810.4297"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="992" x2="992" y1="52.9766" y2="810.4297"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1325" x2="1325" y1="52.9766" y2="810.4297"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1655" x2="1655" y1="52.9766" y2="810.4297"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1842" x2="1842" y1="52.9766" y2="810.4297"/><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="51" x="20" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="37" x="27" y="42.0234">Actor</text><rect fill="#B0C4DE" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="341" x="81" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="327" x="88" y="25.5352">«/juror-management/manage-jurors/approve»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="125" x="189" y="42.0234">ApproveJurorPage</text><rect fill="#B0C4DE" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="441" x="432" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="427" x="439" y="25.5352">«/juror-management/manage-jurors/approve/:jurorNumber»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="132" x="586.5" y="42.0234">ApproveRejectPage</text><rect fill="#FFFFE0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="218" x="883" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="204" x="890" y="25.5352">«manage-jurors.controller.js»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="165" x="909.5" y="42.0234">ManageJurorsController</text><rect fill="#E6E6FA" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="428" x="1111" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="414" x="1118" y="25.5352">«juror-management/manage-jurors/approve-or-reject.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="163" x="1243.5" y="42.0234">ApproveRejectTemplate</text><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="213" x="1549" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="199" x="1556" y="42.0234">ApproveCreateJurorValidator</text><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="141" x="1772" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="127" x="1779" y="42.0234">BackendController</text><polygon fill="#181818" points="239.5,80.2871,249.5,84.2871,239.5,88.2871" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="45.5" x2="245.5" y1="84.2871" y2="84.2871"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="81" x="108" y="79.5449">request page</text><path d="M10,99.2871 L422,99.2871 L422,106.5977 L412,116.5977 L10,116.5977 L10,99.2871 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="74.6211" style="stroke:#000000;stroke-width:1.5;" width="1913" x="10" y="99.2871"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="367" x="25" y="112.8555">ApproveJurorPage : Approve juror standard page load</text><ellipse cx="251" cy="121.8477" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.5;"/><polygon fill="#181818" points="1830.5,118.5977,1840.5,122.5977,1830.5,126.5977" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="255.5" x2="1836.5" y1="122.5977" y2="122.5977"/><polygon fill="#181818" points="262.5,132.5977,252.5,136.5977,262.5,140.5977" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="256.5" x2="1841.5" y1="136.5977" y2="136.5977"/><polygon fill="#181818" points="56.5,161.9082,46.5,165.9082,56.5,169.9082" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="50.5" x2="250.5" y1="165.9082" y2="165.9082"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="108.5" y="161.166">render HTML</text><polygon fill="#181818" points="640.5,198.2188,650.5,202.2188,640.5,206.2188" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="45.5" x2="646.5" y1="202.2188" y2="202.2188"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="120" x="289" y="197.4766">GET link from page</text><ellipse cx="652" cy="230.7793" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.5;"/><polygon fill="#181818" points="980,227.5293,990,231.5293,980,235.5293" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="656.5" x2="986" y1="231.5293" y2="231.5293"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="121" x="761.75" y="226.7871">call page controller</text><polygon fill="#181818" points="1313,256.8398,1323,260.8398,1313,264.8398" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="992" x2="1319" y1="260.8398" y2="260.8398"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="1074" y="256.0977">request and build template</text><polygon fill="#181818" points="1003,286.1504,993,290.1504,1003,294.1504" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="997" x2="1324" y1="290.1504" y2="290.1504"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="1119.5" y="285.4082">return HTML</text><ellipse cx="45" cy="318.7109" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.5;"/><polygon fill="#181818" points="62,315.4609,52,319.4609,62,323.4609" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="60" x2="991" y1="319.4609" y2="319.4609"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="478.75" y="314.7188">render HTML</text><polygon fill="#181818" points="640.5,344.7715,650.5,348.7715,640.5,352.7715" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="45.5" x2="646.5" y1="348.7715" y2="348.7715"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="100" x="299" y="344.0293">POST from form</text><polygon fill="#181818" points="980,374.082,990,378.082,980,382.082" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="652.5" x2="986" y1="378.082" y2="378.082"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="121" x="761.75" y="373.3398">call page controller</text><polygon fill="#181818" points="1643.5,403.3926,1653.5,407.3926,1643.5,411.3926" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="992" x2="1649.5" y1="407.3926" y2="407.3926"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="120" x="1263.75" y="402.6504">validate form input</text><path d="M10,422.3926 L72,422.3926 L72,429.7031 L62,439.7031 L10,439.7031 L10,422.3926 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="134.5527" style="stroke:#000000;stroke-width:1.5;" width="1762" x="10" y="422.3926"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="25" y="435.9609">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="112" x="87" y="435.0273">[No option selected]</text><polygon fill="#181818" points="1003,457.0137,993,461.0137,1003,465.0137" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="997" x2="1654.5" y1="461.0137" y2="461.0137"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="117" x="1265.25" y="456.2715">no option selected</text><polygon fill="#181818" points="1313,486.3242,1323,490.3242,1313,494.3242" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="992" x2="1319" y1="490.3242" y2="490.3242"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="1074" y="485.582">request and build template</text><polygon fill="#181818" points="1003,515.6348,993,519.6348,1003,523.6348" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="997" x2="1324" y1="519.6348" y2="519.6348"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="143" x="1087" y="514.8926">return HTML with error</text><ellipse cx="45" cy="548.1953" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.5;"/><polygon fill="#181818" points="62,544.9453,52,548.9453,62,552.9453" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="60" x2="651.5" y1="548.9453" y2="548.9453"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="309" y="544.2031">render HTML</text><path d="M10,570.9453 L72,570.9453 L72,578.2559 L62,588.2559 L10,588.2559 L10,570.9453 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="134.5527" style="stroke:#000000;stroke-width:1.5;" width="1762" x="10" y="570.9453"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="25" y="584.5137">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="193" x="87" y="583.5801">[Reject selected with no comment]</text><polygon fill="#181818" points="1003,605.5664,993,609.5664,1003,613.5664" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="997" x2="1654.5" y1="609.5664" y2="609.5664"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="117" x="1265.25" y="604.8242">no option selected</text><polygon fill="#181818" points="1313,634.877,1323,638.877,1313,642.877" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="992" x2="1319" y1="638.877" y2="638.877"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="1074" y="634.1348">request and build template</text><polygon fill="#181818" points="1003,664.1875,993,668.1875,1003,672.1875" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="997" x2="1324" y1="668.1875" y2="668.1875"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="143" x="1087" y="663.4453">return HTML with error</text><ellipse cx="45" cy="696.748" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.5;"/><polygon fill="#181818" points="62,693.498,52,697.498,62,701.498" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="60" x2="651.5" y1="697.498" y2="697.498"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="309" y="692.7559">render HTML</text><polygon fill="#181818" points="1003,729.8086,993,733.8086,1003,737.8086" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="997" x2="1654.5" y1="733.8086" y2="733.8086"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="67" x="1290.25" y="729.0664">valid input</text><line style="stroke:#181818;stroke-width:2.0;" x1="52.5" x2="62.5" y1="758.1191" y2="768.1191"/><line style="stroke:#181818;stroke-width:2.0;" x1="52.5" x2="62.5" y1="768.1191" y2="758.1191"/><line style="stroke:#181818;stroke-width:2.0;" x1="1824.5" x2="1834.5" y1="758.1191" y2="768.1191"/><line style="stroke:#181818;stroke-width:2.0;" x1="1824.5" x2="1834.5" y1="768.1191" y2="758.1191"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="57.5" x2="1829.5" y1="763.1191" y2="763.1191"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="224" x="832" y="758.377">backend not currently implemented</text><ellipse cx="251" cy="791.6797" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.5;"/><polygon fill="#181818" points="268,788.4297,258,792.4297,268,796.4297" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="266" x2="991" y1="792.4297" y2="792.4297"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="192" x="525.75" y="787.6875">redirect with success message</text><!--MD5=[fdaa39327fb0f1d553eaa77277afbd96]
+@startuml approve-manual-juror
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant ApproveJurorPage <</juror-management/manage-jurors/approve>> #lightsteelblue
+participant ApproveRejectPage <</juror-management/manage-jurors/approve/:jurorNumber>> #lightsteelblue
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant ManageJurorsController <<manage-jurors.controller.js>> #lightyellow
+
+''' TEMPLATES
+participant ApproveRejectTemplate <<juror-management/manage-jurors/approve-or-reject.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant ApproveCreateJurorValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> ApproveJurorPage : request page
+
+group ApproveJurorPage : Approve juror standard page load
+  ApproveJurorPage o- -> BackendController
+  ApproveJurorPage <- - BackendController
+  Actor <- ApproveJurorPage : render HTML
+end
+
+Actor -> ApproveRejectPage : GET link from page
+
+ApproveRejectPage o-> ManageJurorsController : call page controller
+ManageJurorsController -> ApproveRejectTemplate : request and build template
+ManageJurorsController <- ApproveRejectTemplate : return HTML
+Actor o<- ManageJurorsController : render HTML
+
+Actor -> ApproveRejectPage : POST from form
+
+ApproveRejectPage -> ManageJurorsController : call page controller
+ManageJurorsController -> ApproveCreateJurorValidator : validate form input
+
+alt No option selected
+  ManageJurorsController <- - ApproveCreateJurorValidator : no option selected
+  ManageJurorsController - -> ApproveRejectTemplate : request and build template 
+  ManageJurorsController <- - ApproveRejectTemplate : return HTML with error
+  Actor o<- - ApproveRejectPage : render HTML
+end
+
+alt Reject selected with no comment
+  ManageJurorsController <- - ApproveCreateJurorValidator : no option selected
+  ManageJurorsController - -> ApproveRejectTemplate : request and build template 
+  ManageJurorsController <- - ApproveRejectTemplate : return HTML with error
+  Actor o<- - ApproveRejectPage : render HTML
+end
+
+ManageJurorsController <- ApproveCreateJurorValidator : valid input
+
+Actor x- -x BackendController : backend not currently implemented
+' // TODO use data access object
+' // TODO hit backend
+' // TODO handle response
+
+ApproveJurorPage o<- ManageJurorsController : redirect with success message
+@end
+
+@startuml approve-manual-juror
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+participant ApproveJurorPage <</juror-management/manage-jurors/approve>> #lightsteelblue
+participant ApproveRejectPage <</juror-management/manage-jurors/approve/:jurorNumber>> #lightsteelblue
+
+participant ManageJurorsController <<manage-jurors.controller.js>> #lightyellow
+
+participant ApproveRejectTemplate <<juror-management/manage-jurors/approve-or-reject.njk>> #lavender
+
+participant ApproveCreateJurorValidator
+
+participant BackendController
+
+Actor -> ApproveJurorPage : request page
+
+group ApproveJurorPage : Approve juror standard page load
+  ApproveJurorPage o- -> BackendController
+  ApproveJurorPage <- - BackendController
+  Actor <- ApproveJurorPage : render HTML
+end
+
+Actor -> ApproveRejectPage : GET link from page
+
+ApproveRejectPage o-> ManageJurorsController : call page controller
+ManageJurorsController -> ApproveRejectTemplate : request and build template
+ManageJurorsController <- ApproveRejectTemplate : return HTML
+Actor o<- ManageJurorsController : render HTML
+
+Actor -> ApproveRejectPage : POST from form
+
+ApproveRejectPage -> ManageJurorsController : call page controller
+ManageJurorsController -> ApproveCreateJurorValidator : validate form input
+
+alt No option selected
+  ManageJurorsController <- - ApproveCreateJurorValidator : no option selected
+  ManageJurorsController - -> ApproveRejectTemplate : request and build template 
+  ManageJurorsController <- - ApproveRejectTemplate : return HTML with error
+  Actor o<- - ApproveRejectPage : render HTML
+end
+
+alt Reject selected with no comment
+  ManageJurorsController <- - ApproveCreateJurorValidator : no option selected
+  ManageJurorsController - -> ApproveRejectTemplate : request and build template 
+  ManageJurorsController <- - ApproveRejectTemplate : return HTML with error
+  Actor o<- - ApproveRejectPage : render HTML
+end
+
+ManageJurorsController <- ApproveCreateJurorValidator : valid input
+
+Actor x- -x BackendController : backend not currently implemented
+
+ApproveJurorPage o<- ManageJurorsController : redirect with success message
+@end
+
+PlantUML version 1.2022.7(Mon Aug 22 18:01:30 BST 2022)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

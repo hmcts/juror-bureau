@@ -1,0 +1,106 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import "govukButton" %}
+
+{% block page_title %}
+  {{ serviceName }} - juror record - reassign - pools available
+{% endblock %}
+
+{% block page_identifier %}juror record - reassign - pools available{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <form action="{{ postUrl }}" method="POST">
+
+        <div {% if errors.count > 0 %}class="govuk-form-group--error"{% endif %}>
+          <div class="govuk-label--l" role="heading" aria-level="1">Choose a pool to reassign to</div>
+
+          {% if errors.count > 0 %}
+            <p id="information-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span>
+              {{ errors.items["poolNumber"][0].details }}
+            </p>
+          {% endif %}
+
+          {{ govukSummaryList({
+            classes: "govuk-!-width-two-thirds",
+            rows: [
+              {
+                key: {
+                  text: "Active pools at " + court.locationName | capitalizeFully + " (" + court.locationCode + ")",
+                  classes: "govuk-label--m"
+                },
+                value: {
+                  classes: "mod-no-width"
+                },
+                actions: {
+                  items: [
+                    {
+                      href: changeCourtUrl,
+                      text: "Change court",
+                      visuallyHiddenText: "change court"
+                    }
+                  ]
+                }
+              }
+            ]
+          }) }}
+
+          {% if pools.length === 0 %}
+            <p class="govuk-body">This court has no active pools</p>
+          {% else %}
+            {% include "pool-management/deferral-maintenance/_partials/pools-table.njk" %}
+
+            {% if isCourtUser %}
+              <div class="govuk-grid-row govuk-!-margin-bottom-5">
+                <div class="govuk-grid-column-full">
+                  <div class="govuk-label--m">Or</div>
+                  <div class="govuk-radios" data-module="govuk-radios">
+                    <div class="govuk-radios__item">
+                      <input class="govuk-radios__input" id="new-pool" name="poolNumber" type="radio" value="new-pool">
+                      <label class="govuk-label govuk-radios__label" for="new-pool">
+                        Create a new pool and reassign to this
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+
+          {% endif %}
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}"/>
+        <input id="startDate" type="hidden" name="startDate"/>
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue"
+          }) }}
+
+          <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script type="application/javascript">
+    function storeStartDate(selectedPool) {
+      $('#startDate').val(document.getElementById(selectedPool.value + '-startDate').innerText);
+    }
+  </script>
+  
+{% endblock %}

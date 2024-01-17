@@ -1,0 +1,107 @@
+{% extends "../layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{% block page_title %}
+  {{ serviceName }} - Manage team
+{% endblock %}
+
+{% block page_identifier %}manage team{% endblock %}
+
+{% set currentApp = "Summons replies" %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <h1 class="govuk-heading-xl">Manage team</h1>
+
+      {{ govukButton({
+        text: "Add a new team member",
+        href: url('staff.create.get')
+      }) }}
+    </div>
+  </div>  
+
+  <form action="{{ url('staff.filter.post') }}" method="POST" id="formFilterStaff"> 
+    {{ govukRadios({
+      classes: "govuk-radios--small govuk-radios--inline",
+      idPrefix: "teamFilter",
+      name: "teamFilter",
+      fieldset: {
+      
+      },
+    
+      items: [
+        {
+          value: "active",
+          text: "Show active team members only",
+          attributes: {
+            'onclick': "this.form.submit();"
+          }
+            ,checked: teamFilter === 'active'
+        },
+        {
+          value: "all",
+          text: "Show all team members",
+          attributes: {
+            'onclick': "this.form.submit();"
+            },
+            checked: teamFilter === 'all'
+            }
+      ]
+    }) }}
+    <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+  </form>
+    
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+
+      <table class="govuk-table" data-module="moj-sortable-table">
+
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header" aria-sort="ascending">Staff name</th>
+            <th scope="col" class="govuk-table__header" aria-sort="none">Team leader</th>
+            <th scope="col" class="govuk-table__header" aria-sort="none">Status</th>
+          </tr>
+        </thead>
+
+        <tbody class="govuk-table__body">
+
+          {% for staff in staffMembers %}
+
+            <tr class="govuk-table__row">
+              {# Name #}
+              <td class="govuk-table__cell">
+                <a class="govuk-link" href="{{ url('staff.edit.get', {login: staff.login}) }}">{{ staff.name }}</a>
+              </td>
+
+              {# Team leader #}
+              {% if staff.isTeamLeader %} 
+                <td class="govuk-table__cell">Team leader</td>
+              {% else %}
+                <td class="govuk-table__cell">-</td>
+              {% endif %}
+
+              {# Status #}
+              {% if staff.isActive %}
+                <td class="govuk-table__cell"><strong class="govuk-tag">ACTIVE</strong></td>
+              {% else %}
+                <td class="govuk-table__cell"><strong class="govuk-tag govuk-tag--grey">INACTIVE</strong></td>
+              {% endif %}
+            </tr>
+
+          {% endfor %}
+
+        </tbody>
+
+      </table>
+
+
+    </div>
+  </div>
+
+{% endblock %}

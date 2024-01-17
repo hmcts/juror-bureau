@@ -1,0 +1,111 @@
+@startuml create-nil-pool
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant PoolManagement <</pool-management>>
+participant "Step 1" <</nil-pool>>
+participant "Step 1.1" <</select-court>>
+participant "Step 1.2" <</change-attendance-date>>
+participant "Step 2" <</nil-pool/check-details>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant PoolManagementController <<pool-management.controller.js>>
+participant NilPoolController <<nil-pool.controller.js>>
+participant MatchCourtObject <<matchUserCourt()>>
+participant CreateNilPoolObject <<createNilPool.post()>>
+
+''' TEMPLATES
+participant SelectCourtTemplate <<select-court.njk>>
+participant PoolDetailsTemplate <<pool-details/index.njk>>
+participant CheckDetailsTemplate <<check-details.njk>>
+participant ChangeDateTemplate <<change-attendance-date.njk>>
+
+''' FILTERS AND VALIDATORS
+participant CourtValidator
+participant DateValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+
+''' JOURNEY FLOW
+Actor -> Page : request page
+
+Page -> PoolManagementController : call page controller
+PoolManagementController -> SelectCourtTemplate : request and build template
+"Step 1" <- SelectCourtTemplate : return html
+Actor <- "Step 1" : render html
+
+"Step 1" -> PoolManagementController : call page controller
+PoolManagementController -> PoolDetailsTemplate : request and build template
+"Step 1" <- PoolDetailsTemplate : return html
+Actor <- "Step 1" : render html
+
+alt Change court location
+  "Step 1" -> PoolManagementController : call page controller
+  PoolManagementController -> SelectCourtTemplate : request and build template
+  "Step 1.1" <- SelectCourtTemplate : return html
+  Actor <- "Step 1.1" : render html
+  Actor -> "Step 1.1" : select a new court
+  "Step 1.1" -> PoolManagementController : call page controller
+  PoolManagementController -> CourtValidator : validate selected court
+  PoolManagementController <- CourtValidator : selected court is valid
+  PoolManagementController -> PoolDetailsTemplate : request and build template
+  "Step 1" <- PoolDetailsTemplate : return html
+  Actor <- "Step 1" : render html
+
+  alt Selected court is not valid
+    PoolManagementController <-- CourtValidator : error response
+    "Step 1.1" <-- PoolManagementController : error response
+    Actor <-- "Step 1.1" : render error message
+  end
+end
+
+alt Change attendance date
+  "Step 1" -> PoolManagementController : call page controller
+  PoolManagementController -> ChangeDateTemplate : request and build template
+  "Step 1.2" <- ChangeDateTemplate : return html
+  Actor <- "Step 1.2" : render html
+  Actor -> "Step 1.2" : select a new attendance date
+  "Step 1.2" -> PoolManagementController : call page controller
+  PoolManagementController -> DateValidator : validate selected date
+  PoolManagementController <- DateValidator : selected date is valid
+  PoolManagementController -> PoolDetailsTemplate : request and build template
+  "Step 1" <- PoolDetailsTemplate : return html
+  Actor <- "Step 1" : render html
+
+  alt Selected date is not valid
+    PoolManagementController <-- DateValidator : error response
+    "Step 1.2" <-- PoolManagementController : error response
+    Actor <-- "Step 1.2" : render error message
+  end
+end
+
+"Step 1" -> PoolManagementController : call page controller
+PoolManagementController -> CheckDetailsTemplate : request and build template
+"Step 2" <- CheckDetailsTemplate : return html
+Actor <- "Step 2" : render html
+
+"Step 2" -> PoolManagementController : call page controller
+PoolManagementController -> CreateNilPoolObject : call requestObject
+CreateNilPoolObject -> BackendController : post data
+CreateNilPoolObject <- BackendController : response ok
+
+PoolManagementController <- CreateNilPoolObject : resolve requestObject
+PoolManagementController -> PoolManagementTemplate : request and build template
+PoolManagement <- PoolManagementTemplate : return html
+Actor <- PoolManagement : render html
+
+alt Backend returns an error
+  CreateNilPoolObject <-- BackendController : error response
+  PoolManagementController <-- CreateNilPoolObject : reject requestObject
+  "Step 2" <-- PoolManagementController : error response
+  Actor <-- "Step 2" : render error message
+end
+
+@enduml

@@ -1,0 +1,86 @@
+{% from "moj/components/primary-navigation/macro.njk" import mojPrimaryNavigation %}
+
+{% if pageUrls.requested %}
+  {% set requestedUrl = pageUrls.requested %}
+{% else %}
+  {% set requestedUrl = "/pool-management" %}
+{% endif %}
+
+{% if pageUrls.created %}
+  {% set createdUrl = pageUrls.created %}
+{% else %}
+  {% set createdUrl = "/pool-management?status=created&tab=bureau" %}
+{% endif %}
+
+{% set bureauOnlyRoutes = [
+    "/pool-management/summoning-progress"
+  ]
+%}
+
+{% set allNavBarElements = [
+    {
+      text: "Pool requests",
+      href: requestedUrl,
+      active: (poolStatus === "requested"),
+      attributes: {
+        id: "poolRequestsAnchor"
+      }
+    },
+    {
+      text: "Active pools",
+      href: createdUrl,
+      active: (poolStatus === "created"),
+      attributes: {
+        id: "activePoolsAnchor"
+      }
+    },
+    {
+      text: "Deferral maintenance",
+      href: "/pool-management/deferral-maintenance",
+      active: deferralMaintenance === true,
+      attributes: {
+        id: "deferralMaintenanceAnchor"
+      }
+    },
+    {
+      text: "Summoning progress",
+      href: '/pool-management/summoning-progress',
+      active: true if isSummoningProgress else false,
+      attributes: {
+        id: "summoningProgressAnchor"
+      }
+    },
+    {
+      text: "Search",
+      href: "/pool-management/search",
+      active: true if isPoolSearch else false,
+      attributes: {
+        id: "searchAnchor"
+      }
+    }
+  ]
+%}
+{% set navBarElements = [] %}
+{% for item in allNavBarElements %}
+  {% if bureauOnlyRoutes.includes(item.href)%}
+      {% if authentication.owner === "400" %}
+        {% set navBarElements = (navBarElements.push(item), navBarElements) %}
+      {% endif %}
+  {% else %}
+    {% set navBarElements = (navBarElements.push(item), navBarElements)  %}
+  {% endif %}
+{% endfor %}
+
+{% if pageUrls.created %}
+  {% set createdUrl = pageUrls.created %}
+{% else %}
+  {% set createdUrl = "/pool-management?status=created&tab=bureau" %}
+{% endif %}
+
+{{ mojPrimaryNavigation({
+  label: "Pool Management Navigation",
+  attributes: {
+    id: "poolStatusNav"
+  },
+  items: navBarElements
+}) }}

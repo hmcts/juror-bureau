@@ -1,0 +1,136 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{% from "./pool-record-doughnut.njk" import poolRecordDoughnut %}
+
+{% block page_identifier %}Pool Overview for pool {{ poolDetails.poolNumber }}{% endblock %}
+
+{% block page_title %}
+  {{ serviceName }} - Pool overview for pool {{ poolDetails.poolNumber }}
+{% endblock %}
+
+{% set currentApp = "Pool management" %}
+
+{% block beforeContent %}
+  {% include "includes/back-link.njk" %}
+
+  {% if error %}
+    {{ mojBanner({
+      type: "warning",
+      html: error.message,
+      iconFallbackText: "Warning"
+    }) }}
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+
+{% include "includes/errors.njk" %}
+
+  {% if errors.items["selectedJurors"] %}
+    {% set selectedJurorsError = {"text": errors.items['selectedJurors'][0].details} %}
+  {% else %}
+    {% set selectedJurorsError = undefined %}
+  {% endif %}
+
+{% if availableSuccessMessage %}
+    {{ mojBanner({
+      type: "success",
+      html: successBanner,
+      iconFallbackText: "Success"
+    }) }}
+  {% endif %}
+
+  <div class="after-header">
+    <div class="after-header__pool-record">
+      <span class="after-header__pool-record-label">Pool record</span>
+      <div class="after-header__pool-record-number">
+        <h1 class="govuk-heading-l govuk-!-margin-0">{{ poolDetails.poolNumber }}</h1>
+        {% if isNil === false %}
+          {{ govukTag({
+            text: "Active" if poolDetails.isActive else "Requested",
+            classes: "" if poolDetails.isActive else "govuk-tag--blue" 
+          }) }}
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+
+  <div class="court-details-wrapper">
+    <div class="court-details">
+      <div class="govuk-width-container">
+        <div class="court-details__grid">
+          <div class="column">
+            <span class="govuk-!-font-weight-bold">Court name</span>
+            <span>{{ poolDetails.courtName }}</span>
+          </div>
+          <div class="column">
+            <span class="govuk-!-font-weight-bold">Court location code</span>
+            <span>{{ poolDetails.locCode }}</span>
+          </div>
+          <div class="column">
+            <span class="govuk-!-font-weight-bold">Service start date</span>
+            <span>{{ poolDetails.courtStartDate }}</span>
+          </div>
+          <div class="column">
+            <span class="govuk-!-font-weight-bold">Pool type</span>
+            <span>Crown court</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row govuk-!-margin-top-6">
+    {% include "./_partials/sub-nav.njk" %}
+  </div>
+
+  {% if currentTab == 'history' %}
+    <div class="govuk-grid-row">
+      {% include "./pool-history.njk" %}
+    </div>
+  {% else %}
+
+    {{ govukRadios({
+      classes: "govuk-radios--inline govuk-radios--small",
+      name: "jurorsInPool",
+      value: jurorStatuses,
+      fieldset: {
+        legend: {
+          text: "Jurors in this pool",
+          classes: "govuk-fieldset__legend--m"
+        }
+      },
+      hint: {
+        text: "Only displaying jurors managed by your court"
+      },
+      items: [
+        {
+          value: "responded",
+          text: "Responded, panelled and juror only"
+        },
+        {
+          value: "all",
+          text: "All statuses"
+        }
+      ]
+    }) }}
+
+    {% include "./pool-jurors-attendance.njk" %}
+
+  {% endif %}
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script src="{{ assetPath }}js/pool-overview.js"></script>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+
+{% set currentApp = "Pool management" %}
+
+{% block beforeContent %}
+
+  {% if addCitizensError !== undefined %}
+    <div class="govuk-!-margin-top-4">
+      {{ mojBanner({
+        type: "warning",
+        text: "Something went wrong when trying to add voters to this pool. Please try again or contact an administrator.",
+        iconFallbackText: "Warning"
+      }) }}
+    </div>
+  {% endif %}
+
+  {{ govukBackLink({
+    text: "Back",
+    href: backLinkUrl,
+    attributes: {
+      id: "backLinkAnchor"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+  {% include "./errors.njk" %}
+
+  {% if errors.items.length > 0 %}
+
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <form action="#" method="POST">
+
+        <div class="govuk-form-group {% if maxExceededError.text %}govuk-form-group--error{% endif %}">
+          <fieldset id="postcodesList" class="govuk-fieldset" role="group" aria-describedby="postcodes postcodes-error">
+            <legend class="govuk-fieldset__legend--l">
+              <span class="govuk-fieldset__heading">Enter the number of citizens to include from each postcode area</span>
+            </legend>
+
+            <div class="govuk-caption-m govuk-!-margin-bottom-5">
+              The number of citizens available in each postcode area is shown in brackets.
+
+              {% if maxExceededError.text %}
+                <p id="information-error" class="govuk-error-message">
+                  <span class="govuk-visually-hidden">Error:</span> {{ maxExceededError.text }}
+                </p>
+              {% endif %}
+            </div>
+
+            {% for postcode in postCodes %}
+              {{ govukInput({
+                label: {
+                  text: postcode.text
+                },
+                id: postcode.id,
+                name: postcode.id,
+                classes: "govuk-input--width-3",
+                errorMessage: fieldErrorMessages[postcode.id]
+              }) }}
+            {% endfor %}
+
+            {% if postCodes.length === 0 %}
+              <div class="govuk-body">No jurors on this catchment area.</div>
+            {% endif %}
+
+          </fieldset>
+        </div>
+
+        <div class="govuk-button-group">
+          {% if postCodes.length > 0 %}
+            {{ govukButton({
+              text: "Add citizens",
+              type: "submit",
+              attributes: {
+                id: "addCitizensButton"
+              }
+            }) }}
+          {% endif %}
+
+          <a id="cancelAnchor" class="govuk-link" href="{{ url('pool-overview.get', { poolNumber: poolDetails.poolNumber }) }}">Cancel</a>
+        </div>
+
+        <input type="hidden" id="locCode" name="locCode" value="{{ locationCode }}">
+        <input type="hidden" id="poolNumber" name="poolNumber" value="{{ poolDetails.poolNumber }}">
+        <input type="hidden" id="csrfToken" name="_csrf" value="{{ csrftoken }}">
+      </form>
+
+    </div>
+  </div>
+{% endblock %}

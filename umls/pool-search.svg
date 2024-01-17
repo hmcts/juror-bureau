@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="699px" preserveAspectRatio="none" style="width:1129px;height:699px;background:#FFFFFF;" version="1.1" viewBox="0 0 1129 699" width="1129px" zoomAndPan="magnify"><defs/><g><rect fill="none" height="105.2422" style="stroke:#000000;stroke-width:1.5;" width="962.5" x="10" y="216.5293"/><rect fill="none" height="134.5527" style="stroke:#000000;stroke-width:1.5;" width="1113.5" x="10" y="453.0137"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="45" x2="45" y1="52.9766" y2="692.498"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="202.5" x2="202.5" y1="52.9766" y2="692.498"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="351.5" x2="351.5" y1="52.9766" y2="692.498"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="556.5" x2="556.5" y1="52.9766" y2="692.498"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="753.5" x2="753.5" y1="52.9766" y2="692.498"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="908.5" x2="908.5" y1="52.9766" y2="692.498"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1042.5" x2="1042.5" y1="52.9766" y2="692.498"/><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="51" x="20" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="37" x="27" y="42.0234">Actor</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="80" x="162.5" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="66" x="169.5" y="25.5352">«/search»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="33" x="186" y="42.0234">Page</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="198" x="252.5" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="184" x="259.5" y="25.5352">«pool-search.controller.js»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="146" x="278.5" y="42.0234">PoolSearchController</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="192" x="460.5" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="178" x="467.5" y="25.5352">«PoolSearchObject.post()»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="120" x="496.5" y="42.0234">PoolSearchObject</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="183" x="662.5" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="169" x="669.5" y="25.5352">«pool-search/index.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="103" x="702.5" y="42.0234">IndexTemplate</text><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="107" x="855.5" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="93" x="862.5" y="42.0234">DateValidator</text><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="141" x="972.5" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="127" x="979.5" y="42.0234">BackendController</text><polygon fill="#181818" points="190.5,80.2871,200.5,84.2871,190.5,88.2871" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="45.5" x2="196.5" y1="84.2871" y2="84.2871"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="81" x="83.5" y="79.5449">request page</text><polygon fill="#181818" points="339.5,109.5977,349.5,113.5977,339.5,117.5977" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="202.5" x2="345.5" y1="113.5977" y2="113.5977"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="121" x="216.5" y="108.8555">call page controller</text><polygon fill="#181818" points="742,138.9082,752,142.9082,742,146.9082" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="351.5" x2="748" y1="142.9082" y2="142.9082"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="468.25" y="138.166">request and build template</text><polygon fill="#181818" points="362.5,168.2188,352.5,172.2188,362.5,176.2188" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="356.5" x2="753" y1="172.2188" y2="172.2188"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="513.75" y="167.4766">return HTML</text><polygon fill="#181818" points="56.5,197.5293,46.5,201.5293,56.5,205.5293" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="50.5" x2="350.5" y1="201.5293" y2="201.5293"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="158.5" y="196.7871">render HTML</text><path d="M10,216.5293 L72,216.5293 L72,223.8398 L62,233.8398 L10,233.8398 L10,216.5293 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="105.2422" style="stroke:#000000;stroke-width:1.5;" width="962.5" x="10" y="216.5293"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="25" y="230.0977">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="183" x="87" y="229.1641">[Search Criteria has invalid date]</text><polygon fill="#181818" points="362.5,251.1504,352.5,255.1504,362.5,259.1504" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="356.5" x2="908" y1="255.1504" y2="255.1504"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="91" x="584.75" y="250.4082">error response</text><polygon fill="#181818" points="213.5,280.4609,203.5,284.4609,213.5,288.4609" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="207.5" x2="350.5" y1="284.4609" y2="284.4609"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="91" x="231.5" y="279.7188">error response</text><polygon fill="#181818" points="56.5,309.7715,46.5,313.7715,56.5,317.7715" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="50.5" x2="201.5" y1="313.7715" y2="313.7715"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="133" x="57.5" y="309.0293">render error message</text><polygon fill="#181818" points="544.5,346.082,554.5,350.082,544.5,354.082" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="202.5" x2="550.5" y1="350.082" y2="350.082"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="159" x="300" y="345.3398">search pools with criteria</text><polygon fill="#181818" points="1031,375.3926,1041,379.3926,1031,383.3926" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="556.5" x2="1037" y1="379.3926" y2="379.3926"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="138" x="730.75" y="374.6504">send backend request</text><polygon fill="#181818" points="567.5,404.7031,557.5,408.7031,567.5,412.7031" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="561.5" x2="1042" y1="408.7031" y2="408.7031"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="77" x="761.25" y="403.9609">ok response</text><polygon fill="#181818" points="362.5,434.0137,352.5,438.0137,362.5,442.0137" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="356.5" x2="555.5" y1="438.0137" y2="438.0137"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="96" x="406" y="433.2715">resolve request</text><path d="M10,453.0137 L72,453.0137 L72,460.3242 L62,470.3242 L10,470.3242 L10,453.0137 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="134.5527" style="stroke:#000000;stroke-width:1.5;" width="1113.5" x="10" y="453.0137"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="25" y="466.582">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="147" x="87" y="465.6484">[Backend returns an error]</text><polygon fill="#181818" points="567.5,487.6348,557.5,491.6348,567.5,495.6348" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="561.5" x2="1042" y1="491.6348" y2="491.6348"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="91" x="754.25" y="486.8926">error response</text><polygon fill="#181818" points="362.5,516.9453,352.5,520.9453,362.5,524.9453" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="356.5" x2="555.5" y1="520.9453" y2="520.9453"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="127" x="390.5" y="516.2031">reject requestObject</text><polygon fill="#181818" points="213.5,546.2559,203.5,550.2559,213.5,554.2559" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="207.5" x2="350.5" y1="550.2559" y2="550.2559"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="91" x="231.5" y="545.5137">error response</text><polygon fill="#181818" points="56.5,575.5664,46.5,579.5664,56.5,583.5664" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="50.5" x2="201.5" y1="579.5664" y2="579.5664"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="133" x="57.5" y="574.8242">render error message</text><polygon fill="#181818" points="742,611.877,752,615.877,742,619.877" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="351.5" x2="748" y1="615.877" y2="615.877"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="468.25" y="611.1348">request and build template</text><polygon fill="#181818" points="362.5,641.1875,352.5,645.1875,362.5,649.1875" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="356.5" x2="753" y1="645.1875" y2="645.1875"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="513.75" y="640.4453">return HTML</text><polygon fill="#181818" points="56.5,670.498,46.5,674.498,56.5,678.498" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="50.5" x2="350.5" y1="674.498" y2="674.498"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="158.5" y="669.7559">render HTML</text><!--MD5=[a82d0f397baf653ec6f3f8e2dd81d519]
+@startuml pool-search
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant Page <</search>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant PoolSearchController <<pool-search.controller.js>>
+participant PoolSearchObject <<PoolSearchObject.post()>>
+
+''' TEMPLATES
+participant IndexTemplate <<pool-search/index.njk>>
+
+''' FILTERS AND VALIDATORS
+participant DateValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+
+''' JOURNEY FLOW
+Actor -> Page : request page
+
+Page -> PoolSearchController : call page controller
+
+PoolSearchController -> IndexTemplate : request and build template
+PoolSearchController <- IndexTemplate : return HTML
+Actor <- PoolSearchController : render HTML
+
+alt Search Criteria has invalid date
+  PoolSearchController <- - DateValidator : error response
+  Page <- - PoolSearchController : error response
+  Actor <- - Page : render error message
+end
+
+Page -> PoolSearchObject : search pools with criteria
+PoolSearchObject -> BackendController : send backend request
+PoolSearchObject <- BackendController : ok response
+PoolSearchController <- PoolSearchObject : resolve request
+
+alt Backend returns an error
+  PoolSearchObject <- - BackendController : error response
+  PoolSearchController <- - PoolSearchObject : reject requestObject
+  Page <- - PoolSearchController : error response
+  Actor <- - Page : render error message
+end
+
+PoolSearchController -> IndexTemplate : request and build template
+PoolSearchController <- IndexTemplate : return HTML
+
+Actor <- PoolSearchController : render HTML
+
+@enduml
+
+@startuml pool-search
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+participant Page <</search>>
+
+participant PoolSearchController <<pool-search.controller.js>>
+participant PoolSearchObject <<PoolSearchObject.post()>>
+
+participant IndexTemplate <<pool-search/index.njk>>
+
+participant DateValidator
+
+participant BackendController
+
+
+
+Actor -> Page : request page
+
+Page -> PoolSearchController : call page controller
+
+PoolSearchController -> IndexTemplate : request and build template
+PoolSearchController <- IndexTemplate : return HTML
+Actor <- PoolSearchController : render HTML
+
+alt Search Criteria has invalid date
+  PoolSearchController <- - DateValidator : error response
+  Page <- - PoolSearchController : error response
+  Actor <- - Page : render error message
+end
+
+Page -> PoolSearchObject : search pools with criteria
+PoolSearchObject -> BackendController : send backend request
+PoolSearchObject <- BackendController : ok response
+PoolSearchController <- PoolSearchObject : resolve request
+
+alt Backend returns an error
+  PoolSearchObject <- - BackendController : error response
+  PoolSearchController <- - PoolSearchObject : reject requestObject
+  Page <- - PoolSearchController : error response
+  Actor <- - Page : render error message
+end
+
+PoolSearchController -> IndexTemplate : request and build template
+PoolSearchController <- IndexTemplate : return HTML
+
+Actor <- PoolSearchController : render HTML
+
+@enduml
+
+PlantUML version 1.2022.7(Mon Aug 22 18:01:30 BST 2022)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

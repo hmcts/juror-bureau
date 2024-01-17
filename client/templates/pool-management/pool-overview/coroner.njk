@@ -1,0 +1,210 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+
+{% set currentApp = "Pool management" %}
+
+{% block page_identifier %}Pool Overview for pool {{ poolDetails.poolNumber }}{% endblock %}
+
+{% block page_title %}
+  {{ serviceName }} - Pool overview for pool {{ poolDetails.poolNumber }}
+{% endblock %}
+
+{% block beforeContent %}
+  {% include "includes/back-link.njk" %}
+
+  <div id="bannerWrapper" class="govuk-!-margin-top-4">
+    {# needs to be empty #}
+  </div>
+{% endblock %}
+
+{% block content %}
+
+  <div class="after-header">
+    <div class="after-header__pool-record">
+      <span class="after-header__pool-record-label">Pool record</span>
+      <div class="after-header__pool-record-number">
+        <h1 id="poolNumber" class="govuk-heading-l govuk-!-margin-0">{{ poolDetails.poolNumber }}</h1>
+        {{ govukTag({
+          text: "Active"
+        }) }}
+      </div>
+    </div>
+
+    {% if members.length > 0 %}
+      {{ govukButton({
+        text: "Export pool",
+        classes: "govuk-!-margin-bottom-0 govuk-button--secondary",
+        attributes: {
+          id: "exportPoolButton"
+        }
+      }) }}
+    {% endif %}
+  </div>
+
+  <div class="mod-juror-record__banner govuk-body">
+    <div class="mod-juror-record__banner-column">
+      <div id="courtNameLabel" class="govuk-!-font-weight-bold">Court name</div>
+      <span id="courtName">{{ poolDetails.courtName | capitalizeFully }}</span>
+    </div>
+    <div class="mod-juror-record__banner-column">
+      <div id="courtLocCodeLabel" class="govuk-!-font-weight-bold">Court location code</div>
+      <span id="courtLocCode">{{ poolDetails.locCode }}</span>
+    </div>
+    <div class="mod-juror-record__banner-column">
+      <div id="poolTypeLabel" class="govuk-!-font-weight-bold">Pool type</div>
+      <span id="poolType">{{ "COR" | transformPoolType }}</span>
+    </div>
+  </div>
+
+  <div class="govuk-!-margin-bottom-4">
+    <div class="pool-values__summary">
+      <span class="govuk-body govuk-!-font-weight-bold">
+        Pool summary
+      </span>
+      <span>
+        <span class="govuk-!-font-size-80 govuk-!-font-weight-bold">{{ poolDetails.totalAdded }}</span>
+        <span class="govuk-!-font-size-36">/{{ poolDetails.noRequested }}</span>
+      </span>
+      <span class="label">
+        Pool capacity
+      </span>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {% set courtDetails %}
+      {{ govukSummaryList({
+          classes: "govuk-!-width-two-thirds",
+          rows: [
+            {
+              key: {
+                text: "Name"
+              },
+              value: {
+                text: poolDetails.name
+              }
+            },
+            {
+              key: {
+                text: "Email"
+              },
+              value: {
+                text: poolDetails.emailAddress
+              }
+            },
+            {
+              key: {
+                text: "Phone"
+              },
+              value: {
+                text: poolDetails.phone or "-"
+              }
+            },
+            {
+              key: {
+                text: "Date requested"
+              },
+              value: {
+                text: poolDetails.dateRequested | makeDate | dateFilter(null, "D MMMM YYYY")
+              }
+            }
+          ]
+        }) }}
+      {% endset %}
+
+      {{ govukDetails({
+        summaryText: "Coroner’s court contact details",
+        html: courtDetails
+      }) }}
+
+      <hr class="govuk-section-break govuk-section-break--visible">
+
+      {{ mojSubNavigation({
+        label: "Coroner pool sub-navigation",
+        items: [
+          {
+            text: "Jurors",
+            href: "#",
+            active: true
+          }, {
+            text: "History",
+            href: "#"
+          }
+        ],
+        classes: "govuk-!-margin-bottom-0"
+      }) }}
+
+      <div class="mod-log-left-nav-item">
+        <h2 class="govuk-heading--m">Jurors</h2>
+        <div>
+          {{ govukButton({
+            text: "Add jurors",
+            href: url('coroner-pool.catchment-area.get', {
+              poolNumber: poolDetails.poolNumber
+            }),
+            classes: "govuk-!-margin-bottom-0",
+            attributes: {
+              id: "addJurorsButton"
+            }
+          }) }}
+        </div>
+      </div>
+
+      {% if members.length > 0 %}
+        {{ govukTable({
+          attributes: {
+            'data-module': 'moj-sortable-table'
+          },
+          head: [
+            {
+              text: "Juror number",
+              attributes: {
+                "aria-sort": "ascending"
+              }
+            },
+            {
+              text: "First name",
+              attributes: {
+                "aria-sort": "none"
+              }
+            },
+            {
+              text: "Last name",
+              attributes: {
+                "aria-sort": "none"
+              }
+            },
+            {
+              text: "Postcode",
+              attributes: {
+                "aria-sort": "none"
+              }
+            }
+          ],
+          rows: members
+        }) }}
+
+        {{ govukPagination({
+          previous: {
+            href: pageItems.prev
+          },
+          next: {
+            href: pageItems.next
+          },
+          items: pageItems.items
+        }) }}
+      {% endif %}
+
+    </div>
+  </div>
+
+{% endblock %}

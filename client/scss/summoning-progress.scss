@@ -1,0 +1,153 @@
+.summoning-progress-table {
+    display: grid;
+    grid-template-columns: 
+        minmax(100px, 11%)
+        minmax(100px, 9%)
+        minmax(100px, 7%)
+        minmax(100px, 7%)
+        minmax(100px, 7%)
+        minmax(80px, 6%)
+        auto;
+    grid-column-gap: 5px;
+    height: 100%;
+    margin: 0px;
+
+    thead,
+    tbody,
+    tr {
+        display: contents;
+    }
+}
+
+.summoning-progress-table-header th {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    text-align: left;
+}
+
+.summoning-progress-table-balance-col {
+    background-color: govuk-colour("light-grey");
+    padding-left: 10px;
+    padding-right: 10px;
+
+    &.balance-header {
+        text-align: center;
+    }
+
+    &.negative {
+        font-weight: bold;
+    }
+}
+
+.summoning-progress-table-week-header {
+    grid-column: 1 / 8;
+    border-bottom: 2pt solid black;
+}
+
+.summoning-progress-table-day-row td {
+    padding-top: 20px;
+    padding-bottom: 10px;
+}
+
+.summoning-progress-table-day-row-last td {
+    padding-bottom: 40px;
+}
+
+.summoning-progress-table-barChartLegend {
+    display: flex;
+    justify-content: center;
+    font-weight: normal;
+
+    span {
+        display: inline-block;
+        padding: 0px 10px;
+        font-size: 12px;
+    }
+
+    .requested {
+        background-color: #B1B4B6;
+    }
+    .confirmed {
+        background-color: #1D70B8;
+    }
+    .unavailable {
+        background-color: #B58840;
+    }
+    .surplus {
+        background-color: #D53880;
+    }
+    .notResponded {
+        background: linear-gradient(-45deg,  #B1B4B6 0%,#B1B4B6 50%,#F3F2F1 50%,#F3F2F1 100%);
+    }
+}
+
+.summoning-progress-table-bullet {
+    background-color: lightblue;
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 100%;
+}
+
+.summoning-progress-table-responded-triangle {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 12px solid #1D70B8;
+    margin-left: 3px;
+}
+
+.summoning-progress-barChart-bar {
+    display: inline-block;
+    height: 17px;
+}
+
+.summoning-progress-barChart {
+    position: relative;
+    width: 95%;
+    margin: 0px;
+    margin-left: 5%;
+    padding: 0px;
+    text-indent: 0px;
+    display: flex;
+
+    .requested-triangle {
+        position: absolute;
+        margin-left: -6px;
+        top: -12px;
+        left: 0%;
+        width: 0;
+        height: 0;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 12px solid transparent;       
+    }
+
+    .confirmed {
+        background-color: #1D70B8;
+    }
+
+    .requested {
+        background-color: #B1B4B6;
+    }
+
+    .surplus {
+        background-color: #D53880;
+    }
+
+    .notResponded {
+        background-color: #F3F2F1
+    }
+
+    .unavailable {
+        background-color: #B58840;
+    }
+}
+
+@media print {
+    a[href]:after {
+        content: none !important;
+    }
+}

@@ -1,0 +1,135 @@
+{% extends "../../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% from "../../custom-components/date-picker/macro.njk" import datePicker %}
+{% from "../../custom-components/summary-item/macro.njk" import summaryItem %}
+
+{% block page_title %}
+  {{ serviceName }} - Create a pool for court use only{% endblock %}
+
+{% block page_identifier %}Create a pool for court use only{% endblock %}
+
+{% block beforeContent %}
+
+  {{ govukBackLink({
+    text: "Back",
+    href: backLinkUrl,
+    attributes: {
+      id: "backLinkAnchor"
+    }
+  }) }}
+  
+{% endblock %}
+
+{% block content %}
+
+  {% include "../../includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form action="{{ postUrl }}" method="POST" id="courtOnlyPoolForm">
+
+        <h1 class="govuk-heading-l">Create a pool for court use only</h1>
+        
+        {% if errors.items["poolType"] %}
+          {% set poolTypeError = {"text": errors.items['poolType'][0].details} %}
+        {% endif %}
+        {% if errors.items["serviceStartDate"] %}
+          {% set serviceStartDateError = errors.items["serviceStartDate"][0].details %}
+        {% endif %}
+
+        {% set serviceStartDate = formFields.serviceStartDate %}
+        {% set optionSelected = formFields.poolType %}
+
+        {% if multiCourt %}
+          {{ summaryItem({
+            label: {
+              text: "Court name",
+              classes: "govuk-label--s"
+            },
+            value: courtData.locationName | capitalizeFully,
+            id: "selectedCourtName",
+            name: "selectedCourtName",
+            classes: "govuk-!-width-one-half",
+            action: {
+              href: changeCourtUrl,
+              text: "Change"
+            }
+          }) }}
+        {% endif %}
+
+        {{ datePicker({
+          id: "serviceStartDate",
+          label: {
+            text: "Service start date"
+          },
+          hint: "Use dd/mm/yyyy format. For example, 31/01/2023.",
+          dateMin: "" | makeDate | dateFilter(null, "DD/MM/YYYY"),
+          dateValue: serviceStartDate,
+          dateError: serviceStartDateError
+        }) }}
+        
+        {{ govukRadios({
+          name: "poolType",
+          fieldset: {
+            legend: {
+              text: "Pool type",
+              classes: "govuk-fieldset__legend--s"
+            }
+            
+          },
+          errorMessage: poolTypeError,
+          items: [
+            {
+              value: "CRO", 
+              checked: optionSelected === "CRO",
+              text: "Crown court"
+            },
+            {
+              value: "CIV", 
+              checked: optionSelected === "CIV",
+              text: "Civil court"
+            },
+            {
+              value: "HGH", 
+              checked: optionSelected === "HGH",
+              text: "High Court"
+            }
+          ]
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            type: "submit",
+            attributes: {
+              id: "continueButton"
+            }
+          }) }}
+          <a href="{{ cancelUrl }}" class="govuk-link" id="cancelAnchor">Cancel</a>
+        </div>
+
+        <input type="hidden" name="courtLocCode" value="{{ courtData.locationCode }}">
+        <input type="hidden" name="courtName" value="{{ courtData.locationName }}">
+        <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      const datePickers = []
+        .slice
+        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
+      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
+    });
+  </script>
+{% endblock %}

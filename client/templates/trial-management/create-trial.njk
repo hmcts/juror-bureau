@@ -1,0 +1,316 @@
+{% extends "../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "custom-components/autocomplete/macro.njk" import modAutocomplete %}
+
+{% block page_title %}
+  {%if editTrial %}
+    {{ serviceName }} - edit a trial
+  {% else %}
+    {{ serviceName }} - create a trial
+  {% endif %}
+{% endblock %}
+
+{% block page_identifier %}
+  {%if editTrial %}
+    Edit a trial
+  {% else %}
+    Create a trial
+  {% endif %}
+{% endblock %}
+
+{% if errors.items["trialNumber"] %}
+  {% set trialNumberError = {"text": errors.items['trialNumber'][0].details} %}
+{% endif %}
+{% if errors.items["trialType"] %}
+  {% set trialTypeError = {"text": errors.items['trialType'][0].details} %}
+{% endif %}
+{% if errors.items["defendants"] %}
+  {% set defendantsError = {"text": errors.items['defendants'][0].details} %}
+{% endif %}
+{% if errors.items["respondents"] %}
+  {% set respondentsError = {"text": errors.items['respondents'][0].details} %}
+{% endif %}
+{% if errors.items["startDate"] %}
+  {% set startDateError = errors.items['startDate'][0].details %}
+{% endif %}
+{% if errors.items["judge"] %}
+  {% set judgeError = {"text": errors.items['judge'][0].details} %}
+{% endif %}
+{% if errors.items["court"] %}
+  {% set courtError = {"text": errors.items['court'][0].details} %}
+{% endif %}
+{% if errors.items["courtroom"] %}
+  {% set courtroomError = {"text": errors.items['courtroom'][0].details} %}
+{% endif %}
+
+
+{% set criminalHtml %}
+  {{ govukInput({
+    label: {
+      text: "Defendants"
+    },
+    hint: {
+      text: "If there's not enough space for all defendants, you can type 'et el'."
+    },
+    id: "defendants",
+    name: "defendants",
+    value: trialDetails.defendants,
+    errorMessage: defendantsError
+  }) }}
+{% endset %}
+
+{% set civilHtml %}
+  {{ govukInput({
+    label: {
+      text: "Respondents"
+    },
+    hint: {
+      text: "If there's not enough space for all respondents, you can type 'et el'."
+    },
+    id: "respondents",
+    name: "respondents",
+    value: trialDetails.respondents,
+    errorMessage: respondentsError
+  }) }}
+{% endset %}
+
+{% set courtRadioItems = [] %}
+{% for court in courts %}
+  {% set courtroomHtml %}
+    {{ modAutocomplete({
+      label: {
+        text: "Courtroom"
+      },
+      value:  trialDetails[court.courtLocationName],
+      name: court.courtLocationName,
+      id: court.courtLocationName,
+      data: court.courtrooms,
+      errorMessage: courtroomError
+    }) }}
+
+  {% endset %}
+  {% set courtRadioItems = (courtRadioItems.push(
+    {
+      value: court.courtLocationName,
+      text: court.courtLocationName | capitalize,
+      conditional: { 
+        html: courtroomHtml
+      }
+    }
+  ), courtRadioItems) %}
+{% endfor %}
+
+
+
+{% block content %}
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">
+        {%if editTrial %}
+          Edit a trial
+        {% else %}
+          Create a trial
+        {% endif %}
+      </h1>
+    </div>
+  </div>
+  <form method="post" action="{{ processUrl }}" id="createTrialForm">
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-half">
+
+        {{ govukInput({
+          label: {
+            text: "Case number"
+          },
+          classes: "govuk-!-width-one-half",
+          id: "trialNumber",
+          name: "trialNumber",
+          value: trialDetails.trialNumber,
+          errorMessage: trialNumberError     
+        }) }}
+        {{ govukRadios({
+          fieldset: {
+            legend: {
+              text: "Trial type",
+              classes: "govuk-!-font-weight-bold"
+            }
+          },
+          classes: "govuk-radios",
+          name: "trialType",
+          items: [
+            {
+              value: "CRI",
+              text: "Criminal",
+              conditional: {
+                html: criminalHtml
+              }
+            },
+            {
+              value: "CIV",
+              text: "Civil",
+              conditional: {
+                html: civilHtml
+              }
+            }
+          ],
+          value: trialDetails.trialType,
+          errorMessage: trialTypeError
+        }) }}
+
+        {{ datePicker({
+          id: "startDate",
+          label: {
+              text: "Start date",
+              classes: "govuk-body"
+          },
+          hint: "Use dd/mm/yyyy format. For example, 31/01/2023.",
+          dateValue: trialDetails.startDate,
+          dateMin: minStartDate,
+          dateMax: maxStartDate,
+          dateError: startDateError
+        }) }}
+
+        {{ modAutocomplete({
+          label: {
+            text: "Judge"
+          },
+          value:  trialDetails.judge,
+          name: "judge",
+          id: "judge",
+          data: judges,
+          errorMessage: judgeError
+        }) }}
+
+        {% if courts|length > 1 %}
+          {{ govukRadios({
+            fieldset: {
+              legend: {
+                text: "Select court",
+                classes: "govuk-!-font-weight-bold"
+              }
+            },
+            classes: "govuk-radios",
+            name: "court",
+            items: courtRadioItems,
+            value: trialDetails.court,
+            errorMessage: courtError
+        }) }}
+        {% else %}
+          {{ modAutocomplete({
+            label: {
+              text: "Courtroom"
+            },
+            value:  trialDetails.courtroom,
+            name: "courtroom",
+            id: "courtroom",
+            data: courts[0].courtrooms,
+            errorMessage: courtroomError
+          }) }}
+        {% endif %}
+
+        {{ govukCheckboxes({
+          name: "protected",
+          values: [trialDetails.protected],
+          items: [
+            {
+              value: true,
+              text: "Protected",
+              hint: {
+                text: "If you tick this, all jurors will be anonymous."
+              }
+            }
+          ]
+        }) }}
+
+      </div>
+    </div>
+
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Create trial",
+        type: "submit",
+        attributes: {
+          id: "saveButton"
+        }
+      }) }}
+      <a class="govuk-link govuk-link--no-visited-state" id="cancelAnchor" href="{{ cancelUrl }}">
+        Cancel
+      </a>
+    </div>
+
+    <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+  </form>
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      const datePickers = []
+        .slice
+        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
+      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
+    });
+  </script>
+
+  {# Script to add default values to autocomplete for courtroom and judge #}
+  <script>
+    const isElementLoaded = async selector => {
+      while ( document.querySelector(selector) === null) {
+        await new Promise( resolve =>  requestAnimationFrame(resolve) )
+      }
+      return document.querySelector(selector);
+    };
+
+    {% if trialDetails.courtroom %}
+      {# If there is more than one court to select from then need to handle which courtroom input to populate #}
+      {% if courts|length > 1 %}
+        {% for court in courts %}
+          {% if court.locationName === trialDetails.court %}
+            $(document).ready(function () {
+              const input = document.getElementById('{{court.locationName}}' + 'Courtroom');
+              input.value = '{{trialDetails.courtroom}}';
+              isElementLoaded("[id$='Courtroom__option--0']").then((element) => {
+                document.querySelectorAll("[id$='Courtroom__option--0']").forEach(el=>el.click());
+                document.activeElement.blur();
+              });    
+            });
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        $(document).ready(function () {
+          const input = document.getElementById('courtroom');
+          input.value = '{{trialDetails.courtroom}}';
+          isElementLoaded("#courtroom__option--0").then((element) => {
+            element.click();
+            document.activeElement.blur();
+          });    
+        });
+      {% endif %}
+    {% endif %}
+
+    {% if trialDetails.judge %}
+      $(document).ready(function () {
+        const input = document.getElementById('judge');
+        input.value = '{{trialDetails.judge}}';
+        isElementLoaded("#judge__option--0").then((element) => {
+          element.click();
+          document.activeElement.blur();
+        });    
+      });
+    {% endif %}
+  </script>
+
+{% endblock %}

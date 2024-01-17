@@ -1,0 +1,377 @@
+.mod-juror-record {
+  &--header {
+    &__tag-row {
+      display: inline-block;
+    }
+
+    &__info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      &__name {
+        display: block;
+      }
+
+      &__actions {
+        display: block;
+      }
+    }
+  }
+
+  &__banner {
+    background-color: govuk-colour("light-grey");
+    display: grid;
+    padding: 15px 0;
+    border-top: 3px solid govuk-colour("turquoise");
+    border-bottom: 1px solid $govuk-border-colour;
+    margin-bottom: govuk-spacing(5);
+
+    &-column {
+      padding: 0 15px;
+    }
+
+    @include govuk-media-query($from: desktop) {
+      grid-template-columns: repeat(5, auto);
+
+      &-column {
+        padding: 0 15px;
+
+        /// we can give the first child some margin
+        :first-child {
+          margin-bottom: govuk-spacing(2);
+        }
+      }
+    }
+  }
+
+  &__title {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 2px solid black;
+  }
+}
+
+.mod-contact-third-party {
+  color: govuk-colour("blue");
+  font-weight: bold;
+}
+
+.mod-button-menu {
+  right: 0;
+  width: 270px !important;
+}
+
+.mod-log-left-nav-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reply-view-align_right {
+  right: 0;
+}
+
+.mod-button-group {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  margin-top: govuk-spacing(3);
+  gap: govuk-spacing(2);
+
+  @include govuk-media-query($from: desktop) {
+    font-size: 19px;
+    margin-top: govuk-spacing(0);
+  }
+}
+
+/// Details Banner ///
+/// this can probably be used for both juror-record and summons-reply
+.mod-details-banner {
+  background-color: govuk-colour("light-grey");
+  border-top: 3px solid govuk-colour("purple");
+  border-bottom: 1px solid $govuk-border-colour;
+  margin-bottom: govuk-spacing(5);
+
+  .label {
+    font-weight: bold;
+  }
+
+  .info {
+    line-height: 26px;
+  }
+
+  .with-icon {
+    display: flex;
+    align-items: start;
+    gap: 5px;
+  }
+}
+
+.mod-details-banner-juror-record {
+  @extend .mod-details-banner;
+  border-top: 3px solid govuk-colour("turquoise");
+}
+
+/// Summons Reply ///
+.mod-reply-section {
+  margin-top: govuk-spacing(7);
+
+  &__title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid black;
+    height: 20px;
+  }
+
+  &__required {
+    color: govuk-colour("red");
+    text-decoration: underline;
+  }
+}
+
+/// Used in banners for inverted label
+.mod-tag-grey {
+  color: #ffffff;
+  background-color: govuk-colour("dark-grey");
+}
+
+/// Icons
+.mod-icon-urgent {
+  width: 20px;
+  height: 20px;
+
+  background-image: url('/assets/images/icons/icon-urgent.png');
+  background-size: cover;
+}
+
+@media only screen and (-webkit-min-device-pixel-ratio: 2),
+    only screen and (min-resolution: 192dpi),
+    only screen and (min-resolution: 2dppx) {
+  .mod-icon-urgent {
+    background-image: url('/assets/images/icons/icon-urgent-2x.png');
+    background-size: cover;
+  }
+}
+
+/// Mod Filter
+.mod-filter {
+  border: 1px solid govuk-colour("mid-grey");
+
+  &__heading {
+    background-color: govuk-colour("mid-grey");
+    padding: govuk-spacing(2) govuk-spacing(4);
+  }
+
+  &__options {
+    padding: govuk-spacing(4);
+  }
+
+  &__actions {
+    padding: 0 govuk-spacing(4);
+  }
+}
+
+/// Some CSS utility classes
+.mod-flex {
+  display: flex;
+}
+
+.mod-items-center {
+  align-items: center;
+}
+
+.mod-items-end {
+  align-items: end;
+}
+
+.mod-justify-end {
+  justify-content: end;
+}
+
+.mod-space-between {
+  justify-content: space-between;
+}
+
+.mod-gap-x {
+  &-1 {
+    gap: 0.25rem;
+  }
+  &-2 {
+    gap: 0.5rem;
+  }
+  &-4 {
+    gap: 1rem;
+  }
+}
+
+.mod-no-width {
+  width: 0 !important;
+}
+
+dt.govuk-summary-list-mod {
+  width: 50% !important;
+}
+
+.mod-align-top {
+  vertical-align: top;
+}
+
+/// small hack for radio tables
+.-margin-top-4 {
+  margin-top: -1.25rem;
+}
+
+.ds-calendar-monday {
+  background-color: govuk-colour("blue") !important;
+  color: govuk-colour("white") !important;
+  position: relative !important;
+
+  &:hover {
+    background-color: govuk-colour("light-blue") !important;
+  }
+
+  &:focus {
+    background-color: govuk-colour("yellow") !important;
+    color: govuk-colour("black") !important;
+    box-shadow: 0 -3px govuk-colour("black"), inset 0 -3px govuk-colour("black");
+  }
+}
+
+.mod-red-text {
+  color: govuk-colour("red");
+}
+
+/// mod sortable table
+.mod-sortable-table-head {
+  a {
+    position: relative;
+  }
+
+  &[aria-sort=none] {
+    a::before {
+      content: " \25bc";
+      position: absolute;
+      right: -10px;
+      top: 9px;
+      font-size: .5em;
+    }
+
+    a::after {
+      content: " \25b2";
+      position: absolute;
+      right: -10px;
+      top: 1px;
+      font-size: .5em;
+    }
+  }
+
+  &[aria-sort=ascending] a::after {
+    content: " \25b2";
+    font-size: .8em;
+    position: absolute;
+    right: -15px;
+    top: 2px;
+  }
+
+  &[aria-sort=descending] a::after {
+    content: " \25bc";
+    font-size: .8em;
+    position: absolute;
+    right: -15px;
+    top: 2px;
+  }
+}
+
+.mod-overflow-break-word {
+  overflow-wrap: break-word;
+}
+
+.mod-arrow-svg {
+  width: .9375rem;
+  height: .8125rem;
+  color: #505a5f;
+  fill: currentcolor;
+  forced-color-adjust: auto;
+}
+
+.mod-highlight-table-row {
+  &__grey {
+    background-color: govuk-colour("light-grey");
+  }
+}
+.mod-highlight-table-data {
+  &__grey {
+    background: govuk-colour("light-grey");
+  }
+}
+.mod-center-table-data {
+    text-align: center;
+}
+
+.mod-horizontal-scroll-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.mod-hidden {
+  display: none;
+}
+
+/// The <details> componend from GDS does not allow us to edit its default style
+/// Having a custom css class, allows us to manipulate its children and achieve what we need
+.mod-details-error {
+  summary {
+    color: $govuk-error-colour;
+    @include govuk-typography-weight-bold;
+
+    &:hover {
+      @include govuk-link-style-error;
+    }
+
+    + div {
+      border-left-color: $govuk-error-colour;
+    }
+  }
+}
+
+.mod-padding-block {
+  &--0 {
+    padding-block: 0;
+  }
+}
+
+.mod-hidden {
+  display: none;
+}
+
+/// The <details> componend from GDS does not allow us to edit its default style
+/// Having a custom css class, allows us to manipulate its children and achieve what we need
+.mod-details-error {
+  summary {
+    color: $govuk-error-colour;
+    @include govuk-typography-weight-bold;
+
+    &:hover {
+      @include govuk-link-style-error;
+    }
+
+    + div {
+      border-left-color: $govuk-error-colour;
+    }
+  }
+}
+
+.mod-summary-list-align {
+  &__right {
+    text-align: right;
+  }
+}
+
+.mod-expense-record-header {
+  display: flex;
+  justify-content: space-between;
+}

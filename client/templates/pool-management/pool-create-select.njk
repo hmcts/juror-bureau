@@ -1,0 +1,89 @@
+{% extends "../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{% block page_title %}
+  {{ serviceName }} - Create pool selection{% endblock %}
+
+{% block page_identifier %}Create pool selection{% endblock %}
+
+{% block content %}
+
+  {% set poolTypesOptions = [] %}
+  {% set optionSelected = formFields.poolTypeSelect %}
+
+  {% if authentication.owner === "400" %}
+    {% set poolTypesOptions = (poolTypesOptions.push(
+      {
+        value: "request",
+        checked: optionSelected === "request",
+        text: "Request new pool on behalf of court"
+      },
+      {
+        value: "nil",
+        checked: optionSelected === "nil",
+        text: "Nil pool - no jurors to be added"
+      },
+      {
+        value: "coroner",
+        checked: optionSelected === "coroner",
+        text: "Coroner’s court pool"
+      }
+    ), poolTypesOptions) %}
+  {% else %}
+    {% set poolTypesOptions = (poolTypesOptions.push(
+      {
+        value: "request",
+        checked: optionSelected === "request",
+        text: "Request new pool from Bureau"
+      },
+      {
+        value: "court",
+        checked: optionSelected === "court",
+        text: "Create pool for court use only"
+      },
+      {
+        value: "nil",
+        checked: optionSelected === "nil",
+        text: "Nil pool - no jurors to be added"
+      }
+    ), poolTypesOptions) %}
+  {% endif %}
+
+  {% include "../includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form action="{{ postUrl }}" method="POST" id="poolTypeSelectionForm">
+
+        <h1 class="govuk-heading-l">Create which kind of pool?</h1>
+        
+        {% if errors.items["poolCreateSelect"] %}
+          {% set poolCreateSelect = {"text": errors.items['poolCreateSelect'][0].details} %}
+        {% else %}
+          {% set poolCreateSelect = undefined %}
+        {% endif %}
+        
+        {{ govukRadios({
+          name: "poolCreateSelect",
+          errorMessage: poolCreateSelect,
+          items: poolTypesOptions
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            type: "submit",
+            attributes: {
+              id: "continueButton"
+            }
+          }) }}
+          <a href="{{ cancelUrl }}" class="govuk-link" id="cancelAnchor">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+      </form>
+    </div>
+  </div>
+{% endblock %}

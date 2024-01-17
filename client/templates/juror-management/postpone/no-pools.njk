@@ -1,0 +1,7 @@
+{% extends "layouts/default.njk" %}
+
+{% block content %}
+  <form method="post" action="{{ processUrl }}" id="deferralForm">
+    {% include "summons-management/_partials/deferral-no-available-pools.njk" %}
+  </form>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends "layouts/default.njk" %}
+
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_title %}{{ serviceName }}- juror-management - approve jurors{% endblock %}
+{% block page_identifier %}juror-management - approve jurors{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {% set radioError = undefined %}
+  {% if errors.items['approveReject'] %}
+    {% set radioError = { text: errors.items['approveReject'][0].details } %}
+  {% endif %}
+  
+  {% set textError = undefined %}
+  {% if errors.items["rejectComments"] %}
+    {% set textError = errors.items["rejectComments"][0].details %}
+  {% endif %}
+
+  {% if bannerMessage %}
+    {{ mojBanner({
+      type: "success",
+      text: bannerMessage,
+      iconFallbackText: "Success"
+    }) }}
+  {% endif %}
+
+  <form action="{{ submitUrl }}" method="post" id="approve-form">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-half">
+        <h1 class="govuk-heading-l">Approve or reject pending juror</h1>
+      </div>
+    </div>
+
+    {% set rejectHtml %}
+      {{ govukTextarea({
+        classes: 'govuk-!-width-one-half',
+        id: 'rejectComments',
+        name: 'rejectComments',
+        label: {
+          text: 'Comments'
+        },
+        errorMessage: textError
+      }) }}
+    {% endset -%}
+
+    {{ govukRadios({
+      id: 'approveReject',
+      name: 'approveReject',
+      value: formFields,
+      items: [{
+        value: 'APPROVE',
+        text: "Approve"
+      }, {
+        value: 'REJECT',
+        text: "Reject",
+        conditional: {
+          html: rejectHtml
+        }
+      }],
+      errorMessage: radioError
+    }) }}
+
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Confirm",
+        type: "submit" 
+      }) }}
+
+      <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+    </div>
+    <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+  </form>
+  
+{% endblock %}

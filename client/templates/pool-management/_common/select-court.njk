@@ -1,0 +1,65 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "custom-components/autocomplete/macro.njk" import modAutocomplete %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_identifier %}{{ pageIdentifier }}{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {% set _submitUrl = submitUrl %}
+  {% set _cancelUrl = cancelUrl %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <form action="{{ _submitUrl }}" method="post" id="selectCourt">
+
+        <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+
+        {% if errors.items['courtNameOrLocation'] %}
+          {% set courtNameError = {
+            text: errors
+              .items['courtNameOrLocation'][0]
+              .details
+          } %}
+        {% else %}
+          {% set courtNameError = undefined %}
+        {% endif %}
+
+        {{ modAutocomplete({
+          label: {
+            text: "Enter a court name or location code",
+            class: "govuk-label--s"
+          },
+          name: "courtNameOrLocation",
+          id: "courtNameOrLocation",
+          data: courts,
+          class: "govuk-!-width-one-third",
+          errorMessage: courtNameError
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            type: "submit" 
+          }) }}
+
+          <a class="govuk-link" href="{{ _cancelUrl }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

@@ -1,0 +1,45 @@
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{% set headList = [] %}
+
+{% for head in params.head %}
+  {% set sortOrder = "ascending" if head.sort === "none" or head.sort === "descending" else "descending" %}
+
+  {% if params.url %}
+    {% set url = params.url + "&sortBy=" + head.id + "&sortOrder=" + sortOrder %}
+  {% else %}
+    {% set url = "?sortBy=" + head.id + "&sortOrder=" + sortOrder %}
+  {% endif %}
+
+  {% if head.sortable === false %}
+    {% set headList = (headList.push({
+      text: head.value,
+      format: head.format,
+      classes: "mod-sortable-table-head"
+    }), headList) %}
+  {% else %}
+    {% set headLink %}
+      <a class="govuk-link govuk-link--no-visited-state govuk-link--no-underline"
+        href="{{ url }}" id="{{ head.id }}" role="button" data-module="govuk-button">
+        {{ head.value }}
+      </a>
+    {% endset %}
+
+    {% set headList = (headList.push({
+      html: headLink | safe,
+      format: head.format,
+      classes: "mod-sortable-table-head",
+      attributes: {
+        "aria-sort": head.sort or "none"
+      }
+    }), headList) %}
+  {% endif %}
+{% endfor %}
+
+{{ govukTable({
+  attributes: {
+    id: params.id
+  },
+  head: headList,
+  rows: params.rows
+}) }}

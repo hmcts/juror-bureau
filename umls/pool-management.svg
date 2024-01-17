@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="703px" preserveAspectRatio="none" style="width:1209px;height:703px;background:#FFFFFF;" version="1.1" viewBox="0 0 1209 703" width="1209px" zoomAndPan="magnify"><defs/><g><rect fill="none" height="46.6211" style="stroke:#000000;stroke-width:1.5;" width="720" x="483" y="187.2188"/><rect fill="none" height="46.6211" style="stroke:#000000;stroke-width:1.5;" width="417" x="230" y="306.4609"/><rect fill="none" height="46.6211" style="stroke:#000000;stroke-width:1.5;" width="566" x="637" y="425.7031"/><rect fill="none" height="46.6211" style="stroke:#000000;stroke-width:1.5;" width="584" x="230" y="544.9453"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="30" x2="30" y1="52.9766" y2="696.498"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="148" x2="148" y1="52.9766" y2="696.498"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="361" x2="361" y1="52.9766" y2="696.498"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="565" x2="565" y1="52.9766" y2="696.498"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="725" x2="725" y1="52.9766" y2="696.498"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="928" x2="928" y1="52.9766" y2="696.498"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1122" x2="1122" y1="52.9766" y2="696.498"/><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="51" x="5" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="37" x="12" y="42.0234">Actor</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="164" x="66" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="150" x="73" y="25.5352">«/pool-management»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="33" x="131.5" y="42.0234">Page</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="243" x="240" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="229" x="247" y="25.5352">«pool-management.controller.js»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="189" x="267" y="42.0234">PoolManagementController</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="144" x="493" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="130" x="500" y="25.5352">«fetchCourts.get()»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="90" x="520" y="42.0234">CourtsObject</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="157" x="647" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="143" x="654" y="25.5352">«poolRequests.get()»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="136" x="657.5" y="42.0234">PoolRequestsObject</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="228" x="814" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="214" x="821" y="25.5352">«pool-management/index.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="97" x="879.5" y="42.0234">PageTemplate</text><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="141" x="1052" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="127" x="1059" y="42.0234">BackendController</text><polygon fill="#181818" points="136,80.2871,146,84.2871,136,88.2871" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="30.5" x2="142" y1="84.2871" y2="84.2871"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="81" x="48.75" y="79.5449">request page</text><polygon fill="#181818" points="349.5,109.5977,359.5,113.5977,349.5,117.5977" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="148" x2="355.5" y1="113.5977" y2="113.5977"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="121" x="194.25" y="108.8555">call page controller</text><polygon fill="#181818" points="553,138.9082,563,142.9082,553,146.9082" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="361.5" x2="559" y1="142.9082" y2="142.9082"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="114" x="406.25" y="138.166">call requestObject</text><polygon fill="#181818" points="1110.5,168.2188,1120.5,172.2188,1110.5,176.2188" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="565" x2="1116.5" y1="172.2188" y2="172.2188"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="61" x="813.25" y="167.4766">fetchData</text><path d="M483,187.2188 L545,187.2188 L545,194.5293 L535,204.5293 L483,204.5293 L483,187.2188 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="46.6211" style="stroke:#000000;stroke-width:1.5;" width="720" x="483" y="187.2188"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="498" y="200.7871">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="147" x="560" y="199.8535">[Backend returns an error]</text><polygon fill="#181818" points="576,221.8398,566,225.8398,576,229.8398" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="570" x2="1121.5" y1="225.8398" y2="225.8398"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="91" x="798.25" y="221.0977">error response</text><polygon fill="#181818" points="576,258.1504,566,262.1504,576,266.1504" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="570" x2="1121.5" y1="262.1504" y2="262.1504"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="67" x="810.25" y="257.4082">returnData</text><polygon fill="#181818" points="372.5,287.4609,362.5,291.4609,372.5,295.4609" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="366.5" x2="564" y1="291.4609" y2="291.4609"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="163" x="381.75" y="286.7188">resolve requestObject call</text><path d="M230,306.4609 L292,306.4609 L292,313.7715 L282,323.7715 L230,323.7715 L230,306.4609 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="46.6211" style="stroke:#000000;stroke-width:1.5;" width="417" x="230" y="306.4609"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="245" y="320.0293">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="147" x="307" y="319.0957">[Backend returns an error]</text><polygon fill="#181818" points="372.5,341.082,362.5,345.082,372.5,349.082" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="366.5" x2="564" y1="345.082" y2="345.082"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="153" x="386.75" y="340.3398">reject requestObject call</text><polygon fill="#181818" points="713.5,377.3926,723.5,381.3926,713.5,385.3926" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="361.5" x2="719.5" y1="381.3926" y2="381.3926"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="114" x="486.5" y="376.6504">call requestObject</text><polygon fill="#181818" points="1110.5,406.7031,1120.5,410.7031,1110.5,414.7031" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="725.5" x2="1116.5" y1="410.7031" y2="410.7031"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="61" x="893.5" y="405.9609">fetchData</text><path d="M637,425.7031 L699,425.7031 L699,433.0137 L689,443.0137 L637,443.0137 L637,425.7031 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="46.6211" style="stroke:#000000;stroke-width:1.5;" width="566" x="637" y="425.7031"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="652" y="439.2715">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="147" x="714" y="438.3379">[Backend returns an error]</text><polygon fill="#181818" points="736.5,460.3242,726.5,464.3242,736.5,468.3242" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="730.5" x2="1121.5" y1="464.3242" y2="464.3242"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="91" x="878.5" y="459.582">error response</text><polygon fill="#181818" points="736.5,496.6348,726.5,500.6348,736.5,504.6348" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="730.5" x2="1121.5" y1="500.6348" y2="500.6348"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="67" x="890.5" y="495.8926">returnData</text><polygon fill="#181818" points="372.5,525.9453,362.5,529.9453,372.5,533.9453" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="366.5" x2="724.5" y1="529.9453" y2="529.9453"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="163" x="462" y="525.2031">resolve requestObject call</text><path d="M230,544.9453 L292,544.9453 L292,552.2559 L282,562.2559 L230,562.2559 L230,544.9453 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="46.6211" style="stroke:#000000;stroke-width:1.5;" width="584" x="230" y="544.9453"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="245" y="558.5137">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="147" x="307" y="557.5801">[Backend returns an error]</text><polygon fill="#181818" points="372.5,579.5664,362.5,583.5664,372.5,587.5664" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="366.5" x2="724.5" y1="583.5664" y2="583.5664"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="153" x="467" y="578.8242">reject requestObject call</text><polygon fill="#181818" points="916,615.877,926,619.877,916,623.877" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="361.5" x2="922" y1="619.877" y2="619.877"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="560.25" y="615.1348">request and build template</text><polygon fill="#181818" points="372.5,645.1875,362.5,649.1875,372.5,653.1875" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="366.5" x2="927" y1="649.1875" y2="649.1875"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="605.75" y="644.4453">return HTML</text><polygon fill="#181818" points="41.5,674.498,31.5,678.498,41.5,682.498" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="35.5" x2="360.5" y1="678.498" y2="678.498"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="156" y="673.7559">render HTML</text><!--MD5=[578b7778c475489cb69c64a097a904e9]
+@startuml sequence-general
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+participant Actor
+participant Page <</pool-management>>
+' participant PageValidator <<validator>>
+participant PoolManagementController <<pool-management.controller.js>>
+participant CourtsObject <<fetchCourts.get()>>
+participant PoolRequestsObject <<poolRequests.get()>>
+participant PageTemplate <<pool-management/index.njk>>
+participant BackendController
+' participant PageFilter <<filter>>
+Actor -> Page : request page
+
+' Page -> PageValidator : validate request
+' Page <- PageValidator : return status
+Page -> PoolManagementController : call page controller
+
+PoolManagementController -> CourtsObject : call requestObject
+CourtsObject -> BackendController : fetchData
+alt Backend returns an error
+  CourtsObject <- - BackendController : error response
+end
+CourtsObject <- BackendController : returnData
+PoolManagementController <- CourtsObject : resolve requestObject call
+alt Backend returns an error
+  PoolManagementController <- - CourtsObject : reject requestObject call
+end
+
+PoolManagementController -> PoolRequestsObject : call requestObject
+PoolRequestsObject -> BackendController : fetchData
+alt Backend returns an error
+  PoolRequestsObject <- - BackendController : error response
+end
+PoolRequestsObject <- BackendController : returnData
+PoolManagementController <- PoolRequestsObject : resolve requestObject call
+alt Backend returns an error
+  PoolManagementController <- - PoolRequestsObject : reject requestObject call
+end
+
+' PoolManagementController -> PageValidator : validate data
+' PoolManagementController <- PageValidator : return status
+PoolManagementController -> PageTemplate : request and build template
+
+' PageTemplate -> PageFilter : check filter
+' PageTemplate <- PageFilter : return data
+PoolManagementController <- PageTemplate : return HTML
+' Page <- PoolManagementController : return HTML
+
+Actor <- PoolManagementController : render HTML
+@enduml
+
+@startuml sequence-general
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+participant Actor
+participant Page <</pool-management>>
+participant PoolManagementController <<pool-management.controller.js>>
+participant CourtsObject <<fetchCourts.get()>>
+participant PoolRequestsObject <<poolRequests.get()>>
+participant PageTemplate <<pool-management/index.njk>>
+participant BackendController
+Actor -> Page : request page
+
+Page -> PoolManagementController : call page controller
+
+PoolManagementController -> CourtsObject : call requestObject
+CourtsObject -> BackendController : fetchData
+alt Backend returns an error
+  CourtsObject <- - BackendController : error response
+end
+CourtsObject <- BackendController : returnData
+PoolManagementController <- CourtsObject : resolve requestObject call
+alt Backend returns an error
+  PoolManagementController <- - CourtsObject : reject requestObject call
+end
+
+PoolManagementController -> PoolRequestsObject : call requestObject
+PoolRequestsObject -> BackendController : fetchData
+alt Backend returns an error
+  PoolRequestsObject <- - BackendController : error response
+end
+PoolRequestsObject <- BackendController : returnData
+PoolManagementController <- PoolRequestsObject : resolve requestObject call
+alt Backend returns an error
+  PoolManagementController <- - PoolRequestsObject : reject requestObject call
+end
+
+PoolManagementController -> PageTemplate : request and build template
+
+PoolManagementController <- PageTemplate : return HTML
+
+Actor <- PoolManagementController : render HTML
+@enduml
+
+PlantUML version 1.2022.7(Mon Aug 22 18:01:30 BST 2022)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

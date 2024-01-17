@@ -1,0 +1,95 @@
+@startuml bulk-complete-service
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant PoolOverviewPage <</pool-management/pool-overview/:poolnumber>> #lightsteelblue
+participant CompleteContinuePage <</pool-management/:poolNumber/complete-service/continue>> #lightsteelblue
+participant CompleteServicePage <</pool-management/:poolNumber/complete-service/confirm>> #lightsteelblue
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant PoolOverviewController <<pool-management/pool-overview/pool-overview.controller.js>> #lightyellow
+participant CompleteServiceController <<shared/complete-service/complete-service.controller.js>> #lightyellow
+
+''' TEMPLATES
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+participant PoolOverviewTemplate <<pool-management/pool-overview/index.njk>> #lavender
+participant CompleteContinueTemplate <<shared/complete-service/some-responded.njk>> #lavender
+participant CompleteFailedTemplate <<shared/complete-service/none-responded.njk>> #lavender
+participant CompleteConfirmTemplate <<shared/complete-service/complete-service-confirm.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant JurorSelectValidator
+participant CompleteServiceValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> PoolOverviewPage : request page
+
+group PoolOverview : Pool overview standard page load
+  PoolOverviewPage o--> BackendController
+  PoolOverviewPage <-- BackendController
+  Actor <- PoolOverviewController : render HTML
+end
+
+Actor -> CompleteServicePage : POST from form
+CompleteServicePage -> PoolOverviewController : call page controller
+PoolOverviewController -> JurorSelectValidator : ensure juror is selected
+
+alt No jurors selected
+  PoolOverviewController <-- JurorSelectValidator : no jurors selected
+  PoolOverviewPage o<-- PoolOverviewTemplate : render with error
+  Actor <-- PoolOverviewController : render HTML
+end
+
+PoolOverviewController o<- JurorSelectValidator : validated
+
+alt There are non-'Responded' jurors
+  CompleteContinuePage <-- PoolOverviewController : redirect
+  CompleteContinuePage --> PoolOverviewController : call page controller
+  alt There are no 'Responded' jurors
+    PoolOverviewController --> CompleteFailedTemplate : request and build template
+    PoolOverviewController <-- CompleteFailedTemplate : return HTML
+    Actor <-- PoolOverviewController : render HTML with link back to pool overview page
+  else
+    PoolOverviewController --> CompleteContinueTemplate : request and build template
+    PoolOverviewController <-- CompleteContinueTemplate : return HTML
+    Actor <-- PoolOverviewController : render HTML
+    alt Cancel and go back
+      Actor -->o PoolOverviewPage : link to pool Overview
+    else Continue with 'Responded' jurors
+      Actor --> CompleteContinuePage : POST from form
+      CompleteContinuePage --> PoolOverviewController : call page controller
+      PoolOverviewController --> JurorSelectValidator : ensure juror is selected
+      PoolOverviewController o<-- JurorSelectValidator : validated
+    end
+  end
+end
+
+CompleteServicePage <- PoolOverviewController : redirect
+CompleteServicePage -> CompleteServiceController : call page controller
+CompleteServiceController -> CompleteConfirmTemplate : request and build template
+CompleteServiceController <- CompleteConfirmTemplate : return HTML
+Actor <- PoolOverviewController : render HTML
+
+Actor ->o CompleteServicePage : POST from form
+CompleteServicePage -> CompleteServiceController : call page controller
+CompleteServiceController -> CompleteServiceValidator : validate form
+
+alt Date validation fails
+  CompleteServiceController <-- CompleteServiceValidator : data validation fails
+  CompleteServicePage o<-- CompleteServiceController : redirect to select court page
+end
+
+CompleteServiceController <- CompleteServiceValidator : data validation succeeds
+
+Actor x<-->x BackendController : No backend handled currently
+' // TODO Hit data access object
+' // TODO Hit backend
+' // TODO Handle response
+
+PoolOverviewPage o<- CompleteServiceController : Redirect with success message

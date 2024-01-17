@@ -1,0 +1,186 @@
+{% extends "../layouts/default.njk" %}
+
+{% from "govuk/components/error-message/macro.njk" import govukErrorMessage -%}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "../custom-components/summary-item/macro.njk" import summaryItem %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "custom-components/time-input/macro.njk" import timeInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{% block page_identifier %}Default Expenses{% endblock %}
+
+{% block content %}
+{% include "includes/errors.njk" %}
+ {% set smartcardError = undefined %}
+  {% if errors.items["smartcardNumber"] %}
+    {% set smartcardError = { text: errors.items["smartcardNumber"][0].details } %}
+  {% endif %}
+{% set financialLossError = undefined %}
+  {% if errors.items["cost"] %}
+    {% set financialLossError = { text: errors.items["cost"][0].details } %}
+  {% endif %}
+{% set smartcardSpendError = undefined %}
+  {% if errors.items["smartcardSpend"] %}
+    {% set smartcardSpendError = { text: errors.items["smartcardSpend"][0].details } %}
+  {% endif %}
+{% set milesError = undefined %}
+  {% if errors.items["miles"] %}
+    {% set milesError = { text: errors.items["miles"][0].details } %}
+  {% endif %}
+{% set travelTimeError = undefined %}
+  {% if errors.items["totalTravelTime"] %}
+    {% set travelTimeError = { text: errors.items["totalTravelTime"][0].details } %}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <span class="govuk-caption-l"></span>
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-4">  Set Default Expenses </h1>
+      <p><span class="govuk-caption-l govuk-!-margin-bottom-4">Amounts entered here will be applied to all draft expense records.</span></p>
+      <form method="post" action="{{ processUrl }}" id="setDefaultExpensesForm">
+        
+      <div class="mod-juror-record__title govuk-!-margin-bottom-5">
+        <h2 id="overviewLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Financial loss</h2>
+      </div>
+      {{ govukInput({
+        id: "cost",
+        name: "cost",
+        label: {
+          text: "Loss of earnings or benefits per day"
+        },
+        value: tmpBody.cost,
+        errorMessage: financialLossError,
+        classes: "govuk-input--width-5 govuk-input--extra-letter-spacing",
+        hint: {
+          text: "Enter actual amount lost, rather than the daily cap"
+        },
+        prefix: {
+          text: "£"
+        },
+        classes: "govuk-input--width-5",
+        spellcheck: false
+      }) }}
+      <div class="mod-juror-record__title govuk-!-margin-bottom-5">
+       <h2 id="overviewLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Travel</h2>
+       </div>
+      {{ timeInput({
+        id: "totalTravelTime",
+        name: "totalTravelTime",
+        fieldset: {
+          legend: {
+            text: "Total travel time",
+            classes: "govuk-body"
+          }
+        },
+        errorMessage: travelTimeError,
+        hint: {
+          text: "Enter travel time to and from court. For example 1:15."
+        },
+        items: {
+          hour: {
+          value: tmpBody['totalTravelTime-hour'],
+          attributes: {
+          minLength: "1",
+          maxLength: "2"
+          }
+          },
+          minute: {
+            value: tmpBody['totalTravelTime-minute'],
+            attributes: {
+              minLength: "1",
+              maxLength: "2"
+            }
+          }
+        },
+        errors: errors.items
+      }) }}
+
+        {{ govukInput({
+        label: {
+          text: "Miles travelled by car, motorcycle or bicycle per day"
+        },
+        value: tmpBody.miles,
+        errorMessage: milesError,
+        classes: "govuk-input--width-5",
+        id: "miles",
+        name: "miles",
+        suffix: {
+          text: "miles"
+        },
+        spellcheck: false
+      }) }}
+      <div class="mod-juror-record__title govuk-!-margin-bottom-5">
+      <h2 id="overviewLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Food and drink</h2>
+      </div>
+      {{ govukRadios({
+        classes: "govuk-radios--inline",
+        name: "foodAndDrink",
+        fieldset: {
+          legend: {
+            text: "Is the juror claiming their food and drink allowance?",
+            isPageHeading: true,
+            classes: "govuk-fieldset__legend--s"
+          }
+        },
+        items: [
+          {
+            value: "yes",
+            text: "Yes",
+            checked: tmpBody.foodAndDrink === 'yes'
+          },
+          {
+            value: "no",
+            text: "No",
+            checked: tmpBody.foodAndDrink === undefined or tmpBody.foodAndDrink === 'no'
+          }
+        ]
+      }) }}
+
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+      {{ govukInput({
+        label: {
+          text: "Smartcard Number"
+        },
+        value: tmpBody.smartcardNumber,
+        errorMessage: smartcardError,
+        classes: "govuk-input--width-20",
+        id: "smartcardNumber",
+        name: "smartcardNumber"
+      }) }}
+
+      {{ govukInput({
+        id: "smartcardSpend",
+        name: "smartcardSpend",
+        label: {
+          text: "Total smartcard spend"
+        },
+        value: tmpBody.smartcardSpend,
+        errorMessage: smartcardSpendError,
+        classes: "govuk-!-width-one-half",
+        hint: {
+          text: "If you enter this, the total will be worked out as an average per day and applied to all draft expense records."
+        },
+        prefix: {
+          text: "£"
+        },
+        classes: "govuk-input--width-5",
+        spellcheck: false
+      }) }}
+
+      <div class="govuk-button-group govuk-!-padding-top-5">
+        {{ govukButton({
+          text: "Apply to all draft expenses",
+          type: "submit"
+        }) }}
+        <a class="govuk-link" href="{{ cancelUrl }}">Cancel without saving</a>
+      </div>
+      <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>  
+    </div>
+  </div>
+{% endblock %}

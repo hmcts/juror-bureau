@@ -1,0 +1,43 @@
+{% extends "./govuk_template.njk" %}
+
+{% block head %}
+  {% include "../includes/head.njk" %}
+{% endblock %}
+
+{% block cookie_message %}
+  <p>{{cookieText | safe }}</p>
+{% endblock %}
+
+{#
+{% block proposition_header %}
+  {% include "includes/propositional_navigation.njk" %}
+{% endblock %}
+#}
+
+{#
+{% block header_class %}
+  with-proposition
+{% endblock %}
+#}
+
+{% block current_app %}
+  {% include "includes/current_app.njk" %}
+{% endblock %}
+
+{% block nav_header %}
+  {% if currentApp === "Summons replies" and authentication.owner === "400" %}
+    {% include "includes/header_navigation.njk" %}
+  {% elif currentApp === "Pool management" %}
+    {% include "pool-management/_common/pool-management-nav.njk" %}
+  {% elif currentApp === "Jurors" %}
+    {% include "juror-management/_common/juror-management-nav.njk" %}
+  {% elif currentApp === "Trials" %}
+    {% include "trial-management/_common/trial-management-nav.njk" %}
+  {% elif currentApp === "Senior Jury Officer tasks" %}
+    {% include "sjo-tasks/_common/sjo-tasks-nav.njk" %}
+  {% endif %}
+{% endblock %}
+
+{% block body_end %}
+  {% include "../includes/scripts.njk" %}
+{% endblock %}

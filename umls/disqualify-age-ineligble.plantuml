@@ -1,0 +1,127 @@
+@startuml disqualify-age-ineligible
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant EnterSummonsReplyPage <</enter>>
+participant IneligbleAgePage <</excusal>>
+participant SummonsReplyPage <</summons>>
+participant JurorRecordPage <</record>>
+participant SummonsInboxPage <</inbox>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant PaperReplyController <<paper-reply.controller.js>>
+participant JurorRecordObject <<record.get()>>
+participant PaperReplyPatchObject <<paperReplyObject.patch()>>
+participant PaperReplyPostObject <<paperReplyObject.post()>>
+participant InboxController <<inbox.controller.js>>
+
+
+''' TEMPLATES
+participant IndexTemplate <<summons-management/paper-reply/index.njk>>
+participant IneligibleAgeTemplate <<summons-management/paper-reply/ineligible-age.njk>>
+
+''' FILTERS AND VALIDATORS
+participant PaperReplyValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+
+''' JOURNEY FLOW
+alt Enter paper summons reply
+Actor -> JurorRecordPage : enter summons reply
+JurorRecordPage -> PaperReplyController : call page controller
+end
+
+alt Edit digital response juror details
+Actor -> SummonsReplyPage : enter summons reply
+SummonsReplyPage -> PaperReplyController : call page controller
+end
+
+
+PaperReplyController -> JurorRecordObject : build request object
+JurorRecordObject -> BackendController : send backend request
+JurorRecordObject <- BackendController : ok response
+PaperReplyController <- JurorRecordObject : resolve request
+
+PaperReplyController -> IndexTemplate : request and build template
+PaperReplyController <- IndexTemplate : return HTML
+EnterSummonsReplyPage <- PaperReplyController : return HTML
+Actor <- EnterSummonsReplyPage : render HTML
+
+alt Failed to fetch juror record
+    JurorRecordObject <-- BackendController : error response
+    PaperReplyController <-- JurorRecordObject : reject requestObject
+    JurorRecordPage <-- PaperReplyController : redirect to juror record page
+    Actor <-- JurorRecordPage : redirect to juror record page
+end
+
+
+Actor -> EnterSummonsReplyPage : enter ineligble DOB and click continue
+
+EnterSummonsReplyPage -> PaperReplyController : call page controller
+
+PaperReplyController -> PaperReplyValidator : validate juror details
+PaperReplyController <- PaperReplyValidator : validate juror details
+
+alt DOB is invalid or missing
+    PaperReplyController <-- PaperReplyValidator : reason or decision is invalid or missing
+    EnterSummonsReplyPage <-- PaperReplyController : error response
+    Actor <-- EnterSummonsReplyPage : render error message
+end
+
+PaperReplyController -> IneligibleAgeTemplate : request and build template
+PaperReplyController <- IneligibleAgeTemplate : return HTML
+IneligbleAgePage <- PaperReplyController : return HTML
+Actor <- IneligbleAgePage : render HTML
+
+Actor -> IneligbleAgePage : disqaulify juror
+
+alt Paper response
+    IneligbleAgePage -> PaperReplyController : call page controller
+
+    PaperReplyController -> PaperReplyPostObject : build request object
+    PaperReplyPostObject -> BackendController : send backend request
+    PaperReplyPostObject <- BackendController : ok response
+    PaperReplyController <- PaperReplyPostObject : resolve request
+
+    PaperReplyController -> InboxController : redirect to inbox
+    SummonsInboxPage <- InboxController : redirect to inbox
+    Actor <- SummonsInboxPage : redirect to inbox
+
+    alt Failed to disqaulify juror
+        PaperReplyPostObject <-- BackendController : error response
+        PaperReplyController <-- PaperReplyPostObject : reject requestBody
+        EnterSummonsReplyPage <-- PaperReplyController : redirect to enter summons reply page
+        Actor <-- EnterSummonsReplyPage : redirect to enter summons reply page
+    end
+end
+
+alt Digital response
+    IneligbleAgePage -> PaperReplyController : call page controller
+
+    PaperReplyController -> PaperReplyPatchObject : build request object
+    PaperReplyPatchObject -> BackendController : send backend request
+    PaperReplyPatchObject <- BackendController : ok response
+    PaperReplyController <- PaperReplyPatchObject : resolve request
+
+    PaperReplyController -> InboxController : redirect to inbox
+    SummonsInboxPage <- InboxController : redirect to inbox
+    Actor <- SummonsInboxPage : redirect to inbox
+
+    alt Failed to disqaulify juror
+        PaperReplyPatchObject <-- BackendController : error response
+        PaperReplyController <-- PaperReplyPatchObject : reject requestBody
+        EnterSummonsReplyPage <-- PaperReplyController : redirect to enter summons reply page
+        Actor <-- EnterSummonsReplyPage : redirect to enter summons reply page
+    end
+end
+
+
+
+@enduml

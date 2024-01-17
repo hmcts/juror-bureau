@@ -1,0 +1,67 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+
+    {% set totals = data.expenses.totals %}
+
+    <table class="govuk-table mod-horizontal-scroll-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header">Date</th>
+          <th scope="col" class="govuk-table__header">Attendance</th>
+          <th scope="col" class="govuk-table__header">P. transport</th>
+          <th scope="col" class="govuk-table__header">Taxi</th>
+          <th scope="col" class="govuk-table__header">Motorcycle</th>
+          <th scope="col" class="govuk-table__header">Car</th>
+          <th scope="col" class="govuk-table__header">Bicycle</th>
+          <th scope="col" class="govuk-table__header">Parking</th>
+          <th scope="col" class="govuk-table__header">Food and drink</th>
+          <th scope="col" class="govuk-table__header">Loss of earnings</th>
+          <th scope="col" class="govuk-table__header">Extra care</th>
+          <th scope="col" class="govuk-table__header">Other</th>
+          <th scope="col" class="govuk-table__header">(Smart Card)</th>
+          <th scope="col" class="govuk-table__header">Method</th>
+          <th scope="col" class="govuk-table__header mod-highlight-table-data__grey mod-center-table-data">Total</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        {% for day in data.expenses.days%}
+        <tr class="govuk-table__row">
+          <td class="govuk-table__cell"><a href="#" class="govuk-body govuk-link" id="expenseDateLink">{{day.date | dateFilter("YYYY-MM-DD", "ddd DD MMM YYYY")}}</a></td>
+          <td class="govuk-table__cell">{{day.attendance}}</td>
+          <td class="govuk-table__cell">{{day.pTransport}}</td>
+          <td class="govuk-table__cell">{{day.taxi}}</td>
+          <td class="govuk-table__cell">{{day.motorcycle}}</td>
+          <td class="govuk-table__cell">{{day.car}}</td>
+          <td class="govuk-table__cell">{{day.bicycle}}</td>
+          <td class="govuk-table__cell">{{day.parking}}</td>
+          <td class="govuk-table__cell">{{day.foodAndDrink}}</td>
+          <td class="govuk-table__cell">{{day.lossOfEarnings}}</td>
+          <td class="govuk-table__cell">{{day.extraCare}}</td>
+          <td class="govuk-table__cell">{{day.other}}</td>
+          <td class="govuk-table__cell">({{day.smartCard}})</td>
+          <td class="govuk-table__cell">{{day.method}}</td>
+          <td class="govuk-table__cell mod-highlight-table-data__grey mod-center-table-data">{{day.total}}</td>
+        </tr>
+        {% endfor %}
+        <tr class="govuk-table__row mod-highlight-table-row__grey">
+          <td class="govuk-table__cell">Totals</td>
+          <td class="govuk-table__cell">{{totals.attendance}}</td>
+          <td class="govuk-table__cell">{{totals.pTransport}}</td>
+          <td class="govuk-table__cell">{{totals.taxi}}</td>
+          <td class="govuk-table__cell">{{totals.motorcycle}}</td>
+          <td class="govuk-table__cell">{{totals.car}}</td>
+          <td class="govuk-table__cell">{{totals.bicycle}}</td>
+          <td class="govuk-table__cell">{{totals.parking}}</td>
+          <td class="govuk-table__cell">{{totals.foodAndDrink}}</td>
+          <td class="govuk-table__cell">{{totals.lossOfEarnings}}</td>
+          <td class="govuk-table__cell">{{totals.extraCare}}</td>
+          <td class="govuk-table__cell">{{totals.other}}</td>
+          <td class="govuk-table__cell">({{totals.smartCard}})</td>
+          <td class="govuk-table__cell"></td>
+          <td class="govuk-table__cell mod-center-table-data">{{totals.total}}</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+</div>

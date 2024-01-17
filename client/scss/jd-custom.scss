@@ -1,0 +1,579 @@
+//
+// Custom styles for JD Bureau
+//
+
+// blue background for badge
+.jd-badge-blue {
+  background-color:#1D70B8;
+}
+
+.jd-label-blue {
+  color: govuk-colour("blue");
+  font-weight: bold;
+}
+
+.jd-label-black {
+  color: govuk-colour("black");
+  font-weight: bold;
+}
+
+// red highlight for Date Received
+.jd-response-overdue {
+  color: #d4351c;
+  font-weight: bold
+}
+
+
+
+// blue info banner
+.jd-banner-info {
+  border-color: lighten(#1D70B8, 50%);
+  background-color: lighten(#1D70B8, 50%);
+}
+
+// Seach - align Juror number with checkbox in search results
+.jd-block-align {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+// Search - vertical align search results grid cell
+.jd-middle-align {
+  vertical-align: middle;
+}
+
+.jd-right-align {
+  float: right;
+}
+
+.jd-no-bullet {
+  text-decoration: none;
+}
+
+.jd-global-font {
+  font-family: $govuk-font-family;
+}
+
+
+// Assign replies page
+.jd-assign-replies-total {
+  display: inline-block;
+  color: #1d70b8;
+  border-right: solid 5px black;
+  padding-right: 20px;
+  margin-right: 10px;
+  min-width: 150px;
+}
+.jd-assign-replies-send {
+  display: inline-block;
+  color: #d4351c;
+  margin-right: 30px;
+  min-width: 150px;
+}
+.jd-assign-replies-urgent {
+  display: inline-block;
+  color: #912b88;
+  margin-right: 30px;
+  min-width: 150px;
+}
+.jd-assign-replies-standard {
+  display: inline-block;
+  color: black;
+  min-width: 150px;
+}
+.jd-assign-replies-input-label {
+  width: 175px;
+  min-width: 120px;
+
+  margin-right: 20px;
+  background-color: #f3f2f1;
+  
+  vertical-align: middle;
+  padding-top: 9px;
+  padding-left: 10px;
+  padding-bottom: 9px;
+  padding-right: 20px;
+}
+.jd-assign-replies-border-send {
+  border-left: 7px solid #d4351c;
+}
+.jd-assign-replies-border-urgent {
+  border-left: 7px solid #912b88;
+}
+.jd-assign-replies-border-standard {
+  border-left: 7px solid black;
+}
+
+.jd-assign-replies-table-head {
+  border-bottom: 0px;
+}
+
+// response details page - header banner background
+.jd-response-details-banner-blue {
+  background-color:#1D70B8;
+  color: white;
+  font-size: 16px;
+}
+
+.jd-response-details-banner-row {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.jd-response-overdue-details-banner {
+  background-color: govuk-colour("red");
+  color: white;
+  font-weight: bold;
+  padding: 1px 3px 2px 3px;
+}
+
+.jd-response-menu-item {
+  padding-right: 10px;
+}
+
+.jd-response-defer-date-list {
+  width: 250px;
+}
+
+// details styles
+
+.jd-button-width {
+  min-width: 100px;
+}
+
+.jd-panel-title {
+  padding-top: 20px;
+  padding-bottom: 10px;
+  border-bottom: 3px solid black;
+}
+
+.jd-call-log-date-time {
+  color: lighten(black, 50%);
+}
+
+.jd-details-eligibility-head-width {
+  width: 250px;
+}
+.jd-details-deferral-excusal-head-width {
+  width: 250px;
+}
+.jd-details-cjs-employment-head-width {
+  width: 250px;
+}
+.jd-details-cjs-adjustments-head-width {
+  width: 250px;
+}
+
+.jd-details-menu-indicator {
+  padding-right: 10px;
+}
+
+.jd-logs-menu-indicator {
+  padding-left: 15px;
+  padding-right: 10px;
+}
+
+.jd-edit-panel {
+  padding-top: 20px;
+}
+
+.jd-save-cancel-button-group {
+  padding-left: 20px;
+}
+
+// styling for standard textarea to match GDS
+.jd-textarea {
+  width: 100%;
+  border: 2px solid black;
+}
+.jd-textarea:focus {
+  border: 4px solid black;
+  box-shadow: 0px 0px 3px 3px $govuk-focus-colour;
+  outline-style: none;
+}
+
+.jd-dashboard-chart-container {
+  margin-bottom: 1000px;
+}
+
+.jd-remaining-count {
+  color: lighten(black, 50%);
+}
+
+// General legacy styles
+
+.u-hide {
+  display: none;
+}
+
+.u-hide--small {
+  display: none;
+}
+
+.edit-section {
+  display: none;
+}
+
+
+.input-icon-group {
+  input {
+    width: 25%;
+  }
+
+  .icon-item {
+    background-color: white;
+    cursor: pointer;
+    display: inline-block;
+    left: -3px;
+    padding: 0 5px;
+    position: relative;
+    top: 6px;
+
+    .icon {
+      position: relative;
+      top: 3px;
+    }
+  }
+
+  @media screen and (min-width: 641px) {
+    .icon-item {
+      left: -4px;
+      padding: 2px 5px 1px 5px;
+      top: 5px;
+    }
+  }
+}
+
+.icon {
+  display: inline-block;
+
+  background-position: 0 0;
+  background-repeat: no-repeat;
+}
+
+.icon-calendar {
+  width: 27px;
+  height: 27px;
+
+  background-image: url('/assets/images/icon-calendar.png');
+}
+
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 20 / 10), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .icon-calendar {
+    background-image: url('/assets/images/icon-calendar-2x.png');
+  }
+}
+
+
+
+
+
+
+// modal dialogs - used on Search & Response Details pages
+
+textarea.modal-textarea {
+  border: 2px solid #000000;
+  height: 141px;
+  margin: 32px auto 0;
+  max-width: 540px;
+  width: 80%; }
+
+.modal {
+  background-color: rgba(0, 0, 0, 0.4);
+  display: none;
+  height: 100%;
+  left: 0;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 120; }
+.modal .modal-content {
+  background-color: #fff;
+  border: 2px solid #ffbf47;
+  box-shadow: 2px 4px 5px 0 rgba(0, 0, 0, 0.25);
+  left: 50%;
+  margin: 0;
+  max-height: 80%;
+  overflow-y: auto;
+  padding: 20px;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 48.61%; }
+.modal .modal-title {
+  margin-bottom: 0;
+  margin-top: 20px; }
+.modal .modal-title .icon {
+  left: -8px;
+  position: relative;
+  top: 5px; }
+.modal h3.modal-title {
+  margin-bottom: 30px;
+  margin-top: 10px; }
+.modal .modal-title-aside {
+  float: right;
+  margin-top: 10px; }
+.modal .modal-title-aside .close-modal {
+  color: #0b0c0c; }
+.modal .modal-title-aside .close-modal:hover, .modal .modal-title-aside .close-modal:active, .modal .modal-title-aside .close-modal:visited {
+  color: inherit; }
+.modal hr {
+  margin-bottom: 30px;
+}
+
+
+
+.js-enabled .moj-js-hidden {
+  display: none; }
+
+.js-hidden {
+  display: none;
+}
+
+.faded-bg {
+  background: rgba(11, 12, 12, 0.25);
+  display: none;
+  height: 100%;
+  left: 0;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  z-index: 100; }
+
+
+
+.edit-section {
+  background: #fff;
+  border: 2px solid #ffbf47;
+  box-sizing: border-box;
+  display: none;
+  position: relative;
+  z-index: 110; }
+.edit-section .edit-form fieldset {
+  margin: 0;
+  padding: 10px 20px; 
+  border: 0;}
+.edit-section .edit-form fieldset.info {
+  border-left: 5px solid #28a197; }
+.edit-section .edit-form hr {
+  margin: 1px 20px 1px; }
+.edit-section--readonly {
+  border: 2px solid transparent; }
+.edit-section--readonly .button--notes-edit {
+  display: block; }
+.edit-section--readonly .edit-title {
+  background: none; }
+.edit-section--readonly .edit-controls {
+  display: none; }
+
+
+
+.detail-section {
+  position: relative; }
+.detail-section .section-heading {
+  background-color: #dee0e2;
+  height: 60px;
+  margin-bottom: 15px;
+  position: relative; }
+.detail-section .section-heading h3 {
+  font-weight: normal;
+  left: 19px;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%); }
+.detail-section .section-heading .edit-actions {
+  right: 19px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%); }
+.detail-section .section-heading .edit-actions a {
+  color: inherit;
+  margin-left: 15px; }
+.detail-section .section-heading--teal {
+  background-color: rgba(40, 161, 151, 0.25); }
+.detail-section .section-heading--small, .detail-section .section-heading--small h3 {
+  font-size: 19px; }
+.detail-section .section-heading--spaced {
+  margin-top: 15px; }
+
+// reply view dropdown menus
+.reply-view-dropdown-menus {
+  padding-right: 120px;
+  //float: right;
+  //background-color: #28a197;
+}
+
+.reply-view-header-menus {
+  float: right;
+  margin-right: -10px;
+}
+
+.reply-view-header-menus-disabled {
+  float: right;
+  margin-right: 11px;
+}
+
+.reply-view-header-menus #moreActionsMenu {
+  width: 300px;
+}
+
+.reply-view-header-menus #processAction {
+  width: 160px;
+}
+
+.process-action-disdabled {
+  width: 160px;
+  margin-left: 5px;
+}
+
+/*
+  GDS govukSelect components
+*/
+.sendToSelect {
+  width: 40%;
+}
+.officerAssignedSelect {
+  width: 50%;
+  margin-bottom: 15px;
+}
+
+/*
+  Date picker (Deferral Date)
+*/
+
+.deferral-datepicker {
+  display: block;
+  margin-bottom: 25px;
+}
+
+.noscript {
+  display: none; }
+
+.calendar-button {
+  float: right;
+  background: none;
+  border: none;
+  padding: 0; }
+
+.datepicker-group {
+  position: relative;
+}
+
+.datepicker-controls-group {
+  background:white;
+  //border: 1px solid #ccc;
+  padding-bottom: 50px;
+}
+  
+.datepicker {
+  float: right;
+  padding: 2px;
+  position: absolute;
+  width: 261px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  z-index: 1;
+}
+
+.datepicker-button {
+  float: none;
+  background: none;
+  border: none;
+  padding-top: 30px;
+  padding-left: 0px;
+  padding-right: 15px;
+}
+
+.datepicker-date-field {
+  display: none;
+  }
+  
+.datepicker-select {
+  background-color: #1d70b8;
+  color: white;
+}
+
+.datepicker-noselect {
+  background-color: white;
+  color: #b1b4b6;
+}
+
+div#bn_prev {
+  margin: 3px;
+  float: left;
+  width: 24px;
+  height: 24px;
+  text-align: center; }
+
+div#bn_next {
+  margin: 3px;
+  float: right;
+  width: 24px;
+  height: 24px;
+  text-align: center; }
+
+div#bn_prev:hover,
+div#bn_prev:focus,
+div#bn_next:hover,
+div#bn_next:focus {
+  margin: 3px;
+  background-color: #fc3;
+  border-radius: 4px; }
+
+img.bn_img {
+  margin: 0;
+  padding: 2px; }
+
+div#month {
+  float: left;
+  padding-top: 3px;
+  width: 190px;
+  height: 24px;
+  text-align: center;
+  font-weight: bold; }
+
+table#cal {
+  font-size: 1.2em;
+  text-align: center; }
+
+table#cal th,
+table#cal td {
+  width: 35px;
+  height: 30px;
+  padding: 0; }
+
+table#cal thead {
+  border-bottom: 1px solid #999; }
+
+table#cal td {
+  border: none;
+  text-align: center; }
+
+table#cal td.today {
+  background-color: #FFF0C4;
+  border-radius: 2px; }
+
+table#cal td:hover,
+table#cal td.focus {
+  background-color: #fc3; }
+
+table#cal td.empty:hover {
+  background-color: #f9f9f9;
+  border: 1px solid #eee; }
+
+.offscreen {
+  position: absolute;
+  left: -200em;
+  top: -100em; }
+
+.datepicker[aria-hidden="true"] {
+  display: none; }
+
+.fill {
+  width: 80% !important; }
+
+

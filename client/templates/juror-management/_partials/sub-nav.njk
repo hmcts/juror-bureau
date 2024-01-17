@@ -1,0 +1,67 @@
+{% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
+
+{{ mojSubNavigation({
+  label: "Sub navigation",
+  items: [{
+    text: "Overview",
+    href: url('juror-record.overview.get', {
+      jurorNumber: juror.commonDetails.jurorNumber
+    }),
+    active: currentTab === "overview",
+    attributes: {
+      id: "overviewTab"
+    }
+  }, {
+    text: "Juror details",
+    href: url('juror-record.details.get', {
+      jurorNumber: juror.commonDetails.jurorNumber
+    }),
+    active: currentTab === "details",
+    attributes: {
+      id: "detailsTab"
+    }
+  }, {
+    text: "Summons reply",
+    href: url('juror-record.summons.get', {
+      jurorNumber: juror.commonDetails.jurorNumber
+    }),
+    active: currentTab === "summons",
+    attributes: {
+      id: "summonsTab"
+    }
+  }, {
+    text: "Finance and expenses",
+    href: url('juror-record.finance.get', {
+      jurorNumber: juror.commonDetails.jurorNumber
+    }),
+    active: currentTab === "finance",
+    attributes: {
+      id: "financeTab"
+    }
+  }, {
+    text: "Attendance",
+    href: url('juror-record.attendance.get', {
+      jurorNumber: juror.commonDetails.jurorNumber
+    }),
+    active: currentTab === "attendance",
+    attributes: {
+      id: "attendanceTab"
+    }
+  }, {
+    text: "Notes",
+    href: url('juror-record.notes.get', {
+      jurorNumber: juror.commonDetails.jurorNumber
+    }),
+    active: currentTab === "notes",
+    attributes: {
+      id: "notesTab"
+    }
+  }, {
+    text: "History",
+    href: "#",
+    active: currentTab === "history",
+    attributes: {
+      id: "historyTab"
+    }
+  }]
+}) }}

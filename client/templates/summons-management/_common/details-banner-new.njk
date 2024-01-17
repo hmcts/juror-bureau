@@ -1,0 +1,96 @@
+{% if response.serviceStartDate %}
+  {% set serviceStartDate = response.serviceStartDate | dateFilter(null, "ddd DD MMM YYYY") %}
+{% elif response.hearingDate == null %}
+  {% set serviceStartDate = response.poolDate | dateFilter("DD/MM/YYYY", "ddd DD MMM YYYY") %}
+{% else %}
+  {% set serviceStartDate = response.hearingDate | dateFilter("DD/MM/YYYY", "ddd DD MMM YYYY") %}
+{% endif %}
+
+{% if (response.statusRender) === "Responded" and (response.excusalReason != null or replyType === "EXCUSAL") %}
+  {% set iconHtml %}
+    <span class="icon mod-icon-urgent"></span>
+  {% endset %}
+{% endif %}
+
+{% set jurorStatus = response.statusRender %}
+{% if response.statusRender === "Excused" and (response.thirdPartyReason === "deceased" or response.excusalReason === "D") %}
+  {% set jurorStatus = "Deceased" %}
+{% endif %}
+
+<div class="mod-details-banner">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <div class="govuk-grid-column-one-half govuk-!-padding-2">
+        <div class="govuk-grid-column-one-third">
+          <div class="label info">Juror number</div>
+          <div class="info">{{ response.jurorNumber }}</div>
+        </div>
+        <div class="govuk-grid-column-one-third">
+          <div class="label info">Juror status</div>
+          <div class="info with-icon">{{ jurorStatus }} {{ iconHtml | safe }}</div>
+        </div>
+        <div class="govuk-grid-column-one-third">
+          <div class="label info">Pool number</div>
+          <div class="info">{{ response.poolNumber }}</div>
+        </div>
+      </div>
+      <div class="govuk-grid-column-one-half govuk-!-padding-2">
+        <div class="govuk-grid-column-one-third">
+          <div class="label info">Service start date</div>
+          <div class="info">{{ serviceStartDate }}</div>
+        </div>
+        <div class="govuk-grid-column-one-third">
+          <div class="label info">Court name</div>
+          <div class="info">{{ response.courtName | capitalizeFully }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="govuk-grid-column-full govuk-!-padding-left-3">
+      <hr class="govuk-section-break govuk-section-break--visible">
+    </div>
+
+    <div class="govuk-grid-column-full">
+      <div class="govuk-grid-column-one-half govuk-!-padding-2">
+        <div class="govuk-grid-column-one-third">
+          <div class="label info">Reply status</div>
+          <div class="info">
+            {{ govukTag({
+              text: processingStatusDisp,
+              classes: "govuk-tag--blue"
+            }) }}
+          </div>
+        </div>
+        <div class="govuk-grid-column-one-third">
+          <div class="label info">Reply type</div>
+          <div class="info">
+            {{ replyTypeTag({
+              replyType: replyType,
+              hasModAccess: hasModAccess
+            }) }}
+          </div>
+        </div>
+        <div class="govuk-grid-column-one-third">
+          <div class="label info">Assigned to</div>
+          <div class="info">{{ response.assignedStaffMember.name or "Unassigned" | capitalizeFully }}</div>
+        </div>
+      </div>
+      <div class="govuk-grid-column-one-half govuk-!-padding-2">
+        <div class="govuk-grid-column-one-third">
+          <div class="label info">Reply received</div>
+          <div class="info">{{ response.dateReceived | dateFilter(null if method === "paper" else "DD/MM/YYYY", "DD MMM YYYY") }}</div> {# 🤔 #}
+        </div>
+        <div class="govuk-grid-column-one-third">
+          <div class="label info">Reply method</div>
+          <div class="info">{{ (method or "digital") | capitalizeFully }}</div>
+        </div>
+        {% if response.welshCourt %}
+          <div class="govuk-grid-column-one-third">
+            <div class="label info">Reply language</div>
+            <div class="info">{{ "Welsh" if response.welsh else "English" }}</div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>

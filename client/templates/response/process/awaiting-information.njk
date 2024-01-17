@@ -1,0 +1,98 @@
+{% extends "../../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{% block page_title %}
+  {{ serviceName }} - process - awaiting information{% endblock %}
+
+{% block page_identifier %}process - awaiting information{% endblock %}
+
+{% set currentApp = "Summons replies" %}
+
+{% block content %}
+
+  {% include "../../includes/errors.njk" %}
+
+  {% if errors.items["awaitingInformation"] %}
+    {% set awaitingInformationError = {
+        "text": errors.items['awaitingInformation'][0].details,
+        "classes": "govuk-!-width-two-thirds"
+      } %}
+  {% else %}
+    {% set awaitingInformationError = undefined %}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <h1 class="{{ 'govuk-heading-l' if hasModAccess else 'govuk-heading-xl' }}">
+        <span class="{{ 'govuk-caption-l' if hasModAccess else 'govuk-caption-xl' }}">{{ replyDetails.jurorName }}</span>
+        {% if awaitingInformationUpdate.required %}
+          This juror record needs to be updated before continuing
+        {% else %}
+          Mark this reply as awaiting information
+        {% endif %}
+      </h1>
+
+      {% if awaitingInformationUpdate.required %}
+        <p class="govuk-body">
+          The status of this reply was changed in the Juror app to 'Awaiting information'. Select below the party that the bureau is waiting on information from.
+        </p>
+        <p class="govuk-body">
+          You cannot access this juror record until the status has been updated.
+        </p>
+      {% endif %}
+
+      {% set postUrl = url('response.detail.awaiting.information.post', { id: jurorNumber }) %}
+      {% if method === 'paper' %}
+        {% set postUrl = url('response.detail.awaiting.information.post', { id: jurorNumber, type: 'paper' }) %}
+      {% endif %}
+
+      <form action="{{ postUrl }}" method="post" id="awaitingInformationForm">
+
+        {{ govukRadios({
+          idPrefix: "awaitingInformation",
+          name: "awaitingInformation",
+          fieldset: {
+            legend: {
+              text: "Who are you waiting for information from?"
+                if hasModAccess else "Who is the bureau waiting for information from?",
+              classes: "govuk-body govuk-!-font-weight-bold"
+            }
+          },
+          errorMessage: awaitingInformationError,
+          items: [
+            {value: "AWAITING_CONTACT", text: "Juror" if hasModAccess else "Awaiting juror"},
+            {value: "AWAITING_COURT_REPLY", text: "Court" if hasModAccess else "Awaiting court reply"},
+            {value: "AWAITING_TRANSLATION", text: "Translation unit" if hasModAccess else "Awaiting translation"}
+          ]
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Confirm"
+          }) }}
+          {% if awaitingInformationUpdate.cancelUrl %}
+            <a class="govuk-link" href="{{ awaitingInformationUpdate.cancelUrl }}">Back</a>
+          {% else %}
+            {% if method === 'paper' %}
+              <a class="govuk-link" href="{{ url('response.paper.details.get', { id: jurorNumber, type: 'paper' }) }}">Cancel</a>
+            {% else %}
+              <a class="govuk-link" href="{{ url('response.detail.get', { id: jurorNumber }) }}">Cancel</a>
+            {% endif %}
+          {% endif %}
+        </div>
+
+        <input type="hidden" name="jurorNumber" id="jurorNumber" value="{{ jurorNumber }}">
+        <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+        <input type="hidden" name="version" id="version" value="{{ replyDetails.version }}">
+
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}
+
+

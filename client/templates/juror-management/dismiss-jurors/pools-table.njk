@@ -1,0 +1,59 @@
+<div class="govuk-caption-m">
+  <span id="total-checked-pools">{{ totalCurrentlySelected }}</span> of <span id="total-pools-count">{{ pools.length }}</span> selected
+</div>
+
+<table class="govuk-table" data-module="moj-sortable-table">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header mod-padding-block--0">
+        <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
+          <input type="checkbox" class="govuk-checkboxes__input"
+              id="check-all-pools" aria-label="check-all-pools"/>
+          <label class="govuk-label govuk-checkboxes__label" for="check-all-pools">
+            <span class="govuk-visually-hidden">Select all pools</span>
+          </label>
+        </div>
+      </th>
+      <th scope="col" class="govuk-table__header jd-middle-align mod-padding-block--0" aria-sort="none">Pool number</th>
+      <th scope="col" class="govuk-table__header jd-middle-align mod-padding-block--0" aria-sort="none">Jurors in attendance</th>
+      <th scope="col" class="govuk-table__header jd-middle-align mod-padding-block--0" aria-sort="none">Jurors on call</th>
+      <th scope="col" class="govuk-table__header jd-middle-align mod-padding-block--0" aria-sort="none">Others</th>
+      <th scope="col" class="govuk-table__header jd-middle-align mod-padding-block--0" aria-sort="none">Total</th>
+      <th scope="col" class="govuk-table__header jd-middle-align mod-padding-block--0" aria-sort="none">Pool type</th>
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric jd-middle-align mod-padding-block--0" aria-sort="none">Service start date</th>
+    </tr>
+  </thead>
+
+  <tbody class="govuk-table__body">
+    {% for pool in pools %}
+
+      <tr class="govuk-table__row govuk-table__row--selected">
+        <td class="govuk-table__cell mod-padding-block--0">
+          <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
+            <input type="checkbox" class="govuk-checkboxes__input"
+              id="pool-{{ pool.poolNumber }}" aria-label="check-pool-{{ pool.poolNumber }}"
+              name="checked-pools" value="{{ pool.poolNumber }}"
+              {% if tmpForm["checked-pools"] and pool.poolNumber in tmpForm["checked-pools"] %}checked{% endif %}/>
+            <label class="govuk-label govuk-checkboxes__label" for="pool-{{ pool.poolNumber }}">
+              <span class="govuk-visually-hidden">Select pool {{ pool.poolNumber }}</span>
+            </label>
+          </div>
+        </td>
+        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ pool.poolNumber }}">
+          <a href="{{ url('pool-overview.get', { poolNumber: pool.poolNumber }) }}" class="govuk-link">{{ pool.poolNumber }}</a>
+        </td>
+        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ pool.inAttendance }}">{{ pool.inAttendance }}</td>
+        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ pool.onCall }}">{{ pool.onCall }}</td>
+        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ pool.others }}">{{ pool.others }}</td>
+
+        {% set poolTotal = pool.inAttendance + pool.onCall + pool.others %}
+        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ poolTotal }}">{{ poolTotal }}</td>
+        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ pool.poolType }}">{{ pool.poolType }}</td>
+        <td class="govuk-table__cell govuk-table__cell--numeric jd-middle-align mod-padding-block--0" data-sort-value="{{ pool.serviceStartDate }}">
+          {{ pool.serviceStartDate | dateFilter("YYYY/MM/DD", "ddd D MMM YYYY") }}
+        </td>
+      </tr>
+
+    {% endfor %}
+  </tbody>
+</table>

@@ -1,0 +1,40 @@
+// Import GOV.UK elements from /govuk-modules/, this will import the frontend toolkit and some base styles.
+// Take a look in /govuk-modules/_govuk-elements.scss to see which files are imported.//
+
+//@import 'govuk-elements';
+
+// ITCSS Imports
+//@import '01-settings/index';
+//@import '02-tools/index';
+//@import '03-generic/index';
+//@import '04-elements/index';
+//@import '05-objects/index';
+//@import '06-components/index';
+//@import '07-trumps/index';
+
+//$govuk-assets-path: '/govuk/assets/';
+
+// override font family
+$govuk-font-family: helvetica, arial, sans-serif;
+
+// override gds toolkit page width
+$govuk-page-width: 1500px;
+
+// override moj toolkit page width
+$moj-page-width: 1500px !default;
+
+
+
+@import "node_modules/govuk-frontend/govuk/all";
+
+@import "node_modules/@ministryofjustice/frontend/moj/all.scss";
+
+@import "dashboard.scss";
+@import "jd-custom.scss";
+@import "mod-custom.scss";
+@import "./custom-components/index.scss";
+@import "homepage.scss";
+@import "pool-overview.scss";
+@import "summoning-progress.scss";
+@import "create-pool.scss";
+@import "trial-detail.scss";

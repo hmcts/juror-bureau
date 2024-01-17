@@ -1,0 +1,55 @@
+<div class="govuk-grid-row tabs" id="logTabs">
+
+  <div class="govuk-grid-column-one-quarter">
+    <nav class="moj-side-navigation sidebar-navigation--logs compact">
+      <ul class="moj-side-navigation__list font-small">
+        <li class="moj-side-navigation__item {% if response.notes.length > 1 %}info{% endif %}" data-target="notesTab" data-tabs="logTabs" data-title="Notes">
+          <a href="#notesTab">{{ "Internal notes" if hasModAccess else "Notes" }}
+            {% if (response.notes.length > 1) %}
+              <span id="notesIndicator" class="jd-details-menu-indicator  jd-right-align">
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="5" r="5" fill="#1D70B8"/></svg>
+              </span>
+            {% endif %}
+          </a>
+        </li>
+        <li class="moj-side-navigation__item {% if response.phoneLogs.length > 0 %}info{% endif %}" data-target="callLog" data-tabs="logTabs" data-title="Call log">
+          <a href="#callLog">
+            {#<span class="value">{{ response.phoneLogs.length }}</span>#}
+            {{ "Contact log" if hasModAccess else "Call log" }}
+            <span id="callLogIndicator" class="moj-notification-badge jd-badge-blue jd-right-align">{{ response.phoneLogs.length }}</span>
+          </a>
+        </li>
+        {% if hasModAccess === false or hasModAccess === undefined %}
+          <li class="moj-side-navigation__item {% if response.changeLog.length > 0 %}info{% endif %}" data-target="changelogTab" data-tabs="logTabs" data-title="Change log">
+            <a href="#changelogTab">
+              {#<span class="value">{{ response.changeLog.length }}</span>#}
+              Change log
+              <span id="changeLogIndicator" class="moj-notification-badge jd-badge-blue jd-right-align">{{ response.changeLog.length }}</span>
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+
+    {#
+    <div class="hidden-no-js">
+      {% include "./_partials/update.njk" %}
+    </div>
+    #}
+    <div class="show-no-js">&nbsp;</div>
+  </div>
+
+  <div class="govuk-grid-column-three-quarters">
+    <div class="tab-content active" id="notesTab" data-tabs="logTabs">
+      {% include "./_partials/notes.njk" %}
+    </div>
+
+    <div class="tab-content" id="callLog" data-tabs="logTabs">
+      {% include "./_partials/call-logs.njk" %}
+    </div>
+
+    <div class="tab-content" id="changelogTab" data-tabs="logTabs">
+      {% include "./_partials/change-logs.njk" %}
+    </div>
+  </div>
+</div>

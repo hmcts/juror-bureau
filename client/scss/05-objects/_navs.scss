@@ -1,0 +1,175 @@
+.nav-wrapper {
+  background-color: $grey-3;
+}
+
+.navigation-header-bar {
+
+  margin: 0 auto;
+  max-width: 990px;
+
+  ul {
+    list-style-type: none;
+  }
+
+  li {
+
+    display: inline-block;
+
+    a {
+      color: $black;
+      display: inline-block;
+      letter-spacing: 0.03em;
+      padding: 6px 0;
+      position: relative;
+      text-align: center;
+      text-decoration: none;
+      width: 140px;
+
+      .info {
+        background-color: $color-turquoise-lighter;
+
+        border-bottom-right-radius: 45px 50px;
+        border-top-right-radius: 45px 50px;
+        border-top-left-radius: 45px 50px;
+        border-bottom-left-radius: 45px 50px;
+
+        line-height: 20px;
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        text-align: center;
+        width: 33px;
+      }
+    }
+
+    &.active,
+    &:hover {
+      a {
+        background-color: $govuk-blue;
+        color: $white;
+      }
+    }
+  }
+}
+
+
+.sidebar-navigation {
+
+  margin-bottom: 30px;
+
+  ul {
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    border-left: 5px solid transparent;
+    color: $color-black;
+    line-height: 40px;
+    list-style: none;
+    margin-bottom: 15px;
+    min-height: 40px;
+
+
+    .value--grey {
+      background-color: $panel-colour;
+      width: 50px;
+    }
+
+    .value--error {
+      background-color: lighten($error-colour, 45%);
+      border: 3px solid $error-colour;
+      color: $error-colour;
+    }
+
+    &.active {
+      background-color: $govuk-blue;
+      color: $white;
+
+      .value {
+        background-color: $govuk-blue-lighten;
+      }
+
+      a:focus {
+        background-color: $govuk-blue;
+      }
+    }
+
+    &:hover:not(.active):not(.no-hover) {
+      background-color: $yellow;
+
+      .value {
+        background-color: $yellow-50;
+
+        &--grey {
+          background-color: $panel-colour;
+        }
+      }
+
+      .icon {
+        background-image: url('/img/icons/icon-info-white.png');
+
+        @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 20 / 10), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+          background-image: url('/img/icons/icon-info-white-2x.png');
+        }
+      }
+    }
+
+    &.info {
+      border-left: 5px solid $turquoise;
+    }
+  }
+
+  a {
+    color: inherit;
+    display: block;
+    height: 100%;
+    outline: none;
+    padding-left: 16px;
+    text-decoration: none;
+  }
+
+  .value {
+    float: right;
+    height: 40px;
+    position: relative;
+    text-align: center;
+    width: 40px;
+  }
+
+  .icon {
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+
+  @media (min-width: 769px) {
+    max-width: 85%;
+  }
+
+  @media (min-width: 960px) {
+    &:not(.compact) {
+      margin-bottom: 0;
+
+      li {
+        height: 50px;
+        line-height: 50px;
+        margin-bottom: 15px;
+      }
+
+      .value {
+        height: 50px;
+        width: 50px;
+      }
+
+      a {
+        padding-left: 36px;
+      }
+
+    }
+  }
+
+}

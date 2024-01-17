@@ -1,0 +1,160 @@
+@startuml enter-paper-summons-reply
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant JurorRecordPage <</record/{id}/overview>>
+participant JurorDetailsPage <</submit-paper/index>>
+participant EligibilityPage <</submit-paper/eligibility>>
+participant ReplyTypesPage <</submit-paper/reply-types>>
+participant CjsEmploymentPage <</submit-paper/cjs-employment>>
+participant AdjustmentsPage <</submit-paper/adjustments>>
+participant SignaturePage <</submit-paper/signature>>
+participant SummonsReplyPage <</response/{id}/paper>>
+
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant PaperReplyController <<paper-reply.controller.js>>
+participant GetJurorDetailsObj <<record.get()>>
+participant PaperReplyObject <<paperReplyObject.post()>>
+
+''' TEMPLATES
+participant IndexTemplate <<paper-reply/index.njk>>
+participant EligibilityTemplate <<paper-reply/eligibility.njk>>
+participant ReplyTypesTemplate <<paper-reply/reply-types.njk>>
+participant CjsEmploymentTemplate <<paper-reply/cjs-employment.njk>>
+participant AdjustmentsTemplate <<paper-reply/adjustments.njk>>
+participant SignatureTemplate <<paper-reply/signature.njk>>
+
+''' FILTERS AND VALIDATORS
+participant PaperReplyValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+''' JOURNEY FLOW
+Actor -> JurorRecordPage : click enter summons reply button
+
+JurorRecordPage -> PaperReplyController : call page controller
+
+PaperReplyController -> GetJurorDetailsObj : build request object
+GetJurorDetailsObj -> BackendController : send backend request
+GetJurorDetailsObj <- BackendController : ok response
+PaperReplyController <- GetJurorDetailsObj : resolve request
+
+alt Failed to fetch juror record
+    GetJurorDetailsObj <-- BackendController : error response
+    PaperReplyController <-- GetJurorDetailsObj : resolve error response
+    JurorRecordPage <-- PaperReplyController : error response
+    Actor <-- JurorRecordPage : render error message  
+end
+
+PaperReplyController -> IndexTemplate : request and build template
+PaperReplyController <- IndexTemplate : return HTML
+JurorDetailsPage <- PaperReplyController : return HTML
+Actor <- JurorDetailsPage : render HTML
+
+Actor -> JurorDetailsPage : enter juror details
+
+JurorDetailsPage -> PaperReplyController : post juror details
+PaperReplyController -> PaperReplyValidator : validate details
+PaperReplyController <- PaperReplyValidator : valid details
+
+alt Invalid juror details
+    PaperReplyController <-- PaperReplyValidator : invalid details
+    PaperReplyController --> IndexTemplate : request and build template
+    PaperReplyController <-- IndexTemplate : return HTML with error message
+    JurorDetailsPage <-- PaperReplyController : return HTML with error message
+    Actor <-- JurorDetailsPage : render error message
+end
+
+PaperReplyController -> EligibilityTemplate : request and build template
+PaperReplyController <- EligibilityTemplate : return HTML
+EligibilityPage <- PaperReplyController : return HTML
+Actor <- EligibilityPage : render HTML
+
+Actor -> EligibilityPage : select eligibility options
+
+PaperReplyController -> ReplyTypesTemplate : request and build template
+PaperReplyController <- ReplyTypesTemplate : return HTML
+ReplyTypesPage <- PaperReplyController : return HTML
+Actor <- ReplyTypesPage : render HTML
+
+Actor -> ReplyTypesPage : select reply type option
+
+ReplyTypesPage -> PaperReplyController : call page controller
+
+PaperReplyController -> CjsEmploymentTemplate : request and build template
+PaperReplyController <- CjsEmploymentTemplate : return HTML
+CjsEmploymentPage <- PaperReplyController : return HTML
+Actor <- CjsEmploymentPage : render HTML
+
+Actor -> CjsEmploymentPage : select CJS Employment option
+
+alt User enters CJS Employement details
+    CjsEmploymentPage -> PaperReplyController : post employment details
+    PaperReplyController -> PaperReplyValidator : validate employment details
+    PaperReplyController <- PaperReplyValidator : valid employment details
+
+    alt Invalid juror details
+        PaperReplyController <-- PaperReplyValidator : invalid employment details
+        PaperReplyController --> CjsEmploymentTemplate : request and build template
+        PaperReplyController <-- CjsEmploymentTemplate : return HTML with error message
+        CjsEmploymentPage <-- PaperReplyController : return HTML with error message
+        Actor <-- CjsEmploymentPage : render error message
+    end
+end
+
+CjsEmploymentPage -> PaperReplyController : call page controller
+
+PaperReplyController -> AdjustmentsTemplate : request and build template
+PaperReplyController <- AdjustmentsTemplate : return HTML
+AdjustmentsPage <- PaperReplyController : return HTML
+Actor <- AdjustmentsPage : render HTML
+
+Actor -> AdjustmentsPage : select reasonable adjustment option
+
+alt User enters reasonable adjustment details
+    AdjustmentsPage -> PaperReplyController : post reasonable adjustment details
+    PaperReplyController -> PaperReplyValidator : validate reasonable adjustment details
+    PaperReplyController <- PaperReplyValidator : valid reasonable adjustment details
+
+    alt Invalid juror details
+        PaperReplyController <-- PaperReplyValidator : invalid reasonable adjustment details
+        PaperReplyController --> AdjustmentsTemplate : request and build template
+        PaperReplyController <-- AdjustmentsTemplate : return HTML with error message
+        AdjustmentsPage <-- PaperReplyController : return HTML with error message
+        Actor <-- AdjustmentsPage : render error message
+    end
+end
+
+AdjustmentsPage -> PaperReplyController : call page controller
+
+PaperReplyController -> SignatureTemplate : request and build template
+PaperReplyController <- SignatureTemplate : return HTML
+SignaturePage <- PaperReplyController : return HTML
+Actor <- SignaturePage : render HTML
+
+Actor -> SignaturePage : select signature option
+
+SignaturePage -> PaperReplyController : call page controller
+
+PaperReplyController -> PaperReplyObject : build request object
+PaperReplyObject -> BackendController : send backend request
+PaperReplyObject <- BackendController : ok response
+PaperReplyController <- PaperReplyObject : resolve request
+
+alt Failed to add the paper response
+    PaperReplyController <-- BackendController : error response
+    SignaturePage <-- PaperReplyController : error response
+    Actor <-- SignaturePage : render error message
+end
+
+SummonsReplyPage <- PaperReplyController : redirect to summons reply
+Actor <- SummonsReplyPage : redirect to summons reply
+
+
+@enduml

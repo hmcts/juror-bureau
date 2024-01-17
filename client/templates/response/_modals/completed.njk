@@ -1,0 +1,40 @@
+<section class="modal-content awaiting-information-section">
+
+  {#
+  <h3 class="modal-title font-large no-bold">Response Completed</h3>
+  <h3 class="modal-title no-bold">This response has already been processed in Juror, please check the details are correct.</h3>
+  #}
+
+  <form>
+
+    <div class="govuk-form-group inline" id="completedGroup" aria-describedby="completedHint">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+        <h1 class="govuk-fieldset__heading">
+          Response Completed
+        </h1>
+      </legend>
+
+      <div id="completedHint" class="govuk-hint">
+        This response has already been processed in Juror, please check the details are correct.
+      </div>
+
+      <span class="govuk-error-message error-message-decision"></span>
+    </div>
+
+    <br />
+
+    <div class="govuk-form-group">
+      <span class="govuk-error-message error-message-submit"></span>
+      <div class="govuk-button-group">
+        <button id="completedMarkComplete" class="govuk-button modal-save-button" data-module="govuk-button" value="Ok">Ok</button>
+      </div>
+    </div>
+
+
+    <input type="hidden" name="jurorNumber" id="jurorNumber" value="{{ response.jurorNumber }}">
+    <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+    <input type="hidden" name="version" id="version" value="{{ version }}">
+
+  </form>
+
+</section>

@@ -1,0 +1,113 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - juror-management - dismiss-jurors - pools{% endblock %}
+{% block page_identifier %}juror-management - dismiss-jurors - pools{% endblock %}
+
+{% block content %}
+  {% set actionUrl = url("juror-management.dismiss-jurors.pools.post") %}
+
+  {% set jurorsToDismissError = undefined %}
+  {% if errors.items["jurorsToDismiss"] %}
+    {% set jurorsToDismissError = {
+      text: errors.items["jurorsToDismiss"][0].details
+    } %}
+  {% endif %}
+
+  {% set selectPoolsError = undefined %}
+  {% if errors.items["checked-pools"] %}
+    {% set selectPoolsError = errors.items["checked-pools"][0].details %}
+  {% endif %}
+
+  {% include "includes/errors.njk" %}
+
+  <form method="POST" action="{{ actionUrl }}">
+
+    <h1 class="govuk-heading-l">Dismiss jurors</h1>
+
+    {{ govukCheckboxes({
+      name: "jurors-to-include",
+      classes: "govuk-checkboxes--small",
+      fieldset: {
+        legend: {
+          text: "Select to include these jurors (optional)",
+          isPageHeading: "false",
+          classes: "govuk-fieldset__legend--m"
+        }
+      },
+      items: [
+        {
+          value: "on-call",
+          text: "Include jurors on call",
+          checked: "on-call" in tmpForm["jurors-to-include"] if tmpForm["jurors-to-include"]
+        },
+        {
+          value: "not-in-attendance",
+          text: "Include others not in attendance",
+          checked: "not-in-attendance" in tmpForm["jurors-to-include"] if tmpForm["jurors-to-include"]
+        }
+      ]
+    }) }}
+
+    <div {% if selectPoolsError %}class="govuk-form-group govuk-form-group--error"{% endif %}>
+      <h2 class="govuk-heading-m">Select which pools to include</h2>
+
+      {% if selectPoolsError %}
+        <p id="select-pools-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span> {{ selectPoolsError }}
+        </p>
+      {% endif %}
+
+      {% include "./pools-table.njk" %}
+    </div>
+
+    <h2 class="govuk-heading-m">Number of available jurors from selected pools</h2>
+    {{ govukButton({
+      text: "Calculate available jurors",
+      classes: "govuk-button--secondary govuk-!-margin-bottom-3",
+      type: "submit",
+      attributes: {
+        formaction: actionUrl + "?action=calculate_available_jurors"
+      }
+    }) }}
+    {% if tmpForm.jurorsAvailableToDismiss %}
+      <p class="govuk-body">{{ tmpForm.jurorsAvailableToDismiss }} jurors available to dismiss</p>
+    {% endif %}
+
+    {{ govukInput({
+      label: {
+        text: "How many of these jurors do you want to dismiss?",
+        isPageHeading: false,
+        classes: "govuk-label--m"
+      },
+      id: "jurorsToDismiss",
+      name: "jurorsToDismiss",
+      classes: "govuk-input--width-2",
+      type: "number",
+      value: tmpForm.jurorsToDismiss,
+      errorMessage: jurorsToDismissError
+    }) }}
+
+    {{ csrfProtection(csrftoken) }}
+
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Generate list of jurors to dismiss",
+        type: "submit"
+      }) }}
+
+      <a class="govuk-link" href="#">Cancel</a>
+    </div>
+
+  </form>
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script src="{{ assetPath }}js/dismiss-jurors.js"></script>
+{% endblock %}

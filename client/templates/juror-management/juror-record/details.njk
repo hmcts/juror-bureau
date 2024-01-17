@@ -1,0 +1,150 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+
+{% block page_title %}
+  {{ serviceName }} - juror record - details
+{% endblock %}
+
+{% block page_identifier %}juror record - details{% endblock %}
+
+{% set currentApp = "Juror management" %}
+
+{% block beforeContent %}
+  {% include "includes/back-link.njk" %}
+{% endblock %}
+
+{% block content %}
+
+  {# TODO: maybe these builders can be moved somewhere else.... the address might not be the best way like this #}
+  {% set currentName = [juror.commonDetails.title, juror.commonDetails.firstName, juror.commonDetails.lastName] %}
+  {% set pendingName = [juror.commonDetails.pendingTitle, juror.commonDetails.pendingFirstName, juror.commonDetails.pendingLastName] %}
+  {% set addressParts = [juror.addressLineOne, juror.addressLineTwo, juror.addressLineThree, juror.addressTown, juror.addressCounty] %}
+
+  {# define what phone # and email to show based on response input #}
+  {% set mainPhone = juror.primaryPhone | replace(' ', '') if juror.primaryPhone else "-" %}
+  {% set otherPhone = juror.secondaryPhone | replace(' ', '') if juror.secondaryPhone else "-" %}
+  {% if juror.thirdParty.useJurorPhoneDetails === false %}
+    {% set mainPhone = "<span class=\"mod-contact-third-party\">Contact Third Party</span>" %}
+    {% set otherPhone = "<span class=\"mod-contact-third-party\">Contact Third Party</span>" %}
+  {% endif %}
+
+  {% set emailAddress = (juror.emailAddress | lower) if juror.emailAddress else "-" %}
+  {% if juror.thirdParty.useJurorEmailDetails === false %}
+    {% set emailAddress = "<span class=\"mod-contact-third-party\">Contact Third Party</span>" %}
+  {% endif %}
+
+  {% if juror.replyProcessingStatus !== 'To Do' %}
+    {% set editDetailsLink %}
+      {{ url('juror-record.details-edit.get', { jurorNumber: juror.commonDetails.jurorNumber }) }}
+    {% endset %}
+  {% endif %}
+
+  {% include "../_partials/heading.njk" %}
+
+  <div class="mod-juror-record__title govuk-body">
+    <h2 id="jurorDetailsLabel" class="govuk-heading-m">Juror details</h2>
+    {% if (authentication.owner === juror.commonDetails.owner) and (editDetailsLink) %}
+      <a id="changeJurorDetailsAnchor" href="{{ editDetailsLink }}" class="govuk-link">Add or change</a>
+    {% endif %}
+  </div>
+
+  {% set nameHtml %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-half">
+        {% if juror.commonDetails.pendingFirstName %} <!-- why check for pending firstname only? because both first and last are mandatory -->
+          <div class="govuk-!-font-weight-bold">Current</div>
+        {% endif %}
+        <div>
+          {{ currentName | join(' ') | capitalizeFully }}
+        </div>
+      </div>
+      {% if juror.commonDetails.pendingFirstName !== null %}
+        <div class="govuk-grid-column-one-half">
+          <div class="mod-contact-third-party">Pending approval</div>
+          <div>
+            {{ pendingName | join(' ') | capitalizeFully }}
+          </div>
+          {% if isCourtUser %}
+            <div>
+              <a href="{{ url('juror-record.details.new-name.get', { jurorNumber: juror.commonDetails.jurorNumber }) }}" class="govuk-link">
+                Approve or reject
+              </a>
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  {% endset %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              text: "Name",
+              classes: "mod-align-top"
+            },
+            value: {
+              html: nameHtml | safe
+            }
+          },
+          {
+            key: {
+              text: "Address"
+            },
+            value: {
+              html: addressParts | buildRecordAddress | capitalizeFully + '<br>' + juror.addressPostcode
+            }
+          },
+          {
+            key: {
+              text: "Main phone"
+            },
+            value: {
+              html: mainPhone
+            }
+          },
+          {
+            key: {
+              text: "Other phone"
+            },
+            value: {
+              html: otherPhone
+            }
+          },
+          {
+            key: {
+              text: "Email"
+            },
+            value: {
+              html: emailAddress
+            }
+          },
+          {
+            key: {
+              text: "Date of birth"
+            },
+            value: {
+              text: juror.dateOfBirth | dateFilter(null, "DD MMM YYYY") if juror.dateOfBirth else "-"
+            }
+          },
+          {
+            key: {
+              text: "Welsh language"
+            },
+            value: {
+              text: "Yes" if juror.welsh else "No"
+            }
+          }
+        ]
+      }) }}
+    </div>
+  </div>
+
+  {% if juror.thirdParty %}
+    {% include "./_partials/third-party-details.njk" %}
+  {% endif %}
+{% endblock %}

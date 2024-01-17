@@ -1,0 +1,63 @@
+@startuml pool-history
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant PoolOverviewPage <</pool-overview>>
+participant PoolManagementPage <</pool-management>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant PoolOverviewController <<pool-overview.controller.js>>
+participant PoolSummaryObject <<poolSummaryObject.get()>>
+participant PoolHistoryObject <<poolHistoryObject.get()>>
+
+''' TEMPLATES
+participant IndexTemplate <<pool-management/pool-overview/index.njk>>
+
+''' FILTERS AND VALIDATORS
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+
+''' JOURNEY FLOW
+Actor -> PoolOverviewPage : pool history
+
+PoolOverviewPage -> PoolOverviewController : call page controller
+
+PoolOverviewController -> PoolSummaryObject : build request object
+PoolSummaryObject -> BackendController : send backend request
+PoolSummaryObject <- BackendController : ok response
+PoolOverviewController <- PoolSummaryObject : resolve request
+
+alt Failed to fetch pool summary
+    PoolSummaryObject <-- BackendController : error response
+    PoolOverviewController <-- PoolSummaryObject : reject requestObject
+    PoolManagementPage <-- PoolOverviewController : redirect to pool management page
+    Actor <-- PoolManagementPage : redirect to pool management page
+end
+
+PoolOverviewController -> PoolHistoryObject : build request object
+PoolHistoryObject -> BackendController : send backend request
+PoolHistoryObject <- BackendController : ok response
+PoolOverviewController <- PoolHistoryObject : resolve request
+
+PoolOverviewController -> IndexTemplate : request and build template
+PoolOverviewController <- IndexTemplate : return HTML
+PoolOverviewPage <- PoolOverviewController : return HTML
+
+Actor <- PoolOverviewPage : render pool history tab
+
+alt Failed to fetch pool history
+    PoolSummaryObject <-- BackendController : error response
+    PoolOverviewController <-- PoolSummaryObject : reject requestObject
+    PoolManagementPage <-- PoolOverviewController : redirect to pool management page
+    Actor <-- PoolManagementPage : redirect to pool management page
+end
+
+
+@enduml

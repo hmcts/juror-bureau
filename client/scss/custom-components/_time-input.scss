@@ -1,0 +1,16 @@
+.time-input {
+  @include govuk-clearfix;
+  // font-size: 0 removes whitespace caused by inline-block
+  font-size: 0;
+
+  &__item {
+    display: inline-block;
+    margin-bottom: 0;
+  }
+
+  &__divider {
+    display: inline-block;
+    margin: 0 govuk-spacing(1);
+    font-weight: bold;
+  }
+}

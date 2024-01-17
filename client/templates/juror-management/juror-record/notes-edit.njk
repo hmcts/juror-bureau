@@ -1,0 +1,86 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+
+{% block page_title %}
+  {{ serviceName }} - juror record - edit notes
+{% endblock %}
+
+{% block page_identifier %}juror record - edit notes{% endblock %}
+
+{% set currentApp = "Juror management" %}
+
+{% block beforeContent %}
+  {% include "includes/back-link.njk" %}
+
+  {% if errorMessage %}
+    {{ mojBanner({
+      type: 'warning',
+      text: errorMessage,
+      iconFallbackText: 'Warning'
+    }) }}
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {% set notesError = undefined %}
+  {% if errors.items["notes"] %}
+    {% set notesError = {"text": errors.items["notes"][0].details} %}
+  {% endif %}
+
+  {% set nameParts = [juror.commonDetails.title, juror.commonDetails.firstName, juror.commonDetails.lastName] %}
+  {% set labelHTML %}
+    <span class="govuk-!-font-weight-bold govuk-!-font-size-27">Add a note</span>
+  {% endset %}
+
+  <div class="after-header">
+    <div class="after-header__pool-record">
+      <span class="after-header__pool-record-label">
+        {{ nameParts | join(' ') | capitalizeFully }}
+      </span>
+      <div class="after-header__pool-record-number">
+        <h1 class="govuk-heading-l govuk-!-margin-0">
+          Notes
+        </h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form id="jurorNotesForm" action="{{ actionUrl }}" method="post">
+
+        {{ govukCharacterCount({
+          name: "notes",
+          id: "notes",
+          maxlength: 2000,
+          rows: 10,
+          label: {
+            html: labelHTML
+          },
+          errorMessage: notesError,
+          value: juror.notes
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Save",
+            attributes: {
+              id: "saveButton"
+            }
+          }) }}
+
+          <a id="cancelAnchor" class="govuk-link" href="{{ backLinkUrl.url }}">Cancel</a>
+        </div>
+
+        <input type="hidden" id="_csrf" name="_csrf" value="{{ csrftoken }}" >
+      </form>
+    </div>
+  </div>
+
+{% endblock %}

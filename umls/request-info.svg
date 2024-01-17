@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="1023px" preserveAspectRatio="none" style="width:2270px;height:1023px;background:#FFFFFF;" version="1.1" viewBox="0 0 2270 1023" width="2270px" zoomAndPan="magnify"><defs/><g><rect fill="none" height="105.2422" style="stroke:#000000;stroke-width:1.5;" width="2254" x="10" y="480.3242"/><rect fill="none" height="222.4844" style="stroke:#000000;stroke-width:1.5;" width="2114" x="10" y="658.1875"/><rect fill="none" height="105.2422" style="stroke:#000000;stroke-width:1.5;" width="1385" x="10" y="894.6719"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="45" x2="45" y1="52.9766" y2="1016.9141"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="275" x2="275" y1="52.9766" y2="1016.9141"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="437" x2="437" y1="52.9766" y2="1016.9141"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="594" x2="594" y1="52.9766" y2="1016.9141"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="787" x2="787" y1="52.9766" y2="1016.9141"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="997" x2="997" y1="52.9766" y2="1016.9141"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1245" x2="1245" y1="52.9766" y2="1016.9141"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1485" x2="1485" y1="52.9766" y2="1016.9141"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1697" x2="1697" y1="52.9766" y2="1016.9141"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1891" x2="1891" y1="52.9766" y2="1016.9141"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="2043" x2="2043" y1="52.9766" y2="1016.9141"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="2189" x2="2189" y1="52.9766" y2="1016.9141"/><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="51" x="20" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="37" x="27" y="42.0234">Actor</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="175" x="188" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="161" x="195" y="25.5352">«/response/{id}/paper»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="145" x="203" y="42.0234">ResponseDetailsPage</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="129" x="373" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="108" x="383.5" y="25.5352">«/request-info»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="115" x="380" y="42.0234">RequestInfoPage</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="165" x="512" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="151" x="519" y="25.5352">«/request-info/letter»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="128" x="530.5" y="42.0234">ConfirmLetterPage</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="201" x="687" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="187" x="694" y="25.5352">«request-info.controller.js»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="152" x="711.5" y="42.0234">RequestInfoController</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="198" x="898" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="184" x="905" y="25.5352">«RequestInfoObject.post()»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="126" x="934" y="42.0234">RequestInfoObject</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="279" x="1106" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="265" x="1113" y="25.5352">«summons-management.controller.js»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="227" x="1132" y="42.0234">SummonsManagementController</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="180" x="1395" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="166" x="1402" y="25.5352">«request-info/form.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="100" x="1435" y="42.0234">FormTemplate</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="224" x="1585" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="210" x="1592" y="25.5352">«request-info/send-letter.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="137" x="1628.5" y="42.0234">SendLetterTemplate</text><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="144" x="1819" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="130" x="1826" y="42.0234">SummonsValidator</text><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="141" x="1973" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="127" x="1980" y="42.0234">BackendController</text><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="130" x="2124" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="116" x="2131" y="42.0234">RequestInfopage</text><polygon fill="#181818" points="263.5,80.2871,273.5,84.2871,263.5,88.2871" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="45.5" x2="269.5" y1="84.2871" y2="84.2871"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="161" x="80" y="79.5449">request juror info by post</text><polygon fill="#181818" points="775.5,109.5977,785.5,113.5977,775.5,117.5977" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="275.5" x2="781.5" y1="113.5977" y2="113.5977"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="121" x="471" y="108.8555">call page controller</text><polygon fill="#181818" points="1473,138.9082,1483,142.9082,1473,146.9082" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="787.5" x2="1479" y1="142.9082" y2="142.9082"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="1051.75" y="138.166">request and build template</text><polygon fill="#181818" points="798.5,168.2188,788.5,172.2188,798.5,176.2188" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="792.5" x2="1484" y1="172.2188" y2="172.2188"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="1097.25" y="167.4766">return HTML</text><polygon fill="#181818" points="448.5,197.5293,438.5,201.5293,448.5,205.5293" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="442.5" x2="786.5" y1="201.5293" y2="201.5293"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="573.5" y="196.7871">return HTML</text><polygon fill="#181818" points="56.5,226.8398,46.5,230.8398,56.5,234.8398" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="50.5" x2="436.5" y1="230.8398" y2="230.8398"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="201.5" y="226.0977">render HTML</text><polygon fill="#181818" points="425.5,256.1504,435.5,260.1504,425.5,264.1504" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="45.5" x2="431.5" y1="260.1504" y2="260.1504"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="195" x="144" y="255.4082">confirm information to request</text><polygon fill="#181818" points="775.5,285.4609,785.5,289.4609,775.5,293.4609" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="437.5" x2="781.5" y1="289.4609" y2="289.4609"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="121" x="552" y="284.7188">call page controller</text><polygon fill="#181818" points="1879,314.7715,1889,318.7715,1879,322.7715" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="787.5" x2="1885" y1="318.7715" y2="318.7715"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="200" x="1239.25" y="314.0293">validate request for information</text><polygon fill="#181818" points="798.5,344.082,788.5,348.082,798.5,352.082" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="792.5" x2="1890" y1="348.082" y2="348.082"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="96" x="1291.25" y="343.3398">request is valid</text><polygon fill="#181818" points="1685,373.3926,1695,377.3926,1685,381.3926" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="787.5" x2="1691" y1="377.3926" y2="377.3926"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="1157.75" y="372.6504">request and build template</text><polygon fill="#181818" points="798.5,402.7031,788.5,406.7031,798.5,410.7031" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="792.5" x2="1696" y1="406.7031" y2="406.7031"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="1203.25" y="401.9609">return HTML</text><polygon fill="#181818" points="605.5,432.0137,595.5,436.0137,605.5,440.0137" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="599.5" x2="786.5" y1="436.0137" y2="436.0137"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="652" y="431.2715">return HTML</text><polygon fill="#181818" points="56.5,461.3242,46.5,465.3242,56.5,469.3242" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="50.5" x2="593.5" y1="465.3242" y2="465.3242"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="280" y="460.582">render HTML</text><path d="M10,480.3242 L72,480.3242 L72,487.6348 L62,497.6348 L10,497.6348 L10,480.3242 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="105.2422" style="stroke:#000000;stroke-width:1.5;" width="2254" x="10" y="480.3242"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="25" y="493.8926">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="201" x="87" y="492.959">[Request for information is invalid]</text><polygon fill="#181818" points="798.5,514.9453,788.5,518.9453,798.5,522.9453" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="792.5" x2="1890" y1="518.9453" y2="518.9453"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="91" x="1293.75" y="514.2031">error response</text><polygon fill="#181818" points="2177,544.2559,2187,548.2559,2177,552.2559" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="787.5" x2="2183" y1="548.2559" y2="548.2559"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="91" x="1442.75" y="543.5137">error response</text><polygon fill="#181818" points="56.5,573.5664,46.5,577.5664,56.5,581.5664" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="50.5" x2="436.5" y1="577.5664" y2="577.5664"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="133" x="175" y="572.8242">render error message</text><polygon fill="#181818" points="582.5,609.877,592.5,613.877,582.5,617.877" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="45.5" x2="588.5" y1="613.877" y2="613.877"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="109" x="265.5" y="609.1348">user clicks 'done'</text><polygon fill="#181818" points="775.5,639.1875,785.5,643.1875,775.5,647.1875" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="594.5" x2="781.5" y1="643.1875" y2="643.1875"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="121" x="630.5" y="638.4453">call page controller</text><path d="M10,658.1875 L72,658.1875 L72,665.498 L62,675.498 L10,675.498 L10,658.1875 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="222.4844" style="stroke:#000000;stroke-width:1.5;" width="2114" x="10" y="658.1875"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="25" y="671.7559">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="161" x="87" y="670.8223">[Automatic letter generation]</text><polygon fill="#181818" points="985,692.8086,995,696.8086,985,700.8086" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="787.5" x2="991" y1="696.8086" y2="696.8086"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="126" x="829.25" y="692.0664">build request object</text><polygon fill="#181818" points="2031.5,722.1191,2041.5,726.1191,2031.5,730.1191" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="997" x2="2037.5" y1="726.1191" y2="726.1191"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="138" x="1451.25" y="721.377">send backend request</text><polygon fill="#181818" points="1008,751.4297,998,755.4297,1008,759.4297" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1002" x2="2042.5" y1="755.4297" y2="755.4297"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="107" x="1466.75" y="750.6875">created response</text><polygon fill="#181818" points="798.5,780.7402,788.5,784.7402,798.5,788.7402" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="792.5" x2="996" y1="784.7402" y2="784.7402"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="96" x="844.25" y="779.998">resolve request</text><polygon fill="#181818" points="1233.5,810.0508,1243.5,814.0508,1233.5,818.0508" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="787.5" x2="1239.5" y1="814.0508" y2="814.0508"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="189" x="922" y="809.3086">redirect response details page</text><polygon fill="#181818" points="286.5,839.3613,276.5,843.3613,286.5,847.3613" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="280.5" x2="1244.5" y1="843.3613" y2="843.3613"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="206" x="657.5" y="838.6191">redirect to response details page</text><polygon fill="#181818" points="56.5,868.6719,46.5,872.6719,56.5,876.6719" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="50.5" x2="274.5" y1="872.6719" y2="872.6719"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="206" x="57.5" y="867.9297">redirect to response details page</text><path d="M10,894.6719 L72,894.6719 L72,901.9824 L62,911.9824 L10,911.9824 L10,894.6719 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="105.2422" style="stroke:#000000;stroke-width:1.5;" width="1385" x="10" y="894.6719"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="25" y="908.2402">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="146" x="87" y="907.3066">[Manual letter is required]</text><polygon fill="#181818" points="1233.5,929.293,1243.5,933.293,1233.5,937.293" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="787.5" x2="1239.5" y1="933.293" y2="933.293"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="189" x="922" y="928.5508">redirect response details page</text><polygon fill="#181818" points="286.5,958.6035,276.5,962.6035,286.5,966.6035" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="280.5" x2="1244.5" y1="962.6035" y2="962.6035"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="206" x="657.5" y="957.8613">redirect to response details page</text><polygon fill="#181818" points="56.5,987.9141,46.5,991.9141,56.5,995.9141" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="50.5" x2="274.5" y1="991.9141" y2="991.9141"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="206" x="57.5" y="987.1719">redirect to response details page</text><!--MD5=[807bc3a130223060ae22e5014ebb49c7]
+@startuml request-info
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant ResponseDetailsPage <</response/{id}/paper>>
+participant RequestInfoPage <</request-info>>
+participant ConfirmLetterPage <</request-info/letter>>
+
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant RequestInfoController <<request-info.controller.js>>
+participant RequestInfoObject <<RequestInfoObject.post()>>
+participant SummonsManagementController <<summons-management.controller.js>>
+
+''' TEMPLATES
+participant FormTemplate <<request-info/form.njk>>
+participant SendLetterTemplate <<request-info/send-letter.njk>>
+
+''' FILTERS AND VALIDATORS
+participant SummonsValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+
+''' JOURNEY FLOW
+Actor -> ResponseDetailsPage : request juror info by post
+
+ResponseDetailsPage -> RequestInfoController : call page controller
+
+RequestInfoController -> FormTemplate : request and build template
+RequestInfoController <- FormTemplate : return HTML
+RequestInfoPage <- RequestInfoController : return HTML
+Actor <- RequestInfoPage : render HTML
+
+Actor -> RequestInfoPage : confirm information to request
+
+RequestInfoPage -> RequestInfoController : call page controller
+
+RequestInfoController -> SummonsValidator : validate request for information
+RequestInfoController <- SummonsValidator : request is valid
+
+RequestInfoController -> SendLetterTemplate : request and build template
+RequestInfoController <- SendLetterTemplate : return HTML
+ConfirmLetterPage <- RequestInfoController: return HTML
+Actor <- ConfirmLetterPage : render HTML
+
+alt Request for information is invalid
+    RequestInfoController <- - SummonsValidator : error response
+    RequestInfopage <- - RequestInfoController : error response
+    Actor <- - RequestInfoPage : render error message
+end
+
+Actor -> ConfirmLetterPage : user clicks 'done'
+ConfirmLetterPage -> RequestInfoController : call page controller
+
+alt Automatic letter generation
+    RequestInfoController -> RequestInfoObject : build request object
+    RequestInfoObject -> BackendController : send backend request
+    RequestInfoObject <- BackendController : created response
+    RequestInfoController <- RequestInfoObject : resolve request
+
+    RequestInfoController -> SummonsManagementController : redirect response details page
+    ResponseDetailsPage <- SummonsManagementController : redirect to response details page
+    Actor <- ResponseDetailsPage : redirect to response details page
+end
+
+alt Manual letter is required
+    RequestInfoController -> SummonsManagementController : redirect response details page
+    ResponseDetailsPage <- SummonsManagementController : redirect to response details page
+    Actor <- ResponseDetailsPage : redirect to response details page    
+end
+
+@enduml
+
+@startuml request-info
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+participant ResponseDetailsPage <</response/{id}/paper>>
+participant RequestInfoPage <</request-info>>
+participant ConfirmLetterPage <</request-info/letter>>
+
+
+participant RequestInfoController <<request-info.controller.js>>
+participant RequestInfoObject <<RequestInfoObject.post()>>
+participant SummonsManagementController <<summons-management.controller.js>>
+
+participant FormTemplate <<request-info/form.njk>>
+participant SendLetterTemplate <<request-info/send-letter.njk>>
+
+participant SummonsValidator
+
+participant BackendController
+
+
+
+Actor -> ResponseDetailsPage : request juror info by post
+
+ResponseDetailsPage -> RequestInfoController : call page controller
+
+RequestInfoController -> FormTemplate : request and build template
+RequestInfoController <- FormTemplate : return HTML
+RequestInfoPage <- RequestInfoController : return HTML
+Actor <- RequestInfoPage : render HTML
+
+Actor -> RequestInfoPage : confirm information to request
+
+RequestInfoPage -> RequestInfoController : call page controller
+
+RequestInfoController -> SummonsValidator : validate request for information
+RequestInfoController <- SummonsValidator : request is valid
+
+RequestInfoController -> SendLetterTemplate : request and build template
+RequestInfoController <- SendLetterTemplate : return HTML
+ConfirmLetterPage <- RequestInfoController: return HTML
+Actor <- ConfirmLetterPage : render HTML
+
+alt Request for information is invalid
+    RequestInfoController <- - SummonsValidator : error response
+    RequestInfopage <- - RequestInfoController : error response
+    Actor <- - RequestInfoPage : render error message
+end
+
+Actor -> ConfirmLetterPage : user clicks 'done'
+ConfirmLetterPage -> RequestInfoController : call page controller
+
+alt Automatic letter generation
+    RequestInfoController -> RequestInfoObject : build request object
+    RequestInfoObject -> BackendController : send backend request
+    RequestInfoObject <- BackendController : created response
+    RequestInfoController <- RequestInfoObject : resolve request
+
+    RequestInfoController -> SummonsManagementController : redirect response details page
+    ResponseDetailsPage <- SummonsManagementController : redirect to response details page
+    Actor <- ResponseDetailsPage : redirect to response details page
+end
+
+alt Manual letter is required
+    RequestInfoController -> SummonsManagementController : redirect response details page
+    ResponseDetailsPage <- SummonsManagementController : redirect to response details page
+    Actor <- ResponseDetailsPage : redirect to response details page    
+end
+
+@enduml
+
+PlantUML version 1.2022.7(Mon Aug 22 18:01:30 BST 2022)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

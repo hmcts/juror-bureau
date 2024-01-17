@@ -1,0 +1,75 @@
+@startuml summoning-progress
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant PoolManagementPage <</pool-management>>
+participant SummoningProgressPage <</summoning-progress>>
+participant PoolOverviewPage <</pool-overview>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant SummoningProgressController <<summoning-progress.controller.js>>
+participant SummoningProgressObject <<summoningProgressObject.get()>>
+participant PoolOverviewController <<pool-overview.controller.js>>
+
+''' TEMPLATES
+participant IndexTemplate <<summoning-progress/index.njk>>
+
+''' FILTERS AND VALIDATORS
+participant CourtNameOrLocationAndPoolType
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+
+''' JOURNEY FLOW
+Actor -> PoolManagementPage : summoning progress
+
+PoolManagementPage -> SummoningProgressController : call page controller
+
+SummoningProgressController -> IndexTemplate : request and build template
+SummoningProgressController <- IndexTemplate : return HTML
+SummoningProgressPage <- SummoningProgressController : return HTML
+Actor <- SummoningProgressPage : render HTML
+
+Actor -> SummoningProgressPage : enter court location and type
+
+SummoningProgressPage -> SummoningProgressController : call page controller
+SummoningProgressController -> CourtNameOrLocationAndPoolType : validate court location and type
+SummoningProgressController <- CourtNameOrLocationAndPoolType : court location and type are valid
+
+alt Court location or type is invalid
+    SummoningProgressController <-- CourtNameOrLocationAndPoolType : court location or type is invalid
+    SummoningProgressPage <-- SummoningProgressController : error response
+    Actor <-- SummoningProgressPage : render error message
+end
+
+SummoningProgressController -> SummoningProgressObject : build request object
+SummoningProgressObject -> BackendController : send backend request
+SummoningProgressObject <- BackendController : ok response
+SummoningProgressController <- SummoningProgressObject : resolve request
+
+SummoningProgressController -> IndexTemplate : request and build template
+SummoningProgressController <- IndexTemplate : return HTML
+SummoningProgressPage <- SummoningProgressController : return HTML
+Actor <- SummoningProgressPage : render HTML
+
+alt Failed to fetch summoning progress
+    SummoningProgressObject <-- BackendController : error response
+    SummoningProgressController <-- SummoningProgressObject : reject requestObject
+    SummoningProgressPage <-- SummoningProgressController : error response
+    Actor <-- SummoningProgressPage : render error message
+end
+
+Actor -> SummoningProgressPage : clicks pool number
+
+SummoningProgressPage -> SummoningProgressController : call page controller
+PoolOverviewController <- SummoningProgressController : redirect to pool overview page
+PoolManagementPage <- PoolOverviewController : redirect to pool overview page
+Actor <- PoolManagementPage : redirect to pool overview
+
+@enduml

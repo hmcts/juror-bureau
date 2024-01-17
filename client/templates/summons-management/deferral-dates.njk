@@ -1,0 +1,96 @@
+{% extends "../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+
+{% block page_title %}{{ serviceName }} - process response{% endblock %}
+
+{% block page_identifier %}process - what to do{% endblock %}
+
+{% set currentApp = "Summons replies" %}
+
+{% block beforeContent %}
+  <a href="{{ backLinkUrl }}" class="govuk-back-link">Back</a>
+{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <h1 class="govuk-heading-l">Enter the juror's preferred start dates</h1>
+  <form action="{{ processUrl }}" method="POST" id="deferralForm">
+    
+    {{ datePicker({
+    id: "deferredToDate1",
+    label: {
+      text: "First choice",
+      classes: "govuk-label--s"
+    },
+    dateValue: datesEntered.firstChoiceDate,
+    dateMin: minDate,
+    dateMax: maxDate,
+    hint: dateHint,
+    dateError: errorsToDisplay.firstError
+    }) }}
+
+    {{ datePicker({
+    id: "deferredToDate2",
+    label: {
+      text: "Second choice",
+      classes: "govuk-label--s"
+    },
+    dateValue: datesEntered.secondChoiceDate,
+    dateMin: minDate,
+    dateMax: maxDate,
+    hint: dateHint,
+    dateError: errorsToDisplay.secondError
+    }) }}
+
+    {{ datePicker({
+    id: "deferredToDate3",
+    label: {
+      text: "Third choice",
+      classes: "govuk-label--s"
+    },
+    dateValue: datesEntered.thirdChoiceDate,
+    dateMin: minDate,
+    dateMax: maxDate,
+    hint: dateHint,
+    dateError: errorsToDisplay.thirdError
+    }) }}
+
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Continue",
+        attributes: {
+          id: "continueButton"
+        }
+      }) }}
+      <a id="adjustmentsCancelBtn" class="govuk-link--no-visited-state" href="{{ cancelUrl }}">Cancel</a>
+    </div>
+
+    <input type="hidden" name="_csrf" id="csrfToken" value="{{ csrftoken }}">
+  </form>
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+
+      const datePickers = []
+        .slice
+        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
+      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
+
+    });
+  </script>
+{% endblock %}
+
+

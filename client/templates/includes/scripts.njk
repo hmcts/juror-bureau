@@ -1,0 +1,64 @@
+<script src="{{ assetPath }}js/jquery.min.js"></script>
+
+<!-- show-hide-content only needed for legacy datepicker popup -->
+<!--<script src="{{ assetPath }}js/show-hide-content.js"></script>-->
+
+<!-- Bureau page scripts -->
+<script src="{{ assetPath }}js/bundle.js"></script>
+
+<!--  Init GDS and MOJ toolkits -->
+<script src="{{ assetPath }}js/govuk/all.js"></script>
+<script src="{{ assetPath }}js/moj/all.js"></script>
+<script>
+  $(document).ready(function () {
+    //console.log("init GOVUK toolkit");
+    window.GOVUKFrontend.initAll();
+    //console.log("init MOJ toolkit");
+    window.MOJFrontend.initAll();
+
+    // only needed for datepicker on Process  Reply - Deferral action
+    //var showHideContent = new GOVUK.ShowHideContent();
+    //showHideContent.init();
+  })
+</script>
+
+  
+<!-- scripts to run after GDS/MOJ inits only on reply details page -->
+
+{% if displayProcessButtonMenu %}
+  <script>
+    // button menu in reply details page header
+    new MOJFrontend.ButtonMenu({
+      container: $('#moj-process-button-menu'),
+      mq: '(min-width: 200em)',
+      buttonText: 'Process reply',
+      buttonClasses: 'moj-button-menu__wrapper--right',
+    });
+  </script>
+{% endif %}
+
+{% if displayActionsButtonMenu %}
+  <script>
+    // button menu in reply details page header
+    new MOJFrontend.ButtonMenu({
+      container: $('#moj-actions-button-menu'),
+      mq: '(min-width: 200em)',
+      buttonText: 'More actions',
+      buttonClasses: 'govuk-button--secondary moj-button-menu__toggle-button--secondary',
+    });
+  </script>
+{% endif %}
+
+{% if displayPoolManagementActionsButtonMenu %}
+  <script>
+    // button menu for the pool-management page
+    new MOJFrontend.ButtonMenu({
+      container: $("#moj-pool-management-button-menu"),
+      mq: "(min-width: 200em)",
+      buttonText: "Create a pool",
+      buttonClasses:
+        "govuk-button--secondary moj-button-menu__toggle-button--secondary",
+    });
+  </script>
+{% endif %}
+

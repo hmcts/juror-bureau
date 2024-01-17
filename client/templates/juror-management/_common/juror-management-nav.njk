@@ -1,0 +1,60 @@
+{% from "moj/components/primary-navigation/macro.njk" import mojPrimaryNavigation %}
+
+{% set approveAnchorHTML %}
+  <span id="approveAnchor">Approve jurors{% if jurorApprovalCount > 0 %} <span id="jurorApprovalCount" class="moj-notification-badge jd-badge-blue">{{ jurorApprovalCount }}</span>{% endif %}</span>
+{% endset %}
+
+{% set navBarElements =
+  ([
+    {
+      html: approveAnchorHTML,
+      href: url("juror-management.manage-jurors.approve.get"),
+      active: nav === "approve",
+      attributes: {
+        id: "approveAnchor"
+      }
+    }
+  ] if isSJO else [
+    {
+      text: "Manage jurors",
+      href: url("juror-management.manage-jurors.in-waiting.get"),
+      active: nav === "jurors",
+      attributes: {
+        id: "jurorsAnchor"
+      }
+    },
+    {
+      text: "Record attendance",
+      href: url("juror-management.attendance.get"),
+      active: nav === "attendance",
+      attributes: {
+        id: "attencanceAnchor"
+      }
+    }
+  ]).concat([
+    {
+      text: "Unpaid attendance",
+      href: url("juror-management.unpaid-attendance.get"),
+      active: nav === "unpaid-attendance",
+      attributes: {
+        id: "unpaidAttencanceAnchor"
+      }
+    },
+    {
+      text: "Approve expenses",
+      href: url("juror-management.approve-expenses.bacs-and-cheque.get"),
+      active: nav === "approve-expenses",
+      attributes: {
+        id: "expensesAnchor"
+      }
+    }
+  ])
+%}
+
+{{ mojPrimaryNavigation({
+  label: "Juror management navigation",
+  attributes: {
+    id: "jurorManagementNav"
+  },
+  items: navBarElements
+}) }}

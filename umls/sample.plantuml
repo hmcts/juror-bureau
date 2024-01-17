@@ -1,0 +1,56 @@
+@startuml sequence-general
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+participant Actor
+participant Whatever
+participant Page <</pool-management>>
+' participant PageValidator <<validator>>
+participant PoolManagementController <<pool-management.controller.js>>
+participant CourtsObject <<fetchCourts.get()>>
+participant PoolRequestsObject <<poolRequests.get()>>
+participant PageTemplate <<pool-management/index.njk>>
+participant BackendController
+
+
+
+' participant PageFilter <<filter>>
+Actor -> Page : request page
+
+' Page -> PageValidator : validate request
+' Page <- PageValidator : return status
+Page -> PoolManagementController : call page controller
+
+PoolManagementController -> CourtsObject : call requestObject
+CourtsObject -> BackendController : fetchData
+alt Backend returns an error
+  CourtsObject <-- BackendController : error response
+end
+CourtsObject <- BackendController : returnData
+PoolManagementController <- CourtsObject : resolve requestObject call
+alt Backend returns an error
+  PoolManagementController <-- CourtsObject : reject requestObject call
+end
+
+PoolManagementController -> PoolRequestsObject : call requestObject
+PoolRequestsObject -> BackendController : fetchData
+alt Backend returns an error
+  PoolRequestsObject <-- BackendController : error response
+end
+PoolRequestsObject <- BackendController : returnData
+PoolManagementController <- PoolRequestsObject : resolve requestObject call
+alt Backend returns an error
+  PoolManagementController <-- PoolRequestsObject : reject requestObject call
+end
+
+' PoolManagementController -> PageValidator : validate data
+' PoolManagementController <- PageValidator : return status
+PoolManagementController -> PageTemplate : request template
+
+' PageTemplate -> PageFilter : check filter
+' PageTemplate <- PageFilter : return data
+PoolManagementController <- PageTemplate : return HTML
+' Page <- PoolManagementController : return HTML
+
+Actor <- PoolManagementController : render HTML
+@enduml

@@ -1,0 +1,149 @@
+@startuml mark-juror-deferred
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant ProcessResponsePage <</response/{id}/{paper|digital}/process>>
+participant DeferralDatesPage <</deferral-dates>>
+participant DeferralPage <</deferral>>
+participant InboxPage <</inbox>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant SummonsManagementController <<summons-management.controller.js>>
+participant PreferredDatesObj <<preferredDatesObj.get()>>
+participant DeferralPoolsObj <<deferralPoolsObj.post()>>
+participant ExcusalCodesObj <<excusalCodesObject.get()>>
+participant DeferralObj <<deferralObj.post()>>
+
+
+''' TEMPLATES
+participant DeferralDatesTemplate <<summons-management/deferral-dates.njk>>
+participant DeferralTemplate <<summons-management/deferral.njk>>
+
+''' FILTERS AND VALIDATORS
+participant DeferralDatePickerValidator
+participant DeferralDateAndReasonValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+''' JOURNEY FLOW
+Actor -> ProcessResponsePage : request deferal for juror
+
+ProcessResponsePage -> SummonsManagementController : call page controller
+
+alt Paper summons reply
+    SummonsManagementController -> DeferralDatesTemplate : request and build template
+    SummonsManagementController <- DeferralDatesTemplate : return HTML
+    DeferralDatesPage <- SummonsManagementController : return HTML
+    Actor <- DeferralDatesPage : render HTML
+
+    Actor -> DeferralDatesPage : enter valid deferral dates
+
+    DeferralDatesPage -> SummonsManagementController : post deferral dates
+    SummonsManagementController -> DeferralDatePickerValidator : validate deferral dates
+    SummonsManagementController <- DeferralDatePickerValidator : valid dates
+
+    alt Invalid deferral dates
+        SummonsManagementController <-- DeferralDatePickerValidator : valid dates
+        SummonsManagementController --> DeferralDatesTemplate : request and build template
+        SummonsManagementController <-- DeferralDatesTemplate : return HTML with error message
+        DeferralDatesPage <-- SummonsManagementController : return HTML with error message
+        Actor <-- DeferralDatesPage : render error message
+    end
+end
+
+alt Digital summons reply
+    SummonsManagementController -> PreferredDatesObj : build request object
+    PreferredDatesObj -> BackendController : send backend request
+    PreferredDatesObj <- BackendController : ok response
+    SummonsManagementController <- PreferredDatesObj : resolve request
+
+    alt Digital reply - does not have preferred dates
+        PreferredDatesObj <- BackendController : ok response - NO PREFERRED DATES
+        SummonsManagementController <- PreferredDatesObj : resolve request
+
+        SummonsManagementController -> DeferralDatesTemplate : request and build template
+        SummonsManagementController <- DeferralDatesTemplate : return HTML
+        DeferralDatesPage <- SummonsManagementController : return HTML
+        Actor <- DeferralDatesPage : render HTML
+
+        Actor -> DeferralDatesPage : enter valid deferral dates
+
+        DeferralDatesPage -> SummonsManagementController : post deferral dates
+        SummonsManagementController -> DeferralDatePickerValidator : validate deferral dates
+        SummonsManagementController <- DeferralDatePickerValidator : valid dates
+    end
+
+    alt Failed to retreive preferred dates
+        PreferredDatesObj <-- BackendController : error response
+        SummonsManagementController <-- PreferredDatesObj : resolve error response
+        DeferralDatesPage <-- SummonsManagementController : error response
+        Actor <-- DeferralDatesPage : render error message  
+    end
+end
+
+SummonsManagementController -> DeferralPoolsObj : build request object
+DeferralPoolsObj -> BackendController : send backend request
+DeferralPoolsObj <- BackendController : ok response
+SummonsManagementController <- DeferralPoolsObj : resolve request
+
+alt Failed to fetch pool options
+    DeferralPoolsObj <-- BackendController : error response
+    SummonsManagementController <-- DeferralPoolsObj : resolve error response
+    DeferralPage <-- SummonsManagementController : error response
+    Actor <-- DeferralPage : render error message
+end
+
+SummonsManagementController -> ExcusalCodesObj : build request object
+ExcusalCodesObj -> BackendController : send backend request
+ExcusalCodesObj <- BackendController : ok response
+SummonsManagementController <- ExcusalCodesObj : resolve request
+
+alt Failed to retreive excusal codes
+    ExcusalCodesObj <-- BackendController : error response
+    SummonsManagementController <-- ExcusalCodesObj : resolve error response
+    DeferralPage <-- SummonsManagementController : error response
+    Actor <-- DeferralPage : render error message
+end
+
+SummonsManagementController -> DeferralTemplate : request and build template
+SummonsManagementController <- DeferralTemplate : return HTML
+DeferralPage <- SummonsManagementController : return HTML
+Actor <- DeferralPage : render HTML
+
+Actor -> DeferralPage : select deferral reason and deferral option
+
+DeferralPage -> SummonsManagementController : post deferral options
+SummonsManagementController -> DeferralDateAndReasonValidator : validate reason and option
+SummonsManagementController <- DeferralDateAndReasonValidator : valid reason and option
+
+alt Invalid reason or option
+    SummonsManagementController <-- DeferralDateAndReasonValidator : valid dates
+    SummonsManagementController --> DeferralTemplate : request and build template
+    SummonsManagementController <-- DeferralTemplate : return HTML with error message
+    DeferralPage <-- SummonsManagementController : return HTML with error message
+    Actor <-- DeferralPage : render error message
+end
+
+SummonsManagementController -> DeferralObj : build request object
+DeferralObj -> BackendController : send backend request
+DeferralObj <- BackendController : ok response
+SummonsManagementController <- DeferralObj : resolve request
+
+alt Failed to process Deferral
+    SummonsManagementController <-- BackendController : error response
+    DeferralPage <-- SummonsManagementController : error response
+    Actor <-- DeferralPage : render error message
+end
+
+InboxPage <- SummonsManagementController : redirect to inbox
+Actor <- InboxPage : redirect to inbox
+
+
+
+
+@enduml

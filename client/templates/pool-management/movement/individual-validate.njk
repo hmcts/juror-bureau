@@ -1,0 +1,55 @@
+{% extends "../../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{% block page_title %}You cannot move this juror{% endblock %}
+
+{% block content %}
+
+    {% include "includes/errors.njk" %}
+
+    <form method="POST" id="deferralForm">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-l govuk-!-margin-bottom-6">You cannot move this juror</h1>
+            </div>
+        </div>
+
+        {% if problems.noActiveRecord|length%}
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <p class="govuk-body">This juror is no longer in the original pool they were assigned to.</p>
+                <p class="govuk-body"> Another user may have moved them before you were able to.</p>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if problems.ageIneligible|length%}
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <p class="govuk-body">This juror cannot be moved because they'll be 76 years old by the new date and no longer eligible for jury service.</p>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if problems.invalidStatus|length%}
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <p class="govuk-body">You can only move jurors with a responded or summoned status. This juror have a different status and cannot be moved.</p>
+                <p class="govuk-body">This juror has a status of:</p>
+                <p class="govuk-body"><strong>{{problems.invalidStatus[0].status}}</strong></p>
+                <p class="govuk-body">You can update their status if you need to.</p>
+            </div>
+        </div>
+        {% endif %}
+
+        {# Submit form #}
+        <div class="govuk-button-group">
+            <a href="{{ cancelUrl }}" class="govuk-link--no-visited-state" id="cancelAnchor">Back to juror record</a>
+        </div>
+
+        <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+        <input type="hidden" name="version" id="version" value="{{ version }}">
+    </form>
+{% endblock %}

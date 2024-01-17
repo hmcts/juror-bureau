@@ -1,0 +1,104 @@
+@startuml bulk-return
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant JuryDetailsPage <</trial-management/trials/:trialNumber/detail>> #lightsteelblue
+participant ReturnPost <</trial-management/trials/:trialNumber/return>> #lightsteelblue
+participant HandleAttendancePage <</trial-management/trials/:trialNumber/return/attendance>> #lightsteelblue
+participant CheckOutPage <</trial-management/trials/:trialNumber/return/check-out>> #lightsteelblue
+participant ReturnConfirmPage <</trial-management/trials/:trialNumber/return/confirm>> #lightsteelblue
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant TrialManagementController <<trial-management.controller.js>> #lightyellow
+participant ReturnController <<returns.controller.js>> #lightyellow
+
+''' TEMPLATES
+participant TrialDetailsTemplate <<trial-management/trial-detail.njk>> #lavender
+participant HandleAttendanceTemplate <<trial-management/returns/return-attendance.njk>> #lavender
+participant CheckOutTemplate <<trial-management/returns/return-check-out.njk>> #lavender
+participant ReturnConfirmTemplate <<trial-management/returns/confirm-return.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant CheckOutTimeValidator
+participant CheckInTimeValidator
+participant JurorSelectValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+Actor -> JuryDetailsPage : request page
+
+group TrialDetails : Trial details standard page load
+  JuryDetailsPage o--x BackendController
+  Actor <- TrialManagementController : render HTML
+end
+
+Actor -> ReturnPost : POST from form
+ReturnPost -> ReturnController : call page controller
+ReturnController -> JurorSelectValidator : ensure juror is selected
+
+alt No jurors selected
+  ReturnController <-- JurorSelectValidator : no jurors selected
+  JuryDetailsPage <-- ReturnController : redirect to details page
+  JuryDetailsPage o<-- TrialDetailsTemplate : render with error
+  Actor <-- TrialManagementController : render HTML
+end
+
+ReturnController <- JurorSelectValidator : validated
+HandleAttendancePage o<- ReturnController : redirect to attendance page
+ReturnController -> HandleAttendanceTemplate : request and build template
+ReturnController <- HandleAttendanceTemplate : return HTML
+Actor <- ReturnController : render HTML
+
+Actor -> HandleAttendancePage : POST from form
+HandleAttendancePage -> ReturnController : call page controller
+
+alt No option selected
+  ReturnController <-- JurorSelectValidator : no jurors selected
+  HandleAttendancePage o<-- HandleAttendanceTemplate : render with error
+  Actor <-- TrialManagementController : render HTML
+end
+
+alt Confirm service is selected
+  CheckOutPage o<- ReturnController : redirect to check out page
+  ReturnController -> CheckOutTemplate : request and build template
+  ReturnController <- CheckOutTemplate : return HTML
+  Actor <- ReturnController : render HTML
+
+  Actor -> CheckOutPage : POST from form
+  CheckOutPage -> ReturnController : call page controller
+  ReturnController -> CheckOutTimeValidator : validate check out time form fields
+  ReturnController <- CheckOutTimeValidator : validation result
+
+  alt Some jurors do not have a check in time
+    ReturnController -> CheckInTimeValidator : validate check out time form fields
+    ReturnController <- CheckInTimeValidator : validation result
+  end
+
+  alt Either validation fails
+    CheckOutPage o<-- ReturnController : render with error
+    Actor <-- ReturnController : render HTML
+  end
+end
+
+ReturnConfirmPage <- ReturnController : redirect directly to confirmation
+ReturnConfirmPage -> ReturnController : call controller
+ReturnController -> ReturnConfirmTemplate : request and build template
+ReturnController <- ReturnConfirmTemplate : return HTML
+Actor <- ReturnController : render HTML
+
+Actor -> ReturnConfirmPage : POST from form
+ReturnConfirmPage -> ReturnController : call controller
+
+Actor x<-->x BackendController : No backend handled currently
+' // TODO Hit data access object
+' // TODO Hit backend
+' // TODO Handle response
+
+JuryDetailsPage o<- ReturnController : Redirect with success message
+

@@ -1,0 +1,34 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+
+{% block page_title %}{{ serviceName }} - Delete Atendance{% endblock %}
+  
+{% block content %}
+
+  {% set _submitUrl = processUrl %}
+  {% set _cancelUrl = cancelUrl %}
+  {% set juror = selectedJuror %}
+  
+  <div class="govuk-grid-row">
+    <form action="{{ _submitUrl }}" method="post" id="confirmCourtTransfer">
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">Are you sure you want to delete attendance for {{juror.firstName}} {{juror.lastName}}?</h1>
+        <div class="govuk-button-group">
+          {{ govukButton({
+          text: "Yes - delete",
+          type: "submit",
+          classes: "govuk-button--warning"
+          }) }}
+          <a class="govuk-link" href="{{ _cancelUrl }}">Cancel</a>
+        </div>
+      </div>
+      <input type="hidden" name="jurorNumber" value="{{ juror.jurorNumber }}">
+      <input type="hidden" name="attendanceDate" value="{{ attendanceDate }}">
+      <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+    </form>
+  </div>
+
+{% endblock %}

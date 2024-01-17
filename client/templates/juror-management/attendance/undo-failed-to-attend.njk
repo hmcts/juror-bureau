@@ -1,0 +1,55 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_title %}{{ serviceName }} - juror-management - update - undo failed to attend{% endblock %}
+{% block page_identifier %}juror-management - update - undo failed to attend{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {% set failedToAttendError = undefined %}
+  {% if errors.items["failed-to-attend"] %}
+    {% set failedToAttendError = { text: errors.items["failed-to-attend"][0].details } %}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+
+      <span class="govuk-caption-l">Undo failed to attend</span>
+      <h1 class="govuk-heading-l">{{ jurorName }}</h1>
+
+      <form method="POST">
+        
+        {{ govukCheckboxes({
+          name: "failed-to-attend",
+          items: [
+            {
+              value: "failed",
+              text: "Tick to confirm the juror's status should revert to ‘Responded’"
+            }
+          ],
+          errorMessage: failedToAttendError
+        }) }}
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Revert to ‘Responded’",
+            attributes: {
+              id: "submitButton"
+            }
+          }) }}
+          <a class="govuk-link" id="cancelAnchor" href="{{ url('juror-record.attendance.get', { jurorNumber: jurorNumber }) }}">
+            Cancel
+          </a>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+{% endblock %}

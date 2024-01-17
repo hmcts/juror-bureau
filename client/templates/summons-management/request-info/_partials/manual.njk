@@ -1,0 +1,16 @@
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+
+<span class="govuk-caption-l">{{ response.jurorName }}</span>
+<h1 class="govuk-heading-l">You need to manually create a letter to send to the juror </h1>
+
+{{ govukInsetText({
+  text: "A letter will not be sent automatically."
+}) }}
+
+<p class="govuk-body">Follow these steps:</p>
+
+<ol class="govuk-list govuk-list--number">
+  <li class="govuk-!-margin-bottom-6">Create a letter requesting a signature on the summons reply, using the letter generator on the shared drive.</li>
+  <li class="govuk-!-margin-bottom-6">If you’re missing other information apart from the signature, you need to manually ask for this in the letter you create.</li>
+  <li class="govuk-!-margin-bottom-6">Post the letter to the juror along with the original summons reply for them to sign.</li>
+</ol>

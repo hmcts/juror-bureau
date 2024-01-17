@@ -1,0 +1,152 @@
+{% extends "../layouts/default.njk" %}
+
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+
+{% block page_title %}
+ {{ serviceName }} - Manage team - Add a new team member
+{% endblock %}
+
+{% block page_identifier %}add a new team member{% endblock %}
+
+{% set currentApp = "Summons replies" %}
+
+{% block content %}
+  
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+
+      {% if errors.items['name'] %}
+        {% set nameError = {text: errors.items['name'][0].details, visuallyHiddenText: 'Error'} %}
+      {% else %}
+        {% set nameError = undefined %}
+      {% endif %}
+
+      {% if errors.items['login'] %}
+        {% set usernameError = {text: errors.items['login'][0].details, visuallyHiddenText: 'Error'} %}
+      {% else %}
+        {% set usernameError = undefined %}
+      {% endif %}
+
+      {% if errors.items['teamLeader'] %}
+        {% set teamLeaderError = {text: errors.items['teamLeader'][0].details, visuallyHiddenText: 'Error'} %}
+      {% else %}
+        {% set teamLeaderError = undefined %}
+      {% endif %}
+
+      <form action="{{ url('staff.create.post') }}" method="POST">
+
+        <fieldset class="govuk-fieldset">
+
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+            <h1 class="govuk-fieldset__heading">
+              Add a new team member
+            </h1>
+          </legend>
+
+          {{ govukInput({
+            label: {
+              text: "Name"
+            },
+            id: "name",
+            name: "name",
+            value: formFields.name,
+            classes: "govuk-!-width-one-quarter",
+            attributes: {
+              maxlength: 30 
+            },
+            errorMessage: nameError
+          }) }}
+
+          {{ govukInput({
+            label: {
+              text: "Username"
+            },
+            id: "login",
+            name: "login",
+            value: formFields.login,
+            classes: "govuk-!-width-one-quarter",
+            attributes: {
+              maxlength: 20 
+            },
+            errorMessage: usernameError
+          }) }}
+
+          {{ govukRadios({
+            classes: "govuk-radios--inline",
+            idPrefix: "teamLeader",
+            name: "teamLeader",
+            fieldset: {
+              legend: {
+                text: "Team leader",
+                isPageHeading: true,
+                classes: "govuk-body"
+              }
+            },
+            items: [
+              {
+                value: "Yes",
+                text: "Yes",
+                checked: teamLeaderEnabled === true
+              },
+              {
+                value: "No",
+                text: "No",
+                checked: teamLeaderEnabled === false
+              }
+            ],
+            errorMessage: teamLeaderError
+          }) }}
+
+          {#
+          {{ govukRadios({
+            classes: "govuk-radios--inline",
+            idPrefix: "active",
+            name: "active"
+            fieldset: {
+              legend: {
+                text: "Active",
+                isPageHeading: true,
+                classes: "govuk-body"
+              }
+            },
+            items: [
+              {
+                value: "Yes",
+                text: "Yes",
+                checked: activeEnabled === true
+              },
+              {
+                value: "No",
+                text: "No",
+                checked: activeEnabled === false
+              }
+            ]
+          }) }}
+          #}
+
+        </fieldset>
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Save",
+            type: "submit" 
+          }) }}
+
+          <a class="govuk-link" href="{{url('staff.get')}}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+
+      </form>
+
+    <div>
+  </div>
+
+
+{% endblock %}

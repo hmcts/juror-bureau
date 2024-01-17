@@ -1,0 +1,50 @@
+<section class="modal-content disqualification-section">
+
+  <form>
+
+    <div class="govuk-form-group">
+      <fieldset class="govuk-fieldset" aria-describedby="disqualifyHint">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h1 class="govuk-fieldset__heading">
+            Disqualification
+          </h1>
+        </legend>
+        <div id="disqualifyHint" class="govuk-hint">
+          Select reason for disqualification
+        </div>
+
+
+        <div class="govuk-radios">
+          <p class="govuk-error-message error-message"></p>
+          {% for reason in disqualifyReasons %}
+          <div class="govuk-radios__item">
+            <input type="radio" class="govuk-radios__input" name="disqualify" id="disqualify_{{ reason.disqualifyCode }}" value="{{ reason.disqualifyCode }}" >
+            <label class="govuk-label govuk-radios__label" for="disqualify_{{ reason.disqualifyCode }}" data-reason="{{ reason.disqualifyCode }} - {{ reason.description }}">
+              {{ reason.disqualifyCode }} - {{ reason.description }}
+            </label>
+          </div>
+          {% endfor %}
+          
+        </div>
+
+      </fieldset>
+    </div>
+
+
+    <div class="govuk-form-group">
+      <span class="govuk-error-message error-message-submit"></span>
+      <div class="govuk-button-group">
+        <button id="disqualifyMarkComplete" class="govuk-button modal-save-button" data-module="govuk-button" value="Mark as completed" disabled >Mark as completed</button>
+        <a id="disqualifyCancelBtn" class="govuk-link close-modal" href="#">Cancel</a>
+      </div>
+    </div>
+
+
+    <input type="hidden" name="jurorNumber" id="jurorNumber" value="{{ response.jurorNumber }}">
+    <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+    <input type="hidden" name="version" id="version" value="{{ version }}">
+
+  </form>
+
+  <br class="clear">
+</section>

@@ -1,0 +1,45 @@
+.mod-large-tag {
+  display:inline-block;
+  padding: 15px;
+  margin-bottom: govuk-spacing(5);
+  color: govuk-colour("white");
+  background-color: govuk-colour("blue");
+
+  &__blue {
+    color: govuk-shade(govuk-colour("blue"), 30%);
+    background-color: govuk-tint(govuk-colour("blue"), 80%);
+  }
+  &__grey {
+    color: govuk-shade(govuk-colour("dark-grey"), 50%);
+    background-color: govuk-tint(govuk-colour("dark-grey"), 85%);
+  }
+  &__label {
+    @include govuk-font($size: 19, $weight: bold);
+    padding-bottom: 10px;
+  }
+  &__value {
+    font-weight: 700;
+    @include govuk-font($size: 36, $weight: bold);
+    padding-bottom: 10px;
+  }
+  &__link {
+    @include govuk-font($size: 19);
+    color: inherit;
+  }
+
+  &-inline {
+    &__label {
+      @include govuk-font($size: 19);
+    }
+    &__value {
+      font-weight: 700;
+      @include govuk-font($size: 24, $weight: bold);
+      padding-left: 15px;
+    }
+    &__link {
+      @include govuk-font($size: 19);
+      color: inherit;
+      padding-left: 15px;
+    }
+  }
+}

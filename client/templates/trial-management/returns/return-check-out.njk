@@ -1,0 +1,106 @@
+{% extends "layouts/default-dashboard.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "custom-components/time-input-12-hour/macro.njk" import timeInput12Hour %}
+
+{% set currentApp = "Trial management" %}
+
+{% block page_identifier %}Return jurors{% endblock %}
+{% block page_title %}{{ serviceName }} - Return jurors{% endblock %}
+
+{% block beforeContent %}
+    {% include "includes/back-link.njk" %}
+{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <span class="trial-detail__header-label">Trial number {{trialNumber}}</span>
+      <h1 class="govuk-heading-l">Confirm attendance</h1>
+      <form method="post">
+
+      {{ timeInput12Hour({
+          id: "checkInTime",
+          name: "checkInTime",
+          hint: {
+            text: "If a juror has already been checked in, this time will not be applied."
+          },
+          fieldset: {
+            legend: {
+              text: "Enter check in time",
+              classes: "govuk-fieldset__legend--s"
+            }
+          },
+          items: {
+            hour: {
+              value: formFields.checkInTimeHour,
+              attributes: {
+                minLength: "1",
+                maxLength: "2"
+              }
+            },
+            minute: {
+              value: formFields.checkInTimeMinute,
+              attributes: {
+                minLength: "1",
+                maxLength: "2"
+              }
+            },
+            period: {
+              value: formFields.checkInTimePeriod
+            }
+          },
+          errors: errors.items
+        }) }}
+
+      {{ timeInput12Hour({
+          id: "checkOutTime",
+          name: "checkOutTime",
+          fieldset: {
+            legend: {
+              text: "Enter check out time",
+              classes: "govuk-fieldset__legend--s"
+            }
+          },
+          items: {
+            hour: {
+              value: formFields.checkOutTimeHour,
+              attributes: {
+                minLength: "1",
+                maxLength: "2"
+              }
+            },
+            minute: {
+              value: formFields.checkOutTimeMinute,
+              attributes: {
+                minLength: "1",
+                maxLength: "2"
+              }
+            },
+            period: {
+              value: formFields.checkOutTimePeriod
+            }
+          },
+          errors: errors.items
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            type: "submit",
+            attributes: {
+              id: "returnJurorsButton",
+              formAction: returnUrl
+            }
+          }) }}
+          <a id="cancelLink" class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+    </div>
+  </div>
+
+{% endblock %}

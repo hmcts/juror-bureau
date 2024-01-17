@@ -1,0 +1,229 @@
+{% extends "../../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "./deferral-date-macro.njk" import deferralDate %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+
+{% block page_title %}
+  {{ serviceName }} - process - deferral{% endblock %}
+
+{% block page_identifier %}process - deferral{% endblock %}
+
+{% block content %}
+
+  {% include "../../includes/errors.njk" %}
+
+  {% if errors.items["deferralReason"] %}
+    {% set deferralReasonError = {"text": errors.items['deferralReason'][0].details} %}
+  {% else %}
+    {% set deferralReasonError = undefined %}
+  {% endif %}
+
+  {% if errors.items["deferralDecision"] %}
+    {% set deferralDecisionError = {"text": errors.items['deferralDecision'][0].details} %}
+  {% else %}
+    {% set deferralDecisionError = undefined %}
+  {% endif %}
+
+  {% if errors.items["deferralDateSelection"] %}
+    {% set deferralDateSelectionError = {"text": errors.items['deferralDateSelection'][0].details} %}
+  {% else %}
+    {% set deferralDateSelectionError = undefined %}
+  {% endif %}
+
+  {% if errors.items["deferralDate"] %}
+    {% set deferralDateError = errors.items['deferralDate'][0].details %}
+  {% else %}
+    {% set deferralDateError = undefined %}
+  {% endif %}
+
+  {% set acceptDeferralRadio = false %}
+  {% set refuseDeferralRadio = false %}
+  {% if deferralDetails.deferralDecision === "acceptDeferral" %}
+    {% set acceptDeferralRadio = true %}
+  {% endif %}
+  {% if deferralDetails.deferralDecision === "refuseDeferral" %}
+    {% set refuseDeferralRadio = true %}
+  {% endif %}
+
+  {% set radioItems = [["Accept deferral request", "Refuse deferral request"], ["Grant deferral", "Refuse deferral"]]%}
+  {% set radioValues = [["acceptDeferral", "refuseDeferral"], ["GRANT", "REFUSE"]] %}
+  {% set submitButtonText = ["Confirm", "Continue"] %}
+  {% set radioText = radioItems[0] %}
+  {% set radioGrantRefuse = radioValues[0] %}
+  {% set submitText = submitButtonText[0] %}
+  {% if hasModAccess === true %}
+    {% set radioText = radioItems[1] %}
+    {% set radioGrantRefuse = radioValues[1] %}
+    {% set submitText = submitButtonText[1] %}
+  {% endif %}
+
+  {# Setup reason dropdown items #}
+  {% set reasonList = [{value: "", text: "Select a reason...", selected: true}] %}
+  {% for reason in deferralReasons %}
+
+    {% if (reason.excusalCode === deferralDetails.deferralReason) %}
+      {% set codeSelected = true %}
+    {% else %}
+      {% set codeSelected = false %}
+    {% endif %}
+
+    {% set reasonList = (reasonList.push({value: reason.excusalCode, text: reason.excusalCode + " - " + reason.description, selected: codeSelected }), reasonList) %}
+  {% endfor %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if hasModAccess === true %}
+        <form action=" {{ processURL }}" method="POST" class="disable-empty" id="deferralForm">
+      {% else %}
+        <form action="/response/{{jurorNumber}}/deferral" method="POST" class="disable-empty" id="deferralForm">
+      {% endif %}
+
+        {% if hasModAccess === false %}
+        <span class="govuk-caption-xl">{{ nameDetails.headerNameRender }}</span>
+        <h1 class="govuk-heading-xl">Deferral request</h1>
+        {% else %}
+        <h1 class="govuk-heading-xl">Grant or refuse a deferral</h1>
+        {% endif %}
+
+        {# deferral reason dropdown #}
+        {{ govukSelect({
+          id: "deferralReason",
+          name: "deferralReason",
+          label: {
+            text: "Reason for the deferral request",
+            classes: "govuk-body govuk-!-font-weight-bold"
+          },
+          items: reasonList,
+          errorMessage: deferralReasonError
+        }) }}
+
+        {# setup date picker html #}
+        {% set otherDeferralDateHTML %}
+          <div class="{% if errors.items['dates'] %}govuk-error{% endif %}" id="datesGroup">
+            {{ datePicker({
+              id: "deferralDate",
+              lang: 'en',
+              label: {
+                text: 'Deferral date'
+              },
+              hint: 'enter a date',
+              dateMin: hearingDate,
+              dateMax: null,
+              dateValue: deferralDetails.deferralDate,
+              dateError: deferralDateError
+            }) }}
+          </div>
+        {% endset -%}
+
+        {# set up deferral date selection item list #}
+        {% set dateItems = [] %}
+        {% set selectedItem = false %}
+        {% for dateItem in deferralDates %}
+          
+          {% if dateItem.dateValue === deferralDetails.deferralDateSelection %}
+            {% set selectedItem = true %}
+          {% else %}
+            {% set selectedItem = false %}
+          {% endif %}
+          
+          {% set dateItems = (dateItems.push({value: dateItem.dateValue, text: dateItem.displayValue, checked: selectedItem }), dateItems) %}
+        {% endfor %}
+
+        {% if deferralDetails.deferralDateSelection === "otherDate" %}
+          {% set selectedItem = true %}
+        {% else %}
+          {% set selectedItem = false %}
+        {% endif %}
+        {% set dateItems = (dateItems.push({value: "otherDate", text: "Other", checked: selectedItem, conditional: {html: otherDeferralDateHTML} }), dateItems) %}
+
+        {# set up date selection / other radio buttons #}
+        {% set deferralChoicesHTML %}
+          {{ govukRadios({
+            idPrefix: "deferralDateSelection",
+            name: "deferralDateSelection",
+            fieldset: {
+              legend: {
+                text: "Select a date to defer to",
+                isPageHeading: true,
+                classes: "govuk-fieldset__legend--s"
+              }
+            },
+            items: dateItems,
+            errorMessage: deferralDateSelectionError
+          }) }}
+        {% endset %}
+
+        {# deferral decision radios accept/refuse #}
+        {{ govukRadios({
+          idPrefix: "deferralDecision",
+          name: "deferralDecision",
+          fieldset: {
+            legend: {
+              text: "Select your decision",
+              classes: "govuk-body govuk-!-font-weight-bold"
+            }
+          },
+          items: [
+            {
+              value: radioGrantRefuse[0],
+              text: radioText[0],
+              checked: acceptDeferralRadio,
+              conditional: {
+                html: deferralChoicesHTML
+              }
+            },
+            {
+              value: radioGrantRefuse[1],
+              text: radioText[1],
+              checked: refuseDeferralRadio
+            }
+          ],
+          errorMessage: deferralDecisionError
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: submitText
+          }) }}
+          {% if hasModAccess === true %}
+            <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+          {% else %}
+            <a class="govuk-link" href="../../response/{{jurorNumber}}">Cancel</a>
+          {% endif %}
+        </div>
+
+        <input type="hidden" name="hearingDate" id="hearingDate" value="{{ hearingDate }}">
+        <input type="hidden" name="jurorNumber" id="jurorNumber" value="{{ jurorNumber }}">
+        <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+        <input type="hidden" name="version" id="version" value="{{ version }}">
+
+      </form>
+      
+    </div>
+  </div>
+                  
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script type="text/javascript" src="{{ assetPath }}js/svgxuse.min.js"></script>
+
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function(){
+
+      const datePickers = [].slice.call(document.querySelectorAll('[data-module="ds-datepicker"]'));
+      datePickers.forEach(datePicker => new DSDatePicker(datePicker, 
+        {imagePath: '{{ assetPath }}assets/images/icons/'
+        }).init());
+
+    });
+  </script>
+
+{% endblock %}

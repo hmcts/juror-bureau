@@ -1,0 +1,189 @@
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+    
+    <form method="post" id="poolDetailsForm" >
+
+        <div class="govuk-grid-column-full juror-actions govuk-!-padding-0 govuk-!-margin-bottom-5">
+          {{ govukButton({
+            text: "Show filter",
+            classes: "govuk-button--secondary govuk-!-margin-bottom-0 govuk-!-margin-right-1",
+            attributes: {
+              id: "pool-overview-show-filter"
+            }
+          }) }}
+          {{ govukButton({
+            text: "Postpone",
+            classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+            type: "submit",
+            attributes: {
+              id: "postponeButton",
+              formAction: postUrls.postponeUrl
+            }
+          }) }}
+          {{ govukButton({
+            text: "Reassign",
+            classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+            type: "submit",
+            attributes: {
+              id: "reassignButton",
+              formAction: postUrls.assignUrl
+            }
+          }) }}
+          {{ govukButton({
+            text: "Transfer",
+            classes: "govuk-button--secondary govuk-!-margin-bottom-0 govuk-!-margin-right-1",
+            type: "submit",
+            attributes: {
+              id: "transferButton",
+              formAction: postUrls.transferUrl
+            }
+          }) }}
+          {{ govukButton({
+            text: "Change next due at court",
+            classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+            type: "submit",
+            attributes: {
+              id: "changeServiceDateButton",
+              formAction: postUrls.changeServiceDateUrl
+            }
+          }) }}
+          {{ govukButton({
+            text: "Complete service",
+            classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+            type: "submit",
+            attributes: {
+              id: "completeServiceButton",
+              formAction: postUrls.completeServiceUrl
+            }
+          }) }}
+        </div>
+
+      <div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-one-third">
+          {% include "./_partials/filters.njk" %}
+        </div>
+
+        {% if poolMembers.length === 0 and poolDetails.isActive === true %}
+          <div id="pool-overview-table-wrapper" class="govuk-grid-column-full">
+            <span class="govuk-body">There are no results to display.</span>
+          </div>
+        {% elif poolDetails.isActive === true %}
+          <div id="pool-overview-table-wrapper" class="govuk-grid-column-full">
+
+            {% if errors.items["selectedJurors"] %}
+              <div class="error-allocation">
+                <p class="govuk-error-message">{{ errors.items['selectedJurors'][0].details }}</p>
+              </div>
+            {% endif %}
+            
+            {% if errors.items["selectedJurors"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
+
+            <div class="govuk-body"> <span id="total-checked-jurors">{{ totalCheckedJurors }}</span> of selected <span id="total-jurors-count">{{ totalJurors }}</span> </div>
+
+            <table class="govuk-table" data-module="moj-sortable-table" data-multi-select-checkbox="#select-all" id="poolJurors" name="poolJurors">
+              <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                  <th scope="col" class="govuk-table__header jd-assign-replies-table-head jd-middle-align" >
+                    <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
+                      <input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check" id="check-all-jurors" 
+                        name="check-all-jurors" aria-label="check-all-jurors" {% if totalCheckedJurors === totalJurors %}checked{% endif %}/>
+                      <label class="govuk-label govuk-checkboxes__label">
+                        <span class="govuk-visually-hidden">Select All</span>
+                      </label>
+                    </div>
+                  </th>
+                  <th scope="col" class="govuk-table__header jd-assign-replies-table-head jd-middle-align" aria-sort="ascending">Juror number</th>
+                  <th scope="col" class="govuk-table__header jd-assign-replies-table-head jd-middle-align" aria-sort="none">First name</th>
+                  <th scope="col" class="govuk-table__header jd-assign-replies-table-head jd-middle-align" aria-sort="none">Last name</th>
+                  <th scope="col" class="govuk-table__header jd-assign-replies-table-head jd-middle-align" aria-sort="none">Attendance</th>
+                  <th scope="col" class="govuk-table__header jd-assign-replies-table-head jd-middle-align" aria-sort="none">Checked in</th>
+                  <th scope="col" class="govuk-table__header jd-assign-replies-table-head jd-middle-align" aria-sort="none">Next due at court</th>
+                  <th scope="col" class="govuk-table__header jd-assign-replies-table-head jd-middle-align" aria-sort="none">Status</th>
+                </tr>
+              </thead>
+              <tbody class="govuk-table__body">
+            
+              {% for member in poolMembers %}
+
+                <tr class="govuk-table__row govuk-table__row--selected">
+                  <td class="govuk-table__cell">
+                    <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox" onclick="checkSet()">
+                      <input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check" id="juror-{{ member.jurorNumber }}"
+                        {% if member.checked %}checked{% endif %} aria-label="check-juror-{{ member.jurorNumber }}" name="checked-jurors" value="{{ member.jurorNumber }}">
+                      <label class="govuk-label govuk-checkboxes__label" for="select-{{ member.jurorNumber }}">
+                        <span class="govuk-visually-hidden">Select {{ member.jurorNumber }}</span>
+                      </label>
+                    </div>
+                  </td>
+                  <td id="{{member.jurorNumber}}" class="govuk-table__cell jd-middle-align"><a href="/juror-management/record/{{member.jurorNumber}}/overview">{{ member.jurorNumber }}</a></td>
+                  <td id="{{member.jurorNumber}}-fName" class="govuk-table__cell jd-middle-align">{{ member.firstName  | capitalize }}</td>
+                  <td id="{{member.jurorNumber}}-lName" class="govuk-table__cell jd-middle-align">{{ member.lastname  | capitalize }}</td>
+                  <td id="{{member.jurorNumber}}-attendance" class="govuk-table__cell jd-middle-align">{{ member.attendance  | capitalize }}</td>
+                  <td id="{{member.jurorNumber}}-checkIn" class="govuk-table__cell jd-middle-align">{{ member.checkedIn  | capitalize if member.checkedIn else "-" }}</td>
+                  <td id="{{member.jurorNumber}}-dueDate" class="govuk-table__cell jd-middle-align">{{  member.nextDueAtCourt | dateFilter("YYYY-MM-DD", "ddd DD MMM YYYY") if member.nextDueAtCourt else "-" }}</td>
+                  <td id="{{member.jurorNumber}}-status" class="govuk-table__cell jd-middle-align">{{ member.status | capitalize }}</td>
+                </tr>
+
+              {% endfor %}
+
+              </tbody>
+            </table>
+
+          {% if errors.items["selectedJurors"] %}</div>{% endif %}
+
+          {{ govukPagination({
+            previous: {
+              href: pagination.prev
+            },
+            next: {
+              href: pagination.next
+            },
+            items: pagination.items
+          }) }}
+
+          </div>
+        {% endif %}
+
+      </div>
+
+      <input type="hidden" name="poolNumber" id="poolNumber" value="{{ poolDetails.poolNumber }}">
+      <input type="hidden" name="_csrf" id="csrfToken" value="{{ csrftoken }}">
+    </form>
+
+  {# <script>
+
+    let allChecked = false;
+    let chkbxs = document.getElementsByName('selectedJurors');
+    document.getElementById("totalJurors").innerHTML = chkbxs.length;
+    document.getElementById("checkedJurors").innerHTML = 0;
+
+    function selectAll() {
+
+      if (allChecked) {
+        allChecked = false;
+        for(var i = 0; i < chkbxs.length; i++){
+          if (chkbxs[i].type=='checkbox')
+          chkbxs[i].checked = false;   
+        }
+        document.getElementById("checkedJurors").innerHTML = $('input[name="selectedJurors"]:checkbox:checked').length;
+      } else {
+        allChecked = true;
+        for(var i = 0; i <chkbxs.length; i++){
+          if (chkbxs[i].type=='checkbox')
+          chkbxs[i].checked = true;  
+        }
+        document.getElementById("checkedJurors").innerHTML = $('input[name="selectedJurors"]:checkbox:checked').length;
+      }
+      
+    };
+
+    function checkSet() {
+      document.getElementById("checkedJurors").innerHTML = $('input[name="selectedJurors"]:checkbox:checked').length;
+      if (chkbxs.length > document.getElementsByName('selectedJurors:checked').length) {
+        document.getElementsByName('check-all-jurors')[0].checked = false;
+        allChecked = false;
+      }
+    }
+  
+  </script> #}
+

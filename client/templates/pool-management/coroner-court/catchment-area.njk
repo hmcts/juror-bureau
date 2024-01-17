@@ -1,0 +1,46 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "../../custom-components/summary-item/macro.njk" import summaryItem %}
+
+{% set currentApp = "Pool management" %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h3 class="govuk-label--m">Add a court catchment area</h3>
+
+      {{ summaryItem({
+        label: {
+          text: "Court name",
+          classes: "govuk-label--s"
+        },
+        value: poolDetails.courtName | capitalizeFully,
+        id: "courtName",
+        name: "courtName",
+        classes: "govuk-!-width-one-half",
+        action: {
+          href: url('coroner-pool.change-catchment-area.get', {
+            poolNumber: poolDetails.poolNumber
+          }),
+          text: "Change"
+        }
+      }) }}
+
+      <div class="govuk-button-group">
+        {{ govukButton({
+          text: "Continue",
+          href: url('coroner-pool.postcodes.get', {
+            poolNumber: poolDetails.poolNumber
+          }),
+          attributes: {
+            id: "continueButton"
+          }
+        }) }}
+
+        <a id="cancelAnchor" class="govuk-link" href="{{ url('pool-overview.get', { poolNumber: poolDetails.poolNumber }) }}">Cancel</a>
+      </div>
+
+    </div>
+  </div>
+{% endblock%}

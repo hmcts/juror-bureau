@@ -1,0 +1,85 @@
+@startuml disqualify-mod
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant ProcessReplyPage <</process>>
+participant DisqualifyPage <</disqualify>>
+participant InboxPage <</inbox>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant ProcessReplyDisqualifyController <<process-reply-disqualify.controller.js>>
+participant GetDisqualifyReasonsObject <<getDisqualificationReasons.get()>>
+participant DisqualifyJurorObject <<disqualifyJuror.patch()>>
+
+''' TEMPLATES
+participant DisqualifyTemplate <<process-reply/disqualify.njk>>
+participant GenericErrorTemplate <<_errors/generic.njk>>
+
+''' FILTERS AND VALIDATORS
+participant DisqualifyValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+''' JOURNEY FLOW
+Actor -> ProcessReplyPage : disqualify juror
+
+ProcessReplyPage -> ProcessReplyDisqualifyController : call page controller
+
+ProcessReplyDisqualifyController -> GetDisqualifyReasonsObject : build request object
+GetDisqualifyReasonsObject -> BackendController : send backend request
+
+alt Failed to fetch list of disqualification reasons
+    GetDisqualifyReasonsObject <-- BackendController : error response
+    ProcessReplyDisqualifyController <-- GetDisqualifyReasonsObject : reject request object
+    ProcessReplyDisqualifyController --> GenericErrorTemplate : request and build template
+    ProcessReplyDisqualifyController <-- GenericErrorTemplate : return HTML
+    DisqualifyPage <-- ProcessReplyDisqualifyController : return HTML
+    Actor <-- DisqualifyPage : render HTML (generic error)
+end
+
+GetDisqualifyReasonsObject <- BackendController : ok response
+ProcessReplyDisqualifyController <- GetDisqualifyReasonsObject : resolve request
+
+ProcessReplyDisqualifyController -> DisqualifyTemplate : request and build template
+ProcessReplyDisqualifyController <- DisqualifyTemplate : return HTML
+DisqualifyPage <- ProcessReplyDisqualifyController : return HTML
+Actor <- DisqualifyPage : render HTML
+
+Actor -> DisqualifyPage : select reasons and disqualify juror
+
+DisqualifyPage -> ProcessReplyDisqualifyController : call page controller
+
+ProcessReplyDisqualifyController -> DisqualifyValidator : validate form input
+
+alt No disqualification reason selected
+    ProcessReplyDisqualifyController <-- DisqualifyValidator : error response
+    DisqualifyPage <-- ProcessReplyDisqualifyController : error response
+    Actor <-- DisqualifyPage : render error message
+end
+
+ProcessReplyDisqualifyController <- DisqualifyValidator : user has selected a disqualification reason
+
+ProcessReplyDisqualifyController -> DisqualifyJurorObject : build request object
+DisqualifyJurorObject -> BackendController : send backend request
+DisqualifyJurorObject <- BackendController : ok response
+ProcessReplyDisqualifyController <- DisqualifyJurorObject : resolve request
+
+InboxPage <- ProcessReplyDisqualifyController : redirect to inbox page
+Actor <- InboxPage : redirect to inbox page
+
+alt Failed to disqualify juror
+    DisqualifyJurorObject <-- BackendController : error response
+    ProcessReplyDisqualifyController <-- DisqualifyJurorObject : reject request object
+    ProcessReplyDisqualifyController --> GenericErrorTemplate : request and build template
+    ProcessReplyDisqualifyController <-- GenericErrorTemplate : return HTML
+    DisqualifyPage <-- ProcessReplyDisqualifyController : return HTML
+    Actor <-- DisqualifyPage : render HTML (generic error)
+end
+
+@enduml

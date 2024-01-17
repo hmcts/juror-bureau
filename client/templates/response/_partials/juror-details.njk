@@ -1,0 +1,212 @@
+<section class="detail-section {% if hasModAccess %}mod-reply-section{% endif %}" id="juror-details-section">
+
+{% set replyType = (method or "digital") %}
+{% if method %}
+  {% set updateUrl = 'summons.update-details.get' %}
+{% else %}
+  {% set updateUrl = 'summons.update-details-digital.get' %}
+{% endif %}
+
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-full">
+
+      {% if hasModAccess %}
+        <div class="mod-reply-section__title">
+          <h2 class="govuk-heading-m">Juror details {{ replyMethod }}
+            {% if method === "paper" %}
+              {{ govukTag({
+                text: "Section complete" if response.jurorDetailsComplete else "incomplete",
+                classes: "govuk-tag" if response.jurorDetailsComplete else "govuk-tag--grey"
+              }) }}
+            {% endif %}
+          </h2>
+          {% if isAddChangeVisible %}
+            <div class="govuk-body">
+              <a id="jurorDetailsEdit" class="govuk-link" href="{{ url( updateUrl, { id: response.jurorNumber, type: replyType }) }}">Add or change</a>
+            </div>
+          {% endif %}
+        </div>
+      {% else %}
+        <div class="jd-panel-title">
+          <h2 class="govuk-heading-m">Juror details
+            {% if canEdit and responseEditEnabled %}
+            <div class="edit-actions govuk-body jd-right-align">
+              <a id="jurorDetailsEdit" class="govuk-link edit-action edit-trigger" data-target="juror-details" href="#">Change</a>
+            </div>
+            {% endif %}
+          </h2>
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+
+  <div class="show-details-container" id="view-juror-details">
+
+    <table class="govuk-table table-summary juror-details" summary="Details about Juror">
+
+      <tbody class="govuk-table__body">
+        <tr class="govuk-table__row {% if nameDetails.changed %}infox{% endif %}" id="name">
+          <th class="govuk-table__header" scope="row">Name</th>
+
+          {% if hasModAccess %}
+            {% if nameDetails.oldName %}
+              <td class="govuk-table__cell" id="jurorName">
+                {% if (nameDetails.changed) or (title.changed) %}<div class="jd-label-black">Current</div>{% endif %}
+                {{ nameDetails.oldName }}
+              </td>
+            {% endif %}
+            <td class="govuk-table__cell" id="jurorName">
+              {% if (nameDetails.changed) or (title.changed) %}<div class="jd-label-blue">Pending</div>{% endif %}
+              {{ nameDetails.currentName }}
+            </td>
+          {% else %}
+            <td class="govuk-table__cell" id="jurorName">
+              {% if (nameDetails.changed) or (title.changed) %}<div class="jd-label-blue">New</div>{% endif %}
+              {{ nameDetails.currentName }}
+            </td>
+            <td class="govuk-table__cell" id="oldJurorName">
+              {% if (nameDetails.changed) or (title.changed) %}<div class="jd-label-black">Previous</div>{% endif %}
+              {{ nameDetails.oldName }}
+            </td>
+          {% endif %}
+       </tr>
+
+        <tr class="govuk-table__row {% if addressDetails.changed %}info{% endif %}" id="address">
+          <th class="govuk-table__header" scope="row">Address</th>
+            <td class="govuk-table__cell" id="jurorAddress">
+            {% if addressDetails.changed %}<div class="jd-label-blue">New</div>{% endif %}
+            {{ addressDetails.currentAddress | safe }}
+            {% if changeCourt %}<br/><span class="change change--changeCourt jd-label-blue">Change Court</span>{% endif %}
+            {% if checkCatchment %}<br/><span class="change change--changeCourt jd-label-blue">Check catchment area</span>{% endif %}
+          </td>
+          <td class="govuk-table__cell" id="oldJurorAddress">
+            {% if addressDetails.changed %}<div class="jd-label-black">Previous</div>{% endif %}
+            {{ addressDetails.oldAddress | safe }}
+          </td>
+        </tr>
+
+        <tr class="govuk-table__row {% if jurorDetails.dateOfBirth.changed %}info{% endif %}"  id="dob">
+          <th class="govuk-table__header" scope="row">Date of birth</th>
+          {% if response.dateOfBirth === null %}
+            <td class="govuk-table__cell" id="jurorDateOfBirth">
+              <span class="mod-reply-section__required">Required</span>
+            </td>
+          {% else %}
+            <td class="govuk-table__cell" id="jurorDateOfBirth">
+              {% if hasModAccess %}
+                {{ jurorDetails.dateOfBirth.current | dateFilter("DD/MM/YYYY", "DD MMM YYYY") }} (Juror will be {{ jurorDetails.dateOfBirth.currentAge }} years old)
+              {% else %}
+                {% if jurorDetails.dateOfBirth.changed %}<div class="jd-label-blue">New</div>{% endif %}
+                {{ jurorDetails.dateOfBirth.current }}{% if response.hearingDate !== null %} (Will be {{ jurorDetails.dateOfBirth.currentAge }}){% endif %}
+              {% endif %}
+            </td>
+            <td class="govuk-table__cell" id="oldJurorDateOfBirth">
+              {% if jurorDetails.dateOfBirth.changed %}<div class="jd-label-black">Previous</div>{% endif %}
+              {{ jurorDetails.dateOfBirth.old | dateFilter("DD/MM/YYYY", "DD MMM YYYY") if hasModAccess and jurorDetails.dateOfBirth.old else jurorDetails.dateOfBirth.old }}
+            </td>
+          {% endif %}
+        </tr>
+
+
+        <tr class="govuk-table__row {% if jurorDetails.phone.changed %}info{% endif %}" id="phone">
+          <th class="govuk-table__header" scope="row">Main Phone</th>
+          {% if jurorDetails.phone.current === null %}
+            <td class="govuk-table__cell" id="jurorPrimaryPhone">-</td>
+          {% else %}
+            <td class="govuk-table__cell" id="jurorPrimaryPhone">
+            {% if jurorDetails.phone.changed %}<div class="jd-label-blue">New</div>{% endif %}
+              {{ jurorDetails.phone.current }}
+            </td>
+            <td class="govuk-table__cell" id="oldJurorPrimaryPhone">
+              {% if jurorDetails.phone.changed %}<div class="jd-label-black">Previous</div>{% endif %}
+              {{ jurorDetails.phone.old }}
+            </td>
+          {% endif %}
+        </tr>
+
+        <tr class="govuk-table__row {% if jurorDetails.altPhone.changed %}info{% endif %}"  id="altPhone">
+          <th class="govuk-table__header" scope="row">{{ "Alternative phone" if hasModAccess else "Another Phone" }}</th>
+          {% if jurorDetails.altPhone.current === null %}
+            <td class="govuk-table__cell" id="jurorSecondaryPhone">-</td>
+          {% else %}
+            <td class="govuk-table__cell" id="jurorSecondaryPhone">
+              {% if jurorDetails.altPhone.changed %}<div class="jd-label-blue">New</div>{% endif %}
+              {{ jurorDetails.altPhone.current }}
+            </td>
+            <td class="govuk-table__cell" id="oldJurorSecondaryPhone">
+              {% if jurorDetails.altPhone.changed %}<div class="jd-label-black">Previous</div>{% endif %}
+              {{ jurorDetails.altPhone.old }}
+            </td>
+          {% endif %}
+        </tr>
+
+        <tr class="govuk-table__row {% if jurorDetails.email.changed %}info{% endif %}"  id="email">
+          <th class="govuk-table__header" scope="row">Email</th>
+          {% if jurorDetails.email.current === null %}
+            <td class="govuk-table__cell" id="jurorEmailAddress">-</td>
+          {% else %}
+            <td class="govuk-table__cell" id="jurorEmailAddress">
+              {% if jurorDetails.email.changed %}<div class="jd-label-blue">New</div>{% endif %}
+              {{ jurorDetails.email.current }}
+            </td>
+            <td class="govuk-table__cell" id="oldJurorEmailAddress">
+              {% if jurorDetails.email.changed %}<div class="jd-label-black">Previous</div>{% endif %}
+              {{ jurorDetails.email.old }}
+            </td>
+          {% endif %}
+        </tr>
+      </tbody>
+    </table>
+
+    {% if thirdPartyDetails.isThirdParty == true %}
+      <br><br>
+      <div class="jd-panel-title">
+          <h2 class="govuk-heading-m">Third party details
+            {% if canEdit and responseEditEnabled %}
+            <div class="edit-actions govuk-body jd-right-align">
+              <a href="#" id="jurorDetailsEditTP" class="govuk-link edit-action edit-trigger" data-target="juror-details" data-ref="#thirdPartySection">Change</a>
+            </div>
+            {% endif %}
+          </h2>
+        </div>
+
+      <table class="govuk-table table-summary juror-details" summary="Details about Juror Third Party">
+        <tbody class="govuk-table__body">
+          {% if method !== "paper" %}
+            <tr class="info" id="thirdPartyNameRow">
+              <th class="govuk-table__header" scope="row">{{ "Name" if hasModAccess else "Third party name" }}</th>
+              <td class="govuk-table__cell" id="thirdPartyName" colspan="2">{{ thirdPartyDetails.name }}</td>
+            </tr>
+          {% endif %}
+          <tr class="info" id="thirdPartyRelationshipRow">
+            <th class="govuk-table__header" scope="row">{{ "Relationship to juror" if hasModAccess else "Third party relationship" }}</th>
+            <td class="govuk-table__cell" colspan="3" id="thirdPartyRelationship" colspan="2">{{ thirdPartyDetails.relationship }}</td>
+          </tr>
+          <tr class="info" id="thirdPartyReasonRow">
+            <th class="govuk-table__header" scope="row">{{ "Reason for completing" if hasModAccess else "Third party reason" }}</th>
+            <td class="govuk-table__cell" colspan="3" id="thirdPartyReason" colspan="2">{{ thirdPartyDetails.reason }}</td>
+          </tr>
+          {% if method !== "paper" %}
+            <tr class="info" id="thirdPartyMainPhoneRow">
+              <th class="govuk-table__header" scope="row">{{ "Main phone" if hasModAccess else "Third party primary phone" }}</th>
+              <td class="govuk-table__cell" colspan="3" id="thirdPartyMainPhone" colspan="2">{{ thirdPartyDetails.mainPhone }}</td>
+            </tr>
+            <tr class="info" id="thirdPartyOtherPhoneRow">
+              <th class="govuk-table__header" scope="row">{{ "Another phone" if hasModAccess else "Third party secondary phone" }}</th>
+              <td class="govuk-table__cell" colspan="3" id="thirdPartyOtherPhone" colspan="2">{{ thirdPartyDetails.otherPhone }}</td>
+            </tr>
+            <tr class="info" id="thirdPartyEmailRow">
+              <th class="govuk-table__header" scope="row">{{ "Email" if hasModAccess else "Third party email" }}</th>
+              <td class="govuk-table__cell" colspan="3" id="thirdPartyEmail" colspan="2">{{ thirdPartyDetails.email }}</td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    {% endif %}
+  </div>
+
+  <div class="edit-section" id="edit-juror-details">
+    {% include "../_edits/edit-juror-details.njk" %}
+  </div>
+</section>

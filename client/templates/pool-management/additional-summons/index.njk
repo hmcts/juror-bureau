@@ -1,0 +1,131 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "../../custom-components/summary-item/macro.njk" import summaryItem %}
+
+{% set currentApp = "Pool management" %}
+
+{% block content%}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      {% set citizensToSummonError = undefined %}
+      {% if errors.items["citizensToSummon"] %}
+        {% set citizensToSummonError = { text: errors.items["citizensToSummon"][0].details } %}
+      {% endif %}
+
+      {% set postcodesError = undefined %}
+      {% if errors.items["postcodes"] %}
+        {% set postcodesError = { text: errors.items["postcodes"][0].details } %}
+      {% endif %}
+
+      <form method="post" action="{{ submitUrl }}">
+
+        <span class="govuk-caption-l">Pool {{ poolDetails.poolDetails.poolNumber }}</span>
+        <h1 class="govuk-heading-l">Summon more citizens</h1>
+
+        <p class="govuk-body">
+          <span class="govuk-heading-s">Jurors requested</span>
+          {{ poolDetails.poolSummary.requiredPoolSize }}
+        </p>
+
+        <p class="govuk-body">
+          <span class="govuk-heading-s">Jurors confirmed</span>
+          {{ poolDetails.bureauSummoning.confirmed }}
+        </p>
+
+        {{ summaryItem({
+          label: {
+            text: "Deferrals available to include in this pool",
+            classes: "govuk-label--s"
+          },
+          value: bureauDeferrals,
+          id: "deferralsAvailable",
+          name: "deferralsAvailable",
+          action: {
+            href: changeDeferralsUrl,
+            text: "Change"
+          }
+        }) }}
+
+        <p class="govuk-body">
+          <span class="govuk-heading-s">Jurors required to complete the request</span>
+          {{ poolDetails.bureauSummoning.required - poolDetails.bureauSummoning.confirmed }}
+        </p>
+
+        <p class="govuk-body">
+          <span class="govuk-heading-s">Citizens summoned</span>
+          {{ poolDetails.bureauSummoning.totalSummoned }}
+        </p>
+
+        {{ govukInput({
+          label: {
+            text: "Extra citizens to summon",
+            classes: "govuk-label--s"
+          },
+          classes: "govuk-input--width-3",
+          id: "citizensToSummon",
+          name: "citizensToSummon",
+          type: "number",
+          errorMessage: citizensToSummonError
+        }) }}
+        
+        {{ summaryItem({
+          label: {
+            text: "Court catchment area",
+            classes: "govuk-label--s"
+          },
+          value: catchmentArea,
+          id: "catchmentArea",
+          name: "catchmentArea",
+          action: {
+            href: changeCatchmentAreaUrl,
+            text: "Change"
+          }
+        }) }}
+
+        {{ govukCheckboxes({
+          name: "postcodes",
+          classes: "govuk-checkboxes--small",
+          fieldset: {
+            legend: {
+              text: "Choose the postcodes to summon from",
+              classes: "govuk-fieldset__legend--s"
+            }
+          },
+          items: postCodes,
+          attributes: {
+            id: "postcodes"
+          },
+          errorMessage: postcodesError
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Summon more citizens",
+            type: "submit",
+            attributes: {
+              id: "continueButton"
+            }
+          }) }}
+
+          <a class="govuk-link" href="{{ url('pool-overview.get', { poolNumber: poolDetails.poolDetails.poolNumber }) }}" id="cancelAnchor">Cancel</a>
+        </div>
+
+        <input type="hidden" name="noRequested" id="noRequested" value="{{ poolDetails.bureauSummoning.required }}"/>
+        <input type="hidden" name="poolNumber" id="poolNumber" value="{{ poolDetails.poolDetails.poolNumber }}"/>
+        <input type="hidden" name="bureauDeferrals" id="bureauDeferrals" value="10"/>
+        <input type="hidden" name="citizensSummoned" id="citizensSummoned" value="{{ poolDetails.poolSummary.currentPoolSize }}"/>
+        <input type="hidden" name="catchmentArea" id="catchmentArea" value="{{ catchmentArea }}"/>
+        <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}"/>
+      
+      </form>
+
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,415 @@
+{% if canEdit %}
+<section>
+  <form class="edit-form" id="juror-details-form">
+
+    <div class="govuk-form-group jd-edit-panel govuk-body">
+
+      <fieldset class="govuk-fieldset" aria-describedby="contact-hint" id="nameFieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+          <h1 class="govuk-fieldset__heading">
+            Name
+          </h1>
+        </legend>
+
+        <div class="govuk-form-group" id="titleGroup">
+          <label class="govuk-label" for="title">Title (optional)</label>
+          <span class="govuk-error-message" id="titleErrorMessage"></span>
+          <input type="text" class="govuk-input govuk-!-width-one-half" id="title" name="title" value="{{ nameDetails.title }}" maxlength="11">
+        </div>
+
+        <div class="govuk-form-group" id="firstNameGroup">
+          <label class="govuk-label" for="firstName">First name</label>
+          <span class="govuk-error-message" id="firstNameErrorMessage"></span>
+          <input type="text" class="govuk-input govuk-!-width-one-half" name="firstName" id="firstName" value="{{ nameDetails.firstName }}" maxlength="20">
+        </div>
+
+        <div class="govuk-form-group" id="lastNameGroup">
+          <label class="govuk-label" for="lastName">Last name</label>
+          <span class="govuk-error-message" id="lastNameErrorMessage"></span>
+          <input type="text" class="govuk-input govuk-!-width-one-half" name="lastName" id="lastName" value="{{ nameDetails.lastName }}" maxlength="20">
+        </div>
+      </fieldset>
+
+      <hr><br/>
+
+      <fieldset class="govuk-fieldset" aria-describedby="contact-hint" id="addressFieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+          <h1 class="govuk-fieldset__heading">
+            Address
+          </h1>
+        </legend>
+
+        <span class="govuk-error-message" id="addressGroupErrorMessage"></span>
+
+        <div class="govuk-form-group" id="address1Group">
+          <label class="govuk-label" for="address1">Building and street</label>
+          <span class="govuk-error-message" id="address1ErrorMessage"></span>
+          <input type="text" class="govuk-input govuk-!-width-one-half" name="address1" id="address1" value="{{ addressDetails.address1 }}">
+        </div>
+
+        <div class="govuk-form-group" id="address2Group">
+          <label for="address2" class="govuk-visually-hidden">Street Address</label>
+          <span class="govuk-error-message" id="address2ErrorMessage"></span>
+          <input type="text" class="govuk-input govuk-!-width-one-half" name="address2" id="address2" value="{{ addressDetails.address2 }}">
+        </div>
+
+        <div class="govuk-form-group" id="address3Group">
+          <label for="address3" class="govuk-visually-hidden">Street Address</label>
+          <span class="govuk-error-message" id="address3ErrorMessage"></span>
+          <input type="text" class="govuk-input govuk-!-width-one-half" name="address3" id="address3" value="{{ addressDetails.address3 }}" maxlength="35">
+        </div>
+
+        <div class="govuk-form-group" id="address4Group">
+          <label class="govuk-label" for="address4">Town or city</label>
+          <span class="govuk-error-message" id="address4ErrorMessage"></span>
+          <input type="text" class="govuk-input govuk-!-width-one-half" name="address4" id="address4" value="{{ addressDetails.address4 }}" maxlength="35">
+        </div>
+
+        <div class="govuk-form-group" id="address5Group">
+          <label class="govuk-label" for="address5">County</label>
+          <span class="govuk-error-message" id="address5ErrorMessage"></span>
+          <input type="text" class="govuk-input govuk-!-width-one-half" name="address5" id="address5" value="{{ addressDetails.address5 }}" maxlength="35">
+        </div>
+
+        <div class="govuk-form-group" id="postcodeGroup">
+          <label class="govuk-label" for="postcode">Postcode</label>
+          <span class="govuk-error-message" id="postcodeErrorMessage"></span>
+          <input type="text" class="govuk-input govuk-!-width-one-half" name="postcode" id="postcode" value="{{ addressDetails.postcode }}" maxlength="8">
+        </div>
+
+
+      </fieldset>
+
+      <hr><br/>
+
+      <fieldset class="govuk-fieldset" role="group" id="dateOfBirthFieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+          <h1 class="govuk-fieldset__heading">
+            Date of birth
+          </h1>
+        </legend>
+
+        <div class="form-group" id="dateOfBirthGroup">
+
+          <span class="govuk-error-message" id="dateOfBirthErrorMessage"></span>
+          <span class="govuk-error-message" id="dobDayErrorMessage"></span>
+          <span class="govuk-error-message" id="dobMonthErrorMessage"></span>
+          <span class="govuk-error-message" id="dobYearErrorMessage"></span>
+
+          <div class="govuk-date-input" id="passport-issued">
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group form-group-day">
+                <label class="govuk-label govuk-date-input__label" for="dobDay">
+                  Day
+                </label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="dobDay" name="dobDay" type="text" pattern="[0-9]*" min="1" max="31" minlength="1" maxlength="2" inputmode="numeric" value="{{ jurorDetails.dateOfBirth.dobDay }}">
+              </div>
+            </div>
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group form-group-month">
+                <label class="govuk-label govuk-date-input__label" for="dobMonth">
+                  Month
+                </label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="dobMonth" name="dobMonth" type="text" pattern="[0-9]*" min="1" max="12" minlength="1" maxlength="2" inputmode="numeric" value="{{ jurorDetails.dateOfBirth.dobMonth }}">
+              </div>
+            </div>
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group form-group-year">
+                <label class="govuk-label govuk-date-input__label" for="dobYear">
+                  Year
+                </label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="dobYear" name="dobYear" type="text" pattern="[0-9]*" maxlength="4" inputmode="numeric" value="{{ jurorDetails.dateOfBirth.dobYear }}">
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </fieldset>
+      
+      <hr><br/>
+
+      <fieldset class="govuk-fieldset" id="phoneFieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+          <h1 class="govuk-fieldset__heading">
+            Main phone
+          </h1>
+        </legend>
+
+        {% if thirdPartyDetails.isThirdParty === true %}
+        
+          <div class="govuk-radios govuk-radios--conditional" data-module="govuk-radios">
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="phoneNumber_existing" type="radio" name="useJurorPhoneDetails" value="N" {% if response.useJurorPhoneDetails === false %} checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="phoneNumber_existing">Use 3rd party details</label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="phoneNumber_new" type="radio" name="useJurorPhoneDetails" value="Y" data-aria-controls="newPhoneNumber" {% if response.useJurorPhoneDetails === true %} checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="phoneNumber_new"> Use juror details</label>
+            </div>
+
+            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="newPhoneNumber">
+
+              <div class="govuk-form-group" id="mainPhoneGroup">
+                <label class="govuk-label" for="mainPhone">Main phone number</label>
+                <span class="govuk-error-message" id="mainPhoneErrorMessage"></span>
+                <input class="govuk-input govuk-!-width-one-half" name="mainPhone" type="text" id="mainPhone" value="{{ jurorDetails.phone.current }}">
+              </div>
+
+              <div class="govuk-form-group" id="altPhoneGroup">
+                <label class="govuk-label" for="altPhone">Another phone</label>
+                <span class="govuk-error-message" id="altPhoneErrorMessage"></span>
+                <input class="govuk-input govuk-!-width-one-half" name="altPhone" type="text" id="altPhone" value="{{ jurorDetails.altPhone.current }}">
+              </div>
+
+            </div>
+          </div>
+
+        {% else %}
+
+          <div class="govuk-form-group" id="mainPhoneGroup">
+            <label class="govuk-label" for="mainPhone">Main phone</label>
+            <span class="govuk-error-message" id="mainPhoneErrorMessage"></span>
+            <input type="text" class="govuk-input govuk-!-width-one-half" name="mainPhone" id="mainPhone" value="{{ jurorDetails.phone.current }}">
+          </div>
+
+          <div class="govuk-form-group" id="altPhoneGroup">
+            <label class="govuk-label" for="altPhone">Another phone</label>
+            <span class="govuk-error-message" id="altPhoneErrorMessage"></span>
+            <input type="text" class="govuk-input govuk-!-width-one-half" name="altPhone" id="altPhone" value="{{ jurorDetails.altPhone.current }}">
+          </div>
+
+        {% endif %}
+
+      </fieldset>
+
+      <hr><br/>
+
+
+      <fieldset class="govuk-fieldset" id="emailFieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+          <h1 class="govuk-fieldset__heading">
+            Email
+          </h1>
+        </legend>
+
+        {% if thirdPartyDetails.isThirdParty === true %}
+        
+          <div class="govuk-radios govuk-radios--conditional" data-module="govuk-radios">
+
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="emailAddress_existing" type="radio" name="useJurorEmailDetails" value="N" {% if response.useJurorEmailDetails === false %} checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="emailAddress_existing">Use 3rd party details</label>
+            </div>
+
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="emailAddress_new" type="radio" name="useJurorEmailDetails" value="Y" data-aria-controls="newEmailAddress" {% if response.useJurorEmailDetails === true %} checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="emailAddress_new">Use juror details</label>
+            </div>
+
+            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="newEmailAddress">
+
+              <div class="govuk-form-group" id="emailAddressGroup">
+                <label class="govuk-label" for="emailAddress">Edit email address</label>
+                <span class="govuk-error-message" id="emailAddressErrorMessage"></span>
+                <input class="govuk-input govuk-!-width-one-half" name="emailAddress" type="text" id="emailAddress" value="{{ jurorDetails.email.current }}">
+              </div>
+
+              <div class="govuk-form-group" id="emailAddressConfirmationGroup">
+                <label class="govuk-label" for="emailAddressConfirmation">Confirm email address</label>
+                <span class="govuk-error-message" id="emailAddressConfirmationErrorMessage"></span>
+                <input class="govuk-input govuk-!-width-one-half" name="emailAddressConfirmation" type="text" id="emailAddressConfirmation" value="{{ jurorDetails.email.current }}">
+              </div>
+
+            </div>
+          </div>
+
+        {% else %}
+
+          <div class="govuk-form-group" id="emailAddressGroup">
+            <label class="govuk-label" for="emailAddress">Email address</label>
+            <span class="govuk-error-message" id="emailAddressErrorMessage"></span>
+            <input type="text" class="govuk-input govuk-!-width-one-half" name="emailAddress" id="emailAddress" value="{{ jurorDetails.email.current }}">
+          </div>
+
+          <div class="govuk-form-group" id="emailAddressConfirmationGroup">
+            <label class="govuk-label" for="emailAddressConfirmation">Confirm email address</label>
+            <span class="govuk-error-message" id="emailAddressConfirmationErrorMessage"></span>
+            <input type="text" class="govuk-input govuk-!-width-one-half" name="emailAddressConfirmation" id="emailAddressConfirmation" value="{{ jurorDetails.email.current }}">
+          </div>
+
+        {% endif %}
+
+      </fieldset>
+
+
+      {# third party details section #}
+
+      {% if thirdPartyDetails.isThirdParty === true %}
+
+        <br />
+
+        {% set thirdPartyBannerHTML %}
+          <div class="jd-label-blue govuk-!-font-weight-bold">A third party completed the summons on behalf of the juror</div>
+        {% endset %}
+
+        {{ mojBanner({
+          type: 'information',
+          html: thirdPartyBannerHTML,
+          iconFallbackText: 'information',
+          id: 'thirdPartyCompletedBanner'
+        }) }}
+
+        <br/>
+
+        <fieldset class="govuk-fieldset" id="thirdPartyNameFieldset">
+
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+            <h1 class="govuk-fieldset__heading">
+              Name
+            </h1>
+          </legend>
+
+          <div class="govuk-form-group" id="thirdPartyFirstNameGroup">
+            <label class="govuk-label" for="thirdPartyFirstName">First name</label>
+            <span class="govuk-error-message" id="thirdPartyFirstNameErrorMessage"></span>
+            <input type="text" class="govuk-input govuk-!-width-one-half" name="thirdPartyFirstName" id="thirdPartyFirstName" value="{{ thirdPartyDetails.firstName }}" maxlength="50">
+          </div>
+
+          <div class="govuk-form-group" id="thirdPartyLastNameGroup">
+            <label class="govuk-label" for="thirdPartyLastName">Last name</label>
+            <span class="govuk-error-message" id="thirdPartyLastNameErrorMessage"></span>
+            <input type="text" class="govuk-input govuk-!-width-one-half" name="thirdPartyLastName" id="thirdPartyLastName" value="{{ thirdPartyDetails.lastName }}" maxlength="50">
+          </div>
+        </fieldset>
+
+        <hr><br>
+
+        <fieldset class="govuk-fieldset" id="thirdPartyRelationshipFieldset">
+          
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+            <h1 class="govuk-fieldset__heading">
+              Relationship to juror
+            </h1>
+          </legend>
+
+          <div class="govuk-form-group" id="relationshipGroup">
+            <span class="govuk-error-message" id="relationshipErrorMessage"></span>
+            <input type="text" class="govuk-input govuk-!-width-one-half" name="relationship" id="relationship" value="{{ thirdPartyDetails.relationship }}">
+          </div>
+        </fieldset>
+
+        <div id="thirdPartySection" />
+
+        <hr><br/>
+
+        <fieldset class="govuk-fieldset" id="thirdPartyReasonFieldset">
+
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+            <h1 class="govuk-fieldset__heading">
+              Reason for completing
+            </h1>
+          </legend>
+
+          <span class="govuk-error-message" id="thirdPartyReasonErrorMessage"></span>
+
+          <div class="govuk-radios govuk-radios--conditional" data-module="govuk-radios">
+
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="thirdPartyReasonNotHere" type="radio" name="thirdPartyReason" value="nothere" {% if thirdPartyDetails.reasonRaw === 'nothere' %} checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="thirdPartyReasonNotHere">The person isn't here</label>
+            </div>
+
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="thirdPartyReasonAssistance" type="radio" name="thirdPartyReason" value="assistance"{% if thirdPartyDetails.reasonRaw === 'assistance' %} checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="thirdPartyReasonAssistance">The person is unable to reply by themself</label>
+            </div>
+
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="thirdPartyReasonDeceased" type="radio" name="thirdPartyReason" value="deceased"{% if thirdPartyDetails.reasonRaw === 'deceased' %} checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="thirdPartyReasonDeceased">The person has died</label>
+            </div>
+
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="thirdPartyReasonOther" type="radio" name="thirdPartyReason" data-aria-controls="thirdPartyOtherReasonDetails" value="other" {% if thirdPartyDetails.reasonRaw === 'other' %} checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="thirdPartyReasonOther">Other</label>
+            </div>
+
+            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="thirdPartyOtherReasonDetails">
+              <div class="govuk-form-group" id="thirdPartyOtherReasonGroup">
+                <label class="govuk-label" for="thirdPartyOtherReason">Provide the reason</label>
+                <span class="govuk-error-message" id="thirdPartyOtherReasonErrorMessage"></span>
+                <textarea class="jd-textarea govuk-body govuk-!-width-three-quarters" name="thirdPartyOtherReason" id="thirdPartyOtherReason" rows="3" maxlength="1000">{{ thirdPartyDetails.reasonOther }}</textarea>
+              </div>
+            </div>
+
+          </div>
+
+
+        </fieldset>
+
+        <hr><br/>
+
+        <fieldset class="govuk-fieldset" id="thirdPartyMainPhoneFieldset">
+           <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+            <h1 class="govuk-fieldset__heading">
+              Phone
+            </h1>
+          </legend>
+
+          <div class="govuk-form-group" id="thirdPartyMainPhoneGroup">
+            <label class="govuk-label" for="thirdPartyMainPhone">Main phone</label>
+            <span class="govuk-error-message" id="thirdPartyMainPhoneErrorMessage"></span>
+            <input type="text" class="govuk-input govuk-!-width-one-half" id="thirdPartyMainPhone" name="thirdPartyMainPhone" value="{{ thirdPartyDetails.mainPhone }}">
+          </div>
+
+          <div class="govuk-form-group" id="thirdPartyAltPhoneGroup">
+            <label class="govuk-label" for="thirdPartyAltPhone"><strong class="bold-small">Another phone</strong></label>
+            <span class="govuk-error-message" id="thirdPartyAltPhoneErrorMessage"></span>
+            <input type="text" class="govuk-input govuk-!-width-one-half" id="thirdPartyAltPhone" name="thirdPartyAltPhone" value="{{ thirdPartyDetails.otherPhone }}">
+          </div>
+        </fieldset>
+
+        <hr><br/>
+
+        <fieldset class="govuk-fieldset" id="thirdPartyEmailFieldset">
+
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+            <h1 class="govuk-fieldset__heading">
+              Email
+            </h1>
+          </legend>
+
+          <div class="govuk-form-group" id="thirdPartyEmailGroup">
+            <label class="govuk-label" for="thirdPartyEmail">Edit email address</label>
+            <span class="govuk-error-message" id="thirdPartyEmailErrorMessage"></span>
+            <input type="email" class="govuk-input govuk-!-width-one-half" id="thirdPartyEmail" name="thirdPartyEmail" value="{{ thirdPartyDetails.email }}" maxlength="254">
+          </div>
+
+          <div class="govuk-form-group" id="thirdPartyEmailConfirmationGroup">
+            <label class="govuk-label" for="thirdPartyEmailConfirmation">Confirm email address</label>
+            <span class="govuk-error-message" id="thirdPartyEmailConfirmationErrorMessage"></span>
+            <input type="email" class="govuk-input govuk-!-width-one-half" id="thirdPartyEmailConfirmation" name="thirdPartyEmailConfirmation" value="{{ thirdPartyDetails.email }}" maxlength="254">
+          </div>
+        </fieldset>
+
+      {% endif %}
+      
+    </div>
+
+    <hr><br>
+    
+    <div class="govuk-button-group jd-save-cancel-button-group">
+      <button id="jurorDetailsSaveButton" class="govuk-button edit-action edit-save" data-target="juror-details" data-module="govuk-button">Save</button>
+      <a id="jurorDetailsCancelButton" class="govuk-link edit-action edit-cancel" data-target="juror-details" href="#">Cancel</a>
+    </div>
+
+    
+    <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+    <input type="hidden" name="jurorNumber" value="{{ response.jurorNumber }}">
+    <input type="hidden" name="version" value="{{ response.version }}">
+    <input type="hidden" name="isThirdParty" value="{% if thirdPartyDetails.isThirdParty == true %}1{% else %}0{% endif %}">
+
+  </form>
+</section>
+{% endif %}

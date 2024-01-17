@@ -1,0 +1,42 @@
+{% extends "../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_title %}{{ serviceName }} - process response{% endblock %}
+
+{% block page_identifier %}process - what to do{% endblock %}
+
+{% set currentApp = "Summons replies" %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+  {% set processActionTypeError = undefined %}
+  {% if errors.items['processActionType'] %}
+    {% set processActionTypeError = { "text": errors.items['processActionType'][0].details } %}
+  {% endif %}
+
+  <form action="{{ processUrl }}" method="POST" id="processReplyForm">
+
+    {% if isLateSummons %}
+      {% include "./_partials/process-late.njk" %}
+    {% else %}
+      {% include "./_partials/process-normal.njk" %}
+    {% endif %}
+
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Continue",
+        type: "submit",
+        attributes: {
+          id: "continueButton"
+        }
+      }) }}
+      <a href="{{ cancelUrl }}" class="govuk-link" id="cancelAnchor">Cancel</a>
+    </div>
+
+    <input type="hidden" name="_csrf" id="csrfToken" value="{{ csrftoken }}">
+  </form>
+
+{% endblock %}

@@ -1,0 +1,96 @@
+<section class="modal-content send-to-section">
+
+  <div class="govuk-body reallocation-modal-title">
+    <p><h1 class="modal-title govuk-heading-m"><strong>{{ staffNameBeingDeactivated.name }}</strong> has outstanding summonses.</h1></p>
+    <p class="modal-title font-small">All summonses must be reallocated. Where would you like to send them to?</p>
+  </div>
+  <form id="modalForm">
+    <div class="form-group" id="reallocateGroup">
+      <span class="error-message error-message-decision"></span>
+
+      {% if overview.urgentsCount !== 0 %}
+        <div class="govuk-grid-row govuk-!-margin-bottom-3">
+          <div class="govuk-grid-column-full">
+
+            <label class="govuk-label jd-block-align govuk-!-width-one-third" for="urgentsSelect">
+              <div><span name="urgent" id="urgentCount">{{ overview.urgentsCount }}</span> Urgent/Send to court</div>
+            </label>
+
+            <select class="form-control govuk-select" name="urgents" id="urgentsSelect">
+              <option value="" class="u-hide--small" selected>Select a recipient</option>
+              {% for staffMember in staffMembers %}
+                <option value="{{ staffMember.login }}" data-title="{{ staffMember.name }}">{{ staffMember.name }}</option>
+              {% endfor %}
+            </select>
+
+          </div>
+        </div>
+      {% endif %}
+
+      {% if overview.pendingCount !== 0 %}
+        <div class="govuk-grid-row govuk-!-margin-bottom-3">
+          <div class="govuk-grid-column-full">
+
+            <label class="govuk-label jd-block-align govuk-!-width-one-third" for="pendingSelect">
+              <div><span name="pending" id="pendingCount">{{ overview.pendingCount }}</span> Awaiting information</div>
+            </label>
+
+            <select class="form-control govuk-select" name="pending" id="pendingSelect">
+              <option value="" class="u-hide--small" selected>Select a recipient</option>
+              {% for staffMember in staffMembers %}
+                <option value="{{ staffMember.login }}" data-title="{{ staffMember.name }}">{{ staffMember.name }}</option>
+              {% endfor %}
+            </select>
+
+          </div>
+        </div>
+      {% endif %}
+
+      {% if overview.todoCount !== 0 %}
+        <div class="govuk-grid-row govuk-!-margin-bottom-5">
+          <div class="govuk-grid-column-full">
+
+            <label class="govuk-label jd-block-align govuk-!-width-one-third" for="todoSelect">
+              <div><span name="todo" id="todoCount">{{ overview.todoCount }}</span> To do</div>
+            </label>
+
+            <select class="form-control govuk-select" name="todo" id="todoSelect">
+              <option value="" class="u-hide--small" selected>Select a recipient</option>
+              <option value="" data-title="The backlog">New Replies</option>
+              {% for staffMember in staffMembers %}
+                <option value="{{ staffMember.login }}" data-title="{{ staffMember.name }}">{{ staffMember.name }}</option>
+              {% endfor %}
+            </select>
+
+          </div>
+        </div>
+      {% endif %}
+        
+    </div>
+
+    <hr class="clear">
+
+    <div class="form-group">
+      <span class="error-message error-message-submit govuk-error-message"></span>
+
+      <div class="govuk-button-group">
+        <button id="reallocationComplete" class="govuk-button" data-module="govuk-button" href="#" disabled>
+          Continue
+        </button>
+        <a id="sendToCancelBtn" class="govuk-link close-reassign-modal" href="#">Cancel</a>
+      </div>
+
+    </div>
+
+    {% for response in responses %}
+    <input type="hidden" name="version" id="version_{{ response.jurorNumber }}" value="{{ response.version }}">
+    <input type="hidden" name="jurorNumber" id="jurorNumber_{{ response.jurorNumber }}" value="{{ response.jurorNumber }}">
+    <input type="hidden" name="assignedTo" id="assignedTo_{{ response.jurorNumber }}" value="{{ response.assignedStaffMember.login }}">
+    {% endfor %}
+
+    <input type="hidden" name="isMulti" id="isMulti" value="false">
+    <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+  </form>
+
+  <br class="clear">
+</section>

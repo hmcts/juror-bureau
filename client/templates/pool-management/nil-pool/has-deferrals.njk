@@ -1,0 +1,14 @@
+{% extends "../../layouts/default.njk" %}
+
+{% set currentApp = "Pool management" %}
+
+{% block page_identifier %}Create Nil Pool{% endblock %}
+
+{% block content %}
+  <h1>There are deferred jurors for this service start date.</h1>
+
+  <p>There are {{ deferrals }} jurors currently deferred to this service start date.</p>
+  <p>Go to <a href="{{ url('pool-management.deferral-maintenance.get') }}" class="govuk-link">deferral maintenance</a> to move these jurors before creating the nil pool for this date.</p>
+
+  <a href="{{ url('pool-management.get') }}" class="govuk-link">Cancel</a>
+{% endblock %}

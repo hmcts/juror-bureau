@@ -1,0 +1,65 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - juror-management - dismiss-jurors - jurors{% endblock %}
+{% block page_identifier %}juror-management - dismiss-jurors - jurors{% endblock %}
+
+{% block beforeContent %}
+  {% include "includes/back-link.njk" %}
+{% endblock %}
+
+{% block content %}
+ 
+  {% set selectJurorsError = undefined %}
+  {% if errors.items["checked-jurors"] %}
+    {% set selectJurorsError = errors.items["checked-jurors"][0].details %}
+  {% endif %}
+
+  {% include "includes/errors.njk" %}
+
+  <div {% if selectJurorsError %}class="govuk-form-group govuk-form-group--error"{% endif %}>
+    <h1 class="govuk-heading-l">Select jurors to dismiss</h1>
+
+    {% if selectJurorsError %}
+      <p id="select-jurors-error" class="govuk-error-message">
+        <span class="govuk-visually-hidden">Error:</span> {{ selectJurorsError }}
+      </p>
+    {% endif %}
+
+    {% include "./jurors-table.njk" %}
+  </div>
+
+  {{ govukPagination({
+    previous: {
+      href: pagination.prev
+    },
+    next: {
+      href: pagination.next
+    },
+    items: pagination.items
+  }) }}
+
+  {% set postAction = url("juror-management.dismiss-jurors.jurors.post") %}
+  <form action="{{ postAction }}" method="POST">
+    {{ csrfProtection(csrftoken) }}
+
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Dismiss selected jurors",
+        type: "submit"
+      }) }}
+
+      <a class="govuk-link" href="{{ url('juror-management.dismiss-jurors.pools.get') }}">Cancel</a>
+    </div>
+  </form>
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script src="{{ assetPath }}js/dismiss-jurors.js"></script>
+{% endblock %}

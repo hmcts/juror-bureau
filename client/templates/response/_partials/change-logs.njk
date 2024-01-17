@@ -1,0 +1,74 @@
+<section class="change-logs">
+
+  <h2 class="govuk-heading-m jd-panel-title">Change log</h2>
+  <hr>
+
+  {% if response.changeLog.length > 0 %}
+    {% for log in response.changeLog %}
+      <div class="log-entry govuk-body">
+        <div class="govuk-body" data-row="summary" data-user="{{ log.staff }}">
+          <span>{{ log.dateRender | dateFilter("DD/MM/YYYY", "D MMM YYYY") }}</span>
+          <span>at {{ log.timeRender | dateFilter("hh:mm", "h:mma")}}</span>
+          <span>by {{ log.staff }}</span>
+        </div>
+
+        {% set noteHTML %}
+          <div data-row="note">{{ log.notes }}</div>
+        {% endset %}
+
+        {{ mojBanner({
+          type: 'information',
+          html: noteHTML,
+          iconFallbackText: 'information',
+          id: 'changeLogNote',
+          classes: 'jd-banner-info'
+        }) }}
+
+        {#<div class="font-xsmall" data-row="note">{{ log.notes }}</div>#}
+        {% for change in log.items %}
+
+          {% if change.oldKeyName %}
+            {% set keyName = change.oldKeyName | changelogKeyName %}
+            {% set oldValue = change.oldValue | changelogValue %}
+            {% set oldValueClass = "" %}
+          {% else %}
+            {% set keyName = change.newKeyName | changelogKeyName %}
+            {% set oldValue = "Entry did not previously exist" %}
+            {% set oldValueClass = "jd-text-blue" %}
+          {% endif %}
+
+          {% if change.newKeyName %}
+            {% set newValue = change.newValue | changelogValue %}
+            {% set newValueClass = "" %}
+          {% else %}
+            {% set newValue = "Entry no longer exists" %}
+            {% set newValueClass = "jd-text-blue" %}
+          {% endif %}
+
+          <table class="govuk-table" >
+            <thead class="govuk-table__head">
+              <tr class="govuk-table__row govuk-!-font-weight-bold">
+                <td class="govuk-!-width-one-third">{{ keyName }}</td>
+                <td class="govuk-!-width-one-third jd-text-blue">New</td>
+                <td class="govuk-!-width-one-third">Previous</td>
+              </tr>
+            </thead>
+
+            <tbody class="govuk-table__body">
+
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell"></td>
+                <td class="govuk-table__cell {{newValueClass}}">{{ newValue }}</td>
+                <td class="govuk-table__cell {{oldValueClass}}">{{ oldValue }}</td>
+              </tr>
+
+            </tbody>
+          </table>
+
+        {% endfor %}
+
+      </div>
+    {% endfor %}
+  {% endif %}
+
+</section>

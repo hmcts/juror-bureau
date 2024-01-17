@@ -1,0 +1,68 @@
+<section class="modal-content excusal-section">
+
+  <form>
+
+    <div class="govuk-form-group" id="excusalGroup">
+      <fieldset class="govuk-fieldset" aria-describedby="excusalHint">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h1 class="govuk-fieldset__heading">
+            Excusal
+          </h1>
+        </legend>
+        
+        {#
+        <div id="excusalHint" class="govuk-hint">
+          Select an option
+        </div>
+        #}
+
+        <span class="govuk-error-message error-message-decision"></span>
+
+        <div class="govuk-radios govuk-radios--inline">
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="excusal-Yes" name="excusal" type="radio" value="Yes">
+            <label class="govuk-label govuk-radios__label" for="excusal-Yes">
+              Accept excusal
+            </label>
+          </div>
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="excusal-No" name="excusal" type="radio" value="No">
+            <label class="govuk-label govuk-radios__label" data-target="excusalReasonExpanded" for="excusal-No">
+              Refuse excusal
+            </label>
+          </div>
+        </div>
+
+      </fieldset>
+    </div>
+
+    <div id="excusalReasonExpanded">
+      <div class="govuk-form-group" id="excusalReasonGroup">
+        <label class="govuk-label" for="excusal_reason">Reason for excusal request</label>
+        <span class="govuk-error-message error-message-reason"></span>
+        <select class="govuk-select" name="excusal_reason" id="excusal_reason">
+          <option value="" class="u-hide--small" selected data-title="Select reason">Select reason</option>
+          {% for reason in excusalReasons %}
+          <option value="{{ reason.excusalCode }}" data-title="{{ reason.description }}">{{ reason.excusalCode }} - {{ reason.description }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="govuk-form-group">
+      <span class="govuk-error-message error-message-submit"></span>
+      <div class="govuk-button-group">
+        <button id="excusalMarkComplete" class="govuk-button modal-save-button" data-module="govuk-button" value="Mark as completed" disabled >Mark as completed</button>
+        <a id="excusalCancelBtn" class="govuk-link close-modal" href="#">Cancel</a>
+      </div>
+    </div>
+
+
+    <input type="hidden" name="jurorNumber" id="jurorNumber" value="{{ response.jurorNumber }}">
+    <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+    <input type="hidden" name="version" id="version" value="{{ version }}">
+
+  </form>
+
+  <br class="clear">
+</section>

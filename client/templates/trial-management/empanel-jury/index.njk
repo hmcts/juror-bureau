@@ -1,0 +1,51 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_identifier %} Empanel Jury {% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <form action="{{ submitUrl }}" method="post" id="numberOfJurorsForm">
+
+        <h1 class="govuk-heading-l">How many jurors do you want to empanel?</h1>
+
+        {% if errors.items['numberOfJurors'] %}
+          {% set numberOfJurorsError = {
+            text: errors.items['numberOfJurors'][0].details
+          } %}
+        {% else %}
+          {% set numberOfJurorsError = undefined %}
+        {% endif %}
+
+        {{ govukInput({
+            classes: 'govuk-input--width-3',
+            id: "numberOfJurors",
+            name: "numberOfJurors",
+            type: "text",
+            errorMessage: numberOfJurorsError,
+            value: tmpBody.numberOfJurors
+          }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            type: "submit" 
+          }) }}
+
+          <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

@@ -1,0 +1,19 @@
+<section class="modal-content change-log-add-section">
+  <label class="govuk-label govuk-label--s modal-title" for="notes">Please give a reason for the change to this summons reply</p>
+
+  <textarea class="govuk-textarea" name="notes" id="notes" rows="7" maxlength="2000"></textarea>
+
+  <div class="govuk-form-group">
+    <span class="govuk-error-message error-message-submit"></span>
+    <div class="govuk-button-group">
+      <button id="changeLogSaveButton" class="govuk-button modal-save-button" data-module="govuk-button" value="Save" disabled >Save</button>
+      <a id="changeLogCancelButton" class="govuk-link close-modal" value="Cancel" href="#">Cancel</a>
+    </div>
+  </div>
+
+
+  <input type="hidden" name="jurorNumber" id="jurorNumber" value="{{ response.jurorNumber }}">
+  <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+  <input type="hidden" name="version" id="version" value="{{ version }}">
+
+</section>

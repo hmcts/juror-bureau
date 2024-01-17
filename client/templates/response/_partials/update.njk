@@ -1,0 +1,46 @@
+<form action="{{ url('response.detail.post', { id: response.jurorNumber }) }}" method="post" id="updateSectionForm" class="response-update-form">
+  <h4 class="heading-small">Reply status</h4>
+  <p>
+    <span class="processing-status-label{% if response.processingStatus === 'CLOSED' %} processing-status-label--green{% endif %}">
+      <span>{{ response.processingStatusRender }}</span>
+      {% if response.processingStatus === 'CLOSED' %}
+      &nbsp;&nbsp;&#x2714;
+      {% endif %}
+    </span>
+  </p>
+
+  {% if response.processingStatus !== 'CLOSED' %}
+  <div class="form-group">
+    <label for="processAction"><strong class="bold-small">Process reply</strong></label>
+    <select name="processAction" id="processAction">
+      <option value="" class="u-hide--small" selected>Select action</option>
+      {% if response.superUrgent %}
+        <option value="send_to_court" data-title="SendToCourt">PDF sent to court...</option>
+      {% else %}
+        <option value="responded" data-title="Responded">Responded</option>
+        <option value="deferral" data-title="Deferral">Deferral</option>
+        <option value="excusal" data-title="Excusal">Excusal</option>
+        <option value="disqualified" data-title="Disqualified">Disqualified</option>
+
+        {% if (assignedSelf === true) or (authentication.staff.rank > 0) %}
+          <option value="send_to" data-title="Send to…">Send to…</option>
+        {% endif %}
+        <option value="awaiting_information" data-title="Awaiting information">Awaiting information</option>
+      {% endif %}
+    </select>
+  </div>
+
+  {% endif %}
+
+  <div>
+    <span class="icon icon-load"></span>
+    <span><a href="/response/{{response.jurorNumber}}/download-pdf/", target="_blank">Download PDF</a></span>
+  </div>
+
+  <input type="hidden" name="jurorNumber" id="jurorNumber" value="{{ response.jurorNumber }}">
+  <input type="hidden" name="_csrf" value="{{ csrftoken }}" id="_csrf">
+  <input type="hidden" name="version" value="{{ response.version }}" id="versionNumber">
+  <input type="hidden" name="courtDate" value="{{ response.hearingDate }}" id="courtDate">
+
+  <p><a href="#" class="link-back link-back--static {% if nav.lastPage === 'search' %}link-search{% elseif response.rawProcessingStatus === 'TODO' %}link-inbox{%elseif response.rawProcessingStatus === 'CLOSED' %}link-complete{% else %}link-pending{% endif %}">Back</a></p>
+</form>

@@ -1,0 +1,84 @@
+  {% set confirmedColour = '#1D70B8' %}
+  {% set requestedColour = '#B1B4B6' %}
+  {% set surplusColour = '#D53880' %}
+  {% set notRespondedColour = '#F3F2F1' %}
+  {% set unavailableColour = '#B58840' %}
+  
+<table class="summoning-progress-table">
+    <thead>
+        <tr class="summoning-progress-table-header">
+            <th>Service start date</th>
+            <th>Pool number</th>
+            <th>Requested</th>
+            <th>Summoned</th>
+            <th>Confirmed</th>
+            <th class="summoning-progress-table-balance-col balance-header">Balance</th>
+            <th class="summoning-progress-table-barChartLegend">
+                <span><div class="summoning-progress-table-bullet confirmed"></div> Confirmed</span>
+                <span><div class="summoning-progress-table-bullet requested"></div><div class="summoning-progress-table-responded-triangle"></div> Requested</span>
+                <span><div class="summoning-progress-table-bullet surplus"></div> Surplus</span>
+                <span><div class="summoning-progress-table-bullet notResponded"></div> Not responded</span>
+                <span><div class="summoning-progress-table-bullet unavailable"></div> Unavailable</span>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for week in summoningProgressList.statsByWeek %}
+            <tr>    
+                <td class="summoning-progress-table-week-header govuk-!-margin-top-4">
+                    <h2 class="govuk-heading-m">Week {{loop.index}}</h2>
+                </td>
+            </tr>
+            {% if week.stats.length === 0 %}
+                <tr class="summoning-progress-table-day-row summoning-progress-table-day-row-last">
+                    <td>{{week.startOfWeek | dateFilter(null, "ddd D MMM YYYY")}}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="summoning-progress-table-balance-col"></td>
+                    <td>
+                        <div class="summoning-progress-barChart">
+                            No pools requested
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                {% for pool in week.stats %}
+                    {% if pool === week.stats | last %}
+                        <tr class="summoning-progress-table-day-row summoning-progress-table-day-row-last">
+                    {% else %}
+                        <tr class="summoning-progress-table-day-row">
+                    {% endif %}
+                    <td>{{pool.serviceStartDate | dateFilter(null, "ddd D MMM YYYY")}}</td>
+                    <td><a href="{{ url('pool-overview.get', { poolNumber: pool.poolNumber }) }}" class="govuk-link">{{pool.poolNumber}}<a></td>
+                    <td>{{pool.requested}}</td>
+                    <td>{{pool.totalSummoned}}</td>
+                    <td>{{pool.confirmed}}</td>
+                    {% if pool.balance < 0 %}
+                        <td class="summoning-progress-table-balance-col negative">{{pool.balance}}</td>
+                    {% else %}
+                        <td class="summoning-progress-table-balance-col">{{ "" if pool.balance === 0 else "+" }}{{pool.balance}}</td>
+                    {% endif %}
+                    <td>
+                        <div class="summoning-progress-barChart">
+                        {% if pool.requested === 0 %}
+                            Nil pool
+                        {% elif pool.totalSummoned === 0 %}
+                            Summoning not started
+                        {% else %}
+                            <span class="barChart-component summoning-progress-barChart-bar confirmed" data-percentage="{{pool.barChart.confirmed}}"></span>
+                            <span class="barChart-component summoning-progress-barChart-bar requested" data-percentage="{{pool.barChart.requested}}"></span>
+                            <span class="barChart-component requested-triangle" data-position="{{pool.barChart.trianglePosition}}"></span>
+                            <span class="barChart-component summoning-progress-barChart-bar surplus" data-percentage="{{pool.barChart.surplus}}"></span>
+                            <span class="barChart-component summoning-progress-barChart-bar notResponded" data-percentage="{{pool.barChart.notResponded}}"></span>
+                            <span class="barChart-component summoning-progress-barChart-bar unavailable" data-percentage="{{pool.barChart.unavailable}}"></span>
+                        {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
