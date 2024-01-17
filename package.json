@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@fengyuanchen/datepicker": "^0.6.4",
-    "@hmcts/properties-volume": "1.0.0",
+    "@hmcts/properties-volume": "1.1.0",
     "@ministryofjustice/frontend": "^1.6.3",
     "accessible-autocomplete": "^2.0.4",
     "basic-auth": "^2.0.0",
