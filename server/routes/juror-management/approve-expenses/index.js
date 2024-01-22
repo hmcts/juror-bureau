@@ -6,16 +6,16 @@
 
   module.exports = function(app) {
 
-    app.get('/juror-management/approve-expenses/bacs-and-cheque',
-      'juror-management.approve-expenses.bacs-and-cheque.get',
+    app.get('/juror-management/approve-expenses',
+      'juror-management.approve-expenses.get',
       auth.verify,
-      controller.getBACSAndCheque(app),
+      controller.getApproveExpenses(app),
     );
 
-    app.get('/juror-management/approve-expenses/cash',
-      'juror-management.approve-expenses.cash.get',
+    app.post('/juror-management/approve-expenses',
+      'juror-management.approve-expenses.post',
       auth.verify,
-      controller.getCash(app),
+      controller.postApproveExpenses(app),
     );
 
     app.get('/juror-management/approve-expenses/view-expenses/:jurorNumber',
@@ -25,9 +25,9 @@
     );
 
     app.post('/juror-management/approve-expenses/bacs-and-cheque',
-      'juror-management.approve-expenses.bacs-and-cheque.post',
+      'juror-management.approve-expenses.filter-dates.post',
       auth.verify,
-      controller.postBACSAndCheque(app),
+      controller.postFilterByDate(app),
     );
 
   };

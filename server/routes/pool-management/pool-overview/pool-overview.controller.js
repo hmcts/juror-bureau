@@ -737,11 +737,15 @@
           });
         }
       } else {
-        const juror = req.session.membersList.find(j => j.jurorNumber === jurorNumber)
-          , filtMem = req.session.filteredMembers.poolMembers.find(j => j.jurorNumber === jurorNumber);
+        const juror = req.session.membersList.find(j => j.jurorNumber === jurorNumber);
 
         juror.checked = !juror.checked;
-        filtMem.checked = !filtMem.checked;
+
+        if (typeof req.session.filteredMembers !== 'undefined') {
+          const filtMem = req.session.filteredMembers.poolMembers.find(j => j.jurorNumber === jurorNumber);
+
+          filtMem.checked = !filtMem.checked;
+        }
       }
 
       app.logger.info('Checked or unchecked one or more jurors: ', {

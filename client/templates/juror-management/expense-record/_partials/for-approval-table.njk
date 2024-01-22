@@ -7,7 +7,7 @@
         {% set tableRows = (tableRows.push(
           [
             {
-              html: '<a href=' + url("juror-management.unpaid-attendance.expense-record.detail.get", { auditNumber: expense.auditNumber }) + ' class="govuk-link">' + expense.auditNumber + '</a>'
+              html: '<a href=' + url("juror-management.unpaid-attendance.expense-record.detail.get", { jurorNumber: jurorNumber, poolNumber: poolNumber, auditNumber: expense.auditNumber }) + ' class="govuk-link">' + expense.auditNumber + '</a>'
             },
             {
               text: expense.attendanceFrom | dateFilter("YYYY-MM-DD", "ddd DD MMM YYYY"),

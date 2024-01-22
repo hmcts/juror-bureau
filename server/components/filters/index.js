@@ -334,6 +334,7 @@
       }
 
       if (minutes.toString().length === 1) minutes = `0${minutes}`;
+      if (hours.toString().length === 1) hours = `0${hours}`;
 
       return `${hours}:${minutes}`;
     },
@@ -366,6 +367,12 @@
       case 'ABSENT':
         return 'Absent';
       };
+    },
+
+    toFixed: function(num, length) {
+      const zeros = length || 2;
+
+      return num.toFixed(zeros);
     },
 
   };

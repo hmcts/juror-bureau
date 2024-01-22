@@ -1,0 +1,344 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+
+{% from "custom-components/mod-large-tag/macro.njk" import modLargeTag %}
+{% from "custom-components/macros/arrows.njk" import leftArrowSVG %}
+{% from "custom-components/macros/arrows.njk" import rightArrowSVG %}
+
+{% block page_title %}{{ serviceName }} - juror-management - unpaid attendance - daily expenses{% endblock %}
+{% block page_identifier %}juror-management - unpaid attendance - daily expenses{% endblock %}
+
+{% set currentApp = "Jurors" %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {% set lossOfEarningsError = undefined %}
+  {% if errors.items["lossOfEarnings"] %}
+    {% set lossOfEarningsError = { text: errors.items["lossOfEarnings"][0].details } %}
+  {% endif %}
+  {% set extraCareCostsError = undefined %}
+  {% if errors.items["extraCareCosts"] %}
+    {% set extraCareCostsError = { text: errors.items["extraCareCosts"][0].details } %}
+  {% endif %}
+  {% set otherCostsError = undefined %}
+  {% if errors.items["otherCosts"] %}
+    {% set otherCostsError = { text: errors.items["otherCosts"][0].details } %}
+  {% endif %}
+  {% set otherCostsDescriptionError = undefined %}
+  {% if errors.items["otherCostsDescription"] %}
+    {% set otherCostsDescriptionError = { text: errors.items["otherCostsDescription"][0].details } %}
+  {% endif %}
+
+  {% set applyToAllDaysError = undefined %}
+  {% if errors.items["applyToAllDays"] %}
+    {% set applyToAllDaysError = { text: errors.items["applyToAllDays"][0].details } %}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <span class="govuk-caption-l">{{ data.name }}</span>
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-3">Daily expenses</h1>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <span class="govuk-caption-m mod-expense-entry-pagination">
+        <a href="{{ pagination.prevLink }}">{{ leftArrowSVG({colour: "blue"}) }}</a>
+        <div> {{ pagination.currPage }} of {{ pagination.totalPages }}</div> 
+        <a href="{{ pagination.nextLink }}">{{ rightArrowSVG({colour: "blue"}) }}</a>
+      </span>
+      <h1 class="govuk-heading-m">{{ data.expenses[0].date | dateFilter("YYYY-MM-DD", "dddd DD MMMM YYYY") }}</h1>
+      {{ govukTag({
+        text: "DRAFT",
+        classes: "govuk-tag--grey"
+      }) }}
+    </div>
+  </div>
+
+  <form class="mod-expense-entry-form" method="post" action="{{ processUrl }}" id="enterDailyExpensesForm">
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-half">
+        <div class="govuk-grid-row">
+          <div id="timeDiv" class="mod-expense-entry-group">
+            <div class="mod-juror-record__title govuk-!-margin-bottom-5">
+              <h2 id="timeLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Time</h2>
+            </div>          
+            {{ govukSummaryList({
+              rows: [
+                {
+                  key: {
+                    text: "Time spent at court"
+                  },
+                  value: {
+                    text: "Non-attendance day"
+                  }
+                }
+              ]
+            }) }}
+            {{ govukRadios({
+              classes: "govuk-radios--inline govuk-radios--small",
+              name: "payAttendance",
+              value: tmpBody.payAttendance,
+              fieldset: {
+                legend: {
+                  text: "Pay attendance",
+                  classes: "govuk-fieldset__legend--s"
+                }
+              },
+              items: [
+                {
+                  value: "halfDay",
+                  text: "Half day"
+                },
+                {
+                  value: "fullDay",
+                  text: "Full day"
+                }
+              ]
+            }) }}
+          </div>
+        </div>
+        <div class="govuk-grid-row">
+          <div id="financialLossDiv" class="mod-expense-entry-group">
+            <div class="mod-juror-record__title govuk-!-margin-bottom-5">
+              <h2 id="financialLossLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Financial loss</h2>
+            </div>          
+            {{ govukInput({
+              id: "lossOfEarningsInput",
+              name: "lossOfEarnings",
+              label: {
+                text: "Loss of earnings or benefits"
+              },
+              prefix: {
+                text: "£"
+              },
+              classes: "govuk-input--width-5",
+              value: tmpBody.lossOfEarnings,
+              errorMessage: lossOfEarningsError
+            }) }}
+            {{ govukInput({
+              id: "extraCareCostsInput",
+              name: "extraCareCosts",
+              label: {
+                text: "Extra care costs"
+              },
+              prefix: {
+                text: "£"
+              },
+              classes: "govuk-input--width-5",
+              value: tmpBody.extraCareCosts,
+              errorMessage: extraCareCostsError
+            }) }}
+            {{ govukInput({
+              id: "otherCostsInput",
+              name: "otherCosts",
+              label: {
+                text: "Other costs"
+              },
+              prefix: {
+                text: "£"
+              },
+              classes: "govuk-input--width-5",
+              value: tmpBody.otherCosts,
+              errorMessage: otherCostsError
+            }) }}
+            {{ govukInput({
+              id: "otherCostsDescriptionInput",
+              name: "otherCostsDescription",
+              classes: "govuk-!-margin-bottom-0",
+              label: {
+                text: "Description of other costs"
+              },
+              value: tmpBody.otherCostsDescription,
+              errorMessage: otherCostsDescriptionError
+            }) }}
+          </div>
+        </div>
+      </div>
+      <div class="govuk-grid-column-one-half">
+        <div class="govuk-grid-row">
+          <div id="applyToAllDiv" class="mod-expense-entry-group">
+            <div class="mod-juror-record__title govuk-!-margin-bottom-5">
+              <h2 id="applyToAllDaysLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Apply to all days</h2>
+            </div>
+            {{ govukCheckboxes({
+              name: "applyToAllDays",
+              classes: "govuk-checkboxes--small",
+              values: tmpBody.applyToAllDays,
+              errorMessage: applyToAllDaysError,
+              fieldset: {
+                legend: {
+                  text: "Tick all you want to copy and apply",
+                  classes: "govuk-fieldset__legend--s"
+                }
+              },
+              items: [
+                {
+                  value: "extraCareCosts",
+                  text: "Extra care costs"
+                },
+                {
+                  value: "otherCosts",
+                  text: "Other costs"
+                },
+                {
+                  value: "payCash",
+                  text: "Pay cash"
+                }
+              ]
+            }) }}
+            {{ govukButton({
+              text: "Apply",
+              classes: "govuk-!-margin-bottom-0",
+              attributes: {
+                id: "applyToAllButton",
+                formAction: postUrls.applyToAllUrl
+              }
+            }) }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <div class="mod-juror-record__title govuk-!-margin-top-5 govuk-!-margin-bottom-5">
+              <h2 id="summaryLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Summary</h2>
+        </div>
+        <div class="govuk-grid-column-one-half govuk-!-padding-left-0">
+          {{ govukSummaryList({
+            attributes: {
+              id: "totalsSummaryTable"
+            },
+            rows: [
+              {
+                key: {
+                  text: "Pay attendance"
+                },
+                value: {
+                  text: ""
+                }
+              },
+              {
+                key: {
+                  text: "Financial loss (capped)"
+                },
+                value: {
+                  text: ""
+                }
+              }
+            ]
+          }) }}
+        </div>
+        <div class="govuk-grid-column-one-half govuk-!-padding-right-0">
+          {{ modLargeTag({
+            id: "totalPaidTag",
+            classes: "govuk-!-margin-bottom-1",
+            label: "Total they'll be paid",
+            value: ""
+          })}}
+          {{ govukCheckboxes({
+              name: "payByCash",
+              classes: "govuk-checkboxes--small",
+              values: tmpBody.payByCash,
+              items: [
+                {
+                  value: "true",
+                  text: "Pay by cash"
+                }
+              ]
+            }) }}
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}" />
+
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <div class="govuk-button-group">
+              {{ govukButton({
+                text: "Save and next",
+                type: "submit",
+                attributes: {
+                  id: "saveAndNextButton",
+                  formAction: postUrls.saveAndNextUrl
+                }
+              }) }}
+
+              {{ govukButton({
+                text: "Save and back to all days",
+                classes: "govuk-button--secondary",
+                attributes: {
+                  id: "saveAndBackButton",
+                  formAction: postUrls.saveAndBackUrl
+                }
+              }) }}
+
+              <a class="govuk-link" href="{{ cancelUrl }}">Cancel without saving</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  </form>
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script>
+
+  $(document).ready(function() {
+    updatePayAttendanceValue()
+    calculateFinancialLoss();
+  })
+
+  $('input[name=payAttendance]:radio').on('change', function() {
+    updatePayAttendanceValue();
+  });
+
+  $('#financialLossDiv input').on('change', function() {
+    calculateFinancialLoss();
+  });
+
+
+  function updatePayAttendanceValue() {
+    let attendance = $('input[name=payAttendance]:checked').val() === 'fullDay' ? 'Full day' : 'Half day';
+    $("#totalsSummaryTable > * > dt:contains('Pay attendance')").next().text(attendance);
+    calculateFinancialLoss();
+  }
+
+  function calculateFinancialLoss() {
+    const lossOfEarnings = parseFloat($('input[name=lossOfEarnings]').val()) || 0;
+    const extraCareCosts = parseFloat($('input[name=extraCareCosts]').val()) || 0;
+    const otherCosts = parseFloat($('input[name=otherCosts]').val()) || 0;
+    const totalLoss = lossOfEarnings + extraCareCosts + otherCosts
+    const lossCap = $('input[name=payAttendance]:checked').val() === 'fullDay' ? {{calculationsData.fullDayLossCap}} : {{calculationsData.halfDayLossCap}};
+
+    const calculatedTotalLoss = totalLoss < lossCap ? totalLoss : lossCap;
+    $("#totalsSummaryTable > * > dt:contains('Financial loss (capped)')").next().text("£" + calculatedTotalLoss.toFixed(2));
+    calculateTotalToBePaid();
+  }
+
+  function calculateTotalToBePaid() {
+    const financialLoss = parseFloat($("#totalsSummaryTable > * > dt:contains('Financial loss (capped)')").next().text().substring(1)) || 0;
+    const travelTotal = parseFloat($("#totalsSummaryTable > * > dt:contains('Travel expenses')").next().text().substring(1)) || 0;
+    const foodAndDrinkTotal = parseFloat($("#totalsSummaryTable > * > dt:contains('Food and drink claim')").next().text().substring(1)) || 0;
+
+    const overallTotal = financialLoss + travelTotal + foodAndDrinkTotal;
+    $("#totalPaidTag-value").text("£" + overallTotal.toFixed(2))
+  }
+
+  </script>
+{% endblock %}

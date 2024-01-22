@@ -2,29 +2,30 @@
   'use strict';
 
   const _ = require('lodash'),
-    selectJurorValidator = require('../../config/validation/pool-reassign'),
-    {
-      checkInTime: checkInTimeValidator,
-      checkOutTime: checkOutTimeValidator,
-      timeMessageMapping,
-    } = require('../../config/validation/check-in-out-time'),
-    validate = require('validate.js');
-
-  const timeIsEmpty = function(body, direction) {
-    return !(body[`check${direction}TimeHour`] !== ''
-      || body[`check${direction}TimeMinute`] !== ''
-      || body[`check${direction}TimePeriod`]);
-  };
+    returnsValidator = require('../../config/validation/return-panel-jury'),
+    validate = require('validate.js'),
+    returnsObject = require('../../objects/return-jurors').returnsObject,
+    { attendanceData } = require('../../objects/attendance-data'),
+    { convert12to24, dateFilter, convertAmPmToLong } = require('../../components/filters'),
+    { padTimeForApi } = require('../../lib/mod-utils');
 
   module.exports.postReturnJurors = (app) => (req, res) => {
     delete req.session.checkInTime;
     delete req.session.checkOutTime;
     delete req.session.handleAttendance;
     delete req.session.formFields;
+    delete req.session.panel;
 
+    const isJuryEmpanelled = _.clone(req.session.isJuryEmpanelled);
+    const panelData  = _.clone(req.session.panelData);
     let validatorResult;
 
-    validatorResult = validate(req.body, selectJurorValidator());
+    delete req.session.panelData;
+    delete req.session.isJuryEmpanelled;
+
+    validatorResult = isJuryEmpanelled
+      ? validate(req.body, returnsValidator.returnJury())
+      : validate(req.body, returnsValidator.returnPanel());
 
     if (typeof validatorResult !== 'undefined') {
       req.session.errors = validatorResult;
@@ -40,21 +41,29 @@
       req.body.selectedJurors = [req.body.selectedJurors];
     }
 
-    req.session.selectedJurors = req.body.selectedJurors;
+    // setup the payload to be sent to api - needs names and status
+    panelData.forEach(juror => {
+      if (juror['juror_status'] === 'Juror') {
+        juror['empanel_status'] = 'JUROR';
+      }
+      delete juror['juror_status'];
+    });
+    req.session.selectedJurors = panelData.filter(juror => req.body.selectedJurors.includes(juror['juror_number']));
 
-    // TODO update route depending on if we're a panel or a full jury
+    if (!isJuryEmpanelled) {
+      // Panel route
+      req.session.panel = true;
+      return res.redirect(app.namedRoutes.build('trial-management.trials.return.confirm.get', {
+        trialNumber: req.params.trialNumber,
+        locationCode: req.params.locationCode,
+      }));
+    }
+
     // Jury route
     return res.redirect(app.namedRoutes.build('trial-management.trials.return.attendance.get', {
       trialNumber: req.params.trialNumber,
       locationCode: req.params.locationCode,
     }));
-
-    // Panel route
-    // req.session.panel = true;
-    // return res.redirect(app.namedRoutes.build('trial-management.trials.return.confirm.get', {
-    //   trialNumber: req.params.trialNumber,
-    //   locationCode: req.params.locationCode,
-    // }));
   };
 
   module.exports.getReturnAttendance = (app) => (req, res) => {
@@ -115,107 +124,141 @@
 
     delete req.session.errors;
 
-    return res.render('trial-management/returns/return-check-out.njk', {
-      formActions: {
-        returnUrl: app.namedRoutes.build('trial-management.trials.return.confirm.post', {
+    attendanceData.get(
+      require('request-promise'),
+      app,
+      req.session.authToken,
+      'JUROR_NUMBER',
+      dateFilter(new Date(), null, 'YYYY-MM-DD'),
+      req.params.locationCode,
+      req.session.selectedJurors.map(juror => juror['juror_number'])
+    )
+      .then((attendanceRecords) => {
+        let earliestCheckInTime;
+
+        attendanceRecords.details.forEach((juror) => {
+          const checkInTime = juror['check_in_time'][0].toString()
+          + juror['check_in_time'][1].toString().padStart(2, '0');
+
+          earliestCheckInTime = checkInTime < earliestCheckInTime
+            || !earliestCheckInTime ? checkInTime : earliestCheckInTime;
+        });
+
+        return res.render('trial-management/returns/return-check-out.njk', {
+          formActions: {
+            returnUrl: app.namedRoutes.build('trial-management.trials.return.confirm.post', {
+              trialNumber: req.params.trialNumber,
+              locationCode: req.params.locationCode,
+            }),
+          },
+          selectedJurors: req.session.selectedJurors,
           trialNumber: req.params.trialNumber,
-          locationCode: req.params.locationCode,
-        }),
-      },
-      selectedJurors: req.session.selectedJurors,
-      trialNumber: req.params.trialNumber,
-      cancelUrl: app.namedRoutes.build('trial-management.trials.detail.get', {
-        trialNumber: req.params.trialNumber,
-        locationCode: req.params.locationCode,
-      }),
-      errors: {
-        title: 'Please check the form',
-        count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-        items: tmpErrors,
-      },
-      formFields: tmpFields,
-      backLinkUrl: {
-        built: true,
-        url: app.namedRoutes.build('trial-management.trials.return.attendance.get', {
-          trialNumber: req.params.trialNumber,
-          locationCode: req.params.locationCode,
-        }),
-      },
-    });
+          cancelUrl: app.namedRoutes.build('trial-management.trials.detail.get', {
+            trialNumber: req.params.trialNumber,
+            locationCode: req.params.locationCode,
+          }),
+          errors: {
+            title: 'Please check the form',
+            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+            items: tmpErrors,
+          },
+          formFields: tmpFields,
+          earliestCheckIn: earliestCheckInTime,
+          backLinkUrl: {
+            built: true,
+            url: app.namedRoutes.build('trial-management.trials.return.attendance.get', {
+              trialNumber: req.params.trialNumber,
+              locationCode: req.params.locationCode,
+            }),
+          },
+        });
+      })
+      .catch((err) => {
+        app.logger.crit('Failed to fetch attendance records for given day and juror numbers', {
+          auth: req.session.authentication,
+          token: req.session.authToken,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic.njk');
+      });
   };
 
-  module.exports.postReturnCheckOut = (app) => (req, res) => {
-    const checkInValidate = validate(req.body, checkInTimeValidator());
-    const checkOutValidate = validate(req.body, checkOutTimeValidator());
-    let totalErrors = {};
+  module.exports.postReturnCheckOut = function(app) {
+    return function(req, res) {
+      const checkInTimeHour = req.body.checkInTimeHour
+        , checkInTimeMinute = req.body.checkInTimeMinute
+        , checkInTimePeriod = req.body.checkInTimePeriod
+        , checkOutTimeHour = req.body.checkOutTimeHour
+        , checkOutTimeMinute = req.body.checkOutTimeMinute
+        , checkOutTimePeriod = req.body.checkOutTimePeriod
+        , earliestCheckIn = req.body.earliestCheckIn;
 
-    // TODO We need to check the server to see what the juror's check-in
-    // times are: If they have one, we can skip check-in validation, and
-    // we need to validate that the check-out time selected is after
-    // all of the juror's check-in times.
+      let validatorResult = validate({
+        checkInTime: {
+          hour: checkInTimeHour,
+          minute: checkInTimeMinute,
+          period: checkInTimePeriod,
+        },
+        checkOutTime: {
+          hour: checkOutTimeHour,
+          minute: checkOutTimeMinute,
+          period: checkOutTimePeriod,
+        },
+      }, returnsValidator.returnAttendanceTimes());
 
-    if (timeIsEmpty(req.body, 'Out')) {
-      totalErrors = {
-        checkOutTime: [timeMessageMapping.checkOut.missingWholeTime],
-      };
-    } else if (typeof checkOutValidate !== 'undefined') {
-      // TODO Validate if this isn't before the Jurors' check-in times
-      totalErrors = checkOutValidate;
-    }
+      let completeValidatorResult = {};
 
-    if (req.session.selectedJurors.reduce((needed, juror) => {
-      if (juror === '123456789') { // Assume this juror isn't checked in
-        return true;
+      if (typeof validatorResult !== 'undefined') {
+        // Validator returns nested result therefore is resturctured
+        if (typeof validatorResult.checkInTime !== 'undefined') {
+          completeValidatorResult = validatorResult.checkInTime[0];
+        }
+
+        if (typeof validatorResult.checkOutTime !== 'undefined') {
+          completeValidatorResult = Object.assign(completeValidatorResult, validatorResult.checkOutTime[0]);
+        }
       }
 
-      return needed;
-    }, false)) {
-      const formattedCheckIn = {};
+      if (!_.isEmpty(completeValidatorResult)) {
+        req.session.errors = completeValidatorResult;
+        req.session.formFields = req.body;
+        return res.redirect(app.namedRoutes.build('trial-management.trials.return.check-out.get', {
+          trialNumber: req.params.trialNumber,
+          locationCode: req.params.locationCode,
+        }));
+      }
 
-      if (timeIsEmpty(req.body, 'In')) {
-        totalErrors = {
-          checkInTime: [timeMessageMapping.checkIn.missingWholeTime],
-          ...totalErrors,
+      // Ensure that check out time entered is later than all jurors check in times
+      const inMinutes = `${req.body.checkInTimeMinute}`.padStart(2, '0'),
+        checkInTime = `${req.body.checkInTimeHour}:${inMinutes}${req.body.checkInTimePeriod}`;
+
+      const outMinutes = `${req.body.checkOutTimeMinute}`.padStart(2, '0')
+        , checkOutTime = `${req.body.checkOutTimeHour}:${outMinutes}${req.body.checkOutTimePeriod}`;
+
+      if (convertAmPmToLong(checkOutTime) <= earliestCheckIn){
+        req.session.errors = {
+          checkOutTime: [{
+            summary: 'Check out time must be after checked in time for all jurors',
+            details: 'Check out time must be after checked in time for all jurors',
+          }],
         };
-      } else if (typeof checkInValidate !== 'undefined') {
-
-        Object.keys(checkInValidate).forEach(key => {
-          const oldMessage = checkInValidate[key][0].summary;
-          const message = oldMessage.slice(0,
-            oldMessage.indexOf(' or delete this juror\'s attendance'));
-
-          formattedCheckIn[key] = [{ summary: message, details: message }];
-        });
+        req.session.formFields = req.body;
+        return res.redirect(app.namedRoutes.build('trial-management.trials.return.check-out.get', {
+          trialNumber: req.params.trialNumber,
+          locationCode: req.params.locationCode,
+        }));
       }
 
-      totalErrors = {...formattedCheckIn, ...totalErrors};
-    }
+      req.session.checkInTime = checkInTime;
+      req.session.checkOutTime = checkOutTime;
 
-    req.session.formFields = req.body;
-
-    if (Object.keys(totalErrors).length > 0) {
-      req.session.errors = totalErrors;
-
-      return res.redirect(app.namedRoutes.build('trial-management.trials.return.check-out.get', {
+      return res.redirect(app.namedRoutes.build('trial-management.trials.return.confirm.get', {
         trialNumber: req.params.trialNumber,
         locationCode: req.params.locationCode,
       }));
-    }
 
-    if (!timeIsEmpty(req.body, 'In')) {
-      const inMinutes = `${req.body.checkInTimeMinute}`.padStart(2, '0');
-
-      req.session.checkInTime = `${req.body.checkInTimeHour}:${inMinutes}${req.body.checkInTimePeriod}`;
-    }
-
-    const outMinutes = `${req.body.checkInTimeMinute}`.padStart(2, '0');
-
-    req.session.checkOutTime = `${req.body.checkOutTimeHour}:${outMinutes}${req.body.checkOutTimePeriod}`;
-
-    return res.redirect(app.namedRoutes.build('trial-management.trials.return.confirm.get', {
-      trialNumber: req.params.trialNumber,
-      locationCode: req.params.locationCode,
-    }));
+    };
   };
 
   module.exports.getReturnConfirm = (app) => (req, res) => {
@@ -223,10 +266,11 @@
     const handleAttendance = req.session.handleAttendance;
     const checkInTime = req.session.checkInTime;
     const checkOutTime = req.session.checkOutTime;
+
     let backUrl;
 
     if (isPanel) {
-      backUrl = app.namedRoutes.build('trial-management.trials.return.detail.get', {
+      backUrl = app.namedRoutes.build('trial-management.trials.detail.get', {
         trialNumber: req.params.trialNumber,
         locationCode: req.params.locationCode,
       });
@@ -267,20 +311,58 @@
 
   module.exports.postReturnConfirm = (app) => (req, res) => {
     // TODO: call the backend here
-    // if success:
-    req.session.bannerMessage =
-      `${req.session.selectedJurors.length} juror${req.session.selectedJurors.length > 1 ? 's' : ''} returned`;
+    const checkInTime = req.session.checkInTime ? padTimeForApi(convert12to24(req.session.checkInTime)) : '';
+    const checkOutTime = req.session.checkOutTime ? padTimeForApi(convert12to24(req.session.checkOutTime)) : '';
+    const selectedJurors = req.session.selectedJurors;
+    const trialNumber = req.params.trialNumber;
+    const locCode = req.params.locationCode;
+    const panelType = req.session.panel ? 'panel' : 'jury';
+    const completeService = req.session.handleAttendance === 'complete' ? 'true' : 'false';
 
+    delete req.session.panel;
+    delete req.session.checkInTime;
+    delete req.session.checkOutTime;
     delete req.session.selectedJurors;
 
-    return res.redirect(app.namedRoutes.build('trial-management.trials.detail.get', {
-      trialNumber: req.params.trialNumber,
-      locationCode: req.params.locationCode,
-    }));
+    let payload;
 
-    // else:
-    // req.session.errors = 'Unhappy path';
+    if (panelType === 'panel') {
+      payload = selectedJurors;
+    } else {
+      payload = {
+        'check_in': checkInTime,
+        'check_out': checkOutTime,
+        completed: completeService,
+        jurors: selectedJurors,
+      };
+    }
 
-    // return res.redirect(errorUrl);
+    returnsObject.post(
+      require('request-promise'),
+      app,
+      req.session.authToken,
+      panelType,
+      trialNumber,
+      locCode,
+      payload
+    )
+      .then(() => {
+        req.session.bannerMessage =
+        `${selectedJurors.length} juror${selectedJurors.length > 1 ? 's' : ''} returned`;
+
+        return res.redirect(app.namedRoutes.build('trial-management.trials.detail.get', {
+          trialNumber: trialNumber,
+          locationCode: locCode,
+        }));
+      })
+      .catch((err) => {
+        app.logger.crit('Failed to return the ' + panelType, {
+          auth: req.session.authentication,
+          token: req.session.authToken,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic.njk');
+      });
   };
 })();

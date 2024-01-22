@@ -14,10 +14,11 @@
     json: true,
     transform: utils.basicDataTransform,
   };
+  const rp = require('request-promise');
 
   module.exports.jurorsAttending = {
     resource: 'moj/juror-management/appearance',
-    get: function(rp, app, jwtToken, locationCode, attendanceDate) {
+    get: function(__, app, jwtToken, locationCode, attendanceDate) {
       const reqOptions = _.clone(options);
 
       reqOptions.headers.Authorization = jwtToken;
@@ -35,7 +36,7 @@
 
       return rp(reqOptions);
     },
-    put: function(rp, app, jwtToken, data) {
+    put: function(__, app, jwtToken, data) {
       const reqOptions = _.clone(options);
 
       reqOptions.headers.Authorization = jwtToken;
@@ -51,6 +52,60 @@
       });
 
       return rp(reqOptions);
+    },
+  };
+
+  module.exports.jurorAttendanceDao = {
+    get: function(app, req, body) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/juror-management/attendance'),
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+        body,
+      };
+
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
+    },
+    patch: function(app, req, body) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/juror-management/attendance'),
+        method: 'PATCH',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+        body,
+      };
+
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
+    },
+    delete: function(app, req, body) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/juror-management/attendance'),
+        method: 'DELETE',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+        body,
+      };
+
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
     },
   };
 

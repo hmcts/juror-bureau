@@ -318,14 +318,14 @@
           },
         },
         {
-          text: unpaid.total_unapproved,
+          text: '£' + parseFloat(unpaid.total_unapproved).toFixed(2),
           attributes: {
             'data-sort-value': unpaid.total_unapproved,
           },
         },
         {
           html: '<a href="/juror-management/unpaid-attendance/expense-record/' +
-            unpaid.juror_number + '" class="govuk-link">' + 'View expenses' + '</a>',
+            unpaid.juror_number + '/' + unpaid.pool_number + '" class="govuk-link">' + 'View expenses' + '</a>',
           attributes: {
             'data-sort-value': unpaid.total_unapproved,
           },

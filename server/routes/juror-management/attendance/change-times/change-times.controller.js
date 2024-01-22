@@ -3,63 +3,64 @@
 
   const _ = require('lodash')
     , validate = require('validate.js')
-    , changeTimesValidator = require('../../../../config/validation/change-attendance-times').changeAttendanceTimes;
+    , changeTimesValidator = require('../../../../config/validation/change-attendance-times').changeAttendanceTimes
+    , { jurorAttendanceDao } = require('../../../../objects/juror-attendance')
+    , { convert12to24, convert24to12, timeArrayToString } = require('../../../../components/filters');
 
   module.exports.getChangeTimes = function(app) {
     return function(req, res) {
+      const { jurorNumber } = req.params;
       let processUrl
         , cancelUrl
         , deleteUrl
-        , juror
         , attendanceDate
         , tmpErrors = _.clone(req.session.errors)
         , tmpBody = _.clone(req.session.formFields);
-      const jn = req.params.jurorNumber;
 
       delete req.session.errors;
       delete req.session.formFields;
 
-      // STUBBED
-      // Juror detials and check in/out time will come from backend
-      juror = {
-        jurorNumber: jn,
-        firstName: 'First0',
-        lastName: 'Last0',
-        checkedIn: null,
-        checkedOut: null,
-      };
+      const juror = req.session.dailyAttendanceList.find(attendee => attendee.jurorNumber === jurorNumber);
+
+      if (!juror) {
+        app.logger.crit('Failed to find a juror with that juror number', {
+          userId: req.session.authentication.login,
+          jwt: req.session.authToken,
+          error: 'The juror number in the url does not match the juror selected to change the times',
+        });
+
+        return res.render('_errors/generic');
+      }
 
       attendanceDate = req.query.date ? req.query.date : req.session.attendanceListDate;
 
       // Check if user navigated from juror record
       if (req.url.includes('record')) {
-        processUrl = app.namedRoutes.build(
-          'juror-record.attendance.change-times.post',
-          {jurorNumber: juror.jurorNumber}
-        );
-        cancelUrl = app.namedRoutes.build('juror-record.attendance.get', {jurorNumber: juror.jurorNumber}
-        );
+        processUrl = app.namedRoutes.build('juror-record.attendance.change-times.post', {
+          jurorNumber: juror.jurorNumber,
+        });
+        cancelUrl = app.namedRoutes.build('juror-record.attendance.get', {
+          jurorNumber: juror.jurorNumber,
+        });
       } else {
-        processUrl = app.namedRoutes.build(
-          'juror-management.attendance.change-times.post',
-          {jurorNumber: juror.jurorNumber}
-        );
+        processUrl = app.namedRoutes.build('juror-management.attendance.change-times.post', {
+          jurorNumber: juror.jurorNumber,
+        });
         cancelUrl = app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate;
-        deleteUrl = app.namedRoutes.build(
-          'juror-management.attendance.delete-attendance.get',
-          {jurorNumber: juror.jurorNumber}
-        );
+        deleteUrl = app.namedRoutes.build('juror-management.attendance.delete-attendance.get', {
+          jurorNumber: juror.jurorNumber,
+        });
       }
 
       const originalCheckInTime =
-        juror.checkedIn !== null
-          ? extractTimeString(juror.checkedIn)
-          : {hour: '', minute: '', period: ''};
+        juror.checkInTime !== null
+          ? extractTimeString(convert24to12(timeArrayToString(juror.checkInTime)))
+          : { hour: '', minute: '', period: '' };
 
       const originalCheckOutTime =
-        juror.checkedOut !== null
-          ? extractTimeString(juror.checkedOut)
-          : {hour: '', minute: '', period: ''};
+        juror.checkOutTime !== null
+          ? extractTimeString(convert24to12(timeArrayToString(juror.checkOutTime)))
+          : { hour: '', minute: '', period: '' };
 
       const checkInTime = {
         hour: typeof tmpBody !== 'undefined' ? tmpBody.checkInTimeHour : originalCheckInTime.hour,
@@ -92,9 +93,8 @@
   };
 
   module.exports.postChangeTimes = function(app) {
-    return function(req, res) {
-      let invalidUrl
-        , redirectUrl;
+    return async function(req, res) {
+      const { jurorNumber } = req.params;
       const checkInTimeHour = req.body.checkInTimeHour
         , checkInTimeMinute = req.body.checkInTimeMinute
         , checkInTimePeriod = req.body.checkInTimePeriod
@@ -102,21 +102,22 @@
         , checkOutTimeMinute = req.body.checkOutTimeMinute
         , checkOutTimePeriod = req.body.checkOutTimePeriod
         , attendanceDate = _.clone(req.session.attendanceDate);
+      let invalidUrl, redirectUrl;
 
       delete req.session.attendanceDate;
 
       // Set up links for correct journey flow
       if (req.url.includes('record')) {
-        invalidUrl = app.namedRoutes.build(
-          'juror-record.attendance.change-times.post',
-          {jurorNumber: req.body.jurorNumber}
-        );
-        redirectUrl = app.namedRoutes.build('juror-record.attendance.get', {jurorNumber: req.body.jurorNumber});
+        invalidUrl = app.namedRoutes.build('juror-record.attendance.change-times.post', {
+          jurorNumber,
+        });
+        redirectUrl = app.namedRoutes.build('juror-record.attendance.get', {
+          jurorNumber,
+        });
       } else {
-        invalidUrl = app.namedRoutes.build(
-          'juror-management.attendance.change-times.get',
-          {jurorNumber: req.body.jurorNumber}
-        ) + '?date=' + attendanceDate;
+        invalidUrl = app.namedRoutes.build('juror-management.attendance.change-times.get', {
+          jurorNumber,
+        }) + '?date=' + attendanceDate;
         redirectUrl = app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate;
       }
 
@@ -152,9 +153,65 @@
         return res.redirect(invalidUrl);
       }
 
-      // TODO - send request to backend to update jurors attendance times on specified day
+      const promiseArray = [];
+      const payload = {
+        commonData: {
+          status: 'CHECK_IN', // default property
+          attendanceDate,
+          locationCode: req.session.authentication.owner,
+          singleJuror: true,
+        },
+        juror: [],
+      };
+      let checkInTime, checkOutTime,
+        checkInPayload = {}, checkOutPayload = {}; // initiated to be iterated even if not set
 
-      res.redirect(redirectUrl);
+      if (checkInTimeHour && checkInTimeMinute && checkInTimePeriod) {
+        checkInPayload = _.cloneDeep(payload);
+
+        checkInTime = convert12to24(checkInTimeHour + ':' + checkInTimeMinute + checkInTimePeriod);
+
+        checkInPayload.commonData.checkInTime = checkInTime;
+        checkInPayload.juror.push(jurorNumber);
+
+        promiseArray.push(jurorAttendanceDao.patch(
+          app,
+          req,
+          checkInPayload,
+        ));
+      }
+      if (checkOutTimeHour && checkOutTimeMinute && checkOutTimePeriod) {
+        checkOutPayload = _.cloneDeep(payload);
+
+        checkOutTime = convert12to24(checkOutTimeHour + ':' + checkOutTimeMinute + checkOutTimePeriod);
+
+        checkOutPayload.commonData.status = 'CHECK_OUT';
+        checkOutPayload.commonData.checkOutTime = checkOutTime;
+        checkOutPayload.juror.push(jurorNumber);
+
+        promiseArray.push(jurorAttendanceDao.patch(
+          app,
+          req,
+          checkOutPayload,
+        ));
+      }
+
+      try {
+        await Promise.all(promiseArray);
+        return res.redirect(redirectUrl);
+      } catch (err) {
+        app.logger.crit('Unable to update the juror attendance times', {
+          auth: req.session.authentication,
+          token: req.session.authToken,
+          data: {
+            ...checkInPayload,
+            ...checkOutPayload,
+          },
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic');
+      }
     };
   };
 

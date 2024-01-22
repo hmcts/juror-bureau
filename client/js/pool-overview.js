@@ -12,7 +12,8 @@
     , checkAllJurors = $('#check-all-jurors')
     , jurorRows = $('input[aria-label^=check-juror]')
     , totalCheckedJurors = $('#total-checked-jurors')
-    , totalJurors = $('#total-jurors-count');
+    , totalJurors = $('#total-jurors-count')
+    , poolNumber = $('#poolNumber');
 
   // checking jurors logic
   if (checkAllJurors && checkAllJurors.length) {
@@ -62,7 +63,9 @@
     var action = isChecking ? 'check' : 'uncheck';
 
     return $.ajax({
-      url: '/juror-management/pool-overview/:poolNumber/check?jurorNumber=' + jurorNumber + '&action=' + action,
+      url: '/juror-management/pool-overview/'
+        + poolNumber.val()
+        + '/check?jurorNumber=' + jurorNumber + '&action=' + action,
       method: 'POST',
       data: {
         _csrf: csrfToken.val(),

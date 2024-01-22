@@ -3,7 +3,7 @@
 
 {% set startDate = "-" %}
 {% if juror.commonDetails.startDate %}
-  {% set startDate = juror.commonDetails.startDate | makeDate | dateFilter(null, "ddd D MMM YYYY") %}
+  {% set startDate = juror.commonDetails.startDate | dateFilter('yyyy-MM-DD', "ddd D MMM YYYY") %}
 {% endif %}
 
 <div class="mod-juror-record--header">

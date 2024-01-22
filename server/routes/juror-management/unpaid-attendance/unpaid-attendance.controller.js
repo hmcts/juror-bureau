@@ -69,6 +69,8 @@
         maxDate,
       };
 
+      delete req.session.expensesList;
+
       fetchUnpaidExpenses.get(
         require('request-promise'),
         app,

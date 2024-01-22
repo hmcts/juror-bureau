@@ -4,23 +4,29 @@
 {% from "govuk/components/table/macro.njk" import govukTable %}
 
 {% block page_title %}{{ serviceName }} - Confirm Atendance{% endblock %}
-  
+
 {% block page_identifier %}Confirm attendance{% endblock %}
 
 {% block content %}
 
   {% set _submitUrl = processUrl %}
   {% set _cancelUrl = cancelUrl %}
-  {% set jurorsCheckedIn = checkedIn%}
-  {% set jurorsNotCheckedIn = [] %}
-  {% for juror in notCheckedIn %}
-  {% set jurorsNotCheckedIn = (jurorsNotCheckedIn.push(
-    [
-      {html: '<a href="'+url('juror-record.overview.get', { jurorNumber: juror.jurorNumber })+'" class="govuk-body govuk-link">'+juror.jurorNumber+'</a>'}, 
-      {text: juror.firstName}, 
-      {text: juror.lastName}
-    ]
-  ), jurorsNotCheckedIn) %}
+  {% set jurorsCheckedIn = checkedIn %}
+  {% set _jurorsNotCheckedIn = [] %}
+  {% for juror in jurorsNotCheckedIn %}
+    {% set _jurorsNotCheckedIn = (_jurorsNotCheckedIn.push(
+      [
+        {
+          html: '<a href="'
+            + url('juror-record.overview.get', { jurorNumber: juror['juror_number'] })
+            + '" class="govuk-body govuk-link">'
+            + juror['juror_number']
+            + '</a>'
+        }, 
+        { text: juror['first_name'] }, 
+        { text: juror['last_name'] }
+      ]
+    ), _jurorsNotCheckedIn) %}
   {% endfor %}
 
   <div class="govuk-grid-row">
@@ -37,31 +43,32 @@
         </p>
 
         <span class="govuk-!-font-size-48 govuk-!-font-weight-bold">
-          {{jurorsNotCheckedIn|length}}
+          {{ _jurorsNotCheckedIn | length }}
         </span>
         <p class="govuk-body">
           jurors were due to attend today but were not checked in
         </p>
-
       </div>
 
-      <div class="govuk-grid-column-one-half">
-        {{ govukTable({
-          firstCellIsHeader: true,
-          head: [
-            {
-              text: "Juror number"
-            },
-            {
-              text: "First name"
-            },
-            {
-              text: "Last name"
-            }
-          ],
-          rows: jurorsNotCheckedIn
-        }) }}
-      </div>
+      {% if _jurorsNotCheckedIn.length > 0 %}
+        <div class="govuk-grid-column-one-half">
+          {{ govukTable({
+            firstCellIsHeader: true,
+            head: [
+              {
+                text: "Juror number"
+              },
+              {
+                text: "First name"
+              },
+              {
+                text: "Last name"
+              }
+            ],
+            rows: _jurorsNotCheckedIn
+          }) }}
+        </div>
+      {% endif %}
 
       <div class="govuk-grid-column-two-thirds">
         <div class="govuk-button-group">
@@ -72,7 +79,7 @@
           <a class="govuk-link" href="{{ _cancelUrl }}">Back to attendance list</a>
         </div>
       </div>
-      
+
       <input type="hidden" name="attendanceDate" value="{{ attendanceDate }}">
       <input type="hidden" name="_csrf" value="{{ csrftoken }}">
 

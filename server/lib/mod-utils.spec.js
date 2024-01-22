@@ -242,10 +242,10 @@
       expect(transformedUnpaidAttendance.rows[0][3].hasOwnProperty('text')).to.be.true;
       expect(transformedUnpaidAttendance.rows[0][3].text).to.equal('Last');
       expect(transformedUnpaidAttendance.rows[0][4].hasOwnProperty('text')).to.be.true;
-      expect(transformedUnpaidAttendance.rows[0][4].text).to.equal('80');
+      expect(transformedUnpaidAttendance.rows[0][4].text).to.equal('£80.00');
       expect(transformedUnpaidAttendance.rows[0][5].hasOwnProperty('html')).to.be.true;
       expect(transformedUnpaidAttendance.rows[0][5].html).to.equal(
-        '<a href="/juror-management/unpaid-attendance/expense-record/123456" class="govuk-link">View expenses</a>');
+        '<a href="/juror-management/unpaid-attendance/expense-record/123456/12345" class="govuk-link">View expenses</a>');
     });
 
     it('should pad the time unit if single numeric values are input', function() {

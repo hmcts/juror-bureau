@@ -295,6 +295,12 @@ dt.govuk-summary-list-mod {
   color: #505a5f;
   fill: currentcolor;
   forced-color-adjust: auto;
+
+  &__blue {
+    color: govuk-colour("white");
+    background-color: govuk-colour("blue");
+    padding: 5px;
+  }
 }
 
 .mod-highlight-table-row {
@@ -374,4 +380,36 @@ dt.govuk-summary-list-mod {
 .mod-expense-record-header {
   display: flex;
   justify-content: space-between;
+}
+
+.mod-expense-entry-group {
+  padding: 10px;
+  margin: 30px 10px 0px 10px;
+  background: #F3F2F1;
+
+  .govuk-form-group {
+    margin-bottom: 15px;
+  }
+
+  .govuk-checkboxes__label {
+    &::before {
+      background-color: govuk-colour("white");
+    }
+  }
+
+  .govuk-radios__label {
+    &::before {
+      background-color: govuk-colour("white");
+    }
+  }
+}
+
+.mod-expense-entry-pagination {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  
+  div {
+    margin: 0 10px 0 10px;
+  }
 }

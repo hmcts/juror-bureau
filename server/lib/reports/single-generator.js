@@ -2,55 +2,12 @@
   'use strict';
 
   const pdfMake = require('pdfmake');
-  const documentOptions = {
-    fonts: {
-      OpenSans: {
-        normal: './client/assets/fonts/OpenSans-Regular.ttf',
-        bold: './client/assets/fonts/OpenSans-Bold.ttf',
-      },
-    },
-    logo: './client/assets/images/hmcts-logo.png',
-    defaultStyles: {
-      pageSize: 'A4',
-      pageOrientation: 'portrait',
-      pageMargins: [20, 50, 20, 40],
-      defaultStyle: {
-        font: 'OpenSans',
-      },
-    },
-    defaultLayout: {
-      hLineWidth: (i) => (i !== 0) ? 1 : 0,
-      hLineColor: '#b1b4b6',
-      vLineWidth: () => 0,
-      paddingLeft: () => 0,
-      paddingRight: () => 0,
-      paddingTop: () => 8,
-      paddingBottom: () => 8,
-    },
-    otherStyles: {
-      header: {
-        fontSize: 18,
-        bold: true,
-        marginLeft: 20,
-        marginTop: 10,
-      },
-      title: {
-        fontSize: 26,
-        bold: true,
-      },
-      label: {
-        bold: true,
-      },
-      body: {
-        fontSize: 10,
-      },
-    },
-  };
+  const layout = require('./default-layout');
 
   const documentHeader = {
     columns: [
       {
-        image: documentOptions.logo,
+        image: layout().logo,
         width: 30,
       },
       {
@@ -112,7 +69,7 @@
 
       return {
         width: '50%',
-        layout: documentOptions.defaultLayout,
+        layout: layout().defaultLayout,
         alignment: 'left',
         table: {
           widths: [120, '*'],
@@ -137,7 +94,7 @@
     const _defaultTableOptions = {
       alignment: 'justify',
       style: 'body',
-      layout: documentOptions.defaultLayout,
+      layout: layout().defaultLayout,
       margin: [0, 30, 0, 0],
     };
     const _tables = [];
@@ -185,8 +142,8 @@
    */
   module.exports.generateDocument = (content, options = {}) => {
     return new Promise((resolve, reject) => {
-      const _defaultStyles = documentOptions.defaultStyles;
-      const printer = new pdfMake(documentOptions.fonts);
+      const _defaultStyles = layout(options.pageOrientation).defaultStyles;
+      const printer = new pdfMake(layout().fonts);
       const chunks = [];
 
       const _documentContent = [
@@ -195,16 +152,12 @@
         ...documentContent(content.tables),
       ];
 
-      if (options.pageOrientation) {
-        _defaultStyles.pageOrientation = options.pageOrientation;
-      }
-
       const document = printer.createPdfKitDocument({
         ..._defaultStyles,
         header: documentHeader,
         footer: documentFooter(content.footerText),
         content: [ ..._documentContent ],
-        styles: documentOptions.otherStyles,
+        styles: layout().otherStyles,
       });
 
       document.on('data', function(data) {

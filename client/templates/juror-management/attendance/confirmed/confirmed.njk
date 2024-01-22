@@ -26,85 +26,112 @@
 }) }}
 
 {% if currentTab === "attended" %}
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full govuk-body">
-    <b><span id="confirmedJurors">{{ confirmedJurors.length }}</span> jurors confirmed as attending</b>
-    <table class="govuk-table {% if listedJurors.length === 0 %}js-hidden{% endif %}"
-    data-module="moj-sortable-table" id="attendanceTable">
-      <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-          <th scope="col" class="govuk-table__header" aria-sort="ascending">Juror number</th>
-          <th scope="col" class="govuk-table__header" aria-sort="none">First name</th>
-          <th scope="col" class="govuk-table__header" aria-sort="none">Last name</th>
-          <th scope="col" class="govuk-table__header" aria-sort="none">Status</th>
-          <th scope="col" class="govuk-table__header" aria-sort="none">Checked in</th>
-          <th scope="col" class="govuk-table__header" aria-sort="none">Checked out</th>
-        </tr>
-      </thead>
-      <tbody class="govuk-table__body">
-        {% for row in confirmedJurors %}
-        <tr class="govuk-table__row" id="{{ row.jurorNumber }}-row">
-          <td class="govuk-table__cell" data-sort-value="{{ row.jurorNumber }}" id="{{ row.jurorNumber }}-jurorNumber">
-                <a href="{{ url('juror-record.overview.get', { jurorNumber: row.jurorNumber }) }}" class="govuk-link" id="{{ row.jurorNumber }}-jurorRecordLink">{{ row.jurorNumber }}</a>
-          </td>
-          <td class="govuk-table__cell" data-sort-value="{{ row.firstName }}" id="{{ row.jurorNumber }}-firstName">
-            {{ row.firstName }}
-          </td>
-          <td class="govuk-table__cell" data-sort-value="{{ row.lastName }}" id="{{ row.jurorNumber }}-lastName">
-            {{ row.lastName }}
-          </td>
-          <td class="govuk-table__cell" data-sort-value="{{ row.status }}" id="{{ row.jurorNumber }}-status">
-            {{ row.status }}
-          </td>
-          <td class="govuk-table__cell"
-            data-sort-value="{{ row.checkedIn | convertAmPmToLong }}"
-            id="{{ row.jurorNumber }}-checkedIn">
-            {{ row.checkedIn }}
-          </td>
-          <td class="govuk-table__cell"
-            data-sort-value="{{ row.checkedOut | convertAmPmToLong }}"
-            id="{{ row.jurorNumber }}-checkedOut">
-            {{ row.checkedOut }}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full govuk-body">
+      
+      <b>
+        <span id="confirmedJurors">{{ confirmedJurors.length }}</span> jurors confirmed as attending
+      </b>
+      
+      <table class="govuk-table {% if listedJurors.length === 0 %}js-hidden{% endif %}"
+      data-module="moj-sortable-table" id="attendanceTable">
+
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header" aria-sort="ascending">Juror number</th>
+            <th scope="col" class="govuk-table__header" aria-sort="none">First name</th>
+            <th scope="col" class="govuk-table__header" aria-sort="none">Last name</th>
+            <th scope="col" class="govuk-table__header" aria-sort="none">Status</th>
+            <th scope="col" class="govuk-table__header" aria-sort="none">Checked in</th>
+            <th scope="col" class="govuk-table__header" aria-sort="none">Checked out</th>
+          </tr>
+        </thead>
+
+        <tbody class="govuk-table__body">
+
+          {% for row in confirmedJurors %}
+            <tr class="govuk-table__row" id="{{ row.jurorNumber }}-row">
+              <td class="govuk-table__cell" data-sort-value="{{ row.jurorNumber }}" id="{{ row.jurorNumber }}-jurorNumber">
+                <a href="{{ url('juror-record.overview.get', { jurorNumber: row.jurorNumber }) }}"
+                  class="govuk-link" id="{{ row.jurorNumber }}-jurorRecordLink">
+                {{ row.jurorNumber }}
+              </a>
+              </td>
+              <td class="govuk-table__cell" data-sort-value="{{ row.firstName }}" id="{{ row.jurorNumber }}-firstName">
+                {{ row.firstName }}
+              </td>
+              <td class="govuk-table__cell" data-sort-value="{{ row.lastName }}" id="{{ row.jurorNumber }}-lastName">
+                {{ row.lastName }}
+              </td>
+              <td class="govuk-table__cell" data-sort-value="{{ row.jurorStatus }}" id="{{ row.jurorNumber }}-status">
+                {{ row.jurorStatus }}
+              </td>
+              <td class="govuk-table__cell"
+                data-sort-value="{{ row.checkInTime | timeArrayToString | convertAmPmToLong }}"
+                id="{{ row.jurorNumber }}-checkInTime">
+                {{ row.checkInTime | timeArrayToString | convert24to12 }}
+              </td>
+              <td class="govuk-table__cell"
+                data-sort-value="{{ row.checkOutTime | timeArrayToString | convertAmPmToLong }}"
+                id="{{ row.jurorNumber }}-checkOutTime">
+                {{ row.checkOutTime | timeArrayToString | convert24to12 }}
+              </td>
+            </tr>
+
+          {% endfor %}
+
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
+
 {% elif currentTab === "absent" %}
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full govuk-body">
-    <b><span id="absentJurors">{{ absentJurors.length }}</span> jurors confirmed as absent</b>
-    <table class="govuk-table {% if listedJurors.length === 0 %}js-hidden{% endif %}"
-    data-module="moj-sortable-table" id="attendanceTable">
-      <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-          <th scope="col" class="govuk-table__header" aria-sort="ascending">Juror number</th>
-          <th scope="col" class="govuk-table__header" aria-sort="none">First name</th>
-          <th scope="col" class="govuk-table__header" aria-sort="none">Last name</th>
-          <th scope="col" class="govuk-table__header" aria-sort="none">Status</th>
-        </tr>
-      </thead>
-      <tbody class="govuk-table__body">
-        {% for row in absentJurors %}
-        <tr class="govuk-table__row" id="{{ row.jurorNumber }}-row">
-          <td class="govuk-table__cell" data-sort-value="{{ row.jurorNumber }}" id="{{ row.jurorNumber }}-jurorNumber">
-          <a href="{{ url('juror-record.overview.get', { jurorNumber: row.jurorNumber }) }}" class="govuk-link" id="{{ row.jurorNumber }}-jurorRecordLink">{{ row.jurorNumber }}</a>
-          </td>
-          <td class="govuk-table__cell" data-sort-value="{{ row.firstName }}" id="{{ row.jurorNumber }}-firstName">
-          {{ row.firstName }}
-          </td>
-          <td class="govuk-table__cell" data-sort-value="{{ row.lastName }}" id="{{ row.jurorNumber }}-lastName">
-          {{ row.lastName }}
-          </td>
-          <td class="govuk-table__cell" data-sort-value="{{ row.status }}" id="{{ row.jurorNumber }}-status">
-          {{ row.status }}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full govuk-body">
+
+      <b>
+        <span id="absentJurors">{{ absentJurors.length }}</span> jurors confirmed as absent
+      </b>
+
+      <table class="govuk-table {% if listedJurors.length === 0 %}js-hidden{% endif %}"
+      data-module="moj-sortable-table" id="attendanceTable">
+
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header" aria-sort="ascending">Juror number</th>
+            <th scope="col" class="govuk-table__header" aria-sort="none">First name</th>
+            <th scope="col" class="govuk-table__header" aria-sort="none">Last name</th>
+            <th scope="col" class="govuk-table__header" aria-sort="none">Status</th>
+          </tr>
+        </thead>
+
+        <tbody class="govuk-table__body">
+
+          {% for row in absentJurors %}
+
+            <tr class="govuk-table__row" id="{{ row.jurorNumber }}-row">
+              <td class="govuk-table__cell" data-sort-value="{{ row.jurorNumber }}" id="{{ row.jurorNumber }}-jurorNumber">
+                <a href="{{ url('juror-record.overview.get', { jurorNumber: row.jurorNumber }) }}"
+                  class="govuk-link" id="{{ row.jurorNumber }}-jurorRecordLink">
+                  {{ row.jurorNumber }}
+                </a>
+              </td>
+              <td class="govuk-table__cell" data-sort-value="{{ row.firstName }}" id="{{ row.jurorNumber }}-firstName">
+                {{ row.firstName }}
+              </td>
+              <td class="govuk-table__cell" data-sort-value="{{ row.lastName }}" id="{{ row.jurorNumber }}-lastName">
+                {{ row.lastName }}
+              </td>
+              <td class="govuk-table__cell" data-sort-value="{{ row.jurorStatus }}" id="{{ row.jurorNumber }}-status">
+                {{ row.jurorStatus }}
+              </td>
+            </tr>
+          
+          {% endfor %}
+
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
 {% endif %}

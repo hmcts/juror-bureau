@@ -11,6 +11,8 @@
     generateSomeOtherReport,
   } = require('./some-report/some-report.controller');
 
+  const { generateBulk } = require('./expenses-bulk/expenses-bulk.controller');
+
   module.exports = function(app) {
 
     app.get('/reports',
@@ -30,6 +32,10 @@
       'some-other-report.generate.get',
       auth.verify,
       generateSomeOtherReport(app));
+
+    app.get('/reporting/expenses-bulk/expenses-bulk.pdf',
+      'expenses-bulk.generate.get',
+      generateBulk(app));
 
   };
 

@@ -300,11 +300,12 @@
         searchParams.status = null;
       }
 
-      searchObj.post(require('request-promise'), app, req.session.authToken, searchParams)
+      // searchObj.post(require('request-promise'), app, req.session.authToken, searchParams)
+      searchObj.get(require('request-promise'), app, req.session.authToken, searchParams)
         .then(successCB)
         .catch(errorCB);
     });
-  }
+  };
 
   module.exports.getResponseAlert = function(responseItem) {
     var alertData;

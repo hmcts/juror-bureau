@@ -1,6 +1,8 @@
 (function() {
   'use strict';
 
+  const { generateDocument } = require('../../../lib/reports/single-generator');
+
   // TODO: this file will stay here for future reference and removed once we start implementing the reports
   const sampleRow = {
     jurorNumber: '645200045',
@@ -28,7 +30,6 @@
   module.exports.generateSomeReport = function(app) {
     return async function(req, res) {
       const query = req.query;
-      const { generateDocument } = require('../../../lib/report-generator');
 
       const buildRows = (rows = 10) => {
         const _rows = [];
@@ -78,8 +79,6 @@
               ],
             },
           ],
-        }, {
-          pageOrientation: 'portrait',
         });
 
         res.contentType('application/pdf');
@@ -99,7 +98,6 @@
   module.exports.generateSomeOtherReport = function(app) {
     return async function(req, res) {
       const query = req.query;
-      const { generateDocument } = require('../../../lib/report-generator');
 
       const buildRows = (rows = 10) => {
         const _rows = [];

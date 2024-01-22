@@ -1,11 +1,9 @@
-{% extends "../../layouts/default.njk" %}
+{% extends "layouts/default.njk" %}
 
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
-
-{% from "../../custom-components/time-input-12-hour/macro.njk" import timeInput12Hour %}
-
+{% from "custom-components/time-input-12-hour/macro.njk" import timeInput12Hour %}
 
 {% block page_title %}{{ serviceName }} - Change Attendance Times{% endblock %}
   
@@ -30,71 +28,71 @@
       <p class="govuk-body-l ">{{attendanceDate | dateFilter(null, "dddd D MMMM YYYY")}}</p>
 
       {{ timeInput12Hour({
-      id: "checkInTime",
-      name: "checkInTime",
-      fieldset: {
-      legend: {
-      text: "Enter check in time",
-      classes: "govuk-fieldset__legend--m"
-      }
-      },
-      items: {
-      hour: {
-      value: checkInTime.hour,
-      attributes: {
-      minLength: "1",
-      maxLength: "2"
-      }
-      },
-      minute: {
-      value: checkInTime.minute,
-      attributes: {
-      minLength: "1",
-      maxLength: "2"
-      }
-      },
-      period: {
-      value: checkInTime.period
-      }
-      },
-      errors: errors.items
+        id: "checkInTime",
+        name: "checkInTime",
+        fieldset: {
+          legend: {
+            text: "Enter check in time",
+            classes: "govuk-fieldset__legend--m"
+          }
+        },
+        items: {
+          hour: {
+            value: checkInTime.hour,
+            attributes: {
+              minLength: "1",
+              maxLength: "2"
+            }
+          },
+          minute: {
+            value: checkInTime.minute,
+            attributes: {
+              minLength: "1",
+              maxLength: "2"
+            }
+          },
+          period: {
+            value: checkInTime.period
+          }
+        },
+        errors: errors.items
       }) }}
 
       {{ timeInput12Hour({
-      id: "checkOutTime",
-      name: "checkOutTime",
-      fieldset: {
-      legend: {
-      text: "Enter check out time",
-      classes: "govuk-fieldset__legend--m"
-      }
-      },
-      items: {
-      hour: {
-      value: checkOutTime.hour,
-      attributes: {
-      minLength: "1",
-      maxLength: "2"
-      }
-      },
-      minute: {
-      value: checkOutTime.minute,
-      attributes: {
-      minLength: "1",
-      maxLength: "2"
-      }
-      },
-      period: {
-      value: checkOutTime.period
-      }
-      },
-      errors: errors.items
+        id: "checkOutTime",
+        name: "checkOutTime",
+        fieldset: {
+          legend: {
+            text: "Enter check out time",
+            classes: "govuk-fieldset__legend--m"
+          }
+        },
+        items: {
+          hour: {
+            value: checkOutTime.hour,
+            attributes: {
+              minLength: "1",
+              maxLength: "2"
+            }
+          },
+          minute: {
+            value: checkOutTime.minute,
+            attributes: {
+              minLength: "1",
+              maxLength: "2"
+            }
+          },
+          period: {
+            value: checkOutTime.period
+          }
+        },
+        errors: errors.items
       }) }}
 
       <div class="govuk-button-group">
         {{ govukButton({
-        text: "Save changes",
-        type: "submit" 
+          text: "Save changes",
+          type: "submit"
         }) }}
         <a class="govuk-link" href="{{ _cancelUrl }}">Cancel</a>
       </div>
@@ -102,12 +100,11 @@
       <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
       {% if _deleteUrl %}
-        <a class="mod-red-text" href="{{ _deleteUrl }}">Delete attendance and mark as absent</a>
+        <a class="mod-red-text govuk-body" href="{{ _deleteUrl }}">Delete attendance and mark as absent</a>
       {% endif %}
 
     </div>
 
-    <input type="hidden" name="jurorNumber" value="{{ juror.jurorNumber }}">
     <input type="hidden" name="attendanceDate" value="{{ attendanceDate }}">
     <input type="hidden" name="_csrf" value="{{ csrftoken }}">
 

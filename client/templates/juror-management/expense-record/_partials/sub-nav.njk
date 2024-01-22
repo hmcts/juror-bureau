@@ -5,7 +5,7 @@
   items: [
     {
       text: "Draft",
-      href: url("juror-management.unpaid-attendance.expense-record.get", {jurorNumber: '841501025'}) + "?status=draft",
+      href: url("juror-management.unpaid-attendance.expense-record.get", {jurorNumber: jurorNumber, poolNumber: poolNumber}) + "?status=draft",
       active: currentTab === "draft",
       attributes: {
         id: "draftTab"
@@ -13,7 +13,7 @@
     }, 
     {
       text: "For approval",
-      href: url("juror-management.unpaid-attendance.expense-record.get", {jurorNumber: '841501025'}) + "?status=forApproval",
+      href: url("juror-management.unpaid-attendance.expense-record.get", {jurorNumber: jurorNumber, poolNumber: poolNumber}) + "?status=forApproval",
       active: currentTab === "forApproval",
       attributes: {
         id: "forApprovalTab"
@@ -21,7 +21,7 @@
     },
     {
       text: "Approved",
-      href: url("juror-management.unpaid-attendance.expense-record.get", {jurorNumber: '841501025'}) + "?status=approved",
+      href: url("juror-management.unpaid-attendance.expense-record.get", {jurorNumber: jurorNumber, poolNumber: poolNumber}) + "?status=approved",
       active: currentTab === "approved",
       attributes: {
         id: "approvedTab"

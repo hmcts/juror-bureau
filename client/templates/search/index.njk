@@ -7,7 +7,6 @@
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 
-
 {% block page_title %}
   {{ serviceName }} - Search
 {% endblock %}
@@ -34,12 +33,12 @@
       <fieldset class="govuk-fieldset">
 
         {# Setup officer assigned list #}
-        {% set sendToList = [{value: "", text: "All officers", selected: true}] %}
+        {% set sendToList = [{value: "", text: "Select an officer to assign to", selected: true}] %}
         {% if authentication.staff.rank > 0 %}
           {% set sendToList = (sendToList.push({value: "AUTO", text: "AUTO", selected: false }), sendToList) %}
         {% endif %}
         {% for staffMember in staffList %}
-          {% if searchParams.staffAssigned === staffMember.login %}
+          {% if searchParams.officerAssigned === staffMember.login %}
             {% set staffSelected = true %}
           {% else %}
             {% set staffSelected = false %}
@@ -49,10 +48,10 @@
 
         <div class="officerAssignedSelect">
           {{ govukSelect({
-            id: "staffAssigned",
-            name: "staffAssigned",
+            id: "officerAssigned",
+            name: "officer_assigned",
             label: {
-              text: "Officer assigned",
+              text: "Select an officer assigned",
               classes: "govuk-body govuk-!-font-weight-bold"
             },
             items: sendToList
@@ -63,41 +62,83 @@
         <div class="govuk-checkboxes" data-module="govuk-checkboxes">
           <div class="govuk-checkboxes__divider govuk-!-font-weight-bold">Alerts</div>
           <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input" id="urgentsOnly" name="urgentsOnly" type="checkbox" value="urgentsOnly" {% if searchParams.urgentsOnly == true %}checked{% endif %}>
+            <input
+              class="govuk-checkboxes__input"
+              id="isUrgent"
+              name="is_urgent"
+              type="checkbox"
+              value="true"
+              {% if searchParams.is_urgent %}checked{% endif %}
+            >
             <label class="govuk-label govuk-checkboxes__label" for="urgentsOnly">
               Urgent
             </label>
           </div>
           <div class="govuk-checkboxes__divider govuk-!-font-weight-bold">Status</div>
           <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input" id="todo" name="status" type="checkbox" value="TODO" {% if searchParams.isTodo === true %} checked {% endif %}>
+            <input
+              class="govuk-checkboxes__input"
+              id="todo"
+              name="processing_status"
+              type="checkbox"
+              value="TODO"
+              {% if searchParams.is_todo === true %} checked {% endif %}
+            >
             <label class="govuk-label govuk-checkboxes__label" for="todo">
               To do
             </label>
           </div>
           <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input" id="awaitingReply" name="status" type="checkbox" value="AWAITING_COURT_REPLY" {% if searchParams.isAwaitingCourtReply === true %} checked {% endif %}>
+            <input
+              class="govuk-checkboxes__input"
+              id="awaitingReply"
+              name="processing_status"
+              type="checkbox"
+              value="AWAITING_COURT_REPLY"
+              {% if searchParams.is_awaiting_court_reply === true %} checked {% endif %}
+            >
             <label class="govuk-label govuk-checkboxes__label" for="awaitingReply">
               Awaiting court reply
             </label>
           </div>
 
           <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input" id="awaitingContact" name="status" type="checkbox" value="AWAITING_CONTACT" {% if searchParams.isAwaitingContact === true %} checked {% endif %}>
+            <input
+              class="govuk-checkboxes__input"
+              id="awaitingContact"
+              name="processing_status"
+              type="checkbox"
+              value="AWAITING_CONTACT"
+              {% if searchParams.is_awaiting_contact === true %} checked {% endif %}
+            >
             <label class="govuk-label govuk-checkboxes__label" for="awaitingContact">
               Awaiting juror reply
             </label>
           </div>
 
           <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input" id="awaitingTranslation" name="status" type="checkbox" value="AWAITING_TRANSLATION" {% if searchParams.isAwaitingTranslation === true %} checked {% endif %}>
+            <input
+              class="govuk-checkboxes__input"
+              id="awaitingTranslation"
+              name="processing_status"
+              type="checkbox"
+              value="AWAITING_TRANSLATION"
+              {% if searchParams.is_awaiting_translation === true %} checked {% endif %}
+            >
             <label class="govuk-label govuk-checkboxes__label" for="awaitingTranslation">
               Awaiting translation
             </label>
           </div>
 
           <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input" id="closed" name="status" type="checkbox" value="CLOSED" {% if searchParams.isClosed === true %} checked {% endif %}>
+            <input 
+              class="govuk-checkboxes__input" 
+              id="closed" 
+              name="processing_status" 
+              type="checkbox" 
+              value="COMPLETED" 
+              {% if searchParams.is_completed === true %} checked {% endif %}
+            >
             <label class="govuk-label govuk-checkboxes__label" for="closed">
               Completed
             </label>
@@ -120,9 +161,9 @@
           </legend>
 
           {% if parametersError %}
-          <p id="searchParametersError" class="govuk-error-message">
-            <span class="govuk-visually-hidden">Error:</span> {{ parametersError }}
-          </p>
+            <p id="searchParametersError" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ parametersError }}
+            </p>
           {% endif %}
 
           <div class="govuk-grid-row"> {# row 1 - juror number #}
@@ -130,13 +171,12 @@
               {{ govukInput({
                 label: {
                   text: "Juror number",
-                  classes: "govuk-label--s",
                   isPageHeading: false
                 },
                 classes: "govuk-input--width-10",
                 id: "jurorNumber",
-                name: "jurorNumber",
-                value: searchParams.jurorNumber,
+                name: "juror_number",
+                value: searchParams.juror_number,
                 attributes: {
                   maxlength: "9"
                 }
@@ -149,13 +189,12 @@
               {{ govukInput({
                 label: {
                   text: "Juror's last name",
-                  classes: "govuk-label--s",
                   isPageHeading: false
                 },
                 classes: "govuk-input--width-20",
                 id: "lastName",
-                name: "lastName",
-                value: searchParams.lastName,
+                name: "last_name",
+                value: searchParams.last_name,
                 attributes: {
                   maxlength: "20"
                 }
@@ -168,58 +207,21 @@
               {{ govukInput({
                 label: {
                   text: "Juror's pool number",
-                  classes: "govuk-label--s",
                   isPageHeading: false
                 },
                 classes: "govuk-input--width-10",
                 id: "poolNumber",
-                name: "poolNumber",
-                value: searchParams.poolNumber,
+                name: "pool_number",
+                value: searchParams.pool_number,
                 attributes: {
                   maxlength: "10"
                 }
               }) }}
             </div>
 
-
-            {# postcode - HIDDEN #}
-            {% set postcodeValue = undefined %}
-            {% if searchParams.postcode %}
-              {% set postcodeValue = searchParams.postcode %}
-            {% else %}
-              {% set postcodeValue = searchParams.postCode %}
-            {% endif %}
-            <div class="govuk-grid-column-one-third u-hide">
-              {{ govukInput({
-                label: {
-                  text: "Juror's postcode",
-                  classes: "govuk-label--s ",
-                  isPageHeading: false
-                },
-                id: "postcode",
-                name: "postcode",
-                value: postcodeValue
-              }) }}
-            </div>
-
-            {# court code  - HIDDEN #}
-            <div class="govuk-grid-column-one-third u-hide">
-              {{ govukInput({
-                label: {
-                  text: "Court code",
-                  classes: "govuk-label--s",
-                  isPageHeading: false
-                },
-                id: "courtCode",
-                name: "courtCode",
-                value: searchParams.courtCode
-              }) }}
-            </div>
-
           </div> {# end row 3 #}
 
           {% if authentication.staff.rank > 0 %}
-        
             {# filters #}
             <div class="govuk-grid-row">
               <div class="govuk-grid-column-one-half">
@@ -253,13 +255,6 @@
       </div>
         
       <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
-      <input type="hidden" name="sortBy" id="sortBy" value="dateReceived">
-      <input type="hidden" name="sortOrder" id="sortOrder" value="DESC">
-      {% if errors.items['selectedResponses']%}
-        <input type="hidden" name="selectionError" id="selectionError" value="Y">
-      {% else %}
-        <input type="hidden" name="selectionError" id="selectionError" value="N">
-      {% endif %}
 
     </form>
   </div>
@@ -270,25 +265,35 @@
 
     <div class="govuk-grid-column-full search-content govuk-body">
 
-      {#
-      <h2 id="searchProcessingMsg" class="govuk-heading-m u-hide">
-        Loading search results...
-      </h2>
-      #}
-
-      <h2 id="searchSummaryMsg" class="govuk-heading-m {% if not results %} u-hide{% endif %}">
-        <span id="resultCount">{{ results.length }}</span> results for <span id="resultsStr">{{ resultsStr | safe }}</span>
+      <h2
+        id="searchSummaryMsg"
+        class="govuk-heading-m {% if not responses.juror_response or responses.juror_response.length === 0 %} u-hide{% endif %}"
+      >
+        <span id="resultCount">{{ responses.juror_response.length }}</span> results for <span id="resultsStr">{{ resultsStr | safe }}</span>
       </h2>
 
-      <h2 id="maxExceeded" class="govuk-heading-m  additional-info-text {% if not results %} u-hide{% elif meta.total <= meta.max %} u-hide{% endif %} search-loaded">
+      {# <h2
+        id="maxExceeded"
+        class="govuk-heading-m additional-info-text {% if not results %} u-hide{% elif meta.total <= meta.max %} u-hide{% endif %} search-loaded">
         The specified search resulted in more than <span class="maxRecordsMsg">{{ meta.max }}</span> results. This list only shows the oldest <span class="maxRecordsMsg">{{ meta.max }}</span>.
-      </h2>
+      </h2> #}
 
-      <h2 id="noResultsMsg" class="govuk-heading-m {% if not results %} u-hide{% elif results.length > 0 %} u-hide{% endif %}">
-        No responses were found that match your search criteria.
-      </h2>
+      <div id="noResultsMsg" class="{% if not responses.juror_response or responses.juror_response.length > 0 %} u-hide{% endif %}">
+        <h2 class="govuk-heading-m">There are no matching results.</h2>
 
-      <form class="govuk-form-group {% if errors.items['selectedResponses']%}govuk-form-group--error{% endif %}" action="{{ url('response.assign.multi.selected.post') }}" method="POST" id="selectedSendToForm">
+        <p class="govuk_body">Improve your search by:</p>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>double-checking your spelling</li>
+          <li>searching by juror number or juror’s last name or juror’s pool number/li>
+        </ul>
+      </div>
+
+      <form
+        class="govuk-form-group {% if errors.items['selectedResponses']%}govuk-form-group--error{% endif %}"
+        action="{{ url('response.assign.multi.selected.post') }}"
+        method="POST"
+        id="selectedSendToForm"
+      >
 
         {% if errors.items['selectedResponses']%}
           <p id="send-to-selection-error" class="govuk-error-message">
@@ -297,7 +302,7 @@
         {% endif %}
 
         {% if authentication.staff.rank > 0 %}
-          <div class="response-assignment {% if not results %} u-hide{% elif results.length == 0 %} u-hide{%endif %}">
+          <div class="response-assignment {% if not responses.juror_response or responses.juror_response.length === 0 %} u-hide{% endif %}">
             {# Select all #}
             <button id="selectAllLink" class="govuk-button govuk-button--secondary" data-module="govuk-button" />
                 Select all
@@ -313,7 +318,7 @@
           </div>
         {% endif %}
 
-        {% if results.length > 0 %}
+        {% if responses.juror_response.length > 0 %}
           <table id="searchResultTable" class="govuk-table" data-module="moj-sortable-table">
 
             <thead class="govuk-table__head">
@@ -321,65 +326,69 @@
 
                 <th scope="col" class="govuk-table__header govuk-table__header--numeric" aria-sort="none">Juror number</th>
                 <th scope="col" class="govuk-table__header" aria-sort="none">Juror name</th>
+                <th scope="col" class="govuk-table__header" aria-sort="none">Juror's postcode</th>
                 <th scope="col" class="govuk-table__header" aria-sort="none">Pool number</th>
+                <th scope="col" class="govuk-table__header" aria-sort="none">Court name</th>
                 <th scope="col" class="govuk-table__header" aria-sort="none">Officer assigned</th>
                 <th scope="col" class="govuk-table__header" aria-sort="none">Reply status</th>
-                <th scope="col" class="govuk-table__header" aria-sort="descending">Date received</th>
-                <th scope="col" class="govuk-table__header" aria-sort="none">Alerts</th>
+                <th scope="col" class="govuk-table__header" aria-sort="ascending">Date received</th>
 
               </tr>
             </thead>
 
             <tbody class="govuk-table__body">
 
-              {% for item in results %}
-                {# <tr data-toggle-active id="id_{{ item.jurorNumber }}" class="govuk-table__row search-results-row todo{% if item.isUrgent %} urgent{% endif %}{% if item.isClosed %} closed{% endif %} search-loaded" data-target="/response/{{ item.jurorNumber }}"> #}
+              {% for item in responses.juror_response %}
                 <tr class="govuk-table__row search-results-row">
 
-                  <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="{{item.jurorNumber}}">
+                  <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="{{item.juror_number}}">
                     <div>
-                      {% if authentication.staff.rank > 0 and item.isClosed == false %}
+                      {% if authentication.staff.rank > 0 and item.processingStatus !== "COMPLETED" %}
                         <div class="govuk-checkboxes__item govuk-checkboxes--small jd-block-align">
-                          <input class="govuk-checkboxes__input multi-select" type="checkbox" data-behaviour="exclusive" name="selectedResponses" id="selectedResponse_{{item.jurorNumber}}" data-value="{{ item.jurorNumber }}" value="{{ item.jurorNumber }}">
-                          <label class="govuk-label govuk-checkboxes__label " for="selectedResponse_{{item.jurorNumber}}"></label>
+                          <input
+                            class="govuk-checkboxes__input multi-select"
+                            type="checkbox"
+                            data-behaviour="exclusive"
+                            name="selectedResponses"
+                            id="selectedResponse_{{item.juror_number}}"
+                            data-value="{{ item.juror_number }}"
+                            value="{{ item.juror_number }}"
+                          >
+                          <label class="govuk-label govuk-checkboxes__label " for="selectedResponse_{{item.juror_number}}"></label>
                         </div>
                       {% endif %}
-                      <a class="govuk-link jd-block-align" href="/response/{{item.jurorNumber}}"><span class="govuk-visually-hidden">view response </span>{{-item.jurorNumber-}}</a>
+
+                      {% set responseUrl = undefined %}
+                      {% if item.reply_type === "Paper" %}
+                        {% set responseUrl = url("response.paper.details.get", {
+                          id: item.juror_number,
+                          type: "paper"
+                        }) %}
+                      {% else %}
+                        {% set responseUrl = url("response.detail.get", {
+                          id: item.juror_number
+                        }) %}
+                      {% endif %}
+
+                      <a class="govuk-link jd-block-align" href="{{ responseUrl }}"><span class="govuk-visually-hidden">view response </span>{{ item.juror_number }}</a>
                     </div>
                   </td>
 
-                  <td class="govuk-table__cell jd-middle-align juror-name-col">{{ item.name }}</td>
-                  <td class="govuk-table__cell jd-middle-align juror-pool-col" data-sort-value="{{ item.poolNumber }}">{{ item.poolNumber }}</td>
-                  <td class="govuk-table__cell jd-middle-align juror-officer-col">{{ item.staff.name }}</td>
+                  <td class="govuk-table__cell jd-middle-align juror-name-col">{{ item.juror_name | capitalizeFully }}</td>
+                  <td class="govuk-table__cell jd-middle-align juror-postcode-col">{{ item.postcode }}</td>
+                  <td class="govuk-table__cell jd-middle-align juror-pool-col" data-sort-value="{{ item.pool_number }}">{{ item.pool_number }}</td>
+                  <td class="govuk-table__cell jd-middle-align juror-court-name-col">{{ item.court_name }}</td>
+                  <td class="govuk-table__cell jd-middle-align juror-officer-col">{{ item.officer_assigned }}</td>
                   
-                  {% set statusDesc %}
-                    {{ item.status | capitalise }}
-                  {% endset %}
-                  {% if (statusDesc === 'AWAITING JUROR') %}
-                    {% set statusDesc = 'AWAITING JUROR REPLY' %}
-                  {% endif %}
                   <td class="govuk-table__cell jd-middle-align juror-status-col">
-                    <span class="govuk-tag govuk-tag--blue">{{ statusDesc }}</span>
+                    <span class="govuk-tag govuk-tag--blue">{{ item.reply_status }}</span>
                   </td>
 
-                  <td class="govuk-table__cell jd-middle-align date-col {% if item.slaOverdue %}jd-response-overdue{% endif %}" data-sort-value="{{item.dateReceived | dateFilter('DD/MM/YYYY', 'YYYYMMDD')}}">{{item.dateReceived | dateFilter("DD/MM/YYYY", "D MMM YYYY")}}</td>
-
-                  {% if item.superUrgent %}
-                    {% set alertSortVal = 2 %}
-                  {% elif item.urgent %}
-                    {% set alertSortVal = 1 %}
-                  {% else %}
-                    {% set alertSortVal = 0 %}
-                  {% endif %}
-
-                  <td class="govuk-table__cell jd-middle-align urgent-col" data-sort-value="{{alertSortVal}}">
-                    {% if item.superUrgent %}
-                    <span class="moj-badge moj-badge--red">Send to court</span>
-                    {% elif item.urgent %}
-                    <span class="moj-badge moj-badge--red">Urgent</span>
-                    {% else %}
-                    <span></span>
-                    {% endif %}
+                  <td
+                    class="govuk-table__cell jd-middle-align date-col {% if item.slaOverdue %}jd-response-overdue{% endif %}"
+                    data-sort-value="{{item.date_received | dateFilter('YYYY-MM-DD', 'YYYYMMDD')}}"
+                  >
+                    {{item.date_received | dateFilter("YYYY-MM-DD", "D MMM YYYY")}}
                   </td>
                               
                 </tr>
@@ -397,31 +406,22 @@
 
   </div>
 
-
-{#
-<div id="modal" class="govuk-body modal">
-  {% include "../includes/send-to.njk" %}
-</div>
-#}
-
 {% endblock %}
 
-{#
 {% block body_end %}
   {{ super() }}
-
+  
   <script src="{{ assetPath }}js/accessible-autocomplete.min.js"></script>
-
   <script type="text/javascript">
+
     $(document).ready(function(){
       accessibleAutocomplete.enhanceSelectElement({
-        selectElement: document.querySelector('#staffAssigned'),
+        selectElement: document.querySelector('#officerAssigned'),
         showAllValues: true,
-        defaultValue: 'All officers',
         dropdownArrow: () => ''
       })
     });
+
   </script>
-  
+
 {% endblock %}
-#}

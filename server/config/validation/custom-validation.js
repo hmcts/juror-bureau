@@ -696,18 +696,25 @@
         summary: '',
         summaryLink: 'jurorNumber',
         fields: [],
-        details: []
+        details: [],
       }
       , searchParams = false
-      , strMessage = ''
+      , strMessage = '';
 
     if (req.session.authentication.staff.rank > 0){
       // Team leads
       strMessage = 'Enter a juror number, a juror\'s last name, a juror\'s pool number or advanced criteria to search';
-      searchParams = attributes.jurorNumber.trim() || attributes.lastName.trim() || attributes.poolNumber.trim() || attributes.staffAssigned.trim() || attributes.status || attributes.urgentsOnly;
+      searchParams = attributes.juror_number.trim()
+        || attributes.last_name.trim()
+        || attributes.pool_number.trim()
+        || attributes.officer_assigned.trim()
+        || attributes.processing_status
+        || attributes.is_urgent;
     } else {
       strMessage = 'Enter a juror number, a juror\'s last name or a juror\'s pool number to search';
-      searchParams = attributes.jurorNumber.trim() || attributes.lastName.trim() || attributes.poolNumber.trim();
+      searchParams = attributes.juror_number.trim()
+        || attributes.last_name.trim()
+        || attributes.pool_number.trim();
     }
 
     if (!searchParams){
