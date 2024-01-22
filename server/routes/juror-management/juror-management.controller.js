@@ -26,10 +26,6 @@
           selectedDateString,
         );
 
-        // get just the jurors for this date... this would be replaced with an api call
-        // const attendees = req.session.attendanceList.find(list => list.date === selectedDateString);
-        // const attendanceStatus = typeof attendees !== 'undefined' ? attendees.status : 'Unconfirmed';
-
         attendees = attendees.map((attendee) => {
           attendee['juror_status'] = getJurorStatus(attendee['juror_status']);
           return _.mapKeys(attendee, (__, key) => _.camelCase(key));
@@ -56,10 +52,12 @@
         );
         // TODO: until here
 
+        const attendanceConfirmed = isAttendanceConfirmed(attendees);
+
         return res.render('juror-management/attendance.njk', {
           nav: 'attendance',
           status: status || 'in-waiting',
-          attendanceStatus: 'Unconfirmed',
+          attendanceStatus: attendanceConfirmed ? 'Confirmed' : 'Unconfirmed',
           confirmedTab,
           selectedDate: dateFilter(selectedDate, null, dateFormat),
           yesterday: dateFilter(selectedDate.setDate(selectedDate.getDate() - 1), null, dateFormat),
@@ -85,5 +83,13 @@
       }
     };
   };
+
+  function isAttendanceConfirmed(attendees) {
+    if (!attendees.length) return false;
+
+    return attendees.filter(
+      (attendee) => !attendee.noShow && attendee.appStage !== 'APPEARANCE_CONFIRMED'
+    ).length === 0;
+  }
 
 })();

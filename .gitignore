@@ -10,6 +10,8 @@ reports/
 client/css
 development/client/js/i18n/en.json
 
+!/server/lib/reports
+
 *.log*
 *.map
 bundle.js

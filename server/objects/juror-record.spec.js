@@ -50,8 +50,8 @@
         expect(testObj.hasOwnProperty('headers')).to.be.true;
         expect(testObj.headers.hasOwnProperty('If-None-Match')).to.be.true;
 
-        expect(testObj.body.hasOwnProperty('someDetails')).to.equal(true);
-        expect(testObj.body.someDetails).to.equal(bodyStub.someDetails);
+        expect(testObj.body.hasOwnProperty('some_details')).to.equal(true);
+        expect(testObj.body.some_details).to.equal(bodyStub.someDetails);
       }
     );
 

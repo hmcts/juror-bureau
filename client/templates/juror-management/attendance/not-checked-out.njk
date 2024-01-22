@@ -1,10 +1,10 @@
-{% extends "../../layouts/default.njk" %}
+{% extends "layouts/default.njk" %}
 
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 
-{% from "../../custom-components/time-input-12-hour/macro.njk" import timeInput12Hour %}
+{% from "custom-components/time-input-12-hour/macro.njk" import timeInput12Hour %}
 
 {% block page_title %}{{ serviceName }} - Jurors Not Checked Out{% endblock %}
 
@@ -12,14 +12,20 @@
 
   {% set _submitUrl = processUrl %}
   {% set _cancelUrl = cancelUrl %}
-  {% set jurorsCheckedIn = checkedIn %}
   {% set jurorsNotCheckedOut = [] %}
   {% for juror in notCheckedOut %}
     {% set jurorsNotCheckedOut = (jurorsNotCheckedOut.push(
       [
-        {html: '<a href="'+url('juror-record.overview.get', { jurorNumber: juror.jurorNumber })+'" class="govuk-body govuk-link">'+juror.jurorNumber+'</a>'},
-        {text: juror.firstName},
-        {text: juror.lastName}
+        {
+          html: '<a href="'
+            + url('juror-record.overview.get', { jurorNumber: juror.juror_number })
+            + '" class="govuk-body govuk-link">'
+            + juror.juror_number
+            + '</a>'
+        },
+        { text: juror.first_name },
+        { text: juror.last_name },
+        { text: juror.check_in_time | timeArrayToString | convert24to12 }
       ]
     ), jurorsNotCheckedOut) %}
   {% endfor %}
@@ -36,62 +42,64 @@
 
       <div class="govuk-grid-column-one-half">
         {{ govukTable({
-        firstCellIsHeader: true,
-        head: [
-        {
-        text: "Juror number"
-        },
-        {
-        text: "First name"
-        },
-        {
-        text: "Last name"
-        }
-        ],
-        rows: jurorsNotCheckedOut
+          firstCellIsHeader: true,
+          head: [
+            {
+              text: "Juror number"
+            },
+            {
+              text: "First name"
+            },
+            {
+              text: "Last name"
+            },
+            {
+              text: "Checked in"
+            }
+          ],
+          rows: jurorsNotCheckedOut
         }) }}
       </div>
 
       <div class="govuk-grid-column-two-thirds">
-
         {{ timeInput12Hour({
-        id: "checkOutTime",
-        name: "checkOutTime",
-        fieldset: {
-        legend: {
-        text: "Enter check out time",
-        classes: "govuk-fieldset__legend--m"
-        }
-        },
-        hint: {
-        text: "This will be applied to all jurors in this list"
-        },
-        items: {
-        hour: {
-        value: checkOutTime.hour,
-        attributes: {
-          minLength: "1",
-          maxLength: "2"
-        }
-        },
-        minute: {
-        value: checkOutTime.minute,
-        attributes: {
-          minLength: "1",
-          maxLength: "2"
-        }
-        },
-        period: {
-        value: checkOutTime.period
-        }
-        },
-        errors: errors.items
+          id: "checkOutTime",
+          name: "checkOutTime",
+          fieldset: {
+            legend: {
+              text: "Enter check out time",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          hint: {
+            text: "This will be applied to all jurors in this list"
+          },
+          items: {
+            hour: {
+              value: checkOutTime.hour,
+              attributes: {
+                minLength: "1",
+                maxLength: "2"
+              }
+            },
+            minute: {
+              value: checkOutTime.minute,
+              attributes: {
+                minLength: "1",
+                maxLength: "2"
+              }
+            },
+            period: {
+              value: checkOutTime.period
+            }
+          },
+          errors: errors.items
         }) }}
 
         <div class="govuk-button-group">
           {{ govukButton({
-          text: "Continue",
-          type: "submit"
+            text: "Continue",
+            type: "submit"
           }) }}
           <a class="govuk-link" href="{{ _cancelUrl }}">Back to attendance list</a>
         </div>

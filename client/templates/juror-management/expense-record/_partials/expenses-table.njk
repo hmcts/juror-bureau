@@ -1,9 +1,12 @@
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
 
     {% set totals = data.expenses.totals %}
 
     <table class="govuk-table mod-horizontal-scroll-table">
+      <hr class="govuk-section-break govuk-section-break--visible">
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">
           <th scope="col" class="govuk-table__header">Date</th>
@@ -24,44 +27,60 @@
         </tr>
       </thead>
       <tbody class="govuk-table__body">
-        {% for day in data.expenses.days%}
+        {% for expense in expenseData.expenses%}
+
+        {% set attendanceType = "Full day" if expense.attendance_type else "Half day" %}
+        {% if loop.index > 10 or page > 1%}
+          {% set attendanceType = attendanceType + " (>10 days)"%}
+        {% endif %}
+
         <tr class="govuk-table__row">
-          <td class="govuk-table__cell"><a href="#" class="govuk-body govuk-link" id="expenseDateLink">{{day.date | dateFilter("YYYY-MM-DD", "ddd DD MMM YYYY")}}</a></td>
-          <td class="govuk-table__cell">{{day.attendance}}</td>
-          <td class="govuk-table__cell">{{day.pTransport}}</td>
-          <td class="govuk-table__cell">{{day.taxi}}</td>
-          <td class="govuk-table__cell">{{day.motorcycle}}</td>
-          <td class="govuk-table__cell">{{day.car}}</td>
-          <td class="govuk-table__cell">{{day.bicycle}}</td>
-          <td class="govuk-table__cell">{{day.parking}}</td>
-          <td class="govuk-table__cell">{{day.foodAndDrink}}</td>
-          <td class="govuk-table__cell">{{day.lossOfEarnings}}</td>
-          <td class="govuk-table__cell">{{day.extraCare}}</td>
-          <td class="govuk-table__cell">{{day.other}}</td>
-          <td class="govuk-table__cell">({{day.smartCard}})</td>
-          <td class="govuk-table__cell">{{day.method}}</td>
-          <td class="govuk-table__cell mod-highlight-table-data__grey mod-center-table-data">{{day.total}}</td>
+          <td class="govuk-table__cell"><a href="#" class="govuk-body govuk-link" id="expenseDateLink">{{expense.appearance_date | dateFilter("YYYY-MM-DD", "ddd DD MMM YYYY")}}</a></td>
+          <td class="govuk-table__cell">{{attendanceType}}</td>
+          <td class="govuk-table__cell">£{{expense.public_transport}}</td>
+          <td class="govuk-table__cell">£{{expense.taxi}}</td>
+          <td class="govuk-table__cell">£{{expense.motorcycle}}</td>
+          <td class="govuk-table__cell">£{{expense.car}}</td>
+          <td class="govuk-table__cell">£{{expense.bicycle}}</td>
+          <td class="govuk-table__cell">£{{expense.parking}}</td>
+          <td class="govuk-table__cell">£{{expense.food_and_drink}}</td>
+          <td class="govuk-table__cell">£{{expense.loss_of_earnings}}</td>
+          <td class="govuk-table__cell">£{{expense.extra_care}}</td>
+          <td class="govuk-table__cell">£{{expense.other}}</td>
+          <td class="govuk-table__cell">(£{{expense.smart_card}})</td>
+          <td class="govuk-table__cell">{{expense.payment_method}}</td>
+          <td class="govuk-table__cell mod-highlight-table-data__grey mod-center-table-data">£{{expense.total}}</td>
         </tr>
         {% endfor %}
         <tr class="govuk-table__row mod-highlight-table-row__grey">
           <td class="govuk-table__cell">Totals</td>
-          <td class="govuk-table__cell">{{totals.attendance}}</td>
-          <td class="govuk-table__cell">{{totals.pTransport}}</td>
-          <td class="govuk-table__cell">{{totals.taxi}}</td>
-          <td class="govuk-table__cell">{{totals.motorcycle}}</td>
-          <td class="govuk-table__cell">{{totals.car}}</td>
-          <td class="govuk-table__cell">{{totals.bicycle}}</td>
-          <td class="govuk-table__cell">{{totals.parking}}</td>
-          <td class="govuk-table__cell">{{totals.foodAndDrink}}</td>
-          <td class="govuk-table__cell">{{totals.lossOfEarnings}}</td>
-          <td class="govuk-table__cell">{{totals.extraCare}}</td>
-          <td class="govuk-table__cell">{{totals.other}}</td>
-          <td class="govuk-table__cell">({{totals.smartCard}})</td>
+          <td class="govuk-table__cell">{{expenseData.totals.total_days}}</td>
+          <td class="govuk-table__cell">£{{expenseData.totals.public_transport}}</td>
+          <td class="govuk-table__cell">£{{expenseData.totals.taxi}}</td>
+          <td class="govuk-table__cell">£{{expenseData.totals.motorcycle}}</td>
+          <td class="govuk-table__cell">£{{expenseData.totals.car}}</td>
+          <td class="govuk-table__cell">£{{expenseData.totals.bicycle}}</td>
+          <td class="govuk-table__cell">£{{expenseData.totals.parking}}</td>
+          <td class="govuk-table__cell">£{{expenseData.totals.food_and_drink}}</td>
+          <td class="govuk-table__cell">£{{expenseData.totals.loss_of_earnings}}</td>
+          <td class="govuk-table__cell">£{{expenseData.totals.extra_care}}</td>
+          <td class="govuk-table__cell">£{{expenseData.totals.other}}</td>
+          <td class="govuk-table__cell">(£{{expenseData.totals.smart_card}})</td>
           <td class="govuk-table__cell"></td>
-          <td class="govuk-table__cell mod-center-table-data">{{totals.total}}</td>
+          <td class="govuk-table__cell mod-center-table-data">£{{expenseData.totals.total}}</td>
         </tr>
       </tbody>
     </table>
+
+    {{ govukPagination({
+      previous: {
+        href: pagination.prev
+      },
+      next: {
+        href: pagination.next
+      },
+      items: pagination.items
+    }) }} 
 
   </div>
 </div>

@@ -2,6 +2,7 @@
 
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
 
 {% from "custom-components/mod-large-tag/macro.njk" import modLargeTag %}
 
@@ -16,6 +17,25 @@
 
 {% block content %}
 
+{% include "includes/errors.njk" %}
+
+{% if jurorDetails.name.firstName %}
+  {% set jurorName = jurorDetails.name.firstName + ' ' + jurorDetails.name.lastName %}
+  {% if jurorDetails.name.title %}
+    {% set jurorName = jurorDetails.name.title + ' ' + jurorDetails.name.firstName + ' ' + jurorDetails.name.lastName %}
+  {% endif %}
+{% else %}
+  {% set jurorName = data.name %}
+{% endif %}
+
+{% if bannerMessage %}
+    {{ mojBanner({
+      type: "success",
+      text: bannerMessage,
+      iconFallbackText: "Success"
+    }) }}
+  {% endif %}
+
   <div class="mod-expense-record-header">
     <div>
       <span class="govuk-caption-l">Expenses</span>
@@ -27,7 +47,7 @@
   </div>
   <div class="mod-expense-record-header">
     <div>
-        <h1 class="govuk-heading-l govuk-!-margin-bottom-3">{{data.name}}</h1>
+        <h1 class="govuk-heading-l govuk-!-margin-bottom-3">{{jurorName}}</h1>
     </div>
 
     <div>
@@ -44,7 +64,7 @@
               text: "Juror number"
             },
             value: {
-              html: '<a href=' + url("juror-record.overview.get", { jurorNumber: data.jurorNumber }) + ' class="govuk-link">' + data.jurorNumber + '</a>'
+              html: '<a href=' + url("juror-record.overview.get", { jurorNumber: jurorNumber }) + ' class="govuk-link">' + jurorNumber + '</a>'
             }
           },
           {
@@ -52,7 +72,7 @@
               text: "Pool number"
             },
             value: {
-              text: data.poolNumber
+              text: poolNumber
             }
           }
         ]
@@ -67,7 +87,7 @@
       id: "draftTotalTag",
       colour: "grey",
       label: "Total in draft",
-      value: data.total
+      value: ("£" + (expenseData.totals.total_amount | toFixed(2))) if expenseData else "£0.00"
     })}}
   {% elif currentTab === "forApproval" %}
     {{ modLargeTag({
@@ -84,6 +104,8 @@
     })}}
   {% endif %}
 
+  <form id="submitExpensesForm" method="POST">
+
   {% if currentTab === "draft" %}
 
     <div class="govuk-grid-row">
@@ -91,9 +113,10 @@
         <span>
           {{ govukButton({
             text: "Submit for approval",
-            href: '#',
+            disabled: true if not expenseData,
             attributes: {
-              id: "submitApprovalButton"
+              id: "submitApprovalButton",
+              formAction: submitUrl
             }
           }) }}
           {{ govukButton({
@@ -116,7 +139,7 @@
       </div>
     </div>
 
-    {% include "./_partials/expenses-table.njk" %}
+    {% include "./_partials/draft-table.njk" %}
 
   {% elif currentTab === "forApproval" %}
 
@@ -127,5 +150,74 @@
     {% include "./_partials/approved-table.njk" %}
   
   {% endif %}
+
+  </form>
   
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+  <script>
+    var checkAllExpenses = $('#check-all-expenses')
+    , expenseRows = $('input[id^=expense]')
+    , totalCheckedExpenses = $('#totalCheckedExpenses')
+    , totalExpenses = $('#totalExpenses')
+    , csrfToken = $('#_csrf');
+
+    // checking jurors logic
+    if (checkAllExpenses) {
+      checkAllExpenses.on('change', function() {
+        var isCheckingAll = this.checked;
+
+        request(this.id, isCheckingAll).then(function() {
+          expenseRows.each(function(_, element) {
+            element.checked = isCheckingAll;
+          });
+
+          totalCheckedExpenses.text(isCheckingAll ? totalExpenses.text() : '0');
+        });
+      });
+    }
+
+    if (expenseRows && expenseRows.length) {
+      expenseRows.each(function(_, element) {
+        element.addEventListener('change', async function() {
+          var expenseDate = this.id.split('-')[1];
+          var isCheckingExpense = this.checked;
+
+          request(expenseDate, isCheckingExpense).then(function() {
+            if (isCheckingJuror) {
+              totalCheckedExpenses.text(+totalCheckedExpenses.text() + 1);
+            } else {
+              totalCheckedExpenses.text(+totalCheckedExpenses.text() - 1);
+            }
+            updateCheckAllJurorsCheckbox(isCheckingJuror);
+          });
+        });
+      });
+    }
+
+    function updateCheckAllJurorsCheckbox(checking) {
+      if (checking) {
+        if (totalCheckedExpenses.text() === totalExpenses.text()) {
+          checkAllExpenses[0].checked = true;
+        }
+      } else {
+        checkAllExpenses[0].checked = false;
+      }
+    }
+
+    function request(expenseDate, isChecking) {
+      var action = isChecking ? 'check' : 'uncheck';
+
+      return $.ajax({
+        url: '/juror-management/unpaid-attendance/expense-record/check?expenseDate='
+          + expenseDate + '&action=' + action,
+        method: 'POST',
+        data: {
+          _csrf: csrfToken.val(),
+        },
+      });
+    };
+  </script>
 {% endblock %}

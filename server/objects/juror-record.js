@@ -122,8 +122,12 @@
           this.resource,
           jurorNumber);
         reqOptions.method = 'PATCH';
-        reqOptions.body = tmpBody;
 
+        tmpBody = _.mapKeys(tmpBody, (value, key) => _.snakeCase(key));
+
+        delete Object.assign(tmpBody, {'welsh_language_required': tmpBody.welsh }).welsh;
+
+        reqOptions.body = tmpBody;
 
         app.logger.debug('Sending request to API: ', {
           uri: reqOptions.uri,
@@ -321,6 +325,35 @@
 
         return rp(reqOptions);
       },
+    }
+
+    , jurorDetailsObject = {
+      resource: 'moj/juror-record/details',
+      post: function(rp, app, jwtToken, jurorNumber, jurorVersion, includeDetails) {
+        const reqOptions = _.clone(options);
+
+        reqOptions.headers.Authorization = jwtToken;
+        reqOptions.uri = urljoin(reqOptions.uri, this.resource);
+        reqOptions.method = 'POST';
+        reqOptions.body = [
+          {
+            'juror_number': jurorNumber,
+            'juror_version': jurorVersion,
+            'include': includeDetails,
+          },
+        ];
+
+
+
+        app.logger.info('Sending request to API: ', {
+          uri: reqOptions.uri,
+          headers: reqOptions.headers,
+          method: reqOptions.method,
+          data: reqOptions.body,
+        });
+
+        return rp(reqOptions);
+      },
     };
 
   module.exports.record = record;
@@ -333,6 +366,7 @@
   module.exports.opticReferenceObject = opticReferenceObject;
   module.exports.changeName = changeName;
   module.exports.failedToAttendObject = failedToAttendObject;
+  module.exports.jurorDetailsObject = jurorDetailsObject;
 
   const rp = require('request-promise');
 

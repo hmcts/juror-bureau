@@ -64,7 +64,7 @@
         return res.render('juror-management/create-record-manual/index', {
           pools: poolsList.availablePools,
           postUrl: app.namedRoutes.build('create-juror-record.pool-select.post'),
-          cancelUrl: app.namedRoutes.build('juror-management.manage-jurors.in-waiting.get'),
+          cancelUrl: cancelUrl(req, app),
           changeCourtUrl: app.namedRoutes.build('create-juror-record.change-court.get'),
           court: courtData,
           multiCourt: multiCourt,
@@ -112,7 +112,7 @@
         };
       };
 
-      return res.redirect(app.namedRoutes.build('create-juror-record.juror-name.get', {
+      return res.redirect(app.namedRoutes.build(summaryStageCheck('create-juror-record.juror-name.get', req), {
         poolNumber: req.body.poolNumber,
       }));
     };
@@ -128,7 +128,7 @@
         poolNumber: 'new-pool',
       };
 
-      return res.redirect(app.namedRoutes.build('create-juror-record.juror-name.get', {
+      return res.redirect(app.namedRoutes.build(summaryStageCheck('create-juror-record.juror-name.get', req), {
         poolNumber: 'new-pool',
       }));
     };
@@ -216,7 +216,7 @@
         postUrl: app.namedRoutes.build('create-juror-record.juror-name.post', {
           poolNumber: req.params.poolNumber,
         }),
-        cancelUrl: app.namedRoutes.build('juror-management.manage-jurors.in-waiting.get'),
+        cancelUrl: cancelUrl(req, app),
         subServiceName: subServiceName,
         pageIdentifier: 'What\'s the juror\'s name?',
         formFields: formFields,
@@ -247,7 +247,7 @@
 
       req.session.newJuror.jurorName = tmpBody;
 
-      return res.redirect(app.namedRoutes.build('create-juror-record.juror-dob.get', {
+      return res.redirect(app.namedRoutes.build(summaryStageCheck('create-juror-record.juror-dob.get', req), {
         poolNumber: req.params.poolNumber,
       }));
     };
@@ -280,7 +280,7 @@
         postUrl: app.namedRoutes.build('create-juror-record.juror-dob.post', {
           poolNumber: req.params.poolNumber,
         }),
-        cancelUrl: app.namedRoutes.build('juror-management.manage-jurors.in-waiting.get'),
+        cancelUrl: cancelUrl(req, app),
         backLinkUrl: app.namedRoutes.build('create-juror-record.juror-name.get', {
           poolNumber: req.params.poolNumber,
         }),
@@ -334,7 +334,7 @@
           }));
         };
 
-        return res.redirect(app.namedRoutes.build('create-juror-record.juror-address.get', {
+        return res.redirect(app.namedRoutes.build(summaryStageCheck('create-juror-record.juror-address.get', req), {
           poolNumber: req.params.poolNumber,
         }));
 
@@ -376,7 +376,7 @@
         postUrl: app.namedRoutes.build('create-juror-record.ineligible-age.post', {
           poolNumber: req.params.poolNumber,
         }),
-        cancelUrl: app.namedRoutes.build('juror-management.manage-jurors.in-waiting.get'),
+        cancelUrl: cancelUrl(req, app),
         subServiceName: subServiceName,
         pageIdentifier: 'Check the date of birth',
         formTitle: 'Is their date of birth correct?',
@@ -438,7 +438,7 @@
         postUrl: app.namedRoutes.build('create-juror-record.juror-address.post', {
           poolNumber: req.params.poolNumber,
         }),
-        cancelUrl: app.namedRoutes.build('juror-management.manage-jurors.in-waiting.get'),
+        cancelUrl: cancelUrl(req, app),
         backLinkUrl: app.namedRoutes.build('create-juror-record.juror-dob.get', {
           poolNumber: req.params.poolNumber,
         }),
@@ -488,7 +488,7 @@
           }));
         };
 
-        return res.redirect(app.namedRoutes.build('create-juror-record.juror-contact.get', {
+        return res.redirect(app.namedRoutes.build(summaryStageCheck('create-juror-record.juror-contact.get', req), {
           poolNumber: req.params.poolNumber,
         }));
 
@@ -515,7 +515,7 @@
     return function(req, res) {
 
       return res.render('juror-management/create-record-manual/outside-postcode.njk', {
-        continueUrl: app.namedRoutes.build('create-juror-record.juror-contact.get', {
+        continueUrl: app.namedRoutes.build(summaryStageCheck('create-juror-record.juror-contact.get', req), {
           poolNumber: req.params.poolNumber,
         }),
         changeUrl: app.namedRoutes.build('create-juror-record.juror-address.get', {
@@ -546,7 +546,7 @@
         postUrl: app.namedRoutes.build('create-juror-record.juror-contact.post', {
           poolNumber: req.params.poolNumber,
         }),
-        cancelUrl: app.namedRoutes.build('juror-management.manage-jurors.in-waiting.get'),
+        cancelUrl: cancelUrl(req, app),
         backLinkUrl: app.namedRoutes.build('create-juror-record.juror-address.get', {
           poolNumber: req.params.poolNumber,
         }),
@@ -565,7 +565,7 @@
 
       req.session.newJuror.jurorContact = tmpBody;
 
-      return res.redirect(app.namedRoutes.build('create-juror-record.notes.get', {
+      return res.redirect(app.namedRoutes.build(summaryStageCheck('create-juror-record.notes.get', req), {
         poolNumber: req.params.poolNumber,
       }));
     };
@@ -591,7 +591,7 @@
         postUrl: app.namedRoutes.build('create-juror-record.notes.post', {
           poolNumber: req.params.poolNumber,
         }),
-        cancelUrl: app.namedRoutes.build('juror-management.manage-jurors.in-waiting.get'),
+        cancelUrl: cancelUrl(req, app),
         subServiceName: subServiceName,
         pageIdentifier: 'Notes',
         formFields: formFields,
@@ -622,6 +622,8 @@
           poolNumber: req.params.poolNumber,
         }));
       };
+
+      req.session.newJuror.summaryStage = true;
 
       let poolNumber;
 
@@ -657,7 +659,7 @@
         jurorDob: app.namedRoutes.build('create-juror-record.juror-dob.get', {
           poolNumber: req.params.poolNumber,
         }),
-        jurorAddress: app.namedRoutes.build('create-juror-record.juror-contact.get', {
+        jurorAddress: app.namedRoutes.build('create-juror-record.juror-address.get', {
           poolNumber: req.params.poolNumber,
         }),
         jurorContact: app.namedRoutes.build('create-juror-record.juror-contact.get', {
@@ -731,5 +733,20 @@
 
     return [convertedDob, jurorAgeString].join(' ');
   };
+
+  function summaryStageCheck(postPath, req) {
+    if (typeof req.session.newJuror !== 'undefined' && typeof req.session.newJuror.summaryStage !== 'undefined') {
+      return 'create-juror-record.summary.get';
+    }
+    return postPath;
+  };
+
+  function cancelUrl(req, app) {
+    return typeof req.session.newJuror !== 'undefined' && typeof req.session.newJuror.summaryStage !== 'undefined'
+      ? app.namedRoutes.build('create-juror-record.summary.get', {
+        poolNumber: req.session.newJuror.poolNumber,
+      })
+      : app.namedRoutes.build('juror-management.manage-jurors.in-waiting.get');
+  }
 
 })();

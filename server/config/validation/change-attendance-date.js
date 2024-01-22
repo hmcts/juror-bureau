@@ -29,7 +29,7 @@
   module.exports.jurorSelect = function() {
     return {
       selectedJurors: {
-        jurorSelect: {},
+        changeAttendanceJurorSelect: {},
       },
     };
   };
@@ -80,7 +80,7 @@
   };
 
 
-  validate.validators.jurorSelect = function(value, options, key, attributes) {
+  validate.validators.changeAttendanceJurorSelect = function(value, options, key, attributes) {
     var message = {
       summary: '',
       details: [],

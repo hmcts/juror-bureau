@@ -81,20 +81,26 @@
     let failValidationUrl, successUrl, errorUrl;
 
     if (typeof req.params.poolNumber !== 'undefined') {
-      failValidationUrl = app.namedRoutes.build('pool-overview.complete-service.confirm.get',
-        { poolNumber: req.params.poolNumber });
-      successUrl = app.namedRoutes.build('pool-overview.get',
-        { poolNumber: req.params.poolNumber });
-      errorUrl = app.namedRoutes.build('pool-overview.get',
-        { poolNumber: req.params.poolNumber });
+      failValidationUrl = app.namedRoutes.build('pool-overview.complete-service.confirm.get', {
+        poolNumber: req.params.poolNumber,
+      });
+      successUrl = app.namedRoutes.build('pool-overview.get', {
+        poolNumber: req.params.poolNumber,
+      });
+      errorUrl = app.namedRoutes.build('pool-overview.get', {
+        poolNumber: req.params.poolNumber,
+      });
     } else if (typeof req.params.jurorNumber !== 'undefined') {
-      failValidationUrl = app.namedRoutes.build('juror.update.complete-service.get',
-        { jurorNumber: req.params.jurorNumber});
+      failValidationUrl = app.namedRoutes.build('juror.update.complete-service.get', {
+        jurorNumber: req.params.jurorNumber,
+      });
       // TODO: remove query param once backend implemented, to show data as designed
-      successUrl = app.namedRoutes.build('juror-record.overview.get',
-        { jurorNumber: req.params.jurorNumber }) + '?serviceAttributes=true';
-      errorUrl = app.namedRoutes.build('juror.update.complete-service.get',
-        { jurorNumber: req.params.jurorNumber });
+      successUrl = app.namedRoutes.build('juror-record.overview.get', {
+        jurorNumber: req.params.jurorNumber,
+      }) + '?serviceAttributes=true';
+      errorUrl = app.namedRoutes.build('juror.update.complete-service.get', {
+        jurorNumber: req.params.jurorNumber,
+      });
     }
 
     if (typeof validatorResult !== 'undefined') {
@@ -108,19 +114,17 @@
       pool: req.params.poolNumber || req.session.jurorCommonDetails.poolNumber,
       completionDate: req.body.completionDate,
       selectedJurors: req.body.selectedJurors,
-    }).then((response) => {
+    }).then(() => {
       req.session.bannerMessage =
         typeof req.params.jurorNumber !== 'undefined'
           ? 'Juror\'s service completed'
           // eslint-disable-next-line max-len
-          : `Service completed for ${req.body.selectedJurors.length} juror${req.body.selectedJurors.length > 1 ? 's' : ''}`;
+          : `Service completed for ${req.body.selectedJurors.length} ${jurorSuffix('juror', req.body.selectedJurors.length)}`;
 
       delete req.session.selectedJurors;
 
       return res.redirect(successUrl);
     }, (err) => {
-
-      req.session.errors = err;
       app.logger.crit('Failed to complete juror(s) service: ', {
         auth: req.session.authentication,
         jwt: req.session.authToken,
@@ -131,8 +135,24 @@
         },
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
-      
-      return res.redirect(errorUrl);
+
+      if (err.statusCode === 422) {
+
+        req.session.errors = {
+          completionDate: [{
+            details: err.error.message,
+          }],
+        };
+
+        return res.redirect(errorUrl);
+      }
+
+      return res.render('_errors/generic');
     });
   };
+
+  function jurorSuffix(word, length) {
+    return word + (length > 1 ? 's' : '');
+  }
+
 })();

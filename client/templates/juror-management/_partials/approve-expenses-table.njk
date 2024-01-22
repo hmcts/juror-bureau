@@ -3,12 +3,17 @@
 {%- from "govuk/components/tag/macro.njk" import govukTag -%}
 {%- from "moj/components/banner/macro.njk" import mojBanner -%}
 
+{% set jurors = approvalData[currentTab] %}
 
 {% if jurors | length > 0 %}
-  <div class="flex mod-flex mod-gap-x-4">
-  </div>
+  <div class="flex mod-flex mod-gap-x-4"></div>
   
-  <form method="post" id="manageJurorsForm" >
+  <form action="{{ processUrl }}" method="post" id="approveExpensesForm" >
+
+    {{ govukButton({
+      type: "submit",
+      text: "Approve"
+    }) }}
 
     <div class="govuk-body govuk-!-margin-bottom-0"> <span id="checkedJurors"></span> of <span id="totalJurors"></span> selected</div>
 
@@ -35,10 +40,12 @@
       <tbody class="govuk-table__body">
     
       {% for juror in jurors %}
-      {% set tagClass = "govuk-tag--blue"%}
-      {% if juror.status === "For reapproval" %}
-      {% set tagClass = "govuk-tag--red"%}
-      {% endif %}
+
+        {% set tagClass = "govuk-tag--blue"%}
+        {% if juror.status === "For reapproval" %}
+          {% set tagClass = "govuk-tag--red"%}
+        {% endif %}
+
         <tr class="govuk-table__row govuk-table__row--selected">
           <td class="govuk-table__cell">
             <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox" onclick="checkSet()">
@@ -48,15 +55,17 @@
               </label>
             </div>
           </td>
-          <td id="{{juror.jurorNumber}}-jurorNumber" class="govuk-table__cell jd-middle-align govuk-!-font-weight-bold">{{ juror.jurorNumber }}</td>
+          <td id="{{juror.jurorNumber}}-jurorNumber" class="govuk-table__cell jd-middle-align">{{ juror.jurorNumber }}</td>
           <td id="{{juror.jurorNumber}}-poolNumber" class="govuk-table__cell jd-middle-align">{{ juror.poolNumber }}</td>
           <td id="{{juror.jurorNumber}}-firstName" class="govuk-table__cell jd-middle-align">{{ juror.firstName  | capitalize }}</td>
           <td id="{{juror.jurorNumber}}-lastName" class="govuk-table__cell jd-middle-align">{{ juror.lastName  | capitalize }}</td>
-           <td id="{{juror.jurorNumber}}-total" class="govuk-table__cell jd-middle-align govuk-!-font-weight-bold">{{ juror.total | capitalize }}</td>
-          <td id="{{juror.jurorNumber}}-status" class="govuk-table__cell jd-middle-align">{{govukTag({
-          text:juror.status,
-          classes: tagClass
-        })}}</td>
+          <td id="{{juror.jurorNumber}}-total" class="govuk-table__cell jd-middle-align govuk-!-font-weight-bold">{{ juror.total | capitalize }}</td>
+          <td id="{{juror.jurorNumber}}-status" class="govuk-table__cell jd-middle-align">
+            {{govukTag({
+              text: juror.status,
+              classes: tagClass
+            })}}
+          </td>
           <td id="{{juror.jurorNumber}}-viewExpenses" class="govuk-table__cell jd-middle-align"><a href="{{url('juror-management.approve-expenses.view-expenses.get', {jurorNumber: juror.jurorNumber})}}">View expenses</a></td>
         </tr>
 
@@ -103,6 +112,6 @@
 
   {% else %}
 
-    <p class="govuk-body">No jurors in waiting</p>
+    <p class="govuk-body">There are no expenses to approve.</p>
 
 {% endif %}

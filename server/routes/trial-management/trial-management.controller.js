@@ -87,6 +87,7 @@
       delete req.session.handleAttendance;
       delete req.session.checkInTime;
       delete req.session.checkOutTime;
+      delete req.session.isJuryEmpanelled;
 
       Promise.all([trialDetailsObject.get(
         require('request-promise'),
@@ -121,9 +122,11 @@
 
           if (panelData) {
             trialData.panelledJurors = panelData;
+            req.session.panelData = panelData;
+
           }
 
-
+          req.session.isJuryEmpanelled = trialData['is_jury_empanelled'];
 
           return res.render('trial-management/trial-detail.njk', {
             trial: trialData,

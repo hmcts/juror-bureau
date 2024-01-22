@@ -107,7 +107,7 @@
 
                 <tr class="govuk-table__row govuk-table__row--selected">
                   <td class="govuk-table__cell">
-                    <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox" onclick="checkSet()">
+                    <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
                       <input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check" id="juror-{{ member.jurorNumber }}"
                         {% if member.checked %}checked{% endif %} aria-label="check-juror-{{ member.jurorNumber }}" name="checked-jurors" value="{{ member.jurorNumber }}">
                       <label class="govuk-label govuk-checkboxes__label" for="select-{{ member.jurorNumber }}">
@@ -149,41 +149,3 @@
       <input type="hidden" name="poolNumber" id="poolNumber" value="{{ poolDetails.poolNumber }}">
       <input type="hidden" name="_csrf" id="csrfToken" value="{{ csrftoken }}">
     </form>
-
-  {# <script>
-
-    let allChecked = false;
-    let chkbxs = document.getElementsByName('selectedJurors');
-    document.getElementById("totalJurors").innerHTML = chkbxs.length;
-    document.getElementById("checkedJurors").innerHTML = 0;
-
-    function selectAll() {
-
-      if (allChecked) {
-        allChecked = false;
-        for(var i = 0; i < chkbxs.length; i++){
-          if (chkbxs[i].type=='checkbox')
-          chkbxs[i].checked = false;   
-        }
-        document.getElementById("checkedJurors").innerHTML = $('input[name="selectedJurors"]:checkbox:checked').length;
-      } else {
-        allChecked = true;
-        for(var i = 0; i <chkbxs.length; i++){
-          if (chkbxs[i].type=='checkbox')
-          chkbxs[i].checked = true;  
-        }
-        document.getElementById("checkedJurors").innerHTML = $('input[name="selectedJurors"]:checkbox:checked').length;
-      }
-      
-    };
-
-    function checkSet() {
-      document.getElementById("checkedJurors").innerHTML = $('input[name="selectedJurors"]:checkbox:checked').length;
-      if (chkbxs.length > document.getElementsByName('selectedJurors:checked').length) {
-        document.getElementsByName('check-all-jurors')[0].checked = false;
-        allChecked = false;
-      }
-    }
-  
-  </script> #}
-

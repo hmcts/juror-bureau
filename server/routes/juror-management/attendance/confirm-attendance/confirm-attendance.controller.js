@@ -4,57 +4,107 @@
   const _ = require('lodash')
     , validate = require('validate.js')
     , checkInOutTimeValidator = require('../../../../config/validation/check-in-out-time')
-    , { convertAmPmToLong } = require('../../../../components/filters');
+    , { convertAmPmToLong, timeArrayToString, convert12to24 } = require('../../../../components/filters')
+    , { jurorAttendanceDao } = require('../../../../objects/juror-attendance');
 
 
   module.exports.getConfirmAttendance = function(app) {
-    return function(req, res) {
+    return async function(req, res) {
       let processUrl
         , cancelUrl
-        , checkedIn
-        , jurorsNotCheckedIn
-        , jurorsNotCheckedOut
         , attendanceDate = req.session.attendanceListDate;
 
       processUrl = app.namedRoutes.build('juror-management.attendance.confirm-attendance.post');
       cancelUrl = app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate;
 
-      jurorsNotCheckedOut = req.session.dailyAttendanceList.filter(
-        attendee => (attendee.checkedIn !== null && attendee.checkedOut === null)
-      );
+      try {
+        const body = {
+          commonData: {
+            tag: 'NOT_CHECKED_OUT',
+            attendanceDate,
+            locationCode: req.session.authentication.owner,
+          },
+        };
+        const response = await jurorAttendanceDao.get(app, req, body);
+        const jurorsNotCheckedOut = response.details;
 
-      if (jurorsNotCheckedOut.length) {
-        req.session.jurorsNotCheckedOut = jurorsNotCheckedOut;
-        return res.redirect(
-          app.namedRoutes.build('juror-management.attendance.confirm-attendance.not-checked-out.get')
-        );
+        if (jurorsNotCheckedOut.length) {
+          req.session.jurorsNotCheckedOut = jurorsNotCheckedOut;
+          return res.redirect(
+            app.namedRoutes.build('juror-management.attendance.confirm-attendance.not-checked-out.get')
+          );
+        }
+      } catch (err) {
+        app.logger.crit('Failed to fetch not checked out jurors', {
+          auth: req.session.authentication,
+          token: req.session.authToken,
+          data: body,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic');
       }
 
-      // STUBBED
-      // Will get jurors eligbile for confirmation from backend
-      checkedIn = req.session.dailyAttendanceList.filter(attendee => attendee.checkedIn !== null).length;
-      jurorsNotCheckedIn = req.session.dailyAttendanceList.filter(attendee => attendee.checkedIn === null);
+      try {
+        const body = {
+          commonData: {
+            tag: 'CONFIRM_ATTENDANCE',
+            attendanceDate,
+            locationCode: req.session.authentication.owner,
+          },
+        };
+        const response = await jurorAttendanceDao.get(app, req, body);
+        const jurorsNotCheckedIn = response.details;
 
-      return res.render('juror-management/attendance/confirm-attendance', {
-        checkedIn: checkedIn,
-        notCheckedIn: jurorsNotCheckedIn,
-        attendanceDate,
-        processUrl,
-        cancelUrl,
-      });
+        return res.render('juror-management/attendance/confirm-attendance', {
+          checkedIn: response.summary.checkedIn,
+          jurorsNotCheckedIn,
+          attendanceDate,
+          processUrl,
+          cancelUrl,
+        });
+      } catch (err) {
+        app.logger.crit('Failed to fetch jurors marked as not attending / not checked in', {
+          auth: req.session.authentication,
+          token: req.session.authToken,
+          data: body,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic');
+      }
     };
   };
 
-  //STUBBED
   // Will make call to backend to confirm jurors' attendance on that day
   module.exports.postConfirmAttendance = function(app) {
-    return function(req, res) {
+    return async function(req, res) {
       const attendanceDate = req.session.attendanceListDate;
-      const index = req.session.attendanceList.findIndex((obj => obj.date === attendanceDate));
 
-      req.session.attendanceList[index].status = 'Confirmed';
+      const payload = {
+        commonData: {
+          status: 'CONFIRM_ATTENDANCE',
+          attendanceDate: attendanceDate,
+          locationCode: req.session.authentication.owner,
+          singleJuror: false,
+        },
+        jurors: [],
+      };
 
-      return res.redirect(app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate);
+      try {
+        await jurorAttendanceDao.patch(app, req, payload);
+
+        return res.redirect(app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate);
+      } catch (err) {
+        app.logger.crit('Failes to confir the attendance', {
+          auth: req.session.authentication,
+          token: req.session.authToken,
+          data: payload,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic');
+      }
     };
   };
 
@@ -95,7 +145,7 @@
   };
 
   module.exports.postNotCheckedOut = function(app) {
-    return function(req, res) {
+    return async function(req, res) {
       let validatorResult
         , jurorsNotCheckedOut = req.session.jurorsNotCheckedOut;
       const checkOutTimeHour = req.body.checkOutTimeHour
@@ -133,10 +183,9 @@
       let checkOutTooEarly = false;
       let notCheckedOutJNs = [];
 
-
       jurorsNotCheckedOut.forEach((juror) => {
-        notCheckedOutJNs.push(juror.jurorNumber);
-        let checkInTime = convertAmPmToLong(juror.checkedIn);
+        notCheckedOutJNs.push(juror.juror_number);
+        let checkInTime = convertAmPmToLong(timeArrayToString(juror.check_in_time));
 
         if (checkOutTime <= checkInTime){
           checkOutTooEarly = true;
@@ -144,10 +193,12 @@
       });
 
       if (checkOutTooEarly) {
-        let tmpErrors = {checkOutTime: [{
-          summary: 'Check out time cannot be earlier than check in time',
-          details: 'Check out time cannot be earlier than check in time',
-        }]};
+        let tmpErrors = {
+          checkOutTime: [{
+            summary: 'Check out time cannot be earlier than check in time',
+            details: 'Check out time cannot be earlier than check in time',
+          }],
+        };
 
         req.session.errors = tmpErrors;
         req.session.formFields = req.body;
@@ -156,30 +207,35 @@
         ));
       }
 
-      //STUBBED
-      // Will make call to backend to add check out times for juror's
+      const payload = {
+        commonData: {
+          status: 'CHECK_OUT',
+          attendanceDate: req.body.attendanceDate,
+          locationCode: req.session.authentication.owner,
+          checkOutTime: convert12to24(checkOutTimeHour + ':' + checkOutTimeMinute + checkOutTimePeriod),
+          singleJuror: false,
+        },
+        juror: notCheckedOutJNs,
+      };
 
-      req.session.dailyAttendanceList.forEach((attendee) => {
-        if (notCheckedOutJNs.includes(attendee.jurorNumber)) {
-          attendee.checkedOut = checkOutTimeHour + ':' + checkOutTimeMinute + checkOutTimePeriod;
-        }
-      });
-      attendanceListSave(app, req, res);
-      return res.redirect(app.namedRoutes.build('juror-management.attendance.confirm-attendance.get'));
+      try {
+        await jurorAttendanceDao.patch(app, req, payload);
+
+        return res.redirect(
+          app.namedRoutes.build('juror-management.attendance.confirm-attendance.get')
+        );
+      } catch (err) {
+        app.logger.crit('Failed to checkout the list of jurors', {
+          auth: req.session.authentication,
+          token: req.session.authToken,
+          data: payload,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic');
+      }
     };
   };
-
-  // CURRENTLY BEING USED TO MIMIC DATA BEING SAVED TO BACKEND
-  // WILL BE UPDATED/REMOVED IN FUTURE
-  function attendanceListSave(app, req, res) {
-    const date = req.session.attendanceListDate;
-    // eslint-disable-next-line max-len
-    const index = req.session.attendanceList.findIndex((obj => obj.date === date));
-
-    req.session.attendanceList[index].jurors = req.session.dailyAttendanceList;
-    req.session.save();
-    return;
-  }
 
 })();
 

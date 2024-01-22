@@ -3,8 +3,8 @@
 
   const _ = require('lodash');
   const { getJurorStatus, padTimeForApi } = require('../../../lib/mod-utils');
-  const { convertAmPmToLong, convert12to24 } = require('../../../components/filters');
-  const { jurorsAttending } = require('../../../objects/juror-attendance');
+  const { convertAmPmToLong, convert12to24, timeArrayToString } = require('../../../components/filters');
+  const { jurorsAttending, jurorAttendanceDao } = require('../../../objects/juror-attendance');
 
   module.exports.postCheckIn = function(app) {
     return async function(req, res) {
@@ -20,6 +20,7 @@
             'location_code': req.session.authentication.owner,
             'attendance_date': req.session.attendanceListDate,
             'check_in_time': padTimeForApi(convert12to24(req.body.time)),
+            'appearance_stage': 'CHECKED_IN',
           }
         );
 
@@ -35,7 +36,7 @@
         }
 
         const attendee = {
-          jurorNumber: jurorNumber,
+          jurorNumber,
           firstName: '-',
           lastName: '-',
           jurorStatus: '-',
@@ -53,45 +54,64 @@
 
   module.exports.postCheckOut = function(app) {
     return async function(req, res) {
+      const { jurorNumber } = req.body;
 
-      const attendee = req.session.dailyAttendanceList.find(a => a.jurorNumber === req.body.jurorNumber);
+      const attendee = req.session.dailyAttendanceList.find(
+        (a) => a.jurorNumber === jurorNumber
+      );
 
       if (!attendee) {
-        return res.status(404).send('juror not found');
+        return res.status(404).send();
       }
 
-      const checkInTime = convertAmPmToLong(attendee.checkedIn);
+      const checkInTime = convertAmPmToLong(timeArrayToString(attendee.checkInTime));
       const checkOutTime = convertAmPmToLong(req.body.time);
 
       if (checkInTime >= checkOutTime) {
-        attendee.checkedOut = null;
         return res.status(400).send('check out earlier than check in');
       }
 
-      req.session.dailyAttendanceList.forEach((juror) => {
-        if (juror.jurorNumber === req.body.jurorNumber) {
-          juror.checkedOut = req.body.time;
-        }
-      });
-
       try {
-        // TODO: send an api request then respond with the result...
-        await apiMock(req.body.jurorNumber);
+        await jurorsAttending.put(
+          require('request-promise'),
+          app,
+          req.session.authToken,
+          {
+            'juror_number': jurorNumber,
+            'location_code': req.session.authentication.owner,
+            'attendance_date': req.session.attendanceListDate,
+            'check_out_time': padTimeForApi(convert12to24(req.body.time)),
+            'appearance_stage': 'CHECKED_OUT',
+          }
+        );
 
-        attendanceListSave(app, req, res);
+        attendee.checkOutTime = req.body.time;
+        req.session.dailyAttendanceList.forEach((a) => {
+          if (a.jurorNumber === jurorNumber) {
+            a.checkOutTime = req.body.time;
+            a.appStage = 'CHECKED_OUT';
+          }
+        });
+
         return res.render('juror-management/attendance/unconfirmed/table-row.njk', {
           row: attendee,
         });
-      } catch (error) {
-        attendee.checkedOut = 'Fail';
-        // TODO: this will render a different table row with an api error
-        attendanceListSave(app, req, res);
+      } catch (err) {
+        if (err.statusCode === 404) {
+          return res.status(404).send('juror not found');
+        }
+
+        const _attendee = {
+          jurorNumber: jurorNumber,
+          firstName: '-',
+          lastName: '-',
+          jurorStatus: '-',
+          checkOutTime: 'Fail',
+          kind: 'checkOut',
+        };
+
         return res.render('juror-management/attendance/unconfirmed/table-row.njk', {
-          row: {
-            ...attendee,
-            checkedOut: 'Fail',
-            kind: 'checkOut',
-          },
+          row: _attendee,
           error: true,
         });
       }
@@ -100,14 +120,23 @@
 
   module.exports.postCheckOutAllJurors = function(app) {
     return async function(req, res) {
+      const attendanceDate = req.session.attendanceListDate;
 
-      const attendees = req.session.dailyAttendanceList.filter(a => a.checkedIn !== null);
+      const attendees = req.session.dailyAttendanceList
+        .filter(a => a.checkInTime !== null && a.checkOutTime === null);
 
-      const latestStartTime = attendees.reduce(
-        (max, juror) => convertAmPmToLong(juror.checkedIn) > max
-          ? convertAmPmToLong(juror.checkedIn)
-          : max, convertAmPmToLong(attendees[0].checkedIn)
-      );
+      const jurors = attendees.reduce((list, juror) => {
+        list.push(juror.jurorNumber);
+        return list;
+      }, []);
+
+      // TODO: block when check out is earlier than check in
+      const latestStartTime = attendees.reduce((time, attendee) => {
+        const _time = +convertAmPmToLong(timeArrayToString(attendee.checkInTime));
+
+        return _time >= time ? _time : time;
+      }, 0);
+
       const checkOutTime = convertAmPmToLong(req.body.time);
 
       if (latestStartTime >= checkOutTime) {
@@ -115,31 +144,40 @@
       }
 
       req.session.dailyAttendanceList.forEach((attendee) => {
-        if (attendee.checkedIn !== null) {
-          attendee.checkedOut = req.body.time;
+        if (attendee.checkOutTime !== null) {
+          attendee.checkOutTime = req.body.time;
         }
       });
 
-      new Promise((resolve, reject) => {
-        attendees.forEach(async(attendee, index, array) => {
-          try {
-            await apiMock(attendee.jurorNumber);
-            if (index === array.length - 1) resolve();
-          } catch (error) {
-            let objIndex = req.session.dailyAttendanceList.findIndex((obj => obj.jurorNumber === attendee.jurorNumber));
+      const payload = {
+        commonData: {
+          status: 'CHECK_OUT',
+          attendanceDate: attendanceDate,
+          locationCode: req.session.authentication.owner,
+          checkOutTime: padTimeForApi(convert12to24(req.body.time)),
+          singleJuror: false,
+        },
+        juror: jurors,
+      };
 
-            req.session.dailyAttendanceList[objIndex].checkedOut = 'Fail';
-            if (index === array.length - 1) resolve();
-          }
-        });
-      }).then(() => {
-        const listedJurors = req.session.dailyAttendanceList.filter(attendee => attendee.checkedIn !== null);
+      try {
+        await jurorAttendanceDao.patch(
+          app,
+          req,
+          payload,
+        );
 
-        attendanceListSave(app, req, res);
-        return res.render('juror-management/attendance/unconfirmed/table-rows.njk', {
-          listedJurors,
+        return res.redirect(app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate);
+      } catch (err) {
+        app.logger.crit('Failed when trying to check all jurors out', {
+          auth: req.session.authentication,
+          token: req.session.authToken,
+          data: payload,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
-      });
+
+        return res.render('_errors/generic');
+      }
     };
   };
 
@@ -186,20 +224,16 @@
 
   module.exports.getDeleteAttendance = function(app) {
     return function(req, res) {
-      let processUrl
-        , cancelUrl
-        , selectedJuror;
-
-      const jn = req.params.jurorNumber;
+      const { jurorNumber } = req.params;
       const attendanceDate = req.session.attendanceListDate;
 
-      processUrl = app.namedRoutes.build('juror-management.attendance.delete-attendance.post'
-        , {jurorNumber: req.params.jurorNumber});
-      cancelUrl = app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate;
+      const processUrl = app.namedRoutes.build('juror-management.attendance.delete-attendance.post', {
+        jurorNumber,
+      });
+      const cancelUrl = app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate;
 
-      //STUBBED
-      // Will get jurors details from backend
-      selectedJuror = req.session.dailyAttendanceList.find(a => a.jurorNumber === jn);
+      // TODO: revise this way of getting the juror
+      const selectedJuror = req.session.dailyAttendanceList.find(a => a.jurorNumber === jurorNumber);
 
       return res.render('juror-management/attendance/delete-attendance', {
         selectedJuror,
@@ -211,50 +245,40 @@
   };
 
   module.exports.postDeleteAttendance = function(app) {
-    return function(req, res) {
+    return async function(req, res) {
+      const { jurorNumber } = req.params;
       const attendanceDate = req.session.attendanceListDate;
 
-      //STUBBED
-      // Will make call to backend to delete jurors attendance on that day
-      req.session.dailyAttendanceList.forEach((attendee) => {
-        if (attendee.jurorNumber === req.body.jurorNumber) {
-          attendee.checkedIn = null;
-          attendee.checkedOut = null;
-        }
-      });
-      attendanceListSave(app, req, res);
+      const payload = {
+        commonData: {
+          status: 'DELETE',
+          attendanceDate: attendanceDate,
+          locationCode: req.session.authentication.owner,
+          singleJuror: true,
+        },
+        juror: [jurorNumber],
+      };
 
-      res.redirect(app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate);
+      try {
+        await jurorAttendanceDao.delete(
+          app,
+          req,
+          payload,
+        );
+
+        res.redirect(app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate);
+      } catch (err) {
+        app.logger.crit('Unable to delete the jurors attendance', {
+          auth: req.session.authentication,
+          token: req.session.authToken,
+          data: payload,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic');
+      }
     };
   };
-
-
-  // CURRENTLY BEING USED TO MIMIC DATA BEING SAVED TO BACKEND
-  // WILL BE UPDATED/REMOVED IN FUTURE
-  function attendanceListSave(app, req, res) {
-    const date = req.session.attendanceListDate;
-    // eslint-disable-next-line max-len
-    const index = req.session.attendanceList.findIndex((obj => obj.date === date));
-
-    req.session.attendanceList[index].jurors = req.session.dailyAttendanceList;
-    req.session.save();
-    return;
-  }
-
-  // TODO: To be replaced by an api call
-  function apiMock(jn) {
-    const failingJn = ['100000004', '100000005'];
-
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (failingJn.includes(jn)) {
-          return reject(new Error('some error...'));
-        }
-
-        resolve();
-      }, 300);
-    });
-  }
 
 })();
 

@@ -216,11 +216,11 @@
         }));
       }
 
-      momentSst.date(req.session.paperResponseDetails.startDate[2]);
-      momentSst.month(req.session.paperResponseDetails.startDate[1] - 1);
-      momentSst.year(req.session.paperResponseDetails.startDate[0]);
-
-      tmpAge = modUtils.dateDifference(momentSst, req.body.dateOfBirth, 'years');
+      tmpAge = modUtils.dateDifference(
+        dateFilter(req.session.paperResponseDetails.startDate, 'YYYY/MM/DD', 'DD/MM/YYYY'),
+        req.body.dateOfBirth,
+        'years'
+      );
 
       if (tmpAge < 18 || tmpAge > 75) {
         req.session.paperResponseDetails.yearsOld = tmpAge;
