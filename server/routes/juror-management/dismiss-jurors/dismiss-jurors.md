@@ -23,7 +23,10 @@ The officer needs to have available a selection of active pools to select and ge
 | postCheckJuror() | Posts the select state for the targeted juror. This is only available on the list of jurors. |
 
 ## X.0.4 Filters
-`convertAmPmTime()`
+`convertAmPmToLong()`
+`dateFilter()`
+`timeArrayToString()`
+`convert12to24()`
 
 ## X.0.5 Validators
 | Validator function | Purpose |
@@ -33,19 +36,36 @@ The officer needs to have available a selection of active pools to select and ge
 | checkOutTime() | Validate the checkout time for the jurors still not checked out. |
 
 ## X.0.6 Request objects
-// TODO: Not yet implemented
-`bureau/server/objects/request-object.js`
-
+`bureau/server/objects/request-pool.js`
 | Request object | Call signature | Purpose | Response object |
 |-|-|-|-|
-| objectName | `METHOD moj/route/called` | Request object purpose | `ResponseObjectDTO` |
+| fetchPoolsAtCourt | `GET moj/pool-request/pools-at-court` | Fetches a list of all active pools at a location for court users. | PoolsAtCourtLocationListDto |
+
+`bureau/server/objects/dismiss-jurors.js`
+| Request object | Call signature | Purpose | Response object |
+|-|-|-|-|
+| getJurorsObject | `GET moj/juror-management/jurors-to-dismiss` | Fetches a list of random jurors to dismiss given the selected criteria. | JurorsToDismissResponseDto |
+| dismissJurorsObject | `PATCH moj/complete-service/dismissal` | Comlpetes services and dismisses selected jurors. | N/A |
+
+`bureau/server/objects/juror-attendance.js`
+| Request object | Call signature | Purpose | Response object |
+|-|-|-|-|
+| jurorAttendanceDao | `GET moj/juror-management/attendance` | Retrieve a list of juror attendance details based on attendance (appearance) status. | AttendanceDetailsResponseDto |
+| jurorAttendanceDao | `PATCH moj/juror-management/attendance` | Update the list of jurors based on their attendance (appearance) status. | AttendanceDetailsResponseDto |
 
 ## X.0.7 Utilities
-`constants`
-`paginationBuilder()`
+* `constants`
+* `paginationBuilder()`
+* `totalCurrentlySelected()` - Returns how many pools are selcted on initial screen
+* `calculateTotalJurorsAvailable()` - Calculates how many jurors are available to dismiss based on the selections made
+* `paginateJurorsList()` - Slices the jurors list to fit within the 25 limit based on the current page
+* `compareCheckInAndCheckOutTimes()` - Returns whether the check out time entered is after the checxk in time for each juror
 
 ## X.0.8 Exceptions
-None known.
+* Failed to fetch pools to dismiss jurors from
+* Failed to fetch jurors to dismiss
+* Failed to dismiss the selected jurors
+* Failed to checkout the selected jurors
 
 ## X.0.10 Templates
 `bureau/client/templates/juror-management/manage-jurors/dismiss-jurors/pools-list.njk`
@@ -67,4 +87,4 @@ This template displays a datepicker that the jury officer can use to select a da
 This template displays the list of jurors still not checked out and a time input form to enter a checkout time. It allows the officer to post the time and checkout the jurors listed.
 
 ## X.0.11 Sequence diagram
-<!-- ![](/frontend/bureau/umls/dismiss-jurors.svg) -->
+![](../../../../umls/dismiss-jurors.svg)

@@ -109,7 +109,7 @@
                   <td class="govuk-table__cell">
                     <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
                       <input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check" id="juror-{{ member.jurorNumber }}"
-                        {% if member.checked %}checked{% endif %} aria-label="check-juror-{{ member.jurorNumber }}" name="checked-jurors" value="{{ member.jurorNumber }}">
+                        {% if member.checked %}checked{% endif %} aria-label="check-juror-{{ member.jurorNumber }}" name="selectedJurors" value="{{ member.jurorNumber }}">
                       <label class="govuk-label govuk-checkboxes__label" for="select-{{ member.jurorNumber }}">
                         <span class="govuk-visually-hidden">Select {{ member.jurorNumber }}</span>
                       </label>

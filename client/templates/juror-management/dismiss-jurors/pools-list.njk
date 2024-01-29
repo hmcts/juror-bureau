@@ -10,6 +10,7 @@
 
 {% block content %}
   {% set actionUrl = url("juror-management.dismiss-jurors.pools.post") %}
+  {% set cancelUrl = url("juror-management.manage-jurors.in-waiting.get") %}
 
   {% set jurorsToDismissError = undefined %}
   {% if errors.items["jurorsToDismiss"] %}
@@ -100,7 +101,7 @@
         type: "submit"
       }) }}
 
-      <a class="govuk-link" href="#">Cancel</a>
+      <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
     </div>
 
   </form>

@@ -27,6 +27,8 @@
         attendee = _.mapKeys(attendee, (__, key) => _.camelCase(key));
         attendee.jurorStatus = getJurorStatus(attendee.jurorStatus);
 
+        req.session.dailyAttendanceList.push(attendee);
+
         return res.render('juror-management/attendance/unconfirmed/table-row.njk', {
           row: attendee,
         });

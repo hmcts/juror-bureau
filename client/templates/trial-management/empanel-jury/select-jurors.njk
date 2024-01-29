@@ -89,9 +89,12 @@
 
         {% endfor %}
 
+        <div class="govuk-caption-l govuk-!-margin-bottom-6">
+          <span id="selected-total">{{jurors.length}}</span> selected of {{requiredNumberOfJurors}} jurors needed
+        </div>
         <div class="govuk-button-group">
           {{ govukButton({
-            text: "Continue",
+            text: "Confirm and empanel jury",
             type: "submit" 
           }) }}
 
@@ -109,5 +112,40 @@
 
     </div>
   </div>
+
+{% endblock %}
+
+{% block body_end %}
+  {{super()}}
+
+  <script>
+    (function() {
+      'use strict';
+
+      window.addEventListener('load', function() {
+        var radioInputs = Array.from(document.getElementsByClassName('govuk-radios__input'));
+        var continueButton = document.getElementById('confirm-button');
+        var selected = document.getElementById('selected-total');
+
+        var setSelected = () => {
+          var numSelected = radioInputs.filter((radio) => 
+            radio.value === "juror" && radio.checked
+          ).length;
+          
+          selected.innerText = numSelected;
+        }
+        
+        if (selected && radioInputs.length > 0) {
+          radioInputs.map((radio) => {
+            radio.addEventListener('change', setSelected );
+          });
+        }
+
+        setSelected();
+      });
+
+    })();
+
+  </script>
 
 {% endblock %}

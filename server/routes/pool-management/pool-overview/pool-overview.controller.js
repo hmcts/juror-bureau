@@ -227,13 +227,10 @@
 
       if (data.poolDetails.isActive === true
         && !!data.bureauSummoning.required) {
-        if (modUtils.dateDifference(
-          dateFilter(data.poolDetails.courtStartDate, 'dddd DD MMM YYYY', 'DD/MM/YYYY'),
-          new Date()
-          , 'days'
-        ) <= 0 && isCourtUser(req, res)) {
+        if (isCourtUser(req, res)) {
           return renderAttendancePool(app, req, res, tmpError, data);
         }
+
         return renderActivePool(app, req, res, tmpError, data);
       }
 
@@ -621,50 +618,27 @@
     let pagination;
 
     try {
-      if (!req.session.membersList) {
-        delete req.session.filteredMembers;
-        delete req.session.filters;
+      delete req.session.filteredMembers;
+      delete req.session.filters;
 
-        let membersList = await poolMembersObj.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
-          data.poolDetails.poolNumber,
-        );
+      let membersList = await poolMembersObj.get(
+        require('request-promise'),
+        app,
+        req.session.authToken,
+        data.poolDetails.poolNumber,
+      );
 
-        app.logger.info('Fetched court members: ', {
-          auth: req.session.authentication,
-          jwt: req.session.authToken,
-          data: membersList,
-        });
-
-        // TODO - REMOVE THIS! - Use new backend endpoint to get all required details
-        // only using this code block to add some required details to all jurors in pool - DEMO PURPOSES
-        let index = 1;
-
-        membersList.poolMembers.forEach(function(element) {
-          element.jurorNumber = '6415000' + index.toString().padStart(2, '0');
-          index++;
-          if (membersList.poolMembers.findIndex(x => x.jurorNumber === element.jurorNumber) % 3 === 0) {
-            element.attendance = 'in attendance';
-            element.checkedIn = '9:15am';
-            element.nextDueAtCourt = '2023-12-10';
-            element.status = 'responded';
-          } else if (membersList.poolMembers.findIndex(x => x.jurorNumber === element.jurorNumber) % 2 === 0) {
-            element.attendance = 'other';
-            element.checkedIn = '';
-            element.nextDueAtCourt = '2023-12-10';
-            element.status = 'failed to attend';
-          } else {
-            element.attendance = 'on a trial';
-            element.checkedIn = '9:15am';
-            element.nextDueAtCourt = '';
-            element.status = 'juror';
-          }
-        });
-
-        req.session.membersList = membersList.poolMembers;
-      }
+      app.logger.info('Fetched court members: ', {
+        auth: req.session.authentication,
+        jwt: req.session.authToken,
+        data: membersList,
+      });
+      
+      req.session.membersList = membersList.poolMembers;
+      req.session.jurorDetails = {};
+      membersList.poolMembers.forEach(item => {
+        req.session.jurorDetails[item.jurorNumber] = item;
+      });
 
       if (typeof req.session.filteredMembers !== 'undefined' && typeof filters !== 'undefined') {
         poolMembers = _.clone(req.session.filteredMembers).poolMembers;

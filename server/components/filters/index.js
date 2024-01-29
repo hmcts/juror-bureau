@@ -375,6 +375,19 @@
       return num.toFixed(zeros);
     },
 
+    fullCourtType: function(court) {
+      switch (court) {
+      case 'CRO':
+        return 'Crown court';
+      case 'COR':
+        return 'Coroner’s court';
+      case 'CIV':
+        return 'Civil court';
+      case 'HGH':
+        return 'High court';
+      }
+    },
+
   };
 
 })();
