@@ -5,7 +5,7 @@
     returnsValidator = require('../../config/validation/return-panel-jury'),
     validate = require('validate.js'),
     returnsObject = require('../../objects/return-jurors').returnsObject,
-    { attendanceData } = require('../../objects/attendance-data'),
+    { jurorAttendanceDao } = require('../../objects/juror-attendance'),
     { convert12to24, dateFilter, convertAmPmToLong } = require('../../components/filters'),
     { padTimeForApi } = require('../../lib/mod-utils');
 
@@ -124,14 +124,19 @@
 
     delete req.session.errors;
 
-    attendanceData.get(
-      require('request-promise'),
+    const body = {
+      commonData: {
+        tag: 'JUROR_NUMBER',
+        attendanceDate: dateFilter(new Date(), null, 'YYYY-MM-DD'),
+        locationCode: req.params.locationCode,
+      },
+      juror: req.session.selectedJurors.map(juror => juror['juror_number']),
+    };
+
+    jurorAttendanceDao.get(
       app,
-      req.session.authToken,
-      'JUROR_NUMBER',
-      dateFilter(new Date(), null, 'YYYY-MM-DD'),
-      req.params.locationCode,
-      req.session.selectedJurors.map(juror => juror['juror_number'])
+      req,
+      body
     )
       .then((attendanceRecords) => {
         let earliestCheckInTime;

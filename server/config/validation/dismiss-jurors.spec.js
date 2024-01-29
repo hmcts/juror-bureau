@@ -12,7 +12,7 @@
         'checked-pools': ['123123123'],
       };
 
-      const validatorResult = validate(mockRequest, jurorsToDismiss());
+      const validatorResult = validate(mockRequest, jurorsToDismiss(50));
 
       expect(validatorResult).to.be.undefined;
     });
@@ -23,7 +23,7 @@
         'checked-pools': [],
       };
 
-      const validatorResult = validate(mockRequest, jurorsToDismiss());
+      const validatorResult = validate(mockRequest, jurorsToDismiss(50));
 
       expect(validatorResult).to.be.an('object');
       expect(validatorResult).to.have.ownProperty('jurorsToDismiss');

@@ -26,6 +26,7 @@
         text: "Enter a completion date"
       },
       hint: "Use dd/mm/yyyy format. For example, 31/01/2023.",
+      dateMin: latestServiceStartDate | dateFilter("yyyy-MM-DD", "DD/MM/YYYY"),
       dateMax: dateLimit | dateFilter(null, "DD/MM/YYYY"),
       dateValue: today | dateFilter(null, "DD/MM/YYYY"),
       dateError: dateError

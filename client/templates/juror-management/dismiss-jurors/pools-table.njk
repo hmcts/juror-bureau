@@ -31,26 +31,25 @@
         <td class="govuk-table__cell mod-padding-block--0">
           <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
             <input type="checkbox" class="govuk-checkboxes__input"
-              id="pool-{{ pool.poolNumber }}" aria-label="check-pool-{{ pool.poolNumber }}"
-              name="checked-pools" value="{{ pool.poolNumber }}"
-              {% if tmpForm["checked-pools"] and pool.poolNumber in tmpForm["checked-pools"] %}checked{% endif %}/>
-            <label class="govuk-label govuk-checkboxes__label" for="pool-{{ pool.poolNumber }}">
-              <span class="govuk-visually-hidden">Select pool {{ pool.poolNumber }}</span>
+              id="pool-{{ pool.pool_number }}" aria-label="check-pool-{{ pool.pool_number }}"
+              name="checked-pools" value="{{ pool.pool_number }}"
+              {% if tmpForm["checked-pools"] and pool['pool_number'] in tmpForm["checked-pools"] %}checked{% endif %}/>
+            <label class="govuk-label govuk-checkboxes__label" for="pool-{{ pool.pool_number }}">
+              <span class="govuk-visually-hidden">Select pool {{ pool.pool_number }}</span>
             </label>
           </div>
         </td>
-        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ pool.poolNumber }}">
-          <a href="{{ url('pool-overview.get', { poolNumber: pool.poolNumber }) }}" class="govuk-link">{{ pool.poolNumber }}</a>
+        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ pool.pool_number }}">
+          <a href="{{ url('pool-overview.get', { poolNumber: pool.pool_number }) }}" class="govuk-link">{{ pool.pool_number }}</a>
         </td>
-        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ pool.inAttendance }}">{{ pool.inAttendance }}</td>
-        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ pool.onCall }}">{{ pool.onCall }}</td>
-        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ pool.others }}">{{ pool.others }}</td>
+        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ pool.jurors_in_attendance }}">{{ pool.jurors_in_attendance }}</td>
+        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ pool.jurors_on_call }}">{{ pool.jurors_on_call }}</td>
+        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ pool.other_jurors }}">{{ pool.other_jurors }}</td>
 
-        {% set poolTotal = pool.inAttendance + pool.onCall + pool.others %}
-        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ poolTotal }}">{{ poolTotal }}</td>
-        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ pool.poolType }}">{{ pool.poolType }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric jd-middle-align mod-padding-block--0" data-sort-value="{{ pool.serviceStartDate }}">
-          {{ pool.serviceStartDate | dateFilter("YYYY/MM/DD", "ddd D MMM YYYY") }}
+        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ pool.total_jurors }}">{{ pool.total_jurors }}</td>
+        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ pool.pool_type }}">{{ pool.pool_type | fullCourtType }}</td>
+        <td class="govuk-table__cell govuk-table__cell--numeric jd-middle-align mod-padding-block--0" data-sort-value="{{ pool.service_start_date }}">
+          {{ pool.service_start_date | dateFilter("YYYY-MM-DD", "ddd D MMM YYYY") }}
         </td>
       </tr>
 

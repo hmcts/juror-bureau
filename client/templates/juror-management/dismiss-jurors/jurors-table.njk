@@ -27,29 +27,38 @@
   <tbody class="govuk-table__body">
     {% for juror in jurors %}
 
+      {% set nextDueAtCourt = "-" %}
+      {% if juror.next_due_at_court %}
+        {% if juror.next_due_at_court === "On call" %}
+          {% set nextDueAtCourt = "On call" %}
+        {% else %}
+          {% set nextDueAtCourt = juror.next_due_at_court | dateFilter("YYYY-MM-DD", "ddd D MMM YYYY") %}
+        {% endif %}
+      {% endif %}
+
       <tr class="govuk-table__row govuk-table__row--selected">
         <td class="govuk-table__cell mod-padding-block--0">
           <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
             <input type="checkbox" class="govuk-checkboxes__input"
-              id="juror-{{ juror.jurorNumber }}" {% if juror.checked %}checked{% endif %}
-              aria-label="check-juror-{{ juror.jurorNumber }}" name="checked-jurors"/>
-            <label class="govuk-label govuk-checkboxes__label" for="juror-{{ juror.jurorNumber }}">
-              <span class="govuk-visually-hidden">Select juror {{ juror.jurorNumber }}</span>
+              id="juror-{{ juror.juror_number }}" {% if juror.checked %}checked{% endif %}
+              aria-label="check-juror-{{ juror.juror_number }}" name="checked-jurors"/>
+            <label class="govuk-label govuk-checkboxes__label" for="juror-{{ juror.juror_number }}">
+              <span class="govuk-visually-hidden">Select juror {{ juror.juror_number }}</span>
             </label>
           </div>
         </td>
-        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ juror.jurorNumber }}">
-          <a href="#" class="govuk-link">{{ juror.jurorNumber }}</a>
+        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ juror.juror_number }}">
+          <a href="{{ url('juror-record.overview.get', { jurorNumber: juror.juror_number }) }}" class="govuk-link">{{ juror.juror_number }}</a>
         </td>
-        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ juror.firstName }}">{{ juror.firstName }}</td>
-        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ juror.lastName }}">{{ juror.lastName }}</td>
+        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ juror.first_name }}">{{ juror.first_name }}</td>
+        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ juror.last_name }}">{{ juror.last_name }}</td>
         <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ juror.attending }}">{{ juror.attending }}</td>
-        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ juror.checkedIn or "-" }}">{{ juror.checkedIn or "-" }}</td>
-        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ juror.nextDueAtCourt }}">
-          {{ juror.nextDueAtCourt | dateFilter("YYYY/MM/DD", "ddd D MMM YYYY") }}
+        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ juror.check_in_time or "-" }}">{{ juror.check_in_time | timeArrayToString if juror.check_in_time else "-" }}</td>
+        <td class="govuk-table__cell jd-middle-align mod-padding-block--0" data-sort-value="{{ nextDueAtCourt }}">
+          {{ nextDueAtCourt }}
         </td>
-        <td class="govuk-table__cell govuk-table__cell--numeric jd-middle-align mod-padding-block--0" data-sort-value="{{ juror.serviceStartDate }}">
-          {{ juror.serviceStartDate | dateFilter("YYYY/MM/DD", "ddd D MMM YYYY") }}
+        <td class="govuk-table__cell govuk-table__cell--numeric jd-middle-align mod-padding-block--0" data-sort-value="{{ juror.service_start_date }}">
+          {{ juror.service_start_date | dateFilter("YYYY-MM-DD", "ddd D MMM YYYY") }}
         </td>
       </tr>
 

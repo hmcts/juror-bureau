@@ -5,7 +5,7 @@ const moment = require('moment');
 const validate = require('validate.js');
 const { genericDatePicker } = require('./date-picker');
 
-module.exports.jurorsToDismiss = () => {
+module.exports.jurorsToDismiss = (jurorsAvailable) => {
   return {
     jurorsToDismiss: {
       presence: {
@@ -15,12 +15,8 @@ module.exports.jurorsToDismiss = () => {
           summary: 'Enter how many jurors you want to dismiss',
         },
       },
-      numericality: {
-        greaterThan: 0,
-        message: {
-          details: 'Amount of jurors to dismiss must be 1 or more',
-          summary: 'Amount of jurors to dismiss must be 1 or more',
-        },
+      noJurorsToDismiss: {
+        jurorsAvailable,
       },
     },
     'checked-pools': {
@@ -42,6 +38,21 @@ module.exports.completeService = () => {
       completionServiceDate: {},
     },
   };
+};
+
+validate.validators.noJurorsToDismiss = function(value, options, key, attributes) {
+  if (value < 1) {
+    return {
+      summary: 'Amount of jurors to dismiss must be 1 or more',
+      details: 'Amount of jurors to dismiss must be 1 or more',
+    };
+  } else if (value > options.jurorsAvailable) {
+    return {
+      summary: 'Amount of jurors to dismiss must be ' + options.jurorsAvailable + ' or fewer',
+      details: 'Amount of jurors to dismiss must be ' + options.jurorsAvailable + ' or fewer',
+    };
+  }
+  return null;
 };
 
 validate.validators.completionServiceDate = function(value) {

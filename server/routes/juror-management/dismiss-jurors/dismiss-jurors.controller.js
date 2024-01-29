@@ -2,12 +2,15 @@
 'use strict';
 
 const _ = require('lodash');
+const moment = require('moment');
 const validate = require('validate.js');
 const { jurorsToDismiss, completeService } = require('../../../config/validation/dismiss-jurors');
 const { checkOutTime } = require('../../../config/validation/check-in-out-time');
 const modUtils = require('../../../lib/mod-utils');
-const { getPoolsObject, getJurorsObject } = require('../../../objects/dismiss-jurors');
-const { convertAmPmTime } = require('../../../components/filters');
+const { getJurorsObject, dismissJurorsObject } = require('../../../objects/dismiss-jurors');
+const { fetchPoolsAtCourt } = require('../../../objects/request-pool');
+const { convertAmPmToLong, dateFilter, timeArrayToString, convert12to24 } = require('../../../components/filters');
+const { jurorAttendanceDao } = require('../../../objects/juror-attendance');
 
 module.exports.getDismissJurorsPools = function(app) {
   return async function(req, res) {
@@ -16,6 +19,7 @@ module.exports.getDismissJurorsPools = function(app) {
     const tmpErrors = _.clone(req.session.errors);
 
     delete req.session.errors;
+    delete req.session.poolsAtCourt;
 
     if (req.session.dismissJurors && req.session.dismissJurors.jurors) {
       delete req.session.dismissJurors.jurors;
@@ -26,7 +30,14 @@ module.exports.getDismissJurorsPools = function(app) {
     }
 
     try {
-      const pools = await getPoolsObject.get(() => {}, app, 'token');
+      const pools = await fetchPoolsAtCourt.get(
+        require('request-promise'),
+        app,
+        req.session.authToken,
+        req.session.authentication.owner
+      );
+
+      req.session.poolsAtCourt = pools.pools_at_court_location.filter(pool => pool.total_jurors !== 0);
 
       app.logger.info('Fetched the pools to dismiss jurors from: ', {
         auth: req.session.authentication,
@@ -35,7 +46,7 @@ module.exports.getDismissJurorsPools = function(app) {
 
       return res.render('juror-management/dismiss-jurors/pools-list.njk', {
         totalCurrentlySelected: totalCurrentlySelected(tmpForm['checked-pools']),
-        pools,
+        pools: req.session.poolsAtCourt,
         tmpForm,
         errors: {
           title: 'Please check the form',
@@ -59,17 +70,20 @@ module.exports.postDismissJurorsPools = function(app) {
   return function(req, res) {
     const { action } = req.query;
     const calculateAvailableJurors = 'calculate_available_jurors';
+    const availablePools = _.clone(req.session.poolsAtCourt);
+    const jurorsAvailable = calculateTotalJurorsAvailable(req.body, availablePools);
 
     req.session.dismissJurors = req.body;
     delete req.session.dismissJurors._csrf;
+    delete req.session.poolsAtCourt;
 
     if (action === calculateAvailableJurors) {
-      req.session.dismissJurors.jurorsAvailableToDismiss = 50;
+      req.session.dismissJurors.jurorsAvailableToDismiss = jurorsAvailable;
 
       return res.redirect(app.namedRoutes.build('juror-management.dismiss-jurors.pools.get'));
     }
 
-    const validatorResult = validate(req.body, jurorsToDismiss());
+    const validatorResult = validate(req.body, jurorsToDismiss(jurorsAvailable));
 
     if (validatorResult) {
       req.session.errors = validatorResult;
@@ -91,12 +105,20 @@ module.exports.getJurorsList = function(app) {
 
     try {
       if (req.session.dismissJurors && !req.session.dismissJurors.jurors) {
-        req.session.dismissJurors.jurors = await getJurorsObject
-          .get(() => {}, app, 'token', req.session.dismissJurors);
+        const jurorList = await getJurorsObject
+          .get(require('request-promise'),
+            app,
+            req.session.authToken,
+            req.session.dismissJurors,
+            req.session.authentication.owner
+          );
+
+        req.session.dismissJurors.jurors = jurorList.jurors_to_dismiss_request_data;
 
         app.logger.info('Fetched the the list of jurors to dismiss: ', {
           auth: req.session.authentication,
           jwt: req.session.authToken,
+          data: req.session.dismissJurors.jurors,
         });
       }
 
@@ -125,7 +147,7 @@ module.exports.getJurorsList = function(app) {
         },
       });
     } catch (err) {
-      app.logger.crit('Failed to fetch jurors to dismiss jurors from: ', {
+      app.logger.crit('Failed to fetch jurors to dismiss: ', {
         auth: req.session.authentication,
         jwt: req.session.authToken,
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
@@ -137,7 +159,7 @@ module.exports.getJurorsList = function(app) {
 };
 
 module.exports.postJurorsList = function(app) {
-  return function(req, res) {
+  return async function(req, res) {
     const urls = {
       jurors: 'juror-management.dismiss-jurors.jurors.get',
       checkOut: 'juror-management.dismiss-jurors.check-out.get',
@@ -157,7 +179,18 @@ module.exports.postJurorsList = function(app) {
       return res.redirect(app.namedRoutes.build(urls.jurors));
     }
 
-    const notCheckedOut = checkedJurors.filter(juror => juror.checkedIn && juror.checkedOut === null);
+    const selectedJurorNo = checkedJurors.map((juror) => juror.juror_number);
+
+    const payload = {
+      commonData: {
+        tag: 'NOT_CHECKED_OUT',
+        attendanceDate: dateFilter(new Date(), null, 'YYYY-MM-DD'),
+        locationCode: req.session.authentication.owner,
+      },
+      juror: selectedJurorNo,
+    };
+    const response = await jurorAttendanceDao.get(app, req, payload);
+    const notCheckedOut = response.details.filter((juror) => selectedJurorNo.includes(juror.juror_number));
 
     if (notCheckedOut.length) {
       req.session.dismissJurors.notCheckedOut = notCheckedOut;
@@ -174,11 +207,25 @@ module.exports.getCompleteService = function() {
     const today = new Date();
     const dateLimit = new Date([today.getFullYear(), today.getMonth() + 1, today.getDate()]);
     const tmpErrors = _.clone(req.session.errors);
+    const checkedJurors = req.session.dismissJurors.jurors.filter(juror => juror.checked);
 
     delete req.session.errors;
 
+    let latestServiceStartDate = checkedJurors[0].service_start_date;
+
+    checkedJurors.forEach((juror) => {
+      const ssDate = moment(juror.service_start_date, 'yyyy-MM-DD');
+
+      latestServiceStartDate = ssDate.isBefore(moment(latestServiceStartDate, 'yyyy-MM-DD'))
+        ? juror.service_start_date
+        : latestServiceStartDate;
+    });
+
+    req.session.dismissJurors.latestServiceStartDate = latestServiceStartDate;
+
     return res.render('juror-management/dismiss-jurors/complete-service.njk', {
       today,
+      latestServiceStartDate,
       dateLimit,
       errors: {
         title: 'Please check the form',
@@ -202,18 +249,42 @@ module.exports.postCompleteService = function(app) {
       return res.redirect(app.namedRoutes.build('juror-management.dismiss-jurors.complete-service.get'));
     }
 
+    const latestServiceStartDate = req.session.dismissJurors.latestServiceStartDate;
+
+    delete req.session.dismissJurors.latestServiceStartDate;
+
+    if (moment(req.body.completionDate, 'DD/MM/YYYY').isBefore(moment(latestServiceStartDate, 'yyyy-MM-DD'))) {
+      req.session.errors = {
+        completionDate: [{
+          details: 'Completion date cannot be before service start date  ',
+          summary: 'Completion date cannot be before service start date  ',
+        }],
+      };
+
+      return res.redirect(app.namedRoutes.build('juror-management.dismiss-jurors.complete-service.get'));
+    }
+
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      const checkedJurors = req.session.dismissJurors.jurors.filter(juror => juror.checked);
+
+      const payload = {
+        'juror_numbers': checkedJurors.map((juror) => juror.juror_number),
+        'completion_date': dateFilter(req.body.completionDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
+      };
+
+      await dismissJurorsObject.patch(require('request-promise'), app, req.session.authToken, payload);
 
       app.logger.info('Jurors dismissed and service completed: ', {
         auth: req.session.authentication,
         jwt: req.session.authToken,
       });
 
-      const checkedJurors = req.session.dismissJurors.jurors.filter(juror => juror.checked);
-      const message = `${checkedJurors.length} jurors dismissed and service completed.`;
+      req.session.bannerMessage = `${checkedJurors.length} jurors dismissed and service completed.`;
 
-      return res.send({ status: 'ok', message });
+      delete req.session.dismissJurors;
+
+      return res.redirect(app.namedRoutes.build('juror-management.manage-jurors.in-waiting.get'));
     } catch (err) {
       app.logger.crit('Failed to dismiss the selected jurors: ', {
         auth: req.session.authentication,
@@ -281,7 +352,20 @@ module.exports.postCheckOutJurors = function(app) {
     }
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const payload = {
+        commonData: {
+          status: 'CHECK_OUT',
+          attendanceDate: dateFilter(new Date(), null, 'YYYY-MM-DD'),
+          locationCode: req.session.authentication.owner,
+          checkOutTime: modUtils.padTimeForApi(
+            convert12to24(checkOutTimeHour + ':' + checkOutTimeMinute + checkOutTimePeriod)
+          ),
+          singleJuror: false,
+        },
+        juror: req.session.dismissJurors.notCheckedOut.map((j) => j.juror_number),
+      };
+
+      await jurorAttendanceDao.patch(app, req, payload);
 
       app.logger.info('Checked-out selected jurors: ', {
         auth: req.session.authentication,
@@ -295,6 +379,13 @@ module.exports.postCheckOutJurors = function(app) {
         jwt: req.session.authToken,
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
+
+      req.session.errors = {
+        checkOut: [{
+          details: 'Failed to checkout the selected jurors',
+          summary: 'Failed to checkout the selected jurors',
+        }],
+      };
 
       return res.redirect(app.namedRoutes.build('juror-management.dismiss-jurors.check-out.get'));
     }
@@ -310,7 +401,7 @@ module.exports.postCheckJuror = function(app) {
         j.checked = action === 'check';
       });
     } else {
-      const juror = req.session.dismissJurors.jurors.find(j => j.jurorNumber === jurorNumber);
+      const juror = req.session.dismissJurors.jurors.find(j => j.juror_number === jurorNumber);
 
       juror.checked = !juror.checked;
     }
@@ -337,6 +428,29 @@ function totalCurrentlySelected(checkedPools) {
   return 0;
 }
 
+function calculateTotalJurorsAvailable(selections, allPools){
+  if (selections['checked-pools']){
+    const selectedPools = allPools.filter((pool) => selections['checked-pools'].includes(pool.pool_number));
+    let totalAvailable = 0;
+
+    selectedPools.forEach((pool) => {
+      totalAvailable = totalAvailable + pool.jurors_in_attendance;
+      if (selections['jurors-to-include']) {
+        if (selections['jurors-to-include'].includes('on-call')) {
+          totalAvailable = totalAvailable + pool.jurors_on_call;
+        }
+        if (selections['jurors-to-include'].includes('not-in-attendance')) {
+          totalAvailable = totalAvailable + pool.other_jurors;
+        }
+      }
+    });
+
+    return totalAvailable;
+  }
+
+  return 0;
+}
+
 function paginateJurorsList(jurors, params, currentPage) {
   return new Promise((resolve) => {
     let start = 0;
@@ -353,10 +467,9 @@ function paginateJurorsList(jurors, params, currentPage) {
   });
 }
 
-// Note: not checked in users can be ignored here, but they will also be checked out.
 function compareCheckInAndCheckOutTimes({ notCheckedOut, checkOutTime: time }) {
-  const _checkOutTime = convertAmPmTime(`${time.hour}:${time.minute}${time.period}`);
+  const _checkOutTime = convertAmPmToLong(`${time.hour}:${time.minute}${time.period}`);
 
   return notCheckedOut
-    .filter(juror => _checkOutTime < convertAmPmTime(juror.checkedIn));
+    .filter(juror => _checkOutTime < convertAmPmToLong(timeArrayToString(juror.check_in_time)));
 }

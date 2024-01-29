@@ -19,6 +19,7 @@
       delete req.session.bannerMessage;
       delete req.session.newJuror;
       delete req.session.poolCreateFormFields;
+      delete req.session.dismissJurors;
 
       return res.render('juror-management/manage-jurors.njk', {
         nav: 'jurors',

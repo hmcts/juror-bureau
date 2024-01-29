@@ -35,6 +35,11 @@
             classes: "govuk-button--secondary",
             href: url('create-juror-record.get')
           }) }}
+          {{ govukButton({
+            text: "Dismiss jurors",
+            classes: "govuk-button--secondary",
+            href: url('juror-management.dismiss-jurors.pools.get')
+          }) }}
         {% endif %}
         {{ govukButton({
           text: "Refresh",

@@ -9,7 +9,7 @@
       uri: config.apiEndpoint,
       headers: {
         'User-Agent': 'Request-Promise',
-        'Content-Type': 'application/vnd.api+json'
+        'Content-Type': 'application/vnd.api+json',
       },
       json: true,
       transform: utils.basicDataTransform,
@@ -21,7 +21,7 @@
     , fetchCourts = {
       resource: 'moj/pool-request/court-locations',
       get: function(rp, app, jwtToken) {
-        var reqOptions = _.clone(options)
+        var reqOptions = _.clone(options);
 
         reqOptions.headers.Authorization = jwtToken;
         reqOptions.uri = urljoin(reqOptions.uri, this.resource);
@@ -34,13 +34,13 @@
         });
 
         return rp(reqOptions);
-      }
+      },
     }
 
     , fetchAllCourts = {
       resource: 'moj/court-location/all-court-locations',
       get: function(rp, app, jwtToken) {
-        var reqOptions = _.clone(options)
+        var reqOptions = _.clone(options);
 
         reqOptions.headers.Authorization = jwtToken;
         reqOptions.uri = urljoin(reqOptions.uri, this.resource);
@@ -53,7 +53,7 @@
         });
 
         return rp(reqOptions);
-      }
+      },
     }
 
     , fetchCourtDeferrals = {
@@ -76,7 +76,7 @@
         });
 
         return rp(reqOptions);
-      }
+      },
     }
 
     , checkDayType = {
@@ -99,7 +99,7 @@
         });
 
         return rp(reqOptions);
-      }
+      },
     }
 
     , generatePoolNumber = {
@@ -122,7 +122,7 @@
         });
 
         return rp(reqOptions);
-      }
+      },
     }
 
     , fetchPoolNumbers = {
@@ -144,7 +144,7 @@
         });
 
         return rp(reqOptions);
-      }
+      },
     }
 
     , createPoolRequest = {
@@ -197,7 +197,7 @@
         });
 
         return rp(reqOptions);
-      }
+      },
     }
 
     , fetchCoronerPool = {
@@ -219,7 +219,7 @@
         });
 
         return rp(reqOptions);
-      }
+      },
     }
 
     , addCoronerCitizens = {
@@ -240,7 +240,26 @@
         });
 
         return rp(reqOptions);
-      }
+      },
+    },
+
+    fetchPoolsAtCourt = {
+      resource: 'moj/pool-request/pools-at-court',
+      get: function(rp, app, jwtToken, locCode) {
+        const reqOptions = _.clone(options);
+
+        reqOptions.headers.Authorization = jwtToken;
+        reqOptions.uri = urljoin(reqOptions.uri, this.resource, '?locCode=' + locCode);
+        reqOptions.method = 'GET';
+
+        app.logger.info('Sending request to API: ', {
+          uri: reqOptions.uri,
+          headers: reqOptions.headers,
+          method: reqOptions.method,
+        });
+
+        return rp(reqOptions);
+      },
     };
 
   module.exports.fetchCourts = fetchCourts;
@@ -253,5 +272,6 @@
   module.exports.createCoronerPool = createCoronerPool;
   module.exports.fetchCoronerPool = fetchCoronerPool;
   module.exports.addCoronerCitizens = addCoronerCitizens;
+  module.exports.fetchPoolsAtCourt = fetchPoolsAtCourt;
 
 })();
