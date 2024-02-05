@@ -545,6 +545,7 @@ class DSDatePicker {
   focusNextMonth(event, focus = true) {
     event.preventDefault();
     const date = new Date(this.currentDate);
+    date.setDate(1);
     date.setMonth(date.getMonth() + 1);
     this.goToDate(date, focus);
   }
@@ -552,6 +553,7 @@ class DSDatePicker {
   focusPreviousMonth(event, focus = true) {
     event.preventDefault();
     const date = new Date(this.currentDate);
+    date.setDate(1);
     date.setMonth(date.getMonth() - 1);
     this.goToDate(date, focus);
   }

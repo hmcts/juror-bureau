@@ -34,7 +34,7 @@
               {{ day["hours"] if day["hours"] else "-" }}
             </td>
             <td class="govuk-table__cell govuk-table__cell--numeric">
-              {{ day["travel_time"] if day["travel_time"] else "-" }}
+              {{ day["travel_time"] | timeArrayToString | convert24toHours if day["travel_time"] else "-" }}
             </td>
             <td class="govuk-table__cell govuk-table__cell--numeric">
               {{ day["attendance_type"] | attendanceType }}

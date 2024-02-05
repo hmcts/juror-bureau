@@ -1,0 +1,93 @@
+
+{% set poolRows = [] %}
+{% for pool in pools %}
+  {% set poolRows = (poolRows.push([
+    {
+      html: '<a href=' + url("pool-overview.get", { poolNumber: pool.pool_number }) + ' class="govuk-link">' + pool.pool_number + '</a>',
+      attributes: {
+        "data-sort-value": pool.pool_number
+      }
+    },
+    {
+      text: pool.jurors_on_trials,
+      attributes: {
+        "data-sort-value": pool.jurors_on_trials
+      }
+    },
+    {
+      text: pool.jurors_in_attendance,
+      attributes: {
+        "data-sort-value": pool.jurors_in_attendance
+      }
+    },
+    {
+      text: pool.jurors_on_call,
+      attributes: {
+        "data-sort-value": pool.jurors_on_call
+      }
+    },
+    {
+      text: pool.pool_type | fullCourtType,
+      attributes: {
+        "data-sort-value": pool.pool_type | fullCourtType
+      }
+    },
+    {
+      text: pool.service_start_date | dateFilter('yyyy-MM-DD', 'ddd DD MMM yyyy'),
+      attributes: {
+        "data-sort-value": pool.service_start_date
+      }
+    }
+  ]), poolRows) %}
+{% endfor %}
+
+<h2 class="govuk-caption-m">Choose a pool of jurors to manage</h2>
+
+{% if poolRows.length === 0 %}
+  <p class="govuk-body">There are no pools available</p>
+{% else %}
+  {{ govukTable({
+  attributes: {
+    'data-module': 'moj-sortable-table'
+  },
+  head: [
+    {
+      text: "Pool number",
+      attributes: {
+        "aria-sort": "none"
+      }
+    },
+    {
+      text: "Jurors on trial",
+      attributes: {
+        "aria-sort": "none"
+      }
+    },
+    {
+      text: "Jurors in attendance",
+      attributes: {
+        "aria-sort": "none"
+      }
+    },
+    {
+      text: "Jurors on call",
+      attributes: {
+        "aria-sort": "none"
+      }
+    },
+    {
+      text: "Pool type",
+      attributes: {
+        "aria-sort": "none"
+      }
+    },
+    {
+      text: "Service start date",
+      attributes: {
+        "aria-sort": "ascending"
+      }
+    }
+  ],
+  rows: poolRows
+}) }}
+{% endif %}

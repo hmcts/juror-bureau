@@ -51,7 +51,7 @@
           'ANOTHER LINE',
           'THE TOWN',
           'GREATER CITY',
-          'PO57 C0D3'
+          'PO57 C0D3',
         ]
         , expected = '123 STREET NAME<br> ANOTHER LINE<br> THE TOWN<br> GREATER CITY<br> PO57 C0D3'
         , output;
@@ -67,7 +67,7 @@
           null,
           null,
           'GREATER CITY',
-          'PO57 C0D3'
+          'PO57 C0D3',
         ]
         , expected = '123 STREET NAME<br> GREATER CITY<br> PO57 C0D3'
         , output;
@@ -83,7 +83,7 @@
           null,
           null,
           'GREATER CITY',
-          'PO57 C0D3'
+          'PO57 C0D3',
         ]
         , expected = '123 Street Name<br> Greater City<br> Po57 C0d3'
         , output;
@@ -151,6 +151,36 @@
       output = filter.isAutoProcessed();
       expect(output).to.be.equal('System');
     });
+
+    it('should build a grammatically correct string output for a list - 1 item',
+      () => {
+        let input = ['item1'],
+          expected = 'item1',
+          output = filter.prettyList(input);
+
+        expect(output).to.be.equal(expected);
+      }
+    );
+
+    it('should build a grammatically correct string output for a list - 2 items',
+      () => {
+        let input = ['item1', 'item2'],
+          expected = 'item1 and item2',
+          output = filter.prettyList(input);
+
+        expect(output).to.be.equal(expected);
+      }
+    );
+
+    it('should build a grammatically correct string output for a list - 3 or more items',
+      () => {
+        let input = ['item1', 'item2', 'item3'],
+          expected = 'item1, item2 and item3',
+          output = filter.prettyList(input);
+
+        expect(output).to.be.equal(expected);
+      }
+    );
 
   });
 

@@ -1,0 +1,112 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% set currentApp = "Documents" %}
+
+{% block page_title %}{{ serviceName }} - Documents - {{pageIdentifier}} results{% endblock %}
+{% block page_identifier %}{{pageIdentifier}} results{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back to all documents",
+    href: backLinkUrl,
+    attributes: {
+      id: "backLinkAnchor"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  {% include "includes/errors.njk" %}
+
+  {% if errors.items["selectedJurors"] %}
+    {% set selectedJurorsError = {"text": errors.items['selectedJurors'][0].details} %}
+  {% else %}
+    {% set selectedJurorsError = undefined %}
+  {% endif %}
+
+  {# Delete pending document error #}
+  <div id="delete-error" class="moj-banner moj-banner--warning mod-hidden" role="region" aria-label="Warning">
+    <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
+      <path d="M13.6,15.4h-2.3v-4.5h2.3V15.4z M13.6,19.8h-2.3v-2.2h2.3V19.8z M0,23.2h25L12.5,2L0,23.2z" />
+    </svg>
+    <div class="moj-banner__message">Unable to delete the letter from the printing queue</div>
+  </div>
+
+  {# Delete pending document success #}
+  <div id="delete-success" class="moj-banner moj-banner--success mod-hidden" role="region" aria-label="Success">
+    <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
+      <path d="M25,6.2L8.7,23.2L0,14.1l4-4.2l4.7,4.9L21,2L25,6.2z" />
+    </svg>
+    <div class="moj-banner__message">1 pending document deleted</div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-l">{{ pageIdentifier }}</h1>
+
+      <p class="govuk-body govuk-!-font-weight-bold">Showing results for '{{ "all letters" if documentSearchBy === "allLetters" else searchBy }}' 
+        <a id="addressChangeAnchor" href="{{ changeUrl }}" class="govuk-link">Change</a>
+      </p>
+
+      {% if totalJurors > 0 and documentSearchBy !== "allLetters" %}
+        <form method="POST" action="{{ postUrl }}">
+          {{ govukButton({
+            text: buttonLabel,
+            classes: "govuk-button--secondary",
+            type: "submit"
+          }) }}
+
+          <input type="hidden" id="documentType" value="{{ document }}" />
+          {{ csrfProtection(csrftoken) }}
+        </form>
+
+        <div class="govuk-caption-m">
+          <span id="selectedJurorsCount">{{ selectedJurors }}</span> of {{ totalJurors }} selected
+        </div>
+      {% else %}
+        {{ csrfProtection(csrftoken) }}
+      {% endif %}
+    </div>
+  </div>
+
+  {% if totalJurors > 0 %}
+    {% include "../_partials/table.njk" %}
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        {{ govukPagination({
+          previous: {
+            href: paginationObject.prev
+          },
+          next: {
+            href: paginationObject.next
+          },
+          items: paginationObject.items
+        }) }}
+      </div>
+    </div>
+  {% else %}
+    <hr class="govuk-section-break govuk-section-break--visible">
+
+    <h2>There are no matching results</h2>
+    <p class="govuk-body">Improve your search by:</p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>double-checking your spelling</li>
+      <li>searching by the complete juror number only</li>
+    </ul>
+  {% endif %}
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script src="{{ assetPath if assetPath else '/' }}js/document-letters.js"></script>
+{% endblock %}

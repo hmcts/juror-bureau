@@ -1,0 +1,173 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/error-message/macro.njk" import govukErrorMessage -%}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+
+{% block page_title %}{{ serviceName }} - Documents - {{pageIdentifier}}{% endblock %}
+{% block page_identifier %}documents - {{pageIdentifier}}{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back to all documents",
+    href: backLinkUrl,
+    attributes: {
+      id: "backLinkAnchor"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    
+    {% include "includes/errors.njk" %}
+
+      {% set documentSearchBy = undefined %}
+        {% if errors.items["documentSearchBy"] %}
+          {% set documentSearchBy = { text: errors.items['documentSearchBy'][0].details} %}
+        {% endif %}
+
+    {% set jurorDetailsError = undefined %}
+      {% if errors.items["jurorDetails"] %}
+        {% set jurorDetailsError = { text: errors.items['jurorDetails'][0].details} %}
+      {% endif %}
+
+      {% set poolDetailsError = undefined %}
+      {% if errors.items["poolDetails"] %}
+        {% set poolDetailsError = { text: errors.items['poolDetails'][0].details} %}
+      {% endif %}
+
+    {% set jurorHtml %}
+      {{ govukInput({
+          label: {
+            text: "Enter juror name, number or postcode",
+            classes: "govuk-label"
+          },
+          classes: "govuk-!-width-one-third",
+          id: "jurorDetails",
+          name: "jurorDetails",
+          type: "text",
+          value: "",
+          errorMessage: jurorDetailsError
+        }) }}
+    {% endset %} 
+
+    {% set poolHtml %}
+      {{ govukInput({
+              label: {
+                text: "Enter pool number",
+                classes: "govuk-label"
+              },
+              classes: "govuk-!-width-one-third",
+              id: "poolDetails",
+              name: "poolDetails",
+              type: "number",
+              value: "",
+              errorMessage: poolDetailsError
+            }) }}
+    {% endset %} 
+
+    <form action="{{ postUrl }}" method="post" id="documentLetterForm">
+      <h1 class="title govuk-heading-l">{{pageIdentifier}}</h1>
+
+      {% if isCourtUser %}
+        {{ govukRadios({
+          name: "documentSearchBy",
+          errorMessage: documentSearchBy,
+          fieldset: {
+            legend: {
+              text: "Search by",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          items: [
+            {
+              value: "juror",
+              text: "Juror",
+              checked: formFields.documentSearchBy  === "juror",
+              conditional: {
+                html: jurorHtml
+              }
+            },
+            {
+              value: "pool",
+              text: "Pool",
+              checked: formFields.documentSearchBy === "pool",
+                conditional: {
+                html: poolHtml
+              }
+            }
+          ]
+        }) }}
+     
+        {{ govukCheckboxes({
+          name: "includePrinted",
+          items: [
+            {
+              value: "includePrinted",
+              text: "Include printed",
+              checked: formFields.includePrinted === 'includePrinted'
+            }
+          ]
+        }) }}
+      {% endif %}
+
+      {% if isBureauUser %}
+          {{ govukRadios({
+          name: "documentSearchBy",
+          errorMessage: documentSearchBy,
+          fieldset: {
+            legend: {
+              text: "Search by",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          items: [
+            {
+              value: "juror",
+              text: "Juror",
+              checked: formFields.documentSearchBy  === "juror",
+              conditional: {
+                html: jurorHtml
+              }
+            },
+            {
+              value: "pool",
+              text: "Pool",
+              checked: formFields.documentSearchBy === "pool",
+                conditional: {
+                html: poolHtml
+              }
+            },
+            {
+              divider: "or"
+            },
+            {
+              value: "allLetters",
+              text: "Show all letters queued for printing",
+              checked: formFields.documentSearchBy === "allLetters"
+            }
+          ]
+        }) }}
+      {% endif %}
+
+      <div class="govuk-button-group">
+        {{ govukButton({
+          text: "Search",
+          type: "submit",
+          attributes: {
+            id: "searchButton"
+          }
+        }) }}
+      </div>
+      <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+
+    </form>
+  </div>
+</div>
+
+{% endblock %}

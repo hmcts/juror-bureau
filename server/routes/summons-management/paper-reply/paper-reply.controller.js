@@ -77,31 +77,11 @@
               : '';
 
             details.postcode = details.addressPostcode;
-            details.address = {
-              part1: details.addressLineOne,
-              part2: details.addressLineTwo,
-              part3: details.addressLineThree,
-              part4: details.addressTown,
-              part5: details.addressCounty,
-            };
 
             delete details.commonDetails;
 
             // add current juror details to session to allow for caching purposes
             req.session.paperResponseDetails = details;
-          } else {
-            const currentDetails = req.session.paperResponseDetails;
-
-            // req.session.paperResponseDetails.address gets updated by the change address form
-            // So load it into the current details here, otherwise they go missing
-            currentDetails.addressPostcode = currentDetails.postcode;
-            if (currentDetails.address) {
-              currentDetails.addressLineOne = currentDetails.address.part1;
-              currentDetails.addressLineTwo = currentDetails.address.part2;
-              currentDetails.addressLineThree = currentDetails.address.part3;
-              currentDetails.addressTown = currentDetails.address.part4;
-              currentDetails.addressCounty = currentDetails.address.part5;
-            }
           }
 
           if (req.session.paperResponseDetails.fixedName) {
@@ -1063,24 +1043,26 @@
 
   module.exports.getEditAddress = function(app) {
     return function(req, res) {
-      var address = req.session.paperResponseDetails.address
+
+      let paperDetails = req.session.paperResponseDetails
+        , address = {}
         , tmpErrors = _.clone(req.session.errors)
         , tmpData = _.clone(req.session.formFields) || {};
 
-      address.postcode = req.session.paperResponseDetails.postcode;
+      address.postcode = req.session.paperResponseDetails.addressPostcode;
 
-      address.part1 = typeof tmpData.address1 !== 'undefined' ? tmpData.address1 : address.part1;
-      address.part2 = typeof tmpData.address2 !== 'undefined' ? tmpData.address2 : address.part2;
-      address.part3 = typeof tmpData.address3 !== 'undefined' ? tmpData.address3 : address.part3;
-      address.part4 = typeof tmpData.address4 !== 'undefined' ? tmpData.address4 : address.part4;
-      address.part5 = typeof tmpData.address5 !== 'undefined' ? tmpData.address5 : address.part5;
-      address.postcode = typeof tmpData.postcode !== 'undefined' ? tmpData.postcode : address.postcode;
+      address.part1 = typeof tmpData.address1 !== 'undefined' ? tmpData.address1 : paperDetails.addressLineOne;
+      address.part2 = typeof tmpData.address2 !== 'undefined' ? tmpData.address2 : paperDetails.addressLineTwo;
+      address.part3 = typeof tmpData.address3 !== 'undefined' ? tmpData.address3 : paperDetails.addressLineThree;
+      address.part4 = typeof tmpData.address4 !== 'undefined' ? tmpData.address4 : paperDetails.addressTown;
+      address.part5 = typeof tmpData.address5 !== 'undefined' ? tmpData.address5 : paperDetails.addressCounty;
+      address.postcode = typeof tmpData.postcode !== 'undefined' ? tmpData.postcode : paperDetails.addressPostcode;
 
       delete req.session.errors;
       delete req.session.formFields;
 
       return res.render('summons-management/paper-reply/edit-address', {
-        address: req.session.paperResponseDetails.address,
+        address: address,
         postUrl: app.namedRoutes.build('paper-reply.edit-address.post', {
           id: req.params.id,
         }),
@@ -1110,15 +1092,12 @@
         }));
       }
 
-      // all is valid so mutate the current response data and set the new address
-      req.session.paperResponseDetails.address = {
-        part1: req.body['address1'],
-        part2: req.body['address2'],
-        part3: req.body['address3'],
-        part4: req.body['address4'],
-        part5: req.body['address5'],
-      };
-      req.session.paperResponseDetails.postcode = req.body['postcode'];
+      req.session.paperResponseDetails.addressLineOne = req.body['address1'];
+      req.session.paperResponseDetails.addressLineTwo = req.body['address2'];
+      req.session.paperResponseDetails.addressLineThree = req.body['address3'];
+      req.session.paperResponseDetails.addressTown = req.body['address4'];
+      req.session.paperResponseDetails.addressCounty = req.body['address5'];
+      req.session.paperResponseDetails.addressPostcode = req.body['postcode'];
 
       return res.redirect(app.namedRoutes.build('paper-reply.index.get', {
         id: req.params.id,

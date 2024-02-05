@@ -3,12 +3,14 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
 {% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
 
 {% block page_title %}{{ serviceName }}- juror-management - manage jurors{% endblock %}
 {% block page_identifier %}juror-management - manage jurors{% endblock %}
 
 {% set pendingApprovalHtml %}
-  <span id="pendingApprovalTab">Pending Approval{% if pendingApprovalCount > 0 %} <span id="pendingApprovalCount" class="moj-notification-badge jd-badge-blue">{{ pendingApprovalCount }}</span>{% endif %}</a></span>
+  <span id="pendingApprovalTab">Pending approval{% if pendingApprovalCount > 0 %} <span id="pendingApprovalCount" class="moj-notification-badge jd-badge-blue">{{ pendingApprovalCount }}</span>{% endif %}</a></span>
 {% endset %}
 
 {% set currentApp = "Jurors" %}
@@ -54,45 +56,32 @@
       </div>
     </div>
   </div>
+
+  {% if pendingApprovalCount > 0 %}
+    {{ mojSubNavigation({
+      label: "Jurors attendance navigation",
+      classes: "govuk-!-margin-bottom-3",
+      items: [{
+        text: "Pools",
+        href: url('juror-management.manage-jurors.pools.get'),
+        active: currentTab === "pools"
+      },
+      {
+        html: pendingApprovalHtml,
+        href: url('juror-management.manage-jurors.pending-approval.get'),
+        active: currentTab === "pending-approval"
+      }]
+    }) }}
+  {% endif %}
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      {{ mojSubNavigation({
-        label: "Jurors attendance navigation",
-        items: [{
-          text: "In waiting",
-          href: url('juror-management.manage-jurors.in-waiting.get'),
-          active: currentTab === "in-waiting"
-        },
-        {
-          text: "On trials",
-          href: url('juror-management.manage-jurors.on-trials.get'),
-          active: currentTab === "on-trials"
-        },
-        {
-          text: "On call",
-          href: url('juror-management.manage-jurors.on-call.get'),
-          active: currentTab === "on-call"
-        },
-        {
-          html: pendingApprovalHtml,
-          href: url('juror-management.manage-jurors.pending-approval.get'),
-          active: currentTab === "pending-approval"
-        }]
-      }) }}
-    </div>
-  </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      {% if currentTab === "in-waiting" %}
-        {# IN WAITING PAGE CONTENT NOT FINALISED BY DESIGN TEAM #}
-        {% include "./manage-jurors/in-waiting.njk" %}
-      {% elif currentTab === "on-trials" %}
-         <p class="govuk-body">ON TRIALS TAB</p>
-      {% elif currentTab === "on-call" %}
-          <p class="govuk-body">ON CALL TAB</p>
+      {% if currentTab === "pools" %}
+        {% include "./manage-jurors/pools.njk" %}
       {% elif currentTab === "pending-approval" %}
         {% include "./manage-jurors/pending-approval.njk" %}
       {% endif %}
     </div>
   </div>
+  
 {% endblock %}

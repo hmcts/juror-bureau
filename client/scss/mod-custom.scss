@@ -350,27 +350,6 @@ dt.govuk-summary-list-mod {
   }
 }
 
-.mod-hidden {
-  display: none;
-}
-
-/// The <details> componend from GDS does not allow us to edit its default style
-/// Having a custom css class, allows us to manipulate its children and achieve what we need
-.mod-details-error {
-  summary {
-    color: $govuk-error-colour;
-    @include govuk-typography-weight-bold;
-
-    &:hover {
-      @include govuk-link-style-error;
-    }
-
-    + div {
-      border-left-color: $govuk-error-colour;
-    }
-  }
-}
-
 .mod-summary-list-align {
   &__right {
     text-align: right;
@@ -390,18 +369,6 @@ dt.govuk-summary-list-mod {
   .govuk-form-group {
     margin-bottom: 15px;
   }
-
-  .govuk-checkboxes__label {
-    &::before {
-      background-color: govuk-colour("white");
-    }
-  }
-
-  .govuk-radios__label {
-    &::before {
-      background-color: govuk-colour("white");
-    }
-  }
 }
 
 .mod-expense-entry-pagination {
@@ -411,5 +378,21 @@ dt.govuk-summary-list-mod {
   
   div {
     margin: 0 10px 0 10px;
+  }
+}
+
+/// The reason for these to be extracted from the previous parent class they were in
+/// is beacause we do not have any instance of checks or radios where the background
+/// does not need to be white... so, here, at lease we make sure that they will always
+/// have a white background
+.govuk-checkboxes__label {
+  &::before {
+    background-color: govuk-colour("white");
+  }
+}
+
+.govuk-radios__label {
+  &::before {
+    background-color: govuk-colour("white");
   }
 }

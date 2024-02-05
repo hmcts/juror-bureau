@@ -60,6 +60,12 @@
             summary: 'Enter a real date',
             details: 'Enter a real date',
           }];
+        } else if (moment(attributes.attendanceDate, 'DD/MM/YYYY')
+          .isSameOrBefore(moment(attributes.originalNextDate, 'YYYY, MM, DD'))) {
+          tmpErrors = [{
+            summary: 'Date must be in the future',
+            details: 'Date must be in the future',
+          }];
         };
       } else if (options.bulk) {
         tmpErrors = [{

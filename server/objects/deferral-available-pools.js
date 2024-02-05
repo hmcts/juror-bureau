@@ -17,11 +17,15 @@
 
     , deferralPoolsObj = {
       resourcePost: 'moj/deferral-maintenance/available-pools',
-      post: function(rp, app, jwtToken, deferralDates, jurorNumber) {
+      post: function(rp, app, jwtToken, deferralDates, jurorNumber, courtLocCode) {
         var reqOptions = _.clone(options);
 
         reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri, this.resourcePost, jurorNumber);
+        if (courtLocCode) {
+          reqOptions.uri = urljoin(reqOptions.uri, this.resourcePost, courtLocCode, jurorNumber, 'deferral_dates');
+        } else {
+          reqOptions.uri = urljoin(reqOptions.uri, this.resourcePost, jurorNumber);
+        }
         reqOptions.method = 'POST';
         reqOptions.body = deferralDates;
 

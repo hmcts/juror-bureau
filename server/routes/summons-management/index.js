@@ -10,6 +10,7 @@
     require('./paper-reply')(app);
     require('./request-info')(app);
     require('./process-reply/disqualify')(app);
+    require('./process-reply/reassign-before-process')(app);
     require('./update')(app);
 
     // express allows us to have optional parameters on a route definition

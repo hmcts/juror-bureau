@@ -37,7 +37,7 @@
 
       if (createJurorMode) {
         postUrl = app.namedRoutes.build('create-juror-record.create-pool.post');
-        cancelUrl = app.namedRoutes.build('juror-management.manage-jurors.in-waiting.get');
+        cancelUrl = app.namedRoutes.build('juror-management.manage-jurors.pools.get');
         backLinkUrl = app.namedRoutes.build('create-juror-record.get');
         changeCourtUrl = app.namedRoutes.build('create-juror-record.create-pool.change-court.get');
       } else {

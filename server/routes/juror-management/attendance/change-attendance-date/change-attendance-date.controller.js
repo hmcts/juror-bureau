@@ -8,7 +8,7 @@
     , attendanceDateValidator = require('../../../../config/validation/change-attendance-date').attendanceDate;
 
   module.exports.getChangeAttendanceDate = function(app) {
-    return function(req, res) {
+    return async function(req, res) {
       const tmpErrors = _.clone(req.session.errors)
         , tmpBody = _.clone(req.session.formFields)
         , { jurorNumber } = req.params;
@@ -37,21 +37,49 @@
         return res.render('_errors/generic');
       }
 
-      return res.render('juror-management/attendance/change-attendance-date', {
-        processUrl: app.namedRoutes.build(
-          'juror-record.attendance.change-attendance-date.post',
-          { jurorNumber: juror.jurorNumber }
-        ),
-        cancelUrl: app.namedRoutes.build('juror-record.attendance.get', { jurorNumber: juror.jurorNumber }),
-        juror,
-        minDate: dateFilter(new Date(), null, 'DD/MM/YYYY'),
-        errors: {
-          title: 'Please check the form',
-          count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-          items: tmpErrors,
-        },
-        formDetails: tmpBody,
-      });
+      try {
+
+        const attendance = await jurorRecordObject.attendanceDetails.get(
+          require('request-promise'),
+          app,
+          req.session.authToken,
+          jurorNumber,
+          req.session.jurorCommonDetails.poolNumber,
+        );
+
+        return res.render('juror-management/attendance/change-attendance-date', {
+          processUrl: app.namedRoutes.build(
+            'juror-record.attendance.change-attendance-date.post',
+            { jurorNumber: juror.jurorNumber }
+          ),
+          cancelUrl: app.namedRoutes.build('juror-record.attendance.get', { jurorNumber: juror.jurorNumber }),
+          juror,
+          minDate: dateFilter(new Date(), null, 'DD/MM/YYYY'),
+          originalNextDate: attendance.next_date,
+          errors: {
+            title: 'Please check the form',
+            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+            items: tmpErrors,
+          },
+          formDetails: tmpBody,
+        });
+      } catch (err) {
+        if (err.statusCode === 404) {
+          return res.render('juror-management/_errors/not-found');
+        }
+
+        app.logger.crit('Failed to fetch the juror attendance data:', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            jurorNumber,
+            locationCode: req.session.locCode,
+          },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic');
+      };
     };
   };
 

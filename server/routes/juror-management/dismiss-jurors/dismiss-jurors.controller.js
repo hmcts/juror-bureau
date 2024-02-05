@@ -284,7 +284,7 @@ module.exports.postCompleteService = function(app) {
 
       delete req.session.dismissJurors;
 
-      return res.redirect(app.namedRoutes.build('juror-management.manage-jurors.in-waiting.get'));
+      return res.redirect(app.namedRoutes.build('juror-management.manage-jurors.pools.get'));
     } catch (err) {
       app.logger.crit('Failed to dismiss the selected jurors: ', {
         auth: req.session.authentication,
