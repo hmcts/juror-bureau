@@ -74,31 +74,44 @@
 
       const searchParams = _.clone(payload);
 
+      if (payload.last_name) {
+        payload['last_name_display'] = payload.last_name;
+        payload['last_name'] = payload.last_name.toUpperCase();
+      }
+
       if (payload.processing_status) {
-        switch (payload.processing_status) {
-        case 'TODO':
-          searchParams['is_todo'] = true;
-          break;
-        case 'AWAITING_COURT_REPLY':
-          searchParams['is_awaiting_court_reply'] = true;
-          break;
-        case 'AWAITING_JUROR_REPLY':
-          searchParams['is_awaiting_juror_reply'] = true;
-          break;
-        case 'AWAITING_TRANSLATION':
-          searchParams['is_awaiting_translation'] = true;
-          break;
-        case 'COMPLETED':
-          searchParams['is_completed'] = true;
-          break;
+        if (!Array.isArray(payload.processing_status)){
+          payload['processing_status'] = [payload.processing_status];
+        }
+
+        for (const status in payload.processing_status){
+          if (typeof status !== 'undefined') {
+            switch (payload.processing_status[status]) {
+            case 'TODO':
+              searchParams['is_todo'] = true;
+              break;
+            case 'AWAITING_COURT_REPLY':
+              searchParams['is_awaiting_court_reply'] = true;
+              break;
+            case 'AWAITING_CONTACT':
+              searchParams['is_awaiting_contact'] = true;
+              break;
+            case 'AWAITING_TRANSLATION':
+              searchParams['is_awaiting_translation'] = true;
+              break;
+            case 'CLOSED':
+              searchParams['is_completed'] = true;
+              break;
+            }
+          }
         }
       }
 
-      let staff;
-
       try {
-        staff = await staffRosterObj.get(require('request-promise'), app, req.session.authToken);
-        const responses = await searchResponsesDAO.post(app, req, payload);
+        promiseArr.push(staffRosterObj.get(require('request-promise'), app, req.session.authToken));
+        promiseArr.push(searchResponsesDAO.post(app, req, payload));
+
+        const [staff, responses] = await Promise.all(promiseArr);
 
         responses.juror_response.forEach(responsesListIterator(staff));
 
@@ -126,6 +139,7 @@
           resultsStr,
         });
       } catch (err) {
+
         app.logger.crit('Failed to fetch search results: ', {
           auth: req.session.authentication,
           jwt: req.session.authToken,
@@ -159,8 +173,8 @@
     if (payload.juror_number) {
       str.push(`"${payload.juror_number}"`);
     }
-    if (payload.last_name) {
-      str.push(`"${payload.last_name}"`);
+    if (payload.last_name_display) {
+      str.push(`"${payload.last_name_display}"`);
     }
     if (payload.pool_number) {
       str.push(`"${payload.pool_number}"`);
@@ -195,7 +209,7 @@
       'AWAITING_COURT_REPLY': 'Awaiting court reply',
       'AWAITING_CONTACT': 'Awaiting juror reply',
       'AWAITING_TRANSLATION': 'Awaiting translation',
-      COMPLETED: 'Completed',
+      CLOSED: 'Completed',
     };
 
     return statuses[originalStatus];

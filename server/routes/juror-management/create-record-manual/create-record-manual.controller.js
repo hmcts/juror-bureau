@@ -410,7 +410,7 @@
         }));
       };
 
-      return res.redirect(app.namedRoutes.build('juror-management.manage-jurors.in-waiting.get'));
+      return res.redirect(app.namedRoutes.build('juror-management.manage-jurors.pools.get'));
     };
   };
 
@@ -676,7 +676,7 @@
         postUrl: app.namedRoutes.build('create-juror-record.summary.post', {
           poolNumber: req.params.poolNumber,
         }),
-        cancelUrl: app.namedRoutes.build('juror-management.manage-jurors.in-waiting.get'),
+        cancelUrl: app.namedRoutes.build('juror-management.manage-jurors.pools.get'),
         pageIdentifier: 'Check your answers',
         subServiceName,
         formFields,
@@ -746,7 +746,7 @@
       ? app.namedRoutes.build('create-juror-record.summary.get', {
         poolNumber: req.session.newJuror.poolNumber,
       })
-      : app.namedRoutes.build('juror-management.manage-jurors.in-waiting.get');
+      : app.namedRoutes.build('juror-management.manage-jurors.pools.get');
   }
 
 })();

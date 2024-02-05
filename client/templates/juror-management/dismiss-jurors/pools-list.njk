@@ -10,7 +10,7 @@
 
 {% block content %}
   {% set actionUrl = url("juror-management.dismiss-jurors.pools.post") %}
-  {% set cancelUrl = url("juror-management.manage-jurors.in-waiting.get") %}
+  {% set cancelUrl = url("juror-management.manage-jurors.pools.get") %}
 
   {% set jurorsToDismissError = undefined %}
   {% if errors.items["jurorsToDismiss"] %}

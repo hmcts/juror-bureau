@@ -373,6 +373,23 @@
       const zeros = length || 2;
 
       return num.toFixed(zeros);
+
+    },
+
+    /**
+     * Takes in an array/list and returns a grammatically correct string output.
+     * @param {array} inputList input list
+     * @returns {string} gramatically correct output
+     */
+    prettyList: (inputList) => {
+      return inputList.reduce(
+        (acc, current, index) => {
+          if (index === inputList.length - 1) {
+            return acc + ' and ' + current;
+          }
+          return acc + ', ' + current;
+        },
+      );
     },
 
     fullCourtType: function(court) {
@@ -386,6 +403,17 @@
       case 'HGH':
         return 'High court';
       }
+    },
+
+    convert24toHours: function(time24) {
+      let [hours, minutes] = time24.split(':');
+
+      hours = parseInt(hours) * 60;
+      minutes = parseInt(minutes);
+
+      let time = hours + minutes;
+
+      return time / 60;
     },
 
   };

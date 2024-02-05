@@ -94,9 +94,15 @@
         }
 
         if (typeof req.session.summonsUpdate.newAddress !== 'undefined') {
-          details.postcode = req.session.summonsUpdate.newAddress.postcode;
-          details.address = req.session.summonsUpdate.newAddress;
           req.session.summonsUpdate.address = req.session.summonsUpdate.newAddress;
+          const newAddress = _.clone(req.session.summonsUpdate.newAddress);
+
+          details.addressLineOne = newAddress.part1;
+          details.addressLineTwo = newAddress.part2;
+          details.addressLineThree = newAddress.part3;
+          details.addressLineTown = newAddress.part4;
+          details.addressLineCounty = newAddress.part5;
+          details.addressPostcode = newAddress.postcode;
 
           delete req.session.summonsUpdate.newAddress;
         }
@@ -641,10 +647,12 @@
         id: req.params['id'],
         type: req.params['type'],
       });
-      const address = typeof req.session.summonsUpdate.newAddress !== 'undefined'
-        ? req.session.summonsUpdate.newAddress : req.session.summonsUpdate.address;
+      const address = typeof req.session.formFields !== 'undefined'
+        ? req.session.formFields : (typeof req.session.summonsUpdate.newAddress !== 'undefined'
+          ? req.session.summonsUpdate.newAddress : req.session.summonsUpdate.address);
       const tmpErrors = _.clone(req.session.errors);
 
+      delete req.session.formFields;
       delete req.session.errors;
 
       return res.render('summons-management/paper-reply/edit-address.njk', {
@@ -667,6 +675,23 @@
         'summons.update-details.get' :
         'summons.update-details-digital.get';
 
+      if (typeof validatorResult !== 'undefined') {
+        req.session.errors = validatorResult;
+        req.session.formFields = {
+          part1: req.body['address1'],
+          part2: req.body['address2'],
+          part3: req.body['address3'],
+          part4: req.body['address4'],
+          part5: req.body['address5'],
+          postcode: req.body['postcode'],
+        };
+
+        return res.redirect(app.namedRoutes.build('summons.update-details.edit-address.get', {
+          id: req.params['id'],
+          type: req.params['type'],
+        }));
+      }
+
       req.session.summonsUpdate.newAddress = {
         part1: req.body['address1'],
         part2: req.body['address2'],
@@ -675,15 +700,6 @@
         part5: req.body['address5'],
         postcode: req.body['postcode'],
       };
-
-      if (typeof validatorResult !== 'undefined') {
-        req.session.errors = validatorResult;
-        req.session.formFields = req.body;
-
-        return res.redirect(app.namedRoutes.build('summons.update-details.edit-address.get', {
-          id: req.params['id'],
-        }));
-      }
 
       return res.redirect(app.namedRoutes.build(redirectPath, {
         id: req.params['id'],

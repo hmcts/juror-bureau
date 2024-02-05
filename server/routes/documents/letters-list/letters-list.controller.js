@@ -1,0 +1,281 @@
+(function() {
+  'use strict';
+
+  const _ = require('lodash');
+  const urljoin = require('url-join');
+  const modUtils = require('../../../lib/mod-utils');
+  const validate = require('validate.js');
+  const validator = require('../../../config/validation/letters-list');
+  const { isBureauUser } = require('../../../components/auth/user-type');
+  const { reissueLetterDAO } = require('../../../objects/documents');
+  const { tableGenerator } = require('../helper/table-generator');
+
+  module.exports.getListLetters = function(app) {
+    return function(req, res) {
+      const { document } = req.params;
+      const _isBureauUser = isBureauUser(req, res);
+      const backLinkUrl = app.namedRoutes.build('documents.get');
+      const changeUrl = app.namedRoutes.build('documents.form.get', {
+        document,
+      });
+      const tmpErrors = _.clone(req.session.errors);
+
+      const { documentSearchBy, jurorDetails, poolDetails, page } = req.query;
+      let searchBy, paginationObject;
+
+      delete req.session.errors;
+
+      if (documentSearchBy === 'juror'){
+        searchBy = jurorDetails;
+      } else {
+        searchBy = poolDetails;
+      }
+
+      if (!req.session.documentsJurorsList) {
+        return res.redirect(app.namedRoutes.build('documents.get'));
+      }
+
+      if (req.session.documentsJurorsList.data.length > modUtils.constants.PAGE_SIZE) {
+        paginationObject = modUtils.paginationBuilder(
+          req.session.documentsJurorsList.data.length,
+          page || 1,
+          req.url,
+        );
+      }
+
+      const slicedJurorList = {
+        headings: req.session.documentsJurorsList.headings,
+        'data_types': req.session.documentsJurorsList.data_types,
+        data: paginateJurorsList(req.session.documentsJurorsList.data, page || 1),
+      };
+
+      const { tableHeader, tableRows } = tableGenerator.bind({
+        response: slicedJurorList,
+        checkedJurors: req.session.documentsJurorsList.checkedJurors || [],
+      })(_isBureauUser);
+
+      const postUrl = urljoin(app.namedRoutes.build('documents.letters-list.post', {
+        document,
+      }), urlBuilder(req.query));
+
+      const selectedJurors = (req.session.documentsJurorsList.checkedJurors
+        && req.session.documentsJurorsList.checkedJurors.length) || 0;
+
+      return res.render('documents/_common/letters-list.njk', {
+        pageIdentifier: modUtils.getLetterIdentifier(document),
+        backLinkUrl,
+        postUrl,
+        changeUrl,
+        searchBy,
+        headings: tableHeader,
+        rows: tableRows,
+        paginationObject,
+        buttonLabel: buttonLabel(document, _isBureauUser),
+        selectedJurors,
+        totalJurors: calculateTotalJurors(req.session.documentsJurorsList.data, documentSearchBy),
+        document,
+        documentSearchBy,
+        errors: {
+          title: 'There is a problem',
+          count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+          items: tmpErrors,
+        },
+      });
+    };
+  };
+
+  module.exports.postListLetters = function(app) {
+    return async function(req, res) {
+      const { document } = req.params;
+
+      const validatorResult = validate(req.body, validator(req.session.documentsJurorsList.checkedJurors));
+
+      if (typeof validatorResult !== 'undefined') {
+        req.session.errors = validatorResult;
+        req.session.noJurorSelect = true;
+
+        return res.redirect(urljoin(app.namedRoutes.build('documents.letters-list.get', {
+          document,
+        }), urlBuilder(req.query)));
+      }
+
+      delete req.session.errors;
+
+      const payload = {
+        'letters_list': req.session.documentsJurorsList.checkedJurors,
+      };
+
+      try {
+        await reissueLetterDAO.postList(app, req, payload);
+
+        const documentCount = req.session.documentsJurorsList.checkedJurors.length;
+
+        req.session.documentsJurorsList.successMessage =
+          `${documentCount} document${documentCount > 1 ? 's' : ''} sent for printing`;
+
+        return res.redirect(app.namedRoutes.build('documents.get'));
+      } catch (err) {
+        req.session.errors = {
+          selectedJurors: [{
+            summary: 'Unable to reprint letters for the selected jurors',
+            details: 'Unable to reprint letters for the selected jurors',
+          }],
+        };
+
+        app.logger.crit('Failed to reprint letters for selected jurors', {
+          userId: req.session.authentication.login,
+          jwt: req.session.authToken,
+          data: payload,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.redirect(urljoin(app.namedRoutes.build('documents.letters-list.get', {
+          document,
+        }), urlBuilder(req.query)));
+      }
+    };
+  };
+
+  module.exports.deletePendingLetter = function(app) {
+    return async function(req, res) {
+      const payload = {
+        'letters_list': [{
+          'juror_number': req.body.juror_number,
+          'form_code': req.body.form_code,
+          'date_printed': req.body.date_printed,
+        }],
+      };
+
+      try {
+        await reissueLetterDAO.deletePending(app, req, payload);
+
+        const index = req.session.documentsJurorsList.data
+          .findIndex((juror) => (
+            juror[0] === req.body.juror_number
+            && juror[juror.length - 1] === req.body.form_code
+            && juror[juror.length - 2] === false
+          ));
+
+        req.session.documentsJurorsList.data.splice(index, 1);
+
+        return res.send();
+      } catch (err) {
+        app.logger.crit('Failed to delete the letter from the printing queue', {
+          userId: req.session.authentication.login,
+          jwt: req.session.authToken,
+          data: payload,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.status(err.statusCode).send();
+      }
+    };
+  };
+
+  // Because we need to move to redis, the checking of jurors could break due to race conditions
+  // with this in mind it will be better if we keep the checked jurors on a separated array stored in redis
+  // (memory for now) so we can update it using the redis api directly and not wait for the request to finish
+  // the same approach could be used in other places where we have checkboxes for selecting items from big lists
+  module.exports.checkJuror = function(app) {
+    return function(req, res) {
+      const { isChecking } = req.body;
+
+      if (!req.session.documentsJurorsList.checkedJurors) {
+        req.session.documentsJurorsList.checkedJurors = [];
+      }
+
+      delete req.body._csrf;
+      delete req.body.isChecking;
+
+      const index = req.session.documentsJurorsList.checkedJurors
+        .findIndex((juror) => (
+          juror.juror_number === req.body.juror_number
+          && juror.form_code === req.body.form_code
+          && juror.date_printed === req.body.date_printed
+        ));
+
+      if (isChecking && index === -1) {
+        req.session.documentsJurorsList.checkedJurors.push(req.body);
+      } else {
+        req.session.documentsJurorsList.checkedJurors.splice(index, 1);
+      }
+
+      app.logger.info('Checked / unchecked juror document: ', {
+        auth: req.session.authentication,
+        jwt: req.session.authToken,
+        data: { ...req.body },
+      });
+
+      return res.send();
+    };
+  };
+
+  function paginateJurorsList(jurors, currentPage) {
+    let start = 0;
+    let end = 25;
+
+    if (currentPage > 1) {
+      start = (currentPage - 1) * modUtils.constants.PAGE_SIZE;
+    }
+
+    end = start + modUtils.constants.PAGE_SIZE;
+
+    return jurors.slice(start, end);
+  }
+
+  function urlBuilder(params) {
+    const parameters = [];
+
+    if (params.documentSearchBy) {
+      parameters.push('documentSearchBy=' + params.documentSearchBy);
+    }
+
+    if (params.jurorDetails) {
+      parameters.push('jurorDetails=' + params.jurorDetails);
+    }
+
+    if (params.poolDetails) {
+      parameters.push('poolDetails=' + params.poolDetails);
+    }
+
+    if (params.includePrinted) {
+      parameters.push('includePrinted=' + params.includePrinted);
+    }
+
+    return  '?' + parameters.join('&');
+  }
+
+  function buttonLabel(document, _isBureauUser) {
+    switch (document) {
+    case 'initial-summons':
+      return 'Resend initial summons';
+    case 'summons-reminders':
+      return 'Resend summons reminder';
+    case 'further-information':
+      return 'Resend request for further information';
+    case 'confirmation':
+      return 'Resend confirmation letter';
+    case 'deferral-granted':
+      return _isBureauUser ? 'Resend deferral granted letter' : 'Print deferral granted letter';
+    case 'deferral-refused':
+      return _isBureauUser ? 'Resend deferral refused letter' : 'Print deferral refused letter';
+    case 'excusal-granted':
+      return _isBureauUser ? 'Resend excusal granted letter' : 'Print excusal granted letter';
+    case 'excusal-refused':
+      return _isBureauUser ? 'Resend excusal refused letter' : 'Print excusal refused letter';
+    case 'postponement':
+      return _isBureauUser ? 'Resend postponement letter' : 'Print postponement letter';
+    case 'withdrawal':
+      return _isBureauUser ? 'Resend withdrawal letter' : 'Print withdrawal letter';
+    }
+  };
+
+  function calculateTotalJurors(data, documentSearchBy) {
+    if (documentSearchBy === 'allLetters') {
+      return data.length;
+    }
+
+    return data.filter((doc) => doc[doc.length - 2] !== false).length;
+  }
+
+})();

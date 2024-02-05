@@ -18,8 +18,8 @@
 {% block content %}
 
   {% include "includes/errors.njk" %}
-  {% set addressParts = [details.address.part1, details.address.part2, details.address.part3, details.address.part4, details.address.part5, details.address.part6] %}
-  {% set jurorAddress = addressParts | buildRecordAddress | capitalizeFully + "<br>" + details.postcode %}
+  {% set addressParts = [details.addressLineOne, details.addressLineTwo, details.addressLineThree, details.addressTown, details.addressCounty] %}
+  {% set jurorAddress = addressParts | buildRecordAddress | capitalizeFully + "<br>" + details.addressPostcode %}
 
   <span class="govuk-caption-l">Enter summons reply</span>
   <h1 class="govuk-heading-l">Juror details</h1>

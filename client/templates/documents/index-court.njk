@@ -1,0 +1,48 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% set currentApp = "Documents" %}
+
+{% block page_title %}{{ serviceName }} - Documents{% endblock %}
+{% block page_identifier %}documents{% endblock %}
+
+{% macro buildUrl(param) %}
+  {{ url("documents.form.get", {
+    document: param
+  }) }}
+{% endmacro %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third">
+      <h1 class="govuk-heading-xl">Documents</h1>
+
+      <h2>Before service</h2>
+      <hr class="govuk-section-break govuk-section-break--visible">
+      <ul class="govuk-list govuk-list--spaced govuk-!-padding-top-2">
+        <li><a class="govuk-link" href="{{ buildUrl('deferral-granted') }}">Deferral granted letters</a></li>
+        <li><a class="govuk-link" href="{{ buildUrl('deferral-refused') }}">Deferral refused letters</a></li>
+        <li><a class="govuk-link" href="{{ buildUrl('excusal-granted') }}">Excusal granted letters</a></li>
+        <li><a class="govuk-link" href="{{ buildUrl('excusal-refused') }}">Excusal refused letters</a></li>
+        <li><a class="govuk-link" href="{{ buildUrl('postponement') }}">Postponement letters</a></li>
+        <li><a class="govuk-link" href="{{ buildUrl('withdrawal') }}">Withdrawal letters</a></li>
+      </ul>
+
+      <h2 class="govuk-!-padding-top-5">During service</h2>
+      <hr class="govuk-section-break govuk-section-break--visible">
+      <ul class="govuk-list govuk-list--spaced govuk-!-padding-top-2">
+        <li><a class="govuk-link" href="#">Failed to attend letters</a></li>
+        <li><a class="govuk-link" href="#">Show cause letters</a></li>
+        <li>
+      </ul>
+
+      <h2 class="govuk-!-padding-top-5">After service</h2>
+      <hr class="govuk-section-break govuk-section-break--visible">
+      <ul class="govuk-list govuk-list--spaced govuk-!-padding-top-2">
+        <li><a class="govuk-link" href="#">Certificate of attendance</a></li>
+        <li><a class="govuk-link" href="#">Certificate of exemption</a></li>
+        <li>
+      </ul>
+
+    </div>
+  </div>
+{% endblock %}

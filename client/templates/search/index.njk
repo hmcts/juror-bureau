@@ -38,7 +38,7 @@
           {% set sendToList = (sendToList.push({value: "AUTO", text: "AUTO", selected: false }), sendToList) %}
         {% endif %}
         {% for staffMember in staffList %}
-          {% if searchParams.officerAssigned === staffMember.login %}
+          {% if searchParams.officer_assigned === staffMember.login %}
             {% set staffSelected = true %}
           {% else %}
             {% set staffSelected = false %}
@@ -136,7 +136,7 @@
               id="closed" 
               name="processing_status" 
               type="checkbox" 
-              value="COMPLETED" 
+              value="CLOSED" 
               {% if searchParams.is_completed === true %} checked {% endif %}
             >
             <label class="govuk-label govuk-checkboxes__label" for="closed">

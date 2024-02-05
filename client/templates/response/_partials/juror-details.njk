@@ -60,6 +60,9 @@
               {% if (nameDetails.changed) or (title.changed) %}<div class="jd-label-blue">Pending</div>{% endif %}
               {{ nameDetails.currentName }}
             </td>
+            {% if not nameDetails.oldName %}
+              <td class="govuk-table__cell"></td>
+            {% endif %}
           {% else %}
             <td class="govuk-table__cell" id="jurorName">
               {% if (nameDetails.changed) or (title.changed) %}<div class="jd-label-blue">New</div>{% endif %}
@@ -113,6 +116,7 @@
           <th class="govuk-table__header" scope="row">Main Phone</th>
           {% if jurorDetails.phone.current === null %}
             <td class="govuk-table__cell" id="jurorPrimaryPhone">-</td>
+            <td class="govuk-table__cell"></td>
           {% else %}
             <td class="govuk-table__cell" id="jurorPrimaryPhone">
             {% if jurorDetails.phone.changed %}<div class="jd-label-blue">New</div>{% endif %}
@@ -120,7 +124,7 @@
             </td>
             <td class="govuk-table__cell" id="oldJurorPrimaryPhone">
               {% if jurorDetails.phone.changed %}<div class="jd-label-black">Previous</div>{% endif %}
-              {{ jurorDetails.phone.old }}
+              {{ jurorDetails.phone.old if jurorDetails.phone.old}}
             </td>
           {% endif %}
         </tr>
@@ -129,6 +133,7 @@
           <th class="govuk-table__header" scope="row">{{ "Alternative phone" if hasModAccess else "Another Phone" }}</th>
           {% if jurorDetails.altPhone.current === null %}
             <td class="govuk-table__cell" id="jurorSecondaryPhone">-</td>
+            <td class="govuk-table__cell"></td>
           {% else %}
             <td class="govuk-table__cell" id="jurorSecondaryPhone">
               {% if jurorDetails.altPhone.changed %}<div class="jd-label-blue">New</div>{% endif %}
@@ -145,6 +150,7 @@
           <th class="govuk-table__header" scope="row">Email</th>
           {% if jurorDetails.email.current === null %}
             <td class="govuk-table__cell" id="jurorEmailAddress">-</td>
+            <td class="govuk-table__cell"></td>
           {% else %}
             <td class="govuk-table__cell" id="jurorEmailAddress">
               {% if jurorDetails.email.changed %}<div class="jd-label-blue">New</div>{% endif %}

@@ -1,0 +1,45 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+
+{% set currentApp = "Documents" %}
+
+{% block page_title %}{{ serviceName }} - Documents{% endblock %}
+{% block page_identifier %}documents{% endblock %}
+
+{% macro buildUrl(param) %}
+  {{ url("documents.form.get", {
+    document: param
+  }) }}
+{% endmacro %}
+
+{% block content %}
+
+  {% if printingMessage %}
+    {{ mojBanner({
+      type: "success",
+      text: printingMessage,
+      iconFallbackText: "Success"
+    }) }}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-xl">Documents</h1>
+      
+      <ul class="govuk-list govuk-list--spaced">
+        <li><a class="govuk-link" href="{{ buildUrl('initial-summons') }}">Initial summons</a></li>
+        <li><a class="govuk-link" href="{{ buildUrl('summons-reminders') }}">Summons reminders</a></li>
+        <li><a class="govuk-link" href="{{ buildUrl('further-information') }}">Requests for further information</a></li>
+        <li><a class="govuk-link" href="{{ buildUrl('deferral-granted') }}">Deferral granted letters</a></li>
+        <li><a class="govuk-link" href="{{ buildUrl('deferral-refused') }}">Deferral refused letters</a></li>
+        <li><a class="govuk-link" href="{{ buildUrl('excusal-granted') }}">Excusal granted letters</a></li>
+        <li><a class="govuk-link" href="{{ buildUrl('excusal-refused') }}">Excusal refused letters</a></li>
+        <li><a class="govuk-link" href="{{ buildUrl('postponement') }}">Postponement letters</a></li>
+        <li><a class="govuk-link" href="{{ buildUrl('withdrawal') }}">Withdrawal letters</a></li>
+        <li><a class="govuk-link" href="{{ buildUrl('confirmation') }}">Confirmation letters</a></li>
+      </ul>
+
+    </div>
+  </div>
+{% endblock %}

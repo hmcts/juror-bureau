@@ -241,9 +241,9 @@
 
         return rp(reqOptions);
       },
-    },
+    }
 
-    fetchPoolsAtCourt = {
+    , fetchPoolsAtCourt = {
       resource: 'moj/pool-request/pools-at-court',
       get: function(rp, app, jwtToken, locCode) {
         const reqOptions = _.clone(options);

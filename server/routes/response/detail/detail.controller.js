@@ -3,6 +3,9 @@
  * GET    /    ->    index
  */
 
+const { courtLocationsFromPostcodeObj } = require('../../../objects/court-location.js');
+const { resolveCatchmentResponse } = require('../../summons-management/summons-management.controller.js');
+
 ;(function(){
   'use strict';
 
@@ -214,6 +217,126 @@
                   },
                 });
 
+                if (data.newJurorPostcode !== data.jurorPostcode && data.processingStatus !== 'Closed') {
+                  const postcode = modUtils.splitPostCode(data.newJurorPostcode);
+
+                  return courtLocationsFromPostcodeObj.get(
+                    require('request-promise'),
+                    app,
+                    req.session.authToken,
+                    postcode
+                  )
+                    .then(
+                      (catchmentResponse) => {
+                        app.logger.info('Fetched the courts for new address: ', {
+                          auth: req.session.authentication,
+                          jwt: req.session.authToken,
+                          postcode: data.newJurorPostcode,
+                          data: {
+                            catchmentResponse,
+                          },
+                        });
+
+                        req.session.catchmentWarning = resolveCatchmentResponse(catchmentResponse,
+                          req.session.locCode);
+
+
+                        return res.render('response/detail.njk', {
+                          response: data,
+                          nameDetails: nameDetails,
+                          addressDetails: addressDetails,
+                          jurorDetails: additionalChangeDetails,
+                          thirdPartyDetails: thirdPartyDetails,
+                          logAttention: ((data.notes !== null && data.notes.length > 0) || data.phoneLogs.length > 0),
+                          dateConfirmed: (!data.excusalReason && !data.deferralReason),
+                          importantNavItems: importantNavItems,
+                          eligibilityDetails: eligibilityDetails,
+                          isDeceased: thirdPartyDetails.reason === 'Deceased',
+                          adjustmentsHasFlag: data.specialNeeds.length > 0 && thirdPartyDetails.reason !== 'Deceased',
+                          assignedSelf: !(
+                            data.assignedStaffMember === null ||
+                              data.assignedStaffMember.login === null ||
+                              data.assignedStaffMember.login !== req.session.authentication.login
+                          ),
+                          nav: req.session.nav,
+                          canEdit: canEdit,
+                          poolStatus: data.status,
+                          processingStatus: data.processingStatus,
+                          processingStatusDisp: getProcessingStatusDisplay(data.processingStatus, req.session.hasModAccess),
+                          displayProcessButtonMenu: (data.processingStatus !== 'CLOSED'),
+                          displayActionsButtonMenu: true,
+                          replyType: getReplyType(data, req.session.hasModAccess),
+                          errors: {
+                            count: typeof req.session.errors !== 'undefined' ? Object.keys(req.session.errors).length : 0,
+                            items: req.session.errors,
+                          },
+                          opticReference,
+                          processedBannerMessage: data.processedBannerMessage ? data.processedBannerMessage : null,
+                          catchmentWarning: req.session.catchmentWarning,
+                        });
+                      }
+                    )
+                    .catch(
+                      (err) => {
+                        // NO CATCHEMENT AREA FOR POSTCODE
+                        if (err.statusCode === 404) {
+                          app.logger.crit('No catchment area for juror\'s postcode: ', {
+                            auth: req.session.authentication,
+                            jwt: req.session.authToken,
+                            data: req.params['id'],
+                            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+                          });
+
+                          req.session.catchmentWarning = resolveCatchmentResponse([], req.session.locCode);
+
+                          return res.render('response/detail', {
+                            response: data,
+                            nameDetails: nameDetails,
+                            addressDetails: addressDetails,
+                            jurorDetails: additionalChangeDetails,
+                            thirdPartyDetails: thirdPartyDetails,
+                            logAttention: ((data.notes !== null && data.notes.length > 0) || data.phoneLogs.length > 0),
+                            dateConfirmed: (!data.excusalReason && !data.deferralReason),
+                            importantNavItems: importantNavItems,
+                            eligibilityDetails: eligibilityDetails,
+                            isDeceased: thirdPartyDetails.reason === 'Deceased',
+                            adjustmentsHasFlag: data.specialNeeds.length > 0 && thirdPartyDetails.reason !== 'Deceased',
+                            assignedSelf: !(
+                              data.assignedStaffMember === null ||
+                              data.assignedStaffMember.login === null ||
+                              data.assignedStaffMember.login !== req.session.authentication.login
+                            ),
+                            nav: req.session.nav,
+                            canEdit: canEdit,
+                            poolStatus: data.status,
+                            processingStatus: data.processingStatus,
+                            processingStatusDisp: getProcessingStatusDisplay(data.processingStatus, req.session.hasModAccess),
+                            displayProcessButtonMenu: (data.processingStatus !== 'CLOSED'),
+                            displayActionsButtonMenu: true,
+                            replyType: getReplyType(data, req.session.hasModAccess),
+                            errors: {
+                              count: typeof req.session.errors !== 'undefined' ? Object.keys(req.session.errors).length : 0,
+                              items: req.session.errors,
+                            },
+                            opticReference,
+                            processedBannerMessage: data.processedBannerMessage ? data.processedBannerMessage : null,
+                            catchmentWarning: req.session.catchmentWarning,
+                          });
+                        }
+
+                        app.logger.crit('Failed when fetching the juror\'s catchement area: ', {
+                          auth: req.session.authentication,
+                          jwt: req.session.authToken,
+                          data: req.params['id'],
+                          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+                        });
+
+                        return res.redirect(app.namedRoutes.build('homepage.get'));
+                      }
+                    );
+
+                }
+
                 if (data.processingStatus === 'CLOSED') {
                   data.processedBannerMessage = modUtils.resolveProcessedBannerMessage(data.statusRender, {
                     isExcusal: !!data.excusalReason,
@@ -245,9 +368,6 @@
                 poolStatus: data.status,
                 processingStatus: data.processingStatus,
                 processingStatusDisp: getProcessingStatusDisplay(data.processingStatus, req.session.hasModAccess),
-                changeCourt: (catchmentStatus === 'Changed'),
-                checkCatchment: (catchmentStatus === 'NotFound'),
-                catchmentStatus: catchmentStatus,
                 displayProcessButtonMenu: (data.processingStatus !== 'CLOSED'),
                 displayActionsButtonMenu: true,
                 replyType: getReplyType(data, req.session.hasModAccess),
@@ -260,7 +380,7 @@
                 opticReference,
                 processedBannerMessage: data.processedBannerMessage ? data.processedBannerMessage : null,
               });
-            })
+            });
         }
 
         , errorCB = function(err) {
@@ -341,12 +461,12 @@
               summary: errorMsg,
               details: errorMsg,
             }],
-          }
+          };
 
           return res.redirect(app.namedRoutes.build('response.detail.get', {
-            id: req.body.jurorNumber
+            id: req.body.jurorNumber,
           }));
-        }
+        };
 
       // Remove errors each time
       delete req.session.errors;
@@ -408,7 +528,7 @@
             data: {
               jurorNumber: req.params.id,
               notes: req.body.notes,
-              version: req.body.version
+              version: req.body.version,
             },
             response: response,
           });
@@ -422,7 +542,7 @@
             data: {
               jurorNumber: req.params.id,
               notes: req.body.notes,
-              version: req.body.version
+              version: req.body.version,
             },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
@@ -472,8 +592,8 @@
             errors: {
               title: '',
               count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-              items: tmpErrors
-            }
+              items: tmpErrors,
+            },
           });
 
         }
@@ -510,8 +630,8 @@
           errors: {
             title: '',
             count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-            items: tmpErrors
-          }
+            items: tmpErrors,
+          },
         });
       }
 
@@ -532,7 +652,7 @@
             data: {
               jurorNumber: req.params.id,
               notes: req.body.notes,
-              version: req.body.version
+              version: req.body.version,
             },
             response: response,
           });
@@ -547,7 +667,7 @@
             data: {
               jurorNumber: req.params.id,
               notes: req.body.notes,
-              version: req.body.version
+              version: req.body.version,
             },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
@@ -557,8 +677,8 @@
             req.session.errors = {
               notes: [{
                 details: 'The notes have been updated by someone else',
-                summary: 'The notes have been updated by someone else'
-              }]
+                summary: 'The notes have been updated by someone else',
+              }],
             };
 
             return res.redirect(app.namedRoutes.build('response.detail.notes.edit.get', {id: req.body.jurorNumber}));
@@ -573,13 +693,13 @@
             errors: {
               title: '',
               count: 1,
-              message: 'Could not update notes of response'
-            }
+              message: 'Could not update notes of response',
+            },
           });
 
         },
         validatorResult,
-        notesText = req.body.notes
+        notesText = req.body.notes;
 
       // Store notes
       req.session.replyDetails.notes = req.body.notes;
@@ -613,7 +733,7 @@
     return function(req, res) {
       var tmpErrors
         , jurorName
-        , callNotes
+        , callNotes;
 
       if (req.session.replyDetails){
         jurorName = req.session.replyDetails.jurorName;
@@ -635,8 +755,8 @@
         errors: {
           title: '',
           count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-          items: tmpErrors
-        }
+          items: tmpErrors,
+        },
       });
 
     };
@@ -682,14 +802,14 @@
             errors: {
               title: '',
               count: 1,
-              message: 'Could not create phone log entry for response'
-            }
+              message: 'Could not create phone log entry for response',
+            },
           });
 
         };
 
       // Store notes
-      req.session.replyDetails.callNotes = req.body.callNotes
+      req.session.replyDetails.callNotes = req.body.callNotes;
 
       // Validate input
       validatorResult = validate(req.body, require('../../../config/validation/phone-log.js')(req));
@@ -717,7 +837,7 @@
     return function(req, res) {
       var successCB = function(disqualifyReasons) {
           var tmpErrors
-            , tmpFields
+            , tmpFields;
 
           app.logger.info('Fetched list of disqualify reasons: ', {
             auth: req.session.authentication,
@@ -755,7 +875,7 @@
         }
 
         , errorCB = function(err) {
-          var tmpErrors
+          var tmpErrors;
 
           app.logger.crit('Failed to fetch list of disqualify reasons: ', {
             auth: req.session.authentication,
@@ -767,15 +887,15 @@
           });
 
           tmpErrors = {
-            '': [{'details': 'Failed to fetch list of disqualify reasons'}]
-          }
+            '': [{'details': 'Failed to fetch list of disqualify reasons'}],
+          };
 
           return res.render('index.njk', {
             errors: {
               message: '',
               count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-              items: tmpErrors
-            }
+              items: tmpErrors,
+            },
           });
 
         };
@@ -826,8 +946,8 @@
 
           req.session.formFields = req.body;
           req.session.errors = {
-            '': [{'details': err.error.message}]
-          }
+            '': [{'details': err.error.message}],
+          };
 
           return res.redirect(app.namedRoutes.build('response.detail.disqualify.get', {id: req.params.id}));
         };
@@ -960,15 +1080,15 @@
           });
 
           if (parseInt(err.statusCode, 10) === 400) {
-            messageText = 'The summons has been completed by another user. Your changes will not be saved.'
+            messageText = 'The summons has been completed by another user. Your changes will not be saved.';
           } else {
             messageText = 'Could not update response';
           }
 
           req.session.formFields = req.body;
           req.session.errors = {
-            '': [{'details': messageText}]
-          }
+            '': [{'details': messageText}],
+          };
 
           //return res.status(err.statusCode).send(err.error);
           return res.redirect(app.namedRoutes.build('response.detail.excusal.get', {id: req.params.id}));
@@ -1017,7 +1137,7 @@
           .catch(errorCB);
 
       }
-    }
+    };
   };
 
   module.exports.getDeferral = function(app) {
@@ -1036,7 +1156,7 @@
               responseId: req.params.id,
               deferralDates: data[1].deferralDate,
             },
-            reasons: data[0]
+            reasons: data[0],
           });
 
           tmpFields = _.cloneDeep(req.session.formFields);
@@ -1131,15 +1251,15 @@
           });
 
           if (parseInt(err.statusCode, 10) === 400) {
-            messageText = 'The summons has been completed by another user. Your changes will not be saved.'
+            messageText = 'The summons has been completed by another user. Your changes will not be saved.';
           } else {
             messageText = 'Could not update response';
           }
 
           req.session.formFields = req.body;
           req.session.errors = {
-            '': [{'details': messageText}]
-          }
+            '': [{'details': messageText}],
+          };
 
           return res.redirect(app.namedRoutes.build('response.detail.deferral.get', {id: req.params.id}));
         };
@@ -1200,8 +1320,8 @@
           , fonts = {
             OpenSans: {
               normal: './client/assets/fonts/OpenSans-Regular.ttf',
-              bold: './client/assets/fonts/OpenSans-Bold.ttf'
-            }
+              bold: './client/assets/fonts/OpenSans-Bold.ttf',
+            },
           }
           , printer
           , jurorData = {}
@@ -1219,27 +1339,27 @@
             nothere: 'The person isn\'t here'
             , assistance: 'The person is unable to reply by themselves'
             , deceased: 'The person has died'
-            , other: 'Other'
+            , other: 'Other',
           }
           , thirdPartyReasonCY = {
             nothere: 'Nid yw\'r unigolyn yma'
             , assistance: 'Nid yw\'r unigolyn yn gallu ymateb dros ei hun'
             , deceased: 'Mae\'r unigolyn wedi marw'
-            , other: 'Arall'
+            , other: 'Arall',
           }
           , assistanceEN = {
             L: 'Limited mobility'
             , H: 'Hearing impairment'
             , I: 'Diabetes'
             , V: 'Severe sight impairment'
-            , R: 'Learning disability'
+            , R: 'Learning disability',
           }
           , assistanceCY = {
             L: 'Symudedd cyfyngedig'
             , H: 'Nam ar y clyw'
             , I: 'Clefyd siwgr'
             , V: 'Nam difrifol ar eich golwg'
-            , R: 'Anabledd dysgu'
+            , R: 'Anabledd dysgu',
           };
 
         printer = new pdfMake(fonts);
@@ -1357,7 +1477,7 @@
           mentalHealthSectioned:{details: getMentalHealthDetails(responseData).q1Details},
           mentalHealthCapacity:{details: getMentalHealthDetails(responseData).q2Details},
           onBail:{details: responseData.bailDetails},
-          convicted:{details: responseData.convictionsDetails}
+          convicted:{details: responseData.convictionsDetails},
         };
 
         jurorData.thirdPartyDetails = {
@@ -1369,7 +1489,7 @@
           mainPhone: responseData.thirdPartyMainPhoneNumber,
           otherPhone: responseData.thirdPartyAlternatePhoneNumber,
           emailAddress: responseData.thirdPartyEmailAddress,
-          reasonText: ''
+          reasonText: '',
         };
 
         switch (responseData.thirdPartyReason) {
@@ -1428,10 +1548,10 @@
           result = Buffer.concat(chunks);
           res.contentType('application/pdf');
           res.send(result);
-        })
+        });
         pdfDoc.end();
 
-      }
+      };
 
       //Get response data from back end API
       responseDetailObj.get(require('request-promise'), app, req.session.authToken, req.params.id)
@@ -1491,7 +1611,7 @@
         }));
       }
       return res.redirect(app.namedRoutes.build('response.detail.get', {
-        id: req.params.id
+        id: req.params.id,
       }));
     };
   };
@@ -1517,7 +1637,7 @@
           if (typeof req.session.hasModAccess !== 'undefined' && req.session.hasModAccess) {
             req.session.responseWasActioned = {
               jurorDetails: req.session.replyDetails,
-              type: 'Responded'
+              type: 'Responded',
             };
 
             return res.redirect(app.namedRoutes.build('inbox.todo.get'));
@@ -1547,8 +1667,8 @@
 
           req.session.formFields = req.body;
           req.session.errors = {
-            '': [{'details': err.error.message}]
-          }
+            '': [{'details': err.error.message}],
+          };
 
           // redirect to the process page?
           if (typeof req.session.hasModAccess !== 'undefined' && req.session.hasModAccess) {
@@ -1561,7 +1681,7 @@
           return res.redirect(app.namedRoutes.build('response.detail.responded.get', {
             id: req.params.id,
           }));
-        }
+        };
 
       delete req.session.errors;
       delete req.session.formFields;
@@ -1592,7 +1712,7 @@
           if (typeof req.session.hasModAccess !== 'undefined' && req.session.hasModAccess) {
             req.session.responseWasActioned = {
               jurorDetails: req.session.replyDetails,
-              type: 'Responded'
+              type: 'Responded',
             };
 
             return res.redirect(app.namedRoutes.build('inbox.todo.get'));
@@ -1606,7 +1726,8 @@
         req.session.authToken,
         req.params.id,
         'CLOSED',
-        req.body.version
+        req.body.version,
+        req.session.hasModAccess,
       )
         .then(successCB)
         .catch(errorCB);
@@ -1616,7 +1737,7 @@
   module.exports.getAwaitingInformation = function() {
     return function(req, res) {
       var tmpErrors
-        , tmpFields
+        , tmpFields;
 
       tmpErrors = _.cloneDeep(req.session.errors);
       tmpFields = _.cloneDeep(req.session.formFields);
@@ -1634,7 +1755,7 @@
             count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
             items: tmpErrors,
           },
-          method: req.params['type'] || 'digital'
+          method: req.params['type'] || 'digital',
         });
       }
       return res.redirect(app.namedRoutes.build('response.detail.get', {id: req.params.id}));
@@ -1687,11 +1808,11 @@
 
           req.session.formFields = req.body;
           req.session.errors = {
-            '': [{'details': err.error.message}]
-          }
+            '': [{'details': err.error.message}],
+          };
 
           return res.redirect(app.namedRoutes.build('response.detail.awaiting.information.get', routeParameters));
-        }
+        };
 
       if (req.session.hasModAccess && req.params['type'] === 'paper') {
         routeParameters.type = 'paper';
@@ -1757,7 +1878,7 @@
       responseDetailObj.get(require('request-promise'), app, req.session.authToken, req.params.id)
         .then(successCB)
         .catch(errorCB);
-    }
+    };
   };
 
   module.exports.validateEdit = function() {
@@ -1773,7 +1894,7 @@
         validatorRules = _.merge(
           validatorRules,
           require('../../../config/validation/edit-' + req.body.target + '-third-party.js')(req)
-        )
+        );
       }
 
       // Add dob fields into single dob object if they exist
@@ -1953,7 +2074,7 @@
           }
 
           return res.status(err.statusCode).send(err.error);
-        }
+        };
 
 
       bureauStatusObj.post(
@@ -2015,7 +2136,7 @@
         data.newJurorAddress4,
         data.newJurorAddress5,
         data.newJurorAddress6,
-        data.newJurorPostcode
+        data.newJurorPostcode,
       ].filter(function(val) {
         return typeof val !== 'undefined' && val !== null && val.length > 0;
       }).join('<br>')
@@ -2027,7 +2148,7 @@
         data.jurorAddress4,
         data.jurorAddress5,
         data.jurorAddress6,
-        data.jurorPostcode
+        data.jurorPostcode,
       ].filter(function(val) {
         return typeof val !== 'undefined' && val !== null && val.length > 0;
       }).join('<br>')
@@ -2066,7 +2187,7 @@
 
     if (data.useJurorPhoneDetails || data.useJurorPhoneDetails === 'undefined' || data.useJurorPhoneDetails === null) {
       phoneChanged = (data.phoneNumber !== data.newPhoneNumber && typeof data.phoneNumber !== 'undefined' && data.phoneNumber !== null && data.phoneNumber.length !== 0);
-      altPhoneChanged = (data.altPhoneNumber !== data.newAltPhoneNumber && typeof data.altPhoneNumber !== 'undefined' && data.altPhoneNumber !== null && data.altPhoneNumber.length !== 0 && (data.altPhoneNumber !== data.newPhoneNumber))
+      altPhoneChanged = (data.altPhoneNumber !== data.newAltPhoneNumber && typeof data.altPhoneNumber !== 'undefined' && data.altPhoneNumber !== null && data.altPhoneNumber.length !== 0 && (data.altPhoneNumber !== data.newPhoneNumber));
     } else {
       phoneChanged = (data.phoneNumber !== data.thirdPartyMainPhoneNumber && typeof data.phoneNumber !== 'undefined' && data.phoneNumber !== null && data.phoneNumber.length !== 0);
       altPhoneChanged = (data.altPhoneNumber !== data.thirdPartyAlternatePhoneNumber && typeof data.altPhoneNumber !== 'undefined' && data.altPhoneNumber !== null && data.altPhoneNumber.length !== 0 && (data.thirdPartyAlternatePhoneNumber !== data.thirdPartyMainPhoneNumber));
@@ -2123,7 +2244,7 @@
       mentalHealthAct: mentalHealth,
       bail: bail,
       convictions: convictions,
-    }
+    };
   }
 
   function getThirdPartyDetails(data) {
@@ -2138,13 +2259,13 @@
 
     switch (data.thirdPartyReason) {
     case 'nothere':
-      thirdPartyReason = 'Juror is not here'
+      thirdPartyReason = 'Juror is not here';
       break;
     case 'deceased':
-      thirdPartyReason = 'Deceased'
+      thirdPartyReason = 'Deceased';
       break;
     case 'assistance':
-      thirdPartyReason = 'Assistance'
+      thirdPartyReason = 'Assistance';
       break;
     default:
       thirdPartyReason = data.thirdPartyOtherReason;
@@ -2166,7 +2287,7 @@
       email: thirdPartyEmail,
       reasonRaw: data.thirdPartyReason,
       reasonOther: data.thirdPartyOtherReason,
-    }
+    };
   }
 
   function getCJSEmploymentDetails(data, employer){
@@ -2228,7 +2349,7 @@
         mhQ2 = splitData[0].trim();
       }
     } else {
-      mhQ1 = null
+      mhQ1 = null;
       mhQ2 = null;
     }
 
@@ -2318,7 +2439,7 @@
 
         return {
           errors: errors,
-          results: results
+          results: results,
         };
       });
   }
@@ -2439,7 +2560,7 @@
         dateVal = arrDates[index];
         returnDates.push({
           dateValue: dateVal,
-          displayValue: moment(dateVal, 'DD/MM/YYYY').format('D MMMM YYYY')
+          displayValue: moment(dateVal, 'DD/MM/YYYY').format('D MMMM YYYY'),
         });
       }
     }
@@ -2453,7 +2574,7 @@
 
     if (arrCodes){
       sortedCodes = arrCodes.sort(function(a, b) {
-        return a.excusalCode.localeCompare(b.excusalCode)
+        return a.excusalCode.localeCompare(b.excusalCode);
       });
     }
 

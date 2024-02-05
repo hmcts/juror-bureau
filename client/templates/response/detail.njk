@@ -4,6 +4,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "../includes/reply-type-tag-macro.njk" import replyTypeTag %}
 {% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 
 {% block page_title %}
   {{ serviceName }} - response details
@@ -70,6 +71,44 @@
       {% set urgencyBadge = "Overdue" %}
     {% else %}
       {% set urgencyBadge = undefined %}
+    {% endif %}
+  {% endif %}
+
+
+  {# catchment warning banner #}
+  {% if hasModAccess %}
+    {% if catchmentWarning.isOutwithCatchment %}
+      {% if catchmentWarning.courts | length %}
+        {% set newCourts = [] %}
+        {% for court in catchmentWarning.courts %}
+          {% set newCourts = (newCourts.push(court.formattedName), newCourts) %}
+        {% endfor %}
+        {% set catchmentWarningHtml %}
+          <p class="govuk-notification-banner__heading">
+            Juror's address is outside the catchment area of the court they were summoned to
+          </p>
+          <p>
+            Their new address is in the catchment area for {{newCourts | prettyList}}.
+          <p>
+          <p>
+            You can change the juror's court when you process the reply.
+          </p>
+        {% endset %}
+      {% else %}
+        {% set catchmentWarningHtml %}
+          <p class="govuk-notification-banner__heading">
+            Juror's postcode is not recognised as belonging to any court catchment area
+          </p>
+          <p>
+            Check the juror's postcode is correct.
+          <p>
+        {% endset %}
+      {% endif %}
+      <div class="govuk-grid-row govuk-body">
+        {{ govukNotificationBanner({
+          html: catchmentWarningHtml
+        }) }}
+      </div>
     {% endif %}
   {% endif %}
 

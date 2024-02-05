@@ -82,6 +82,16 @@ module.exports.postProcessReply = function(app) {
       return res.redirect(app.namedRoutes.build('process-reply.get', routeParameters));
     }
 
+    if (req.session.catchmentWarning && req.session.catchmentWarning.isOutwithCatchment) {
+      routeParameters.action = req.body.processActionType;
+
+      if (req.body.processActionType === 'disqualify') {
+        return res.redirect(app.namedRoutes.build(processActionType[req.body.processActionType], routeParameters));
+      }
+
+      return res.redirect(app.namedRoutes.build('reassign-before-process.get', routeParameters));
+    }
+
     return res.redirect(app.namedRoutes.build(processActionType[req.body.processActionType], routeParameters));
   };
 };

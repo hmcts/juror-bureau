@@ -1,14 +1,14 @@
 (function() {
   'use strict';
 
-  var _ = require('lodash')
-    , crypto = require('crypto')
-    , transformPoolType = require('../components/filters').transformPoolType
-    , dateFilter = require('../components/filters').dateFilter
-    , capitalizeFully = require('../components/filters').capitalizeFully
-    , moment = require('moment')
-    , modUtils = require('../lib/mod-utils')
-    , { LaunchDarkly } = require('./launchdarkly');
+  const _ = require('lodash');
+  const crypto = require('crypto');
+  const transformPoolType = require('../components/filters').transformPoolType;
+  const dateFilter = require('../components/filters').dateFilter;
+  const capitalizeFully = require('../components/filters').capitalizeFully;
+  const moment = require('moment');
+  const modUtils = require('../lib/mod-utils');
+  const { LaunchDarkly } = require('./launchdarkly');
 
   module.exports.hasFlagAccess = async function(username, owner, flag) {
     // context object for launchdarkly
@@ -23,8 +23,8 @@
   };
 
   module.exports.matchUserCourt = function(courts, body) {
-    var match = false
-      , courtCode;
+    let match = false;
+    let courtCode;
 
     courtCode = body.courtNameOrLocation.toString().match(/\d+/g);
 
@@ -819,6 +819,32 @@
     const part = postcode.slice(0, index);
 
     return part.trim();
+  };
+
+  module.exports.getLetterIdentifier= function(pageType){
+    switch (pageType){
+    case 'initial-summons':
+      return 'Initial summons';
+    case 'summons-reminders':
+      return 'Summons reminders';
+    case 'further-information':
+      return 'Requests for further information';
+    case 'confirmation':
+      return 'Confirmation letters';
+    case 'deferral-granted':
+      return 'Deferral granted letters';
+    case 'deferral-refused':
+      return 'Deferral refused letters';
+    case 'excusal-granted':
+      return 'Excusal granted letters';
+    case 'excusal-refused':
+      return 'Excusal refused letters';
+    case 'postponement':
+      return 'Postponement letters';
+    case 'withdrawal':
+      return 'Withdrawal letters';
+    default: return '';
+    }
   };
 
 })();

@@ -41,6 +41,7 @@
     require('./trial-management')(app);
     require('./reporting')(app);
     require('./sjo-tasks')(app);
+    require('./documents')(app);
 
     app.route('/health')
       .get(function(req, res) {

@@ -15,6 +15,7 @@
     it('should validate a valid request', function() {
       var mockRequest = {
         attendanceDate: "30/10/2023",
+        originalNextDate: '2023,10,29',
       };
 
       validatorResult = validate(mockRequest, attendanceDateValidator());
@@ -36,6 +37,7 @@
     it('should validate an invalid request - empty field', function() {
       var mockRequest = {
         attendanceDate: "",
+        originalNextDate: '2023,10,29',
       };
 
       validatorResult = validate(mockRequest, attendanceDateValidator());
@@ -49,6 +51,7 @@
     it('should validate an invalid request - special chars in date', function() {
       var mockRequest = {
         attendanceDate: "30!10!2023",
+        originalNextDate: '2023,10,29',
       };
 
       validatorResult = validate(mockRequest, attendanceDateValidator());
@@ -63,6 +66,7 @@
     it('should validate an invalid request - invalid date', function() {
       var mockRequest = {
         attendanceDate: "30/13/2023",
+        originalNextDate: '2023,10,29',
       };
 
       validatorResult = validate(mockRequest, attendanceDateValidator());
@@ -71,6 +75,21 @@
       expect(validatorResult).to.have.ownPropertyDescriptor('attendanceDate');
       expect(validatorResult.attendanceDate[0]).to.have.ownPropertyDescriptor('details');
       expect(validatorResult.attendanceDate[0].details).to.equal('Enter a real date');
+
+    });
+
+    it('should validate an invalid request - date is in the past', function() {
+      var mockRequest = {
+        attendanceDate: "30/12/2023",
+        originalNextDate: '2023,12,31',
+      };
+
+      validatorResult = validate(mockRequest, attendanceDateValidator());
+
+      expect(validatorResult).to.be.an('object');
+      expect(validatorResult).to.have.ownPropertyDescriptor('attendanceDate');
+      expect(validatorResult.attendanceDate[0]).to.have.ownPropertyDescriptor('details');
+      expect(validatorResult.attendanceDate[0].details).to.equal('Date must be in the future');
 
     });
 

@@ -4,11 +4,12 @@
   const _ = require('lodash'),
     validate = require('validate.js'),
     processApprovalValidator = require('../../../config/validation/approve-create-juror'),
+    { fetchPoolsAtCourt } = require('../../../objects/request-pool'),
     jurorsForApproval  = require('../../../objects/approve-jurors').jurorList,
     processPendingJuror = require('../../../objects/approve-jurors').processPendingJuror;
 
   module.exports.getInWaiting = function(app) {
-    return function(req, res) {
+    return async function(req, res) {
 
       let bannerMessage;
 
@@ -21,49 +22,69 @@
       delete req.session.poolCreateFormFields;
       delete req.session.dismissJurors;
 
-      return res.render('juror-management/manage-jurors.njk', {
-        nav: 'jurors',
-        jurorApprovalCount: req.session.jurorApprovalCount,
-        currentTab: 'in-waiting',
-        bannerMessage,
-        jurors:[
-          {
-            jurorNumber: '645200045',
-            firstName: 'Iqbal',
-            lastName: 'Hussain',
-            poolNumber: '415220904',
-            status: 'responded',
+      try {
+        const pools = await fetchPoolsAtCourt.get(
+          require('request-promise'),
+          app,
+          req.session.authToken,
+          req.session.authentication.owner,
+        );
+
+        app.logger.info('Fetched pools at court location: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: pools,
+        });
+
+        try {
+          const forApproval = await jurorsForApproval.get(
+            require('request-promise'),
+            app,
+            req.session.authToken,
+            req.session.authentication.owner,
+            'QUEUED'
+          );
+
+          app.logger.info('Fetched jurors pending approval: ', {
+            auth: req.session.authentication,
+            jwt: req.session.authToken,
+            data: forApproval,
+          });
+
+          return res.render('juror-management/manage-jurors.njk', {
+            nav: 'jurors',
+            pendingApprovalCount: forApproval.pending_jurors_response_data.length,
+            currentTab: 'pools',
+            bannerMessage,
+            pools: pools.pools_at_court_location,
+          });
+
+        } catch (error) {
+          app.logger.crit('Unable to fetch pending juror list', {
+            auth: req.session.authentication,
+            token: req.session.authToken,
+            data: {
+              locationCode: req.session.authentication.owner,
+              status: 'QUEUED',
+            },
+            error: typeof error.error !== 'undefined' ? error.error : error.toString(),
+          });
+          return res.render('_errors/generic.njk');
+        }
+
+      } catch (err) {
+        app.logger.crit('Failed to fetch pools at court location: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            locationCode: req.session.authentication.owner,
           },
-        ],
-      });
-    };
-  };
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
 
-  module.exports.getOnTrials = function(app) {
-    return function(req, res) {
+        return res.render('_errors/generic.njk');
+      }
 
-      delete req.session.bannerMessage;
-      delete req.session.newJuror;
-
-      return res.render('juror-management/manage-jurors.njk', {
-        nav: 'jurors',
-        jurorApprovalCount: req.session.jurorApprovalCount,
-        currentTab: 'on-trials',
-      });
-    };
-  };
-
-  module.exports.getOnCall = function(app) {
-    return function(req, res) {
-
-      delete req.session.bannerMessage;
-      delete req.session.newJuror;
-
-      return res.render('juror-management/manage-jurors.njk', {
-        nav: 'jurors',
-        jurorApprovalCount: req.session.jurorApprovalCount,
-        currentTab: 'on-call',
-      });
     };
   };
 
@@ -91,7 +112,7 @@
 
           return res.render('juror-management/manage-jurors.njk', {
             nav: 'jurors',
-            jurorApprovalCount: req.session.jurorApprovalCount,
+            pendingApprovalCount: jurors.length,
             currentTab: 'pending-approval',
             bannerMessage,
             jurors,

@@ -18,7 +18,8 @@
     , opticReferenceValidator = require('../../config/validation/optic-reference')
     , deferralJurorValidator = require('../../config/validation/deferral-juror')
     , deferralDatePickerValidator = require('../../config/validation/date-picker').deferralDatePicker
-    , otherDeferralDateValidater = require('../../config/validation/deferral-mod').deferralDateAndReason;
+    , otherDeferralDateValidater = require('../../config/validation/deferral-mod').deferralDateAndReason
+    , courtLocationsFromPostcodeObj = require('../../objects/court-location').courtLocationsFromPostcodeObj;
 
   const dateHint = 'Use dd/mm/yyyy format. For example, 31/01/2023.';
 
@@ -359,6 +360,9 @@
           return res.redirect(app.namedRoutes.build('process-deferral-dates.get', routeParameters));
         };
 
+      // If new address entered and reassigning to new court
+      const courtLocCode = _.clone(req.session.receivingCourtLocCode);
+
       // get the available pools for these dates
       postBody.deferralDates = req.session.deferralDates;
 
@@ -368,6 +372,7 @@
         req.session.authToken,
         postBody,
         req.params['id'],
+        courtLocCode
       )
         .then(successCB)
         .catch(errorCB);
@@ -410,6 +415,11 @@
           delete req.session.otherDateSearch;
           delete req.session.deferralDatesEntered;
           delete req.session.deferralReasons;
+
+          if (req.session.receivingCourtLocCode) {
+            req.session.locCode = _.clone(req.session.receivingCourtLocCode);
+          }
+          delete req.session.receivingCourtLocCode;
 
           return res.redirect(app.namedRoutes.build('inbox.todo.get'));
 
@@ -646,6 +656,7 @@
           delete req.session.jurorDetails;
           delete req.session.jurorName;
           delete req.session.specialNeeds;
+          delete req.session.catchmentWarning;
 
           jurorDetails = {
             name: nameDetails,
@@ -801,6 +812,93 @@
         isExcusal: data.responseClone.excusal,
         isDeceased: data.responseClone.excusalReason === 'D',
       });
+    }
+
+    const postcode = modUtils.splitPostCode(data.responseClone.addressPostcode);
+
+    if (data.addressDetails.changed &&
+      (data.responseClone.existingAddressPostcode !== data.responseClone.addressPostcode &&
+        data.responseClone.processingStatus !== 'Closed')) {
+      return courtLocationsFromPostcodeObj.get(require('request-promise'), app, req.session.authToken,
+        postcode)
+        .then(
+          (catchmentResponse) => {
+            app.logger.info('Fetched the courts for new address: ', {
+              auth: req.session.authentication,
+              jwt: req.session.authToken,
+              postcode: data.responseClone.addressPostcode,
+              data: {
+                catchmentResponse,
+              },
+            });
+
+            req.session.catchmentWarning = resolveCatchmentResponse(catchmentResponse,
+              req.session.locCode);
+
+            return res.render('response/detail', {
+              method: req.params['type'] || 'digital',
+              displayActionsButtonMenu: true,
+              replyType: resolveReplyType(data.responseClone),
+              response: data.responseClone,
+              nameDetails: data.nameDetails,
+              addressDetails: data.addressDetails,
+              eligibilityDetails: data.eligibilityDetails,
+              jurorDetails: data.jurorDetails,
+              importantNavItems: data.importantNavItems,
+              processingStatusDisp: data.processingStatusDisp,
+              thirdPartyDetails: data.thirdPartyDetails,
+              opticReference: data.opticReference,
+              processedBannerMessage: data.processedBannerMessage,
+              isBureauUser: isBureauUser(req),
+              isAddChangeVisible: data.responseClone.processingStatus !== 'Closed',
+              catchmentWarning: req.session.catchmentWarning,
+            });
+
+          }
+        )
+        .catch(
+          (err) => {
+            app.logger.crit('Failed when fetching the juror\'s catchement area: ', {
+              auth: req.session.authentication,
+              jwt: req.session.authToken,
+              data: req.params['id'],
+              error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+            });
+
+            // NO CATCHEMENT AREA FOR POSTCODE
+            if (err.statusCode === 404) {
+              app.logger.crit('No catchment area for juror\'s postcode: ', {
+                auth: req.session.authentication,
+                jwt: req.session.authToken,
+                data: req.params['id'],
+                error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+              });
+
+              req.session.catchmentWarning = resolveCatchmentResponse([], req.session.locCode);
+
+              return res.render('response/detail', {
+                method: req.params['type'] || 'digital',
+                displayActionsButtonMenu: true,
+                replyType: resolveReplyType(data.responseClone),
+                response: data.responseClone,
+                nameDetails: data.nameDetails,
+                addressDetails: data.addressDetails,
+                eligibilityDetails: data.eligibilityDetails,
+                jurorDetails: data.jurorDetails,
+                importantNavItems: data.importantNavItems,
+                processingStatusDisp: data.processingStatusDisp,
+                thirdPartyDetails: data.thirdPartyDetails,
+                opticReference: data.opticReference,
+                processedBannerMessage: data.processedBannerMessage,
+                isBureauUser: isBureauUser(req),
+                isAddChangeVisible: data.responseClone.processingStatus !== 'Closed',
+                catchmentWarning: req.session.catchmentWarning,
+              });
+            }
+
+            return res.redirect(app.namedRoutes.build('homepage.get'));
+          }
+        );
     }
 
     return res.render('response/detail', {
@@ -1078,5 +1176,27 @@
 
     return date;
   }
+
+  function resolveCatchmentResponse(courtsInCatchment, currentLocationCode) {
+    let catchment = {
+      currentLocationCode: currentLocationCode,
+      isOutwithCatchment: true,
+      courts: [],
+    };
+
+    for (let court of courtsInCatchment) {
+      if (court.locationCode === currentLocationCode) {
+        catchment.isOutwithCatchment = false;
+      }
+      if (court.locationCode !== '400') {
+        court.formattedName = modUtils.transformCourtName(court);
+        catchment.courts.push(court);
+      }
+    }
+
+    return catchment;
+  };
+
+  module.exports.resolveCatchmentResponse = resolveCatchmentResponse;
 
 })();

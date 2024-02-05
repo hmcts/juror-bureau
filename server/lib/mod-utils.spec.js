@@ -220,11 +220,11 @@
     it('should transform the unpaid attendance list before rendering', function() {
       var unpaidAttendanceList = [
         {
-          juror_number: '123456',
-          pool_number: '12345',
-          first_name: 'First',
-          last_name: 'Last',
-          total_unapproved: '80',
+          'juror_number': '123456',
+          'pool_number': '12345',
+          'first_name': 'First',
+          'last_name': 'Last',
+          'total_unapproved': '80',
         },
       ];
 
@@ -244,8 +244,8 @@
       expect(transformedUnpaidAttendance.rows[0][4].hasOwnProperty('text')).to.be.true;
       expect(transformedUnpaidAttendance.rows[0][4].text).to.equal('£80.00');
       expect(transformedUnpaidAttendance.rows[0][5].hasOwnProperty('html')).to.be.true;
-      expect(transformedUnpaidAttendance.rows[0][5].html).to.equal(
-        '<a href="/juror-management/unpaid-attendance/expense-record/123456/12345" class="govuk-link">View expenses</a>');
+      // eslint-disable-next-line max-len
+      expect(transformedUnpaidAttendance.rows[0][5].html).to.equal('<a href="/juror-management/unpaid-attendance/expense-record/123456/12345" class="govuk-link">View expenses</a>');
     });
 
     it('should pad the time unit if single numeric values are input', function() {
@@ -673,6 +673,72 @@
       olderDate.setDate(olderDate.getDate() + 10);
       isBefore = modUtils.isLateSummons(olderDate);
       expect(isBefore).to.be.false;
+    });
+
+    it('should return the correct letter identifier - initial summons', () => {
+      const identifier = modUtils.getLetterIdentifier('initial-summons');
+
+      expect(identifier).to.equal('Initial summons');
+    });
+
+    it('should return the correct letter identifier - summons reminders', () => {
+      const identifier = modUtils.getLetterIdentifier('summons-reminders');
+
+      expect(identifier).to.equal('Summons reminders');
+    });
+
+    it('should return the correct letter identifier - further information', () => {
+      const identifier = modUtils.getLetterIdentifier('further-information');
+
+      expect(identifier).to.equal('Requests for further information');
+    });
+
+    it('should return the correct letter identifier - confirmation', () => {
+      const identifier = modUtils.getLetterIdentifier('confirmation');
+
+      expect(identifier).to.equal('Confirmation letters');
+    });
+
+    it('should return the correct letter identifier - deferral granted', () => {
+      const identifier = modUtils.getLetterIdentifier('deferral-granted');
+
+      expect(identifier).to.equal('Deferral granted letters');
+    });
+
+    it('should return the correct letter identifier - deferral refused', () => {
+      const identifier = modUtils.getLetterIdentifier('deferral-refused');
+
+      expect(identifier).to.equal('Deferral refused letters');
+    });
+
+    it('should return the correct letter identifier - deferral refused', () => {
+      const identifier = modUtils.getLetterIdentifier('deferral-refused');
+
+      expect(identifier).to.equal('Deferral refused letters');
+    });
+
+    it('should return the correct letter identifier - excusal granted', () => {
+      const identifier = modUtils.getLetterIdentifier('excusal-granted');
+
+      expect(identifier).to.equal('Excusal granted letters');
+    });
+
+    it('should return the correct letter identifier - excusal refused', () => {
+      const identifier = modUtils.getLetterIdentifier('excusal-refused');
+
+      expect(identifier).to.equal('Excusal refused letters');
+    });
+
+    it('should return the correct letter identifier - postponement', () => {
+      const identifier = modUtils.getLetterIdentifier('postponement');
+
+      expect(identifier).to.equal('Postponement letters');
+    });
+
+    it('should return the correct letter identifier - withdrawal', () => {
+      const identifier = modUtils.getLetterIdentifier('withdrawal');
+
+      expect(identifier).to.equal('Withdrawal letters');
     });
 
   });

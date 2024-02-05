@@ -23,7 +23,7 @@
               <a href="{{ url('inbox.todo.get') }}" class="govuk-link govuk-!-font-weight-bold">Summons management</a>
             </li>
             <li>
-              <a href="{{ url('juror-management.manage-jurors.approve.get') if isSJO else url('juror-management.manage-jurors.in-waiting.get') }}" class="govuk-link govuk-!-font-weight-bold">Juror management</a>
+              <a href="{{ url('juror-management.manage-jurors.approve.get') if isSJO else url('juror-management.manage-jurors.pools.get') }}" class="govuk-link govuk-!-font-weight-bold">Juror management</a>
             </li>
             <li>
               <a href="#" class="govuk-link govuk-!-font-weight-bold">Expense management</a>
@@ -41,6 +41,9 @@
             {% endif %}
             <li>
               <a href="#" class="govuk-link govuk-!-font-weight-bold">Administration</a>
+            </li>
+            <li>
+              <a href="{{ url('documents.get') }}" class="govuk-link govuk-!-font-weight-bold">Documents</a>
             </li>
           </ul>
         </div>

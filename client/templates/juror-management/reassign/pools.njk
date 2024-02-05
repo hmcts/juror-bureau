@@ -9,6 +9,12 @@
 
 {% block page_identifier %}juror record - reassign - pools available{% endblock %}
 
+{% block beforeContent %}
+  {% if backLinkUrl %}
+      {% include "../../includes/back-link.njk" %}
+  {% endif %}
+{% endblock %}
+
 {% block content %}
 
   {% include "includes/errors.njk" %}
