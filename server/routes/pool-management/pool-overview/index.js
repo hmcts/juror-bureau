@@ -5,6 +5,7 @@
     , completeServiceController = require('../../shared/complete-service/complete-service.controller')
     , transferController = require('../../juror-management/update/juror-update.transfer.controller')
     , reassignController = require('../../juror-management/reassign/reassign.controller')
+    , postponeController = require('../../juror-management/postpone/postpone.controller')
     , auth = require('../../../components/auth');
 
   module.exports = function(app) {
@@ -97,5 +98,14 @@
       auth.verify,
       completeServiceController.postCompleteServiceConfirm(app));
 
+    // Bulk postpone
+    app.post('/pool-management/:poolNumber/postpone',
+      'pool-overview.postpone.post',
+      auth.verify,
+      controller.postBulkPostpone(app));
+    app.get('/pool-management/postpone-jurors/:poolNumber',
+      'pool-management.postpone.get',
+      auth.verify,
+      postponeController.getPostponeDate(app));
   };
 })();

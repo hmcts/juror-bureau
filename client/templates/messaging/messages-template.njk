@@ -1,0 +1,159 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "custom-components/time-input-12-hour/macro.njk" import timeInput12Hour %}
+
+{% set currentApp = "Messaging" %}
+
+{% block page_title %}{{ serviceName }} - Messaging - {{ messageTitle }}{% endblock %}
+{% block page_identifier %}messaging{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+       <span class="govuk-caption-xl">{{ messageTitle | capitalize }}</span>
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Message details</h1>
+
+      <form action="{{ submitUrl }}" method="post" id="messageTemplateForm">
+
+        <div class="mod-juror-record__title govuk-!-margin-bottom-5">
+          <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Message template</h2>
+        </div>
+
+        {% if sendType === "EMAIL" %}
+          <p class="govuk-body">This can only be sent by email.</p>
+        {% elif sendType === "SMS"%}
+          <p class="govuk-body">This can only be sent by text message.</p>
+        {% endif %}
+
+        {% if welshMessage %}
+          <h3 class="govuk-heading-s">English version</h3>
+        {% endif %}
+        
+        <div class="govuk-summary-card">
+          <div class="govuk-summary-card__title-wrapper">
+            <h2 class="govuk-summary-card__title">Your jury service</h2>
+          </div>
+          <div class="govuk-summary-card__content">
+            <dl class="govuk-summary-list">
+              <div class="govuk-summary-list__row">
+                <dd class="govuk-summary-list__value">
+                  {{ englishMessage }}
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+
+        {% if welshMessage %}
+          <h3 class="govuk-heading-s">Welsh version</h3>
+
+          <div class="govuk-summary-card">
+          <div class="govuk-summary-card__title-wrapper">
+            <h2 class="govuk-summary-card__title">Eich Gwasanaeth Rheithgor</h2>
+          </div>
+          <div class="govuk-summary-card__content">
+            <dl class="govuk-summary-list">
+              <div class="govuk-summary-list__row">
+                <dd class="govuk-summary-list__value">
+                  {{ welshMessage }}
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if editDetails %}
+          <div class="mod-juror-record__title govuk-!-margin-bottom-5">
+            <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Enter details</h2>
+          </div>
+
+          {% for field in placeholders %}
+            {% if field.editable === true %}
+              {% set identifier = field.displayName | toCamelCase %}
+              {% if field.dataType === "DATE" %}
+                {% set dateError = null %}
+                {% if errors.items[identifier] %}
+                  {% set dateError = errors.items[identifier][0].summary %}
+                {% endif %}
+                {{ datePicker({
+                  id: identifier,
+                  label: {
+                    text: field.displayName | toSentenceCase
+                  },
+                  hint: "Use dd/mm/yyyy format. For example, 31/01/2023.",
+                  dateValue: tmpBody[identifier],
+                  dateError: dateError
+                }) }}
+              {% elif field.dataType === "TIME" %}
+                {{ timeInput12Hour({
+                  id: identifier,
+                  name: identifier,
+                  fieldset: {
+                    legend: {
+                      text: field.displayName | toSentenceCase,
+                      classes: "govuk-fieldset__legend--s"
+                    }
+                  },
+                  items: {
+                    hour: {
+                      value: tmpBody[identifier + "Hour"],
+                      attributes: {
+                        minLength: "1",
+                        maxLength: "2"
+                      }
+                    },
+                    minute: {
+                      value: tmpBody[identifier + "Minute"],
+                      attributes: {
+                        minLength: "1",
+                        maxLength: "2"
+                      }
+                    },
+                    period: {
+                      value: tmpBody[identifier + "Period"]
+                    }
+                  },
+                  errors: errors.items
+                }) }}
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+
+        {% endif %}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            type: "submit"
+          }) }}
+
+          <a class="govuk-link" id="cancelAnchor" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+        
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+
+      </form>
+
+    </div>
+  </div>
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      const datePickers = []
+        .slice
+        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
+      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
+    });
+  </script>
+{% endblock %}

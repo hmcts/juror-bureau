@@ -1,0 +1,197 @@
+{% if searchBy === "jurorNumber" %}
+
+  {% set jurorNumberSearchError = undefined %}
+  {% if errors.items["jurorNumberSearch"] %}
+    {% set jurorNumberSearchError = {"text": errors.items['jurorNumberSearch'][0].details} %}
+  {% endif %}
+
+  <div class="mod-flex mod-items-end mod-gap-x-4 ">
+    <h2 class="govuk-heading-m">Search by juror number</h2>
+    <a class="govuk-body govuk-link govuk-link--no-visited-state" id="searchAgainAnchor" href="{{ changeSearchUrl }}">Change</a>
+  </div>
+  <form action="{{ searchUrl }}" method="POST" class="mod-flex mod-items-end mod-gap-x-2">
+    {{ govukInput({
+      label: {
+        text: "Juror number"
+      },
+      classes: "govuk-input",
+      id: "jurorNumberSearch",
+      name: "jurorNumberSearch",
+      errorMessage: jurorNumberSearchError,
+      value: tmpBody.jurorNumberSearch if tmpBody.jurorNumberSearch else searchOptions['jurorSearch']['jurorNumber']
+    }) }}
+
+    {{ govukButton({
+      text: "Search",
+      classes: "govuk-button--secondary",
+      attributes: {
+        id: "search-button"
+      }
+    }) }}
+    <input type="hidden" id="csrfToken" name="_csrf" value="{{ csrftoken }}"/>
+  </form>
+
+{% elif searchBy === "jurorName"  %}
+
+  {% set jurorNameSearchError = undefined %}
+  {% if errors.items["jurorNameSearch"] %}
+    {% set jurorNameSearchError = {"text": errors.items['jurorNameSearch'][0].details} %}
+  {% endif %}
+
+  <div class="mod-flex mod-items-end mod-gap-x-4 ">
+    <h2 class="govuk-heading-m">Search by juror name</h2>
+    <a class="govuk-body govuk-link govuk-link--no-visited-state" id="searchAgainAnchor" href="{{ changeSearchUrl }}">Change</a>
+  </div>
+  <form action="{{ searchUrl }}" method="POST" class="mod-flex mod-items-end mod-gap-x-2">
+    {{ govukInput({
+      label: {
+        text: "Juror name"
+      },
+      classes: "govuk-input",
+      id: "jurorNameSearch",
+      name: "jurorNameSearch",
+      errorMessage: jurorNameSearchError,
+      value: tmpBody.jurorNameSearch if tmpBody.jurorNumberSearch else searchOptions['jurorSearch']['jurorName']
+    }) }}
+
+    {{ govukButton({
+      text: "Search",
+      classes: "govuk-button--secondary",
+      attributes: {
+        id: "search-button"
+      }
+    }) }}
+    <input type="hidden" id="csrfToken" name="_csrf" value="{{ csrftoken }}"/>
+  </form>
+
+{% elif searchBy === "pool"  %}
+
+  {% set poolSearchError = undefined %}
+  {% if errors.items["poolSearch"] %}
+    {% set poolSearchError = {"text": errors.items['poolSearch'][0].details} %}
+  {% endif %}
+
+  <div class="mod-flex mod-items-end mod-gap-x-4 ">
+    <h2 class="govuk-heading-m">Search by pool number</h2>
+    <a class="govuk-body govuk-link govuk-link--no-visited-state" id="searchAgainAnchor" href="{{ changeSearchUrl }}">Change</a>
+  </div>
+  <form action="{{ searchUrl }}" method="POST" class="mod-flex mod-items-end mod-gap-x-2">
+    {{ govukInput({
+      label: {
+        text: "Pool number"
+      },
+      classes: "govuk-input",
+      id: "poolSearch",
+      name: "poolSearch",
+      errorMessage: poolSearchError,
+      value: tmpBody.poolSearch if tmpBody.poolSearch else searchOptions['poolNumber']
+    }) }}
+
+    {{ govukButton({
+      text: "Search",
+      classes: "govuk-button--secondary",
+      attributes: {
+        id: "search-button"
+      }
+    }) }}
+    <input type="hidden" id="csrfToken" name="_csrf" value="{{ csrftoken }}"/>
+  </form>
+
+{% elif searchBy === "trial"  %}
+
+  <div class="mod-flex mod-items-end mod-gap-x-4 ">
+    <h2 class="govuk-heading-m">Jurors from trial {{ searchOptions['trialNumber'] }}</h2>
+    <a class="govuk-body govuk-link govuk-link--no-visited-state" id="searchAgainAnchor" href="{{ changeSearchUrl }}">Change</a>
+  </div>
+
+{% elif searchBy === "nextDueAtCourt"  %}
+
+  {% set nextDueAtCourtDateError = undefined %}
+  {% if errors.items["nextDueAtCourtDate"] %}
+    {% set nextDueAtCourtDateError = errors.items['nextDueAtCourtDate'][0].details %}
+  {% endif %}
+
+  <div class="mod-flex mod-items-end mod-gap-x-4 ">
+    <h2 class="govuk-heading-m">Search by next due at court</h2>
+    <a class="govuk-body govuk-link govuk-link--no-visited-state" id="searchAgainAnchor" href="{{ changeSearchUrl }}">Change</a>
+  </div>
+  <form action="{{ searchUrl }}" method="POST" class="mod-flex mod-items-end mod-gap-x-2">
+    <div class="govuk-form-group ds_datepicker {% if nextDueAtCourtDateError %}govuk-form-group--error{% endif %}">
+      <h2 class="govuk-label-wrapper">
+        <label id="nextDueAtCourtDateLabel" class="govuk-label govuk-body" for="nextDueAtCourtDate">
+          Enter date next due at court
+        </label>
+      </h2>
+      <div id="nextDueAtCourtDateHint" class="govuk-hint">
+        Use dd/mm/yyyy format. For example, 31/01/2023.
+      </div>
+      {% if nextDueAtCourtDateError %}
+        <p id="nextDueAtCourtDateError" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span> {{ nextDueAtCourtDateError }}
+        </p>
+      {% endif %}
+      <div id="nextDueAtCourtDateDatepicker" data-module="ds-datepicker" class="mod-flex mod-items-start mod-gap-x-4">
+        <div class="ds_input__wrapper govuk-!-margin-bottom-1">
+          <input id="nextDueAtCourtDate" name="nextDueAtCourtDate" type="text" 
+            value="{{ tmpBody.nextDueAtCourtDate if tmpBody.nextDueAtCourtDate else searchOptions['nextDueAtCourtDate'] | dateFilter('yyyy-MM-DD', 'DD/MM/YYYY') }}"
+            class="govuk-input ds_input ds_input--fixed-10 {% if nextDueAtCourtDateError %}ds_input--error{% endif %}"
+            data-mindate="" data-maxdate="" data-lang="en" />
+        </div>
+        {{ govukButton({
+          text: "Search",
+          classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+          attributes: {
+            id: "search-button"
+          }
+        }) }}
+      </div>
+    </div>
+    <input type="hidden" id="csrfToken" name="_csrf" value="{{ csrftoken }}"/>
+  </form>
+
+{% elif searchBy === "deferral"  %}
+
+  {% set deferralDateError = undefined %}
+  {% if errors.items["deferralDate"] %}
+    {% set deferralDateError = errors.items['deferralDate'][0].details %}
+  {% endif %}
+
+  <div class="mod-flex mod-items-end mod-gap-x-4 ">
+    <h2 class="govuk-heading-m">Search by date deferred to</h2>
+    <a class="govuk-body govuk-link govuk-link--no-visited-state" id="searchAgainAnchor" href="{{ changeSearchUrl }}">Change</a>
+  </div>
+  <form action="{{ searchUrl }}" method="POST" class="mod-flex mod-items-end mod-gap-x-2">
+    <div class="govuk-form-group ds_datepicker {% if deferralDateError %}govuk-form-group--error{% endif %}">
+      <h2 class="govuk-label-wrapper">
+        <label id="deferralDateLabel" class="govuk-label govuk-body" for="deferralDate">
+          Enter a deferral date
+        </label>
+      </h2>
+      <div id="deferralDateHint" class="govuk-hint">
+        Use dd/mm/yyyy format. For example, 31/01/2023.
+      </div>
+      {% if deferralDateError %}
+        <p id="deferralDateError" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span> {{ deferralDateError }}
+        </p>
+      {% endif %}
+      <div id="deferralDateDatepicker" data-module="ds-datepicker" class="mod-flex mod-items-start mod-gap-x-4">
+        <div class="ds_input__wrapper govuk-!-margin-bottom-1">
+          <input id="deferralDate" name="deferralDate" type="text" 
+            value="{{ tmpBody.dateDeferredTo if tmpBody.dateDeferredTo else searchOptions['dateDeferredTo'] | dateFilter('yyyy-MM-DD', 'DD/MM/YYYY') }}"
+            class="govuk-input ds_input ds_input--fixed-10 {% if deferralDateError %}ds_input--error{% endif %}"
+            data-mindate="" data-maxdate="" data-lang="en" />
+        </div>
+        {{ govukButton({
+          text: "Search",
+          classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+          attributes: {
+            id: "search-button"
+          }
+        }) }}
+      </div>
+    </div>
+    <input type="hidden" id="csrfToken" name="_csrf" value="{{ csrftoken }}"/>
+  </form>
+
+{% endif %}

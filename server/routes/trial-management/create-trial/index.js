@@ -18,6 +18,18 @@
       controller.postCreateTrial(app),
     );
 
+    app.get('/trial-management/create-trial/confirm-protected',
+      'trial-management.create-trial-confirm-protected.get',
+      auth.verify,
+      controller.getCreateProtectedTrial(app),
+    );
+
+    app.post('/trial-management/create-trial/confirm-protected',
+      'trial-management.create-trial-confirm-protected.post',
+      auth.verify,
+      controller.postCreateProtectedTrial(app),
+    );
+
   };
 })();
 

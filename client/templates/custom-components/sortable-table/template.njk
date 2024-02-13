@@ -14,8 +14,9 @@
   {% if head.sortable === false %}
     {% set headList = (headList.push({
       text: head.value,
+      html: head.html,
       format: head.format,
-      classes: "mod-sortable-table-head"
+      classes: "mod-sortable-table-head " + head.classes
     }), headList) %}
   {% else %}
     {% set headLink %}
@@ -28,7 +29,7 @@
     {% set headList = (headList.push({
       html: headLink | safe,
       format: head.format,
-      classes: "mod-sortable-table-head",
+      classes: "mod-sortable-table-head " + head.classes,
       attributes: {
         "aria-sort": head.sort or "none"
       }
@@ -41,5 +42,6 @@
     id: params.id
   },
   head: headList,
-  rows: params.rows
+  rows: params.rows,
+  classes: params.classes
 }) }}

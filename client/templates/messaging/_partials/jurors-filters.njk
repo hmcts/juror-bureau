@@ -1,0 +1,97 @@
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "custom-components/mod-filter/macro.njk" import modFilter %}
+
+{% set filterOptionsHtml %}
+
+{{ govukCheckboxes({
+  name: "include",
+  classes: "govuk-checkboxes--small",
+  fieldset: {
+    legend: {
+      text: "Include",
+      classes: "govuk-fieldset__legend--s"
+    }
+  },
+  values: appliedFilters.include,
+  items: [
+    {
+      value: "INCLUDE_ON_CALL",
+      text: "On call"
+    },
+    {
+      value: "INCLUDE_FAILED_TO_ATTEND",
+      text: "Failed to attend"
+    },
+    {
+      value: "INCLUDE_DEFERRED",
+      text: "Deferred"
+    },
+    {
+      value: "INCLUDE_JURORS_AND_PANELLED",
+      text: "Jurors and panelled"
+    },
+    {
+      value: "INCLUDE_COMPLETED",
+      text: "Completed"
+    },
+    {
+      value: "INCLUDE_TRANSFERRED",
+      text: "Transferred"
+    },
+    {
+      value: "INCLUDE_DISQUALIFIED_AND_EXCUSED",
+      text: "Disqualified and excused"
+    }
+  ]
+}) }}
+
+{{ govukCheckboxes({
+  name: "showOnly",
+  classes: "govuk-checkboxes--small",
+  fieldset: {
+    legend: {
+      text: "Show only",
+      classes: "govuk-fieldset__legend--s"
+    }
+  },
+  values: appliedFilters.showOnly,
+  items: [
+    {
+      value: "SHOW_ONLY_ON_CALL",
+      text: "On call"
+    },
+    {
+      value: "SHOW_ONLY_FAILED_TO_ATTEND",
+      text: "Failed to attend"
+    },
+    {
+      value: "SHOW_ONLY_DEFERRED",
+      text: "Deferred"
+    },
+    {
+      value: "SHOW_ONLY_RESPONDED",
+      text: "Responded"
+    }
+  ]
+}) }}
+
+
+{% endset %}
+
+<form action="{{ filterUrl }}" method="POST">
+  {{ modFilter({
+    heading: {
+      text: "Filter",
+      classes: "govuk-!-margin-bottom-0"
+    },
+    classes: "js-hidden",
+    attributes: {
+      id: "messaging-jurors-filter",
+      "aria-hidden": true
+    },
+    optionsHtml: filterOptionsHtml,
+    clearUrl: clearFiltersUrl
+  }) }}
+
+  <input type="hidden" id="csrftoken" name="_csrf" value="{{ csrftoken }}"/>
+</form>

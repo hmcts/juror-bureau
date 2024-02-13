@@ -72,7 +72,8 @@
         paginationObject,
         buttonLabel: buttonLabel(document, _isBureauUser),
         selectedJurors,
-        totalJurors: calculateTotalJurors(req.session.documentsJurorsList.data, documentSearchBy),
+        totalJurors: req.session.documentsJurorsList.data.length,
+        totalCheckableJurors: calculateTotalJurors(req.session.documentsJurorsList.data, documentSearchBy),
         document,
         documentSearchBy,
         errors: {

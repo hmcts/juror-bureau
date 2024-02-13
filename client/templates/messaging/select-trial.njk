@@ -1,0 +1,81 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "custom-components/time-input-12-hour/macro.njk" import timeInput12Hour %}
+
+{% set currentApp = "Messaging" %}
+
+{% block page_title %}{{ serviceName }} - Messaging - {{ messageTitle }}{% endblock %}
+{% block page_identifier %}messaging{% endblock %}
+
+{% block beforeContent %}
+  {% include "includes/back-link.njk" %}
+{% endblock %}
+
+{% block content %}
+
+  {% set searchTrialNumberError = undefined %}
+  {% if errors.items["searchTrialNumber"] %}
+    {% set searchTrialNumberError = {"text": errors.items['searchTrialNumber'][0].details} %}
+  {% endif %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-xl">{{ messageTitle | capitalize }}</span>
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Select a trial</h1>
+
+      <form action="{{ filterUrl }}" method="POST" class="mod-flex mod-items-end mod-gap-x-2">
+
+        {{ govukInput({
+          label: {
+            text: "Enter a trial number"
+          },
+          classes: "govuk-input--width-20",
+          id: "searchTrialNumber",
+          name: "searchTrialNumber",
+          errorMessage: searchTrialNumberError,
+          value: tmpBody.searchTrialNumber if tmpBody.searchTrialNumber else trialNumber
+        }) }}
+
+        {{ govukButton({
+          text: "Search",
+          classes: "govuk-button--secondary",
+          attributes: {
+            id: "search-trials-button"
+          }
+        }) }}
+
+        <a class="govuk-body govuk-link govuk-link--no-visited-state govuk-!-margin-bottom-7" id="clearSearchAnchor" href="{{ clearSearchUrl }}">Clear search</a>
+
+        <input type="hidden" id="csrfToken" name="_csrf" value="{{ csrftoken }}"/>
+      </form>
+
+    </div>
+  </div>
+
+  <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible govuk-!-margin-top-0 govuk-!-margin-bottom-6">
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {% if trials.rows | length > 0 %}
+        <form action="{{ submitUrl }}" method="post" id="selectTrialForm">
+          {{ govukButton({
+            text: "Continue with selected",
+            type: "submit"
+          }) }}
+
+          {% include "./_partials/trials-table.njk" %}
+        
+          <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+      {% else %}
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-6">No matching results</h2>
+      {% endif %}
+    </div>
+  </div>
+
+{% endblock %}

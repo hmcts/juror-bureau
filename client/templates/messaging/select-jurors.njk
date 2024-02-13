@@ -1,0 +1,91 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "custom-components/time-input-12-hour/macro.njk" import timeInput12Hour %}
+
+{% set currentApp = "Messaging" %}
+
+{% block page_title %}{{ serviceName }} - Messaging - {{ messageTitle }}{% endblock %}
+{% block page_identifier %}messaging{% endblock %}
+
+{% block beforeContent %}
+  {% include "includes/back-link.njk" %}
+{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <span class="govuk-caption-xl">{{ messageTitle | capitalize }}</span>
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Select jurors to send message to</h1>
+      
+      {% if sendType === "EMAIL" %}
+        <p class="govuk-body govuk-!-margin-bottom-6">This can only be sent by email.</p>
+      {% elif sendType === "SMS"%}
+        <p class="govuk-body govuk-!-margin-bottom-6">This can only be sent by text message.</p>
+      {% else %}
+        <p class="govuk-body govuk-!-margin-bottom-6">You should send this message by email if we have an email address for the juror.</p>
+      {% endif %}
+
+      {% include "./_partials/juror-select-search.njk" %}
+
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible govuk-!-margin-top-0 govuk-!-margin-bottom-6">
+
+      {% if totalJurors === 0 %}
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-6">No matching results</h2>
+      {% elif totalJurors > 500 %}
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-6">There are more than 500 results. Refine your search.</h2>
+      {% else %}
+        <div class="govuk-button-group govuk-!-margin-bottom-0">
+          {{ govukButton({
+            text: "Show filter",
+            classes: "govuk-button--secondary",
+            attributes: {
+              id: "messaging-jurors-filter-button"
+            }
+          }) }}
+          {{ govukButton({
+            text: "Send message",
+            attributes: {
+              id: "sendMessageButton",
+              form: "jurorSelectionForm",
+              formAction: submitUrl
+            }
+          }) }}
+        </div>
+
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-one-quarter">
+            {% include "./_partials/jurors-filters.njk" %}
+          </div>
+          <form id="jurorSelectionForm" method="POST">
+            {% include "./_partials/jurors-table.njk" %}
+            <input type="hidden" id="csrfToken" name="_csrf" value="{{ csrftoken }}"/>
+          </form>
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script src="{{ assetPath }}js/messaging-juror-select.js"></script>
+
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      const datePickers = []
+        .slice
+        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
+      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
+    });
+  </script>
+{% endblock %}

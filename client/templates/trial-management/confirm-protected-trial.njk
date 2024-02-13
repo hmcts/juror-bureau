@@ -1,0 +1,27 @@
+{% extends "../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block content %}
+
+<h1 class="govuk-heading-l">Do you want this trial to be protected?</h1>
+
+<p class="govuk-body govuk-!-margin-bottom-7">All juror names will be anonymous so that their identity can be protected.</p>
+
+<form method="post" action="{{ processUrl }}" id="confirmProtectedTrial">
+
+  <div class="govuk-button-group">
+    {{ govukButton({
+      text: "Yes - continue",
+      type: "submit",
+      attributes: {
+        id: "continueButton"
+      }
+    }) }}
+
+    <a class="govuk-link" href="{{ cancelUrl }}">No - go back</a>
+  </div>
+  <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+ </form>
+
+ {% endblock %}

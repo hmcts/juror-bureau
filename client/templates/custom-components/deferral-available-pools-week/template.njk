@@ -56,7 +56,8 @@
         fieldset: {
             legend: {
             text: params.deferralPoolWeek.weekCommencing | dateFilter("YYYY-MM-DD", "dddd D MMMM YYYY"),
-            classes: params.headerClass
+            classes: "govuk-fieldset__legend--m",
+            isPageHeading: true
             }
         },
         items: poolRowList,

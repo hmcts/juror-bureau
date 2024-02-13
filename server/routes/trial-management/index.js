@@ -61,5 +61,16 @@
       auth.verify,
       returnsController.postReturnConfirm(app),
     );
+
+    app.get('/trial-management/trials/:trialNumber/:locationCode/end-trial',
+      'trial-management.trials.end-trial.get',
+      auth.verify,
+      controller.getEndTrial(app),
+    );
+    app.post('/trial-management/trials/:trialNumber/:locationCode/end-trial',
+      'trial-management.trials.end-trial.post',
+      auth.verify,
+      controller.postEndTrial(app),
+    );
   };
 })();

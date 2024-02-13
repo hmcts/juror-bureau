@@ -29,6 +29,9 @@
           '&sort_order=' + opts.sortOrder,
           '&is_active=' + opts.isActive
         );
+        if (opts.trialNumber) {
+          reqOptions.uri = urljoin(reqOptions.uri, '&trial_number=' + opts.trialNumber);
+        }
         reqOptions.method = 'GET';
 
         app.logger.debug('Sending request to API: ', {

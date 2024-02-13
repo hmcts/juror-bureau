@@ -15,12 +15,8 @@
 
   {% include "includes/errors.njk" %}
 
-  {% if errors
-    .items["deferralPoolSelect"][0]
-    .details %}
-    {% set selectPoolError = errors
-      .items["deferralPoolSelect"][0]
-      .details %}
+  {% if errors.items["deferralDateAndPool"] %}
+    {% set selectPoolError = errors.items["deferralDateAndPool"][0].details %}
   {% endif %}
 
   <form action="{{ processUrl }}" method="POST" id="deferralForm">
@@ -31,7 +27,7 @@
 
       {% if selectPoolError %}
         <p id="selectPoolError" class="govuk-error-message">
-          <span class="govuk-visually-hidden">Error:</span> {{ selectPoolError }}
+          {{ selectPoolError }}
         </p>
       {% endif %}
 

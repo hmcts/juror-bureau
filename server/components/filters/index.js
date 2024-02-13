@@ -301,6 +301,10 @@
         break;
       }
 
+      if (finalTime > 2359) {
+        finalTime = finalTime - 1200;
+      }
+
       return finalTime;
     },
 
@@ -318,6 +322,22 @@
       }
 
       return timeArray.join(':') + period;
+    },
+
+    timeStringToArray: function(timeString) {
+      if (Array.isArray(timeString)) return timeString;
+
+      let timeArray = [];
+      let period = timeString.slice(-2);
+
+      timeArray.push(timeString.slice(0, -5));
+      timeArray.push(timeString.slice(-4, -2));
+
+      if (period === 'pm' && timeArray[0] < 12) {
+        timeArray[0] = +timeArray[0] + 12;
+      }
+
+      return timeArray;
     },
 
     convert12to24: function(time12) {
@@ -416,6 +436,13 @@
       return time / 60;
     },
 
+    toCamelCase: function(str) {
+      return _.camelCase(str);
+    },
+
+    toSentenceCase: function(str) {
+      return _.upperFirst(_.lowerCase(str));
+    },
   };
 
 })();

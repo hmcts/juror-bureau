@@ -128,16 +128,18 @@
             </div>
         </div>
         {% endif %}
-
         {# Submit form #}
         <div class="govuk-button-group">
-            {{ govukButton({
-                text: "Continue and move remaining jurors",
-                attributes: {
-                    formAction: continueUrl
+            {% if (eligibleJurorLength === undefined) or (eligibleJurorLength > 0) %}
+                {{ govukButton({
+                    text: "Continue and move remaining jurors",
+                    attributes: {
+                        formAction: continueUrl
                 }
             }) }}
-            <a href="{{ cancelUrl }}" class="govuk-link--no-visited-state" id="cancelAnchor">Cancel and go back</a>
+            {% endif %}
+            <a href="{{ cancelUrl }}" class="govuk-body govuk-link--no-visited-state" id="cancelAnchor">Cancel and go back</a>
+            
         </div>
 
         <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">

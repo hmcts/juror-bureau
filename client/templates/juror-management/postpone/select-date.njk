@@ -22,7 +22,6 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
 
-      {% set processUrl = url("juror.update.postpone-date.post", { jurorNumber: jurorNumber }) %}
       <form action="{{ processUrl }}" method="POST" class="disable-empty" id="deferralForm">
 
         <h1 class="govuk-label--l govuk-!-margin-top-0">Enter a new service start date</h1>
@@ -43,7 +42,6 @@
             }
           }) }}
 
-          {% set cancelUrl = url("juror-record.overview.get", { jurorNumber: jurorNumber }) %}
           <a class="govuk-link govuk-link--no-visited-state" id="cancelAnchor" href="{{ cancelUrl }}">Cancel</a>
         </div>
 
