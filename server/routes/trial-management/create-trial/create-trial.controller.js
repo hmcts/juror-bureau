@@ -61,9 +61,11 @@
           });
 
           tmpErrors = _.clone(req.session.errors);
-          tmpFields = _.clone(req.session.formFields);
+          tmpFields = typeof req.session.createTrial !== 'undefined' ?
+            _.clone(req.session.createTrial.tmpFields) : _.clone(req.session.formFields);
           delete req.session.errors;
           delete req.session.formFields;
+          delete req.session.createTrial;
 
           return res.render('trial-management/create-trial.njk', {
             nav: 'trials',
@@ -117,35 +119,31 @@
 
       const payload = trialPayloadBuilder(req.body, judges, courtrooms);
 
-      createTrialObject.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
-        payload
-      )
-        .then((resp) => {
-          app.logger.info('Created a new trial', {
-            auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: payload,
-            response: resp,
-          });
-          return res.redirect(
-            app.namedRoutes.build('trial-management.trials.detail.get', {
-              trialNumber: resp.trial_number,
-              locationCode: payload.court_location,
-            })
-          );
-        })
-        .catch((err) => {
-          app.logger.crit('Failed to create a new trial: ', {
-            auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: payload,
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
-          return res.render('_errors/generic');
-        });
+      if (req.body.protected === 'true') {
+        req.session.createTrial = {
+          payload: _.clone(payload),
+          tmpFields: req.body,
+        };
+
+        return res.redirect(app.namedRoutes.build('trial-management.create-trial-confirm-protected.get'));
+      }
+
+      createTrial(app, req, res, payload);
+    };
+  };
+
+  module.exports.getCreateProtectedTrial = function(app) {
+    return function(req, res) {
+      return res.render('trial-management/confirm-protected-trial.njk', {
+        processUrl: app.namedRoutes.build('trial-management.create-trial-confirm-protected.post'),
+        cancelUrl: app.namedRoutes.build('trial-management.create-trial.get'),
+      });
+    };
+  };
+
+  module.exports.postCreateProtectedTrial = function(app) {
+    return function(req, res) {
+      createTrial(app, req, res, req.session.createTrial.payload);
     };
   };
 
@@ -180,6 +178,43 @@
     payload.protected_trial = body.protected ? true : false;
 
     return payload;
+  }
+
+  function createTrial(app, req, res, payload){
+    createTrialObject.post(
+      require('request-promise'),
+      app,
+      req.session.authToken,
+      payload
+    )
+      .then((resp) => {
+        app.logger.info('Created a new trial', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: payload,
+          response: resp,
+        });
+
+        if (typeof req.session.createTrial !== 'undefined') {
+          delete req.session.createTrial;
+        };
+
+        return res.redirect(
+          app.namedRoutes.build('trial-management.trials.detail.get', {
+            trialNumber: resp.trial_number,
+            locationCode: payload.court_location,
+          })
+        );
+      })
+      .catch((err) => {
+        app.logger.crit('Failed to create a new trial: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: payload,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+        return res.render('_errors/generic');
+      });
   }
 
 })();

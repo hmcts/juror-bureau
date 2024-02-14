@@ -3,9 +3,13 @@
 
   const _ = require('lodash')
     , modUtils = require('../../lib/mod-utils')
+    , validate = require('validate.js')
     , { panelListDAO } = require('../../objects/panel')
     , { trialsListObject, trialDetailsObject } = require('../../objects/create-trial')
-    , { dateFilter, capitalizeFully, makeDate } = require('../../components/filters');
+    , { endTrialObject } = require('../../objects/end-trial')
+    , { dateFilter, capitalizeFully, makeDate } = require('../../components/filters')
+    , endTrialDateValidator = require('../../config/validation/end-trial')
+    , moment = require('moment');
 
 
   module.exports.getTrials = function(app) {
@@ -21,6 +25,8 @@
         sortBy: sortBy,
         sortOrder: sortOrder === 'ascending' ? 'asc' : 'desc',
       };
+
+      delete req.session.continueToEndTrial;
 
       trialsListObject.get(
         require('request-promise'),
@@ -81,6 +87,7 @@
       delete req.session.errors;
       delete req.session.formFields;
       delete req.session.trial;
+      delete req.session.continueToEndTrial;
 
       // Clear returns flow
       delete req.session.panel;
@@ -123,7 +130,6 @@
           if (panelData) {
             trialData.panelledJurors = panelData;
             req.session.panelData = panelData;
-
           }
 
           req.session.isJuryEmpanelled = trialData['is_jury_empanelled'];
@@ -160,6 +166,127 @@
 
           return res.redirect(app.namedRoutes.build('trial-management.trials.get'));
         });
+    };
+  };
+
+  module.exports.getEndTrial = function(app) {
+    return async function(req, res) {
+      let tmpErrors
+        , tmpFields
+        , radioToggle = typeof req.session.formFields !== 'undefined' &&
+        typeof req.session.formFields.endTrial !== 'undefined';
+
+      tmpErrors = _.clone(req.session.errors);
+      tmpFields = _.clone(req.session.formFields);
+
+      if (typeof req.session.formFields === 'undefined') {
+        tmpFields = {
+          endTrialDate: moment(new Date()).format('DD/MM/YYYY'),
+        };
+      };
+
+      delete req.session.errors;
+      delete req.session.formFields;
+
+      try {
+        let panelData = await panelListDAO.get(
+          app, req, req.params.trialNumber, req.params.locationCode
+        );
+
+        if (panelData.length > 0 && typeof req.session.continueToEndTrial === 'undefined') {
+          return res.render('trial-management/end-trial/cannot-end-trial.njk', {
+            isJuryEmpanelled: req.session.isJuryEmpanelled,
+            cancelUrl: app.namedRoutes.build('trial-management.trials.detail.get', {
+              trialNumber: req.params.trialNumber,
+              locationCode: req.params.locationCode,
+            }),
+          });
+        } else if (panelData.length > 0 && req.session.continueToEndTrial) {
+          return res.redirect(app.namedRoutes.build('trial-management.trials.detail.get', {
+            trialNumber: req.params.trialNumber,
+            locationCode: req.params.locationCode,
+          }));
+        };
+        return res.render('trial-management/end-trial/end-trial.njk', {
+          processUrl: app.namedRoutes.build('trial-management.trials.end-trial.post', {
+            trialNumber: req.params.trialNumber,
+            locationCode: req.params.locationCode,
+          }),
+          trialNumber: req.params.trialNumber,
+          tmpFields,
+          radioToggle,
+          errors: {
+            title: 'Please check the form',
+            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+            items: tmpErrors,
+          },
+        });
+      } catch (err) {
+        app.logger.crit('Failed to fetch trial details: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            trialNumber: req.params.trialNumber,
+            locationCode: req.params.locationCode,
+          },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic.njk');
+      };
+    };
+  };
+
+  module.exports.postEndTrial = function(app) {
+    return async function(req, res) {
+      const validateEndTrialDate = validate(req.body, endTrialDateValidator());
+
+      if (typeof validateEndTrialDate !== 'undefined') {
+        req.session.errors = validateEndTrialDate;
+        req.session.formFields = req.body;
+
+        return res.redirect(app.namedRoutes.build('trial-management.trials.end-trial.get', {
+          trialNumber: req.params.trialNumber,
+          locationCode: req.params.locationCode,
+        }));
+      }
+
+      try {
+        if (req.body.endTrial === 'true') {
+
+          let payload = {
+            'trial_end_date': dateFilter(req.body.endTrialDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
+            'trial_number': req.params.trialNumber,
+            'location_code': req.params.locationCode,
+          };
+
+          await endTrialObject.patch(
+            require('request-promise')
+            , app
+            , req.session.authToken
+            , payload);
+
+          req.session.bannerMessage = typeof req.session.bannerMessage !== 'undefined' ?
+            req.session.bannerMessage + ' and trial ended' : 'Trial ended';
+        };
+
+        return res.redirect(app.namedRoutes.build('trial-management.trials.detail.get', {
+          trialNumber: req.params.trialNumber,
+          locationCode: req.params.locationCode,
+        }));
+      } catch (err) {
+        app.logger.crit('Failed to end trial: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            trialNumber: req.params.trialNumber,
+            locationCode: req.params.locationCode,
+          },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic.njk');
+      };
     };
   };
 

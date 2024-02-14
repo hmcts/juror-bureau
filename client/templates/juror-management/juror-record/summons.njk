@@ -20,65 +20,77 @@
 
   {% include "../_partials/heading.njk" %}
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
+      {% if juror.commonDetails.manuallyCreated %}
+        <div class="mod-juror-record__title govuk-body">
+          <h2 id="summonsLabel" class="govuk-heading-m ">Summons</h2>
+        </div>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-two-thirds">
+            <p class="govuk-body">Juror was summoned in person</p>
+          </div>
+        </div>
 
-      <div class="mod-juror-record__title">
-        <h2 id="summonsLabel" class="govuk-heading-m">Summons reply</h2>
-      </div>
-      {{ govukSummaryList({
-        rows: [
-          {
-            key: {
-              text: "Reply status"
-            },
-            value: {
-              html: govukTag({
-                text: "Summons not Received" if jurorStatus === "Undeliverable" else (replyStatus or "Summoned"),
-                classes: "govuk-tag--blue" if replyStatus === "Completed" else "govuk-tag--grey"
-              }) | safe
-            }
-          },
-          {
-            key: {
-              text: "Processing outcome"
-            },
-            value: {
-              text: processingOutcome | safe
-            }
-          },
-          {
-            key: {
-              text: "Reply date"
-            },
-            value: {
-              text: juror.replyDate | makeDate | dateFilter(null, "D MMMM YYYY") if juror.replyDate else "-"
-            }
-          },
-          {
-            key: {
-              text: "Reply method"
-            },
-            value: {
-              text: juror.replyMethod | capitalize or "-"
-            }
-          }
-        ]
-      }) }}
-
-      {% if juror.replyMethod === "PAPER" %}
-        {% set summonsReplyUrl = url('response.paper.details.get', {
-          id: juror.commonDetails.jurorNumber,
-          type: 'paper'
-        }) %}
       {% else %}
-        {% set summonsReplyUrl = url('response.detail.get', {id: juror.commonDetails.jurorNumber}) %}
+        <div class="mod-juror-record__title">
+          <h2 id="summonsLabel" class="govuk-heading-m">Summons reply</h2>
+        </div>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-two-thirds">
+
+            {{ govukSummaryList({
+              rows: [
+                {
+                  key: {
+                    text: "Reply status"
+                  },
+                  value: {
+                    html: govukTag({
+                      text: "Summons not Received" if jurorStatus === "Undeliverable" else (replyStatus or "Summoned"),
+                      classes: "govuk-tag--blue" if replyStatus === "Completed" else "govuk-tag--grey"
+                    }) | safe
+                  }
+                },
+                {
+                  key: {
+                    text: "Processing outcome"
+                  },
+                  value: {
+                    text: processingOutcome | safe
+                  }
+                },
+                {
+                  key: {
+                    text: "Reply date"
+                  },
+                  value: {
+                    text: juror.replyDate | makeDate | dateFilter(null, "D MMMM YYYY") if juror.replyDate else "-"
+                  }
+                },
+                {
+                  key: {
+                    text: "Reply method"
+                  },
+                  value: {
+                    text: juror.replyMethod | capitalize or "-"
+                  }
+                }
+              ]
+            }) }}
+          </div>
+        </div>
+        {% if juror.replyMethod === "PAPER" %}
+          {% set summonsReplyUrl = url('response.paper.details.get', {
+            id: juror.commonDetails.jurorNumber,
+            type: 'paper'
+          }) %}
+        {% else %}
+          {% set summonsReplyUrl = url('response.detail.get', {id: juror.commonDetails.jurorNumber}) %}
+        {% endif %}
+
+        {% if juror.replyMethod and jurorStatus !== "Undeliverable" %}
+          <a href="{{ summonsReplyUrl }}" class="govuk-link govuk-body">View summons reply</a>
+        {% endif %}
+        
       {% endif %}
 
-      {% if juror.replyMethod and jurorStatus !== "Undeliverable" %}
-        <a href="{{ summonsReplyUrl }}" class="govuk-link govuk-body">View summons reply</a>
-      {% endif %}
-
-    </div>
-  </div>
 {% endblock %}

@@ -1,0 +1,33 @@
+{% from "moj/components/primary-navigation/macro.njk" import mojPrimaryNavigation %}
+
+{% set navItems = [] %}
+{% if isCourtUser %}
+  {% set navItems = (navItems.push(
+    {
+      text: "Send messages",
+      href: url("messaging.send.get"),
+      active: nav === "send",
+      attributes: {
+        id: "sendMessagesAnchor"
+      }
+    }
+  ), navItems) %}
+{% endif %}
+{% set navItems = (navItems.push(
+  {
+    text: "Export contact details",
+    href: url("messaging.export-contacts.get"),
+    active: nav === "export",
+    attributes: {
+      id: "exportDetailsAnchor"
+    }
+  }
+), navItems) %}
+
+{{ mojPrimaryNavigation({
+  label: "Messaging navigation",
+  attributes: {
+    id: "messagingNav"
+  },
+  items: navItems
+}) }}

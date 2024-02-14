@@ -45,6 +45,9 @@
             <li>
               <a href="{{ url('documents.get') }}" class="govuk-link govuk-!-font-weight-bold">Documents</a>
             </li>
+            <li>
+              <a href="{{ url('messaging.export-contacts.get') if isBureauUser else url('messaging.send.get') }}" class="govuk-link govuk-!-font-weight-bold">Messaging</a>
+            </li>
           </ul>
         </div>
       </div>

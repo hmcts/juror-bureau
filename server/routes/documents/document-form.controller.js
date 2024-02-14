@@ -9,20 +9,6 @@
     , { reissueLetterDAO } = require('../../objects/documents')
     , { isCourtUser } = require('../../components/auth/user-type');
 
-  // TODO: will be updated with the addition of new letter types in the backend
-  const LetterType = {
-    'initial-summons': 'SUMMONS',
-    'summons-reminders': 'REMINDERS',
-    'further-information': 'INFORMATION',
-    'confirmation': 'CONFIRMATION',
-    'deferral-granted': 'DEFERRAL_GRANTED',
-    'deferral-refused': 'DEFERRAL_REFUSED',
-    'excusal-granted': 'EXCUSAL_GRANTED',
-    'excusal-refused': 'EXCUSAL_REFUSED',
-    'postponement': 'POSTPONED',
-    'withdrawal': 'WITHDRAWAL',
-  };
-
   module.exports.getDocumentForm = function(app) {
     return function(req, res) {
       const tmpErrors = _.clone(req.session.errors);
@@ -75,7 +61,7 @@
         const payload = buildPayload(req);
 
         payload.document = document;
-        payload['letter_type'] = LetterType[document];
+        payload['letter_type'] = modUtils.LetterType[document];
 
         delete payload._csrf;
 
@@ -83,6 +69,12 @@
 
         if (isCourtUser(req, res)) {
           response = await reissueLetterDAO.getListCourt(app, req, payload);
+
+          response.data_types.push('hidden');
+          response.headings.push('Row Id');
+          response.data.forEach((juror, i) => {
+            juror.id = i;
+          });
         } else {
           response = await reissueLetterDAO.getList(app, req, payload);
         }

@@ -148,7 +148,7 @@
     {
       value: "disqualified",
       text: "Disqualified"
-    },
+},
     {
       value: "deceased",
       text: "Deceased"
@@ -163,7 +163,7 @@
     heading: {
       text: "Filter"
     },
-    classes: "js-hidden",
+classes: "js-hidden",
     attributes: {
       id: "pool-overview-filter",
       "aria-hidden": true
@@ -174,4 +174,5 @@
 
   <input type="hidden" name="poolNumber" id="poolNumber" value="{{ poolDetails.poolNumber }}">
   <input type="hidden" id="csrftoken" name="_csrf" value="{{ csrftoken }}"/>
+  <input type="hidden" name="courtStartDate" id="courtStartDate" value="{{ poolDetails.courtStartDate }}">
 </form>

@@ -1,7 +1,10 @@
+const { capitalise, toSentenceCase } = require('../components/filters');
+
 (function() {
   'use strict';
 
-  var modUtils = require('./mod-utils')
+  var _ = require('lodash')
+    , modUtils = require('./mod-utils')
     , dateFilter = require('../components/filters').dateFilter;
 
   describe('Modernisation Util Component:', function() {
@@ -246,6 +249,53 @@
       expect(transformedUnpaidAttendance.rows[0][5].hasOwnProperty('html')).to.be.true;
       // eslint-disable-next-line max-len
       expect(transformedUnpaidAttendance.rows[0][5].html).to.equal('<a href="/juror-management/unpaid-attendance/expense-record/123456/12345" class="govuk-link">View expenses</a>');
+    });
+
+    it('should transform the messaging trials list before rendering', function() {
+      var trialsList = [
+        {
+          parties: 'Test Defendant',
+          judge: 'Judge Test',
+          courtroom: 'Large Room',
+          court: 'CHESTER',
+          trialNumber: 'T100000000',
+          trialType: 'Civil',
+          courtLocation: '415',
+          startDate: [ 2024, 2, 7 ],
+          isActive: false,
+        },
+      ];
+
+      const transforedTrialsTable = modUtils.transformMessagingTrialsList(trialsList);
+
+      console.log(transforedTrialsTable.head);
+      console.log(transforedTrialsTable.rows);
+
+      expect(transforedTrialsTable.head).to.be.length(7);
+      expect(transforedTrialsTable.rows).to.be.length(1);
+      expect(transforedTrialsTable.rows[0][0].hasOwnProperty('html')).to.be.true;
+      expect(transforedTrialsTable.rows[0][0].html).to.equal(
+        '<div class="govuk-radios govuk-radios--small" data-module="govuk-radios">' +
+          '<div class="govuk-radios__item">' +
+            '<input class="govuk-radios__input" id="T100000000" name="selectedTrial" type="radio" value="T100000000">' +
+            '<label class="govuk-label govuk-radios__label">' +
+              '<a href="/trial-management/trials/T100000000/415/detail" class="govuk-link">T100000000</a>' +
+            '</label>' +
+          '</div>' +
+        '</div>'
+      );
+      expect(transforedTrialsTable.rows[0][1].hasOwnProperty('text')).to.be.true;
+      expect(transforedTrialsTable.rows[0][1].text).to.equal('Test Defendant');
+      expect(transforedTrialsTable.rows[0][2].hasOwnProperty('text')).to.be.true;
+      expect(transforedTrialsTable.rows[0][2].text).to.equal('Civil');
+      expect(transforedTrialsTable.rows[0][3].hasOwnProperty('text')).to.be.true;
+      expect(transforedTrialsTable.rows[0][3].text).to.equal('Chester');
+      expect(transforedTrialsTable.rows[0][4].hasOwnProperty('text')).to.be.true;
+      expect(transforedTrialsTable.rows[0][4].text).to.equal('Large Room');
+      expect(transforedTrialsTable.rows[0][5].hasOwnProperty('text')).to.be.true;
+      expect(transforedTrialsTable.rows[0][5].text).to.equal('Judge Test');
+      expect(transforedTrialsTable.rows[0][6].hasOwnProperty('text')).to.be.true;
+      expect(transforedTrialsTable.rows[0][6].text).to.equal('Wed 07 Feb 2024');
     });
 
     it('should pad the time unit if single numeric values are input', function() {
@@ -739,6 +789,82 @@
       const identifier = modUtils.getLetterIdentifier('withdrawal');
 
       expect(identifier).to.equal('Withdrawal letters');
+    });
+
+    it('should format a date for a letter in english', () => {
+      const date = '2024-01-01';
+      const isWelsh = false;
+      const formattedDate = modUtils.formatLetterDate(date, 'dddd D MMMM YYYY', isWelsh);
+
+      expect(formattedDate).to.equal('Monday 1 January 2024');
+    });
+
+    it('should format a date for a letter in welsh', () => {
+      const date = '2024-01-01';
+      const isWelsh = true;
+      const formattedDate = modUtils.formatLetterDate(date, 'dddd D MMMM YYYY', isWelsh);
+
+      expect(formattedDate).to.equal('Dydd Llun 1 Ionawr 2024');
+    });
+
+    it('should format all keys in a deeply nested object to given case', () => {
+      const deeplyNestedObj = {
+        id: 1,
+        'a b C': { 'd e f': { ghi: 'ghi', jkL: 'jkl' } },
+        mno: [ { onm: 'onm' }, { nOm: 'nom' } ],
+        'p q r': 'pqr',
+        Stu: { vwx: 'vwx', y: { Z: 'z' }},
+      };
+      let formattedObject;
+
+      formattedObject = modUtils.replaceAllObjKeys(_.cloneDeep(deeplyNestedObj), toSentenceCase);
+
+      expect(formattedObject).to.deep.equal(
+        {
+          Id: 1,
+          'A b c': { 'D e f': { Ghi: 'ghi', 'Jk l': 'jkl' } },
+          Mno: [ { Onm: 'onm' }, {'N om': 'nom' } ],
+          'P q r': 'pqr',
+          Stu: { Vwx: 'vwx', Y: { Z: 'z' } },
+        }
+      );
+
+      formattedObject = modUtils.replaceAllObjKeys(_.cloneDeep(deeplyNestedObj), capitalise);
+
+      expect(formattedObject).to.deep.equal(
+        {
+          ID: 1,
+          'A B C': { 'D E F': { GHI: 'ghi', JKL: 'jkl' } },
+          MNO: [ { ONM: 'onm' }, { NOM: 'nom' } ],
+          'P Q R': 'pqr',
+          STU: { VWX: 'vwx', Y: { Z: 'z' } },
+        }
+      );
+
+      formattedObject = modUtils.replaceAllObjKeys(_.cloneDeep(deeplyNestedObj), _.camelCase);
+
+      expect(formattedObject).to.deep.equal(
+        {
+          id: 1,
+          mno: [ { onm: 'onm' }, { nOm: 'nom' } ],
+          aBC: { dEF: { ghi: 'ghi', jkL: 'jkl' } },
+          pQR: 'pqr',
+          stu: { vwx: 'vwx', y: { z: 'z' } },
+        }
+      );
+
+      formattedObject = modUtils.replaceAllObjKeys(_.cloneDeep(deeplyNestedObj), _.snakeCase);
+
+      expect(formattedObject).to.deep.equal(
+        {
+          id: 1,
+          mno: [ { onm: 'onm' }, { 'n_om': 'nom' } ],
+          'a_b_c': { 'd_e_f': { ghi: 'ghi', 'jk_l': 'jkl' } },
+          'p_q_r': 'pqr',
+          stu: { vwx: 'vwx', y: { z: 'z' } },
+        }
+      );
+
     });
 
   });

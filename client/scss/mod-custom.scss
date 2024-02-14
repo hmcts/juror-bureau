@@ -179,6 +179,10 @@
   display: flex;
 }
 
+.mod-items-start {
+  align-items: start;
+}
+
 .mod-items-center {
   align-items: center;
 }
@@ -317,6 +321,10 @@ dt.govuk-summary-list-mod {
     text-align: center;
 }
 
+.mod-middle-align {
+  vertical-align: middle;
+}
+
 .mod-horizontal-scroll-table {
     display: block;
     overflow-x: auto;
@@ -394,5 +402,11 @@ dt.govuk-summary-list-mod {
 .govuk-radios__label {
   &::before {
     background-color: govuk-colour("white");
+  }
+}
+
+.mod-select {
+  &--no-min-width{
+    min-width: 0;
   }
 }

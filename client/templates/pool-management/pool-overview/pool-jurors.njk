@@ -1,48 +1,91 @@
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{%- from "govuk/components/checkboxes/macro.njk" import govukCheckboxes -%}
+{%- from "govuk/components/input/macro.njk" import govukInput -%}
+{%- from "govuk/components/table/macro.njk" import govukTable -%}
+{%- from "moj/components/filter/macro.njk" import mojFilter -%}
+{% from "custom-components/mod-filter/macro.njk" import modFilter %}
+{%- from "moj/components/button-menu/macro.njk" import mojButtonMenu -%}
 {% if members.length === 0 and poolDetails.isActive === true %}
-  <div class="govuk-grid-column-full govuk-body">
-    This pool has no members.
-  </div>
-{% elif poolDetails.isActive === true %}
-  <form method="post" id="jurorDetailsForm" >
-
-    <div class="govuk-grid-column-full juror-actions govuk-!-padding-0 govuk-!-margin-bottom-5">
-      {{ govukButton({
-        text: "Show filter",
-        classes: "govuk-button--secondary govuk-!-margin-bottom-0",
-        attributes: {
-          id: "editPoolButton"
-        }
-      }) }}
-      {{ govukButton({
-        text: "Reassign",
-        classes: "govuk-button--secondary govuk-!-margin-bottom-0",
-        type: "submit",
-        attributes: {
-          id: "reassignButton",
-          formAction: postUrls.assignUrl
-        }
-      }) }}
-      {% if isCourtUser %}
-        {{ govukButton({
-          text: "Transfer",
-          classes: "govuk-button--secondary govuk-!-margin-bottom-0",
-          type: "submit",
-          attributes: {
-            id: "transferButton",
-            formAction: postUrls.transferUrl
-          }
-        }) }}
-        {{ govukButton({
-          text: "Complete service",
-          classes: "govuk-button--secondary govuk-!-margin-bottom-0",
-          type: "submit",
-          attributes: {
-            id: "completeServiceButton",
-            formAction: postUrls.completeServiceUrl
-          }
-        }) }}
-      {% endif %}
+    <div class="govuk-grid-column-full govuk-body">
+      This pool has no members.
     </div>
+  {% elif poolDetails.isActive === true %}
+
+    <form method="post" id="jurorDetailsForm" >
+       
+      <div class="govuk-grid-column-full juror-actions govuk-!-padding-0 govuk-!-margin-bottom-5">
+        {{ govukRadios({
+          classes: "govuk-radios--inline govuk-radios--small",
+          name: "jurorsInPool",
+          value: jurorStatuses,
+          fieldset: {
+            legend: {
+              text: "Jurors in this pool",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          hint: {
+            text: "Only displaying jurors managed by the Bureau"
+          },
+
+          items: [
+            {
+              value: "responded",
+              text: "Responded jurors only",
+              checked: true
+            },
+            {
+              value: "all",
+              text: "All jurors"
+            }
+          ]
+        }) }}
+          {{ govukButton({
+            text: "Show filter",
+            classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+            attributes: {
+              id: "editPoolButton"
+            }
+          }) }}
+          {{ govukButton({
+            text: "Reassign",
+            classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+            type: "submit",
+            attributes: {
+              id: "reassignButton",
+              formAction: postUrls.assignUrl
+            }
+          }) }}
+          {{ govukButton({
+            text: "Postpone",
+            classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+            type: "submit",
+            attributes: {
+              id: "postponeButton",
+              formAction: postUrls.postponeUrl
+            }
+          }) }}
+          {% if isCourtUser %}
+            {{ govukButton({
+              text: "Transfer",
+              classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+              type: "submit",
+              attributes: {
+                id: "transferButton",
+                formAction: postUrls.transferUrl
+              }
+            }) }}
+            {{ govukButton({
+              text: "Complete service",
+              classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+              type: "submit",
+              attributes: {
+                id: "completeServiceButton",
+                formAction: postUrls.completeServiceUrl
+              }
+            }) }}
+          {% endif %}
+        </div>
 
     {% if errors.items["selectedJurors"] %}<div class="error-allocation">
       <p class="govuk-error-message">{{ errors.items['selectedJurors'][0].details }}</p>
@@ -98,6 +141,7 @@
     {% if errors.items["selectedJurors"] %}</div>{% endif %}
 
     <input type="hidden" name="poolNumber" id="poolNumber" value="{{ poolDetails.poolNumber }}">
+    <input type="hidden" name="courtStartDate" id="courtStartDate" value="{{ poolDetails.courtStartDate }}">
     <input type="hidden" name="_csrf" id="csrfToken" value="{{ csrftoken }}">
   </form>
 

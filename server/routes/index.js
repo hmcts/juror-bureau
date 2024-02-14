@@ -42,6 +42,7 @@
     require('./reporting')(app);
     require('./sjo-tasks')(app);
     require('./documents')(app);
+    require('./messaging')(app);
 
     app.route('/health')
       .get(function(req, res) {

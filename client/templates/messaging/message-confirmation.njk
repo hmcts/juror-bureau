@@ -1,0 +1,86 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "custom-components/time-input-12-hour/macro.njk" import timeInput12Hour %}
+
+{% set currentApp = "Messaging" %}
+
+{% block page_title %}{{ serviceName }} - Messaging - {{ messageTitle }}{% endblock %}
+{% block page_identifier %}messaging{% endblock %}
+
+{% block beforeContent %}
+  {% include "includes/back-link.njk" %}
+{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+       <span class="govuk-caption-xl">{{ messageTitle | capitalize }}</span>
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Check and send message</h1>
+
+      <form action="{{ submitUrl }}" method="post" id="messageTemplateForm">
+
+        <div class="mod-juror-record__title govuk-!-margin-bottom-5">
+          <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Message template</h2>
+        </div>
+
+        {% if welshMessage and welshJurors > 0 %}
+          <h3 class="govuk-heading-s">English version</h3>
+        {% endif %}
+
+        <p class="govuk-body">You’re sending the following message to {{ englishJurors }} jurors. You cannot undo this after sending.</p>
+        
+        <div class="govuk-summary-card">
+          <div class="govuk-summary-card__title-wrapper">
+            <h2 class="govuk-summary-card__title">Your jury service</h2>
+          </div>
+          <div class="govuk-summary-card__content">
+            <dl class="govuk-summary-list">
+              <div class="govuk-summary-list__row">
+                <dd class="govuk-summary-list__value">
+                  {{ englishMessage }}
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+
+        {% if welshMessage and welshJurors > 0 %}
+          <h3 class="govuk-heading-s">Welsh version</h3>
+
+          <p class="govuk-body">You’re sending the following message to {{ welshJurors }} jurors. This cannot be undone.</p>
+
+          <div class="govuk-summary-card">
+          <div class="govuk-summary-card__title-wrapper">
+            <h2 class="govuk-summary-card__title">Eich Gwasanaeth Rheithgor</h2>
+          </div>
+          <div class="govuk-summary-card__content">
+            <dl class="govuk-summary-list">
+              <div class="govuk-summary-list__row">
+                <dd class="govuk-summary-list__value">
+                  {{ welshMessage }}
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Send message",
+            type: "submit"
+          }) }}
+
+          <a class="govuk-link" id="cancelAnchor" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+        
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+
+      </form>
+
+    </div>
+  </div>
+{% endblock %}

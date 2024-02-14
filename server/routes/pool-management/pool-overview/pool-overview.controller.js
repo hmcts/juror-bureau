@@ -12,7 +12,8 @@
     , modUtils = require('../../../lib/mod-utils')
     , { dateFilter } = require('../../../components/filters')
     , isCourtUser = require('../../../components/auth/user-type').isCourtUser
-    , capitalizeFully = require('../../../components/filters').capitalizeFully;
+    , capitalizeFully = require('../../../components/filters').capitalizeFully
+    , moment = require('moment');
 
   function errorCB(app, req, res, poolNumber, errorString) {
     return function(err) {
@@ -42,7 +43,7 @@
         }
         return coronerCourtPool(app)(req, res);
       }
-
+      delete req.session.poolJurorsPostpone;
       return poolSummaryObj.get(
         require('request-promise'),
         app,
@@ -314,6 +315,8 @@
             { poolNumber: req.params.poolNumber })
           , completeServiceUrl = app.namedRoutes.build('pool-overview.complete-service.post',
             { poolNumber: req.params.poolNumber })
+          , postponeUrl = app.namedRoutes.build('pool-overview.postpone.post',
+            { poolNumber: req.params.poolNumber })
           , availableSuccessMessage = false
           , successBanner
           , tmpError
@@ -351,7 +354,6 @@
         delete req.session.bannerMessage;
         // TODO: Make sure that this has no future implications 🤔
         req.session.locCode = req.params.poolNumber.substring(0, 3);
-
         res.render('pool-management/pool-overview/index', {
           backLinkUrl:{
             built: true,
@@ -368,7 +370,7 @@
           isNil: data.poolDetails.is_nil_pool,
           isActive: data.isActive,
           currentTab: 'jurors',
-          postUrls: { assignUrl, transferUrl, completeServiceUrl },
+          postUrls: { assignUrl, transferUrl, completeServiceUrl, postponeUrl },
           navData: _.clone(req.session.poolManagementNav),
           errors: {
             title: 'Please check the form',
@@ -494,10 +496,10 @@
       delete req.session.filteredMembers;
       data.filters = {};
       delete filters._csrf;
-
+      
       // REMOVE ALL SELECTED JURORS - dont want prior selections persisting through filtering
-      req.session.membersList.forEach((member) => delete member.checked);
-      let membersList = _.clone(req.session.membersList) || [];
+      // req.session.membersList.forEach((member) => delete member.checked);
+      // let membersList = _.clone(req.session.membersList) || [];
 
       app.logger.info('Filtering members in pool: ', {
         auth: req.session.authentication,
@@ -564,7 +566,7 @@
         });
       }
 
-      req.session.filteredMembers = {poolMembers: membersList};
+      // req.session.filteredMembers = {poolMembers: membersList};
 
       renderAttendancePool(app, req, res, null, data);
 
@@ -579,6 +581,8 @@
       , completeServiceUrl = app.namedRoutes.build('pool-overview.complete-service.post',
         { poolNumber: req.params.poolNumber })
       , changeServiceDateUrl = app.namedRoutes.build('pool-overview.change-next-attendance.post',
+        { poolNumber: req.params.poolNumber })
+      , postponeUrl = app.namedRoutes.build('pool-overview.postpone.post',
         { poolNumber: req.params.poolNumber })
       , filters = _.clone(req.session.filters);
 
@@ -671,7 +675,7 @@
         isNil: data.poolDetails.is_nil_pool,
         isActive: data.isActive,
         currentTab: 'jurors',
-        postUrls: { assignUrl, transferUrl, completeServiceUrl, changeServiceDateUrl },
+        postUrls: { assignUrl, transferUrl, completeServiceUrl, changeServiceDateUrl, postponeUrl },
         navData: _.clone(req.session.poolManagementNav),
         errors: {
           title: 'Please check the form',
@@ -690,6 +694,32 @@
       errorCB(app, req, res, data.poolDetails.poolNumber, 'Failed to fetch pool members:')(err);
     }
   }
+
+  module.exports.postBulkPostpone = function(app) {
+    return function(req, res) {
+      var validatorResult;
+
+      validatorResult = validate(req.body, jurorSelectValidator());
+      if (typeof validatorResult !== 'undefined') {
+
+        req.session.errors = validatorResult;
+        req.session.noJurorSelect = true;
+        return res.redirect(app.namedRoutes.build('pool-overview.get', {
+          poolNumber: req.body.poolNumber}));
+      }
+
+      req.session.poolJurorsPostpone = req.body;
+      delete req.session.poolJurorsPostpone._csrf;
+      delete req.session.errors;
+
+      if (!Array.isArray(req.body.selectedJurors)) {
+        req.session.poolJurorsPostpone.selectedJurors = [req.body.selectedJurors];
+      }
+      return res.redirect(app.namedRoutes.build('pool-management.postpone.get', {
+        poolNumber: req.body.poolNumber,
+      }));
+    };
+  };
 
   module.exports.postCheckJuror = function(app) {
     return function(req, res) {

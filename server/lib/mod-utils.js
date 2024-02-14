@@ -1,11 +1,11 @@
+
 (function() {
   'use strict';
 
   const _ = require('lodash');
   const crypto = require('crypto');
   const transformPoolType = require('../components/filters').transformPoolType;
-  const dateFilter = require('../components/filters').dateFilter;
-  const capitalizeFully = require('../components/filters').capitalizeFully;
+  const { dateFilter, capitalizeFully, makeDate } = require('../components/filters');
   const moment = require('moment');
   const modUtils = require('../lib/mod-utils');
   const { LaunchDarkly } = require('./launchdarkly');
@@ -334,6 +334,121 @@
 
       table.rows.push(item);
     });
+    return table;
+  };
+
+  module.exports.transformMessagingTrialsList = (trials, sortBy, sortOrder) => {
+    const table = {
+        head: [],
+        rows: [],
+      }
+      , order = sortOrder || 'ascending';
+
+    table.head.push(
+      {
+        id: 'trialNumber',
+        value: 'Trial number',
+        sort: sortBy === 'trialNumber' ? order : 'none',
+        classes: 'govuk-!-padding-left-6',
+      },
+      {
+        id: 'description',
+        value: 'Names',
+        sort: sortBy === 'description' ? order : 'none',
+      },
+      {
+        id: 'trialType',
+        value: 'Trial type',
+        sort: sortBy === 'trialType' ? order : 'none',
+      },
+      {
+        id: 'courtLocation',
+        value: 'Court',
+        sort: sortBy === 'courtLocation' ? order : 'none',
+      },
+      {
+        id: 'courtroom',
+        value: 'Courtroom',
+        sort: sortBy === 'courtroom' ? order : 'none',
+      },
+      {
+        id: 'judge',
+        value: 'Judge',
+        sort: sortBy === 'judge' ? order : 'none',
+      },
+      {
+        id: 'trialStartDate',
+        value: 'Start date',
+        sort: sortBy === 'trialStartDate' ? order : 'none',
+      },
+    );
+
+    trials.forEach(function(trial) {
+      const item = [];
+
+      item.push(
+        {
+          html:
+            '<div class="govuk-radios govuk-radios--small" data-module="govuk-radios">' +
+              '<div class="govuk-radios__item">' +
+                '<input class="govuk-radios__input" id="' + trial.trialNumber + '" name="selectedTrial" ' +
+                  'type="radio" value="' + trial.trialNumber + '">' +
+                '<label class="govuk-label govuk-radios__label">' +
+                  '<a href="/trial-management/trials/' + trial.trialNumber + '/' + trial.courtLocation + '/detail'+ '" ' +
+                  'class="govuk-link">' + trial.trialNumber + '</a></label>' +
+              '</div>' +
+            '</div>',
+          attributes: {
+            'data-sort-value': trial.trialNumber,
+          },
+        },
+        {
+          text: trial.parties,
+          attributes: {
+            'data-sort-value': trial.parties,
+          },
+          classes: 'mod-middle-align',
+        },
+        {
+          text: capitalizeFully(trial.trialType),
+          attributes: {
+            'data-sort-value': trial.trialType,
+          },
+          classes: 'mod-middle-align',
+        },
+        {
+          text: capitalizeFully(trial.court),
+          attributes: {
+            'data-sort-value': trial.court,
+          },
+          classes: 'mod-middle-align',
+        },
+        {
+          text: capitalizeFully(trial.courtroom),
+          attributes: {
+            'data-sort-value': trial.courtroom,
+          },
+          classes: 'mod-middle-align',
+        },
+        {
+          text: capitalizeFully(trial.judge),
+          attributes: {
+            'data-sort-value': trial.judge,
+          },
+          classes: 'mod-middle-align',
+        },
+        {
+          text: dateFilter(makeDate(trial.startDate), 'YYYY,MM,DD', 'ddd DD MMM YYYY'),
+          attributes: {
+            'data-sort-value': makeDate(trial.startDate),
+          },
+          classes: 'mod-middle-align',
+        },
+      );
+
+      table.rows.push(item);
+    });
+
     return table;
   };
 
@@ -845,6 +960,114 @@
       return 'Withdrawal letters';
     default: return '';
     }
+  };
+
+  module.exports.LetterType = {
+    'initial-summons': 'SUMMONS',
+    'summons-reminders': 'REMINDERS',
+    'further-information': 'INFORMATION',
+    'confirmation': 'CONFIRMATION',
+    'deferral-granted': 'DEFERRAL_GRANTED',
+    'deferral-refused': 'DEFERRAL_DENIED',
+    'excusal-granted': 'EXCUSAL_GRANTED',
+    'excusal-refused': 'EXCUSAL_DENIED',
+    'postponement': 'POSTPONED',
+    'withdrawal': 'WITHDRAWAL',
+  };
+
+  module.exports.formatLetterDate = function(date, format, welsh) {
+    const _moment = moment(date);
+
+    if (welsh) {
+      return _moment.locale('cy').format(format);
+    }
+
+    return _moment.format(format);
+  };
+
+  /**
+  * Recursively calls the function to replace each key,
+    if objects are contained within an array it replaces these too
+    looping through until every object key is replaced using the string conversion function
+  * @param {object} obj the object that you want to convert keys for
+  * @param {function} getNewKey the string conversion function to change keys by
+                      (i.e. filters (capitialise(),...) or lodash string conversion methods (_.toCamelCase(),...))
+  * @returns {object} the given object with all its keys replaced using the supplied string conversion function
+    @example
+    * // returns {
+          ID: 1,
+          'A B C': { 'D E F': { GHI: 'ghi', JKL: 'jkl' } },
+          MNO: [ { ONM: 'onm' }, { NOM: 'nom' } ],
+          'P Q R': 'pqr',
+          STU: { VWX: 'vwx', Y: { Z: 'z' } },
+        }
+    * modUtils.replaceAllObjKeys({
+        id: 1,
+        'a b C': { 'd e f': { ghi: 'ghi', jkL: 'jkl' } },
+        mno: [ { onm: 'onm' }, { nOm: 'nom' } ],
+        'p q r': 'pqr',
+        Stu: { vwx: 'vwx', y: { Z: 'z' }},
+      }, capitalise);
+  */
+  module.exports.replaceAllObjKeys = (obj, getNewKey) => {
+    if (Array.isArray(obj)) {
+      for (let i = 0; i < obj.length; i++) {
+        modUtils.replaceAllObjKeys(obj[i], getNewKey);
+      }
+    } else if (typeof obj === 'object') {
+      // eslint-disable-next-line guard-for-in
+      for (const key in obj) {
+        const newKey = getNewKey(key);
+
+        obj[newKey] = obj[key];
+        if (key !== newKey) {
+          delete obj[key];
+        }
+        modUtils.replaceAllObjKeys(obj[newKey], getNewKey);
+      }
+    }
+
+    return obj;
+  };
+
+  module.exports.messagingCodes = {
+    'reminder-to-attend': 'REMIND_TO_ATTEND',
+    'failed-to-attend': 'FAILED_TO_ATTEND_COURT',
+    'attendance-date-time-changed': 'ATTENDANCE_DATE_AND_TIME_CHANGED_COURT',
+    'attendance-time-changed': 'ATTENDANCE_TIME_CHANGED_COURT',
+    'complete-attended': 'COMPLETE_ATTENDED_COURT',
+    'complete-not-needed': 'COMPLETE_NOT_NEEDED_COURT',
+    'next-attendance-date': 'NEXT_ATTENDANCE_DATE_COURT',
+    'on-call': 'ON_CALL_COURT',
+    'please-contact': 'PLEASE_CONTACT_COURT',
+    'delayed-start': 'DELAYED_START_COURT',
+    'selection': 'SELECTION_COURT',
+    'bad-weather': 'BAD_WEATHER_COURT',
+    'check-inbox': 'CHECK_INBOX_COURT',
+    'bring-lunch': 'BRING_LUNCH_COURT',
+    'excused': 'EXCUSED_COURT',
+    'sentencing-invite': 'SENTENCING_INVITE_COURT',
+    'sentencing-date': 'SENTENCING_DATE_COURT',
+  };
+
+  module.exports.messagingTitles = {
+    'reminder-to-attend': 'Reminder to attend',
+    'failed-to-attend': 'Failed to attend',
+    'attendance-date-time-changed': 'Attendance date and time changed',
+    'attendance-time-changed': 'Attendance time changed',
+    'complete-attended': 'Complete juror - attended',
+    'complete-not-needed': 'Complete juror - not needed',
+    'next-attendance-date': 'Next due at court date',
+    'on-call': 'On call',
+    'please-contact': 'Ask juror to contact court',
+    'delayed-start': 'Delayed start',
+    'selection': 'Selected for panel',
+    'bad-weather': 'Bad weather',
+    'check-inbox': 'Check email',
+    'bring-lunch': 'Bring lunch',
+    'excused': 'Excused',
+    'sentencing-invite': 'Sentencing invite',
+    'sentencing-date': 'Sentencing date',
   };
 
 })();

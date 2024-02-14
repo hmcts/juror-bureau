@@ -28,7 +28,7 @@
     const sortDirection = i === this.headings.length - 2 ? 'descending' : 'none';
     const numberTypeClass = this.dataTypes[i] === 'number'
       ? 'govuk-table__header--numeric' : '';
-    const isHidden = curr.includes('hidden_');
+    const isHidden = curr.includes('hidden_') || this.dataTypes[i] === 'hidden';
 
     let row = '';
 
@@ -53,15 +53,14 @@
     const jurorInfo = Object.values(curr);
 
     const datePrintedIdx = this.headings.indexOf('Date printed');
-    const formCodeIdx = this.headings.indexOf('hidden_form_code');
 
-    const _isPrinted = jurorInfo[datePrintedIdx] !== '-';
+    const _isPrinted = jurorInfo[datePrintedIdx] !== null;
     const isPrintedHighlight = _isPrinted ? 'mod-highlight-table-row__grey' : '';
 
     const checkedJuror = this.checkedJurors.filter((juror) => (
       juror.juror_number === jurorInfo[0]
-      && juror.form_code === jurorInfo[formCodeIdx]
-      && juror.date_printed === jurorInfo[datePrintedIdx]
+      && parseInt(juror.form_code) === curr.id
+      && juror.date_printed === (curr.date_printed || 'null')
     ));
 
     const isChecked = (checkedJuror && checkedJuror.length) ? 'checked' : '';
@@ -72,8 +71,8 @@
             <input type="checkbox" class="govuk-checkboxes__input"
               id="juror-${jurorInfo[0]}" ${isChecked}
               aria-label="check-juror-${jurorInfo[0]}"
-              data-version="${jurorInfo[formCodeIdx]}"
-              data-printed="${jurorInfo[datePrintedIdx]}"
+              data-version="${curr.id}"
+              data-printed="${curr.date_printed}"
               name="checked-jurors"
             />
             <label class="govuk-label govuk-checkboxes__label" for="juror-${jurorInfo[0]}">
@@ -88,7 +87,7 @@
       const isDate = this.dataTypes[index] === 'date';
       const isNumber = this.dataTypes[index] === 'number';
       const value = jurorInfo[index];
-      const isHidden = this.headings[index].includes('hidden_');
+      const isHidden = this.dataTypes[index] === 'hidden';
 
       const _formatValue = {
         isDate,

@@ -1,0 +1,48 @@
+{% extends "layouts/default.njk" %}
+
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+
+{% set currentApp = "Messaging" %}
+
+{% block page_title %}{{ serviceName }} - Messaging{% endblock %}
+{% block page_identifier %}messaging{% endblock %}
+
+{% macro buildUrl(param) %}
+  {{ url("messaging.send.template.get", {
+    message: param
+  }) }}
+{% endmacro %}
+
+{% block content %}
+  {% if bannerMessage %}
+    {{ mojBanner({
+      type: "success",
+      html: bannerMessage,
+      iconFallbackText: "Success"
+    }) }}
+  {% endif %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Send messages</h1>
+      <ul class="govuk-list govuk-list--spaced">
+        <li><a class="govuk-link govuk-link--no-visited-state" href="{{ buildUrl('please-contact') }}">Ask juror to contact court</a></li>
+        <li><a class="govuk-link govuk-link--no-visited-state" href="{{ buildUrl('attendance-date-time-changed') }}">Attendance date and time changed</a></li>
+        <li><a class="govuk-link govuk-link--no-visited-state" href="{{ buildUrl('attendance-time-changed') }}">Attendance time changed</a></li>
+        <li><a class="govuk-link govuk-link--no-visited-state" href="{{ buildUrl('bad-weather') }}">Bad weather</a></li>
+        <li><a class="govuk-link govuk-link--no-visited-state" href="{{ buildUrl('bring-lunch') }}">Bring lunch</a></li>
+        <li><a class="govuk-link govuk-link--no-visited-state" href="{{ buildUrl('check-inbox') }}">Check email (text only)</a></li>
+        <li><a class="govuk-link govuk-link--no-visited-state" href="{{ buildUrl('complete-attended') }}">Complete juror - attended</a></li>
+        <li><a class="govuk-link govuk-link--no-visited-state" href="{{ buildUrl('complete-not-needed') }}">Complete juror - not needed</a></li>
+        <li><a class="govuk-link govuk-link--no-visited-state" href="{{ buildUrl('delayed-start') }}">Delayed start</a></li>
+        <li><a class="govuk-link govuk-link--no-visited-state" href="{{ buildUrl('excused') }}">Excused</a></li>
+        <li><a class="govuk-link govuk-link--no-visited-state" href="{{ buildUrl('failed-to-attend') }}">Failed to attend</a></li>
+        <li><a class="govuk-link govuk-link--no-visited-state" href="{{ buildUrl('next-attendance-date') }}">Next due at court date</a></li>
+        <li><a class="govuk-link govuk-link--no-visited-state" href="{{ buildUrl('on-call') }}">On call</a></li>
+        <li><a class="govuk-link govuk-link--no-visited-state" href="{{ buildUrl('reminder-to-attend') }}">Reminder to attend</a></li>
+        <li><a class="govuk-link govuk-link--no-visited-state" href="{{ buildUrl('selection') }}">Selected for panel</a></li>
+        <li><a class="govuk-link govuk-link--no-visited-state" href="{{ buildUrl('sentencing-date') }}">Sentencing date (email only)</a></li>
+        <li><a class="govuk-link govuk-link--no-visited-state" href="{{ buildUrl('sentencing-invite') }}">Sentencing invite (email only)</a></li>
+      </ul>
+    </div>
+  </div>
+{% endblock %}

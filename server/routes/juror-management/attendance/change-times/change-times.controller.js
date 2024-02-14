@@ -8,7 +8,7 @@
     , { convert12to24, convert24to12, timeArrayToString } = require('../../../../components/filters');
 
   module.exports.getChangeTimes = function(app) {
-    return function(req, res) {
+    return async function(req, res) {
       const { jurorNumber } = req.params;
       let processUrl
         , cancelUrl
@@ -20,75 +20,97 @@
       delete req.session.errors;
       delete req.session.formFields;
 
-      const juror = req.session.dailyAttendanceList.find(attendee => attendee.jurorNumber === jurorNumber);
+      try {
+        attendanceDate = req.query.date ? req.query.date : req.session.attendanceListDate;
 
-      if (!juror) {
-        app.logger.crit('Failed to find a juror with that juror number', {
-          userId: req.session.authentication.login,
-          jwt: req.session.authToken,
-          error: 'The juror number in the url does not match the juror selected to change the times',
+        const body = {
+          commonData: {
+            tag: 'JUROR_NUMBER',
+            attendanceDate,
+            locationCode: req.session.authentication.owner,
+            singleJuror: true,
+          },
+          juror: [jurorNumber],
+        };
+
+        const data = await jurorAttendanceDao.get(app, req, body);
+        const juror = data.details[0];
+
+        if (!juror) {
+          app.logger.crit('Failed to find a juror with that juror number', {
+            userId: req.session.authentication.login,
+            jwt: req.session.authToken,
+            error: 'The juror number in the url does not match the juror selected to change the times',
+          });
+
+          return res.render('_errors/generic');
+        }
+
+        // Check if user navigated from juror record
+        if (req.url.includes('record')) {
+          processUrl = app.namedRoutes.build('juror-record.attendance.change-times.post', {
+            jurorNumber: juror.juror_number,
+          });
+          cancelUrl = app.namedRoutes.build('juror-record.attendance.get', {
+            jurorNumber: juror.juror_number,
+          });
+        } else {
+          processUrl = app.namedRoutes.build('juror-management.attendance.change-times.post', {
+            jurorNumber: juror.juror_number,
+          });
+          cancelUrl = app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate;
+          deleteUrl = app.namedRoutes.build('juror-management.attendance.delete-attendance.get', {
+            jurorNumber: juror.juror_number,
+          });
+        }
+
+        const originalCheckInTime =
+          juror.check_in_time !== null
+            ? extractTimeString(convert24to12(timeArrayToString(juror.check_in_time)))
+            : { hour: '', minute: '', period: '' };
+
+        const originalCheckOutTime =
+          juror.check_out_time !== null
+            ? extractTimeString(convert24to12(timeArrayToString(juror.check_out_time)))
+            : { hour: '', minute: '', period: '' };
+
+        const checkInTime = {
+          hour: typeof tmpBody !== 'undefined' ? tmpBody.checkInTimeHour : originalCheckInTime.hour,
+          minute: typeof tmpBody !== 'undefined' ? tmpBody.checkInTimeMinute : originalCheckInTime.minute,
+          period: typeof tmpBody !== 'undefined' ? tmpBody.checkInTimePeriod : originalCheckInTime.period,
+        };
+        const checkOutTime = {
+          hour: typeof tmpBody !== 'undefined' ? tmpBody.checkOutTimeHour : originalCheckOutTime.hour,
+          minute: typeof tmpBody !== 'undefined' ? tmpBody.checkOutTimeMinute : originalCheckOutTime.minute,
+          period: typeof tmpBody !== 'undefined' ? tmpBody.checkOutTimePeriod : originalCheckOutTime.period,
+        };
+
+        req.session.attendanceDate = attendanceDate;
+
+        return res.render('juror-management/attendance/change-times', {
+          selectedJuror: juror,
+          attendanceDate: attendanceDate,
+          processUrl,
+          cancelUrl,
+          deleteUrl,
+          errors: {
+            title: 'Please check the form',
+            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+            items: tmpErrors,
+          },
+          checkInTime,
+          checkOutTime,
+        });
+      } catch (err) {
+        app.logger.crit('Failed to fetch attendance records for given day and juror number', {
+          auth: req.session.authentication,
+          token: req.session.authToken,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic');
+        return res.render('_errors/generic.njk');
       }
 
-      attendanceDate = req.query.date ? req.query.date : req.session.attendanceListDate;
-
-      // Check if user navigated from juror record
-      if (req.url.includes('record')) {
-        processUrl = app.namedRoutes.build('juror-record.attendance.change-times.post', {
-          jurorNumber: juror.jurorNumber,
-        });
-        cancelUrl = app.namedRoutes.build('juror-record.attendance.get', {
-          jurorNumber: juror.jurorNumber,
-        });
-      } else {
-        processUrl = app.namedRoutes.build('juror-management.attendance.change-times.post', {
-          jurorNumber: juror.jurorNumber,
-        });
-        cancelUrl = app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate;
-        deleteUrl = app.namedRoutes.build('juror-management.attendance.delete-attendance.get', {
-          jurorNumber: juror.jurorNumber,
-        });
-      }
-
-      const originalCheckInTime =
-        juror.checkInTime !== null
-          ? extractTimeString(convert24to12(timeArrayToString(juror.checkInTime)))
-          : { hour: '', minute: '', period: '' };
-
-      const originalCheckOutTime =
-        juror.checkOutTime !== null
-          ? extractTimeString(convert24to12(timeArrayToString(juror.checkOutTime)))
-          : { hour: '', minute: '', period: '' };
-
-      const checkInTime = {
-        hour: typeof tmpBody !== 'undefined' ? tmpBody.checkInTimeHour : originalCheckInTime.hour,
-        minute: typeof tmpBody !== 'undefined' ? tmpBody.checkInTimeMinute : originalCheckInTime.minute,
-        period: typeof tmpBody !== 'undefined' ? tmpBody.checkInTimePeriod : originalCheckInTime.period,
-      };
-      const checkOutTime = {
-        hour: typeof tmpBody !== 'undefined' ? tmpBody.checkOutTimeHour : originalCheckOutTime.hour,
-        minute: typeof tmpBody !== 'undefined' ? tmpBody.checkOutTimeMinute : originalCheckOutTime.minute,
-        period: typeof tmpBody !== 'undefined' ? tmpBody.checkOutTimePeriod : originalCheckOutTime.period,
-      };
-
-      req.session.attendanceDate = attendanceDate;
-
-      return res.render('juror-management/attendance/change-times', {
-        selectedJuror: juror,
-        attendanceDate: attendanceDate,
-        processUrl,
-        cancelUrl,
-        deleteUrl,
-        errors: {
-          title: 'Please check the form',
-          count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-          items: tmpErrors,
-        },
-        checkInTime,
-        checkOutTime,
-      });
     };
   };
 
@@ -153,59 +175,50 @@
         return res.redirect(invalidUrl);
       }
 
-      const promiseArray = [];
       const payload = {
         commonData: {
-          status: 'CHECK_IN', // default property
+          status: '',
           attendanceDate,
           locationCode: req.session.authentication.owner,
           singleJuror: true,
         },
-        juror: [],
+        juror: [jurorNumber],
       };
-      let checkInTime, checkOutTime,
-        checkInPayload = {}, checkOutPayload = {}; // initiated to be iterated even if not set
+      let checkInTime, checkOutTime;
+      let status;
 
       if (checkInTimeHour && checkInTimeMinute && checkInTimePeriod) {
-        checkInPayload = _.cloneDeep(payload);
-
         checkInTime = convert12to24(checkInTimeHour + ':' + checkInTimeMinute + checkInTimePeriod);
-
-        checkInPayload.commonData.checkInTime = checkInTime;
-        checkInPayload.juror.push(jurorNumber);
-
-        promiseArray.push(jurorAttendanceDao.patch(
-          app,
-          req,
-          checkInPayload,
-        ));
+        payload.commonData.checkInTime = checkInTime;
+        status = 'CHECK_IN';
       }
       if (checkOutTimeHour && checkOutTimeMinute && checkOutTimePeriod) {
-        checkOutPayload = _.cloneDeep(payload);
-
         checkOutTime = convert12to24(checkOutTimeHour + ':' + checkOutTimeMinute + checkOutTimePeriod);
-
-        checkOutPayload.commonData.status = 'CHECK_OUT';
-        checkOutPayload.commonData.checkOutTime = checkOutTime;
-        checkOutPayload.juror.push(jurorNumber);
-
-        promiseArray.push(jurorAttendanceDao.patch(
-          app,
-          req,
-          checkOutPayload,
-        ));
+        payload.commonData.checkOutTime = checkOutTime;
+        status = status === 'CHECK_IN' ? 'CHECK_IN_AND_OUT' : 'CHECK_OUT';
       }
+      payload.commonData.status = status;
 
       try {
-        await Promise.all(promiseArray);
+        await jurorAttendanceDao.patch(
+          app,
+          req,
+          payload,
+        );
+        app.logger.info('Updated juror\'s attendance times', {
+          auth: req.session.authentication,
+          token: req.session.authToken,
+          data: {
+            ...payload,
+          },
+        });
         return res.redirect(redirectUrl);
       } catch (err) {
         app.logger.crit('Unable to update the juror attendance times', {
           auth: req.session.authentication,
           token: req.session.authToken,
           data: {
-            ...checkInPayload,
-            ...checkOutPayload,
+            ...payload,
           },
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });

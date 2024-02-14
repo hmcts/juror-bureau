@@ -16,15 +16,16 @@
     }
 
     , postponeObject = {
-      resource: 'moj/deferral-maintenance/juror/postpone/{}',
-      post: function(rp, app, jwtToken, jurorNumber, body) {
+      resource: 'moj/deferral-maintenance/juror/postpone',
+      post: function(rp, app, jwtToken, body) {
         var reqOptions = _.clone(options);
 
         reqOptions.headers.Authorization = jwtToken;
         reqOptions.method = 'POST';
 
         reqOptions.body = _.clone(body);
-        reqOptions.uri = urljoin(reqOptions.uri, this.resource.replace('{}', jurorNumber));
+
+        reqOptions.uri = urljoin(reqOptions.uri, this.resource);
 
         app.logger.debug('Sending request to API: ', {
           uri: reqOptions.uri,
@@ -37,5 +38,5 @@
       },
     };
 
-  module.exports = postponeObject;
+  module.exports.postponeObject = postponeObject;
 })();

@@ -55,20 +55,34 @@
         <a id="addressChangeAnchor" href="{{ changeUrl }}" class="govuk-link">Change</a>
       </p>
 
-      {% if totalJurors > 0 and documentSearchBy !== "allLetters" %}
-        <form method="POST" action="{{ postUrl }}">
+      {% if totalCheckableJurors > 0 and documentSearchBy !== "allLetters" %}
+        {% if authentication.owner === "400" %}
+          <form method="POST" action="{{ postUrl }}">
+            {{ govukButton({
+              text: buttonLabel,
+              classes: "govuk-button--secondary",
+              type: "submit"
+            }) }}
+
+            <input type="hidden" id="documentType" value="{{ document }}" />
+            {{ csrfProtection(csrftoken) }}
+          </form>
+        {% else %}
           {{ govukButton({
             text: buttonLabel,
             classes: "govuk-button--secondary",
-            type: "submit"
+            href: url("documents.letters-list.print", { document: document }),
+            id: "print-documents",
+            attributes: {
+              target: "_blank"
+            }
           }) }}
 
-          <input type="hidden" id="documentType" value="{{ document }}" />
           {{ csrfProtection(csrftoken) }}
-        </form>
+        {% endif %}
 
         <div class="govuk-caption-m">
-          <span id="selectedJurorsCount">{{ selectedJurors }}</span> of {{ totalJurors }} selected
+          <span id="selectedJurorsCount">{{ selectedJurors }}</span> of {{ totalCheckableJurors }} selected
         </div>
       {% else %}
         {{ csrfProtection(csrftoken) }}
@@ -109,4 +123,18 @@
   {{ super() }}
 
   <script src="{{ assetPath if assetPath else '/' }}js/document-letters.js"></script>
+
+  {% if authentication.owner !== "400" %}
+    <script>
+      $('loaded', function() {
+        $('#print-documents').click(function(event) {
+          var selectedJurorsCount = $('#selectedJurorsCount').text();
+
+          if (parseInt(selectedJurorsCount) === 0) {
+            event.preventDefault();
+          }
+        });
+      });
+    </script>
+  {% endif %}
 {% endblock %}

@@ -1,12 +1,16 @@
 (function() {
   'use strict';
 
-  const { getDocuments } = require('./documents.controller')
-    , { getListLetters,
-      postListLetters,
-      checkJuror,
-      deletePendingLetter } = require('./letters-list/letters-list.controller')
-    , auth = require('../../components/auth');
+  const { getDocuments } = require('./documents.controller');
+  const {
+    getListLetters,
+    postListLetters,
+    checkJuror,
+    deletePendingLetter,
+  } = require('./letters-list/letters-list.controller');
+  const { printDocuments } = require('./print.controller');
+  const auth = require('../../components/auth');
+  const { isCourtUser } = require('../../components/auth/user-type');
 
   const {
     getDocumentForm,
@@ -50,6 +54,12 @@
       'documents.letters-list.check.post',
       auth.verify,
       checkJuror(app));
+
+    app.get('/documents/:document/letters-list/print',
+      'documents.letters-list.print',
+      auth.verify,
+      isCourtUser,
+      printDocuments(app));
   };
 
 })();

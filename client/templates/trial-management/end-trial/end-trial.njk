@@ -1,0 +1,88 @@
+{% extends "layouts/default-dashboard.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+
+{% set currentApp = "Trial management" %}
+
+{% block page_identifier %}End Trial{% endblock %}
+
+{% block content %}
+
+  {% set _processUrl = processUrl %}
+
+  {% include "includes/errors.njk" %}
+
+    {% set radioOptionError = undefined %}
+    {% if errors.items["endTrial"] %}
+      {% set radioOptionError = { text: errors.items["endTrial"][0].details } %}
+    {% endif %}
+
+    {% set dateError = undefined %}
+    {% if errors.items["endTrialDate"] %}
+      {% set dateError = errors.items["endTrialDate"][0].details %}
+    {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+    <span class="trial-detail__header-label">Trial number {{ trialNumber }}</span>
+    <h1 class="govuk-heading-l">Do you want to end this trial?</h1>
+
+      {% set endTrialDateHtml %}
+        {{ datePicker({
+          id: 'endTrialDate',
+          hint: 'Use dd/mm/yyyy format. For example, 31/01/2023.',
+          dateValue: tmpFields.endTrialDate,
+          dateError: dateError
+        }) }}
+      {% endset -%}
+
+      <form action="{{ _processUrl }}" method="post" id="endTrialDateForm">
+
+        {{ govukRadios({
+          name: "endTrial",
+          errorMessage: radioOptionError,
+          items: [
+            {
+              value: true,
+              text: "Yes",
+              checked: radioToggle,
+              conditional: {
+                html: endTrialDateHtml
+              }
+            },
+            {
+              value: false,
+              text: "No"
+            }
+          ]
+        }) }} 
+
+        {{ govukButton({
+          text: "Continue",
+          type: "submit",
+          attributes: {
+            id: "endTrialButton"
+          }
+        }) }}
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      const datePickers = []
+        .slice
+        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
+      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
+    });
+  </script>
+{% endblock %}

@@ -1,0 +1,200 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+
+{% set currentApp = "Messaging" %}
+
+{% block page_title %}{{ serviceName }} - Messaging - {{ messageTitle }}{% endblock %}
+{% block page_identifier %}messaging{% endblock %}
+
+{% block beforeContent %}
+  {% include "includes/back-link.njk" %}
+{% endblock %}
+
+{% block content %}
+
+  {% set searchByError = undefined %}
+  {% if errors.items["searchBy"] %}
+    {% set searchByError = {"text": errors.items['searchBy'][0].details} %}
+  {% endif %}
+  {% set jurorNumberSearchError = undefined %}
+  {% if errors.items["jurorNumberSearch"] %}
+    {% set jurorNumberSearchError = {"text": errors.items['jurorNumberSearch'][0].details} %}
+  {% endif %}
+  {% set jurorNameSearchError = undefined %}
+  {% if errors.items["jurorNameSearch"] %}
+    {% set jurorNameSearchError = {"text": errors.items['jurorNameSearch'][0].details} %}
+  {% endif %}
+  {% set poolSearchError = undefined %}
+  {% if errors.items["poolSearch"] %}
+    {% set poolSearchError = {"text": errors.items['poolSearch'][0].details} %}
+  {% endif %}
+  {% set nextDueAtCourtDateError = undefined %}
+  {% if errors.items["nextDueAtCourtDate"] %}
+    {% set nextDueAtCourtDateError = errors.items['nextDueAtCourtDate'][0].details %}
+  {% endif %}
+  {% set deferralDateError = undefined %}
+  {% if errors.items["deferralDate"] %}
+    {% set deferralDateError = errors.items['deferralDate'][0].details %}
+  {% endif %}
+
+  {% set jurorNumberHtml %}
+    {{ govukInput({
+      id: "jurorNumberSearch",
+      name: "jurorNumberSearch",
+      classes: "govuk-!-width-one-quarter",
+      label: {
+        text: "Enter juror number"
+      },
+      errorMessage: jurorNumberSearchError,
+      value: tmpBody.jurorNumberSearch
+    }) }}
+  {% endset %}
+
+  {% set jurorNameHtml %}
+    {{ govukInput({
+      id: "jurorNameSearch",
+      name: "jurorNameSearch",
+      classes: "govuk-!-width-one-quarter",
+      label: {
+        text: "Enter juror name"
+      },
+      errorMessage: jurorNameSearchError,
+      value: tmpBody.jurorNameSearch
+    }) }}
+  {% endset %}
+
+  {% set poolHtml %}
+    {{ govukInput({
+      id: "poolSearch",
+      name: "poolSearch",
+      classes: "govuk-!-width-one-quarter",
+      label: {
+        text: "Enter pool number"
+      },
+      errorMessage: poolSearchError,
+      value: tmpBody.poolSearch
+    }) }}
+  {% endset %}
+
+  {% set nextDueHtml %}
+    {{ datePicker({
+      id: "nextDueAtCourtDate",
+      label: {
+        text: "Enter date next due at court",
+        classes: "govuk-body"
+      },
+      hint: "Use dd/mm/yyyy format. For example, 31/01/2023.",
+      dateValue: nextDueAtCourtDate,
+      dateError: nextDueAtCourtDateError
+    }) }}
+  {% endset %}
+
+  {% set dateDeferredToHtml %}
+    {{ datePicker({
+      id: "deferralDate",
+      label: {
+        text: "Enter a deferral date",
+        classes: "govuk-body"
+      },
+      hint: "Use dd/mm/yyyy format. For example, 31/01/2023.",
+      dateValue: deferralDate,
+      dateError: deferralDateError
+    }) }}
+  {% endset %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+       <span class="govuk-caption-xl">{{ messageTitle | capitalize }}</span>
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Find jurors to send message to</h1>
+
+      <form action="{{ submitUrl }}" method="post" id="findJurorsForm">
+
+        {{ govukRadios({
+          name: "searchBy",
+          errorMessage: searchByError,
+          value: tmpBody.searchBy,
+          fieldset: {
+            legend: {
+              text: "Search by",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          items: [
+            {
+              value: "jurorNumber",
+              text: "Juror number",
+              conditional: {
+                html: jurorNumberHtml
+              }
+            },
+            {
+              value: "jurorName",
+              text: "Juror name",
+              conditional: {
+                html: jurorNameHtml
+              }
+            },
+            {
+              value: "pool",
+              text: "Pool",
+              conditional: {
+                html: poolHtml
+              }
+            },
+            {
+              value: "trial",
+              text: "Trial"
+            },
+            {
+              value: "nextDueAtCourt",
+              text: "Next due at court",
+              conditional: {
+                html: nextDueHtml
+              }
+            },
+            {
+              value: "deferral",
+              text: "Date deferred to",
+              conditional: {
+                html: dateDeferredToHtml
+              }
+            }
+          ]
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            type: "submit"
+          }) }}
+
+          <a class="govuk-link" id="cancelAnchor" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+        
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+
+      </form>
+
+    </div>
+  </div>
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      const datePickers = []
+        .slice
+        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
+      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
+    });
+  </script>
+{% endblock %}

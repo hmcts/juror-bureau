@@ -3,7 +3,8 @@
 
   const _ = require('lodash');
   const { getJurorStatus, padTimeForApi } = require('../../../lib/mod-utils');
-  const { convertAmPmToLong, convert12to24, timeArrayToString } = require('../../../components/filters');
+  const { convertAmPmToLong, convert12to24, timeArrayToString
+    , timeStringToArray } = require('../../../components/filters');
   const { jurorsAttending, jurorAttendanceDao } = require('../../../objects/juror-attendance');
 
   module.exports.postCheckIn = function(app) {
@@ -90,7 +91,7 @@
         attendee.checkOutTime = req.body.time;
         req.session.dailyAttendanceList.forEach((a) => {
           if (a.jurorNumber === jurorNumber) {
-            a.checkOutTime = req.body.time;
+            a.checkOutTime = timeStringToArray(req.body.time);
             a.appStage = 'CHECKED_OUT';
           }
         });

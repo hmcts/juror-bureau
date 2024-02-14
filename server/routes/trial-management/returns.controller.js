@@ -355,7 +355,9 @@
         req.session.bannerMessage =
         `${selectedJurors.length} juror${selectedJurors.length > 1 ? 's' : ''} returned`;
 
-        return res.redirect(app.namedRoutes.build('trial-management.trials.detail.get', {
+        req.session.continueToEndTrial = true;
+
+        return res.redirect(app.namedRoutes.build('trial-management.trials.end-trial.get', {
           trialNumber: trialNumber,
           locationCode: locCode,
         }));

@@ -182,6 +182,50 @@
       }
     );
 
+    it('should convert a string to camel case', function() {
+      let string = 'String To Camel Case';
+      const expected = 'stringToCamelCase';
+      let output;
+
+      output = filter.toCamelCase(string);
+      expect(output).to.be.equal(expected);
+
+      string = '--string-to-camel-case-';
+
+      output = filter.toCamelCase(string);
+      expect(output).to.be.equal(expected);
+
+      string = '__STRING_TO_CAMEL_CASE__';
+
+      output = filter.toCamelCase(string);
+      expect(output).to.be.equal(expected);
+
+      output = filter.toCamelCase();
+      expect(output).to.be.equal('');
+    });
+
+    it('should convert a string to sentence case', function() {
+      let string = 'String To Sentence Case';
+      const expected = 'String to sentence case';
+      let output;
+
+      output = filter.toSentenceCase(string);
+      expect(output).to.be.equal(expected);
+
+      string = '--string-to-sentence-case-';
+
+      output = filter.toSentenceCase(string);
+      expect(output).to.be.equal(expected);
+
+      string = '__STRING_TO_SENTENCE_CASE__';
+
+      output = filter.toSentenceCase(string);
+      expect(output).to.be.equal(expected);
+
+      output = filter.toSentenceCase();
+      expect(output).to.be.equal('');
+    });
+
   });
 
 })();

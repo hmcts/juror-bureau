@@ -26,49 +26,49 @@
     
     {% include "includes/errors.njk" %}
 
-      {% set documentSearchBy = undefined %}
-        {% if errors.items["documentSearchBy"] %}
-          {% set documentSearchBy = { text: errors.items['documentSearchBy'][0].details} %}
-        {% endif %}
+    {% set documentSearchBy = undefined %}
+    {% if errors.items["documentSearchBy"] %}
+      {% set documentSearchBy = { text: errors.items['documentSearchBy'][0].details} %}
+    {% endif %}
 
     {% set jurorDetailsError = undefined %}
-      {% if errors.items["jurorDetails"] %}
-        {% set jurorDetailsError = { text: errors.items['jurorDetails'][0].details} %}
-      {% endif %}
+    {% if errors.items["jurorDetails"] %}
+      {% set jurorDetailsError = { text: errors.items['jurorDetails'][0].details} %}
+    {% endif %}
 
-      {% set poolDetailsError = undefined %}
-      {% if errors.items["poolDetails"] %}
-        {% set poolDetailsError = { text: errors.items['poolDetails'][0].details} %}
-      {% endif %}
+    {% set poolDetailsError = undefined %}
+    {% if errors.items["poolDetails"] %}
+      {% set poolDetailsError = { text: errors.items['poolDetails'][0].details} %}
+    {% endif %}
 
     {% set jurorHtml %}
       {{ govukInput({
-          label: {
-            text: "Enter juror name, number or postcode",
-            classes: "govuk-label"
-          },
-          classes: "govuk-!-width-one-third",
-          id: "jurorDetails",
-          name: "jurorDetails",
-          type: "text",
-          value: "",
-          errorMessage: jurorDetailsError
-        }) }}
+        label: {
+          text: "Enter juror name, number or postcode",
+          classes: "govuk-label"
+        },
+        classes: "govuk-!-width-one-third",
+        id: "jurorDetails",
+        name: "jurorDetails",
+        type: "text",
+        value: "",
+        errorMessage: jurorDetailsError
+      }) }}
     {% endset %} 
 
     {% set poolHtml %}
       {{ govukInput({
-              label: {
-                text: "Enter pool number",
-                classes: "govuk-label"
-              },
-              classes: "govuk-!-width-one-third",
-              id: "poolDetails",
-              name: "poolDetails",
-              type: "number",
-              value: "",
-              errorMessage: poolDetailsError
-            }) }}
+        label: {
+          text: "Enter pool number",
+          classes: "govuk-label"
+        },
+        classes: "govuk-!-width-one-third",
+        id: "poolDetails",
+        name: "poolDetails",
+        type: "number",
+        value: "",
+        errorMessage: poolDetailsError
+      }) }}
     {% endset %} 
 
     <form action="{{ postUrl }}" method="post" id="documentLetterForm">
@@ -106,6 +106,7 @@
      
         {{ govukCheckboxes({
           name: "includePrinted",
+          classes: "govuk-checkboxes--small",
           items: [
             {
               value: "includePrinted",

@@ -10,6 +10,71 @@
 {% block page_identifier %}trial-management - trials{% endblock %}
 
 {% set currentApp = "Trials" %}
+{% set trialDetails = [
+  {
+    key: {
+      text: "Defendants" if trial.trial_type === "Criminal" else "Respondents"
+    },
+    value: {
+      text: trial.defendants
+    }
+  },
+  {
+    key: {
+      text: "Trial type"
+    },
+    value: {
+      text: trial.trial_type | capitalizeFully
+    }
+  },
+  {
+    key: {
+      text: "Trial start date"
+    },
+    value: {
+      text: trial.start_date | makeDate | dateFilter("YYYY,MM,DD", "dddd D MMMM YYYY")
+    }
+  },
+  {
+    key: {
+      text: "Judge"
+    },
+    value: {
+      text: trial.judge.description
+    }
+  },
+  {
+    key: {
+      text: "Courtroom"
+    },
+    value: {
+      text: trial.courtroom.description | capitalizeFully
+    }
+  },
+  {
+    key: {
+      text: "Protected?"
+    },
+    value: {
+      text: "Yes" if trial.protected else "No"
+    }
+  }
+]%}
+
+{% set endDateRow =
+  {
+    key: {
+      text: "Trial end date"
+    },
+    value: {
+      text: trial.trial_end_date | makeDate | dateFilter("YYYY,MM,DD", "dddd D MMMM YYYY")
+    }
+  }
+%}
+
+{% if not trial.is_active %}
+  {% set trialDetails = (trialDetails.splice(3, 0, endDateRow), trialDetails)%}
+{% endif %}
 
 {% block content %}
 {{errors.message}}
@@ -71,12 +136,14 @@
             href: url('trial-management.edit-trial.get', {trialNumber: trial.trial_number, locationCode: locationCode})
           }) }} #}
         {% endif %}
-        
-        {{ govukButton({
-          text: "End trial",
-          classes: "govuk-button--secondary",
-          href: "#"
-        }) }}
+
+        {% if trial.is_active %}
+          {{ govukButton({
+            text: "End trial",
+            classes: "govuk-button--secondary",
+            href: url('trial-management.trials.end-trial.get', {trialNumber: trial.trial_number, locationCode: locationCode})
+          }) }}
+        {% endif %}
       </div>
     </div>
   </div>
@@ -84,56 +151,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half govuk-body">
       {{ govukSummaryList({
-        rows: [
-          {
-            key: {
-              text: "Defendants" if trial.trial_type === "Criminal" else "Respondents"
-            },
-            value: {
-              text: trial.defendants
-            }
-          },
-          {
-            key: {
-              text: "Trial type"
-            },
-            value: {
-              text: trial.trial_type | capitalizeFully
-            }
-          },
-          {
-            key: {
-              text: "Trial start date"
-            },
-            value: {
-              text: trial.start_date | makeDate | dateFilter("YYYY,MM,DD", "ddd D MMM YYYY")
-            }
-          },
-          {
-            key: {
-              text: "Judge"
-            },
-            value: {
-              text: trial.judge.description
-            }
-          },
-          {
-            key: {
-              text: "Courtroom"
-            },
-            value: {
-              text: trial.courtroom.description | capitalizeFully
-            }
-          },
-          {
-            key: {
-              text: "Protected?"
-            },
-            value: {
-              text: "Yes" if trial.protected else "No"
-            }
-          }
-        ]
+        rows: trialDetails
       }) }}
     </div>
   </div>
