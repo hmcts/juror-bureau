@@ -272,7 +272,7 @@
       expect(validatorResult).to.be.an('object');
       expect(validatorResult).to.have.ownPropertyDescriptor('startDate');
       expect(validatorResult.startDate[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.startDate[0].details).to.equal('Enter a real start date');
+      expect(validatorResult.startDate[0].details).to.equal('Enter a date in the correct format, for example, 31/01/2023');
 
     });
 

@@ -45,6 +45,15 @@
       auth.verify,
       controller.postDeferral(app));
 
+    app.get('/summons-replies/response/:id/:type(paper|digital)/deferral/letter',
+      'process-deferral.letter.get',
+      auth.verify,
+      controller.getDeferralLetter(app));
+    app.post('/summons-replies/response/:id/:type(paper|digital)/deferral/letter',
+      'process-deferral.letter.post',
+      auth.verify,
+      controller.postDeferralLetter(app));
+
     app.get('/summons-replies/response/:id/:type(paper|digital)/excusal',
       'process-excusal.get',
       auth.verify,
@@ -53,6 +62,15 @@
       'process-excusal.post',
       auth.verify,
       controller.postExcusal(app));
+
+    app.get('/summons-replies/response/:id/:type(paper|digital)/excusal/:letter(grant|refuse)/letter',
+      'process-excusal.letter.get',
+      auth.verify,
+      controller.getExcusalLetter(app));
+    app.post('/summons-replies/response/:id/:type(paper|digital)/excusal/:letter(grant|refuse)/letter',
+      'process-excusal.letter.post',
+      auth.verify,
+      controller.postExcusalLetter(app));
 
     app.get('/summons-replies/response/:id/:type(paper)',
       'response.paper.details.get',

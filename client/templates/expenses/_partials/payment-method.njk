@@ -1,0 +1,35 @@
+<div id="paymentMethodDiv" class="mod-expense-entry-group">
+  <div class="mod-juror-record__title govuk-!-margin-bottom-5">
+    <h2 id="paymentMethodLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Payment method</h2>
+  </div>
+
+  {{ govukRadios({
+    name: "paymentMethod",
+    classes: "govuk-radios--small",
+    fieldset: {
+      legend: {
+        text: "How should the juror be paid for this day?",
+        classes: "govuk-fieldset__legend--s"
+      }
+    },
+    items: [
+      {
+        value: "BACS",
+        text: "BACS or cheque",
+        checked: not expensesData.pay_cash,
+        attributes: {
+          "data-summary-detectable": ""
+        }
+      },
+      {
+        value: "CASH",
+        text: "Cash",
+        checked: expensesData.pay_cash,
+        attributes: {
+          "data-summary-detectable": ""
+        }
+      }
+    ]
+  }) }}
+
+</div>

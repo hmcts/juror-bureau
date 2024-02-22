@@ -12,6 +12,7 @@
     , jurorUndeliverableObject = require('../../../objects/juror-undeliverable').jurorUndeliverableObject
     , jurorTransfer = require('../../../objects/juror-transfer').jurorTransfer
     , { dateFilter } = require('../../../components/filters');
+  const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
 
   module.exports.index = function(app) {
     return function(req, res) {
@@ -219,6 +220,13 @@
             req.session.bannerMessage = 'Deferral granted (' + deferralReason + ')';
           }
 
+          if (res.locals.isCourtUser) {
+            return res.redirect(app.namedRoutes.build('juror.update.deferral.letter.get', {
+              jurorNumber: req.params.jurorNumber,
+              letter: req.body.deferralDecision.toLowerCase(),
+            }));
+          }
+
           return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
             jurorNumber: req.params.jurorNumber,
           }));
@@ -267,6 +275,44 @@
       deferralObject.put(require('request-promise'), app, req.session.authToken, req.body, req.params.jurorNumber)
         .then(successCB)
         .catch(errorCB);
+    };
+  };
+
+  module.exports.getDeferralLetter = function(app) {
+    return function(req, res) {
+      const letterType = req.params.letter === 'grant' ? 'granted' : 'refused';
+
+      return flowLetterGet(req, res, {
+        serviceTitle: 'send letter',
+        pageIdentifier: 'process - deferral',
+        currentApp: '',
+        letterMessage: `a deferral ${letterType}`,
+        letterType: `deferral-${letterType}`,
+        postUrl: app.namedRoutes.build('juror.update.deferral.letter.post', {
+          jurorNumber: req.params.jurorNumber,
+          letter: req.params.letter,
+        }),
+        cancelUrl: app.namedRoutes.build('juror-record.overview.get', {
+          jurorNumber: req.params.jurorNumber,
+        }),
+      });
+    };
+  };
+
+  module.exports.postDeferralLetter = function(app) {
+    return function(req, res) {
+      return flowLetterPost(req, res, {
+        errorRoute: app.namedRoutes.build('juror.update.deferral.letter.get', {
+          jurorNumber: req.params.jurorNumber,
+          letter: req.params.letter,
+        }),
+        pageIdentifier: 'process - deferral',
+        serviceTitle: 'send letter',
+        currentApp: '',
+        completeRoute: app.namedRoutes.build('juror-record.overview.get', {
+          jurorNumber: req.params.jurorNumber,
+        }),
+      });
     };
   };
 

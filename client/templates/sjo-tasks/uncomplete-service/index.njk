@@ -19,6 +19,11 @@
   {% set searchByJurorError = {"text": errors.items['searchByJuror'][0].details} %}
 {% endif %}
 
+{% set searchByJurorNameError = undefined %}
+{% if errors.items["searchByJurorName"] %}
+  {% set searchByJurorNameError = {"text": errors.items['searchByJurorName'][0].details} %}
+{% endif %}
+
 {% set searchByPoolError = undefined %}
 {% if errors.items["searchByPool"] %}
   {% set searchByPoolError = {"text": errors.items['searchByPool'][0].details} %}
@@ -31,9 +36,22 @@
     classes: "govuk-!-width-one-half",
     value: tmpFields.searchByJuror,
     label: {
-      text: "Enter juror name, number or postcode"
+      text: "Enter juror number"
     },
     errorMessage: searchByJurorError
+  }) }}
+{% endset %}
+
+{% set nameHTML %}
+  {{ govukInput({
+    id: "searchByJurorName",
+    name: "searchByJurorName",
+    classes: "govuk-!-width-one-half",
+    value: tmpFields.searchByJurorName,
+    label: {
+      text: "Enter juror name"
+    },
+    errorMessage: searchByJurorNameError
   }) }}
 {% endset %}
 
@@ -91,10 +109,18 @@
             items: [
               {
                 value: "juror",
-                text: "Juror",
+                text: "Juror Number",
                 checked: tmpFields.searchCompletedJurors === "juror",
                 conditional: {
                   html: jurorHTML
+                }
+              },
+              {
+                value: "name",
+                text: "Juror Name",
+                checked: tmpFields.searchCompletedJurors === "name",
+                conditional: {
+                  html: nameHTML
                 }
               },
               {

@@ -11,6 +11,11 @@
       const { status } = req.params;
       const { date, tab } = req.query;
       const dateFormat = 'dddd D MMMM YYYY';
+      const tmpErrors = _.cloneDeep(req.session.errors);
+      const tmpFields = _.cloneDeep(req.session.formFields);
+
+      delete req.session.errors;
+      delete req.session.formFields;
 
       const selectedDate = date ? new Date(date) : new Date();
       const selectedDateString = dateFilter(selectedDate, null, 'YYYY-MM-DD');
@@ -67,6 +72,12 @@
           absentJurors,
           failedCheckIn,
           failedCheckOut,
+          tmpFields,
+          errors: {
+            message: '',
+            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+            items: tmpErrors,
+          },
         });
       } catch (err) {
         app.logger.crit('Failed to fetch jurors attendance list: ', {

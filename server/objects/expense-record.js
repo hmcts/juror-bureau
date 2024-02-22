@@ -1,71 +1,91 @@
 ;(function(){
   'use strict';
 
-  var _ = require('lodash')
-    , urljoin = require('url-join')
-    , config = require('../config/environment')()
-    , utils = require('../lib/utils')
-    , options = {
-      uri: config.apiEndpoint,
-      headers: {
-        'User-Agent': 'Request-Promise',
-        'Content-Type': 'application/vnd.api+json',
-      },
-      json: true,
-      transform: utils.basicDataTransform,
-    }
+  const urljoin = require('url-join');
+  const config = require('../config/environment')();
+  const rp = require('request-promise');
 
-    , expenseRecordObject = {
-      resource: 'moj/expenses',
-      get: function(rp, app, jwtToken, jurorNumber, identifier) {
-        var reqOptions = _.clone(options);
+  module.exports.getDraftExpensesDAO = {
+    get: function(app, req, jurorNumber, poolNumber) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/expenses/draft', jurorNumber, poolNumber),
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+      };
 
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri, this.resource);
+      app.logger.info('Sending request to API: ', payload);
 
-        reqOptions.body = [
-          {
-            'juror_number': jurorNumber,
-            identifier: identifier,
-          },
-        ];
+      return rp(payload);
+    },
+  };
 
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          body: reqOptions.body,
-        });
-
-        return rp(reqOptions);
-      },
-    }
-
-    , submitDraftExpenses = {
-      resource: 'moj/expenses/submit-for-approval',
-      post: function(rp, app, jwtToken, jurorNumber, poolNumber, attendanceDates) {
-        var reqOptions = _.clone(options);
-
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri, this.resource);
-        reqOptions.method = 'POST';
-
-        reqOptions.body = {
+  module.exports.submitDraftExpenses = {
+    post: function(app, req, jurorNumber, poolNumber, attendanceDates) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/expenses/submit-for-approval'),
+        method: 'POST',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+        body: {
           'juror_number': jurorNumber,
           'pool_number': poolNumber,
           'attendance_dates': attendanceDates,
-        };
+        },
+      };
 
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          body: reqOptions.body,
-        });
+      app.logger.info('Sending request to API: ', payload);
 
-        return rp(reqOptions);
-      },
-    };
+      return rp(payload);
+    },
+  };
 
+  module.exports.getDraftExpenseDAO = {
+    post: function(app, req, body) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/expenses/entered'),
+        method: 'POST',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+        body,
+      };
 
-  module.exports.expenseRecordObject = expenseRecordObject;
-  module.exports.submitDraftExpenses = submitDraftExpenses;
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
+    },
+  };
+
+  module.exports.postDraftExpenseDAO = {
+    post: function(app, req, jurorNumber, body) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, `moj/expenses/${jurorNumber}/draft/attended_day`),
+        method: 'POST',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+        body,
+      };
+
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
+    },
+  };
+
 })();

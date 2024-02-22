@@ -12,11 +12,6 @@
       controller.getExpenseRecord(app),
     );
 
-    app.post('/juror-management/unpaid-attendance/expense-record/check',
-      'sjo-tasks.uncomplete-service.check-uncheck.post',
-      auth.verify,
-      controller.postCheckExpense(app));
-
     app.post('/juror-management/unpaid-attendance/expense-record/:jurorNumber/:poolNumber/submit',
       'juror-management.unpaid-attendance.expense-record.submit.post',
       auth.verify,

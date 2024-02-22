@@ -1,12 +1,11 @@
 (function() {
   'use strict';
 
-  const _ = require('lodash')
-    , modUtils = require('../../../lib/mod-utils')
-    , validate = require('validate.js')
-    , urljoin = require('url-join')
-    , fetchUnpaidExpenses = require('../../../objects/expenses').fetchUnpaidExpenses
-    , unpaidAttendanceFilterValidation = require('../../../config/validation/unpaid-attendance');
+  const modUtils = require('../../../lib/mod-utils');
+  const validate = require('validate.js');
+  const urljoin = require('url-join');
+  const fetchUnpaidExpenses = require('../../../objects/expenses').fetchUnpaidExpenses;
+  const unpaidAttendanceFilterValidation = require('../../../config/validation/unpaid-attendance');
 
   module.exports.getUnpaidAttendance = function(app) {
     return function(req, res) {
@@ -72,7 +71,6 @@
       delete req.session.expensesList;
 
       fetchUnpaidExpenses.get(
-        require('request-promise'),
         app,
         req.session.authToken,
         req.session.authentication.owner,

@@ -276,7 +276,7 @@
       },
       {
         id: 'unpaidTotal',
-        value: 'Total unapproved',
+        value: 'Total in draft',
         sort: sortBy === 'unpaidTotal' ? order : 'none',
         sortable: true,
       },
@@ -330,6 +330,102 @@
             'data-sort-value': unpaid.total_unapproved,
           },
         }
+      );
+
+      table.rows.push(item);
+    });
+    return table;
+  };
+
+  module.exports.transformCompletedJurorsList = (completedJurors, sortBy, sortOrder, checkedJurors) => {
+    const order = sortOrder || 'ascending';
+    const table = {
+      head: [{
+        id: 'jurorNumber',
+        value: 'Juror Number',
+        sort: sortBy === 'jurorNumber' ? order : 'none',
+        sortable: true,
+      },
+      {
+        id: 'firstName',
+        value: 'First Name',
+        sort: sortBy === 'firstName' ? order : 'none',
+        sortable: true,
+      },
+      {
+        id: 'lastName',
+        value: 'Last Name',
+        sort: sortBy === 'lastName' ? order : 'none',
+        sortable: true,
+      },
+      {
+        id: 'postcode',
+        value: 'Postcode',
+        sort: sortBy === 'postcode' ? order : 'none',
+        sortable: true,
+      },
+      {
+        id: 'completionDate',
+        value: 'Completion date',
+        sort: !sortBy || sortBy === 'completionDate' ? order : 'none',
+        sortable: true,
+      }],
+      rows: [],
+    };
+
+    completedJurors.forEach((juror) => {
+      let item = [];
+      let checked = checkedJurors.some(j => j.juror_number === juror.juror_number) ? 'checked' : '';
+
+      item.push(
+        {
+          html: '<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">'
+            + '<input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check" id="select-'
+            + juror.juror_number +'" '
+            + 'name="selectedJurors"' + checked + ' value="' + juror.juror_number + '">'
+            + '<label class="govuk-label govuk-checkboxes__label" for="select-'+ juror.juror_number +'">'
+            + '<span class="govuk-visually-hidden">Select '+ juror.juror_number +'</span> </label> </div>',
+          attributes: {
+            'data-sort-value': juror.juror_number,
+          },
+          classes: 'mod-middle-align',
+        },
+        {
+          html: '<a href="/juror-management/record/' +
+            juror.juror_number + '/finance" class="govuk-link mod-middle-align">' + juror.juror_number + '</a>',
+          attributes: {
+            'data-sort-value': juror.juror_number,
+          },
+          classes: 'mod-middle-align',
+        },
+        {
+          text: capitalizeFully(juror.first_name),
+          attributes: {
+            'data-sort-value': juror.first_name,
+          },
+          classes: 'mod-middle-align',
+        },
+        {
+          text: capitalizeFully(juror.last_name),
+          attributes: {
+            'data-sort-value': juror.last_name,
+          },
+          classes: 'mod-middle-align',
+        },
+        {
+          text: juror.postcode,
+          attributes: {
+            'data-sort-value': juror.postcode,
+          },
+          classes: 'mod-middle-align',
+        },
+        {
+          text: dateFilter(juror.completion_date, null, 'ddd DD MMM YYYY'),
+          attributes: {
+            'data-sort-value': juror.completion_date,
+          },
+          classes: 'mod-middle-align',
+        },
       );
 
       table.rows.push(item);
@@ -394,7 +490,8 @@
                 '<input class="govuk-radios__input" id="' + trial.trialNumber + '" name="selectedTrial" ' +
                   'type="radio" value="' + trial.trialNumber + '">' +
                 '<label class="govuk-label govuk-radios__label">' +
-                  '<a href="/trial-management/trials/' + trial.trialNumber + '/' + trial.courtLocation + '/detail'+ '" ' +
+                  '<a href="/trial-management/trials/' + trial.trialNumber + '/'
+                  + trial.courtLocation + '/detail'+ '" ' +
                   'class="govuk-link">' + trial.trialNumber + '</a></label>' +
               '</div>' +
             '</div>',
@@ -968,9 +1065,9 @@
     'further-information': 'INFORMATION',
     'confirmation': 'CONFIRMATION',
     'deferral-granted': 'DEFERRAL_GRANTED',
-    'deferral-refused': 'DEFERRAL_DENIED',
+    'deferral-refused': 'DEFERRAL_REFUSED',
     'excusal-granted': 'EXCUSAL_GRANTED',
-    'excusal-refused': 'EXCUSAL_DENIED',
+    'excusal-refused': 'EXCUSAL_REFUSED',
     'postponement': 'POSTPONED',
     'withdrawal': 'WITHDRAWAL',
   };

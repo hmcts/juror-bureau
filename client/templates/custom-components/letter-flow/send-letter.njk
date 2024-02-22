@@ -1,0 +1,57 @@
+{% extends "../../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_title %}{{ serviceName}} - {{ serviceTitle }}{% endblock %}
+
+{% block page_identifier %}{{ pageIdentifier }}{% endblock %}
+
+{% set currentApp = currentApp %}
+{% set message = "Do you want to print " + letterMessage + " letter?" %}
+
+{% if errors.items["printLetters"] %}
+  {% set letterError = {"text": errors.items['printLetters'][0].details} %}
+{% endif %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <form action="{{ postUrl }}" method="post" id="printLetterForm">
+    {{ govukRadios({
+      classes: "govuk-radios--inline",
+      name: "printLetters",
+      errorMessage: letterError,
+      fieldset: {
+        legend: {
+          text: message,
+          classes: "govuk-fieldset__legend--m"
+        }
+      },
+      items: [
+        {
+          value: "yes",
+          text: "Yes"
+        },
+        {
+          value: "no",
+          text: "No"
+        }
+      ]
+    }) }}
+
+    <input type="hidden" name="letterType" value={{ letterType }}>
+    <input type="hidden" name="_csrf" value="{{csrftoken}}">
+
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Continue",
+        type: "submit" 
+      }) }}
+
+      <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+    </div>
+  </form>
+
+{% endblock %}

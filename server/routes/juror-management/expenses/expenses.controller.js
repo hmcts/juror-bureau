@@ -9,13 +9,18 @@
     return function(req, res) {
       const tmpErrors = _.cloneDeep(req.session.errors);
       const tmpBody = _.cloneDeep(req.session.tmpBody);
-      const processUrl = app.namedRoutes.build('juror-management.default-expenses.post',
-          {jurorNumber: req.params.jurorNumber}),
-        cancelUrl = app.namedRoutes.build(
-          'juror-management.unpaid-attendance.expense-record.get', {jurorNumber: req.params.jurorNumber});
+
+      const processUrl = app.namedRoutes.build('juror-management.default-expenses.post', {
+        jurorNumber: req.params.jurorNumber,
+      });
+      const cancelUrl = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
+        jurorNumber: req.params.jurorNumber,
+        poolNumber: '123456789',
+      });
 
       delete req.session.errors;
       delete req.session.tmpBody;
+
       return res.render('expenses/default-expenses.njk', {
         processUrl,
         cancelUrl,
@@ -42,14 +47,16 @@
         req.session.errors = validatorResult;
 
         return res.redirect(app.namedRoutes.build('juror-management.default-expenses.get', {
-          jurorNumber: req.params.jurorNumber}));
+          jurorNumber: req.params.jurorNumber,
+        }));
+      }
 
-      };
       try {
         //TODO replace with endpoint
         resolver();
-        return res.redirect(app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get',
-          {jurorNumber: req.params.jurorNumber}));
+        return res.redirect(app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
+          jurorNumber: req.params.jurorNumber,
+        }));
       } catch (error) {
         app.logger.crit('Unable to uncomplete service', {
           auth: req.session.authentication,
@@ -62,6 +69,7 @@
     };
 
   };
+
   //TODO delete resolver once backend is ready
   function resolver() {
     return new Promise(res => res(''));

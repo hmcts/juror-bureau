@@ -3,15 +3,11 @@
 
   require('./custom-validation');
 
-  module.exports = function(req) {
+  module.exports.searchParameters = function(req) {
     return {
-
       searchParameters: {
-
         searchParameters: req,
-
       },
-
     };
   };
 })();

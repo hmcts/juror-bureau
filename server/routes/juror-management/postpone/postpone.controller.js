@@ -1,3 +1,5 @@
+const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
+
 (function() {
   'use strict';
 
@@ -319,6 +321,40 @@
     };
   };
 
+  module.exports.getPostponeLetter = function(app) {
+    return function(req, res) {
+      return flowLetterGet(req, res, {
+        serviceTitle: 'send letter',
+        pageIdentifier: 'process - postpone',
+        currentApp: '',
+        letterMessage: 'a postponement',
+        letterType: 'postponement',
+        postUrl: app.namedRoutes.build('juror-update.postpone.letter.post', {
+          jurorNumber: req.params.jurorNumber,
+        }),
+        cancelUrl: app.namedRoutes.build('juror-record.overview.get', {
+          jurorNumber: req.params.jurorNumber,
+        }),
+      });
+    };
+  };
+
+  module.exports.postPostponeLetter = function(app) {
+    return function(req, res) {
+      return flowLetterPost(req, res, {
+        errorRoute: app.namedRoutes.build('juror-update.postpone.letter.get', {
+          jurorNumber: req.params.jurorNumber,
+        }),
+        pageIdentifier: 'process - postpone',
+        serviceTitle: 'send letter',
+        currentApp: '',
+        completeRoute: app.namedRoutes.build('juror-record.overview.get', {
+          jurorNumber: req.params.jurorNumber,
+        }),
+      });
+    };
+  };
+
   function sendPostponeRequest(app, req, res, payload){
     var successCB = function() {
         let receivingPoolNumberDate = typeof req.session.poolJurorsPostpone !== 'undefined' ?
@@ -342,18 +378,7 @@
           req.session.bannerMessage = jurorString
           + ' postponed to Pool <a class="govuk-link" href='+ poolUrl +'>' + pn + '</a>';
         }
-        if (typeof req.session.poolJurorsPostpone !== 'undefined') {
-          jurorNumber = req.session.poolJurorsPostpone.selectedJurors;
-          redirectUrl = app.namedRoutes.build('pool-overview.get', {
-            poolNumber: req.params['poolNumber'],
-          });
-        } else {
-          jurorNumber = req.params.jurorNumber;
-          redirectUrl = app.namedRoutes.build('juror-record.overview.get', {
-            jurorNumber: req.params.jurorNumber,
-          });
-          req.session.bannerMessage = 'Postponed';
-        }
+
         app.logger.info('Juror succesfully transferred: ', {
           auth: req.session.authentication,
           jwt: req.session.authToken,
@@ -363,8 +388,26 @@
           },
         });
 
-        return res.redirect(redirectUrl);
+        if (typeof req.session.poolJurorsPostpone !== 'undefined') {
+          jurorNumber = req.session.poolJurorsPostpone.selectedJurors;
 
+          return res.redirect(app.namedRoutes.build('pool-overview.get', {
+            poolNumber: req.params['poolNumber'],
+          }));
+        }
+
+        jurorNumber = req.params.jurorNumber;
+        req.session.bannerMessage = 'Postponed';
+
+        if (res.locals.isCourtUser) {
+          return res.redirect(app.namedRoutes.build('juror-update.postpone.letter.get', {
+            jurorNumber: req.params.jurorNumber,
+          }));
+        }
+
+        return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
+          jurorNumber: req.params.jurorNumber,
+        }));
       }
 
       , errorCB = function(err) {

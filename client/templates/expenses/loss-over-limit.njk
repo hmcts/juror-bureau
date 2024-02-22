@@ -30,15 +30,15 @@
                     text: "Juror's loss:"
                   },
                   value: {
-                    text: "£" + jurorsLoss
+                    text: "£" + jurorLossData.juror_loss
                   }
                 },
                 {
                   key: {
-                    text: "Daily limit (Full day):" if lossCap.attendance === "fullDay" else "Daily limit (Half day):"
+                    text: "Daily limit (Full day):" if jurorLossData.attendance_type === "FULL_DAY" else "Daily limit (Half day):"
                   },
                   value: {
-                    text: "£" + lossCap.total
+                    text: "£" + jurorLossData.limit | toFixed(2)
                   }
                 }
               ]
@@ -48,7 +48,7 @@
 
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-full">
-            <p class="govuk-body">The amounts you entered will be automatically recalculated to limit the juror’s loss to £{{lossCap.total}}.</p>
+            <p class="govuk-body">The amounts you entered will be automatically recalculated to limit the juror’s loss to £{{ jurorLossData.limit | toFixed(2) }}.</p>
 
             {{ govukButton({
               text: "Continue",

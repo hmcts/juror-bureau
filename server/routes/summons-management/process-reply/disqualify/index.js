@@ -16,5 +16,17 @@
       auth.verify,
       controller.postDisqualify(app)
     );
-  }
+
+    app.get('/summons-replies/response/:id/:type(paper|digital)/disqualify/letter',
+      'process-disqualify.letter.get',
+      auth.verify,
+      controller.getDisqualifyLetter(app),
+    );
+
+    app.post('/summons-replies/response/:id/:type(paper|digital)/disqualify/letter',
+      'process-disqualify.letter.post',
+      auth.verify,
+      controller.postDisqualifyLetter(app),
+    );
+  };
 })();

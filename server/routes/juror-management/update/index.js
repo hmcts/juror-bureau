@@ -22,6 +22,14 @@
       , 'juror.update.deferral.post'
       , auth.verify
       , controller.postDeferral(app));
+    app.get('/juror-management/juror/:jurorNumber/update/deferral/:letter(grant|refuse)/letter'
+      , 'juror.update.deferral.letter.get'
+      , auth.verify
+      , controller.getDeferralLetter(app));
+    app.post('/juror-management/juror/:jurorNumber/update/deferral/:letter(grant|refuse)/letter'
+      , 'juror.update.deferral.letter.post'
+      , auth.verify
+      , controller.postDeferralLetter(app));
 
     // Transfer - transfer juror to another court
     // -Step 1 - select court and date

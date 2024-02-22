@@ -9,8 +9,8 @@
         presence: {
           allowEmpty: false,
           message: {
-            summary: 'Select whether you want to search by juror or pool',
-            details: 'Select whether you want to search by juror or pool',
+            summary: 'Select whether you want to search by juror number, juror name or pool',
+            details: 'Select whether you want to search by juror number, juror name or pool',
           },
         },
       },
@@ -22,8 +22,21 @@
         presence: {
           allowEmpty: false,
           message: {
-            summary: 'Enter juror name, number or postcode',
-            details: 'Enter juror name, number or postcode',
+            summary: 'Enter juror number',
+            details: 'Enter juror number',
+          },
+        },
+      },
+    };
+  };
+  module.exports.searchByJurorName = function() {
+    return {
+      searchByJurorName: {
+        presence: {
+          allowEmpty: false,
+          message: {
+            summary: 'Enter juror name',
+            details: 'Enter juror name',
           },
         },
       },

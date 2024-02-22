@@ -80,6 +80,12 @@
     flex-direction: column;
   }
 
+  &__jurors-breakdown {
+    display: flex;
+    flex-direction: column;
+    padding: 0 50px 0 0;
+  }
+
   &__chart {
     padding: 0 50px;
     border-right: none;
@@ -100,6 +106,12 @@
     
     &__chart {
       padding: 0 92px;
+      border-right: solid 1px $govuk-border-colour;
+    }
+
+    &__jurors-required {
+      padding: 0 50px 0 0;
+      margin: 0 50px 0 0;
       border-right: solid 1px $govuk-border-colour;
     }
   }

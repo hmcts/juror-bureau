@@ -1,0 +1,56 @@
+{% set applyToAllDaysError = undefined %}
+{% if errors.items["applyToAllDays"] %}
+  {% set applyToAllDaysError = { text: errors.items["applyToAllDays"][0].details } %}
+{% endif %}
+
+<div id="applyToAllDaysDiv" class="mod-expense-entry-group">
+  <div class="mod-juror-record__title govuk-!-margin-bottom-5">
+    <h2 id="applyToAllDaysLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Apply to all days</h2>
+  </div>
+
+  {{ govukCheckboxes({
+    name: "applyToAllDays",
+    classes: "govuk-checkboxes--small",
+    values: tmpBody.applyToAllDays,
+    errorMessage: applyToAllDaysError,
+    fieldset: {
+      legend: {
+        text: "Tick all you want to copy and apply",
+        classes: "govuk-fieldset__legend--s"
+      }
+    },
+    items: [
+      {
+        value: "lossOfEarnings",
+        text: "Loss of earnings"
+      },
+      {
+        value: "extraCareCosts",
+        text: "Extra care costs"
+      },
+      {
+        value: "otherCosts",
+        text: "Other costs"
+      },
+      {
+        value: "travel",
+        text: "Travel"
+      },
+      {
+        value: "paymentMethod",
+        text: "Payment method"
+      }
+    ]
+  }) }}
+
+  {{ govukButton({
+    text: "Apply",
+    classes: "govuk-!-margin-bottom-0",
+    type: "submit",
+    attributes: {
+      id: "applyToAllButton",
+      formAction: postUrls.applyToAllUrl
+    }
+  }) }}
+
+</div>

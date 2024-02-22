@@ -6,6 +6,7 @@
     , disqualifyValidator = require('../../../../config/validation/disqualify-mod')
     , getDisqualificationReasons = require('../../../../objects/disqualify-mod').getDisqualificationReasons
     , disqualifyJuror = require('../../../../objects/disqualify-mod').disqualifyJuror;
+  const { flowLetterGet, flowLetterPost } = require('../../../../lib/flowLetter');
 
   module.exports.getDisqualify = (app) => {
     return (req, res) => {
@@ -104,6 +105,10 @@
 
           delete req.session.disqualificationReasons;
 
+          if (res.locals.isCourtUser) {
+            return res.redirect(app.namedRoutes.build('process-disqualify.letter.get', routeParameters));
+          }
+
           return res.redirect(app.namedRoutes.build('inbox.todo.get'));
         }).catch((err) => {
           app.logger.crit('Failed to process juror disqualification', {
@@ -115,6 +120,38 @@
 
           return res.render('_errors/generic');
         });
-    }
-  }
+    };
+  };
+
+  module.exports.getDisqualifyLetter = function(app) {
+    return function(req, res) {
+      return flowLetterGet(req, res, {
+        serviceTitle: 'send letter',
+        pageIdentifier: 'process - what to do',
+        currentApp: 'Summons replies',
+        letterMessage: 'a disqualification',
+        letterType: 'withdrawal',
+        postUrl: app.namedRoutes.build('process-disqualify.letter.post', {
+          id: req.params.id,
+          type: req.params.type,
+        }),
+        cancelUrl: app.namedRoutes.build('inbox.todo.get'),
+      });
+    };
+  };
+
+  module.exports.postDisqualifyLetter = function(app) {
+    return function(req, res) {
+      return flowLetterPost(req, res, {
+        errorRoute: app.namedRoutes.build('process-disqualify.letter.get', {
+          id: req.params.id,
+          type: req.params.type,
+        }),
+        pageIdentifier: 'process - what to do',
+        serviceTitle: 'send letter',
+        currentApp: 'Summons replies',
+        completeRoute: app.namedRoutes.build('inbox.todo.get'),
+      });
+    };
+  };
 })();

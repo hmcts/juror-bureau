@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="1287px" preserveAspectRatio="none" style="width:4793px;height:1287px;background:#FFFFFF;" version="1.1" viewBox="0 0 4793 1287" width="4793px" zoomAndPan="magnify"><defs/><g><rect fill="none" height="134.5527" style="stroke:#000000;stroke-width:1.5;" width="4431.5" x="10" y="157.9082"/><rect fill="none" height="105.2422" style="stroke:#000000;stroke-width:1.5;" width="4626.5" x="10" y="511.6348"/><rect fill="none" height="193.1738" style="stroke:#000000;stroke-width:1.5;" width="4777.5" x="10" y="923.9824"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="45" x2="45" y1="52.9766" y2="1280.709"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="381.5" x2="381.5" y1="52.9766" y2="1280.709"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="835.5" x2="835.5" y1="52.9766" y2="1280.709"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1365.5" x2="1365.5" y1="52.9766" y2="1280.709"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1700.5" x2="1700.5" y1="52.9766" y2="1280.709"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1883.5" x2="1883.5" y1="52.9766" y2="1280.709"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="2151.5" x2="2151.5" y1="52.9766" y2="1280.709"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="2448.5" x2="2448.5" y1="52.9766" y2="1280.709"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="2762.5" x2="2762.5" y1="52.9766" y2="1280.709"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="3225.5" x2="3225.5" y1="52.9766" y2="1280.709"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="3811.5" x2="3811.5" y1="52.9766" y2="1280.709"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="4191.5" x2="4191.5" y1="52.9766" y2="1280.709"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="4356.5" x2="4356.5" y1="52.9766" y2="1280.709"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="4533.5" x2="4533.5" y1="52.9766" y2="1280.709"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="4706.5" x2="4706.5" y1="52.9766" y2="1280.709"/><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="51" x="20" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="37" x="27" y="42.0234">Actor</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="366" x="198.5" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="352" x="205.5" y="25.5352">«/pool-management/pool-overview/:poolnumber»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="125" x="319" y="42.0234">PoolOverviewPage</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="523" x="574.5" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="509" x="581.5" y="25.5352">«/pool-management/:poolNumber/change-next-due-at-court/continue»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="104" x="784" y="42.0234">SelectDatePage</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="516" x="1107.5" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="502" x="1114.5" y="25.5352">«/pool-management/:poolNumber/change-next-due-at-court/confirm»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="120" x="1305.5" y="42.0234">ConfirmDatePage</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="134" x="1633.5" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="56" x="1672.5" y="25.5352">«/error»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="120" x="1640.5" y="42.0234">GenericErrorPage</text><rect fill="#FFFFE0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="213" x="1777.5" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="199" x="1784.5" y="25.5352">«pool-overview.controller.js»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="162" x="1803" y="42.0234">PoolOverviewController</text><rect fill="#FFFFE0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="302" x="2000.5" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="288" x="2007.5" y="25.5352">«change-next-due-at-court.controller.js»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="236" x="2033.5" y="42.0234">ChangeNextDueAtCourtController</text><rect fill="#FFFFE0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="273" x="2312.5" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="259" x="2319.5" y="25.5352">«changeNextDueAtCourtDTO.patch()»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="207" x="2345.5" y="42.0234">changeNextDueAtCourtObject</text><rect fill="#E6E6FA" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="334" x="2595.5" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="320" x="2602.5" y="25.5352">«pool-management/pool-overview/index.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="156" x="2684.5" y="42.0234">PoolOverviewTemplate</text><rect fill="#E6E6FA" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="572" x="2939.5" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="558" x="2946.5" y="25.5352">«pool-management/change-next-due-at-court/change-next-due-at-court.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="135" x="3158" y="42.0234">SelectDateTemplate</text><rect fill="#E6E6FA" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="580" x="3521.5" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="566" x="3528.5" y="25.5352">«pool-management/change-next-due-at-court/confirm-next-due-at-courtt.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="151" x="3736" y="42.0234">ConfirmDateTemplate</text><rect fill="#E6E6FA" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="160" x="4111.5" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="146" x="4118.5" y="25.5352">«_errors/generic.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="99" x="4142" y="42.0234">ErrorTemplate</text><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="150" x="4281.5" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="136" x="4288.5" y="42.0234">JurorSelectValidator</text><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="185" x="4441.5" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="171" x="4448.5" y="42.0234">AttendanceDateValidator</text><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="141" x="4636.5" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="127" x="4643.5" y="42.0234">BackendController</text><polygon fill="#181818" points="369.5,80.2871,379.5,84.2871,369.5,88.2871" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="45.5" x2="375.5" y1="84.2871" y2="84.2871"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="312" x="57.5" y="79.5449">select jurors and click 'Change next duie at court'</text><polygon fill="#181818" points="2139.5,109.5977,2149.5,113.5977,2139.5,117.5977" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="381.5" x2="2145.5" y1="113.5977" y2="113.5977"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="167" x="1183" y="108.8555">call change date controller</text><polygon fill="#181818" points="4344.5,138.9082,4354.5,142.9082,4344.5,146.9082" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2151.5" x2="4350.5" y1="142.9082" y2="142.9082"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="147" x="3180.5" y="138.166">ensure juror is selected</text><path d="M10,157.9082 L72,157.9082 L72,165.2188 L62,175.2188 L10,175.2188 L10,157.9082 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="134.5527" style="stroke:#000000;stroke-width:1.5;" width="4431.5" x="10" y="157.9082"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="25" y="171.4766">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="110" x="87" y="170.543">[No jurors selected]</text><polygon fill="#181818" points="2162.5,192.5293,2152.5,196.5293,2162.5,200.5293" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2156.5" x2="4355.5" y1="196.5293" y2="196.5293"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="113" x="3197.5" y="191.7871">no jurors selected</text><polygon fill="#181818" points="1895,221.8398,1885,225.8398,1895,229.8398" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1889" x2="2150.5" y1="225.8398" y2="225.8398"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="178" x="1928.75" y="221.0977">call pool overview controller</text><polygon fill="#181818" points="392.5,251.1504,382.5,255.1504,392.5,259.1504" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="386.5" x2="1883" y1="255.1504" y2="255.1504"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="89" x="1088.25" y="250.4082">error message</text><polygon fill="#181818" points="56.5,280.4609,46.5,284.4609,56.5,288.4609" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="50.5" x2="380.5" y1="284.4609" y2="284.4609"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="133" x="147" y="279.7188">render error message</text><polygon fill="#181818" points="3213.5,316.7715,3223.5,320.7715,3213.5,324.7715" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2151.5" x2="3219.5" y1="320.7715" y2="320.7715"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="2604" y="316.0293">request and build template</text><polygon fill="#181818" points="2162.5,346.082,2152.5,350.082,2162.5,354.082" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2156.5" x2="3224.5" y1="350.082" y2="350.082"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="2649.5" y="345.3398">return HTML</text><polygon fill="#181818" points="847,375.3926,837,379.3926,847,383.3926" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="841" x2="2150.5" y1="379.3926" y2="379.3926"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="1454.75" y="374.6504">return HTML</text><polygon fill="#181818" points="56.5,404.7031,46.5,408.7031,56.5,412.7031" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="50.5" x2="835" y1="408.7031" y2="408.7031"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="400.75" y="403.9609">render HTML</text><polygon fill="#181818" points="824,434.0137,834,438.0137,824,442.0137" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="45.5" x2="830" y1="438.0137" y2="438.0137"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="183" x="349.25" y="433.2715">enter date and click continue</text><polygon fill="#181818" points="2139.5,463.3242,2149.5,467.3242,2139.5,471.3242" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="836" x2="2145.5" y1="467.3242" y2="467.3242"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="121" x="1433.25" y="462.582">call page conrtoller</text><polygon fill="#181818" points="4522,492.6348,4532,496.6348,4522,500.6348" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2151.5" x2="4528" y1="496.6348" y2="496.6348"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="83" x="3301.25" y="491.8926">validate form</text><path d="M10,511.6348 L72,511.6348 L72,518.9453 L62,528.9453 L10,528.9453 L10,511.6348 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="105.2422" style="stroke:#000000;stroke-width:1.5;" width="4626.5" x="10" y="511.6348"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="25" y="525.2031">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="119" x="87" y="524.2695">[Invalid date entered]</text><polygon fill="#181818" points="2162.5,546.2559,2152.5,550.2559,2162.5,554.2559" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2156.5" x2="4533" y1="550.2559" y2="550.2559"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="120" x="3282.75" y="545.5137">data validationfails</text><polygon fill="#181818" points="847,575.5664,837,579.5664,847,583.5664" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="841" x2="2150.5" y1="579.5664" y2="579.5664"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="89" x="1449.25" y="574.8242">error message</text><polygon fill="#181818" points="56.5,604.877,46.5,608.877,56.5,612.877" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="50.5" x2="835" y1="608.877" y2="608.877"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="133" x="374.25" y="604.1348">render error message</text><polygon fill="#181818" points="3799.5,641.1875,3809.5,645.1875,3799.5,649.1875" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2151.5" x2="3805.5" y1="645.1875" y2="645.1875"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="2897" y="640.4453">request and build template</text><polygon fill="#181818" points="2162.5,670.498,2152.5,674.498,2162.5,678.498" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2156.5" x2="3810.5" y1="674.498" y2="674.498"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="2942.5" y="669.7559">return HTML</text><polygon fill="#181818" points="1376.5,699.8086,1366.5,703.8086,1376.5,707.8086" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1370.5" x2="2150.5" y1="703.8086" y2="703.8086"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="1719.5" y="699.0664">return HTML</text><polygon fill="#181818" points="56.5,729.1191,46.5,733.1191,56.5,737.1191" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="50.5" x2="1364.5" y1="733.1191" y2="733.1191"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="665.5" y="728.377">render HTML</text><polygon fill="#181818" points="1353.5,758.4297,1363.5,762.4297,1353.5,766.4297" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="45.5" x2="1359.5" y1="762.4297" y2="762.4297"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="89" x="661" y="757.6875">click continue</text><polygon fill="#181818" points="2139.5,787.7402,2149.5,791.7402,2139.5,795.7402" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1365.5" x2="2145.5" y1="791.7402" y2="791.7402"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="121" x="1698" y="786.998">call page controller</text><polygon fill="#181818" points="2437,817.0508,2447,821.0508,2437,825.0508" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2151.5" x2="2443" y1="821.0508" y2="821.0508"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="126" x="2237.25" y="816.3086">build request object</text><polygon fill="#181818" points="4695,846.3613,4705,850.3613,4695,854.3613" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2449" x2="4701" y1="850.3613" y2="850.3613"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="138" x="3509" y="845.6191">send backend request</text><polygon fill="#181818" points="2460,875.6719,2450,879.6719,2460,883.6719" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2454" x2="4706" y1="879.6719" y2="879.6719"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="77" x="3539.5" y="874.9297">ok response</text><polygon fill="#181818" points="2162.5,904.9824,2152.5,908.9824,2162.5,912.9824" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2156.5" x2="2448" y1="908.9824" y2="908.9824"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="96" x="2252.25" y="904.2402">resolve request</text><path d="M10,923.9824 L72,923.9824 L72,931.293 L62,941.293 L10,941.293 L10,923.9824 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="193.1738" style="stroke:#000000;stroke-width:1.5;" width="4777.5" x="10" y="923.9824"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="25" y="937.5508">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="278" x="87" y="936.6172">[Failed to change next due at court date of jurors]</text><polygon fill="#181818" points="2460,958.6035,2450,962.6035,2460,966.6035" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2454" x2="4706" y1="962.6035" y2="962.6035"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="91" x="3532.5" y="957.8613">error response</text><polygon fill="#181818" points="2162.5,987.9141,2152.5,991.9141,2162.5,995.9141" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2156.5" x2="2448" y1="991.9141" y2="991.9141"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="127" x="2236.75" y="987.1719">reject requestObject</text><polygon fill="#181818" points="4179.5,1017.2246,4189.5,1021.2246,4179.5,1025.2246" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2151.5" x2="4185.5" y1="1021.2246" y2="1021.2246"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="3087" y="1016.4824">request and build template</text><polygon fill="#181818" points="2162.5,1046.5352,2152.5,1050.5352,2162.5,1054.5352" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2156.5" x2="4190.5" y1="1050.5352" y2="1050.5352"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="3132.5" y="1045.793">return HTML</text><polygon fill="#181818" points="1711.5,1075.8457,1701.5,1079.8457,1711.5,1083.8457" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1705.5" x2="2150.5" y1="1079.8457" y2="1079.8457"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="1887" y="1075.1035">return HTML</text><polygon fill="#181818" points="56.5,1105.1563,46.5,1109.1563,56.5,1113.1563" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="50.5" x2="1699.5" y1="1109.1563" y2="1109.1563"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="108" x="819" y="1104.4141">render error page</text><polygon fill="#181818" points="1895,1141.4668,1885,1145.4668,1895,1149.4668" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1889" x2="2150.5" y1="1145.4668" y2="1145.4668"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="178" x="1928.75" y="1140.7246">call pool overview controller</text><polygon fill="#181818" points="2750.5,1170.7773,2760.5,1174.7773,2750.5,1178.7773" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1884" x2="2756.5" y1="1174.7773" y2="1174.7773"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="2238.75" y="1170.0352">request and build template</text><polygon fill="#181818" points="1895,1200.0879,1885,1204.0879,1895,1208.0879" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1889" x2="2761.5" y1="1204.0879" y2="1204.0879"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="2284.25" y="1199.3457">return HTML</text><polygon fill="#181818" points="392.5,1229.3984,382.5,1233.3984,392.5,1237.3984" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="386.5" x2="1883" y1="1233.3984" y2="1233.3984"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="1093.75" y="1228.6563">return HTML</text><polygon fill="#181818" points="56.5,1258.709,46.5,1262.709,56.5,1266.709" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="50.5" x2="380.5" y1="1262.709" y2="1262.709"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="219" x="104" y="1257.9668">render HTML with succcess banner</text><!--MD5=[237c8187605ffbaf7b16748901f54d75]
+@startuml bulk-change-next-due-at-court
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant PoolOverviewPage <</pool-management/pool-overview/:poolnumber>>
+participant SelectDatePage <</pool-management/:poolNumber/change-next-due-at-court/continue>>
+participant ConfirmDatePage <</pool-management/:poolNumber/change-next-due-at-court/confirm>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant PoolOverviewController <<pool-overview.controller.js>> #lightyellow
+participant ChangeNextDueAtCourtController <<change-next-due-at-court.controller.js>> #lightyellow
+participant changeNextDueAtCourtObject <<changeNextDueAtCourtDTO.patch()>> #lightyellow
+
+''' TEMPLATES
+participant PoolOverviewTemplate <<pool-management/pool-overview/index.njk>> #lavender
+participant SelectDateTemplate <<pool-management/change-next-due-at-court/change-next-due-at-court.njk>> #lavender
+participant ConfirmDateTemplate <<pool-management/change-next-due-at-court/confirm-next-due-at-courtt.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant JurorSelectValidator
+participant AttendanceDateValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> PoolOverviewPage : select jurors and click 'Change next duie at court'
+
+PoolOverviewPage -> ChangeNextDueAtCourtController : call change date controller
+
+ChangeNextDueAtCourtController -> JurorSelectValidator : ensure juror is selected
+
+alt No jurors selected
+  ChangeNextDueAtCourtController <- - JurorSelectValidator : no jurors selected
+  PoolOverviewController <- ChangeNextDueAtCourtController : call pool overview controller
+  PoolOverviewPage <- PoolOverviewController : error message
+  Actor <- PoolOverviewPage : render error message
+end
+
+ChangeNextDueAtCourtController -> SelectDateTemplate : request and build template
+ChangeNextDueAtCourtController <- SelectDateTemplate : return HTML
+SelectDatePage <- ChangeNextDueAtCourtController : return HTML
+Actor <- SelectDatePage : render HTML
+
+Actor -> SelectDatePage : enter date and click continue
+
+SelectDatePage -> ChangeNextDueAtCourtController : call page conrtoller
+
+ChangeNextDueAtCourtController -> AttendanceDateValidator : validate form
+
+alt Invalid date entered
+  ChangeNextDueAtCourtController <- - AttendanceDateValidator : data validationfails
+  SelectDatePage <- ChangeNextDueAtCourtController : error message
+  Actor <- SelectDatePage : render error message
+end
+
+ChangeNextDueAtCourtController -> ConfirmDateTemplate : request and build template
+ChangeNextDueAtCourtController <- ConfirmDateTemplate : return HTML
+ConfirmDatePage <- ChangeNextDueAtCourtController : return HTML
+Actor <- ConfirmDatePage : render HTML
+
+Actor -> ConfirmDatePage : click continue
+
+ConfirmDatePage -> ChangeNextDueAtCourtController : call page controller
+
+ChangeNextDueAtCourtController -> changeNextDueAtCourtObject : build request object
+changeNextDueAtCourtObject -> BackendController : send backend request
+changeNextDueAtCourtObject <- BackendController : ok response
+ChangeNextDueAtCourtController <- changeNextDueAtCourtObject : resolve request
+
+alt Failed to change next due at court date of jurors
+    changeNextDueAtCourtObject <- - BackendController : error response
+    ChangeNextDueAtCourtController <- - changeNextDueAtCourtObject : reject requestObject
+    ChangeNextDueAtCourtController -> ErrorTemplate : request and build template
+    ChangeNextDueAtCourtController <- ErrorTemplate : return HTML
+    GenericErrorPage <- ChangeNextDueAtCourtController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+ChangeNextDueAtCourtController -> PoolOverviewController : call pool overview controller
+PoolOverviewController -> PoolOverviewTemplate : request and build template
+PoolOverviewController <- PoolOverviewTemplate : return HTML
+PoolOverviewPage <- PoolOverviewController : return HTML
+Actor <- PoolOverviewPage : render HTML with succcess banner
+@end
+
+@startuml bulk-change-next-due-at-court
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+participant PoolOverviewPage <</pool-management/pool-overview/:poolnumber>>
+participant SelectDatePage <</pool-management/:poolNumber/change-next-due-at-court/continue>>
+participant ConfirmDatePage <</pool-management/:poolNumber/change-next-due-at-court/confirm>>
+participant GenericErrorPage <</error>>
+
+participant PoolOverviewController <<pool-overview.controller.js>> #lightyellow
+participant ChangeNextDueAtCourtController <<change-next-due-at-court.controller.js>> #lightyellow
+participant changeNextDueAtCourtObject <<changeNextDueAtCourtDTO.patch()>> #lightyellow
+
+participant PoolOverviewTemplate <<pool-management/pool-overview/index.njk>> #lavender
+participant SelectDateTemplate <<pool-management/change-next-due-at-court/change-next-due-at-court.njk>> #lavender
+participant ConfirmDateTemplate <<pool-management/change-next-due-at-court/confirm-next-due-at-courtt.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+participant JurorSelectValidator
+participant AttendanceDateValidator
+
+participant BackendController
+
+Actor -> PoolOverviewPage : select jurors and click 'Change next duie at court'
+
+PoolOverviewPage -> ChangeNextDueAtCourtController : call change date controller
+
+ChangeNextDueAtCourtController -> JurorSelectValidator : ensure juror is selected
+
+alt No jurors selected
+  ChangeNextDueAtCourtController <- - JurorSelectValidator : no jurors selected
+  PoolOverviewController <- ChangeNextDueAtCourtController : call pool overview controller
+  PoolOverviewPage <- PoolOverviewController : error message
+  Actor <- PoolOverviewPage : render error message
+end
+
+ChangeNextDueAtCourtController -> SelectDateTemplate : request and build template
+ChangeNextDueAtCourtController <- SelectDateTemplate : return HTML
+SelectDatePage <- ChangeNextDueAtCourtController : return HTML
+Actor <- SelectDatePage : render HTML
+
+Actor -> SelectDatePage : enter date and click continue
+
+SelectDatePage -> ChangeNextDueAtCourtController : call page conrtoller
+
+ChangeNextDueAtCourtController -> AttendanceDateValidator : validate form
+
+alt Invalid date entered
+  ChangeNextDueAtCourtController <- - AttendanceDateValidator : data validationfails
+  SelectDatePage <- ChangeNextDueAtCourtController : error message
+  Actor <- SelectDatePage : render error message
+end
+
+ChangeNextDueAtCourtController -> ConfirmDateTemplate : request and build template
+ChangeNextDueAtCourtController <- ConfirmDateTemplate : return HTML
+ConfirmDatePage <- ChangeNextDueAtCourtController : return HTML
+Actor <- ConfirmDatePage : render HTML
+
+Actor -> ConfirmDatePage : click continue
+
+ConfirmDatePage -> ChangeNextDueAtCourtController : call page controller
+
+ChangeNextDueAtCourtController -> changeNextDueAtCourtObject : build request object
+changeNextDueAtCourtObject -> BackendController : send backend request
+changeNextDueAtCourtObject <- BackendController : ok response
+ChangeNextDueAtCourtController <- changeNextDueAtCourtObject : resolve request
+
+alt Failed to change next due at court date of jurors
+    changeNextDueAtCourtObject <- - BackendController : error response
+    ChangeNextDueAtCourtController <- - changeNextDueAtCourtObject : reject requestObject
+    ChangeNextDueAtCourtController -> ErrorTemplate : request and build template
+    ChangeNextDueAtCourtController <- ErrorTemplate : return HTML
+    GenericErrorPage <- ChangeNextDueAtCourtController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+ChangeNextDueAtCourtController -> PoolOverviewController : call pool overview controller
+PoolOverviewController -> PoolOverviewTemplate : request and build template
+PoolOverviewController <- PoolOverviewTemplate : return HTML
+PoolOverviewPage <- PoolOverviewController : return HTML
+Actor <- PoolOverviewPage : render HTML with succcess banner
+@end
+
+PlantUML version 1.2022.7(Mon Aug 22 18:01:30 BST 2022)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

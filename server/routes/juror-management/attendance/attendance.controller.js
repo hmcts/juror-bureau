@@ -2,6 +2,8 @@
   'use strict';
 
   const _ = require('lodash');
+  const validate = require('validate.js');
+  const checkOutAllValidator = require('../../../config/validation/check-out-all-jurors');
   const { getJurorStatus, padTimeForApi } = require('../../../lib/mod-utils');
   const { convertAmPmToLong, convert12to24, timeArrayToString
     , timeStringToArray } = require('../../../components/filters');
@@ -124,7 +126,6 @@
   module.exports.postCheckOutAllJurors = function(app) {
     return async function(req, res) {
       const attendanceDate = req.session.attendanceListDate;
-
       const attendees = req.session.dailyAttendanceList
         .filter(a => a.checkInTime !== null && a.checkOutTime === null);
 
@@ -140,15 +141,32 @@
         return _time >= time ? _time : time;
       }, 0);
 
+      let validatorResult = validate(req.body, checkOutAllValidator.checkOutAllJurors());
+
+      if (typeof validatorResult !== 'undefined') {
+        req.session.errors = validatorResult;
+        req.session.formFields = req.body;
+
+        return res.redirect(app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate);
+      };
+
+      req.body.time = req.body.checkOutTimeHour.concat(':', req.body.checkOutTimeMinute)
+        .concat('', req.body.checkOutTimePeriod);
+
       const checkOutTime = convertAmPmToLong(req.body.time);
 
       if (latestStartTime >= checkOutTime) {
         return res.status(400).send('check out earlier than check in');
       }
 
+      let panelledJurors = [];
+
       req.session.dailyAttendanceList.forEach((attendee) => {
         if (attendee.checkOutTime !== null) {
           attendee.checkOutTime = req.body.time;
+        }
+        if (attendee.jurorStatus === 'Panel' && attendee.checkOutTime === null) {
+          panelledJurors.push(attendee.jurorNumber);
         }
       });
 
@@ -170,6 +188,15 @@
           payload,
         );
 
+        if (panelledJurors.length > 0) {
+          req.session.checkOutPanelled = {
+            panelledJurors,
+            payload,
+            checkOutTime: req.body.time,
+          };
+          return res.redirect(app.namedRoutes.build('juror-management.check-out-panelled.get'));
+        };
+
         return res.redirect(app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate);
       } catch (err) {
         app.logger.crit('Failed when trying to check all jurors out', {
@@ -187,8 +214,8 @@
   module.exports.getCheckOutPanelledJurors = function(app) {
     return function(req, res) {
       const attendanceDate = req.session.attendanceListDate;
-      const panelledJurorNo = ['100000000'];
-      const time = '5:30pm';
+      const panelledJurorNo = req.session.checkOutPanelled.panelledJurors;
+      const time = req.session.checkOutPanelled.checkOutTime;
 
       const panelledJurors = req.session.dailyAttendanceList.filter(
         (juror) => panelledJurorNo.includes(juror.jurorNumber)
@@ -205,23 +232,31 @@
   };
 
   module.exports.postCheckOutPanelledJurors = function(app) {
-    return function(req, res) {
+    return async function(req, res) {
       const attendanceDate = req.session.attendanceListDate;
-      const panelledJurorNo = JSON.parse(req.body.panelledJurorNo);
 
-      req.session.dailyAttendanceList.forEach((attendee) => {
-        if (panelledJurorNo.includes(attendee.jurorNumber)) {
-          attendee.checkedOut = req.body.time;
-        }
-      });
+      const payload = _.cloneDeep(req.session.checkOutPanelled.payload);
 
-      const date = req.session.attendanceListDate;
-      const index = req.session.attendanceList.findIndex((obj => obj.date === date));
+      payload.commonData.status = 'CHECK_OUT_PANELLED';
 
-      req.session.attendanceList[index].jurors = req.session.dailyAttendanceList;
-      req.session.save();
+      try {
+        await jurorAttendanceDao.patch(
+          app,
+          req,
+          payload,
+        );
 
-      return res.redirect(app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate);
+        return res.redirect(app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate);
+      } catch (err) {
+        app.logger.crit('Failed when trying to check all panelled jurors out', {
+          auth: req.session.authentication,
+          token: req.session.authToken,
+          data: req.session.checkOutPanelled.payload,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic');
+      };
     };
   };
 

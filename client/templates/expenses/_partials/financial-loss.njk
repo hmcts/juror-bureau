@@ -1,0 +1,88 @@
+{% set lossOfEarningsError = undefined %}
+{% if errors.items["lossOfEarnings"] %}
+  {% set lossOfEarningsError = { text: errors.items["lossOfEarnings"][0].details } %}
+{% endif %}
+
+{% set extraCareCostsError = undefined %}
+{% if errors.items["extraCareCosts"] %}
+  {% set extraCareCostsError = { text: errors.items["extraCareCosts"][0].details } %}
+{% endif %}
+
+{% set otherCostsError = undefined %}
+{% if errors.items["otherCosts"] %}
+  {% set otherCostsError = { text: errors.items["otherCosts"][0].details } %}
+{% endif %}
+
+{% set otherCostsDescriptionError = undefined %}
+{% if errors.items["otherCostsDescription"] %}
+  {% set otherCostsDescriptionError = { text: errors.items["otherCostsDescription"][0].details } %}
+{% endif %}
+
+<div id="financialLossDiv" class="mod-expense-entry-group">
+  <div class="mod-juror-record__title govuk-!-margin-bottom-5">
+    <h2 id="financialLossLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Financial loss</h2>
+  </div>
+
+  {{ govukInput({
+    id: "lossOfEarnings",
+    name: "lossOfEarnings",
+    label: {
+      text: "Loss of earnings or benefits"
+    },
+    prefix: {
+      text: "£"
+    },
+    classes: "govuk-input--width-5",
+    value: (tmpBody.lossOfEarnings | toFixed(2)) if tmpBody.lossOfEarnings,
+    errorMessage: lossOfEarningsError,
+    attributes: {
+      "data-summary-detectable": ""
+    }
+  }) }}
+
+  {{ govukInput({
+    id: "extraCareCosts",
+    name: "extraCareCosts",
+    label: {
+      text: "Extra care costs"
+    },
+    prefix: {
+      text: "£"
+    },
+    classes: "govuk-input--width-5",
+    value: (tmpBody.extraCareCosts | toFixed(2)) if tmpBody.extraCareCosts,
+    errorMessage: extraCareCostsError,
+    attributes: {
+      "data-summary-detectable": ""
+    }
+  }) }}
+
+  {{ govukInput({
+    id: "otherCosts",
+    name: "otherCosts",
+    label: {
+      text: "Other costs"
+    },
+    prefix: {
+      text: "£"
+    },
+    classes: "govuk-input--width-5",
+    value: (tmpBody.otherCosts | toFixed(2)) if tmpBody.otherCosts,
+    errorMessage: otherCostsError,
+    attributes: {
+      "data-summary-detectable": ""
+    }
+  }) }}
+
+  {{ govukInput({
+    id: "otherCostsDescription",
+    name: "otherCostsDescription",
+    classes: "govuk-!-margin-bottom-0",
+    label: {
+      text: "Description of other costs"
+    },
+    value: tmpBody.otherCostsDescription,
+    errorMessage: otherCostsDescriptionError
+  }) }}
+
+</div>

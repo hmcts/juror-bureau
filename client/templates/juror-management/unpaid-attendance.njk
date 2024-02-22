@@ -18,7 +18,7 @@
 {% set filterByDate %}
   <div class="filter-by-date">
     <div class="additional-stats__row">
-      
+      <div><h1 class="govuk-heading-m">Show jurors who attended between these dates</h1></div>
       {% set unpaidAttendanceFromDateError = undefined %}
       {% set unpaidAttendanceToDateError = undefined %}
       
@@ -68,10 +68,9 @@
     <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-l" id="attendanceDate">Unpaid Attendance</h1>
       {% include "includes/errors.njk" %}
-
       <form class="mod-filter-form" id="unpaidAttendanceForm" method="post">
         {{ govukDetails({
-            summaryText: "Filter by date",
+            summaryText: "Filter jurors",
             html: filterByDate,
             id: "filterByDate"
         }) }}
@@ -90,6 +89,7 @@
             <span class="govuk-body govuk-!-font-weight-bold">
               Showing {{totalAttendance}} jurors with unpaid attendance
             </span>
+            
    {% if totalAttendance > 0 %}
             {{ modSortableTable({
               id: "unpaidAttendanceTable",

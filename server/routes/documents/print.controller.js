@@ -3,7 +3,7 @@
 
   const { reissueLetterDAO } = require('../../objects/documents');
   const letterTemplates = require('./pdf/letter-templates');
-  const { formatLetterDate, LetterType } = require('../../lib/mod-utils');
+  const { LetterType } = require('../../lib/mod-utils');
 
   module.exports.printDocuments = function(app) {
     return async function(req, res) {
@@ -87,9 +87,20 @@
     const documents = data.map((juror) => {
       const isWelsh = juror.welsh;
 
+      const courtAddress = [
+        juror.court_name,
+        juror.court_address_line1,
+        juror.court_address_line2,
+        juror.court_address_line3,
+        juror.court_address_line4,
+        juror.court_address_line5,
+        juror.court_address_line6,
+        juror.court_post_code,
+      ];
+
       juror.content = letterTemplates('deferral-refused', {
         welsh: isWelsh,
-        courtAddress: Object.values(juror.courtAddress).join('\n'),
+        courtAddress: courtAddress.filter((line) => line).join('\n'),
       });
 
       juror.title = isWelsh ? 'GWASANAETH RHEITHGOR' : 'JURY SERVICE';
@@ -120,9 +131,20 @@
     const documents = data.map((juror) => {
       const isWelsh = juror.welsh;
 
+      const courtAddress = [
+        juror.court_name,
+        juror.court_address_line1,
+        juror.court_address_line2,
+        juror.court_address_line3,
+        juror.court_address_line4,
+        juror.court_address_line5,
+        juror.court_address_line6,
+        juror.court_post_code,
+      ];
+
       juror.content = letterTemplates('excusal-refused', {
         welsh: isWelsh,
-        courtAddress: Object.values(juror.courtAddress).join('\n'),
+        courtAddress: courtAddress.filter((line) => line).join('\n'),
       });
 
       juror.title = isWelsh ? 'GWASANAETH RHEITHGOR' : 'JURY SERVICE';
@@ -138,8 +160,8 @@
       const isWelsh = juror.welsh;
 
       juror.content = letterTemplates('postponement', {
-        serviceDate: formatLetterDate(new Date(), 'dddd D MMMM YYYY', isWelsh),
-        serviceTime: '09:45 AM',
+        serviceDate: juror.postponed_to_date,
+        serviceTime: juror.attend_time,
         welsh: isWelsh,
       });
 

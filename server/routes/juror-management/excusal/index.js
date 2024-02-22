@@ -13,6 +13,14 @@
       'juror.excusal.post',
       auth.verify,
       controller.post(app));
-  };
 
+    app.get('/juror-management/juror/:jurorNumber/update/excusal/:letter(grant|refuse)/letter'
+      , 'juror.update.excusal.letter.get'
+      , auth.verify
+      , controller.getExcusalLetter(app));
+    app.post('/juror-management/juror/:jurorNumber/update/excusal/:letter(grant|refuse)/letter'
+      , 'juror.update.excusal.letter.post'
+      , auth.verify
+      , controller.postExcusalLetter(app));
+  };
 })();

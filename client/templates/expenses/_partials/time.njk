@@ -1,0 +1,100 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% set travelTimeError = undefined %}
+{% if errors.items["totalTravelTime-hour"] or errors.items["totalTravelTime-minute"] %}
+  {% set travelTimeErrorHtml %}
+  {% if errors.items["totalTravelTime-hour"] %}
+    <span class="govuk-error-message" id="totalTravelTimeHourErrorMessage">
+      {{ errors.items["totalTravelTime-hour"][0].details }}
+    </span>
+  {% endif %}
+  {% if errors.items["totalTravelTime-minute"] %}
+    <span class="govuk-error-message" id="totalTravelTimeMinuteErrorMessage">
+      {{ errors.items["totalTravelTime-minute"][0].details }}
+    </span>
+  {% endif %}
+  {% endset %}
+  {% set travelTimeError = {
+    html: travelTimeErrorHtml
+  } %}
+{% endif %}
+
+<div id="timeDiv" class="mod-expense-entry-group">
+  <div class="mod-juror-record__title govuk-!-margin-bottom-5">
+    <h2 id="timeLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Time</h2>
+  </div>
+
+  {{ govukSummaryList({
+    rows: [
+      {
+        key: {
+          text: "Time spent at court"
+        },
+        value: {
+          text: timeSpentAtCourt.hour + " hours " + timeSpentAtCourt.minute + " minutes"
+        }
+      }
+    ]
+  }) }}
+
+  {{ timeInput({
+    id: "totalTravelTime",
+    name: "totalTravelTime",
+    fieldset: {
+      legend: {
+        text: "Total travel time",
+        classes: "govuk-fieldset__legend--s"
+      }
+    },
+    errorMessage: travelTimeError,
+    items: {
+      hour: {
+        value: tmpBody["totalTravelTime-hour"] or "0",
+        attributes: {
+          minLength: "1",
+          maxLength: "2",
+          "data-summary-detectable": ""
+        }
+      },
+      minute: {
+        value: tmpBody["totalTravelTime-minute"] or "0",
+        attributes: {
+          minLength: "1",
+          maxLength: "2",
+          "data-summary-detectable": ""
+        }
+      }
+    },
+    errors: errors.items
+  }) }}
+
+  {{ govukRadios({
+    classes: "govuk-radios--inline govuk-radios--small",
+    name: "payAttendance",
+    value: tmpBody.payAttendance,
+    fieldset: {
+      legend: {
+        text: "Pay attendance",
+        classes: "govuk-fieldset__legend--s"
+      }
+    },
+    items: [
+      {
+        value: "HALF_DAY",
+        text: "Half day",
+        checked: expensesData.time.pay_attendance === "HALF_DAY",
+        attributes: {
+          "data-summary-detectable": ""
+        }
+      },
+      {
+        value: "FULL_DAY",
+        text: "Full day",
+        checked: expensesData.time.pay_attendance === "FULL_DAY",
+        attributes: {
+          "data-summary-detectable": ""
+        }
+      }
+    ]
+  }) }}
+</div>

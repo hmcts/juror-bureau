@@ -19,7 +19,7 @@
 
     , fetchUnpaidExpenses = {
       resource: 'moj/expenses/unpaid-summary/',
-      get: function(rp, app, jwtToken, locCode, opts) {
+      get: function(app, jwtToken, locCode, opts) {
         var reqOptions = _.clone(options);
 
         var parameters = [];
@@ -52,7 +52,7 @@
   module.exports.fetchUnpaidExpenses = fetchUnpaidExpenses;
 
   module.exports.expensesDAO = {
-    get: function(app, req, jurors, l) {
+    get: function(app, req, jurors) {
       const payload = {
         uri: urljoin(config.apiEndpoint, 'moj/expenses'),
         method: 'GET',

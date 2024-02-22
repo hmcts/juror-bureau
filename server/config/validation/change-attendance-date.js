@@ -8,7 +8,7 @@
   module.exports.attendanceDate = function(options) {
     return {
       attendanceDate: {
-        attendanceDatePicker: {
+        changeAttendanceDatePicker: {
           bulk: false,
           onCall: options && options.onCall,
         },
@@ -19,7 +19,7 @@
   module.exports.bulkAttendanceDate = function() {
     return {
       attendanceDate: {
-        attendanceDatePicker: {
+        changeAttendanceDatePicker: {
           bulk: true,
         },
       },
@@ -34,7 +34,7 @@
     };
   };
 
-  validate.validators.attendanceDatePicker = function(value, options, key, attributes) {
+  validate.validators.changeAttendanceDatePicker = function(value, options, key, attributes) {
     let dateRegex = /[^0-9\/]+/,
       tmpErrors = [],
       dateInitial = parseDate(value);

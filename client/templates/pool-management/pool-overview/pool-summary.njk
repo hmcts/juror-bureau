@@ -1,66 +1,103 @@
-<div class="govuk-grid-row">
-  <div class="pool-values">
-    <div class="pool-values__bureau-summoning">
-      <span class="govuk-body govuk-!-font-weight-bold">
-        Bureau summoning
-      </span>
-      <span class="govuk-!-font-size-80 govuk-!-font-weight-bold">
-        {{ bureauSummoning.required }}
-      </span>
-      <span class="label">
-        Jurors requested
-      </span>
-    </div>
-    <div class="pool-values__jurors-confirmed">
-      <span class="govuk-!-font-size-80 govuk-!-font-weight-bold">
-        {{ bureauSummoning.confirmed }}
-      </span>
-      <span class="label">
-        Jurors confirmed
-      </span>
-    </div>
-    <div class="pool-values__chart">
-      {{ poolRecordDoughnut({
-        id: "poolRecordStats",
-        values: {
-          required: bureauSummoning.required,
-          confirmed: bureauSummoning.confirmed,
-          unavailable: bureauSummoning.unavailable,
-          notResponded: bureauSummoning.notResponded,
-          surplus: bureauSummoning.surplus,
-          total: bureauSummoning.totalSummoned
-        }
-      }) }}
-    </div>
-    <div class="pool-values__summary">
-      <span class="govuk-body govuk-!-font-weight-bold">
-        Pool summary
-      </span>
-      <span>
-        <span class="govuk-!-font-size-80 govuk-!-font-weight-bold">{{ poolSummary.currentPoolSize }}</span>
-        <span class="govuk-!-font-size-36">/{{ poolSummary.requiredPoolSize }}</span>
-      </span>
-      <span class="label">
-        Current pool size
-      </span>
+{% if isBureauUser %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <div class="pool-values">
+        <div class="pool-values__bureau-summoning">
+          <span class="govuk-body govuk-!-font-weight-bold">
+            Bureau summoning
+          </span>
+          <span class="govuk-!-font-size-80 govuk-!-font-weight-bold">
+            {{ bureauSummoning.required }}
+          </span>
+          <span class="label">
+            Jurors requested
+          </span>
+        </div>
+        <div class="pool-values__jurors-confirmed">
+          <span class="govuk-!-font-size-80 govuk-!-font-weight-bold">
+            {{ bureauSummoning.confirmed }}
+          </span>
+          <span class="label">
+            Jurors confirmed
+          </span>
+        </div>
+        <div class="pool-values__chart">
+          {{ poolRecordDoughnut({
+            id: "poolRecordStats",
+            values: {
+              required: bureauSummoning.required,
+              confirmed: bureauSummoning.confirmed,
+              unavailable: bureauSummoning.unavailable,
+              notResponded: bureauSummoning.notResponded,
+              surplus: bureauSummoning.surplus,
+              total: bureauSummoning.totalSummoned
+            }
+          }) }}
+        </div>
+        <div class="pool-values__summary">
+          <span class="govuk-body govuk-!-font-weight-bold">
+            Pool summary
+          </span>
+          <span>
+            <span class="govuk-!-font-size-80 govuk-!-font-weight-bold">{{ poolSummary.currentPoolSize }}</span>
+            <span class="govuk-!-font-size-36">/{{ poolSummary.requiredPoolSize }}</span>
+          </span>
+          <span class="label">
+            Current pool size
+          </span>
+        </div>
+      </div>
+
+      <div class="govuk-grid-column-full">
+        {{ govukDetails({
+          summaryText: "Additional pool statistics",
+          html: additionalPoolStats,
+          id: "additionalPoolStats"
+        }) }}
+      </div>
     </div>
   </div>
+{% else %}
+  <h2 class="govuk-label--m">
+    Pool summary
+  </h2>
 
-  <div class="govuk-grid-column-full">
-    {{ govukDetails({
-      summaryText: "Additional pool statistics",
-      html: additionalPoolStats,
-      id: "additionalPoolStats"
-    }) }}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <div class="pool-values">
+        <div class="pool-values__bureau-summoning pool-values__jurors-required">
+          <span class="govuk-!-font-size-80 govuk-!-font-weight-bold">
+            {{ poolSummary.requiredPoolSize }}
+          </span>
+          <span class="label">
+            Jurors needed
+          </span>
+        </div>
+        <div class="pool-values__jurors-breakdown">
+          <span class="govuk-!-font-size-48">
+            {{ additionalStatistics.courtSupply }}
+          </span>
+          <span class="label">
+            Court deferrals used
+          </span>
+        </div>
+        <div class="pool-values__jurors-breakdown">
+          <span class="govuk-!-font-size-48">
+            {{ bureauSummoning.required }}
+          </span>
+          <span class="label">
+            Jurors requested from Bureau
+          </span>
+        </div>
+      </div>
+    </div>
   </div>
+{% endif %}
 
-  {% include "./_partials/sub-nav.njk" %}
+{% include "./_partials/sub-nav.njk" %}
 
-  {% if currentTab == 'history' %}
-    {% include "./pool-history.njk" %}
-  {% else %}
-    {% include "./pool-jurors.njk" %}
-  {% endif %}
-
-</div>
-
+{% if currentTab == 'history' %}
+  {% include "./pool-history.njk" %}
+{% else %}
+  {% include "./pool-jurors.njk" %}
+{% endif %}

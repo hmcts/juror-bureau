@@ -392,8 +392,16 @@
     toFixed: function(num, length) {
       const zeros = length || 2;
 
-      return num.toFixed(zeros);
+      if (!num) {
+        // LESS GO JS
+        return '0.00';
+      }
 
+      if (isNaN(num)) {
+        return num;
+      }
+
+      return parseFloat(num).toFixed(zeros);
     },
 
     /**

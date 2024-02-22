@@ -22,9 +22,18 @@
   {# no search parameters error - link to jurorNumber field #}
   {% set parametersError = undefined %}
   {% if errors.items["searchParameters"] %}
-    {% set parametersError = errors.items['searchParameters'][0]['details'] %}
+    {% set parametersError = errors.items["searchParameters"][0].details %}
   {% endif %}
 
+  {% set jurorNumberError = undefined %}
+  {% if errors.items["jurorNumber"] %}
+    {% set jurorNumberError = { text: errors.items["jurorNumber"][0].details } %}
+  {% endif %}
+
+  {% set poolNumberError = undefined %}
+  {% if errors.items["poolNumber"] %}
+    {% set poolNumberError = { text: errors.items["poolNumber"][0].details } %}
+  {% endif %}
 
   {# setup Filter component #}
   {% set filtersHTML %}
@@ -179,7 +188,8 @@
                 value: searchParams.juror_number,
                 attributes: {
                   maxlength: "9"
-                }
+                },
+                errorMessage: jurorNumberError
               }) }}
             </div>
           </div> {# end row 1 #}
@@ -215,7 +225,8 @@
                 value: searchParams.pool_number,
                 attributes: {
                   maxlength: "10"
-                }
+                },
+                errorMessage: poolNumberError
               }) }}
             </div>
 
@@ -284,7 +295,7 @@
         <p class="govuk_body">Improve your search by:</p>
         <ul class="govuk-list govuk-list--bullet">
           <li>double-checking your spelling</li>
-          <li>searching by juror number or juror’s last name or juror’s pool number/li>
+          <li>searching by juror number or juror’s last name or juror’s pool number</li>
         </ul>
       </div>
 
