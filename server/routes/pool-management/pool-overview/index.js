@@ -10,7 +10,7 @@
 
   module.exports = function(app) {
 
-    require('./change-attendance-date/index')(app);
+    require('./change-next-due-at-court')(app);
 
     app.get('/pool-management/pool-overview/:poolNumber',
       'pool-overview.get',

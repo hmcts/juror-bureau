@@ -24,6 +24,9 @@
   };
 
   validate.validators.endTrialDatePicker = function(value, options, key, attributes) {
+
+    if (attributes.endTrial !== 'true') return;
+
     if (typeof attributes.endTrialDate === 'undefined' || attributes.endTrialDate.length === 0) {
       return [{
         summary: 'Enter a trial end date',
@@ -48,6 +51,7 @@
         details: 'Enter a real date',
       }];
     };
+
     return null;
   };
 

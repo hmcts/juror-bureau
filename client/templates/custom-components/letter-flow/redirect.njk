@@ -1,0 +1,17 @@
+{% extends "../../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_title %}{{ serviceName}} - {{ serviceTitle }}{% endblock %}
+
+{% block page_identifier %}{{ pageIdentifier }}{% endblock %}
+
+{% set currentApp = currentApp %}
+
+{% block body_end %}
+  <script>
+    open("{{ url('documents.letters-list.print', { document: letterType }) }}", '_blank');
+    window.location.replace("{{ completeRoute }}");
+  </script>
+{% endblock %}

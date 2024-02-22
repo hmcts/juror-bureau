@@ -34,8 +34,8 @@
       }];
     } else if (!dateInitial.isMonthAndDayValid) {
       tmpErrors = [{
-        summary: 'Enter a real start date',
-        details: 'Enter a real start date',
+        summary: 'Enter a date in the correct format, for example, 31/01/2023',
+        details: 'Enter a date in the correct format, for example, 31/01/2023',
       }];
     };
     if (modUtils.dateDifference(dateInitial.dateAsDate, new Date(), 'years') > 0) {

@@ -63,7 +63,7 @@
 
 {% set checkOutHtml %}
 <div>
-  <form id="checkOutForm">
+  <form method="POST" action="{{ url('juror-management.check-out-all-jurors.post') }}" id="checkOutForm" >
     <div id="checkOutTimeErrorContainer" class="govuk-!-margin-bottom-5">
       {{ timeInput12Hour({
         id: "checkOutTime",
@@ -76,21 +76,21 @@
         },
         items: {
           hour: {
-            value: checkOutTime.hour,
+            value: checkOutTime.hour or tmpFields.checkOutTimeHour,
             attributes: {
               minLength: "1",
               maxLength: "2"
             }
           },
           minute: {
-            value: checkOutTime.minute,
+            value: checkOutTime.minute or tmpFields.checkOutTimeMinute,
             attributes: {
               minLength: "1",
               maxLength: "2"
             }
           },
           period: {
-            value: checkOutTime.period
+            value: checkOutTime.period or tmpFields.checkOutTimePeriod
           }
         },
         errors: errors.items
@@ -106,7 +106,10 @@
         {{ govukButton({
           text: "Check out juror",
           classes: "govuk-!-margin-bottom-1",
-          type: "submit"
+          type: "button",
+          attributes: {
+            id: "checkOutSingleJuror"
+          }
         }) }}
       </div>
     </div>
@@ -114,8 +117,7 @@
     {{ govukButton({
       text: "Check out all jurors",
       classes: "govuk-button--secondary govuk-!-margin-bottom-1",
-      type: "button",
-      id: "checkOutAllJurors"
+      type: "submit"
     }) }}
     <input type="hidden" name="_csrf" id="checkOutcsrfToken" value="{{ csrftoken }}"/>
   </form>
@@ -144,6 +146,8 @@
         {
           value: "checkOut",
           text: "Check out",
+          checked: tmpFields.checkOutTimeHour !== undefined or tmpFields.checkOutTimeMinute !== undefined 
+            or tmpFields.checkOutTimePeriod !== undefined,
           conditional: {
             html: checkOutHtml
           }

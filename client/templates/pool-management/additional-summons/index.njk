@@ -120,7 +120,7 @@
         <input type="hidden" name="noRequested" id="noRequested" value="{{ poolDetails.bureauSummoning.required }}"/>
         <input type="hidden" name="poolNumber" id="poolNumber" value="{{ poolDetails.poolDetails.poolNumber }}"/>
         <input type="hidden" name="bureauDeferrals" id="bureauDeferrals" value="10"/>
-        <input type="hidden" name="citizensSummoned" id="citizensSummoned" value="{{ poolDetails.poolSummary.currentPoolSize }}"/>
+        <input type="hidden" name="citizensSummoned" id="citizensSummoned" value="{{ poolDetails.bureauSummoning.totalSummoned }}"/>
         <input type="hidden" name="catchmentArea" id="catchmentArea" value="{{ catchmentArea }}"/>
         <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}"/>
       

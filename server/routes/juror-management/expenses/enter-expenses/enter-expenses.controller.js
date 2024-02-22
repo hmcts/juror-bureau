@@ -1,95 +1,127 @@
 (function() {
   'use strict';
 
-  const _ = require('lodash')
-    , validate = require('validate.js')
-    , enterExpensesValidator = require('../../../../config/validation/enter-expenses');
-
-  const stubbedExpenseEntries = require('../../../../stores/daily-expenses-entry');
+  const _ = require('lodash');
+  const validate = require('validate.js');
+  const enterExpensesValidator = require('../../../../config/validation/enter-expenses');
+  const { getDraftExpenseDAO, postDraftExpenseDAO } = require('../../../../objects/expense-record');
+  const { jurorDetailsObject } = require('../../../../objects/juror-record');
 
   module.exports.getEnterExpenses = (app) => {
-    return function(req, res) {
+    return async function(req, res) {
+      const { jurorNumber, poolNumber } = req.params;
+      const { date } = req.query;
+      const page = parseInt(req.query.page);
+
+      // Some quick handler if there is no date in the query param
+      if (!date || date === '' || !page) {
+        return res.render('_errors/generic');
+      }
+
       delete req.session.jurorsLoss;
       delete req.session.lossCap;
       delete req.session.currentExpensePage;
       delete req.session.nonAttendanceDay;
 
       const tmpErrors = _.cloneDeep(req.session.errors)
-        , page = parseInt(req.query['page']) || 1
         , postUrls = {
           saveAndNextUrl: app.namedRoutes.build('juror-management.enter-expenses.post', {
-            jurorNumber: req.params.jurorNumber,
-            poolNumber: req.params.poolNumber,
-          }) + '?page=' + page + '&action=next',
+            jurorNumber,
+            poolNumber,
+          }) + `?date=${date}&page=${page}&action=next`,
           saveAndBackUrl: app.namedRoutes.build('juror-management.enter-expenses.post', {
-            jurorNumber: req.params.jurorNumber,
-            poolNumber: req.params.poolNumber,
-          }) + '?page=' + page + '&action=back',
+            jurorNumber,
+            poolNumber,
+          }) + `?date=${date}&page=${page}&action=back`,
           applyToAllUrl: app.namedRoutes.build('juror-management.enter-expenses.apply-to-all.post', {
-            jurorNumber: req.params.jurorNumber,
-            poolNumber: req.params.poolNumber,
-          }) + '?page=' + page,
+            jurorNumber,
+            poolNumber,
+          }) + `?date=${date}&page=${page}`,
         }
-        , changeFoodUrl = app.namedRoutes.build('juror-management.default-expenses.get', {
-          jurorNumber: req.params.jurorNumber,
-        })
         , cancelUrl = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
-          jurorNumber: req.params.jurorNumber,
-          poolNumber: req.params.poolNumber,
+          jurorNumber,
+          poolNumber,
         });
-      let tmpBody;
+      let tmpBody, responses;
 
-      // TODO - calculation rates will come from backend
-      const calculationsData = {
-        fullDayLossCap: 64.95,
-        halfDayLossCap: 32.50,
-        foodAndDrinkDefault: 5.71,
-        carRateDefault: 0.35,
-        carRateOnePassenger: 0.5,
-        carRateTwoPassengers: 0.75,
-        motorcycleRate: 0.23,
-        bicycleRate: 0.1,
-      };
+      try {
+        const _expensesData = getDraftExpenseDAO.post(app, req, {
+          'juror_number': jurorNumber,
+          'pool_number': poolNumber,
+          'date_of_expense': date,
+        });
+
+        const _jurorDetails = jurorDetailsObject.post(
+          require('request-promise'),
+          app,
+          req.session.authToken,
+          jurorNumber,
+          null,
+          ['NAME_DETAILS'],
+        );
+
+        responses = await Promise.all([_expensesData, _jurorDetails]);
+
+        app.logger.info('Fetched expenses data and juror details for', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            jurorNumber,
+            poolNumber,
+            attendanceDate: date,
+          },
+        });
+
+      } catch (err) {
+        app.logger.crit('Failed to fetch draft expense for: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            jurorNumber,
+            poolNumber,
+          },
+        });
+
+        return res.render('_errors/generic');
+      }
+
+      const expensesData = responses[0];
+      const jurorDetails = responses[1][0];
 
       // Mimicing paginating the list, returning same header data but expenses list will be filtered to 1
-      const pagination = buildExpensesPagination(app, req, res, page)
-        , dailyExpenseData = _.clone(stubbedExpenseEntries)
-        , dailyExpenses = dailyExpenseData.expenses[page - 1];
+      const pagination = buildExpensesPagination(app, req, res, page);
 
-      dailyExpenseData.expenses = [dailyExpenses];
-
-      const renderTemplate = dailyExpenseData.expenses[0].timeAtCourt === 'non-attendance'
+      const renderTemplate = expensesData.none_attendance_day
         ? 'expenses/enter-expenses-non-attendance.njk'
         : 'expenses/enter-expenses.njk';
 
-      req.session.nonAttendanceDay = dailyExpenseData.expenses[0].timeAtCourt === 'non-attendance';
+      req.session.nonAttendanceDay = expensesData.none_attendance_day;
 
       if (!req.session.tmpBody) {
         // TODO - replace with API call
-        tmpBody = manipulateExpesnesApiData(dailyExpenseData.expenses[0]);
+        tmpBody = manipulateExpesnesApiData(expensesData);
       } else {
         tmpBody = _.cloneDeep(req.session.tmpBody);
-      }
-
-      if (req.session.lowerLossCap){
-        tmpBody.lossOfEarnings = _.clone(req.session.lowerLossCap);
-        tmpBody.extraCareCosts = '';
-        tmpBody.otherCosts = '';
-        tmpBody.otherCostsDescription = '';
       }
 
       delete req.session.errors;
       delete req.session.tmpBody;
       delete req.session.lowerLossCap;
 
+      const [timeSpentAtCourtHour, timeSpentAtCourtMinute] = expensesData.time.time_spent_at_court.split(':');
+
       return res.render(renderTemplate, {
         postUrls,
-        changeFoodUrl,
         cancelUrl,
         pagination,
-        data: dailyExpenseData,
-        // Data needed to do totals calculations in FE
-        calculationsData,
+        expensesData,
+        jurorDetails,
+        timeSpentAtCourt: {
+          hour: timeSpentAtCourtHour,
+          minute: timeSpentAtCourtMinute,
+        },
+        jurorNumber,
+        poolNumber,
         tmpBody,
         errors: {
           title: 'Please check the form',
@@ -101,10 +133,11 @@
   };
 
   module.exports.postEnterExpenses = (app) => {
-    return function(req, res) {
-      const page = parseInt(req.query['page']) || 1
-        , action = req.query['action']
-        , nonAttendanceDay = _.clone(req.session.nonAttendanceDay);
+    return async function(req, res) {
+      const { jurorNumber, poolNumber } = req.params;
+      const { date, action } = req.query;
+      const page = parseInt(req.query['page']);
+      const nonAttendanceDay = _.clone(req.session.nonAttendanceDay);
       let validatorResult;
 
       delete req.session.nonAttendanceDay;
@@ -124,65 +157,79 @@
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.tmpBody = req.body;
+
         return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.get', {
-          jurorNumber: req.params.jurorNumber,
-          poolNumber: req.params.poolNumber,
-        }) + '?page=' + page);
-      }
-
-      const lossOfEarnings = parseFloat(req.body.lossOfEarnings) || 0;
-      const extraCareCosts = parseFloat(req.body.extraCareCosts) || 0;
-      const otherCosts = parseFloat(req.body.otherCosts) || 0;
-      const totalLoss = lossOfEarnings + extraCareCosts + otherCosts;
-      const lossCap = req.body.payAttendance === 'fullDay' ? 64.95 : 32.50;
-
-      if (totalLoss > lossCap) {
-        req.session.tmpBody = req.body;
-        req.session.jurorsLoss = totalLoss;
-        req.session.lossCap = {
-          attendance: req.body.payAttendance,
-          total: lossCap.toFixed(2),
-        };
-        req.session.currentExpensePage = page;
-        return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.loss-over-limit.get', {
-          jurorNumber: req.params.jurorNumber,
-          poolNumber: req.params.poolNumber,
-        }));
+          jurorNumber,
+          poolNumber,
+        }) + `?date=${date}&page=${page}`);
       }
 
       if (parseFloat(req.body.total) < 0){
         req.session.tmpBody = req.body;
         return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.total-less-zero.get', {
-          jurorNumber: req.params.jurorNumber,
-          poolNumber: req.params.poolNumber,
+          jurorNumber,
+          poolNumber,
         }));
       }
 
-      if (action === 'next') {
-        const nextPage = req.session.totalPages !== page ? page + 1 : page;
+      const data = buildDataPayload(req.body);
 
-        return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.get', {
-          jurorNumber: req.params.jurorNumber,
-        }) + '?page=' + nextPage);
+      data['date_of_expense'] = date;
+      data['pool_number'] = poolNumber;
+
+      try {
+        const response = await postDraftExpenseDAO.post(app, req, jurorNumber, data);
+
+        const nextDate = req.session.expensesData.dates[page];
+        const nextPage = page + 1;
+
+        if (response.financial_loss_warning) {
+          req.session.financialLossWarning = response.financial_loss_warning;
+
+          req.session.nextExpensePage = action === 'next' ? nextPage : false;
+          req.session.nextExpenseDate = action === 'next' ? nextDate : false;
+
+          return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.loss-over-limit.get', {
+            jurorNumber,
+            poolNumber,
+          }));
+        }
+
+        if (action === 'next' && nextDate) {
+          return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.get', {
+            jurorNumber,
+            poolNumber,
+          }) + `?date=${nextDate}&page=${nextPage}`);
+        }
+
+        return res.redirect(app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
+          jurorNumber,
+          poolNumber,
+        }));
+      } catch (err) {
+        app.logger.crit('Failed to update a draft expense: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            jurorNumber,
+            ...data,
+          },
+        });
+
+        return res.render('_errors/generic');
       }
-      return res.redirect(app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
-        jurorNumber: req.params.jurorNumber,
-        poolNumber: req.params.poolNumber,
-      }));
     };
   };
 
   module.exports.getLossOverLimit = (app) => {
     return function(req, res) {
-      const jurorsLoss = _.clone(req.session.jurorsLoss)
-        , lossCap = _.clone(req.session.lossCap);
+      const { jurorNumber, poolNumber } = req.params;
 
       return res.render('expenses/loss-over-limit.njk', {
-        jurorsLoss: jurorsLoss,
-        lossCap: lossCap,
+        jurorLossData: req.session.financialLossWarning,
         processUrl: app.namedRoutes.build('juror-management.enter-expenses.loss-over-limit.post', {
-          jurorNumber: req.params.jurorNumber,
-          poolNumber: req.params.poolNumber,
+          jurorNumber,
+          poolNumber,
         }),
       });
     };
@@ -190,24 +237,37 @@
 
   module.exports.postLossOverLimit = (app) => {
     return function(req, res) {
-      const page = req.session.currentExpensePage;
+      const { jurorNumber, poolNumber } = req.params;
+      const date = req.session.nextExpenseDate;
+      const page = req.session.nextExpensePage;
 
-      req.session.lowerLossCap = _.clone(req.session.lossCap.total);
+      delete req.session.financialLossWarning;
+      delete req.session.nextExpensePage;
+      delete req.session.nextExpenseDate;
 
-      delete req.session.jurorsLoss;
-      delete req.session.lossCap;
-      delete req.session.currentExpensePage;
+      if (date && page) {
+        return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.get', {
+          jurorNumber,
+          poolNumber,
+        }) + `?date=${date}&page=${page}`);
+      }
 
-      return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.get', {
-        jurorNumber: req.params.jurorNumber,
-        poolNumber: req.params.poolNumber,
-      }) + '?page=' + page);
+      return res.redirect(app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
+        jurorNumber,
+        poolNumber,
+      }));
     };
   };
 
   module.exports.postApplyExpensesToAll = (app) => {
-    return function(req, res) {
+    return async function(req, res) {
+      const { jurorNumber, poolNumber } = req.params;
       const page = parseInt(req.query['page']) || 1;
+      const date = req.query.date;
+      const redirectUrl = app.namedRoutes.build('juror-management.enter-expenses.get', {
+        jurorNumber,
+        poolNumber,
+      }) + `?date=${date}&page=${page}`;
 
       if (!req.body.applyToAllDays) {
         req.session.errors = {
@@ -216,26 +276,58 @@
             details: 'Select at least one option to copy and apply',
           }],
         };
+
         req.session.tmpBody = req.body;
-        return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.get', {
-          jurorNumber: req.params.jurorNumber,
-          poolNumber: req.params.poolNumber,
-        }) + '?page=' + page);
+
+        return res.redirect(redirectUrl);
       }
 
-      // TODO add call to BE once ready
+      const data = buildDataPayload(req.body);
 
-      return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.get', {
-        jurorNumber: req.params.jurorNumber,
-        poolNumber: req.params.poolNumber,
-      }) + '?page=' + page);
+      data['date_of_expense'] = date;
+      data['pool_number'] = poolNumber;
+      data['apply_to_days'] = [];
+
+      if (req.body.applyToAllDays.includes('lossOfEarnings')) {
+        data.apply_to_days.push('LOSS_OF_EARNINGS');
+      }
+      if (req.body.applyToAllDays.includes('extraCareCosts')) {
+        data.apply_to_days.push('EXTRA_CARE_COSTS');
+      }
+      if (req.body.applyToAllDays.includes('otherCosts')) {
+        data.apply_to_days.push('OTHER_COSTS');
+      }
+      if (req.body.applyToAllDays.includes('travel')) {
+        data.apply_to_days.push('TRAVEL_COSTS');
+      }
+      if (req.body.applyToAllDays.includes('paymentMethod')) {
+        data.apply_to_days.push('PAY_CASH');
+      }
+
+      try {
+        // TODO: need to confirm that we need to handle loss over limit when applying to all days
+        await postDraftExpenseDAO.post(app, req, jurorNumber, data);
+
+        return res.redirect(redirectUrl);
+      } catch (err) {
+        app.logger.crit('Failed to update expenses for all draft days: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            jurorNumber,
+            ...data,
+          },
+        });
+
+        return res.render('_errors/generic');
+      }
     };
   };
 
   module.exports.getTotalLessThanZero = (app) => {
     return function(req, res) {
       return res.render('expenses/total-less-than-zero.njk', {
-        deaultExpensesUrl: app.namedRoutes.build('juror-management.default-expenses.get', {
+        defaultExpensesUrl: app.namedRoutes.build('juror-management.default-expenses.get', {
           jurorNumber: req.params.jurorNumber,
           poolNumber: req.params.poolNumber,
         }),
@@ -247,32 +339,92 @@
     };
   };
 
+  module.exports.getRecalculateTotals = (app) => {
+    return async function(req, res) {
+      const { jurorNumber, poolNumber } = req.params;
+
+      await sleep();
+
+      app.logger.info('Recalculated summary totals for: ', {
+        auth: req.session.authentication,
+        jwt: req.session.authToken,
+        data: {
+          jurorNumber,
+          poolNumber,
+        },
+      });
+
+      return res.render('expenses/_partials/summary.njk');
+    };
+  };
+
   function buildExpensesPagination(app, req, res, page) {
     let pagination = {
       currPage: page,
-      totalPages: stubbedExpenseEntries.totalDays,
+      totalPages: req.session.expensesData.total,
     };
 
     delete req.session.totalPages;
 
     req.session.totalPages = pagination.totalPages;
 
-    if (stubbedExpenseEntries.totalDays > 1) {
+    const nextDate = req.session.expensesData.dates[page];
+    const prevDate = req.session.expensesData.dates[page - 2];
+
+    if (req.session.expensesData.total > 1) {
       if (page !== 1) {
         pagination.prevLink = app.namedRoutes.build('juror-management.enter-expenses.get', {
           jurorNumber: req.params.jurorNumber,
           poolNumber: req.params.poolNumber,
-        }) + '?page=' + (page - 1);
+        }) + `?date=${prevDate}&page=${page - 1}`;
       }
-      if (page !== stubbedExpenseEntries.totalDays) {
+      if (page !== req.session.expensesData.total) {
         pagination.nextLink = app.namedRoutes.build('juror-management.enter-expenses.get', {
           jurorNumber: req.params.jurorNumber,
           poolNumber: req.params.poolNumber,
-        }) + '?page=' + (page + 1);
+        }) + `?date=${nextDate}&page=${page + 1}`;
       }
     }
 
     return pagination;
+  }
+
+  function buildDataPayload(body) {
+    const data = {
+      'pay_cash': body.paymentMethod === 'CASH',
+      time: {
+        'pay_attendance': body.payAttendance,
+        'travel_time': body['totalTravelTime-hour'] + ':' + body['totalTravelTime-minute'],
+      },
+      travel: {
+        'traveled_by_car': false,
+        'traveled_by_motorcycle': false,
+        'traveled_by_bicycle': false,
+        'jurors_taken_by_car': body.passengers,
+        'miles_traveled': body.milesTravelled,
+        parking: body.parking,
+        'public_transport': body.publicTransport,
+        taxi: body.taxi,
+      },
+      'food_and_drink': {
+        'food_and_drink_claim_type': body.foodAndDrink,
+        'smart_card_amount': body.smartcardSpend,
+      },
+      'financial_loss': {
+        'loss_of_earnings': body.lossOfEarnings,
+        'extra_care_cost': body.extraCareCosts,
+        'other_cost': body.otherCosts,
+        'other_cost_description': body.otherCostsDescription,
+      },
+    };
+
+    if (body.travelType) {
+      data.travel['traveled_by_car'] = body.travelType.includes('car');
+      data.travel['traveled_by_motorcycle'] = body.travelType.includes('motorcycle');
+      data.travel['traveled_by_bicycle'] = body.travelType.includes('bicycle');
+    }
+
+    return data;
   }
 
   // Matches data from api to correct form fields
@@ -280,30 +432,32 @@
   function manipulateExpesnesApiData(data) {
     let formData;
 
-    if (data.timeAtCourt === 'non-attendance') {
+    if (data.attendance_type === 'NON_ATTENDANCE') {
       formData = {
-        payAttendance: data.payAttendance,
-        lossOfEarnings: data.lossOfEarnings,
-        extraCareCosts: data.extraCareCosts,
-        otherCosts: data.otherCosts,
-        otherCostsDescription: data.otherCostsDescription,
+        payAttendance: data.time.pay_attendance,
+        lossOfEarnings: data.financial_loss.loss_of_earnings,
+        extraCareCosts: data.financial_loss.extra_care_costs,
+        otherCosts: data.financial_loss.other_cost,
+        otherCostsDescription: data.financial_loss.other_cost_description,
       };
     } else {
+      const [totalTravelTimeHour, totalTravelTimeMinute] = data.time.travel_time.split(':');
+
       formData = {
-        'totalTravelTime-hour': data.travelTime.hour,
-        'totalTravelTime-minute': data.travelTime.minute,
-        payAttendance: data.payAttendance,
+        'totalTravelTime-hour': totalTravelTimeHour,
+        'totalTravelTime-minute': totalTravelTimeMinute,
+        payAttendance: data.time.pay_attendance,
         travelType: data.travelType,
-        passengers: data.passengers,
-        milesTravelled: data.milesTravelled,
-        parking: data.parking,
-        publicTransport: data.publicTransport,
-        taxi: data.taxi,
-        lossOfEarnings: data.lossOfEarnings,
-        extraCareCosts: data.extraCareCosts,
-        otherCosts: data.otherCosts,
-        otherCostsDescription: data.otherCostsDescription,
-        smartcardSpend: data.smartcardSpend,
+        passengers: data.travel.jurors_taken_by_car,
+        milesTravelled: data.travel.miles_traveled,
+        parking: data.travel.parking,
+        publicTransport: data.travel.public_transport,
+        taxi: data.travel.taxi,
+        lossOfEarnings: data.financial_loss.loss_of_earnings,
+        extraCareCosts: data.financial_loss.extra_care_cost,
+        otherCosts: data.financial_loss.other_cost,
+        otherCostsDescription: data.financial_loss.other_cost_description,
+        smartcardSpend: data.food_and_drink.smart_card_amount,
       };
     }
 

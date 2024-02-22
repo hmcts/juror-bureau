@@ -2,12 +2,10 @@
 
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/tag/macro.njk" import govukTag %}
-{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 
-{% from "custom-components/mod-large-tag/macro.njk" import modLargeTag %}
 {% from "custom-components/time-input/macro.njk" import timeInput %}
 {% from "custom-components/macros/arrows.njk" import leftArrowSVG %}
 {% from "custom-components/macros/arrows.njk" import rightArrowSVG %}
@@ -21,89 +19,14 @@
 
   {% include "includes/errors.njk" %}
 
-  {% set travelTimeError = undefined %}
-  {% if errors.items["totalTravelTime-hour"] or errors.items["totalTravelTime-minute"] %}
-    {% set travelTimeErrorHtml %}
-    {% if errors.items["totalTravelTime-hour"] %}
-      <span class="govuk-error-message" id="totalTravelTimeHourErrorMessage">
-        {{ errors.items["totalTravelTime-hour"][0].details }}
-      </span>
-    {% endif %}
-    {% if errors.items["totalTravelTime-minute"] %}
-      <span class="govuk-error-message" id="totalTravelTimeMinuteErrorMessage">
-        {{ errors.items["totalTravelTime-minute"][0].details }}
-      </span>
-    {% endif %}
-    {% endset %}
-    {% set travelTimeError = {
-      html: travelTimeErrorHtml
-    } %}
+  {% set jurorName = jurorDetails.name.firstName + ' ' + jurorDetails.name.lastName %}
+  {% if jurorDetails.name.title %}
+    {% set jurorName = jurorDetails.name.title + ' ' + jurorDetails.name.firstName + ' ' + jurorDetails.name.lastName %}
   {% endif %}
-
-  {% set passengersError = undefined %}
-  {% if errors.items["passengers"] %}
-    {% set passengersError = { text: errors.items["passengers"][0].details } %}
-  {% endif %}
-  {% set milesTravelledError = undefined %}
-  {% if errors.items["milesTravelled"] %}
-    {% set milesTravelledError = { text: errors.items["milesTravelled"][0].details } %}
-  {% endif %}
-  {% set parkingError = undefined %}
-  {% if errors.items["parking"] %}
-    {% set parkingError = { text: errors.items["parking"][0].details } %}
-  {% endif %}
-  {% set publicTransportError = undefined %}
-  {% if errors.items["publicTransport"] %}
-    {% set publicTransportError = { text: errors.items["publicTransport"][0].details } %}
-  {% endif %}
-  {% set taxiError = undefined %}
-  {% if errors.items["taxi"] %}
-    {% set taxiError = { text: errors.items["taxi"][0].details } %}
-  {% endif %}
-
-  {% set lossOfEarningsError = undefined %}
-  {% if errors.items["lossOfEarnings"] %}
-    {% set lossOfEarningsError = { text: errors.items["lossOfEarnings"][0].details } %}
-  {% endif %}
-  {% set extraCareCostsError = undefined %}
-  {% if errors.items["extraCareCosts"] %}
-    {% set extraCareCostsError = { text: errors.items["extraCareCosts"][0].details } %}
-  {% endif %}
-  {% set otherCostsError = undefined %}
-  {% if errors.items["otherCosts"] %}
-    {% set otherCostsError = { text: errors.items["otherCosts"][0].details } %}
-  {% endif %}
-  {% set otherCostsDescriptionError = undefined %}
-  {% if errors.items["otherCostsDescription"] %}
-    {% set otherCostsDescriptionError = { text: errors.items["otherCostsDescription"][0].details } %}
-  {% endif %}
-
-  {% set smartcardSpendError = undefined %}
-  {% if errors.items["smartcardSpend"] %}
-    {% set smartcardSpendsError = { text: errors.items["smartcardSpend"][0].details } %}
-  {% endif %}
-
-  {% set applyToAllDaysError = undefined %}
-  {% if errors.items["applyToAllDays"] %}
-    {% set applyToAllDaysError = { text: errors.items["applyToAllDays"][0].details } %}
-  {% endif %}
-
-  {% set carConditionalHTML %}
-    {{ govukInput({
-      id: "passengersInput",
-      name: "passengers",
-      label: {
-        text: "Number of other jurors taken as passengers"
-      },
-      classes: "govuk-input--width-2",
-      value: tmpBody.passengers,
-      errorMessage: passengersError
-    }) }}
-  {% endset %}
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
-      <span class="govuk-caption-l">{{ data.name }}</span>
+      <span class="govuk-caption-l">{{ jurorName }}</span>
       <h1 class="govuk-heading-xl govuk-!-margin-bottom-3">Daily expenses</h1>
     </div>
   </div>
@@ -115,7 +38,7 @@
         <div> {{ pagination.currPage }} of {{ pagination.totalPages }}</div> 
         <a href="{{ pagination.nextLink }}">{{ rightArrowSVG({colour: "blue"}) }}</a>
       </span>
-      <h1 class="govuk-heading-m">{{ data.expenses[0].date | dateFilter("YYYY-MM-DD", "dddd DD MMMM YYYY") }}</h1>
+      <h1 class="govuk-heading-m">{{ expensesData.date_of_expense | dateFilter("YYYY-MM-DD", "dddd DD MMMM YYYY") }}</h1>
       {{ govukTag({
         text: "DRAFT",
         classes: "govuk-tag--grey"
@@ -126,392 +49,51 @@
   <form class="mod-expense-entry-form" method="post" id="enterDailyExpensesForm">
 
     <div class="govuk-grid-row">
+
       <div class="govuk-grid-column-one-half">
         <div class="govuk-grid-row">
-          <div id="timeDiv" class="mod-expense-entry-group">
-            <div class="mod-juror-record__title govuk-!-margin-bottom-5">
-              <h2 id="timeLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Time</h2>
-            </div>          
-            {{ govukSummaryList({
-              rows: [
-                {
-                  key: {
-                    text: "Time spent at court"
-                  },
-                  value: {
-                    text: data.expenses[0].timeAtCourt.hour + " hours " + data.expenses[0].timeAtCourt.minute + " minutes"
-                  }
-                }
-              ]
-            }) }}
-
-            {{ timeInput({
-              id: "totalTravelTimeInput",
-              name: "totalTravelTime",
-              fieldset: {
-                legend: {
-                  text: "Total travel time",
-                  classes: "govuk-fieldset__legend--s"
-                }
-              },
-              errorMessage: travelTimeError,
-              items: {
-                hour: {
-                value: tmpBody['totalTravelTime-hour'],
-                attributes: {
-                minLength: "1",
-                maxLength: "2"
-                }
-                },
-                minute: {
-                  value: tmpBody['totalTravelTime-minute'],
-                  attributes: {
-                    minLength: "1",
-                    maxLength: "2"
-                  }
-                }
-              },
-              errors: errors.items
-            }) }}
-
-            {{ govukRadios({
-              classes: "govuk-radios--inline govuk-radios--small",
-              name: "payAttendance",
-              value: tmpBody.payAttendance,
-              fieldset: {
-                legend: {
-                  text: "Pay attendance",
-                  classes: "govuk-fieldset__legend--s"
-                }
-              },
-              items: [
-                {
-                  value: "halfDay",
-                  text: "Half day"
-                },
-                {
-                  value: "fullDay",
-                  text: "Full day"
-                }
-              ]
-            }) }}
-          </div>
+          {% include "./_partials/time.njk" %}
         </div>
+
         <div class="govuk-grid-row">
-          <div id="travelDiv" class="mod-expense-entry-group">
-            <div class="mod-juror-record__title govuk-!-margin-bottom-5">
-              <h2 id="timeLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Travel</h2>
-            </div>          
-            {{ govukCheckboxes({
-              name: "travelType",
-              values: tmpBody.travelType,
-              fieldset: {
-                legend: {
-                  text: "Did the juror travel by car, motorcycle or bicycle?",
-                  classes: "govuk-fieldset__legend--s"
-                }
-              },
-              items: [
-                {
-                  value: "car",
-                  text: "Car",
-                  conditional: {
-                    html: carConditionalHTML
-                  }
-                },
-                {
-                  value: "motorcycle",
-                  text: "Motorcycle"
-                },
-                {
-                  value: "bicycle",
-                  text: "Bicycle"
-                }
-              ]
-            }) }}
-            {{ govukInput({
-              id: "milesTravelledInput",
-              name: "milesTravelled",
-              label: {
-                text: "Miles travelled by car, motorcycle or bicycle"
-              },
-              suffix: {
-                text: "miles"
-              },
-              classes: "govuk-input--width-3",
-              value: tmpBody.milesTravelled,
-              errorMessage: milesTravelledError
-            }) }}
-            {{ govukInput({
-              id: "parkingInput",
-              name: "parking",
-              label: {
-                text: "Parking"
-              },
-              prefix: {
-                text: "£"
-              },
-              classes: "govuk-input--width-5",
-              value: tmpBody.parking,
-              errorMessage: parkingError
-            }) }}
-            {{ govukInput({
-              id: "publicTransportInput",
-              name: "publicTransport",
-              label: {
-                text: "Public transport"
-              },
-              prefix: {
-                text: "£"
-              },
-              classes: "govuk-input--width-5",
-              value: tmpBody.publicTransport,
-              errorMessage: publicTransportError
-            }) }}
-            {{ govukInput({
-              id: "taxiInput",
-              name: "taxi",
-              label: {
-                text: "Taxi"
-              },
-              prefix: {
-                text: "£"
-              },
-              classes: "govuk-input--width-5",
-              value: tmpBody.taxi,
-              errorMessage: taxiError
-            }) }}
-          </div>
+          {% include "./_partials/travel.njk" %}
+        </div>
+
+        <div class="govuk-grid-row">
+          {% include "./_partials/food-and-drink.njk" %}          
         </div>
       </div>
+
       <div class="govuk-grid-column-one-half">
         <div class="govuk-grid-row">
-          <div id="financialLossDiv" class="mod-expense-entry-group">
-            <div class="mod-juror-record__title govuk-!-margin-bottom-5">
-              <h2 id="financialLossLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Financial loss</h2>
-            </div>          
-            {{ govukInput({
-              id: "lossOfEarningsInput",
-              name: "lossOfEarnings",
-              label: {
-                text: "Loss of earnings or benefits"
-              },
-              prefix: {
-                text: "£"
-              },
-              classes: "govuk-input--width-5",
-              value: tmpBody.lossOfEarnings,
-              errorMessage: lossOfEarningsError
-            }) }}
-            {{ govukInput({
-              id: "extraCareCostsInput",
-              name: "extraCareCosts",
-              label: {
-                text: "Extra care costs"
-              },
-              prefix: {
-                text: "£"
-              },
-              classes: "govuk-input--width-5",
-              value: tmpBody.extraCareCosts,
-              errorMessage: extraCareCostsError
-            }) }}
-            {{ govukInput({
-              id: "otherCostsInput",
-              name: "otherCosts",
-              label: {
-                text: "Other costs"
-              },
-              prefix: {
-                text: "£"
-              },
-              classes: "govuk-input--width-5",
-              value: tmpBody.otherCosts,
-              errorMessage: otherCostsError
-            }) }}
-            {{ govukInput({
-              id: "otherCostsDescriptionInput",
-              name: "otherCostsDescription",
-              classes: "govuk-!-margin-bottom-0",
-              label: {
-                text: "Description of other costs"
-              },
-              value: tmpBody.otherCostsDescription,
-              errorMessage: otherCostsDescriptionError
-            }) }}
-          </div>
+          {% include "./_partials/financial-loss.njk" %}
         </div>
+
         <div class="govuk-grid-row">
-          <div id="foodAndDrinkDiv" class="mod-expense-entry-group">
-            <div class="mod-juror-record__title govuk-!-margin-bottom-5">
-              <h2 id="foodAndDrinkLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Food and drink</h2>
-            </div>          
-            {{ govukSummaryList({
-              rows: [
-                {
-                  key: {
-                    text: "Claiming food and drink allowance?"
-                  },
-                  value: {
-                    text: "Yes" if  data.expenses[0].foodAndDrink else "No"
-                  },
-                  actions: {
-                    items: [
-                      {
-                        href: changeFoodUrl,
-                        text: "Change"
-                      }
-                    ]
-                  }
-                },
-                {
-                  key: {
-                    text: "Amount spent on smartcard for this day"
-                  },
-                  value: {
-                    text: "£" + data.smartcardSpend if data.smartcardSpend !== "0.00" else "-"
-                  },
-                  actions: {
-                    items: [
-                      {
-                        href: changeFoodUrl,
-                        text: "Change"
-                      }
-                    ]
-                  }
-                }
-              ]
-            }) }}
-          </div>
+          {% include "./_partials/payment-method.njk" %}
         </div>
+
         <div class="govuk-grid-row">
-          <div id="applyToAllDaysDiv" class="mod-expense-entry-group">
-            <div class="mod-juror-record__title govuk-!-margin-bottom-5">
-              <h2 id="applyToAllDaysLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Apply to all days</h2>
-            </div>
-            {{ govukCheckboxes({
-              name: "applyToAllDays",
-              classes: "govuk-checkboxes--small",
-              values: tmpBody.applyToAllDays,
-              errorMessage: applyToAllDaysError,
-              fieldset: {
-                legend: {
-                  text: "Tick all you want to copy and apply",
-                  classes: "govuk-fieldset__legend--s"
-                }
-              },
-              items: [
-                {
-                  value: "extraCareCosts",
-                  text: "Extra care costs"
-                },
-                {
-                  value: "otherCosts",
-                  text: "Other costs"
-                },
-                {
-                  value: "travel",
-                  text: "Travel"
-                },
-                {
-                  value: "payCash",
-                  text: "Pay cash"
-                }
-              ]
-            }) }}
-            {{ govukButton({
-              text: "Apply",
-              classes: "govuk-!-margin-bottom-0",
-              type: "submit",
-              attributes: {
-                id: "applyToAllButton",
-                formAction: postUrls.applyToAllUrl
-              }
-            }) }}
-          </div>
+          {% include "./_partials/apply-to-all-days.njk" %}
         </div>
       </div>
+
     </div>
 
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
         <div class="mod-juror-record__title govuk-!-margin-top-5 govuk-!-margin-bottom-5">
-              <h2 id="summaryLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Summary</h2>
+          <h2 id="summaryLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Totals</h2>
         </div>
-        <div class="govuk-grid-column-one-half govuk-!-padding-left-0">
-          {{ govukSummaryList({
-            attributes: {
-              id: 'totalsSummaryTable'
-            },
-            rows: [
-              {
-                key: {
-                  text: "Pay attendance"
-                },
-                value: {
-                  text: "Full day" if tmpBody.payAttendance === "fullDay" else "Half day"
-                }
-              },
-              {
-                key: {
-                  text: "Financial loss (capped)"
-                },
-                value: {
-                  text: ""
-                }
-              },
-              {
-                key: {
-                  text: "Travel expenses"
-                },
-                value: {
-                  text: ""
-                }
-              },
-              {
-                key: {
-                  text: "Food and drink claim"
-                },
-                value: {
-                  text: ""
-                }
-              },
-              {
-                key: {
-                  text: "Smartcard spend"
-                },
-                value: {
-                  text: "(£" + data.smartcardSpend + ")"
-                }
-              }
-            ]
-          }) }}
-        </div>
-        <div class="govuk-grid-column-one-half govuk-!-padding-right-0">
-          {{ modLargeTag({
-            id: "totalPaidTag",
-            classes: "govuk-!-margin-bottom-1",
-            label: "Total they'll be paid",
-            value: "£82.73"
-          })}}
-          {{ govukCheckboxes({
-              name: "payByCash",
-              classes: "govuk-checkboxes--small",
-              values: tmpBody.payByCash,
-              items: [
-                {
-                  value: "true",
-                  text: "Pay by cash"
-                }
-              ]
-            }) }}
-        </div>
+        
+        {% include "./_partials/summary.njk" %}
 
         <input type="hidden" name="total" value="">
         <input type="hidden" name="_csrf" value="{{ csrftoken }}" />
 
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-full">
+
             <div class="govuk-button-group">
               {{ govukButton({
                 text: "Save and next",
@@ -534,6 +116,7 @@
 
               <a class="govuk-link" href="{{ cancelUrl }}">Cancel without saving</a>
             </div>
+
           </div>
         </div>
         
@@ -547,106 +130,36 @@
 {% block body_end %}
   {{ super() }}
 
-  <script>
+  <script type="application/javascript">
+    var expensesSummary = $('#expenses-summary');
 
-  $(document).ready(function() {
-    updatePayAttendanceValue();
-    calculateFinancialLoss();
-    calculateTravelExpenses();
-    calculateFoodAndDrink();
-  })
+    $('[data-summary-detectable]').each(function(_, element) {
+      element.addEventListener('change', function() {
+        expensesSummary.children().each(function(_, child) {
+          child.remove();
+        });
 
-  $('input[name=payAttendance]:radio').on('change', function() {
-    updatePayAttendanceValue();
-  });
+        var refresh = $(`{% include "./_partials/totals-changed-banner.njk" %}`);
+        expensesSummary.append(refresh);
+        
+        var recalculateTotals = $('#recalculate-totals');
 
-  $('#travelDiv input').on('change', function() {
-    calculateTravelExpenses();
-  });
-
-  $('#financialLossDiv input').on('change', function() {
-    calculateFinancialLoss();
-  });
-
-  $('#foodAndDrinkDiv input').on('change', function() {
-    calculateFoodAndDrink();
-  });
-
-  function updatePayAttendanceValue() {
-    let attendance = $('input[name=payAttendance]:checked').val() === 'fullDay' ? 'Full day' : 'Half day';
-    $("#totalsSummaryTable > * > dt:contains('Pay attendance')").next().text(attendance);
-    calculateFinancialLoss();
-  }
-
-  // TODO - update calculation formulas once information received
-  function calculateFinancialLoss() {
-    const lossOfEarnings = parseFloat($('input[name=lossOfEarnings]').val()) || 0;
-    const extraCareCosts = parseFloat($('input[name=extraCareCosts]').val()) || 0;
-    const otherCosts = parseFloat($('input[name=otherCosts]').val()) || 0;
-    const totalLoss = lossOfEarnings + extraCareCosts + otherCosts
-    const lossCap = $('input[name=payAttendance]:checked').val() === 'fullDay' ? {{calculationsData.fullDayLossCap}} : {{calculationsData.halfDayLossCap}};
-
-    const calculatedTotalLoss = totalLoss < lossCap ? totalLoss : lossCap;
-    $("#totalsSummaryTable > * > dt:contains('Financial loss (capped)')").next().text("£" + calculatedTotalLoss.toFixed(2));
-    calculateTotalToBePaid();
-  }
-
-  function calculateTravelExpenses() {
-    const milesTravelled = parseFloat($('input[name=milesTravelled]').val()) || 0;
-    const parking = parseFloat($('input[name=parking]').val()) || 0;
-    const publicTransport = parseFloat($('input[name=publicTransport]').val()) || 0;
-    const taxi = parseFloat($('input[name=taxi]').val()) || 0;
-    let modesOfTransport = [];
-    let transportCost = 0;
-
-    $("input:checkbox[name=travelType]:checked").each(function(){
-      modesOfTransport.push($(this).val());
+        recalculateTotals.click(onRecalculateTotalsClick);
+      });
     });
 
-    modesOfTransport.forEach(function(mode){
-      switch(mode) {
-        case 'car':
-          const passengers = parseInt($('#passengersInput').val()) || 0;
-          if (passengers === 0) {
-            transportCost = transportCost + (milesTravelled * {{calculationsData.carRateDefault}});
-          } else if (passengers === 1) {
-            transportCost = transportCost + (milesTravelled * {{calculationsData.carRateOnePassenger}});
-          } else if (passengers > 1) {
-            transportCost = transportCost + (milesTravelled * {{calculationsData.carRateTwoPassengers}});
-          }
-          break;
-        case 'motorcycle':
-          transportCost = transportCost + (milesTravelled * {{calculationsData.motorcycleRate}});
-          break;
-        case 'bicycle':
-          transportCost = transportCost + (milesTravelled * {{calculationsData.bicycleRate}});
-          break;
-      }
-    })
+    function onRecalculateTotalsClick(event) {
+      event.preventDefault();
+      
+      $.ajax('/juror-management/expenses/{{ jurorNumber }}/{{ poolNumber }}/enter-expenses/recalculate-totals')
+        .then(function(response) {
+          expensesSummary.children().each(function(_, child) {
+            child.remove();
+          });
 
-    const calculatedTravalTotal = transportCost + parking + publicTransport + taxi;
-    $("#totalsSummaryTable > * > dt:contains('Travel expenses')").next().text("£" + calculatedTravalTotal.toFixed(2));
-    calculateTotalToBePaid();
-  }
-
-  function calculateFoodAndDrink() {
-    // TODO - update how value is calculated
-    const calculatedFoodAndDrink =  {{data.expenses[0].foodAndDrink}} ? {{calculationsData.foodAndDrinkDefault}} : 0;
-    $("#totalsSummaryTable > * > dt:contains('Food and drink claim')").next().text("£" + calculatedFoodAndDrink.toFixed(2));
-
-    calculateTotalToBePaid();
-  }
-
-  function calculateTotalToBePaid() {
-    const financialLoss = parseFloat($("#totalsSummaryTable > * > dt:contains('Financial loss (capped)')").next().text().substring(1)) || 0;
-    const travelTotal = parseFloat($("#totalsSummaryTable > * > dt:contains('Travel expenses')").next().text().substring(1)) || 0;
-    const foodAndDrinkTotal = parseFloat($("#totalsSummaryTable > * > dt:contains('Food and drink claim')").next().text().substring(1)) || 0;
-    const smartcardSpend = parseFloat({{data.smartcardSpend}}) || 0;
-
-    const overallTotal = (financialLoss + travelTotal + foodAndDrinkTotal) - smartcardSpend;
-    $("input[name=total]").val(overallTotal.toFixed(2));
-    $("#totalPaidTag-value").text("£" + overallTotal.toFixed(2))
-  }
-
+          var newSummaryTotals = $(response);
+          expensesSummary.append(newSummaryTotals);
+        });
+    }
   </script>
 {% endblock %}

@@ -168,7 +168,7 @@
   
         expect(validatorResult).to.be.an('object');
         expect(validatorResult.jurorTransferDate[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.jurorTransferDate[0].summary).to.equal('Enter a real start date');
+        expect(validatorResult.jurorTransferDate[0].summary).to.equal('Enter a date in the correct format, for example, 31/01/2023');
 
       });
 
@@ -184,7 +184,7 @@
   
         expect(validatorResult).to.be.an('object');
         expect(validatorResult.jurorTransferDate[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.jurorTransferDate[0].summary).to.equal('Enter a real start date');
+        expect(validatorResult.jurorTransferDate[0].summary).to.equal('Enter a date in the correct format, for example, 31/01/2023');
 
       });
 
@@ -216,7 +216,7 @@
   
         expect(validatorResult).to.be.an('object');
         expect(validatorResult.jurorTransferDate[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.jurorTransferDate[0].summary).to.equal('Enter a real start date');
+        expect(validatorResult.jurorTransferDate[0].summary).to.equal('Enter a date in the correct format, for example, 31/01/2023');
 
       });
 

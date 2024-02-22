@@ -24,6 +24,10 @@
     }]
   }) }}
 
+  {% if tmpFields !== undefined %}
+    {% include "includes/errors.njk" %}
+  {% endif %}
+
   <div class="govuk-error-summary js-hidden" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
     <h2 class="govuk-error-summary__title" id="error-summary-title">
       There is a problem
@@ -72,4 +76,10 @@
     {% include "./attendance/in-waiting.njk" %}
   {% elif status === "in-trial" %}
   {% endif %}
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script src="{{ assetPath }}js/attendance.js"></script>
 {% endblock %}

@@ -100,7 +100,7 @@
       });
   });
 
-  $('#checkOutForm').submit(function(event) {
+  $('#checkOutSingleJuror').click(function(event) {
     var jn;
 
     jurorNumber = $('#checkOutJurorNumber');
@@ -159,18 +159,18 @@
       });
   });
 
-  $('[id$=recordCheckOut]').click(function(event) {
+  $('[id$=recordCheckOut]').click(recordCheckoutTimeHandler);
+
+  function recordCheckoutTimeHandler() {
     var jn = $(this).attr('id');
 
     jurorNumber = $('#checkOutJurorNumber');
     form = 'checkOut';
 
-
     jn = jn.substring(0, jn.indexOf('-'));
 
     jurorNumber.val(jn);
 
-    event.preventDefault();
     errorContainer.addClass('js-hidden');
 
     validationResult = validate('record');
@@ -214,50 +214,7 @@
         jurorNumber.val(jn);
         jurorNumber.focus();
       });
-  });
-
-  $('#checkOutAllJurors').click(function(event) {
-    form = 'checkOut';
-
-    event.preventDefault();
-    errorContainer.addClass('js-hidden');
-
-    validationResult = validate('all');
-    if (validationResult) {
-      addError(validationResult);
-      // Emulate click on check out radio
-      checkOutRadio.prop('checked', true);
-      checkInConditionalHtml.addClass('govuk-radios__conditional--hidden');
-      checkOutConditionalHtml.removeClass('govuk-radios__conditional--hidden');
-      return;
-    }
-
-    $.ajax({
-      url: '/juror-management/attendance/check-out-all-jurors',
-      method: 'POST',
-      data: {
-        time: checkOutHour.val() + ':' + checkOutMinute.val() + timePeriod(),
-        _csrf: csrfToken.val(),
-      },
-    })
-      .then(function(res) {
-        replaceMultipleRows(res);
-
-        checkOutTimeError(null, true);
-        jurorNumberError(null, true);
-      })
-      .catch(function(err) {
-        if (err.status === 403) {
-          location.href = '/'; // TODO: handle this better
-        }
-        if (err.status === 400) {
-          addError([{
-            message: 'Check out time cannot be earlier than check in time',
-            field: 'checkOutTimeHour',
-          }]);
-        }
-      });
-  });
+  }
 
   function validate(method) {
     var errors = [];
@@ -544,19 +501,17 @@
   function replaceTableRow(html) {
     var tableRow = $(html);
     var tempRow = $('#' + tableRow.attr('id'));
+    var ch, jn;
+
+    tableRow.children().each(function(_, child) {
+      ch = $(child);
+
+      if (ch.data('kind') === 'jurorNumber') {
+        jn = ch.children(':first').text();
+      }
+    });
 
     if (tableRow.data('failed')) {
-      // eslint-disable-next-line vars-on-top
-      var ch, jn;
-
-      tableRow.children().each(function(_, child) {
-        ch = $(child);
-
-        if (ch.data('kind') === 'jurorNumber') {
-          jn = ch.children(':first').text();
-        }
-      });
-
       // eslint-disable-next-line vars-on-top
       var listItem = $('<li>' + jn + '</li>');
 
@@ -573,6 +528,9 @@
 
     attendeesTable.removeClass('js-hidden');
     tempRow.replaceWith(tableRow);
+
+    $('#'+ jn +'-recordCheckOut').click(recordCheckoutTimeHandler);
+
     updateJurorsCount(attendeesTable.children()[1]);
   }
 

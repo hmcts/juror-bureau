@@ -1,0 +1,89 @@
+@startuml bulk-change-next-due-at-court
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant PoolOverviewPage <</pool-management/pool-overview/:poolnumber>>
+participant SelectDatePage <</pool-management/:poolNumber/change-next-due-at-court/continue>>
+participant ConfirmDatePage <</pool-management/:poolNumber/change-next-due-at-court/confirm>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant PoolOverviewController <<pool-overview.controller.js>> #lightyellow
+participant ChangeNextDueAtCourtController <<change-next-due-at-court.controller.js>> #lightyellow
+participant changeNextDueAtCourtObject <<changeNextDueAtCourtDTO.patch()>> #lightyellow
+
+''' TEMPLATES
+participant PoolOverviewTemplate <<pool-management/pool-overview/index.njk>> #lavender
+participant SelectDateTemplate <<pool-management/change-next-due-at-court/change-next-due-at-court.njk>> #lavender
+participant ConfirmDateTemplate <<pool-management/change-next-due-at-court/confirm-next-due-at-courtt.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant JurorSelectValidator
+participant AttendanceDateValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> PoolOverviewPage : select jurors and click 'Change next duie at court'
+
+PoolOverviewPage -> ChangeNextDueAtCourtController : call change date controller
+
+ChangeNextDueAtCourtController -> JurorSelectValidator : ensure juror is selected
+
+alt No jurors selected
+  ChangeNextDueAtCourtController <-- JurorSelectValidator : no jurors selected
+  PoolOverviewController <- ChangeNextDueAtCourtController : call pool overview controller
+  PoolOverviewPage <- PoolOverviewController : error message
+  Actor <- PoolOverviewPage : render error message
+end
+
+ChangeNextDueAtCourtController -> SelectDateTemplate : request and build template
+ChangeNextDueAtCourtController <- SelectDateTemplate : return HTML
+SelectDatePage <- ChangeNextDueAtCourtController : return HTML
+Actor <- SelectDatePage : render HTML
+
+Actor -> SelectDatePage : enter date and click continue
+
+SelectDatePage -> ChangeNextDueAtCourtController : call page conrtoller
+
+ChangeNextDueAtCourtController -> AttendanceDateValidator : validate form
+
+alt Invalid date entered
+  ChangeNextDueAtCourtController <-- AttendanceDateValidator : data validationfails
+  SelectDatePage <- ChangeNextDueAtCourtController : error message
+  Actor <- SelectDatePage : render error message
+end
+
+ChangeNextDueAtCourtController -> ConfirmDateTemplate : request and build template
+ChangeNextDueAtCourtController <- ConfirmDateTemplate : return HTML
+ConfirmDatePage <- ChangeNextDueAtCourtController : return HTML
+Actor <- ConfirmDatePage : render HTML
+
+Actor -> ConfirmDatePage : click continue
+
+ConfirmDatePage -> ChangeNextDueAtCourtController : call page controller
+
+ChangeNextDueAtCourtController -> changeNextDueAtCourtObject : build request object
+changeNextDueAtCourtObject -> BackendController : send backend request
+changeNextDueAtCourtObject <- BackendController : ok response
+ChangeNextDueAtCourtController <- changeNextDueAtCourtObject : resolve request
+
+alt Failed to change next due at court date of jurors
+    changeNextDueAtCourtObject <-- BackendController : error response
+    ChangeNextDueAtCourtController <-- changeNextDueAtCourtObject : reject requestObject
+    ChangeNextDueAtCourtController -> ErrorTemplate : request and build template
+    ChangeNextDueAtCourtController <- ErrorTemplate : return HTML
+    GenericErrorPage <- ChangeNextDueAtCourtController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+ChangeNextDueAtCourtController -> PoolOverviewController : call pool overview controller
+PoolOverviewController -> PoolOverviewTemplate : request and build template
+PoolOverviewController <- PoolOverviewTemplate : return HTML
+PoolOverviewPage <- PoolOverviewController : return HTML
+Actor <- PoolOverviewPage : render HTML with succcess banner

@@ -4,6 +4,7 @@
   const _ = require('lodash')
     , excusalObj = require('../../../objects/excusal-mod').excusalObject
     , validate = require('validate.js');
+  const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
 
   module.exports.index = function(app) {
     return async function(req, res) {
@@ -71,6 +72,13 @@
             },
           });
 
+          if (res.locals.isCourtUser) {
+            return res.redirect(app.namedRoutes.build('juror.update.excusal.letter.get', {
+              jurorNumber: req.params.jurorNumber,
+              letter: req.body.excusalDecision.toLowerCase(),
+            }));
+          }
+
           return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
             jurorNumber: req.params['jurorNumber'],
           }));
@@ -110,6 +118,44 @@
       )
         .then(successCB)
         .catch(errorCB);
+    };
+  };
+
+  module.exports.getExcusalLetter = function(app) {
+    return function(req, res) {
+      const letterType = req.params.letter === 'grant' ? 'granted' : 'refused';
+
+      return flowLetterGet(req, res, {
+        serviceTitle: 'send letter',
+        pageIdentifier: 'process - excusal',
+        currentApp: 'Summons replies',
+        letterMessage: `an excusal ${letterType}`,
+        letterType: `excusal-${letterType}`,
+        postUrl: app.namedRoutes.build('juror.update.excusal.letter.post', {
+          jurorNumber: req.params.jurorNumber,
+          letter: req.params.letter,
+        }),
+        cancelUrl: app.namedRoutes.build('juror-record.overview.get', {
+          jurorNumber: req.params.jurorNumber,
+        }),
+      });
+    };
+  };
+
+  module.exports.postExcusalLetter = function(app) {
+    return function(req, res) {
+      return flowLetterPost(req, res, {
+        errorRoute: app.namedRoutes.build('juror.update.excusal.letter.get', {
+          jurorNumber: req.params.jurorNumber,
+          letter: req.params.letter,
+        }),
+        pageIdentifier: 'process - excusal',
+        serviceTitle: 'send letter',
+        currentApp: 'Summons replies',
+        completeRoute: app.namedRoutes.build('juror-record.overview.get', {
+          jurorNumber: req.params.jurorNumber,
+        }),
+      });
     };
   };
 

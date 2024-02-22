@@ -32,7 +32,7 @@
     {% elif row.checkInTime === "Fail" %}
       -
     {% else %}
-      <a href="#" class="govuk-link" id="{{ row.jurorNumber }}-recordCheckOut">Record time</a>
+      <a href="#checkOutTimeHour" class="govuk-link" id="{{ row.jurorNumber }}-recordCheckOut">Record time</a>
     {% endif %}
   </td>
   <td class="govuk-table__cell" id="{{ row.jurorNumber }}-change">

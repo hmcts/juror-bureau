@@ -5,12 +5,15 @@
   const staffRosterObj = require('../../objects/staff-roster').object;
   const validate = require('validate.js');
   const { searchResponsesDAO } = require('../../objects/search.js');
+  const validator = require('../../config/validation/search.js');
 
   module.exports.index = function(app) {
     return async function(req, res) {
-      const tmpErrors = _.cloneDeep(req.session.errors);
+      const tmpErrors = _.clone(req.session.errors);
+      const tmpFields = _.clone(req.session.formFields);
 
       delete req.session.errors;
+      delete req.session.formFields;
 
       // if the user refresh by clicking the url bar and pressing enter we reset the results list
       delete req.session.searchResponse;
@@ -24,6 +27,7 @@
 
         return res.render('search/index', {
           staffList,
+          searchParams: tmpFields,
           errors: {
             message: '',
             count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -45,20 +49,52 @@
   module.exports.search = function(app) {
     return async function(req, res) {
       const promiseArr = [];
+      let validatorResult;
+
+      const sendValidationError = (errors) => {
+        req.session.errors = errors;
+        req.session.formFields = req.body;
+
+        return res.redirect(app.namedRoutes.build('search.get'));
+      };
 
       delete req.session.errors;
       delete req.session.formFields;
 
-      // Validate search parameters
-      const validatorResult = validate(req.body, require('../../config/validation/search.js')(req));
+      if (req.body.juror_number.trim().length !== 0 && req.body.juror_number.trim().length !== 9) {
+        validatorResult = {
+          jurorNumber: [
+            {
+              summary: 'Juror number must be 9 characters',
+              summaryLink: 'jurorNumber',
+              details: 'Juror number must be 9 characters',
+            },
+          ],
+        };
+      }
+
+      if (req.body.pool_number.trim().length !== 0 && req.body.pool_number.trim().length !== 9) {
+        validatorResult = {
+          ...validatorResult,
+          poolNumber: [
+            {
+              summary: 'Pool number must be 9 characters',
+              summaryLink: 'poolNumber',
+              details: 'Pool number must be 9 characters',
+            },
+          ],
+        };
+      }
 
       if (typeof validatorResult !== 'undefined') {
-        req.session.errors = validatorResult;
-        req.session.formFields = req.body;
+        return sendValidationError(validatorResult);
+      }
 
-        return res.redirect(app.namedRoutes.build('search.get', {
-          id: req.body.jurorNumber,
-        }));
+      // Validate search parameters
+      validatorResult = validate(req.body, validator.searchParameters(req));
+
+      if (typeof validatorResult !== 'undefined') {
+        return sendValidationError(validatorResult);
       }
 
       // build a payload to send
@@ -107,11 +143,20 @@
         }
       }
 
+      let staff;
+      let responses = {
+        'juror_response': [],
+      };
+      let resultsStr;
+
       try {
         promiseArr.push(staffRosterObj.get(require('request-promise'), app, req.session.authToken));
         promiseArr.push(searchResponsesDAO.post(app, req, payload));
 
-        const [staff, responses] = await Promise.all(promiseArr);
+        const response = await Promise.all(promiseArr);
+
+        staff = response[0];
+        responses = response[1];
 
         responses.juror_response.forEach(responsesListIterator(staff));
 
@@ -130,14 +175,8 @@
           response: _.merge(staff, responses),
         });
 
-        const resultsStr = buildSearchString(payload);
+        resultsStr = buildSearchString(payload);
 
-        return res.render('search/index', {
-          staffList: staff,
-          responses,
-          searchParams,
-          resultsStr,
-        });
       } catch (err) {
 
         app.logger.crit('Failed to fetch search results: ', {
@@ -149,12 +188,12 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('search/index', {
+      } finally {
+        res.render('search/index', {
           staffList: staff,
-          responses: {
-            'juror_response': [],
-          },
+          responses,
           searchParams,
+          resultsStr,
         });
       }
     };

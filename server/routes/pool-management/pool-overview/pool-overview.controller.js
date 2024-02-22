@@ -170,6 +170,7 @@
         },
       });
 
+      /* eslint-disable-next-line */
       req.session.bannerMessage = `${transferedJurors.length} juror${transferedJurors.length > 1 ? 's' : ''} transferred to ${courtName}`;
 
       delete req.session.formField;
@@ -496,7 +497,7 @@
       delete req.session.filteredMembers;
       data.filters = {};
       delete filters._csrf;
-      
+
       // REMOVE ALL SELECTED JURORS - dont want prior selections persisting through filtering
       // req.session.membersList.forEach((member) => delete member.checked);
       // let membersList = _.clone(req.session.membersList) || [];
@@ -580,7 +581,7 @@
         { poolNumber: req.params.poolNumber })
       , completeServiceUrl = app.namedRoutes.build('pool-overview.complete-service.post',
         { poolNumber: req.params.poolNumber })
-      , changeServiceDateUrl = app.namedRoutes.build('pool-overview.change-next-attendance.post',
+      , changeServiceDateUrl = app.namedRoutes.build('pool-overview.change-next-due-at-court.post',
         { poolNumber: req.params.poolNumber })
       , postponeUrl = app.namedRoutes.build('pool-overview.postpone.post',
         { poolNumber: req.params.poolNumber })
@@ -637,7 +638,7 @@
         jwt: req.session.authToken,
         data: membersList,
       });
-      
+
       req.session.membersList = membersList.poolMembers;
       req.session.jurorDetails = {};
       membersList.poolMembers.forEach(item => {

@@ -69,6 +69,5 @@
   require('./modal');
   require('./status');
   require('./export-coroner');
-  require('./attendance');
 
 })();

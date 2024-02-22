@@ -3,6 +3,7 @@
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
 
 {% block page_identifier %}Uncomplete service{% endblock %}
 
@@ -28,7 +29,6 @@
   {% if errors.items["selectedJurors"] %}
     {% set selectedJurorsError = {"text": errors.items['selectedJurors'][0].details} %}
   {% endif %}
-
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <form action="{{ postUrl }}" method="POST" id="selectJurorsForm">
@@ -42,7 +42,7 @@
           </tr>
         </table>
 
-        {% if jurors.length === 0 %}
+        {% if jurors.length === 0 and not overLimit %}
           <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
           <h2>There are no matching results</h2>
@@ -51,7 +51,7 @@
             <li>double-checking your spelling</li>
             <li>trying different search criteria</li>
           </ul>
-        {% elif jurors.length > 500 %}
+        {% elif overLimit %}
           <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
           <h2>There are more than 500 results</h2>
@@ -66,52 +66,16 @@
             type: "submit"
           }) }}
         </div>
-
-        <div class="govuk-body"><span id="checkedJurors">{{ totalCheckedJurors }}</span> of selected <span id="totalJurors">{{ totalJurors }}</span></div>
-
-        <table class="govuk-table" data-module="moj-sortable-table" data-multi-select-checkbox="#select-all" id="poolJurorReassign" name="poolJurorReassign">
-          <thead class="govuk-table__head">
-            <tr class="govuk-table__row">
-              <th scope="col" class="govuk-table__header jd-assign-replies-table-head" >
-                <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
-                  <input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check" id="check-all-jurors" name="selectAllCheckbox" 
-                    {% if totalCheckedJurors === totalJurors %}checked{% endif %}/>
-                  <label class="govuk-label govuk-checkboxes__label">
-                    <span class="govuk-visually-hidden">Select All</span>
-                  </label>
-                </div>
-              </th>
-              <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="ascending">Juror number</th>
-              <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none">First name</th>
-              <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none">Last name</th>
-              <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none">Postcode</th>
-              <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none">Completion date</th>
-            </tr>
-          </thead>
-          <tbody class="govuk-table__body">
-        
-            {% for juror in jurors %}
-
-              <tr class="govuk-table__row govuk-table__row--selected">
-                <td class="govuk-table__cell">
-                  <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
-                    <input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check" id="select-{{ juror.jurorNumber }}" name="selectedJurors" 
-                      value="{{ juror.jurorNumber }}" {% if juror.checked %}checked{% endif %}>
-                    <label class="govuk-label govuk-checkboxes__label" for="select-{{ juror.jurorNumber }}">
-                      <span class="govuk-visually-hidden">Select {{ juror.jurorNumber }}</span>
-                    </label>
-                  </div>
-                </td>
-                <td id="{{juror.jurorNumber}}" class="govuk-table__cell jd-middle-align"><a href="/juror-management/record/{{juror.jurorNumber}}/overview">{{ juror.jurorNumber }}</a></td>
-                <td id="{{juror.jurorNumber}}-firstName" class="govuk-table__cell jd-middle-align">{{ juror.firstName  | capitalize }}</td>
-                <td id="{{juror.jurorNumber}}-lastName" class="govuk-table__cell jd-middle-align">{{ juror.lastName  | capitalize }}</td>
-                <td id="{{juror.jurorNumber}}-postcode" class="govuk-table__cell jd-middle-align">{{ juror.postcode }}</td>
-                <td id="{{juror.jurorNumber}}-completionDate" class="govuk-table__cell jd-middle-align">{{ juror.completionDate }}</td>
-              </tr>
-
-            {% endfor %}
-          </tbody>
-        </table>
+        <div class="govuk-body"><span id="checkedJurors">{{ totalCheckedJurors }}</span> of selected <span id="totalJurors">{{ totalItems }}</span></div>
+        {{ modSortableTable({
+              id: "completedJurorsTable",
+              head: completedJurorsList.head,
+              rows: completedJurorsList.rows,
+              url: urlPrefix,
+              selectable: true,
+              totalCheckedJurors: totalCheckedJurors,
+              totalJurors: totalItems
+            }) }}
 
         {{ govukPagination({
           previous: {

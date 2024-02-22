@@ -1,7 +1,20 @@
 {% from "govuk/components/table/macro.njk" import govukTable %}
 
 {% set headList = [] %}
-
+{%set selectAll %}
+  <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
+    <input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check" id="check-all-jurors" name="selectAllCheckbox" 
+      {% if params.totalCheckedJurors === params.totalJurors %}checked{% endif %}/>
+    <label class="govuk-label govuk-checkboxes__label">
+      <span class="govuk-visually-hidden">Select All</span>
+    </label>
+  </div>
+{%endset%}
+{% if params.selectable %}
+{% set headList = (headList.push({
+    html: selectAll
+    }), headList)%}
+{% endif %}
 {% for head in params.head %}
   {% set sortOrder = "ascending" if head.sort === "none" or head.sort === "descending" else "descending" %}
 
@@ -29,14 +42,13 @@
     {% set headList = (headList.push({
       html: headLink | safe,
       format: head.format,
-      classes: "mod-sortable-table-head " + head.classes,
+      classes: "mod-sortable-table-head " + head.classes + " mod-middle-align",
       attributes: {
         "aria-sort": head.sort or "none"
       }
     }), headList) %}
   {% endif %}
 {% endfor %}
-
 {{ govukTable({
   attributes: {
     id: params.id

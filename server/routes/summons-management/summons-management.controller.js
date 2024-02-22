@@ -20,6 +20,7 @@
     , deferralDatePickerValidator = require('../../config/validation/date-picker').deferralDatePicker
     , otherDeferralDateValidater = require('../../config/validation/deferral-mod').deferralDateAndReason
     , courtLocationsFromPostcodeObj = require('../../objects/court-location').courtLocationsFromPostcodeObj;
+  const { flowLetterPost, flowLetterGet } = require('../../lib/flowLetter');
 
   const dateHint = 'Use dd/mm/yyyy format. For example, 31/01/2023.';
 
@@ -382,7 +383,6 @@
 
   module.exports.postDeferral = function(app) {
     return function(req, res) {
-
       let validatorResult
         , data = {}
         , deferralDates = []
@@ -421,11 +421,14 @@
           }
           delete req.session.receivingCourtLocCode;
 
+          if (res.locals.isCourtUser) {
+            return res.redirect(app.namedRoutes.build('process-deferral.letter.get', routeParameters));
+          }
+
           return res.redirect(app.namedRoutes.build('inbox.todo.get'));
 
         }
         , errorCB = function(err) {
-
           app.logger.crit('Failed to process Deferral: ', {
             auth: req.session.authentication,
             jwt: req.session.authToken,
@@ -495,6 +498,37 @@
     };
   };
 
+  module.exports.getDeferralLetter = function(app) {
+    return function(req, res) {
+      return flowLetterGet(req, res, {
+        serviceTitle: 'send letter',
+        pageIdentifier: 'process - what to do',
+        currentApp: 'Summons replies',
+        letterMessage: 'a deferral granted',
+        letterType: 'deferral-granted',
+        postUrl: app.namedRoutes.build('process-deferral.letter.post', {
+          id: req.params.id,
+          type: req.params.type,
+        }),
+        cancelUrl: app.namedRoutes.build('inbox.todo.get'),
+      });
+    };
+  };
+
+  module.exports.postDeferralLetter = function(app) {
+    return function(req, res) {
+      return flowLetterPost(req, res, {
+        errorRoute: app.namedRoutes.build('process-deferral.letter.get', {
+          id: req.params.id,
+          type: req.params.type,
+        }),
+        pageIdentifier: 'process - what to do',
+        serviceTitle: 'send letter',
+        currentApp: 'Summons replies',
+        completeRoute: app.namedRoutes.build('inbox.todo.get'),
+      });
+    };
+  };
 
   module.exports.getExcusal = function(app) {
     return function(req, res) {
@@ -594,10 +628,16 @@
 
           delete req.session.excusalReasons;
 
+          if (res.locals.isCourtUser) {
+            return res.redirect(app.namedRoutes.build('process-excusal.letter.get', {
+              ...routeParameters,
+              letter: req.body.excusalDecision.toLowerCase(),
+            }));
+          }
+
           return res.redirect(app.namedRoutes.build('inbox.todo.get'));
         }
         , errorCB = function(err) {
-
           app.logger.crit('Failed to process excusal: ', {
             auth: req.session.authentication,
             jwt: req.session.authToken,
@@ -635,6 +675,42 @@
       )
         .then(successCB)
         .catch(errorCB);
+    };
+  };
+
+  module.exports.getExcusalLetter = function(app) {
+    return function(req, res) {
+      const letterType = req.params.letter === 'grant' ? 'granted' : 'refused';
+
+      return flowLetterGet(req, res, {
+        serviceTitle: 'send letter',
+        pageIdentifier: 'process - what to do',
+        currentApp: 'Summons replies',
+        letterMessage: `an excusal ${letterType} `,
+        letterType: `excusal-${letterType}`,
+        postUrl: app.namedRoutes.build('process-excusal.letter.post', {
+          id: req.params.id,
+          type: req.params.type,
+          letter: req.params.letter,
+        }),
+        cancelUrl: app.namedRoutes.build('inbox.todo.get'),
+      });
+    };
+  };
+
+  module.exports.postExcusalLetter = function(app) {
+    return function(req, res) {
+      return flowLetterPost(req, res, {
+        errorRoute: app.namedRoutes.build('process-excusal.letter.get', {
+          id: req.params.id,
+          type: req.params.type,
+          letter: req.params.letter.toLowerCase(),
+        }),
+        pageIdentifier: 'process - what to do',
+        serviceTitle: 'send letter',
+        currentApp: 'Summons replies',
+        completeRoute: app.namedRoutes.build('inbox.todo.get'),
+      });
     };
   };
 

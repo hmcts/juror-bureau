@@ -12,12 +12,12 @@
     checkAllJurors.on('change', function() {
       var isCheckingAll = this.checked;
 
-      request(this.id, isCheckingAll).then(function() {
+      request(this.id, isCheckingAll).then(function(noChecked) {
         jurorRows.each(function(_, element) {
           element.checked = isCheckingAll;
         });
 
-        totalCheckedJurors.text(isCheckingAll ? totalJurors.text() : '0');
+        totalCheckedJurors.text(isCheckingAll ? noChecked : '0');
       });
     });
   }
@@ -28,12 +28,8 @@
         var jurorNumber = this.id.split('-')[1];
         var isCheckingJuror = this.checked;
 
-        request(jurorNumber, isCheckingJuror).then(function() {
-          if (isCheckingJuror) {
-            totalCheckedJurors.text(+totalCheckedJurors.text() + 1);
-          } else {
-            totalCheckedJurors.text(+totalCheckedJurors.text() - 1);
-          }
+        request(jurorNumber, isCheckingJuror).then(function(noChecked) {
+          totalCheckedJurors.text(noChecked || '0');
           updateCheckAllJurorsCheckbox(isCheckingJuror);
         });
       });

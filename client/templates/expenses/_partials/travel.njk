@@ -1,0 +1,155 @@
+{% set passengersError = undefined %}
+{% if errors.items["passengers"] %}
+  {% set passengersError = { text: errors.items["passengers"][0].details } %}
+{% endif %}
+
+{% set milesTravelledError = undefined %}
+{% if errors.items["milesTravelled"] %}
+  {% set milesTravelledError = { text: errors.items["milesTravelled"][0].details } %}
+{% endif %}
+
+{% set parkingError = undefined %}
+{% if errors.items["parking"] %}
+  {% set parkingError = { text: errors.items["parking"][0].details } %}
+{% endif %}
+
+{% set publicTransportError = undefined %}
+{% if errors.items["publicTransport"] %}
+  {% set publicTransportError = { text: errors.items["publicTransport"][0].details } %}
+{% endif %}
+
+{% set taxiError = undefined %}
+{% if errors.items["taxi"] %}
+  {% set taxiError = { text: errors.items["taxi"][0].details } %}
+{% endif %}
+
+<div id="travelDiv" class="mod-expense-entry-group">
+  <div class="mod-juror-record__title govuk-!-margin-bottom-5">
+    <h2 id="timeLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Travel</h2>
+  </div>
+
+  {% set carConditionalHTML %}
+    {{ govukInput({
+      id: "passengers",
+      name: "passengers",
+      label: {
+        text: "Number of other jurors taken as passengers"
+      },
+      classes: "govuk-input--width-2",
+      value: tmpBody.passengers,
+      errorMessage: passengersError,
+      attributes: {
+        "data-summary-detectable": ""
+      }
+    }) }}
+  {% endset %}
+
+  {{ govukCheckboxes({
+    name: "travelType",
+    values: tmpBody.travelType,
+    fieldset: {
+      legend: {
+        text: "Did the juror travel by car, motorcycle or bicycle?",
+        classes: "govuk-fieldset__legend--s"
+      }
+    },
+    items: [
+      {
+        value: "car",
+        text: "Car",
+        conditional: {
+          html: carConditionalHTML
+        },
+        checked: expensesData.travel.traveled_by_car,
+        attributes: {
+          "data-summary-detectable": ""
+        }
+      },
+      {
+        value: "motorcycle",
+        text: "Motorcycle",
+        checked: expensesData.travel.traveled_by_motorcycle,
+        attributes: {
+          "data-summary-detectable": ""
+        }
+      },
+      {
+        value: "bicycle",
+        text: "Bicycle",
+        checked: expensesData.travel.traveled_by_bicycle,
+        attributes: {
+          "data-summary-detectable": ""
+        }
+      }
+    ]
+  }) }}
+
+  {{ govukInput({
+    id: "milesTravelled",
+    name: "milesTravelled",
+    label: {
+      text: "Miles travelled by car, motorcycle or bicycle"
+    },
+    suffix: {
+      text: "miles"
+    },
+    classes: "govuk-input--width-3",
+    value: tmpBody.milesTravelled,
+    errorMessage: milesTravelledError,
+    attributes: {
+      "data-summary-detectable": ""
+    }
+  }) }}
+
+  {{ govukInput({
+    id: "parking",
+    name: "parking",
+    label: {
+      text: "Parking"
+    },
+    prefix: {
+      text: "£"
+    },
+    classes: "govuk-input--width-5",
+    value: tmpBody.parking | toFixed(2),
+    errorMessage: parkingError,
+    attributes: {
+      "data-summary-detectable": ""
+    }
+  }) }}
+
+  {{ govukInput({
+    id: "publicTransport",
+    name: "publicTransport",
+    label: {
+      text: "Public transport"
+    },
+    prefix: {
+      text: "£"
+    },
+    classes: "govuk-input--width-5",
+    value: tmpBody.publicTransport | toFixed(2),
+    errorMessage: publicTransportError,
+    attributes: {
+      "data-summary-detectable": ""
+    }
+  }) }}
+
+  {{ govukInput({
+    id: "taxi",
+    name: "taxi",
+    label: {
+      text: "Taxi"
+    },
+    prefix: {
+      text: "£"
+    },
+    classes: "govuk-input--width-5",
+    value: tmpBody.taxi | toFixed(2),
+    errorMessage: taxiError,
+    attributes: {
+      "data-summary-detectable": ""
+    }
+  }) }}
+
+</div>
