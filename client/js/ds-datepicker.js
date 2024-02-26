@@ -122,6 +122,7 @@ class DSDatePicker {
         const cell = document.createElement('td');
         const dateButton = document.createElement('button');
         dateButton.dataset.form = 'date-select';
+        dateButton.type = 'button';
 
         cell.appendChild(dateButton);
         row.appendChild(cell);
@@ -167,7 +168,7 @@ class DSDatePicker {
   //<svg class="ds_icon" aria-hidden="false" role="img" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><image xlink:href="${this.imagePath}icons.stack.svg#calendar_today"></image></svg>
 
   buttonTemplate() {
-    return `<button class="ds_button  ds_button--icon-only  js-calendar-button" aria-expanded="false">
+    return `<button type="button" class="ds_button  ds_button--icon-only  js-calendar-button" aria-expanded="false">
           <span class="visually-hidden">${this.chooseDate}</span>
           <svg class="ds_icon" aria-hidden="true" role="img"><use href="${this.imagePath}icons.stack.svg#calendar_today"></use></svg>
       </button>
@@ -177,12 +178,12 @@ class DSDatePicker {
   dialogTemplate(titleId) {
     return `<div class="ds_datepicker__dialog__header ">
         <div class="ds_datepicker__dialog__navbuttons">
-            <button class="ds_button  ds_button--icon-only  js-datepicker-prev-year" aria-label="previous year" data-button="button-datepicker-prevyear">
+            <button type="button" class="ds_button  ds_button--icon-only  js-datepicker-prev-year" aria-label="previous year" data-button="button-datepicker-prevyear">
                 <span class="visually-hidden">${this.hiddenLabels.previousYear}</span>
                 <svg focusable="false" class="ds_icon" aria-hidden="true" role="img"><use href="${this.imagePath}icons.stack.svg#double_chevron_left"></use></svg>
             </button>
 
-            <button class="ds_button  ds_button--icon-only  js-datepicker-prev-month" aria-label="previous month" data-button="button-datepicker-prevmonth">
+            <button type="button" class="ds_button  ds_button--icon-only  js-datepicker-prev-month" aria-label="previous month" data-button="button-datepicker-prevmonth">
                 <span class="visually-hidden">${this.hiddenLabels.previousMonth}</span>
                 <svg focusable="false" class="ds_icon" aria-hidden="true" role="img"><use href="${this.imagePath}icons.stack.svg#chevron_left"></use></svg>
             </button>
@@ -191,12 +192,12 @@ class DSDatePicker {
         <h2 id="${titleId}" class="ds_datepicker__dialog__title  js-datepicker-month-year" aria-live="polite">June 2020</h2>
 
         <div class="ds_datepicker__dialog__navbuttons">
-            <button class="ds_button  ds_button--icon-only  js-datepicker-next-month" aria-label="next month" data-button="button-datepicker-nextmonth">
+            <button type="button" class="ds_button  ds_button--icon-only  js-datepicker-next-month" aria-label="next month" data-button="button-datepicker-nextmonth">
                 <span class="visually-hidden">${this.hiddenLabels.nextMonth}</span>
                 <svg focusable="false" class="ds_icon" aria-hidden="true" role="img"><use href="${this.imagePath}icons.stack.svg#chevron_right"></use></svg>
             </button>
 
-            <button class="ds_button  ds_button--icon-only  js-datepicker-next-year" aria-label="next year" data-button="button-datepicker-nextyear">
+            <button type="button" class="ds_button  ds_button--icon-only  js-datepicker-next-year" aria-label="next year" data-button="button-datepicker-nextyear">
                 <span class="visually-hidden">${this.hiddenLabels.nextYear}</span>
                 <svg focusable="false" class="ds_icon" aria-hidden="true" role="img"><use href="${this.imagePath}icons.stack.svg#double_chevron_right"></use></svg>
             </button>

@@ -1,12 +1,13 @@
 ;(function(){
   'use strict';
 
+  const _ = require('lodash');
   const urljoin = require('url-join');
   const config = require('../config/environment')();
   const rp = require('request-promise');
 
   module.exports.getDraftExpensesDAO = {
-    get: function(app, req, jurorNumber, poolNumber) {
+    get: function(app, req, jurorNumber, poolNumber, etag = null) {
       const payload = {
         uri: urljoin(config.apiEndpoint, 'moj/expenses/draft', jurorNumber, poolNumber),
         method: 'GET',
@@ -18,7 +19,17 @@
         json: true,
       };
 
+      if (etag) {
+        payload.headers['If-None-Match'] = `${etag}`;
+      }
+
       app.logger.info('Sending request to API: ', payload);
+
+      payload.transform = (response, incomingRequest) => {
+        const headers = _.cloneDeep(incomingRequest.headers);
+
+        return { response, headers };
+      };
 
       return rp(payload);
     },

@@ -1,5 +1,5 @@
 <div class="govuk-grid-row">
-  {% if not expenseData %}
+  {% if expenseData.expense_details.length === 0 %}
 
     <div class="govuk-grid-column-full govuk-body">
       There are no draft expenses.
@@ -123,8 +123,6 @@
 
         </tbody>
       </table>
-
-      <input type="hidden" id="_csrf" name="_csrf" value="{{ csrftoken }}">
 
       {% if errors.items["checkedExpenses"] %}</div>{% endif %}
 
