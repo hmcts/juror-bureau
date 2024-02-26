@@ -3,8 +3,8 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "moj/components/banner/macro.njk" import mojBanner %}
-
 {% from "custom-components/mod-large-tag/macro.njk" import modLargeTag %}
+{% from "includes/csrf.njk" import csrfProtection %}
 
 {% block page_title %}{{ serviceName }} - juror-management - unpaid attendance - expense record{% endblock %}
 {% block page_identifier %}juror-management - unpaid attendance - expense record{% endblock %}
@@ -150,6 +150,8 @@
       {% include "./_partials/approved-table.njk" %}
     
     {% endif %}
+
+    {{ csrfProtection(csrftoken) }}
 
   </form>
   

@@ -66,7 +66,9 @@
         jurorNumber,
         poolNumber,
       )
-        .then(async(expenseData) => {
+        .then(async function({ response: expenseData, headers }) {
+
+          req.session.draftExpensesEtag = headers.etag;
 
           app.logger.info('Fetched draft expenses for juror: ', {
             auth: req.session.authentication,
@@ -118,40 +120,6 @@
         })
         .catch(async(err) => {
 
-          if (err.statusCode === 404){
-            app.logger.info('Fetched draft expenses for juror: ', {
-              auth: req.session.authentication,
-              jwt: req.session.authToken,
-            });
-
-            const jurorData = await fetchJurorDetails(
-              app,
-              req,
-              res,
-              req.params.jurorNumber,
-              null,
-              ['NAME_DETAILS']
-            );
-
-            return res.render('juror-management/expense-record/expense-record.njk', {
-              backLinkUrl,
-              setExpensesUrl,
-              submitUrl,
-              nav: 'unpaid-attendance',
-              jurorApprovalCount: req.session.jurorApprovalCount,
-              currentTab: currentTab,
-              jurorDetails: jurorData,
-              jurorNumber,
-              poolNumber,
-              bannerMessage,
-              errors: {
-                title: '',
-                count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-                items: tmpErrors,
-              },
-            });
-          }
-
           app.logger.crit('Failed to fetch draft expense data: ', {
             auth: req.session.authentication,
             jwt: req.session.authToken,
@@ -168,8 +136,12 @@
   };
 
   module.exports.postSubmitExpenses = function(app) {
-    return function(req, res) {
+    return async function(req, res) {
       const { jurorNumber, poolNumber } = req.params;
+      const redirectUrl = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
+        jurorNumber,
+        poolNumber,
+      });
 
       if (!req.body['checked-expenses']) {
         req.session.errors = {
@@ -179,10 +151,47 @@
           }],
         };
 
-        return res.redirect(app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
+        return res.redirect(redirectUrl);
+      }
+
+      if (!Array.isArray(req.body['checked-expenses'])) {
+        req.body['checked-expenses'] = [req.body['checked-expenses']];
+      }
+
+      try {
+        await getDraftExpensesDAO.get(
+          app,
+          req,
           jurorNumber,
           poolNumber,
-        }));
+          req.session.draftExpensesEtag
+        );
+
+        req.session.errors = {
+          checkedExpenses: [{
+            summary: 'New draft expenses were added or some have already been approved',
+            details: 'New draft expenses were added or some have already been approved',
+          }],
+        };
+
+        return res.redirect(redirectUrl);
+
+      } catch (err) {
+        if (err.statusCode !== 304) {
+
+          app.logger.crit('Failed to compare etags for when submitting draft expenses for approval: ', {
+            auth: req.session.authentication,
+            jwt: req.session.authToken,
+            data: {
+              jurorNumber,
+              poolNumber,
+              expenses: req.body['checked-expenses'],
+            },
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
+
+          return res.render('_errors/generic');
+        }
       }
 
       submitDraftExpenses.post(
@@ -195,10 +204,7 @@
         .then(() => {
           req.session.bannerMessage = 'Expenses submitted for approval';
 
-          return res.redirect(app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
-            jurorNumber,
-            poolNumber,
-          }));
+          return res.redirect(redirectUrl);
         })
         .catch((err) => {
           app.logger.crit('Failed to fetch draft expense data: ', {
