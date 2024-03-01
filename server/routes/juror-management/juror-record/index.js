@@ -4,7 +4,9 @@
   const auth = require('../../../components/auth');
   const controller = require('./juror-record.controller')
     , attendanceTimeController = require('../attendance/change-times/change-times.controller')
-    , attendanceDateController = require('../attendance/change-attendance-date/change-attendance-date.controller');
+    , attendanceDateController = require('../attendance/change-attendance-date/change-attendance-date.controller')
+    , nonAttendanceDateController = require('../expenses/non-attendance-day/non-attendance-day.controller')
+    , expensesController = require('../expenses/expenses.controller');
 
   module.exports = function(app) {
     app.get('/juror-management/record/:jurorNumber/overview',
@@ -31,6 +33,16 @@
       controller.checkResponse(app),
       controller.getFinanceTab(app));
 
+    app.get('/juror-management/record/:jurorNumber/:poolNumber/default-expenses',
+      'juror-record.default-expenses.get',
+      auth.verify,
+      expensesController.getDefaultExpenses(app));
+
+    app.post('/juror-management/record/:jurorNumber/:poolNumber/default-expenses',
+      'juror-management.default-expenses.post',
+      auth.verify,
+      expensesController.postDefaultExpenses(app));
+
     app.get('/juror-management/record/:jurorNumber/attendance',
       'juror-record.attendance.get',
       auth.verify,
@@ -46,6 +58,14 @@
       auth.verify,
       attendanceDateController.postChangeAttendanceDate(app)
     );
+    app.get('/juror-management/record/:jurorNumber/:poolNumber/non-attendance-day',
+      'juror-record.attendance.non-attendance-day.get',
+      auth.verify,
+      nonAttendanceDateController.getNonAttendanceDay(app));
+    app.post('/juror-management/record/:jurorNumber/:poolNumber/non-attendance-day',
+      'juror-record.attendance.non-attendance-day.post',
+      auth.verify,
+      nonAttendanceDateController.postNonAttendanceDay(app));
     app.get('/juror-management/record/:jurorNumber/attendance/change-times',
       'juror-record.attendance.change-times.get',
       auth.verify,

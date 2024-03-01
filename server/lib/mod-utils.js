@@ -325,7 +325,7 @@
         },
         {
           html: '<a href="/juror-management/unpaid-attendance/expense-record/' +
-            unpaid.juror_number + '/' + unpaid.pool_number + '" class="govuk-link">' + 'View expenses' + '</a>',
+            unpaid.juror_number + '/' + unpaid.pool_number + '/draft" class="govuk-link">' + 'View expenses' + '</a>',
           attributes: {
             'data-sort-value': unpaid.total_unapproved,
           },
@@ -1068,7 +1068,7 @@
     'deferral-refused': 'DEFERRAL_REFUSED',
     'excusal-granted': 'EXCUSAL_GRANTED',
     'excusal-refused': 'EXCUSAL_REFUSED',
-    'postponement': 'POSTPONED',
+    'postponement': 'POSTPONEMENT',
     'withdrawal': 'WITHDRAWAL',
   };
 

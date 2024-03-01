@@ -1,0 +1,60 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - juror-management - expenses - add smartcard spend{% endblock %}
+{% block page_identifier %}juror-management - add smartcard spend{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {% set smartcardAmountError = undefined %}
+  {% if errors.items["smartcardAmount"] %}
+    {% set smartcardAmountError = { text: errors.items["smartcardAmount"][0].details } %}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <h1 class="govuk-heading-xl">Add smartcard spend</h1>
+
+      <p class="govuk-body">The system will calculate a daily average from the total you enter and add it to each selected day.</p>
+
+      <form method="POST" action="{{ postUrl }}">
+
+        {{ govukInput({
+          label: {
+            text: "Total smartcard spend across all selected days."
+          },
+          classes: "govuk-input--width-5",
+          id: "smartcardAmount",
+          name: "smartcardAmount",
+          prefix: {
+            text: "£"
+          },
+          value: tmpData.smartcardAmount,
+          errorMessage: smartcardAmountError
+        }) }}
+      
+        <input name="attendanceDates" type="hidden" value="{{ dates }}" />
+        {{ csrfProtection(csrftoken) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            type: "submit",
+            text: "Add smartcard spend"
+          }) }}
+
+          <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

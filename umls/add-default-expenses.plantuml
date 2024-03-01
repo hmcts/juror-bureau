@@ -1,0 +1,110 @@
+@startuml add-default-expenses
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant JurorRecordExpensesPage <</juror-management/record/:jurorNumber/expenses>>
+participant DraftExpenseRecordPage <</juror-management/unpaid-attendance/expense-record/:jurorNumber/:poolNumber>>
+participant DefaultExpensesPage <</juror-management/expenses/:jurorNumber/:poolNumber/default-expenses>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant JurorRecordController <<juror-record.controller.js>> #lightyellow
+participant ExpenseRecordController <<expense-record.controller.js>> #lightyellow
+participant DefaultExpensesController <<expenses.controller.js>> #lightyellow
+participant DefaultExpensesObject <<defaultExpensesDAO.get()>> #lightyellow
+participant SetDefaultExpensesObject <<defaultExpensesDAO.post()>> #lightyellow
+
+''' TEMPLATES
+participant JurorRecordExpensesTemplate <<juror-management/juror-record/expenses.njk>> #lavender
+participant DraftExpenseRecordTemplate <<juror-management/expense-record/expense-record.njk>> #lavender
+participant DefaultExpensesTemplate <<expenses/default-expenses.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant DefaultExpensesValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> JurorRecordExpensesPage : click add or change default expenses link
+JurorRecordExpensesPage -> DefaultExpensesController : call expenses controller
+
+alt Navigate from expense record
+  Actor -> DraftExpenseRecordPage : click add or change default expenses link
+  DraftExpenseRecordPage -> DefaultExpensesController : call expenses controller
+end
+ 
+DefaultExpensesController -> DefaultExpensesObject : build request object
+DefaultExpensesObject -> BackendController : send backend request
+DefaultExpensesObject <- BackendController : ok response
+DefaultExpensesController <- DefaultExpensesObject : resolve request
+
+alt Failed to fetch jurors default expenses
+    DefaultExpensesObject <-- BackendController : error response
+    DefaultExpensesController <-- DefaultExpensesObject : reject requestObject
+    DefaultExpensesController -> ErrorTemplate : request and build template
+    DefaultExpensesController <- ErrorTemplate : return HTML
+    GenericErrorPage <- DefaultExpensesController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+DefaultExpensesController -> DefaultExpensesTemplate : request and build template
+DefaultExpensesController <- DefaultExpensesTemplate : return HTML
+DefaultExpensesPage <- DefaultExpensesController : return HTML
+Actor <- DefaultExpensesPage : render HTML
+
+Actor -> DefaultExpensesPage : enters a valid default expense values
+
+DefaultExpensesPage -> DefaultExpensesController : call page controller
+
+DefaultExpensesController -> DefaultExpensesValidator : validate form
+
+alt Invalid values entered
+  DefaultExpensesController <-- DefaultExpensesValidator : data validation fails
+  DefaultExpensesController -> DefaultExpensesTemplate : request and build error message template
+  DefaultExpensesController <- DefaultExpensesTemplate : return HTML
+  DefaultExpensesPage <- DefaultExpensesController : return HTML
+  Actor <- DefaultExpensesPage : render error message
+end
+
+DefaultExpensesController <- DefaultExpensesValidator : valid values entered
+
+DefaultExpensesController -> SetDefaultExpensesObject : build request object
+SetDefaultExpensesObject -> BackendController : send backend request
+SetDefaultExpensesObject <- BackendController : ok response
+DefaultExpensesController <- SetDefaultExpensesObject : resolve request
+
+alt Failed to set default expenses
+    SetDefaultExpensesObject <-- BackendController : error response
+    DefaultExpensesController <-- SetDefaultExpensesObject : reject requestObject
+    DefaultExpensesController -> ErrorTemplate : request and build template
+    DefaultExpensesController <- ErrorTemplate : return HTML
+    GenericErrorPage <- DefaultExpensesController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+DefaultExpensesController -> JurorRecordController : call juror record controller controller
+JurorRecordController -> JurorRecordExpensesTemplate : request and build template
+JurorRecordController <- JurorRecordExpensesTemplate : return HTML
+JurorRecordExpensesPage <- JurorRecordController : return HTML
+Actor <- JurorRecordExpensesPage : render HTML
+
+alt Initally navigated from expense record
+  DefaultExpensesController -> ExpenseRecordController : call juror record controller controller
+  ExpenseRecordController -> DraftExpenseRecordTemplate : request and build template
+  ExpenseRecordController <- DraftExpenseRecordTemplate : return HTML
+  DraftExpenseRecordPage <- ExpenseRecordController : return HTML
+  Actor <- DraftExpenseRecordPage : render HTML
+end
+
+
+
+
+
+
+
+    

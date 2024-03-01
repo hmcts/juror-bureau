@@ -1,3 +1,7 @@
+{% from "./expenses-table-macros.njk" import consolidatedExpensesTable %}
+{% from "./expenses-table-macros.njk" import attendanceType %}
+{% from "./expenses-table-macros.njk" import rowCheckbox %}
+
 <div class="govuk-grid-row">
   {% if expenseData.expense_details.length === 0 %}
 
@@ -6,126 +10,80 @@
     </div>
 
   {% else %}
-    <div class="govuk-grid-column-full">
 
-      {% if errors.items["checkedExpenses"] %}
-        <div class="error-allocation">
-          <p class="govuk-error-message">{{ errors.items['checkedExpenses'][0].details }}</p>
-        </div>
-      {% endif %}
-      {% if errors.items["checkedExpenses"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
+    {% set headingsHtml %}
+      <th scope="col" class="govuk-table__header">Date</th>
+      <th scope="col" class="govuk-table__header">Attendance</th>
+      <th scope="col" class="govuk-table__header">P. transport</th>
+      <th scope="col" class="govuk-table__header">Taxi</th>
+      <th scope="col" class="govuk-table__header">Motorcycle</th>
+      <th scope="col" class="govuk-table__header">Car</th>
+      <th scope="col" class="govuk-table__header">Bicycle</th>
+      <th scope="col" class="govuk-table__header">Parking</th>
+      <th scope="col" class="govuk-table__header">Food and drink</th>
+      <th scope="col" class="govuk-table__header">Loss of earnings</th>
+      <th scope="col" class="govuk-table__header">Extra care</th>
+      <th scope="col" class="govuk-table__header">Other</th>
+      <th scope="col" class="govuk-table__header">(Smart Card)</th>
+      <th scope="col" class="govuk-table__header">Method</th>
+      <th scope="col" class="govuk-table__header mod-highlight-table-data__grey mod-center-table-data">Total</th>
+    {% endset %}
 
-      <div class="govuk-body"><span id="totalCheckedExpenses">0</span> of <span id="totalExpenses">{{ totalExpenses }}</span> selected</div>
+    {% set rowsHtml %}
+      {% for expense in expenseData.expense_details %}
 
-      <table class="govuk-table mod-horizontal-scroll-table">
-        <hr class="govuk-section-break govuk-section-break--visible">
-        <thead class="govuk-table__head">
-          <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header mod-padding-block--0">
-              <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
-                <input type="checkbox" class="govuk-checkboxes__input" id="check-all-expenses"
-                  aria-label="check-all-expenses" {% if totalCheckedExpenses === totalExpenses %}checked{% endif %}/>
-                <label class="govuk-label govuk-checkboxes__label" for="expenses-all">
-                  <span class="govuk-visually-hidden">Select all expenses</span>
-                </label>
-              </div>
-            </th>
-            <th scope="col" class="govuk-table__header">Date</th>
-            <th scope="col" class="govuk-table__header">Attendance</th>
-            <th scope="col" class="govuk-table__header">P. transport</th>
-            <th scope="col" class="govuk-table__header">Taxi</th>
-            <th scope="col" class="govuk-table__header">Motorcycle</th>
-            <th scope="col" class="govuk-table__header">Car</th>
-            <th scope="col" class="govuk-table__header">Bicycle</th>
-            <th scope="col" class="govuk-table__header">Parking</th>
-            <th scope="col" class="govuk-table__header">Food and drink</th>
-            <th scope="col" class="govuk-table__header">Loss of earnings</th>
-            <th scope="col" class="govuk-table__header">Extra care</th>
-            <th scope="col" class="govuk-table__header">Other</th>
-            <th scope="col" class="govuk-table__header">(Smart Card)</th>
-            <th scope="col" class="govuk-table__header">Method</th>
-            <th scope="col" class="govuk-table__header mod-highlight-table-data__grey mod-center-table-data">Total</th>
-          </tr>
-        </thead>
-        <tbody class="govuk-table__body">
-          
-          {% for expense in expenseData.expense_details %}
+        <tr class="govuk-table__row">
+          {{ rowCheckbox({ attendanceDate: expense.attendance_date }) }}
+          <td class="govuk-table__cell">
+            <a href="{{ enterExpensesUrl }}?date={{ expense.attendance_date }}&page={{ loop.index }}" class="govuk-body govuk-link" id="expenseDateLink">
+              {{ expense.attendance_date | dateFilter("YYYY-MM-DD", "ddd DD MMM YYYY") }}
+            </a>
+          </td>
+          <td class="govuk-table__cell">{{ attendanceType({ attendance: expense.attendance_type }) }}</td>
+          <td class="govuk-table__cell">£{{ expense.public_transport | toFixed(2) }}</td>
+          <td class="govuk-table__cell">£{{ expense.taxi | toFixed(2) }}</td>
+          <td class="govuk-table__cell">£{{ expense.motorcycle | toFixed(2) }}</td>
+          <td class="govuk-table__cell">£{{ expense.car | toFixed(2) }}</td>
+          <td class="govuk-table__cell">£{{ expense.bicycle | toFixed(2) }}</td>
+          <td class="govuk-table__cell">£{{ expense.parking | toFixed(2) }}</td>
+          <td class="govuk-table__cell">£{{ expense.food_and_drink | toFixed(2) }}</td>
+          <td class="govuk-table__cell">£{{ expense.loss_of_earnings | toFixed(2) }}</td>
+          <td class="govuk-table__cell">£{{ expense.extra_care | toFixed(2) }}</td>
+          <td class="govuk-table__cell">£{{ expense.other | toFixed(2) }}</td>
+          <td class="govuk-table__cell">(£{{ expense.smart_card | toFixed(2) }})</td>
+          <td class="govuk-table__cell">{{ expense.payment_method }}</td>
+          <td class="govuk-table__cell mod-highlight-table-data__grey mod-center-table-data"><b>£{{ expense.total | toFixed(2) }}</b></td>
+        </tr>
 
-            {# TODO: replace with something better #}
-            {% if expense.attendance_type === "FULL_DAY" %}
-              {% set attendanceType = "Full day" %}
-            {% elif expense.attendance_type === "HALF_DAY" %}
-              {% set attendanceType = "Half day" %}
-            {% elif expense.attendance_type === "ABSENT" %}
-              {% set attendanceType = "Absent (no show)" %}
-            {% elif expense.attendance_type === "NON_ATTENDANCE" %}
-              {% set attendanceType = "Non-attendance day" %}
-            {% elif expense.attendance_type === "FULL_DAY_LONG_TRIAL" %}
-              {% set attendanceType = "Full day (>10 days)" %}
-            {% elif expense.attendance_type === "HALF_DAY_LONG_TRIAL" %}
-              {% set attendanceType = "Half day (>10 days)" %}
-            {% elif expense.attendance_type === "NON_ATTENDANCE_LONG_TRIAL" %}
-              {% set attendanceType = "Non-attendance day (>10 days)" %}
-            {% endif %}
+      {% endfor %}
 
-            <tr class="govuk-table__row">
-              <td class="govuk-table__cell mod-padding-block--0">
-                <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
-                  <input type="checkbox" class="govuk-checkboxes__input"
-                    id="expense-{{ expense.attendance_date | dateFilter('YYYY-MM-DD', 'YYYYMMDD') }}" {% if expense.checked %}checked{% endif %}
-                    aria-label="check-expense-{{ expense.attendance_date | dateFilter('YYYY-MM-DD', 'YYYYMMDD') }}" name="checked-expenses" value="{{ expense.attendance_date }}"/>
-                  <label class="govuk-label govuk-checkboxes__label" for="expense-{{ expense.attendance_date | dateFilter('YYYY-MM-DD', 'YYYYMMDD') }}">
-                    <span class="govuk-visually-hidden">Select expense {{ expense.attendance_date | dateFilter('YYYY-MM-DD', 'YYYYMMDD') }}</span>
-                  </label>
-                </div>
-              </td>
-              <td class="govuk-table__cell">
-                <a href="{{ enterExpensesUrl }}?date={{ expense.attendance_date }}&page={{ loop.index }}" class="govuk-body govuk-link" id="expenseDateLink">
-                  {{expense.attendance_date | dateFilter("YYYY-MM-DD", "ddd DD MMM YYYY")}}
-                </a>
-              </td>
-              <td class="govuk-table__cell">{{ attendanceType }}</td>
-              <td class="govuk-table__cell">£{{ expense.public_transport | toFixed(2) }}</td>
-              <td class="govuk-table__cell">£{{ expense.taxi | toFixed(2) }}</td>
-              <td class="govuk-table__cell">£{{ expense.motorcycle | toFixed(2) }}</td>
-              <td class="govuk-table__cell">£{{ expense.car | toFixed(2) }}</td>
-              <td class="govuk-table__cell">£{{ expense.bicycle | toFixed(2) }}</td>
-              <td class="govuk-table__cell">£{{ expense.parking | toFixed(2) }}</td>
-              <td class="govuk-table__cell">£{{ expense.food_and_drink | toFixed(2) }}</td>
-              <td class="govuk-table__cell">£{{ expense.loss_of_earnings | toFixed(2) }}</td>
-              <td class="govuk-table__cell">£{{ expense.extra_care | toFixed(2) }}</td>
-              <td class="govuk-table__cell">£{{ expense.other | toFixed(2) }}</td>
-              <td class="govuk-table__cell">(£{{ expense.smart_card | toFixed(2) }})</td>
-              <td class="govuk-table__cell">{{ expense.payment_method }}</td>
-              <td class="govuk-table__cell mod-highlight-table-data__grey mod-center-table-data">£{{ expense.total | toFixed(2) }}</td>
-            </tr>
+      <tr class="govuk-table__row mod-highlight-table-row__grey">
+        <td class="govuk-table__cell"></td>
+        <td class="govuk-table__cell"><b>Totals</b></td>
+        <td class="govuk-table__cell"><b>{{ expenseData.total.total_days }}</b></td>
+        <td class="govuk-table__cell"><b>£{{ expenseData.total.public_transport | toFixed(2) }}</b></td>
+        <td class="govuk-table__cell"><b>£{{ expenseData.total.taxi | toFixed(2) }}</b></td>
+        <td class="govuk-table__cell"><b>£{{ expenseData.total.motorcycle | toFixed(2) }}</b></td>
+        <td class="govuk-table__cell"><b>£{{ expenseData.total.car | toFixed(2) }}</b></td>
+        <td class="govuk-table__cell"><b>£{{ expenseData.total.bicycle | toFixed(2) }}</b></td>
+        <td class="govuk-table__cell"><b>£{{ expenseData.total.parking | toFixed(2) }}</b></td>
+        <td class="govuk-table__cell"><b>£{{ expenseData.total.food_and_drink | toFixed(2) }}</b></td>
+        <td class="govuk-table__cell"><b>£{{ expenseData.total.loss_of_earnings | toFixed(2) }}</b></td>
+        <td class="govuk-table__cell"><b>£{{ expenseData.total.extra_care | toFixed(2) }}</b></td>
+        <td class="govuk-table__cell"><b>£{{ expenseData.total.other | toFixed(2) }}</b></td>
+        <td class="govuk-table__cell"><b>(£{{ expenseData.total.smart_card | toFixed(2) }})</b></td>
+        <td class="govuk-table__cell"></td>
+        <td class="govuk-table__cell mod-center-table-data"><b>£{{ expenseData.total.total | toFixed(2) }}</b></td>
+      </tr>
+    {% endset %}
+    
+    {{ consolidatedExpensesTable({
+      headings: headingsHtml,
+      rows: rowsHtml,
+      totalExpenses: totalExpenses,
+      totalCheckedExpenses: 0,
+      errors: errors
+    }) }}
 
-          {% endfor %}
-
-          <tr class="govuk-table__row mod-highlight-table-row__grey">
-            <td class="govuk-table__cell"></td>
-            <td class="govuk-table__cell">Totals</td>
-            <td class="govuk-table__cell">{{ expenseData.total.total_days }}</td>
-            <td class="govuk-table__cell">£{{ expenseData.total.public_transport | toFixed(2) }}</td>
-            <td class="govuk-table__cell">£{{ expenseData.total.taxi | toFixed(2) }}</td>
-            <td class="govuk-table__cell">£{{ expenseData.total.motorcycle | toFixed(2) }}</td>
-            <td class="govuk-table__cell">£{{ expenseData.total.car | toFixed(2) }}</td>
-            <td class="govuk-table__cell">£{{ expenseData.total.bicycle | toFixed(2) }}</td>
-            <td class="govuk-table__cell">£{{ expenseData.total.parking | toFixed(2) }}</td>
-            <td class="govuk-table__cell">£{{ expenseData.total.food_and_drink | toFixed(2) }}</td>
-            <td class="govuk-table__cell">£{{ expenseData.total.loss_of_earnings | toFixed(2) }}</td>
-            <td class="govuk-table__cell">£{{ expenseData.total.extra_care | toFixed(2) }}</td>
-            <td class="govuk-table__cell">£{{ expenseData.total.other | toFixed(2) }}</td>
-            <td class="govuk-table__cell">(£{{ expenseData.total.smart_card | toFixed(2) }})</td>
-            <td class="govuk-table__cell"></td>
-            <td class="govuk-table__cell mod-center-table-data">£{{ expenseData.total.total | toFixed(2) }}</td>
-          </tr>
-
-        </tbody>
-      </table>
-
-      {% if errors.items["checkedExpenses"] %}</div>{% endif %}
-
-    </div>
   {% endif %}
 </div>

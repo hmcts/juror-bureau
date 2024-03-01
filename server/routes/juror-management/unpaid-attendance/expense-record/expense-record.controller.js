@@ -1,227 +1,114 @@
 (function() {
   'use strict';
 
-  const _ = require('lodash');
-  const { getDraftExpensesDAO, submitDraftExpenses } = require('../../../../objects/expense-record');
   const { jurorDetailsObject } = require('../../../../objects/juror-record');
   const modUtils = require('../../../../lib/mod-utils');
+  const { getDraftExpensesDAO } = require('../../../../objects/expense-record');
+  const { getDraftExpenses, postDraftExpenses } = require('./draft.controller');
+  const { getForApprovalExpenses, postForApprovalExpenses } = require('./for-approval.controller');
 
-  module.exports.getExpenseRecord = function(app) {
-    return function(req, res) {
-      let data;
-      const currentTab = req.query['status'] || 'draft';
-
-      // STUBBED till BE is ready, calls will be replaced
-      if (currentTab === 'draft') {
-        return getDraftExpenses(app)(req, res);
-      } else if (currentTab === 'forApproval') {
-        data = require('../../../../stores/expenses').forApproval;
-      } else if (currentTab === 'approved') {
-        data = require('../../../../stores/expenses').approved;
-      }
-
-      const { jurorNumber, poolNumber } = req.params;
-      const setExpensesUrl = app.namedRoutes.build('juror-management.default-expenses.get', {
-        jurorNumber,
-      });
-
-      return res.render('juror-management/expense-record/expense-record.njk', {
-        backLinkUrl: app.namedRoutes.build('juror-management.unpaid-attendance.get'),
-        setExpensesUrl,
-        nav: 'unpaid-attendance',
-        jurorApprovalCount: req.session.jurorApprovalCount,
-        currentTab: currentTab,
-        data: data,
-        jurorNumber,
-        poolNumber,
-      });
-    };
-  };
-
-  function getDraftExpenses(app) {
-    return function(req, res) {
-      const { jurorNumber, poolNumber } = req.params;
-      const tmpErrors = _.clone(req.session.errors);
-      const bannerMessage = _.clone(req.session.bannerMessage);
-      const currentTab = 'draft';
-      const setExpensesUrl = app.namedRoutes.build('juror-management.default-expenses.get', {
-        jurorNumber,
-      });
-      const submitUrl = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.submit.post', {
-        jurorNumber,
-        poolNumber,
-      });
-      const enterExpensesUrl = app.namedRoutes.build('juror-management.enter-expenses.get', {
-        jurorNumber,
-        poolNumber,
-      });
-      const backLinkUrl = app.namedRoutes.build('juror-management.unpaid-attendance.get');
-
-      delete req.session.errors;
-      delete req.session.bannerMessage;
-
-      getDraftExpensesDAO.get(
-        app,
-        req,
-        jurorNumber,
-        poolNumber,
-      )
-        .then(async function({ response: expenseData, headers }) {
-
-          req.session.draftExpensesEtag = headers.etag;
-
-          app.logger.info('Fetched draft expenses for juror: ', {
-            auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: {
-              expenseData,
-            },
-          });
-
-          const jurorData = await fetchJurorDetails(
-            app,
-            req,
-            res,
-            jurorNumber,
-            null,
-            ['NAME_DETAILS']
-          );
-
-          const totalExpenses = expenseData.expense_details.length;
-
-          req.session.expensesData = {
-            total: totalExpenses,
-            dates: expenseData.expense_details.reduce((prev, expense) => {
-              prev.push(expense.attendance_date);
-              return prev;
-            }, []),
-          };
-
-          return res.render('juror-management/expense-record/expense-record.njk', {
-            backLinkUrl,
-            setExpensesUrl,
-            submitUrl,
-            enterExpensesUrl,
-            nav: 'unpaid-attendance',
-            jurorApprovalCount: req.session.jurorApprovalCount,
-            currentTab: currentTab,
-            expenseData: expenseData,
-            jurorDetails: jurorData,
-            jurorNumber,
-            poolNumber,
-            totalExpenses,
-            bannerMessage,
-            errors: {
-              title: '',
-              count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-              items: tmpErrors,
-            },
-          });
-        })
-        .catch(async(err) => {
-
-          app.logger.crit('Failed to fetch draft expense data: ', {
-            auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: {
-              jurorNumber: req.params.jurorNumber,
-              poolNumber: req.params.poolNumber,
-            },
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
-
-          return res.render('_errors/generic');
-        });
-    };
-  };
-
-  module.exports.postSubmitExpenses = function(app) {
+  module.exports.getExpensesList = function(app) {
     return async function(req, res) {
-      const { jurorNumber, poolNumber } = req.params;
-      const redirectUrl = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
-        jurorNumber,
-        poolNumber,
-      });
-
-      if (!req.body['checked-expenses']) {
-        req.session.errors = {
-          checkedExpenses: [{
-            summary: 'Select at least one day',
-            details: 'Select at least one day',
-          }],
-        };
-
-        return res.redirect(redirectUrl);
-      }
-
-      if (!Array.isArray(req.body['checked-expenses'])) {
-        req.body['checked-expenses'] = [req.body['checked-expenses']];
-      }
+      const { jurorNumber, poolNumber, status } = req.params;
 
       try {
-        await getDraftExpensesDAO.get(
+        const jurorDetails = await fetchJurorDetails(
           app,
           req,
+          res,
           jurorNumber,
-          poolNumber,
-          req.session.draftExpensesEtag
+          null,
+          ['NAME_DETAILS']
         );
 
-        req.session.errors = {
-          checkedExpenses: [{
-            summary: 'New draft expenses were added or some have already been approved',
-            details: 'New draft expenses were added or some have already been approved',
-          }],
-        };
-
-        return res.redirect(redirectUrl);
-
+        req.jurorDetails = jurorDetails;
       } catch (err) {
-        if (err.statusCode !== 304) {
+        app.logger.crit('Failed to fetch juror details', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            jurorNumber,
+            claims: ['NAME_DETAILS'],
+          },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
 
-          app.logger.crit('Failed to compare etags for when submitting draft expenses for approval: ', {
-            auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: {
-              jurorNumber,
-              poolNumber,
-              expenses: req.body['checked-expenses'],
-            },
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
-
-          return res.render('_errors/generic');
-        }
+        return res.redirect('_errors/generic');
       }
 
-      submitDraftExpenses.post(
-        app,
-        req,
-        jurorNumber,
-        poolNumber,
-        req.body['checked-expenses']
-      )
-        .then(() => {
-          req.session.bannerMessage = 'Expenses submitted for approval';
-
-          return res.redirect(redirectUrl);
-        })
-        .catch((err) => {
-          app.logger.crit('Failed to fetch draft expense data: ', {
-            auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: {
-              jurorNumber,
-              poolNumber,
-              dates: req.body['checked-expenses'],
-            },
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
-
-          return res.render('_errors/generic');
+      switch (status) {
+      case 'draft':
+        getDraftExpenses(app)(req, res);
+        break;
+      case 'for-approval':
+        getForApprovalExpenses(app)(req, res);
+        break;
+      case 'for-reapproval':
+        getForApprovalExpenses(app)(req, res);
+        break;
+      case 'approved':
+        getForApprovalExpenses(app)(req, res);
+        break;
+      default:
+        app.logger.crit('Invalid expense status entered', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            jurorNumber,
+            poolNumber,
+            status,
+          },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
+
+        return res.render('_errors/generic');
+      }
     };
   };
+
+  module.exports.postExpensesList = function(app) {
+    return async function(req, res) {
+      const { jurorNumber, poolNumber, status } = req.params;
+
+      switch (status) {
+      case 'draft':
+        postDraftExpenses(app)(req, res);
+        break;
+      case 'for-approval':
+        postForApprovalExpenses(app)(req, res);
+        break;
+      case 'for-reapproval':
+        postForApprovalExpenses(app)(req, res);
+        break;
+      case 'approved':
+        postForApprovalExpenses(app)(req, res);
+        break;
+      default:
+        app.logger.crit('Invalid expense status entered', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            jurorNumber,
+            poolNumber,
+            status,
+          },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic');
+      }
+    };
+  };
+
+
+
+
+
+
+
+
+
+
 
   module.exports.getExpenseRecordDetail = function(app) {
     return function(req, res) {
@@ -266,15 +153,17 @@
               'juror-management.unpaid-attendance.expense-record.get', {
                 jurorNumber: expenseData.juror_number,
                 poolNumber: req.params.poolNumber,
+                status: 'for-approval',
               }
-            ) + '?status=forApproval';
+            );
           } else if (status === 'approved') {
             backLinkUrl = app.namedRoutes.build(
               'juror-management.unpaid-attendance.expense-record.get', {
                 jurorNumber: expenseData.juror_number,
                 poolNumber: req.params.poolNumber,
+                status: 'approved',
               }
-            ) + '?status=approved';
+            );
           }
 
           const expenses = await paginateExpensesList(expenseData.expenses, page);
@@ -289,7 +178,6 @@
             backLinkUrl,
             approveUrl,
             nav: 'unpaid-attendance',
-            jurorApprovalCount: req.session.jurorApprovalCount,
             jurorDetails: jurorData,
             expenseData: expenseData,
             attendanceDates: {

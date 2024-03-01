@@ -1,6 +1,3 @@
-/* eslint-disable strict */
-'use strict';
-
 const launchDarklySdk = require('launchdarkly-node-server-sdk');
 const secretsConfig = require('config');
 

@@ -1,6 +1,7 @@
 {% extends "layouts/default.njk" %}
 
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/tag/macro.njk" import govukTag %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "moj/components/banner/macro.njk" import mojBanner %}
@@ -93,6 +94,29 @@
       }) }}
     </div>
   </div>
+
+  <span>
+    {{ govukButton({
+      text: "Add attendance day",
+      href: '#',
+      classes: "govuk-button--secondary",
+      attributes: {
+        id: "addAttendanceDayButton"
+      }
+    }) }}
+    {{ govukButton({
+      text: "Add a non-attendance day",
+      href: url('juror-record.attendance.non-attendance-day.get', {
+          jurorNumber: juror.commonDetails.jurorNumber,
+          poolNumber: juror.commonDetails.poolNumber,
+          status: 'draft'
+        }),
+      classes: "govuk-button--secondary govuk-!-margin-left-3",
+      attributes: {
+        id: "addNonAttendanceDayButton"
+      }
+    }) }}
+  </span>
 
   {% if attendance["juror_attendance_response_data"].length %}
     {% include "./_partials/attendance-table.njk" %}

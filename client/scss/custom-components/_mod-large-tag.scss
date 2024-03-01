@@ -13,6 +13,10 @@
     color: govuk-shade(govuk-colour("dark-grey"), 50%);
     background-color: govuk-tint(govuk-colour("dark-grey"), 85%);
   }
+  &__orange {
+    color: govuk-shade(govuk-colour("orange"), 50%);
+    background-color: govuk-tint(govuk-colour("orange"), 70%);
+  }
   &__label {
     @include govuk-font($size: 19, $weight: bold);
     padding-bottom: 10px;

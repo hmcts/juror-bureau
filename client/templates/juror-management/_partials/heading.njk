@@ -23,11 +23,13 @@
     </div>
 
     <div class="mod-juror-record--header__actions">
-      {{ govukButton({
-        text: "Update juror record",
-        classes: "govuk-button--secondary",
-        href: url("juror.update.get", { jurorNumber: juror.commonDetails.jurorNumber })
-      }) }}
+      {% if authentication.owner === juror.commonDetails.owner %}
+        {{ govukButton({
+          text: "Update juror record",
+          classes: "govuk-button--secondary",
+          href: url("juror.update.get", { jurorNumber: juror.commonDetails.jurorNumber })
+        }) }}
+      {% endif %}
 
       {% if not hasSummons and canSummon %}
         {{ govukButton({

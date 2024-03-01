@@ -5,10 +5,10 @@
 
   module.exports = function() {
     return {
-      cost: {
-        financialLoss: {},
+      financialLoss: {
+        deafultFinancialLoss: {},
       },
-      smartcardNumber: {
+      smartCard: {
         length: {
           maximum: 20,
           message: {
@@ -17,19 +17,16 @@
           },
         },
       },
-      smartcardSpend: {
-        smartcardSpendErrorMessage: {},
+      mileage: {
+        defaultMileage: {},
       },
-      miles: {
-        milesErrorMessage: {},
-      },
-      totalTravelTime: {
-        travelMinutesErrorMessage: {},
+      travelTime: {
+        defaultTravelMinutes: {},
       },
     };
   };
 
-  validate.validators.financialLoss = function(value) {
+  validate.validators.deafultFinancialLoss = function(value) {
     var message = {
       summary: '',
       details: [],
@@ -49,27 +46,7 @@
     return null;
   };
 
-  validate.validators.smartcardSpendErrorMessage = function(value) {
-    var message = {
-      summary: '',
-      details: [],
-    };
-
-    if (value === '') return null;
-
-    if (isNaN(value)) {
-      message.summary = 'Smartcard spend can only include numbers and a decimal point';
-      message.details.push('Smartcard spend can only include numbers and a decimal point');
-    }
-
-    if (message.summary !== '') {
-      return message;
-    }
-
-    return null;
-  };
-
-  validate.validators.milesErrorMessage = function(value) {
+  validate.validators.defaultMileage = function(value) {
     var message = {
       summary: '',
       details: [],
@@ -94,7 +71,7 @@
     return null;
   };
 
-  validate.validators.travelMinutesErrorMessage = function(value) {
+  validate.validators.defaultTravelMinutes = function(value) {
     var message = {
       summary: '',
       details: [],
@@ -112,11 +89,11 @@
     if (message.summary !== '') {
       return message;
     }
-    if (value.minutes !== '') {
-      if (isNaN(parseInt(value.minutes))) {
+    if (value.minute !== '') {
+      if (isNaN(parseInt(value.minute))) {
         message.summary = 'Total travel time can only include numbers';
         message.details.push('Total travel time can only include numbers');
-      } else if (parseInt(value.minutes) < 0 || parseInt(value.minutes) > 59) {
+      } else if (parseInt(value.minute) < 0 || parseInt(value.minute) > 59) {
         message.summary = 'Enter minutes between 0 and 59';
         message.details.push('Enter minutes between 0 and 59');
       };

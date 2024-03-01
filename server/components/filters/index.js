@@ -253,7 +253,10 @@
      * @returns {date} The formated date
      */
     makeDate: function(date) {
-      if (!date || !date.length || !(date instanceof Array)) {
+      const dateRegex = /\d{4}-\d{2}-\d{2}/g;
+
+      // eslint is flagging this but sonar will also flagging if I dont do this........
+      if ((!date?.length || !(date instanceof Array)) && !dateRegex.test(date)) {
         return new Date();
       }
 
@@ -382,8 +385,16 @@
       switch (type) {
       case 'FULL_DAY':
         return 'Full day';
+      case 'FULL_DAY_LONG_TRIAL':
+        return 'Full day (>10 days)';
       case 'HALF_DAY':
         return 'Half day';
+      case 'HALF_DAY_LONG_TRIAL':
+        return 'Half day (>10 days)';
+      case 'NON_ATTENDANCE':
+        return 'Non-attendance day';
+      case 'NON_ATTENDANCE_LONG_TRIAL':
+        return 'Non-attendance day (>10 days)';
       case 'ABSENT':
         return 'Absent';
       };
@@ -441,7 +452,7 @@
 
       let time = hours + minutes;
 
-      return time / 60;
+      return Math.round((time / 60) * 100) / 100;
     },
 
     toCamelCase: function(str) {

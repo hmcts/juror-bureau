@@ -42,7 +42,7 @@
     </div>
 
     <div>
-      <a href="{{ setExpensesUrl }}" class="govuk-body govuk-link">Add or change default expenses</a>
+      <a href="{{ setExpensesUrl }}" class="govuk-body govuk-link govuk-link--no-visited-state">Add or change default expenses</a>
     </div>
   </div>
   <div class="mod-expense-record-header">
@@ -51,7 +51,7 @@
     </div>
 
     <div>
-      <a href="#" class="govuk-body govuk-link">Add or change bank details</a>
+      <a href="#" class="govuk-body govuk-link govuk-link--no-visited-state">Add or change bank details</a>
     </div>
   </div>
 
@@ -82,34 +82,41 @@
 
   {% include "./_partials/sub-nav.njk" %}
 
-  {% if currentTab === "draft" %}
+  {% if status === "draft" %}
     {{ modLargeTag({
       id: "draftTotalTag",
       colour: "grey",
       label: "Total in draft",
       value: ("£" + (expenseData.total.total | toFixed(2)))
     })}}
-  {% elif currentTab === "forApproval" %}
+  {% elif status === "for-approval" %}
     {{ modLargeTag({
       id: "forApprovalTotalTag",
       colour: "blue",
       label: "Total for approval",
-      value: data.total
+      value: ("£" + (data.total.total_due | toFixed(2)))
     })}}
-  {% elif currentTab === "approved" %}
+  {% elif status === "for-reapproval" %}
+    {{ modLargeTag({
+      id: "forReapprovalTotalTag",
+      colour: "orange",
+      label: "Total for reapproval",
+      value: ("£" + (data.total.total_due | toFixed(2)))
+    })}}
+  {% elif status === "approved" %}
     {{ modLargeTag({
       id: "approvedTotalTag",
       label: "Total approved",
-      value: data.total
+      value: ("£" + (data.total.total_paid | toFixed(2)))
     })}}
   {% endif %}
 
   <form id="submitExpensesForm" method="POST">
 
-    {% if currentTab === "draft" %}
+    {% if status === "draft" %}
 
       <div class="govuk-grid-row">
-        <div class="govuk-grid-column-one-half">
+        <div class="govuk-grid-column-full">
           {{ govukButton({
             text: "Submit for approval",
             disabled: true if not expenseData,
@@ -130,10 +137,22 @@
 
           {{ govukButton({
             text: "Add a non-attendance day",
-            href: '#',
+            href: url('juror-management.non-attendance-day.get', {
+                jurorNumber: jurorNumber,
+                poolNumber: poolNumber
+              }),
             classes: "govuk-button--secondary govuk-!-margin-left-3",
             attributes: {
               id: "nonAttendanceDayButton"
+            }
+          }) }}
+
+          {{ govukButton({
+            text: "Add smartcard spend",
+            classes: "govuk-button--secondary govuk-!-margin-left-3",
+            attributes: {
+              id: "addSmartCardSpendButton",
+              formAction: submitUrl + "?action=ADD_SMARTCARD_SPEND"
             }
           }) }}
         </div>
@@ -141,13 +160,56 @@
 
       {% include "./_partials/draft-table.njk" %}
 
-    {% elif currentTab === "forApproval" %}
+    {% elif status === "for-approval" %}
 
-      {% include "./_partials/for-approval-table.njk" %}
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          {{ govukButton({
+            text: "Edit expenses for approval",
+            classes: "govuk-button--secondary",
+            attributes: {
+              id: "editExpensesForApprovalButton",
+              formAction: submitUrl
+            }
+          }) }}
+        </div>
+      </div>
 
-    {% elif currentTab === "approved" %}
+      {% include "./_partials/approval-table.njk" %}
 
-      {% include "./_partials/approved-table.njk" %}
+    {% elif status === "for-reapproval" %}
+
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          {{ govukButton({
+            text: "Edit expenses for reapproval",
+            classes: "govuk-button--secondary",
+            attributes: {
+              id: "editExpensesForReapprovalButton",
+              formAction: submitUrl
+            }
+          }) }}
+        </div>
+      </div>
+
+      {% include "./_partials/approval-table.njk" %}
+
+    {% elif status === "approved" %}
+
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          {{ govukButton({
+            text: "Edit approved expenses",
+            classes: "govuk-button--secondary",
+            attributes: {
+              id: "editExpensesApprovedButton",
+              formAction: submitUrl
+            }
+          }) }}
+        </div>
+      </div>
+
+      {% include "./_partials/approval-table.njk" %}
     
     {% endif %}
 

@@ -129,4 +129,24 @@
     },
   };
 
+  module.exports.jurorNonAttendanceDao = {
+    post: function(app, req, body) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/juror-management/non-attendance'),
+        method: 'POST',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+        body,
+      };
+
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
+    },
+  };
+
 })();
