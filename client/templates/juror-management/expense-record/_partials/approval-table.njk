@@ -1,0 +1,106 @@
+{% from "./expenses-table-macros.njk" import consolidatedExpensesTable %}
+{% from "./expenses-table-macros.njk" import attendanceType %}
+{% from "./expenses-table-macros.njk" import rowCheckbox %}
+
+<div class="govuk-grid-row">
+  {% if data.expense_details.length === 0 %}
+
+    <div class="govuk-grid-column-full govuk-body">
+      There are no expenses {{ status }}
+    </div>
+
+  {% else %}
+
+    {% set headingsHtml %}
+      <th scope="col" class="govuk-table__header" aria-sort="ascending">Date</th>
+      <th scope="col" class="govuk-table__header" aria-sort="none">Audit report</th>
+      <th scope="col" class="govuk-table__header" aria-sort="none">Attendance</th>
+      <th scope="col" class="govuk-table__header" aria-sort="none">Financial loss</th>
+      <th scope="col" class="govuk-table__header" aria-sort="none">Travel</th>
+      <th scope="col" class="govuk-table__header" aria-sort="none">Food and drink</th>
+      <th scope="col" class="govuk-table__header" aria-sort="none">Smartcard</th>
+      {% if status === "for-approval" or status === "for-reapproval" %}
+        <th scope="col" class="govuk-table__header" aria-sort="none">Total due</th>
+      {% endif %}
+      {% if status === "for-reapproval" or status === "approved" %}
+        <th scope="col" class="govuk-table__header" aria-sort="none">Total paid</th>
+      {% endif %}
+      {% if status === "for-reapproval" %}
+        <th scope="col" class="govuk-table__header" aria-sort="none">Balance to pay</th>
+      {% endif %}
+      <th scope="col" class="govuk-table__header" aria-sort="none">
+        {% if status === "for-approval" or status === "for-reapproval" %}
+          Submitted for approval
+        {% elif status === "approved" %}
+          Date approved
+        {% endif %}
+      </th>
+    {% endset %}
+
+    {% set rowsHtml %}
+
+      {% for expense in data.expense_details %}
+
+        <tr class="govuk-table__row">
+          {{ rowCheckbox({ attendanceDate: expense.attendance_date }) }}
+          <td class="govuk-table__cell" data-sort-value="{{ expense.attendance_date }}">
+            {{ expense.attendance_date | dateFilter("YYYY-MM-DD", "ddd DD MMM YYYY") }}
+          </td>
+          <td class="govuk-table__cell">
+            <a href="#">
+              {{ expense.financial_audit_number }}
+            </a>
+          </td>
+          <td class="govuk-table__cell">{{ attendanceType({ attendance: expense.attendance_type }) }}</td>
+          <td class="govuk-table__cell">£{{ expense.financial_loss | toFixed(2) }}</td>
+          <td class="govuk-table__cell">£{{ expense.travel | toFixed(2) }}</td>
+          <td class="govuk-table__cell">£{{ expense.food_and_drink | toFixed(2) }}</td>
+          <td class="govuk-table__cell">(£{{ expense.smartcard | toFixed(2) }})</td>
+          {% if status === "for-approval" or status === "for-reapproval" %}
+            <td class="govuk-table__cell">£{{ expense.total_due | toFixed(2) }}</td>
+          {% endif %}
+          {% if status === "for-reapproval" or status === "approved" %}
+            <td class="govuk-table__cell">£{{ expense.total_paid | toFixed(2) }}</td>
+          {% endif %}
+          {% if status === "for-reapproval" %}
+            <td class="govuk-table__cell"><b>£{{ expense.balance_to_pay | toFixed(2) }}</b></td>
+          {% endif %}
+          <td class="govuk-table__cell" data-sort-value="{{ expense.audit_created_on }}">{{ expense.audit_created_on | dateFilter("YYYY-MM-DD hh:mm:ss", "ddd DD MMM YYYY [at] h:mma") }}</td>
+        </tr>
+
+      {% endfor %}
+
+      <tr class="govuk-table__row mod-highlight-table-row__grey">
+        <td class="govuk-table__cell"></td>
+        <td class="govuk-table__cell"><b>Totals</b></td>
+        <td class="govuk-table__cell"></td>
+        <td class="govuk-table__cell"><b>{{ data.total.total_attendances }}</b></td>
+        <td class="govuk-table__cell"><b>£{{ data.total.financial_loss | toFixed(2) }}</b></td>
+        <td class="govuk-table__cell"><b>£{{ data.total.travel | toFixed(2) }}</b></td>
+        <td class="govuk-table__cell"><b>£{{ data.total.food_and_drink | toFixed(2) }}</b></td>
+        <td class="govuk-table__cell"><b>(£{{ data.total.smartcard | toFixed(2) }})</b></td>
+        {% if status === "for-approval" or status === "for-reapproval" %}
+          <td class="govuk-table__cell"><b>£{{ data.total.total_due | toFixed(2) }}</b></td>
+        {% endif %}
+        {% if status === "for-reapproval" or status === "approved" %}
+          <td class="govuk-table__cell"><b>£{{ data.total.total_paid | toFixed(2) }}</b></td>
+        {% endif %}
+        {% if status === "for-reapproval" %}
+          <td class="govuk-table__cell"><b>£{{ data.total.balance_to_pay | toFixed(2) }}</b></td>
+        {% endif %}
+        <td class="govuk-table__cell"></td>
+      </tr>
+
+    {% endset %}
+
+    {{ consolidatedExpensesTable({
+      sorted: true,
+      headings: headingsHtml,
+      rows: rowsHtml,
+      totalExpenses: data.total.total_attendances,
+      totalCheckedExpenses: 0,
+      errors: errors
+    }) }}
+
+  {% endif %}
+</div>

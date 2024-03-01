@@ -91,4 +91,40 @@
     },
   };
 
+  module.exports.defaultExpensesDAO = {
+    get: function(app, req, jurorNumber) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/expenses/default-summary', jurorNumber),
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+      };
+
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
+    },
+    post: function(app, req, body) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/expenses/set-default-expenses', body.jurorNumber),
+        method: 'POST',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+        body: _.mapKeys(body, (__, key) => _.snakeCase(key)),
+      };
+
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
+    },
+  };
+
 })();

@@ -20,21 +20,32 @@
         {% for day in attendance["juror_attendance_response_data"] %}
           {% set attendanceDate = day["attendance_date"] | makeDate %}
 
+          {% set checkInTime = "-" %}
+          {% set checkOutTime = "-" %}
+          {% set hours = "-" %}
+          {% set travelTime = "-" %}
+          {% if day["attendance_type"] !== "ABSENT" and day["attendance_type"] !== "NON_ATTENDANCE" and day["attendance_type"] !== "NON_ATTENDANCE_LONG_TRIAL" %}
+            {% set checkInTime = day["check_in_time"] | timeArrayToString | convert24to12 %}
+            {% set checkOutTime = day["check_out_time"] | timeArrayToString | convert24to12%}
+            {% set hours = day["hours"] %}
+            {% set travelTime = day["travel_time"] | timeArrayToString | convert24toHours %}
+          {% endif %}
+
           <tr class="govuk-table__row {% if day['attendance_type'] === 'ABSENT' %}mod-highlight-table-row__grey{% endif %}">
             <td class="govuk-table__cell" data-sort-value="{{ attendanceDate | dateFilter(null, "DD/MM/YYYY") }}">
               {{ attendanceDate | dateFilter(null, "ddd D MMM YYYY") }}
             </td>
             <td class="govuk-table__cell govuk-table__cell--numeric">
-              {{ day["check_in_time"] | timeArrayToString | convert24to12 if day["check_in_time"] else "-" }}
+              {{ checkInTime }}
             </td>
             <td class="govuk-table__cell govuk-table__cell--numeric">
-              {{ day["check_out_time"] | timeArrayToString | convert24to12 if day["check_out_time"] else "-" }}
+              {{ checkOutTime }}
             </td>
             <td class="govuk-table__cell govuk-table__cell--numeric">
-              {{ day["hours"] if day["hours"] else "-" }}
+              {{ hours }}
             </td>
             <td class="govuk-table__cell govuk-table__cell--numeric">
-              {{ day["travel_time"] | timeArrayToString | convert24toHours if day["travel_time"] else "-" }}
+              {{ travelTime }}
             </td>
             <td class="govuk-table__cell govuk-table__cell--numeric">
               {{ day["attendance_type"] | attendanceType }}
@@ -45,7 +56,7 @@
               {% endif %}
             </td>
             <td class="govuk-table__cell govuk-table__cell--numeric">
-              <a class="govuk-link" href="{{ url('juror-record.attendance.change-times.get', { jurorNumber:  juror.commonDetails.jurorNumber}) }}?date={{ makeDate | dateFilter(null, "YYYY-MM-DD")}}">
+              <a class="govuk-link govuk-link--no-visited-state" href="{{ url('juror-record.attendance.change-times.get', { jurorNumber:  juror.commonDetails.jurorNumber}) }}?date={{ day['attendance_date'] | dateFilter("null", "YYYY-MM-DD")}}">
                 Change
                 <span class="govuk-visually-hidden"> the juror attendance times</span>
               </a>

@@ -12,7 +12,8 @@
     , app = express()
     , server = http.createServer(app)
     , releaseVersion = require(__dirname + '/../package.json').version
-    , { LaunchDarkly } = require('./lib/launchdarkly');
+    , { LaunchDarkly } = require('./lib/launchdarkly')
+    , { AppInsights } = require('./lib/appinsights');
 
   // Attach logger to app
   app.logger = logger;
@@ -23,6 +24,7 @@
 
   // This will initiate a laundarkly connection and keep it open waiting for flag checks
   new LaunchDarkly();
+  new AppInsights();
 
   // A bit of conditional shiny
   if (config.logConsole !== false) {

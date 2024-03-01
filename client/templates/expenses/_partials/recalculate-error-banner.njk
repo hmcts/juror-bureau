@@ -1,0 +1,13 @@
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+
+{% set messageHtml %}
+  Failed to recalculate totals. <a href="#" id="recalculate-totals">Try again</a>
+  <br><br>
+  If problem persists, contact Crown IT support.
+{% endset %}
+
+{{ mojBanner({
+  type: "warning",
+  html: messageHtml,
+  iconFallbackText: "Warning"
+}) }}

@@ -44,7 +44,7 @@ const { isCourtUser } = require('../../../../components/auth/user-type');
       controller.getTotalLessThanZero(app));
 
     // ajax call to recalculate summary totals
-    app.get('/juror-management/expenses/:jurorNumber/:poolNumber/enter-expenses/recalculate-totals',
+    app.post('/juror-management/expenses/:jurorNumber/:poolNumber/enter-expenses/recalculate-totals',
       'juror-management.enter-expenses.recalculate-totals.get',
       auth.verify,
       isCourtUser,

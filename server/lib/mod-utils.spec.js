@@ -248,7 +248,7 @@ const { capitalise, toSentenceCase } = require('../components/filters');
       expect(transformedUnpaidAttendance.rows[0][4].text).to.equal('£80.00');
       expect(transformedUnpaidAttendance.rows[0][5].hasOwnProperty('html')).to.be.true;
       // eslint-disable-next-line max-len
-      expect(transformedUnpaidAttendance.rows[0][5].html).to.equal('<a href="/juror-management/unpaid-attendance/expense-record/123456/12345" class="govuk-link">View expenses</a>');
+      expect(transformedUnpaidAttendance.rows[0][5].html).to.equal('<a href="/juror-management/unpaid-attendance/expense-record/123456/12345/draft" class="govuk-link">View expenses</a>');
     });
 
     it('should transform the messaging trials list before rendering', function() {

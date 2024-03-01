@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="1704px" preserveAspectRatio="none" style="width:4705px;height:1704px;background:#FFFFFF;" version="1.1" viewBox="0 0 4705 1704" width="4705px" zoomAndPan="magnify"><defs/><g><rect fill="none" height="75.9316" style="stroke:#000000;stroke-width:1.5;" width="2637" x="10" y="128.5977"/><rect fill="none" height="163.8633" style="stroke:#000000;stroke-width:1.5;" width="4421" x="10" y="423.7031"/><rect fill="none" height="193.1738" style="stroke:#000000;stroke-width:1.5;" width="4572" x="10" y="748.1191"/><rect fill="none" height="193.1738" style="stroke:#000000;stroke-width:1.5;" width="4572" x="10" y="955.293"/><rect fill="none" height="193.1738" style="stroke:#000000;stroke-width:1.5;" width="4572" x="10" y="1162.4668"/><rect fill="none" height="163.8633" style="stroke:#000000;stroke-width:1.5;" width="3689" x="10" y="1516.1934"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="45" x2="45" y1="52.9766" y2="1697.0566"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="282" x2="282" y1="52.9766" y2="1697.0566"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="803" x2="803" y1="52.9766" y2="1697.0566"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1450" x2="1450" y1="52.9766" y2="1697.0566"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1854" x2="1854" y1="52.9766" y2="1697.0566"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="2031" x2="2031" y1="52.9766" y2="1697.0566"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="2254" x2="2254" y1="52.9766" y2="1697.0566"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="2508" x2="2508" y1="52.9766" y2="1697.0566"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="2766" x2="2766" y1="52.9766" y2="1697.0566"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="3077" x2="3077" y1="52.9766" y2="1697.0566"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="3478" x2="3478" y1="52.9766" y2="1697.0566"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="3866" x2="3866" y1="52.9766" y2="1697.0566"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="4124" x2="4124" y1="52.9766" y2="1697.0566"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="4317" x2="4317" y1="52.9766" y2="1697.0566"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="4501" x2="4501" y1="52.9766" y2="1697.0566"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="4640" x2="4640" y1="52.9766" y2="1697.0566"/><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="51" x="20" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="37" x="27" y="42.0234">Actor</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="402" x="81" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="388" x="88" y="25.5352">«/juror-management/record/:jurorNumber/attendance»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="193" x="185.5" y="42.0234">JurorRecordAttendancePage</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="621" x="493" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="607" x="500" y="25.5352">«/juror-management/unpaid-attendance/expense-record/:jurorNumber/:poolNumber»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="173" x="717" y="42.0234">DraftExpenseRecordPage</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="653" x="1124" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="639" x="1131" y="25.5352">«/juror-management/unpaid-attendance/non-attendance-day/:jurorNumber/:poolNumber»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="192" x="1354.5" y="42.0234">AddNonAttendanceDayPage</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="134" x="1787" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="56" x="1826" y="25.5352">«/error»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="120" x="1794" y="42.0234">GenericErrorPage</text><rect fill="#FFFFE0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="201" x="1931" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="187" x="1938" y="25.5352">«juror-record.controller.js»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="152" x="1955.5" y="42.0234">JurorRecordController</text><rect fill="#FFFFE0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="225" x="2142" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="211" x="2149" y="25.5352">«expense-record.controller.js»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="176" x="2166.5" y="42.0234">ExpenseRecordController</text><rect fill="#FFFFE0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="257" x="2380" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="243" x="2387" y="25.5352">«non-attendance-day.controller.js»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="201" x="2408" y="42.0234">NonAttendanceDayController</text><rect fill="#FFFFE0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="239" x="2647" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="225" x="2654" y="25.5352">«jurorNonAttendanceDao.post()»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="175" x="2679" y="42.0234">NonAttendanceDayObject</text><rect fill="#E6E6FA" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="362" x="2896" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="348" x="2903" y="25.5352">«juror-management/juror-record/attendance.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="224" x="2965" y="42.0234">JurorRecordAttendanceTemplate</text><rect fill="#E6E6FA" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="421" x="3268" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="407" x="3275" y="25.5352">«juror-management/expense-record/expense-record.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="204" x="3376.5" y="42.0234">DraftExpenseRecordTemplate</text><rect fill="#E6E6FA" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="335" x="3699" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="321" x="3706" y="25.5352">«juror-management/non-attendance-day.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="195" x="3769" y="42.0234">NonAttendanceDayTemplate</text><rect fill="#E6E6FA" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="160" x="4044" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="146" x="4051" y="25.5352">«_errors/generic.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="99" x="4074.5" y="42.0234">ErrorTemplate</text><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="207" x="4214" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="193" x="4221" y="42.0234">NonAttendanceDayValidator</text><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="141" x="4431" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="127" x="4438" y="42.0234">BackendController</text><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="117" x="4582" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="103" x="4589" y="42.0234">SelectPoolPage</text><polygon fill="#181818" points="270,80.2871,280,84.2871,270,88.2871" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="45.5" x2="276" y1="84.2871" y2="84.2871"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="188" x="69.75" y="79.5449">click add non-attendance day</text><polygon fill="#181818" points="2496.5,109.5977,2506.5,113.5977,2496.5,117.5977" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="282" x2="2502.5" y1="113.5977" y2="113.5977"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="218" x="1286.25" y="108.8555">call non-attendance day conrtoller</text><path d="M10,128.5977 L72,128.5977 L72,135.9082 L62,145.9082 L10,145.9082 L10,128.5977 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="75.9316" style="stroke:#000000;stroke-width:1.5;" width="2637" x="10" y="128.5977"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="25" y="142.166">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="176" x="87" y="141.2324">[Navigate from expense record]</text><polygon fill="#181818" points="791.5,163.2188,801.5,167.2188,791.5,171.2188" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="45.5" x2="797.5" y1="167.2188" y2="167.2188"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="188" x="330.5" y="162.4766">click add non-attendance day</text><polygon fill="#181818" points="2496.5,192.5293,2506.5,196.5293,2496.5,200.5293" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="803.5" x2="2502.5" y1="196.5293" y2="196.5293"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="218" x="1547" y="191.7871">call non-attendance day conrtoller</text><polygon fill="#181818" points="3854.5,228.8398,3864.5,232.8398,3854.5,236.8398" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2508.5" x2="3860.5" y1="232.8398" y2="232.8398"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="3103" y="228.0977">request and build template</text><polygon fill="#181818" points="2519.5,258.1504,2509.5,262.1504,2519.5,266.1504" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2513.5" x2="3865.5" y1="262.1504" y2="262.1504"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="3148.5" y="257.4082">return HTML</text><polygon fill="#181818" points="1461.5,287.4609,1451.5,291.4609,1461.5,295.4609" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1455.5" x2="2507.5" y1="291.4609" y2="291.4609"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="1940.5" y="286.7188">return HTML</text><polygon fill="#181818" points="56.5,316.7715,46.5,320.7715,56.5,324.7715" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="50.5" x2="1449.5" y1="320.7715" y2="320.7715"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="708" y="316.0293">render HTML</text><polygon fill="#181818" points="1438.5,346.082,1448.5,350.082,1438.5,354.082" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="45.5" x2="1444.5" y1="350.082" y2="350.082"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="342" x="577" y="345.3398">enters a valid non-attendance day and clicks continue</text><polygon fill="#181818" points="2519.5,375.3926,2509.5,379.3926,2519.5,383.3926" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2513.5" x2="4639.5" y1="379.3926" y2="379.3926"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="121" x="3514" y="374.6504">call page conrtoller</text><polygon fill="#181818" points="4305.5,404.7031,4315.5,408.7031,4305.5,412.7031" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2508.5" x2="4311.5" y1="408.7031" y2="408.7031"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="83" x="3371.5" y="403.9609">validate form</text><path d="M10,423.7031 L72,423.7031 L72,431.0137 L62,441.0137 L10,441.0137 L10,423.7031 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="163.8633" style="stroke:#000000;stroke-width:1.5;" width="4421" x="10" y="423.7031"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="25" y="437.2715">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="119" x="87" y="436.3379">[Invalid date entered]</text><polygon fill="#181818" points="2519.5,458.3242,2509.5,462.3242,2519.5,466.3242" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2513.5" x2="4316.5" y1="462.3242" y2="462.3242"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="120" x="3353" y="457.582">data validationfails</text><polygon fill="#181818" points="3854.5,487.6348,3864.5,491.6348,3854.5,495.6348" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2508.5" x2="3860.5" y1="491.6348" y2="491.6348"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="262" x="3056.5" y="486.8926">request and build error message template</text><polygon fill="#181818" points="2519.5,516.9453,2509.5,520.9453,2519.5,524.9453" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2513.5" x2="3865.5" y1="520.9453" y2="520.9453"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="3148.5" y="516.2031">return HTML</text><polygon fill="#181818" points="1461.5,546.2559,1451.5,550.2559,1461.5,554.2559" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1455.5" x2="2507.5" y1="550.2559" y2="550.2559"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="1940.5" y="545.5137">return HTML</text><polygon fill="#181818" points="56.5,575.5664,46.5,579.5664,56.5,583.5664" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="50.5" x2="1449.5" y1="579.5664" y2="579.5664"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="133" x="681.5" y="574.8242">render error message</text><polygon fill="#181818" points="2519.5,611.877,2509.5,615.877,2519.5,619.877" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2513.5" x2="4316.5" y1="615.877" y2="615.877"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="124" x="3351" y="611.1348">validat date entered</text><polygon fill="#181818" points="2754.5,641.1875,2764.5,645.1875,2754.5,649.1875" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2508.5" x2="2760.5" y1="645.1875" y2="645.1875"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="126" x="2574.5" y="640.4453">build request object</text><polygon fill="#181818" points="4489.5,670.498,4499.5,674.498,4489.5,678.498" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2766.5" x2="4495.5" y1="674.498" y2="674.498"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="138" x="3565" y="669.7559">send backend request</text><polygon fill="#181818" points="2777.5,699.8086,2767.5,703.8086,2777.5,707.8086" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2771.5" x2="4500.5" y1="703.8086" y2="703.8086"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="77" x="3595.5" y="699.0664">ok response</text><polygon fill="#181818" points="2519.5,729.1191,2509.5,733.1191,2519.5,737.1191" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2513.5" x2="2765.5" y1="733.1191" y2="733.1191"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="96" x="2589.5" y="728.377">resolve request</text><path d="M10,748.1191 L72,748.1191 L72,755.4297 L62,765.4297 L10,765.4297 L10,748.1191 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="193.1738" style="stroke:#000000;stroke-width:1.5;" width="4572" x="10" y="748.1191"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="25" y="761.6875">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="279" x="87" y="760.7539">[Date already been recorded as an attendance day]</text><polygon fill="#181818" points="2777.5,782.7402,2767.5,786.7402,2777.5,790.7402" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2771.5" x2="4500.5" y1="786.7402" y2="786.7402"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="127" x="3570.5" y="781.998">error response (422)</text><polygon fill="#181818" points="2519.5,812.0508,2509.5,816.0508,2519.5,820.0508" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2513.5" x2="2765.5" y1="816.0508" y2="816.0508"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="127" x="2574" y="811.3086">reject requestObject</text><polygon fill="#181818" points="3854.5,841.3613,3864.5,845.3613,3854.5,849.3613" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2508.5" x2="3860.5" y1="845.3613" y2="845.3613"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="262" x="3056.5" y="840.6191">request and build error message template</text><polygon fill="#181818" points="2519.5,870.6719,2509.5,874.6719,2519.5,878.6719" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2513.5" x2="3865.5" y1="874.6719" y2="874.6719"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="3148.5" y="869.9297">return HTML</text><polygon fill="#181818" points="1461.5,899.9824,1451.5,903.9824,1461.5,907.9824" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1455.5" x2="2507.5" y1="903.9824" y2="903.9824"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="1940.5" y="899.2402">return HTML</text><polygon fill="#181818" points="56.5,929.293,46.5,933.293,56.5,937.293" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="50.5" x2="1449.5" y1="933.293" y2="933.293"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="133" x="681.5" y="928.5508">render error message</text><path d="M10,955.293 L72,955.293 L72,962.6035 L62,972.6035 L10,972.6035 L10,955.293 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="193.1738" style="stroke:#000000;stroke-width:1.5;" width="4572" x="10" y="955.293"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="25" y="968.8613">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="211" x="87" y="967.9277">[Date before jurors service start date]</text><polygon fill="#181818" points="2777.5,989.9141,2767.5,993.9141,2777.5,997.9141" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2771.5" x2="4500.5" y1="993.9141" y2="993.9141"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="127" x="3570.5" y="989.1719">error response (422)</text><polygon fill="#181818" points="2519.5,1019.2246,2509.5,1023.2246,2519.5,1027.2246" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2513.5" x2="2765.5" y1="1023.2246" y2="1023.2246"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="127" x="2574" y="1018.4824">reject requestObject</text><polygon fill="#181818" points="3854.5,1048.5352,3864.5,1052.5352,3854.5,1056.5352" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2508.5" x2="3860.5" y1="1052.5352" y2="1052.5352"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="262" x="3056.5" y="1047.793">request and build error message template</text><polygon fill="#181818" points="2519.5,1077.8457,2509.5,1081.8457,2519.5,1085.8457" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2513.5" x2="3865.5" y1="1081.8457" y2="1081.8457"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="3148.5" y="1077.1035">return HTML</text><polygon fill="#181818" points="1461.5,1107.1563,1451.5,1111.1563,1461.5,1115.1563" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1455.5" x2="2507.5" y1="1111.1563" y2="1111.1563"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="1940.5" y="1106.4141">return HTML</text><polygon fill="#181818" points="56.5,1136.4668,46.5,1140.4668,56.5,1144.4668" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="50.5" x2="1449.5" y1="1140.4668" y2="1140.4668"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="133" x="681.5" y="1135.7246">render error message</text><path d="M10,1162.4668 L72,1162.4668 L72,1169.7773 L62,1179.7773 L10,1179.7773 L10,1162.4668 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="193.1738" style="stroke:#000000;stroke-width:1.5;" width="4572" x="10" y="1162.4668"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="25" y="1176.0352">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="257" x="87" y="1175.1016">[Failed to add a non-attendance day for juror]</text><polygon fill="#181818" points="2777.5,1197.0879,2767.5,1201.0879,2777.5,1205.0879" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2771.5" x2="4500.5" y1="1201.0879" y2="1201.0879"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="91" x="3588.5" y="1196.3457">error response</text><polygon fill="#181818" points="2519.5,1226.3984,2509.5,1230.3984,2519.5,1234.3984" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="2513.5" x2="2765.5" y1="1230.3984" y2="1230.3984"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="127" x="2574" y="1225.6563">reject requestObject</text><polygon fill="#181818" points="4112,1255.709,4122,1259.709,4112,1263.709" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2508.5" x2="4118" y1="1259.709" y2="1259.709"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="3231.75" y="1254.9668">request and build template</text><polygon fill="#181818" points="2519.5,1285.0195,2509.5,1289.0195,2519.5,1293.0195" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2513.5" x2="4123" y1="1289.0195" y2="1289.0195"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="3277.25" y="1284.2773">return HTML</text><polygon fill="#181818" points="1865,1314.3301,1855,1318.3301,1865,1322.3301" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1859" x2="2507.5" y1="1318.3301" y2="1318.3301"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="2142.25" y="1313.5879">return HTML</text><polygon fill="#181818" points="56.5,1343.6406,46.5,1347.6406,56.5,1351.6406" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="50.5" x2="1853" y1="1347.6406" y2="1347.6406"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="108" x="895.75" y="1342.8984">render error page</text><polygon fill="#181818" points="2042.5,1379.9512,2032.5,1383.9512,2042.5,1387.9512" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2036.5" x2="2507.5" y1="1383.9512" y2="1383.9512"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="230" x="2155" y="1379.209">call juror record controller controller</text><polygon fill="#181818" points="3065,1409.2617,3075,1413.2617,3065,1417.2617" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2031.5" x2="3071" y1="1413.2617" y2="1413.2617"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="2469.75" y="1408.5195">request and build template</text><polygon fill="#181818" points="2042.5,1438.5723,2032.5,1442.5723,2042.5,1446.5723" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2036.5" x2="3076" y1="1442.5723" y2="1442.5723"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="2515.25" y="1437.8301">return HTML</text><polygon fill="#181818" points="293,1467.8828,283,1471.8828,293,1475.8828" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="287" x2="2030.5" y1="1471.8828" y2="1471.8828"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="1117.75" y="1467.1406">return HTML</text><polygon fill="#181818" points="56.5,1497.1934,46.5,1501.1934,56.5,1505.1934" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="50.5" x2="281" y1="1501.1934" y2="1501.1934"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="123.75" y="1496.4512">render HTML</text><path d="M10,1516.1934 L72,1516.1934 L72,1523.5039 L62,1533.5039 L10,1533.5039 L10,1516.1934 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="163.8633" style="stroke:#000000;stroke-width:1.5;" width="3689" x="10" y="1516.1934"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="25" y="1529.7617">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="225" x="87" y="1528.8281">[Initally navigated from expense record]</text><polygon fill="#181818" points="2265.5,1550.8145,2255.5,1554.8145,2265.5,1558.8145" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2259.5" x2="2507.5" y1="1554.8145" y2="1554.8145"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="230" x="2266.5" y="1550.0723">call juror record controller controller</text><polygon fill="#181818" points="3466.5,1580.125,3476.5,1584.125,3466.5,1588.125" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2254.5" x2="3472.5" y1="1584.125" y2="1584.125"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="2782" y="1579.3828">request and build template</text><polygon fill="#181818" points="2265.5,1609.4355,2255.5,1613.4355,2265.5,1617.4355" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="2259.5" x2="3477.5" y1="1613.4355" y2="1613.4355"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="2827.5" y="1608.6934">return HTML</text><polygon fill="#181818" points="814.5,1638.7461,804.5,1642.7461,814.5,1646.7461" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="808.5" x2="2253.5" y1="1642.7461" y2="1642.7461"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="1490" y="1638.0039">return HTML</text><polygon fill="#181818" points="56.5,1668.0566,46.5,1672.0566,56.5,1676.0566" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="50.5" x2="802.5" y1="1672.0566" y2="1672.0566"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="384.5" y="1667.3145">render HTML</text><!--MD5=[0add6dbc6f3ac20b24a90d029f4ba9fd]
+@startuml add-non-attendance-day
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant JurorRecordAttendancePage <</juror-management/record/:jurorNumber/attendance>>
+participant DraftExpenseRecordPage <</juror-management/unpaid-attendance/expense-record/:jurorNumber/:poolNumber>>
+participant AddNonAttendanceDayPage <</juror-management/unpaid-attendance/non-attendance-day/:jurorNumber/:poolNumber>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant JurorRecordController <<juror-record.controller.js>> #lightyellow
+participant ExpenseRecordController <<expense-record.controller.js>> #lightyellow
+participant NonAttendanceDayController <<non-attendance-day.controller.js>> #lightyellow
+participant NonAttendanceDayObject <<jurorNonAttendanceDao.post()>> #lightyellow
+
+''' TEMPLATES
+participant JurorRecordAttendanceTemplate <<juror-management/juror-record/attendance.njk>> #lavender
+participant DraftExpenseRecordTemplate <<juror-management/expense-record/expense-record.njk>> #lavender
+participant NonAttendanceDayTemplate <<juror-management/non-attendance-day.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant NonAttendanceDayValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> JurorRecordAttendancePage : click add non-attendance day
+JurorRecordAttendancePage -> NonAttendanceDayController : call non-attendance day conrtoller
+
+alt Navigate from expense record
+  Actor -> DraftExpenseRecordPage : click add non-attendance day
+  DraftExpenseRecordPage -> NonAttendanceDayController : call non-attendance day conrtoller
+end
+
+NonAttendanceDayController -> NonAttendanceDayTemplate : request and build template
+NonAttendanceDayController <- NonAttendanceDayTemplate : return HTML
+AddNonAttendanceDayPage <- NonAttendanceDayController : return HTML
+Actor <- AddNonAttendanceDayPage : render HTML
+
+Actor -> AddNonAttendanceDayPage : enters a valid non-attendance day and clicks continue
+
+SelectPoolPage -> NonAttendanceDayController : call page conrtoller
+
+NonAttendanceDayController -> NonAttendanceDayValidator : validate form
+
+alt Invalid date entered
+  NonAttendanceDayController <- - NonAttendanceDayValidator : data validationfails
+  NonAttendanceDayController -> NonAttendanceDayTemplate : request and build error message template
+  NonAttendanceDayController <- NonAttendanceDayTemplate : return HTML
+  AddNonAttendanceDayPage <- NonAttendanceDayController : return HTML
+  Actor <- AddNonAttendanceDayPage : render error message
+end
+
+NonAttendanceDayController <- NonAttendanceDayValidator : validat date entered
+
+NonAttendanceDayController -> NonAttendanceDayObject : build request object
+NonAttendanceDayObject -> BackendController : send backend request
+NonAttendanceDayObject <- BackendController : ok response
+NonAttendanceDayController <- NonAttendanceDayObject : resolve request
+
+alt Date already been recorded as an attendance day
+    NonAttendanceDayObject <- - BackendController : error response (422)
+    NonAttendanceDayController <- - NonAttendanceDayObject : reject requestObject
+    NonAttendanceDayController -> NonAttendanceDayTemplate : request and build error message template
+    NonAttendanceDayController <- NonAttendanceDayTemplate : return HTML
+    AddNonAttendanceDayPage <- NonAttendanceDayController : return HTML
+    Actor <- AddNonAttendanceDayPage : render error message
+end
+
+alt Date before jurors service start date
+    NonAttendanceDayObject <- - BackendController : error response (422)
+    NonAttendanceDayController <- - NonAttendanceDayObject : reject requestObject
+    NonAttendanceDayController -> NonAttendanceDayTemplate : request and build error message template
+    NonAttendanceDayController <- NonAttendanceDayTemplate : return HTML
+    AddNonAttendanceDayPage <- NonAttendanceDayController : return HTML
+    Actor <- AddNonAttendanceDayPage : render error message
+end
+
+alt Failed to add a non-attendance day for juror
+    NonAttendanceDayObject <- - BackendController : error response
+    NonAttendanceDayController <- - NonAttendanceDayObject : reject requestObject
+    NonAttendanceDayController -> ErrorTemplate : request and build template
+    NonAttendanceDayController <- ErrorTemplate : return HTML
+    GenericErrorPage <- NonAttendanceDayController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+NonAttendanceDayController -> JurorRecordController : call juror record controller controller
+JurorRecordController -> JurorRecordAttendanceTemplate : request and build template
+JurorRecordController <- JurorRecordAttendanceTemplate : return HTML
+JurorRecordAttendancePage <- JurorRecordController : return HTML
+Actor <- JurorRecordAttendancePage : render HTML
+
+alt Initally navigated from expense record
+  NonAttendanceDayController -> ExpenseRecordController : call juror record controller controller
+  ExpenseRecordController -> DraftExpenseRecordTemplate : request and build template
+  ExpenseRecordController <- DraftExpenseRecordTemplate : return HTML
+  DraftExpenseRecordPage <- ExpenseRecordController : return HTML
+  Actor <- DraftExpenseRecordPage : render HTML
+end
+
+
+
+
+
+
+
+    
+@end
+
+@startuml add-non-attendance-day
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+participant JurorRecordAttendancePage <</juror-management/record/:jurorNumber/attendance>>
+participant DraftExpenseRecordPage <</juror-management/unpaid-attendance/expense-record/:jurorNumber/:poolNumber>>
+participant AddNonAttendanceDayPage <</juror-management/unpaid-attendance/non-attendance-day/:jurorNumber/:poolNumber>>
+participant GenericErrorPage <</error>>
+
+participant JurorRecordController <<juror-record.controller.js>> #lightyellow
+participant ExpenseRecordController <<expense-record.controller.js>> #lightyellow
+participant NonAttendanceDayController <<non-attendance-day.controller.js>> #lightyellow
+participant NonAttendanceDayObject <<jurorNonAttendanceDao.post()>> #lightyellow
+
+participant JurorRecordAttendanceTemplate <<juror-management/juror-record/attendance.njk>> #lavender
+participant DraftExpenseRecordTemplate <<juror-management/expense-record/expense-record.njk>> #lavender
+participant NonAttendanceDayTemplate <<juror-management/non-attendance-day.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+participant NonAttendanceDayValidator
+
+participant BackendController
+
+Actor -> JurorRecordAttendancePage : click add non-attendance day
+JurorRecordAttendancePage -> NonAttendanceDayController : call non-attendance day conrtoller
+
+alt Navigate from expense record
+  Actor -> DraftExpenseRecordPage : click add non-attendance day
+  DraftExpenseRecordPage -> NonAttendanceDayController : call non-attendance day conrtoller
+end
+
+NonAttendanceDayController -> NonAttendanceDayTemplate : request and build template
+NonAttendanceDayController <- NonAttendanceDayTemplate : return HTML
+AddNonAttendanceDayPage <- NonAttendanceDayController : return HTML
+Actor <- AddNonAttendanceDayPage : render HTML
+
+Actor -> AddNonAttendanceDayPage : enters a valid non-attendance day and clicks continue
+
+SelectPoolPage -> NonAttendanceDayController : call page conrtoller
+
+NonAttendanceDayController -> NonAttendanceDayValidator : validate form
+
+alt Invalid date entered
+  NonAttendanceDayController <- - NonAttendanceDayValidator : data validationfails
+  NonAttendanceDayController -> NonAttendanceDayTemplate : request and build error message template
+  NonAttendanceDayController <- NonAttendanceDayTemplate : return HTML
+  AddNonAttendanceDayPage <- NonAttendanceDayController : return HTML
+  Actor <- AddNonAttendanceDayPage : render error message
+end
+
+NonAttendanceDayController <- NonAttendanceDayValidator : validat date entered
+
+NonAttendanceDayController -> NonAttendanceDayObject : build request object
+NonAttendanceDayObject -> BackendController : send backend request
+NonAttendanceDayObject <- BackendController : ok response
+NonAttendanceDayController <- NonAttendanceDayObject : resolve request
+
+alt Date already been recorded as an attendance day
+    NonAttendanceDayObject <- - BackendController : error response (422)
+    NonAttendanceDayController <- - NonAttendanceDayObject : reject requestObject
+    NonAttendanceDayController -> NonAttendanceDayTemplate : request and build error message template
+    NonAttendanceDayController <- NonAttendanceDayTemplate : return HTML
+    AddNonAttendanceDayPage <- NonAttendanceDayController : return HTML
+    Actor <- AddNonAttendanceDayPage : render error message
+end
+
+alt Date before jurors service start date
+    NonAttendanceDayObject <- - BackendController : error response (422)
+    NonAttendanceDayController <- - NonAttendanceDayObject : reject requestObject
+    NonAttendanceDayController -> NonAttendanceDayTemplate : request and build error message template
+    NonAttendanceDayController <- NonAttendanceDayTemplate : return HTML
+    AddNonAttendanceDayPage <- NonAttendanceDayController : return HTML
+    Actor <- AddNonAttendanceDayPage : render error message
+end
+
+alt Failed to add a non-attendance day for juror
+    NonAttendanceDayObject <- - BackendController : error response
+    NonAttendanceDayController <- - NonAttendanceDayObject : reject requestObject
+    NonAttendanceDayController -> ErrorTemplate : request and build template
+    NonAttendanceDayController <- ErrorTemplate : return HTML
+    GenericErrorPage <- NonAttendanceDayController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+NonAttendanceDayController -> JurorRecordController : call juror record controller controller
+JurorRecordController -> JurorRecordAttendanceTemplate : request and build template
+JurorRecordController <- JurorRecordAttendanceTemplate : return HTML
+JurorRecordAttendancePage <- JurorRecordController : return HTML
+Actor <- JurorRecordAttendancePage : render HTML
+
+alt Initally navigated from expense record
+  NonAttendanceDayController -> ExpenseRecordController : call juror record controller controller
+  ExpenseRecordController -> DraftExpenseRecordTemplate : request and build template
+  ExpenseRecordController <- DraftExpenseRecordTemplate : return HTML
+  DraftExpenseRecordPage <- ExpenseRecordController : return HTML
+  Actor <- DraftExpenseRecordPage : render HTML
+end
+
+
+
+
+
+
+
+    
+@end
+
+PlantUML version 1.2022.7(Mon Aug 22 18:01:30 BST 2022)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

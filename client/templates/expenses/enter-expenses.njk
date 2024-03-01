@@ -10,6 +10,8 @@
 {% from "custom-components/macros/arrows.njk" import leftArrowSVG %}
 {% from "custom-components/macros/arrows.njk" import rightArrowSVG %}
 
+{% from "includes/csrf.njk" import csrfProtection %}
+
 {% block page_title %}{{ serviceName }} - juror-management - unpaid attendance - daily expenses{% endblock %}
 {% block page_identifier %}juror-management - unpaid attendance - daily expenses{% endblock %}
 
@@ -34,9 +36,15 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
       <span class="govuk-caption-m mod-expense-entry-pagination">
-        <a href="{{ pagination.prevLink }}">{{ leftArrowSVG({colour: "blue"}) }}</a>
-        <div> {{ pagination.currPage }} of {{ pagination.totalPages }}</div> 
-        <a href="{{ pagination.nextLink }}">{{ rightArrowSVG({colour: "blue"}) }}</a>
+        {% if pagination.currPage > 1 %}
+          <a href="{{ pagination.prevLink }}">{{ leftArrowSVG({ colour: "blue" }) }}</a>
+        {% endif %}
+        <div>
+          {{ pagination.currPage }} of {{ pagination.totalPages }}
+        </div>
+        {% if pagination.currPage < pagination.totalPages %}
+          <a href="{{ pagination.nextLink }}">{{ rightArrowSVG({ colour: "blue" }) }}</a>
+        {% endif %}
       </span>
       <h1 class="govuk-heading-m">{{ expensesData.date_of_expense | dateFilter("YYYY-MM-DD", "dddd DD MMMM YYYY") }}</h1>
       {{ govukTag({
@@ -85,11 +93,17 @@
         <div class="mod-juror-record__title govuk-!-margin-top-5 govuk-!-margin-bottom-5">
           <h2 id="summaryLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Totals</h2>
         </div>
-        
-        {% include "./_partials/summary.njk" %}
+
+        <div id="expenses-summary">
+          {# Here will go the totals summary... and the refresh warnings #}
+        </div>
+
+        <input type="hidden" name="jurorNumber" id="jurorNumber" value="{{ jurorNumber }}"/>
+        <input type="hidden" name="poolNumber" id="poolNumber" value="{{ poolNumber }}"/>
 
         <input type="hidden" name="total" value="">
-        <input type="hidden" name="_csrf" value="{{ csrftoken }}" />
+        
+        {{ csrfProtection(csrftoken) }}
 
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-full">
@@ -119,10 +133,10 @@
 
           </div>
         </div>
-        
+
       </div>
     </div>
-  
+
   </form>
 
 {% endblock %}
@@ -130,36 +144,5 @@
 {% block body_end %}
   {{ super() }}
 
-  <script type="application/javascript">
-    var expensesSummary = $('#expenses-summary');
-
-    $('[data-summary-detectable]').each(function(_, element) {
-      element.addEventListener('change', function() {
-        expensesSummary.children().each(function(_, child) {
-          child.remove();
-        });
-
-        var refresh = $(`{% include "./_partials/totals-changed-banner.njk" %}`);
-        expensesSummary.append(refresh);
-        
-        var recalculateTotals = $('#recalculate-totals');
-
-        recalculateTotals.click(onRecalculateTotalsClick);
-      });
-    });
-
-    function onRecalculateTotalsClick(event) {
-      event.preventDefault();
-      
-      $.ajax('/juror-management/expenses/{{ jurorNumber }}/{{ poolNumber }}/enter-expenses/recalculate-totals')
-        .then(function(response) {
-          expensesSummary.children().each(function(_, child) {
-            child.remove();
-          });
-
-          var newSummaryTotals = $(response);
-          expensesSummary.append(newSummaryTotals);
-        });
-    }
-  </script>
+  <script src="{{ assetPath }}js/expenses-summary.js"></script>
 {% endblock %}

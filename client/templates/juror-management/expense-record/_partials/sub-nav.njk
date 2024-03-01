@@ -1,28 +1,79 @@
 {% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
+{% from "moj/components/notification-badge/macro.njk" import mojNotificationBadge %}
+
+{% macro countPill(count) %}
+  {% if count > 0 %}
+    <span id="jurorApprovalCount" class="moj-notification-badge jd-badge-blue">
+      {{ count }}
+    </span>
+  {% endif %}
+{% endmacro %}
+
+{% set draftTabHtml %}
+  <span id="draftTab">
+    Draft {{ countPill(counts.total_draft) }}
+  </span>
+{% endset %}
+
+{% set approvalTabHtml %}
+  <span id="approvalTab">
+    For approval {{ countPill(counts.total_for_approval) }}
+  </span>
+{% endset %}
+
+{% set reapprovalTabHtml %}
+  <span id="forReapprovalTab">
+    For reapproval {{ countPill(counts.total_for_reapproval) }}
+  </span>
+{% endset %}
 
 {{ mojSubNavigation({
   label: "Sub navigation",
   items: [
     {
-      text: "Draft",
-      href: url("juror-management.unpaid-attendance.expense-record.get", {jurorNumber: jurorNumber, poolNumber: poolNumber}) + "?status=draft",
-      active: currentTab === "draft",
+      html: draftTabHtml,
+      href: url("juror-management.unpaid-attendance.expense-record.get", {
+          jurorNumber: jurorNumber,
+          poolNumber: poolNumber,
+          status: "draft"
+        }),
+      active: status === "draft",
       attributes: {
         id: "draftTab"
       }
     }, 
     {
-      text: "For approval",
-      href: url("juror-management.unpaid-attendance.expense-record.get", {jurorNumber: jurorNumber, poolNumber: poolNumber}) + "?status=forApproval",
-      active: currentTab === "forApproval",
+      html: approvalTabHtml,
+      href: url("juror-management.unpaid-attendance.expense-record.get", {
+          jurorNumber: jurorNumber,
+          poolNumber: poolNumber,
+          status: "for-approval"
+        }),
+      active: status === "for-approval",
       attributes: {
         id: "forApprovalTab"
       }
     },
     {
+      html: reapprovalTabHtml,
+      href: url("juror-management.unpaid-attendance.expense-record.get", {
+          jurorNumber: jurorNumber,
+          poolNumber: poolNumber,
+          status: "for-reapproval"
+        }),
+      active: status === "for-reapproval",
+      attributes: {
+        id: "forReapprovalTab"
+      }
+    },
+    {
       text: "Approved",
-      href: url("juror-management.unpaid-attendance.expense-record.get", {jurorNumber: jurorNumber, poolNumber: poolNumber}) + "?status=approved",
-      active: currentTab === "approved",
+      href: url("juror-management.unpaid-attendance.expense-record.get", {
+          jurorNumber: jurorNumber,
+          poolNumber: poolNumber,
+          status: "approved"
+        }),
+      active: status === "approved",
       attributes: {
         id: "approvedTab"
       }

@@ -5,7 +5,8 @@
     , validate = require('validate.js')
     , changeTimesValidator = require('../../../../config/validation/change-attendance-times').changeAttendanceTimes
     , { jurorAttendanceDao } = require('../../../../objects/juror-attendance')
-    , { convert12to24, convert24to12, timeArrayToString } = require('../../../../components/filters');
+    , { convert12to24, convert24to12, timeArrayToString } = require('../../../../components/filters')
+    , { replaceAllObjKeys } = require('../../../../lib/mod-utils');
 
   module.exports.getChangeTimes = function(app) {
     return async function(req, res) {
@@ -19,6 +20,7 @@
 
       delete req.session.errors;
       delete req.session.formFields;
+      delete req.session.originalAppStage;
 
       try {
         attendanceDate = req.query.date ? req.query.date : req.session.attendanceListDate;
@@ -34,7 +36,7 @@
         };
 
         const data = await jurorAttendanceDao.get(app, req, body);
-        const juror = data.details[0];
+        const juror = replaceAllObjKeys(data.details[0], _.camelCase);
 
         if (!juror) {
           app.logger.crit('Failed to find a juror with that juror number', {
@@ -46,32 +48,34 @@
           return res.render('_errors/generic');
         }
 
+        req.session.originalAppStage = juror.appStage;
+
         // Check if user navigated from juror record
         if (req.url.includes('record')) {
           processUrl = app.namedRoutes.build('juror-record.attendance.change-times.post', {
-            jurorNumber: juror.juror_number,
+            jurorNumber: juror.jurorNumber,
           });
           cancelUrl = app.namedRoutes.build('juror-record.attendance.get', {
-            jurorNumber: juror.juror_number,
+            jurorNumber: juror.jurorNumber,
           });
         } else {
           processUrl = app.namedRoutes.build('juror-management.attendance.change-times.post', {
-            jurorNumber: juror.juror_number,
+            jurorNumber: juror.jurorNumber,
           });
           cancelUrl = app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate;
           deleteUrl = app.namedRoutes.build('juror-management.attendance.delete-attendance.get', {
-            jurorNumber: juror.juror_number,
+            jurorNumber: juror.jurorNumber,
           });
         }
 
         const originalCheckInTime =
-          juror.check_in_time !== null
-            ? extractTimeString(convert24to12(timeArrayToString(juror.check_in_time)))
+          juror.checkInTime !== null
+            ? extractTimeString(convert24to12(timeArrayToString(juror.checkInTime)))
             : { hour: '', minute: '', period: '' };
 
         const originalCheckOutTime =
-          juror.check_out_time !== null
-            ? extractTimeString(convert24to12(timeArrayToString(juror.check_out_time)))
+          juror.checkOutTime !== null
+            ? extractTimeString(convert24to12(timeArrayToString(juror.checkOutTime)))
             : { hour: '', minute: '', period: '' };
 
         const checkInTime = {
@@ -205,6 +209,7 @@
           req,
           payload,
         );
+
         app.logger.info('Updated juror\'s attendance times', {
           auth: req.session.authentication,
           token: req.session.authToken,
@@ -212,7 +217,41 @@
             ...payload,
           },
         });
-        return res.redirect(redirectUrl);
+
+        if (req.session.originalAppStage !== 'CHECKED_IN' || req.session.originalAppStage !== 'CHECKED_OUT'){
+          const confirmPayload = {
+            commonData: {
+              status: 'CONFIRM_ATTENDANCE',
+              attendanceDate: attendanceDate,
+              locationCode: req.session.authentication.owner,
+              singleJuror: true,
+            },
+            jurors: [jurorNumber],
+          };
+
+          try {
+            await jurorAttendanceDao.patch(app, req, confirmPayload);
+
+            app.logger.info('Confirmed the juror\'s attendance', {
+              auth: req.session.authentication,
+              token: req.session.authToken,
+              data: {
+                ...confirmPayload,
+              },
+            });
+
+            return res.redirect(redirectUrl);
+          } catch (err) {
+            app.logger.crit('Failed to confirm the attendance', {
+              auth: req.session.authentication,
+              token: req.session.authToken,
+              data: payload,
+              error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+            });
+
+            return res.render('_errors/generic');
+          }
+        }
       } catch (err) {
         app.logger.crit('Unable to update the juror attendance times', {
           auth: req.session.authentication,

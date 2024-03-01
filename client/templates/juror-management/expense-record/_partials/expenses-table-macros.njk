@@ -1,0 +1,76 @@
+{% macro consolidatedExpensesTable(params) %}
+  <div class="govuk-grid-column-full">
+
+    <div class="govuk-caption-m govuk-!-margin-bottom-3">
+      <span id="totalCheckedExpenses">0</span> of <span id="totalExpenses">{{ params.totalExpenses }}</span> selected
+    </div>
+
+    {% if params.errors.items["checkedExpenses"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
+    {% if params.errors.items["checkedExpenses"] %}
+      <div class="error-allocation">
+        <p class="govuk-error-message">{{ params.errors.items['checkedExpenses'][0].details }}</p>
+      </div>
+    {% endif %}
+
+    <table class="govuk-table mod-horizontal-scroll-table" {% if params.sorted === true %}data-module="moj-sortable-table"{% endif %}>
+      <hr class="govuk-section-break govuk-section-break--visible">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header mod-padding-block--0">
+            <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
+              <input type="checkbox" class="govuk-checkboxes__input" id="check-all-expenses"
+                aria-label="check-all-expenses" {% if params.totalCheckedExpenses === params.totalExpenses %}checked{% endif %}/>
+              <label class="govuk-label govuk-checkboxes__label" for="expenses-all">
+                <span class="govuk-visually-hidden">Select all expenses</span>
+              </label>
+            </div>
+          </th>
+          
+          {{ params.headings | safe }}
+
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        
+        {{ params.rows | safe }}
+
+      </tbody>
+    </table>
+
+    {% if params.errors.items["checkedExpenses"] %}</div>{% endif %}
+
+  </div>
+{% endmacro %}
+
+{% macro rowCheckbox(params) %}
+  <td class="govuk-table__cell mod-padding-block--0">
+    <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
+      <input type="checkbox" class="govuk-checkboxes__input"
+        id="expense-{{ params.attendanceDate | dateFilter('YYYY-MM-DD', 'YYYYMMDD') }}"
+        aria-label="check-expense-{{ params.attendanceDate | dateFilter('YYYY-MM-DD', 'YYYYMMDD') }}" name="checked-expenses" value="{{ params.attendanceDate }}"/>
+      <label class="govuk-label govuk-checkboxes__label" for="expense-{{ params.attendanceDate | dateFilter('YYYY-MM-DD', 'YYYYMMDD') }}">
+        <span class="govuk-visually-hidden">Select expense {{ params.attendanceDate | dateFilter('YYYY-MM-DD', 'YYYYMMDD') }}</span>
+      </label>
+    </div>
+  </td>
+{% endmacro %}
+
+{% macro attendanceType(params) %}
+  {% if params.attendance === "FULL_DAY" %}
+    {% set attendanceType = "Full day" %}
+  {% elif params.attendance === "HALF_DAY" %}
+    {% set attendanceType = "Half day" %}
+  {% elif params.attendance === "ABSENT" %}
+    {% set attendanceType = "Absent (no show)" %}
+  {% elif params.attendance === "NON_ATTENDANCE" %}
+    {% set attendanceType = "Non-attendance day" %}
+  {% elif params.attendance === "FULL_DAY_LONG_TRIAL" %}
+    {% set attendanceType = "Full day (>10 days)" %}
+  {% elif params.attendance === "HALF_DAY_LONG_TRIAL" %}
+    {% set attendanceType = "Half day (>10 days)" %}
+  {% elif params.attendance === "NON_ATTENDANCE_LONG_TRIAL" %}
+    {% set attendanceType = "Non-attendance day (>10 days)" %}
+  {% endif %}
+
+  <span>{{ attendanceType }}</span>
+{% endmacro %}

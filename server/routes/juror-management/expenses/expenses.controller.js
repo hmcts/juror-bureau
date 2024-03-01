@@ -2,63 +2,107 @@
   'use strict';
 
   const _ = require('lodash')
+    , modUtils = require('../../../lib/mod-utils')
     , validate = require('validate.js')
-    , validator = require('../../../config/validation/default-expenses');
+    , validator = require('../../../config/validation/default-expenses')
+    , { defaultExpensesDAO } = require('../../../objects/expenses');
 
   module.exports.getDefaultExpenses = (app) => {
-    return function(req, res) {
+    return async function(req, res) {
       const tmpErrors = _.cloneDeep(req.session.errors);
       const tmpBody = _.cloneDeep(req.session.tmpBody);
-
-      const processUrl = app.namedRoutes.build('juror-management.default-expenses.post', {
-        jurorNumber: req.params.jurorNumber,
-      });
-      const cancelUrl = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
-        jurorNumber: req.params.jurorNumber,
-        poolNumber: '123456789',
-      });
+      const { jurorNumber, poolNumber } = req.params;
+      const processUrl = req.url.includes('record')
+        ? app.namedRoutes.build('juror-record.default-expenses.post',
+          { jurorNumber, poolNumber})
+        : app.namedRoutes.build('juror-management.default-expenses.post',
+          { jurorNumber, poolNumber});
+      const cancelUrl = req.url.includes('record')
+        ? 'ADD JUROR RECORD EXPENSES LINK ONCE AVAILABLE'
+        : app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get',
+          { jurorNumber, poolNumber, status: 'draft'});
 
       delete req.session.errors;
       delete req.session.tmpBody;
 
-      return res.render('expenses/default-expenses.njk', {
-        processUrl,
-        cancelUrl,
-        tmpBody,
-        errors: {
-          title: 'Please check the form',
-          count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-          items: tmpErrors,
-        },
-      });
+      try {
+        const data = await defaultExpensesDAO.get(app, req, jurorNumber);
+        const defaultExpenses = modUtils.replaceAllObjKeys(_.cloneDeep(data), _.camelCase);
+
+        defaultExpenses['travelTime-hour'] = defaultExpenses.travelTime ? defaultExpenses.travelTime.split(':')[0] : '';
+        defaultExpenses['travelTime-minute'] = defaultExpenses.travelTime ? defaultExpenses.travelTime.split(':')[1] : '';
+        defaultExpenses.financialLoss = defaultExpenses.financialLoss ? defaultExpenses.financialLoss.toString() : '';
+        defaultExpenses.amountSpent = defaultExpenses.amountSpent ? defaultExpenses.amountSpent.toString() : '';
+        defaultExpenses.mileage = defaultExpenses.mileage ? defaultExpenses.mileage.toString() : '';
+        defaultExpenses.claimingSubsistenceAllowance = defaultExpenses.claimingSubsistenceAllowance ? 'true' : 'false';
+
+        return res.render('expenses/default-expenses.njk', {
+          jurorNumber: jurorNumber,
+          defaultExpenses,
+          processUrl,
+          cancelUrl,
+          tmpBody,
+          errors: {
+            title: 'Please check the form',
+            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+            items: tmpErrors,
+          },
+        });
+      } catch (err) {
+        app.logger.crit('Failed to fetch jurors default expenses', {
+          auth: req.session.authentication,
+          token: req.session.authToken,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic.njk');
+      }
     };
   };
 
   module.exports.postDefaultExpenses = (app) => {
     return async function(req, res) {
-      req.body.totalTravelTime = {
-        hour: req.body['totalTravelTime-hour'],
-        minutes: req.body['totalTravelTime-minute'],
+      const { jurorNumber, poolNumber } = req.params;
+      const validationErrorUrl = req.url.includes('record ')
+        ? app.namedRoutes.build('juror-record.default-expenses.get',
+          { jurorNumber, poolNumber })
+        : app.namedRoutes.build('juror-management.default-expenses.get',
+          { jurorNumber, poolNumber });
+      const redirectUrl = req.url.includes('record ')
+        ? 'ADD JUROR RECORD EXPENSES LINK ONCE AVAILABLE'
+        : app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get',
+          { jurorNumber, poolNumber, status: 'draft'});
+
+      req.body.travelTime = {
+        hour: req.body['travelTime-hour'],
+        minute: req.body['travelTime-minute'],
       };
+
       const validatorResult = validate(req.body, validator());
 
       if (typeof validatorResult !== 'undefined') {
         req.session.tmpBody = req.body;
         req.session.errors = validatorResult;
 
-        return res.redirect(app.namedRoutes.build('juror-management.default-expenses.get', {
-          jurorNumber: req.params.jurorNumber,
-        }));
+        return res.redirect(validationErrorUrl);
       }
 
       try {
-        //TODO replace with endpoint
-        resolver();
-        return res.redirect(app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
-          jurorNumber: req.params.jurorNumber,
-        }));
-      } catch (error) {
-        app.logger.crit('Unable to uncomplete service', {
+        req.body.travelTime = req.body['travelTime-hour'] ? [parseInt(req.body['travelTime-hour'])] : [0];
+        if (req.body['travelTime-minute']) {
+          req.body.travelTime.push(parseInt(req.body['travelTime-minute']));
+        } else {
+          req.body.travelTime.push(0);
+        }
+        delete req.body['travelTime-hour'];
+        delete req.body['travelTime-minute'];
+        delete req.body._csrf;
+
+        await defaultExpensesDAO.post(app, req, req.body);
+
+        return res.redirect(redirectUrl);
+      } catch (err) {
+        app.logger.crit('Failed to set default expenses', {
           auth: req.session.authentication,
           token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
@@ -68,11 +112,6 @@
       };
     };
 
-  };
-
-  //TODO delete resolver once backend is ready
-  function resolver() {
-    return new Promise(res => res(''));
   };
 
 })();

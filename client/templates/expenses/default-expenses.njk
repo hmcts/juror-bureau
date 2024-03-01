@@ -14,25 +14,21 @@
 
 {% block content %}
 {% include "includes/errors.njk" %}
- {% set smartcardError = undefined %}
-  {% if errors.items["smartcardNumber"] %}
-    {% set smartcardError = { text: errors.items["smartcardNumber"][0].details } %}
+ {% set smartCardError = undefined %}
+  {% if errors.items["smartCard"] %}
+    {% set smartCardError = { text: errors.items["smartCard"][0].details } %}
   {% endif %}
 {% set financialLossError = undefined %}
-  {% if errors.items["cost"] %}
-    {% set financialLossError = { text: errors.items["cost"][0].details } %}
+  {% if errors.items["financialLoss"] %}
+    {% set financialLossError = { text: errors.items["financialLoss"][0].details } %}
   {% endif %}
-{% set smartcardSpendError = undefined %}
-  {% if errors.items["smartcardSpend"] %}
-    {% set smartcardSpendError = { text: errors.items["smartcardSpend"][0].details } %}
-  {% endif %}
-{% set milesError = undefined %}
-  {% if errors.items["miles"] %}
-    {% set milesError = { text: errors.items["miles"][0].details } %}
+{% set mileageError = undefined %}
+  {% if errors.items["mileage"] %}
+    {% set mileageError = { text: errors.items["mileage"][0].details } %}
   {% endif %}
 {% set travelTimeError = undefined %}
-  {% if errors.items["totalTravelTime"] %}
-    {% set travelTimeError = { text: errors.items["totalTravelTime"][0].details } %}
+  {% if errors.items["travelTime"] %}
+    {% set travelTimeError = { text: errors.items["travelTime"][0].details } %}
   {% endif %}
 
   <div class="govuk-grid-row">
@@ -47,12 +43,12 @@
         <h2 id="overviewLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Financial loss</h2>
       </div>
       {{ govukInput({
-        id: "cost",
-        name: "cost",
+        id: "financialLoss",
+        name: "financialLoss",
         label: {
           text: "Loss of earnings or benefits per day"
         },
-        value: tmpBody.cost,
+        value: tmpBody.financialLoss if tmpBody else defaultExpenses.financialLoss,
         errorMessage: financialLossError,
         classes: "govuk-input--width-5 govuk-input--extra-letter-spacing",
         hint: {
@@ -68,8 +64,8 @@
        <h2 id="overviewLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Travel</h2>
        </div>
       {{ timeInput({
-        id: "totalTravelTime",
-        name: "totalTravelTime",
+        id: "travelTime",
+        name: "travelTime",
         fieldset: {
           legend: {
             text: "Total travel time",
@@ -82,14 +78,14 @@
         },
         items: {
           hour: {
-          value: tmpBody['totalTravelTime-hour'],
+          value: tmpBody['travelTime-hour'] if tmpBody['travelTime-hour'] else defaultExpenses['travelTime-hour'],
           attributes: {
           minLength: "1",
           maxLength: "2"
           }
           },
           minute: {
-            value: tmpBody['totalTravelTime-minute'],
+            value: tmpBody['travelTime-minute'] if tmpBody['travelTime-minute'] else defaultExpenses['travelTime-minute'],
             attributes: {
               minLength: "1",
               maxLength: "2"
@@ -103,11 +99,11 @@
         label: {
           text: "Miles travelled by car, motorcycle or bicycle per day"
         },
-        value: tmpBody.miles,
-        errorMessage: milesError,
+        value: tmpBody.mileage if tmpBody.mileage else defaultExpenses.mileage,
+        errorMessage: mileageError,
         classes: "govuk-input--width-5",
-        id: "miles",
-        name: "miles",
+        id: "mileage",
+        name: "mileage",
         suffix: {
           text: "miles"
         },
@@ -128,16 +124,15 @@
         },
         items: [
           {
-            value: "yes",
-            text: "Yes",
-            checked: tmpBody.foodAndDrink === 'yes'
+            value: "true",
+            text: "Yes"
           },
           {
-            value: "no",
-            text: "No",
-            checked: tmpBody.foodAndDrink === undefined or tmpBody.foodAndDrink === 'no'
+            value: "false",
+            text: "No"
           }
-        ]
+        ],
+        value: tmpBody.foodAndDrink if tmpBody.foodAndDrink else defaultExpenses.claimingSubsistenceAllowance
       }) }}
 
       <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
@@ -146,39 +141,36 @@
         label: {
           text: "Smartcard Number"
         },
-        value: tmpBody.smartcardNumber,
-        errorMessage: smartcardError,
+        value: tmpBody.smartCard if tmpBody.smartCard else defaultExpenses.smartCard,
+        errorMessage: smartCardError,
         classes: "govuk-input--width-20",
-        id: "smartcardNumber",
-        name: "smartcardNumber"
+        id: "smartCard",
+        name: "smartCard"
       }) }}
 
-      {{ govukInput({
-        id: "smartcardSpend",
-        name: "smartcardSpend",
-        label: {
-          text: "Total smartcard spend"
-        },
-        value: tmpBody.smartcardSpend,
-        errorMessage: smartcardSpendError,
-        classes: "govuk-!-width-one-half",
-        hint: {
-          text: "If you enter this, the total will be worked out as an average per day and applied to all draft expense records."
-        },
-        prefix: {
-          text: "£"
-        },
-        classes: "govuk-input--width-5",
-        spellcheck: false
+      <div class="mod-juror-record__title govuk-!-margin-bottom-5">
+      <h2 id="overviewLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Save or apply defaults</h2>
+      </div>
+
+      {{ govukCheckboxes({
+        name: "applyToAllDraft",
+        classes: "govuk-checkboxes--small",
+        items: [
+          {
+            value: "true",
+            text: "Tick to overwrite any existing draft expenses with these amounts for this juror."
+          }
+        ]
       }) }}
 
-      <div class="govuk-button-group govuk-!-padding-top-5">
+      <div class="govuk-button-group">
         {{ govukButton({
-          text: "Apply to all draft expenses",
+          text: "Save default expenses",
           type: "submit"
         }) }}
         <a class="govuk-link" href="{{ cancelUrl }}">Cancel without saving</a>
       </div>
+      <input type="hidden" name="jurorNumber" value="{{ jurorNumber }}">
       <input type="hidden" name="_csrf" value="{{ csrftoken }}">
       </form>  
     </div>

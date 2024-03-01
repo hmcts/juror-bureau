@@ -4,8 +4,12 @@
   const _ = require('lodash');
   const validate = require('validate.js');
   const enterExpensesValidator = require('../../../../config/validation/enter-expenses');
-  const { getDraftExpenseDAO, postDraftExpenseDAO } = require('../../../../objects/expense-record');
   const { jurorDetailsObject } = require('../../../../objects/juror-record');
+  const {
+    getDraftExpenseDAO,
+    postDraftExpenseDAO,
+    postRecalculateSummaryTotalsDAO,
+  } = require('../../../../objects/expense-record');
 
   module.exports.getEnterExpenses = (app) => {
     return async function(req, res) {
@@ -41,6 +45,7 @@
         , cancelUrl = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
           jurorNumber,
           poolNumber,
+          status: 'draft',
         });
       let tmpBody, responses;
 
@@ -80,6 +85,7 @@
             jurorNumber,
             poolNumber,
           },
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
         return res.render('_errors/generic');
@@ -98,7 +104,6 @@
       req.session.nonAttendanceDay = expensesData.none_attendance_day;
 
       if (!req.session.tmpBody) {
-        // TODO - replace with API call
         tmpBody = manipulateExpesnesApiData(expensesData);
       } else {
         tmpBody = _.cloneDeep(req.session.tmpBody);
@@ -205,6 +210,7 @@
         return res.redirect(app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
           jurorNumber,
           poolNumber,
+          status: 'draft',
         }));
       } catch (err) {
         app.logger.crit('Failed to update a draft expense: ', {
@@ -214,6 +220,7 @@
             jurorNumber,
             ...data,
           },
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
         return res.render('_errors/generic');
@@ -255,6 +262,7 @@
       return res.redirect(app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
         jurorNumber,
         poolNumber,
+        status: 'draft',
       }));
     };
   };
@@ -305,7 +313,6 @@
       }
 
       try {
-        // TODO: need to confirm that we need to handle loss over limit when applying to all days
         await postDraftExpenseDAO.post(app, req, jurorNumber, data);
 
         return res.redirect(redirectUrl);
@@ -317,6 +324,7 @@
             jurorNumber,
             ...data,
           },
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
         return res.render('_errors/generic');
@@ -343,18 +351,41 @@
     return async function(req, res) {
       const { jurorNumber, poolNumber } = req.params;
 
-      await sleep();
+      delete req.body._csrf;
 
-      app.logger.info('Recalculated summary totals for: ', {
-        auth: req.session.authentication,
-        jwt: req.session.authToken,
-        data: {
-          jurorNumber,
-          poolNumber,
-        },
-      });
+      const data = {
+        'juror_number': jurorNumber,
+        'expense_list': [
+          req.body,
+        ],
+      };
 
-      return res.render('expenses/_partials/summary.njk');
+      try {
+        const response = await postRecalculateSummaryTotalsDAO.post(app, req, data);
+
+        app.logger.info('Recalculated summary totals for: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            jurorNumber,
+            poolNumber,
+          },
+        });
+
+        return res.render('expenses/_partials/summary.njk', {
+          expenseData: response.expense_details[0],
+          expenseTotals: response.totals,
+        });
+      } catch (err) {
+        app.logger.crit('Failed to recalculate the summary totals: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+
+        return res.render('expenses/_partials/recalculate-error-banner.njk');
+      }
     };
   };
 
@@ -427,8 +458,6 @@
     return data;
   }
 
-  // Matches data from api to correct form fields
-  // TODO - update once BE has been implemented
   function manipulateExpesnesApiData(data) {
     let formData;
 

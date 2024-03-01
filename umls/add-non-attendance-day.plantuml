@@ -1,0 +1,113 @@
+@startuml add-non-attendance-day
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant JurorRecordAttendancePage <</juror-management/record/:jurorNumber/attendance>>
+participant DraftExpenseRecordPage <</juror-management/unpaid-attendance/expense-record/:jurorNumber/:poolNumber>>
+participant AddNonAttendanceDayPage <</juror-management/unpaid-attendance/non-attendance-day/:jurorNumber/:poolNumber>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant JurorRecordController <<juror-record.controller.js>> #lightyellow
+participant ExpenseRecordController <<expense-record.controller.js>> #lightyellow
+participant NonAttendanceDayController <<non-attendance-day.controller.js>> #lightyellow
+participant NonAttendanceDayObject <<jurorNonAttendanceDao.post()>> #lightyellow
+
+''' TEMPLATES
+participant JurorRecordAttendanceTemplate <<juror-management/juror-record/attendance.njk>> #lavender
+participant DraftExpenseRecordTemplate <<juror-management/expense-record/expense-record.njk>> #lavender
+participant NonAttendanceDayTemplate <<juror-management/non-attendance-day.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant NonAttendanceDayValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> JurorRecordAttendancePage : click add non-attendance day
+JurorRecordAttendancePage -> NonAttendanceDayController : call non-attendance day conrtoller
+
+alt Navigate from expense record
+  Actor -> DraftExpenseRecordPage : click add non-attendance day
+  DraftExpenseRecordPage -> NonAttendanceDayController : call non-attendance day conrtoller
+end
+
+NonAttendanceDayController -> NonAttendanceDayTemplate : request and build template
+NonAttendanceDayController <- NonAttendanceDayTemplate : return HTML
+AddNonAttendanceDayPage <- NonAttendanceDayController : return HTML
+Actor <- AddNonAttendanceDayPage : render HTML
+
+Actor -> AddNonAttendanceDayPage : enters a valid non-attendance day and clicks continue
+
+SelectPoolPage -> NonAttendanceDayController : call page conrtoller
+
+NonAttendanceDayController -> NonAttendanceDayValidator : validate form
+
+alt Invalid date entered
+  NonAttendanceDayController <-- NonAttendanceDayValidator : data validationfails
+  NonAttendanceDayController -> NonAttendanceDayTemplate : request and build error message template
+  NonAttendanceDayController <- NonAttendanceDayTemplate : return HTML
+  AddNonAttendanceDayPage <- NonAttendanceDayController : return HTML
+  Actor <- AddNonAttendanceDayPage : render error message
+end
+
+NonAttendanceDayController <- NonAttendanceDayValidator : validat date entered
+
+NonAttendanceDayController -> NonAttendanceDayObject : build request object
+NonAttendanceDayObject -> BackendController : send backend request
+NonAttendanceDayObject <- BackendController : ok response
+NonAttendanceDayController <- NonAttendanceDayObject : resolve request
+
+alt Date already been recorded as an attendance day
+    NonAttendanceDayObject <-- BackendController : error response (422)
+    NonAttendanceDayController <-- NonAttendanceDayObject : reject requestObject
+    NonAttendanceDayController -> NonAttendanceDayTemplate : request and build error message template
+    NonAttendanceDayController <- NonAttendanceDayTemplate : return HTML
+    AddNonAttendanceDayPage <- NonAttendanceDayController : return HTML
+    Actor <- AddNonAttendanceDayPage : render error message
+end
+
+alt Date before jurors service start date
+    NonAttendanceDayObject <-- BackendController : error response (422)
+    NonAttendanceDayController <-- NonAttendanceDayObject : reject requestObject
+    NonAttendanceDayController -> NonAttendanceDayTemplate : request and build error message template
+    NonAttendanceDayController <- NonAttendanceDayTemplate : return HTML
+    AddNonAttendanceDayPage <- NonAttendanceDayController : return HTML
+    Actor <- AddNonAttendanceDayPage : render error message
+end
+
+alt Failed to add a non-attendance day for juror
+    NonAttendanceDayObject <-- BackendController : error response
+    NonAttendanceDayController <-- NonAttendanceDayObject : reject requestObject
+    NonAttendanceDayController -> ErrorTemplate : request and build template
+    NonAttendanceDayController <- ErrorTemplate : return HTML
+    GenericErrorPage <- NonAttendanceDayController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+NonAttendanceDayController -> JurorRecordController : call juror record controller controller
+JurorRecordController -> JurorRecordAttendanceTemplate : request and build template
+JurorRecordController <- JurorRecordAttendanceTemplate : return HTML
+JurorRecordAttendancePage <- JurorRecordController : return HTML
+Actor <- JurorRecordAttendancePage : render HTML
+
+alt Initally navigated from expense record
+  NonAttendanceDayController -> ExpenseRecordController : call juror record controller controller
+  ExpenseRecordController -> DraftExpenseRecordTemplate : request and build template
+  ExpenseRecordController <- DraftExpenseRecordTemplate : return HTML
+  DraftExpenseRecordPage <- ExpenseRecordController : return HTML
+  Actor <- DraftExpenseRecordPage : render HTML
+end
+
+
+
+
+
+
+
+    

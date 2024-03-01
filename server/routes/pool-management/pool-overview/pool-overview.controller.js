@@ -499,8 +499,8 @@
       delete filters._csrf;
 
       // REMOVE ALL SELECTED JURORS - dont want prior selections persisting through filtering
-      // req.session.membersList.forEach((member) => delete member.checked);
-      // let membersList = _.clone(req.session.membersList) || [];
+      req.session.membersList.forEach((member) => delete member.checked);
+      let membersList = _.clone(req.session.membersList) || [];
 
       app.logger.info('Filtering members in pool: ', {
         auth: req.session.authentication,
@@ -639,6 +639,7 @@
         data: membersList,
       });
 
+      membersList = typeof membersList !== 'undefined' ? membersList : { poolMembers: [] };
       req.session.membersList = membersList.poolMembers;
       req.session.jurorDetails = {};
       membersList.poolMembers.forEach(item => {
