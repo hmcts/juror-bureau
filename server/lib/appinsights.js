@@ -4,7 +4,9 @@ const secretsConfig = require('config');
 module.exports.AppInsights = class AppInsights {
 
   constructor() {
-    if (secretsConfig.get('secrets.juror.app-insights-connection-string')) {
+    const appInsightsString = secretsConfig.get('secrets.juror.app-insights-connection-string')
+
+    if (appInsightsString) {
       console.log('Starting Appinsights');
 
       appInsights.setup(secretsConfig.get('secrets.juror.app-insights-connection-string'))
