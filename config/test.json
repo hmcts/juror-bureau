@@ -8,7 +8,7 @@
       "bureau-smartSurveyToken": "",
       "bureau-smartSurveyTokenSecret": "",
       "launchDarklyKey": "",
-      "app-insights-connection-string": "app-insights-connection-string"
+      "app-insights-connection-string": ""
     }
   }
 }
