@@ -9,7 +9,7 @@ module.exports.AppInsights = class AppInsights {
     if (appInsightsString) {
       console.log('Starting Appinsights');
 
-      appInsights.setup(secretsConfig.get('secrets.juror.app-insights-connection-string'))
+      appInsights.setup(appInsightsString)
         .setAutoCollectConsole(true, true)
         .setSendLiveMetrics(true)
         .start();
