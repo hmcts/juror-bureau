@@ -42,23 +42,11 @@
 
   {% set acceptDeferralRadio = false %}
   {% set refuseDeferralRadio = false %}
-  {% if deferralDetails.deferralDecision === "acceptDeferral" %}
+  {% if deferralDetails.deferralDecision === "GRANT" %}
     {% set acceptDeferralRadio = true %}
   {% endif %}
-  {% if deferralDetails.deferralDecision === "refuseDeferral" %}
+  {% if deferralDetails.deferralDecision === "REFUSE" %}
     {% set refuseDeferralRadio = true %}
-  {% endif %}
-
-  {% set radioItems = [["Accept deferral request", "Refuse deferral request"], ["Grant deferral", "Refuse deferral"]]%}
-  {% set radioValues = [["acceptDeferral", "refuseDeferral"], ["GRANT", "REFUSE"]] %}
-  {% set submitButtonText = ["Confirm", "Continue"] %}
-  {% set radioText = radioItems[0] %}
-  {% set radioGrantRefuse = radioValues[0] %}
-  {% set submitText = submitButtonText[0] %}
-  {% if hasModAccess === true %}
-    {% set radioText = radioItems[1] %}
-    {% set radioGrantRefuse = radioValues[1] %}
-    {% set submitText = submitButtonText[1] %}
   {% endif %}
 
   {# Setup reason dropdown items #}
@@ -76,18 +64,9 @@
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      {% if hasModAccess === true %}
-        <form action=" {{ processURL }}" method="POST" class="disable-empty" id="deferralForm">
-      {% else %}
-        <form action="/response/{{jurorNumber}}/deferral" method="POST" class="disable-empty" id="deferralForm">
-      {% endif %}
+      <form action=" {{ processURL }}" method="POST" class="disable-empty" id="deferralForm">
 
-        {% if hasModAccess === false %}
-        <span class="govuk-caption-xl">{{ nameDetails.headerNameRender }}</span>
-        <h1 class="govuk-heading-xl">Deferral request</h1>
-        {% else %}
         <h1 class="govuk-heading-xl">Grant or refuse a deferral</h1>
-        {% endif %}
 
         {# deferral reason dropdown #}
         {{ govukSelect({
@@ -106,11 +85,11 @@
           <div class="{% if errors.items['dates'] %}govuk-error{% endif %}" id="datesGroup">
             {{ datePicker({
               id: "deferralDate",
-              lang: 'en',
+              lang: "en",
               label: {
-                text: 'Deferral date'
+                text: "Deferral date"
               },
-              hint: 'enter a date',
+              hint: "Enter a date",
               dateMin: hearingDate,
               dateMax: null,
               dateValue: deferralDetails.deferralDate,
@@ -133,12 +112,14 @@
           {% set dateItems = (dateItems.push({value: dateItem.dateValue, text: dateItem.displayValue, checked: selectedItem }), dateItems) %}
         {% endfor %}
 
-        {% if deferralDetails.deferralDateSelection === "otherDate" %}
-          {% set selectedItem = true %}
-        {% else %}
-          {% set selectedItem = false %}
-        {% endif %}
-        {% set dateItems = (dateItems.push({value: "otherDate", text: "Other", checked: selectedItem, conditional: {html: otherDeferralDateHTML} }), dateItems) %}
+        {% set dateItems = (dateItems.push({
+          value: "otherDate",
+          text: "Other",
+          checked: deferralDetails.deferralDateSelection === "otherDate",
+          conditional: {
+              html: otherDeferralDateHTML
+            }
+          }), dateItems) %}
 
         {# set up date selection / other radio buttons #}
         {% set deferralChoicesHTML %}
@@ -169,17 +150,17 @@
           },
           items: [
             {
-              value: radioGrantRefuse[0],
-              text: radioText[0],
-              checked: acceptDeferralRadio,
+              value: "GRANT",
+              text: "Grant deferral",
+              checked: deferralDetails.deferralDecision === "GRANT",
               conditional: {
                 html: deferralChoicesHTML
               }
             },
             {
-              value: radioGrantRefuse[1],
-              text: radioText[1],
-              checked: refuseDeferralRadio
+              value: "REFUSE",
+              text: "Refuse deferral",
+              checked: deferralDetails.deferralDecision === "REFUSE"
             }
           ],
           errorMessage: deferralDecisionError
@@ -187,13 +168,10 @@
 
         <div class="govuk-button-group">
           {{ govukButton({
-            text: submitText
+            text: "Continue"
           }) }}
-          {% if hasModAccess === true %}
-            <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
-          {% else %}
-            <a class="govuk-link" href="../../response/{{jurorNumber}}">Cancel</a>
-          {% endif %}
+
+          <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
         </div>
 
         <input type="hidden" name="hearingDate" id="hearingDate" value="{{ hearingDate }}">

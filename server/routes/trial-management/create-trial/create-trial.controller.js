@@ -44,21 +44,26 @@
           const courtrooms = data[0];
           const judges = data[1];
 
+          const courtroomsToDisplay = [];
+
           req.session.judges = judges.judges;
-          req.session.courtrooms = courtrooms;
+          req.session.courtrooms = courtrooms.map((court) => {
 
-          const judgesToDisplay = judges.judges.map(j => j.description);
+            court.display_name = court.court_location;
+            court.court_location = court.court_location.replace(/ /g, '_');
 
-          let courtroomsToDisplay = [];
-
-          courtrooms.forEach((court) => {
             courtroomsToDisplay.push(
               {
+                displayName: court.display_name,
                 courtLocationName: court.court_location,
                 courtrooms: court.court_rooms.map(room => room.description),
               }
             );
+
+            return court;
           });
+
+          const judgesToDisplay = judges.judges.map(j => j.description);
 
           tmpErrors = _.clone(req.session.errors);
           tmpFields = typeof req.session.createTrial !== 'undefined' ?

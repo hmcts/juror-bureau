@@ -22,6 +22,10 @@
         );
 
         req.jurorDetails = jurorDetails;
+
+        // we need to store the location code because we need it to be able to visit the juror record page
+        req.session.locCode = poolNumber.slice(0, 3);
+
       } catch (err) {
         app.logger.crit('Failed to fetch juror details', {
           auth: req.session.authentication,

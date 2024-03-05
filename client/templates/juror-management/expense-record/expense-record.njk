@@ -51,7 +51,7 @@
     </div>
 
     <div>
-      <a href="#" class="govuk-body govuk-link govuk-link--no-visited-state">Add or change bank details</a>
+      <a href="{{ bankDetailsUrl }}" class="govuk-body govuk-link govuk-link--no-visited-state">Add or change bank details</a>
     </div>
   </div>
 
@@ -64,7 +64,7 @@
               text: "Juror number"
             },
             value: {
-              html: '<a href=' + url("juror-record.overview.get", { jurorNumber: jurorNumber }) + ' class="govuk-link">' + jurorNumber + '</a>'
+              html: '<a href=' + url("juror-record.expenses.get", { jurorNumber: jurorNumber }) + ' class="govuk-link">' + jurorNumber + '</a>'
             }
           },
           {

@@ -6,6 +6,7 @@
 {% from "govuk/components/details/macro.njk" import govukDetails %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "custom-components/autocomplete/macro.njk" import "modAutocomplete" %}
 
 {% block page_title %}
   {{ serviceName }} - Search
@@ -41,29 +42,16 @@
     <div class="govuk-form-group">
       <fieldset class="govuk-fieldset">
 
-        {# Setup officer assigned list #}
-        {% set sendToList = [{value: "", text: "Select an officer to assign to", selected: true}] %}
-        {% if authentication.staff.rank > 0 %}
-          {% set sendToList = (sendToList.push({value: "AUTO", text: "AUTO", selected: false }), sendToList) %}
-        {% endif %}
-        {% for staffMember in staffList %}
-          {% if searchParams.officer_assigned === staffMember.login %}
-            {% set staffSelected = true %}
-          {% else %}
-            {% set staffSelected = false %}
-          {% endif %}
-          {% set sendToList = (sendToList.push({value: staffMember.login, text: staffMember.name, selected: staffSelected }), sendToList) %}
-        {% endfor %}
-
         <div class="officerAssignedSelect">
-          {{ govukSelect({
-            id: "officerAssigned",
-            name: "officer_assigned",
+          {{ modAutocomplete({
             label: {
               text: "Select an officer assigned",
-              classes: "govuk-body govuk-!-font-weight-bold"
+              class: "govuk-body govuk-!-font-weight-bold"
             },
-            items: sendToList
+            value: "",
+            name: "officer_assigned",
+            id: "officerAssigned",
+            data: "AUTO," + staffList
           }) }}
         </div>
 
@@ -316,15 +304,15 @@
           <div class="response-assignment {% if not responses.juror_response or responses.juror_response.length === 0 %} u-hide{% endif %}">
             {# Select all #}
             <button id="selectAllLink" class="govuk-button govuk-button--secondary" data-module="govuk-button" />
-                Select all
+              Select all
             </button>
             {# Unselect all #}
             <button id="deselectAllLink" class="govuk-button govuk-button--secondary" data-module="govuk-button" />
-                Unselect all
+              Unselect all
             </button>
             {# Send to...#}
             <button id="sendToButtonMulti" type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" />
-                Send to...
+              Send to...
             </button>
           </div>
         {% endif %}
@@ -399,7 +387,7 @@
                     class="govuk-table__cell jd-middle-align date-col {% if item.slaOverdue %}jd-response-overdue{% endif %}"
                     data-sort-value="{{item.date_received | dateFilter('YYYY-MM-DD', 'YYYYMMDD')}}"
                   >
-                    {{item.date_received | dateFilter("YYYY-MM-DD", "D MMM YYYY")}}
+                    {{ item.date_received | dateFilter("YYYY-MM-DD", "D MMM YYYY") }}
                   </td>
                               
                 </tr>

@@ -237,7 +237,7 @@ const { capitalise, toSentenceCase } = require('../components/filters');
       expect(transformedUnpaidAttendance.rows).to.be.length(1);
       expect(transformedUnpaidAttendance.rows[0][0].hasOwnProperty('html')).to.be.true;
       expect(transformedUnpaidAttendance.rows[0][0].html).to.equal(
-        '<a href="/juror-management/record/123456/finance" class="govuk-link">123456</a>');
+        '<a href="/juror-management/record/123456/expenses" class="govuk-link">123456</a>');
       expect(transformedUnpaidAttendance.rows[0][1].hasOwnProperty('text')).to.be.true;
       expect(transformedUnpaidAttendance.rows[0][1].text).to.equal('12345');
       expect(transformedUnpaidAttendance.rows[0][2].hasOwnProperty('text')).to.be.true;

@@ -11,12 +11,12 @@
 
 {% set bacsAndChequeTabHtml %}
   <span id="bacsAndChequeTab">
-    BACS and cheque{% if approvalData['bacs-and-cheque'].length > 0 %} <span id="jurorApprovalCount" class="moj-notification-badge jd-badge-blue">{{ approvalData['bacs-and-cheque'].length }}</span>{% endif %}</a>
+    BACS and cheque{% if tabHeaders.totalPendingBacs > 0 %} <span id="jurorApprovalCount" class="moj-notification-badge jd-badge-blue">{{ tabHeaders.totalPendingBacs }}</span>{% endif %}</a>
   </span>
 {% endset %}
 {% set cashTabHtml %}
   <span id="cashTab">
-    Cash{% if approvalData['cash'].length > 0 %} <span id="jurorApprovalCount" class="moj-notification-badge jd-badge-blue">{{ approvalData['cash'].length }}</span>{% endif %}</a>
+    Cash{% if tabHeaders.totalPendingCash > 0 %} <span id="jurorApprovalCount" class="moj-notification-badge jd-badge-blue">{{ tabHeaders.totalPendingCash }}</span>{% endif %}</a>
   </span>
 {% endset %}
 
@@ -56,7 +56,9 @@
         {% if errors.items["approveExpensesFromDate"] or errors.items["approveExpensesToDate"]%}
           {% set toggle = true %}
         {% endif %}
-        {% if params.filterStartDate or params.filterEndDate %}
+        {% if dateFilters.from or dateFilters.to %}
+          {% set filterStartDate = dateFilters.from | dateFilter("yyyy-MM-DD", "DD/MM/YYYY") %}
+          {% set filterEndDate = dateFilters.to | dateFilter("yyyy-MM-DD", "DD/MM/YYYY") %}
           {% set toggle = true %}
         {% endif %}
 
@@ -66,7 +68,7 @@
             text: "Date from"
           },
           hint: "Use dd/mm/yyyy format.",
-          dateValue: params.filterStartDate,
+          dateValue: tmpBody.filterStartDate if tmpBody.filterStartDate else filterStartDate,
           dateError: approveExpensesFromDateError
         }) }}
 
@@ -76,8 +78,7 @@
             text: "Date to"
           },
           hint: "Use dd/mm/yyyy format.",
-          dateMin: filters.filterStartDate,
-          dateValue: params.filterEndDate,
+          dateValue: tmpBody.filterEndDate if tmpBody.filterEndDate else filterEndDate,
           dateError: approveExpensesToDateError
         }) }}
 
@@ -96,6 +97,27 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
       <h1 class="govuk-heading-l">Approve expenses</h1>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ mojSubNavigation({
+        label: "Approve expenses navigation",
+        items: [{
+          html: bacsAndChequeTabHtml,
+          href: tabsUrls.bacsAndCheque,
+          active: currentTab === "BACS"
+        },
+        {
+          html: cashTabHtml,
+          href: tabsUrls.cash,
+          active: currentTab === "CASH"
+        }]
+      }) }}
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
       <form action="{{ processDateFilterUrl }}" class="mod-filter-form" id="filterByDateForm" method="post">
         {{ govukDetails({
             summaryText: "Filter by date",
@@ -107,27 +129,6 @@
         <input type="hidden" name="currentTab" value="{{ currentTab }}">
         <input type="hidden" name="_csrf" value="{{ csrftoken }}">
       </form>
-    </div>
-  </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      {{ mojSubNavigation({
-        label: "Approve expenses navigation",
-        items: [{
-          html: bacsAndChequeTabHtml,
-          href: tabsUrls.bacsAndCheque,
-          active: currentTab === "bacs-and-cheque"
-        },
-        {
-          html: cashTabHtml,
-          href: tabsUrls.cash,
-          active: currentTab === "cash"
-        }]
-      }) }}
-    </div>
-  </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
       {% include "./_partials/approve-expenses-table.njk" %}
     </div>
   </div>
@@ -145,4 +146,39 @@
       datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
     });
   </script>
+
+  <script>
+    let allChecked = false;
+    let chkbxs = document.getElementsByName('selectedJurors');
+    document.getElementById("totalJurors").innerHTML = chkbxs.length;
+    document.getElementById("checkedJurors").innerHTML = 0;
+
+    function selectAll() {
+      if (allChecked) {
+        allChecked = false;
+        for(var i = 0; i < chkbxs.length; i++){
+          if (chkbxs[i].type=='checkbox')
+          chkbxs[i].checked = false;   
+        }
+        document.getElementById("checkedJurors").innerHTML = $('input:checkbox:checked').length;
+      } else {
+        allChecked = true;
+        for(var i = 0; i < chkbxs.length; i++){
+          if (chkbxs[i].type=='checkbox')
+          chkbxs[i].checked = true;  
+        }
+        document.getElementById("checkedJurors").innerHTML = $('input:checkbox:checked').length - 1;
+      }
+      
+    };
+
+    function checkSet() {
+      document.getElementById("checkedJurors").innerHTML = $('input:checkbox:checked').length;
+      if (chkbxs.length > document.getElementsByName('selectedJurors:checked').length) {
+        document.getElementsByName('selectAllCheckbox')[0].checked = false;
+        allChecked = false;
+      }
+    }
+  </script>
+
 {% endblock %}

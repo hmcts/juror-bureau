@@ -71,6 +71,26 @@
           locationCode: req.params.locationCode,
         }));
       }, (err) => {
+        if (err.statusCode === 422) {
+          app.logger.warn('Failed to generate a panel from with a BVR', {
+            auth: req.session.authentication,
+            token: req.session.authToken,
+            error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+          });
+
+          req.session.errors = {
+            generatePanelError: [{
+              details: err.error.message,
+              summary: err.error.message,
+            }],
+          };
+
+          return res.redirect(app.namedRoutes.build('trial-management.generate-panel.get', {
+            trialNumber: req.params.trialNumber,
+            locationCode: req.params.locationCode,
+          }));
+        }
+
         app.logger.crit('Failed to generate a panel from all available jurors', {
           auth: req.session.authentication,
           token: req.session.authToken,

@@ -78,7 +78,9 @@
           'juror_number': req.params.jurorNumber,
           'location_code': req.session.authentication.owner,
           'pool_number': req.params.poolNumber,
-          'non_attendance_date': dateFilter(req.body.nonAttendanceDay, 'DD/MM/YYYY', 'YYYY-MM-DD'),
+          'non_attendance_date': dateFilter(
+            req.body.nonAttendanceDay.split('/').map(d => d.padStart(2, '0')).join('/'), 'DD/MM/YYYY', 'YYYY-MM-DD',
+          ),
         };
 
         await jurorNonAttendanceDao.post(app, req, payload);

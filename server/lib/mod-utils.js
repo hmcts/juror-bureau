@@ -294,7 +294,7 @@
       item.push(
         {
           html: '<a href="/juror-management/record/' +
-            unpaid.juror_number + '/finance" class="govuk-link">' + unpaid.juror_number + '</a>',
+            unpaid.juror_number + '/expenses" class="govuk-link">' + unpaid.juror_number + '</a>',
           attributes: {
             'data-sort-value': unpaid.juror_number,
           },

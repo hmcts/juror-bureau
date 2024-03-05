@@ -8,6 +8,7 @@
 
     require('./enter-expenses')(app);
     require('./non-attendance-day')(app);
+    require('./edit-bank-details')(app);
 
     app.get('/juror-management/expenses/:jurorNumber/:poolNumber/default-expenses',
       'juror-management.default-expenses.get',
@@ -18,6 +19,7 @@
       'juror-management.default-expenses.post',
       auth.verify,
       controller.postDefaultExpenses(app));
+
   };
 
 })();

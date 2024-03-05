@@ -25,8 +25,11 @@
           staffList = await staffRosterObj.get(require('request-promise'), app, req.session.authToken);
         }
 
+        // always reset the staff list here
+        req.session.staffList = _.clone(staffList);
+
         return res.render('search/index', {
-          staffList,
+          staffList: flattenStaffList(staffList),
           searchParams: tmpFields,
           errors: {
             message: '',
@@ -65,9 +68,9 @@
         validatorResult = {
           jurorNumber: [
             {
+              details: 'Juror number must be 9 characters',
               summary: 'Juror number must be 9 characters',
               summaryLink: 'jurorNumber',
-              details: 'Juror number must be 9 characters',
             },
           ],
         };
@@ -78,9 +81,25 @@
           ...validatorResult,
           poolNumber: [
             {
+              details: 'Pool number must be 9 characters',
               summary: 'Pool number must be 9 characters',
               summaryLink: 'poolNumber',
-              details: 'Pool number must be 9 characters',
+            },
+          ],
+        };
+      }
+
+      const staffToSearch = req.session.staffList
+        .find((staff) => staff.name.toLowerCase() === req.body['officer_assigned'].toLowerCase());
+
+      if (!staffToSearch && !!req.body['officer_assigned']) {
+        validatorResult = {
+          ...validatorResult,
+          officerAssigned: [
+            {
+              details: 'Select a staff from the list provided',
+              summary: 'Select a staff from the list provided',
+              summaryLink: 'officerAssigned',
             },
           ],
         };
@@ -106,6 +125,12 @@
         }
       }
 
+      // assign the officer and then delete the list from session
+      if (staffToSearch) {
+        payload['officer_assigned'] = staffToSearch.login;
+      }
+
+      delete req.session.staffList;
       delete payload._csrf;
 
       const searchParams = _.clone(payload);
@@ -175,6 +200,9 @@
           response: _.merge(staff, responses),
         });
 
+        // we will not move away from this controller / page... so set again the staff list for the next submission
+        req.session.staffList = _.clone(staff);
+
         resultsStr = buildSearchString(payload);
 
       } catch (err) {
@@ -190,7 +218,7 @@
 
       } finally {
         res.render('search/index', {
-          staffList: staff,
+          staffList: flattenStaffList(staff),
           responses,
           searchParams,
           resultsStr,
@@ -205,6 +233,13 @@
       return res.redirect(app.namedRoutes.build('search.get'));
     };
   };
+
+  function flattenStaffList(staffList) {
+    return staffList.reduce((list, curr) => {
+      list.push(curr.name);
+      return list;
+    }, []).join(',');
+  }
 
   function buildSearchString(payload) {
     const str = [];

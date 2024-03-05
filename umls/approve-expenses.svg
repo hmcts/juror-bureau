@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="1791px" preserveAspectRatio="none" style="width:3271px;height:1791px;background:#FFFFFF;" version="1.1" viewBox="0 0 3271 1791" width="3271px" zoomAndPan="magnify"><defs/><g><rect fill="none" height="253.7949" style="stroke:#000000;stroke-width:1.5;" width="3114" x="10" y="128.5977"/><rect fill="none" height="163.8633" style="stroke:#000000;stroke-width:1.5;" width="3094" x="20" y="211.5293"/><rect fill="none" height="193.1738" style="stroke:#000000;stroke-width:1.5;" width="3245" x="20" y="513.6348"/><rect fill="none" height="134.5527" style="stroke:#000000;stroke-width:1.5;" width="2266" x="20" y="896.6719"/><rect fill="none" height="163.8633" style="stroke:#000000;stroke-width:1.5;" width="2715" x="20" y="1045.2246"/><rect fill="none" height="193.1738" style="stroke:#000000;stroke-width:1.5;" width="3245" x="20" y="1340.3301"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="55" x2="55" y1="52.9766" y2="1784.9883"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="369" x2="369" y1="52.9766" y2="1784.9883"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="741" x2="741" y1="52.9766" y2="1784.9883"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1029" x2="1029" y1="52.9766" y2="1784.9883"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1227" x2="1227" y1="52.9766" y2="1784.9883"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1467" x2="1467" y1="52.9766" y2="1784.9883"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1697" x2="1697" y1="52.9766" y2="1784.9883"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="2047" x2="2047" y1="52.9766" y2="1784.9883"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="2505" x2="2505" y1="52.9766" y2="1784.9883"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="2815" x2="2815" y1="52.9766" y2="1784.9883"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="3004" x2="3004" y1="52.9766" y2="1784.9883"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="3184" x2="3184" y1="52.9766" y2="1784.9883"/><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="51" x="30" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="37" x="37" y="42.0234">Actor</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="303" x="218" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="289" x="225" y="25.5352">«/juror-management/approve-expenses»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="156" x="291.5" y="42.0234">ApproveExpensesPage</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="421" x="531" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="407" x="538" y="25.5352">«/juror-management/approve-expenses/cannot-approve»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="206" x="638.5" y="42.0234">CannotApproveExpensesPage</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="134" x="962" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="56" x="1001" y="25.5352">«/error»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="120" x="969" y="42.0234">GenericErrorPage</text><rect fill="#FFFFE0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="243" x="1106" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="229" x="1113" y="25.5352">«approve-expenses.controller.js»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="193" x="1131" y="42.0234">ApproveExpensesController</text><rect fill="#FFFFE0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="216" x="1359" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="202" x="1366" y="25.5352">«approveExpensesDAO.get()»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="194" x="1370" y="42.0234">ExpensesForApprovalObject</text><rect fill="#FFFFE0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="224" x="1585" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="210" x="1592" y="25.5352">«approveExpensesDAO.post()»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="167" x="1613.5" y="42.0234">ApproveExpensesObject</text><rect fill="#E6E6FA" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="457" x="1819" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="443" x="1826" y="25.5352">«juror-management/approve-expenses/approve-expenses.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="187" x="1954" y="42.0234">ApproveExpensesTemplate</text><rect fill="#E6E6FA" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="439" x="2286" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="425" x="2293" y="25.5352">«juror-management/approve-expenses/cannot-approve.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="172" x="2419.5" y="42.0234">CannotApproveTemplate</text><rect fill="#E6E6FA" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="160" x="2735" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="146" x="2742" y="25.5352">«_errors/generic.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="99" x="2765.5" y="42.0234">ErrorTemplate</text><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="199" x="2905" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="185" x="2912" y="42.0234">ApproveExpensesValidator</text><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="141" x="3114" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="127" x="3121" y="42.0234">BackendController</text><polygon fill="#181818" points="357.5,80.2871,367.5,84.2871,357.5,88.2871" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="55.5" x2="363.5" y1="84.2871" y2="84.2871"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="290" x="67.5" y="79.5449">click juror management approve expenses tab</text><polygon fill="#181818" points="1215.5,109.5977,1225.5,113.5977,1215.5,117.5977" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="369.5" x2="1221.5" y1="113.5977" y2="113.5977"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="204" x="696.5" y="108.8555">call approve expenses controller</text><path d="M10,128.5977 L72,128.5977 L72,135.9082 L62,145.9082 L10,145.9082 L10,128.5977 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="253.7949" style="stroke:#000000;stroke-width:1.5;" width="3114" x="10" y="128.5977"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="25" y="142.166">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="160" x="87" y="141.2324">[Enter new dates to filter by]</text><polygon fill="#181818" points="357.5,163.2188,367.5,167.2188,357.5,171.2188" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="55.5" x2="363.5" y1="167.2188" y2="167.2188"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="128" y="162.4766">enter new dates to filter by</text><polygon fill="#181818" points="2992.5,192.5293,3002.5,196.5293,2992.5,200.5293" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1227.5" x2="2998.5" y1="196.5293" y2="196.5293"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="110" x="2061" y="191.7871">validate selection</text><path d="M20,211.5293 L82,211.5293 L82,218.8398 L72,228.8398 L20,228.8398 L20,211.5293 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="163.8633" style="stroke:#000000;stroke-width:1.5;" width="3094" x="20" y="211.5293"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="35" y="225.0977">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="125" x="97" y="224.1641">[Invalid dates entered]</text><polygon fill="#181818" points="1238.5,246.1504,1228.5,250.1504,1238.5,254.1504" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="1232.5" x2="3003.5" y1="250.1504" y2="250.1504"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="124" x="2054" y="245.4082">data validation fails</text><polygon fill="#181818" points="2035.5,275.4609,2045.5,279.4609,2035.5,283.4609" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1227.5" x2="2041.5" y1="279.4609" y2="279.4609"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="262" x="1506.5" y="274.7188">request and build error message template</text><polygon fill="#181818" points="1238.5,304.7715,1228.5,308.7715,1238.5,312.7715" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1232.5" x2="2046.5" y1="308.7715" y2="308.7715"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="1598.5" y="304.0293">return HTML</text><polygon fill="#181818" points="380.5,334.082,370.5,338.082,380.5,342.082" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="374.5" x2="1226.5" y1="338.082" y2="338.082"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="759.5" y="333.3398">return HTML</text><polygon fill="#181818" points="66.5,363.3926,56.5,367.3926,66.5,371.3926" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="60.5" x2="368.5" y1="367.3926" y2="367.3926"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="133" x="146" y="362.6504">render error message</text><polygon fill="#181818" points="1455,406.7031,1465,410.7031,1455,414.7031" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1227.5" x2="1461" y1="410.7031" y2="410.7031"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="126" x="1284.25" y="405.9609">build request object</text><polygon fill="#181818" points="3172.5,436.0137,3182.5,440.0137,3172.5,444.0137" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1467" x2="3178.5" y1="440.0137" y2="440.0137"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="138" x="2256.75" y="435.2715">send backend request</text><polygon fill="#181818" points="1478,465.3242,1468,469.3242,1478,473.3242" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1472" x2="3183.5" y1="469.3242" y2="469.3242"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="77" x="2287.25" y="464.582">ok response</text><polygon fill="#181818" points="1238.5,494.6348,1228.5,498.6348,1238.5,502.6348" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1232.5" x2="1466" y1="498.6348" y2="498.6348"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="96" x="1299.25" y="493.8926">resolve request</text><path d="M20,513.6348 L82,513.6348 L82,520.9453 L72,530.9453 L20,530.9453 L20,513.6348 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="193.1738" style="stroke:#000000;stroke-width:1.5;" width="3245" x="20" y="513.6348"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="35" y="527.2031">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="222" x="97" y="526.2695">[Failed to fetch approval expenses data]</text><polygon fill="#181818" points="1478,548.2559,1468,552.2559,1478,556.2559" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="1472" x2="3183.5" y1="552.2559" y2="552.2559"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="91" x="2280.25" y="547.5137">error response</text><polygon fill="#181818" points="1238.5,577.5664,1228.5,581.5664,1238.5,585.5664" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="1232.5" x2="1466" y1="581.5664" y2="581.5664"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="127" x="1283.75" y="576.8242">reject requestObject</text><polygon fill="#181818" points="2803,606.877,2813,610.877,2803,614.877" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1227.5" x2="2809" y1="610.877" y2="610.877"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="1936.75" y="606.1348">request and build template</text><polygon fill="#181818" points="1238.5,636.1875,1228.5,640.1875,1238.5,644.1875" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1232.5" x2="2814" y1="640.1875" y2="640.1875"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="1982.25" y="635.4453">return HTML</text><polygon fill="#181818" points="1040,665.498,1030,669.498,1040,673.498" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1034" x2="1226.5" y1="669.498" y2="669.498"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="1089.25" y="664.7559">return HTML</text><polygon fill="#181818" points="66.5,694.8086,56.5,698.8086,66.5,702.8086" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="60.5" x2="1028" y1="698.8086" y2="698.8086"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="108" x="488.25" y="694.0664">render error page</text><polygon fill="#181818" points="2035.5,731.1191,2045.5,735.1191,2035.5,739.1191" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1227.5" x2="2041.5" y1="735.1191" y2="735.1191"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="1553" y="730.377">request and build template</text><polygon fill="#181818" points="1238.5,760.4297,1228.5,764.4297,1238.5,768.4297" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1232.5" x2="2046.5" y1="764.4297" y2="764.4297"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="1598.5" y="759.6875">return HTML</text><polygon fill="#181818" points="380.5,789.7402,370.5,793.7402,380.5,797.7402" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="374.5" x2="1226.5" y1="793.7402" y2="793.7402"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="759.5" y="788.998">return HTML</text><polygon fill="#181818" points="66.5,819.0508,56.5,823.0508,66.5,827.0508" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="60.5" x2="368.5" y1="823.0508" y2="823.0508"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="172.5" y="818.3086">render HTML</text><polygon fill="#181818" points="357.5,848.3613,367.5,852.3613,357.5,856.3613" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="55.5" x2="363.5" y1="852.3613" y2="852.3613"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="215" x="105" y="847.6191">select expenses and click approve</text><polygon fill="#181818" points="1215.5,877.6719,1225.5,881.6719,1215.5,885.6719" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="369.5" x2="1221.5" y1="881.6719" y2="881.6719"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="121" x="738" y="876.9297">call page controller</text><path d="M20,896.6719 L82,896.6719 L82,903.9824 L72,913.9824 L20,913.9824 L20,896.6719 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="134.5527" style="stroke:#000000;stroke-width:1.5;" width="2266" x="20" y="896.6719"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="35" y="910.2402">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="190" x="97" y="909.3066">[No expenses selected to approve]</text><polygon fill="#181818" points="2035.5,931.293,2045.5,935.293,2035.5,939.293" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1227.5" x2="2041.5" y1="935.293" y2="935.293"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="262" x="1506.5" y="930.5508">request and build error message template</text><polygon fill="#181818" points="1238.5,960.6035,1228.5,964.6035,1238.5,968.6035" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1232.5" x2="2046.5" y1="964.6035" y2="964.6035"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="1598.5" y="959.8613">return HTML</text><polygon fill="#181818" points="380.5,989.9141,370.5,993.9141,380.5,997.9141" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="374.5" x2="1226.5" y1="993.9141" y2="993.9141"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="759.5" y="989.1719">return HTML</text><polygon fill="#181818" points="66.5,1019.2246,56.5,1023.2246,66.5,1027.2246" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="60.5" x2="368.5" y1="1023.2246" y2="1023.2246"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="133" x="146" y="1018.4824">render error message</text><path d="M20,1045.2246 L82,1045.2246 L82,1052.5352 L72,1062.5352 L20,1062.5352 L20,1045.2246 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="163.8633" style="stroke:#000000;stroke-width:1.5;" width="2715" x="20" y="1045.2246"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="35" y="1058.793">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="328" x="97" y="1057.8594">[One or more of expenses selected was submitted by user]</text><polygon fill="#181818" points="2493.5,1079.8457,2503.5,1083.8457,2493.5,1087.8457" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1227.5" x2="2499.5" y1="1083.8457" y2="1083.8457"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="1782" y="1079.1035">request and build template</text><polygon fill="#181818" points="1238.5,1109.1563,1228.5,1113.1563,1238.5,1117.1563" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1232.5" x2="2504.5" y1="1113.1563" y2="1113.1563"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="1827.5" y="1108.4141">return HTML</text><polygon fill="#181818" points="752.5,1138.4668,742.5,1142.4668,752.5,1146.4668" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="746.5" x2="1226.5" y1="1142.4668" y2="1142.4668"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="945.5" y="1137.7246">return HTML</text><polygon fill="#181818" points="66.5,1167.7773,56.5,1171.7773,66.5,1175.7773" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="60.5" x2="740.5" y1="1171.7773" y2="1171.7773"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="358.5" y="1167.0352">render HTML</text><polygon fill="#181818" points="729.5,1197.0879,739.5,1201.0879,729.5,1205.0879" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="55.5" x2="735.5" y1="1201.0879" y2="1201.0879"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="221" x="288" y="1196.3457">clicks approve remaining expenses</text><polygon fill="#181818" points="1685,1233.3984,1695,1237.3984,1685,1241.3984" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1227.5" x2="1691" y1="1237.3984" y2="1237.3984"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="126" x="1399.25" y="1232.6563">build request object</text><polygon fill="#181818" points="3172.5,1262.709,3182.5,1266.709,3172.5,1270.709" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1697" x2="3178.5" y1="1266.709" y2="1266.709"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="138" x="2371.75" y="1261.9668">send backend request</text><polygon fill="#181818" points="1708,1292.0195,1698,1296.0195,1708,1300.0195" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1702" x2="3183.5" y1="1296.0195" y2="1296.0195"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="77" x="2402.25" y="1291.2773">ok response</text><polygon fill="#181818" points="1238.5,1321.3301,1228.5,1325.3301,1238.5,1329.3301" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1232.5" x2="1696" y1="1325.3301" y2="1325.3301"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="96" x="1414.25" y="1320.5879">resolve request</text><path d="M20,1340.3301 L82,1340.3301 L82,1347.6406 L72,1357.6406 L20,1357.6406 L20,1340.3301 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="193.1738" style="stroke:#000000;stroke-width:1.5;" width="3245" x="20" y="1340.3301"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="35" y="1353.8984">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="208" x="97" y="1352.9648">[Failed to approve selected expenses]</text><polygon fill="#181818" points="1708,1374.9512,1698,1378.9512,1708,1382.9512" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="1702" x2="3183.5" y1="1378.9512" y2="1378.9512"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="91" x="2395.25" y="1374.209">error response</text><polygon fill="#181818" points="1238.5,1404.2617,1228.5,1408.2617,1238.5,1412.2617" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="1232.5" x2="1696" y1="1408.2617" y2="1408.2617"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="127" x="1398.75" y="1403.5195">reject requestObject</text><polygon fill="#181818" points="2803,1433.5723,2813,1437.5723,2803,1441.5723" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1227.5" x2="2809" y1="1437.5723" y2="1437.5723"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="1936.75" y="1432.8301">request and build template</text><polygon fill="#181818" points="1238.5,1462.8828,1228.5,1466.8828,1238.5,1470.8828" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1232.5" x2="2814" y1="1466.8828" y2="1466.8828"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="1982.25" y="1462.1406">return HTML</text><polygon fill="#181818" points="1040,1492.1934,1030,1496.1934,1040,1500.1934" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1034" x2="1226.5" y1="1496.1934" y2="1496.1934"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="1089.25" y="1491.4512">return HTML</text><polygon fill="#181818" points="66.5,1521.5039,56.5,1525.5039,66.5,1529.5039" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="60.5" x2="1028" y1="1525.5039" y2="1525.5039"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="108" x="488.25" y="1520.7617">render error page</text><polygon fill="#181818" points="1455,1557.8145,1465,1561.8145,1455,1565.8145" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1227.5" x2="1461" y1="1561.8145" y2="1561.8145"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="126" x="1284.25" y="1557.0723">build request object</text><polygon fill="#181818" points="3172.5,1587.125,3182.5,1591.125,3172.5,1595.125" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1467" x2="3178.5" y1="1591.125" y2="1591.125"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="138" x="2256.75" y="1586.3828">send backend request</text><polygon fill="#181818" points="1478,1616.4355,1468,1620.4355,1478,1624.4355" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1472" x2="3183.5" y1="1620.4355" y2="1620.4355"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="77" x="2287.25" y="1615.6934">ok response</text><polygon fill="#181818" points="1238.5,1645.7461,1228.5,1649.7461,1238.5,1653.7461" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1232.5" x2="1466" y1="1649.7461" y2="1649.7461"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="96" x="1299.25" y="1645.0039">resolve request</text><polygon fill="#181818" points="2035.5,1675.0566,2045.5,1679.0566,2035.5,1683.0566" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1227.5" x2="2041.5" y1="1679.0566" y2="1679.0566"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="1553" y="1674.3145">request and build template</text><polygon fill="#181818" points="1238.5,1704.3672,1228.5,1708.3672,1238.5,1712.3672" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1232.5" x2="2046.5" y1="1708.3672" y2="1708.3672"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="1598.5" y="1703.625">return HTML</text><polygon fill="#181818" points="380.5,1733.6777,370.5,1737.6777,380.5,1741.6777" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="374.5" x2="1226.5" y1="1737.6777" y2="1737.6777"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="759.5" y="1732.9355">return HTML</text><polygon fill="#181818" points="66.5,1762.9883,56.5,1766.9883,66.5,1770.9883" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="60.5" x2="368.5" y1="1766.9883" y2="1766.9883"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="172.5" y="1762.2461">render HTML</text><!--MD5=[a3afff356dd9d535d7c4897bd5714398]
+@startuml approve-expenses
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant ApproveExpensesPage <</juror-management/approve-expenses>>
+participant CannotApproveExpensesPage <</juror-management/approve-expenses/cannot-approve>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant ApproveExpensesController <<approve-expenses.controller.js>> #lightyellow
+participant ExpensesForApprovalObject <<approveExpensesDAO.get()>> #lightyellow
+participant ApproveExpensesObject <<approveExpensesDAO.post()>> #lightyellow
+
+''' TEMPLATES
+participant ApproveExpensesTemplate <<juror-management/approve-expenses/approve-expenses.njk>> #lavender
+participant CannotApproveTemplate <<juror-management/approve-expenses/cannot-approve.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant ApproveExpensesValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> ApproveExpensesPage : click juror management approve expenses tab
+ApproveExpensesPage -> ApproveExpensesController : call approve expenses controller
+
+alt Enter new dates to filter by 
+  Actor -> ApproveExpensesPage : enter new dates to filter by
+  ApproveExpensesController -> ApproveExpensesValidator : validate selection
+  alt Invalid dates entered
+    ApproveExpensesController <- - ApproveExpensesValidator : data validation fails
+    ApproveExpensesController -> ApproveExpensesTemplate : request and build error message template
+    ApproveExpensesController <- ApproveExpensesTemplate : return HTML
+    ApproveExpensesPage <- ApproveExpensesController : return HTML
+    Actor <- ApproveExpensesPage : render error message
+  end
+end
+ 
+ApproveExpensesController -> ExpensesForApprovalObject : build request object
+ExpensesForApprovalObject -> BackendController : send backend request
+ExpensesForApprovalObject <- BackendController : ok response
+ApproveExpensesController <- ExpensesForApprovalObject : resolve request
+
+alt Failed to fetch approval expenses data
+    ExpensesForApprovalObject <- - BackendController : error response
+    ApproveExpensesController <- - ExpensesForApprovalObject : reject requestObject
+    ApproveExpensesController -> ErrorTemplate : request and build template
+    ApproveExpensesController <- ErrorTemplate : return HTML
+    GenericErrorPage <- ApproveExpensesController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+ApproveExpensesController -> ApproveExpensesTemplate : request and build template
+ApproveExpensesController <- ApproveExpensesTemplate : return HTML
+ApproveExpensesPage <- ApproveExpensesController : return HTML
+Actor <- ApproveExpensesPage : render HTML
+
+Actor -> ApproveExpensesPage : select expenses and click approve
+
+ApproveExpensesPage -> ApproveExpensesController : call page controller
+
+alt No expenses selected to approve
+  ApproveExpensesController -> ApproveExpensesTemplate : request and build error message template
+  ApproveExpensesController <- ApproveExpensesTemplate : return HTML
+  ApproveExpensesPage <- ApproveExpensesController : return HTML
+  Actor <- ApproveExpensesPage : render error message
+end
+
+alt One or more of expenses selected was submitted by user
+  ApproveExpensesController -> CannotApproveTemplate : request and build template
+  ApproveExpensesController <- CannotApproveTemplate : return HTML
+  CannotApproveExpensesPage <- ApproveExpensesController : return HTML
+  Actor <- CannotApproveExpensesPage : render HTML
+  Actor -> CannotApproveExpensesPage : clicks approve remaining expenses
+end
+
+ApproveExpensesController -> ApproveExpensesObject : build request object
+ApproveExpensesObject -> BackendController : send backend request
+ApproveExpensesObject <- BackendController : ok response
+ApproveExpensesController <- ApproveExpensesObject : resolve request
+
+alt Failed to approve selected expenses
+    ApproveExpensesObject <- - BackendController : error response
+    ApproveExpensesController <- - ApproveExpensesObject : reject requestObject
+    ApproveExpensesController -> ErrorTemplate : request and build template
+    ApproveExpensesController <- ErrorTemplate : return HTML
+    GenericErrorPage <- ApproveExpensesController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+ApproveExpensesController -> ExpensesForApprovalObject : build request object
+ExpensesForApprovalObject -> BackendController : send backend request
+ExpensesForApprovalObject <- BackendController : ok response
+ApproveExpensesController <- ExpensesForApprovalObject : resolve request
+ApproveExpensesController -> ApproveExpensesTemplate : request and build template
+ApproveExpensesController <- ApproveExpensesTemplate : return HTML
+ApproveExpensesPage <- ApproveExpensesController : return HTML
+Actor <- ApproveExpensesPage : render HTML
+
+
+
+
+
+
+
+    
+@end
+
+@startuml approve-expenses
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+participant ApproveExpensesPage <</juror-management/approve-expenses>>
+participant CannotApproveExpensesPage <</juror-management/approve-expenses/cannot-approve>>
+participant GenericErrorPage <</error>>
+
+participant ApproveExpensesController <<approve-expenses.controller.js>> #lightyellow
+participant ExpensesForApprovalObject <<approveExpensesDAO.get()>> #lightyellow
+participant ApproveExpensesObject <<approveExpensesDAO.post()>> #lightyellow
+
+participant ApproveExpensesTemplate <<juror-management/approve-expenses/approve-expenses.njk>> #lavender
+participant CannotApproveTemplate <<juror-management/approve-expenses/cannot-approve.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+participant ApproveExpensesValidator
+
+participant BackendController
+
+Actor -> ApproveExpensesPage : click juror management approve expenses tab
+ApproveExpensesPage -> ApproveExpensesController : call approve expenses controller
+
+alt Enter new dates to filter by 
+  Actor -> ApproveExpensesPage : enter new dates to filter by
+  ApproveExpensesController -> ApproveExpensesValidator : validate selection
+  alt Invalid dates entered
+    ApproveExpensesController <- - ApproveExpensesValidator : data validation fails
+    ApproveExpensesController -> ApproveExpensesTemplate : request and build error message template
+    ApproveExpensesController <- ApproveExpensesTemplate : return HTML
+    ApproveExpensesPage <- ApproveExpensesController : return HTML
+    Actor <- ApproveExpensesPage : render error message
+  end
+end
+ 
+ApproveExpensesController -> ExpensesForApprovalObject : build request object
+ExpensesForApprovalObject -> BackendController : send backend request
+ExpensesForApprovalObject <- BackendController : ok response
+ApproveExpensesController <- ExpensesForApprovalObject : resolve request
+
+alt Failed to fetch approval expenses data
+    ExpensesForApprovalObject <- - BackendController : error response
+    ApproveExpensesController <- - ExpensesForApprovalObject : reject requestObject
+    ApproveExpensesController -> ErrorTemplate : request and build template
+    ApproveExpensesController <- ErrorTemplate : return HTML
+    GenericErrorPage <- ApproveExpensesController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+ApproveExpensesController -> ApproveExpensesTemplate : request and build template
+ApproveExpensesController <- ApproveExpensesTemplate : return HTML
+ApproveExpensesPage <- ApproveExpensesController : return HTML
+Actor <- ApproveExpensesPage : render HTML
+
+Actor -> ApproveExpensesPage : select expenses and click approve
+
+ApproveExpensesPage -> ApproveExpensesController : call page controller
+
+alt No expenses selected to approve
+  ApproveExpensesController -> ApproveExpensesTemplate : request and build error message template
+  ApproveExpensesController <- ApproveExpensesTemplate : return HTML
+  ApproveExpensesPage <- ApproveExpensesController : return HTML
+  Actor <- ApproveExpensesPage : render error message
+end
+
+alt One or more of expenses selected was submitted by user
+  ApproveExpensesController -> CannotApproveTemplate : request and build template
+  ApproveExpensesController <- CannotApproveTemplate : return HTML
+  CannotApproveExpensesPage <- ApproveExpensesController : return HTML
+  Actor <- CannotApproveExpensesPage : render HTML
+  Actor -> CannotApproveExpensesPage : clicks approve remaining expenses
+end
+
+ApproveExpensesController -> ApproveExpensesObject : build request object
+ApproveExpensesObject -> BackendController : send backend request
+ApproveExpensesObject <- BackendController : ok response
+ApproveExpensesController <- ApproveExpensesObject : resolve request
+
+alt Failed to approve selected expenses
+    ApproveExpensesObject <- - BackendController : error response
+    ApproveExpensesController <- - ApproveExpensesObject : reject requestObject
+    ApproveExpensesController -> ErrorTemplate : request and build template
+    ApproveExpensesController <- ErrorTemplate : return HTML
+    GenericErrorPage <- ApproveExpensesController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+ApproveExpensesController -> ExpensesForApprovalObject : build request object
+ExpensesForApprovalObject -> BackendController : send backend request
+ExpensesForApprovalObject <- BackendController : ok response
+ApproveExpensesController <- ExpensesForApprovalObject : resolve request
+ApproveExpensesController -> ApproveExpensesTemplate : request and build template
+ApproveExpensesController <- ApproveExpensesTemplate : return HTML
+ApproveExpensesPage <- ApproveExpensesController : return HTML
+Actor <- ApproveExpensesPage : render HTML
+
+
+
+
+
+
+
+    
+@end
+
+PlantUML version 1.2022.7(Mon Aug 22 18:01:30 BST 2022)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

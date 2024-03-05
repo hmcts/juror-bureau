@@ -12,7 +12,7 @@
   {% if params.action %}
     {% if params.layout !== "inline" %} <br> {% endif %}
     <span {%- if params.id %} id="{{ params.id + '-link' }}"{% endif %}>
-      <a href="{{params.action.href}}" class="{{className}}__link">{{ params.action.text }}<a/>
+      <a href="{{params.action.href}}" class="{{className}}__link">{{ params.action.text }}</a>
     </span>
   {% endif %}
 </div>

@@ -429,6 +429,15 @@
         req.session.editJurorDetails.commonDetails.lastName = lastName;
       }
 
+      if (req.url.includes('bank-details/address')) {
+        const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
+
+        return res.redirect(app.namedRoutes.build(`${routePrefix}.bank-details.address-edit.get`, {
+          jurorNumber: req.params['jurorNumber'],
+          poolNumber: req.params['poolNumber'],
+        }));
+      }
+
       return res.render('juror-management/edit/juror-edit-details', {
         jurorNumber: req.params['jurorNumber'],
         backLinkUrl: {
@@ -534,6 +543,18 @@
 
   const processJurorEdit = function(app, req, res, disqualifyAge) {
     const requestBody = { ...req.session.formFields };
+    const successUrl = app.namedRoutes.build('juror-record.details.get', {
+      jurorNumber: req.params.jurorNumber,
+    });
+
+    if (req.url.includes('bank-details')){
+      const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
+
+      app.namedRoutes.build(`${routePrefix}.bank-details.get`, {
+        jurorNumber: req.params['jurorNumber'],
+        poolNumber: req.params['poolNumber'],
+      });
+    }
 
     delete requestBody.thirdParty;
     delete requestBody.extraSupport;
@@ -592,10 +613,9 @@
         delete req.session.editJurorEtag;
         delete req.session.editJurorDetails;
         delete req.session.dateMax;
+        delete req.session.formFields;
 
-        return res.redirect(app.namedRoutes.build('juror-record.details.get', {
-          jurorNumber: req.params.jurorNumber,
-        }));
+        return res.redirect(successUrl);
       })
       .catch((err) => {
         app.logger.crit('Failed to change juror details: ', {
@@ -615,15 +635,37 @@
 
   module.exports.getEditDetailsAddress = (app) => {
     return (req, res) => {
-      let address = {
-          part1: req.session.editJurorDetails.addressLineOne,
-          part2: req.session.editJurorDetails.addressLineTwo,
-          part3: req.session.editJurorDetails.addressLineThree,
-          part4: req.session.editJurorDetails.addressTown,
-          part5: req.session.editJurorDetails.addressCounty,
-          postcode: req.session.editJurorDetails.addressPostcode,
-        },
+      let postUrl, cancelUrl,
         tmpErrors = _.clone(req.session.errors);
+
+      const address = {
+        part1: req.session.editJurorDetails.addressLineOne,
+        part2: req.session.editJurorDetails.addressLineTwo,
+        part3: req.session.editJurorDetails.addressLineThree,
+        part4: req.session.editJurorDetails.addressTown,
+        part5: req.session.editJurorDetails.addressCounty,
+        postcode: req.session.editJurorDetails.addressPostcode,
+      };
+
+      if (req.url.includes('bank-details')) {
+        const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
+
+        postUrl = app.namedRoutes.build(`${routePrefix}.bank-details.address-edit.post`, {
+          jurorNumber: req.params['jurorNumber'],
+          poolNumber: req.params['poolNumber'],
+        });
+        cancelUrl = app.namedRoutes.build(`${routePrefix}.bank-details.get`, {
+          jurorNumber: req.params['jurorNumber'],
+          poolNumber: req.params['poolNumber'],
+        });
+      } else {
+        postUrl = app.namedRoutes.build('juror-record.details-edit-address.post', {
+          jurorNumber: req.params['jurorNumber'],
+        });
+        cancelUrl = app.namedRoutes.build('juror-record.details-edit.get', {
+          jurorNumber: req.params['jurorNumber'],
+        });
+      }
 
       if (req.session.formFields) {
         address.part1 = req.session.formFields.address1;
@@ -640,12 +682,8 @@
 
       return res.render('summons-management/paper-reply/edit-address', {
         address: address,
-        postUrl: app.namedRoutes.build('juror-record.details-edit-address.post', {
-          jurorNumber: req.params['jurorNumber'],
-        }),
-        cancelUrl: app.namedRoutes.build('juror-record.details-edit.get', {
-          jurorNumber: req.params['jurorNumber'],
-        }),
+        postUrl,
+        cancelUrl,
         errors: {
           title: 'Please check the form',
           count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -659,13 +697,24 @@
     return (req, res) => {
       let validatorResult = validate(req.body, paperReplyValidator.jurorAddress());
 
+      const formErrorUrl = app.namedRoutes.build('juror-record.details-edit-address.get', {
+        jurorNumber: req.params['jurorNumber'],
+      });
+
+      if (req.url.includes('bank-details')){
+        const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
+
+        app.namedRoutes.build(`${routePrefix}.bank-details.address-edit.get`, {
+          jurorNumber: req.params['jurorNumber'],
+          poolNumber: req.params['poolNumber'],
+        });
+      }
+
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
 
-        return res.redirect(app.namedRoutes.build('juror-record.details-edit-address.get', {
-          jurorNumber: req.params['jurorNumber'],
-        }));
+        return res.redirect(formErrorUrl);
       }
 
       req.session.editJurorDetails.addressLineOne = req.body.address1;
@@ -674,6 +723,26 @@
       req.session.editJurorDetails.addressTown = req.body.address4;
       req.session.editJurorDetails.addressCounty = req.body.address5;
       req.session.editJurorDetails.addressPostcode = req.body.postcode;
+
+      // If only changing address then resend the data given from original API call
+      if (req.url.includes('bank-details')) {
+        const body = {
+          specNeedValue: req.session.editJurorDetails.specialNeed,
+          specNeedMsg: req.session.editJurorDetails.specialNeedMessage,
+          title: req.session.editJurorDetails.commonDetails.title,
+          firstName: req.session.editJurorDetails.commonDetails.firstName,
+          lastName: req.session.editJurorDetails.commonDetails.lastName,
+          ...req.session.editJurorDetails,
+        };
+
+        delete body.commonDetails;
+        delete body.specialNeed;
+        delete body.specialNeedMessage;
+
+        req.session.formFields = body;
+
+        return processJurorEdit(app, req, res);
+      }
 
       return res.redirect(app.namedRoutes.build('juror-record.details-edit.get', {
         jurorNumber: req.params['jurorNumber'],

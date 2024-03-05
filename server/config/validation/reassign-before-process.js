@@ -32,8 +32,8 @@
         presence: {
           allowEmpty: false,
           message: {
-            summary: 'Select whether you want to grant or refused this deferral',
-            details: 'Select whether you want to grant or refused this deferral',
+            summary: 'Select whether you want to grant or refuse this deferral',
+            details: 'Select whether you want to grant or refuse this deferral',
           },
         },
       },

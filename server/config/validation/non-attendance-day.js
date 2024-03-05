@@ -31,7 +31,9 @@
           summary: 'Non-attendance date must only include numbers',
           details: 'Non-attendance date must only include numbers',
         }];
-      } else if (!moment(dateInitial.dateAsDate).isValid() || value.length > 10) {
+      } else if (!moment(dateInitial.dateAsDate).isValid()
+        || value.length > 10
+        || `${dateInitial.intYear}`.length === 2) {
         tmpErrors = [{
           summary: 'Enter a non-attendance date in the correct format, for example, 31/01/2023',
           details: 'Enter a non-attendance date in the correct format, for example, 31/01/2023',
@@ -41,7 +43,7 @@
           summary: 'Please enter a valid date for the non-attendance day',
           details: 'Please enter a valid date for the non-attendance day',
         }];
-      };
+      }
     }
 
     return tmpErrors.length === 0

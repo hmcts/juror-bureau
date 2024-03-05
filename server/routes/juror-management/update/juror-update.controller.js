@@ -258,11 +258,8 @@
       delete req.session.deferralReasons;
       delete req.session.formFields;
 
-      deferralReason = tmpReasons
-        .find(reason => reason.excusalCode === req.body.deferralReason).description.toLowerCase();
-
       validatorResult = validate(req.body,
-        require('../../../config/validation/deferral-mod.js').deferralReasonAndDecision());
+        require('../../../config/validation/deferral-mod.js').deferralReasonAndDecision(req.body));
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
@@ -271,6 +268,9 @@
           jurorNumber: req.params.jurorNumber,
         }));
       }
+
+      deferralReason = tmpReasons
+        .find(reason => reason.excusalCode === req.body.deferralReason).description.toLowerCase();
 
       deferralObject.put(require('request-promise'), app, req.session.authToken, req.body, req.params.jurorNumber)
         .then(successCB)

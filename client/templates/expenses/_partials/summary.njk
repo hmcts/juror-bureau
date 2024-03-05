@@ -2,53 +2,80 @@
 {% from "custom-components/mod-large-tag/macro.njk" import modLargeTag %}
 
 <div class="govuk-grid-column-one-half govuk-!-padding-left-0">
-  {{ govukSummaryList({
-    attributes: {
-      id: 'totalsSummaryTable'
-    },
-    rows: [
-      {
-        key: {
-          text: "Pay attendance"
-        },
-        value: {
-          text: "Full day" if expenseData.pay_attendance === "FULL_DAY" else "Half day"
-        }
+  {% if expenseData.attendance_type === 'NON_ATTENDANCE' %}
+    {{ govukSummaryList({
+      attributes: {
+        id: 'totalsSummaryTable'
       },
-      {
-        key: {
-          text: "Financial loss (capped)"
+      rows: [
+        {
+          key: {
+            text: "Pay attendance"
+          },
+          value: {
+            text: "Full day" if expenseData.pay_attendance === "FULL_DAY" else "Half day"
+          }
         },
-        value: {
-          text: "£" + (expenseData.loss_of_earnings + expenseData.other + expenseData.extra_care) | toFixed(2)
+        {
+          key: {
+            text: "Financial loss (capped)"
+          },
+          value: {
+            text: "£" + (expenseData.loss_of_earnings + expenseData.other + expenseData.extra_care) | toFixed(2)
+          }
         }
+      ]
+    }) }}
+  {% else %}
+    {{ govukSummaryList({
+      attributes: {
+        id: 'totalsSummaryTable'
       },
-      {
-        key: {
-          text: "Travel expenses"
+      rows: [
+        {
+          key: {
+            text: "Pay attendance"
+          },
+          value: {
+            text: "Full day" if expenseData.pay_attendance === "FULL_DAY" else "Half day"
+          }
         },
-        value: {
-          text: "£" + expenseData.total_travel_expenses | toFixed(2)
-        }
-      },
-      {
-        key: {
-          text: "Food and drink claim"
+        {
+          key: {
+            text: "Financial loss (capped)"
+          },
+          value: {
+            text: "£" + (expenseData.loss_of_earnings + expenseData.other + expenseData.extra_care) | toFixed(2)
+          }
         },
-        value: {
-          text: "£" + expenseData.food_and_drink | toFixed(2)
-        }
-      },
-      {
-        key: {
-          text: "Smartcard spend"
+        {
+          key: {
+            text: "Travel expenses"
+          },
+          value: {
+            text: "£" + expenseData.total_travel_expenses | toFixed(2)
+          }
         },
-        value: {
-          text: "(£" + expenseData.smart_card | toFixed(2) + ")"
+        {
+          key: {
+            text: "Food and drink claim"
+          },
+          value: {
+            text: "£" + expenseData.food_and_drink | toFixed(2)
+          }
+        },
+        {
+          key: {
+            text: "Smartcard spend"
+          },
+          value: {
+            text: "(£" + expenseData.smart_card | toFixed(2) + ")"
+          }
         }
-      }
-    ]
-  }) }}
+      ]
+    }) }}
+  {% endif %}
+  
 </div>
 
 <div class="govuk-grid-column-one-half govuk-!-padding-right-0">

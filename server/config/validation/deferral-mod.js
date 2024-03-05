@@ -1,8 +1,9 @@
 ;(function(){
   'use strict';
 
-  require('./custom-validation');
+  const validate = require('validate.js');
 
+  require('./custom-validation');
   require('./date-picker');
 
   module.exports.deferralReasonAndDecision = function() {
@@ -20,13 +21,49 @@
         presence: {
           allowEmpty: false,
           message: {
-            summary: 'Select whether you want to grant or refused this deferral',
-            details: 'Select whether you want to grant or refused this deferral',
+            summary: 'Select whether you want to grant or refuse this deferral',
+            details: 'Select whether you want to grant or refuse this deferral',
           },
         },
       },
-
+      deferralDateSelection: {
+        updateJurorDeferralSelectDate: {},
+      },
+      deferralDate: {
+        updateJurorDeferralEnterDate: {},
+        genericDatePicker: {},
+      },
     };
+  };
+
+  validate.validators.updateJurorDeferralSelectDate = function(value, options, key, attributes) {
+    if (!attributes.deferralDecision || attributes.deferralDecision === 'REFUSE') {
+      return null;
+    }
+
+    if (!attributes.deferralDateSelection || attributes.deferralDateSelection === '') {
+      return {
+        summary: 'Select a date to defer to',
+        details: 'Select a date to defer to',
+      };
+    }
+
+    return null;
+  };
+
+  validate.validators.updateJurorDeferralEnterDate = function(value, options, key, attributes) {
+    if (attributes.deferralDecision === 'REFUSE') {
+      return null;
+    }
+
+    if (attributes.deferralDateSelection === 'otherDate' && attributes.deferralDate === '') {
+      return {
+        summary: 'Enter a date to defer to',
+        details: 'Enter a date to defer to',
+      };
+    }
+
+    return null;
   };
 
   module.exports.deferralDateAndReason = (minDate, maxDate) => {

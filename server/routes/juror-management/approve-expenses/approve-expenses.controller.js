@@ -5,31 +5,33 @@
     validate = require('validate.js'),
     urljoin = require('url-join'),
     approveExpensesFilterValidation = require('../../../config/validation/approve-expenses'),
-    mockData = require('../../../stores/expenses').expensesApproval;
+    { approveExpensesDAO } = require('../../../objects/expenses'),
+    { dateFilter } = require('../../../components/filters'),
+    { replaceAllObjKeys } = require('../../../lib/mod-utils');
 
   module.exports.getApproveExpenses = function(app) {
     return async function(req, res) {
       let bannerMessage;
-      let currentTab = typeof req.query.tab !== 'undefined' ? req.query.tab : 'bacs-and-cheque';
-      let approvalData = {
-        'bacs-and-cheque': [],
-        'cash': [],
+      const currentTab = req.query.tab || 'BACS';
+      const dateFilters = {
+        from: req.query.from || '',
+        to: req.query.to || '',
       };
-      let params = {
-        filterStartDate: req.query.filterStartDate,
-        filterEndDate: req.query.filterEndDate,
-      };
-      let tabsUrls = {
+      const tabsUrls = {
         bacsAndCheque: urljoin(
           app.namedRoutes.build('juror-management.approve-expenses.get'),
-          urlBuilder(params, 'bacs-and-cheque')),
+          urlBuilder(dateFilters, 'BACS')),
         cash: urljoin(
           app.namedRoutes.build('juror-management.approve-expenses.get'),
-          urlBuilder(params, 'cash')),
+          urlBuilder(dateFilters, 'CASH')),
       };
-      const processUrl = app.namedRoutes.build('juror-management.approve-expenses.post');
+      const processUrl = urljoin(
+        app.namedRoutes.build('juror-management.approve-expenses.post'),
+        urlBuilder(dateFilters, currentTab)
+      );
       const processDateFilterUrl = app.namedRoutes.build('juror-management.approve-expenses.filter-dates.post');
       const tmpErrors = _.cloneDeep(req.session.errors);
+      const tmpBody = _.cloneDeep(req.session.fromFields);
 
       if (typeof req.session.bannerMessage !== 'undefined') {
         bannerMessage = req.session.bannerMessage;
@@ -37,28 +39,48 @@
 
       delete req.session.bannerMessage;
       delete req.session.errors;
+      delete req.session.fromFields;
 
       try {
-
         // TODO: replace with API call once BE is ready
-        const data = await getApprovalExpensesResolver();
+        let { response: data, headers } = await approveExpensesDAO.get(
+          app,
+          req,
+          req.session.authentication.owner,
+          currentTab,
+          dateFilters
+        );
 
-        // TEMP - we don't yet know how we will get this data from the BE
-        for (let i = 0; i < data.length; i++) {
-          if (data[i].paymentMethod === 'BACS and cheque') {
-            approvalData['bacs-and-cheque'].push(data[i]);
-          } else {
-            approvalData['cash'].push(data[i]);
-          }
+        req.session.approveExpensesEtag = headers.etag;
+
+        app.logger.info('Fetched expenses awaiting approval: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            data,
+          },
+        });
+
+        data = replaceAllObjKeys(_.cloneDeep(data), _.camelCase);
+
+        const jurors = data.pendingApproval;
+
+        const tabHeaders = {
+          totalPendingBacs: data.totalPendingBacs,
+          totalPendingCash: data.totalPendingCash,
         };
 
-        return res.render('juror-management/approve-expenses.njk', {
+        req.session.approveExpenses = { jurors, tabHeaders };
+
+        return res.render('juror-management/approve-expenses/approve-expenses.njk', {
           processUrl,
           processDateFilterUrl,
-          params,
+          dateFilters,
           tabsUrls,
           currentTab,
-          approvalData,
+          jurors: req.session.approveExpenses.jurors,
+          tabHeaders: req.session.approveExpenses.tabHeaders,
+          tmpBody,
           bannerMessage,
           clearFilter: app.namedRoutes.build('juror-management.approve-expenses.get'),
           nav: 'approve-expenses',
@@ -80,38 +102,99 @@
     };
   };
 
-  // TEMP - awaiting screens design finalisation as they seem to keep changing on Figma
   module.exports.postApproveExpenses = function(app) {
+    return async function(req, res) {
+      const currentTab = req.query.tab || 'BACS';
+      const dateFilters = {
+        from: req.query.from || '',
+        to: req.query.to || '',
+      };
+      const redirectUrl = urljoin(
+        app.namedRoutes.build('juror-management.approve-expenses.get'),
+        urlBuilder(dateFilters, currentTab)
+      );
+      const jurors = _.clone(req.session.approveExpenses.jurors);
+
+      delete req.session.approveExpenses.jurors;
+
+      if (!req.body.selectedJurors) {
+        req.session.errors = {
+          selectedJurors: [{
+            summary: 'Select at least one juror\'s expenses to approve',
+            details: 'Select at least one juror\'s expenses to approve',
+          }],
+        };
+
+        return res.redirect(redirectUrl);
+      }
+
+      const checkedJurors = jurors.filter(
+        j => req.body.selectedJurors.includes(`${j.jurorNumber}-${_.camelCase(j.expenseType)}`)
+      );
+
+      req.session.approveExpenses.checkedJurors = checkedJurors;
+
+      if (checkedJurors.some((j) => !j.canApprove)){
+        return res.redirect(urljoin(
+          app.namedRoutes.build('juror-management.approve-expenses.cannot-approve.get'),
+          urlBuilder(dateFilters, currentTab)
+        ));
+      }
+
+      return sendApprovalRequest(app, req, res);
+    };
+  };
+
+  module.exports.getCannotApprove = function(app) {
     return function(req, res) {
+      const currentTab = req.query.tab || 'BACS';
+      const dateFilters = {
+        from: req.query.from || '',
+        to: req.query.to || '',
+      };
+      const checkedJurors = _.clone(req.session.approveExpenses.checkedJurors);
+      const canApprove = checkedJurors.filter(j => j.canApprove);
 
-      // TODO: Bulk approve - check who has submitted each audit. A user cannot approve an audit they have created.
-      // checklist validation to be added when the design team has finalised the error messages
+      return res.render('juror-management/approve-expenses/cannot-approve.njk', {
+        canApproveJurors: canApprove,
+        submitUrl:urljoin(
+          app.namedRoutes.build('juror-management.approve-expenses.cannot-approve.post'),
+          urlBuilder(dateFilters, currentTab)
+        ),
+        cancelUrl: urljoin(
+          app.namedRoutes.build('juror-management.approve-expenses.get'),
+          urlBuilder(dateFilters, currentTab)
+        ),
+      });
+    };
+  };
 
-      req.session.bannerMessage = 'Expenses approved for '
-        + req.body.selectedJurors.length + ' jurors and sent to printer';
-
-      return res.redirect(app.namedRoutes.build('juror-management.approve-expenses.get'));
+  module.exports.postCannotApprove = function(app) {
+    return function(req, res) {
+      req.session.approveExpenses.checkedJurors = req.session.approveExpenses.checkedJurors.filter(j => j.canApprove);
+      return sendApprovalRequest(app, req, res);
     };
   };
 
   module.exports.postFilterByDate = function(app) {
     return function(req, res) {
-      const redirectUrl = urljoin(
-        app.namedRoutes.build('juror-management.approve-expenses.get'),
-        urlBuilder(req.body, req.body.currentTab));
       const validateFilter = validate(req.body, approveExpensesFilterValidation());
 
-      delete req.session.errors;
-
-      req.session.tmpBody = _.cloneDeep(req.body);
-
       if (typeof validateFilter !== 'undefined') {
+        req.session.fromFields = _.cloneDeep(req.body);
         req.session.errors = validateFilter;
 
-        return res.redirect(redirectUrl);
+        return res.redirect(urljoin(
+          app.namedRoutes.build('juror-management.approve-expenses.get'),
+          urlBuilder({}, req.body.currentTab))
+        );
       }
 
-      delete req.session.tmpBody;
+      const from = dateFilter(req.body.filterStartDate, 'DD/MM/YYYY', 'yyyy-MM-DD');
+      const to = dateFilter(req.body.filterEndDate, 'DD/MM/YYYY', 'yyyy-MM-DD');
+      const redirectUrl = urljoin(
+        app.namedRoutes.build('juror-management.approve-expenses.get'),
+        urlBuilder({from, to}, req.body.currentTab));
 
       return res.redirect(redirectUrl);
     };
@@ -119,47 +202,124 @@
 
   module.exports.getViewExpenses = function(app) {
     return async function(req, res){
-      try {
-        // TEMP - we do not yet know how we will get the auditNumber from the BE
-        // TODO: replace with API call once BE is ready
-        const auditNumber = await getAuditNumberResolver();
+      //TODO - Print audit report for expenses
+      const {jurorNumber, poolNumber, status} = req.params;
 
-        return res.redirect(app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.detail.get', {
-          auditNumber: auditNumber,
-        }));
-      } catch (err) {
-        app.logger.crit('Unable to get detailed expense record', {
-          auth: req.session.authentication,
-          token: req.session.authToken,
-          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
-        });
-
-        return res.render('_errors/generic.njk');
-      };
+      return res.redirect(app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
+        jurorNumber,
+        poolNumber,
+        status,
+      }));
     };
   };
 
-  function urlBuilder(params, currentTab) {
+  async function sendApprovalRequest(app, req, res) {
+    const currentTab = req.query.tab || 'BACS';
+    const dateFilters = {
+      from: req.query.from || '',
+      to: req.query.to || '',
+    };
+    const redirectUrl = urljoin(
+      app.namedRoutes.build('juror-management.approve-expenses.get'),
+      urlBuilder(dateFilters, currentTab)
+    );
+    const checkedJurors = _.clone(req.session.approveExpenses.checkedJurors);
 
-    var parameters = [];
+    delete req.session.approveExpenses.checkedJurors;
+
+    const payload = [];
+
+    try {
+      await approveExpensesDAO.get(
+        app,
+        req,
+        req.session.authentication.owner,
+        currentTab,
+        dateFilters,
+        req.session.approveExpensesEtag
+      );
+
+      // TODO: update error message content once confirmed
+      req.session.errors = {
+        approveExpenses: [{
+          summary: 'Expenses were updated or some have already been approved',
+          details: 'Expenses were updated or some have already been approved',
+        }],
+      };
+
+      return res.redirect(redirectUrl);
+
+    } catch (err) {
+      if (err.statusCode !== 304) {
+
+        app.logger.crit('Failed to compare etags for when approving expenses: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            expenses: checkedJurors,
+          },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic');
+      }
+    }
+
+    checkedJurors.forEach(j => {
+      payload.push({
+        jurorNumber: j.jurorNumber,
+        poolNumber: j.poolNumber,
+        approvalType: j.expenseType,
+        isCashPayment: currentTab === 'CASH',
+        revisions: j.revisions,
+      });
+    });
+
+    replaceAllObjKeys(payload, _.snakeCase);
+
+    try {
+      await approveExpensesDAO.post(app, req, payload);
+
+      req.session.bannerMessage = `Expenses approved for ${checkedJurors.length > 1
+        ? `${checkedJurors.length} jurors`
+        : `${checkedJurors[0].firstName} ${checkedJurors[0].lastName}`
+      }`;
+
+      return res.redirect(redirectUrl);
+    } catch (err) {
+
+      app.logger.crit('Unable to approve selected expenses', {
+        auth: req.session.authentication,
+        token: req.session.authToken,
+        error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+      });
+
+      if (err.statusCode === 422) {
+        req.session.errors = {
+          selectedJurors: [{
+            details: err.error.message,
+          }],
+        };
+        return res.redirect(redirectUrl);
+      }
+
+      return res.render('_errors/generic.njk');
+    }
+  }
+
+  function urlBuilder(params, currentTab) {
+    const parameters = [];
 
     parameters.push('tab=' + currentTab);
 
-    if (params.filterStartDate) {
-      parameters.push('filterStartDate=' + params.filterStartDate);
+    if (params.from) {
+      parameters.push('from=' + params.from);
     }
-    if (params.filterEndDate) {
-      parameters.push('filterEndDate=' + params.filterEndDate);
+    if (params.to) {
+      parameters.push('to=' + params.to);
     }
 
     return  '?' + parameters.join('&');
   };
 
-  //TODO delete resolvers once backend is ready
-  function getAuditNumberResolver() {
-    return new Promise(res => res('1324354657'));
-  };
-  function getApprovalExpensesResolver() {
-    return new Promise(res => res(mockData));
-  };
 })();

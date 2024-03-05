@@ -177,13 +177,13 @@
         }));
       }
 
-      const data = buildDataPayload(req.body);
+      const data = buildDataPayload(req.body, nonAttendanceDay);
 
       data['date_of_expense'] = date;
       data['pool_number'] = poolNumber;
 
       try {
-        const response = await postDraftExpenseDAO.post(app, req, jurorNumber, data);
+        const response = await postDraftExpenseDAO.post(app, req, jurorNumber, data, nonAttendanceDay);
 
         const nextDate = req.session.expensesData.dates[page];
         const nextPage = page + 1;
@@ -290,7 +290,7 @@
         return res.redirect(redirectUrl);
       }
 
-      const data = buildDataPayload(req.body);
+      const data = buildDataPayload(req.body, req.session.nonAttendanceDay);
 
       data['date_of_expense'] = date;
       data['pool_number'] = poolNumber;
@@ -313,7 +313,7 @@
       }
 
       try {
-        await postDraftExpenseDAO.post(app, req, jurorNumber, data);
+        await postDraftExpenseDAO.post(app, req, jurorNumber, data, req.session.nonAttendanceDay);
 
         return res.redirect(redirectUrl);
       } catch (err) {
@@ -420,39 +420,56 @@
     return pagination;
   }
 
-  function buildDataPayload(body) {
-    const data = {
-      'pay_cash': body.paymentMethod === 'CASH',
-      time: {
-        'pay_attendance': body.payAttendance,
-        'travel_time': body['totalTravelTime-hour'] + ':' + body['totalTravelTime-minute'],
-      },
-      travel: {
-        'traveled_by_car': false,
-        'traveled_by_motorcycle': false,
-        'traveled_by_bicycle': false,
-        'jurors_taken_by_car': body.passengers,
-        'miles_traveled': body.milesTravelled,
-        parking: body.parking,
-        'public_transport': body.publicTransport,
-        taxi: body.taxi,
-      },
-      'food_and_drink': {
-        'food_and_drink_claim_type': body.foodAndDrink,
-        'smart_card_amount': body.smartcardSpend,
-      },
-      'financial_loss': {
-        'loss_of_earnings': body.lossOfEarnings,
-        'extra_care_cost': body.extraCareCosts,
-        'other_cost': body.otherCosts,
-        'other_cost_description': body.otherCostsDescription,
-      },
-    };
+  function buildDataPayload(body, nonAttendanceDay) {
+    let data = {};
 
-    if (body.travelType) {
-      data.travel['traveled_by_car'] = body.travelType.includes('car');
-      data.travel['traveled_by_motorcycle'] = body.travelType.includes('motorcycle');
-      data.travel['traveled_by_bicycle'] = body.travelType.includes('bicycle');
+    if (nonAttendanceDay) {
+      data = {
+        'pay_cash': body.paymentMethod === 'CASH',
+        'time': {
+          'pay_attendance': body.payAttendance,
+        },
+        'financial_loss': {
+          'loss_of_earnings': body.lossOfEarnings,
+          'extra_care_cost': body.extraCareCosts,
+          'other_cost': body.otherCosts,
+          'other_cost_description': body.otherCostsDescription,
+        },
+      };
+    } else {
+      data = {
+        'pay_cash': body.paymentMethod === 'CASH',
+        time: {
+          'pay_attendance': body.payAttendance,
+          'travel_time': body['totalTravelTime-hour'] + ':' + body['totalTravelTime-minute'],
+        },
+        travel: {
+          'traveled_by_car': false,
+          'traveled_by_motorcycle': false,
+          'traveled_by_bicycle': false,
+          'jurors_taken_by_car': body.passengers,
+          'miles_traveled': body.milesTravelled,
+          parking: body.parking,
+          'public_transport': body.publicTransport,
+          taxi: body.taxi,
+        },
+        'food_and_drink': {
+          'food_and_drink_claim_type': body.foodAndDrink,
+          'smart_card_amount': body.smartcardSpend,
+        },
+        'financial_loss': {
+          'loss_of_earnings': body.lossOfEarnings,
+          'extra_care_cost': body.extraCareCosts,
+          'other_cost': body.otherCosts,
+          'other_cost_description': body.otherCostsDescription,
+        },
+      };
+
+      if (body.travelType) {
+        data.travel['traveled_by_car'] = body.travelType.includes('car');
+        data.travel['traveled_by_motorcycle'] = body.travelType.includes('motorcycle');
+        data.travel['traveled_by_bicycle'] = body.travelType.includes('bicycle');
+      }
     }
 
     return data;
