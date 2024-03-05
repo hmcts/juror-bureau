@@ -27,19 +27,17 @@
       controller.checkResponse(app),
       controller.getSummonsTab(app));
 
-    app.get('/juror-management/record/:jurorNumber/finance',
-      'juror-record.finance.get',
+    app.get('/juror-management/record/:jurorNumber/expenses',
+      'juror-record.expenses.get',
       auth.verify,
       controller.checkResponse(app),
-      controller.getFinanceTab(app));
-
+      controller.getExpensesTab(app));
     app.get('/juror-management/record/:jurorNumber/:poolNumber/default-expenses',
       'juror-record.default-expenses.get',
       auth.verify,
       expensesController.getDefaultExpenses(app));
-
     app.post('/juror-management/record/:jurorNumber/:poolNumber/default-expenses',
-      'juror-management.default-expenses.post',
+      'juror-record.default-expenses.post',
       auth.verify,
       expensesController.postDefaultExpenses(app));
 

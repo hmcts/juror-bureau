@@ -22,6 +22,10 @@
         jurorNumber,
         poolNumber,
       });
+      const bankDetailsUrl = app.namedRoutes.build('juror-management.bank-details.get', {
+        jurorNumber,
+        poolNumber,
+      });
       const backLinkUrl = app.namedRoutes.build('juror-management.unpaid-attendance.get');
 
       delete req.session.errors;
@@ -60,6 +64,7 @@
             setExpensesUrl,
             submitUrl,
             enterExpensesUrl,
+            bankDetailsUrl,
             nav: 'unpaid-attendance',
             status,
             expenseData: expenseData,

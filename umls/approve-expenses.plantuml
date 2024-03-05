@@ -1,0 +1,103 @@
+@startuml approve-expenses
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant ApproveExpensesPage <</juror-management/approve-expenses>>
+participant CannotApproveExpensesPage <</juror-management/approve-expenses/cannot-approve>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant ApproveExpensesController <<approve-expenses.controller.js>> #lightyellow
+participant ExpensesForApprovalObject <<approveExpensesDAO.get()>> #lightyellow
+participant ApproveExpensesObject <<approveExpensesDAO.post()>> #lightyellow
+
+''' TEMPLATES
+participant ApproveExpensesTemplate <<juror-management/approve-expenses/approve-expenses.njk>> #lavender
+participant CannotApproveTemplate <<juror-management/approve-expenses/cannot-approve.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant ApproveExpensesValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> ApproveExpensesPage : click juror management approve expenses tab
+ApproveExpensesPage -> ApproveExpensesController : call approve expenses controller
+
+alt Enter new dates to filter by 
+  Actor -> ApproveExpensesPage : enter new dates to filter by
+  ApproveExpensesController -> ApproveExpensesValidator : validate selection
+  alt Invalid dates entered
+    ApproveExpensesController <-- ApproveExpensesValidator : data validation fails
+    ApproveExpensesController -> ApproveExpensesTemplate : request and build error message template
+    ApproveExpensesController <- ApproveExpensesTemplate : return HTML
+    ApproveExpensesPage <- ApproveExpensesController : return HTML
+    Actor <- ApproveExpensesPage : render error message
+  end
+end
+ 
+ApproveExpensesController -> ExpensesForApprovalObject : build request object
+ExpensesForApprovalObject -> BackendController : send backend request
+ExpensesForApprovalObject <- BackendController : ok response
+ApproveExpensesController <- ExpensesForApprovalObject : resolve request
+
+alt Failed to fetch approval expenses data
+    ExpensesForApprovalObject <-- BackendController : error response
+    ApproveExpensesController <-- ExpensesForApprovalObject : reject requestObject
+    ApproveExpensesController -> ErrorTemplate : request and build template
+    ApproveExpensesController <- ErrorTemplate : return HTML
+    GenericErrorPage <- ApproveExpensesController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+ApproveExpensesController -> ApproveExpensesTemplate : request and build template
+ApproveExpensesController <- ApproveExpensesTemplate : return HTML
+ApproveExpensesPage <- ApproveExpensesController : return HTML
+Actor <- ApproveExpensesPage : render HTML
+
+Actor -> ApproveExpensesPage : select expenses and click approve
+
+ApproveExpensesPage -> ApproveExpensesController : call page controller
+
+alt No expenses selected to approve
+  ApproveExpensesController -> ApproveExpensesTemplate : request and build error message template
+  ApproveExpensesController <- ApproveExpensesTemplate : return HTML
+  ApproveExpensesPage <- ApproveExpensesController : return HTML
+  Actor <- ApproveExpensesPage : render error message
+end
+
+alt One or more of expenses selected was submitted by user
+  ApproveExpensesController -> CannotApproveTemplate : request and build template
+  ApproveExpensesController <- CannotApproveTemplate : return HTML
+  CannotApproveExpensesPage <- ApproveExpensesController : return HTML
+  Actor <- CannotApproveExpensesPage : render HTML
+  Actor -> CannotApproveExpensesPage : clicks approve remaining expenses
+end
+
+ApproveExpensesController -> ApproveExpensesObject : build request object
+ApproveExpensesObject -> BackendController : send backend request
+ApproveExpensesObject <- BackendController : ok response
+ApproveExpensesController <- ApproveExpensesObject : resolve request
+
+alt Failed to approve selected expenses
+    ApproveExpensesObject <-- BackendController : error response
+    ApproveExpensesController <-- ApproveExpensesObject : reject requestObject
+    ApproveExpensesController -> ErrorTemplate : request and build template
+    ApproveExpensesController <- ErrorTemplate : return HTML
+    GenericErrorPage <- ApproveExpensesController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+ApproveExpensesController -> ExpensesForApprovalObject : build request object
+ExpensesForApprovalObject -> BackendController : send backend request
+ExpensesForApprovalObject <- BackendController : ok response
+ApproveExpensesController <- ExpensesForApprovalObject : resolve request
+ApproveExpensesController -> ApproveExpensesTemplate : request and build template
+ApproveExpensesController <- ApproveExpensesTemplate : return HTML
+ApproveExpensesPage <- ApproveExpensesController : return HTML
+Actor <- ApproveExpensesPage : render HTML

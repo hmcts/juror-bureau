@@ -1,0 +1,186 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+
+{% from "custom-components/mod-large-tag/macro.njk" import modLargeTag %}
+
+
+{% block page_title %}
+  {{ serviceName }} - juror record - expenses
+{% endblock %}
+
+{% block page_identifier %}juror record - expenses{% endblock %}
+
+{% set currentApp = "Juror management" %}
+
+{% block beforeContent %}
+  {% include "includes/back-link.njk" %}
+{% endblock %}
+
+{% block content %}
+  {% set currentName = [juror.commonDetails.title, juror.commonDetails.firstName, juror.commonDetails.lastName] %}
+
+  {% include "../_partials/heading.njk" %}
+
+  <div class="govuk-grid-row govuk-!-margin-bottom-6">
+    <div class="govuk-grid-column-full">
+
+      <div class="mod-juror-record__title govuk-body">
+        <h2 id="dailyExpensesLabel" class="govuk-heading-m">Daily expenses</h2>
+        <a id="viewAllExpensesAnchor" href="{{ viewAllExpensesLink }}" class="govuk-link govuk-link--no-visited-state">View all expenses</a>
+      </div>
+
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          {{ modLargeTag({
+            id: "totalInDraftTag" ,
+            colour: "grey",
+            classes: "mod-large-tag__juror-record govuk-!-margin-right-2",
+            label: "Total in draft",
+            value: "£" + expenseDetails.totalDraft | toFixed(2),
+            action: {
+              href: viewDraftExpensesLink,
+              text: "View"
+            }
+          })}}
+          {{ modLargeTag({
+            id: "totalForApprovalTag" ,
+            colour: "blue",
+            classes: "mod-large-tag__juror-record govuk-!-margin-right-2",
+            label: "Total for approval",
+            value: "£" + expenseDetails.totalForApproval | toFixed(2),
+            action: {
+              href: viewForApprovalExpensesLink,
+              text: "View"
+            }
+          })}}
+          {{ modLargeTag({
+            id: "totalApprovedTag",
+            classes: "mod-large-tag__juror-record",
+            label: "Total approved",
+            value: "£" + + expenseDetails.totalApproved | toFixed(2),
+            action: {
+              href: viewApprovedExpensesLink,
+              text: "View"
+            }
+          })}}
+        </div>
+      </div>
+      {% if expenseDetails.totalDraft > 0 or expenseDetails.totalForApproval > 0 or expenseDetails.totalApproved > 0 %}
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <a id="editSubmittedExpensesAnchor" href="{{ editSubmittedExpensesLink }}" class="govuk-link govuk-link--no-visited-state govuk-body">Edit submitted expenses</a>
+          </div>
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <div class="mod-juror-record__title govuk-body">
+        <h2 id="defaultExpensesLabel" class="govuk-heading-m">Set default expenses</h2>
+        <a id="changeDefaultExpensesAnchor" href="{{ editDefaultExpensesLink }}" class="govuk-link govuk-link--no-visited-state">Add or change</a>
+      </div>
+
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+          {{ govukSummaryList({
+            rows: [
+              {
+                key: {
+                  text: "Loss of earnings or benefits per day"
+                },
+                value: {
+                  text: ("£" + defaultExpenses.financial_loss | toFixed(2)) if defaultExpenses.financial_loss else "-"
+                }
+              },
+              {
+                key: {
+                  text: "Travel time"
+                },
+                value: {
+                  text: defaultExpenses.travel_time | hoursStringToHoursAndMinutes if defaultExpenses.travel_time else "-"
+                }
+              },
+              {
+                key: {
+                  text: "Miles travelled"
+                },
+                value: {
+                  text: (defaultExpenses.mileage + " miles") if defaultExpenses.mileage else "-"
+                }
+              },
+              {
+                key: {
+                  text: "Smartcard number"
+                },
+                value: {
+                  text: defaultExpenses.smart_card if defaultExpenses.smart_card else "-"
+                }
+              },
+              {
+                key: {
+                  text: "Total smartcard spend"
+                },
+                value: {
+                  text: ("£" + defaultExpenses.total_smart_card_spend | toFixed(2)) if defaultExpenses.total_smart_card_spend else "-"
+                }
+              }
+            ]
+          }) }}
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="govuk-grid-row govuk-!-margin-bottom-6">
+    <div class="govuk-grid-column-full">
+
+      <div class="mod-juror-record__title govuk-body">
+        <h2 id="jurorBankDetailsLabel" class="govuk-heading-m">Juror's bank details</h2>
+        <a id="changeJurorBankDetailsAnchor" href="{{ editBankDetailsLink }}" class="govuk-link govuk-link--no-visited-state">Add or change</a>
+      </div>
+
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+          {{ govukSummaryList({
+            rows: [
+              {
+                key: {
+                  text: "Account number"
+                },
+                value: {
+                  text: bankDetails.bank_account_number if bankDetails.bank_account_number else "-"
+                }
+              },
+              {
+                key: {
+                  text: "Sort code"
+                },
+                value: {
+                  text: bankDetails.sort_code | sortCode if bankDetails.sort_code else "-"
+                }
+              },
+              {
+                key: {
+                  text: "Account holder's name"
+                },
+                value: {
+                  text: bankDetails.account_holder_name if bankDetails.account_holder_name else "-"
+                }
+              }
+            ]
+          }) }}
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  
+{% endblock %}

@@ -14,6 +14,8 @@
   };
 
   validate.validators.genericDatePicker = function(value, options, key, attributes) {
+    if (!value) return;
+
     let dateRegex = /[^0-9\/]+/,
       tmpErrors = [],
       dateInitial = validateDateInitial(value);
@@ -48,7 +50,7 @@
       , dateAsDate = new Date(intYear, intMonth - 1, intDay)  // Date takes a 0-11 month range
       , isMonthAndDayValid = isValidDaysAndMonth(intDay, intMonth, intYear);
 
-    return { isMonthAndDayValid, dateAsDate };
+    return { isMonthAndDayValid, dateAsDate, intYear };
   };
 
   function isValidDaysAndMonth(d, m, y) {

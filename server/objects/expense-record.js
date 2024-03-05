@@ -80,9 +80,10 @@
   };
 
   module.exports.postDraftExpenseDAO = {
-    post: function(app, req, jurorNumber, body) {
+    post: function(app, req, jurorNumber, body, nonAttendance) {
+      const resource = nonAttendance ? `moj/expenses/${jurorNumber}/draft/non_attended_day` : `moj/expenses/${jurorNumber}/draft/attended_day`;
       const payload = {
-        uri: urljoin(config.apiEndpoint, `moj/expenses/${jurorNumber}/draft/attended_day`),
+        uri: urljoin(config.apiEndpoint, resource),
         method: 'POST',
         headers: {
           'User-Agent': 'Request-Promise',

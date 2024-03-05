@@ -459,9 +459,24 @@
       return _.camelCase(str);
     },
 
+    toKebabCase: function(str) {
+      return _.kebabCase(str);
+    },
+
     toSentenceCase: function(str) {
       return _.upperFirst(_.lowerCase(str));
     },
+
+    sortCode: function(str) {
+      return `${str[0]}${str[1]}-${str[2]}${str[3]}-${str[4]}${str[5]}`
+    },
+
+    hoursStringToHoursAndMinutes: function(time) {
+      const hours = parseInt(time.split(':')[0]);
+      const mins = parseInt(time.split(':')[1]);
+
+      return `${hours > 0 ? hours + (hours > 1 ? ' hours ' : ' hour ') : ''}${mins > 0 ? mins + (mins > 1 ? ' minutes' : ' minute') : ''}`
+    }
   };
 
 })();

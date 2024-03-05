@@ -127,4 +127,99 @@
     },
   };
 
+  module.exports.jurorBankDetailsDAO = {
+    get: function(app, req, jurorNumber, etag = null) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/juror-record', jurorNumber, 'bank-details'),
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+      };
+
+      if (etag) {
+        payload.headers['If-None-Match'] = `${etag}`;
+      }
+
+      app.logger.info('Sending request to API: ', payload);
+
+      payload.transform = (response, incomingRequest) => {
+        const headers = _.cloneDeep(incomingRequest.headers);
+
+        return { response, headers };
+      };
+
+      return rp(payload);
+    },
+    patch: function(app, req, body) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/juror-record/update-bank-details'),
+        method: 'PATCH',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+        body,
+      };
+
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
+    },
+  };
+
+  module.exports.approveExpensesDAO = {
+    get: function(app, req, locCode, paymentMethod, dates, etag = null) {
+      const uri = dates
+        ? urljoin(config.apiEndpoint, 'moj/expenses/approval', locCode, paymentMethod, `?from=${dates.from}&to=${dates.to}`)
+        : urljoin(config.apiEndpoint, 'moj/expenses/approval', locCode, paymentMethod);
+      const payload = {
+        uri,
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+      };
+
+      if (etag) {
+        payload.headers['If-None-Match'] = `${etag}`;
+      }
+
+      app.logger.info('Sending request to API: ', payload);
+
+      payload.transform = (response, incomingRequest) => {
+        const headers = _.cloneDeep(incomingRequest.headers);
+
+        return { response, headers };
+      };
+
+      return rp(payload);
+    },
+    post: function(app, req, body) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/expenses/approve'),
+        method: 'POST',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+        body,
+      };
+
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
+    },
+  };
+
 })();

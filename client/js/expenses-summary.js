@@ -4,6 +4,8 @@
   var expensesSummary = $('#expenses-summary');
   var jurorNumber = $('input[id="jurorNumber"]').val();
   var poolNumber = $('input[id="poolNumber"]').val();
+  var timeAtCourt = $('#timeAtCourt > div > dd').text().trim();
+  var nonAttendanceDay = timeAtCourt === 'Non-attendance day';
   var urlSearchParams = new URLSearchParams(window.location.search);
 
   $('loaded', function() {
@@ -67,9 +69,11 @@
       'pay_cash': payCash === 'CASH',
     };
 
-    attendance(data);
-    travel(data);
-    foodAndDrink(data);
+    if (!nonAttendanceDay) {
+      attendance(data);
+      travel(data);
+      foodAndDrink(data);
+    }
     financialLoss(data);
 
     return data;

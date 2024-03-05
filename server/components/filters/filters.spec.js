@@ -204,6 +204,28 @@
       expect(output).to.be.equal('');
     });
 
+    it('should convert a string to kebab case', function() {
+      let string = 'String To Kebab Case';
+      const expected = 'string-to-kebab-case';
+      let output;
+
+      output = filter.toKebabCase(string);
+      expect(output).to.be.equal(expected);
+
+      string = '--string-to-kebab-case-';
+
+      output = filter.toKebabCase(string);
+      expect(output).to.be.equal(expected);
+
+      string = '__STRING_TO_KEBAB_CASE__';
+
+      output = filter.toKebabCase(string);
+      expect(output).to.be.equal(expected);
+
+      output = filter.toKebabCase();
+      expect(output).to.be.equal('');
+    });
+
     it('should convert a string to sentence case', function() {
       let string = 'String To Sentence Case';
       const expected = 'String to sentence case';
@@ -224,6 +246,41 @@
 
       output = filter.toSentenceCase();
       expect(output).to.be.equal('');
+    });
+
+    it('should add hyphens to a sort code', function() {
+      let string = '123456';
+      const expected = '12-34-56';
+
+      const output = filter.sortCode(string);
+
+      expect(output).to.be.equal(expected);
+    });
+
+    it('should convert a time string to hours and minutes', function() {
+      let string;
+      let expected;
+      let output;
+
+      string = '01:45';
+      expected = '1 hour 45 minutes';
+      output = filter.hoursStringToHoursAndMinutes(string);
+      expect(output).to.be.equal(expected);
+
+      string = '00:45';
+      expected = '45 minutes';
+      output = filter.hoursStringToHoursAndMinutes(string);
+      expect(output).to.be.equal(expected);
+
+      string = '01:00';
+      expected = '1 hour ';
+      output = filter.hoursStringToHoursAndMinutes(string);
+      expect(output).to.be.equal(expected);
+
+      string = '02:01';
+      expected = '2 hours 1 minute';
+      output = filter.hoursStringToHoursAndMinutes(string);
+      expect(output).to.be.equal(expected);
     });
 
   });

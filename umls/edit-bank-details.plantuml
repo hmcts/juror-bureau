@@ -1,0 +1,110 @@
+@startuml edit-bank-details
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant JurorRecordExpensesPage <</juror-management/record/:jurorNumber/expenses>>
+participant DraftExpenseRecordPage <</juror-management/unpaid-attendance/expense-record/:jurorNumber/:poolNumber>>
+participant BankDetailsPage <</juror-management/expenses/:jurorNumber/:poolNumber/bank-details>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant JurorRecordController <<juror-record.controller.js>> #lightyellow
+participant ExpenseRecordController <<expense-record.controller.js>> #lightyellow
+participant EditBankDetailsController <<edit-bank-details.controller.js>> #lightyellow
+participant BankDetailsObject <<jurorBankDetailsDAO.get()>> #lightyellow
+participant SetBankDetailsObject <<jurorBankDetailsDAO.patch()>> #lightyellow
+
+''' TEMPLATES
+participant JurorRecordExpensesTemplate <<juror-management/juror-record/expenses.njk>> #lavender
+participant DraftExpenseRecordTemplate <<juror-management/expense-record/expense-record.njk>> #lavender
+participant BankDetailsTemplate <<expenses/default-expenses.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant BankDetailsValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> JurorRecordExpensesPage : click add or change bank details link
+JurorRecordExpensesPage -> EditBankDetailsController : call bank details controller
+
+alt Navigate from expense record
+  Actor -> DraftExpenseRecordPage : click add or change bank details link
+  DraftExpenseRecordPage -> EditBankDetailsController : call bank details controller
+end
+ 
+EditBankDetailsController -> BankDetailsObject : build request object
+BankDetailsObject -> BackendController : send backend request
+BankDetailsObject <- BackendController : ok response
+EditBankDetailsController <- BankDetailsObject : resolve request
+
+alt Failed to fetch jurors bank details
+    BankDetailsObject <-- BackendController : error response
+    EditBankDetailsController <-- BankDetailsObject : reject requestObject
+    EditBankDetailsController -> ErrorTemplate : request and build template
+    EditBankDetailsController <- ErrorTemplate : return HTML
+    GenericErrorPage <- EditBankDetailsController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+EditBankDetailsController -> BankDetailsTemplate : request and build template
+EditBankDetailsController <- BankDetailsTemplate : return HTML
+BankDetailsPage <- EditBankDetailsController : return HTML
+Actor <- BankDetailsPage : render HTML
+
+Actor -> BankDetailsPage : enters valid bank details values
+
+BankDetailsPage -> EditBankDetailsController : call page controller
+
+EditBankDetailsController -> BankDetailsValidator : validate form
+
+alt Invalid values entered
+  EditBankDetailsController <-- BankDetailsValidator : data validation fails
+  EditBankDetailsController -> BankDetailsTemplate : request and build error message template
+  EditBankDetailsController <- BankDetailsTemplate : return HTML
+  BankDetailsPage <- EditBankDetailsController : return HTML
+  Actor <- BankDetailsPage : render error message
+end
+
+EditBankDetailsController <- BankDetailsValidator : valid values entered
+
+EditBankDetailsController -> SetBankDetailsObject : build request object
+SetBankDetailsObject -> BackendController : send backend request
+SetBankDetailsObject <- BackendController : ok response
+EditBankDetailsController <- SetBankDetailsObject : resolve request
+
+alt Failed to set jurors bank details
+    SetBankDetailsObject <-- BackendController : error response
+    EditBankDetailsController <-- SetBankDetailsObject : reject requestObject
+    EditBankDetailsController -> ErrorTemplate : request and build template
+    EditBankDetailsController <- ErrorTemplate : return HTML
+    GenericErrorPage <- EditBankDetailsController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+EditBankDetailsController -> JurorRecordController : call juror record controller controller
+JurorRecordController -> JurorRecordExpensesTemplate : request and build template
+JurorRecordController <- JurorRecordExpensesTemplate : return HTML
+JurorRecordExpensesPage <- JurorRecordController : return HTML
+Actor <- JurorRecordExpensesPage : render HTML
+
+alt Initally navigated from expense record
+  EditBankDetailsController -> ExpenseRecordController : call juror record controller controller
+  ExpenseRecordController -> DraftExpenseRecordTemplate : request and build template
+  ExpenseRecordController <- DraftExpenseRecordTemplate : return HTML
+  DraftExpenseRecordPage <- ExpenseRecordController : return HTML
+  Actor <- DraftExpenseRecordPage : render HTML
+end
+
+
+
+
+
+
+
+    

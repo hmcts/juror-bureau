@@ -100,7 +100,7 @@
   {% set courtRadioItems = (courtRadioItems.push(
     {
       value: court.courtLocationName,
-      text: court.courtLocationName | capitalize,
+      text: court.displayName | capitalize,
       conditional: { 
         html: courtroomHtml
       }
@@ -211,7 +211,7 @@
             label: {
               text: "Courtroom"
             },
-            value:  trialDetails.courtroom,
+            value: trialDetails.courtroom,
             name: "courtroom",
             id: "courtroom",
             data: courts[0].courtrooms,

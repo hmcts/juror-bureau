@@ -25,76 +25,82 @@
   </div>
 
   {{ govukSummaryList({
+    attributes: {
+      id: "timeAtCourt"
+    },
     rows: [
       {
         key: {
           text: "Time spent at court"
         },
         value: {
-          text: timeSpentAtCourt.hour + " hours " + timeSpentAtCourt.minute + " minutes"
+          text: (timeSpentAtCourt.hour + " hours " + timeSpentAtCourt.minute + " minutes") if not expensesData.none_attendance_day else "Non-attendance day"
         }
       }
     ]
   }) }}
 
-  {{ timeInput({
-    id: "totalTravelTime",
-    name: "totalTravelTime",
-    fieldset: {
-      legend: {
-        text: "Total travel time",
-        classes: "govuk-fieldset__legend--s"
-      }
-    },
-    errorMessage: travelTimeError,
-    items: {
-      hour: {
-        value: tmpBody["totalTravelTime-hour"] or "0",
-        attributes: {
-          minLength: "1",
-          maxLength: "2",
-          "data-summary-detectable": ""
+  {% if not expensesData.none_attendance_day %}
+    {{ timeInput({
+      id: "totalTravelTime",
+      name: "totalTravelTime",
+      fieldset: {
+        legend: {
+          text: "Total travel time",
+          classes: "govuk-fieldset__legend--s"
         }
       },
-      minute: {
-        value: tmpBody["totalTravelTime-minute"] or "0",
-        attributes: {
-          minLength: "1",
-          maxLength: "2",
-          "data-summary-detectable": ""
+      errorMessage: travelTimeError,
+      items: {
+        hour: {
+          value: tmpBody["totalTravelTime-hour"] or "0",
+          attributes: {
+            minLength: "1",
+            maxLength: "2",
+            "data-summary-detectable": ""
+          }
+        },
+        minute: {
+          value: tmpBody["totalTravelTime-minute"] or "0",
+          attributes: {
+            minLength: "1",
+            maxLength: "2",
+            "data-summary-detectable": ""
+          }
         }
-      }
-    },
-    errors: errors.items
-  }) }}
+      },
+      errors: errors.items
+    }) }}
 
-  {{ govukRadios({
-    classes: "govuk-radios--inline govuk-radios--small",
-    name: "payAttendance",
-    value: tmpBody.payAttendance,
-    fieldset: {
-      legend: {
-        text: "Pay attendance",
-        classes: "govuk-fieldset__legend--s"
-      }
-    },
-    items: [
-      {
-        value: "HALF_DAY",
-        text: "Half day",
-        checked: expensesData.time.pay_attendance === "HALF_DAY",
-        attributes: {
-          "data-summary-detectable": ""
+    {{ govukRadios({
+      classes: "govuk-radios--inline govuk-radios--small",
+      name: "payAttendance",
+      value: tmpBody.payAttendance,
+      fieldset: {
+        legend: {
+          text: "Pay attendance",
+          classes: "govuk-fieldset__legend--s"
         }
       },
-      {
-        value: "FULL_DAY",
-        text: "Full day",
-        checked: expensesData.time.pay_attendance === "FULL_DAY",
-        attributes: {
-          "data-summary-detectable": ""
+      items: [
+        {
+          value: "HALF_DAY",
+          text: "Half day",
+          checked: expensesData.time.pay_attendance === "HALF_DAY",
+          attributes: {
+            "data-summary-detectable": ""
+          }
+        },
+        {
+          value: "FULL_DAY",
+          text: "Full day",
+          checked: expensesData.time.pay_attendance === "FULL_DAY",
+          attributes: {
+            "data-summary-detectable": ""
+          }
         }
-      }
-    ]
-  }) }}
+      ]
+    }) }}
+  {% endif %}
+
 </div>

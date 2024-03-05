@@ -1,6 +1,7 @@
 (function() {
   'use strict';
 
+  const _ = require('lodash');
   const modUtils = require('../../../lib/mod-utils');
   const validate = require('validate.js');
   const urljoin = require('url-join');
@@ -9,27 +10,24 @@
 
   module.exports.getUnpaidAttendance = function(app) {
     return function(req, res) {
-
       const currentPage = req.query['page'] || 1;
       const minDate = req.query['filterStartDate'] || null;
       const maxDate = req.query['filterEndDate']|| null;
       const sortOrder = req.query['sortOrder'] || 'ascending';
       const sortBy = req.query['sortBy'] || 'unpaidLastName';
-      const clearFilter = req.query['clearFilter'] || false;
+      const tmpErrors = _.clone(req.session.errors);
 
       const successCB = function(data) {
         var listToRender = modUtils.transformUnpaidAttendanceList(data.content, sortBy, sortOrder);
         let pageItems, errors;
 
-        if (clearFilter) {
-          delete req.session.errors;
-        }
+        delete req.session.errors;
 
-        if (typeof req.session.errors !== 'undefined') {
+        if (tmpErrors) {
           errors = {
             title : 'There is a problem',
-            count: typeof req.session.errors !== 'undefined' ? Object.keys(req.session.errors).length : 0,
-            items: req.session.errors,
+            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+            items: tmpErrors,
           };
           req.session.unpaidAttendanceTotal = 0;
         } else {

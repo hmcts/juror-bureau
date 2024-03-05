@@ -1,3 +1,5 @@
+const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/expenses');
+
 (function() {
   'use strict';
 
@@ -317,11 +319,86 @@
     };
   };
 
-  module.exports.getFinanceTab = function(app) {
-    return function(req, res) {
-      return render(req, res, 'finance', req.params['jurorNumber']);
+  module.exports.getExpensesTab = function(app) {
+    return async function(req, res) {
+      const { jurorNumber } = req.params;
+
+      try {
+        clearInvalidSessionData(req);
+
+        // TODO - Make call to relevant API once available
+        const jurorOverview = await jurorRecordObject.record.get(
+          require('request-promise'),
+          app,
+          req.session.authToken,
+          'overview',
+          jurorNumber,
+          req.session.locCode,
+        );
+
+        const defaultExpenses = await defaultExpensesDAO.get(app, req, jurorNumber);
+
+        const { response: bankDetails } = await jurorBankDetailsDAO.get(app, req, jurorNumber);
+
+        cacheJurorCommonDetails(req, jurorOverview.data.commonDetails);
+
+        app.logger.info('Fetched the juror record expenses info: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+        });
+
+        // TODO - replace with data from API call
+        const dailyExpenses = {
+          totalDraft: 110,
+          totalForApproval: 0,
+          totalApproved: 0,
+        };
+
+        return res.render('juror-management/juror-record/expenses', {
+          backLinkUrl: 'homepage.get',
+          juror: jurorOverview.data,
+          jurorStatus: resolveJurorStatus(jurorOverview.data.commonDetails),
+          currentTab: 'expenses',
+          hasSummons: req.session.hasSummonsResponse,
+          dailyExpenses,
+          defaultExpenses,
+          bankDetails,
+          viewAllExpensesLink: app.namedRoutes.build('juror-management.unpaid-attendance.get'),
+          viewDraftExpensesLink: app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
+            jurorNumber: jurorNumber, poolNumber: jurorOverview.data.commonDetails.poolNumber, status: 'draft',
+          }),
+          viewForApprovalExpensesLink: app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
+            jurorNumber: jurorNumber, poolNumber: jurorOverview.data.commonDetails.poolNumber, status: 'for-approval',
+          }),
+          viewApprovedExpensesLink: app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
+            jurorNumber: jurorNumber, poolNumber: jurorOverview.data.commonDetails.poolNumber, status: 'approved',
+          }),
+          editSubmittedExpensesLink: '#',
+          editDefaultExpensesLink: app.namedRoutes.build('juror-record.default-expenses.get', {
+            jurorNumber: jurorNumber, poolNumber: jurorOverview.data.commonDetails.poolNumber,
+          }),
+          editBankDetailsLink: app.namedRoutes.build('juror-record.bank-details.get', {
+            jurorNumber: jurorNumber, poolNumber: jurorOverview.data.commonDetails.poolNumber,
+          }),
+        });
+      } catch (err) {
+        if (err.statusCode === 404) {
+          return res.render('juror-management/_errors/not-found');
+        }
+        app.logger.crit('Failed to fetch the juror expenses data:', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            jurorNumber,
+            locationCode: req.session.locCode,
+          },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+        return res.render('_errors/generic');
+      }
     };
   };
+
 
   module.exports.getAttendanceTab = function(app) {
     return async function(req, res) {
@@ -493,17 +570,33 @@
           delete req.session.errors;
           delete req.session.jurorNotes;
 
+          let backLinkUrl = app.namedRoutes.build('juror-record.notes.get', {
+            jurorNumber: req.params['jurorNumber'],
+          });
+          let actionUrl = app.namedRoutes.build('juror-record.notes-edit.post', {
+            jurorNumber: req.params['jurorNumber'],
+          });
+
+          if (req.url.includes('bank-details')) {
+            const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
+
+            backLinkUrl = app.namedRoutes.build(`${routePrefix}.bank-details.get`, {
+              jurorNumber: req.params['jurorNumber'],
+              poolNumber: req.params['poolNumber'],
+            });
+            actionUrl = app.namedRoutes.build(`${routePrefix}.bank-details.notes-edit.post`, {
+              jurorNumber: req.params['jurorNumber'],
+              poolNumber: req.params['poolNumber'],
+            });
+          }
+
           return res.render('juror-management/juror-record/notes-edit', {
             backLinkUrl: {
               built: true,
-              url: app.namedRoutes.build('juror-record.notes.get', {
-                jurorNumber: req.params['jurorNumber'],
-              }),
+              url: backLinkUrl,
             },
             juror: jurorNotes,
-            actionUrl: app.namedRoutes.build('juror-record.notes-edit.post', {
-              jurorNumber: req.params['jurorNumber'],
-            }),
+            actionUrl,
             errors: {
               title: 'Please check the form',
               count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -524,6 +617,10 @@
             },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
+
+          if (req.url.includes('bank-details')) {
+            return res.render('_errors/generic');
+          }
 
           return res.redirect(app.namedRoutes.build('juror-record.notes.get', {
             jurorNumber: req.params['jurorNumber'],
@@ -549,7 +646,42 @@
   // of course the promise will resolve if the code is 200 (error) or throw an exception if the code is 304 (success) 😅
   module.exports.postEditNotes = function(app) {
     return function(req, res) {
-      var editSuccessCB = function() {
+
+      let successUrl = app.namedRoutes.build('juror-record.notes.get', {
+        jurorNumber: req.params['jurorNumber'],
+      });
+      let backLinkUrl = app.namedRoutes.build('juror-record.notes.get', {
+        jurorNumber: req.params['jurorNumber'],
+      });
+      let actionUrl = app.namedRoutes.build('juror-record.notes-edit.post', {
+        jurorNumber: req.params['jurorNumber'],
+      });
+      let formErrorUrl = app.namedRoutes.build('juror-record.notes-edit.get', {
+        jurorNumber: req.params['jurorNumber'],
+      });
+
+      if (req.url.includes('bank-details')) {
+        const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
+
+        successUrl = app.namedRoutes.build(`${routePrefix}.bank-details.get`, {
+          jurorNumber: req.params['jurorNumber'],
+          poolNumber: req.params['poolNumber'],
+        });
+        backLinkUrl = app.namedRoutes.build(`${routePrefix}.bank-details.get`, {
+          jurorNumber: req.params['jurorNumber'],
+          poolNumber: req.params['poolNumber'],
+        });
+        actionUrl = app.namedRoutes.build(`${routePrefix}.bank-details.notes-edit.post`, {
+          jurorNumber: req.params['jurorNumber'],
+          poolNumber: req.params['poolNumber'],
+        });
+        formErrorUrl = app.namedRoutes.build(`${routePrefix}.bank-details.notes-edit.get`, {
+          jurorNumber: req.params['jurorNumber'],
+          poolNumber: req.params['poolNumber'],
+        });
+      }
+
+      const editSuccessCB = function() {
           app.logger.info('Updated the juror notes: ', {
             auth: req.session.authentication,
             jwt: req.session.authToken,
@@ -561,9 +693,7 @@
 
           delete req.session.jurorNotes;
 
-          return res.redirect(app.namedRoutes.build('juror-record.notes.get', {
-            jurorNumber: req.params['jurorNumber'],
-          }));
+          return res.redirect(successUrl);
         }
         , resourceChangedCB = function(response) {
 
@@ -579,14 +709,10 @@
           return res.render('juror-management/juror-record/notes-edit', {
             backLinkUrl: {
               built: true,
-              url: app.namedRoutes.build('juror-record.notes.get', {
-                jurorNumber: req.params['jurorNumber'],
-              }),
+              url: backLinkUrl,
             },
             juror: response.data,
-            actionUrl: app.namedRoutes.build('juror-record.notes-edit.post', {
-              jurorNumber: req.params['jurorNumber'],
-            }),
+            actionUrl: actionUrl,
             errorMessage: 'This record has been modified',
           });
         }
@@ -632,9 +758,7 @@
 
         req.session.jurorNotes = req.body.notes;
 
-        return res.redirect(app.namedRoutes.build('juror-record.notes-edit.get', {
-          jurorNumber: req.params['jurorNumber'],
-        }));
+        return res.redirect(formErrorUrl);
       }
 
       jurorRecordObject.record.get(

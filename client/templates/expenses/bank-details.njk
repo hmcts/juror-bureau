@@ -1,0 +1,123 @@
+{% extends "../layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+
+{% block page_title %}
+  {{ serviceName }} - juror record - juror's bank details
+{% endblock %}
+
+{% block page_identifier %}Juror's Bank Details{% endblock %}
+
+{% block content %}
+
+  {% set accountNumberError = undefined %}
+  {% if errors.items["accountNumber"] %}
+    {% set accountNumberError = { text: errors.items["accountNumber"][0].details } %}
+  {% endif %}
+  {% set sortCodeError = undefined %}
+  {% if errors.items["sortCode"] %}
+    {% set sortCodeError = { text: errors.items["sortCode"][0].details } %}
+  {% endif %}
+  {% set accountHolderNameError = undefined %}
+  {% if errors.items["accountHolderName"] %}
+    {% set accountHolderNameError = { text: errors.items["accountHolderName"][0].details } %}
+  {% endif %}
+
+  {% set addressParts = [juror.addressLine1, juror.addressLine2, juror.addressLine3, juror.addressLine4, juror.addressLine5] %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-4">Juror's Bank Details</h1>
+      <p><span class="govuk-body govuk-!-margin-bottom-4">If you do not enter bank details, the juror will be sent a cheque by post.</span></p>
+      <form method="post" action="{{ processUrl }}" id="setBankDetailsForm">
+        
+        <div class="mod-juror-record__title govuk-!-margin-bottom-5">
+          <h2 id="overviewLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Bank details</h2>
+        </div>
+        {{ govukInput({
+          id: "accountNumber",
+          name: "accountNumber",
+          label: {
+            text: "Account number"
+          },
+          value: tmpBody.accountNumber if tmpBody.accountNumber else juror.anonymisedAccountNumber,
+          errorMessage: accountNumberError,
+          classes: "govuk-input--width-20 govuk-input--extra-letter-spacing",
+          spellcheck: false
+        }) }}
+        {{ govukInput({
+          id: "sortCode",
+          name: "sortCode",
+          label: {
+            text: "Sort code"
+          },
+          value: tmpBody.sortCode if tmpBody.sortCode else juror.anonymisedSortCode,
+          errorMessage: sortCodeError,
+          classes: "govuk-input--width-20 govuk-input--extra-letter-spacing",
+          spellcheck: false
+        }) }}
+        {{ govukInput({
+          id: "accountHolderName",
+          name: "accountHolderName",
+          label: {
+            text: "Account holder's name"
+          },
+          value: tmpBody.accountHolderName if tmpBody.accountHolderName else juror.accountHolderName,
+          errorMessage: accountHolderNameError,
+          classes: "govuk-input--width-20",
+          spellcheck: false
+        }) }}
+        
+        <div class="mod-juror-record__title govuk-!-margin-bottom-5">
+          <h2 id="overviewLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Juror's address</h2>
+          <div class="flex mod-flex mod-gap-x-4">
+            <a id="addressChangeAnchor" href="{{ changeAddressUrl }}" class="govuk-link govuk-link--no-visited-state">
+              Change
+            </a>
+          </div>
+        </div>
+        <div class="govuk-!-width-one-half">
+          <div>
+            <p class="govuk-body">{{(addressParts | buildRecordAddress | capitalizeFully + '<br>' + juror.postcode) | safe}}</p>
+            <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+          </div>
+        </div>
+
+        <div class="mod-juror-record__title govuk-!-margin-bottom-5">
+          <h2 id="overviewLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Internal notes</h2>
+          <div class="flex mod-flex mod-gap-x-4">
+            <a id="notesChangeAnchor" href="{{ addNotesUrl }}" class="govuk-link govuk-link--no-visited-state">
+              Add or change
+            </a>
+          </div>
+        </div>
+
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-two-thirds">
+            <p class="govuk-caption-m govuk-!-margin-top-0">These can only be seen by internal staff at HMCTS. The public cannot request to view them.</p>
+            <p class="govuk-body">
+              {{ juror.notes }}
+            </p>
+          </div>
+        </div>
+
+        <div class="govuk-button-group govuk-!-padding-top-5">
+          {{ govukButton({
+            text: "Save",
+            type: "submit"
+          }) }}
+          <a class="govuk-link" href="{{ cancelUrl }}">Cancel without saving</a>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+
+    </form>
+
+    </div>
+  </div>
+{% endblock %}

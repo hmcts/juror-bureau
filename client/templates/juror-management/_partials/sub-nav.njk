@@ -30,15 +30,15 @@
       id: "summonsTab"
     }
   }, {
-    text: "Finance and expenses",
-    href: url('juror-record.finance.get', {
+    text: "Expenses",
+    href: url('juror-record.expenses.get', {
       jurorNumber: juror.commonDetails.jurorNumber
     }),
-    active: currentTab === "finance",
+    active: currentTab === "expenses",
     attributes: {
-      id: "financeTab"
+      id: "expensesTab"
     }
-  }, {
+  } if isCourtUser, {
     text: "Attendance",
     href: url('juror-record.attendance.get', {
       jurorNumber: juror.commonDetails.jurorNumber

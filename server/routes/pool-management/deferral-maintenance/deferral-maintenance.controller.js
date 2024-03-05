@@ -13,7 +13,7 @@
   function successCB(data, courtCode) {
     return function(app, req, res) {
       var court = req.session.courtsList.find((element) => {
-        return element.locationCode === courtCode
+        return element.locationCode === courtCode;
       });
 
       req.session.deferralMaintenance = {
@@ -36,7 +36,7 @@
       return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.filter.get', {
         locationCode: court.locationCode,
       }));
-    }
+    };
   }
 
   function errorCB(err) {
@@ -58,7 +58,7 @@
       });
 
       return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.get'));
-    }
+    };
   }
 
   module.exports.index = function(app) {
@@ -74,8 +74,8 @@
       }
 
       return render()(req, res);
-    }
-  }
+    };
+  };
 
   module.exports.getDeferrals = function(app) {
     return function(req, res) {
@@ -99,8 +99,8 @@
         .deferrals.get(rp, app, req.session.authToken, courtCode)
         .then((data) => successCB(data, courtCode[0])(app, req, res))
         .catch((err) => errorCB(err)(app, req, res));
-    }
-  }
+    };
+  };
 
   module.exports.postFilterDeferrals = function(app) {
     return function(req, res) {
@@ -149,7 +149,8 @@
       if (filters.deferredTo) {
         data.filters.deferredTo = filters.deferredTo;
         data.deferrals = data.deferrals.filter((deferral) => {
-          return dateFilter(new Date(deferral.deferredTo), null, 'DD/MM/YYYY') === filters.deferredTo;
+          return dateFilter(deferral.deferredTo, 'yyyy-MM-dd', 'DD/MM/YYYY')
+            === filters.deferredTo.split('/').map(d => d.padStart(2, '0')).join('/');
         });
       }
 
@@ -165,6 +166,7 @@
 
       // if we have filters, we then store the filtered deferrals because we need them
       const filterLength = Object.entries(data.filters).length;
+
       if (filterLength > 0) {
         req.session.deferralMaintenance.filtered =
           data.deferrals.reduce((prev, curr) => {
@@ -174,8 +176,8 @@
       }
 
       return render(data, !!Object.entries(data.filters).length)(req, res);
-    }
-  }
+    };
+  };
 
   module.exports.getCheckDeferral = function(app) {
     return function(req, res) {
@@ -216,8 +218,8 @@
       total = req.session.deferralMaintenance.deferrals.filter((deferral) => deferral.isChecked).length;
 
       return res.status(200).send({ jurorNumber: req.params['jurorNumber'], isChecked: juror.isChecked, total });
-    }
-  }
+    };
+  };
 
   module.exports.getProcessCheckedDeferrals = function(app) {
     return function(req, res) {
@@ -236,7 +238,7 @@
             },
           });
 
-          const sortedPools = data.deferralPoolsSummary[0].deferralOptions.sort(function(a,b){
+          const sortedPools = data.deferralPoolsSummary[0].deferralOptions.sort(function(a, b){
             return new Date(a.serviceStartDate) - new Date(b.serviceStartDate);
           });
 
@@ -292,8 +294,8 @@
         .availablePools.get(rp, app, req.session.authToken, req.params['locationCode'])
         .then(processSuccessCB)
         .catch(processErrorCB);
-    }
-  }
+    };
+  };
 
   module.exports.postProcessCheckedDeferrals = function(app) {
     return function(req, res) {
@@ -347,7 +349,7 @@
           return res.redirect(app.namedRoutes.build('pool-management.deferral-maintencance.process.get', {
             locationCode: req.params['locationCode'],
           }));
-        }
+        };
 
       validatorResult = validate(req.body, validator.selectedActivePool());
       if (typeof validatorResult !== 'undefined') {
@@ -364,8 +366,8 @@
         .allocateJurors.post(rp, app, req.session.authToken, deferralsToProcess, req.body.poolNumber)
         .then(processSuccessCB)
         .catch(processErrorCB);
-    }
-  }
+    };
+  };
 
   function render(data, isFiltered = false) {
     return function(req, res) {
@@ -407,7 +409,7 @@
         },
         isFiltered,
       });
-    }
+    };
   }
 
   /**

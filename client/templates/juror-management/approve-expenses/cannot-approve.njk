@@ -1,0 +1,42 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page_title %}{{ serviceName }} - approve expenses{% endblock %}
+  
+{% block page_identifier %}Approve expenses - cannot approve{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+        <h1 class="govuk-heading-l">You cannot approve expenses that you submitted</h1>
+
+        {% if canApproveJurors | length > 0 %}
+          <form action="{{ submitUrl }}" method="post" id="confirmApprovalForm">
+            <p class="govuk-body">You’ll need to ask a colleague to approve these for you.</p>
+            <p class="govuk-body">You can still approve all other remaining expenses.</p>
+            <div class="govuk-button-group">
+              {{ govukButton({
+                text: "Approve remaining expenses",
+                type: "submit"
+              }) }}
+              <a class="govuk-link govuk-link--no-visited-state" id="cancelAnchor" href="{{ cancelUrl }}">Cancel</a>
+            </div>
+            <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+          </form>
+        {% else %}
+          <p class="govuk-body">Another colleague will need to approve them.</p>
+          <div class="govuk-button-group">
+            {{ govukButton({
+              text: "Go back",
+              href: cancelUrl
+            }) }}
+          </div>
+        {% endif %}
+
+    </div>
+  </div>
+
+{% endblock %}

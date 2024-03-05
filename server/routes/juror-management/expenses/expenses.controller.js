@@ -4,8 +4,8 @@
   const _ = require('lodash')
     , modUtils = require('../../../lib/mod-utils')
     , validate = require('validate.js')
-    , validator = require('../../../config/validation/default-expenses')
-    , { defaultExpensesDAO } = require('../../../objects/expenses');
+    , { defaultExpensesDAO } = require('../../../objects/expenses')
+    , defaultExpensesValidator = require('../../../config/validation/default-expenses');
 
   module.exports.getDefaultExpenses = (app) => {
     return async function(req, res) {
@@ -18,7 +18,8 @@
         : app.namedRoutes.build('juror-management.default-expenses.post',
           { jurorNumber, poolNumber});
       const cancelUrl = req.url.includes('record')
-        ? 'ADD JUROR RECORD EXPENSES LINK ONCE AVAILABLE'
+        ? app.namedRoutes.build('juror-record.expenses.get',
+          { jurorNumber })
         : app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get',
           { jurorNumber, poolNumber, status: 'draft'});
 
@@ -63,13 +64,14 @@
   module.exports.postDefaultExpenses = (app) => {
     return async function(req, res) {
       const { jurorNumber, poolNumber } = req.params;
-      const validationErrorUrl = req.url.includes('record ')
+      const validationErrorUrl = req.url.includes('record')
         ? app.namedRoutes.build('juror-record.default-expenses.get',
           { jurorNumber, poolNumber })
         : app.namedRoutes.build('juror-management.default-expenses.get',
           { jurorNumber, poolNumber });
-      const redirectUrl = req.url.includes('record ')
-        ? 'ADD JUROR RECORD EXPENSES LINK ONCE AVAILABLE'
+      const redirectUrl = req.url.includes('record')
+        ? app.namedRoutes.build('juror-record.expenses.get',
+          { jurorNumber })
         : app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get',
           { jurorNumber, poolNumber, status: 'draft'});
 
@@ -77,8 +79,7 @@
         hour: req.body['travelTime-hour'],
         minute: req.body['travelTime-minute'],
       };
-
-      const validatorResult = validate(req.body, validator());
+      const validatorResult = validate(req.body, defaultExpensesValidator());
 
       if (typeof validatorResult !== 'undefined') {
         req.session.tmpBody = req.body;
