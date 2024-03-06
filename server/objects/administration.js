@@ -181,4 +181,35 @@
     },
   };
 
+  module.exports.courtDetailsDAO = {
+    get: (app, req, loc) => {
+      app.logger.info('Sending request to API: ', 'moj/administration/courts/', loc);
+
+      return rp({
+        uri: urljoin(config.apiEndpoint, 'moj/administration/courts/', loc),
+        method: 'GET',
+        headers: {
+          ...options.headers,
+          Authorization: req.session.authToken,
+        },
+        json: true,
+      });
+    },
+    post: (app, req, loc, body) => {
+      app.logger.info('Sending request to API: ', 'moj/administration/courts/', loc, body);
+
+      return rp({
+        uri: urljoin(config.apiEndpoint, 'moj/administration/courts/', loc),
+        method: 'PUT',
+        headers: {
+          ...options.headers,
+          Authorization: req.session.authToken,
+        },
+        json: true,
+        body,
+      });
+    },
+  };
+
+
 })();

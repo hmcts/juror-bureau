@@ -1,0 +1,108 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "custom-components/time-input-12-hour/macro.njk" import timeInput12Hour %}
+
+{% block page_title %}{{ serviceName }} - administration{% endblock %}
+{% block page_identifier %}administration - system codes - {{ codeType }}{% endblock %}
+
+{% set currentApp = "Court administration" if isCourtUser else ("Bureau administration" if isBureauUser else "System administration") %} 
+{% set nav = "systemCodes" %}
+
+{% block content %}
+{% include "includes/errors.njk" %}  
+
+  <form method="post">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">Court details</h1>
+        <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-2">Court code</h2>
+        <div>{{ courtDetails.court_code }}</div>
+        <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-2">Court name{% if courtDetails.welsh %} (English){% endif %}</h2>
+        <div>{{ courtDetails.english_court_name | capitalizeFully }}</div>
+        <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-2">Address{% if courtDetails.welsh %} (English){% endif %}</h2>
+        <div>
+          {% for key, value in courtDetails.english_address %}
+            {% if value %}
+              {% if key == 'postcode' %}
+                {{ value }}<br />
+              {% else %}
+                {{ value | capitalizeFully }}<br />
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        {% if courtDetails.welsh %}
+          <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-2">Court name (Welsh)</h2>
+          <div>{{ courtDetails.welsh_court_name | capitalizeFully }}</div>
+          <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-2">Address (Welsh)</h2>
+          <div>
+            {% for key, value in courtDetails.welsh_address %}
+              {% if value %}
+                {% if key == 'postcode' %}
+                  {{ value }}<br />
+                {% else %}
+                  {{ value | capitalizeFully }}<br />
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-2">Main telephone</h2>
+        <input name="main_phone_number" class="govuk-input govuk-!-width-one-quarter" value="{{ courtDetails.main_phone }}"/>
+        <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-2">Default attendance time</h2>
+        {{ timeInput12Hour({
+          id: "default_attendance_time",
+          items: {
+            hour: {
+              value: attendanceTime.hour,
+              attributes: {
+                minLength: "1",
+                maxLength: "2"
+              }
+            },
+            minute: {
+              value: attendanceTime.minute,
+              attributes: {
+                minLength: "1",
+                maxLength: "2"
+              }
+            },
+            period: {
+              value: attendanceTime.period
+            }
+          },
+          errors: errors.items
+        }) }}
+        <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-2">Assembly room</h2>
+        <select name="assembly_room_id" class="govuk-select">
+          {% for room in courtrooms %}
+            <option value="{{ room.room_id }}" {% if courtDetails.assembly_room == room.room_name %} selected {% endif %}>{{ room.room_name }}</option>
+          {% endfor %}
+        </select>
+        <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-2">Cost centre</h2>
+        <input name="cost_center" class="govuk-input govuk-!-width-one-half" value="{{ courtDetails.cost_center }}" />
+        <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-2">Signature</h2>
+        <input name="signature" class="govuk-input govuk-!-width-one-half" value="{{ courtDetails.signature }}" />
+      </div>
+    </div>
+
+    <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+
+    <div class="govuk-button-group govuk-!-margin-top-8">
+      {{ govukButton({
+        text: "Save",
+        type: "submit",
+        attributes: {
+          id: "saveButton",
+          formAction: postUrl
+        }
+      }) }}
+      <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+    </div>
+
+  </form>
+{% endblock %}

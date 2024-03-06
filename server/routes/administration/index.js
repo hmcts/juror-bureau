@@ -9,6 +9,7 @@
     require('./expense-limits')(app);
     require('./users')(app);
     require('./room-locations')(app);
+    require('./court-details')(app);
 
     app.get('/administration',
       'administration.get',
