@@ -37,6 +37,12 @@
     {% include "sjo-tasks/_common/sjo-tasks-nav.njk" %}
   {% elif currentApp === "Messaging" %}
     {% include "messaging/_common/messaging-nav.njk" %}
+  {% elif currentApp === "Court administration" %}
+    {% include "administration/_common/court-administration-nav.njk" %}
+  {% elif currentApp === "Bureau administration" %}
+    {% include "administration/_common/bureau-administration-nav.njk" %}
+  {% elif currentApp === "System administration" %}
+    {% include "administration/_common/system-administration-nav.njk" %}
   {% endif %}
 {% endblock %}
 

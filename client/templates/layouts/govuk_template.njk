@@ -119,7 +119,7 @@
 
             {% if authentication.staff.name %}
               <ul class="moj-header__navigation-list">
-                {% if hasModAccess %}
+                {% if hasModAccess and not isSystemAdministrator %}
                   {% include "custom-components/super-navigation/super-navigation.njk" %}
                 {% endif %}
                 <li class="moj-header__navigation-item moj-header__navigation-item--without-children">

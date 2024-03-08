@@ -112,6 +112,47 @@
     }
   };
 
+  const remapCase = function(object, process) {
+    if (Array.isArray(object)) {
+      return object.map((item) => remapCase(item, process));
+    }
+
+    if (object === null) {
+      return null;
+    }
+
+    if (typeof object === 'string') {
+      return process(object);
+    }
+
+    if (typeof object === 'object') {
+      const out = {};
+
+      Object.keys(object).forEach(key => {
+        out[process(key)] = remapCase(object[key], process);
+      });
+
+      return out;
+    }
+
+    return object;
+  };
+
+  const snakeToCamel = function(object) {
+    const process = (item) => item.split('_').reduce((prev, curr) => prev + curr[0].toUpperCase() + curr.slice(1));
+
+    return remapCase(object, process);
+  };
+
+  module.exports.snakeToCamel = snakeToCamel;
+
+  const camelToSnake = function(object) {
+    const process = (item) => item.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
+
+    return remapCase(object, process);
+  };
+
+  module.exports.camelToSnake = camelToSnake;
 
   module.exports.basicDataTransform = function(object, key) {
     var activeKey = key;

@@ -124,7 +124,7 @@
 
       expect(validatorResult).to.be.an('object');
       expect(validatorResult.lossOfEarnings[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.lossOfEarnings[0].details).to.equal('Loss of earnings or benefits can only include numbers and a decimal point');
+      expect(validatorResult.lossOfEarnings[0].details).to.equal('Loss of earnings or benefits per day can only include numbers and a decimal point');
 
       expect(validatorResult).to.be.an('object');
       expect(validatorResult.extraCareCosts[0]).to.have.ownPropertyDescriptor('details');

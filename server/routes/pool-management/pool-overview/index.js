@@ -22,7 +22,6 @@
       auth.verify,
       controller.postFilterJurors(app));
 
-    // ajax route to check / uncheck jurors
     app.post('/juror-management/pool-overview/:poolNumber/check',
       'pool-overview.check-uncheck.post',
       auth.verify,

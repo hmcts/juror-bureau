@@ -1,0 +1,26 @@
+{% from "moj/components/primary-navigation/macro.njk" import mojPrimaryNavigation %}
+
+{{ mojPrimaryNavigation({
+  label: "Bureau administration navigation",
+  attributes: {
+    id: "bureauadministrationNav"
+  },
+  items: [
+    {
+      text: "Users",
+      href: '#',
+      active: nav === "users",
+      attributes: {
+        id: "usersAnchor"
+      }
+    },
+    {
+      text: "System codes",
+      href: url('administration.system-codes.get'),
+      active: nav === "systemCodes",
+      attributes: {
+        id: "systemCodesAnchor"
+      }
+    }
+  ]
+}) }}

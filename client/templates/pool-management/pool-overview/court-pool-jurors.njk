@@ -1,0 +1,110 @@
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
+
+    <form method="post" id="poolDetailsForm" >
+
+        <div class="govuk-grid-column-full juror-actions govuk-!-padding-0 govuk-!-margin-bottom-5">
+          {{ govukButton({
+            text: "Show filter",
+            classes: "govuk-button--secondary govuk-!-margin-bottom-0 govuk-!-margin-right-1",
+            attributes: {
+              id: "pool-overview-show-filter"
+            }
+          }) }}
+          {{ govukButton({
+            text: "Postpone",
+            classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+            type: "submit",
+            attributes: {
+              id: "postponeButton",
+              formAction: postUrls.postponeUrl
+            }
+          }) }}
+          {{ govukButton({
+            text: "Reassign",
+            classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+            type: "submit",
+            attributes: {
+              id: "reassignButton",
+              formAction: postUrls.assignUrl
+            }
+          }) }}
+          {{ govukButton({
+            text: "Transfer",
+            classes: "govuk-button--secondary govuk-!-margin-bottom-0 govuk-!-margin-right-1",
+            type: "submit",
+            attributes: {
+              id: "transferButton",
+              formAction: postUrls.transferUrl
+            }
+          }) }}
+          {{ govukButton({
+            text: "Change next due at court",
+            classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+            type: "submit",
+            attributes: {
+              id: "changeServiceDateButton",
+              formAction: postUrls.changeServiceDateUrl
+            }
+          }) }}
+          {{ govukButton({
+            text: "Complete service",
+            classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+            type: "submit",
+            attributes: {
+              id: "completeServiceButton",
+              formAction: postUrls.completeServiceUrl
+            }
+          }) }}
+        </div>
+
+      <div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-one-third">
+          {% include "./_partials/filters.njk" %}
+        </div>
+
+        {% if poolMembers.length === 0 and poolDetails.isActive === true %}
+          <div id="pool-overview-table-wrapper" class="govuk-grid-column-full">
+            <span class="govuk-body">There are no results to display.</span>
+          </div>
+        {% elif poolDetails.isActive === true %}
+          <div id="pool-overview-table-wrapper" class="govuk-grid-column-full">
+
+            {% if errors.items["selectedJurors"] %}
+              <div class="error-allocation">
+                <p class="govuk-error-message">{{ errors.items['selectedJurors'][0].details }}</p>
+              </div>
+            {% endif %}
+            
+            {% if errors.items["selectedJurors"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
+
+            <div class="govuk-body"> <span id="total-checked-jurors">{{ totalCheckedJurors }}</span> of selected <span id="total-jurors-count">{{ totalJurors }}</span> </div>
+
+            {{ modSortableTable({
+              id: "jurorOverview",
+              head: membersHeaders,
+              rows: poolMembers,
+              url: sortUrl
+            }) }}
+
+            {% if errors.items["selectedJurors"] %}</div>{% endif %}
+
+            {{ govukPagination({
+              previous: {
+                href: pageItems.prev
+              },
+              next: {
+                href: pageItems.next
+              },
+              items: pageItems.items
+            }) }} 
+
+          </div>
+        {% endif %}
+
+      </div>
+
+      <input type="hidden" name="poolNumber" id="poolNumber" value="{{ poolDetails.poolNumber }}">
+      <input type="hidden" name="_csrf" id="csrfToken" value="{{ csrftoken }}">
+    </form>

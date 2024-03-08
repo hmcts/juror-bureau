@@ -5,7 +5,8 @@
 {%- from "moj/components/filter/macro.njk" import mojFilter -%}
 {% from "custom-components/mod-filter/macro.njk" import modFilter %}
 {%- from "moj/components/button-menu/macro.njk" import mojButtonMenu -%}
-{% if members.length === 0 and poolDetails.isActive === true %}
+
+{% if poolMembers.length === 0 and poolDetails.isActive === true %}
     <div class="govuk-grid-column-full govuk-body">
       This pool has no members.
     </div>
@@ -90,52 +91,29 @@
     {% if errors.items["selectedJurors"] %}<div class="error-allocation">
       <p class="govuk-error-message">{{ errors.items['selectedJurors'][0].details }}</p>
     {% endif %}
+    
     {% if errors.items["selectedJurors"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
 
       <div class="govuk-body"> <span id="checkedJurors"></span> of selected <span id="totalJurors"></span> </div>
 
-      <table class="govuk-table" data-module="moj-sortable-table" data-multi-select-checkbox="#select-all" id="poolJurorReassign" name="poolJurorReassign">
-        <thead class="govuk-table__head">
-          <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header jd-assign-replies-table-head">
-              <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox" onclick="selectAll()">
-                <input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check" id="selectAllCheckbox" name="selectAllCheckbox"/>
-                <label class="govuk-label govuk-checkboxes__label">
-                  <span class="govuk-visually-hidden">Select All</span>
-                </label>
-              </div>
-            </th>
-            <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="ascending">Juror number</th>
-            <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none">First name</th>
-            <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none">Last name</th>
-            <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none">Postcode</th>
-            <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none">Status</th>
-          </tr>
-        </thead>
-        <tbody class="govuk-table__body">
-      
-        {% for member in poolMembers %}
+      {{ modSortableTable({
+        id: "jurorOverview",
+        head: membersHeaders,
+        rows: poolMembers,
+        url: urlPrefix
+      }) }}
 
-          <tr class="govuk-table__row govuk-table__row--selected">
-            <td class="govuk-table__cell">
-              <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox" onclick="checkSet()">
-                <input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check" id="select-{{ member.jurorNumber }}" name="selectedJurors" value="{{ member.jurorNumber }}">
-                <label class="govuk-label govuk-checkboxes__label" for="select-{{ member.login }}">
-                  <span class="govuk-visually-hidden">Select {{ member.name }}</span>
-                </label>
-              </div>
-            </td>
-            <td id="{{member.jurorNumber}}" class="govuk-table__cell jd-middle-align"><a href="/juror-management/record/{{member.jurorNumber}}/overview">{{ member.jurorNumber }}</a></td>
-            <td id="{{member.jurorNumber}}-urgent" class="govuk-table__cell jd-middle-align">{{ member.firstName  | capitalize }}</td>
-            <td id="{{member.jurorNumber}}-standard" class="govuk-table__cell jd-middle-align">{{ member.lastname  | capitalize }}</td>
-            <td id="{{member.jurorNumber}}-total" class="govuk-table__cell jd-middle-align">{{ member.postCode }}</td>
-            <td id="{{member.jurorNumber}}-total" class="govuk-table__cell jd-middle-align">{{ member.status | capitalize }}</td>
-          </tr>
+      {% if errors.items["selectedJurors"] %}</div>{% endif %}
 
-        {% endfor %}
-
-      </tbody>
-    </table>
+      {{ govukPagination({
+        previous: {
+          href: pageItems.prev
+        },
+        next: {
+          href: pageItems.next
+        },
+        items: pageItems.items
+      }) }}
 
     {% if errors.items["selectedJurors"] %}</div>{% endif %}
 

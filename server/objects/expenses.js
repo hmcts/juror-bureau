@@ -110,7 +110,7 @@
     },
     post: function(app, req, body) {
       const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/expenses/set-default-expenses', body.jurorNumber),
+        uri: urljoin(config.apiEndpoint, 'moj/expenses/set-default-expenses'),
         method: 'POST',
         headers: {
           'User-Agent': 'Request-Promise',
@@ -118,7 +118,7 @@
           Authorization: req.session.authToken,
         },
         json: true,
-        body: _.mapKeys(body, (__, key) => _.snakeCase(key)),
+        body: utils.camelToSnake(body),
       };
 
       app.logger.info('Sending request to API: ', payload);
