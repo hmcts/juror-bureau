@@ -6,6 +6,11 @@
   &__with-name {
     height: 50px;
     background-color: govuk-colour("blue");
+
+    &__turquoise {
+      height: 50px;
+      background-color: govuk-colour("turquoise");
+    }
   }
   
   &__container {

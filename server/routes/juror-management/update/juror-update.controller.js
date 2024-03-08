@@ -242,12 +242,20 @@
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
+          if (err.statusCode === 422) {
+            app.logger.warn('Failed to decline deferral for juror', {
+              auth: req.session.authentication,
+              token: req.session.authToken,
+              error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+            });
+          }
           req.session.errors = {
-            deceased: [{
-              summary: 'Failed to process juror as deceased',
-              details: 'Failed to process juror as deceased',
+            deferralError: [{
+              details: err.error.message,
+              summary: err.error.message,
             }],
           };
+
           return res.redirect(app.namedRoutes.build('juror.update.deferral.get', {
             jurorNumber: req.params.jurorNumber,
           }));

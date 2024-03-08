@@ -94,10 +94,12 @@
   </div>
 {% endif %}
 
-{% include "./_partials/sub-nav.njk" %}
+  {% include "./_partials/sub-nav.njk" %}
 
-{% if currentTab == 'history' %}
-  {% include "./pool-history.njk" %}
-{% else %}
-  {% include "./pool-jurors.njk" %}
-{% endif %}
+  {% if currentTab == 'history' %}
+    {% include "./pool-history.njk" %}
+  {% else %}
+    {% include "./bureau-pool-jurors.njk" %}
+  {% endif %}
+
+</div>

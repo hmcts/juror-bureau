@@ -1,0 +1,50 @@
+{% from "moj/components/primary-navigation/macro.njk" import mojPrimaryNavigation %}
+
+{{ mojPrimaryNavigation({
+  label: "Court administration navigation",
+  attributes: {
+    id: "courtadministrationNav"
+  },
+  items: [
+    {
+      text: "Users",
+      href: '#',
+      active: nav === "users",
+      attributes: {
+        id: "usersAnchor"
+      }
+    },
+    {
+      text: "Courts and bureau",
+      href: '#',
+      active: nav === "courstAndBureau",
+      attributes: {
+        id: "courtsAndBureauAnchor"
+      }
+    },
+    {
+      text: "Expense rates and limits",
+      href: '#',
+      active: nav === "expenseRatesAndLimits",
+      attributes: {
+        id: "expenseRatesAndLimitsAnchor"
+      }
+    },
+    {
+      text: "Bank holidays",
+      href: '#',
+      active: nav === "bankHolidays",
+      attributes: {
+        id: "bankHolidaysAnchor"
+      }
+    },
+    {
+      text: "System codes",
+      href: url('administration.system-codes.get'),
+      active: nav === "systemCodes",
+      attributes: {
+        id: "systemCodesAnchor"
+      }
+    }
+  ]
+}) }}

@@ -40,13 +40,21 @@
               </li>
             {% endif %}
             <li>
-              <a href="#" class="govuk-link govuk-!-font-weight-bold">Administration</a>
-            </li>
-            <li>
               <a href="{{ url('documents.get') }}" class="govuk-link govuk-!-font-weight-bold">Documents</a>
             </li>
             <li>
               <a href="{{ url('messaging.export-contacts.get') if isBureauUser else url('messaging.send.get') }}" class="govuk-link govuk-!-font-weight-bold">Messaging</a>
+            </li>
+            <li>
+              <a href="{{ url('administration.system-codes.get') }}" class="govuk-link govuk-!-font-weight-bold">
+                {% if isSystemAdministrator %}
+                  System administration
+                {% elif isCourtUser %}
+                  Court administration
+                {% elif isBureauUser %}
+                  Bureau administration
+                {% endif %}
+              </a>
             </li>
           </ul>
         </div>

@@ -4,9 +4,11 @@
 {% from "govuk/components/tag/macro.njk" import govukTag %}
 {% from "govuk/components/details/macro.njk" import govukDetails %}
 {% from "moj/components/banner/macro.njk" import mojBanner %}
-{% from "govuk/components/table/macro.njk" import govukTable %}
 
 {% from "./pool-record-doughnut.njk" import poolRecordDoughnut %}
+
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
 
 {% block page_identifier %}Pool Overview for pool {{ poolDetails.poolNumber }}{% endblock %}
 

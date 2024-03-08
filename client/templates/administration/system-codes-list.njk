@@ -1,0 +1,40 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+
+{% block page_title %}{{ serviceName }} - administration{% endblock %}
+{% block page_identifier %}administration - system codes{% endblock %}
+
+{% set currentApp = "Court administration" if isCourtUser else ("Bureau administration" if isBureauUser else "System administration") %} 
+{% set nav = "systemCodes" %}
+
+{% macro buildUrl(param) %}
+  {{ url("administration.system-codes.codes.get", {
+    codeType: param
+  }) }}
+{% endmacro %}
+
+{% block content %}
+
+{% include "includes/errors.njk" %}  
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <h1 class="govuk-heading-xl">System codes</h1>
+      <ul class="govuk-list govuk-list--spaced">
+        <li><a class="govuk-link govuk-link--no-visited-state" href="{{ buildUrl('disqualified') }}">Disqualified codes</a></li>
+        <li><a class="govuk-link govuk-link--no-visited-state" href="{{ buildUrl('excusal-deferral') }}">Excusal and deferral codes</a></li>
+        <li><a class="govuk-link govuk-link--no-visited-state" href="{{ buildUrl('id-check') }}">ID check codes</a></li>
+        <li><a class="govuk-link govuk-link--no-visited-state" href="{{ buildUrl('juror-status') }}">Juror status codes</a></li>
+        <li><a class="govuk-link govuk-link--no-visited-state" href="{{ buildUrl('phone-log') }}">Phone log codes</a></li>
+        <li><a class="govuk-link govuk-link--no-visited-state" href="{{ buildUrl('reasonable-adjustments') }}">Reasonable adjustment codes</a></li>
+        <li><a class="govuk-link govuk-link--no-visited-state" href="{{ buildUrl('trial-types') }}">Trial types</a></li>
+      </ul>
+    </div>
+  </div>
+
+{% endblock %}

@@ -1,3 +1,5 @@
+const filters = require('../../../components/filters');
+
 (function(){
   'use strict';
 
@@ -13,10 +15,12 @@
     , { dateFilter } = require('../../../components/filters')
     , isCourtUser = require('../../../components/auth/user-type').isCourtUser
     , capitalizeFully = require('../../../components/filters').capitalizeFully
-    , moment = require('moment');
+    , moment = require('moment')
+    , rp = require('request-promise');
 
   function errorCB(app, req, res, poolNumber, errorString) {
     return function(err) {
+      console.log(err);
       app.logger.crit(errorString, {
         auth: req.session.authentication,
         jwt: req.session.authToken,
@@ -32,8 +36,9 @@
 
   module.exports.getJurors = function(app) {
     return function(req, res) {
-      var poolNumber = req.params['poolNumber']
-        , coronerPoolPrefix = '9' + new Date().getFullYear().toString().slice(2, 4);
+      const poolNumber = req.params['poolNumber'];
+      const coronerPoolPrefix = '9' + new Date().getFullYear().toString().slice(2, 4);
+      let tmpError;
 
       // this is going to be changed in the future when the backend for coroner-court pools is done
       // it will also be only after the fetch is complete and we will check the pool-type instead of the number
@@ -43,15 +48,114 @@
         }
         return coronerCourtPool(app)(req, res);
       }
+
+      // display an error message if the pool failed to delete or an invalid location code is used
+      // the location code will be very unlikely to ever be invalid...
+      // an invalid location code would be a string (abc) or a location code that does not exist on our records
+      tmpError = (typeof req.session.deletePoolError !== 'undefined')
+        ? req.session.deletePoolError : req.session.additionalSummonsError;
+      delete req.session.deletePoolError;
+      delete req.session.additionalSummonsError;
+      delete req.session.newCourtCatchmentArea;
+      delete req.session.newBureauDeferrals;
+      delete req.session.poolJurorsReassign;
+      delete req.session.notResponded;
+      delete req.session.selectedJurors;
       delete req.session.poolJurorsPostpone;
-      return poolSummaryObj.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
-        poolNumber,
-      )
-        .then(renderJurors(app, req, res))
-        .catch(errorCB(app, req, res, poolNumber, 'Failed to fetch pool summary:'));
+
+      const poolPromises = [
+        poolSummaryObj.get(
+          rp,
+          app,
+          req.session.authToken,
+          poolNumber,
+        ),
+        poolMembersObj.post(
+          rp,
+          app,
+          req.session.authToken,
+          {
+            'pool_number': poolNumber,
+            'juror_number': req.query.jurorNumber || null,
+            'first_name': req.query.firstName || null,
+            'last_name': req.query.lastName || null,
+            'attendance': req.query.attendance?.toUpperCase()
+              .replace(/ /g, '_').split(',') || null,
+            'checked_in': req.query.checkedIn || null,
+            'next_due': req.query.nextDue || null,
+            'status': req.query.status?.split(',') || null,
+            'page_number': req.query.page || 1,
+            'sort_field': req.query.sortBy || 'juror_number',
+            'sort_method': req.query.sortOrder || 'ascending',
+          },
+        ),
+      ];
+
+      if (isCourtUser(req, res)) {
+        Promise.allSettled(poolPromises).then(
+          ([pool, members]) => courtView(app, req, res, pool.value, members.value, tmpError),
+          errorCB(app, res, res, poolNumber, 'Failed to fetch pool summary for court user:')
+        );
+      } else {
+        Promise.allSettled(poolPromises).then(
+          ([pool, members]) => bureauView(app, req, res, pool.value, members.value, tmpError),
+          errorCB(app, res, res, poolNumber, 'Failed to fetch pool summary for bureau user:')
+        );
+      }
+    };
+  };
+
+  module.exports.postFilterJurors = function(app) {
+    return function(req, res) {
+      const poolNumber = req.params.poolNumber;
+      const filters = req.body;
+
+      const queryParams = new URLSearchParams(req.url.split('?')[1] || '');
+
+      if (filters.jurorNumber) {
+        queryParams.set('jurorNumber', filters.jurorNumber);
+      } else {
+        queryParams.delete('jurorNumber');
+      }
+      if (filters.firstName) {
+        queryParams.set('firstName', filters.firstName);
+      } else {
+        queryParams.delete('firstName');
+      }
+      if (filters.lastName) {
+        queryParams.set('lastName', filters.lastName);
+      } else {
+        queryParams.delete('lastName');
+      }
+      if (filters.attendance) {
+        queryParams.set('attendance', filters.attendance);
+      } else {
+        queryParams.delete('attendance');
+      }
+      if (filters.checkedIn === 'today') {
+        queryParams.set('checkedIn', 'true');
+      } else {
+        queryParams.delete('checkedIn');
+      }
+      if (filters.nextDueAtCourt === 'notSet') {
+        queryParams.set('nextDue', 'false');
+      } else {
+        queryParams.delete('nextDue');
+      }
+      if (filters.nextDueAtCourt === 'set') {
+        queryParams.set('nextDue', 'true');
+      } else {
+        queryParams.delete('nextDue');
+      }
+      if (filters.status) {
+        queryParams.set('status', filters.status);
+      } else {
+        queryParams.delete('status');
+      }
+
+      res.redirect(`${app.namedRoutes.build('pool-overview.get', {
+        poolNumber
+      })}?${queryParams.toString()}`)
     };
   };
 
@@ -75,7 +179,7 @@
       });
 
       return poolSummaryObj.get(
-        require('request-promise'),
+        rp,
         app,
         req.session.authToken,
         poolNumber,
@@ -187,7 +291,7 @@
     newServiceStartDate = dateFilter(req.session.formField.attendanceDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
 
     jurorTransfer.put(
-      require('request-promise'),
+      rp,
       app,
       req.session.authToken,
       transferedJurors,
@@ -197,60 +301,6 @@
       .then(successCB)
       .catch(errorCB(app, req, res, poolNumber, 'Failed to bulk transfer jurors:'));
   };
-
-  function renderJurors(app, req, res) {
-    return function(data) {
-      var tmpError;
-
-      req.session.poolDetails = data;
-
-      // display an error message if the pool failed to delete or an invalid location code is used
-      // the location code will be very unlikely to ever be invalid...
-      // an invalid location code would be a string (abc) or a location code that does not exist on our records
-      tmpError = (typeof req.session.deletePoolError !== 'undefined')
-        ? req.session.deletePoolError : req.session.additionalSummonsError;
-      delete req.session.deletePoolError;
-      delete req.session.additionalSummonsError;
-      delete req.session.newCourtCatchmentArea;
-      delete req.session.newBureauDeferrals;
-      delete req.session.poolJurorsReassign;
-      delete req.session.notResponded;
-      delete req.session.selectedJurors;
-
-      if (data.bureauSummoning.required === 0) {
-        req.session.poolDetails.canConvert = true;
-      }
-
-      app.logger.info('Fetched pool summary: ', {
-        auth: req.session.authentication,
-        jwt: req.session.authToken,
-        data: data,
-      });
-
-      if (data.poolDetails.isActive === true
-        && !!data.bureauSummoning.required) {
-        if (isCourtUser(req, res)) {
-          return renderAttendancePool(app, req, res, tmpError, data);
-        }
-
-        return renderActivePool(app, req, res, tmpError, data);
-      }
-
-      res.render('pool-management/pool-overview/index', {
-        backLinkUrl: 'pool-management.get',
-        poolDetails: data.poolDetails,
-        members: [],
-        bureauSummoning: data.bureauSummoning,
-        poolSummary: data.poolSummary,
-        additionalStatistics: data.additionalStatistics,
-        navData: _.clone(req.session.poolManagementNav),
-        currentTab: 'jurors',
-        isNil: data.poolDetails.is_nil_pool,
-        error: tmpError,
-      });
-    };
-  }
-
 
   function coronerCourtPool(app) {
     return function(req, res) {
@@ -297,91 +347,97 @@
       // temp delete this here 🤔
       delete req.session.newCourtCatchmentArea;
 
-      return fetchCoronerPool.get(require('request-promise'), app, req.session.authToken, req.params['poolNumber'])
+      return fetchCoronerPool.get(rp, app, req.session.authToken, req.params['poolNumber'])
         .then(coronerSuccessCB)
         .catch(errorCB(app, req, res, req.params['poolNumber'], 'Failed to fetch coroner pool:'));
     };
   }
 
-  function renderActivePool(app, req, res, _errors, data) {
-    return poolMembersObj.get(
-      require('request-promise'),
-      app,
-      req.session.authToken,
-      data.poolDetails.poolNumber,
-    )
-      .then(function(membersList) {
-        var assignUrl = app.namedRoutes.build('pool-overview.reassign.post')
-          , transferUrl = app.namedRoutes.build('pool-overview.transfer.post',
-            { poolNumber: req.params.poolNumber })
-          , completeServiceUrl = app.namedRoutes.build('pool-overview.complete-service.post',
-            { poolNumber: req.params.poolNumber })
-          , postponeUrl = app.namedRoutes.build('pool-overview.postpone.post',
-            { poolNumber: req.params.poolNumber })
-          , availableSuccessMessage = false
-          , successBanner
-          , tmpError
-          , error = null;
+  async function bureauView(app, req, res, pool, membersList, _errors) {
+    var assignUrl = app.namedRoutes.build('pool-overview.reassign.post')
+      , transferUrl = app.namedRoutes.build('pool-overview.transfer.post',
+        { poolNumber: req.params.poolNumber })
+      , completeServiceUrl = app.namedRoutes.build('pool-overview.complete-service.post',
+        { poolNumber: req.params.poolNumber })
+      , postponeUrl = app.namedRoutes.build('pool-overview.postpone.post',
+        { poolNumber: req.params.poolNumber })
+      , availableSuccessMessage = false
+      , successBanner
+      , tmpError
+      , error = null;
 
-        app.logger.info('Fetched court members: ', {
-          auth: req.session.authentication,
-          jwt: req.session.authToken,
-          data: membersList,
-        });
+    req.session.poolDetails = pool;
 
-        if (req.session.bannerMessage) {
-          availableSuccessMessage = true;
-          successBanner = req.session.bannerMessage;
-        }
+    app.logger.info('Fetched court members: ', {
+      auth: req.session.authentication,
+      jwt: req.session.authToken,
+      data: membersList,
+    });
 
-        if (req.session.errors && !_errors) {
-          tmpError = req.session.errors;
-        }
+    if (req.session.bannerMessage) {
+      availableSuccessMessage = true;
+      successBanner = req.session.bannerMessage;
+    }
 
-        if (_errors && _errors.type === 'pool-delete-error') {
-          error = _errors;
-        }
+    if (req.session.errors && !_errors) {
+      tmpError = req.session.errors;
+    }
 
-        delete req.session.errors;
-        delete req.session.bannerMessage;
+    if (_errors && _errors.type === 'pool-delete-error') {
+      error = _errors;
+    }
 
-        req.session.jurorDetails = {};
-        if (membersList && membersList.poolMembers) {
-          membersList.poolMembers.forEach(item => {
-            req.session.jurorDetails[item.jurorNumber] = item;
-          });
-        }
+    const currentPage = req.query.page || 1;
+    const sortBy = req.query.sortBy || 'jurorNumber';
+    const order = req.query.sortOrder || 'asc';
 
-        delete req.session.bannerMessage;
-        // TODO: Make sure that this has no future implications 🤔
-        req.session.locCode = req.params.poolNumber.substring(0, 3);
-        res.render('pool-management/pool-overview/index', {
-          backLinkUrl:{
-            built: true,
-            url: app.namedRoutes.build('pool-management.get') + '?status=created',
-          },
-          members: (membersList) ? modUtils.membersRows(membersList.poolMembers, app.namedRoutes) : [],
-          poolMembers: membersList ? membersList.poolMembers : [],
-          availableSuccessMessage: availableSuccessMessage,
-          successBanner: successBanner,
-          poolDetails: data.poolDetails,
-          bureauSummoning: data.bureauSummoning,
-          poolSummary: data.poolSummary,
-          additionalStatistics: data.additionalStatistics,
-          isNil: data.poolDetails.is_nil_pool,
-          isActive: data.isActive,
-          currentTab: 'jurors',
-          postUrls: { assignUrl, transferUrl, completeServiceUrl, postponeUrl },
-          navData: _.clone(req.session.poolManagementNav),
-          errors: {
-            title: 'Please check the form',
-            count: typeof tmpError !== 'undefined' ? Object.keys(tmpError).length : 0,
-            items: tmpError,
-          },
-          error,
-        });
-      })
-      .catch(errorCB(app, req, res, data.poolDetails.poolNumber, 'Failed to fetch pool members:'));
+    let jurors = await paginateJurorsList(membersList.data, sortBy, order, false);
+
+    delete req.session.errors;
+    delete req.session.bannerMessage;
+
+    req.session.jurorDetails = {};
+    if (membersList && membersList.data) {
+      membersList.data.forEach(item => {
+        req.session.jurorDetails[item.jurorNumber] = item;
+      });
+    }
+
+    const pageItems = modUtils.paginationBuilder(
+      membersList.totalItems,
+      currentPage,
+      req.url
+    );
+
+    delete req.session.bannerMessage;
+    // TODO: Make sure that this has no future implications 🤔
+    req.session.locCode = req.params.poolNumber.substring(0, 3);
+    res.render('pool-management/pool-overview/bureau-pool-overview', {
+      backLinkUrl:{
+        built: true,
+        url: app.namedRoutes.build('pool-management.get') + '?status=created',
+      },
+      membersHeaders: jurors.headers,
+      poolMembers: jurors.list,
+      pageItems,
+      availableSuccessMessage: availableSuccessMessage,
+      successBanner: successBanner,
+      poolDetails: pool.poolDetails,
+      bureauSummoning: pool.bureauSummoning,
+      poolSummary: pool.poolSummary,
+      additionalStatistics: pool.additionalStatistics,
+      isNil: pool.poolDetails.is_nil_pool,
+      isActive: pool.isActive,
+      currentTab: 'jurors',
+      postUrls: { assignUrl, transferUrl, completeServiceUrl, postponeUrl },
+      navData: _.clone(req.session.poolManagementNav),
+      errors: {
+        title: 'Please check the form',
+        count: typeof tmpError !== 'undefined' ? Object.keys(tmpError).length : 0,
+        items: tmpError,
+      },
+      error,
+    });
   }
 
   function renderHistory(app, req, res) {
@@ -399,7 +455,7 @@
 
   function renderHistoryItems(app, req, res, data){
     return poolHistoryObj.get(
-      require('request-promise'),
+      rp,
       app,
       req.session.authToken,
       data.poolDetails.poolNumber,
@@ -412,7 +468,7 @@
           data: poolHistoryList,
         });
 
-        res.render('pool-management/pool-overview/index', {
+        res.render('pool-management/pool-overview/bureau-pool-overview', {
           backLinkUrl: {
             built: true,
             url: app.namedRoutes.build('pool-management.get') + (data.poolDetails.isActive ? '?status=created' : ''),
@@ -488,93 +544,7 @@
     };
   };
 
-  module.exports.postFilterJurors = function(app) {
-    return function(req, res) {
-      const data = _.clone(req.session.poolDetails)
-        , filters = _.clone(req.body);
-
-      delete req.session.filters;
-      delete req.session.filteredMembers;
-      data.filters = {};
-      delete filters._csrf;
-
-      // REMOVE ALL SELECTED JURORS - dont want prior selections persisting through filtering
-      req.session.membersList.forEach((member) => delete member.checked);
-      let membersList = _.clone(req.session.membersList) || [];
-
-      app.logger.info('Filtering members in pool: ', {
-        auth: req.session.authentication,
-        jwt: req.session.authToken,
-        data: {
-          filters,
-        },
-      });
-
-      req.session.filters = filters;
-
-      // TODO: refactor this gibberish
-      if (filters.jurorNumber) {
-        data.filters.jurorNumber = filters.jurorNumber;
-        membersList = membersList.filter((member) => {
-          return member.jurorNumber === filters.jurorNumber.trim();
-        });
-      }
-      if (filters.firstName) {
-        data.filters.firstName = filters.firstName;
-        membersList = membersList.filter((member) => {
-          return member.firstName.toLowerCase() === filters.firstName.trim().toLowerCase();
-        });
-      }
-      if (filters.lastName) {
-        data.filters.lastName = filters.lastName;
-        membersList = membersList.filter((member) => {
-          return member.lastName.toLowerCase() === filters.lastName.trim().toLowerCase();
-        });
-      }
-      if (filters.attendance) {
-        data.filters.attendance = filters.attendance;
-        membersList = membersList.filter((member) => {
-          return filters.attendance.includes(member.attendance.toLowerCase());
-        });
-      }
-      if (filters.checkedIn) {
-        data.filters.checkedIn = filters.checkedIn;
-        membersList = membersList.filter((member) => {
-          return member.checkedIn !== '';
-        });
-      }
-      if (filters.nextDueAtCourt) {
-        data.filters.nextDueAtCourt = filters.nextDueAtCourt;
-        const values = ['set', 'notSet'];
-
-        if (!values.every(i => filters.nextDueAtCourt.includes(i))) {
-          if (filters.nextDueAtCourt === 'set') {
-            membersList = membersList.filter((member) => {
-              return member.nextDueAtCourt !== '';
-            });
-          }
-          if (filters.nextDueAtCourt === 'notSet') {
-            membersList = membersList.filter((member) => {
-              return member.nextDueAtCourt === '';
-            });
-          }
-        }
-      }
-      if (filters.status) {
-        data.filters.status = filters.status;
-        membersList = membersList.filter((member) => {
-          return filters.status.includes(member.status.toLowerCase());
-        });
-      }
-
-      // req.session.filteredMembers = {poolMembers: membersList};
-
-      renderAttendancePool(app, req, res, null, data);
-
-    };
-  };
-
-  async function renderAttendancePool(app, req, res, _errors, data) {
+  async function courtView(app, req, res, pool, membersList, _errors) {
 
     const assignUrl = app.namedRoutes.build('pool-overview.reassign.post')
       , transferUrl = app.namedRoutes.build('pool-overview.transfer.post',
@@ -584,8 +554,7 @@
       , changeServiceDateUrl = app.namedRoutes.build('pool-overview.change-next-due-at-court.post',
         { poolNumber: req.params.poolNumber })
       , postponeUrl = app.namedRoutes.build('pool-overview.postpone.post',
-        { poolNumber: req.params.poolNumber })
-      , filters = _.clone(req.session.filters);
+        { poolNumber: req.params.poolNumber });
 
     let availableSuccessMessage = false
       , successBanner
@@ -594,9 +563,10 @@
       , jurorStatuses = 'all';
 
     const specifiedStatuses = ['responded', 'panelled', 'juror'];
+    const filters = req.query;
 
     if (typeof filters !== 'undefined' && typeof filters.status !== 'undefined') {
-      if (specifiedStatuses.every(i => filters.status.includes(i)) && filters.status.length === 3) {
+      if (specifiedStatuses.every(i => filters.status.includes(i)) && filters.status.split(',').length === 3) {
         jurorStatuses = 'responded';
       }
     }
@@ -617,21 +587,11 @@
     delete req.session.errors;
     delete req.session.bannerMessage;
 
-    let poolMembers;
-
-    const currentPage = req.query.page || 1;
     let pagination;
 
     try {
       delete req.session.filteredMembers;
       delete req.session.filters;
-
-      let membersList = await poolMembersObj.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
-        data.poolDetails.poolNumber,
-      );
 
       app.logger.info('Fetched court members: ', {
         auth: req.session.authentication,
@@ -639,43 +599,49 @@
         data: membersList,
       });
 
-      membersList = typeof membersList !== 'undefined' ? membersList : { poolMembers: [] };
-      req.session.membersList = membersList.poolMembers;
+      req.session.membersList = membersList.data;
       req.session.jurorDetails = {};
-      membersList.poolMembers.forEach(item => {
+      membersList.data.forEach(item => {
         req.session.jurorDetails[item.jurorNumber] = item;
       });
 
-      if (typeof req.session.filteredMembers !== 'undefined' && typeof filters !== 'undefined') {
-        poolMembers = _.clone(req.session.filteredMembers).poolMembers;
-      } else {
-        poolMembers = req.session.membersList;
-      }
+      const currentPage = req.query.page || 1;
+      const sortBy = req.query.sortBy || 'jurorNumber';
+      const order = req.query.sortOrder || 'asc';
 
-      let jurors = await paginateJurorsList(poolMembers, currentPage);
+      let jurors = await paginateJurorsList(membersList.data, sortBy, order, true);
 
-      if (poolMembers.length > modUtils.constants.PAGE_SIZE) {
-        pagination = modUtils.paginationBuilder(poolMembers.length, currentPage, req.url);
-      }
+      const totalJurors = membersList.data.length;
+      const totalCheckedJurors = membersList.data.filter(juror => juror.checked).length;
 
-      const totalJurors = poolMembers.length;
-      const totalCheckedJurors = poolMembers.filter(juror => juror.checked).length;
-
-      req.session.poolDetails = data;
-
+      req.session.poolDetails = pool;
       req.session.locCode = req.params.poolNumber.substring(0, 3);
 
-      res.render('pool-management/pool-overview/attendance-pool-overview', {
+      const pageItems = modUtils.paginationBuilder(
+        membersList.totalItems,
+        currentPage,
+        req.url
+      );
+
+      const queryParams = new URLSearchParams(req.url.split('?')[1]);
+      queryParams.delete('sortBy');
+      queryParams.delete('sortOrder');
+      queryParams.delete('showFilter');
+      const sortUrl = req.url.split('?')[0] + '?' + queryParams.toString();
+
+      res.render('pool-management/pool-overview/court-pool-overview', {
         backLinkUrl:{
           built: true,
           url: app.namedRoutes.build('pool-management.get') + '?status=created',
         },
-        poolMembers: jurors ? jurors : [],
+        membersHeaders: jurors.headers,
+        poolMembers: jurors.list,
+        pageItems,
         availableSuccessMessage: availableSuccessMessage,
         successBanner: successBanner,
-        poolDetails: data.poolDetails,
-        isNil: data.poolDetails.is_nil_pool,
-        isActive: data.isActive,
+        poolDetails: pool.poolDetails,
+        isNil: pool.poolDetails.is_nil_pool,
+        isActive: pool.isActive,
         currentTab: 'jurors',
         postUrls: { assignUrl, transferUrl, completeServiceUrl, changeServiceDateUrl, postponeUrl },
         navData: _.clone(req.session.poolManagementNav),
@@ -690,10 +656,12 @@
         totalJurors,
         totalCheckedJurors,
         pagination,
+        sortUrl,
       });
 
     } catch (err) {
-      errorCB(app, req, res, data.poolDetails.poolNumber, 'Failed to fetch pool members:')(err);
+      console.log(err);
+      errorCB(app, req, res, pool.poolDetails.poolNumber, 'Failed to fetch pool members:')(err);
     }
   }
 
@@ -766,20 +734,123 @@
     };
   };
 
-  function paginateJurorsList(jurors, currentPage) {
-    return new Promise((resolve) => {
-      let start = 0;
-      let end = jurors.length;
-
-      if (currentPage > 1) {
-        start = (currentPage - 1) * modUtils.constants.PAGE_SIZE;
-      }
-      if (jurors.length > modUtils.constants.PAGE_SIZE) {
-        end = start + modUtils.constants.PAGE_SIZE;
-      }
-
-      resolve(jurors.slice(start, end));
+  function paginateJurorsList(jurors, sortBy, order, isCourt) {
+    let headers = [{
+      id: 'jurorNumber',
+      value: 'Juror number',
+      sort: sortBy === 'jurorNumber' ? order : 'none',
+      sortable: true,
+    },
+    {
+      id: 'firstName',
+      value: 'First name',
+      sort: sortBy === 'firstName' ? order : 'none',
+      sortable: true,
+    },
+    {
+      id: 'lastName',
+      value: 'Last name',
+      sort: sortBy === 'lastName' ? order : 'none',
+      sortable: true,
+    }];
+    if (isCourt) {
+      headers = headers.concat([
+        {
+          id: 'attendance',
+          value: 'Attendance',
+          sort: sortBy === 'attendance' ? order : 'none',
+          sortable: true,
+        },
+        {
+          id: 'checkedIn',
+          value: 'Checked in',
+          sort: sortBy === 'checkedIn' ? order : 'none',
+          sortable: true,
+        },
+        {
+          id: 'nextDate',
+          value: 'Next due at court',
+          sort: sortBy === 'nextDate' ? order : 'none',
+          sortable: true,
+        }
+      ])
+    } else {
+      headers.push({
+        id: 'postcode',
+        value: 'Postcode',
+        sort: sortBy === 'postcode' ? order : 'none',
+        sortable: true,
+      })
+    }
+    headers.push({
+      id: 'status',
+      value: 'Status',
+      sort: sortBy === 'status' ? order : 'none',
+      sortable: true,
     });
+
+    const list = jurors.map(juror => {
+      let row = [
+        {
+          html: '<a href="/juror-management/record/' +
+            juror.jurorNumber + '/overview" class="govuk-link">' + juror.jurorNumber + '</a>',
+          attributes: {
+            'data-sort-value': juror.jurorNumber,
+          },
+        },
+        {
+          text: filters.capitalizeFully(juror.firstName?.toLowerCase()),
+          attributes: {
+            'data-sort-value': juror.firstName,
+          },
+        },
+        {
+          text: filters.capitalizeFully(juror.lastName?.toLowerCase()),
+          attributes: {
+            'data-sort-value': juror.lastName,
+          },
+        }];
+        
+      if (isCourt) {
+        row = row.concat([
+          {
+            text: filters.capitalizeFully(juror.attendance?.toLowerCase()),
+            attributes: {
+              'data-sort-value': juror.attendance,
+            },
+          },
+          {
+            text: juror.checkedIn ? filters.convert24to12(filters.timeArrayToString(juror.checkedIn)) : '',
+            attributes: {
+              'data-sort-value': juror.checkedIn,
+            },
+          },
+          {
+            text: filters.dateFilter(juror.nextDate),
+            attributes: {
+              'data-sort-value': juror.nextDate,
+            },
+          },
+        ])
+      } else {
+        row.push({
+          text: juror.postcode,
+          attributes: {
+            'data-sort-value': juror.postcode,
+          },
+        })
+      }
+      row.push({
+        text: filters.capitalizeFully(juror.status?.toLowerCase()),
+        attributes: {
+          'data-sort-value': juror.status,
+        },
+      });
+      
+      return row;
+    });
+
+    return {headers, list};
   }
 
 })();

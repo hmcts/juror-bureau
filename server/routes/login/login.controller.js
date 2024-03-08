@@ -67,7 +67,7 @@
           // We are changing the way launchdarkly works.... but need to keep the hasModAccess checks in
           // ... or else the app breaks :D
           req.session.hasModAccess = true;
-          return redirectUser(app, response.owner)(res);
+          return redirectUser(app, response.owner, response.staff)(res);
         }
         , errorCB = function(err) {
           app.logger.warn('Login attempt for "' + req.body.userID + '" responded with ' + err.statusCode, {
@@ -111,8 +111,13 @@
     };
   };
 
-  function redirectUser(app, owner) {
+  function redirectUser(app, owner, staff) {
     return function(res) {
+
+      if (staff.userType === 'ADMINISTRATOR') {
+        return res.redirect(app.namedRoutes.build('administration.system-codes.get'));
+      }
+
       // if the user is not 400 they have no access to an inbox just yet... redirect to the homepage
       if (owner !== '400') {
         return res.redirect(app.namedRoutes.build('homepage.get'));

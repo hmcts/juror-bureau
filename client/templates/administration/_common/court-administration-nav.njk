@@ -1,0 +1,66 @@
+{% from "moj/components/primary-navigation/macro.njk" import mojPrimaryNavigation %}
+
+{{ mojPrimaryNavigation({
+  label: "Court administration navigation",
+  attributes: {
+    id: "courtadministrationNav"
+  },
+  items: [
+    {
+      text: "Users",
+      href: '#',
+      active: nav === "users",
+      attributes: {
+        id: "usersAnchor"
+      }
+    },
+    {
+      text: "Judges",
+      href: '#',
+      active: nav === "judges",
+      attributes: {
+        id: "judgesAnchor"
+      }
+    },
+    {
+      text: "Room locations",
+      href: '#',
+      active: nav === "roomLocations",
+      attributes: {
+        id: "roomLocationsAnchor"
+      }
+    },
+    {
+      text: "Court details",
+      href: '#',
+      active: nav === "courtDetails",
+      attributes: {
+        id: "courtDetailsAnchor"
+      }
+    },
+    {
+      text: "Non-sitting days",
+      href: '#',
+      active: nav === "nonSittingDays",
+      attributes: {
+        id: "nonSittingDaysAnchor"
+      }
+    },
+    {
+      text: "Expense limits",
+      href: '#',
+      active: nav === "expenseLimits",
+      attributes: {
+        id: "expenseLimitsAnchor"
+      }
+    },
+    {
+      text: "System codes",
+      href: url('administration.system-codes.get'),
+      active: nav === "systemCodes",
+      attributes: {
+        id: "systemCodesAnchor"
+      }
+    }
+  ]
+}) }}

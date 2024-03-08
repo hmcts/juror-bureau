@@ -38,7 +38,22 @@
       message.summary = 'Loss of earnings or benefits per day can only include numbers and a decimal point';
       message.details.push('Loss of earnings or benefits per day can only include numbers and a decimal point');
     }
+    if (message.summary !== '') {
+      return message;
+    }
 
+    if (value > 1000000) {
+      message.summary = 'Loss of earnings or benefits per day must be less than £1,000,000';
+      message.details.push('Loss of earnings or benefits per day must be less than £1,000,000');
+    }
+    if (message.summary !== '') {
+      return message;
+    }
+
+    if (value < 0) {
+      message.summary = 'Loss of earnings or benefits per day must not be negative';
+      message.details.push('Loss of earnings or benefits per day must not be negative');
+    }
     if (message.summary !== '') {
       return message;
     }
@@ -63,6 +78,20 @@
     if (value % 1 !== 0) {
       message.summary = 'Miles travelled must be a whole number';
       message.details.push('Miles travelled must be a whole number');
+    }
+    if (message.summary !== '') {
+      return message;
+    }
+    if (value < 0) {
+      message.summary = 'Miles travelled must not be negative';
+      message.details.push('Miles travelled must not be negative');
+    }
+    if (message.summary !== '') {
+      return message;
+    }
+    if (value > 1000000) {
+      message.summary = 'Miles travelled must be less than 1,000,000';
+      message.details.push('Miles travelled must be less than 1,000,000');
     }
     if (message.summary !== '') {
       return message;
@@ -97,6 +126,15 @@
         message.summary = 'Enter minutes between 0 and 59';
         message.details.push('Enter minutes between 0 and 59');
       };
+    }
+
+    if (message.summary !== '') {
+      return message;
+    }
+
+    if (parseInt(value.hour) >= 24) {
+      message.summary = 'Travel time should not be greater than a day';
+      message.details.push('Travel time should not be greater than a day');
     }
 
     if (message.summary !== '') {

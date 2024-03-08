@@ -827,12 +827,14 @@
       }
     }
 
-    if (pageItems[1].number - pageItems[0].number > 1) {
-      pageItems.splice(1, 0, { ellipsis: true });
-    }
+    if (pageItems.length > 1) {
+      if (pageItems[1].number - pageItems[0].number > 1) {
+        pageItems.splice(1, 0, { ellipsis: true });
+      }
 
-    if (pageItems[pageItems.length - 1].number - pageItems[pageItems.length - 2].number > 1) {
-      pageItems.splice(-1, 0, { ellipsis: true });
+      if (pageItems[pageItems.length - 1].number - pageItems[pageItems.length - 2].number > 1) {
+        pageItems.splice(-1, 0, { ellipsis: true });
+      }
     }
 
     if (+currentPage > 1) {

@@ -74,13 +74,7 @@
         },
       },
       lossOfEarnings: {
-        format: {
-          pattern: priceRegex,
-          message: {
-            summary: 'Loss of earnings or benefits can only include numbers and a decimal point',
-            details: 'Loss of earnings or benefits can only include numbers and a decimal point',
-          },
-        },
+        deafultFinancialLoss: {},
       },
       extraCareCosts: {
         format: {
@@ -179,6 +173,41 @@
       : tmpErrors;
   };
 
+  validate.validators.deafultFinancialLoss = function(value) {
+    var message = {
+      summary: '',
+      details: '',
+    };
+
+    if (value === '') return null;
+
+    if (isNaN(value)) {
+      message.summary = 'Loss of earnings or benefits per day can only include numbers and a decimal point';
+      message.details = 'Loss of earnings or benefits per day can only include numbers and a decimal point';
+    }
+    if (message.summary !== '') {
+      return message;
+    }
+
+    if (value > 1000000) {
+      message.summary = 'Loss of earnings or benefits per day must be less than £1,000,000';
+      message.details = 'Loss of earnings or benefits per day must be less than £1,000,000';
+    }
+    if (message.summary !== '') {
+      return message;
+    }
+
+    if (value < 0) {
+      message.summary = 'Loss of earnings or benefits per day must not be negative';
+      message.details = 'Loss of earnings or benefits per day must not be negative';
+    }
+    if (message.summary !== '') {
+      return message;
+    }
+
+    return null;
+  };
+
   validate.validators.dailyExpenseMilesTravelled = function(value, options, key, attributes) {
     let tmpErrors = [];
 
@@ -193,6 +222,18 @@
         return [{
           summary: 'Miles travelled must be a whole number',
           details: 'Miles travelled must be a whole number',
+        }];
+      }
+      if (value < 0) {
+        return [{
+          summary: 'Miles travelled must not be negative',
+          details: 'Miles travelled must not be negative',
+        }];
+      }
+      if (value > 1000000) {
+        return [{
+          summary: 'Miles travelled must be less than 1,000,000',
+          details: 'Miles travelled must be less than 1,000,000',
         }];
       }
     }
