@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="756px" preserveAspectRatio="none" style="width:2076px;height:756px;background:#FFFFFF;" version="1.1" viewBox="0 0 2076 756" width="2076px" zoomAndPan="magnify"><defs/><g><rect fill="none" height="193.1738" style="stroke:#000000;stroke-width:1.5;" width="2060" x="10" y="421.7031"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="45" x2="45" y1="52.9766" y2="749.1191"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="213" x2="213" y1="52.9766" y2="749.1191"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="482" x2="482" y1="52.9766" y2="749.1191"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="700" x2="700" y1="52.9766" y2="749.1191"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="881" x2="881" y1="52.9766" y2="749.1191"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1088" x2="1088" y1="52.9766" y2="749.1191"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1332" x2="1332" y1="52.9766" y2="749.1191"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1611" x2="1611" y1="52.9766" y2="749.1191"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1829" x2="1829" y1="52.9766" y2="749.1191"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="1989" x2="1989" y1="52.9766" y2="749.1191"/><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="51" x="20" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="37" x="27" y="42.0234">Actor</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="237" x="95" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="223" x="102" y="25.5352">«/administration/system-codes»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="147" x="140" y="42.0234">SystemCodesListPage</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="281" x="342" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="267" x="349" y="25.5352">«/administration/system-codes/:code»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="124" x="420.5" y="42.0234">SystemCodesPage</text><rect fill="#E2E2F0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="134" x="633" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="56" x="672" y="25.5352">«/error»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="120" x="640" y="42.0234">GenericErrorPage</text><rect fill="#FFFFE0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="209" x="777" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="195" x="784" y="25.5352">«system-codes.controller.js»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="161" x="801" y="42.0234">SystemCodesController</text><rect fill="#FFFFE0" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="185" x="996" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="171" x="1003" y="25.5352">«systemCodesDAO.get()»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="135" x="1021" y="42.0234">SystemCodesObject</text><rect fill="#E6E6FA" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="283" x="1191" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="269" x="1198" y="25.5352">«administration/system-codes-list.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="178" x="1243.5" y="42.0234">SystemCodesListTemplate</text><rect fill="#E6E6FA" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="255" x="1484" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="241" x="1491" y="25.5352">«administration/system-codes.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="155" x="1534" y="42.0234">SystemCodesTemplate</text><rect fill="#E6E6FA" height="46.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="160" x="1749" y="5"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="146" x="1756" y="25.5352">«_errors/generic.njk»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="99" x="1779.5" y="42.0234">ErrorTemplate</text><rect fill="#E2E2F0" height="30.4883" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="141" x="1919" y="21.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="127" x="1926" y="42.0234">BackendController</text><polygon fill="#181818" points="201.5,80.2871,211.5,84.2871,201.5,88.2871" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="45.5" x2="207.5" y1="84.2871" y2="84.2871"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="144" x="57.5" y="79.5449">click system codes tab</text><polygon fill="#181818" points="869.5,109.5977,879.5,113.5977,869.5,117.5977" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="213.5" x2="875.5" y1="113.5977" y2="113.5977"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="177" x="459" y="108.8555">call system codes controller</text><polygon fill="#181818" points="1320.5,138.9082,1330.5,142.9082,1320.5,146.9082" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="881.5" x2="1326.5" y1="142.9082" y2="142.9082"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="1022.5" y="138.166">request and build template</text><polygon fill="#181818" points="892.5,168.2188,882.5,172.2188,892.5,176.2188" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="886.5" x2="1331.5" y1="172.2188" y2="172.2188"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="1068" y="167.4766">return HTML</text><polygon fill="#181818" points="224.5,197.5293,214.5,201.5293,224.5,205.5293" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="218.5" x2="880.5" y1="201.5293" y2="201.5293"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="508.5" y="196.7871">return HTML</text><polygon fill="#181818" points="56.5,226.8398,46.5,230.8398,56.5,234.8398" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="50.5" x2="212.5" y1="230.8398" y2="230.8398"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="89.5" y="226.0977">render HTML</text><polygon fill="#181818" points="201.5,256.1504,211.5,260.1504,201.5,264.1504" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="45.5" x2="207.5" y1="260.1504" y2="260.1504"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="134" x="62.5" y="255.4082">click a code type link</text><polygon fill="#181818" points="869.5,285.4609,879.5,289.4609,869.5,293.4609" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="213.5" x2="875.5" y1="289.4609" y2="289.4609"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="177" x="459" y="284.7188">call system codes controller</text><polygon fill="#181818" points="1076.5,314.7715,1086.5,318.7715,1076.5,322.7715" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="881.5" x2="1082.5" y1="318.7715" y2="318.7715"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="126" x="922" y="314.0293">build request object</text><polygon fill="#181818" points="1977.5,344.082,1987.5,348.082,1977.5,352.082" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1088.5" x2="1983.5" y1="348.082" y2="348.082"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="138" x="1470" y="343.3398">send backend request</text><polygon fill="#181818" points="1099.5,373.3926,1089.5,377.3926,1099.5,381.3926" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="1093.5" x2="1988.5" y1="377.3926" y2="377.3926"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="77" x="1500.5" y="372.6504">ok response</text><polygon fill="#181818" points="892.5,402.7031,882.5,406.7031,892.5,410.7031" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="886.5" x2="1087.5" y1="406.7031" y2="406.7031"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="96" x="937" y="401.9609">resolve request</text><path d="M10,421.7031 L72,421.7031 L72,429.0137 L62,439.0137 L10,439.0137 L10,421.7031 " fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="193.1738" style="stroke:#000000;stroke-width:1.5;" width="2060" x="10" y="421.7031"/><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="17" x="25" y="435.2715">alt</text><text fill="#000000" font-family="sans-serif" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="167" x="87" y="434.3379">[Failed to fetch system codes]</text><polygon fill="#181818" points="1099.5,456.3242,1089.5,460.3242,1099.5,464.3242" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="1093.5" x2="1988.5" y1="460.3242" y2="460.3242"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="91" x="1493.5" y="455.582">error response</text><polygon fill="#181818" points="892.5,485.6348,882.5,489.6348,892.5,493.6348" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="886.5" x2="1087.5" y1="489.6348" y2="489.6348"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="127" x="921.5" y="484.8926">reject requestObject</text><polygon fill="#181818" points="1817,514.9453,1827,518.9453,1817,522.9453" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="881.5" x2="1823" y1="518.9453" y2="518.9453"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="1270.75" y="514.2031">request and build template</text><polygon fill="#181818" points="892.5,544.2559,882.5,548.2559,892.5,552.2559" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="886.5" x2="1828" y1="548.2559" y2="548.2559"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="1316.25" y="543.5137">return HTML</text><polygon fill="#181818" points="711,573.5664,701,577.5664,711,581.5664" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="705" x2="880.5" y1="577.5664" y2="577.5664"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="751.75" y="572.8242">return HTML</text><polygon fill="#181818" points="56.5,602.877,46.5,606.877,56.5,610.877" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="50.5" x2="699" y1="606.877" y2="606.877"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="108" x="318.75" y="602.1348">render error page</text><polygon fill="#181818" points="1599.5,639.1875,1609.5,643.1875,1599.5,647.1875" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="881.5" x2="1605.5" y1="643.1875" y2="643.1875"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="169" x="1162" y="638.4453">request and build template</text><polygon fill="#181818" points="892.5,668.498,882.5,672.498,892.5,676.498" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="886.5" x2="1610.5" y1="672.498" y2="672.498"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="1207.5" y="667.7559">return HTML</text><polygon fill="#181818" points="493.5,697.8086,483.5,701.8086,493.5,705.8086" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="487.5" x2="880.5" y1="701.8086" y2="701.8086"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="643" y="697.0664">return HTML</text><polygon fill="#181818" points="56.5,727.1191,46.5,731.1191,56.5,735.1191" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="50.5" x2="481.5" y1="731.1191" y2="731.1191"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="80" x="224" y="726.377">render HTML</text><!--MD5=[7cec826060938a46a9faeea6bcfb67bf]
+@startuml display-system-codes
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant SystemCodesListPage <</administration/system-codes>>
+participant SystemCodesPage <</administration/system-codes/:code>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant SystemCodesController <<system-codes.controller.js>> #lightyellow
+participant SystemCodesObject <<systemCodesDAO.get()>> #lightyellow
+
+''' TEMPLATES
+participant SystemCodesListTemplate <<administration/system-codes-list.njk>> #lavender
+participant SystemCodesTemplate <<administration/system-codes.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> SystemCodesListPage : click system codes tab
+SystemCodesListPage -> SystemCodesController : call system codes controller
+
+SystemCodesController -> SystemCodesListTemplate : request and build template
+SystemCodesController <- SystemCodesListTemplate : return HTML
+SystemCodesListPage <- SystemCodesController : return HTML
+Actor <- SystemCodesListPage : render HTML
+
+Actor -> SystemCodesListPage : click a code type link
+SystemCodesListPage -> SystemCodesController : call system codes controller
+ 
+SystemCodesController -> SystemCodesObject : build request object
+SystemCodesObject -> BackendController : send backend request
+SystemCodesObject <- BackendController : ok response
+SystemCodesController <- SystemCodesObject : resolve request
+
+alt Failed to fetch system codes
+    SystemCodesObject <- - BackendController : error response
+    SystemCodesController <- - SystemCodesObject : reject requestObject
+    SystemCodesController -> ErrorTemplate : request and build template
+    SystemCodesController <- ErrorTemplate : return HTML
+    GenericErrorPage <- SystemCodesController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+SystemCodesController -> SystemCodesTemplate : request and build template
+SystemCodesController <- SystemCodesTemplate : return HTML
+SystemCodesPage <- SystemCodesController : return HTML
+Actor <- SystemCodesPage : render HTML
+
+@end
+
+@startuml display-system-codes
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+participant SystemCodesListPage <</administration/system-codes>>
+participant SystemCodesPage <</administration/system-codes/:code>>
+participant GenericErrorPage <</error>>
+
+participant SystemCodesController <<system-codes.controller.js>> #lightyellow
+participant SystemCodesObject <<systemCodesDAO.get()>> #lightyellow
+
+participant SystemCodesListTemplate <<administration/system-codes-list.njk>> #lavender
+participant SystemCodesTemplate <<administration/system-codes.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+participant BackendController
+
+Actor -> SystemCodesListPage : click system codes tab
+SystemCodesListPage -> SystemCodesController : call system codes controller
+
+SystemCodesController -> SystemCodesListTemplate : request and build template
+SystemCodesController <- SystemCodesListTemplate : return HTML
+SystemCodesListPage <- SystemCodesController : return HTML
+Actor <- SystemCodesListPage : render HTML
+
+Actor -> SystemCodesListPage : click a code type link
+SystemCodesListPage -> SystemCodesController : call system codes controller
+ 
+SystemCodesController -> SystemCodesObject : build request object
+SystemCodesObject -> BackendController : send backend request
+SystemCodesObject <- BackendController : ok response
+SystemCodesController <- SystemCodesObject : resolve request
+
+alt Failed to fetch system codes
+    SystemCodesObject <- - BackendController : error response
+    SystemCodesController <- - SystemCodesObject : reject requestObject
+    SystemCodesController -> ErrorTemplate : request and build template
+    SystemCodesController <- ErrorTemplate : return HTML
+    GenericErrorPage <- SystemCodesController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+SystemCodesController -> SystemCodesTemplate : request and build template
+SystemCodesController <- SystemCodesTemplate : return HTML
+SystemCodesPage <- SystemCodesController : return HTML
+Actor <- SystemCodesPage : render HTML
+
+@end
+
+PlantUML version 1.2022.7(Mon Aug 22 18:01:30 BST 2022)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

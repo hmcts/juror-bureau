@@ -1,0 +1,139 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/error-message/macro.njk" import govukErrorMessage -%}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "custom-components/time-input-12-hour/macro.njk" import timeInput12Hour %}
+
+{% block page_title %}{{ serviceName }} - Documents - {{pageIdentifier}}{% endblock %}
+{% block page_identifier %}documents - {{pageIdentifier}}{% endblock %}
+
+{% block beforeContent %}
+  {% if urlParams.jurorNumber === undefined %}
+  {{ govukBackLink({
+    text: "Back to all documents",
+    href: backLinkUrl,
+    attributes: {
+      id: "backLinkAnchor"
+    }
+  }) }}
+  {% endif %}
+{% endblock %}
+
+{# {% if urlParams.jurorNumber%}
+  {% set postUrl = {{ url('documents.form.post', {document: 'show-cause'}) }}%}
+{% else %}
+  {% set postUrl = url('documents.show-cause.post')%}
+{% endif %}
+{% set postUrl = url('documents.form.post') %} #}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    
+    {% include "includes/errors.njk" %}
+
+    <form action="{{ postUrl }}" method="post" id="documentLetterForm">
+      
+      <h1 class="title govuk-heading-l"> {% if urlParams.jurorNumber %} When should the juror attend court? {% else%} Show cause letters {% endif %}</h1>
+      {% set checkOutTimePeriodError = undefined %}
+      {% set hearingDateDetailsError = undefined %}
+      {% set hearingTimeDetailsError = undefined %}
+
+      {% if urlParams.jurorNumber%}
+        {% set labelText = "Hearing date" %}
+        {% set cancelUrl = url('juror-record.attendance.get', {jurorNumber: urlParams.jurorNumber}) %}
+      {% else %}
+        {% set labelText = "Show cause hearing date" %}
+        {% set cancelUrl = backLinkUrl%}
+      {% endif %}
+      
+      {% if errors.items["checkOutTimePeriod"] %}
+        {% set checkOutTimePeriodError = errors.items["checkOutTimePeriod"][0].details %}
+      {% endif %}
+      {% if errors.items["hearingDate"] %}
+        {% set hearingDateDetailsError = errors.items["hearingDate"][0].details %}
+      {% endif %}
+      {% if errors.items["hearingTime"] %}
+        {% set hearingTimeDetailsError = errors.items["hearingTime"][0].details %}
+      {% endif %}
+       {{ datePicker({
+          id: "hearingDate",
+          label: {
+              text: labelText,
+              classes: "govuk-label--m"
+          },
+          hint: "Use dd/mm/yyyy format. For example, 31/01/2023.",
+          dateValue: formFields.hearingDate,
+          dateMin: minDate,
+          dateError: hearingDateDetailsError
+        }) }}
+
+        {{ timeInput12Hour({
+        id: "hearingTime",
+        name: "hearingTime",
+        fieldset: {
+          legend: {
+            text: "Enter a hearing time",
+            classes: "govuk-fieldset__legend--m"
+          }
+        },
+        items: {
+          hour: {
+            value: formFields.hearingTimeHour,
+            attributes: {
+              minLength: "1",
+              maxLength: "2"
+            }
+          },
+          minute: {
+            value: formFields.hearingTimeMinute,
+            attributes: {
+              minLength: "1",
+              maxLength: "2"
+            }
+          },
+          period: {
+            value: formFields.hearingTimePeriod
+          }
+        },
+        errors: errors.items
+      }) }}
+
+      
+
+      <div class="govuk-button-group">
+        {{ govukButton({
+          text: "Continue",
+          type: "submit",
+          attributes: {
+            id: "searchButton",
+            target: "_blank"
+          }
+        }) }}
+        <a id="cancelLink" class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+      </div>
+      <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      const datePickers = []
+        .slice
+        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
+      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
+    });
+  </script>
+{% endblock %}

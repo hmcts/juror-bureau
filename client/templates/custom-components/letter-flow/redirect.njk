@@ -10,8 +10,14 @@
 {% set currentApp = currentApp %}
 
 {% block body_end %}
+  {% set printRoute = url('documents.letters-list.print', { document: letterType }) %}
+
+  {% if letterType === "show-cause" %}
+    {% set printRoute = printRoute + queryParams %}
+  {% endif %}
+
   <script>
-    open("{{ url('documents.letters-list.print', { document: letterType }) }}", '_blank');
-    window.location.replace("{{ completeRoute }}");
+    open("{{ printRoute }}".replace('&amp;', '&'), '_blank');
+    window.location.replace("{{ completeRoute }}"); //jurorrecord
   </script>
 {% endblock %}

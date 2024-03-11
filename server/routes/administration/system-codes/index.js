@@ -1,5 +1,3 @@
-const { isBureauManager, isCourtManager, isSystemAdministrator } = require('../../../components/auth/user-type');
-
 (function() {
   'use strict';
 

@@ -57,8 +57,62 @@
           + 'Unless you are notified that you have been excused, you must attend the Court on the date shown on your summons.\n\n'
           + 'Yours sincerely,';
       },
+
+      'show-cause': (data) => {
+        return 'Whereas you were summoned to appear and serve as a juror at '
+        + `${data.courtName}`
+        + ' on '
+        + `${data.attendanceDate}`
+        + ' and you failed to attend. \n\n'
+        + ' You are ordered to attend before the court on '
+        + `${data.noShowDate}`
+        + ' at '
+        + `${data.noShowTime}`
+        + ' to explain why you should not be fined. \n\n\n\n'
+        + 'By order of the Court';
+      },
+
+      'failed-to-attend': (data) => {
+        return 'You failed to attend for Jury Service on '
+        + `${data.noShowDate}.\n\n`
+        + 'The jury summons warned \"any person who, without reasonable cause, fails to attend for Jury Service or if attending, is not available when called, or is unfit for service by reason of drink or drugs, is liable to a fine.\"\n\n'
+        + 'Please explain why you failed to attend for your Jury Service by either sending a letter to this office or by telephoning.\n\n'
+        + 'If we do not hear from you by '
+        + `${data.replyByDate}`
+        +', further action may be taken.\n\n'
+        + 'Yours sincerely,';
+
+      },
     },
     'cy': {
+      'show-cause': (data) => {
+        return 'Cawsoch eich gwysio i ymddangos a gwasnaethu fel rheithiwr yn '
+        + `${data.courtName}`
+        + ' Ar y Dydd '
+        + `${data.attendanceDate} \n\n'`
+        + ' Ac ni ddaethoch yno \n\n'
+        + ' FE\'CH GORCHMYNNIR i ymddangos gerbron y Llys yn '
+        + `${data.courtName}`
+        + ' Ar y '
+        + `${data.noShowDate}`
+        + ' Am '
+        + `${data.noShowTime}`
+        + 'i ddadlau eich achos pam an ddylech gael eich dirwyo \n\n\n\n'
+        + 'Trwy orchymyn y Llys';
+      },
+
+      'failed-to-attend': (data) => {
+        return 'Nid oeddech yn bresennol i Wasanaethu ar y Rheithgor ar Dydd Mawrth '
+        + `${data.noShowDate}\n\n`
+        + 'Mae\'r rheithgor yn rhybuddio bod \"unrhyw un sydd, heb reswm digonol, yn methu â bod bresennol ar gyfer Gwasanaeth Rheithgor, neu os yw\'n bresennol, heb fod ar gael pan elwir ef/hi, neu heb fod mewn cyflwr i wasanaethu oherwydd diod neu gyffuriau, yn agored i gael dirwy.\"\n\n'
+        + 'A fyddech gystal ag esbonio pam nad oeddech yn bresennol naill ai drwy anfon llythyr i\'r swyddfa hon neu drwy ffonio os gwelwch yn dda.\n\n'
+        + 'Oni chlywn oddi wrthych erbyn Dydd Mawrth '
+        + `${data.replyByDate}`
+        +', efallai y cymerir camau pellach.\n\n'
+        + 'Yn gywir,';
+
+      },
+
       'postponement': (data) => {
         return `Mae amgylchiadau wedi codi sy'n golygu nad oes raid i chi ddod i wasanaethu ar reithgor ar y diwrnod a nodwyd ar eich gw§s. Bellach, gofynnir i chi ddod ar ${data.serviceDate} am ${data.serviceTime}.\n\n`
           + 'Mae\'n ddrwg iawn gennyf am unrhyw anhwylustod i chi oherwydd y gohirio hwn.\n\n'

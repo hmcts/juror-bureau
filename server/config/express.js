@@ -6,7 +6,6 @@
   'use strict';
 
   var express = require('express')
-    , session = require('express-session')
     , nunjucks = require('express-nunjucks')
     , njk = require('nunjucks')
     , csrf = require('csurf')
@@ -20,13 +19,10 @@
 
     , filters = require('../components/filters')
     , mojFilters = require('@ministryofjustice/frontend/moj/filters/all')()
-    , secretsConfig = require('config')
     , config = require('./environment')()
     , utils = require('../lib/utils.js')
     , modUtils = require('../lib/mod-utils')
     , isCourtUser = require('../components/auth/user-type').isCourtUser
-    , sessionExpires
-    , sessionConfig = {}
 
     // Grab environment variables to enable/disable certain services
     , pkg = require(__dirname + '/../../package.json')
@@ -37,10 +33,11 @@
 
     // Basic Auth credentials
     , basicAuthUsername = process.env.USERNAME
-    , basicAuthPassword = process.env.PASSWORD;
+    , basicAuthPassword = process.env.PASSWORD
 
+    , { SessionConfig } = require('../lib/session-config.js');
 
-  module.exports = function(app) {
+  module.exports = async function(app) {
     // Ensure provided environment values are lowercase
     env = env.toLowerCase();
     useAuth = useAuth.toLowerCase();
@@ -53,8 +50,8 @@
         styleSrc: ['\'self\''],
         scriptSrc: ['\'self\'', 'cdnjs.cloudflare.com', '\'unsafe-inline\''],
         fontSrc: ['data:'],
-        connectSrc: ['\'self\'', 'ws://localhost:*']
-      }
+        connectSrc: ['\'self\'', 'ws://localhost:*'],
+      },
     }));
     app.use(helmet.dnsPrefetchControl());
     app.use(helmet.frameguard());
@@ -77,22 +74,7 @@
     app.use(bodyParser.json());
     app.use(methodOverride());
 
-
-    // Configure sessions
-    sessionExpires = 10 * (60 * 60);
-
-    sessionConfig = {
-      secret: secretsConfig.get('secrets.juror.bureau-sessionSecret'),
-      resave: false,
-      saveUninitialized: false,
-      maxAge: sessionExpires,
-      name : 'sessionId',
-      cookie: {
-        httpOnly: true
-      }
-    };
-
-    app.use(session(sessionConfig));
+    new SessionConfig().start(app);
 
     // CSRF Protection
     app.use(csrf());
@@ -118,7 +100,7 @@
       watch: true,
       noCache: true,
       filters: filters,
-      loader: njk.FileSystemLoader // Use synchronous loader templates
+      loader: njk.FileSystemLoader, // Use synchronous loader templates
     });
 
     // Send data to all views

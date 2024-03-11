@@ -60,6 +60,8 @@
       auth.verify,
       isCourtUser,
       printDocuments(app));
+
+    require('./show-cause')(app);
   };
 
 })();

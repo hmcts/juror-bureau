@@ -1,0 +1,106 @@
+@startuml update-expense-rates-and-limits
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant ExpenseLimitsPage <</administration/expense-limits>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant ExpenseLimitsController <<expense-limits.controller.js>> #lightyellow
+participant FetchExpenseLimitsObject <<expenseRatesAndLimitsDAO.get()>> #lightyellow
+participant SetExpenseLimitsObject <<expenseRatesAndLimitsDAO.post()>> #lightyellow
+
+''' TEMPLATES
+participant ExpenseLimitsTemplate <<administration/expense-limits.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant ExpenseLimitsValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> ExpenseLimitsPage : click expense rates and limits tab
+ExpenseLimitsPage -> ExpenseLimitsController : call expense limits controller
+ 
+ExpenseLimitsController -> FetchExpenseLimitsObject : build request object
+FetchExpenseLimitsObject -> BackendController : send backend request
+FetchExpenseLimitsObject <- BackendController : ok response
+ExpenseLimitsController <- FetchExpenseLimitsObject : resolve request
+
+alt Failed to fetch expense rates and limits
+    FetchExpenseLimitsObject <-- BackendController : error response
+    ExpenseLimitsController <-- FetchExpenseLimitsObject : reject requestObject
+    ExpenseLimitsController -> ErrorTemplate : request and build template
+    ExpenseLimitsController <- ErrorTemplate : return HTML
+    GenericErrorPage <- ExpenseLimitsController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+ExpenseLimitsController -> ExpenseLimitsTemplate : request and build template
+ExpenseLimitsController <- ExpenseLimitsTemplate : return HTML
+ExpenseLimitsPage <- ExpenseLimitsController : return HTML
+Actor <- ExpenseLimitsPage : render HTML
+
+Actor -> ExpenseLimitsPage : enter expense rates and limits and click save
+
+ExpenseLimitsPage -> ExpenseLimitsController : POST expense limits
+ExpenseLimitsController -> ExpenseLimitsValidator : validate expense limits
+
+alt invalid expense limits entered
+  ExpenseLimitsController <- ExpenseLimitsValidator : invalid details
+  ExpenseLimitsController -> ExpenseLimitsTemplate : request and build template
+  ExpenseLimitsController <- ExpenseLimitsTemplate : return HTML
+  ExpenseLimitsPage <- ExpenseLimitsController : return error HTML
+  Actor <- ExpenseLimitsPage : render error message
+end
+
+ExpenseLimitsController <- ExpenseLimitsValidator : valid details entered
+
+ExpenseLimitsController -> FetchExpenseLimitsObject : build request object
+FetchExpenseLimitsObject -> BackendController : send backend request
+FetchExpenseLimitsObject <- BackendController : ok response
+ExpenseLimitsController <- FetchExpenseLimitsObject : resolve request - no update to values
+
+alt Failed to compare etags for when updating expense limits and rates
+    FetchExpenseLimitsObject <-- BackendController : error response
+    ExpenseLimitsController <-- FetchExpenseLimitsObject : reject requestObject
+    ExpenseLimitsController -> ErrorTemplate : request and build template
+    ExpenseLimitsController <- ErrorTemplate : return HTML
+    GenericErrorPage <- ExpenseLimitsController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Expense rates or limits changed by another user 
+  ExpenseLimitsController -> ExpenseLimitsTemplate : request and build template
+  ExpenseLimitsController <- ExpenseLimitsTemplate : return HTML
+  ExpenseLimitsPage <- ExpenseLimitsController : return error HTML
+  Actor <- ExpenseLimitsPage : render error message
+end
+
+ExpenseLimitsController -> SetExpenseLimitsObject : build request object
+SetExpenseLimitsObject -> BackendController : send backend request
+SetExpenseLimitsObject <- BackendController : ok response
+ExpenseLimitsController <- SetExpenseLimitsObject : resolve request
+
+alt Failed to update expense rates and limits
+    SetExpenseLimitsObject <-- BackendController : error response
+    ExpenseLimitsController <-- SetExpenseLimitsObject : reject requestObject
+    ExpenseLimitsController -> ErrorTemplate : request and build template
+    ExpenseLimitsController <- ErrorTemplate : return HTML
+    GenericErrorPage <- ExpenseLimitsController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+ExpenseLimitsController -> FetchExpenseLimitsObject : build request object
+FetchExpenseLimitsObject -> BackendController : send backend request
+FetchExpenseLimitsObject <- BackendController : ok response
+ExpenseLimitsController <- FetchExpenseLimitsObject : resolve request
+ExpenseLimitsController -> ExpenseLimitsTemplate : request and build template
+ExpenseLimitsController <- ExpenseLimitsTemplate : return HTML
+ExpenseLimitsPage <- ExpenseLimitsController : return HTML
+Actor <- ExpenseLimitsPage : render HTML

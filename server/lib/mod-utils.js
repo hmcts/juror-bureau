@@ -1057,6 +1057,8 @@
       return 'Postponement letters';
     case 'withdrawal':
       return 'Withdrawal letters';
+    case 'show-cause':
+      return 'Show cause letters';
     default: return '';
     }
   };
@@ -1072,6 +1074,7 @@
     'excusal-refused': 'EXCUSAL_REFUSED',
     'postponement': 'POSTPONEMENT',
     'withdrawal': 'WITHDRAWAL',
+    'show-cause': 'SHOW_CAUSE',
   };
 
   module.exports.formatLetterDate = function(date, format, welsh) {

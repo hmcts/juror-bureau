@@ -1,0 +1,315 @@
+{% extends "../layouts/default.njk" %}
+
+{% from "govuk/components/error-message/macro.njk" import govukErrorMessage -%}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+
+{% block page_title %}{{ serviceName }} - administration{% endblock %}
+{% block page_identifier %}administration - expense rates and limits{% endblock %}
+
+{% set currentApp = "Court administration" if isCourtUser else ("Bureau administration" if isBureauUser else "System administration") %} 
+{% set nav = "expenseRatesAndLimits" %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {% set limitFinancialLossHalfDayError = undefined %}
+  {% if errors.items["limitFinancialLossHalfDay"] %}
+    {% set limitFinancialLossHalfDayError = { text: errors.items["limitFinancialLossHalfDay"][0].details } %}
+  {% endif %}
+  {% set limitFinancialLossFullDayError = undefined %}
+  {% if errors.items["limitFinancialLossFullDay"] %}
+    {% set limitFinancialLossFullDayError = { text: errors.items["limitFinancialLossFullDay"][0].details } %}
+  {% endif %}
+  {% set limitFinancialLossHalfDayLongTrialError = undefined %}
+  {% if errors.items["limitFinancialLossHalfDayLongTrial"] %}
+    {% set limitFinancialLossHalfDayLongTrialError = { text: errors.items["limitFinancialLossHalfDayLongTrial"][0].details } %}
+  {% endif %}
+  {% set limitFinancialLossFullDayLongTrialError = undefined %}
+  {% if errors.items["limitFinancialLossFullDayLongTrial"] %}
+    {% set limitFinancialLossFullDayLongTrialError = { text: errors.items["limitFinancialLossFullDayLongTrial"][0].details } %}
+  {% endif %}
+  {% set carMileageRatePerMile0PassengersError = undefined %}
+  {% if errors.items["carMileageRatePerMile0Passengers"] %}
+    {% set carMileageRatePerMile0PassengersError = { text: errors.items["carMileageRatePerMile0Passengers"][0].details } %}
+  {% endif %}
+  {% set carMileageRatePerMile1PassengersError = undefined %}
+  {% if errors.items["carMileageRatePerMile1Passengers"] %}
+    {% set carMileageRatePerMile1PassengersError = { text: errors.items["carMileageRatePerMile1Passengers"][0].details } %}
+  {% endif %}
+  {% set carMileageRatePerMile2OrMorePassengersError = undefined %}
+  {% if errors.items["carMileageRatePerMile2OrMorePassengers"] %}
+    {% set carMileageRatePerMile2OrMorePassengersError = { text: errors.items["carMileageRatePerMile2OrMorePassengers"][0].details } %}
+  {% endif %}
+  {% set motorcycleMileageRatePerMile0PassengersError = undefined %}
+  {% if errors.items["motorcycleMileageRatePerMile0Passengers"] %}
+    {% set motorcycleMileageRatePerMile0PassengersError = { text: errors.items["motorcycleMileageRatePerMile0Passengers"][0].details } %}
+  {% endif %}
+  {% set motorcycleMileageRatePerMile1PassengersError = undefined %}
+  {% if errors.items["motorcycleMileageRatePerMile1Passengers"] %}
+    {% set motorcycleMileageRatePerMile1PassengersError = { text: errors.items["motorcycleMileageRatePerMile1Passengers"][0].details } %}
+  {% endif %}
+  {% set bikeRateError = undefined %}
+  {% if errors.items["bikeRate"] %}
+    {% set bikeRateError = { text: errors.items["bikeRate"][0].details } %}
+  {% endif %}
+  {% set subsistenceRateStandardError = undefined %}
+  {% if errors.items["subsistenceRateStandard"] %}
+    {% set subsistenceRateStandardError = { text: errors.items["subsistenceRateStandard"][0].details } %}
+  {% endif %}
+  {% set subsistenceRateLongDayError = undefined %}
+  {% if errors.items["subsistenceRateLongDay"] %}
+    {% set subsistenceRateLongDayError = { text: errors.items["subsistenceRateLongDay"][0].details } %}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <h1 class="govuk-heading-l">Expense rates and limits</h1>
+      <form method="post" action="{{ processUrl }}" id="setExpenseLimitsForm">
+        
+        <div class="mod-juror-record__title govuk-!-margin-bottom-5">
+          <h2 id="financialLossLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Financial loss</h2>
+        </div>
+
+        <h2 class="govuk-heading-m">Loss of earnings or benefits</h2>
+
+        {{ govukInput({
+          id: "limitFinancialLossHalfDay",
+          name: "limitFinancialLossHalfDay",
+          label: {
+            text: "Half day",
+            classes: "govuk-!-font-weight-bold"
+          },
+          value: tmpBody.limitFinancialLossHalfDay if tmpBody else expenseLimits.limitFinancialLossHalfDay,
+          errorMessage: limitFinancialLossHalfDayError,
+          classes: "govuk-input--width-5",
+          prefix: {
+            text: "£"
+          },
+          spellcheck: false
+        }) }}
+
+        {{ govukInput({
+          id: "limitFinancialLossFullDay",
+          name: "limitFinancialLossFullDay",
+          label: {
+            text: "Full day",
+            classes: "govuk-!-font-weight-bold"
+          },
+          value: tmpBody.limitFinancialLossFullDay if tmpBody else expenseLimits.limitFinancialLossFullDay,
+          errorMessage: limitFinancialLossFullDayError,
+          classes: "govuk-input--width-5",
+          prefix: {
+            text: "£"
+          },
+          spellcheck: false
+        }) }}
+
+        {{ govukInput({
+          id: "limitFinancialLossHalfDayLongTrial",
+          name: "limitFinancialLossHalfDayLongTrial",
+          label: {
+            text: "Half day (over 10 days)",
+            classes: "govuk-!-font-weight-bold"
+          },
+          value: tmpBody.limitFinancialLossHalfDayLongTrial if tmpBody else expenseLimits.limitFinancialLossHalfDayLongTrial,
+          errorMessage: limitFinancialLossHalfDayLongTrialError,
+          classes: "govuk-input--width-5",
+          prefix: {
+            text: "£"
+          },
+          spellcheck: false
+        }) }}
+
+        {{ govukInput({
+          id: "limitFinancialLossFullDayLongTrial",
+          name: "limitFinancialLossFullDayLongTrial",
+          label: {
+            text: "Full day (over 10 days)",
+            classes: "govuk-!-font-weight-bold"
+          },
+          value: tmpBody.limitFinancialLossFullDayLongTrial if tmpBody else expenseLimits.limitFinancialLossFullDayLongTrial,
+          errorMessage: limitFinancialLossFullDayLongTrialError,
+          classes: "govuk-input--width-5",
+          prefix: {
+            text: "£"
+          },
+          spellcheck: false
+        }) }}
+
+        <div class="mod-juror-record__title govuk-!-margin-bottom-5">
+          <h2 id="mileageLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Mileage</h2>
+        </div>
+
+        <h2 class="govuk-heading-m">Car</h2>
+
+        {{ govukInput({
+          id: "carMileageRatePerMile0Passengers",
+          name: "carMileageRatePerMile0Passengers",
+          label: {
+            text: "1 juror",
+            classes: "govuk-!-font-weight-bold"
+          },
+          value: tmpBody.carMileageRatePerMile0Passengers if tmpBody else expenseLimits.carMileageRatePerMile0Passengers,
+          errorMessage: carMileageRatePerMile0PassengersError,
+          classes: "govuk-input--width-5",
+          prefix: {
+            text: "£"
+          },
+          suffix: {
+            text: "per mile"
+          },
+          spellcheck: false
+        }) }}
+
+        {{ govukInput({
+          id: "carMileageRatePerMile1Passengers",
+          name: "carMileageRatePerMile1Passengers",
+          label: {
+            text: "2 jurors",
+            classes: "govuk-!-font-weight-bold"
+          },
+          value: tmpBody.carMileageRatePerMile1Passengers if tmpBody else expenseLimits.carMileageRatePerMile1Passengers,
+          errorMessage: carMileageRatePerMile1PassengersError,
+          classes: "govuk-input--width-5",
+          prefix: {
+            text: "£"
+          },
+          suffix: {
+            text: "per mile"
+          },
+          spellcheck: false
+        }) }}
+
+        {{ govukInput({
+          id: "carMileageRatePerMile2OrMorePassengers",
+          name: "carMileageRatePerMile2OrMorePassengers",
+          label: {
+            text: "3 jurors or more",
+            classes: "govuk-!-font-weight-bold"
+          },
+          value: tmpBody.carMileageRatePerMile2OrMorePassengers if tmpBody else expenseLimits.carMileageRatePerMile2OrMorePassengers,
+          errorMessage: carMileageRatePerMile2OrMorePassengersError,
+          classes: "govuk-input--width-5",
+          prefix: {
+            text: "£"
+          },
+          suffix: {
+            text: "per mile"
+          },
+          spellcheck: false
+        }) }}
+
+        <h2 class="govuk-heading-m">Motorcycle</h2>
+
+        {{ govukInput({
+          id: "motorcycleMileageRatePerMile0Passengers",
+          name: "motorcycleMileageRatePerMile0Passengers",
+          label: {
+            text: "1 juror",
+            classes: "govuk-!-font-weight-bold"
+          },
+          value: tmpBody.motorcycleMileageRatePerMile0Passengers if tmpBody else expenseLimits.motorcycleMileageRatePerMile0Passengers,
+          errorMessage: motorcycleMileageRatePerMile0PassengersError,
+          classes: "govuk-input--width-5",
+          prefix: {
+            text: "£"
+          },
+          suffix: {
+            text: "per mile"
+          },
+          spellcheck: false
+        }) }}
+
+        {{ govukInput({
+          id: "motorcycleMileageRatePerMile1Passengers",
+          name: "motorcycleMileageRatePerMile1Passengers",
+          label: {
+            text: "2 jurors or more",
+            classes: "govuk-!-font-weight-bold"
+          },
+          value: tmpBody.motorcycleMileageRatePerMile1Passengers if tmpBody else expenseLimits.motorcycleMileageRatePerMile1Passengers,
+          errorMessage: motorcycleMileageRatePerMile1PassengersError,
+          classes: "govuk-input--width-5",
+          prefix: {
+            text: "£"
+          },
+          suffix: {
+            text: "per mile"
+          },
+          spellcheck: false
+        }) }}
+
+        <h2 class="govuk-heading-m">Bicycle</h2>
+
+        {{ govukInput({
+          id: "bikeRate",
+          name: "bikeRate",
+          label: {
+            text: "1 juror",
+            classes: "govuk-!-font-weight-bold"
+          },
+          value: tmpBody.bikeRate if tmpBody else expenseLimits.bikeRate,
+          errorMessage: bikeRateError,
+          classes: "govuk-input--width-5",
+          prefix: {
+            text: "£"
+          },
+          suffix: {
+            text: "per mile"
+          },
+          spellcheck: false
+        }) }}
+
+        <div class="mod-juror-record__title govuk-!-margin-bottom-5">
+          <h2 id="foodAndDrinkLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Food and drink</h2>
+        </div>
+
+        {{ govukInput({
+          id: "subsistenceRateStandard",
+          name: "subsistenceRateStandard",
+          label: {
+            text: "10 hours or less",
+            classes: "govuk-!-font-weight-bold"
+          },
+          value: tmpBody.subsistenceRateStandard if tmpBody else expenseLimits.subsistenceRateStandard,
+          errorMessage: subsistenceRateStandardError,
+          classes: "govuk-input--width-5",
+          prefix: {
+            text: "£"
+          },
+          spellcheck: false
+        }) }}
+
+        {{ govukInput({
+          id: "subsistenceRateLongDay",
+          name: "subsistenceRateLongDay",
+          label: {
+            text: "Over 10 hours",
+            classes: "govuk-!-font-weight-bold"
+          },
+          value: tmpBody.subsistenceRateLongDay if tmpBody else expenseLimits.subsistenceRateLongDay,
+          errorMessage: subsistenceRateLongDayError,
+          classes: "govuk-input--width-5",
+          prefix: {
+            text: "£"
+          },
+          spellcheck: false
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Save",
+            type: "submit"
+          }) }}
+          <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+
+      </form>  
+    </div>
+  </div>
+{% endblock %}
