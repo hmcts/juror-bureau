@@ -1,4 +1,4 @@
- {
+{
   "secrets": {
     "juror": {
       "bureau-sessionSecret": "[super-secret-key][super-secret-key][super-secret-key]",
@@ -10,6 +10,6 @@
       "launchDarklyKey": "",
       "app-insights-connection-string": "",
       "bureau-redisConnection":  "redis://localhost:6379"
-     }
     }
   }
+}
