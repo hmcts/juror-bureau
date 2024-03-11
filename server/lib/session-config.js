@@ -9,7 +9,7 @@ module.exports.SessionConfig = class SessionConfig {
   }
 
   start(app) {
-    const secret = secretsConfig.get('secrets.juror-digital-vault.bureau-sessionSecret');
+    const secret = secretsConfig.get('secrets.juror.bureau-sessionSecret');
     const redisConnectionString = this._getRedisConnectionString();
 
     const config = this._config(secret);
