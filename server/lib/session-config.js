@@ -24,7 +24,7 @@ module.exports.SessionConfig = class SessionConfig {
 
   redisClient() {
     this._redisClient = createClient({
-      url: secretsConfig.get('secrets.juror-digital-vault.redis-connection-string'),
+      url: secretsConfig.get('secrets.juror.bureau-redisConnection'),
       pingInterval: 5000,
       socket: {
         keepAlive: true,
@@ -55,7 +55,7 @@ module.exports.SessionConfig = class SessionConfig {
     let redisConnectionString;
 
     try {
-      redisConnectionString = secretsConfig.get('secrets.juror-digital-vault.redis-connection-string');
+      redisConnectionString = secretsConfig.get('secrets.juror.bureau-redisConnection');
       return redisConnectionString;
     } catch (err) {
       console.log('Redis connection string is not available... setting in memory sessions');

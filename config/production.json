@@ -9,7 +9,7 @@
       "bureau-smartSurveyTokenSecret": "",
       "launchDarklyKey": "",
       "app-insights-connection-string": "",
-      "redis-connection-string":  ""
+      "bureau-redisConnection":  ""
     }
   }
 }
