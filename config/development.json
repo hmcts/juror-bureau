@@ -9,7 +9,7 @@
       "bureau-smartSurveyTokenSecret": "",
       "launchDarklyKey": "",
       "app-insights-connection-string": "",
-      "bureau-redisConnection":  "redis://localhost:6379"
+      "bureau-redisConnection": "redis://localhost:6379"
     }
   }
 }
