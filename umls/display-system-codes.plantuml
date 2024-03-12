@@ -1,0 +1,54 @@
+@startuml display-system-codes
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant SystemCodesListPage <</administration/system-codes>>
+participant SystemCodesPage <</administration/system-codes/:code>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant SystemCodesController <<system-codes.controller.js>> #lightyellow
+participant SystemCodesObject <<systemCodesDAO.get()>> #lightyellow
+
+''' TEMPLATES
+participant SystemCodesListTemplate <<administration/system-codes-list.njk>> #lavender
+participant SystemCodesTemplate <<administration/system-codes.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> SystemCodesListPage : click system codes tab
+SystemCodesListPage -> SystemCodesController : call system codes controller
+
+SystemCodesController -> SystemCodesListTemplate : request and build template
+SystemCodesController <- SystemCodesListTemplate : return HTML
+SystemCodesListPage <- SystemCodesController : return HTML
+Actor <- SystemCodesListPage : render HTML
+
+Actor -> SystemCodesListPage : click a code type link
+SystemCodesListPage -> SystemCodesController : call system codes controller
+ 
+SystemCodesController -> SystemCodesObject : build request object
+SystemCodesObject -> BackendController : send backend request
+SystemCodesObject <- BackendController : ok response
+SystemCodesController <- SystemCodesObject : resolve request
+
+alt Failed to fetch system codes
+    SystemCodesObject <-- BackendController : error response
+    SystemCodesController <-- SystemCodesObject : reject requestObject
+    SystemCodesController -> ErrorTemplate : request and build template
+    SystemCodesController <- ErrorTemplate : return HTML
+    GenericErrorPage <- SystemCodesController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+SystemCodesController -> SystemCodesTemplate : request and build template
+SystemCodesController <- SystemCodesTemplate : return HTML
+SystemCodesPage <- SystemCodesController : return HTML
+Actor <- SystemCodesPage : render HTML
+

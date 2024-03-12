@@ -5,8 +5,10 @@
     , urljoin = require('url-join')
     , validate = require('validate.js')
     , validator = require('../../config/validation/document-form')
+    , showCauseValidator = require('../../config/validation/show-cause')
     , modUtils = require('../../lib/mod-utils')
     , { reissueLetterDAO } = require('../../objects/documents')
+    , { dateFilter } = require('../../components/filters')
     , { isCourtUser } = require('../../components/auth/user-type');
 
   module.exports.getDocumentForm = function(app) {
@@ -14,6 +16,8 @@
       const tmpErrors = _.clone(req.session.errors);
       const backLinkUrl = app.namedRoutes.build('documents.get');
       const formFields = _.clone(req.session.formFields);
+
+      delete req.session.formFields;
       const { document } = req.params;
       const postUrl = app.namedRoutes.build('documents.form.post', {
         document,
@@ -22,14 +26,30 @@
         document,
       });
 
+      const today = new Date();
+      let tomorrow = new Date();
+
+      const postUrlDocumentForm = urljoin(app.namedRoutes.build('documents.show-cause.post', {
+        document,
+      }), urlBuilder(req.query));
+
+      tomorrow.setDate(today.getDate() + 1);
+
       delete req.session.errors;
       delete req.session.formFields;
       delete req.session.documentsJurorsList;
 
-      return res.render('documents/_common/document-form.njk', {
-        postUrl,
+
+      const template = (document === 'show-cause') ? 'show-cause-form' : 'document-form';
+      const postForm = document === 'show-cause' ? postUrlDocumentForm : postUrl;
+
+
+      return res.render(`documents/_common/${template}.njk`, {
+        postUrl: postForm,
         cancelUrl,
         backLinkUrl,
+        minDate: dateFilter(tomorrow, null, 'DD/MM/YYYY'),
+        urlParams: req.query,
         pageIdentifier: modUtils.getLetterIdentifier(document),
         errors: {
           title: 'There is a problem',
@@ -43,14 +63,16 @@
 
   module.exports.postDocumentForm = function(app) {
     return async function(req, res) {
-      const validatorResult = validate(req.body, validator.documentForm());
+
       const { document } = req.params;
+      const formValidator = document === 'show-cause' ? showCauseValidator.showCaseForm() : validator.documentForm();
+      const validatorResult = validate(req.body, formValidator);
 
       delete req.session.errors;
-      req.session.formFields = req.body;
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
+        req.session.formFields = req.body;
 
         return res.redirect(app.namedRoutes.build('documents.form.get', {
           document,
@@ -68,8 +90,9 @@
         let response;
 
         if (isCourtUser(req, res)) {
+          //create another payload object
           response = await reissueLetterDAO.getListCourt(app, req, payload);
-
+          //another endpoint call with new payload
           response.data_types.push('hidden');
           response.headings.push('Row Id');
           response.data.forEach((juror, i) => {
@@ -79,6 +102,7 @@
           response = await reissueLetterDAO.getList(app, req, payload);
         }
 
+
         // TODO: maybe sort the list before caching? ... so we have the pending / - always first
         req.session.documentsJurorsList = response;
 
@@ -87,9 +111,8 @@
           jwt: req.session.authToken,
           data: { ...payload },
         });
-
         return res.redirect(urljoin(app.namedRoutes.build('documents.letters-list.get', {
-          document,
+          document: document,
         }), urlBuilder(req.body)));
       } catch (err) {
         // A 404 means no results were found
@@ -136,6 +159,20 @@
       parameters.push('includePrinted=' + params.includePrinted);
     }
 
+    if (params.hearingDate) {
+      parameters.push('hearingDate=' + params.hearingDate);
+    }
+
+    if (params.jurorNumber) {
+      parameters.push('jurorNumber=' + params.jurorNumber);
+    }
+
+    if (params.hearingTimeHour && params.hearingTimeMinute && params.hearingTimePeriod) {
+      parameters.push('hearingTime=' + convertTimeToHHMM(
+        params.hearingTimeHour, params.hearingTimeMinute, params.hearingTimePeriod)
+      );
+    }
+
     return  '?' + parameters.join('&');
   }
 
@@ -156,5 +193,20 @@
     }
 
     return payload;
+  }
+
+  function convertTimeToHHMM(hour, minute, period) {
+    let convertedHours = parseInt(hour, 10);
+
+    if (period.toLowerCase() === 'pm' && convertedHours !== 12) {
+      convertedHours += 12;
+    } else if (period.toLowerCase() === 'am' && convertedHours === 12) {
+      convertedHours = 0;
+    }
+
+    const formattedHours = convertedHours.toString().padStart(2, '0');
+    const formattedMinutes = minute.toString().padStart(2, '0');
+
+    return `${formattedHours}:${formattedMinutes}`;
   }
 })();

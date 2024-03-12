@@ -26,6 +26,15 @@
       iconFallbackText: "Success"
     }) }}
   {% endif %}
+
+  {% if successBanner %}
+    {{ mojBanner({
+      type: "success",
+      html: successBanner,
+      iconFallbackText: "Success"
+    }) }}
+  {% endif %}
+
 {% endblock %}
 
 {% block content %}
@@ -84,7 +93,7 @@
             actions: {
               items: [
                 {
-                  href: "#",
+                  href: url('documents.form.get', { document: 'show-cause'}) + '?jurorNumber=' + juror.commonDetails.jurorNumber,
                   text: "Print show cause letter"
                 } if attendance.absences > 0
               ]

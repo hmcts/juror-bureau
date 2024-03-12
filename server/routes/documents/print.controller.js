@@ -4,16 +4,17 @@
   const { reissueLetterDAO } = require('../../objects/documents');
   const letterTemplates = require('./pdf/letter-templates');
   const { LetterType } = require('../../lib/mod-utils');
+  const { convert24to12, dateFilter } = require('../../components/filters/index');
 
   module.exports.printDocuments = function(app) {
     return async function(req, res) {
       const { generateDocument } = require('./pdf/letter-generator');
       const { document } = req.params;
+      let jurorNumbers;
 
       // bit of a problem here... when a pdf is renedered, clicking download seems to resend a request to download
       // so clearing the list here would break that... but would also break in case of the user pressing F5
-
-      const jurorNumbers = req.session.documentsJurorsList.checkedJurors.reduce((numbers, juror) => {
+      jurorNumbers = req.session.documentsJurorsList.checkedJurors.reduce((numbers, juror) => {
         numbers.push(juror.juror_number);
         return numbers;
       }, []);
@@ -22,6 +23,11 @@
         'letter_type': LetterType[document],
         'juror_numbers': jurorNumbers,
       };
+
+      if (document === 'show-cause'){
+        payload['show_cause_date'] = dateFilter(req.query.hearingDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
+        payload['show_cause_time'] = req.query.hearingTime;
+      }
 
       try {
         const response = await reissueLetterDAO.printCourtLetters(app, req, payload);
@@ -62,6 +68,8 @@
       return postponement(data);
     case 'withdrawal':
       return withdrawal(data);
+    case 'show-cause':
+      return showCause(data);
     }
   }
 
@@ -179,6 +187,26 @@
 
       juror.content = letterTemplates('withdrawal', {
         welsh: isWelsh,
+      });
+
+      juror.title = isWelsh ? 'GWASANAETH RHEITHGOR' : 'JURY SERVICE';
+
+      return juror;
+    });
+
+    return documents;
+  }
+
+  function showCause(data) {
+    const documents = data.map((juror) => {
+      const isWelsh = juror.welsh;
+
+      juror.content = letterTemplates('show-cause', {
+        welsh: isWelsh,
+        attendanceDate: dateFilter(juror.attendance_date, 'DD MMMM YYYY', 'dddd, DD MMMM, YYYY'),
+        noShowDate: dateFilter(juror.no_show_date, 'DD MMMM YYYY', 'dddd, DD MMMM, YYYY'),
+        noShowTime: convert24to12(juror.no_show_time),
+        courtName: juror.court_name,
       });
 
       juror.title = isWelsh ? 'GWASANAETH RHEITHGOR' : 'JURY SERVICE';

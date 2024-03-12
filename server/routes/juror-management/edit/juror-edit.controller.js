@@ -543,14 +543,14 @@
 
   const processJurorEdit = function(app, req, res, disqualifyAge) {
     const requestBody = { ...req.session.formFields };
-    const successUrl = app.namedRoutes.build('juror-record.details.get', {
+    let successUrl = app.namedRoutes.build('juror-record.details.get', {
       jurorNumber: req.params.jurorNumber,
     });
 
     if (req.url.includes('bank-details')){
       const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
 
-      app.namedRoutes.build(`${routePrefix}.bank-details.get`, {
+      successUrl = app.namedRoutes.build(`${routePrefix}.bank-details.get`, {
         jurorNumber: req.params['jurorNumber'],
         poolNumber: req.params['poolNumber'],
       });

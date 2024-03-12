@@ -24,7 +24,6 @@
       let searchBy, paginationObject;
 
       delete req.session.errors;
-
       if (documentSearchBy === 'juror'){
         searchBy = jurorDetails;
       } else {
@@ -58,6 +57,10 @@
         document,
       }), urlBuilder(req.query));
 
+      const printUrl = urljoin(app.namedRoutes.build('documents.letters-list.print', {
+        document,
+      }), urlBuilder(req.query));
+
       const selectedJurors = (req.session.documentsJurorsList.checkedJurors
         && req.session.documentsJurorsList.checkedJurors.length) || 0;
 
@@ -66,6 +69,7 @@
         backLinkUrl,
         postUrl,
         changeUrl,
+        printUrl,
         searchBy,
         headings: tableHeader,
         rows: tableRows,
@@ -243,6 +247,14 @@
       parameters.push('includePrinted=' + params.includePrinted);
     }
 
+    if (params.hearingDate) {
+      parameters.push('hearingDate=' + params.hearingDate);
+    }
+
+    if (params.hearingTime) {
+      parameters.push('hearingTime=' + params.hearingTime);
+    }
+
     return  '?' + parameters.join('&');
   }
 
@@ -268,6 +280,8 @@
       return _isBureauUser ? 'Resend postponement letter' : 'Print postponement letter';
     case 'withdrawal':
       return _isBureauUser ? 'Resend withdrawal letter' : 'Print withdrawal letter';
+    case 'show-cause':
+      return 'Print show cause letter';
     }
   };
 

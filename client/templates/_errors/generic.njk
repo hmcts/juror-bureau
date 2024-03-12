@@ -4,11 +4,13 @@
   Something went wrong
 {% endblock %}
 
+{% set homeLink = url('administration.get') if isSystemAdministrator else url('homepage.get') %}
+
 {% block content %}
 
   <h2 class="govuk-heading-l">Sorry, there is a technical problem</h2>
   <p class="govuk-body">
-    You can <a class="govuk-link" href="{{ url('homepage.get') }}">go back home</a> and try again later.
+    You can <a class="govuk-link" href="{{ homeLink }}">go back home</a> and try again later.
   </p>
 
 {% endblock %}

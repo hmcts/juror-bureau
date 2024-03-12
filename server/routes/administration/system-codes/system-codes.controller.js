@@ -11,7 +11,7 @@
       key: 'JUROR_STATUS',
       title: 'Juror status codes',
     },
-    'trial-type': {
+    'trial-types': {
       key: 'TRIAL_TYPE',
       title: 'Trial types',
     },

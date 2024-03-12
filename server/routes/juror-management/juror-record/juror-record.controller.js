@@ -404,11 +404,16 @@ const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/ex
     return async function(req, res) {
       const { jurorNumber } = req.params;
       let failedToAttend;
+      let successBanner = false;
 
       if (typeof req.session.failedToAttend !== 'undefined'
         && req.session.failedToAttend.jurorNumber === jurorNumber) {
         failedToAttend = req.session.failedToAttend;
         delete req.session.failedToAttend;
+      }
+      if (req.session.bannerMessage) {
+        successBanner = req.session.bannerMessage;
+        delete req.session.bannerMessage;
       }
 
       try {
@@ -438,6 +443,7 @@ const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/ex
           backLinkUrl: 'homepage.get',
           currentTab: 'attendance',
           juror: jurorOverview.data,
+          successBanner: successBanner,
           jurorStatus: resolveJurorStatus(jurorOverview.data.commonDetails),
           processingOutcome: modUtils.resolveProcessingOutcome(jurorOverview.data.commonDetails.jurorStatus,
             jurorOverview.data.commonDetails.excusalRejected, jurorOverview.data.commonDetails.excusalDescription),
