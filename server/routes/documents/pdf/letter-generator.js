@@ -99,8 +99,7 @@
 
   function documentContent(content) {
     const isWelsh = content.welsh;
-
-    return [
+    const contentArray = [
       {
         columns: [
           {
@@ -132,10 +131,22 @@
         marginTop: 15,
         marginBottom: 30,
       },
-      {
-        text: content.content,
-      },
     ];
+
+    if (content.subTitle) {
+      contentArray.push({
+        text: content.subTitle,
+        bold: true,
+        marginTop: 15,
+        marginBottom: 15,
+      });
+    }
+
+    contentArray.push({
+      text: content.content,
+    });
+
+    return contentArray;
   };
 
   function documentFooter(content) {

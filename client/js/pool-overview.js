@@ -8,35 +8,31 @@
     , respondedStatusRadio = $('#jurorsInPool')
     , allStatusRadio = $('#jurorsInPool-2')
     , url = new URL(window.location)
-    , csrfToken = $('#csrfToken')
     , checkAllJurors = $('#check-all-jurors')
     , jurorRows = $('input[aria-label^=check-juror]')
     , totalCheckedJurors = $('#total-checked-jurors')
-    , totalJurors = $('#total-jurors-count')
-    , poolNumber = $('#poolNumber');
+    , totalJurors = $('#total-jurors-count');
 
   // checking jurors logic
   if (checkAllJurors && checkAllJurors.length) {
     checkAllJurors[0].addEventListener('change', function() {
       var isCheckingAll = this.checked;
 
-      request(this.id, isCheckingAll).then(function() {
-        jurorRows.each(function(_, element) {
-          element.checked = isCheckingAll;
-        });
-
-        totalCheckedJurors.text(isCheckingAll ? totalJurors.text() : '0');
+      jurorRows.each(function(_, element) {
+        element.checked = isCheckingAll;
+        if (element.type === 'hidden' && !isCheckingAll) {
+          element.parentNode.removeChild(element);
+        }
       });
+
+      totalCheckedJurors.text(isCheckingAll ? totalJurors.text() : '0');
     });
   }
 
   if (jurorRows && jurorRows.length) {
     jurorRows.each(function(_, element) {
       element.addEventListener('change', async function() {
-        var jurorNumber = this.id.split('-')[1];
         var isCheckingJuror = this.checked;
-
-        await request(jurorNumber, isCheckingJuror);
 
         if (isCheckingJuror) {
           totalCheckedJurors.text(+totalCheckedJurors.text() + 1);
@@ -59,20 +55,6 @@
     }
   }
 
-  function request(jurorNumber, isChecking) {
-    var action = isChecking ? 'check' : 'uncheck';
-
-    return $.ajax({
-      url: '/juror-management/pool-overview/'
-        + poolNumber.val()
-        + '/check?jurorNumber=' + jurorNumber + '&action=' + action,
-      method: 'POST',
-      data: {
-        _csrf: csrfToken.val(),
-      },
-    });
-  }
-
   // filtering logic
   // if the user is not filtering (ie: first page load), we should hide the filters
   if (url.searchParams.get('showFilter') === 'true') {
@@ -87,7 +69,7 @@
     event.preventDefault();
     selectedStatuses.removeAttr('checked');
     $(':checkbox[value=responded]').prop('checked', 'true');
-    $(':checkbox[value=panelled]').prop('checked', 'true');
+    $(':checkbox[value=panel]').prop('checked', 'true');
     $(':checkbox[value=juror]').prop('checked', 'true');
     $('#applyFiltersButton').trigger('click');
   });

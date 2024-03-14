@@ -1,0 +1,116 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/error-message/macro.njk" import govukErrorMessage -%}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "custom-components/autocomplete/macro.njk" import modAutocomplete %}
+
+{% block page_title %}{{ serviceName }} - Documents - {{pageIdentifier}}{% endblock %}
+{% block page_identifier %}documents - {{pageIdentifier}}{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back to all documents",
+    href: backLinkUrl,
+    attributes: {
+      id: "backLinkAnchor"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-half">
+    
+    {% include "includes/errors.njk" %}
+
+    {% set durationType = undefined %}
+    {% if errors.items["durationType"] %}
+      {% set durationType = { text: errors.items['durationType'][0].details} %}
+    {% endif %}
+    {% set durationYears = undefined %}
+    {% if errors.items["durationYears"] %}
+      {% set durationYearsError = { text: errors.items['durationYears'][0].details} %}
+    {% endif %}
+    {% if errors.items["judge"] %}
+      {% set judgeError = {"text": errors.items['judge'][0].details} %}
+    {% endif %}
+
+    {% set durationHtml %}
+      {{ govukInput({
+        label: {
+          text: "How many years?",
+          classes: "govuk-label"
+        },
+        classes: "govuk-input--width-2",
+        id: "durationYears",
+        name: "durationYears",
+        type: "number",
+        value: tmpBody.durationYears,
+        errorMessage: durationYearsError
+      }) }}
+    {% endset %} 
+    
+    <form action="{{ postUrl }}" method="post" id="documentLetterForm">
+      <h1 class="title govuk-heading-l">{{pageIdentifier}}</h1>
+      
+      {{ govukRadios({
+        name: "durationType",
+        errorMessage: durationType,  
+        fieldset: {
+          legend: {
+            text: "How long should the jurors be exempt from jury service?",
+            classes: "govuk-fieldset__legend--s"
+          }
+        },        
+        items: [
+          {
+            value: "specific",
+            text: "Specific period of time",
+            checked: tmpBody.durationType  === "specific",
+            conditional: {
+              html: durationHtml
+            }
+          },
+          {
+            value: "indefinitely",
+            text: "Indefinitely",
+            checked: tmpBody.durationType === "indefinitely"           
+          }
+        ]
+      }) }}
+
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+          <p class="govuk-heading-s">Judge issuing the exemption</p>
+          {{ modAutocomplete({
+            value:  tmpBody.judge if tmpBody.judge else originalJudge,
+            name: "judge",
+            id: "judge",
+            data: judges,
+            errorMessage: judgeError
+          }) }}  
+        </div>
+      </div>
+
+      <div class="govuk-button-group">
+        {{ govukButton({
+          text: "Continue",
+          type: "submit",
+          attributes: {
+            id: "searchButton"
+          }
+        }) }}
+        <a href="{{ cancelUrl }}" class="govuk-link" id="cancelAnchor">Cancel</a>
+      </div>
+       
+      <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+
+    </form>
+  </div>
+</div>
+
+{% endblock %}

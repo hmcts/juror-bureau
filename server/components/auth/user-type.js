@@ -76,9 +76,8 @@
   function isBureauManager(req, res, next) {
     if (
       isBureauUser(req, res) &&
-      req.session.authentication.hasOwnProperty('staff') === true &&
-      req.session.authentication.staff.hasOwnProperty('roles') === true &&
-      req.session.authentication.staff.roles.includes('MANAGER')
+      req.session.authentication.hasOwnProperty('roles') === true &&
+      req.session.authentication.roles.includes('MANAGER')
     ) {
       if (typeof next !== 'undefined') {
         return next();
@@ -97,9 +96,8 @@
   function isCourtManager(req, res, next) {
     if (
       isCourtUser(req, res) &&
-      req.session.authentication.hasOwnProperty('staff') === true &&
-      req.session.authentication.staff.hasOwnProperty('roles') === true &&
-      req.session.authentication.staff.roles.includes('MANAGER')
+      req.session.authentication.hasOwnProperty('roles') === true &&
+      req.session.authentication.roles.includes('MANAGER')
     ) {
       if (typeof next !== 'undefined') {
         return next();
@@ -118,9 +116,8 @@
   function isSystemAdministrator(req, res, next) {
     if (
       req.session.hasOwnProperty('authentication') === true &&
-      req.session.authentication.hasOwnProperty('staff') === true &&
-      req.session.authentication.staff.hasOwnProperty('userType') === true &&
-      req.session.authentication.staff.userType === 'ADMINISTRATOR'
+      req.session.authentication.hasOwnProperty('userType') === true &&
+      req.session.authentication.userType === 'ADMINISTRATOR'
     ) {
       if (typeof next !== 'undefined') {
         return next();

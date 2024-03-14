@@ -36,8 +36,10 @@
         });
 
         const tmpErrors = _.clone(req.session.errors);
+        const bannerMessage = req.session.submitExpensesBanner;
 
         delete req.session.errors;
+        delete req.session.submitExpensesBanner;
 
         return res.render('juror-management/expense-record/expense-record.njk', {
           backLinkUrl: app.namedRoutes.build('juror-management.unpaid-attendance.get'),
@@ -50,6 +52,7 @@
           poolNumber,
           counts: req.expensesCount,
           jurorDetails: req.jurorDetails,
+          bannerMessage,
           errors: {
             title: '',
             count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -77,16 +80,47 @@
     return function(req, res) {
       const { status, jurorNumber, poolNumber } = req.params;
 
+      const validationErrors = validateIFHasCheckedDates(status, req.body['checked-expenses']);
+
+      if (validationErrors) {
+        req.session.errors = {
+          checkedExpenses: [{
+            summary: validationErrors,
+            details: validationErrors,
+          }],
+        };
+
+        return res.redirect(app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
+          jurorNumber,
+          poolNumber,
+          status,
+        }));
+      }
+
+      // always rewrite this
+      req.session.editApprovalDates = (req.body['checked-expenses'] instanceof Array)
+        ? req.body['checked-expenses']
+        : [req.body['checked-expenses']];
+
       switch (status) {
       case 'for-approval':
-        editForApproval();
-        break;
+        return res.redirect(app.namedRoutes.build('juror-management.edit-expense.get', {
+          jurorNumber,
+          poolNumber,
+          status,
+        }));
       case 'for-reapproval':
-        editForReapproval();
-        break;
+        return res.redirect(app.namedRoutes.build('juror-management.edit-expense.get', {
+          jurorNumber,
+          poolNumber,
+          status,
+        }));
       case 'approved':
-        editApproved();
-        break;
+        return res.redirect(app.namedRoutes.build('juror-management.edit-expense.get', {
+          jurorNumber,
+          poolNumber,
+          status,
+        }));
       }
 
       return res.redirect(app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
@@ -97,16 +131,18 @@
     };
   };
 
-  function editForApproval() {
-    // TODO: implement
-  }
+  function validateIFHasCheckedDates(status, body) {
+    const messages = {
+      'for-approval': 'Select at least one day to edit expenses for approval',
+      'for-reapproval': 'Select at least one day to edit expenses for reapproval',
+      'approved': 'Select at least one day to edit approved expenses',
+    };
 
-  function editForReapproval() {
-    // TODO: implement
-  }
+    if (!body) {
+      return messages[status];
+    }
 
-  function editApproved() {
-    // TODO: implement
+    return;
   }
 
 })();

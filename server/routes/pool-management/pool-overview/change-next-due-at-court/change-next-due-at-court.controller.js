@@ -1,3 +1,4 @@
+
 (function(){
   'use strict';
 
@@ -6,29 +7,35 @@
     , jurorSelectValidator = require('../../../../config/validation/change-attendance-date').jurorSelect
     , attendanceDateValidator = require('../../../../config/validation/change-attendance-date').bulkAttendanceDate
     , { dateFilter } = require('../../../../components/filters')
-    , { changeNextDueAtCourtDAO } = require('../../../../objects/juror-attendance');
+    , { changeNextDueAtCourtDAO } = require('../../../../objects/juror-attendance')
+    , { poolMemebersObject } = require('../../../../objects/pool-members')
+    , rp = require('request-promise');
 
 
   module.exports.postChangeNextDueAtCourt = function(app) {
-    return function(req, res) {
-      const { poolNumber } = req.params;
-      const checkedJurors = req.session.membersList.filter(j => j.checked).map(j => j.jurorNumber);
-      const validatorResult = validate({ selectedJurors: checkedJurors }, jurorSelectValidator());
+    return async function(req, res) {
+      if (req.body['check-all-jurors']) {
+        req.body.selectedJurors = await poolMemebersObject.get(rp, app, req.session.authToken, req.params.poolNumber);
+      } else {
+        let validatorResult;
 
-      if (typeof validatorResult !== 'undefined') {
-        req.session.errors = validatorResult;
-
-        return res.redirect(app.namedRoutes.build('pool-overview.get', { poolNumber }));
+        validatorResult = validate(req.body, jurorSelectValidator());
+        if (typeof validatorResult !== 'undefined') {
+          req.session.errors = validatorResult;
+          req.session.noJurorSelect = true;
+          return res.redirect(app.namedRoutes.build('pool-overview.get', {
+            poolNumber: req.body.poolNumber}));
+        }
       }
 
       delete req.session.membersList;
       delete req.session.filteredMembers;
       delete req.session.filters;
 
-      req.session.selectedJurors = checkedJurors;
+      req.session.selectedJurors = req.body.selectedJurors;
 
       return res.redirect(app.namedRoutes.build('pool-overview.change-next-due-at-court.continue.get', {
-        poolNumber,
+        poolNumber: req.params.poolNumber,
       }));
     };
   };

@@ -6,14 +6,14 @@
   const enterExpensesValidator = require('../../../../config/validation/enter-expenses');
   const { jurorDetailsObject } = require('../../../../objects/juror-record');
   const {
-    getDraftExpenseDAO,
+    getEnteredExpensesDAO,
     postDraftExpenseDAO,
     postRecalculateSummaryTotalsDAO,
   } = require('../../../../objects/expense-record');
 
   module.exports.getEnterExpenses = (app) => {
     return async function(req, res) {
-      const { jurorNumber, poolNumber } = req.params;
+      const { jurorNumber, poolNumber, status } = req.params;
       const { date } = req.query;
       const page = parseInt(req.query.page);
 
@@ -50,10 +50,10 @@
       let tmpBody, responses;
 
       try {
-        const _expensesData = getDraftExpenseDAO.post(app, req, {
+        const _expensesData = getEnteredExpensesDAO.post(app, req, {
           'juror_number': jurorNumber,
           'pool_number': poolNumber,
-          'date_of_expense': date,
+          'expense_dates': [date],
         });
 
         const _jurorDetails = jurorDetailsObject.post(
@@ -91,7 +91,7 @@
         return res.render('_errors/generic');
       }
 
-      const expensesData = responses[0];
+      const expensesData = responses[0][0];
       const jurorDetails = responses[1][0];
 
       // Mimicing paginating the list, returning same header data but expenses list will be filtered to 1
@@ -104,7 +104,7 @@
       req.session.nonAttendanceDay = expensesData.none_attendance_day;
 
       if (!req.session.tmpBody) {
-        tmpBody = manipulateExpesnesApiData(expensesData);
+        tmpBody = manipulateExpensesApiData(expensesData);
       } else {
         tmpBody = _.cloneDeep(req.session.tmpBody);
       }
@@ -127,6 +127,7 @@
         },
         jurorNumber,
         poolNumber,
+        status: 'draft',
         tmpBody,
         errors: {
           title: 'Please check the form',
@@ -350,11 +351,13 @@
   module.exports.getRecalculateTotals = (app) => {
     return async function(req, res) {
       const { jurorNumber, poolNumber } = req.params;
+      const { status } = req.query;
 
       delete req.body._csrf;
 
       const data = {
         'juror_number': jurorNumber,
+        'pool_number': poolNumber,
         'expense_list': [
           req.body,
         ],
@@ -375,6 +378,7 @@
         return res.render('expenses/_partials/summary.njk', {
           expenseData: response.expense_details[0],
           expenseTotals: response.totals,
+          status,
         });
       } catch (err) {
         app.logger.crit('Failed to recalculate the summary totals: ', {
@@ -383,6 +387,8 @@
           data,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
+
+        console.log(err);
 
         return res.render('expenses/_partials/recalculate-error-banner.njk');
       }
@@ -475,7 +481,7 @@
     return data;
   }
 
-  function manipulateExpesnesApiData(data) {
+  function manipulateExpensesApiData(data) {
     let formData;
 
     if (data.attendance_type === 'NON_ATTENDANCE') {

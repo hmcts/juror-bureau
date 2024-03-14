@@ -268,9 +268,6 @@ const { capitalise, toSentenceCase } = require('../components/filters');
 
       const transforedTrialsTable = modUtils.transformMessagingTrialsList(trialsList);
 
-      console.log(transforedTrialsTable.head);
-      console.log(transforedTrialsTable.rows);
-
       expect(transforedTrialsTable.head).to.be.length(7);
       expect(transforedTrialsTable.rows).to.be.length(1);
       expect(transforedTrialsTable.rows[0][0].hasOwnProperty('html')).to.be.true;

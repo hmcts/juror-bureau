@@ -79,10 +79,44 @@
 </div>
 
 <div class="govuk-grid-column-one-half govuk-!-padding-right-0">
-  {{ modLargeTag({
-    id: "totalDueTag",
-    classes: "govuk-!-margin-bottom-1",
-    label: "Total due",
-    value: "£" + expenseData.total_due | toFixed(2)
-  })}}
+  {% if status === "approved" or status === "for-reapproval" %}
+
+    {{ govukSummaryList({
+      attributes: {
+        id: 'totalsDueTable'
+      },
+      rows: [
+        {
+          key: {
+            text: "Total due"
+          },
+          value: {
+            text: "£" + expenseData.total_due | toFixed(2)
+          }
+        },
+        {
+          key: {
+            text: "Total paid to date"
+          },
+          value: {
+            text: "£" + expenseData.total_paid | toFixed(2)
+          }
+        }
+      ]
+    }) }}
+
+    {{ modLargeTag({
+      id: "totalDueTag",
+      classes: "govuk-!-margin-bottom-1",
+      label: "Balance to pay",
+      value: "£" + expenseData.total_outstanding | toFixed(2)
+    })}}
+  {% else %}
+    {{ modLargeTag({
+      id: "totalDueTag",
+      classes: "govuk-!-margin-bottom-1",
+      label: "Total due",
+      value: "£" + expenseData.total_due | toFixed(2)
+    })}}
+  {% endif %}
 </div>

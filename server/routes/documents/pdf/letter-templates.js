@@ -57,6 +57,13 @@
           + 'Unless you are notified that you have been excused, you must attend the Court on the date shown on your summons.\n\n'
           + 'Yours sincerely,';
       },
+      'certificate-of-exemption' : (data) => {
+        return `I certify that ${data.firstName} ${data.lastName} served as a Juror on the above trial.\n\n`
+          + `In the opinion of RH ${data.judge} who presided at the trial it would be reasonable and proper that `
+          + `${data.firstName} ${data.lastName} should be exempt from Jury Service ${data.exemptionPeriod === 'indefinite' ? 'indefinitely' : `for a period of ${data.exemptionPeriod} years`}.\n\n`
+          + 'Yours sincerely,\n\n\n'
+          + `${data.signature}`;
+      },
 
       'show-cause': (data) => {
         return 'Whereas you were summoned to appear and serve as a juror at '
@@ -156,6 +163,13 @@
           + 'Os bydd Barnwr Llys y Goron yn gwrando ar eich apêl, fe\'i gwrandewir cyn y dyddiad pan ddylech ddod i\'r llys fel rheithiwr. Cewch wybod ymlaen llaw, ar ba ddyddiad ac am faint o\'r gloch y cynhelir y gwrandawiad. Cewch ddod yno a rhoi eich rhesymau i\'r Barnwr os dymunwch. Os na fyddwch chi\'n dod yno, penderfynir yr apêl ar sail eich datganiad ysgrifenedig.\n\n'
           + 'Os na fyddwch chi\'n clywed eich bod wedi cael eich esgusodi, rhaid i chi ddod i\'r Llys ar y dyddiad a ddangosir ar eich gw§s.\n\n'
           + 'Yn gywir';
+      },
+      'certificate-of-exemption' : (data) => {
+        return `Tystiaf fod ${data.firstName} ${data.lastName} wedi gwasanaethu fel Rheithiwr yn yr achos uchod.\n\n`
+          + `Ym marn RH ${data.judge} a lywyddodd yr achos, byddai'n rhesymol ac yn iawn i `
+          + `${data.firstName} ${data.lastName} gael ei h/esgusodi o orfod Gwasanaethu ar Reithgor ${data.exemptionPeriod === 'indefinite' ? 'amhenodol' : `am gyfnod o ${data.exemptionPeriod} flynyddoedd.`}.\n\n`
+          + 'Yn gywir\n\n\n'
+          + `${data.signature}`;
       },
     },
   };

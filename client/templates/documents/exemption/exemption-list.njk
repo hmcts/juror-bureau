@@ -1,0 +1,143 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+{%- from "govuk/components/table/macro.njk" import govukTable -%} 
+
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% set currentApp = "Documents" %}
+
+{% block page_title %}{{ serviceName }} - Documents - {{pageIdentifier}} results{% endblock %}
+{% block page_identifier %}{{pageIdentifier}} results{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back to all documents",
+    href: backLinkUrl,
+    attributes: {
+      id: "backLinkAnchor"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  {% include "includes/errors.njk" %}
+
+  {% if errors.items["selectedJurors"] %}
+    {% set selectedJurorsError = {"text": errors.items['selectedJurors'][0].details} %}
+  {% else %}
+    {% set selectedJurorsError = undefined %}
+  {% endif %}
+   
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-l">{{ pageIdentifier }}</h1>
+
+      <p class="govuk-body govuk-!-font-weight-bold">Showing jurors in trial '{{ caseNumber }}' 
+        <a id="addressChangeAnchor" href="{{ changeUrl }}" class="govuk-link">Change</a>
+      </p>
+
+      {% if jurors | length > 0 %}
+
+          {{ govukButton({
+            text: buttonLabel,
+            classes: "govuk-button--secondary",
+            id: "print-documents",
+            href: printUrl,
+            attributes: {
+              target: "_blank"
+            }
+          }) }}
+
+          {{ csrfProtection(csrftoken) }}
+
+      {% else %}
+        {{ csrfProtection(csrftoken) }}
+      {% endif %}
+    </div>
+  </div>
+
+  {% if jurors | length > 0 %}
+  
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+
+      {% if errors.items["selectedJurors"] %}<div class="error-allocation">
+        <p class="govuk-error-message">{{ errors.items['selectedJurors'][0].details }}</p>
+      {% endif %}
+      {% if errors.items["selectedJurors"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
+
+        <div class="govuk-caption-m"> <span id="checkedJurors">0</span> of selected <span id="totalJurors">{{ jurors | length }}</span> </div>
+
+        <table class="govuk-table" data-module="moj-sortable-table" data-multi-select-checkbox="#select-all" id="exemptionJurors" name="exemptionJurors">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header jd-assign-replies-table-head jd-middle-align">
+                <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
+                  <input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check" id="check-all-jurors" name="check-all-jurors"/>
+                  <label class="govuk-label govuk-checkboxes__label">
+                    <span class="govuk-visually-hidden">Select All</span>
+                  </label>
+                </div>
+              </th>
+              <th scope="col" class="govuk-table__header jd-assign-replies-table-head jd-middle-align" aria-sort="ascending">Juror number</th>
+              <th scope="col" class="govuk-table__header jd-assign-replies-table-head jd-middle-align" aria-sort="none">First name</th>
+              <th scope="col" class="govuk-table__header jd-assign-replies-table-head jd-middle-align" aria-sort="none">Last name</th>
+              <th scope="col" class="govuk-table__header jd-assign-replies-table-head jd-middle-align" aria-sort="none">Date empanelled</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">    
+          {% for juror in jurors %}
+              <tr class="govuk-table__row govuk-table__row--selected">
+                <td class="govuk-table__cell">
+                  <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
+                    <input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check" id="select-{{ juror.juror_number }}" name="selectedJurors" value="{{ juror.juror_number }}">
+                    <label class="govuk-label govuk-checkboxes__label" for="select-{{ juror.juror_number }}">
+                      <span class="govuk-visually-hidden">Select {{ juror.juror_number }}</span>
+                    </label>
+                  </div>
+                </td>
+                <td id="{{juror.juror_number}}" class="govuk-table__cell jd-middle-align"><a href="/juror-management/record/{{juror.jurorNumber}}/overview">{{ juror.juror_number }}</a></td>
+                <td id="{{juror.juror_number}}-firstName" class="govuk-table__cell jd-middle-align">{{ juror.first_name  | capitalize }}</td>
+                <td id="{{juror.juror_number}}-lastName" class="govuk-table__cell jd-middle-align">{{ juror.last_name  | capitalize }}</td>
+                <td id="{{juror.juror_number}}-dateEmpanelled" class="govuk-table__cell jd-middle-align">{{ juror.date_empanelled | dateFilter(null, 'ddd DD MMM YYYY') }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% if errors.items["selectedJurors"] %}</div>{% endif %}
+      </div>
+    </div>
+  {% else %}
+    <hr class="govuk-section-break govuk-section-break--visible">
+
+    <h2>There are no matching results</h2>
+    <p class="govuk-body">Improve your search by:</p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>double-checking your spelling</li>
+      <li>searching by the complete juror number only</li>
+    </ul>
+  {% endif %}
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script src="{{ assetPath }}js/certificate-of-exemption-list.js"></script>
+
+  <script>
+    $('loaded', function() {
+      $('#print-documents').click(function(event) {
+        var selectedJurorsCount = $('#checkedJurors').text();
+        if (parseInt(selectedJurorsCount) === 0) {
+          event.preventDefault();
+        }
+      });
+    });
+  </script>
+
+{% endblock %}

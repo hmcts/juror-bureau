@@ -5,6 +5,7 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 
 {% from "custom-components/time-input/macro.njk" import timeInput %}
 {% from "custom-components/macros/arrows.njk" import leftArrowSVG %}
@@ -24,6 +25,26 @@
   {% set jurorName = jurorDetails.name.firstName + ' ' + jurorDetails.name.lastName %}
   {% if jurorDetails.name.title %}
     {% set jurorName = jurorDetails.name.title + ' ' + jurorDetails.name.firstName + ' ' + jurorDetails.name.lastName %}
+  {% endif %}
+
+  {% if status === "approved" or status === "for-reapproval" %}
+    {% set warningHtml %}
+      <p class="govuk-notification-banner__heading">
+        {% if status === "approved" %}
+          You’re editing approved expenses.
+        {% elif status === "for-reapproval" %}
+          You're editing an expense set for reapproval
+        {% endif%}
+      </p>
+
+      <p class="govuk-body">
+        You can only increase amounts (except for Smartcard spend, which you can only decrease).
+      </p>
+    {% endset %}
+
+    {{ govukNotificationBanner({
+      html: warningHtml
+    }) }}
   {% endif %}
 
   <div class="govuk-grid-row">
@@ -47,10 +68,29 @@
         {% endif %}
       </span>
       <h1 class="govuk-heading-m">{{ expensesData.date_of_expense | dateFilter("YYYY-MM-DD", "dddd DD MMMM YYYY") }}</h1>
-      {{ govukTag({
-        text: "DRAFT",
-        classes: "govuk-tag--grey"
-      }) }}
+      
+      {% if status === "draft" %}
+        {{ govukTag({
+          text: "Draft",
+          classes: "govuk-tag--grey"
+        }) }}
+      {% elif status === "for-approval" %}
+        {{ govukTag({
+          text: "For approval",
+          classes: "govuk-tag--blue"
+        }) }}
+      {% elif status === "for-reapproval" %}
+        {{ govukTag({
+          text: "For reapproval",
+          classes: "govuk-tag--blue"
+        }) }}
+      {% elif status === "approved" %}
+        {{ govukTag({
+          text: "Approved",
+          classes: "govuk-tag--blue"
+        }) }}
+      {% endif %}
+
     </div>
   </div>
 
@@ -100,6 +140,7 @@
 
         <input type="hidden" name="jurorNumber" id="jurorNumber" value="{{ jurorNumber }}"/>
         <input type="hidden" name="poolNumber" id="poolNumber" value="{{ poolNumber }}"/>
+        <input type="hidden" name="expenseStatus" id="expense-status" value="{{ status }}"/>
 
         <input type="hidden" name="total" value="">
         

@@ -133,4 +133,11 @@
   {{ super() }}
 
   <script src="{{ assetPath }}js/pool-overview.js"></script>
+  <script>
+    const goHref = (href) => {
+      document.getElementById('navigate').value = 'previous';
+      document.getElementById('poolDetailsForm').action = href;
+      document.getElementById('poolDetailsForm').submit();
+    }
+  </script>
 {% endblock %}

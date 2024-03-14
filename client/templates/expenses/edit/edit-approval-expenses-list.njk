@@ -1,0 +1,169 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "includes/csrf.njk" import csrfProtection %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{% block page_title %}{{ serviceName }} - edit {{ status }} list{% endblock %}
+{% block page_identifier %}expenses - edit {{ status }} list{% endblock %}
+
+{% set currentApp = "Jurors" %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {% set jurorName = jurorDetails.name.firstName + ' ' + jurorDetails.name.lastName %}
+  {% if jurorDetails.name.title %}
+    {% set jurorName = jurorDetails.name.title + ' ' + jurorName %}
+  {% endif %}
+
+  {% if status === "for-approval" %}
+    {% set title = "Edit expenses for approval" %}
+  {% elif status === "for-reapproval" %}
+    {% set title = "Edit expenses for reapproval" %}
+  {% elif status === "approved" %}
+    {% set title = "Edit approved expenses" %}
+  {% endif %}
+
+  <div class="mod-expense-record-header">
+    <div>
+      <span class="govuk-caption-xl">{{ title }}</span>
+    </div>
+
+    <div>
+      {% set applyDefaultLossUrl = url("juror-management.edit-expense.apply-default-loss.get", {
+          jurorNumber: jurorNumber,
+          poolNumber: poolNumber,
+          status: status
+        }) + "?action=apply-default-loss" %}
+      <a href="{{ applyDefaultLossUrl }}" class="govuk-body govuk-link govuk-link--no-visited-state">Apply default loss of earning</a>
+    </div>
+  </div>
+  <div class="mod-expense-record-header">
+    <div>
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-3">{{ jurorName }}</h1>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              text: "Juror number"
+            },
+            value: {
+              html: '<a href=' + url("juror-record.overview.get", { jurorNumber: jurorNumber }) + ' class="govuk-link">' + jurorNumber + '</a>'
+            }
+          },
+          {
+            key: {
+              text: "Pool number"
+            },
+            value: {
+              text: poolNumber
+            }
+          }
+        ]
+      }) }}
+    </div>
+  </div>
+
+  {# dates #}
+  <div class="govuk-body-l">
+    {% if expenseDates.length === 1 %}
+      <b>{{ firstDay | dateFilter("YYYY-MM-DD", "dddd DD MMMM YYYY") }}</b>
+    {% elif expenseDates.length === 2 %}
+      <b>{{ firstDay | dateFilter("YYYY-MM-DD", "dddd DD MMMM YYYY") }}</b> and <b>{{ lastDay | dateFilter("YYYY-MM-DD", "dddd DD MMMM YYYY") }}</b>
+    {% else %}
+      <b>{{ firstDay | dateFilter("YYYY-MM-DD", "dddd DD MMMM YYYY") }}</b> to <b>{{ lastDay | dateFilter("YYYY-MM-DD", "dddd DD MMMM YYYY") }}</b>
+    {% endif %}
+  </div>
+
+  <div class="govuk-button-group">
+    {{ govukButton({
+      text: "Add a non-attendance day",
+      classes: "govuk-button--secondary",
+      href: "#"
+    }) }}
+
+    {{ govukButton({
+      text: "Preview audit report",
+      classes: "govuk-button--secondary",
+      href: "#"
+    }) }}
+  </div>
+
+  <div class="govuk-body">
+    <b>Mileage</b>
+    <span class="govuk-!-margin-left-3">{{ defaultExpense.mileage + " miles" if defaultExpense.mileage else "-" }}</span>
+  </div>
+
+  {% include "./expenses-table.njk" %}
+
+  {% if status === "approved" or status === "for-reapproval" %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-third">
+        {{ govukTable({
+          captionClasses: "govuk-table__caption--m",
+          firstCellIsHeader: true,
+          rows: [
+            [
+              {
+                text: "Total due"
+              },
+              {
+                text: "£" + total.total | toFixed(2)
+              }
+            ],
+            [
+              {
+                text: "Total paid to date"
+              },
+              {
+                text: "£" + total.total_paid | toFixed(2)
+              }
+            ],
+            [
+              {
+                text: "Balance to pay"
+              },
+              {
+                text: "£" + total.total_outstanding | toFixed(2)
+              }
+            ]
+          ]
+        }) }}
+      </div>
+    </div>
+  {% endif %}
+
+  {% set postAction = url("juror-management.edit-expense.post", {
+      jurorNumber: jurorNumber,
+      poolNumber: poolNumber,
+      status: status
+    }) %}
+
+  <form action="{{ postAction }}" method="POST">
+
+    {{ csrfProtection(csrftoken) }}
+
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Submit for approval" if status === "for-approval" else "Submit for reapproval"
+      }) }}
+
+      <a class="govuk-link" href="{{ url("juror-management.unpaid-attendance.expense-record.get", {
+          jurorNumber: jurorNumber,
+          poolNumber: poolNumber,
+          status: status
+        }) }}">
+        Cancel without submitting changes
+      </a>
+    </div>
+  </form>
+
+{% endblock %}

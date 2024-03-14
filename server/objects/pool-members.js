@@ -19,6 +19,24 @@
 
     , poolMemebersObject = {
       resource: 'moj/pool-create/members',
+      get: function(rp, app, jwtToken, poolNumber) {
+        var reqOptions = _.clone(options);
+
+        reqOptions.headers.Authorization = jwtToken;
+        reqOptions.uri = urljoin(reqOptions.uri,
+          this.resource,
+          poolNumber
+        );
+        reqOptions.method = 'GET';
+
+        app.logger.debug('Sending request to API: ', {
+          uri: reqOptions.uri,
+          headers: reqOptions.headers,
+          method: reqOptions.method,
+        });
+
+        return rp(reqOptions);
+      },
       post: function(rp, app, jwtToken, body) {
         var reqOptions = _.clone(options);
 

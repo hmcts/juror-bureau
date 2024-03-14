@@ -13,7 +13,12 @@
   {% elif poolDetails.isActive === true %}
 
     <form method="post" id="jurorDetailsForm" >
-       
+      {% if not selectAll %}
+        {% for selectedJuror in selectedJurors %}
+          <input type="hidden" name="selectedJurors" aria-label="check-juror" value="{{ selectedJuror }}" checked>
+        {% endfor %}
+      {% endif %}
+
       <div class="govuk-grid-column-full juror-actions govuk-!-padding-0 govuk-!-margin-bottom-5">
         {{ govukRadios({
           classes: "govuk-radios--inline govuk-radios--small",
@@ -94,7 +99,7 @@
     
     {% if errors.items["selectedJurors"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
 
-      <div class="govuk-body"> <span id="checkedJurors"></span> of selected <span id="totalJurors"></span> </div>
+      <div class="govuk-body"> <span id="total-checked-jurors">{{ totalCheckedJurors }}</span> of <span id="total-jurors-count">{{ totalJurors }}</span> selected</div>
 
       {{ modSortableTable({
         id: "jurorOverview",
@@ -117,12 +122,13 @@
 
     {% if errors.items["selectedJurors"] %}</div>{% endif %}
 
+    <input type="hidden" name="navigate" id="navigate" value="">
     <input type="hidden" name="poolNumber" id="poolNumber" value="{{ poolDetails.poolNumber }}">
     <input type="hidden" name="courtStartDate" id="courtStartDate" value="{{ poolDetails.courtStartDate }}">
     <input type="hidden" name="_csrf" id="csrfToken" value="{{ csrftoken }}">
   </form>
 
-  <script>
+  {# <script>
     let allChecked = false;
     let chkbxs = document.getElementsByName('selectedJurors');
     document.getElementById("totalJurors").innerHTML = chkbxs.length;
@@ -155,5 +161,5 @@
       }
     }
   </script>
-
+ #}
 {% endif %}

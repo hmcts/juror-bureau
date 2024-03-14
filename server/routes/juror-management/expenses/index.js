@@ -6,6 +6,7 @@
 
   module.exports = function(app) {
 
+    require('./edit')(app);
     require('./enter-expenses')(app);
     require('./non-attendance-day')(app);
     require('./edit-bank-details')(app);

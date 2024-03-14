@@ -40,6 +40,9 @@
         return res.redirect('_errors/generic');
       }
 
+      // always clear the list of edited expenses
+      delete req.session.editedExpenses;
+
       switch (status) {
       case 'draft':
         getDraftExpenses(app)(req, res);
@@ -103,16 +106,6 @@
       }
     };
   };
-
-
-
-
-
-
-
-
-
-
 
   module.exports.getExpenseRecordDetail = function(app) {
     return function(req, res) {
