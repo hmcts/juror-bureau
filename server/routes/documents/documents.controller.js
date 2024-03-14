@@ -12,6 +12,7 @@
       }
 
       delete req.session.documentsJurorsList;
+      delete req.session.exemptionLetter;
 
       if (isCourtUser(req, res)) {
         return res.render('documents/index-court.njk');

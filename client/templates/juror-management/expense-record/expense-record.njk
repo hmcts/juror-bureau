@@ -101,7 +101,7 @@
       id: "forReapprovalTotalTag",
       colour: "orange",
       label: "Total for reapproval",
-      value: ("£" + (data.total.total_due | toFixed(2)))
+      value: ("£" + (data.total.balance_to_pay | toFixed(2)))
     })}}
   {% elif status === "approved" %}
     {{ modLargeTag({

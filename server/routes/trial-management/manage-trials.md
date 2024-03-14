@@ -1,4 +1,4 @@
-# 3.0 Create a trial
+# 3.0 Manage trials
 ## 3.0.1 Description
 From the manage trials view, jury officers can manage all/active trials. This flow includes two additional pages.
 

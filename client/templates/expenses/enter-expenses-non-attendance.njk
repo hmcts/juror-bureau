@@ -47,10 +47,29 @@
         {% endif %}
       </span>
       <h1 class="govuk-heading-m">{{ expensesData.date_of_expense | dateFilter("YYYY-MM-DD", "dddd DD MMMM YYYY") }}</h1>
-      {{ govukTag({
-        text: "DRAFT",
-        classes: "govuk-tag--grey"
-      }) }}
+
+      {% if status === "draft" %}
+        {{ govukTag({
+          text: "Draft",
+          classes: "govuk-tag--grey"
+        }) }}
+      {% elif status === "for-approval" %}
+        {{ govukTag({
+          text: "For approval",
+          classes: "govuk-tag--blue"
+        }) }}
+      {% elif status === "for-reapproval" %}
+        {{ govukTag({
+          text: "For reapproval",
+          classes: "govuk-tag--blue"
+        }) }}
+      {% elif status === "approved" %}
+        {{ govukTag({
+          text: "Approved",
+          classes: "govuk-tag--blue"
+        }) }}
+      {% endif %}
+
     </div>
   </div>
 
@@ -73,9 +92,11 @@
           {% include "./_partials/payment-method.njk" %}
         </div>
 
-        <div class="govuk-grid-row">
-          {% include "./_partials/apply-to-all-days.njk" %}
-        </div>
+        {% if status === "draft" %}
+          <div class="govuk-grid-row">
+            {% include "./_partials/apply-to-all-days.njk" %}
+          </div>
+        {% endif %}
       </div>
 
     </div>
@@ -93,6 +114,10 @@
         <input type="hidden" name="payAttendance" id="payAttendance" value="{{ expensesData.time.pay_attendance }}"/>
         <input type="hidden" name="jurorNumber" id="jurorNumber" value="{{ jurorNumber }}"/>
         <input type="hidden" name="poolNumber" id="poolNumber" value="{{ poolNumber }}"/>
+
+        {% if status !== "draft" %}
+          <input type="hidden" name="nonAttendance" id="nonAttendance" value="{{ expensesData.none_attendance_day }}"/>
+        {% endif %}
 
         <input type="hidden" name="total" value="">
         

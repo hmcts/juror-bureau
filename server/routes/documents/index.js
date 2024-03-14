@@ -8,6 +8,7 @@
     checkJuror,
     deletePendingLetter,
   } = require('./letters-list/letters-list.controller');
+
   const { printDocuments } = require('./print.controller');
   const auth = require('../../components/auth');
   const { isCourtUser } = require('../../components/auth/user-type');
@@ -18,6 +19,9 @@
   } = require('./document-form.controller');
 
   module.exports = function(app) {
+
+    require('./exemption')(app);
+
     app.get('/documents',
       'documents.get',
       auth.verify,

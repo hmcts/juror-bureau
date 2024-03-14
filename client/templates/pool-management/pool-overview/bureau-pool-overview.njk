@@ -172,3 +172,16 @@
   {% endif %}
 
 {% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script src="{{ assetPath }}js/pool-overview.js"></script>
+  <script>
+    const goHref = (href) => {
+      document.getElementById('navigate').value = 'previous';
+      document.getElementById('jurorDetailsForm').action = href;
+      document.getElementById('jurorDetailsForm').submit();
+    }
+  </script>
+{% endblock %}

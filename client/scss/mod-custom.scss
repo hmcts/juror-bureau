@@ -311,6 +311,10 @@ dt.govuk-summary-list-mod {
   &__grey {
     background-color: govuk-colour("light-grey");
   }
+
+  &__light-blue {
+    background-color: govuk-tint(govuk-colour("blue"), 90%);
+  }
 }
 .mod-highlight-table-data {
   &__grey {
@@ -409,4 +413,8 @@ dt.govuk-summary-list-mod {
   &--no-min-width{
     min-width: 0;
   }
+}
+
+.mod-bold {
+  font-weight: bold;
 }

@@ -201,6 +201,58 @@
     return table;
   };
 
+  module.exports.transformCoETrialsList = function(trials) {
+    const list = [];
+
+    trials.forEach(function(trial) {
+      list.push(
+        [
+          {
+            html:
+              '<div class="govuk-radios govuk-radios--small" data-module="govuk-radios">' +
+                '<div class="govuk-radios__item">' +
+                  '<input class="govuk-radios__input" id="' + trial.case_number + '" name="exemptionCaseNumber" ' +
+                    'type="radio" value="' + trial.case_number + '">' +
+                  '<label class="govuk-label govuk-radios__label" for="' + trial.case_number + '">' + trial.case_number + '</label>' +
+                '</div>' +
+              '</div>',
+            attributes: {
+              'data-sort-value': trial.case_number,
+            },
+          },
+          {
+            text: trial.parties,
+            attributes: {
+              'data-sort-value': trial.parties,
+            },
+            classes: 'mod-middle-align',
+          },
+          {
+            text: capitalizeFully(trial.judge),
+            attributes: {
+              'data-sort-value': trial.judge,
+            },
+            classes: 'mod-middle-align',
+          },
+          {
+            text: dateFilter(trial.start_date, 'YYYY,MM,DD', 'ddd DD MMM YYYY'),
+            attributes: {
+              'data-sort-value': makeDate(trial.start_date),
+            },
+            classes: 'mod-middle-align',
+          },
+          {
+            text: trial.end_date ? dateFilter(trial.end_date, 'YYYY,MM,DD', 'ddd DD MMM YYYY') : '-',
+            attributes: {
+              'data-sort-value': trial.end_date ? trial.end_date : '-',
+            },
+            classes: 'mod-middle-align',
+          },
+        ]);
+    });
+    return list;
+  };
+
   module.exports.transformSearchPoolList = function(pools) {
     var list = [];
 

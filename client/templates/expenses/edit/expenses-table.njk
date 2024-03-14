@@ -1,0 +1,203 @@
+{% from "../../juror-management/expense-record/_partials/expenses-table-macros.njk" import consolidatedExpensesTable %}
+{% from "../../juror-management/expense-record/_partials/expenses-table-macros.njk" import attendanceType %}
+
+<table class="govuk-table mod-horizontal-scroll-table">
+  <hr class="govuk-section-break govuk-section-break--visible">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header">Date</th>
+      <th scope="col" class="govuk-table__header">Attendance</th>
+      <th scope="col" class="govuk-table__header">Loss of earnings</th>
+      <th scope="col" class="govuk-table__header">Extra care</th>
+      <th scope="col" class="govuk-table__header">Other</th>
+      <th scope="col" class="govuk-table__header">P. transport</th>
+      <th scope="col" class="govuk-table__header">Taxi</th>
+      <th scope="col" class="govuk-table__header">Motorcycle</th>
+      <th scope="col" class="govuk-table__header">Car</th>
+      <th scope="col" class="govuk-table__header">Bicycle</th>
+      <th scope="col" class="govuk-table__header">Parking</th>
+      <th scope="col" class="govuk-table__header">Food and drink</th>
+      <th scope="col" class="govuk-table__header">(Smartcard)</th>
+      <th scope="col" class="govuk-table__header">Method</th>
+      <th scope="col" class="govuk-table__header mod-highlight-table-data__grey mod-center-table-data">Total</th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+
+    {% for expense in expensesData.expense_details %}
+
+      {% set originalExpense = originalExpenses[expense.attendance_date] %}
+
+      <tr class="govuk-table__row {% if originalExpense %}mod-highlight-table-row__light-blue{% endif %}">
+        <td class="govuk-table__cell mod-middle-align">
+          <a class="govuk-link govuk-link--no-visited-state" href="{{ url('juror-management.edit-expense.edit.get', {
+            jurorNumber: jurorNumber,
+            poolNumber: poolNumber,
+            status: status
+          }) }}?date={{ expense.attendance_date }}&page={{ loop.index }}">
+            {{ expense.attendance_date | dateFilter("YYYY-MM-DD", "ddd DD MMM YYYY") }}
+          </a>
+        </td>
+        <td class="govuk-table__cell">
+          {% if originalExpense %}
+            {{ attendanceType({ attendance: originalExpense.attendance_type }) }}
+          {% endif %}
+          <div class="{% if originalExpense and originalExpense.attendance_type !== expense.attendance_type %}mod-bold{% endif %}">
+            {{ attendanceType({ attendance: expense.attendance_type }) }}
+          </div>
+        </td>
+        <td class="govuk-table__cell">
+          {% if originalExpense %}
+            £{{ originalExpense.loss_of_earnings | toFixed(2) }}
+          {% endif %}
+          <div class="{% if originalExpense and originalExpense.loss_of_earnings !== expense.loss_of_earnings %}mod-bold{% endif %}">
+            £{{ expense.loss_of_earnings | toFixed(2) }}
+          </div>
+        </td>
+        <td class="govuk-table__cell">
+          {% if originalExpense %}
+            £{{ originalExpense.extra_care | toFixed(2) }}
+          {% endif %}
+          <div class="{% if originalExpense and originalExpense.extra_care !== expense.extra_care %}mod-bold{% endif %}">
+            £{{ expense.extra_care | toFixed(2) }}
+          </div>
+        </td>
+        <td class="govuk-table__cell">
+          {% if originalExpense %}
+            £{{ originalExpense.other | toFixed(2) }}
+          {% endif %}
+          <div class="{% if originalExpense and originalExpense.other !== expense.other %}mod-bold{% endif %}">
+            £{{ expense.other | toFixed(2) }}
+          </div>
+        </td>
+        <td class="govuk-table__cell">
+          {% if originalExpense %}
+            £{{ originalExpense.public_transport | toFixed(2) }}
+          {% endif %}
+          <div class="{% if originalExpense and originalExpense.public_transport !== expense.public_transport %}mod-bold{% endif %}">
+            £{{ expense.public_transport | toFixed(2) }}
+          </div>
+        </td>
+        <td class="govuk-table__cell">
+          {% if originalExpense %}
+            £{{ originalExpense.taxi | toFixed(2) }}
+          {% endif %}
+          <div class="{% if originalExpense and originalExpense.taxi !== expense.taxi %}mod-bold{% endif %}">
+            £{{ expense.taxi | toFixed(2) }}
+          </div>
+        </td>
+        <td class="govuk-table__cell">
+          {% if originalExpense %}
+            £{{ originalExpense.motorcycle | toFixed(2) }}
+          {% endif %}
+          <div class="{% if originalExpense and originalExpense.motorcycle !== expense.motorcycle %}mod-bold{% endif %}">
+            £{{ expense.motorcycle | toFixed(2) }}
+          </div>
+        </td>
+        <td class="govuk-table__cell">
+          {% if originalExpense %}
+            £{{ originalExpense.car | toFixed(2) }}
+          {% endif %}
+          <div class="{% if originalExpense and originalExpense.car !== expense.car %}mod-bold{% endif %}">
+            £{{ expense.car | toFixed(2) }}
+          </div>
+        </td>
+        <td class="govuk-table__cell">
+          {% if originalExpense %}
+            £{{ originalExpense.bicycle | toFixed(2) }}
+          {% endif %}
+          <div class="{% if originalExpense and originalExpense.bicycle !== expense.bicycle %}mod-bold{% endif %}">
+            £{{ expense.bicycle | toFixed(2) }}
+          </div>
+        </td>
+        <td class="govuk-table__cell">
+          {% if originalExpense %}
+            £{{ originalExpenses[expense.attendance_date].parking | toFixed(2) }}
+          {% endif %}
+          <div class="{% if originalExpense and originalExpense.parking !== expense.parking %}mod-bold{% endif %}">
+            £{{ expense.parking | toFixed(2) }}
+          </div>
+        </td>
+        <td class="govuk-table__cell">
+          {% if originalExpense %}
+            £{{ originalExpense.food_and_drink | toFixed(2) }}
+          {% endif %}
+          <div class="{% if originalExpense and originalExpense.food_and_drink !== expense.food_and_drink %}mod-bold{% endif %}">
+            £{{ expense.food_and_drink | toFixed(2) }}
+          </div>
+        </td>
+        <td class="govuk-table__cell">
+          {% if originalExpense %}
+            (£{{ originalExpense.smart_card | toFixed(2) }})
+          {% endif %}
+          <div class="{% if originalExpense and originalExpense.smart_card !== expense.smart_card %}mod-bold{% endif %}">
+            (£{{ expense.smart_card | toFixed(2) }})
+          </div>
+        </td>
+        <td class="govuk-table__cell">
+          {% if originalExpense %}
+            {{ originalExpense.payment_method }}
+          {% endif %}
+          <div class="{% if originalExpense and originalExpense.payment_method !== expense.payment_method %}mod-bold{% endif %}">
+            {{ expense.payment_method }}
+          </div>
+        </td>
+        <td class="govuk-table__cell mod-highlight-table-data__grey mod-center-table-data">
+          {% if originalExpense %}
+            £{{ originalExpense.total | toFixed(2) }}
+          {% endif %}
+          <div class="{% if originalExpense and originalExpense.total !== expense.total %}mod-bold{% endif %}">
+            £{{ expense.total | toFixed(2) }}
+          </div>
+        </td>
+      </tr>
+    {% endfor %}
+
+    <tr class="govuk-table__row mod-highlight-table-row__grey">
+      <td class="govuk-table__cell">
+        <b>Totals</b>
+      </td>
+      <td class="govuk-table__cell">
+        <b>{{ total.total_days }}</b>
+      </td>
+      <td class="govuk-table__cell">
+        <b>£{{ total.loss_of_earnings | toFixed(2) }}</b>
+      </td>
+      <td class="govuk-table__cell">
+        <b>£{{ total.extra_care | toFixed(2) }}</b>
+      </td>
+      <td class="govuk-table__cell">
+        <b>£{{ total.other | toFixed(2) }}</b>
+      </td>
+      <td class="govuk-table__cell">
+        <b>£{{ total.public_transport | toFixed(2) }}</b>
+      </td>
+      <td class="govuk-table__cell">
+        <b>£{{ total.taxi | toFixed(2) }}</b>
+      </td>
+      <td class="govuk-table__cell">
+        <b>£{{ total.motorcycle | toFixed(2) }}</b>
+      </td>
+      <td class="govuk-table__cell">
+        <b>£{{ total.car | toFixed(2) }}</b>
+      </td>
+      <td class="govuk-table__cell">
+        <b>£{{ total.bicycle | toFixed(2) }}</b>
+      </td>
+      <td class="govuk-table__cell">
+        <b>£{{ total.parking | toFixed(2) }}</b>
+      </td>
+      <td class="govuk-table__cell">
+        <b>£{{ total.food_and_drink | toFixed(2) }}</b>
+      </td>
+      <td class="govuk-table__cell">
+        <b>(£{{ total.smart_card | toFixed(2) }})</b>
+      </td>
+      <td class="govuk-table__cell"></td>
+      <td class="govuk-table__cell mod-center-table-data">
+        <b>£{{ total.total | toFixed(2) }}</b>
+      </td>
+    </tr>
+
+  </tbody>
+</table>

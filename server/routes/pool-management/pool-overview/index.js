@@ -33,7 +33,7 @@
       controller.getHistory(app));
 
     // Bulk reassign
-    app.post('/pool-management/reassign/',
+    app.post('/pool-overview/reassign/:poolNumber',
       'pool-overview.reassign.post',
       auth.verify,
       controller.postReassign(app));

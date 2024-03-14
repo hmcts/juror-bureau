@@ -1,4 +1,4 @@
-# 3.0 Bulk Transfer
+# 3.0 Bulk Reassign
 ## 3.0.1 Description
 From the Pool Overview, reassign multiple pool members at once to a different pool at either the same or a different court. This flow includes two additional pages, one of which is dependent on the data selected. 
 

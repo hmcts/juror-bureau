@@ -6,10 +6,12 @@
   const config = require('../config/environment')();
   const rp = require('request-promise');
 
+  const endpoint = config.apiEndpoint + '/moj/expenses';
+
   module.exports.getDraftExpensesDAO = {
     get: function(app, req, jurorNumber, poolNumber, etag = null) {
       const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/expenses/draft', jurorNumber, poolNumber),
+        uri: urljoin(endpoint, 'draft', jurorNumber, poolNumber),
         method: 'GET',
         headers: {
           'User-Agent': 'Request-Promise',
@@ -38,7 +40,7 @@
   module.exports.submitDraftExpenses = {
     post: function(app, req, jurorNumber, poolNumber, attendanceDates) {
       const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/expenses/submit-for-approval'),
+        uri: urljoin(endpoint, 'submit-for-approval'),
         method: 'POST',
         headers: {
           'User-Agent': 'Request-Promise',
@@ -59,10 +61,10 @@
     },
   };
 
-  module.exports.getDraftExpenseDAO = {
+  module.exports.getEnteredExpensesDAO = {
     post: function(app, req, body) {
       const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/expenses/entered'),
+        uri: urljoin(endpoint, 'entered'),
         method: 'POST',
         headers: {
           'User-Agent': 'Request-Promise',
@@ -81,9 +83,11 @@
 
   module.exports.postDraftExpenseDAO = {
     post: function(app, req, jurorNumber, body, nonAttendance) {
-      const resource = nonAttendance ? `moj/expenses/${jurorNumber}/draft/non_attended_day` : `moj/expenses/${jurorNumber}/draft/attended_day`;
+      const resource = nonAttendance
+        ? `${jurorNumber}/draft/non_attended_day`
+        : `${jurorNumber}/draft/attended_day`;
       const payload = {
-        uri: urljoin(config.apiEndpoint, resource),
+        uri: urljoin(endpoint, resource),
         method: 'POST',
         headers: {
           'User-Agent': 'Request-Promise',
@@ -103,7 +107,7 @@
   module.exports.getExpenseRecordsDAO = {
     post: function(app, req, body, expenseType) {
       const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/expenses/view', expenseType),
+        uri: urljoin(endpoint, 'view', expenseType, 'simplified'),
         method: 'POST',
         headers: {
           'User-Agent': 'Request-Promise',
@@ -123,7 +127,7 @@
   module.exports.postRecalculateSummaryTotalsDAO = {
     post: function(app, req, body) {
       const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/expenses/calculate/totals'),
+        uri: urljoin(endpoint, 'calculate/totals'),
         method: 'POST',
         headers: {
           'User-Agent': 'Request-Promise',
@@ -143,7 +147,7 @@
   module.exports.addSmartcardSpend = {
     patch: function(app, req, body) {
       const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/expenses/smartcard'),
+        uri: urljoin(endpoint, 'smartcard'),
         method: 'PATCH',        headers: {
           'User-Agent': 'Request-Promise',
           'Content-Type': 'application/vnd.api+json',
@@ -165,7 +169,7 @@
         const { jurorNumber, poolNumber } = req.params;
 
         const payload = {
-          uri: urljoin(config.apiEndpoint, 'moj/expenses/counts', jurorNumber, poolNumber),
+          uri: urljoin(endpoint, 'counts', jurorNumber, poolNumber),
           headers: {
             'User-Agent': 'Request-Promise',
             'Content-Type': 'application/vnd.api+json',
@@ -182,6 +186,46 @@
             next();
           });
       };
+    },
+  };
+
+  module.exports.getApprovalExpenseListDAO = {
+    post: function(app, req, jurorNumber, poolNumber, body) {
+      const payload = {
+        uri: urljoin(endpoint, jurorNumber, poolNumber),
+        method: 'POST',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+        body,
+      };
+
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
+    },
+  };
+
+  module.exports.editApprovalExpenseListDAO = {
+    post: function(app, req, jurorNumber, type, body) {
+      const payload = {
+        uri: urljoin(endpoint, jurorNumber, 'edit', type),
+        method: 'POST',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+        body,
+      };
+
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
     },
   };
 

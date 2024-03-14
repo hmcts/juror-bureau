@@ -7,6 +7,7 @@
   var timeAtCourt = $('#timeAtCourt > div > dd').text().trim();
   var nonAttendanceDay = timeAtCourt === 'Non-attendance day';
   var urlSearchParams = new URLSearchParams(window.location.search);
+  var status = $('#expense-status').val();
 
   $('loaded', function() {
     doAjaxCall();
@@ -38,7 +39,7 @@
     var csrfToken = $('#csrfToken').val();
 
     $.ajax({
-      url: `/juror-management/expenses/${jurorNumber}/${poolNumber}/enter-expenses/recalculate-totals`,
+      url: `/juror-management/expenses/${jurorNumber}/${poolNumber}/enter-expenses/recalculate-totals?status=${status}`,
       method: 'POST',
       data: {
         ...payload(),
@@ -64,7 +65,6 @@
     var payCash = $('input[name="paymentMethod"]:checked').val();
 
     var data = {
-      'pool_number': poolNumber,
       'date_of_expense': urlSearchParams.get('date'),
       'pay_cash': payCash === 'CASH',
     };

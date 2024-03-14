@@ -1,4 +1,4 @@
-# 3.0 Bulk Transfer
+# 3.0 Add non-attendance day
 ## 3.0.1 Description
 From the either the juror record attendance tab or the draft expense record page, add a non-attendance day for the juror. This flow includes one additiona page. 
 

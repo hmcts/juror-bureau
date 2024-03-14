@@ -49,6 +49,11 @@ const filters = require('../../../components/filters');
         return coronerCourtPool(app)(req, res);
       }
 
+      let { selectedJurors, selectAll } = req.session;
+      if (typeof selectedJurors === 'string') {
+        selectedJurors = [selectedJurors];
+      }
+
       // display an error message if the pool failed to delete or an invalid location code is used
       // the location code will be very unlikely to ever be invalid...
       // an invalid location code would be a string (abc) or a location code that does not exist on our records
@@ -60,8 +65,9 @@ const filters = require('../../../components/filters');
       delete req.session.newBureauDeferrals;
       delete req.session.poolJurorsReassign;
       delete req.session.notResponded;
-      delete req.session.selectedJurors;
       delete req.session.poolJurorsPostpone;
+      delete req.session.selectedJurors;
+      delete req.session.selectedAll;
 
       const poolPromises = [
         poolSummaryObj.get(
@@ -82,8 +88,8 @@ const filters = require('../../../components/filters');
             'attendance': req.query.attendance?.toUpperCase()
               .replace(/ /g, '_').split(',') || null,
             'checked_in': req.query.checkedIn || null,
-            'next_due': req.query.nextDue || null,
-            'status': req.query.status?.split(',') || null,
+            'next_due': req.query.nextDue?.split(',') || null,
+            'status': req.query.status?.split(',').map(status => status[0].toUpperCase() + status.slice(1)) || null,
             'page_number': req.query.page || 1,
             'sort_field': req.query.sortBy || 'juror_number',
             'sort_method': req.query.sortOrder || 'ascending',
@@ -93,12 +99,12 @@ const filters = require('../../../components/filters');
 
       if (isCourtUser(req, res)) {
         Promise.allSettled(poolPromises).then(
-          ([pool, members]) => courtView(app, req, res, pool.value, members.value, tmpError),
+          ([pool, members]) => courtView(app, req, res, pool.value, members.value, tmpError, selectedJurors || [], selectAll),
           errorCB(app, res, res, poolNumber, 'Failed to fetch pool summary for court user:')
         );
       } else {
         Promise.allSettled(poolPromises).then(
-          ([pool, members]) => bureauView(app, req, res, pool.value, members.value, tmpError),
+          ([pool, members]) => bureauView(app, req, res, pool.value, members.value, tmpError, selectedJurors || [], selectAll),
           errorCB(app, res, res, poolNumber, 'Failed to fetch pool summary for bureau user:')
         );
       }
@@ -109,6 +115,9 @@ const filters = require('../../../components/filters');
     return function(req, res) {
       const poolNumber = req.params.poolNumber;
       const filters = req.body;
+
+      req.session.selectedJurors = req.body.selectedJurors;
+      req.session.selectAll = req.body["check-all-jurors"];
 
       const queryParams = new URLSearchParams(req.url.split('?')[1] || '');
 
@@ -137,13 +146,8 @@ const filters = require('../../../components/filters');
       } else {
         queryParams.delete('checkedIn');
       }
-      if (filters.nextDueAtCourt === 'notSet') {
-        queryParams.set('nextDue', 'false');
-      } else {
-        queryParams.delete('nextDue');
-      }
-      if (filters.nextDueAtCourt === 'set') {
-        queryParams.set('nextDue', 'true');
+      if (filters.nextDueAtCourt) {
+        queryParams.set('nextDue', filters.nextDueAtCourt);
       } else {
         queryParams.delete('nextDue');
       }
@@ -190,16 +194,21 @@ const filters = require('../../../components/filters');
   };
 
   module.exports.postReassign = function(app) {
-    return function(req, res) {
-      var validatorResult;
+    return async function(req, res) {
+      if (req.body['check-all-jurors']) {
+        req.body.selectedJurors = await poolMembersObj.get(rp, app, req.session.authToken, req.params.poolNumber);
+      } else {
 
-      validatorResult = validate(req.body, jurorSelectValidator());
-      if (typeof validatorResult !== 'undefined') {
+        var validatorResult;
 
-        req.session.errors = validatorResult;
-        req.session.noJurorSelect = true;
-        return res.redirect(app.namedRoutes.build('pool-overview.get', {
-          poolNumber: req.body.poolNumber}));
+        validatorResult = validate(req.body, jurorSelectValidator());
+        if (typeof validatorResult !== 'undefined') {
+
+          req.session.errors = validatorResult;
+          req.session.noJurorSelect = true;
+          return res.redirect(app.namedRoutes.build('pool-overview.get', {
+            poolNumber: req.body.poolNumber}));
+        }
       }
 
       req.session.poolJurorsReassign = req.body;
@@ -219,15 +228,19 @@ const filters = require('../../../components/filters');
   };
 
   module.exports.postTransfer = function(app) {
-    return function(req, res) {
-      var validatorResult;
+    return async function(req, res) {
+      if (req.body['check-all-jurors']) {
+        req.body.selectedJurors = await poolMembersObj.get(rp, app, req.session.authToken, req.params.poolNumber)
+      } else {
+        var validatorResult;
 
-      validatorResult = validate(req.body, jurorSelectValidator());
-      if (typeof validatorResult !== 'undefined') {
-        req.session.errors = validatorResult;
-        req.session.noJurorSelect = true;
-        return res.redirect(app.namedRoutes.build('pool-overview.get', {
-          poolNumber: req.body.poolNumber}));
+        validatorResult = validate(req.body, jurorSelectValidator());
+        if (typeof validatorResult !== 'undefined') {
+          req.session.errors = validatorResult;
+          req.session.noJurorSelect = true;
+          return res.redirect(app.namedRoutes.build('pool-overview.get', {
+            poolNumber: req.body.poolNumber}));
+        }
       }
 
       req.session.poolJurorsTransfer = req.body;
@@ -353,8 +366,9 @@ const filters = require('../../../components/filters');
     };
   }
 
-  async function bureauView(app, req, res, pool, membersList, _errors) {
-    var assignUrl = app.namedRoutes.build('pool-overview.reassign.post')
+  async function bureauView(app, req, res, pool, membersList, _errors, selectedJurors, selectAll) {
+    var assignUrl = app.namedRoutes.build('pool-overview.reassign.post',
+        { poolNumber: req.params.poolNumber })
       , transferUrl = app.namedRoutes.build('pool-overview.transfer.post',
         { poolNumber: req.params.poolNumber })
       , completeServiceUrl = app.namedRoutes.build('pool-overview.complete-service.post',
@@ -391,7 +405,11 @@ const filters = require('../../../components/filters');
     const sortBy = req.query.sortBy || 'jurorNumber';
     const order = req.query.sortOrder || 'asc';
 
-    let jurors = await paginateJurorsList(membersList.data, sortBy, order, false);
+    const totalJurors = membersList.totalItems;
+    const totalCheckedJurors = selectAll ? membersList.totalItems : selectedJurors.length || 0;
+
+    let jurors = await paginateJurorsList(membersList.data, sortBy, order, false, selectedJurors, selectAll);
+    selectedJurors = selectedJurors.filter(item => !membersList.data.find(juror => juror.jurorNumber === item));
 
     delete req.session.errors;
     delete req.session.bannerMessage;
@@ -408,7 +426,7 @@ const filters = require('../../../components/filters');
       currentPage,
       req.url
     );
-
+    
     delete req.session.bannerMessage;
     // TODO: Make sure that this has no future implications 🤔
     req.session.locCode = req.params.poolNumber.substring(0, 3);
@@ -419,7 +437,14 @@ const filters = require('../../../components/filters');
       },
       membersHeaders: jurors.headers,
       poolMembers: jurors.list,
-      pageItems,
+      pageItems: {
+        prev: pageItems.prev && `javascript:goHref('${pageItems.prev}')`,
+        next: pageItems.next && `javascript:goHref('${pageItems.next}')`,
+        items: pageItems.items.map(item => ({
+          ...item,
+          href: `javascript:goHref('${item.href}')`
+        }))
+      },
       availableSuccessMessage: availableSuccessMessage,
       successBanner: successBanner,
       poolDetails: pool.poolDetails,
@@ -437,6 +462,10 @@ const filters = require('../../../components/filters');
         items: tmpError,
       },
       error,
+      selectedJurors,
+      totalJurors,
+      totalCheckedJurors,
+      selectAll,
     });
   }
 
@@ -488,13 +517,18 @@ const filters = require('../../../components/filters');
   }
 
   module.exports.postCompleteService = function(app) {
-    return function(req, res) {
-      const validatorResult = validate(req.body, jurorSelectValidator());
+    return async function(req, res) {
+      if (req.body['check-all-jurors']) {
+        req.body.selectedJurors = await poolMembersObj.get(rp, app, req.session.authToken, req.params.poolNumber)
+      } else {
 
-      if (typeof validatorResult !== 'undefined') {
-        req.session.errors = validatorResult;
+        const validatorResult = validate(req.body, jurorSelectValidator());
 
-        return res.redirect(app.namedRoutes.build('pool-overview.get', { poolNumber: req.params['poolNumber'] }));
+        if (typeof validatorResult !== 'undefined') {
+          req.session.errors = validatorResult;
+
+          return res.redirect(app.namedRoutes.build('pool-overview.get', { poolNumber: req.params['poolNumber'] }));
+        }
       }
 
       if (!Array.isArray(req.body.selectedJurors)) {
@@ -502,19 +536,23 @@ const filters = require('../../../components/filters');
       }
 
       req.session.selectedJurors = req.body.selectedJurors;
-      req.session.notResponded = req.body.selectedJurors.filter(jurorId =>
-        req.session.jurorDetails[jurorId].status !== 'Responded').map(jurorId =>
-        req.session.jurorDetails[jurorId]);
+      delete req.session.selectedJurors._csrf;
+      delete req.session.errors;
 
-      if (req.session.notResponded.length > 0) {
-        req.session.selectedJurors = req.body.selectedJurors.filter(juror =>
-          req.session.jurorDetails[juror].status === 'Responded');
+      // TODO: we may now be able to complete from any status - if this doesn't end up being the case, we need to build new functionality for this check
+      // req.session.notResponded = req.body.selectedJurors.filter(jurorId =>
+      //   req.session.jurorDetails[jurorId]?.status !== 'Responded').map(jurorId =>
+      //   req.session.jurorDetails[jurorId]);
 
-        return res.redirect(app.namedRoutes.build('pool-overview.complete-service.continue.get',
-          { poolNumber: req.params['poolNumber'] }));
-      }
+      // if (req.session.notResponded.length > 0) {
+      //   req.session.selectedJurors = req.body.selectedJurors.filter(juror =>
+      //     req.session.jurorDetails[juror]?.status === 'Responded');
 
-      delete req.session.notResponded;
+      //   return res.redirect(app.namedRoutes.build('pool-overview.complete-service.continue.get',
+      //     { poolNumber: req.params['poolNumber'] }));
+      // }
+
+      // delete req.session.notResponded;
 
       return res.redirect(app.namedRoutes.build('pool-overview.complete-service.confirm.get',
         {poolNumber: req.params.poolNumber}));
@@ -544,9 +582,10 @@ const filters = require('../../../components/filters');
     };
   };
 
-  async function courtView(app, req, res, pool, membersList, _errors) {
+  async function courtView(app, req, res, pool, membersList, _errors, selectedJurors, selectAll) {
 
-    const assignUrl = app.namedRoutes.build('pool-overview.reassign.post')
+    const assignUrl = app.namedRoutes.build('pool-overview.reassign.post',
+        { poolNumber: req.params.poolNumber })
       , transferUrl = app.namedRoutes.build('pool-overview.transfer.post',
         { poolNumber: req.params.poolNumber })
       , completeServiceUrl = app.namedRoutes.build('pool-overview.complete-service.post',
@@ -562,7 +601,7 @@ const filters = require('../../../components/filters');
       , error = null
       , jurorStatuses = 'all';
 
-    const specifiedStatuses = ['responded', 'panelled', 'juror'];
+    const specifiedStatuses = ['responded', 'panel', 'juror'];
     const filters = req.query;
 
     if (typeof filters !== 'undefined' && typeof filters.status !== 'undefined') {
@@ -609,10 +648,11 @@ const filters = require('../../../components/filters');
       const sortBy = req.query.sortBy || 'jurorNumber';
       const order = req.query.sortOrder || 'asc';
 
-      let jurors = await paginateJurorsList(membersList.data, sortBy, order, true);
+      selectedJurors = selectedJurors.filter(item => membersList.data.indexOf(item) < 0);
+      let jurors = await paginateJurorsList(membersList.data, sortBy, order, true, selectedJurors, selectAll);
 
-      const totalJurors = membersList.data.length;
-      const totalCheckedJurors = membersList.data.filter(juror => juror.checked).length;
+      const totalJurors = membersList.totalItems;
+      const totalCheckedJurors = selectAll ? membersList.totalItems : selectedJurors.length || 0;
 
       req.session.poolDetails = pool;
       req.session.locCode = req.params.poolNumber.substring(0, 3);
@@ -636,7 +676,14 @@ const filters = require('../../../components/filters');
         },
         membersHeaders: jurors.headers,
         poolMembers: jurors.list,
-        pageItems,
+        pageItems: {
+          prev: pageItems.prev && `javascript:goHref('${pageItems.prev}')`,
+          next: pageItems.next && `javascript:goHref('${pageItems.next}')`,
+          items: pageItems.items.map(item => ({
+            ...item,
+            href: `javascript:goHref('${item.href}')`
+          }))
+        },
         availableSuccessMessage: availableSuccessMessage,
         successBanner: successBanner,
         poolDetails: pool.poolDetails,
@@ -651,12 +698,18 @@ const filters = require('../../../components/filters');
           items: tmpError,
         },
         error,
-        appliedFilters: filters,
+        appliedFilters: {
+          ...filters,
+          checkedIn: filters.checkedIn ? "today" : "",
+          nextDueAtCourt: filters.nextDue,
+        },
         jurorStatuses,
         totalJurors,
         totalCheckedJurors,
         pagination,
         sortUrl,
+        selectedJurors,
+        selectAll,
       });
 
     } catch (err) {
@@ -666,16 +719,20 @@ const filters = require('../../../components/filters');
   }
 
   module.exports.postBulkPostpone = function(app) {
-    return function(req, res) {
-      var validatorResult;
-
-      validatorResult = validate(req.body, jurorSelectValidator());
-      if (typeof validatorResult !== 'undefined') {
-
-        req.session.errors = validatorResult;
-        req.session.noJurorSelect = true;
-        return res.redirect(app.namedRoutes.build('pool-overview.get', {
-          poolNumber: req.body.poolNumber}));
+    return async function(req, res) {
+      if (req.body['check-all-jurors']) {
+        req.body.selectedJurors = await poolMembersObj.get(rp, app, req.session.authToken, req.params.poolNumber);
+      } else {
+        var validatorResult;
+        
+        validatorResult = validate(req.body, jurorSelectValidator());
+        if (typeof validatorResult !== 'undefined') {
+          
+          req.session.errors = validatorResult;
+          req.session.noJurorSelect = true;
+          return res.redirect(app.namedRoutes.build('pool-overview.get', {
+            poolNumber: req.body.poolNumber}));
+        }
       }
 
       req.session.poolJurorsPostpone = req.body;
@@ -734,8 +791,26 @@ const filters = require('../../../components/filters');
     };
   };
 
-  function paginateJurorsList(jurors, sortBy, order, isCourt) {
+  function paginateJurorsList(jurors, sortBy, order, isCourt, selectedJurors, selectAll) {
     let headers = [{
+      id: 'selectAll',
+      html: `<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">\n` +
+      `  <input\n` +
+      `    type="checkbox"\n` +
+      `    class="govuk-checkboxes__input select-check juror-select-check"\n` +
+      `    id="check-all-jurors"\n` +
+      `    name="check-all-jurors"\n` +
+      `    aria-label="check-all-jurors"\n` +
+      (selectAll ? "    checked\n" : "") +
+      `  >\n` +
+      `  <label class="govuk-label govuk-checkboxes__label">\n` +
+      `    <span class="govuk-visually-hidden">Select All</span>\n` +
+      `  </label>\n` +
+      `</div>`,
+      sortable: false,
+      sort: 'none',
+    },
+    {
       id: 'jurorNumber',
       value: 'Juror number',
       sort: sortBy === 'jurorNumber' ? order : 'none',
@@ -792,6 +867,21 @@ const filters = require('../../../components/filters');
     const list = jurors.map(juror => {
       let row = [
         {
+          html: `<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">\n` +
+          `  <input type="checkbox"\n` +
+          `    class="govuk-checkboxes__input select-check juror-select-check"\n` +
+          `    id="juror-${juror.jurorNumber}"\n` +
+          `    name="selectedJurors"\n` +
+          `    value="${juror.jurorNumber}"\n` +
+          `    aria-label="check-juror"\n` +
+          (selectAll || selectedJurors.indexOf(juror.jurorNumber) > -1 ? 'checked' : '') +
+          `  >\n` +
+          `    <label class="govuk-label govuk-checkboxes__label" for="select-${juror.jurorNumber}">\n` +
+          `    <span class="govuk-visually-hidden">Select ${juror.jurorNumber}</span>\n` +
+          `  </label>\n`+
+          `</div>\n`
+        },
+        {
           html: '<a href="/juror-management/record/' +
             juror.jurorNumber + '/overview" class="govuk-link">' + juror.jurorNumber + '</a>',
           attributes: {
@@ -826,7 +916,7 @@ const filters = require('../../../components/filters');
             },
           },
           {
-            text: filters.dateFilter(juror.nextDate),
+            text: juror.nextDate && filters.dateFilter(juror.nextDate),
             attributes: {
               'data-sort-value': juror.nextDate,
             },

@@ -29,8 +29,10 @@
         <th scope="col" class="govuk-table__header" aria-sort="none">Balance to pay</th>
       {% endif %}
       <th scope="col" class="govuk-table__header" aria-sort="none">
-        {% if status === "for-approval" or status === "for-reapproval" %}
+        {% if status === "for-approval" %}
           Submitted for approval
+        {% elif status === "for-reapproval" %}
+          Date submitted
         {% elif status === "approved" %}
           Date approved
         {% endif %}

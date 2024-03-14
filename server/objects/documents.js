@@ -134,4 +134,61 @@
     },
   };
 
+  module.exports.certificateOfExemptionDAO = {
+    getTrialExemptionList: function(app, req, courtLocationCode) {
+      const payload = {
+        uri: urljoin(
+          config.apiEndpoint,
+          `moj/letter/trials-exemption-list?court_location=${courtLocationCode}`),
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+      };
+
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
+    },
+    getJurorsForExemptionList: function(app, req, caseNumber, courtLocationCode) {
+      const payload = {
+        uri: urljoin(
+          config.apiEndpoint,
+          `moj/letter/jurors-exemption-list?case_number=${caseNumber}&court_location=${courtLocationCode}`),
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+      };
+
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
+    },
+    postPrintLetter: function(app, req, body) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/letter/print-certificate-of-exemption'),
+        method: 'POST',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+        body,
+      };
+
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
+    },
+
+  };
+
 })();
