@@ -1,0 +1,92 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{% block page_title %}{{ serviceName }} - administration{% endblock %}
+{% block page_identifier %}administration - judges - edit judge{% endblock %}
+
+{% set currentApp = "Court administration" %} 
+{% set nav = "judges" %}
+
+{% block content %}
+
+{% set judgeCodeError = undefined %}
+{% if errors.items["judgeCode"] %}
+  {% set judgeCodeError = { text: errors.items["judgeCode"][0].details } %}
+{% endif %}
+
+{% set judgeNameError = undefined %}
+{% if errors.items["judgeName"] %}
+  {% set judgeNameError = { text: errors.items["judgeName"][0].details } %}
+{% endif %}
+
+{% include "includes/errors.njk" %}  
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third">
+      <form action="{{ processUrl }}" method="POST" id="editJudgeForm">
+        <h1 class="govuk-heading-l">Edit judge details</h1>
+
+        {{ govukInput({
+          label: {
+            text: "Judge code",
+            classes: "govuk-!-font-weight-bold"
+          },
+          classes: "govuk-input--width-5",
+          id: "judgeCode",
+          name: "judgeCode",
+          value: tmpBody.judgeCode if tmpBody else judge.judgeCode,
+          errorMessage: judgeCodeError
+        }) }}
+
+        {{ govukInput({
+          label: {
+            text: "Judge name",
+            classes: "govuk-!-font-weight-bold"
+          },
+          classes: "govuk-input",
+          id: "judgeName",
+          name: "judgeName",
+          value: tmpBody.judgeName if tmpBody else judge.judgeName,
+          errorMessage: judgeNameError
+        }) }}
+
+        {{ govukRadios({
+          name: "isActive",
+          fieldset: {
+            legend: {
+              text: "Status",
+              classes: "govuk-!-font-weight-bold"
+            }
+          },
+          items: [
+            {
+              value: "true",
+              text: "Active",
+              checked: tmpBody.isActive if tmpBody else judge.active
+            },
+            {
+              value: "false",
+              text: "Inactive",
+              checked: not tmpBody.isActive if tmpBody else not judge.active
+            }
+          ]
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Save",
+            type: "submit"
+          }) }}
+
+          <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+      </form>
+    </div>
+  </div>
+
+{% endblock %}
