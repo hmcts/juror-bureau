@@ -320,7 +320,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ministryofjustice/frontend@npm:^1.6.3":
+"@ministryofjustice/frontend@npm:^1.8.1":
   version: 1.8.1
   resolution: "@ministryofjustice/frontend@npm:1.8.1"
   dependencies:
@@ -6133,40 +6133,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"govuk-elements-sass@npm:^2.2.1":
-  version: 2.2.1
-  resolution: "govuk-elements-sass@npm:2.2.1"
-  dependencies:
-    govuk_frontend_toolkit: ^5.0.2
-  checksum: a470f64becab83b7b620cbc79582ff36eeb5aff2b80d7f19226cb762d1db71f7bdb76cf24915ecc7b7f5cd8f7c145ed38db8e3893e6c22c61cf3e3c8658f37b5
-  languageName: node
-  linkType: hard
-
-"govuk-frontend@npm:^3.0.0 || ^4.0.0, govuk-frontend@npm:^4.7.0":
+"govuk-frontend@npm:^3.0.0 || ^4.0.0, govuk-frontend@npm:^4.8.0":
   version: 4.8.0
   resolution: "govuk-frontend@npm:4.8.0"
   checksum: e255f924f399319e109347ec4993e0441fc5847a6a73ba44a465b1599c7d03e85c29212743b081ccd60e19224c6301143c77540b8e4bfe615fcb3e162b8663f4
-  languageName: node
-  linkType: hard
-
-"govuk_frontend_toolkit@npm:^4.14.0":
-  version: 4.18.4
-  resolution: "govuk_frontend_toolkit@npm:4.18.4"
-  checksum: 8827ed6cdd02d7ebad0ce46e717015cce90b43273d2e468cf3f1a40c282d5029919d73887fc075c3dafcceb965e622bf4b1f75484d241ea92974bbcbc18810a2
-  languageName: node
-  linkType: hard
-
-"govuk_frontend_toolkit@npm:^5.0.2":
-  version: 5.2.0
-  resolution: "govuk_frontend_toolkit@npm:5.2.0"
-  checksum: b193869de6c3d395fadd842c9c204183dad2dcb6fa657f383ac633831b1ef9c84771b195d69b0bf3ee34545a236d51321dcc9afbf974247c28b2e9c9367eaa83
-  languageName: node
-  linkType: hard
-
-"govuk_template_jinja@npm:^0.26.0":
-  version: 0.26.0
-  resolution: "govuk_template_jinja@npm:0.26.0"
-  checksum: e343ab3ad59f2da31caf3b830c82bda89077cc6caff42ff0321aa74a3133a4c7546ec7bc2d27a202fd3774ca58a0514f0fa320c64d07bbf7adc1f34cd620bbc2
   languageName: node
   linkType: hard
 
@@ -8597,7 +8567,7 @@ __metadata:
   dependencies:
     "@fengyuanchen/datepicker": ^0.6.4
     "@hmcts/properties-volume": 1.1.0
-    "@ministryofjustice/frontend": ^1.6.3
+    "@ministryofjustice/frontend": ^1.8.1
     "@scottish-government/pattern-library": 0.0.381
     accessible-autocomplete: ^2.0.4
     applicationinsights: ^2.9.4
@@ -8623,10 +8593,7 @@ __metadata:
     express-session: ^1.14.0
     faker: ^4.1.0
     fs-extra: ^4.0.3
-    govuk-elements-sass: ^2.2.1
-    govuk-frontend: ^4.7.0
-    govuk_frontend_toolkit: ^4.14.0
-    govuk_template_jinja: ^0.26.0
+    govuk-frontend: ^4.8.0
     grunt: latest
     grunt-accessibility: ^5.0.0
     grunt-autoprefixer: ^3.0.4
@@ -8673,11 +8640,11 @@ __metadata:
     referrer-policy: ^1.0.0
     request: ^2.79.0
     request-promise: ^4.1.1
-    sass: ^1.69.7
+    sass: ^1.72.0
     sinon: ^4.1.2
     sinon-chai: ^2.8.0
     time-grunt: ^1.4.0
-    url-join: ^2.0.2
+    url-join: ^4.0.1
     validate.js: ^0.13.1
     winston: ^2.4.5
   languageName: unknown
@@ -12200,16 +12167,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sass@npm:^1.69.7":
-  version: 1.71.1
-  resolution: "sass@npm:1.71.1"
+"sass@npm:^1.72.0":
+  version: 1.72.0
+  resolution: "sass@npm:1.72.0"
   dependencies:
     chokidar: ">=3.0.0 <4.0.0"
     immutable: ^4.0.0
     source-map-js: ">=0.6.2 <2.0.0"
   bin:
     sass: sass.js
-  checksum: 19c4939d3042eb9459d462bbd27b1f576fa18034e23c87ca0005b87effdee431c16503b5a785edcdcde1a76dfb804716d9ad42c85a78968ac3825d515e45cb53
+  checksum: f420079c7d51660b7256ee52463c1499ede36f7fd5c8ef50c687451777ad641509001454dea45244073cedd7c00e7a3bc1c362e55206ac6686171b994edb41e4
   languageName: node
   linkType: hard
 
@@ -14263,10 +14230,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"url-join@npm:^2.0.2":
-  version: 2.0.5
-  resolution: "url-join@npm:2.0.5"
-  checksum: 5c935cc99e5bfd7150302420db4eff9830d117be5ea3edf4b2d9e30a51484bc422e94fd9f2fba78192a75cebe2663735af716e07ec094b9a5f24c75046644c73
+"url-join@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "url-join@npm:4.0.1"
+  checksum: f74e868bf25dbc8be6a8d7237d4c36bb5b6c62c72e594d5ab1347fe91d6af7ccd9eb5d621e30152e4da45c2e9a26bec21390e911ab54a62d4d82e76028374ee5
   languageName: node
   linkType: hard
 
