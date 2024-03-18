@@ -1,5 +1,3 @@
-const { courtsDAO } = require('../../../objects/administration');
-
 (function() {
   'use strict';
 
@@ -15,6 +13,8 @@ const { courtsDAO } = require('../../../objects/administration');
     mapAdminToPoolRequestCourts,
   } = require('../../../lib/mod-utils');
   const { capitalizeFully } = require('../../../components/filters');
+  const { isBureauManager, isCourtManager, isSystemAdministrator, isManager } = require('../../../components/auth/user-type');
+  const { courtsDAO } = require('../../../objects/administration');
 
   module.exports.getUsers = function(app) {
     return async function(req, res) {
@@ -44,7 +44,6 @@ const { courtsDAO } = require('../../../objects/administration');
         const mainCourts = courts.filter((c) => c.courtType === 'MAIN');
 
         req.session.adminCourts = mainCourts;
-        // console.log(mainCourts);
 
         courtsToDisplay = transformCourtNames(mainCourts);
 
@@ -127,7 +126,7 @@ const { courtsDAO } = require('../../../objects/administration');
           sortUrlPrefix,
           isActive,
           searchOpts,
-          users: transformUsersTable(app, users.data, sortBy, sortOrder),
+          users: transformUsersTable(app, users.data, sortBy, sortOrder)(req, res),
           pagination,
           courtsToDisplay,
         });
@@ -190,6 +189,73 @@ const { courtsDAO } = require('../../../objects/administration');
     };
   };
 
+  module.exports.getCourtBureauUsers = function(app) {
+    return async function(req, res) {
+      const isActive = req.query['isActive'] || 'active'
+        , currentPage = req.query['page'] || 1
+        , sortBy = req.query['sortBy'] || 'name'
+        , sortOrder = req.query['sortOrder'] || 'ascending';
+      const radioUrl =  app.namedRoutes.build('administration.court-bureau.users.get', {
+        location: isCourtManager(req, res) ? 'court' : 'bureau',
+      });
+
+      delete req.query['isActive'];
+
+      try {
+        let pagination;
+        const payload = {
+          'only_active': isActive === 'active',
+          'sort_field': _.snakeCase(sortBy).toUpperCase(),
+          'sort_method': sortOrder === 'ascending' ? 'ASC' : 'DESC',
+          'page_number': currentPage,
+          'page_limit': constants.PAGE_SIZE,
+        };
+
+        console.log(payload);
+
+        const users = await usersDAO.getUsers(app, req, payload);
+
+        replaceAllObjKeys(users, _.camelCase);
+
+        app.logger.info('Fetched list of users', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            users: users,
+          },
+        });
+
+        console.log(users);
+
+        const queryTotal = users.totalItems;
+
+        if (queryTotal > constants.PAGE_SIZE) {
+          pagination = paginationBuilder(queryTotal, currentPage, req.url);
+        }
+
+        return res.render('administration/users/court-bureau-users.njk', {
+          radioUrls: {
+            activeUrl: radioUrl + '?isActive=active',
+            allUrl: radioUrl + '?isActive=all',
+          },
+          isActive,
+          users: transformUsersTable(app, users.data, sortBy, sortOrder)(req, res),
+          pagination,
+        });
+      } catch (err) {
+        app.logger.crit('Failed to list of users: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+          },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic.njk');
+      }
+    };
+  };
+
   module.exports.getUserRecord = function(app) {
     return async function(req, res) {
       const { username } = req.params;
@@ -216,10 +282,11 @@ const { courtsDAO } = require('../../../objects/administration');
           assignCourtsUrl: app.namedRoutes.build('administration.users.assign-courts.get', {
             username: user.username,
           }),
-          backLinkUrl: {
-            built: true,
-            url: app.namedRoutes.build('administration.users.get'),
-          },
+          backLinkUrl: isSystemAdministrator(req, res)
+            ? app.namedRoutes.build('administration.users.get')
+            : app.namedRoutes.build('administration.court-bureau.users.get', {
+              location: isBureauManager(req, res) ? 'bureau' : 'court',
+            }),
         });
       } catch (err) {
         app.logger.crit('Failed to fetch user record: ', {
@@ -237,101 +304,160 @@ const { courtsDAO } = require('../../../objects/administration');
 
 
   function transformUsersTable(app, users, sortBy, sortOrder) {
-    const table = {
-        head: [],
-        rows: [],
-      }
-      , order = sortOrder || 'ascending';
+    return function(req, res) {
+      const table = {
+          head: [],
+          rows: [],
+        }
+        , order = sortOrder || 'ascending';
 
-    table.head.push(
-      {
-        id: 'name',
-        value: 'Name',
-        sort: sortBy === 'name' ? order : 'none',
-      },
-      {
-        id: 'email',
-        value: 'Email',
-        sort: sortBy === 'email' ? order : 'none',
-      },
-      {
-        id: 'userType',
-        value: 'User type',
-        sort: sortBy === 'userType' ? order : 'none',
-      },
-      {
-        id: 'court',
-        value: 'Main courts',
-        sort: sortBy === 'court' ? order : 'none',
-      },
-      {
-        id: 'lastSignIn',
-        value: 'Last sign in',
-        sort: sortBy === 'lastSignIn' ? order : 'none',
-      },
-      {
-        id: 'active',
-        value: 'Status',
-        sort: sortBy === 'active' ? order : 'none',
-      },
-    );
-
-    users.forEach(function(user) {
-      const item = [];
-
-      const courts = [];
-
-      user.courts.forEach(function(court) {
-        courts.push('<p class="govuk-body govuk-!-margin-bottom-0">'
-          + capitalizeFully(`${court.primaryCourt.name} (${court.primaryCourt.locCode})`)
-          + '</p>'
-        );
-      });
-
-      item.push(
+      table.head.push(
         {
-          html: `<a href="${app.namedRoutes.build('administration.users.details.get', {username: user.username})}" 
-            class="govuk-link">${user.name}</a>`,
-          attributes: {
-            'data-sort-value': user.name,
-          },
+          id: 'name',
+          value: 'Name',
+          sort: sortBy === 'name' ? order : 'none',
         },
         {
-          html: `<a href="#" class="govuk-link">${user.email}</a>`,
-          attributes: {
-            'data-sort-value': user.email,
-          },
-        },
-        {
-          text: capitalizeFully(user.userType),
-          attributes: {
-            'data-sort-value': user.userType,
-          },
-        },
-        {
-          html: courts.length ? courts.join('') : '<p class="govuk-body govuk-!-margin-bottom-0">-</p>',
-          attributes: {
-            'data-sort-value': courts.length ? courts : '-',
-          },
-        },
-        {
-          text: user.lastSignIn || '-',
-          attributes: {
-            'data-sort-value': user.lastSignIn || '-',
-          },
-        },
-        {
-          text: user.isActive ? 'Active' : 'Inactive',
-          attributes: {
-            'data-sort-value': user.isActive,
-          },
+          id: 'email',
+          value: 'Email',
+          sort: sortBy === 'email' ? order : 'none',
         },
       );
 
-      table.rows.push(item);
-    });
+      if (isSystemAdministrator(req, res)) {
+        table.head.push(
+          {
+            id: 'userType',
+            value: 'User type',
+            sort: sortBy === 'userType' ? order : 'none',
+          },
+          {
+            id: 'court',
+            value: 'Main courts',
+            sort: sortBy === 'court' ? order : 'none',
+          },
+        );
+      }
 
-    return table;
+      if (isManager(req, res)) {
+        table.head.push(
+          {
+            id: 'manager',
+            value: 'Manager',
+            sort: sortBy === 'manager' ? order : 'none',
+          },
+        );
+        if (isCourtManager(req, res)) {
+          table.head.push(
+            {
+              id: 'SJO',
+              value: 'SJO',
+              sort: sortBy === 'sjo' ? order : 'none',
+            },
+          );
+        }
+      }
+
+      table.head.push(
+        {
+          id: 'lastSignIn',
+          value: 'Last sign in',
+          sort: sortBy === 'lastSignIn' ? order : 'none',
+        },
+        {
+          id: 'active',
+          value: 'Status',
+          sort: sortBy === 'active' ? order : 'none',
+        },
+      );
+
+      users.forEach(function(user) {
+        const item = [];
+
+        const courts = [];
+
+        user.courts.forEach(function(court) {
+          courts.push('<p class="govuk-body govuk-!-margin-bottom-0">'
+          + capitalizeFully(`${court.primaryCourt.name} (${court.primaryCourt.locCode})`)
+          + '</p>'
+          );
+        });
+
+        item.push(
+          {
+            html: `<a href="${app.namedRoutes.build('administration.users.details.get', {username: user.username})}" 
+            class="govuk-link">${user.name}</a>`,
+            attributes: {
+              'data-sort-value': user.name,
+            },
+          },
+          {
+            html: `<a href="#" class="govuk-link">${user.email}</a>`,
+            attributes: {
+              'data-sort-value': user.email,
+            },
+          },
+        );
+
+        if (isSystemAdministrator(req, res)) {
+          item.push(
+            {
+              text: capitalizeFully(user.userType),
+              attributes: {
+                'data-sort-value': user.userType,
+              },
+            },
+            {
+              html: courts.length ? courts.join('') : '<p class="govuk-body govuk-!-margin-bottom-0">-</p>',
+              attributes: {
+                'data-sort-value': courts.length ? courts : '-',
+              },
+            },
+          );
+        }
+
+        if (isManager(req, res)) {
+          item.push(
+            {
+              text: user.roles.includes('MANAGER') ? 'Yes' : 'No',
+              attributes: {
+                'data-sort-value': user.roles.includes('MANAGER') ? 'Yes' : 'No',
+              },
+            },
+          );
+          if (isCourtManager(req, res)) {
+            item.push(
+              {
+                text: user.roles.includes('SENIOR_JURY_OFFICER') ? 'Yes' : 'No',
+                attributes: {
+                  'data-sort-value': user.roles.includes('SENIOR_JURY_OFFICER') ? 'Yes' : 'No',
+                },
+              },
+            );
+          }
+        }
+
+        item.push(
+          {
+            text: user.lastSignIn || '-',
+            attributes: {
+              'data-sort-value': user.lastSignIn || '-',
+            },
+          },
+          {
+            text: user.isActive ? 'Active' : 'Inactive',
+            attributes: {
+              'data-sort-value': user.isActive,
+            },
+          },
+        );
+
+        table.rows.push(item);
+      });
+
+      return table;
+
+    };
   };
 
 })();

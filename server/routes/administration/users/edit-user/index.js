@@ -10,14 +10,12 @@
     app.get('/administration/users/edit-user/:username',
       'administration.users.edit.get',
       auth.verify,
-      isSystemAdministrator,
       controller.getEditUser(app),
     );
 
     app.post('/administration/users/edit-user/:username',
       'administration.users.edit.post',
       auth.verify,
-      isSystemAdministrator,
       controller.postEditUser(app),
     );
 

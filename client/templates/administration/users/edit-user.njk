@@ -10,7 +10,7 @@
 {% block page_title %}{{ serviceName }} - administration{% endblock %}
 {% block page_identifier %}administration - edit user{% endblock %}
 
-{% set currentApp = "System administration" %} 
+{% set currentApp = "Court administration" if isCourtManager else ("Bureau administration" if isBureauManager else "System administration") %} 
 {% set nav = "users" %}
 
 {% block content %}
@@ -58,48 +58,85 @@
       <form action="{{ processUrl }}" method="post" id="editUserForm">
         <h1 class="govuk-heading-xl">Edit user</h1>
 
-        {{ govukSummaryList({
-          rows: [
-            {
-              key: {
-                text: "User type"
-              },
-              value: {
-                text: user.userType | capitalize
-              },
-              actions: {
-                items: [
-                  {
-                    href: changeTypeUrl,
-                    text: "Change"
-                  }
-                ]
+        {% if isSystemAdministrator %}
+
+          {{ govukSummaryList({
+            rows: [
+              {
+                key: {
+                  text: "User type"
+                },
+                value: {
+                  text: user.userType | capitalize
+                },
+                actions: {
+                  items: [
+                    {
+                      href: changeTypeUrl,
+                      text: "Change"
+                    }
+                  ]
+                }
               }
-            }
-          ]
-        }) }}
+            ]
+          }) }}
 
-        {{ govukInput({
-          label: {
-            text: "Full name"
-          },
-          classes: "govuk-input--width-30",
-          id: "name",
-          name: "name",
-          value: tmpBody.name if tmpBody.name else user.name,
-          errorMessage: nameError
-        }) }}
+          {{ govukInput({
+            label: {
+              text: "Full name"
+            },
+            classes: "govuk-input--width-30",
+            id: "name",
+            name: "name",
+            value: tmpBody.name if tmpBody.name else user.name,
+            errorMessage: nameError
+          }) }}
 
-        {{ govukInput({
-          label: {
-            text: "Email"
-          },
-          classes: "govuk-input--width-30",
-          id: "email",
-          name: "email",
-          value: tmpBody.email if tmpBody.email else user.email,
-          errorMessage: emailError
-        }) }}
+          {{ govukInput({
+            label: {
+              text: "Email"
+            },
+            classes: "govuk-input--width-30",
+            id: "email",
+            name: "email",
+            value: tmpBody.email if tmpBody.email else user.email,
+            errorMessage: emailError
+          }) }}
+        
+        {% else %}
+
+          {{ govukSummaryList({
+            rows: [
+              {
+                key: {
+                  text: "Full name"
+                },
+                value: {
+                  text: user.name
+                }
+              },
+              {
+                key: {
+                  text: "Email"
+                },
+                value: {
+                  text: user.email
+                }
+              },
+              {
+                key: {
+                  text: "User type"
+                },
+                value: {
+                  text: user.userType | capitalize
+                }
+              }
+            ]
+          }) }}
+          <input type="hidden" name="name" value="{{ user.name }}">
+          <input type="hidden" name="email" value="{{ user.email }}">
+          
+        {% endif %}
 
         {% if user.userType === 'COURT' or user.userType === 'BUREAU'%}
           {{ govukCheckboxes({

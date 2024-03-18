@@ -1,5 +1,3 @@
-const { capitalise } = require('../../../../components/filters');
-
 (function() {
   'use strict';
 
@@ -8,6 +6,7 @@ const { capitalise } = require('../../../../components/filters');
   const validator = require('../../../../config/validation/create-users');
   const { usersDAO } = require('../../../../objects/users');
   const { replaceAllObjKeys } = require('../../../../lib/mod-utils');
+  const { capitalise } = require('../../../../components/filters');
   const roles = {
     'manager': {
       'key': 'MANAGER',
@@ -37,8 +36,6 @@ const { capitalise } = require('../../../../components/filters');
         const user = await usersDAO.getUserRecord(app, req, username);
 
         replaceAllObjKeys(user, _.camelCase);
-
-        console.log(user);
 
         req.session.editUser = {
           orignalDetails: {

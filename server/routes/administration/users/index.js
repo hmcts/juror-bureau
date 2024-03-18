@@ -3,7 +3,7 @@
 
   const auth = require('../../../components/auth');
   const controller = require('./users.controller');
-  const { isSystemAdministrator } = require('../../../components/auth/user-type');
+  const { isSystemAdministrator, isManager } = require('../../../components/auth/user-type');
 
   module.exports = function(app) {
     require('./create-users')(app);
@@ -17,6 +17,13 @@
       controller.getUsers(app),
     );
 
+    app.get('/administration/:location(court|bureau)/users',
+      'administration.court-bureau.users.get',
+      auth.verify,
+      isManager,
+      controller.getCourtBureauUsers(app),
+    );
+
     app.post('/administration/users/search',
       'administration.users.search.post',
       auth.verify,
@@ -27,7 +34,6 @@
     app.get('/administration/users/:username',
       'administration.users.details.get',
       auth.verify,
-      isSystemAdministrator,
       controller.getUserRecord(app),
     );
   };

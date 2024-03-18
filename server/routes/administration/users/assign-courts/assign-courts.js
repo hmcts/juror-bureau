@@ -37,7 +37,7 @@ const { capitalizeFully } = require('../../../../components/filters');
           };
 
           courts = courtsData;
-          // courts = courtsData.filter((c) => c.courtType === 'MAIN');
+          courts = courtsData.filter((c) => c.courtType === 'MAIN');
         }
 
         return res.render('administration/users/assign-courts/assign-courts.njk', {
@@ -79,14 +79,12 @@ const { capitalizeFully } = require('../../../../components/filters');
       }
       const courts = _.clone(req.session.assignCourts.courts);
 
-      console.log(courts);
       const filteredList = courts.filter((court) =>{
         const courtName = capitalizeFully(court.courtName).trim().replace(',', '') + ' (' + court.locCode + ')';
 
         return courtName.includes(req.body.courtSearch);
       });
 
-      console.log(filteredList);
       req.session.assignCourts.filteredCourts = filteredList;
       return res.redirect(app.namedRoutes.build('administration.users.assign-courts.get', { username }) + '?filter=' + req.body.courtSearch);
     };
