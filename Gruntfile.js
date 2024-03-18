@@ -169,18 +169,6 @@
             {expand: true, cwd: 'config/', src: ['*.*'], dest: 'test/config'}
           ]
         },
-
-        /*
-        govuk: {
-          files: [
-            {cwd: 'node_modules/govuk_frontend_toolkit/', src: ['**'], dest: 'govuk_modules/govuk_frontend_toolkit/'},
-            {cwd: 'node_modules/govuk_template_jinja/assets/', src: ['**'], dest: 'govuk_modules/govuk_template/assets/'},
-            {cwd: 'node_modules/govuk_template_jinja/views/layouts/', src: ['**'], dest: 'govuk_modules/govuk_template/views/layouts/'},
-            {cwd: 'node_modules/govuk-elements-sass/public/sass/', src: ['**', '!node_modules', '!elements-page.scss', '!elements-page-ie6.scss', '!elements-page-ie7.scss', '!elements-page-ie8.scss', '!main.scss', '!main-ie6.scss', '!main-ie7.scss', '!main-ie8.scss', '!prism.scss'], dest: 'govuk_modules/govuk-elements-sass/'}
-          ]
-        }
-        */
-
       },
 
 
