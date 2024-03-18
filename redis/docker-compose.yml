@@ -1,0 +1,20 @@
+version: "3.8"
+
+networks:
+  juror-redis:
+    driver: bridge
+
+volumes:
+  juror-redis:
+
+services:
+  juror-redis:
+    image: redis:latest
+    container_name: juror-redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    volumes:
+      - juror-redis:/var/lib/redis
+    networks:
+      - juror-redis

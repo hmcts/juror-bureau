@@ -44,7 +44,18 @@ After running all the above, you should see the application running (or some err
 
 ### Redis
 
-TODO
+To run redis, the developer can run however they want locally, we recommend docker.
+
+To run with docker, we provide a simple docker-compose file to start a redis container.
+Simply point to `/redis` and then:
+
+```sh
+docker compose up -d # this will run a redis database locally
+```
+
+The command above assumes the developer has docker installed, so if you do not have docker check the redis website below.
+
+[Install redis on MacOS](https://redis.io/docs/install/install-redis/install-redis-on-mac-os/)
 
 <!-- #### Global Packages
 Once Node and NPM are working you must install the following packages globally using;
