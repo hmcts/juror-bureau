@@ -1,21 +1,52 @@
-Juror Bureau Portal
+# Juror Bureau Portal
 
 - Author: MoJ Team
 - Technologies: NodeJS, Express, Nunjucks
 - Summary: A frontend application for serving the Juror Bureau Portal application.
 - Target Product: Juror Bureau Portal Frontend
 
-
-
-
 ## Development Environment
 
 ### Installation
-We require NodeJS and NPM, the latest LTS releases should suffice.
+We require NodeJS (>=18) and Yarn (corepack is included in recent node).
 
-Something like [Node version manager](https://github.com/creationix/nvm) would be a good option for maintaining Node versions and ensuring everyone is running a consistent environment.
+We recommend using `nvm` to manage your node versions locally, but if you prefer to manage them any other way feel free.
 
-#### Global Packages
+#### Using nvm and yarn
+
+[Use nvm's Github to install](https://github.com/nvm-sh/nvm) if you dont have it already.
+
+```sh
+nvm install 20 # install node version 20
+nvm use 20 # set the current shell to use version 20 of node
+nvm alias default 20 # set the node version 20 to be the default version
+```
+
+After setting node 20 to be the version of node to use, we need to enable yarn
+
+```sh
+corepack enable yarn
+```
+
+The version of yarn is set by the project's `.yarnrc.yml` file so do not worry about the version now.
+
+#### Running the application
+
+In a terminal window (could also be vscode's embedded terminal) point to the project directory and run:
+
+```sh
+yarn -v # should log 3.8.1
+yarn install
+yarn start
+```
+
+After running all the above, you should see the application running (or some errors for missing keys). If you get the errors, contact DevOps or other Senior Devs to help you with those keys.
+
+### Redis
+
+TODO
+
+<!-- #### Global Packages
 Once Node and NPM are working you must install the following packages globally using;
 
 ```bash
@@ -166,4 +197,4 @@ grunt build:dist
 
 This command will not run tests, as it is assumed that running the distribution build process will be triggered after tests have passed, coverage thresholds are maintained and linters and SonarQube checks have been made.
 
-
+ -->
