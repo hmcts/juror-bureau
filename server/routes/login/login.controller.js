@@ -115,7 +115,7 @@
     return function(res) {
 
       if (userType === 'ADMINISTRATOR') {
-        return res.redirect(app.namedRoutes.build('administration.system-codes.get'));
+        return res.redirect(app.namedRoutes.build('administration.users.get'));
       }
 
       // if the user is not 400 they have no access to an inbox just yet... redirect to the homepage

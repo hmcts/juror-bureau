@@ -418,3 +418,31 @@ dt.govuk-summary-list-mod {
 .mod-bold {
   font-weight: bold;
 }
+
+.mod-autocomplete--width-20 {
+  max-width: 20.5em;
+}
+
+.mod-assign-courts-table {
+  tbody { height: 1px !important; overflow-y: scroll; }
+}
+
+.fixTableHead { 
+  overflow-y: auto; 
+  height: 75vh; 
+  thead th { 
+    position: sticky; 
+    top: 0; 
+    z-index: 1;
+  } 
+  table { 
+    border-collapse: collapse;         
+    width: 100%; 
+  } 
+  th { 
+    background: govuk-colour("white"); 
+  } 
+  .govuk-checkboxes__item {
+    z-index: 0;
+  }
+} 
