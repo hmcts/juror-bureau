@@ -169,11 +169,8 @@
       delete req.query.court;
       delete req.query.userType;
 
-      console.log('here');
-
       matchUserCourt(req.session.adminCourts, {courtNameOrLocation: req.body.courtSearch})
         .then(function(court) {
-          console.log(court);
           return res.redirect(builUrl({
             userName: req.body.userNameSearch,
             locationCode: court.locationCode,
@@ -211,8 +208,6 @@
           'page_limit': constants.PAGE_SIZE,
         };
 
-        console.log(payload);
-
         const users = await usersDAO.getUsers(app, req, payload);
 
         replaceAllObjKeys(users, _.camelCase);
@@ -224,8 +219,6 @@
             users: users,
           },
         });
-
-        console.log(users);
 
         const queryTotal = users.totalItems;
 
