@@ -21,7 +21,7 @@
   "dependencies": {
     "@fengyuanchen/datepicker": "^0.6.4",
     "@hmcts/properties-volume": "1.1.0",
-    "@ministryofjustice/frontend": "^2.1.1",
+    "@ministryofjustice/frontend": "^1.8.1",
     "accessible-autocomplete": "^2.0.4",
     "applicationinsights": "^2.9.4",
     "basic-auth": "^2.0.0",
@@ -36,7 +36,7 @@
     "express-nunjucks": "^2.2.5",
     "express-session": "^1.14.0",
     "fs-extra": "^4.0.3",
-    "govuk-frontend": "^5.2.0",
+    "govuk-frontend": "^4.8.0",
     "helmet": "^3.9.0",
     "ip": "^1.1.5",
     "jsonwebtoken": "^9.0.0",

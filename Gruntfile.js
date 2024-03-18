@@ -93,7 +93,7 @@
             {expand: true, cwd: 'node_modules/chart.js/dist', src: ['*.js'], dest: 'dist/client/js/chart.js'},
             {expand: true, cwd: 'node_modules/chart.js/dist', src: ['*.css'], dest: 'dist/client/css'},
 
-            {expand: true, cwd: 'node_modules/govuk-frontend/dist/govuk/', src: ['govuk-frontend.min.js', 'govuk-frontend.min.js.map'], dest: 'dist/client/js/govuk'},
+            {expand: true, cwd: 'node_modules/govuk-frontend/govuk/', src: ['all.js', 'all.js.map'], dest: 'dist/client/js/govuk'},
             {expand: true, cwd: 'node_modules/@ministryofjustice/frontend/moj/', src: ['all.js'], dest: 'dist/client/js/moj'},
 
             {expand: true, cwd: 'node_modules/accessible-autocomplete/dist/', src: ['accessible-autocomplete.min.js'], dest: 'dist/client/js'},
@@ -134,7 +134,7 @@
             {expand: true, cwd: 'node_modules/chart.js/dist', src: ['*.js'], dest: 'tmp/client/js/chart.js'},
             {expand: true, cwd: 'node_modules/chart.js/dist', src: ['*.css'], dest: 'tmp/client/css'},
 
-            {expand: true, cwd: 'node_modules/govuk-frontend/dist/govuk/', src: ['govuk-frontend.min.js', 'govuk-frontend.min.js.map'], dest: 'tmp/client/js/govuk'},
+            {expand: true, cwd: 'node_modules/govuk-frontend/govuk/', src: ['all.js', 'all.js.map'], dest: 'tmp/client/js/govuk'},
             {expand: true, cwd: 'node_modules/@ministryofjustice/frontend/moj/', src: ['all.js'], dest: 'tmp/client/js/moj'},
 
             {expand: true, cwd: 'node_modules/accessible-autocomplete/dist/', src: ['accessible-autocomplete.min.js'], dest: 'tmp/client/js'},
@@ -159,7 +159,7 @@
             {expand: true, cwd: 'node_modules/chart.js/dist', src: ['*.js'], dest: 'test/client/js/chart.js'},
             {expand: true, cwd: 'node_modules/chart.js/dist', src: ['*.css'], dest: 'test/client/css'},
 
-            {expand: true, cwd: 'node_modules/govuk-frontend/dist/govuk/', src: ['govuk-frontend.min.js', 'govuk-frontend.min.js.map'], dest: 'test/client/js/govuk'},
+            {expand: true, cwd: 'node_modules/govuk-frontend/govuk/', src: ['all.js', 'all.js.map'], dest: 'test/client/js/govuk'},
             {expand: true, cwd: 'node_modules/@ministryofjustice/frontend/moj/', src: ['all.js'], dest: 'test/client/js/moj'},
 
             {expand: true, cwd: 'node_modules/accessible-autocomplete/dist/', src: ['accessible-autocomplete.min.js'], dest: 'test/client/js'},
@@ -331,7 +331,7 @@
         dist: {
           files: [
             { expand: true, cwd: 'client/assets/images/', src: '**/*.{png,jpg,jpeg,gif,svg}', dest: 'dist/client/assets/images' },
-            { expand: true, cwd: 'node_modules/govuk-frontend/dist/govuk/assets/images/', src: ['**/**.*'], dest: 'dist/client/assets/images' },
+            { expand: true, cwd: 'node_modules/govuk-frontend/govuk/assets/images/', src: ['**/**.*'], dest: 'dist/client/assets/images' },
             { expand: true, cwd: 'node_modules/@ministryofjustice/frontend/moj/assets/images/', src: ['icon-arrow*.*'], dest: 'dist/client/assets/images' },
             { expand: true, cwd: 'node_modules/@scottish-government/pattern-library/dist/images/icons/', src: ['**/**.*'], dest: 'dist/client/assets/images/icons' }
           ]
@@ -339,7 +339,7 @@
         dev: {
           files: [
             { expand: true, cwd: 'client/assets/images/', src: '**/*.{png,jpg,jpeg,gif,svg}', dest: 'tmp/client/assets/images' },
-            { expand: true, cwd: 'node_modules/govuk-frontend/dist/govuk/assets/images/', src: ['**/**.*'], dest: 'tmp/client/assets/images' },
+            { expand: true, cwd: 'node_modules/govuk-frontend/govuk/assets/images/', src: ['**/**.*'], dest: 'tmp/client/assets/images' },
             { expand: true, cwd: 'node_modules/@ministryofjustice/frontend/moj/assets/images/', src: ['icon-arrow*.*'], dest: 'tmp/client/assets/images' },
             { expand: true, cwd: 'node_modules/@scottish-government/pattern-library/dist/images/icons/', src: ['**/**.*'], dest: 'tmp/client/assets/images/icons' }
           ]
@@ -347,7 +347,7 @@
         test: {
           files: [
             { expand: true, cwd: 'client/assets/images/', src: '**/*.{png,jpg,jpeg,gif,svg}', dest: 'test/client/assets/images' },
-            { expand: true, cwd: 'node_modules/govuk-frontend/dist/govuk/assets/images/', src: ['**/**.*'], dest: 'test/client/assets/images' },
+            { expand: true, cwd: 'node_modules/govuk-frontend/govuk/assets/images/', src: ['**/**.*'], dest: 'test/client/assets/images' },
             { expand: true, cwd: 'node_modules/@ministryofjustice/frontend/moj/assets/images/', src: ['icon-arrow*.*'], dest: 'test/client/assets/images' },
             { expand: true, cwd: 'node_modules/@scottish-government/pattern-library/dist/images/icons/', src: ['**/**.*'], dest: 'test/client/assets/images/icons' }
           ]

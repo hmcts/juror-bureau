@@ -6,13 +6,11 @@
 <!--  Init GDS and MOJ toolkits -->
 <script src="{{ assetPath }}js/moj/all.js"></script>
 
-<script type="module">
+<script>
   $(document).ready(function () {
-    import { initAll } from '{{ assetPath }}js/govuk/govuk-frontend.min.js'
-    
-    initAll();
+    window.GOVUKFrontend.initAll();
     window.MOJFrontend.initAll();
-  })
+  });
 </script>
   
 <!-- scripts to run after GDS/MOJ inits only on reply details page -->
