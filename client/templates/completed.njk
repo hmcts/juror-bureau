@@ -37,15 +37,19 @@
             {% for response in responses.items %}
               <tr class="govuk-table__row">
                 <td class="govuk-table__cell">
-                  <a href="/response/{{ response.jurorNumber }}" class="govuk-link">{{ response.jurorNumber }}</a>
+                  {% if response.replyMethod === "Paper" %}
+                    <a href="/summons-replies/response/{{ response.jurorNumber }}/paper" class="govuk-link">{{ response.jurorNumber }}</a>                
+                  {% else %}
+                     <a href="/response/{{ response.jurorNumber }}" class="govuk-link">{{ response.jurorNumber }}</a>
+                  {% endif %}
                 </td>
                 <td class="govuk-table__cell">{{ response.firstName }} {{ response.lastName }}</td>
                 <td class="govuk-table__cell">{{ response.courtName }}</td>
-                <td class="govuk-table__cell"  data-sort-value="{{response.receivedAt | dateFilter('DD/MM/YYYY', 'YYYYMMDD')}}">
-                  {{response.receivedAt | dateFilter("DD/MM/YYYY", "D MMM YYYY")}}
+                <td class="govuk-table__cell"  data-sort-value="{{response.receivedAt | dateFilter('yyyy-MM-dd', 'YYYYMMDD')}}">
+                  {{response.receivedAt | dateFilter("yyyy-MM-dd", "D MMM YYYY")}}
                 </td>
-                <td class="govuk-table__cell {% if response.slaOverdue %}jd-response-overdue{% endif %}" {% if response.slaOverdue %}title="Overdue"{% endif %} data-sort-value="{{(response.completedAt + ' ' + response.completedAtTime) | dateFilter("DD/MM/YYYY hh:mm", "YYYYMMDD hh:mm")}}">
-                  {{(response.completedAt + ' ' + response.completedAtTime) | dateFilter("DD/MM/YYYY hh:mm", "h:mma on D MMM YYYY")}}
+                <td class="govuk-table__cell {% if response.slaOverdue %}jd-response-overdue{% endif %}" {% if response.slaOverdue %}title="Overdue"{% endif %} data-sort-value="{{(response.completedAt + ' ' + response.completedAtTime) | dateFilter("yyyy-MM-dd hh:mm:ss", "YYYYMMDD hh:mm")}}">
+                  {{(response.completedAt) | dateFilter("yyyy-MM-dd hh:mm:ss", "h:mma on D MMM YYYY")}}
                 </td>
               </tr>
             {% endfor %}
