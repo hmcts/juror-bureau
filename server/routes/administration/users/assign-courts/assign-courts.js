@@ -1,5 +1,3 @@
-const { capitalizeFully } = require('../../../../components/filters');
-
 (function() {
   'use strict';
 
@@ -9,6 +7,7 @@ const { capitalizeFully } = require('../../../../components/filters');
   const { usersDAO } = require('../../../../objects/users');
   const { courtsDAO } = require('../../../../objects/administration');
   const { replaceAllObjKeys } = require('../../../../lib/mod-utils');
+  const { capitalizeFully } = require('../../../../components/filters');
 
   module.exports.getAssignCourts = function(app) {
     return async function(req, res) {
@@ -86,7 +85,9 @@ const { capitalizeFully } = require('../../../../components/filters');
       });
 
       req.session.assignCourts.filteredCourts = filteredList;
-      return res.redirect(app.namedRoutes.build('administration.users.assign-courts.get', { username }) + '?filter=' + req.body.courtSearch);
+      return res.redirect(app.namedRoutes.build('administration.users.assign-courts.get', {
+        username,
+      }) + '?filter=' + req.body.courtSearch);
     };
   };
 
@@ -119,6 +120,15 @@ const { capitalizeFully } = require('../../../../components/filters');
 
         await usersDAO.assignCourts(app, req, username, payload);
 
+        app.logger.info('Assigned courts to user', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            username: username,
+            courts: payload,
+          },
+        });
+
         return res.redirect(app.namedRoutes.build('administration.users.details.get', {
           username,
         }));
@@ -143,6 +153,14 @@ const { capitalizeFully } = require('../../../../components/filters');
 
       try {
         const user = await usersDAO.getUserRecord(app, req, username);
+
+        app.logger.info('Fetched user record', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            user: user,
+          },
+        });
 
         replaceAllObjKeys(user, _.camelCase);
 
@@ -174,6 +192,14 @@ const { capitalizeFully } = require('../../../../components/filters');
 
       try {
         await usersDAO.removeCourts(app, req, username, payload);
+        app.logger.info('Removed courts from user', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            username: username,
+            courts: payload,
+          },
+        });
         req.session.bannerMessage = `Court${payload.length > 1 ? 's' : ''} removed`;
         return res.redirect(app.namedRoutes.build('administration.users.details.get', { username }));
       } catch (err) {

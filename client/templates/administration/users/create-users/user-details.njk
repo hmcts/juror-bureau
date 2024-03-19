@@ -23,21 +23,21 @@
 {% if userType === "court" %}
   {% set rolesOptions = [
     {
-      value: "manager",
+      value: "MANAGER",
       text: "Manager",
       hint: {
         text: "Court administration and expense approvals"
       }
     },
     {
-      value: "sjo",
+      value: "SENIOR_JUROR_OFFICER",
       text: "Senior jury officer"
     }
   ] %}
 {% elif userType === "bureau" %}
   {% set rolesOptions = [
     {
-      value: "manager",
+      value: "MANAGER",
       text: "Manager",
       hint: {
         text: "Bureau administration and expense approvals"

@@ -3,9 +3,8 @@
 
   const _ = require('lodash');
   const { usersDAO } = require('../../../objects/users');
+  const modUtils = require('../../../lib/mod-utils');
   const {
-    paginationBuilder,
-    constants,
     replaceAllObjKeys,
     transformCourtNames,
     matchUserCourt,
@@ -13,8 +12,26 @@
     mapAdminToPoolRequestCourts,
   } = require('../../../lib/mod-utils');
   const { capitalizeFully } = require('../../../components/filters');
-  const { isBureauManager, isCourtManager, isSystemAdministrator, isManager } = require('../../../components/auth/user-type');
+  const {
+    isBureauManager,
+    isCourtManager,
+    isSystemAdministrator,
+    isManager,
+  } = require('../../../components/auth/user-type');
   const { courtsDAO } = require('../../../objects/administration');
+  const roles = {
+    'MANAGER': {
+      'title': 'Manager',
+    },
+    'SENIOR_JUROR_OFFICER': {
+      'title': 'Senior Jury Officer',
+    },
+    'TEAM_LEADER': {
+      'title': 'Team Leader',
+    },
+  };
+
+  module.exports.roles = roles;
 
   module.exports.getUsers = function(app) {
     return async function(req, res) {
@@ -34,9 +51,6 @@
         app.logger.info('Fetched list of courts', {
           auth: req.session.authentication,
           jwt: req.session.authToken,
-          data: {
-            courtsData,
-          },
         });
 
         const courts = mapAdminToPoolRequestCourts(courtsData);
@@ -59,7 +73,6 @@
         return res.render('_errors/generic.njk');
       }
 
-
       try {
         let pagination;
         const payload = {
@@ -67,9 +80,11 @@
           'sort_field': _.snakeCase(sortBy).toUpperCase(),
           'sort_method': sortOrder === 'ascending' ? 'ASC' : 'DESC',
           'page_number': currentPage,
-          'page_limit': constants.PAGE_SIZE,
+          'page_limit': modUtils.constants.PAGE_SIZE,
         };
         let sortUrlPrefix = `?isActive=${isActive}`;
+
+        console.log(payload);
 
         delete req.session.adminUserSearch;
 
@@ -107,8 +122,8 @@
 
         const queryTotal = users.totalItems;
 
-        if (queryTotal > constants.PAGE_SIZE) {
-          pagination = paginationBuilder(queryTotal, currentPage, req.url);
+        if (queryTotal > modUtils.constants.PAGE_SIZE) {
+          pagination = modUtils.paginationBuilder(queryTotal, currentPage, req.url);
         }
         let queryString = '';
 
@@ -205,10 +220,12 @@
           'sort_field': _.snakeCase(sortBy).toUpperCase(),
           'sort_method': sortOrder === 'ascending' ? 'ASC' : 'DESC',
           'page_number': currentPage,
-          'page_limit': constants.PAGE_SIZE,
+          'page_limit': modUtils.constants.PAGE_SIZE,
         };
 
         const users = await usersDAO.getUsers(app, req, payload);
+
+        console.log(users);
 
         replaceAllObjKeys(users, _.camelCase);
 
@@ -222,8 +239,8 @@
 
         const queryTotal = users.totalItems;
 
-        if (queryTotal > constants.PAGE_SIZE) {
-          pagination = paginationBuilder(queryTotal, currentPage, req.url);
+        if (queryTotal > modUtils.constants.PAGE_SIZE) {
+          pagination = modUtils.paginationBuilder(queryTotal, currentPage, req.url);
         }
 
         return res.render('administration/users/court-bureau-users.njk', {
@@ -266,9 +283,18 @@
 
         replaceAllObjKeys(user, _.camelCase);
 
+        app.logger.info('Fetched user record', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            user: user,
+          },
+        });
+
         return res.render('administration/users/user-record.njk', {
           user,
           successBanner,
+          roles,
           editUserUrl: app.namedRoutes.build('administration.users.edit.get', {
             username: user.username,
           }),
@@ -353,9 +379,9 @@
 
       table.head.push(
         {
-          id: 'lastSignIn',
+          id: 'lastSignedIn',
           value: 'Last sign in',
-          sort: sortBy === 'lastSignIn' ? order : 'none',
+          sort: sortBy === 'lastSignedIn' ? order : 'none',
         },
         {
           id: 'active',

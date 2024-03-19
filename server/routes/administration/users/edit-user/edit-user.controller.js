@@ -7,20 +7,6 @@
   const { usersDAO } = require('../../../../objects/users');
   const { replaceAllObjKeys } = require('../../../../lib/mod-utils');
   const { capitalise } = require('../../../../components/filters');
-  const roles = {
-    'manager': {
-      'key': 'MANAGER',
-      'title': 'Manager',
-    },
-    'sjo': {
-      'key': 'SENIOR_JUROR_OFFICER',
-      'title': 'Senior Jury Officer',
-    },
-    'team-lead': {
-      'key': 'TEAM_LEADER',
-      'title': 'Team Leader',
-    },
-  };
 
   module.exports.getEditUser = function(app) {
     return async function(req, res) {
@@ -34,6 +20,14 @@
 
       try {
         const user = await usersDAO.getUserRecord(app, req, username);
+
+        app.logger.info('Fetched user record', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            user: user,
+          },
+        });
 
         replaceAllObjKeys(user, _.camelCase);
 
@@ -99,6 +93,16 @@
 
       try {
         await usersDAO.editUser(app, req, username, payload);
+
+        app.logger.info('Updated user details', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            username: username,
+            data: payload,
+          },
+        });
+
         return res.redirect(app.namedRoutes.build('administration.users.details.get', { username }));
       } catch (err) {
         app.logger.crit('Failed to update user details: ', {
@@ -126,7 +130,7 @@
       };
 
       if (user.roles) {
-        editPayload.roles = user.roles.map((role) => roles[role].key);
+        editPayload.roles = user.roles;
       }
 
       try {
@@ -158,6 +162,7 @@
           auth: req.session.authentication,
           jwt: req.session.authToken,
           data: {
+            username,
             editPayload,
           },
         });

@@ -6,20 +6,7 @@
   const validator = require('../../../../config/validation/create-users');
   const { usersDAO } = require('../../../../objects/users');
   const { capitalise } = require('../../../../components/filters');
-  const roles = {
-    'manager': {
-      'key': 'MANAGER',
-      'title': 'Manager',
-    },
-    'sjo': {
-      'key': 'SENIOR_JUROR_OFFICER',
-      'title': 'Senior Jury Officer',
-    },
-    'team-lead': {
-      'key': 'TEAM_LEADER',
-      'title': 'Team Leader',
-    },
-  };
+  const roles = require('../users.controller').roles;
 
   module.exports.getUserType = function(app) {
     return async function(req, res) {
@@ -263,7 +250,7 @@
       };
 
       if (user.roles) {
-        payload.roles = user.roles.map((role) => roles[role].key);
+        payload.roles = user.roles;
       }
 
       try {

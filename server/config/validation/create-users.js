@@ -1,6 +1,8 @@
 (function() {
   'use strict';
 
+  require('./common-email-address');
+
   module.exports.userType = function() {
     return {
       userType: {
@@ -32,6 +34,12 @@
           message: {
             summary: 'Enter the user\'s email',
             details: 'Enter the user\'s email',
+          },
+        },
+        commonEmailAddress: {
+          required: false,
+          messageMap: {
+            email: 'Enter the email address in the correct format, like name@email.com',
           },
         },
       },
