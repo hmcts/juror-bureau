@@ -1,27 +1,17 @@
 <script src="{{ assetPath }}js/jquery.min.js"></script>
 
-<!-- show-hide-content only needed for legacy datepicker popup -->
-<!--<script src="{{ assetPath }}js/show-hide-content.js"></script>-->
-
 <!-- Bureau page scripts -->
 <script src="{{ assetPath }}js/bundle.js"></script>
 
 <!--  Init GDS and MOJ toolkits -->
-<script src="{{ assetPath }}js/govuk/all.js"></script>
 <script src="{{ assetPath }}js/moj/all.js"></script>
+
 <script>
   $(document).ready(function () {
-    //console.log("init GOVUK toolkit");
     window.GOVUKFrontend.initAll();
-    //console.log("init MOJ toolkit");
     window.MOJFrontend.initAll();
-
-    // only needed for datepicker on Process  Reply - Deferral action
-    //var showHideContent = new GOVUK.ShowHideContent();
-    //showHideContent.init();
-  })
+  });
 </script>
-
   
 <!-- scripts to run after GDS/MOJ inits only on reply details page -->
 

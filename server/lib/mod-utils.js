@@ -970,6 +970,10 @@
       return 'Excusal granted (' + description.toLowerCase() + ')';
     }
 
+    if (status === 'Deferred') {
+      return 'Deferral granted (' + description.toLowerCase() + ')';
+    }
+
     if (status === 'Responded') {
       return status;
     }
