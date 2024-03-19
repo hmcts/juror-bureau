@@ -67,8 +67,6 @@
 
       validatorResult = validate(mockRequest, validator.userDetails());
 
-      console.log(validatorResult);
-
       expect(validatorResult).to.be.an('object');
       expect(validatorResult.email[0]).to.have.ownPropertyDescriptor('summary');
       expect(validatorResult.email[0].summary).to.equal(

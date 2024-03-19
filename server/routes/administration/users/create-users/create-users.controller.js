@@ -254,19 +254,21 @@
       }
 
       try {
-        await usersDAO.createUser(app, req, payload);
+        const data = await usersDAO.createUser(app, req, payload);
+        const username = data.username;
 
         app.logger.info('Created new user', {
           auth: req.session.authentication,
           jwt: req.session.authToken,
           data: {
+            username,
             payload,
           },
         });
 
         req.session.bannerMessage = 'New user created';
 
-        return res.redirect(app.namedRoutes.build('administration.users.get'));
+        return res.redirect(app.namedRoutes.build('administration.users.details.get', { username }));
       } catch (err) {
         app.logger.crit('Failed to create new user: ', {
           auth: req.session.authentication,

@@ -369,9 +369,9 @@
         if (isCourtManager(req, res)) {
           table.head.push(
             {
-              id: 'SJO',
+              id: 'seniorJurorOfficer',
               value: 'SJO',
-              sort: sortBy === 'sjo' ? order : 'none',
+              sort: sortBy === 'seniorJurorOfficer' ? order : 'none',
             },
           );
         }
@@ -447,9 +447,9 @@
           if (isCourtManager(req, res)) {
             item.push(
               {
-                text: user.roles.includes('SENIOR_JURY_OFFICER') ? 'Yes' : 'No',
+                text: user.roles.includes('SENIOR_JUROR_OFFICER') ? 'Yes' : 'No',
                 attributes: {
-                  'data-sort-value': user.roles.includes('SENIOR_JURY_OFFICER') ? 'Yes' : 'No',
+                  'data-sort-value': user.roles.includes('SENIOR_JUROR_OFFICER') ? 'Yes' : 'No',
                 },
               },
             );
