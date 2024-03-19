@@ -1,0 +1,277 @@
+{% extends "../layouts/default.njk" %}
+
+{% from "govuk/components/error-message/macro.njk" import govukErrorMessage -%}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{% block page_title %}{{ serviceName }} - administration{% endblock %}
+{% block page_identifier %}administration - Non Sitting Days{% endblock %}
+
+{% set currentApp = "Court administration" if isCourtUser else ("Bureau administration" if isBureauUser else "System administration") %} 
+
+{% set nav = "courtsAndBureau" %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <h1 class="govuk-heading-l">Non-sitting days and bank holidays</h1>
+
+      <div class="mod-juror-record__title govuk-!-margin-bottom-5">
+        <h2 id="overviewLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Chester non-sitting days</h2>
+      </div>
+
+      <div class="mod-flex">
+        {{ govukButton({
+          text: "Add a non-sitting day",
+          classes: "govuk-button--secondary govuk-!-margin-top-1"
+        }) }}
+      </div>
+
+      <div class="mod-juror-record__title govuk-!-margin-bottom-5">
+        <h2 id="overviewLabel" class="govuk-heading-m govuk-!-margin-bottom-2">UK bank holidays</h2>
+      </div>
+    
+
+      {{ govukTable({
+        caption: "2024",
+        captionClasses: "govuk-table__caption--m",
+        head: [
+          {
+            text: "Date"
+          },
+          {
+            text: "Bank holiday"
+          }
+        ],
+        rows: [
+          [
+            {
+              text: "Friday 29 March"
+            },
+            {
+              text: "Good Friday"
+            }
+          ],
+          [
+            {
+              text: "Monday 1 April"
+            },
+            {
+              text: "Easter Monday"
+            }
+          ],
+          [
+            {
+              text: "Monday 6 May"
+            },
+            {
+              text: "Early May bank holiday"
+            }
+          ],
+          [
+            {
+              text: "Monday 27 May"
+            },
+            {
+              text: "Spring bank holiday"
+            }
+          ],
+          [
+            {
+              text: "Monday 26 August"
+            },
+            {
+              text: "Summer bank holiday"
+            }
+          ],
+          [
+            {
+              text: "Wednesday 25 December"
+            },
+            {
+              text: "Christmas Day"
+            }
+          ],
+          [
+            {
+              text: "Thursday 26 December"
+            },
+            {
+              text: "Boxing Day"
+            }
+          ]
+        ]
+      }) }}
+
+{{ govukTable({
+  caption: "2025",
+  captionClasses: "govuk-table__caption--m",
+  head: [
+    {
+      text: "Date"
+    },
+    {
+      text: "Bank holiday"
+    }
+  ],
+  rows: [
+    [
+      {
+        text: "Wednesday 1 January"
+      },
+      {
+        text: "New Year's Day"
+      }
+    ],
+    [
+      {
+        text: "Friday 18 April"
+      },
+      {
+        text: "Good Friday"
+      }
+    ],
+    [
+      {
+        text: "Monday 21 April"
+      },
+      {
+        text: "Easter Monday"
+      }
+    ],
+    [
+      {
+        text: "Monday 5 May"
+      },
+      {
+        text: "Early May bank holiday"
+      }
+    ],
+    [
+      {
+        text: "Monday 26 May"
+      },
+      {
+        text: "Sprint bank holiday"
+      }
+    ],
+    [
+      {
+        text: "Monday 25 August"
+      },
+      {
+        text: "Summer bank holiday"
+      }
+    ],
+    [
+      {
+        text: "Monday 25 December"
+      },
+      {
+        text: "Christmas Day"
+      }
+    ],
+    [
+      {
+        text: "Friday 26 December"
+      },
+      {
+        text: "Boxing Day"
+      }
+    ]
+  ]
+}) }}
+
+      {{ govukTable({
+  caption: "2026",
+  captionClasses: "govuk-table__caption--m",
+  head: [
+    {
+      text: "Date"
+    },
+    {
+      text: "Bank holiday"
+    }
+  ],
+  rows: [
+    [
+      {
+        text: "Thursday 1 January"
+      },
+      {
+        text: "New Years's Day"
+      }
+    ],
+    [
+      {
+        text: "Friday 3 April"
+      },
+      {
+        text: "Good Friday"
+      }
+    ],
+    [
+      {
+        text: "Monday 6 April"
+      },
+      {
+        text: "Easter Monday"
+      }
+    ],
+    [
+      {
+        text: "Monday 4 May"
+      },
+      {
+        text: "Early May bank holiday"
+      }
+    ],
+    [
+      {
+        text: "Monday 25 May"
+      },
+      {
+        text: "Sprint bank holiday"
+      }
+    ],
+    [
+      {
+        text: "Monday 31 August"
+      },
+      {
+        text: "Summer bank holiday"
+      }
+    ],
+    [
+      {
+        text: "Friday 25 December"
+      },
+      {
+        text: "Christmas Day"
+      }
+    ],
+    [
+      {
+        text: "Monday 28 December"
+      },
+      {
+        text: "Boxing Day (substitute day)"
+      }
+    ]
+  ]
+}) }}
+
+
+    </div>
+    <div class="govuk-grid-column-one-third mod-flex mod-justify-end">
+      {{ govukButton({
+        text: "Print",
+        classes: "govuk-button--secondary govuk-!-margin-top-1"
+      }) }}
+    </div>
+  </div>
+{% endblock %}
