@@ -58,7 +58,7 @@
     };
   };
 
-  module.exports.nonAttendanceDay = () => {
+  module.exports.nonAttendanceDay = (originalValues) => {
     return {
       lossOfEarnings: {
         editExpenseLossOfEarnings: {

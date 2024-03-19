@@ -87,7 +87,10 @@
     {{ govukButton({
       text: "Add a non-attendance day",
       classes: "govuk-button--secondary",
-      href: "#"
+      href: url("juror-management.non-attendance-day.get", {
+          jurorNumber: jurorNumber,
+          poolNumber: poolNumber
+        }) + "?status=" + status
     }) }}
 
     {{ govukButton({

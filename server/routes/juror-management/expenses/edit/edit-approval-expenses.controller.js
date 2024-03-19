@@ -339,8 +339,7 @@
 
       const nextDate = req.session.editApprovalDates[+page];
 
-      // const nonAttendanceDay = req.session.editForApprovalInNonAttendance;
-      const nonAttendanceDay = false; // assume always non attendance for now
+      const nonAttendanceDay = !!req.body.nonAttendance;
       let validatorResult;
 
       if (nonAttendanceDay) {
@@ -365,12 +364,14 @@
 
       if (status === 'approved' || status === 'for-reapproval'){
         if (nonAttendanceDay) {
-          validatorResult = validate(req.body, editApprovedExpensesValidator.nonAttendanceDay(req.session.editOriginalValues));
+          validatorResult =
+            validate(req.body, editApprovedExpensesValidator.nonAttendanceDay(req.session.editOriginalValues));
         } else {
           req.body.travelType =
           !Array.isArray(req.body.travelType) ? [req.body.travelType] : req.body.travelType;
 
-          validatorResult = validate(req.body, editApprovedExpensesValidator.attendanceDay(req.session.editOriginalValues));
+          validatorResult =
+            validate(req.body, editApprovedExpensesValidator.attendanceDay(req.session.editOriginalValues));
         }
       }
 
