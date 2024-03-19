@@ -23,9 +23,13 @@
           , tmpBody = _.clone(body);
 
         reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri, this.resource, jurorNumber);
+        reqOptions.uri = urljoin(reqOptions.uri, this.resource);
         reqOptions.method = 'PUT';
         reqOptions.body = tmpBody;
+
+        if (jurorNumber) {
+          reqOptions.uri = urljoin(reqOptions.uri, jurorNumber);
+        }
 
         app.logger.debug('Sending request to API: ', {
           uri: reqOptions.uri,

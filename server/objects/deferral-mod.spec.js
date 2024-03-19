@@ -27,7 +27,7 @@ const { deleteDeferralObject } = require('./deferral-mod');
           jurorNumber: '111000006',
         }
         , testObj = deferralObject.put(rpStub, appStub, 'test-token', bodyObj)
-        , realUri = urljoin('http://localhost:8080/api/v1', 'moj/deferral-response/juror/');
+        , realUri = urljoin('http://localhost:8080/api/v1', 'moj/deferral-response/juror');
 
       expect(testObj.uri).to.equal(realUri);
       expect(testObj.method).to.equal('PUT');
