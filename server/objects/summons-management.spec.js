@@ -38,7 +38,7 @@
     });
 
     it('Should call the correct endpoint to update the awaiting information status', function() {
-      var jurorNumber = 123456789
+      var jurorNumber = '123456789'
         , status = 'AWAITING_CONTACT'
         // eslint-disable-next-line max-len
         , testObj = summonsManagementObj.updateStatus.put(rpStub, appStub, 'test-token', jurorNumber, status)

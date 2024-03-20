@@ -8,6 +8,7 @@
     require('./system-codes')(app);
     require('./expense-limits')(app);
     require('./non-sitting-days')(app);
+    require('./users')(app);
 
     app.get('/administration',
       'administration.get',

@@ -6,7 +6,7 @@
   'use strict';
 
   var express = require('express')
-    , nunjucks = require('express-nunjucks')
+    , nunjucks = require('express-nunjucks').default
     , njk = require('nunjucks')
     , csrf = require('csurf')
     , helmet = require('helmet')
@@ -84,7 +84,7 @@
     // Setup templating engine
     app.set('view engine', 'njk');
     app.set('views', [
-      'node_modules/govuk-frontend/',
+      'node_modules/govuk-frontend',
       'node_modules/@ministryofjustice/frontend/',
       path.join(app.get('appPath'), 'templates'),
     ]);

@@ -1,5 +1,6 @@
 ;(function(){
   'use strict';
+  const {dateFilter} = require("../components/filters")
 
   var _ = require('lodash')
     , moment = require('moment')
@@ -121,22 +122,18 @@
 
             courtName: response.courtName,
             replyType: getReplyType(response),
+            replyMethod: response.replyMethod,
 
             processingStatus: statusMapping.hasOwnProperty(response.processingStatus) ?
               statusMapping[response.processingStatus](hasModAccess) :
               '',
             poolNumber: response.poolNumber,
-
             urgent: response.urgent,
             superUrgent: response.superUrgent,
             slaOverdue: response.slaOverdue,
             isUrgent: (response.superUrgent || response.urgent),
-
-            rawReceivedAt: response.dateReceived,
-            receivedAt: moment(response.dateReceived).format('DD/MM/YYYY'),
-            receivedAtTime: moment(response.dateReceived).format('HH:mm'),
-            rawCompletedAt: response.completedAt,
-            completedAt: moment(response.completedAt).format('DD/MM/YYYY'),
+            receivedAt: response.dateReceived,
+            completedAt: response.completedAt,
             completedAtTime: moment(response.completedAt).format('HH:mm'),
           };
 
