@@ -179,7 +179,6 @@
             jurorNumbers: req.body.selectedJurors,
           })
             .then((data) => {
-              console.log(data);
               if (data.unavailableForMove != null) {
                 req.session.availableForMove = data.availableForMove;
 
