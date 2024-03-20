@@ -1129,7 +1129,7 @@
     'deferral-refused': 'DEFERRAL_REFUSED',
     'excusal-granted': 'EXCUSAL_GRANTED',
     'excusal-refused': 'EXCUSAL_REFUSED',
-    'postponement': 'POSTPONEMENT',
+    'postponement': 'POSTPONED',
     'withdrawal': 'WITHDRAWAL',
     'show-cause': 'SHOW_CAUSE',
   };
