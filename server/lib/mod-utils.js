@@ -1058,14 +1058,14 @@
     return `${hour}:${minute}`;
   };
 
-  module.exports.buildMovementProblems = function(data, sessionDetails) {
+  module.exports.buildMovementProblems = function(data) {
     if (data.unavailableForMove.length){
       let unavailableReasons = {ageIneligible: [], invalidStatus: [], noActiveRecord: []};
       const reasons = data.unavailableForMove.reduce((accumulator, currentValue) => {
         let jurorDetails = {
           jurorNumber: currentValue.jurorNumber,
-          firstName: sessionDetails[currentValue.jurorNumber].firstName,
-          lastName: sessionDetails[currentValue.jurorNumber].lastname,
+          firstName: currentValue.firstName || currentValue['first_name'],
+          lastName: currentValue.lastname || currentValue['last_name'],
         };
 
         if (currentValue.failureReason.includes('maximum age')){

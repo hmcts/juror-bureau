@@ -310,7 +310,7 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
           req.session.jurorCommonDetails.payload.juror_numbers.length,
         continueUrl: app.namedRoutes.build('juror.update-bulk-postpone.continue.post', {
           poolNumber: req.params['poolNumber']}),
-        problems: modUtils.buildMovementProblems(req.session.movementData, req.session.jurorDetails),
+        problems: modUtils.buildMovementProblems(req.session.movementData),
       });
     };
   };
