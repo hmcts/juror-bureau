@@ -3127,15 +3127,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"contained-periodic-values@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "contained-periodic-values@npm:1.0.0"
-  dependencies:
-    nearest-periodic-value: ^1.0.0
-  checksum: 92b5fb3ac07981dc464dc00d561dcb58d0292fec5fe008bf9453687b27376e4ef82fbe155a2e8c380de958ec882862097a76366d518268aca778c8b43a24a5fb
-  languageName: node
-  linkType: hard
-
 "content-disposition@npm:0.5.4":
   version: 0.5.4
   resolution: "content-disposition@npm:0.5.4"
@@ -5120,13 +5111,6 @@ __metadata:
   version: 0.1.8
   resolution: "eyes@npm:0.1.8"
   checksum: c31703a92bf36ba75ee8d379ee7985c24ee6149f3a6175f44cec7a05b178c38bce9836d3ca48c9acb0329a960ac2c4b2ead4e60cdd4fe6e8c92cad7cd6913687
-  languageName: node
-  linkType: hard
-
-"faker@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "faker@npm:4.1.0"
-  checksum: 01cf5adb155eac95cdb01ee8351213fd0dc354dd3b00cc8e54aa00eb8c9c267649560ec7b1c7caa4de1ae727cea69f2df903badd5339a824c147695d8cd969d6
   languageName: node
   linkType: hard
 
@@ -8591,7 +8575,6 @@ __metadata:
     express: ^4.14.0
     express-nunjucks: ^2.2.5
     express-session: ^1.14.0
-    faker: ^4.1.0
     fs-extra: ^4.0.3
     govuk-frontend: ^4.8.0
     grunt: latest
@@ -8629,7 +8612,6 @@ __metadata:
     mocha: ^4.0.1
     mochawesome: ^3.0.0
     moment: ^2.19.3
-    moment-business: ^3.0.1
     named-routes: ^2.0.6
     nsp: ^3.1.0
     nunjucks: 3.2.4
@@ -9833,16 +9815,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment-business@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "moment-business@npm:3.0.1"
-  dependencies:
-    contained-periodic-values: ^1.0.0
-    skipped-periodic-values: ^1.0.0
-  checksum: 78a36e96444a9986995a306580b2388ac43bc49248639513478eaf1c353327d3300dc5c7aa88e5ba3b1a1352debcba01da1efc4d3fa3422e17bda925711233c2
-  languageName: node
-  linkType: hard
-
 "moment@npm:2.x.x, moment@npm:^2.10.2, moment@npm:^2.19.3, moment@npm:^2.27.0, moment@npm:^2.29.4":
   version: 2.30.1
   resolution: "moment@npm:2.30.1"
@@ -9942,13 +9914,6 @@ __metadata:
   version: 1.4.0
   resolution: "natural-compare@npm:1.4.0"
   checksum: 23ad088b08f898fc9b53011d7bb78ec48e79de7627e01ab5518e806033861bef68d5b0cd0e2205c2f36690ac9571ff6bcb05eb777ced2eeda8d4ac5b44592c3d
-  languageName: node
-  linkType: hard
-
-"nearest-periodic-value@npm:^1.0.0":
-  version: 1.2.0
-  resolution: "nearest-periodic-value@npm:1.2.0"
-  checksum: 2b189353f36a1d2f356c6c23235528678aa4e763fa4c7fbce319e7f37afba0d8a3cf8b10c832c8feab5262aefdb39dc982abf933e1c166ce02d6d344be9beecc
   languageName: node
   linkType: hard
 
@@ -12603,15 +12568,6 @@ __metadata:
     supports-color: ^5.1.0
     type-detect: ^4.0.5
   checksum: 48e4ce9a7ffd5f7c2a5021a03f5c01965801864ba0195bedab34f56fe77ad44087324bb5beb2948ab32065ff577d18265898f46a9796fcb898dd053dbe31d1c6
-  languageName: node
-  linkType: hard
-
-"skipped-periodic-values@npm:^1.0.0":
-  version: 1.0.1
-  resolution: "skipped-periodic-values@npm:1.0.1"
-  dependencies:
-    nearest-periodic-value: ^1.0.0
-  checksum: b2ff0ec7e3e10ff816a6351b3cf2f33b013da675546601ea7dda20db1ed568eec928943f14392e09dffa04da62a23e2a802ae46e731dc0f8b4a2db8e91c62d2a
   languageName: node
   linkType: hard
 
