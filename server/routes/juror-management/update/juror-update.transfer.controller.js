@@ -145,7 +145,6 @@
           poolNumber: req.params.poolNumber,
         });
         req.body.selectedJurors = req.session.poolJurorsTransfer.selectedJurors;
-        req.body.jurorDates = req.body.selectedJurors.map(id => req.session.jurorDetails[id].startDate);
         validatorResult = validate(req.body, jurorBulkTransferValidator());
         movementValidateRoute = 'pool-management/movement/bulk-validate.njk';
       }
@@ -180,13 +179,14 @@
             jurorNumbers: req.body.selectedJurors,
           })
             .then((data) => {
-              if (data.unavailableForTransfer != null) {
-                req.session.availableForTransfer = data.availableForTransfer;
+              console.log(data);
+              if (data.unavailableForMove != null) {
+                req.session.availableForMove = data.availableForMove;
 
                 return res.render(movementValidateRoute, {
                   cancelUrl: failUrl,
                   continueUrl: continueUrl,
-                  problems: modUtils.buildMovementProblems(data, req.session.jurorDetails),
+                  problems: modUtils.buildMovementProblems(data),
                 });
               }
 
