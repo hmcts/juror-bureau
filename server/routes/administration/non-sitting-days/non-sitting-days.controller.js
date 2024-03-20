@@ -6,7 +6,7 @@
   const _ = require('lodash')
     , validate = require('validate.js')
     , validator = require('../../../config/validation/add-non-sitting-day')
-    , { bankHolidaysDAO } = require('../../../objects/administration');
+    , { bankHolidaysDAO, nonSittingDayDAO } = require('../../../objects/administration');
 
   module.exports.getNonSittingDays = function(app) {
     return async function(req, res) {
@@ -14,13 +14,20 @@
       const postUrl = app.namedRoutes.build('administration.non-sitting-days.post');
 
       try {
-        const response = await bankHolidaysDAO.get(app, req);
+        const holidayDates = await bankHolidaysDAO.get(app, req);
+
+        const nonSittingDates = await nonSittingDayDAO.get(app, req, req.session.authentication.owner);
+ 
+        const holidayDateYears = Object.keys(holidayDates.response);
 
         return res.render('administration/non-sitting-days.njk', {
           postUrl,
+          holidayDates: holidayDates.response,
+          nonSittingDates: nonSittingDates,
+          holidayDateYears,
         });
       } catch (err) {
-        app.logger.crit('Failed to fetch Non sitting days', {
+        app.logger.crit('Failed to fetch list of holidays', {
           auth: req.session.authentication,
           token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
@@ -28,6 +35,7 @@
 
         return res.render('_errors/generic.njk');
       }
+
     };
   };
 
