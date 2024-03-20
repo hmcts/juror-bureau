@@ -1364,26 +1364,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"assign-deep@npm:1.0.1":
-  version: 1.0.1
-  resolution: "assign-deep@npm:1.0.1"
-  dependencies:
-    assign-symbols: ^2.0.2
-  checksum: 87ec212482212b99f4ac57b024f250059c47637978ad76800dad8364012a2ee6bd5d89562186fa0d5f1a76b1ee83ff82e8c3f8dedc73aee756bdcc9936a3ebe6
-  languageName: node
-  linkType: hard
-
 "assign-symbols@npm:^1.0.0":
   version: 1.0.0
   resolution: "assign-symbols@npm:1.0.0"
   checksum: c0eb895911d05b6b2d245154f70461c5e42c107457972e5ebba38d48967870dee53bcdf6c7047990586daa80fab8dab3cc6300800fbd47b454247fdedd859a2c
-  languageName: node
-  linkType: hard
-
-"assign-symbols@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "assign-symbols@npm:2.0.2"
-  checksum: 98429fd55c435cf3762a0d8276659a09305e7ca0eb97f4f723f9e3b94f1fca1eb61bdca48d16db0eef8c31e743c9ec55d545646a52604896ce2154439c2fd47d
   languageName: node
   linkType: hard
 
@@ -4961,13 +4945,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express-nunjucks@npm:^2.2.5":
-  version: 2.2.5
-  resolution: "express-nunjucks@npm:2.2.5"
+"express-nunjucks@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "express-nunjucks@npm:3.1.1"
   dependencies:
-    assign-deep: 1.0.1
-    nunjucks-async-loader: 1.1.5
-  checksum: 43725f84dbe2875c79e0205425f35d5ed0c54396482a2e10df12559e2b6397b3cde7f024d7288eb3d90fb60dcb884f7525b9bdf3e18d5f26363ed1d449ac5e47
+    nunjucks-async-loader: ^2.1.2
+  peerDependencies:
+    express: ^4.18.2
+    nunjucks: ^3.2.4
+  checksum: f41928106dda3afcd8daae8a18753f110072bcc4d9db406f0f72c12943945636532eb8d0841385705c87f843607d606d80dd7b7d5e5a6a0bf248b1d187b0cce3
   languageName: node
   linkType: hard
 
@@ -8589,7 +8575,7 @@ __metadata:
     eslint-plugin-protractor: ^1.34.2
     eslint-plugin-react: ^7.5.1
     express: ^4.14.0
-    express-nunjucks: ^2.2.5
+    express-nunjucks: ^3.1.1
     express-session: ^1.14.0
     faker: ^4.1.0
     fs-extra: ^4.0.3
@@ -10200,6 +10186,17 @@ __metadata:
     co: 4.6.0
     es6-promisify: 6.1.0
   checksum: 84818c33b1692f17be3f41f2521d1931c5eab495b20998b9c41fa1c531ba3e8570ef42397a116e6e689113d8bad03504e8a6a8e16879ed4b19d1c818a35d6109
+  languageName: node
+  linkType: hard
+
+"nunjucks-async-loader@npm:^2.1.2":
+  version: 2.1.2
+  resolution: "nunjucks-async-loader@npm:2.1.2"
+  dependencies:
+    chokidar: 3.3.1
+  peerDependencies:
+    nunjucks: ^3.2.4
+  checksum: 6a681533521d0e0a97cf6926dac52dc5e70ed64c3d7b9df89b2fc12e12dc61764b26d5e633adac7ecadecd7b448161817c91ddd3685455a58f4f349d13f877f4
   languageName: node
   linkType: hard
 
