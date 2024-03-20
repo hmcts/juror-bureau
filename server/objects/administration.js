@@ -148,6 +148,23 @@
 
       return rp(payload);
     },
+
+    delete: function(app, jwtToken, locCode, date) {
+      let reqOptions = _.clone(options);
+
+      reqOptions.headers.Authorization = jwtToken;
+      reqOptions.uri = urljoin(reqOptions.uri, 'moj/administration/non-sitting-days', locCode, date);
+      reqOptions.method = 'DELETE';
+
+      app.logger.debug('Sending request to API: ', {
+        uri: reqOptions.uri,
+        headers: reqOptions.headers,
+        method: reqOptions.method,
+      });
+
+      return rp(reqOptions);
+    },
+
   };
 
 })();

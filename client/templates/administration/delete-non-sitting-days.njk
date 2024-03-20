@@ -1,0 +1,69 @@
+{% extends "../layouts/default.njk" %}
+
+{% from "govuk/components/error-message/macro.njk" import govukErrorMessage -%}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+
+{% block page_title %}{{ serviceName }} - administration{% endblock %}
+{% block page_identifier %}administration - Add a non-sitting day{% endblock %}
+
+{% set currentApp = "Court administration" if isCourtUser else ("Bureau administration" if isBureauUser else "System administration") %} 
+
+{% set nav = "courtsAndBureau" %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {% set dateError = undefined %}
+  {% if errors.items["nonSittingDate"] %}
+    {% set dateError = errors.items["nonSittingDate"][0].details %}
+  {% endif %}
+
+   {% set decriptionNonSittingDayError = undefined %}
+  {% if errors.items["decriptionNonSittingDay"] %}
+    {% set decriptionNonSittingDayError = { text: errors.items['decriptionNonSittingDay'][0].details} %}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <h1 class="govuk-heading-l">Are you sure you want to delete this non-sitting day?</h1>
+
+      <form action="{{ postUrl }}" method="post" id="nonSittingDaysForm">
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Delete non-sitting day",
+            type: "submit",
+            class: "govuk-!-width-one-half"
+          }) }}
+
+          <a class="govuk-link" href="{{ url('administration.non-sitting-days.get') }}" id="cancelAnchor">Cancel</a>
+        </div>
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+
+
+    </div>
+
+  </div>
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function(){
+
+      const datePickers = []
+        .slice
+        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
+      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
+
+    });
+  </script>
+
+{% endblock %}

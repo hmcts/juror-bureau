@@ -27,7 +27,11 @@
       auth.verify,
       controller.postAddNonSittingDay(app),
     );
-
+    app.get('/administration/delete-non-sitting-days',
+      'administration.delete-non-sitting-days.get',
+      auth.verify,
+      controller.deleteNonSittingDay(app),
+    );
 
   };
 })();

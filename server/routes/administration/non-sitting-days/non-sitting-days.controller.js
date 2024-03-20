@@ -17,7 +17,7 @@
         const holidayDates = await bankHolidaysDAO.get(app, req);
 
         const nonSittingDates = await nonSittingDayDAO.get(app, req, req.session.authentication.owner);
- 
+
         const holidayDateYears = Object.keys(holidayDates.response);
 
         return res.render('administration/non-sitting-days.njk', {
@@ -103,6 +103,23 @@
         req.session.formFields = req.body;
 
         return res.redirect(app.namedRoutes.build('administration.add-non-sitting-days.get', {
+
+        }));
+      };
+
+    };
+  };
+
+  module.exports.deleteNonSittingDay = function(app) {
+    return async function(req, res) {
+      var validatorResult;
+
+      validatorResult = validate(req.body, validator.validateDate());
+      if (typeof validatorResult !== 'undefined') {
+        req.session.errors = validatorResult;
+        req.session.formFields = req.body;
+
+        return res.redirect(app.namedRoutes.build('administration.non-sitting-days.get', {
 
         }));
       };
