@@ -9,7 +9,7 @@
   module.exports.getRooms = function(app) {
     return (req, res) => {
       return res.redirect(app.namedRoutes.build('administration.room-locations.location.get', {
-        locationCode: req.session.authentication.owner,
+        locationCode: req.session.authentication.locCode,
       }));
     };
   };
