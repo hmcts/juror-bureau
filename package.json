@@ -33,7 +33,7 @@
     "csurf": "^1.9.0",
     "errorhandler": "^1.4.3",
     "express": "^4.14.0",
-    "express-nunjucks": "^3.0.0",
+    "express-nunjucks": "^3.1.1",
     "express-session": "^1.14.0",
     "fs-extra": "^4.0.3",
     "govuk-frontend": "^4.8.0",
