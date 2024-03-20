@@ -3,7 +3,7 @@
   <p id="event-name-error" class="govuk-error-message">
     {{ params.errorMessage.text }}
   </p>
-  <div id="ac-{{ params.id }}" name="ac-{{ params.name }}" data-content="{{ params.data }}"></div>
+  <div id="ac-{{ params.id }}" class="{{ params.classes }}" name="ac-{{ params.name }}" data-content="{{ params.data }}"></div>
 </div>
 
 <script src="{{ assetPath if assetPath else '/' }}js/accessible-autocomplete.min.js"></script>

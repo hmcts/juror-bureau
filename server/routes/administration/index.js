@@ -7,6 +7,7 @@
   module.exports = function(app) {
     require('./system-codes')(app);
     require('./expense-limits')(app);
+    require('./users')(app);
 
     app.get('/administration',
       'administration.get',

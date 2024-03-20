@@ -1,0 +1,197 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - administration{% endblock %}
+{% block page_identifier %}administration - edit user{% endblock %}
+
+{% set currentApp = "Court administration" if isCourtManager else ("Bureau administration" if isBureauManager else "System administration") %} 
+{% set nav = "users" %}
+
+{% block content %}
+
+  {% set rolesOptions = [] %}
+  {% if user.userType === "COURT" %}
+    {% set rolesOptions = [
+      {
+        value: "MANAGER",
+        text: "Manager",
+        hint: {
+          text: "Court administration and expense approvals"
+        }
+      },
+      {
+        value: "SENIOR_JUROR_OFFICER",
+        text: "Senior jury officer"
+      }
+    ] %}
+  {% elif user.userType === "BUREAU" %}
+    {% set rolesOptions = [
+      {
+        value: "MANAGER",
+        text: "Manager",
+        hint: {
+          text: "Bureau administration and expense approvals"
+        }
+      }
+    ] %}
+  {% endif %}
+
+  {% set nameError = undefined %}
+  {% if errors.items["name"] %}
+    {%  set nameError = { text: errors.items['name'][0].details} %}
+  {% endif %}
+  {% set emailError = undefined %}
+  {% if errors.items["email"] %}
+    {%  set emailError = { text: errors.items['email'][0].details} %}
+  {% endif %}
+
+  {% include "includes/errors.njk" %} 
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form action="{{ processUrl }}" method="post" id="editUserForm">
+        <h1 class="govuk-heading-xl">Edit user</h1>
+
+        {% if isSystemAdministrator %}
+
+          {{ govukSummaryList({
+            rows: [
+              {
+                key: {
+                  text: "User type"
+                },
+                value: {
+                  text: user.userType | capitalize
+                },
+                actions: {
+                  items: [
+                    {
+                      href: changeTypeUrl,
+                      text: "Change"
+                    }
+                  ]
+                }
+              }
+            ]
+          }) }}
+
+          {{ govukInput({
+            label: {
+              text: "Full name"
+            },
+            classes: "govuk-input--width-30",
+            id: "name",
+            name: "name",
+            value: tmpBody.name if tmpBody.name else user.name,
+            errorMessage: nameError
+          }) }}
+
+          {{ govukInput({
+            label: {
+              text: "Email"
+            },
+            classes: "govuk-input--width-30",
+            id: "email",
+            name: "email",
+            value: tmpBody.email if tmpBody.email else user.email,
+            errorMessage: emailError
+          }) }}
+        
+        {% else %}
+
+          {{ govukSummaryList({
+            rows: [
+              {
+                key: {
+                  text: "Full name"
+                },
+                value: {
+                  text: user.name
+                }
+              },
+              {
+                key: {
+                  text: "Email"
+                },
+                value: {
+                  text: user.email
+                }
+              },
+              {
+                key: {
+                  text: "User type"
+                },
+                value: {
+                  text: user.userType | capitalize
+                }
+              }
+            ]
+          }) }}
+          <input type="hidden" name="name" value="{{ user.name }}">
+          <input type="hidden" name="email" value="{{ user.email }}">
+          
+        {% endif %}
+
+        {% if user.userType === 'COURT' or user.userType === 'BUREAU'%}
+          {{ govukCheckboxes({
+            name: "roles",
+            classes: "govuk-checkboxes--small",
+            fieldset: {
+              legend: {
+                text: "Extra permissions",
+                isPageHeading: true,
+                classes: "govuk-fieldset__legend--m"
+              }
+            },
+            hint: {
+              text: "Tick all that apply"
+            },
+            items: rolesOptions,
+            values: tmpBody.roles if tmpBody.roles else user.roles
+          }) }}
+        {% endif %}
+
+        {{ govukRadios({
+          classes: "govuk-radios",
+          name: "isActive",
+          fieldset: {
+            legend: {
+              text: "Status",
+              isPageHeading: true,
+              classes: "govuk-fieldset__legend--s"
+            }
+          },
+          items: [
+            {
+              value: true,
+              text: "Active",
+              checked: user.isActive === true
+            },
+            {
+              value: false,
+              text: "Inactive",
+              checked: user.isActive === false
+            }
+          ]
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Save changes",
+            type: "submit"
+          }) }}
+          <a href="{{ cancelUrl }}" class="govuk-link" id="cancelAnchor">Cancel</a>
+        </div>
+
+        {{ csrfProtection(csrftoken) }}
+      </form>
+    </div>
+  </div>
+
+{% endblock %}

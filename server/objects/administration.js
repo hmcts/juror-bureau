@@ -83,4 +83,23 @@
     },
   };
 
+  module.exports.courtsDAO = {
+    get: function(app, req) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/administration/courts'),
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+      };
+
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
+    },
+  };
+
 })();

@@ -33,8 +33,9 @@
         if (parseInt(court.locationCode) === parseInt(courtCode[0])) {
 
           match = true;
-          court.attendanceTime = court.attendanceTime.match(/[\d:]+/g)[0];
-
+          if (court.attendanceTime){
+            court.attendanceTime = court.attendanceTime.match(/[\d:]+/g)[0] || null;
+          }
           resolve(court);
         }
       });
@@ -1226,6 +1227,18 @@
     'excused': 'Excused',
     'sentencing-invite': 'Sentencing invite',
     'sentencing-date': 'Sentencing date',
+  };
+
+  module.exports.mapAdminToPoolRequestCourts = (adminCourts) => {
+    modUtils.replaceAllObjKeys(adminCourts, _.camelCase);
+
+    return adminCourts.map((court) => {
+      return {
+        locationName: court.courtName,
+        locationCode: court.locCode,
+        courtType: court.courtType,
+      };
+    });
   };
 
 })();
