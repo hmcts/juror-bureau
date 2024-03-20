@@ -11,7 +11,7 @@
   module.exports.getCourtDetails = function(app) {
     return (req, res) => {
       return res.redirect(app.namedRoutes.build('administration.court-details.location.get', {
-        locationCode: req.session.authentication.owner,
+        locationCode: req.session.authentication.locCode,
       }));
     };
   };
