@@ -104,8 +104,5 @@
     "sinon-chai": "^2.8.0",
     "time-grunt": "^1.4.0"
   },
-  "resolutions": {
-    "jackspeak": "2.1.1"
-  },
   "packageManager": "yarn@3.8.1"
 }
