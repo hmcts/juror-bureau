@@ -12,6 +12,22 @@
       controller.getNonSittingDays(app),
     );
 
+    app.post('/administration/add-non-sitting-days',
+      'administration.non-sitting-days.post',
+      auth.verify,
+      controller.postNonSittingDays(app),
+    );
+    app.get('/administration/add-non-sitting-days',
+      'administration.add-non-sitting-days.get',
+      auth.verify,
+      controller.getAddNonSittingDay(app),
+    );
+    app.post('/administration/add-non-sitting-days',
+      'administration.add-non-sitting-days.post',
+      auth.verify,
+      controller.postAddNonSittingDay(app),
+    );
+
 
   };
 })();

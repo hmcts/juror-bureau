@@ -1,6 +1,5 @@
 {% extends "../layouts/default.njk" %}
 
-{% from "govuk/components/error-message/macro.njk" import govukErrorMessage -%}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
 
@@ -24,17 +23,18 @@
         <h2 id="overviewLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Chester non-sitting days</h2>
       </div>
 
-      <div class="mod-flex">
-        {{ govukButton({
-          text: "Add a non-sitting day",
-          classes: "govuk-button--secondary govuk-!-margin-top-1"
-        }) }}
-      </div>
-
+      <form action="{{ postUrl }}" method="post" id="nonSittingDaysForm">
+        <div class="mod-flex">
+          {{ govukButton({
+            text: "Add a non-sitting day",
+            classes: "govuk-button--secondary govuk-!-margin-top-1",
+            href: url('administration.add-non-sitting-days.get')
+          }) }}
+        </div>
+      </form>
       <div class="mod-juror-record__title govuk-!-margin-bottom-5">
         <h2 id="overviewLabel" class="govuk-heading-m govuk-!-margin-bottom-2">UK bank holidays</h2>
       </div>
-    
 
       {{ govukTable({
         caption: "2024",
