@@ -114,7 +114,8 @@
   };
 
   validate.validators.editExpensePassengers = function(value, options, key, attributes) {
-    if (options.originalValues.travel.jurors_taken_by_car !== null && options.originalValues.travel.jurors_taken_by_car !== '') {
+    if (options.originalValues.travel.jurors_taken_by_car !== null
+      && options.originalValues.travel.jurors_taken_by_car !== '') {
       if (value < options.originalValues.travel.jurors_taken_by_car || value === '') {
         return [{
           summary: 'You cannot reduce number of passengers as juror has already been paid for this',
@@ -125,7 +126,8 @@
   };
 
   validate.validators.editExpenseMiles = function(value, options, key, attributes) {
-    if (options.originalValues.travel.miles_traveled !== null && options.originalValues.travel.miles_traveled !== '') {
+    if (options.originalValues.travel.miles_traveled !== null
+      && options.originalValues.travel.miles_traveled !== '') {
       if (value < options.originalValues.travel.miles_traveled || value === '') {
         return [{
           summary: 'Miles travelled cannot be lower than the miles originally entered',
@@ -169,7 +171,8 @@
   };
 
   validate.validators.editExpenseLossOfEarnings = function(value, options, key, attributes) {
-    if (options.originalValues.financial_loss.loss_of_earnings !== null && options.originalValues.financial_loss.loss_of_earnings > 0) {
+    if (options.originalValues.financial_loss.loss_of_earnings !== null
+      && options.originalValues.financial_loss.loss_of_earnings > 0) {
       if (value < options.originalValues.financial_loss.loss_of_earnings || value === '') {
         return [{
           summary: 'Loss of earnings or benefits amount cannot be less than the amount originally entered',
@@ -180,7 +183,8 @@
   };
 
   validate.validators.editExpenseExtraCare = function(value, options, key, attributes) {
-    if (options.originalValues.financial_loss.extra_care_cost !== null && options.originalValues.financial_loss.extra_care_cost > 0) {
+    if (options.originalValues.financial_loss.extra_care_cost !== null
+      && options.originalValues.financial_loss.extra_care_cost > 0) {
       if (value < options.originalValues.financial_loss.extra_care_cost || value === '') {
         return [{
           summary: 'Extra care costs cannot be less than the amount originally entered',

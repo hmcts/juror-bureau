@@ -73,9 +73,10 @@
     }) }}
 
     {% set isNotApprovedForReapproval = status !== "approved" and status !== "for-reapproval" %}
+    {% set isDraftType = status === "draft" or status === "for-approval" %}
 
     {% set payAttendanceItems = [] %}
-    {# {% if isNotApprovedForReappoval and expensesData.time.pay_attendance === "HALF_DAY" %} #}
+    {% if (expensesData.time.pay_attendance === "HALF_DAY" or isNotApprovedForReappoval) or isDraftType %}
       {% set payAttendanceItems = (payAttendanceItems.push({
           value: "HALF_DAY",
           text: "Half day",
@@ -84,7 +85,7 @@
             "data-summary-detectable": ""
           }
         }), payAttendanceItems) %}
-    {# {% endif %} #}
+    {% endif %}
 
     {% set payAttendanceItems = (payAttendanceItems.push({
         value: "FULL_DAY",
