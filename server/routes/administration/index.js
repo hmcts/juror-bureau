@@ -10,6 +10,7 @@
     require('./users')(app);
     require('./room-locations')(app);
     require('./court-details')(app);
+    require('./courts-and-bureau')(app);
 
     app.get('/administration',
       'administration.get',

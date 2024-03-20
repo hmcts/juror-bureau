@@ -1,4 +1,3 @@
-
 (function() {
   'use strict';
   const _ = require('lodash');
@@ -7,7 +6,7 @@
   const { convert24to12, convert12to24 } = require('../../../components/filters');
   const { replaceAllObjKeys, padTimeForApi } = require('../../../lib/mod-utils');
   const validator = require('../../../config/validation/court-details');
-
+  const { isSystemAdministrator } = require('../../../components/auth/user-type');
 
   module.exports.getCourtDetails = function(app) {
     return (req, res) => {
@@ -34,6 +33,8 @@
           replaceAllObjKeys(courtDetails, _.camelCase);
           replaceAllObjKeys(courtrooms, _.camelCase);
 
+          console.log(courtDetails);
+
           const originalCourtRoomId = courtrooms.find(c => c.roomName === courtDetails.assemblyRoom)
             ? courtrooms.find(c => c.roomName === courtDetails.assemblyRoom).id
             : '';
@@ -42,9 +43,11 @@
           return res.render('administration/court-details.njk', {
             originalCourtRoomId,
             attendanceTime,
-            cancelUrl: app.namedRoutes.build('administration.court-details.location.get', {
-              locationCode,
-            }),
+            cancelUrl: isSystemAdministrator(req, res)
+              ? app.namedRoutes.build('administration.courts-and-bureau.get')
+              : app.namedRoutes.build('administration.court-details.location.get', {
+                locationCode,
+              }),
             courtDetails,
             courtrooms,
             postUrl: app.namedRoutes.build('administration.court-details.location.post', {
@@ -106,7 +109,7 @@
       replaceAllObjKeys(payload, _.snakeCase);
 
       try {
-        await courtDetailsDAO.post(app, req, req.params.locationCode, payload);
+        await courtDetailsDAO.put(app, req, req.params.locationCode, payload);
         res.redirect(redirectUrl);
       } catch (err) {
         app.logger.crit('Failed to update court details', {

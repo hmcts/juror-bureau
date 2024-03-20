@@ -1,4 +1,4 @@
-{% extends "layouts/default.njk" %}
+{% extends "layouts/default.njk" if isCourtManager else "layouts/default-no-nav.njk" %}
 
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
@@ -8,9 +8,9 @@
 {% from "includes/csrf.njk" import csrfProtection %}
 
 {% block page_title %}{{ serviceName }} - administration{% endblock %}
-{% block page_identifier %}administration - system codes - {{ codeType }}{% endblock %}
+{% block page_identifier %}administration - court details{% endblock %}
 
-{% set currentApp = "Court administration" if isCourtManager else ("Bureau administration" if isBureauManager else "System administration") %} 
+{% set currentApp = "Court administration" if isCourtManager else "System administration" %} 
 {% set nav = "courtDetails" %}
 
 {% block content %}
@@ -45,7 +45,11 @@
   <form method="post">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl">Court details</h1>
+        {% if isCourtManager %}
+          <h1 class="govuk-heading-xl">Court details</h1>
+        {% elif isSystemAdministrator %}
+          <h1 class="govuk-heading-xl">{{ { locationCode: courtDetails.courtCode, locationName: courtDetails.englishCourtName } | transformCourtName }}</h1>
+        {% endif %}
         <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-2">Court code</h2>
         <p class="govuk-body">{{ courtDetails.courtCode }}</p>
         <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-2">Court name{% if courtDetails.welsh %} (English){% endif %}</h2>

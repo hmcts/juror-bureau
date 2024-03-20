@@ -182,32 +182,38 @@
   };
 
   module.exports.courtDetailsDAO = {
-    get: (app, req, loc) => {
-      app.logger.info('Sending request to API: ', 'moj/administration/courts/', loc);
-
-      return rp({
-        uri: urljoin(config.apiEndpoint, 'moj/administration/courts/', loc),
+    get: function(app, req, loc) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/administration/courts', loc),
         method: 'GET',
         headers: {
-          ...options.headers,
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
           Authorization: req.session.authToken,
         },
         json: true,
-      });
-    },
-    post: (app, req, loc, body) => {
-      app.logger.info('Sending request to API: ', 'moj/administration/courts/', loc, body);
+      };
 
-      return rp({
-        uri: urljoin(config.apiEndpoint, 'moj/administration/courts/', loc),
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
+    },
+    put: function(app, req, loc, body) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/administration/courts', loc),
         method: 'PUT',
         headers: {
-          ...options.headers,
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
           Authorization: req.session.authToken,
         },
         json: true,
         body,
-      });
+      };
+
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
     },
   };
 
