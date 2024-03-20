@@ -45,6 +45,10 @@
           password: req.body.password,
         }
         , authSuccess = function(resp) {
+
+          if (resp.userType === 'COURT') {
+            resp.locCode = '415';
+          }
           createJWTToken(req, resp, secretsConfig.get('secrets.juror.bureau-jwtKey'));
           return successCB(resp);
         }

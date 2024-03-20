@@ -31,12 +31,102 @@
             href: url('administration.add-non-sitting-days.get')
           }) }}
         </div>
+
+        {% set dateRows = [] %}
+        {% for date in nonSittingDates %}
+          {% set dateRows = (dateRows.push(
+          [
+            {
+              text: date.date | dateFilter('yyyy-MM-DD', 'ddd DD MMM yyyy')
+            },
+            {
+              text: date.description | toSentenceCase
+            },
+            {
+              html: '<a href=' + url("administration.add-non-sitting-days.get") + ' class="govuk-link">' + 'Delete' + '</a>'
+            }
+          ]
+          ), dateRows) %}
+        {% endfor %}
+
+        {{ govukTable({
+          head: [
+            {
+              text: "Date"
+            },
+            {
+              text: "Description"
+            },
+            {
+              text: ""
+            }
+          ],
+          rows: dateRows
+        }) }}
       </form>
       <div class="mod-juror-record__title govuk-!-margin-bottom-5">
         <h2 id="overviewLabel" class="govuk-heading-m govuk-!-margin-bottom-2">UK bank holidays</h2>
       </div>
+        {% for year in holidayDateYears %}
 
-      {{ govukTable({
+          {% set holidayDateRows = [] %}  
+          {% for dateRow in holidayDates[year] %}        
+            {% set holidayDateRows = (holidayDateRows.push(
+            [{
+                text: dateRow.date | dateFilter('yyyy-MM-DD', 'ddd DD MMM yyyy')
+              },
+              {
+                text: dateRow.description | toSentenceCase
+              }
+            ]
+            ), holidayDateRows) %}
+          {% endfor %}
+
+          {{ govukTable({
+            caption: year,
+            captionClasses: "govuk-table__caption--m",
+            head: [
+              {
+                text: "Date"
+              },
+              {
+                text: "Bank holiday"
+              }
+            ],
+            rows: holidayDateRows
+          }) }}
+          {% endfor %}
+ {# from backend: 
+ 1.Keys : ['2024','2025']
+ 2.dates:
+  {
+      '2024': [
+        { date: '2024-09-28', description: 'TEST' },
+        { date: '2024-09-29', description: 'TEST PUBLIC HOLIDAY' }
+      ]       
+      '20245': [
+        { date: '2025-09-28', description: 'TEST' },
+        { date: '2025-09-29', description: 'TEST PUBLIC HOLIDAY' }
+      ]
+    }
+    },
+ //Loop over keys = key
+  {{ govukTable({
+        caption: key,
+        captionClasses: "govuk-table__caption--m",
+        head: [
+          {
+            text: "Date"
+          },
+          {
+            text: "Bank holiday"
+          }
+        ],
+        rows: dates[key]
+      }) }} #}
+
+
+      {# {{ govukTable({
         caption: "2024",
         captionClasses: "govuk-table__caption--m",
         head: [
@@ -47,224 +137,8 @@
             text: "Bank holiday"
           }
         ],
-        rows: [
-          [
-            {
-              text: "Friday 29 March"
-            },
-            {
-              text: "Good Friday"
-            }
-          ],
-          [
-            {
-              text: "Monday 1 April"
-            },
-            {
-              text: "Easter Monday"
-            }
-          ],
-          [
-            {
-              text: "Monday 6 May"
-            },
-            {
-              text: "Early May bank holiday"
-            }
-          ],
-          [
-            {
-              text: "Monday 27 May"
-            },
-            {
-              text: "Spring bank holiday"
-            }
-          ],
-          [
-            {
-              text: "Monday 26 August"
-            },
-            {
-              text: "Summer bank holiday"
-            }
-          ],
-          [
-            {
-              text: "Wednesday 25 December"
-            },
-            {
-              text: "Christmas Day"
-            }
-          ],
-          [
-            {
-              text: "Thursday 26 December"
-            },
-            {
-              text: "Boxing Day"
-            }
-          ]
-        ]
-      }) }}
-
-{{ govukTable({
-  caption: "2025",
-  captionClasses: "govuk-table__caption--m",
-  head: [
-    {
-      text: "Date"
-    },
-    {
-      text: "Bank holiday"
-    }
-  ],
-  rows: [
-    [
-      {
-        text: "Wednesday 1 January"
-      },
-      {
-        text: "New Year's Day"
-      }
-    ],
-    [
-      {
-        text: "Friday 18 April"
-      },
-      {
-        text: "Good Friday"
-      }
-    ],
-    [
-      {
-        text: "Monday 21 April"
-      },
-      {
-        text: "Easter Monday"
-      }
-    ],
-    [
-      {
-        text: "Monday 5 May"
-      },
-      {
-        text: "Early May bank holiday"
-      }
-    ],
-    [
-      {
-        text: "Monday 26 May"
-      },
-      {
-        text: "Sprint bank holiday"
-      }
-    ],
-    [
-      {
-        text: "Monday 25 August"
-      },
-      {
-        text: "Summer bank holiday"
-      }
-    ],
-    [
-      {
-        text: "Monday 25 December"
-      },
-      {
-        text: "Christmas Day"
-      }
-    ],
-    [
-      {
-        text: "Friday 26 December"
-      },
-      {
-        text: "Boxing Day"
-      }
-    ]
-  ]
-}) }}
-
-      {{ govukTable({
-  caption: "2026",
-  captionClasses: "govuk-table__caption--m",
-  head: [
-    {
-      text: "Date"
-    },
-    {
-      text: "Bank holiday"
-    }
-  ],
-  rows: [
-    [
-      {
-        text: "Thursday 1 January"
-      },
-      {
-        text: "New Years's Day"
-      }
-    ],
-    [
-      {
-        text: "Friday 3 April"
-      },
-      {
-        text: "Good Friday"
-      }
-    ],
-    [
-      {
-        text: "Monday 6 April"
-      },
-      {
-        text: "Easter Monday"
-      }
-    ],
-    [
-      {
-        text: "Monday 4 May"
-      },
-      {
-        text: "Early May bank holiday"
-      }
-    ],
-    [
-      {
-        text: "Monday 25 May"
-      },
-      {
-        text: "Sprint bank holiday"
-      }
-    ],
-    [
-      {
-        text: "Monday 31 August"
-      },
-      {
-        text: "Summer bank holiday"
-      }
-    ],
-    [
-      {
-        text: "Friday 25 December"
-      },
-      {
-        text: "Christmas Day"
-      }
-    ],
-    [
-      {
-        text: "Monday 28 December"
-      },
-      {
-        text: "Boxing Day (substitute day)"
-      }
-    ]
-  ]
-}) }}
-
+        rows: dateRows
+      }) }} #}
 
     </div>
     <div class="govuk-grid-column-one-third mod-flex mod-justify-end">
