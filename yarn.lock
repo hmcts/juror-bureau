@@ -5123,10 +5123,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"faker@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "faker@npm:4.1.0"
-  checksum: 01cf5adb155eac95cdb01ee8351213fd0dc354dd3b00cc8e54aa00eb8c9c267649560ec7b1c7caa4de1ae727cea69f2df903badd5339a824c147695d8cd969d6
+"faker@npm:^6.0.0":
+  version: 6.6.6
+  resolution: "faker@npm:6.6.6"
+  checksum: bfb0d581ab4d76095f2c6bff213fe1735ce077f0f8df849c144ad26035e105bce1b7a704cc030366338c52e25b636ac097a712426a78c9b8804af78f6f2bffe7
   languageName: node
   linkType: hard
 
@@ -8591,7 +8591,7 @@ __metadata:
     express: ^4.14.0
     express-nunjucks: ^2.2.5
     express-session: ^1.14.0
-    faker: ^4.1.0
+    faker: ^6.0.0
     fs-extra: ^4.0.3
     govuk-frontend: ^4.8.0
     grunt: latest
