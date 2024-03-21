@@ -28,7 +28,6 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
         originalDate = new Date(req.session.jurorCommonDetails.startDate);
         backUrl = req.session.processLateSummons.backUrl;
         cancelUrl = req.session.processLateSummons.cancelUrl;
-        delete req.session.processLateSummons;
       } else if (typeof req.session.poolJurorsPostpone !== 'undefined'){
         originalDate = new Date(req.session.poolJurorsPostpone.courtStartDate);
         backUrl = app.namedRoutes.build('pool-overview.get', {
@@ -394,6 +393,8 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
             ...payload,
           },
         });
+
+        delete req.session.processLateSummons;
 
         if (typeof req.session.poolJurorsPostpone !== 'undefined') {
           jurorNumber = req.session.poolJurorsPostpone.selectedJurors;

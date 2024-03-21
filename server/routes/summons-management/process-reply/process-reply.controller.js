@@ -17,6 +17,7 @@ module.exports.getProcessReply = function(app) {
 
     delete req.session.errors;
     delete req.session.formFields;
+    delete req.session.processLateSummons;
 
     processUrl = app.namedRoutes.build('process-reply.post', routeParameters);
     if (req.params['type'] === 'paper') {

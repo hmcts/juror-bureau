@@ -54,7 +54,6 @@
 
           if (typeof req.session.processLateSummons !== 'undefined') {
             cancelUrl = req.session.processLateSummons.cancelUrl;
-            delete req.session.processLateSummons;
           }
 
           return res.render('juror-management/reassign/pools', {
@@ -366,6 +365,7 @@
       .then(() => {
         req.session.locCode = req.session.receivingCourtLocCode;
         delete req.session.receivingCourtLocCode;
+        delete req.session.processLateSummons;
 
         let poolUrl = app.namedRoutes.build('pool-overview.get', {
           poolNumber: payload.receivingPoolNumber,
