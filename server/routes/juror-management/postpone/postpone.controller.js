@@ -151,6 +151,11 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
             });
             originalDate = moment(req.session.jurorCommonDetails.startDate);
           }
+
+          if (typeof req.session.processLateSummons !== 'undefined') {
+            cancelUrl = req.session.processLateSummons.cancelUrl;
+          }
+
           // eslint-disable-next-line one-var
           const filteredPools = {
             ...poolOptions.deferralPoolsSummary[0],

@@ -284,6 +284,10 @@
         ? app.namedRoutes.build('pool-management.reassign.confirm.post', {poolNumber: req.params['poolNumber']})
         : app.namedRoutes.build('juror-management.reassign.confirm.post', {jurorNumber: req.params['jurorNumber']});
 
+      if (typeof req.session.processLateSummons !== 'undefined') {
+        cancelUrl = req.session.processLateSummons.cancelUrl;
+      }
+
       return validateMovementObj.validateMovement.put(
         require('request-promise'),
         app,
