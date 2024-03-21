@@ -54,9 +54,9 @@
       const courts = _.clone(req.session.courtsAndBureau.courts);
 
       const filteredList = courts.filter((court) =>{
-        const courtName = transformCourtName(court);
+        const courtName = transformCourtName(court).toLowerCase();
 
-        return courtName.includes(req.body.courtSearch);
+        return courtName.includes(req.body.courtSearch.toLowerCase());
       });
 
       req.session.courtsAndBureau.filteredCourts = filteredList;
