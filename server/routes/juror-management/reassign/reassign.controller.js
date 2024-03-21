@@ -294,7 +294,7 @@
             return res.render('pool-management/movement/bulk-validate', {
               cancelUrl: cancelUrl,
               continueUrl: continueUrl,
-              problems: modUtils.buildMovementProblems(data, req.session.jurorDetails),
+              problems: modUtils.buildMovementProblems(data),
             });
           }
 

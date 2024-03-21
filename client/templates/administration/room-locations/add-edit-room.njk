@@ -1,0 +1,63 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - administration{% endblock %}
+{% block page_identifier %}administration - room locations{% endblock %}
+
+{% set currentApp = "Court administration" %} 
+
+{% block content %}
+
+  {% set roomNameError = undefined %}
+  {% if errors.items["roomName"] %}
+    {%  set roomNameError = { text: errors.items['roomName'][0].details} %}
+  {% endif %}
+  {% set roomDescriptionError = undefined %}
+  {% if errors.items["roomDescription"] %}
+    {%  set roomDescriptionError = { text: errors.items['roomDescription'][0].details} %}
+  {% endif %}
+
+  {% include "includes/errors.njk" %}  
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">{{ "Edit room location" if action === 'edit' else "Add new room location" }}</h1>
+      <form action="{{ processUrl }}" method="post" id="editRoomForm">
+        {{ govukInput({
+          label: {
+            text: "Room name"
+          },
+          classes: "govuk-input--width-30",
+          id: "roomName",
+          name: "roomName",
+          errorMessage: roomNameError,
+          value: tmpBody.roomName if tmpBody else courtroom.roomName
+        }) }}
+
+        {{ govukInput({
+          label: {
+            text: "Room description"
+          },
+          classes: "govuk-input--width-30",
+          id: "roomDescription",
+          name: "roomDescription",
+          errorMessage: roomDescriptionError,
+          value: tmpBody.roomDescription if tmpBody else courtroom.roomDescription
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Save",
+            type: "submit"
+          }) }}
+          <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+        {{ csrfProtection(csrftoken) }}
+      </form>
+    </div>
+  </div>
+
+{% endblock %}ß
