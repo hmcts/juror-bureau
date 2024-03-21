@@ -506,34 +506,123 @@
           'loss_of_earnings': req.body.lossOfEarnings,
         };
       }
+
       if (req.body.applyToAllDays.includes('extraCareCosts')) {
         applyToAllPayload['financial_loss'] = {
           ...applyToAllPayload['financial_loss'],
-          'extra_care': req.body.extraCareCosts,
+          'extra_care_cost': req.body.extraCareCosts,
         };
       }
+
       if (req.body.applyToAllDays.includes('otherCosts')) {
         applyToAllPayload['financial_loss'] = {
           ...applyToAllPayload['financial_loss'],
-          'other': req.body.otherCosts,
+          'other_cost': req.body.otherCosts,
         };
       }
+
       if (req.body.applyToAllDays.includes('travel')) {
         const data = buildDataPayload(req.body, false); // bit of a hack
 
         applyToAllPayload['travel'] = data.travel;
       }
+
       if (req.body.applyToAllDays.includes('paymentMethod')) {
         applyToAllPayload['pay_cash'] = req.body.paymentMethod === 'CASH';
       }
 
-      const expensesData = await getEnteredExpensesDAO.post(app, req, {
-        'juror_number': jurorNumber,
-        'pool_number': poolNumber,
-        'expense_dates': req.session.editApprovalDates,
-      });
+      let expensesData;
 
       try {
+        expensesData = await getEnteredExpensesDAO.post(app, req, {
+          'juror_number': jurorNumber,
+          'pool_number': poolNumber,
+          'expense_dates': req.session.editApprovalDates,
+        });
+
+        const errors = {};
+
+        for (const expense of expensesData) {
+          if (req.body.applyToAllDays.includes('lossOfEarnings') && applyToAllPayload.financial_loss) {
+            if (applyToAllPayload.financial_loss.loss_of_earnings
+              // eslint-disable-next-line max-len
+              && parseInt(applyToAllPayload.financial_loss.loss_of_earnings) < expense.financial_loss.loss_of_earnings) {
+              errors.lossOfEarnings = [{
+                summary: 'The new financial loss cannot be less than originally paid in the selected expenses',
+                details: 'The new financial loss cannot be less than originally paid in the selected expenses',
+              }];
+            }
+          }
+
+          if (req.body.applyToAllDays.includes('extraCareCosts') && applyToAllPayload.financial_loss) {
+            if (applyToAllPayload.financial_loss.extra_care_cost
+              && parseInt(applyToAllPayload.financial_loss.extra_care_cost) < expense.financial_loss.extra_care_cost) {
+              errors.extraCareCosts = [{
+                summary: 'The new extra care costs cannot be less than originally paid in the selected expenses',
+                details: 'The new extra care costs cannot be less than originally paid in the selected expenses',
+              }];
+            }
+          }
+
+          if (req.body.applyToAllDays.includes('otherCosts') && applyToAllPayload.financial_loss) {
+            if (applyToAllPayload.financial_loss.other_cost
+              && parseInt(applyToAllPayload.financial_loss.other_cost) < expense.financial_loss.other_cost) {
+              errors.otherCosts = [{
+                summary: 'The new other costs cannot be less than originally paid in the selected expenses',
+                details: 'The new other costs cannot be less than originally paid in the selected expenses',
+              }];
+            }
+          }
+
+          if (req.body.applyToAllDays.includes('travel') && applyToAllPayload.travel) {
+            if (applyToAllPayload.travel.miles_traveled
+              && parseInt(applyToAllPayload.travel.miles_traveled) < expense.travel.miles_traveled) {
+              errors.milesTravelled = [{
+                summary: 'The new miles traveled cannot be less than originally paid in the selected expenses',
+                details: 'The new miles traveled cannot be less than originally paid in the selected expenses',
+              }];
+            }
+
+            if (applyToAllPayload.travel.parking
+              && parseInt(applyToAllPayload.travel.parking) < expense.travel.parking) {
+              errors.parking = [{
+                summary: 'The new parking costs cannot be less than originally paid in the selected expenses',
+                details: 'The new parking costs cannot be less than originally paid in the selected expenses',
+              }];
+            }
+
+            if (applyToAllPayload.travel.public_transport
+              && parseInt(applyToAllPayload.travel.public_transport) < expense.travel.public_transport) {
+              errors.publicTransport = [{
+                summary: 'The new public transport costs cannot be less than originally paid in the selected expenses',
+                details: 'The new public transport costs cannot be less than originally paid in the selected expenses',
+              }];
+            }
+
+            if (applyToAllPayload.travel.taxi
+              && parseInt(applyToAllPayload.travel.taxi) < expense.travel.taxi) {
+              errors.taxi = [{
+                summary: 'The new taxi costs cannot be less than originally paid in the selected expenses',
+                details: 'The new taxi costs cannot be less than originally paid in the selected expenses',
+              }];
+            }
+
+            if (applyToAllPayload.travel.jurors_taken_by_car
+              && parseInt(applyToAllPayload.travel.jurors_taken_by_car) < expense.travel.jurors_taken_by_car) {
+              errors.passengers = [{
+                summary: 'The new passengers taken cannot be less than originally paid in the selected expenses',
+                details: 'The new passengers taken cannot be less than originally paid in the selected expenses',
+              }];
+            }
+          }
+
+          if (Object.entries(errors).length) {
+            req.session.errors = errors;
+
+            return res.redirect(redirectUrl);
+          }
+        }
+
         for (const expense of expensesData) {
           const expenseDate = expense.date_of_expense;
           let editedExpense = req.session.editedExpenses[expenseDate];

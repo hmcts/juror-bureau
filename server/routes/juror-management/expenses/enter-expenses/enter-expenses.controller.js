@@ -388,8 +388,6 @@
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
-        console.log(err);
-
         return res.render('expenses/_partials/recalculate-error-banner.njk', {
           isLessThanPaid: err.error.code === 'EXPENSE_VALUES_REDUCED_LESS_THAN_PAID',
         });
