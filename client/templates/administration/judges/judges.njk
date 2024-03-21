@@ -101,39 +101,44 @@
         </div>
       </fieldset>
 
-      {{ govukTable({
-        attributes: {
-          'data-module': 'moj-sortable-table'
-        },
-        head: [
-          {
-            text: "Code",
-            attributes: {
-              "aria-sort": "ascending"
-            }
+      {% if judges | length %}
+        {{ govukTable({
+          attributes: {
+            'data-module': 'moj-sortable-table'
           },
-          {
-            text: "Judge name",
-            attributes: {
-              "aria-sort": "none"
-            }
-          },
-          {
-            text: "Status",
-            attributes: {
-              "aria-sort": "none"
-            }
-          },
-          {
-            text: "Last used",
-            attributes: {
-              "aria-sort": "none"
-            }
-          },
-          {}
-        ],
-        rows: judgeRows
-      }) }}
+          head: [
+            {
+              text: "Code",
+              attributes: {
+                "aria-sort": "ascending"
+              }
+            },
+            {
+              text: "Judge name",
+              attributes: {
+                "aria-sort": "none"
+              }
+            },
+            {
+              text: "Status",
+              attributes: {
+                "aria-sort": "none"
+              }
+            },
+            {
+              text: "Last used",
+              attributes: {
+                "aria-sort": "none"
+              }
+            },
+            {}
+          ],
+          rows: judgeRows
+        }) }}
+      {% else %}
+        <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-3">
+        <h2>There are no matching results</h2>
+      {% endif %}
     </div>
   </div>
 
