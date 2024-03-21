@@ -9,6 +9,7 @@
     require('./expense-limits')(app);
     require('./non-sitting-days')(app);
     require('./users')(app);
+    require('./room-locations')(app);
 
     app.get('/administration',
       'administration.get',

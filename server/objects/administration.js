@@ -102,6 +102,85 @@
     },
   };
 
+  module.exports.courtroomsDAO = {
+    get: function(app, req, loc) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/administration/court-rooms', loc),
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+      };
+
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
+    },
+    getDetails: function(app, req, loc, id, etag = null) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/administration/court-rooms', loc, id),
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+      };
+
+      if (etag) {
+        payload.headers['If-None-Match'] = `${etag}`;
+      }
+
+      app.logger.info('Sending request to API: ', payload);
+
+      payload.transform = (response, incomingRequest) => {
+        const headers = _.cloneDeep(incomingRequest.headers);
+
+        return { response, headers };
+      };
+
+      return rp(payload);
+    },
+    put: function(app, req, loc, id, body) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/administration/court-rooms', loc, id),
+        method: 'PUT',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+        body,
+      };
+
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
+    },
+    post: function(app, req, loc, body) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/administration/court-rooms', loc),
+        method: 'POST',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+        body,
+      };
+
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
+    },
+  };
+
   module.exports.bankHolidaysDAO = {
     get: function(app, req, etag = null) {
       const payload = {

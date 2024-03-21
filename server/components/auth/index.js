@@ -46,9 +46,9 @@
         }
         , authSuccess = function(resp) {
 
-          if (resp.userType === 'COURT') {
-            resp.locCode = '415';
-          }
+          // TODO - REMOVE LINE AS SOON AS NEW TOKEN CHANGES ARE MERGED INTO API
+          resp.locCode = resp.owner;
+
           createJWTToken(req, resp, secretsConfig.get('secrets.juror.bureau-jwtKey'));
           return successCB(resp);
         }

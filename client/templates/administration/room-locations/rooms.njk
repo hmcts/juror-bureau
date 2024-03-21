@@ -1,0 +1,102 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{% block page_title %}{{ serviceName }} - administration{% endblock %}
+{% block page_identifier %}administration - room locations{% endblock %}
+
+{% set currentApp = "Court administration" %} 
+{% set nav = "roomLocations" %}
+
+{% block content %}
+
+  {% set roomTableRows = [] %}
+  {% for room in courtrooms %}
+    {% set roomTableRows = (roomTableRows.push(
+      [
+        {
+          text: room.roomName,
+          attributes: {
+              "data-sort-value": room.roomName
+          }
+        },
+        {
+          text: room.roomDescription,
+          attributes: {
+              "data-sort-value": room.roomDescription
+          }
+        },
+        {
+          html: "<a class='govuk-link govuk-link--no-visited-state' href='"
+          + url('administration.room-locations.edit.get', {locationCode: locationCode, id: room.id})
+          + "'>Edit</a>"
+        }
+      ]
+    ), roomTableRows) %}
+  {% endfor %}
+
+  {% if successBanner %}
+    {{ mojBanner({
+      type: "success",
+      html: successBanner,
+      iconFallbackText: "Success"
+    }) }}
+  {% endif %}
+
+  {% include "includes/errors.njk" %}  
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <h1 class="govuk-heading-l">Room locations</h1>
+    </div>
+    <div class="govuk-grid-column-one-half mod-flex mod-justify-end">
+      <div class="govuk-button-group">
+        {{ govukButton({
+          text: "Add new",
+          classes: "govuk-button",
+          href: addRoomUrl
+        }) }}
+        {{ govukButton({
+          text: "Print",
+          classes: "govuk-button--secondary",
+          href: '#'
+        }) }}
+      </div>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      {% if courtrooms | length %}
+        {{ govukTable({
+          attributes: {
+            'data-module': 'moj-sortable-table'
+          },
+          head: [
+            {
+              text: "Room name",
+              attributes: {
+                "aria-sort": "ascending"
+              }
+            },
+            {
+              text: "Description",
+              attributes: {
+                "aria-sort": "none"
+              }
+            },
+            {}
+          ],
+          rows: roomTableRows
+        }) }}
+      {% else %}
+        <hr class="govuk-section-break govuk-section-break--visible">
+        <h2>There are no matching results.</h2>
+      {% endif %}
+
+    </div>
+  </div>
+
+{% endblock %}ß
