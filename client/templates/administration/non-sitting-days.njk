@@ -43,7 +43,7 @@
               text: date.description | toSentenceCase
             },
             {
-              html: '<a href=' + url("administration.delete-non-sitting-days.get") + ' class="govuk-link">' + 'Delete' + '</a>'
+              html: '<a href="' + url("administration.delete-non-sitting-days.get") + '?nonSittingDate=' +date.date+ '"" class="govuk-link">' + 'Delete' + '</a>'
             }
           ]
           ), dateRows) %}
@@ -85,6 +85,7 @@
           {{ govukTable({
             caption: year,
             captionClasses: "govuk-table__caption--m",
+            classes:'two-column',
             head: [
               {
                 text: "Date"
@@ -96,50 +97,6 @@
             rows: holidayDateRows
           }) }}
           {% endfor %}
- {# from backend: 
- 1.Keys : ['2024','2025']
- 2.dates:
-  {
-      '2024': [
-        { date: '2024-09-28', description: 'TEST' },
-        { date: '2024-09-29', description: 'TEST PUBLIC HOLIDAY' }
-      ]       
-      '20245': [
-        { date: '2025-09-28', description: 'TEST' },
-        { date: '2025-09-29', description: 'TEST PUBLIC HOLIDAY' }
-      ]
-    }
-    },
- //Loop over keys = key
-  {{ govukTable({
-        caption: key,
-        captionClasses: "govuk-table__caption--m",
-        head: [
-          {
-            text: "Date"
-          },
-          {
-            text: "Bank holiday"
-          }
-        ],
-        rows: dates[key]
-      }) }} #}
-
-
-      {# {{ govukTable({
-        caption: "2024",
-        captionClasses: "govuk-table__caption--m",
-        head: [
-          {
-            text: "Date"
-          },
-          {
-            text: "Bank holiday"
-          }
-        ],
-        rows: dateRows
-      }) }} #}
-
     </div>
     <div class="govuk-grid-column-one-third mod-flex mod-justify-end">
       {{ govukButton({

@@ -227,22 +227,41 @@
 
       return rp(payload);
     },
+    post: function(app, req, locCode, body) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/administration/non-sitting-days', locCode),
+        method: 'POST',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+        body,
+      };
 
-    delete: function(app, jwtToken, locCode, date) {
-      let reqOptions = _.clone(options);
+      app.logger.info('Sending request to API: ', payload);
 
-      reqOptions.headers.Authorization = jwtToken;
-      reqOptions.uri = urljoin(reqOptions.uri, 'moj/administration/non-sitting-days', locCode, date);
-      reqOptions.method = 'DELETE';
-
-      app.logger.debug('Sending request to API: ', {
-        uri: reqOptions.uri,
-        headers: reqOptions.headers,
-        method: reqOptions.method,
-      });
-
-      return rp(reqOptions);
+      return rp(payload);
     },
+
+    delete: function(app, req, locCode, date) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/administration/non-sitting-days', locCode, date),
+        method: 'DELETE',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+      };
+
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
+    },
+
 
   };
 

@@ -32,7 +32,7 @@
       <h1 class="govuk-heading-l">Add a non-sitting day</h1>
 
       <form action="{{ postUrl }}" method="post" id="nonSittingDaysForm">
-         <div class="datepicker-controls-group govuk-!-padding-bottom-0" id="datesGroup">
+        <div class="datepicker-controls-group govuk-!-padding-bottom-0" id="datesGroup">
           {{ datePicker({
             id: 'nonSittingDate',
             label: {
@@ -49,6 +49,10 @@
           label: {
             text: "Description",
             classes: "govuk-!-font-weight-bold"
+          },
+          attributes: {
+            maxlength: "30",
+            spellcheck: "false"
           },
           classes: "govuk-!-width-two-thirds",
           id: "decriptionNonSittingDay",
@@ -68,8 +72,6 @@
         </div>
         <input type="hidden" name="_csrf" value="{{ csrftoken }}">
       </form>
-
-
     </div>
 
   </div>
