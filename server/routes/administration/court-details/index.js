@@ -21,26 +21,18 @@
   };
 
   module.exports = function(app) {
-
-    app.get('/administration/court-details/',
+    app.get('/administration/court-details/:locationCode',
       'administration.court-details.get',
       auth.verify,
       hasCourtDetailsAccess,
       controller.getCourtDetails(app),
     );
 
-    app.get('/administration/court-details/:locationCode',
-      'administration.court-details.location.get',
-      auth.verify,
-      hasCourtDetailsAccess,
-      controller.getCourtLocationDetails(app),
-    );
-
     app.post('/administration/court-details/:locationCode',
-      'administration.court-details.location.post',
+      'administration.court-details.post',
       auth.verify,
       hasCourtDetailsAccess,
-      controller.postCourtLocationDetails(app),
+      controller.postCourtDetails(app),
     );
   };
 })();

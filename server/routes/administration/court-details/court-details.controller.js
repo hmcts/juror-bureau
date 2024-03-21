@@ -10,14 +10,6 @@
 
   module.exports.getCourtDetails = function(app) {
     return (req, res) => {
-      return res.redirect(app.namedRoutes.build('administration.court-details.location.get', {
-        locationCode: req.session.authentication.locCode,
-      }));
-    };
-  };
-
-  module.exports.getCourtLocationDetails = function(app) {
-    return (req, res) => {
       const { locationCode } = req.params;
       const tmpBody = _.clone(req.session.formFields);
       const tmpErrors = _.clone(req.session.errors);
@@ -29,11 +21,17 @@
         courtDetailsDAO.get(app, req, locationCode),
         courtroomsDAO.get(app, req, locationCode),
       ])
-        .then(([courtDetails, courtrooms]) => {
-          replaceAllObjKeys(courtDetails, _.camelCase);
-          replaceAllObjKeys(courtrooms, _.camelCase);
+        .then(([{ response: courtDetails, headers }, courtrooms]) => {
 
           console.log(courtDetails);
+          console.log(courtrooms);
+
+          req.session.courtDetails = {
+            etag: headers.etag,
+          };
+
+          replaceAllObjKeys(courtDetails, _.camelCase);
+          replaceAllObjKeys(courtrooms, _.camelCase);
 
           const originalCourtRoomId = courtrooms.find(c => c.roomName === courtDetails.assemblyRoom)
             ? courtrooms.find(c => c.roomName === courtDetails.assemblyRoom).id
@@ -45,12 +43,12 @@
             attendanceTime,
             cancelUrl: isSystemAdministrator(req, res)
               ? app.namedRoutes.build('administration.courts-and-bureau.get')
-              : app.namedRoutes.build('administration.court-details.location.get', {
+              : app.namedRoutes.build('administration.court-details.get', {
                 locationCode,
               }),
             courtDetails,
             courtrooms,
-            postUrl: app.namedRoutes.build('administration.court-details.location.post', {
+            postUrl: app.namedRoutes.build('administration.court-details.post', {
               locationCode,
             }),
             tmpBody,
@@ -76,10 +74,11 @@
     };
   };
 
-  module.exports.postCourtLocationDetails = function(app) {
+  module.exports.postCourtDetails = function(app) {
     return async(req, res) => {
-      const redirectUrl = app.namedRoutes.build('administration.court-details.location.get', {
-        locationCode: req.params.locationCode,
+      const { locationCode } = req.params;
+      const redirectUrl = app.namedRoutes.build('administration.court-details.get', {
+        locationCode,
       });
 
       const validatorResult = validate(req.body, validator.courtDetails());
@@ -88,6 +87,33 @@
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
         return res.redirect(redirectUrl);
+      }
+
+      try {
+        await courtDetailsDAO.get(app, req, locationCode, req.session.courtDetails.etag);
+
+        req.session.errors = {
+          bankDetails: [{
+            summary: 'Court location details have been updated by another user',
+            details: 'Court location details have been updated by another user',
+          }],
+        };
+
+        return res.redirect(redirectUrl);
+      } catch (err) {
+        if (err.statusCode !== 304) {
+
+          app.logger.crit('Failed to compare etags for when updating court location details: ', {
+            auth: req.session.authentication,
+            jwt: req.session.authToken,
+            data: {
+              locationCode,
+            },
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
+
+          return res.render('_errors/generic');
+        }
       }
 
       delete req.body._csrf;
@@ -109,14 +135,14 @@
       replaceAllObjKeys(payload, _.snakeCase);
 
       try {
-        await courtDetailsDAO.put(app, req, req.params.locationCode, payload);
+        await courtDetailsDAO.put(app, req, locationCode, payload);
         res.redirect(redirectUrl);
       } catch (err) {
         app.logger.crit('Failed to update court details', {
           auth: req.session.authentication,
           token: req.session.authToken,
           data: {
-            locCode: req.params.locationCode,
+            locationCode,
             payload,
           },
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),

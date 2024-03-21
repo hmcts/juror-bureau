@@ -182,7 +182,7 @@
   };
 
   module.exports.courtDetailsDAO = {
-    get: function(app, req, loc) {
+    get: function(app, req, loc, etag = null) {
       const payload = {
         uri: urljoin(config.apiEndpoint, 'moj/administration/courts', loc),
         method: 'GET',
@@ -194,7 +194,17 @@
         json: true,
       };
 
+      if (etag) {
+        payload.headers['If-None-Match'] = `${etag}`;
+      }
+
       app.logger.info('Sending request to API: ', payload);
+
+      payload.transform = (response, incomingRequest) => {
+        const headers = _.cloneDeep(incomingRequest.headers);
+
+        return { response, headers };
+      };
 
       return rp(payload);
     },
