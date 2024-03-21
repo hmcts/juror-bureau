@@ -18,10 +18,10 @@
             summary: 'Smartcard spend can only be 0 or more',
             details: 'Smartcard spend can only be 0 or more',
           },
-          lessThanOrEqualTo: 1000000,
-          notLessThanOrEqualTo: {
-            summary: 'Smartcard spend can not exceed 1,000,000',
-            details: 'Smartcard spend can not exceed 1,000,000',
+          lessThan: 1000000,
+          notLessThan: {
+            summary: 'Smartcard spend must be less than £1,000,000',
+            details: 'Smartcard spend must be less than £1,000,000',
           },
           notValid: {
             summary: 'Smartcard spend can only include numbers and a decimal point',
