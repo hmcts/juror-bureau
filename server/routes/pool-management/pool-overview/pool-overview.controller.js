@@ -648,11 +648,12 @@ const filters = require('../../../components/filters');
       const sortBy = req.query.sortBy || 'jurorNumber';
       const order = req.query.sortOrder || 'asc';
 
-      selectedJurors = selectedJurors.filter(item => membersList.data.indexOf(item) < 0);
-      let jurors = await paginateJurorsList(membersList.data, sortBy, order, true, selectedJurors, selectAll);
-
       const totalJurors = membersList.totalItems;
       const totalCheckedJurors = selectAll ? membersList.totalItems : selectedJurors.length || 0;
+      
+      let jurors = await paginateJurorsList(membersList.data, sortBy, order, true, selectedJurors, selectAll);
+      selectedJurors = selectedJurors.filter(item => !membersList.data.find(data => data.jurorNumber == item));
+
 
       req.session.poolDetails = pool;
       req.session.locCode = req.params.poolNumber.substring(0, 3);
