@@ -8,6 +8,7 @@
     require('./system-codes')(app);
     require('./expense-limits')(app);
     require('./users')(app);
+    require('./room-locations')(app);
 
     app.get('/administration',
       'administration.get',
