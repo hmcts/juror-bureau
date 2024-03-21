@@ -28,7 +28,7 @@
                 text: "Daily limit"
               },
               value: {
-                text: response.publicTransportAmountLimit
+                text: "£" + travelOverLimit.publicTransportLimit
               }
             },
             {
@@ -36,7 +36,7 @@
                 text: "Amount entered"
               },
               value: {
-                text: response.publicTransportAmountEntered,
+                text: "£" + body.publicTransport,
                 classes: "mod-red-text"
               }
             }
@@ -55,7 +55,7 @@
                 text: "Daily limit"
               },
               value: {
-                text: response.taxiAmountLimit
+                text: "£" + travelOverLimit.taxiLimit
               }
             },
             {
@@ -63,7 +63,7 @@
                 text: "Amount entered"
               },
               value: {
-                text: response.taxiAmountEntered,
+                text: "£" + body.taxi,
                 classes: "mod-red-text"
               }
             }
