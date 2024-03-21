@@ -1,0 +1,89 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - juror-management - unpaid attendance - daily expenses - travel limits{% endblock %}
+{% block page_identifier %}juror-management - unpaid attendance - daily expenses - travel limits{% endblock %}
+
+{% set currentApp = "Jurors" %}
+
+{% block content %}
+  <form method="post" action="{{ continueUrl }}" id="travelLimitsForm">
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-half">
+        <h1 class="govuk-heading-l">Some amounts entered are more than your court’s suggested daily limits</h1>
+      </div>
+    </div>
+    
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-half">
+        <h2 class="govuk-heading-m">Public transport</h2>
+        {{ govukSummaryList({
+          rows: [
+            {
+              key: {
+                text: "Daily limit"
+              },
+              value: {
+                text: response.publicTransportAmountLimit
+              }
+            },
+            {
+              key: {
+                text: "Amount entered"
+              },
+              value: {
+                text: response.publicTransportAmountEntered,
+                classes: "mod-red-text"
+              }
+            }
+          ]
+        }) }}
+      </div>
+    </div>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-half">
+        <h2 class="govuk-heading-m">Taxi</h2>
+        {{ govukSummaryList({
+          rows: [
+            {
+              key: {
+                text: "Daily limit"
+              },
+              value: {
+                text: response.taxiAmountLimit
+              }
+            },
+            {
+              key: {
+                text: "Amount entered"
+              },
+              value: {
+                text: response.taxiAmountEntered,
+                classes: "mod-red-text"
+              }
+            }
+          ]
+        }) }}
+      </div>
+    </div>
+
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Pay amount entered",
+        attributes: {
+          id: "payAmountEnteredButton"
+        }
+      }) }}
+
+      <a class="govuk-link" id="cancelAnchor" href="{{ cancelUrl }}">Go back and change</a>
+    </div>
+
+    {{ csrfProtection(csrftoken) }}
+
+  </form>
+{% endblock %}

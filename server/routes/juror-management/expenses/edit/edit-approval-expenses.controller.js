@@ -13,6 +13,7 @@
   const validate = require('validate.js');
   const enterExpensesValidator = require('../../../../config/validation/enter-expenses');
   const editApprovedExpensesValidator = require('../../../../config/validation/edit-approved-expenses');
+  const { expenseRatesAndLimitsDAO } = require('../../../../objects/administration');
 
   const STATUSES = {
     'for-approval': 'FOR_APPROVAL',
@@ -441,18 +442,10 @@
         }));
       }
 
-      const totalFinancialLoss = Number(req.body.lossOfEarnings)
-        + Number(req.body.extraCareCosts) + Number(req.body.otherCosts);
-      let lossLimit = response.expense_details[0].attendance_type === 'FULL_DAY' ? 64.95 : 32.47;
-      let showLossOverLimit;
+      const { showLossOverLimit, error } =
+        await isLossOverLimit(app, req, response.expense_details[0].attendance_type, date);
 
-      try {
-        const defaultExpenses = await defaultExpensesDAO.get(app, req, jurorNumber);
-
-        if (defaultExpenses.financial_loss) {
-          lossLimit = defaultExpenses.financial_loss;
-        }
-      } catch (err) {
+      if (error) {
         app.logger.crit('Failed to fetch default expenses to compare with', {
           auth: req.session.authentication,
           jwt: req.session.authToken,
@@ -461,21 +454,6 @@
         });
 
         return res.render('_errors/generic');
-      }
-
-      // I think here we need to check if there is a default limit set to the user
-      if (totalFinancialLoss > lossLimit) {
-
-        showLossOverLimit = {
-          'juror_loss': totalFinancialLoss,
-          limit: lossLimit,
-          'attendance_type': response.expense_details[0].attendance_type,
-          'is_long_trial_day': false,
-          // eslint-disable-next-line max-len
-          message: `The amount you entered will automatically be recalculated to limit the juror's loss to £${lossLimit}`,
-        };
-
-        req.session.financialLossWarning = showLossOverLimit;
       }
 
       if (action === 'back' || !nextDate) {
@@ -815,6 +793,62 @@
     }
 
     return formData;
+  }
+
+  async function isLossOverLimit(app, req, attendancType, date) {
+    let showLossOverLimit;
+    const totalFinancialLoss = Number(req.body.lossOfEarnings)
+    + Number(req.body.extraCareCosts) + Number(req.body.otherCosts);
+    let lossLimit;
+
+    try {
+      const { response } = await expenseRatesAndLimitsDAO.get(app, req);
+
+      switch (attendancType) {
+      case 'FULL_DAY':
+        lossLimit = response.limit_financial_loss_full_day;
+        break;
+      case 'FULL_DAY_LONG_TRIAL':
+        lossLimit = response.limit_financial_loss_full_day_long_trial;
+        break;
+      case 'HALF_DAY':
+        lossLimit = response.limit_financial_loss_half_day;
+        break;
+      case 'HALF_DAY_LONG_TRIAL':
+        lossLimit = response.limit_financial_loss_half_day_long_trial;
+        break;
+      case 'NON_ATTENDANCE':
+        lossLimit = response.limit_financial_loss_full_day;
+        break;
+      case 'NON_ATTENDANCE_LONG_TRIAL':
+        lossLimit = response.limit_financial_loss_full_day_long_trial;
+        break;
+      }
+
+    } catch (error) {
+      return { showLossOverLimit: false, error };
+    }
+
+    if (totalFinancialLoss > lossLimit) {
+      showLossOverLimit = {
+        'juror_loss': totalFinancialLoss,
+        limit: lossLimit,
+        'attendance_type': attendancType,
+        'is_long_trial_day': false,
+        // eslint-disable-next-line max-len
+        message: `The amount you entered will automatically be recalculated to limit the juror's loss to £${lossLimit}`,
+      };
+
+      if (req.session.editedExpenses[date] && req.session.editedExpenses[date].formData) {
+        req.session.editedExpenses[date].formData['financial_loss']['loss_of_earnings'] = lossLimit;
+        req.session.editedExpenses[date].formData['financial_loss']['extra_care_cost'] = 0;
+        req.session.editedExpenses[date].formData['financial_loss']['other_cost'] = 0;
+      }
+
+      req.session.financialLossWarning = showLossOverLimit;
+    }
+
+    return { showLossOverLimit, error: false };
   }
 
 })();

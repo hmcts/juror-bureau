@@ -115,6 +115,10 @@
 
       const [timeSpentAtCourtHour, timeSpentAtCourtMinute] = expensesData.time.time_spent_at_court.split(':');
 
+      if (req.session.editExpenseTravelOverLimit && req.session.editExpenseTravelOverLimit.body) {
+        tmpBody = req.session.editExpenseTravelOverLimit.body;
+      }
+
       return res.render(renderTemplate, {
         postUrls,
         cancelUrl,
@@ -147,6 +151,10 @@
       let validatorResult;
 
       delete req.session.nonAttendanceDay;
+
+      if (action === 'accept-travel-over-limit') {
+        req.body = req.session.editExpenseTravelOverLimit.body;
+      }
 
       req.body.applyToAllDays =
         !Array.isArray(req.body.applyToAllDays) ? [req.body.applyToAllDays] : req.body.applyToAllDays;
@@ -182,6 +190,47 @@
 
       data['date_of_expense'] = date;
       data['pool_number'] = poolNumber;
+
+      if (action !== 'accept-travel-over-limit') {
+        const { showTravelOverLimit, error } = await isTravelOverLimit(app, req);
+
+        req.session.editExpenseTravelOverLimit = {
+          body: req.body,
+        };
+
+        if (error) {
+          app.logger.crit('Failed to check if travel is over the limit', {
+            auth: req.session.authentication,
+            jwt: req.session.authToken,
+            data: {
+              jurorNumber,
+              poolNumber,
+            },
+            error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+          });
+
+          return res.render('_errors/generic');
+        }
+
+        if (showTravelOverLimit) {
+          const cancelUrl = app.namedRoutes.build('juror-management.enter-expenses.get', {
+            jurorNumber,
+            poolNumber,
+          }) + `?date=${date}&page=${page}`;
+          const continueUrl = app.namedRoutes.build('juror-management.enter-expenses.post', {
+            jurorNumber,
+            poolNumber,
+          }) + `?date=${date}&page=${page}&action=accept-travel-over-limit`;
+
+          req.session.editExpenseTravelOverLimit.continueUrl = continueUrl;
+          req.session.editExpenseTravelOverLimit.cancelUrl = cancelUrl;
+
+          return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.travel-over-limit.get', {
+            jurorNumber,
+            poolNumber,
+          }));
+        }
+      }
 
       try {
         const response = await postDraftExpenseDAO.post(app, req, jurorNumber, data, nonAttendanceDay);
@@ -273,6 +322,25 @@
         poolNumber,
         status: 'draft',
       }));
+    };
+  };
+
+  module.exports.getTravelOverLimit = (app) => {
+    return function(req, res) {
+      const { jurorNumber, poolNumber } = req.params;
+
+      const { continueUrl, cancelUrl } = req.session.editExpenseTravelOverLimit;
+
+      return res.render('expenses/travel-over-limit.njk', {
+        continueUrl,
+        cancelUrl,
+      });
+    };
+  };
+
+  module.exports.postTravelOverLimit = (app) => {
+    return function(req, res) {
+      // TODO: Implement this
     };
   };
 
@@ -522,6 +590,19 @@
     }
 
     return formData;
+  }
+
+  async function isTravelOverLimit(app, req) {
+    let showTravelOverLimit;
+
+    try {
+      showTravelOverLimit = true;
+    } catch (error) {
+      return { showTravelOverLimit, error };
+    }
+
+
+    return { showTravelOverLimit, error: false };
   }
 
 })();

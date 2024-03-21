@@ -3,64 +3,61 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 
-{% block page_title %}{{ serviceName }} - juror-management - unpaid attendance - daily expenses{% endblock %}
-{% block page_identifier %}juror-management - unpaid attendance - daily expenses{% endblock %}
+{% block page_title %}{{ serviceName }} - juror-management - unpaid attendance - daily expenses - loss over limits{% endblock %}
+{% block page_identifier %}juror-management - unpaid attendance - daily expenses - loss over limits{% endblock %}
 
 {% set currentApp = "Jurors" %}
 
 {% block content %}
+  <form method="post" id="lossOverLimitForm">
 
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h1 class="govuk-heading-l">Juror’s financial loss is over the daily limit</h1>
+      </div>
+    </div>
+    
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-half">
 
-      <form method="post" id="lossOverLimitForm">
-
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-full">
-            <h1 class="govuk-heading-l">Juror’s financial loss is over the daily limit</h1>
-          </div>
-        </div>
-        
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-one-half">
-
-            {{ govukSummaryList({
-              classes: "govuk-summary-list--no-border",
-              rows: [
-                {
-                  key: {
-                    text: "Juror's loss:"
-                  },
-                  value: {
-                    text: "£" + jurorLossData.juror_loss
-                  }
-                },
-                {
-                  key: {
-                    text: "Daily limit (Full day):" if jurorLossData.attendance_type === "FULL_DAY" else "Daily limit (Half day):"
-                  },
-                  value: {
-                    text: "£" + jurorLossData.limit | toFixed(2)
-                  }
-                }
-              ]
-            }) }}
-          </div>
-        </div>
-
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-full">
-            <p class="govuk-body">The amounts you entered will be automatically recalculated to limit the juror’s loss to £{{ jurorLossData.limit | toFixed(2) }}.</p>
-
-            {{ govukButton({
-              text: "Continue",
-              type: "submit",
-              attributes: {
-                formAction: processUrl
+        {{ govukSummaryList({
+          classes: "govuk-summary-list--no-border",
+          rows: [
+            {
+              key: {
+                text: "Juror's loss:"
+              },
+              value: {
+                text: "£" + jurorLossData.juror_loss
               }
-            }) }}
-          </div>
-        </div>
+            },
+            {
+              key: {
+                text: "Daily limit (Full day):" if jurorLossData.attendance_type === "FULL_DAY" else "Daily limit (Half day):"
+              },
+              value: {
+                text: "£" + jurorLossData.limit | toFixed(2)
+              }
+            }
+          ]
+        }) }}
+      </div>
+    </div>
 
-        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
-      </form>
-  
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <p class="govuk-body">The amounts you entered will be automatically recalculated to limit the juror’s loss to £{{ jurorLossData.limit | toFixed(2) }}.</p>
+
+        {{ govukButton({
+          text: "Continue",
+          type: "submit",
+          attributes: {
+            formAction: processUrl
+          }
+        }) }}
+      </div>
+    </div>
+
+    <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+  </form>
 {% endblock %}
