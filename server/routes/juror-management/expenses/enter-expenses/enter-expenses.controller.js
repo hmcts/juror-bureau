@@ -13,7 +13,7 @@
 
   module.exports.getEnterExpenses = (app) => {
     return async function(req, res) {
-      const { jurorNumber, poolNumber, status } = req.params;
+      const { jurorNumber, poolNumber } = req.params;
       const { date } = req.query;
       const page = parseInt(req.query.page);
 
@@ -252,6 +252,14 @@
       delete req.session.financialLossWarning;
       delete req.session.nextExpensePage;
       delete req.session.nextExpenseDate;
+
+      if (req.session.editExpenseLossOverLimitNextUrl) {
+        const nextUrl = req.session.editExpenseLossOverLimitNextUrl;
+
+        delete req.session.editExpenseLossOverLimitNextUrl;
+
+        return res.redirect(nextUrl);
+      }
 
       if (date && page) {
         return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.get', {

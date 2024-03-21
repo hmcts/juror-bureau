@@ -391,15 +391,23 @@
       data['date_of_expense'] = date;
       data['none_attendance_day'] = nonAttendanceDay;
 
+      let response;
+
       try {
-        const response = await postRecalculateSummaryTotalsDAO.post(app, req, {
+        response = await postRecalculateSummaryTotalsDAO.post(app, req, {
           'juror_number': jurorNumber,
           'pool_number': poolNumber,
           'expense_list': [data],
         });
 
         // I want to compare the previous with this one to check
-        if (JSON.stringify(req.session.editDateTotalsOriginal) !== JSON.stringify(response.expense_details[0])) {
+        const originalValues = _.clone(req.session.editDateTotalsOriginal);
+        const responseValues = _.clone(response.expense_details[0]);
+
+        delete originalValues.financial_loss_apportioned_applied;
+        delete responseValues.financial_loss_apportioned_applied;
+
+        if (JSON.stringify(originalValues) !== JSON.stringify(responseValues)) {
           req.session.editedExpenses[date] = {
             tableData: { ...response.expense_details[0] },
             formData: data,
@@ -433,20 +441,79 @@
         }));
       }
 
+      const totalFinancialLoss = Number(req.body.lossOfEarnings)
+        + Number(req.body.extraCareCosts) + Number(req.body.otherCosts);
+      let lossLimit = response.expense_details[0].attendance_type === 'FULL_DAY' ? 64.95 : 32.47;
+      let showLossOverLimit;
+
+      try {
+        const defaultExpenses = await defaultExpensesDAO.get(app, req, jurorNumber);
+
+        if (defaultExpenses.financial_loss) {
+          lossLimit = defaultExpenses.financial_loss;
+        }
+      } catch (err) {
+        app.logger.crit('Failed to fetch default expenses to compare with', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: jurorNumber,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic');
+      }
+
+      // I think here we need to check if there is a default limit set to the user
+      if (totalFinancialLoss > lossLimit) {
+
+        showLossOverLimit = {
+          'juror_loss': totalFinancialLoss,
+          limit: lossLimit,
+          'attendance_type': response.expense_details[0].attendance_type,
+          'is_long_trial_day': false,
+          // eslint-disable-next-line max-len
+          message: `The amount you entered will automatically be recalculated to limit the juror's loss to £${lossLimit}`,
+        };
+
+        req.session.financialLossWarning = showLossOverLimit;
+      }
+
       if (action === 'back' || !nextDate) {
-        return res.redirect(app.namedRoutes.build('juror-management.edit-expense.get', {
+        const nextUrl = app.namedRoutes.build('juror-management.edit-expense.get', {
           jurorNumber,
           poolNumber,
           status,
-        }));
+        });
+
+        if (showLossOverLimit) {
+          req.session.editExpenseLossOverLimitNextUrl = nextUrl;
+
+          return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.loss-over-limit.get', {
+            jurorNumber,
+            poolNumber,
+          }));
+        }
+
+        return res.redirect(nextUrl);
       }
 
       if (action === 'next') {
-        return res.redirect(app.namedRoutes.build('juror-management.edit-expense.edit.get', {
+        const nextUrl = app.namedRoutes.build('juror-management.edit-expense.edit.get', {
           jurorNumber,
           poolNumber,
           status,
-        }) + `?date=${nextDate}&page=${+page + 1}`);
+        }) + `?date=${nextDate}&page=${+page + 1}`;
+
+        if (showLossOverLimit) {
+          req.session.editExpenseLossOverLimitNextUrl = nextUrl;
+
+          return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.loss-over-limit.get', {
+            jurorNumber,
+            poolNumber,
+          }));
+        }
+
+        return res.redirect(nextUrl);
       }
     };
   };
