@@ -67,6 +67,7 @@
       const formFields = _.clone(req.session.formFields);
 
       const cancelUrl = app.namedRoutes.build('administration.add-non-sitting-days.get');
+      const postUrl = app.namedRoutes.build('administration.add-non-sitting-days.post');
 
       delete req.session.errors;
       delete req.session.formFields;
@@ -74,6 +75,7 @@
       try {
         return res.render('administration/add-non-sitting-days.njk', {
           cancelUrl,
+          postUrl,
           errors: {
             title: 'There is a problem',
             count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -96,8 +98,8 @@
   module.exports.postAddNonSittingDay = function(app) {
     return async function(req, res) {
       var validatorResult;
-
-      validatorResult = validate(req.body, validator.validateDate());
+           
+      validatorResult = validate(req.body, validator());
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
@@ -112,18 +114,13 @@
 
   module.exports.deleteNonSittingDay = function(app) {
     return async function(req, res) {
-      var validatorResult;
+      return res.render('administration/delete-non-sitting-days.njk');
+    };
+  };
 
-      validatorResult = validate(req.body, validator.validateDate());
-      if (typeof validatorResult !== 'undefined') {
-        req.session.errors = validatorResult;
-        req.session.formFields = req.body;
-
-        return res.redirect(app.namedRoutes.build('administration.non-sitting-days.get', {
-
-        }));
-      };
-
+  module.exports.postDeleteNonSittingDay = function(app) {
+    return async function(req, res) {
+      return res.render('administration/delete-non-sitting-days.njk');
     };
   };
 

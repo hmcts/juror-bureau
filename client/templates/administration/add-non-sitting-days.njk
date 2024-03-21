@@ -40,7 +40,7 @@
               classes: "govuk-label--s"
             },
             hint: 'Use dd/mm/yyyy format. For example, 31/01/2023',
-            dateValue: defaultAttendanceDate,
+            dateValue: formFields.nonSittingDate,
             dateError: dateError
           }) }}
         </div>
@@ -53,7 +53,7 @@
           classes: "govuk-!-width-two-thirds",
           id: "decriptionNonSittingDay",
           name: "decriptionNonSittingDay",
-          value: tmpBody.decriptionNonSittingDay,
+          value: formFields.decriptionNonSittingDay,
           errorMessage: decriptionNonSittingDayError
         }) }}
 

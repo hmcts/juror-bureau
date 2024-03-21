@@ -2,8 +2,6 @@
 
 {% from "govuk/components/error-message/macro.njk" import govukErrorMessage -%}
 {% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "custom-components/date-picker/macro.njk" import datePicker %}
-{% from "govuk/components/input/macro.njk" import govukInput %}
 
 {% block page_title %}{{ serviceName }} - administration{% endblock %}
 {% block page_identifier %}administration - Add a non-sitting day{% endblock %}
@@ -36,8 +34,7 @@
         <div class="govuk-button-group">
           {{ govukButton({
             text: "Delete non-sitting day",
-            type: "submit",
-            class: "govuk-!-width-one-half"
+            classes: "govuk-button--warning"
           }) }}
 
           <a class="govuk-link" href="{{ url('administration.non-sitting-days.get') }}" id="cancelAnchor">Cancel</a>
