@@ -36,7 +36,7 @@
             },
           });
 
-          if (req.session.poolJurorsReassign) {
+          if (typeof req.session.poolJurorsReassign !== 'undefined') {
             postUrl = app.namedRoutes.build('pool-management.reassign.post', {
               poolNumber: req.params['poolNumber']});
             cancelUrl = app.namedRoutes.build('pool-overview.get', {
@@ -50,6 +50,11 @@
               jurorNumber: req.params['jurorNumber']});
             changeCourtUrl = app.namedRoutes.build('juror-management.reassign.select-court.get', {
               jurorNumber: req.params['jurorNumber']});
+          }
+
+          if (typeof req.session.processLateSummons !== 'undefined') {
+            cancelUrl = req.session.processLateSummons.cancelUrl;
+            delete req.session.processLateSummons;
           }
 
           return res.render('juror-management/reassign/pools', {
