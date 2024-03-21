@@ -1,14 +1,9 @@
 (function() {
   'use strict';
   var validate = require('validate.js')
-    , validator = require('./create-courtroom')
-    , validatorResult = null;
+    , validator = require('./create-courtroom');
 
   describe('Administration - Create courtroom validators:', function() {
-
-    beforeEach(function() {
-      validatorResult = null;
-    });
 
     it('should successfully validate entered courtroom details', function() {
       const mockRequest = {
@@ -16,7 +11,8 @@
         roomDescription: 'roomDescription',
       };
 
-      validatorResult = validate(mockRequest, validator.roomDetails());
+      const validatorResult = validate(mockRequest, validator.roomDetails());
+
       expect(validatorResult).to.be.undefined;
     });
 
@@ -26,7 +22,7 @@
         roomDescription: '',
       };
 
-      validatorResult = validate(mockRequest, validator.roomDetails());
+      const validatorResult = validate(mockRequest, validator.roomDetails());
 
       expect(validatorResult).to.be.an('object');
       expect(validatorResult.roomName[0]).to.have.ownPropertyDescriptor('summary');
