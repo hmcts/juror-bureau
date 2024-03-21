@@ -24,7 +24,7 @@
     },
     {
       text: "Room locations",
-      href: url('administration.room-locations.get'),
+      href: url('administration.room-locations.get', { locationCode: authentication.locCode }),
       active: nav === "roomLocations",
       attributes: {
         id: "roomLocationsAnchor"

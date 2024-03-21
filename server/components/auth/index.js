@@ -45,6 +45,10 @@
           password: req.body.password,
         }
         , authSuccess = function(resp) {
+
+          // TODO - REMOVE LINE AS SOON AS NEW TOKEN CHANGES ARE MERGED INTO API
+          resp.locCode = resp.owner;
+
           createJWTToken(req, resp, secretsConfig.get('secrets.juror.bureau-jwtKey'));
           return successCB(resp);
         }

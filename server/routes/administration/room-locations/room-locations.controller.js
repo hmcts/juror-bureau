@@ -6,14 +6,6 @@
   const validator = require('../../../config/validation/create-courtroom');
   const { replaceAllObjKeys } = require('../../../lib/mod-utils');
 
-  module.exports.getRooms = function(app) {
-    return (req, res) => {
-      return res.redirect(app.namedRoutes.build('administration.room-locations.location.get', {
-        locationCode: req.session.authentication.locCode,
-      }));
-    };
-  };
-
   module.exports.getRoomLocations = function(app) {
     return async(req, res) => {
       const { locationCode } = req.params;

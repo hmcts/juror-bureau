@@ -7,15 +7,8 @@
 
   module.exports = function(app) {
 
-    app.get('/administration/room-locations/',
-      'administration.room-locations.get',
-      auth.verify,
-      isCourtManager,
-      controller.getRooms(app),
-    );
-
     app.get('/administration/room-locations/:locationCode',
-      'administration.room-locations.location.get',
+      'administration.room-locations.get',
       auth.verify,
       isCourtManager,
       controller.getRoomLocations(app),
