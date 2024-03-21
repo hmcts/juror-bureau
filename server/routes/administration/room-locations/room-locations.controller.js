@@ -65,7 +65,7 @@
           action: 'edit',
           courtroom,
           processUrl: app.namedRoutes.build('administration.room-locations.edit.post', { locationCode, id }),
-          cancelUrl: app.namedRoutes.build('administration.room-locations.location.get', { locationCode }),
+          cancelUrl: app.namedRoutes.build('administration.room-locations.get', { locationCode }),
           tmpBody,
           errors: {
             title: 'Please check the form',
@@ -144,7 +144,7 @@
 
         req.session.bannerMessage = 'Room location updated';
 
-        return res.redirect(app.namedRoutes.build('administration.room-locations.location.get', {
+        return res.redirect(app.namedRoutes.build('administration.room-locations.get', {
           locationCode,
         }));
       } catch (err) {
@@ -176,7 +176,7 @@
       return res.render('administration/room-locations/add-edit-room.njk', {
         action: 'add',
         processUrl: app.namedRoutes.build('administration.room-locations.add.post', { locationCode }),
-        cancelUrl: app.namedRoutes.build('administration.room-locations.location.get', { locationCode }),
+        cancelUrl: app.namedRoutes.build('administration.room-locations.get', { locationCode }),
         tmpBody,
         errors: {
           title: 'Please check the form',
@@ -210,7 +210,7 @@
 
         req.session.bannerMessage = 'Room location added';
 
-        return res.redirect(app.namedRoutes.build('administration.room-locations.location.get', {
+        return res.redirect(app.namedRoutes.build('administration.room-locations.get', {
           locationCode,
         }));
       } catch (err) {
