@@ -24,11 +24,11 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
       let processUrl;
       let cancelUrl;
 
-      if (typeof req.session.processLateSummons !== 'undefined'){
+      if (typeof req.session.processLateSummons !== 'undefined') {
         originalDate = new Date(req.session.jurorCommonDetails.startDate);
         backUrl = req.session.processLateSummons.backUrl;
         cancelUrl = req.session.processLateSummons.cancelUrl;
-      } else if (typeof req.session.poolJurorsPostpone !== 'undefined'){
+      } else if (typeof req.session.poolJurorsPostpone !== 'undefined') {
         originalDate = new Date(req.session.poolJurorsPostpone.courtStartDate);
         backUrl = app.namedRoutes.build('pool-overview.get', {
           poolNumber: req.params['poolNumber'],
