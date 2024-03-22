@@ -12,7 +12,6 @@
   const { jurorDetailsObject } = require('../../../../objects/juror-record');
   const validate = require('validate.js');
   const enterExpensesValidator = require('../../../../config/validation/enter-expenses');
-  const editApprovedExpensesValidator = require('../../../../config/validation/edit-approved-expenses');
   const { expenseRatesAndLimitsDAO } = require('../../../../objects/administration');
   const { getCourtLocationRates } = require('../../../../objects/court-location');
 
@@ -376,30 +375,6 @@
         }) + `?date=${date}&page=${page}`);
       }
 
-      if (status === 'approved' || status === 'for-reapproval'){
-        if (nonAttendanceDay) {
-          validatorResult =
-            validate(req.body, editApprovedExpensesValidator.nonAttendanceDay(req.session.editOriginalValues));
-        } else {
-          req.body.travelType =
-          !Array.isArray(req.body.travelType) ? [req.body.travelType] : req.body.travelType;
-
-          validatorResult =
-            validate(req.body, editApprovedExpensesValidator.attendanceDay(req.session.editOriginalValues));
-        }
-      }
-
-      if (typeof validatorResult !== 'undefined') {
-        req.session.errors = validatorResult;
-        req.session.tmpBody = req.body;
-
-        return res.redirect(app.namedRoutes.build('juror-management.edit-expense.edit.get', {
-          jurorNumber,
-          poolNumber,
-          status,
-        }) + `?date=${date}&page=${page}`);
-      }
-
       const data = buildDataPayload(req.body, nonAttendanceDay);
 
       data['date_of_expense'] = date;
@@ -420,7 +395,7 @@
               jurorNumber,
               poolNumber,
             },
-            error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+            error: typeof error.error !== 'undefined' ? error.error : error.toString(),
           });
 
           return res.render('_errors/generic');
@@ -488,6 +463,16 @@
           delete req.session.editedExpenses[date];
         }
       } catch (err) {
+        if (err.error.code === 'EXPENSE_VALUES_REDUCED_LESS_THAN_PAID' && err.error.meta_data) {
+          req.session.errors = buildCalculatedExpenseErrors(err.error.meta_data);
+
+          return res.redirect(app.namedRoutes.build('juror-management.edit-expense.edit.get', {
+            jurorNumber,
+            poolNumber,
+            status,
+          }) + `?date=${date}&page=${page}`);
+        }
+
         app.logger.crit('Failed to recalculate the totals for an updated expense', {
           auth: req.session.authentication,
           jwt: req.session.authToken,
@@ -520,7 +505,7 @@
           auth: req.session.authentication,
           jwt: req.session.authToken,
           data: jurorNumber,
-          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+          error: typeof error.error !== 'undefined' ? error.error : error.toString(),
         });
 
         return res.render('_errors/generic');
@@ -918,19 +903,22 @@
 
     try {
       const { publicTransport, taxi } = req.body;
+      const response = await getCourtLocationRates(app, req);
 
-      const {
-        ['public_transport_soft_limit']: publicTransportLimit,
-        ['taxi_soft_limit']: taxiLimit,
-      } = await getCourtLocationRates(app, req);
+      const publicTransportLimit = response.public_transport_soft_limit;
+      const taxiLimit = response.taxi_soft_limit;
+
+      if (!publicTransportLimit && !taxiLimit) {
+        return { showTravelOverLimit, error: false };
+      }
 
       if (
-        Number(publicTransportLimit) < Number(publicTransport)
-        || Number(taxiLimit) < Number(taxi)
+        Number(publicTransportLimit || 0) < Number(publicTransport)
+        || Number(taxiLimit || 0) < Number(taxi)
       ) {
         showTravelOverLimit = {
-          publicTransportLimit,
-          taxiLimit,
+          publicTransportLimit: response.public_transport_soft_limit,
+          taxiLimit: response.taxi_soft_limit,
         };
       }
 
@@ -939,6 +927,68 @@
     }
 
     return { showTravelOverLimit, error: false };
+  }
+
+  function buildCalculatedExpenseErrors(metaData) {
+    const errors = {};
+
+    if (metaData.lossOfEarnings) {
+      errors.lossOfEarnings = [{
+        summary: 'The new financial loss cannot be less than originally paid in the selected expenses',
+        details: 'The new financial loss cannot be less than originally paid in the selected expenses',
+      }];
+    }
+
+    if (metaData.childcare) {
+      errors.extraCareCosts = [{
+        summary: 'The new extra care costs cannot be less than originally paid in the selected expenses',
+        details: 'The new extra care costs cannot be less than originally paid in the selected expenses',
+      }];
+    }
+
+    if (metaData.miscAmount) {
+      errors.otherCosts = [{
+        summary: 'The new other costs cannot be less than originally paid in the selected expenses',
+        details: 'The new other costs cannot be less than originally paid in the selected expenses',
+      }];
+    }
+
+    if (metaData.parking) {
+      errors.parking = [{
+        summary: 'The new parking costs cannot be less than originally paid in the selected expenses',
+        details: 'The new parking costs cannot be less than originally paid in the selected expenses',
+      }];
+    }
+
+    if (metaData.hiredVehicle) {
+      errors.taxi = [{
+        summary: 'The new taxi costs cannot be less than originally paid in the selected expenses',
+        details: 'The new taxi costs cannot be less than originally paid in the selected expenses',
+      }];
+    }
+
+    if (metaData.publicTransport) {
+      errors.publicTransport = [{
+        summary: 'The new public transport costs cannot be less than originally paid in the selected expenses',
+        details: 'The new public transport costs cannot be less than originally paid in the selected expenses',
+      }];
+    }
+
+    if (metaData.smartCardAmount) {
+      errors.smartcardSpend = [{
+        summary: 'The new smart card amount cannot be more than originally paid in the selected expenses',
+        details: 'The new smart card amount cannot be more than originally paid in the selected expenses',
+      }];
+    }
+
+    if (metaData.car) {
+      errors.milesTravelled = [{
+        summary: 'The new miles traveled cannot be less than originally paid in the selected expenses',
+        details: 'The new miles traveled cannot be less than originally paid in the selected expenses',
+      }];
+    }
+
+    return errors;
   }
 
 })();

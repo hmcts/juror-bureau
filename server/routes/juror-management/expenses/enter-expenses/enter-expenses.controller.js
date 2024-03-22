@@ -211,7 +211,7 @@
               jurorNumber,
               poolNumber,
             },
-            error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+            error: typeof error.error !== 'undefined' ? error.error : error.toString(),
           });
 
           return res.render('_errors/generic');
@@ -606,11 +606,10 @@
 
     try {
       const { publicTransport, taxi } = req.body;
+      const response = await getCourtLocationRates(app, req);
 
-      const {
-        ['public_transport_soft_limit']: publicTransportLimit,
-        ['taxi_soft_limit']: taxiLimit,
-      } = await getCourtLocationRates(app, req);
+      const publicTransportLimit = response.publicTransportLimit || '-';
+      const taxiLimit = response.taxiLimit || '-';
 
       if (
         Number(publicTransportLimit) < Number(publicTransport)

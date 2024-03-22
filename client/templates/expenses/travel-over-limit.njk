@@ -28,7 +28,7 @@
                 text: "Daily limit"
               },
               value: {
-                text: "£" + travelOverLimit.publicTransportLimit
+                text: ("£" + travelOverLimit.publicTransportLimit) if travelOverLimit.publicTransportLimit else "-"
               }
             },
             {
@@ -55,7 +55,7 @@
                 text: "Daily limit"
               },
               value: {
-                text: "£" + travelOverLimit.taxiLimit
+                text: ("£" + travelOverLimit.taxiLimit) if travelOverLimit.taxiLimit else "-"
               }
             },
             {
