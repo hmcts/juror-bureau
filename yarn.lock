@@ -675,7 +675,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"access-sniff@npm:^3.0.0":
+"access-sniff@npm:^3.2.0":
   version: 3.2.0
   resolution: "access-sniff@npm:3.2.0"
   dependencies:
@@ -6128,14 +6128,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"grunt-accessibility@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "grunt-accessibility@npm:5.0.0"
+"grunt-accessibility@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "grunt-accessibility@npm:6.0.0"
   dependencies:
-    access-sniff: ^3.0.0
+    access-sniff: ^3.2.0
   peerDependencies:
     grunt: ">=0.4.5"
-  checksum: d40b9fc3ff933ebc624165dff931ee911e132925c1f9b13fb085054fe11b18ee63f65397eddfe8b0fb9280cc193e57951fe9268fa2456f2d76f5b321ad2e5b5a
+  checksum: ef4a928de434bd617c2112ab164b26b8a6e2d39dd938c2957fa44a94935ef6749b65bccc4b2858bce7583e755050b0e0e1facb821f6c67c86e68a25708a115a1
   languageName: node
   linkType: hard
 
@@ -8581,7 +8581,7 @@ __metadata:
     fs-extra: ^11.0.0
     govuk-frontend: ^4.8.0
     grunt: latest
-    grunt-accessibility: ^5.0.0
+    grunt-accessibility: ^6.0.0
     grunt-autoprefixer: ^3.0.4
     grunt-browser-sync: ^2.2.0
     grunt-browserify: ^5.0.0
