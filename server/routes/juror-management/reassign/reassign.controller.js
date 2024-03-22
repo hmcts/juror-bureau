@@ -20,6 +20,7 @@
             , postUrl
             , cancelUrl
             , changeCourtUrl
+            , backUrl
             , filteredPools = response.availablePools
               .filter(pool => pool.poolNumber !==
                 (req.params['poolNumber'] ? req.params['poolNumber'] : req.session.jurorCommonDetails.poolNumber));
@@ -54,6 +55,7 @@
 
           if (typeof req.session.processLateSummons !== 'undefined') {
             cancelUrl = req.session.processLateSummons.cancelUrl;
+            backUrl = req.session.processLateSummons.backUrl;
           }
 
           return res.render('juror-management/reassign/pools', {
@@ -64,6 +66,10 @@
             cancelUrl: cancelUrl,
             changeCourtUrl: changeCourtUrl,
             court,
+            backLinkUrl : {
+              built: true,
+              url: backUrl,
+            },
             errors: {
               title: 'Please check the form',
               count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
