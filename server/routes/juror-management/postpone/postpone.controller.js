@@ -24,7 +24,11 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
       let processUrl;
       let cancelUrl;
 
-      if (typeof req.session.poolJurorsPostpone !== 'undefined'){
+      if (typeof req.session.processLateSummons !== 'undefined') {
+        originalDate = new Date(req.session.jurorCommonDetails.startDate);
+        backUrl = req.session.processLateSummons.backUrl;
+        cancelUrl = req.session.processLateSummons.cancelUrl;
+      } else if (typeof req.session.poolJurorsPostpone !== 'undefined') {
         originalDate = new Date(req.session.poolJurorsPostpone.courtStartDate);
         backUrl = app.namedRoutes.build('pool-overview.get', {
           poolNumber: req.params['poolNumber'],
@@ -45,7 +49,9 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
           jurorNumber: req.params['jurorNumber'],
         });
       }
+
       originalDate.setDate(originalDate.getDate() + 1);
+
       return res.render('juror-management/postpone/select-date.njk', {
         originalDate: originalDate,
         postponeToDate: req.session.postponeToDate,
@@ -145,6 +151,11 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
             });
             originalDate = moment(req.session.jurorCommonDetails.startDate);
           }
+
+          if (typeof req.session.processLateSummons !== 'undefined') {
+            cancelUrl = req.session.processLateSummons.cancelUrl;
+          }
+
           // eslint-disable-next-line one-var
           const filteredPools = {
             ...poolOptions.deferralPoolsSummary[0],
@@ -387,6 +398,8 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
             ...payload,
           },
         });
+
+        delete req.session.processLateSummons;
 
         if (typeof req.session.poolJurorsPostpone !== 'undefined') {
           jurorNumber = req.session.poolJurorsPostpone.selectedJurors;
