@@ -17,7 +17,7 @@
         <h1 class="govuk-heading-l">Some amounts entered are more than your court’s suggested daily limits</h1>
       </div>
     </div>
-    
+
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-one-half">
         <h2 class="govuk-heading-m">Public transport</h2>
@@ -37,7 +37,7 @@
               },
               value: {
                 text: "£" + body.publicTransport,
-                classes: "mod-red-text"
+                classes: "mod-red-text" if body.publicTransport > travelOverLimit.publicTransportLimit else ""
               }
             }
           ]
@@ -64,7 +64,7 @@
               },
               value: {
                 text: "£" + body.taxi,
-                classes: "mod-red-text"
+                classes: "mod-red-text" if body.taxi > travelOverLimit.taxiLimit else ""
               }
             }
           ]
