@@ -913,8 +913,8 @@
       }
 
       if (
-        Number(publicTransportLimit || 0) < Number(publicTransport)
-        || Number(taxiLimit || 0) < Number(taxi)
+        (publicTransportLimit && (Number(publicTransportLimit) < Number(publicTransport)))
+        || (taxiLimit && (Number(taxiLimit) < Number(taxi)))
       ) {
         showTravelOverLimit = {
           publicTransportLimit: response.public_transport_soft_limit,

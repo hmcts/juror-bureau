@@ -37,7 +37,7 @@
               },
               value: {
                 text: "£" + body.publicTransport,
-                classes: "mod-red-text" if body.publicTransport > travelOverLimit.publicTransportLimit else ""
+                classes: "mod-red-text" if (body.publicTransport > travelOverLimit.publicTransportLimit and travelOverLimit.publicTransportLimit) else ""
               }
             }
           ]
@@ -64,7 +64,7 @@
               },
               value: {
                 text: "£" + body.taxi,
-                classes: "mod-red-text" if body.taxi > travelOverLimit.taxiLimit else ""
+                classes: "mod-red-text" if (body.taxi > travelOverLimit.taxiLimit and travelOverLimit.taxiLimit) else ""
               }
             }
           ]

@@ -608,16 +608,20 @@
       const { publicTransport, taxi } = req.body;
       const response = await getCourtLocationRates(app, req);
 
-      const publicTransportLimit = response.publicTransportLimit || '-';
-      const taxiLimit = response.taxiLimit || '-';
+      const publicTransportLimit = response.public_transport_soft_limit;
+      const taxiLimit = response.taxi_soft_limit;
+
+      if (!publicTransportLimit && !taxiLimit) {
+        return { showTravelOverLimit, error: false };
+      }
 
       if (
-        Number(publicTransportLimit) < Number(publicTransport)
-        || Number(taxiLimit) < Number(taxi)
+        (publicTransportLimit && (Number(publicTransportLimit) < Number(publicTransport)))
+        || (taxiLimit && (Number(taxiLimit) < Number(taxi)))
       ) {
         showTravelOverLimit = {
-          publicTransportLimit,
-          taxiLimit,
+          publicTransportLimit: response.public_transport_soft_limit,
+          taxiLimit: response.taxi_soft_limit,
         };
       }
 
