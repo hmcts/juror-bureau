@@ -33,18 +33,18 @@
         {% endfor %}
 
         {{ govukTable({
-        head: [
-          {
-            text: "Date",
-            classes: "govuk-!-width-one-third"
-          },
-          {
-            text: "Bank holiday",
-            classes: "govuk-!-width-two-thirds"
-          }
-        ],
-        rows: holidayRows
-      }) }}
+          head: [
+            {
+              text: "Date",
+              classes: "govuk-!-width-one-third"
+            },
+            {
+              text: "Bank holiday",
+              classes: "govuk-!-width-two-thirds"
+            }
+          ],
+          rows: holidayRows
+        }) }}
       {% endfor %}
     </div>
   </div>
