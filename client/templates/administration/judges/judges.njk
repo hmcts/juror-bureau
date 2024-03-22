@@ -16,28 +16,26 @@
   {% for judge in judges %}
     {% set editHtml = "<a class='govuk-link' href='" + url('administration.judges.edit.get', {judgeId: judge.judgeId}) + "'>Edit</a>" %}
     {% set deleteHtml = " <a class='govuk-link govuk-!-margin-left-2' href='" + url('administration.judges.delete.get', {judgeId: judge.judgeId}) + "'>Delete</a>" %}
-    {% set judgeRows = (judgeRows.push(
-      [
-        {
-          text: judge.judgeCode
-        },
-        {
-          text: judge.judgeName
-        },
-        {
-          text: "Active" if judge.active else "Inactive"
-        },
-        {
-          text: judge.lastUsed | dateFilter("YYYY-mm-dd", "DD-MM-YYYY") if judge.lastUsed else "Not used",
-          attributes: {
-            "data-sort-value": judge.lastUsed if judge.lastUsed else "-"
-          }
-        },
-        {
-          html: editHtml + deleteHtml if not judge.active else editHtml
+    {% set judgeRows = (judgeRows.push([
+      {
+        text: judge.judgeCode
+      },
+      {
+        text: judge.judgeName
+      },
+      {
+        text: "Active" if judge.active else "Inactive"
+      },
+      {
+        text: judge.lastUsed | dateFilter("YYYY-mm-dd", "DD-MM-YYYY") if judge.lastUsed else "Not used",
+        attributes: {
+          "data-sort-value": judge.lastUsed if judge.lastUsed else "-"
         }
-      ]
-    ), judgeRows) %}
+      },
+      {
+        html: editHtml + deleteHtml if not judge.active else editHtml
+      }
+    ]), judgeRows) %}
   {% endfor %}
 
 
@@ -75,28 +73,28 @@
       <fieldset class="govuk-fieldset">
         <div class="govuk-radios govuk-radios--small govuk-radios--inline" data-module="govuk-radios">
         <div class="govuk-radios__item govuk-!-margin-right-0">
-            <input
-                class="govuk-radios__input" 
-                id="activeJudgesRadio" 
-                name="activeJudgesRadio" 
-                type="radio" 
-                value="active"
-                {% if judgeType === 'active' %}checked{% endif %}
-                onclick="window.location.href = '{{url('administration.judges.get')}}?judgeType=active';"
-            >
+          <input
+            class="govuk-radios__input" 
+            id="activeJudgesRadio" 
+            name="activeJudgesRadio" 
+            type="radio" 
+            value="active"
+            {% if judgeType === 'active' %}checked{% endif %}
+            onclick="window.location.href = '{{url('administration.judges.get')}}?judgeType=active';"
+          >
           <label class="govuk-label govuk-radios__label" for="activeJudgesRadio">Active judges</label>
         </div>
         <div class="govuk-radios__item govuk-!-margin-right-0" >
-            <input 
-                class="govuk-radios__input" 
-                id="allJudgesRadio" 
-                name="allJudgesRadio" 
-                type="radio" 
-                value="all"
-                {% if judgeType === 'all' %}checked{% endif %}
-                onclick="window.location.href = '{{url('administration.judges.get')}}?judgeType=all';"
-            >
-            <label class="govuk-label govuk-radios__label" for="allJudgesRadio">All judges</label>
+          <input 
+            class="govuk-radios__input" 
+            id="allJudgesRadio" 
+            name="allJudgesRadio" 
+            type="radio" 
+            value="all"
+            {% if judgeType === 'all' %}checked{% endif %}
+            onclick="window.location.href = '{{url('administration.judges.get')}}?judgeType=all';"
+          >
+          <label class="govuk-label govuk-radios__label" for="allJudgesRadio">All judges</label>
         </div>
         </div>
       </fieldset>
