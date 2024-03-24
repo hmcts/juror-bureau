@@ -8,9 +8,7 @@
     , poolDetailsValidator = require('../../../config/validation/request-pool').coronerPoolDetails
     , coronerPoolPostcodes = require('../../../config/validation/request-pool').coronerPoolPostcodes
     , dateFilter = require('../../../components/filters').dateFilter
-    , postCodesObject = require('../../../objects/postcodes').postCodesObject
-    , poolObj = require('../../../objects/request-pool')
-    , fetchCoronerPoolObj = require('../../../objects/request-pool').fetchCoronerPool;
+    , { createCoronerPoolDAO, fetchCourtsDAO, fetchCoronerPoolDAO, postCodesDAO } = require('../../../objects');
 
   module.exports.getSelectCourt = function(app) {
     return function(req, res) {
@@ -41,7 +39,7 @@
       delete req.session.formFields;
 
       if (typeof req.session.courtsList === 'undefined') {
-        return poolObj.fetchCourts.get(require('request-promise'), app, req.session.authToken)
+        return fetchCourtsDAO.get(req)
           .then(renderFn);
       }
 
@@ -193,7 +191,7 @@
   module.exports.postCheckDetails = function(app) {
     return function(req, res) {
       var successCB = function(response) {
-          var poolNumber = new URLSearchParams(response.headers.location).get('poolNumber');
+          const poolNumber = new URLSearchParams(response._headers.location).get('poolNumber');
 
           app.logger.info('Successfully created a coroner court', {
             auth: req.session.authentication,
@@ -203,7 +201,7 @@
 
           delete req.session.coronerCourt;
 
-          return res.redirect(app.namedRoutes.build('pool-overview.get', { poolNumber: poolNumber }));
+          return res.redirect(app.namedRoutes.build('pool-overview.get', { poolNumber }));
         }
         , errorCB = function(err) {
 
@@ -219,7 +217,7 @@
           return res.redirect(app.namedRoutes.build('coroner-pool.check-details.get'));
         };
 
-      return poolObj.createCoronerPool.post(require('request-promise'), app, req.session.authToken, req.body)
+      return createCoronerPoolDAO.post(req, req.body)
         .then(successCB)
         .catch(errorCB);
     };
@@ -315,10 +313,8 @@
         locationCode = req.session.coronerCourt.locCode;
       }
 
-      return postCodesObject.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+      return postCodesDAO.get(
+        req,
         locationCode,
         isCoronersPool
       )
@@ -400,10 +396,8 @@
         res.send(csvResult.join('\n'));
       };
 
-      return fetchCoronerPoolObj.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+      return fetchCoronerPoolDAO.get(
+        req,
         req.params['poolNumber']
       )
         .then(successCB)

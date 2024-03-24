@@ -3,8 +3,7 @@
 
   var _ = require('lodash')
     , urljoin = require('url-join')
-    , searchPoolObj = require('../../../objects/pool-search.js').poolSearchObject
-    , fetchCourts = require('../../../objects/request-pool').fetchCourts
+    , { fetchCourtsDAO, poolSearchDAO } = require('../../../objects')
     , searchValidator = require('../../../config/validation/pool-search')
     , modUtils = require('../../../lib/mod-utils')
     , validate = require('validate.js')
@@ -118,10 +117,8 @@
         }
         , poolSearchRequest = function() {
         // Run API request
-          return searchPoolObj.post(
-            require('request-promise'),
-            app,
-            req.session.authToken,
+          return poolSearchDAO.post(
+            req,
             req.query
           )
             .then(successfulSearch(app, req, res))
@@ -146,7 +143,7 @@
 
       // a fallback request in case the user haven't cached courts yet
       if (typeof req.session.courtsList === 'undefined') {
-        return fetchCourts.get(require('request-promise'), app, req.session.authToken)
+        return fetchCourtsDAO.get(req)
           .then(function(data) {
             req.session.courtsList = data.courts;
 
@@ -236,10 +233,8 @@
         : '';
 
       // Run API request
-      return searchPoolObj.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+      return poolSearchDAO.post(
+        req,
         req.body
       )
         .then(successfulSearch(app, req, res))

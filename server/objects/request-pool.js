@@ -22,7 +22,8 @@
   module.exports.checkDayTypeDAO = new DAO('moj/pool-request/day-type', { get:
     (locationCode, attendanceDate) => {
       const uri = urljoin(
-        this.resource,
+        // this.resource, // Throws undefined here???
+        'moj/pool-request/day-type',
         '?locationCode=' + locationCode,
         '&attendanceDate=' + attendanceDate);
 

@@ -8,7 +8,7 @@
   module.exports.summonCitizenDAO = new DAO('moj/pool-create', {
     post: function(body, endpoint) {
       const uri = urljoin(this.resource, endpoint);
-      const payload = {...body};
+      const payload = { ...body };
 
       if (endpoint === 'create-pool') {
         payload.startDate = dateFilter(new Date(payload.courtDate), null, 'YYYY-MM-DD');

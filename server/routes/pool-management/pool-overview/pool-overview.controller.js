@@ -1,22 +1,20 @@
-const filters = require('../../../components/filters');
-
 (function(){
   'use strict';
 
   var _ = require('lodash')
     , validate = require('validate.js')
-    , jurorTransfer = require('../../../objects/juror-transfer').jurorTransfer
     , jurorSelectValidator = require('../../../config/validation/pool-reassign')
-    , poolSummaryObj = require('../../../objects/pool-summary.js').poolSummaryObject
-    , poolMembersObj = require('../../../objects/pool-members.js').poolMemebersObject
-    , poolHistoryObj = require('../../../objects/pool-history.js').poolHistoryObject
-    , fetchCoronerPool = require('../../../objects/request-pool').fetchCoronerPool
+    , {
+      fetchCoronerPoolDAO,
+      jurorTransferDAO,
+      poolHistoryDAO,
+      poolMembersDAO,
+      poolSummaryDAO,
+    } = require('../../../objects')
     , modUtils = require('../../../lib/mod-utils')
-    , { dateFilter } = require('../../../components/filters')
-    , isCourtUser = require('../../../components/auth/user-type').isCourtUser
-    , capitalizeFully = require('../../../components/filters').capitalizeFully
-    , moment = require('moment')
-    , rp = require('request-promise');
+    , utils = require('../../../lib/utils')
+    , { dateFilter, capitalizeFully, convert24to12, timeArrayToString } = require('../../../components/filters')
+    , isCourtUser = require('../../../components/auth/user-type').isCourtUser;
 
   function errorCB(app, req, res, poolNumber, errorString) {
     return function(err) {
@@ -35,7 +33,7 @@ const filters = require('../../../components/filters');
   }
 
   module.exports.getJurors = function(app) {
-    return function(req, res) {
+    return async function(req, res) {
       const poolNumber = req.params['poolNumber'];
       const coronerPoolPrefix = '9' + new Date().getFullYear().toString().slice(2, 4);
       let tmpError;
@@ -70,16 +68,12 @@ const filters = require('../../../components/filters');
       delete req.session.selectedAll;
 
       const poolPromises = [
-        poolSummaryObj.get(
-          rp,
-          app,
-          req.session.authToken,
+        poolSummaryDAO.get(
+          req,
           poolNumber,
         ),
-        poolMembersObj.post(
-          rp,
-          app,
-          req.session.authToken,
+        poolMembersDAO.post(
+          req,
           {
             'pool_number': poolNumber,
             'juror_number': req.query.jurorNumber || null,
@@ -182,10 +176,8 @@ const filters = require('../../../components/filters');
         jwt: req.session.authToken,
       });
 
-      return poolSummaryObj.get(
-        rp,
-        app,
-        req.session.authToken,
+      return poolSummaryDAO.get(
+        req,
         poolNumber,
       )
         .then(renderHistory(app, req, res))
@@ -196,7 +188,7 @@ const filters = require('../../../components/filters');
   module.exports.postReassign = function(app) {
     return async function(req, res) {
       if (req.body['check-all-jurors']) {
-        req.body.selectedJurors = await poolMembersObj.get(rp, app, req.session.authToken, req.params.poolNumber);
+        req.body.selectedJurors = await poolMembersDAO.get(req, req.params.poolNumber);
       } else {
 
         var validatorResult;
@@ -251,8 +243,9 @@ const filters = require('../../../components/filters');
         req.session.poolJurorsTransfer.selectedJurors = [req.body.selectedJurors];
       }
 
-      return res.redirect(app.namedRoutes.build('pool-overview.transfer.select-court.get',
-        { poolNumber: req.params.poolNumber }));
+      return res.redirect(app.namedRoutes.build('pool-overview.transfer.select-court.get', {
+        poolNumber: req.params.poolNumber,
+      }));
     };
   };
 
@@ -360,7 +353,7 @@ const filters = require('../../../components/filters');
       // temp delete this here 🤔
       delete req.session.newCourtCatchmentArea;
 
-      return fetchCoronerPool.get(rp, app, req.session.authToken, req.params['poolNumber'])
+      return fetchCoronerPoolDAO.get(req, req.params['poolNumber'])
         .then(coronerSuccessCB)
         .catch(errorCB(app, req, res, req.params['poolNumber'], 'Failed to fetch coroner pool:'));
     };
@@ -408,7 +401,7 @@ const filters = require('../../../components/filters');
     const totalJurors = membersList.totalItems;
     const totalCheckedJurors = selectAll ? membersList.totalItems : selectedJurors.length || 0;
 
-    let jurors = await paginateJurorsList(membersList.data, sortBy, order, false, selectedJurors, selectAll);
+    let jurors = paginateJurorsList(membersList.data, sortBy, order, false, selectedJurors, selectAll);
     selectedJurors = selectedJurors.filter(item => !membersList.data.find(juror => juror.jurorNumber === item));
 
     delete req.session.errors;
@@ -473,20 +466,18 @@ const filters = require('../../../components/filters');
     return function(data) {
       req.session.poolDetails = data;
 
-      app.logger.info('Rendering Pool history: ', {auth: req.session.authentication,
+      app.logger.info('Rendering Pool history: ', {
+        auth: req.session.authentication,
         jwt: req.session.authToken,
       });
 
       return renderHistoryItems(app, req, res, data);
-
     };
   }
 
   function renderHistoryItems(app, req, res, data){
-    return poolHistoryObj.get(
-      rp,
-      app,
-      req.session.authToken,
+    return poolHistoryDAO.get(
+      req,
       data.poolDetails.poolNumber,
     )
       .then(function(poolHistoryList) {
@@ -649,7 +640,7 @@ const filters = require('../../../components/filters');
       const order = req.query.sortOrder || 'asc';
 
       selectedJurors = selectedJurors.filter(item => membersList.data.indexOf(item) < 0);
-      let jurors = await paginateJurorsList(membersList.data, sortBy, order, true, selectedJurors, selectAll);
+      let jurors = paginateJurorsList(membersList.data, sortBy, order, true, selectedJurors, selectAll);
 
       const totalJurors = membersList.totalItems;
       const totalCheckedJurors = selectAll ? membersList.totalItems : selectedJurors.length || 0;
@@ -721,7 +712,7 @@ const filters = require('../../../components/filters');
   module.exports.postBulkPostpone = function(app) {
     return async function(req, res) {
       if (req.body['check-all-jurors']) {
-        req.body.selectedJurors = await poolMembersObj.get(rp, app, req.session.authToken, req.params.poolNumber);
+        req.body.selectedJurors = await poolMembersDAO.get(req, req.params.poolNumber);
       } else {
         var validatorResult;
         
@@ -791,7 +782,9 @@ const filters = require('../../../components/filters');
     };
   };
 
-  function paginateJurorsList(jurors, sortBy, order, isCourt, selectedJurors, selectAll) {
+  function paginateJurorsList(_jurors, sortBy, order, isCourt, selectedJurors, selectAll) {
+    const jurors = utils.snakeToCamel(_jurors);
+
     let headers = [{
       id: 'selectAll',
       html: `<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">\n` +
@@ -889,13 +882,13 @@ const filters = require('../../../components/filters');
           },
         },
         {
-          text: filters.capitalizeFully(juror.firstName?.toLowerCase()),
+          text: capitalizeFully(juror.firstName?.toLowerCase()),
           attributes: {
             'data-sort-value': juror.firstName,
           },
         },
         {
-          text: filters.capitalizeFully(juror.lastName?.toLowerCase()),
+          text: capitalizeFully(juror.lastName?.toLowerCase()),
           attributes: {
             'data-sort-value': juror.lastName,
           },
@@ -904,19 +897,19 @@ const filters = require('../../../components/filters');
       if (isCourt) {
         row = row.concat([
           {
-            text: filters.capitalizeFully(juror.attendance?.toLowerCase()),
+            text: capitalizeFully(juror.attendance?.toLowerCase()),
             attributes: {
               'data-sort-value': juror.attendance,
             },
           },
           {
-            text: juror.checkedIn ? filters.convert24to12(filters.timeArrayToString(juror.checkedIn)) : '',
+            text: juror.checkedIn ? convert24to12(timeArrayToString(juror.checkedIn)) : '',
             attributes: {
               'data-sort-value': juror.checkedIn,
             },
           },
           {
-            text: juror.nextDate && filters.dateFilter(juror.nextDate),
+            text: juror.nextDate && dateFilter(juror.nextDate),
             attributes: {
               'data-sort-value': juror.nextDate,
             },
@@ -931,7 +924,7 @@ const filters = require('../../../components/filters');
         })
       }
       row.push({
-        text: filters.capitalizeFully(juror.status?.toLowerCase()),
+        text: capitalizeFully(juror.status?.toLowerCase()),
         attributes: {
           'data-sort-value': juror.status,
         },

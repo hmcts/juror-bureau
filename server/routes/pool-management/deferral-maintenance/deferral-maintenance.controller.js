@@ -7,7 +7,7 @@
     , modUtils = require('../../../lib/mod-utils')
     , validator = require('../../../config/validation/pool-management').deferralMaintenance
     , validate = require('validate.js')
-    , requestObj = require('../../../objects/pool-management').deferralMaintenance
+    , { deferralsDAO, availableDeferralPoolsDAO, allocateJurorsDAO } = require('../../../objects')
     , dateFilter = require('../../../components/filters').dateFilter;
 
   function successCB(data, courtCode) {
@@ -95,8 +95,7 @@
         return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.get'));
       }
 
-      return requestObj
-        .deferrals.get(rp, app, req.session.authToken, courtCode)
+      return deferralsDAO.get(req, courtCode)
         .then((data) => successCB(data, courtCode[0])(app, req, res))
         .catch((err) => errorCB(err)(app, req, res));
     };
@@ -290,8 +289,7 @@
         }));
       }
 
-      return requestObj
-        .availablePools.get(rp, app, req.session.authToken, req.params['locationCode'])
+      return availableDeferralPoolsDAO.get(req, req.params['locationCode'])
         .then(processSuccessCB)
         .catch(processErrorCB);
     };
@@ -362,8 +360,7 @@
 
       deferralsToProcess = extractDeferralsToProcess(req.session.deferralMaintenance.deferrals);
 
-      return requestObj
-        .allocateJurors.post(rp, app, req.session.authToken, deferralsToProcess, req.body.poolNumber)
+      return allocateJurorsDAO.post(req, deferralsToProcess, req.body.poolNumber)
         .then(processSuccessCB)
         .catch(processErrorCB);
     };

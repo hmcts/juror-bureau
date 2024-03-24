@@ -2,7 +2,7 @@
   'use strict';
 
   var modUtils = require('../../lib/mod-utils')
-    , requestObj = require('../../objects/request-pool')
+    , { checkDayTypeDAO } = require('../../objects');
 
   module.exports = function(app) {
     return function(req, res) {
@@ -26,7 +26,7 @@
               title: 'The attendance date is a bank holiday',
               reason: 'You’ve selected an attendance date that’s'
                 + ' a UK bank holiday. You can continue or go back and change the date.',
-            }
+            };
           }
 
           if (data === dayTypes.WEEKEND) {
@@ -34,7 +34,7 @@
               title: 'The attendance date is a weekend',
               reason: 'You’ve selected an attendance date that’s'
                 + ' a Saturday or a Sunday. You can continue or go back and change the date.',
-            }
+            };
           }
 
           // set the correct redirect uri depending on where the user comes from
@@ -80,10 +80,8 @@
           return res.redirect(app.namedRoutes.build('request-pool.pool-details.get'));
         };
 
-      requestObj.checkDayType.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+      checkDayTypeDAO.get(
+        req,
         req.session.poolDetails.courtCode,
         (typeof req.session.tmpDate !== 'undefined') ? req.session.tmpDate : req.session.poolDetails.attendanceDate
       )

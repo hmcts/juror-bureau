@@ -6,7 +6,7 @@
 
   module.exports.deferralsDAO = new DAO('moj/deferral-maintenance/deferrals', {
     get: function(locationCode) {
-      const uri = urljoin(this.resource, locationCode);
+      const uri = urljoin(this.resource, locationCode.toString());
 
       return { uri };
     }}

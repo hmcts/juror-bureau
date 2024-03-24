@@ -14,7 +14,7 @@ const client = axios.create({
 
 client.interceptors.request.use(function(request) {
   const { Logger } = require('../components/logger');
-  const logBody = request.data ? {body: {...request.data}} : {};
+  const logBody = request.data ? { body: { ...request.data } } : {};
 
   if (logBody && logBody.body && logBody.body.password) {
     delete logBody.body.password;
@@ -32,7 +32,11 @@ client.interceptors.request.use(function(request) {
 });
 
 client.interceptors.response.use(
-  (response) => ({...response.data, _headers: response.headers}),
+  (response) => {
+    const data = isResponseDataPlain(response.data) ? { data: response.data } : response.data;
+
+    return { ...data, _headers: response.headers };
+  },
   (err) => {
     const error = {
       statusCode: err.response.status,
@@ -46,19 +50,25 @@ client.interceptors.response.use(
   },
 );
 
+function isResponseDataPlain(data) {
+  return typeof data === 'string' || typeof data === 'number' || typeof data === 'boolean';
+}
+
 module.exports.axiosClient = function(method, url, jwtToken, variables) {
   if (variables && variables.body) {
     return client[method](url, variables.body, {
       headers: {
         ...variables.headers,
         Authorization: jwtToken,
-      }});
+      },
+    });
   }
 
   return client[method](url, {
     headers: {
       ...(variables && variables.headers),
       Authorization: jwtToken,
-    }});
+    },
+  });
 };
 

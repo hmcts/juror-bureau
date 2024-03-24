@@ -4,8 +4,7 @@
   var _ = require('lodash')
     , validate = require('validate.js')
     , modUtils = require('../../lib/mod-utils')
-    , poolRequests = require('../../objects/pool-list').poolRequests
-    , fetchCourts = require('../../objects/request-pool').fetchCourts
+    , { poolRequestsDAO, fetchCourtsDAO } = require('../../objects')
     , poolTypeSelectValidator = require('../../config/validation/pool-create-select');
 
   module.exports.index = function(app) {
@@ -64,7 +63,7 @@
             deletedRecord: deletedRecord,
             newPoolCreated: newPoolCreated,
             pageItems: pageItems,
-            displayPoolManagementActionsButtonMenu: (status === 'requested') ? true : false,
+            displayPoolManagementActionsButtonMenu: status === 'requested',
             pageUrls: pageUrls,
             locCode: req.query['location_code'],
             courts: modUtils.transformCourtNames(req.session.courtsList),
@@ -103,7 +102,7 @@
       delete req.session.coronerCourt;
       delete req.session.poolCreateFormFields;
 
-      promiseArr.push(poolRequests.get(require('request-promise'), app, req.session.authToken, {
+      promiseArr.push(poolRequestsDAO.get(req, {
         status: status,
         tab: tab,
         page: page,
@@ -114,7 +113,7 @@
       // this can later be replaced by a "in memory" cached version of the courts list
       // having this stored in a memory ds/db can make faster reads and improves our code
       // because we do not have to rely in the session data anymore
-      promiseArr.push(fetchCourts.get(require('request-promise'), app, req.session.authToken, req));
+      promiseArr.push(fetchCourtsDAO.get(req));
       Promise.all(promiseArr)
         .then(successCB)
         .catch(errorCB);

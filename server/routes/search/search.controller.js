@@ -180,7 +180,7 @@
         const response = await Promise.all(promiseArr);
 
         staff = response[0].data;
-        responses = response[1].data;
+        responses = response[1];
 
         responses.juror_response.forEach(responsesListIterator(staff));
 

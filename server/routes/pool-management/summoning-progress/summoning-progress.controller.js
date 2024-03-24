@@ -6,8 +6,7 @@
     , validate = require('validate.js')
     , validator = require('../../../config/validation/request-pool')
     , modUtils = require('../../../lib/mod-utils')
-    , fetchCourts = require('../../../objects/request-pool').fetchCourts
-    , summoningProgressObject = require('../../../objects/summoning-progress').summoningProgressObject;
+    , { fetchCourtsDAO, summoningProgressDAO } = require('../../../objects');
 
   module.exports.index = (app) => {
     return (req, res) => {
@@ -77,11 +76,9 @@
       }
 
       if (typeof req.session.courtsList === 'undefined') {
-        return fetchCourts.get(
-          require('request-promise'),
-          app,
-          req.session.authToken
-        ).then((data) => {
+        return fetchCourtsDAO.get(req).then((data) => {
+          req.session.courtsList = data.courts;
+        }).then((data) => {
           req.session.courtsList = data.courts;
         })
       }
@@ -131,10 +128,8 @@
       query.locCode = locCode;
     }
 
-    return summoningProgressObject.get(
-      require('request-promise'),
-      app,
-      req.session.authToken,
+    return summoningProgressDAO.get(
+      req,
       query
     ).then(successfulRequest(app, req, res)
     ).catch((err) => {

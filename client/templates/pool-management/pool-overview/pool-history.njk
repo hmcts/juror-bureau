@@ -1,34 +1,36 @@
 {% from "moj/components/timeline/macro.njk" import mojTimeline %}
 
-<div class="govuk-grid-column-full govuk-body">
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full govuk-body">
 
-  <h2 id="jurorDetailsLabel" class="govuk-heading-m">History</h2>
+    <h2 id="jurorDetailsLabel" class="govuk-heading-m">History</h2>
 
-  {% set logs = [] %}
-  {% set historyHtml = undefined %}
-  {% for historyLog in poolHistory %}
-    {% set historyHtml %}
-      <p class="govuk-body">{{ historyLog.otherInformation }}</p>
-    {% endset %}
-    {% set logs = (logs.push({
-      label: {
-        text: historyLog.historyDescription
-      },
-      html: historyHtml,
-      datetime: {
-        timestamp: historyLog.datePart,
-        type: "datetime"
-      },
-      byline: {
-        text: historyLog.userId
-      }
-    }), logs) %}
-  {% endfor %}
+    {% set logs = [] %}
+    {% set historyHtml = undefined %}
+    {% for historyLog in poolHistory %}
+      {% set historyHtml %}
+        <p class="govuk-body">{{ historyLog.otherInformation }}</p>
+      {% endset %}
+      {% set logs = (logs.push({
+        label: {
+          text: historyLog.historyDescription
+        },
+        html: historyHtml,
+        datetime: {
+          timestamp: historyLog.datePart,
+          type: "datetime"
+        },
+        byline: {
+          text: historyLog.userId
+        }
+      }), logs) %}
+    {% endfor %}
 
-  <div class="govuk-grid-column-two-thirds">
-    {{ mojTimeline({
-      items: logs
-    }) }}
+    <div class="govuk-grid-column-two-thirds">
+      {{ mojTimeline({
+        items: logs
+      }) }}
+    </div>
+
   </div>
-
 </div>

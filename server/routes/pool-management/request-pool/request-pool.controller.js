@@ -5,7 +5,12 @@
     , validate = require('validate.js')
     , validator = require('../../../config/validation/request-pool')
     , modUtils = require('../../../lib/mod-utils')
-    , requestPoolObj = require('../../../objects/request-pool')
+    , {
+      createPoolRequestDAO,
+      fetchCourtDeferralsDAO,
+      fetchPoolNumbersDAO,
+      generatePoolNumberDAO,
+    } = require('../../../objects')
     , isCourtUser = require('../../../components/auth/user-type').isCourtUser
     , dateFilter = require('../../../components/filters').dateFilter
     , checkDayType = require('../check-day-type')
@@ -21,8 +26,8 @@
       }
 
       next();
-    }
-  }
+    };
+  };
 
   module.exports.getSelectCourt = function(app) {
     return function(req, res) {
@@ -50,8 +55,8 @@
           req.session.errors = {
             courtNameOrLocation: [{
               summary: 'Please check the court name or location',
-              details: 'It was not possible to load your court automatically. Please manually select a court'
-            }]
+              details: 'It was not possible to load your court automatically. Please manually select a court',
+            }],
           };
 
           // because the court was invalid lets then set it as invalid but not remove
@@ -100,10 +105,10 @@
           title: 'Please check the form',
           count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
           items: tmpErrors,
-        }
+        },
       });
-    }
-  }
+    };
+  };
 
   module.exports.postSelectCourt = function(app) {
     return function(req, res) {
@@ -124,8 +129,8 @@
           req.session.errors = {
             courtNameOrLocation: [{
               summary: 'Please check the court name or location',
-              details: 'This court does not exist. Please enter a name or code of an existing court'
-            }]
+              details: 'This court does not exist. Please enter a name or code of an existing court',
+            }],
           };
 
           res.redirect(app.namedRoutes.build('request-pool.select-court.get'));
@@ -146,8 +151,8 @@
       return modUtils.matchUserCourt(courtsList, req.body)
         .then(successCB)
         .catch(errorCB);
-    }
-  }
+    };
+  };
 
   // maybe there is a better way of running this without having to request the number of deferrals every time?
   // TODO: investigate the above?
@@ -156,7 +161,7 @@
       var tmpErrors
         , suggestedDate
 
-        , successCB = function(data) {
+        , successCB = function({ data }) {
 
           // cache the number of deferrals available so we can always have it at hand
           // for when changing the number of deferrals
@@ -197,7 +202,7 @@
               title: 'Please check the form',
               count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
               items: tmpErrors,
-            }
+            },
           });
         }
         , errorCB = function(err) {
@@ -240,17 +245,15 @@
       delete req.session.redirectedFrom;
       delete req.session.checkDetailsPage;
 
-      requestPoolObj.fetchCourtDeferrals.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+      fetchCourtDeferralsDAO.get(
+        req,
         req.session.poolDetails.courtCode,
         req.session.poolDetails.attendanceDate
       )
         .then(successCB)
         .catch(errorCB);
-    }
-  }
+    };
+  };
 
   // I may need to add a request here to fetch the pool number
   // but it could also be done before getting here
@@ -283,8 +286,8 @@
       req.session.redirectedFrom = 'request-pool.pool-details.post';
 
       checkDayType(app)(req, res);
-    }
-  }
+    };
+  };
 
   module.exports.getChangeAttendanceDate = function(app) {
     return function(req, res) {
@@ -316,10 +319,10 @@
           title: 'Please check the form',
           count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
           items: tmpErrors,
-        }
+        },
       });
-    }
-  }
+    };
+  };
 
   module.exports.postChangeAttendanceDate = function(app) {
     return function(req, res) {
@@ -334,7 +337,7 @@
       }
 
       // set the new date to the session poolDetails object
-      req.session.tmpDate = dateFilter(req.body.attendanceDate, 'DD/MM/YYYY', 'YYYY-MM-DD')
+      req.session.tmpDate = dateFilter(req.body.attendanceDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
 
       // clear error session data
       delete req.session.errors;
@@ -345,8 +348,8 @@
       req.session.redirectedFrom = 'request-pool.change-attendance-date.post';
 
       checkDayType(app)(req, res);
-    }
-  }
+    };
+  };
 
   module.exports.getChangeDeferrals = function(app) {
     return function(req, res) {
@@ -371,17 +374,17 @@
           title: 'Please check the form',
           count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
           items: tmpErrors,
-        }
+        },
       });
-    }
-  }
+    };
+  };
 
   module.exports.postChangeDeferrals = function(app) {
     return function(req, res) {
       var validatorResult;
 
       validatorResult = validate({
-        numberOfDeferrals: req.session.poolDetails.courtDeferralsAvailable
+        numberOfDeferrals: req.session.poolDetails.courtDeferralsAvailable,
       }, validator.numberOfDeferrals(req.body));
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
@@ -397,8 +400,8 @@
       req.session.poolDetails.numberOfCourtDeferrals = req.body.numberOfDeferrals;
 
       res.redirect(app.namedRoutes.build('request-pool.pool-details.get'));
-    }
-  }
+    };
+  };
 
   module.exports.getInvalidDate = function(app) {
     return function(req, res) {
@@ -418,12 +421,12 @@
       res.render('pool-management/_common/invalid-date', {
         invalidDate: invalidDate,
       });
-    }
-  }
+    };
+  };
 
   module.exports.getCheckDetails = function(app) {
     return function(req, res) {
-      var successCB = function(data) {
+      var successCB = function({ data }) {
 
           // set the new pool number into the current poolDetails data...
           // we know that data is undefined because coming from change-pool-number screen
@@ -472,10 +475,8 @@
 
       // conditionally send an api request to generate a pool number
       if (typeof req.session.newPoolNumber === 'undefined') {
-        requestPoolObj.generatePoolNumber.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+        generatePoolNumberDAO.get(
+          req,
           req.session.poolDetails.courtCode,
           req.session.poolDetails.attendanceDate
         )
@@ -485,8 +486,8 @@
         // call the successCB() function with no parameters
         successCB();
       }
-    }
-  }
+    };
+  };
 
   module.exports.postCheckDetails = function(app) {
     return function(req, res) {
@@ -519,11 +520,11 @@
       delete req.session.errors;
       delete req.session.formFields;
 
-      requestPoolObj.createPoolRequest.post(require('request-promise'), app, req.session.authToken, tmpBody)
+      createPoolRequestDAO.post(req, tmpBody)
         .then(successCB)
         .catch(errorCB);
-    }
-  }
+    };
+  };
 
   module.exports.getChangeAttendanceTime = function(app) {
     return function(req, res) {
@@ -550,10 +551,10 @@
           title: 'Please check the form',
           count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
           items: tmpErrors,
-        }
+        },
       });
-    }
-  }
+    };
+  };
 
   module.exports.postChangeAttendanceTime = function(app) {
     return function(req, res) {
@@ -574,8 +575,8 @@
       req.session.poolDetails.attendanceTime = modUtils.padTime(req.body);
 
       res.redirect(app.namedRoutes.build('request-pool.pool-details.get'));
-    }
-  }
+    };
+  };
 
   module.exports.getChangePoolNumber = function(app) {
     return function(req, res) {
@@ -598,7 +599,7 @@
               title: 'Please check the form',
               count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
               items: tmpErrors,
-            }
+            },
           });
         }
         , errorCB = function(err) {
@@ -611,7 +612,7 @@
           });
 
           return res.redirect(app.namedRoutes.build('pool-management.get'));
-        }
+        };
 
       // quit the request-pool process if the user tries to access from an invalid page / direct link
       if (req.session.checkDetailsPage !== true) {
@@ -624,11 +625,11 @@
 
       poolNumberPrefix = poolNumberPrefixBuilder(req.session.poolDetails);
 
-      requestPoolObj.fetchPoolNumbers.get(require('request-promise'), app, req.session.authToken, poolNumberPrefix)
+      fetchPoolNumbersDAO.get(req, poolNumberPrefix)
         .then(successCB)
         .catch(errorCB);
-    }
-  }
+    };
+  };
 
   module.exports.postChangePoolNumber = function(app) {
     return function(req, res) {
@@ -653,8 +654,8 @@
       req.session.newPoolNumber = req.body.poolNumber;
 
       res.redirect(app.namedRoutes.build('request-pool.check-details.get'));
-    }
-  }
+    };
+  };
 
   module.exports.poolNumberPrefixBuilder = poolNumberPrefixBuilder;
   function poolNumberPrefixBuilder(poolDetails) {

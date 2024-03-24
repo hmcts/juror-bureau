@@ -2,14 +2,15 @@
   'use strict';
 
   var _ = require('lodash')
-    , summonsFormObj = require('../../../../objects/summons-form').poolSummaryObject
+    // , summonsFormObj = require('../../../../objects/summons-form').poolSummaryObject
     , modUtils = require('../../../../lib/mod-utils')
     , additionalSummonsValidator = require('../../../../config/validation/additional-summons')
     , courtNameOrLocationValidator = require('../../../../config/validation/request-pool').courtNameOrLocation
     , deferralsValidator = require('../../../../config/validation/request-pool').numberOfDeferrals
     , dateFilter = require('../../../../components/filters/').dateFilter
-    , summonCitizenObject = require('../../../../objects/summon-citizens').summonCitizenObject
-    , fetchCourts = require('../../../../objects/request-pool').fetchCourts
+    // , summonCitizenObject = require('../../../../objects/summon-citizens').summonCitizenObject
+    // , fetchCourts = require('../../../../objects/request-pool').fetchCourts
+    , { fetchCourtsDAO, summonCitizenDAO, summonsFormDAO } = require('../../../../objects')
     , validate = require('validate.js');
 
   module.exports.index = function(app) {
@@ -89,7 +90,7 @@
         req.session.poolDetails.currentCatchmentArea = catchmentAreaCode;
       }
 
-      summonsFormObj.post(require('request-promise'), app, req.session.authToken, req.session.poolDetails)
+      summonsFormDAO.post(req, req.session.poolDetails)
         .then(successCB)
         .catch(errorCB);
     };
@@ -152,7 +153,7 @@
         }));
       };
 
-      summonCitizenObject.post(require('request-promise'), app, req.session.authToken, req.body, 'create-pool')
+      summonCitizenDAO.post(req, req.body, 'create-pool')
         .then(successCB)
         .catch(errorCB);
     };
@@ -219,7 +220,7 @@
       delete req.session.formFields;
 
       if (typeof req.session.courtsList === 'undefined') {
-        return fetchCourts.get(require('request-promise'), app, req.session.authToken)
+        return fetchCourtsDAO.get(req)
           .then(renderFn);
       }
 
