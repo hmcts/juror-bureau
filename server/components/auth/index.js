@@ -14,9 +14,17 @@
 
     , secretsConfig = require('config')
     , errors = require('../errors')
-    , authObj = require('../../objects/auth').object
+    , { authDAO } = require('../../objects')
     , msgMappings = require('../errors/message-mapping')
-    , { isBureauUser, isCourtUser, isSJOUser, isBureauManager, isCourtManager, isSystemAdministrator, isManager } = require('./user-type')
+    , {
+      isBureauUser,
+      isCourtUser,
+      isSJOUser,
+      isBureauManager,
+      isCourtManager,
+      isSystemAdministrator,
+      isManager,
+    } = require('./user-type')
 
     , createJWTToken = function(req, body, key) {
       // if user is found create a token
@@ -51,32 +59,12 @@
 
           createJWTToken(req, resp, secretsConfig.get('secrets.juror.bureau-jwtKey'));
           return successCB(resp);
-        }
-        , authFailure = function(err) {
-          var errJson = { statusCode: err.statusCode, error: 'USER_NOT_FOUND', originalError: err.error }
-            , identifiedErr
-            , logonMsgs = msgMappings.logon;
-
-          // Map the provided error message to our identifiers
-          Object.keys(logonMsgs).forEach(function(o) {
-            if (o === err.error.message) {
-              identifiedErr = err.error.message;
-            }
-          });
-
-          // Set the returned error message to this identifier
-          if (typeof identifiedErr !== 'undefined') {
-            errJson.error = identifiedErr;
-          }
-
-          // Return the error as an identifier
-          return errorCB(errJson);
         };
 
       // Send request using auth request object
-      authObj.post(require('request-promise'), app, req.session.authToken, userObj)
+      authDAO.post(req, userObj)
         .then(authSuccess)
-        .catch(authFailure);
+        .catch(errorCB);
     }
 
     , logout = function(req, res) {

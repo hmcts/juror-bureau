@@ -1,7 +1,7 @@
 ;(function(){
   'use strict';
 
-  var responsesObj = require('../../objects/responses').object
+  var { responsesDAO } = require('../../objects')
     , utils = require('../../lib/utils');
 
   module.exports.index = function(app) {
@@ -31,8 +31,7 @@
           return res.render('index.njk');
         };
 
-      responsesObj
-        .query(require('request-promise'), app, req.session.authToken, 'completed', req.session.hasModAccess)
+      responsesDAO.get(req, 'completed', req.session.hasModAccess)
         .then(successCB)
         .catch(errorCB);
     };

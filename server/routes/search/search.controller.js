@@ -2,9 +2,8 @@
   'use strict';
 
   const _ = require('lodash');
-  const staffRosterObj = require('../../objects/staff-roster').object;
+  const { staffRosterDAO, searchDAO } = require('../../objects');
   const validate = require('validate.js');
-  const { searchResponsesDAO } = require('../../objects/search.js');
   const validator = require('../../config/validation/search.js');
 
   module.exports.index = function(app) {
@@ -22,7 +21,7 @@
         let staffList;
 
         if (req.session.authentication.staff !== null && req.session.authentication.staff.rank > 0) {
-          staffList = await staffRosterObj.get(require('request-promise'), app, req.session.authToken);
+          staffList = (await staffRosterDAO.get(req)).data;
         }
 
         // always reset the staff list here
@@ -175,13 +174,13 @@
       let resultsStr;
 
       try {
-        promiseArr.push(staffRosterObj.get(require('request-promise'), app, req.session.authToken));
-        promiseArr.push(searchResponsesDAO.post(app, req, payload));
+        promiseArr.push(staffRosterDAO.get(req));
+        promiseArr.push(searchDAO.post(req, payload));
 
         const response = await Promise.all(promiseArr);
 
-        staff = response[0];
-        responses = response[1];
+        staff = response[0].data;
+        responses = response[1].data;
 
         responses.juror_response.forEach(responsesListIterator(staff));
 

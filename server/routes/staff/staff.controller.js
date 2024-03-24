@@ -2,15 +2,18 @@
   'use strict';
 
   var _ = require('lodash')
-    , staffObj = require('../../objects/staff').object
-    , staffRosterObj = require('../../objects/staff-roster').object
-    , assignObj = require('../../objects/assign').object
-    , assignMultiObj = require('../../objects/assign-multi').object
-    , responseDetailObj = require('../../objects/response-detail').object
-    , reallocateObj = require('../../objects/reallocate').object
-    , responseOverviewObj = require('../../objects/response-overview').object
-    , assignmentsMultiObj = require('../../objects/assignments-multi').object
-    , teamObj = require('../../objects/team').object
+    , {
+      assignDAO,
+      assignmentsMultiDAO,
+      assignMultiDAO,
+      reallocateDAO,
+      digitalDetailDAO,
+      responseOverviewDAO,
+      staffRosterDAO,
+      staffDAO,
+      individualStaffDAO,
+      teamListDAO,
+    } = require('../../objects')
     , validate = require('validate.js')
     , utils = require('../../lib/utils');
 
@@ -68,7 +71,7 @@
       delete req.session.formFields;
       delete req.session.errors;
 
-      staffObj.get(require('request-promise'), app, req.session.authToken)
+      staffDAO.get(req)
         .then(successCB)
         .catch(errorCB);
     };
@@ -115,7 +118,7 @@
           return res.redirect(app.namedRoutes.build('staff.get'));
         };
 
-      teamObj.getList(require('request-promise'), app, req.session.authToken)
+      teamListDAO.get(req)
         .then(successCB)
         .catch(errorCB);
 
@@ -207,7 +210,7 @@
 
 
       // Send Create request
-      staffObj.post(require('request-promise'), app, req.session.authToken, postBody)
+      staffDAO.post(req, postBody)
         .then(successCB)
         .catch(failureCB);
     };
@@ -289,8 +292,8 @@
         };
 
 
-      promiseArr.push(staffObj.getOne(require('request-promise'), app, req.session.authToken, req.params.login));
-      promiseArr.push(teamObj.getList(require('request-promise'), app, req.session.authToken));
+      promiseArr.push(individualStaffDAO.get(req, req.params.login));
+      promiseArr.push(teamListDAO.get(req));
       Promise.all(promiseArr)
         .then(successCB)
         .catch(errorCB);
@@ -380,7 +383,7 @@
 
 
       // Send Create request
-      staffObj.put(require('request-promise'), app, req.session.authToken, req.body['_login'], putBody)
+      individualStaffDAO.put(req, req.body['_login'], putBody)
         .then(successCB)
         .catch(failureCB);
     };
@@ -461,8 +464,8 @@
           });
         }
 
-      promiseArr.push(staffRosterObj.get(require('request-promise'), app, req.session.authToken));
-      promiseArr.push(responseDetailObj.get(require('request-promise'), app, req.session.authToken, req.params.id));
+      promiseArr.push(staffRosterDAO.get(req));
+      promiseArr.push(digitalDetailDAO.get(req, req.params.id));
 
       Promise.all(promiseArr)
         .then(successCB)
@@ -538,8 +541,7 @@
         req.body.sendToOfficer = '';
       }
 
-      // eslint-disable-next-line max-len
-      assignObj.post(require('request-promise'), app, req.session.authToken, req.body.jurorNumber, req.body.sendToOfficer, req.body.version)
+      assignDAO.post(req, req.body.jurorNumber, req.body.sendToOfficer, req.body.version)
         .then(successCB)
         .catch(errorCB);
     };
@@ -641,8 +643,8 @@
       req.session.sendToMulti = {};
       req.session.sendToMulti.jurorNumbers = selectedJurorNumbers;
 
-      promiseArr.push(assignmentsMultiObj.post(require('request-promise'), app, req.session.authToken, selectedJurorNumbers));
-      promiseArr.push(staffRosterObj.get(require('request-promise'), app, req.session.authToken));
+      promiseArr.push(assignmentsMultiDAO.post(req, selectedJurorNumbers));
+      promiseArr.push(staffRosterDAO.get(req));
 
 
       Promise.all(promiseArr)
@@ -773,7 +775,7 @@
         req.body.sendToOfficer = '';
       }
 
-      assignMultiObj.post(require('request-promise'), app, req.session.authToken, req.body.sendToOfficer, responses)
+      assignMultiDAO.post(req, req.body.sendToOfficer, responses)
         .then(successCB)
         .catch(errorCB);
     };
@@ -813,7 +815,8 @@
           return res.status(err.statusCode).send((typeof err.error !== 'undefined') ? err.error : err);
         };
 
-      reallocateObj.post(require('request-promise'), app, req.session.authToken, req.body.staffToDeactivate, req.body.pendingLogin, req.body.todoLogin, req.body.urgentsLogin)
+      /* eslint-disable max-len */
+      reallocateDAO.post(req, req.body.staffToDeactivate, req.body.pendingLogin, req.body.todoLogin, req.body.urgentsLogin)
         .then(successCB)
         .catch(errorCB);
     };
@@ -861,8 +864,8 @@
           return res.render('includes/staffInactive');
         }
 
-      promiseArr.push(staffRosterObj.get(require('request-promise'), app, req.session.authToken));
-      promiseArr.push(responseOverviewObj.get(require('request-promise'), app, req.session.authToken, req.params.login));
+      promiseArr.push(staffRosterDAO.get(req));
+      promiseArr.push(responseOverviewDAO.get(req, req.params.login));
 
       Promise.all(promiseArr)
         .then(successCB)
@@ -924,7 +927,7 @@
 
 
 
-      staffObj.get(require('request-promise'), app, req.session.authToken)
+      staffDAO.get(req)
         .then(successCB)
         .catch(errorCB);
     };

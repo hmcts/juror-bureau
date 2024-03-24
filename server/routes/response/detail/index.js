@@ -2,9 +2,9 @@
 ;(function(){
   'use strict';
 
-  var controller = require('./detail.controller')
-    , auth = require('../../../components/auth')
-    , responseCountMiddleware = require('../../../objects/responses').object;
+  const controller = require('./detail.controller');
+  const auth = require('../../../components/auth');
+  const { todoDAO } = require('../../../objects');
 
   module.exports = function(app) {
     // Ajax fetched notes
@@ -63,7 +63,7 @@
     app.post('/response/:id/sendcourt', 'response.detail.sendcourt.post', auth.verify, controller.postSendToCourt(app));
 
     // Standard page load
-    app.get('/response/:id', 'response.detail.get', auth.verify, responseCountMiddleware.getCount.bind(app), controller.index(app));
+    app.get('/response/:id', 'response.detail.get', auth.verify, todoDAO.get, controller.index(app));
     app.post('/response/:id', 'response.detail.post', auth.verify, controller.post(app));
   };
 })();

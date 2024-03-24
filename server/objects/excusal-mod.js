@@ -1,49 +1,18 @@
 (function() {
   'use strict';
 
-  var _ = require('lodash')
-    , urljoin = require('url-join')
-    , config = require('../config/environment')()
-    , utils = require('../lib/utils')
-    , options = {
-      uri: config.apiEndpoint,
-      headers: {
-        'User-Agent': 'Request-Promise',
-        'Content-Type': 'application/vnd.api+json',
-      },
-      json: true,
-      transform: utils.basicDataTransform,
-    }
+  const { DAO } = require('./dataAccessObject');
+  const urljoin = require('url-join');
 
-    , excusalObject = {
-      resource: 'moj/excusal-response/juror/{}',
-      put: function(rp, app, jwtToken, body, jurorNumber, replyMethod) {
+  module.exports.excusalResponseDAO = new DAO('moj/excusal-response/juror', {
+    put: function(body, jurorNumber, replyMethod) {
+      const uri = urljoin(this.resource, jurorNumber);
+      const payload = {
+        ...body,
+        replyMethod: replyMethod.toUpperCase(),
+      };
 
-        var reqOptions = _.clone(options)
-          , tmpBody = {};
-
-        tmpBody.excusalDecision = body.excusalDecision;
-        tmpBody.excusalReasonCode = body.excusalCode;
-
-        if (replyMethod) {
-          tmpBody.replyMethod = replyMethod.toUpperCase();
-        }
-
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri, this.resource.replace('{}', jurorNumber));
-        reqOptions.method = 'PUT';
-        reqOptions.body = tmpBody;
-
-        app.logger.info('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          data: reqOptions.body,
-        });
-
-        return rp(reqOptions);
-      },
-    };
-
-  module.exports.excusalObject = excusalObject;
+      return { uri, body: payload };
+    }}
+  );
 })();

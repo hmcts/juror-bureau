@@ -1,70 +1,51 @@
 /* eslint-disable strict */
 'use strict';
+const { DAO } = require('./dataAccessObject');
 
-const _ = require('lodash');
-const config = require('../config/environment')();
-const utils = require('../lib/utils');
-const urljoin = require('url-join');
-const options = {
-  uri: config.apiEndpoint,
-  headers: {
-    'User-Agent': 'Request-Promise',
-    'Content-Type': 'application/vnd.api+json',
-  },
-  json: true,
-  transform: utils.basicDataTransform,
-};
+module.exports.getPoolsDAO = new DAO('moj/juror-management/dismiss-jurors/pools', {
+  // TODO: remove once back end code is ready
+  get: function() {
+    const { pools } = require('../stores/dismiss-jurors');
 
-module.exports.getJurorsObject = {
-  resource: 'moj/juror-management/jurors-to-dismiss',
-  get: function(rp, app, jwtToken, params, locCode) {
-    const reqOptions = _.clone(options);
+    return {debug: Promise.resolve(pools)};
+  }}
+);
 
-    reqOptions.headers.Authorization = jwtToken;
-    reqOptions.uri = urljoin(reqOptions.uri, this.resource);
-    reqOptions.method = 'GET';
+module.exports.getJurorsDAO = new DAO('moj/juror-management/dismiss-jurors/jurors', {
+  // TODO: remove once back end code is ready
+  get: function(req, params) {
+    const { jurors } = require('../stores/dismiss-jurors');
+    let _jurors = jurors.filter(juror => juror['attending'] === 'In attendance');
 
-    const jurorsToInclude = params['jurors-to-include'] instanceof Array
-      ? params['jurors-to-include']
-      : [params['jurors-to-include']];
+    if (params['jurors-to-include'] &&
+      (params['jurors-to-include'] === 'on-call'
+        || params['jurors-to-include'].includes('on-call'))) {
+      _jurors.push(...jurors.filter(juror => juror['attending'] === 'On call'));
+    }
 
-    reqOptions.body = {
-      'pool_numbers': params['checked-pools'] instanceof Array
-        ? params['checked-pools']
-        : [params['checked-pools']],
-      'location_code': locCode,
-      'number_of_jurors_to_dismiss': params['jurorsToDismiss'],
-      'include_jurors_on_call': jurorsToInclude.includes('on-call') ? true : false,
-      'include_jurors_not_in_attendance': jurorsToInclude.includes('not-in-attendance') ? true : false,
-    };
+    if (params['jurors-to-include'] &&
+      (params['jurors-to-incldue'] === 'not-in-attendance'
+        || params['jurors-to-include'].includes('not-in-attendance'))) {
+      _jurors.push(...jurors.filter(juror => juror['attending'] === 'Other'));
+    }
 
-    app.logger.info('Sending request to API: ', {
-      uri: reqOptions.uri,
-      headers: reqOptions.headers,
-      method: reqOptions.method,
-    });
+    _jurors = randomizer(_jurors, _jurors.length);
 
-    return rp(reqOptions);
-  },
-};
+    return {debug: Promise.resolve(_jurors.slice(0, params.jurorsToDismiss))};
+  }}
+);
 
-module.exports.dismissJurorsObject = {
-  resource: 'moj/complete-service/dismissal',
-  patch: function(rp, app, jwtToken, payload) {
-    const reqOptions = _.clone(options);
+// This is temp for randomizing my list of jurors. the backend will do this when ready
+function randomizer(arr, length) {
+  const crypto = require('crypto');
+  const randomized = [];
 
-    reqOptions.headers.Authorization = jwtToken;
-    reqOptions.uri = urljoin(reqOptions.uri, this.resource);
-    reqOptions.method = 'PATCH';
+  for (let i = 0; i < length; i++) {
+    const random = crypto.randomInt(arr.length);
 
-    reqOptions.body = payload;
+    randomized.push(arr[random]);
+    arr.splice(random, 1);
+  }
 
-    app.logger.info('Sending request to API: ', {
-      uri: reqOptions.uri,
-      headers: reqOptions.headers,
-      method: reqOptions.method,
-    });
-
-    return rp(reqOptions);
-  },
-};
+  return randomized;
+}

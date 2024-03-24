@@ -1,12 +1,12 @@
 ;(function(){
   'use strict';
 
-  var controller = require('./inbox.controller')
-    , auth = require('../../components/auth')
-    , responseCountMiddleware = require('../../objects/responses').object;
+  const controller = require('./inbox.controller');
+  const auth = require('../../components/auth');
+  const { todoDAO } = require('../../objects');
 
   module.exports = function(app) {
-    app.get('/inbox', 'inbox.todo.get', auth.verify, responseCountMiddleware.getCount.bind(app), controller.index(app));
+    app.get('/inbox', 'inbox.todo.get', auth.verify, todoDAO.get, controller.index(app));
   };
 
 })();

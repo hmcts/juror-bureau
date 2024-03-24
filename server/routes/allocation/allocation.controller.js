@@ -2,7 +2,7 @@
   'use strict';
 
   var _ = require('lodash')
-    , backlogObj = require('../../objects/backlog').object
+    , { backlogDAO, allocateBacklogDAO } = require('../../objects')
     , validate = require('validate.js')
     , assignRepliesValidator = require('../../config/validation/allocation')
 
@@ -61,7 +61,7 @@
       delete req.session.searchResponse;
 
       // Perform each request and then wait for all to resolve
-      backlogObj.get(require('request-promise'), app, req.session.authToken)
+      backlogDAO.get(req)
         .then(successCB)
         .catch(errorCB);
     };
@@ -183,13 +183,13 @@
         }
       }
 
-      backlogObj.get(require('request-promise'), app, req.session.authToken, rejectUpdate)
+      backlogDAO.get(req)
         .then(readSuccess)
         .catch(readError)
         .then(function(){
           if (rejectUpdate === false){
             payload = getAllocationList(req.body);
-            backlogObj.post(require('request-promise'), app, req.session.authToken, payload)
+            allocateBacklogDAO.post(req, payload)
               .then(updateSuccess)
               .catch(updateError);
           }

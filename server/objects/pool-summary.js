@@ -1,42 +1,14 @@
-; (function() {
+;(function() {
   'use strict';
 
-  var _ = require('lodash')
-    , urljoin = require('url-join')
-    , config = require('../config/environment')()
-    , utils = require('../lib/utils')
-    , options = {
-      uri: config.apiEndpoint,
-      headers: {
-        'User-Agent': 'Request-Promise',
-        'Content-Type': 'application/vnd.api+json'
-      },
-      json: true,
-      transform: utils.basicDataTransform,
-    }
+  const { DAO } = require('./dataAccessObject');
+  const urljoin = require('url-join');
 
-    , poolSummaryObject = {
-      resource: 'moj/manage-pool/summary',
-      get: function(rp, app, jwtToken, poolNumber) {
+  module.exports.poolSummaryDAO = new DAO('moj/manage-pool/summary', {
+    get: function(poolNumber) {
+      const uri = urljoin(this.resource, '?poolNumber=' + poolNumber);
 
-        var reqOptions = _.clone(options);
-
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri,
-          this.resource,
-          '?poolNumber=' + poolNumber
-        );
-        reqOptions.method = 'GET';
-
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-        });
-
-        return rp(reqOptions);
-      },
-    }
-
-  module.exports.poolSummaryObject = poolSummaryObject;
+      return { uri };
+    }}
+  );
 })();

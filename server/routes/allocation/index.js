@@ -1,9 +1,9 @@
 ;(function(){
   'use strict';
 
-  var controller = require('./allocation.controller')
-    , auth = require('../../components/auth')
-    , responseCountMiddleware = require('../../objects/responses').object;
+  const controller = require('./allocation.controller');
+  const auth = require('../../components/auth');
+  const { todoDAO } = require('../../objects');
 
   module.exports = function(app) {
     app.get(
@@ -11,7 +11,7 @@
       'allocation.get',
       auth.verify,
       auth.isSupervisor,
-      responseCountMiddleware.getCount.bind(app),
+      todoDAO.get,
       controller.index(app)
     );
 
@@ -20,7 +20,7 @@
       'allocation.post',
       auth.verify,
       auth.isSupervisor,
-      responseCountMiddleware.getCount.bind(app),
+      todoDAO.get,
       controller.post(app)
     );
 

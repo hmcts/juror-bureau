@@ -1,17 +1,17 @@
-const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
-
 (function() {
   'use strict';
 
-  var _ = require('lodash')
-    , validate = require('validate.js')
-    , postponeObj = require('../../../objects/postpone').postponeObject
-    , availablePoolsObj = require('../../../objects/pool-management').deferralMaintenance.availablePools
-    , postponeValidator = require('../../../config/validation/postpone')
-    , validateMovementObj = require('../../../objects/pool-management').validateMovement
-    , moment = require('moment')
-    , modUtils = require('../../../lib/mod-utils')
-    , { dateFilter } = require('../../../components/filters');
+  const _ = require('lodash');
+  const validate = require('validate.js');
+
+  const { availableDeferralPoolsDAO, postponeDAO } = require('../../../objects');
+
+  const postponeValidator = require('../../../config/validation/postpone');
+  const validateMovementObj = require('../../../objects/pool-management');
+  const moment = require('moment');
+  const modUtils = require('../../../lib/mod-utils');
+  const { dateFilter } = require('../../../components/filters');
+  const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
 
   module.exports.getPostponeDate = function(app) {
     return function(req, res) {
@@ -194,10 +194,8 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
         jurorNumber = req.params['jurorNumber'];
       }
 
-      availablePoolsObj.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+      availableDeferralPoolsDAO.post(
+        req,
         jurorNumber,
         [req.session.postponeToDate.split('/').reverse().join('-')]
       )
@@ -428,10 +426,9 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
         return res.render('_errors/generic');
       };
 
-    postponeObj.post(
-      require('request-promise'),
-      app,
-      req.session.authToken,
+    postponeDAO.post(
+      req,
+      req.params['jurorNumber'],
       payload)
       .then(successCB)
       .catch(errorCB);

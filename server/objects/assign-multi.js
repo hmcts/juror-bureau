@@ -1,43 +1,16 @@
 ;(function(){
   'use strict';
 
-  var _ = require('lodash')
-    , urljoin = require('url-join')
-    , config = require('../config/environment')()
-    , utils = require('../lib/utils')
-    , options = {
-      uri: config.apiEndpoint,
-      headers: {
-        'User-Agent': 'Request-Promise',
-        'Content-Type': 'application/vnd.api+json'
-      },
-      json: true,
-      transform: utils.basicDataTransform,
-    }
+  const { DAO } = require('./dataAccessObject');
 
-    , responseObject = {
-      resource: 'bureau/staff/assign-multi',
-      post: function(rp, app, jwtToken, assignTo, responses) {
-        var reqOptions = _.clone(options)
+  module.exports.assignMultiDAO = new DAO('bureau/staff/assign-multi', {
+    post: function(assignTo, responses) {
+      const body = {
+        assignTo: (typeof assignTo === 'string' && assignTo.length > 0) ? assignTo : null,
+        responses: responses,
+      };
 
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri, this.resource);
-        reqOptions.method = 'POST';
-        reqOptions.body = {
-          assignTo: (typeof assignTo === 'string' && assignTo.length > 0) ? assignTo : null,
-          responses: responses,
-        };
-
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          body: reqOptions.body,
-        });
-
-        return rp(reqOptions);
-      }
-    }
-
-  module.exports.object = responseObject;
+      return { body };
+    }}
+  );
 })();

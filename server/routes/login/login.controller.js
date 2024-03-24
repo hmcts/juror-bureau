@@ -73,7 +73,7 @@
           app.logger.warn('Login attempt for "' + req.body.userID + '" responded with ' + err.statusCode, {
             userID: req.body.userID,
             jwt: req.session.authToken,
-            error: (typeof err.originalError.error !== 'undefined') ? err.originalError.error : err.originalError,
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
           // Add error feedback

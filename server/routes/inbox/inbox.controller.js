@@ -2,7 +2,7 @@
   'use strict';
 
   var _ = require('lodash')
-    , responsesObj = require('../../objects/responses').object
+    , { responsesDAO } = require('../../objects')
     , utils = require('../../lib/utils')
 
   module.exports.index = function(app) {
@@ -66,8 +66,8 @@
       delete req.session.errors;
       delete req.session.nav;
 
-      responsesObj
-        .query(require('request-promise'), app, req.session.authToken, 'todo', req.session.hasModAccess)
+      responsesDAO
+        .get(req, 'todo', req.session.hasModAccess)
         .then(successCB)
         .catch(errorCB);
     };

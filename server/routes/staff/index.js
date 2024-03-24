@@ -1,9 +1,9 @@
 ;(function(){
   'use strict';
 
-  var controller = require('./staff.controller')
-    , auth = require('../../components/auth')
-    , responseCountMiddleware = require('../../objects/responses').object;
+  const controller = require('./staff.controller');
+  const auth = require('../../components/auth');
+  const { todoDAO } = require('../../objects');
 
   module.exports = function(app) {
     // Staff list
@@ -12,7 +12,7 @@
       'staff.get',
       auth.verify,
       auth.isSupervisor,
-      responseCountMiddleware.getCount.bind(app),
+      todoDAO.get,
       controller.index(app));
 
     // Staff filter POST
@@ -29,7 +29,7 @@
       'staff.create.get',
       auth.verify,
       auth.isSupervisor,
-      responseCountMiddleware.getCount.bind(app),
+      todoDAO.get,
       controller.staffCreate(app));
 
     // Staff Create POST
@@ -78,7 +78,7 @@
       'staff.edit.get',
       auth.verify,
       auth.isSupervisor,
-      responseCountMiddleware.getCount.bind(app),
+      todoDAO.get,
       controller.staffEdit(app));
 
     // Staff Edit POST

@@ -1,150 +1,67 @@
 (function() {
   'use strict';
 
-  let _ = require('lodash')
-    , config = require('../config/environment')()
-    , utils = require('../lib/utils')
-    , urljoin = require('url-join')
-    , options = {
-      uri: config.apiEndpoint,
-      headers: {
-        'User-Agent': 'Request-Promise',
-        'Content-Type': 'application/vnd.api+json',
-      },
-      json: true,
-      transform: utils.basicDataTransform,
-    },
+  const { DAO } = require('./dataAccessObject');
+  const urljoin = require('url-join');
 
-    deferralObject = {
-      resource: 'moj/deferral-response/juror',
-      postresource: 'moj/deferral-maintenance/juror/defer',
-      put: function(rp, app, jwtToken, body, jurorNumber) {
-        var reqOptions = _.clone(options)
-          , tmpBody = _.clone(body);
+  module.exports.deferResponseDAO = new DAO('moj/deferral-response/juror', {
+    put: function(body, jurorNumber) {
+      const uri = urljoin(this.resource, jurorNumber);
 
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri, this.resource);
-        reqOptions.method = 'PUT';
-        reqOptions.body = tmpBody;
+      return { uri, body };
+    }}
+  );
 
-        if (jurorNumber) {
-          reqOptions.uri = urljoin(reqOptions.uri, jurorNumber);
-        }
+  module.exports.deferJurorDAO = new DAO('moj/deferral-maintenance/juror/defer', {
+    post: function(jurorNumber, poolNumber, deferralDate, deferralReason, replyMethod) {
+      const uri = urljoin(this.resource, jurorNumber);
+      let body;
 
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          data: tmpBody,
-        });
+      if (poolNumber) {
+        body = {
+          deferralDate: deferralDate,
+          excusalReasonCode: deferralReason,
+          poolNumber: poolNumber,
+          replyMethod: replyMethod.toUpperCase(),
+        };
+      } else {
+        body = {
+          deferralDate: deferralDate,
+          excusalReasonCode: deferralReason,
+          replyMethod: replyMethod.toUpperCase(),
+        };
+      }
 
-        return rp(reqOptions);
-      },
+      return { uri, body };
+    }}
+  );
 
-      post: function(rp, app, jwtToken, jurorNumber, poolNumber, deferralDate, deferralReason, replyMethod) {
-        var reqOptions = _.clone(options);
+  module.exports.changeDeferralDateDAO = new DAO('moj/deferral-maintenance/deferrals/change-deferral-date', {
+    post: function(jurorNumber, deferralDate, poolNumber, excusalReasonCode) {
+      const uri = urljoin(this.resource, jurorNumber);
+      const body = {
+        deferralDate,
+        poolNumber,
+        excusalReasonCode,
+      };
 
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.method = 'POST';
-        reqOptions.uri = urljoin(reqOptions.uri, this.postresource, jurorNumber);
+      return { uri, body };
+    }}
+  );
 
-        if (poolNumber) {
-          reqOptions.body = {
-            deferralDate: deferralDate,
-            excusalReasonCode: deferralReason,
-            poolNumber: poolNumber,
-            replyMethod: replyMethod.toUpperCase(),
-          };
-        } else {
-          reqOptions.body = {
-            'deferralDate': deferralDate,
-            'excusalReasonCode': deferralReason,
-            'replyMethod': replyMethod.toUpperCase(),
-          };
-        }
+  module.exports.deferralPoolsDAO = new DAO('moj/deferral-maintenance/available-pools', {
+    post: function(deferralDates, jurorNumber) {
+      const uri = urljoin(this.resource, jurorNumber);
 
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          body: reqOptions.body,
-        });
+      return { uri, body: deferralDates };
+    }}
+  );
 
-        return rp(reqOptions);
-      },
-    },
+  module.exports.deleteDeferralDAO = new DAO('moj/deferral-maintenance/delete-deferral', {
+    delete: function(jurorNumber) {
+      const uri = urljoin(this.resource, jurorNumber);
 
-    changeDeferralObject = {
-      resource: 'moj/deferral-maintenance/deferrals/change-deferral-date',
-      post: function(rp, app, jwtToken, jurorNumber, deferralDate, poolNumber, excusalReasonCode) {
-        let reqOptions = _.clone(options)
-          , tmpBody = {};
-
-        tmpBody.deferralDate = deferralDate;
-        tmpBody.poolNumber = poolNumber;
-        tmpBody.excusalReasonCode = excusalReasonCode;
-
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri, this.resource, jurorNumber);
-        reqOptions.method = 'POST';
-        reqOptions.body = tmpBody;
-
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          data: tmpBody,
-        });
-
-        return rp(reqOptions);
-      },
-    },
-
-    deferralPoolsObject = {
-      resource: 'moj/deferral-maintenance/available-pools',
-      post: function(rp, app, jwtToken, deferralDates, jurorNumber) {
-        let reqOptions = _.clone(options)
-          , tmpBody = {};
-
-        tmpBody.deferralDates = deferralDates;
-
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri, this.resource, jurorNumber);
-        reqOptions.method = 'POST';
-        reqOptions.body = tmpBody;
-
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          body: reqOptions.body,
-        });
-
-        return rp(reqOptions);
-      },
-    },
-
-    deleteDeferralObject = {
-      resource: 'moj/deferral-maintenance/delete-deferral',
-      delete: function(rp, app, jwtToken, jurorNumber) {
-        let reqOptions = _.clone(options);
-
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri, this.resource, jurorNumber);
-        reqOptions.method = 'DELETE';
-
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-        });
-
-        return rp(reqOptions);
-      },
-    };
-
-  module.exports.deferralObject = deferralObject;
-  module.exports.changeDeferralObject = changeDeferralObject;
-  module.exports.deferralPoolsObject = deferralPoolsObject;
-  module.exports.deleteDeferralObject = deleteDeferralObject;
+      return { uri };
+    }}
+  );
 })();
