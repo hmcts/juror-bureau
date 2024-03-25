@@ -1,0 +1,27 @@
+{% extends "../layouts/default.njk" %}
+
+{% from "govuk/components/error-message/macro.njk" import govukErrorMessage -%}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+
+{% block page_title %}{{ serviceName }} - administration{% endblock %}
+{% block page_identifier %}administration - expense rates and limits{% endblock %}
+
+{% set currentApp = "Court administration" if isCourtUser else ("Bureau administration" if isBureauUser else "System administration") %} 
+{% set nav = "expenseRatesAndLimits" %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <h1 class="govuk-heading-l">Expense rates and limits</h1>
+     
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+
+    
+    </div>
+  </div>
+{% endblock %}

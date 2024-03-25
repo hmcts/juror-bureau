@@ -7,6 +7,7 @@
   module.exports = function(app) {
     require('./system-codes')(app);
     require('./expense-limits')(app);
+    require('./expense-limits-transport')(app);
     require('./users')(app);
     require('./room-locations')(app);
     require('./bank-holidays')(app);
