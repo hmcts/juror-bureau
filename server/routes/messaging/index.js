@@ -120,5 +120,10 @@
       auth.verify,
       exportController.getExportContacts(app),
     );
+    app.post('/messaging/export-contact-details',
+      'messaging.export-contacts.post',
+      auth.verify,
+      exportController.postExportContacts(app),
+    );
   };
 })();
