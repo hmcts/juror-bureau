@@ -255,6 +255,7 @@
           Authorization: req.session.authToken,
         },
         json: true,
+        date,
       };
 
       app.logger.info('Sending request to API: ', payload);

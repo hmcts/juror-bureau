@@ -7,16 +7,28 @@
     , validate = require('validate.js')
     , validator = require('../../../config/validation/add-non-sitting-day')
     , { bankHolidaysDAO, nonSittingDayDAO } = require('../../../objects/administration')
+    , fetchAllCourts = require('../../../objects/request-pool').fetchAllCourts
     , { dateFilter } = require('../../../components/filters');
 
   module.exports.getNonSittingDays = function(app) {
     return async function(req, res) {
+
+      let bannerMessage;
+
+      if (typeof req.session.bannerMessage !== 'undefined') {
+        bannerMessage = req.session.bannerMessage;
+      }
+      delete req.session.bannerMessage;
 
       const postUrl = app.namedRoutes.build('administration.non-sitting-days.post');
 
       try {
         const holidayDates = await bankHolidaysDAO.get(app, req);
         const nonSittingDates = await nonSittingDayDAO.get(app, req, req.session.authentication.owner);
+        const fetchAllAvailableCourts = await fetchAllCourts.get(require('request-promise'), app, req.session.authToken);
+
+        const loggedInName = fetchAllAvailableCourts.courts.find(({locationCode}) => locationCode === req.session.authentication.locCode);
+
 
         const holidayDateYears = Object.keys(holidayDates.response);
 
@@ -25,9 +37,11 @@
           holidayDates: holidayDates.response,
           nonSittingDates: nonSittingDates,
           holidayDateYears,
+          locationName: loggedInName.locationName,
+          bannerMessage,
         });
       } catch (err) {
-        app.logger.crit('Failed to fetch list of holidays', {
+        app.logger.crit('Failed to fetch list of holidays and non eitting days', {
           auth: req.session.authentication,
           token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
@@ -110,7 +124,8 @@
       };
 
       try {
-        await nonSittingDayDAO.post(app, req, req.session.locCode, payload);
+        await nonSittingDayDAO.post(app, req, req.session.authentication.locCode, payload);
+        req.session.bannerMessage = 'Non-sitting day added';
         return res.redirect(app.namedRoutes.build('administration.non-sitting-days.get'));
 
       } catch (err) {
@@ -141,7 +156,8 @@
       const date = (req.body.nonSittingDate !== '' ? dateFilter(req.body.nonSittingDate, null, 'YYYY-MM-DD') : '');
 
       try {
-        await nonSittingDayDAO.delete(app, req, req.session.locCode, date);
+        await nonSittingDayDAO.delete(app, req, req.session.authentication.locCode, date);
+        req.session.bannerMessage = 'Non-sitting day deleted';
         return res.redirect(app.namedRoutes.build('administration.non-sitting-days.get'));
 
       } catch (err) {
