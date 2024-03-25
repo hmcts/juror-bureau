@@ -278,6 +278,7 @@
         },
         json: true,
       };
+
       if (etag) {
         payload.headers['If-None-Match'] = `${etag}`;
       }
