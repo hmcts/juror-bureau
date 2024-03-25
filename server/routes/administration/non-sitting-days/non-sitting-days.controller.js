@@ -60,7 +60,7 @@
         return res.redirect(app.namedRoutes.build('administration.add-non-sitting-days.get'));
       } catch (err) {
 
-        app.logger.crit('Failed eo add the non sitting day ', {
+        app.logger.crit('Failed to add the non sitting day ', {
           auth: req.session.authentication,
           jwt: req.session.authToken,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
