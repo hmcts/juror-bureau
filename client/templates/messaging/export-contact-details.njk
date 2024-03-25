@@ -1,14 +1,122 @@
 {% extends "layouts/default.njk" %}
 
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
 {% set currentApp = "Messaging" %}
 
-{% block page_title %}{{ serviceName }} - Messaging{% endblock %}
-{% block page_identifier %}messaging{% endblock %}
+{% block page_title %}{{ serviceName }} - Messaging - export contact details{% endblock %}
+{% block page_identifier %}messaging - export contact details{% endblock %}
+
+{% set byJurorHtml %}
+  {{ govukInput({
+    label: {
+      text: "Enter juror name, number or postcode"
+    },
+    id: "jurorNumber",
+    name: "jurorNumber"
+  }) }}
+{% endset %}
+
+{% set byPoolHtml %}
+  {{ govukInput({
+    label: {
+      text: "Enter pool number"
+    },
+    classes: "govuk-input--width-10",
+    id: "poolNumber",
+    name: "poolNumber"
+  }) }}
+{% endset %}
+
+{% set byCourtHtml %}
+  {{ govukInput({
+    label: {
+      text: "Enter court name"
+    },
+    id: "courtName",
+    name: "courtName"
+  }) }}
+{% endset %}
+
+{% set byDeferredToDateHtml %}
+  {{ datePicker({
+    id: "deferredTo",
+    label: {
+      text: "Enter a deferral date"
+    },
+    hint: "Use dd/mm/yyyy format. For example, 31/01/2023."
+  }) }}
+  {# dateValue: "25/12/2023",
+  dateMin: "25/12/2022",
+  dateMax: "25/12/2024",
+  dateError: "An error message." #}
+{% endset %}
 
 {% block content %}
+
+  {% include "includes/errors.njk" %}
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Export contact details</h1>
+      <span class="govuk-caption-xl">Export contact details</span>
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Find contact details</h1>
     </div>
   </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+
+      <form id="findContactDetailsForm" method="post">
+        {{ govukRadios({
+          name: "searchBy",
+          fieldset: {
+            legend: {
+              text: "Search by",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          items: [
+            { value: "juror", text: "Juror", conditional: { html: byJurorHtml } },
+            { value: "pool", text: "Pool", conditional: { html: byPoolHtml } },
+            { value: "court", text: "Deferrals in a specific court", conditional: { html: byCourtHtml } },
+            { value: "dateDeferredTo" ,text: "Date deferred to", conditional: { html: byDeferredToDateHtml } }
+          ]
+        }) }}
+
+        {{ csrfProtection(csrftoken) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            attributes: {
+              id: "continueButton"
+            }
+          }) }}
+        
+          {# I don't think this screen needs a cancel link because there is nothing to cancel and go back to #}
+          {# <a class="govuk-link" href="#">Cancel</a> #}
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      const datePickers = []
+        .slice
+        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
+      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
+    });
+  </script>
 {% endblock %}
