@@ -153,7 +153,7 @@
   module.exports.postDeleteNonSittingDay = function(app) {
     return async function(req, res) {
 
-      const date = (req.body.nonSittingDate !== '' ? dateFilter(req.body.nonSittingDate, null, 'YYYY-MM-DD') : '');
+      const date = dateFilter(req.body.nonSittingDate, null, 'YYYY-MM-DD');
 
       try {
         await nonSittingDayDAO.delete(app, req, req.session.authentication.locCode, date);
