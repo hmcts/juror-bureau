@@ -10,6 +10,7 @@
     require('./non-sitting-days')(app);
     require('./users')(app);
     require('./room-locations')(app);
+    require('./bank-holidays')(app);
 
     app.get('/administration',
       'administration.get',
