@@ -33,8 +33,9 @@
         if (parseInt(court.locationCode) === parseInt(courtCode[0])) {
 
           match = true;
-          court.attendanceTime = court.attendanceTime.match(/[\d:]+/g)[0];
-
+          if (court.attendanceTime){
+            court.attendanceTime = court.attendanceTime.match(/[\d:]+/g)[0] || null;
+          }
           resolve(court);
         }
       });
@@ -1057,14 +1058,14 @@
     return `${hour}:${minute}`;
   };
 
-  module.exports.buildMovementProblems = function(data, sessionDetails) {
+  module.exports.buildMovementProblems = function(data) {
     if (data.unavailableForMove.length){
       let unavailableReasons = {ageIneligible: [], invalidStatus: [], noActiveRecord: []};
       const reasons = data.unavailableForMove.reduce((accumulator, currentValue) => {
         let jurorDetails = {
           jurorNumber: currentValue.jurorNumber,
-          firstName: sessionDetails[currentValue.jurorNumber].firstName,
-          lastName: sessionDetails[currentValue.jurorNumber].lastname,
+          firstName: currentValue.firstName || currentValue['first_name'],
+          lastName: currentValue.lastname || currentValue['last_name'],
         };
 
         if (currentValue.failureReason.includes('maximum age')){
@@ -1128,7 +1129,7 @@
     'deferral-refused': 'DEFERRAL_REFUSED',
     'excusal-granted': 'EXCUSAL_GRANTED',
     'excusal-refused': 'EXCUSAL_REFUSED',
-    'postponement': 'POSTPONEMENT',
+    'postponement': 'POSTPONED',
     'withdrawal': 'WITHDRAWAL',
     'show-cause': 'SHOW_CAUSE',
   };
@@ -1226,6 +1227,18 @@
     'excused': 'Excused',
     'sentencing-invite': 'Sentencing invite',
     'sentencing-date': 'Sentencing date',
+  };
+
+  module.exports.mapAdminToPoolRequestCourts = (adminCourts) => {
+    modUtils.replaceAllObjKeys(adminCourts, _.camelCase);
+
+    return adminCourts.map((court) => {
+      return {
+        locationName: court.courtName,
+        locationCode: court.locCode,
+        courtType: court.courtType,
+      };
+    });
   };
 
 })();

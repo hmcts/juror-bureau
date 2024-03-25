@@ -8,7 +8,7 @@
   items: [
     {
       text: "Users",
-      href: '#',
+      href: url('administration.court-bureau.users.get', { location: 'court' }),
       active: nav === "users",
       attributes: {
         id: "usersAnchor"
@@ -16,7 +16,7 @@
     },
     {
       text: "Judges",
-      href: '#',
+      href: url('administration.judges.get'),
       active: nav === "judges",
       attributes: {
         id: "judgesAnchor"
@@ -24,7 +24,7 @@
     },
     {
       text: "Room locations",
-      href: '#',
+      href: url('administration.room-locations.get', { locationCode: authentication.locCode }),
       active: nav === "roomLocations",
       attributes: {
         id: "roomLocationsAnchor"

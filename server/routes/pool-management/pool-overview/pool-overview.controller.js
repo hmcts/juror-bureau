@@ -68,6 +68,7 @@ const filters = require('../../../components/filters');
       delete req.session.poolJurorsPostpone;
       delete req.session.selectedJurors;
       delete req.session.selectedAll;
+      delete req.session.processLateSummons;
 
       const poolPromises = [
         poolSummaryObj.get(
@@ -266,7 +267,7 @@ const filters = require('../../../components/filters');
 
   module.exports.postTransferContinue = function(app) {
     return (req, res) => {
-      executeTransfer(app, req, res, req.session.availableForTransfer);
+      executeTransfer(app, req, res, req.session.availableForMove);
     };
   };
 
