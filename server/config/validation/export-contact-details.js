@@ -1,7 +1,7 @@
 ;(function(){
   'use strict';
 
-  module.exports = function(body) {
+  module.exports.exportContactDetailsValidator = function(body) {
     return {
       searchBy: {
         presence: {
@@ -53,6 +53,20 @@
             },
           },
         };
+      },
+    };
+  };
+
+  module.exports.detailsToExportValidator = function() {
+    return {
+      detailsToExport: {
+        presence: {
+          allowEmpty: false,
+          message: {
+            details: 'Select the details you want to export',
+            summary: 'Select the details you want to export',
+          },
+        },
       },
     };
   };
