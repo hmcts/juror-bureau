@@ -3,7 +3,10 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
+
 {% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "custom-components/autocomplete/macro.njk" import modAutocomplete %}
+
 {% from "includes/csrf.njk" import csrfProtection %}
 
 {% set currentApp = "Messaging" %}
@@ -11,15 +14,28 @@
 {% block page_title %}{{ serviceName }} - Messaging - export contact details{% endblock %}
 {% block page_identifier %}messaging - export contact details{% endblock %}
 
+{# juror number infos #}
+{% set jurorNumberError = undefined %}
+{% if errors.items["jurorNumber"] %}
+  {% set jurorNumberError = { "text": errors.items["jurorNumber"][0].details } %}
+{% endif %}
+
 {% set byJurorHtml %}
   {{ govukInput({
     label: {
       text: "Enter juror name, number or postcode"
     },
     id: "jurorNumber",
-    name: "jurorNumber"
+    name: "jurorNumber",
+    errorMessage: jurorNumberError
   }) }}
 {% endset %}
+
+{# pool number infos #}
+{% set poolNumberError = undefined %}
+{% if errors.items["poolNumber"] %}
+  {% set poolNumberError = { "text": errors.items["poolNumber"][0].details } %}
+{% endif %}
 
 {% set byPoolHtml %}
   {{ govukInput({
@@ -28,17 +44,26 @@
     },
     classes: "govuk-input--width-10",
     id: "poolNumber",
-    name: "poolNumber"
+    name: "poolNumber",
+    errorMessage: poolNumberError
   }) }}
 {% endset %}
 
+{# court name infos #}
+{% set courtNameError = undefined %}
+{% if errors.items["courtName"] %}
+  {% set courtNameError = { "text": errors.items["courtName"][0].details } %}
+{% endif %}
+
 {% set byCourtHtml %}
-  {{ govukInput({
+  {{ modAutocomplete({
     label: {
       text: "Enter court name"
     },
+    name: "courtName",
     id: "courtName",
-    name: "courtName"
+    data: courts,
+    errorMessage: courtNameError
   }) }}
 {% endset %}
 
@@ -55,6 +80,12 @@
   dateMax: "25/12/2024",
   dateError: "An error message." #}
 {% endset %}
+
+{# radios error #}
+{% set searchByError = undefined %}
+{% if errors.items["searchBy"] %}
+  {% set searchByError = { "text": errors.items["searchBy"][0].details } %}
+{% endif %}
 
 {% block content %}
 
@@ -80,11 +111,31 @@
             }
           },
           items: [
-            { value: "juror", text: "Juror", conditional: { html: byJurorHtml } },
-            { value: "pool", text: "Pool", conditional: { html: byPoolHtml } },
-            { value: "court", text: "Deferrals in a specific court", conditional: { html: byCourtHtml } },
-            { value: "dateDeferredTo" ,text: "Date deferred to", conditional: { html: byDeferredToDateHtml } }
-          ]
+            {
+              value: "juror",
+              text: "Juror",
+              conditional: { html: byJurorHtml },
+              checked: jurorNumberError !== undefined
+            },
+            {
+              value: "pool",
+              text: "Pool",
+              conditional: { html: byPoolHtml },
+              checked: poolNumberError !== undefined
+            },
+            {
+              value: "court",
+              text: "Deferrals in a specific court",
+              conditional: { html: byCourtHtml },
+              checked: courtNameError !== undefined
+            },
+            {
+              value: "dateDeferredTo",
+              text: "Date deferred to",
+              conditional: { html: byDeferredToDateHtml }
+            }
+          ],
+          errorMessage: searchByError
         }) }}
 
         {{ csrfProtection(csrftoken) }}
