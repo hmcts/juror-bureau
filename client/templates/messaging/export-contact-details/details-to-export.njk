@@ -1,0 +1,109 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - Messaging - export contact details - details to export{% endblock %}
+{% block page_identifier %}messaging - export contact details - details to export{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {% set detailsToExportError = undefined %}
+  {% if errors.items["detailsToExport"] %}
+    {% set detailsToExportError = { "text": errors.items["detailsToExport"][0].details } %}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <span class="govuk-caption-xl">Export contact details</span>
+      <h1 class="govuk-heading-xl">Select details to export</h1>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+
+      <form method="post" id="detailsToExportForm">
+        {{ govukCheckboxes({
+          name: "detailsToExport",
+          classes: "govuk-checkboxes--small",
+          errorMessage: detailsToExportError,
+          items: [
+            {
+              value: "juror_number",
+              text: "Juror number"
+            },
+            {
+              value: "title",
+              text: "Title"
+            },
+            {
+              value: "first_name",
+              text: "First name"
+            },
+            {
+              value: "last_name",
+              text: "Last name"
+            },
+            {
+              value: "email",
+              text: "Email"
+            },
+            {
+              value: "main_phone",
+              text: "Main phone"
+            },
+            {
+              value: "other_phone",
+              text: "Other phone"
+            },
+            {
+              value: "work_phone",
+              text: "Work phone"
+            },
+            {
+              value: "address",
+              text: "Address"
+            },
+            {
+              value: "postcode",
+              text: "Postcode"
+            },
+            {
+              value: "status",
+              text: "Status"
+            },
+            {
+              value: "pool_number",
+              text: "Pool number"
+            },
+            {
+              value: "date_deferred_to",
+              text: "Date deferred to"
+            }
+          ]
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Export contact details",
+            attributes: {
+              id: "exportContactDetailsButton"
+            }
+          }) }}
+        
+          <a class="govuk-link" href="{{ url('messaging.export-contacts.get') }}">Cancel</a>
+        </div>
+
+        {{ csrfProtection(csrftoken) }}
+
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

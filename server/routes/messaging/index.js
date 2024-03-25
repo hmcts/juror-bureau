@@ -115,15 +115,35 @@
       sendController.postChangeMethod(app),
     );
 
+    // export contact details routes
     app.get('/messaging/export-contact-details',
       'messaging.export-contacts.get',
       auth.verify,
       exportController.getExportContacts(app),
     );
+
     app.post('/messaging/export-contact-details',
       'messaging.export-contacts.post',
       auth.verify,
       exportController.postExportContacts(app),
+    );
+
+    app.get('/messaging/export-contact-details/jurors',
+      'messaging.export-contacts.jurors.get',
+      auth.verify,
+      exportController.getJurorsList(app),
+    );
+
+    app.get('/messaging/export-contact-details/details-to-export',
+      'messaging.export-contacts.details-to-export.get',
+      auth.verify,
+      exportController.getSelectDetailsToExport(app),
+    );
+
+    app.post('/messaging/export-contact-details/details-to-export',
+      'messaging.export-contacts.details-to-export.post',
+      auth.verify,
+      exportController.postSelectDetailsToExport(app),
     );
   };
 })();
