@@ -26,7 +26,11 @@
     let match = false;
     let courtCode;
 
+    console.log('Initial payload:', body);
+
     courtCode = body.courtNameOrLocation.toString().match(/\d+/g);
+
+    console.log('Matched court code:', courtCode);
 
     return new Promise(function(resolve, reject) {
       courts.forEach(function(court) {
