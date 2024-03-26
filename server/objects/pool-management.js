@@ -68,6 +68,9 @@
       availablePools: {
         get: availablePools.bind({ resource: 'moj/manage-pool/available-pools/{}' }),
       },
+      availableCourtOwnedPools: {
+        get: availablePools.bind({ resource: 'moj/manage-pool/available-pools-court-owned/{}' }),
+      },
       reassignJuror: {
         resource: 'moj/manage-pool/reassign-jurors',
         put: function(rp, app, jwtToken, payload) {
