@@ -1,0 +1,143 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{% block page_title %}{{ serviceName }} - administration{% endblock %}
+{% block page_identifier %}administration - judges{% endblock %}
+
+{% set currentApp = "Court administration" %} 
+{% set nav = "judges" %}
+
+{% block content %}
+
+  {% set judgeRows = [] %}
+  {% for judge in judges %}
+    {% set editHtml = "<a class='govuk-link' href='" + url('administration.judges.edit.get', {judgeId: judge.judgeId}) + "'>Edit</a>" %}
+    {% set deleteHtml = " <a class='govuk-link govuk-!-margin-left-2' href='" + url('administration.judges.delete.get', {judgeId: judge.judgeId}) + "'>Delete</a>" %}
+    {% set judgeRows = (judgeRows.push([
+      {
+        text: judge.judgeCode
+      },
+      {
+        text: judge.judgeName
+      },
+      {
+        text: "Active" if judge.active else "Inactive"
+      },
+      {
+        text: judge.lastUsed | dateFilter("YYYY-mm-dd", "DD-MM-YYYY") if judge.lastUsed else "Not used",
+        attributes: {
+          "data-sort-value": judge.lastUsed if judge.lastUsed else "-"
+        }
+      },
+      {
+        html: editHtml + deleteHtml if not judge.active else editHtml
+      }
+    ]), judgeRows) %}
+  {% endfor %}
+
+
+  {% include "includes/errors.njk" %}  
+
+  {% if bannerMessage %}
+    {{ mojBanner({
+      type: "success",
+      text: bannerMessage,
+      iconFallbackText: "Success"
+    }) }}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Judges</h1>
+    </div>
+    <div class="govuk-grid-column-one-half mod-flex mod-justify-end">
+      <div class="govuk-button-group">
+        {{ govukButton({
+          text: "Add new",
+          href: url('administration.judges.add.get')
+        }) }}
+
+        {{ govukButton({
+          text: "Print",
+          classes: "govuk-button--secondary"
+        }) }}
+      </div>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <fieldset class="govuk-fieldset">
+        <div class="govuk-radios govuk-radios--small govuk-radios--inline" data-module="govuk-radios">
+        <div class="govuk-radios__item govuk-!-margin-right-0">
+          <input
+            class="govuk-radios__input" 
+            id="activeJudgesRadio" 
+            name="activeJudgesRadio" 
+            type="radio" 
+            value="active"
+            {% if judgeType === 'active' %}checked{% endif %}
+            onclick="window.location.href = '{{url('administration.judges.get')}}?judgeType=active';"
+          >
+          <label class="govuk-label govuk-radios__label" for="activeJudgesRadio">Active judges</label>
+        </div>
+        <div class="govuk-radios__item govuk-!-margin-right-0" >
+          <input 
+            class="govuk-radios__input" 
+            id="allJudgesRadio" 
+            name="allJudgesRadio" 
+            type="radio" 
+            value="all"
+            {% if judgeType === 'all' %}checked{% endif %}
+            onclick="window.location.href = '{{url('administration.judges.get')}}?judgeType=all';"
+          >
+          <label class="govuk-label govuk-radios__label" for="allJudgesRadio">All judges</label>
+        </div>
+        </div>
+      </fieldset>
+
+      {% if judges | length %}
+        {{ govukTable({
+          attributes: {
+            'data-module': 'moj-sortable-table'
+          },
+          head: [
+            {
+              text: "Code",
+              attributes: {
+                "aria-sort": "ascending"
+              }
+            },
+            {
+              text: "Judge name",
+              attributes: {
+                "aria-sort": "none"
+              }
+            },
+            {
+              text: "Status",
+              attributes: {
+                "aria-sort": "none"
+              }
+            },
+            {
+              text: "Last used",
+              attributes: {
+                "aria-sort": "none"
+              }
+            },
+            {}
+          ],
+          rows: judgeRows
+        }) }}
+      {% else %}
+        <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-3">
+        <h2>There are no matching results</h2>
+      {% endif %}
+    </div>
+  </div>
+
+{% endblock %}
