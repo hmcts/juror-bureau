@@ -79,9 +79,9 @@
       const courts = _.clone(req.session.assignCourts.courts);
 
       const filteredList = courts.filter((court) =>{
-        const courtName = capitalizeFully(court.courtName).trim().replace(',', '') + ' (' + court.locCode + ')';
+        const courtName = ((court.courtName).trim().replace(',', '') + ' (' + court.locCode + ')').toLowerCase();
 
-        return courtName.includes(req.body.courtSearch);
+        return courtName.includes(req.body.courtSearch.toLowerCase());
       });
 
       req.session.assignCourts.filteredCourts = filteredList;

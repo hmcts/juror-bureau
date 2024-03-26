@@ -1,0 +1,142 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - administration{% endblock %}
+{% block page_identifier %}administration - courts and bureau{% endblock %}
+
+{% set currentApp = "System administration" %} 
+{% set nav = "courtsAndBureau" %}
+
+{% block content %}
+
+  {% set courtTableRows = [] %}
+  {% for court in courts %}
+    {% set courtTableRows = (courtTableRows.push(
+      [
+        {
+          text: court | transformCourtName,
+          attributes: {
+              "data-sort-value": court | transformCourtName
+          }
+        },
+        {
+          text: court.courtType | capitalize,
+          attributes: {
+              "data-sort-value": court.courtType
+          }
+        },
+        {
+          html: "<a class='govuk-link govuk-link--no-visited-state' href='#'>Court home</a> 
+            <a class='govuk-link govuk-link--no-visited-state govuk-!-margin-left-4' 
+            href='"+ url('administration.court-details.get', {locationCode: court.locationCode}) +"'>
+              Edit court details
+            </a>"
+        }
+      ]
+    ), courtTableRows) %}
+  {% endfor %}
+
+  {% include "includes/errors.njk" %}  
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">Courts and Bureau</h1>
+
+      {{ govukTable({
+        head: [
+          {
+            classes: 'govuk-!-width-one-third'
+          }, 
+          {
+            classes: 'govuk-!-width-one-third'
+          }, 
+          {
+            classes: 'govuk-!-width-one-third'
+          }
+        ],
+        rows: [
+          [
+            {
+              text: "Jury Central Summoning Bureau"
+            },
+            {},
+            {
+              html: "<a class='govuk-link' href='#'>Bureau home</a>"
+            }
+          ]
+        ]
+      }) }}
+
+      <form action="{{ filterUrl }}" method="POST" class="mod-flex mod-items-end mod-gap-x-4">
+        {{ govukInput({
+          label: {
+            text: "Court name or location code"
+          },
+          classes: "govuk-input--width-20",
+          id: "courtSearch",
+          name: "courtSearch",
+          errorMessage: courtSearchError,
+          value: filter
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Filter",
+            classes: "govuk-button--secondary",
+            attributes: {
+              id: "filter-button"
+            }
+          }) }}
+          
+          <a class="govuk-link govuk-link--no-visited-state" href="{{ clearFilterUrl }}">Clear filter</a>
+        </div>
+
+        {{ csrfProtection(csrftoken) }}
+      </form>
+
+      {% if courts | length %}
+        <div class="fixTableHead govuk-!-margin-bottom-6">
+          {{ govukTable({
+            attributes: {
+              'data-module': 'moj-sortable-table'
+            },
+            head: [
+              {
+                text: "Court name",
+                attributes: {
+                  "aria-sort": "ascending"
+                },
+                classes: 'govuk-!-width-one-third'
+              },
+              {
+                text: "Court type",
+                attributes: {
+                  "aria-sort": "none"
+                },
+                classes: 'govuk-!-width-one-third'
+              },
+              {
+                classes: 'govuk-!-width-one-third'
+              }
+            ],
+            rows: courtTableRows
+          }) }}
+        </div>
+      {% else %}
+        <hr class="govuk-section-break govuk-section-break--visible">
+        <h2>There are no matching results.</h2>
+        <p class="govuk-body">Improve your search by double-checking your spelling.</p>
+      {% endif %}
+
+    </div>
+  </div>
+
+{% endblock %}ß

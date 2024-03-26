@@ -19,12 +19,6 @@
     delete req.session.formField;
 
     if (typeof req.params.poolNumber !== 'undefined') {
-      const jurorDates = req.session.selectedJurors.map(id => req.session.jurorDetails[id].startDate);
-      const minDate = jurorDates.reduce(function(prev, curr) {
-        return makeDate(prev) < makeDate(curr) ? prev : curr;
-      });
-
-      minCompletionDate = dateFilter(makeDate(minDate), null, 'DD/MM/YYYY');
       cancelUrl = app.namedRoutes.build('pool-overview.get', {
         poolNumber: req.params.poolNumber,
       });
@@ -72,10 +66,11 @@
       req.body.selectedJurors = req.session.selectedJurors;
     }
 
+    // If we single transfer, we can FE validate startDate.
     req.body.jurorDates =
       typeof req.params.jurorNumber !== 'undefined'
         ? [req.session.jurorCommonDetails.startDate]
-        : req.body.selectedJurors.map(id => req.session.jurorDetails[id].startDate);
+        : [];
 
     const validatorResult = validate(req.body, completeServiceValidator());
     let failValidationUrl, successUrl, errorUrl;
