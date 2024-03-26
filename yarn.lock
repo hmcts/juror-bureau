@@ -4969,7 +4969,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express@npm:^4.14.0":
+"express@npm:^4.19.2":
   version: 4.19.2
   resolution: "express@npm:4.19.2"
   dependencies:
@@ -8571,7 +8571,7 @@ __metadata:
     eslint-plugin-jsx-a11y: ^6.0.2
     eslint-plugin-protractor: ^1.34.2
     eslint-plugin-react: ^7.5.1
-    express: ^4.14.0
+    express: ^4.19.2
     express-nunjucks: ^3.1.1
     express-session: ^1.14.0
     fs-extra: ^11.0.0
