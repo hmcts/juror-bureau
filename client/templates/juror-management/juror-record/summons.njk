@@ -87,7 +87,7 @@
           {% set summonsReplyUrl = url('response.detail.get', {id: juror.commonDetails.jurorNumber}) %}
         {% endif %}
 
-        {% if juror.replyMethod and jurorStatus !== "Undeliverable" %}
+        {% if juror.replyMethod and jurorStatus !== "Undeliverable" and juror.replyDate %}
           <a href="{{ summonsReplyUrl }}" class="govuk-link govuk-body">View summons reply</a>
         {% endif %}
         
