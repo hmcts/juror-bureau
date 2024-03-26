@@ -295,4 +295,60 @@
     },
   };
 
+  module.exports.nonSittingDayDAO = {
+    get: function(app, req, locCode) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/administration/non-sitting-days', locCode),
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+      };
+
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
+    },
+    post: function(app, req, locCode, body) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/administration/non-sitting-days', locCode),
+        method: 'POST',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+        body,
+      };
+
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
+    },
+
+    delete: function(app, req, locCode, date) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/administration/non-sitting-days', locCode, date),
+        method: 'DELETE',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+        date,
+      };
+
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
+    },
+
+
+  };
+
 })();
