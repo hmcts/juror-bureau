@@ -19,6 +19,7 @@
     , editJurorDetailsObject = require('../../../objects/juror-record').editDetails
     , deleteDeferralObject = require('../../../objects/deferral-mod').deleteDeferralObject
     , paperReplyValidator = require('../../../config/validation/paper-reply')
+    , { administrationCodes } = require('../../../objects/administration-codes')
     , { changeName: fixNameObj, disqualifyAgeDAO } = require('../../../objects/juror-record');
 
   module.exports.getEditDeferral = (app) => {
@@ -361,21 +362,27 @@
 
   module.exports.getEditDetails = (app) => {
     return async(req, res) => {
-      let adjustmentReasons = modUtils.adjustmentsReasons,
-        reasons = [{value: '', text: 'Select a reason...', selected: true}];
-
-      Object.keys(adjustmentReasons).forEach((key) => {
-        reasons.push(
-          {
-            value: key,
-            text: adjustmentReasons[key],
-          });
-      });
 
       req.session.dateMax = moment().subtract(1, 'days');
 
-      if (!req.session.editJurorDetails) {
-        try {
+      try {
+        let adjustmentReasonsObj = modUtils.reasonsArrToObj(await administrationCodes.get(
+            require('request-promise'),
+            app,
+            req.session.authToken,
+            'REASONABLE_ADJUSTMENTS'
+          )),
+          reasons = [{value: '', text: 'Select a reason...', selected: true}];
+
+        Object.keys(adjustmentReasonsObj).forEach((key) => {
+          reasons.push(
+            {
+              value: key,
+              text: adjustmentReasonsObj[key],
+            });
+        });
+
+        if (!req.session.editJurorDetails) {
           const response = await jurorRecordObject.get(require('request-promise'), app, req.session.authToken, 'detail',
             req.params['jurorNumber'], req.session.locCode);
 
@@ -392,74 +399,74 @@
           req.session.editJurorEtag = response.headers.etag;
           req.session.editJurorDetails = response.data;
 
-        } catch (err) {
-          app.logger.crit('Failed to retrieve juror details: ', {
-            auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: {
-              jurorNumber: req.params['jurorNumber'],
-              locCode: req.session.locCode,
-            },
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
-          return res.render('_errors/generic');
         }
-      }
 
-      let jurorDetails = req.session.editJurorDetails;
+        let jurorDetails = req.session.editJurorDetails;
 
-      if (req.session.formFields) {
-        req.session.formFields.specialNeed = req.session.formFields.specNeedValue;
-        req.session.formFields.specialNeedMessage = req.session.formFields.specNeedMsg;
+        if (req.session.formFields) {
+          req.session.formFields.specialNeed = req.session.formFields.specNeedValue;
+          req.session.formFields.specialNeedMessage = req.session.formFields.specNeedMsg;
 
-        Object.assign(jurorDetails, req.session.formFields);
+          Object.assign(jurorDetails, req.session.formFields);
 
-        delete req.session.formFields;
-      }
+          delete req.session.formFields;
+        }
 
-      let tmpErrors = _.clone(req.session.errors);
+        let tmpErrors = _.clone(req.session.errors);
 
-      delete req.session.errors;
+        delete req.session.errors;
 
-      if (req.session.editJurorDetails.fixedName) {
-        const { title, firstName, lastName } = req.session.editJurorDetails.fixedName;
+        if (req.session.editJurorDetails.fixedName) {
+          const { title, firstName, lastName } = req.session.editJurorDetails.fixedName;
 
-        req.session.editJurorDetails.commonDetails.title = title;
-        req.session.editJurorDetails.commonDetails.firstName = firstName;
-        req.session.editJurorDetails.commonDetails.lastName = lastName;
-      }
+          req.session.editJurorDetails.commonDetails.title = title;
+          req.session.editJurorDetails.commonDetails.firstName = firstName;
+          req.session.editJurorDetails.commonDetails.lastName = lastName;
+        }
 
-      if (req.url.includes('bank-details/address')) {
-        const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
+        if (req.url.includes('bank-details/address')) {
+          const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
 
-        return res.redirect(app.namedRoutes.build(`${routePrefix}.bank-details.address-edit.get`, {
+          return res.redirect(app.namedRoutes.build(`${routePrefix}.bank-details.address-edit.get`, {
+            jurorNumber: req.params['jurorNumber'],
+            poolNumber: req.params['poolNumber'],
+          }));
+        }
+
+        return res.render('juror-management/edit/juror-edit-details', {
           jurorNumber: req.params['jurorNumber'],
-          poolNumber: req.params['poolNumber'],
-        }));
-      }
-
-      return res.render('juror-management/edit/juror-edit-details', {
-        jurorNumber: req.params['jurorNumber'],
-        backLinkUrl: {
-          built: true,
-          url: app.namedRoutes.build('juror-record.overview.get', {
+          backLinkUrl: {
+            built: true,
+            url: app.namedRoutes.build('juror-record.overview.get', {
+              jurorNumber: req.params['jurorNumber'],
+            }),
+          },
+          processUrl: app.namedRoutes.build('juror-record.details-edit.post', {
             jurorNumber: req.params['jurorNumber'],
           }),
-        },
-        processUrl: app.namedRoutes.build('juror-record.details-edit.post', {
-          jurorNumber: req.params['jurorNumber'],
-        }),
-        juror: jurorDetails,
-        adjustmentReasons: reasons,
-        dateMax: dateFilter(req.session.dateMax, null, 'DD/MM/YYYY'),
-        errors: {
-          title: 'Please check the form',
-          count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-          items: tmpErrors,
-        },
-        isCourtUser: isCourtUser(req),
-        isTeamLeader: isTeamLeader(req),
-      });
+          juror: jurorDetails,
+          adjustmentReasons: reasons,
+          dateMax: dateFilter(req.session.dateMax, null, 'DD/MM/YYYY'),
+          errors: {
+            title: 'Please check the form',
+            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+            items: tmpErrors,
+          },
+          isCourtUser: isCourtUser(req),
+          isTeamLeader: isTeamLeader(req),
+        });
+      } catch (err) {
+        app.logger.crit('Failed to retrieve juror details: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            jurorNumber: req.params['jurorNumber'],
+            locCode: req.session.locCode,
+          },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+        return res.render('_errors/generic');
+      }
     };
   };
 

@@ -663,19 +663,21 @@
     hgh: 'HGH',
   };
 
-  module.exports.adjustmentsReasons = {
-    C: 'C - Childcare problems',
-    D: 'D - Diet',
-    H: 'H - Hearing impairment',
-    I: 'I - Diabetic',
-    L: 'L - Limited mobility',
-    M: 'M - Multiple',
-    O: 'O - Other',
-    P: 'P - Pregnancy',
-    R: 'R - Reading',
-    U: 'U - Drug dependent',
-    V: 'V - Visual impairment',
-    W: 'W - Wheelchair access',
+  module.exports.reasonsArrToObj = function(list) {
+    let reasonsObject = {};
+
+    list.forEach(reason => {
+      if (reason.code === ' ' || reason.code === '') {
+        reasonsObject[reason.code] = capitalizeFully(reason.description);
+      } else {
+        reasonsObject[reason.code] = reason.code + ' - ' + capitalizeFully(reason.description);
+      }
+      if (reason.description === 'CJS EMPLOYEE') {
+        reasonsObject[reason.code] = reason.code + ' - CJS Employee';
+      }
+    });
+
+    return reasonsObject;
   };
 
   module.exports.deferralReasons = {
