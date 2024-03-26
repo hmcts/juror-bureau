@@ -45,7 +45,8 @@
           const maxAttendanceDate = `${ today.getDate() }/${ today.getMonth() + 1 }/${ today.getFullYear() + 1 }`;
           const defaultAttendanceDate = tmpFields && tmpFields.attendanceDate || '';
 
-          req.session.courtsList = data.courts;
+          req.session.filteredCourts = data.courts.filter((court) =>
+            (court.owner !== req.session.authentication.owner));
 
           return res.render('juror-management/transfer-court.njk', {
             bulkUpdate,
@@ -56,7 +57,7 @@
             defaultAttendanceDate,
             minAttendanceDate,
             maxAttendanceDate,
-            courts: modUtils.transformCourtNames(data.courts),
+            courts: modUtils.transformCourtNames(req.session.filteredCourts),
             errors: {
               message: '',
               count:
@@ -158,7 +159,7 @@
         return res.redirect(failUrl);
       }
 
-      modUtils.matchUserCourt(req.session.courtsList, req.body)
+      modUtils.matchUserCourt(req.session.filteredCourts, req.body)
         .then((court) => {
           app.logger.info('Matched the selected court', {
             auth: req.session.authentication,
@@ -179,6 +180,8 @@
             jurorNumbers: req.body.selectedJurors,
           })
             .then((data) => {
+              delete req.session.filteredCourts;
+
               if (data.unavailableForMove != null) {
                 req.session.availableForMove = data.availableForMove;
 
@@ -199,6 +202,9 @@
                 error:
                   typeof err.error !== 'undefined' ? err.error : err.toString(),
               });
+
+              delete req.session.filteredCourts;
+
               return res.render('_errors/generic');
             });
         })
