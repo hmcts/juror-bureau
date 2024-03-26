@@ -62,6 +62,17 @@
       expect(testObj.method).to.equal('GET');
     });
 
+    // eslint-disable-next-line max-len
+    it('should call the correct endpoint to fetch Court-owned pools available for a given court location - create juror record', function() {
+      var locationCode = '415'
+        , testObj = requestObj.reassignJurors.availableCourtOwnedPools.get(rpStub, appStub, 'test-token', locationCode)
+        // eslint-disable-next-line max-len
+        , realUri = urljoin('http://localhost:8080/api/v1', 'moj/manage-pool/available-pools-court-owned', locationCode);
+
+      expect(testObj.uri).to.equal(realUri);
+      expect(testObj.method).to.equal('GET');
+    });
+
     it('shout call the correct endpoint to reassign the selected juror to a different pool', function() {
       var payload = {
           jurorNumbers: ['123456789'],

@@ -84,8 +84,6 @@
         };
         let sortUrlPrefix = `?isActive=${isActive}`;
 
-        console.log(payload);
-
         delete req.session.adminUserSearch;
 
         const searchOpts = {};
@@ -224,8 +222,6 @@
         };
 
         const users = await usersDAO.getUsers(app, req, payload);
-
-        console.log(users);
 
         replaceAllObjKeys(users, _.camelCase);
 
