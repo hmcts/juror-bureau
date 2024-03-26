@@ -7,7 +7,7 @@
       "bureau-jwtTTL": "8h",
       "bureau-smartSurveyToken": "",
       "bureau-smartSurveyTokenSecret": "",
-      "launchDarklyKey": "",
+      "launchDarklyKey": "sdk-5b0b0b7c-85a0-411a-8c05-f58d616b5f2d",
       "app-insights-connection-string": "",
       "bureau-redisConnection": "redis://localhost:6379"
     }

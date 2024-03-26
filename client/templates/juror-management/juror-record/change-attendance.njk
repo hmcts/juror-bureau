@@ -1,0 +1,134 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "custom-components/time-input-12-hour/macro.njk" import timeInput12Hour %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% set checkInHtml %}
+{{ timeInput12Hour({
+        id: "checkInTime",
+        name: "checkInTime",
+        fieldset: {
+          legend: {
+            text: "Enter check in time",
+            classes: "govuk-fieldset__legend--s"
+          }
+        },
+        items: {
+          hour: {
+            value: tmpBody.checkInTimeHour,
+            attributes: {
+              minLength: "1",
+              maxLength: "2"
+            }
+          },
+          minute: {
+            value: tmpBody.checkInTimeMinute,
+            attributes: {
+              minLength: "1",
+              maxLength: "2"
+            }
+          },
+          period: {
+            value: tmpBody.checkInTimePeriod
+          }
+        },
+        errors: errors.items
+      }) }}
+  {{ timeInput12Hour({
+          id: "checkOutTime",
+          name: "checkOutTime",
+          fieldset: {
+            legend: {
+              text: "Enter check out time",
+              classes: "govuk-fieldset__legend--s"
+            }
+          },
+          items: {
+            hour: {
+              value: tmpBody.checkOutTimeHour,
+              attributes: {
+                minLength: "1",
+                maxLength: "2"
+              }
+            },
+            minute: {
+              value: tmpBody.checkOutTimeMinute,
+              attributes: {
+                minLength: "1",
+                maxLength: "2"
+              }
+            },
+            period: {
+              value: tmpBody.checkOutTimePeriod
+            }
+          },
+          errors: errors.items
+        }) }}
+{% endset %}
+{% block content %}
+<div class="govuk-grid-row">
+  {% set processActionTypeError = undefined %}
+    {% if errors.items["processActionType"] %}
+      {% set processActionTypeError = { text: errors.items['processActionType'][0].details }%}
+    {% endif %}
+  <form method="post" id="changeAttendanceDate">
+      <div class="govuk-grid-column-two-thirds">
+          {% include "includes/errors.njk" %}
+
+            <h1 class="govuk-heading-l">
+           <span class="govuk-caption-l">Attendance</span>
+            <span class="govuk-caption-l"></span>
+            {{jurorName}}
+            </h1>
+
+      <p class="govuk-body-l ">{{attendanceDate | dateFilter(null, "dddd D MMMM YYYY")}}</p>
+
+          {{ govukRadios({
+            name: "processActionType",
+            fieldset: {
+              legend: {
+                text: "Select attendance type",
+                classes: "govuk-fieldset__legend--m"
+              }
+            },
+            items: [
+            {
+                    value: "attendance",
+                    text: "Attendance",
+                    checked: tmpBody.processActionType === 'attendance',
+                    conditional: {
+                      html: checkInHtml
+                    }
+              },
+              {
+                value: "nonAttendance",
+                text: "Non-attendance"
+              },
+              {
+                value: "absence",
+                text: "Absence"
+              }
+            ],
+            errorMessage: processActionTypeError
+          }) }}
+       </div>
+    <div class="govuk-button-group">
+        {{ govukButton({
+          text: "Save Changes",
+          type: "submit"
+        }) }}
+        <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+      </div>
+
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+      <a class="mod-red-text govuk-body" href="{{ _deleteUrl }}">Delete attendance</a>
+
+    </div>
+    <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+
+  </form>
+</div>
+{% endblock %}
