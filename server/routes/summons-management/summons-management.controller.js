@@ -19,7 +19,8 @@
     , deferralJurorValidator = require('../../config/validation/deferral-juror')
     , deferralDatePickerValidator = require('../../config/validation/date-picker').deferralDatePicker
     , otherDeferralDateValidater = require('../../config/validation/deferral-mod').deferralDateAndReason
-    , courtLocationsFromPostcodeObj = require('../../objects/court-location').courtLocationsFromPostcodeObj;
+    , courtLocationsFromPostcodeObj = require('../../objects/court-location').courtLocationsFromPostcodeObj
+    , { administrationCodes } = require('../../objects/administration-codes');
   const { flowLetterPost, flowLetterGet } = require('../../lib/flowLetter');
 
   const dateHint = 'Use dd/mm/yyyy format. For example, 31/01/2023.';
@@ -716,8 +717,9 @@
 
   module.exports.getPaperResponseDetails = function(app) {
     return function(req, res) {
-      var successCB = function({ data }) {
-          var responseClone = _.clone(data)
+      var promiseArr = []
+        , successCB = function(response) {
+          var responseClone = _.clone(response[0].data)
             , nameDetails
             , addressDetails
             , jurorDetails
@@ -760,11 +762,11 @@
           req.session.specialNeeds = responseClone.specialNeeds;
 
           responseClone.eligibilityComplete = isComplete(responseClone.eligibility);
-          responseClone.cjsEmployments = data.cjsEmployment;
+          responseClone.cjsEmployments = response[0].data.cjsEmployment;
 
           if (responseClone.specialNeeds) {
             responseClone.specialNeeds[0].assistanceType =
-              modUtils.adjustmentsReasons[responseClone.specialNeeds[0].assistanceType];
+              modUtils.reasonsArrToObj(response[1])[responseClone.specialNeeds[0].assistanceType];
 
             jurorDetails.specialNeeds = responseClone.specialNeeds;
           }
@@ -780,11 +782,12 @@
             convictions: responseClone.eligibility.convicted,
           };
           eligibilityDetails.eligible = (
-            data.eligibility.livedConsecutive &&
-            (!data.eligibility.mentalHealthAct && data.eligibility.mentalHealthAct !== null) &&
-            (!data.eligibility.mentalHealthCapacity && data.eligibility.mentalHealthCapacity !== null) &&
-            (!data.eligibility.onBail && data.eligibility.onBail !== null) &&
-            (!data.eligibility.convicted && data.eligibility.convicted !== null)
+            response[0].data.eligibility.livedConsecutive &&
+            (!response[0].data.eligibility.mentalHealthAct && response[0].data.eligibility.mentalHealthAct !== null) &&
+            (!response[0].data.eligibility.mentalHealthCapacity &&
+              response[0].data.eligibility.mentalHealthCapacity !== null) &&
+            (!response[0].data.eligibility.onBail && response[0].data.eligibility.onBail !== null) &&
+            (!response[0].data.eligibility.convicted && response[0].data.eligibility.convicted !== null)
           );
 
           // calculate whether or not a left side nav will have a blue tick
@@ -816,7 +819,7 @@
               jurorDetails.dateOfBirth.ageIneligible === false
             ),
             signature: (
-              !data.signed &&
+              !response[0].data.signed &&
               !jurorDetails.dateOfBirth.ageIneligible &&
               !jurorDetails.dateOfBirth.ageIneligible
             ),
@@ -825,15 +828,15 @@
           responseClone.isLateSummons = modUtils.isLateSummons(responseClone.serviceStartDate);
 
           req.session.replyDetails = {};
-          req.session.replyDetails.jurorNumber = data.jurorNumber;
+          req.session.replyDetails.jurorNumber = response[0].data.jurorNumber;
           req.session.replyDetails.jurorName = nameDetails.headerNameRender;
-          req.session.replyDetails.jurorStartDate = data.serviceStartDate;
+          req.session.replyDetails.jurorStartDate = response[0].data.serviceStartDate;
           req.session.replyDetails.isLateSummons = responseClone.isLateSummons;
 
           // we need to store the location code because we need it to be able to visit the juror record page
-          req.session.locCode = data.poolNumber.slice(0, 3);
+          req.session.locCode = response[0].data.poolNumber.slice(0, 3);
 
-          responseClone.statusRender = data.jurorStatus;
+          responseClone.statusRender = response[0].data.jurorStatus;
 
           return opticReferenceObj.get(require('request-promise'),
             app,
@@ -866,7 +869,10 @@
           return res.redirect(app.namedRoutes.build('homepage.get'));
         };
 
-      return paperReplyObj.get(require('request-promise'), app, req.session.authToken, req.params['id'])
+      promiseArr.push(paperReplyObj.get(require('request-promise'), app, req.session.authToken, req.params['id']));
+      promiseArr.push(administrationCodes.get(
+        require('request-promise'), app, req.session.authToken, 'REASONABLE_ADJUSTMENTS'));
+      Promise.all(promiseArr)
         .then(successCB)
         .catch(errorCB);
     };

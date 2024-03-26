@@ -8,6 +8,7 @@
     , paperReplyObjectObj = require('../../../objects/paper-reply').paperReplyObject
     , getJurorDetailsObj = require('../../../objects/juror-record').record
     , { changeName: fixNameObj } = require('../../../objects/juror-record')
+    , { administrationCodes } = require('../../../objects/administration-codes')
     , paperReplyValidator = require('../../../config/validation/paper-reply')
     , { updateStatus } = require('../../../objects/summons-management')
     , validate = require('validate.js')
@@ -632,12 +633,11 @@
   };
 
   module.exports.getAdjustments = function(app) {
-    return function(req, res) {
+    return async function(req, res) {
       var specialNeeds = []
         , assistanceType
         , assistanceTypeDetails
         , adjustmentsResponse
-        , adjustmentsReasons = modUtils.adjustmentsReasons
         , reasons = []
         , tmpErrors = _.clone(req.session.errors);
 
@@ -660,38 +660,58 @@
         };
       }
 
-      Object.keys(adjustmentsReasons).forEach((key) => {
-        reasons.push(
-          {
-            value: key,
-            text: adjustmentsReasons[key],
-            selected: key === assistanceType,
-          });
-      });
+      try {
+        let adjustmentsReasons = modUtils.reasonsArrToObj(await administrationCodes.get(
+          require('request-promise'),
+          app,
+          req.session.authToken,
+          'REASONABLE_ADJUSTMENTS'
+        ));
 
-      return res.render('summons-management/paper-reply/adjustments', {
-        cancelUrl: app.namedRoutes.build('juror-record.overview.get', {
-          jurorNumber: req.params['id'],
-        }),
-        postUrl: app.namedRoutes.build('paper-reply.adjustments.post', {
-          id: req.params['id'],
-        }),
-        backLinkUrl: {
-          built: true,
-          url: app.namedRoutes.build('paper-reply.cjs-employment.get', {
+        Object.keys(adjustmentsReasons).forEach((key) => {
+          reasons.push(
+            {
+              value: key,
+              text: adjustmentsReasons[key],
+              selected: key === assistanceType,
+            });
+        });
+
+        return res.render('summons-management/paper-reply/adjustments', {
+          cancelUrl: app.namedRoutes.build('juror-record.overview.get', {
+            jurorNumber: req.params['id'],
+          }),
+          postUrl: app.namedRoutes.build('paper-reply.adjustments.post', {
             id: req.params['id'],
           }),
-        },
-        adjustmentsResponse,
-        assistanceTypeDetails,
-        specialNeeds,
-        reasons,
-        errors: {
-          title: 'Please check the form',
-          count: countErrors(tmpErrors),
-          items: tmpErrors,
-        },
-      });
+          backLinkUrl: {
+            built: true,
+            url: app.namedRoutes.build('paper-reply.cjs-employment.get', {
+              id: req.params['id'],
+            }),
+          },
+          adjustmentsResponse,
+          assistanceTypeDetails,
+          specialNeeds,
+          reasons,
+          errors: {
+            title: 'Please check the form',
+            count: countErrors(tmpErrors),
+            items: tmpErrors,
+          },
+        });
+      } catch (err) {
+        app.logger.crit('Failed to retrieve juror details: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            jurorNumber: req.params['jurorNumber'],
+            locCode: req.session.locCode,
+          },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+        return res.render('_errors/generic');
+      };
     };
   };
 

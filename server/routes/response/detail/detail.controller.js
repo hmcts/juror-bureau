@@ -28,6 +28,7 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
     , welshLanguageText = require('../../../../client/js/i18n/cy/PDF.json')
     , paperUpdateStatus = require('../../../objects/summons-management').updateStatus
     , opticReferenceObj = require('../../../objects/juror-record').opticReferenceObject
+    , { administrationCodes } = require('../../../objects/administration-codes')
     , { dateFilter } = require('../../../components/filters');
 
   module.exports.index = function(app) {
@@ -106,8 +107,8 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
             },
             poolNumber: data.poolNumber,
             replyType: 'digital',
-            specialNeeds: data.specialNeeds && data.specialNeeds.length > 0 ? [{
-              assistanceType: modUtils.adjustmentsReasons[data.specialNeeds[0].code],
+            specialNeeds: data.specialNeeds.length > 0 ? [{
+              assistanceType: modUtils.reasonsArrToObj(response.results[2])[data.specialNeeds[0].code],
               assistanceTypeDetails: data.specialNeedsArrangements || data.specialNeeds[0].detail,
             }] : [],
           };
@@ -411,6 +412,14 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
       );
       promiseArr.push(
         courtObj.getCatchmentStatus(require('request-promise'), app, req.session.authToken, req.params.id));
+      promiseArr.push(
+        administrationCodes.get(
+          require('request-promise'),
+          app,
+          req.session.authToken,
+          'REASONABLE_ADJUSTMENTS'
+        )
+      );
 
       executeAllPromises(promiseArr)
         .then(successCB)
