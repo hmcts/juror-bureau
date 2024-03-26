@@ -385,9 +385,9 @@
 
                   <td
                     class="govuk-table__cell jd-middle-align date-col {% if item.slaOverdue %}jd-response-overdue{% endif %}"
-                    data-sort-value="{{item.dateReceived | dateFilter('yyyy-MM-dd', 'YYYYMMDD')}}"
-                  >
-                    {{ item.dateReceived | dateFilter("yyyy-MM-dd", "D MMM YYYY") }}
+                    data-sort-value="{{item.date_received | dateFilter('yyyy-MM-dd HH:mm:ss', 'YYYYMMDD')}}"
+                  > 
+                    {{ item.date_received | dateFilter("yyyy-MM-dd HH:mm:ss", "D MMM YYYY") }}
                   </td>
                               
                 </tr>
