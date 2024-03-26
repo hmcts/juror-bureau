@@ -52,7 +52,7 @@
       try {
         const courtsList = await fetchCourts.get(require('request-promise'), app, req.session.authToken);
         const courtData = await modUtils.matchUserCourt(courtsList.courts, locCode);
-        const poolsList = await requestObj.availablePools
+        const poolsList = await requestObj.availableCourtOwnedPools
           .get(require('request-promise'), app, req.session.authToken, courtData.locationCode);
         const multiCourt = courtsList.courts.length > 1;
 
