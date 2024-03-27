@@ -48,7 +48,6 @@
 
       try {
         let templateData = await messageTemplateDAO.get(
-          require('request-promise'),
           app,
           req.session.authToken,
           messagingCodes[message],
@@ -438,7 +437,6 @@
 
       try {
         let jurorsData = await jurorSearchDAO.post(
-          require('request-promise'),
           app,
           req.session.authToken,
           req.session.authentication.owner,
@@ -574,7 +572,6 @@
 
       try {
         let messageData = await populatedMessageDAO.post(
-          require('request-promise'),
           app,
           req.session.authToken,
           messagingCodes[message],
@@ -644,7 +641,6 @@
         };
 
         await sendMessage.post(
-          require('request-promise'),
           app,
           req.session.authToken,
           messagingCodes[message],
@@ -717,7 +713,6 @@
             };
 
             let jurorsData = await jurorSearchDAO.post(
-              require('request-promise'),
               app,
               req.session.authToken,
               req.session.authentication.owner,
