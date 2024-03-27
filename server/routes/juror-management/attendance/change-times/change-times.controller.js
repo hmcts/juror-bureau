@@ -58,6 +58,7 @@
           cancelUrl = app.namedRoutes.build('juror-record.attendance.get', {
             jurorNumber: juror.jurorNumber,
           });
+          req.session.jurorNameChangeAttendance = juror.firstName + ' ' + juror.lastName;
         } else {
           processUrl = app.namedRoutes.build('juror-management.attendance.change-times.post', {
             jurorNumber: juror.jurorNumber,
