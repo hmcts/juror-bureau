@@ -1,3 +1,5 @@
+const e = require('express');
+
 (function() {
   'use strict';
 
@@ -13,8 +15,7 @@
 
       let tmpErrors = _.clone(req.session.errors)
         , tmpFields = _.clone(req.session.formFields)
-        , { jurorNumber } = req.params
-        , poolNumber = req.params.poolNumber;
+        , { jurorNumber, poolNumber } = req.params;
       let cancelUrl = app.namedRoutes.build('juror-record.attendance.get', {
         jurorNumber,
       });
@@ -37,13 +38,13 @@
       delete req.session.formFields;
 
       const juror = {
-        jurorNumber: req.params.jurorNumber,
+        jurorNumber: jurorNumber,
         onCall: req.session.jurorCommonDetails.onCall,
       };
 
       if (jurorNumber !== req.session.jurorCommonDetails.jurorNumber) {
 
-        app.logger.crit('Juror number does not match caching data', {
+        app.logger.crit('Juror number does not match cached data', {
           auth: req.session.authentication,
           jwt: req.session.authToken,
           data: {
@@ -61,20 +62,21 @@
         juror,
         cancelUrl,
         postUrl,
+        tmpFields,
+        checkInTime,
+        checkOutTime,
         errors: {
           title: 'There is a problem',
           count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
           items: tmpErrors,
         },
-        tmpFields,
-        checkInTime,
-        checkOutTime,
       });
     };
   };
 
   module.exports.postAddAttendanceDate = (app) => {
     return async function(req, res) {
+      const { jurorNumber } = req.params;
       let bannerMessage;
 
       if (typeof req.session.bannerMessage !== 'undefined') {
@@ -86,36 +88,35 @@
       const attendanceDateValidation = validate(req.body, attendanceDateValidator.attendanceDay());
       const attendanceTimeValidation = validate(req.body, attendanceDateValidator.attendanceTime());
 
-      let validatorResult;
+      const validatorResult = {};
 
       if (typeof attendanceDateValidation !== 'undefined') {
-        validatorResult = {};
         validatorResult.attendanceDay = attendanceDateValidation.attendanceDay;
       };
 
       if (typeof attendanceTimeValidation !== 'undefined') {
-        typeof validatorResult !== 'undefined' ? validatorResult : validatorResult = {};
         validatorResult.checkInTime = attendanceTimeValidation.checkInTime;
         validatorResult.checkOutTime = attendanceTimeValidation.checkOutTime;
       };
 
       let errorUrl = app.namedRoutes.build('juror-record.attendance.add-attendance-date.get', {
-        jurorNumber: req.params.jurorNumber,
+        jurorNumber,
       });
       let successUrl = app.namedRoutes.build('juror-record.attendance.get', {
-        jurorNumber: req.params.jurorNumber,
+        jurorNumber,
         bannerMessage,
       });
 
-      if (typeof validatorResult !== 'undefined') {
+      if (Object.keys(validatorResult).length) {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
 
         return res.redirect(errorUrl);
       }
+
       try {
         const payload = {
-          'juror_number': req.params.jurorNumber,
+          'juror_number': jurorNumber,
           'pool_number': req.session.jurorCommonDetails.poolNumber,
           'location_code': req.session.authentication.owner,
           'attendance_date': dateFilter(req.body.attendanceDay, 'DD/MM/YYYY', 'YYYY-MM-DD'),
@@ -127,6 +128,7 @@
 
         await jurorAddAttendanceDao.post(app, req, payload);
         req.session.bannerMessage = 'Attendance date added';
+
         return res.redirect(successUrl);
       } catch (err) {
         app.logger.crit('Failed to add an attendance day for juror', {
@@ -135,7 +137,18 @@
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic.njk');
+        req.session.errors = {
+          invalidData: [{
+            details: err.error.message ? err.error.message : 'Could not add attendance date',
+            summary: err.error.message ? err.error.message : 'Could not add attendance date',
+          }],
+        };
+
+        req.session.formFields = req.body;
+
+        return res.redirect(app.namedRoutes.build('juror-record.attendance.add-attendance-date.get', {
+          jurorNumber,
+        }));
       }
 
     };
