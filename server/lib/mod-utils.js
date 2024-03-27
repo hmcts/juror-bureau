@@ -672,35 +672,18 @@
       } else {
         reasonsObject[reason.code] = reason.code + ' - ' + capitalizeFully(reason.description);
       }
-      if (reason.description === 'CJS EMPLOYEE') {
-        reasonsObject[reason.code] = reason.code + ' - CJS Employee';
+      if (reasonsObject[reason.code].includes('Cjs')) {
+        reasonsObject[reason.code] = reasonsObject[reason.code].replace('Cjs', 'CJS');
+      }
+      if (reasonsObject[reason.code].includes('(') && reasonsObject[reason.code].includes(')')) {
+        const insideParen = reasonsObject[reason.code].substring(
+          (reasonsObject[reason.code].indexOf('(') + 1), reasonsObject[reason.code].indexOf(')'));
+
+        reasonsObject[reason.code] = reasonsObject[reason.code].replace(insideParen, insideParen.toLowerCase());
       }
     });
 
     return reasonsObject;
-  };
-
-  module.exports.deferralReasons = {
-    '': 'Select a reason...',
-    A: 'A-Moved from the area',
-    B: 'B-Student',
-    C: 'C-Childcare',
-    F: 'F-Forces',
-    G: 'G-Financial hardship',
-    I: 'I-Ill',
-    J: 'J-Excused by bureau, too many jurors',
-    K: 'K-Criminal record',
-    L: 'L-Language difficulties',
-    M: 'M-Medical',
-    N: 'N-Mental health',
-    O: 'O-Other',
-    R: 'R-Religious reason',
-    S: 'S-Recently served',
-    T: 'T-Travelling difficulties',
-    W: 'W-Work related',
-    X: 'X-Carer',
-    Y: 'Y-Holiday',
-    Z: 'Z-Bereavement',
   };
 
   module.exports.buildSuggestedDate = function(date) {

@@ -8,7 +8,6 @@
     , dateFilter = require('../../../components/filters').dateFilter
     , makeDate = require('../../../components/filters').makeDate
     , { isCourtUser, isTeamLeader } = require('../../../components/auth/user-type')
-    , excusalCodesObj = require('../../../objects/excusal').object
     , activePoolsObj = require('../../../objects/deferral-mod').deferralPoolsObject
     , changeDeferralObject = require('../../../objects/deferral-mod').changeDeferralObject
     , changeDeferralValidator = require('../../../config/validation/deferral-mod').deferralDateAndReason
@@ -24,7 +23,7 @@
 
   module.exports.getEditDeferral = (app) => {
     return (req, res) => {
-      excusalCodesObj.get(require('request-promise'), app, req.session.authToken)
+      administrationCodes.get(require('request-promise'), app, req.session.authToken, 'EXCUSAL_AND_DEFERRAL')
         .then((data) => {
           app.logger.info('Retrieved excusal codes: ', {
             auth: req.session.authentication,
@@ -33,8 +32,8 @@
           });
 
           let trimmedData = data.filter((reasonObj) => {
-              return reasonObj.excusalCode !== 'D'
-                && reasonObj.excusalCode !== 'P';
+              return reasonObj.code !== 'D'
+                && reasonObj.code !== 'P';
             }),
             tmpErrors = _.clone(req.session.errors);
 
@@ -86,7 +85,7 @@
             deleteUrl: app.namedRoutes.build('juror-record.deferral-edit-delete.post', {
               jurorNumber: req.params['jurorNumber'],
             }),
-            excusalReasons: getExcusalReasons(trimmedData),
+            excusalReasons: trimmedData,
             selectedDeferralReason: selectedDeferralReason,
             selectedDeferralDate: selectedDeferralDate,
             minDate: dateFilter(moment(minDate).add(1, 'days'), null, 'DD/MM/YYYY'),
@@ -347,18 +346,6 @@
         });
     };
   };
-
-  function getExcusalReasons(arrCodes){
-    var sortedCodes = [];
-
-    if (arrCodes){
-      sortedCodes = arrCodes.sort(function(a, b) {
-        return a.excusalCode.localeCompare(b.excusalCode);
-      });
-    }
-
-    return sortedCodes;
-  }
 
   module.exports.getEditDetails = (app) => {
     return async(req, res) => {
