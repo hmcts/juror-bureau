@@ -29,7 +29,7 @@
         req.session.staffList = _.clone(staffList);
 
         return res.render('search/index', {
-          staffList: flattenStaffList(staffList),
+          staffList: staffList ? flattenStaffList(staffList) : [],
           searchParams: tmpFields,
           errors: {
             message: '',
@@ -89,20 +89,25 @@
         };
       }
 
-      const staffToSearch = req.session.staffList
-        .find((staff) => staff.name.toLowerCase() === req.body['officer_assigned'].toLowerCase());
+      const staffToSearch = null;
 
-      if (!staffToSearch && !!req.body['officer_assigned']) {
-        validatorResult = {
-          ...validatorResult,
-          officerAssigned: [
-            {
-              details: 'Select a staff from the list provided',
-              summary: 'Select a staff from the list provided',
-              summaryLink: 'officerAssigned',
-            },
-          ],
-        };
+      if (req.session.staffList) {
+
+        staffToSearch = req.session.staffList
+          .find((staff) => staff.name.toLowerCase() === req.body['officer_assigned'].toLowerCase());
+
+        if (!staffToSearch && !!req.body['officer_assigned']) {
+          validatorResult = {
+            ...validatorResult,
+            officerAssigned: [
+              {
+                details: 'Select a staff from the list provided',
+                summary: 'Select a staff from the list provided',
+                summaryLink: 'officerAssigned',
+              },
+            ],
+          };
+        }
       }
 
       if (typeof validatorResult !== 'undefined') {
