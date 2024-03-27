@@ -64,7 +64,7 @@ module.exports.SessionConfig = class SessionConfig {
   }
 
   _config(secret) {
-    const isDev = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'dev';
+    const isProduction = process.env.NODE_ENV === 'production';
 
     return {
       secret,
@@ -72,9 +72,8 @@ module.exports.SessionConfig = class SessionConfig {
       saveUninitialized: false,
       maxAge: this._sessionExpires,
       name : 'Juror-Bureau-Session',
-      // proxy: !isDev,
       cookie: {
-        secure: true,
+        secure: isProduction,
         httpOnly: true,
       },
     };
