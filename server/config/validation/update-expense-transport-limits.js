@@ -1,7 +1,7 @@
 ;(function(){
   'use strict';
 
-  const priceRegex = '^\d*\.?\d*$/';
+  const priceRegex = '^\\d{1,}\\.{0,1}\\d{0,}$';
 
   module.exports = function() {
     return {
