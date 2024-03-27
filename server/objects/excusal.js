@@ -94,7 +94,7 @@
             defaultArr = [{value: '', text: 'Select a reason...', selected: true}];
 
           sortedCodes.formatted = sortedCodes.original.reduce((prev, reason) => {
-            prev.push({ value: reason.excusalCode, text: `${reason.excusalCode} - ${reason.description}` });
+            prev.push({ value: reason.code, text: `${reason.code} - ${reason.description}` });
             return prev;
           }, defaultArr);
 

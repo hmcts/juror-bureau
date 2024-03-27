@@ -1011,7 +1011,7 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
           //return res.render('response/_modals/excusal.njk', {
           return res.render('response/process/excusal.njk', {
             excusalDetails: tmpFields,
-            excusalReasons: getExcusalReasons(data[0]),
+            excusalReasons: data[0],
             nameDetails: getNameDetails(data[1]),
             jurorNumber: req.params.id,
             version: data[1].version,
@@ -1036,15 +1036,12 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
           return res.render('index.njk');
         };
 
-      promiseArr.push(excusalObj.get(require('request-promise'), app, req.session.authToken));
+      promiseArr.push(administrationCodes.get(
+        require('request-promise'), app, req.session.authToken, 'EXCUSAL_AND_DEFERRAL'));
       promiseArr.push(responseDetailObj.get(require('request-promise'), app, req.session.authToken, req.params.id));
       Promise.all(promiseArr)
         .then(successCB)
         .catch(errorCB);
-
-      //excusalObj.get(require('request-promise'), app, req.session.authToken)
-      //  .then(successCB)
-      //  .catch(errorCB);
     };
   };
 
@@ -1184,7 +1181,7 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
           //return res.render('response/_modals/deferral.njk', {
           return res.render('response/process/deferral.njk', {
             deferralDetails: tmpFields,
-            deferralReasons: getExcusalReasons(data[0]),
+            deferralReasons: data[0],
             deferralDates: deferralDates,
             defaultDate: defaultDate,
             nameDetails: getNameDetails(data[1]),
@@ -1212,7 +1209,8 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
           return res.render('index.njk');
         };
 
-      promiseArr.push(excusalObj.get(require('request-promise'), app, req.session.authToken));
+      promiseArr.push(administrationCodes.get(
+        require('request-promise'), app, req.session.authToken, 'EXCUSAL_AND_DEFERRAL'));
       promiseArr.push(responseDetailObj.get(require('request-promise'), app, req.session.authToken, req.params.id));
       Promise.all(promiseArr)
         .then(successCB)
@@ -2576,18 +2574,6 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
 
     return returnDates;
 
-  }
-
-  function getExcusalReasons(arrCodes){
-    var sortedCodes = [];
-
-    if (arrCodes){
-      sortedCodes = arrCodes.sort(function(a, b) {
-        return a.excusalCode.localeCompare(b.excusalCode);
-      });
-    }
-
-    return sortedCodes;
   }
 
 })();

@@ -6,7 +6,6 @@
     , isBureauUser = require('../../components/auth/user-type').isBureauUser
     , paperReplyObj = require('../../objects/paper-reply').paperReplyObject
     , excusalObj = require('../../objects/excusal-mod').excusalObject
-    , excusalCodesObj = require('../../objects/excusal').object
     , deferralObj = require('../../objects/deferral-mod').deferralObject
     , preferredDatesObj = require('../../objects/deferral-preferred-dates').preferredDatesObj
     , deferralPoolsObj = require('../../objects/deferral-available-pools').object
@@ -266,7 +265,7 @@
           });
 
           //GET DEFFERAL CODES FROM BACKEND
-          excusalCodesObj.get(require('request-promise'), app, req.session.authToken)
+          administrationCodes.get(require('request-promise'), app, req.session.authToken, 'EXCUSAL_AND_DEFERRAL')
             .then((data) => {
               app.logger.info('Retrieved excusal codes: ', {
                 auth: req.session.authentication,
@@ -275,8 +274,8 @@
               });
 
               let trimmedReasons = data.filter((reasonObj) => {
-                return reasonObj.excusalCode !== 'D'
-                    && reasonObj.excusalCode !== 'P';
+                return reasonObj.code !== 'D'
+                    && reasonObj.code !== 'P';
               });
 
               delete req.session.errors;
@@ -320,7 +319,7 @@
               return res.render('summons-management/deferral', {
                 jurorNumber: routeParameters.id,
                 type: routeParameters.type,
-                deferralReasons: getExcusalReasons(trimmedReasons),
+                deferralReasons: trimmedReasons,
                 jurorDetails: req.session.jurorDetails,
                 cancelUrl,
                 backLinkUrl,
@@ -396,7 +395,7 @@
         , sentToDeferral = req.body.sendToDeferralMaintence ? req.body.sendToDeferralMaintence : null
         , successCB = function() {
 
-          let codeMessage = (code) => req.session.deferralReasons.filter((el) => el.excusalCode === code)[0].description
+          let codeMessage = (code) => req.session.deferralReasons.filter((el) => el.code === code)[0].description
             , deferralMessage = 'Deferral granted (' + codeMessage(req.body.deferralReason).toLowerCase() + ')';
 
           req.session.responseWasActioned = {
@@ -564,7 +563,7 @@
             cancelUrl: cancelUrl,
             backLinkUrl: backLinkUrl,
             excusalDetails: tmpFields,
-            excusalReasons: getExcusalReasons(data),
+            excusalReasons: data,
             errors: {
               title: 'Please check the form',
               count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -596,7 +595,7 @@
         cancelUrl = app.namedRoutes.build('response.detail.get', routeParameters);
       }
 
-      excusalCodesObj.get(require('request-promise'), app, req.session.authToken)
+      administrationCodes.get(require('request-promise'), app, req.session.authToken, 'EXCUSAL_AND_DEFERRAL')
         .then(successCB)
         .catch(errorCB);
     };
@@ -610,7 +609,7 @@
           type: req.params['type'],
         }
         , successCB = function() {
-          var codeMessage = (code) => req.session.excusalReasons.filter((el) => el.excusalCode === code)[0].description
+          var codeMessage = (code) => req.session.excusalReasons.filter((el) => el.code === code)[0].description
             , reason = {
               REFUSE: 'Excusal refused (' + codeMessage(req.body.excusalCode).toLowerCase() + ')',
               GRANT: 'Excusal granted (' + codeMessage(req.body.excusalCode).toLowerCase() + ')',
@@ -1237,18 +1236,6 @@
     }
 
     return resolvedStatus;
-  }
-
-  function getExcusalReasons(arrCodes){
-    var sortedCodes = [];
-
-    if (arrCodes){
-      sortedCodes = arrCodes.sort(function(a, b) {
-        return a.excusalCode.localeCompare(b.excusalCode);
-      });
-    }
-
-    return sortedCodes;
   }
 
   function createDeferralDate(deferredToDate) {
