@@ -74,6 +74,7 @@
     app.use(bodyParser.json());
     app.use(methodOverride());
 
+    app.set('trust proxy', 1);
     new SessionConfig().start(app);
 
     // CSRF Protection
