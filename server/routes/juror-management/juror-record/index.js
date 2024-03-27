@@ -6,6 +6,8 @@
     , attendanceTimeController = require('../attendance/change-times/change-times.controller')
     , attendanceDateController = require('../attendance/change-attendance-date/change-attendance-date.controller')
     , nonAttendanceDateController = require('../expenses/non-attendance-day/non-attendance-day.controller')
+    , addAttendanceDateController = require('../attendance/add-attendance-date/add-attendance-date.controller')
+    , changeJurorAttendanceController = require('../juror-record/change-attendance/change-attendance.controller')
     , expensesController = require('../expenses/expenses.controller');
 
   module.exports = function(app) {
@@ -55,6 +57,26 @@
       'juror-record.attendance.change-attendance-date.post',
       auth.verify,
       attendanceDateController.postChangeAttendanceDate(app)
+    );
+    app.get('/juror-management/record/:jurorNumber/add-attendance-date',
+      'juror-record.attendance.add-attendance-date.get',
+      auth.verify,
+      addAttendanceDateController.getAddAttendanceDate(app)
+    );
+    app.post('/juror-management/record/:jurorNumber/add-attendance-date',
+      'juror-record.attendance.add-attendance-date.post',
+      auth.verify,
+      addAttendanceDateController.postAddAttendanceDate(app)
+    );
+    app.get('/juror-management/record/:jurorNumber/change-juror-attendance',
+      'juror-record.attendance.change-attendance-date.get',
+      auth.verify,
+      changeJurorAttendanceController.getChangeAttendance(app)
+    );
+    app.post('/juror-management/record/:jurorNumber/change-juror-attendance',
+      'juror-record.attendance.change-attendance-date.post',
+      auth.verify,
+      changeJurorAttendanceController.postChangeAttendance(app)
     );
     app.get('/juror-management/record/:jurorNumber/:poolNumber/non-attendance-day',
       'juror-record.attendance.non-attendance-day.get',

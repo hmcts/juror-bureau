@@ -1,0 +1,144 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "custom-components/time-input-12-hour/macro.njk" import timeInput12Hour %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - Add an attendance day{% endblock %}
+{% block page_identifier %}juror record - attendances - add an attendance day{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {% if bannerMessage %}
+    {{ mojBanner({
+      type: "success",
+      text: bannerMessage,
+      iconFallbackText: "Success"
+    }) }}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+
+    {% set attendanceDayError = undefined %}
+    {% if errors.items["attendanceDay"] %}
+      {% set attendanceDayError = errors
+        .items['attendanceDay'][0]
+        .details %}
+    {% endif %}
+
+    <form action="{{ postUrl }}" method="post" id="attendanceDate">
+
+      <div class="govuk-grid-column-two-thirds">
+
+        <h1 class="govuk-heading-l">Add an attendance day</h1>
+
+        {{ datePicker({
+          id: "attendanceDay",
+          label: {
+            text: "Enter attendance date"
+          },
+          hint: "Use dd/mm/yyyy format. For example, 31/01/2024.",
+          dateMin: "" | makeDate | dateFilter(null, "DD/MM/YYYY"),
+          dateValue: tmpFields.attendanceDay,
+          dateError: attendanceDayError
+        }) }}
+
+        {{ timeInput12Hour({
+          id: "checkInTime",
+          name: "checkInTime",
+          fieldset: {
+            legend: {
+              text: "Enter check in time",
+              classes: "govuk-fieldset__legend--s"
+            }
+          },
+          items: {
+            hour: {
+              value: checkInTime.hour,
+              attributes: {
+                minLength: "1",
+                maxLength: "2"
+              }
+            },
+            minute: {
+              value: checkInTime.minute,
+              attributes: {
+                minLength: "1",
+                maxLength: "2"
+              }
+            },
+            period: {
+              value: checkInTime.period
+            }
+          },
+          errors: errors.items
+        }) }}
+
+        {{ timeInput12Hour({
+          id: "checkOutTime",
+          name: "checkOutTime",
+          fieldset: {
+            legend: {
+              text: "Enter check out time",
+              classes: "govuk-fieldset__legend--s"
+            }
+          },
+          items: {
+            hour: {
+              value: checkOutTime.hour,
+              attributes: {
+                minLength: "1",
+                maxLength: "2"
+              }
+            },
+            minute: {
+              value: checkOutTime.minute,
+              attributes: {
+                minLength: "1",
+                maxLength: "2"
+              }
+            },
+            period: {
+              value: checkOutTime.period
+            }
+          },
+          errors: errors.items
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Add attendance day",
+            attributes: {
+              id: "addAttendanceDayButton"
+            }
+          }) }}
+          <a class="govuk-link" id="cancelAnchor" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+      </div>
+      
+      {{ csrfProtection(csrftoken) }}
+
+    </form>
+
+  </div>
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      const datePickers = []
+        .slice
+        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
+      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
+    });
+  </script>
+{% endblock %}
