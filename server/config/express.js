@@ -6,7 +6,7 @@
   'use strict';
 
   var express = require('express')
-    , nunjucks = require('express-nunjucks')
+    , nunjucks = require('express-nunjucks').default
     , njk = require('nunjucks')
     , csrf = require('csurf')
     , helmet = require('helmet')

@@ -26,7 +26,11 @@
     let match = false;
     let courtCode;
 
+    console.log('Initial payload:', body);
+
     courtCode = body.courtNameOrLocation.toString().match(/\d+/g);
+
+    console.log('Matched court code:', courtCode);
 
     return new Promise(function(resolve, reject) {
       courts.forEach(function(court) {
@@ -1079,8 +1083,8 @@
       const reasons = data.unavailableForMove.reduce((accumulator, currentValue) => {
         let jurorDetails = {
           jurorNumber: currentValue.jurorNumber,
-          firstName: sessionDetails[currentValue.jurorNumber].firstName,
-          lastName: sessionDetails[currentValue.jurorNumber].lastname,
+          firstName: currentValue.firstName || currentValue['first_name'],
+          lastName: currentValue.lastname || currentValue['last_name'],
         };
 
         if (currentValue.failureReason.includes('maximum age')){
@@ -1144,7 +1148,7 @@
     'deferral-refused': 'DEFERRAL_REFUSED',
     'excusal-granted': 'EXCUSAL_GRANTED',
     'excusal-refused': 'EXCUSAL_REFUSED',
-    'postponement': 'POSTPONEMENT',
+    'postponement': 'POSTPONED',
     'withdrawal': 'WITHDRAWAL',
     'show-cause': 'SHOW_CAUSE',
   };
