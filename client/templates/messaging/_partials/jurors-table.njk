@@ -129,7 +129,7 @@
 <div id="messaging-jurors-table-wrapper" class="govuk-grid-column-full govuk-body">
 
 
-  <div class="govuk-caption-m govuk-!-margin-bottom-3"> <span id="checkedJurors">{{ checkedJurors | length }}</span> of selected <span id="totalJurors">{{ totalJurors }}</span> </div>
+  <div class="govuk-caption-m govuk-!-margin-bottom-3"> <span id="checkedJurors">{{ checkedJurors | length }}</span> of <span id="totalJurors">{{ totalJurors }}</span> selected</div>
 
   {% set _allChecked = ' checked' if checkedJurors | length === totalJurors else '' %}
 
