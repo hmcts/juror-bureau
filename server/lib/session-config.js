@@ -72,9 +72,9 @@ module.exports.SessionConfig = class SessionConfig {
       saveUninitialized: false,
       maxAge: this._sessionExpires,
       name : 'Juror-Bureau-Session',
-      proxy: !isDev,
+      // proxy: !isDev,
       cookie: {
-        secure: !isDev,
+        secure: true,
         httpOnly: true,
       },
     };
