@@ -71,12 +71,12 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
                 additionalChangeDetails.ageIneligible === false
               ),
               cjsEmployment: (
-                (data.cjsEmployments.length > 0) &&
+                (data.cjsEmployments && data.cjsEmployments.length > 0) &&
                 thirdPartyDetails.reason !== 'Deceased' &&
                 additionalChangeDetails.ageIneligible === false
               ),
               adjustments: (
-                (data.specialNeedsArrangements !== null || data.specialNeeds.length > 0) &&
+                (data.specialNeedsArrangements || (data.specialNeeds && data.specialNeeds.length > 0)) &&
                 thirdPartyDetails.reason !== 'Deceased' &&
                 additionalChangeDetails.ageIneligible === false
               ),
@@ -106,7 +106,7 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
             },
             poolNumber: data.poolNumber,
             replyType: 'digital',
-            specialNeeds: data.specialNeeds.length ? [{
+            specialNeeds: data.specialNeeds && data.specialNeeds.length > 0 ? [{
               assistanceType: modUtils.adjustmentsReasons[data.specialNeeds[0].code],
               assistanceTypeDetails: data.specialNeedsArrangements || data.specialNeeds[0].detail,
             }] : [],
@@ -413,8 +413,8 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
         courtObj.getCatchmentStatus(require('request-promise'), app, req.session.authToken, req.params.id));
 
       executeAllPromises(promiseArr)
-        .then(successCB);
-
+        .then(successCB)
+        .catch(errorCB);
 
     };
   };
