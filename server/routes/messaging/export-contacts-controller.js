@@ -92,7 +92,14 @@
         return res.redirect(app.namedRoutes.build('messaging.export-contacts.get'));
       }
 
-      return res.render('messaging/export-contact-details/jurors-list.njk');
+      return res.render('messaging/export-contact-details/jurors-list.njk', {
+        origin: 'EXPORT_DETAILS',
+        totalJurors: 20,
+        backLinkUrl: {
+          built: true,
+          url: app.namedRoutes.build('messaging.export-contacts.get'),
+        },
+      });
     };
   };
 

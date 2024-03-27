@@ -35,39 +35,7 @@
 
       <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible govuk-!-margin-top-0 govuk-!-margin-bottom-6">
 
-      {% if totalJurors === 0 %}
-        <h2 class="govuk-heading-m govuk-!-margin-bottom-6">No matching results</h2>
-      {% elif totalJurors > 500 %}
-        <h2 class="govuk-heading-m govuk-!-margin-bottom-6">There are more than 500 results. Refine your search.</h2>
-      {% else %}
-        <div class="govuk-button-group govuk-!-margin-bottom-0">
-          {{ govukButton({
-            text: "Show filter",
-            classes: "govuk-button--secondary",
-            attributes: {
-              id: "messaging-jurors-filter-button"
-            }
-          }) }}
-          {{ govukButton({
-            text: "Send message",
-            attributes: {
-              id: "sendMessageButton",
-              form: "jurorSelectionForm",
-              formAction: submitUrl
-            }
-          }) }}
-        </div>
-
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-one-quarter">
-            {% include "./_partials/jurors-filters.njk" %}
-          </div>
-          <form id="jurorSelectionForm" method="POST">
-            {% include "./_partials/jurors-table.njk" %}
-            <input type="hidden" id="csrfToken" name="_csrf" value="{{ csrftoken }}"/>
-          </form>
-        </div>
-      {% endif %}
+      {% include "./_partials/juror-list-results.njk" %}
 
     </div>
   </div>
