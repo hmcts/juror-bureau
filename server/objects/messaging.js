@@ -11,120 +11,121 @@
         'Content-Type': 'application/vnd.api+json',
       },
       json: true,
+    }
+    , rp = require('request-promise');
+
+  const messageTemplateDAO = {
+    resource: 'moj/messages/view',
+
+    get: function(app, jwtToken, messageType, locCode) {
+      const reqOptions = _.clone(options);
+
+      reqOptions.headers.Authorization = jwtToken;
+      reqOptions.method = 'GET';
+      reqOptions.uri = urljoin(
+        reqOptions.uri,
+        this.resource,
+        messageType,
+        locCode
+      );
+
+      app.logger.debug('Sending request to API: ', {
+        uri: reqOptions.uri,
+        headers: reqOptions.headers,
+        method: reqOptions.method,
+      });
+
+      return rp(reqOptions);
     },
+  };
 
-    messageTemplateDAO = {
-      resource: 'moj/messages/view',
+  const populatedMessageDAO = {
+    resource: 'moj/messages/view/{messageType}/{locCode}/populated',
 
-      get: function(rp, app, jwtToken, messageType, locCode) {
-        const reqOptions = _.clone(options);
+    post: function(app, jwtToken, messageType, locCode, payload) {
+      const reqOptions = _.clone(options);
 
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.method = 'GET';
-        reqOptions.uri = urljoin(
-          reqOptions.uri,
-          this.resource,
-          messageType,
-          locCode
-        );
+      reqOptions.headers.Authorization = jwtToken;
+      reqOptions.method = 'POST';
+      reqOptions.uri = urljoin(
+        reqOptions.uri,
+        this.resource.replace('{messageType}', messageType).replace('{locCode}', locCode),
+      );
+      reqOptions.body = payload;
 
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-        });
+      app.logger.debug('Sending request to API: ', {
+        uri: reqOptions.uri,
+        headers: reqOptions.headers,
+        method: reqOptions.method,
+      });
 
-        return rp(reqOptions);
-      },
+      return rp(reqOptions);
     },
+  };
 
-    populatedMessageDAO = {
-      resource: 'moj/messages/view/{messageType}/{locCode}/populated',
+  const jurorSearchDAO = {
+    resource: 'moj/messages/search',
 
-      post: function(rp, app, jwtToken, messageType, locCode, payload) {
-        const reqOptions = _.clone(options);
+    post: function(app, jwtToken, locCode, opts, simpleResponse) {
+      const reqOptions = _.clone(options);
+      let tmpBody = _.clone(opts);
 
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.method = 'POST';
-        reqOptions.uri = urljoin(
-          reqOptions.uri,
-          this.resource.replace('{messageType}', messageType).replace('{locCode}', locCode),
-        );
-        reqOptions.body = payload;
+      reqOptions.headers.Authorization = jwtToken;
+      reqOptions.method = 'POST';
+      reqOptions.uri = urljoin(
+        reqOptions.uri,
+        this.resource,
+        locCode,
+      );
+      if (simpleResponse) {
+        reqOptions.uri = urljoin(reqOptions.uri, '?simple_response=true');
+      }
 
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-        });
+      tmpBody = _.mapKeys(tmpBody, (__, key) => _.snakeCase(key));
 
-        return rp(reqOptions);
-      },
+      reqOptions.body = tmpBody;
+
+      app.logger.debug('Sending request to API: ', {
+        uri: reqOptions.uri,
+        headers: reqOptions.headers,
+        method: reqOptions.method,
+        body: reqOptions.body,
+      });
+
+      return rp(reqOptions);
     },
+  };
 
-    jurorSearchDAO = {
-      resource: 'moj/messages/search',
+  const sendMessage = {
+    resource: 'moj/messages/send',
 
-      post: function(rp, app, jwtToken, locCode, opts, simpleResponse) {
-        const reqOptions = _.clone(options);
-        let tmpBody = _.clone(opts);
+    post: function(app, jwtToken, messageType, locCode, body) {
+      const reqOptions = _.clone(options);
+      let tmpBody = _.clone(body);
 
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.method = 'POST';
-        reqOptions.uri = urljoin(
-          reqOptions.uri,
-          this.resource,
-          locCode,
-        );
-        if (simpleResponse) {
-          reqOptions.uri = urljoin(reqOptions.uri, '?simple_response=true');
-        }
+      reqOptions.headers.Authorization = jwtToken;
+      reqOptions.method = 'POST';
+      reqOptions.uri = urljoin(
+        reqOptions.uri,
+        this.resource,
+        messageType,
+        locCode,
+      );
 
-        tmpBody = _.mapKeys(tmpBody, (__, key) => _.snakeCase(key));
+      tmpBody = _.mapKeys(tmpBody, (__, key) => _.snakeCase(key));
 
-        reqOptions.body = tmpBody;
+      reqOptions.body = tmpBody;
 
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          body: reqOptions.body,
-        });
+      app.logger.debug('Sending request to API: ', {
+        uri: reqOptions.uri,
+        headers: reqOptions.headers,
+        method: reqOptions.method,
+        body: reqOptions.body,
+      });
 
-        return rp(reqOptions);
-      },
+      return rp(reqOptions);
     },
-
-    sendMessage = {
-      resource: 'moj/messages/send',
-
-      post: function(rp, app, jwtToken, messageType, locCode, body) {
-        const reqOptions = _.clone(options);
-        let tmpBody = _.clone(body);
-
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.method = 'POST';
-        reqOptions.uri = urljoin(
-          reqOptions.uri,
-          this.resource,
-          messageType,
-          locCode,
-        );
-
-        tmpBody = _.mapKeys(tmpBody, (__, key) => _.snakeCase(key));
-
-        reqOptions.body = tmpBody;
-
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          body: reqOptions.body,
-        });
-
-        return rp(reqOptions);
-      },
-    };
+  };
 
   module.exports.messageTemplateDAO = messageTemplateDAO;
   module.exports.populatedMessageDAO = populatedMessageDAO;

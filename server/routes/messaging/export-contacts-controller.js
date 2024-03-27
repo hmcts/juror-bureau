@@ -9,6 +9,7 @@
   } = require('../../config/validation/export-contact-details');
   const { fetchAllCourts } = require('../../objects/request-pool');
   const { transformCourtNames } = require('../../lib/mod-utils');
+  const { jurorSearchDAO } = require('../../objects/messaging');
 
   module.exports.getExportContacts = function(app) {
     return async function(req, res) {
@@ -77,7 +78,7 @@
   };
 
   module.exports.getJurorsList = function(app) {
-    return function(req, res) {
+    return async function(req, res) {
       const {
         search_by: searchBy,
         juror_number: jurorNumber,
@@ -92,9 +93,30 @@
         return res.redirect(app.namedRoutes.build('messaging.export-contacts.get'));
       }
 
+      const { authToken, locCode } = req.session;
+      const payload = {
+        'pool_number': '415240501',
+        'pageLimit': 25,
+        'pageNumber': 1,
+      };
+      let jurorsList;
+
+      debugger;
+
+      try {
+        jurorsList = await jurorSearchDAO.post(app, authToken, locCode, payload, true);
+
+        debugger;
+      } catch (err) {
+        console.log(err);
+        return; // do not continue on the error
+      }
+
+      debugger;
+
       return res.render('messaging/export-contact-details/jurors-list.njk', {
         origin: 'EXPORT_DETAILS',
-        totalJurors: 20,
+        totalJurors: jurorsList.total_items,
         backLinkUrl: {
           built: true,
           url: app.namedRoutes.build('messaging.export-contacts.get'),
