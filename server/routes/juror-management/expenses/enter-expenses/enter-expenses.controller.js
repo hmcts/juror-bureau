@@ -183,14 +183,6 @@
         }) + `?date=${date}&page=${page}`);
       }
 
-      if (parseFloat(req.body.total) < 0){
-        req.session.tmpBody = req.body;
-        return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.total-less-zero.get', {
-          jurorNumber,
-          poolNumber,
-        }));
-      }
-
       const data = buildDataPayload(req.body, nonAttendanceDay);
 
       data['date_of_expense'] = date;
@@ -249,6 +241,30 @@
 
       // clear any data related to the edit expense travel over limit
       delete req.session.editExpenseTravelOverLimit;
+
+      try {
+        const payload = {
+          'juror_number': jurorNumber,
+          'pool_number': poolNumber,
+          'expense_list': [{ ...data }],
+        };
+
+        delete payload.expense_list[0].pool_number;
+
+        await postRecalculateSummaryTotalsDAO.post(app, req, payload);
+      } catch (err) {
+        if (err.error.code === 'EXPENSES_CANNOT_BE_LESS_THAN_ZERO') {
+          req.session.tmpBody = {
+            ...req.body,
+            date,
+            page,
+          };
+          return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.total-less-zero.get', {
+            jurorNumber,
+            poolNumber,
+          }));
+        }
+      }
 
       try {
         const response = await postDraftExpenseDAO.post(app, req, jurorNumber, data, nonAttendanceDay);
@@ -420,15 +436,18 @@
 
   module.exports.getTotalLessThanZero = (app) => {
     return function(req, res) {
+      const { jurorNumber, poolNumber } = req.params;
+      const { date, page } = req.session.tmpBody;
+
       return res.render('expenses/total-less-than-zero.njk', {
         defaultExpensesUrl: app.namedRoutes.build('juror-management.default-expenses.get', {
-          jurorNumber: req.params.jurorNumber,
-          poolNumber: req.params.poolNumber,
+          jurorNumber,
+          poolNumber,
         }),
         cancelUrl: app.namedRoutes.build('juror-management.enter-expenses.get', {
-          jurorNumber: req.params.jurorNumber,
-          poolNumber: req.params.poolNumber,
-        }),
+          jurorNumber,
+          poolNumber,
+        }) + `?date=${date}&page=${page}`,
       });
     };
   };
