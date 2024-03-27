@@ -16,7 +16,7 @@
     },
     {
       text: "Judges",
-      href: '#',
+      href: url('administration.judges.get'),
       active: nav === "judges",
       attributes: {
         id: "judgesAnchor"
@@ -32,7 +32,7 @@
     },
     {
       text: "Court details",
-      href: '#',
+      href: url('administration.court-details.get', { locationCode: authentication.locCode }),
       active: nav === "courtDetails",
       attributes: {
         id: "courtDetailsAnchor"
@@ -40,7 +40,7 @@
     },
     {
       text: "Non-sitting days",
-      href: '#',
+      href: url('administration.non-sitting-days.get'),
       active: nav === "nonSittingDays",
       attributes: {
         id: "nonSittingDaysAnchor"
