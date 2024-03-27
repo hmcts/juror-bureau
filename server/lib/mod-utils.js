@@ -1077,7 +1077,7 @@
     return `${formattedHours}:${formattedMinutes}`;
   };
 
-  module.exports.buildMovementProblems = function(data, sessionDetails) {
+  module.exports.buildMovementProblems = function(data) {
     if (data.unavailableForMove.length){
       let unavailableReasons = {ageIneligible: [], invalidStatus: [], noActiveRecord: []};
       const reasons = data.unavailableForMove.reduce((accumulator, currentValue) => {
