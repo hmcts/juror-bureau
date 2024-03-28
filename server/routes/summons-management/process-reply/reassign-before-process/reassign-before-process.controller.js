@@ -10,7 +10,7 @@
     selectedActivePoolValidator = require('../../../../config/validation/pool-management.js')
       .deferralMaintenance.selectedActivePool,
     requestCourtsObj = require('../../../../objects/request-pool').fetchCourts,
-    excusalCodesObj = require('../../../../objects/excusal.js').object,
+    { systemCodesDAO } = require('../../../../objects/administration'),
     excusalObj = require('../../../../objects/excusal-mod.js').excusalObject,
     excusalValidator = require('../../../../config/validation/excusal-mod.js'),
     actionPaths = {
@@ -375,8 +375,7 @@
     return async(req, res) => {
       try {
         if (!req.session.excusalReasons) {
-          req.session.excusalReasons = await excusalCodesObj.get(require('request-promise'), app,
-            req.session.authToken);
+          req.session.excusalReasons = await systemCodesDAO.get(app, req, 'EXCUSAL_AND_DEFERRAL');
 
           app.logger.info('Retrieved excusal codes: ', {
             auth: req.session.authentication,
@@ -417,7 +416,7 @@
             }),
           },
           excusalDetails: tmpFields,
-          excusalReasons: getExcusalReasons(req.session.excusalReasons),
+          excusalReasons: req.session.excusalReasons,
           errors: {
             title: 'Please check the form',
             count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -507,15 +506,4 @@
     };
   };
 
-  function getExcusalReasons(arrCodes){
-    var sortedCodes = [];
-
-    if (arrCodes){
-      sortedCodes = arrCodes.sort(function(a, b) {
-        return a.excusalCode.localeCompare(b.excusalCode);
-      });
-    }
-
-    return sortedCodes;
-  }
 })();
