@@ -5,7 +5,7 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
 
   const _ = require('lodash');
   const { courtRatesFromLocation } = require('../../../objects/court-location');
-  const { courtsDAO } = require('../../../objects/administration');
+  const { transportRates } = require('../../../objects/administration');
   const { validate } = require('validate.js');
   const updateExpenseLimits = require('../../../config/validation/update-expense-transport-limits');
 
@@ -21,8 +21,8 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
       const locCode = req.session.authentication.locCode;
 
       try {
-        const  {response, headers } = await courtRatesFromLocation.get(
-          require('request-promise'), app, req, locCode);
+        const  {response, headers } = await transportRates.get(
+          app, req, locCode);
 
         replaceAllObjKeys(response, _.camelCase);
 
@@ -55,6 +55,8 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
     return async function(req, res) {
       const validatorResult = validate(req.body, updateExpenseLimits());
 
+      const locCode = req.session.authentication.locCode;
+
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
@@ -63,8 +65,7 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
       }
 
       try {
-        await courtRatesFromLocation.get(
-          require('request-promise'), app, req, req.session.authentication.locCode, req.session.expenseRatesEtag);
+        await transportRates.get(app, req, locCode, req.session.expenseRatesEtag);
 
         req.session.errors = {
           expenseRates: [{
@@ -99,7 +100,7 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
           'taxi_soft_limit': req.body.taxiDailyLimit,
         };
 
-        await courtsDAO.putRates(app, req, req.session.authentication.locCode, body);
+        await transportRates.put(app, req, req.session.authentication.locCode, body);
 
         return res.redirect(app.namedRoutes.build('administration.expense-limits-court.get'));
       } catch (err) {

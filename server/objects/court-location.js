@@ -32,37 +32,8 @@
 
         return rp(reqOptions);
       },
-    },
-
-    courtRatesFromLocation = {
-      get: function(rp, app, req, locCode, etag = null) {
-        const payload = {
-          uri: urljoin(config.apiEndpoint, 'moj/court-location', locCode, 'rates'),
-          method: 'GET',
-          headers: {
-            'User-Agent': 'Request-Promise',
-            'Content-Type': 'application/vnd.api+json',
-            Authorization: req.session.authToken,
-          },
-          json: true,
-        };
-
-        if (etag) {
-          payload.headers['If-None-Match'] = `${etag}`;
-        }
-
-        app.logger.info('Sending request to API: ', payload);
-
-        payload.transform = (response, incomingRequest) => {
-          const headers = _.cloneDeep(incomingRequest.headers);
-
-          return { response, headers };
-        };
-
-        return rp(payload);
-      },
     };
 
   module.exports.courtLocationsFromPostcodeObj = courtLocationsFromPostcode;
-  module.exports.courtRatesFromLocation = courtRatesFromLocation;
+
 })();
