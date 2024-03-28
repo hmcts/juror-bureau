@@ -134,6 +134,12 @@
       exportController.getJurorsList(app),
     );
 
+    app.post('/messaging/export-contact-details/jurors',
+      'messaging.export-contacts.jurors.post',
+      auth.verify,
+      exportController.postJurorsList(app),
+    );
+
     app.get('/messaging/export-contact-details/details-to-export',
       'messaging.export-contacts.details-to-export.get',
       auth.verify,

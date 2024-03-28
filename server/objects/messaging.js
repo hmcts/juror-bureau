@@ -3,7 +3,6 @@
 
   const _ = require('lodash')
     , config = require('../config/environment')()
-    , urljoin = require('url-join')
     , options = {
       uri: config.apiEndpoint,
       headers: {
@@ -11,88 +10,73 @@
         'Content-Type': 'application/vnd.api+json',
       },
       json: true,
-    }
-    , rp = require('request-promise');
+    };
 
-  const messageTemplateDAO = {
-    resource: 'moj/messages/view',
+  const urljoin = require('url-join');
+  const rp = require('request-promise');
 
-    get: function(app, jwtToken, messageType, locCode) {
-      const reqOptions = _.clone(options);
+  module.exports.messageTemplateDAO = {
+    get: function(app, req, messageType, locCode) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/messages/view', messageType, locCode),
+        method: 'GET',
+        headers: {
+          Authorization: req.session.authToken,
+          'Content-Type': 'application/vnd.api+json',
+        },
+        json: true,
+      };
 
-      reqOptions.headers.Authorization = jwtToken;
-      reqOptions.method = 'GET';
-      reqOptions.uri = urljoin(
-        reqOptions.uri,
-        this.resource,
-        messageType,
-        locCode
-      );
+      app.logger.info('Sending request to API: ', payload);
 
-      app.logger.debug('Sending request to API: ', {
-        uri: reqOptions.uri,
-        headers: reqOptions.headers,
-        method: reqOptions.method,
-      });
-
-      return rp(reqOptions);
+      return rp(payload);
     },
   };
 
-  const populatedMessageDAO = {
-    resource: 'moj/messages/view/{messageType}/{locCode}/populated',
+  module.exports.populatedMessageDAO = {
+    post: function(app, req, messageType, locCode, body) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint,
+          'moj/messages/view/{messageType}/{locCode}/populated'
+            .replace('{messageType}', messageType)
+            .replace('{locCode}', locCode)
+        ),
+        method: 'POST',
+        headers: {
+          Authorization: req.session.authToken,
+          'Content-Type': 'application/vnd.api+json',
+        },
+        json: true,
+        body,
+      };
 
-    post: function(app, jwtToken, messageType, locCode, payload) {
-      const reqOptions = _.clone(options);
+      app.logger.info('Sending request to API: ', payload);
 
-      reqOptions.headers.Authorization = jwtToken;
-      reqOptions.method = 'POST';
-      reqOptions.uri = urljoin(
-        reqOptions.uri,
-        this.resource.replace('{messageType}', messageType).replace('{locCode}', locCode),
-      );
-      reqOptions.body = payload;
-
-      app.logger.debug('Sending request to API: ', {
-        uri: reqOptions.uri,
-        headers: reqOptions.headers,
-        method: reqOptions.method,
-      });
-
-      return rp(reqOptions);
+      return rp(payload);
     },
   };
 
-  const jurorSearchDAO = {
-    resource: 'moj/messages/search',
+  module.exports.jurorSearchDAO = {
+    post: function(app, req, locCode, body, simpleResponse) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/messages/search', locCode),
+        method: 'POST',
+        headers: {
+          Authorization: req.session.authToken,
+          'Content-Type': 'application/vnd.api+json',
+        },
+        json: true,
+      };
 
-    post: function(app, jwtToken, locCode, opts, simpleResponse) {
-      const reqOptions = _.clone(options);
-      let tmpBody = _.clone(opts);
-
-      reqOptions.headers.Authorization = jwtToken;
-      reqOptions.method = 'POST';
-      reqOptions.uri = urljoin(
-        reqOptions.uri,
-        this.resource,
-        locCode,
-      );
       if (simpleResponse) {
-        reqOptions.uri = urljoin(reqOptions.uri, '?simple_response=true');
+        payload.uri = urljoin(payload.uri, '?simple_response=true');
       }
 
-      tmpBody = _.mapKeys(tmpBody, (__, key) => _.snakeCase(key));
+      payload.body = _.mapKeys(body, (__, key) => _.snakeCase(key));
 
-      reqOptions.body = tmpBody;
+      app.logger.info('Sending request to API: ', payload);
 
-      app.logger.debug('Sending request to API: ', {
-        uri: reqOptions.uri,
-        headers: reqOptions.headers,
-        method: reqOptions.method,
-        body: reqOptions.body,
-      });
-
-      return rp(reqOptions);
+      return rp(payload);
     },
   };
 
@@ -127,8 +111,25 @@
     },
   };
 
-  module.exports.messageTemplateDAO = messageTemplateDAO;
-  module.exports.populatedMessageDAO = populatedMessageDAO;
-  module.exports.jurorSearchDAO = jurorSearchDAO;
+  module.exports.downloadCSVDAO = {
+    post: function(app, req, locCode, body) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, 'moj/messages/csv', locCode),
+        method: 'POST',
+        headers: {
+          Authorization: req.session.authToken,
+          'Content-Type': 'application/json',
+          'Accept': 'text/csv',
+        },
+        json: true,
+        body,
+      };
+
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
+    },
+  };
+
   module.exports.sendMessage = sendMessage;
 })();
