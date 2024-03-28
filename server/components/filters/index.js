@@ -476,6 +476,10 @@
       const mins = parseInt(time.split(':')[1]);
 
       return `${hours > 0 ? hours + (hours > 1 ? ' hours ' : ' hour ') : ''}${mins > 0 ? mins + (mins > 1 ? ' minutes' : ' minute') : ''}`
+    },
+
+    transformCourtName: function(courtObj) {
+      return _.startCase(_.toLower(courtObj.locationName)).trim().replace(',', '') + ' (' + courtObj.locationCode + ')';
     }
   };
 

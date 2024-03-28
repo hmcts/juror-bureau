@@ -51,43 +51,6 @@
       }];
     };
 
-    const results = attributes.selectedJurors.reduce((prev, curr, index) => {
-      const date = attributes.jurorDates[index];
-
-      const oldAttendanceDate = moment();
-
-      oldAttendanceDate.date(date[2]);
-      oldAttendanceDate.month(date[1] - 1);
-      oldAttendanceDate.year(date[0]);
-
-      if (
-        modUtils.dateDifference(
-          dateInitial.dateAsDate,
-          oldAttendanceDate,
-          'days'
-        ) < 0
-      ) {
-        prev.push([curr, oldAttendanceDate]);
-
-        return prev;
-      }
-
-      return prev;
-    }, []);
-
-    if (results.length > 0) {
-      const message = {
-        summary: 'You cannot enter a date that’s earlier than the original service start date' 
-      };
-
-      results.forEach(([juror, date]) => {
-        tmpErrors.push({
-          ...message,
-          details: 'You cannot enter a date that’s earlier than the original service start date'
-        });
-      });
-    }
-
     return tmpErrors.length === 0
       ? null
       : tmpErrors;

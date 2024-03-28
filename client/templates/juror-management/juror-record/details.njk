@@ -35,17 +35,15 @@
     {% set emailAddress = "<span class=\"mod-contact-third-party\">Contact Third Party</span>" %}
   {% endif %}
 
-  {% if juror.replyProcessingStatus !== 'To Do' %}
-    {% set editDetailsLink %}
-      {{ url('juror-record.details-edit.get', { jurorNumber: juror.commonDetails.jurorNumber }) }}
-    {% endset %}
-  {% endif %}
+  {% set editDetailsLink %}
+    {{ url('juror-record.details-edit.get', { jurorNumber: juror.commonDetails.jurorNumber }) }}
+  {% endset %}
 
   {% include "../_partials/heading.njk" %}
 
   <div class="mod-juror-record__title govuk-body">
     <h2 id="jurorDetailsLabel" class="govuk-heading-m">Juror details</h2>
-    {% if (authentication.owner === juror.commonDetails.owner) and (editDetailsLink) %}
+    {% if authentication.owner === juror.commonDetails.owner %}
       <a id="changeJurorDetailsAnchor" href="{{ editDetailsLink }}" class="govuk-link">Add or change</a>
     {% endif %}
   </div>
@@ -145,6 +143,6 @@
   </div>
 
   {% if juror.thirdParty %}
-    {% include "./_partials/third-party-details.njk" %}
+    {% include "../_partials/third-party-details.njk" %}
   {% endif %}
 {% endblock %}

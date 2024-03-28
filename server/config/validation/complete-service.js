@@ -53,22 +53,24 @@
     const results = attributes.selectedJurors.reduce((prev, curr, index) => {
       const date = attributes.jurorDates[index];
 
-      const serviceDate = moment();
+      if (date) {
+        const serviceDate = moment();
 
-      serviceDate.date(date[2]);
-      serviceDate.month(date[1] - 1);
-      serviceDate.year(date[0]);
+        serviceDate.date(date[2]);
+        serviceDate.month(date[1] - 1);
+        serviceDate.year(date[0]);
 
-      if (
-        modUtils.dateDifference(
-          dateInitial.dateAsDate,
-          serviceDate,
-          'days'
-        ) < 0
-      ) {
-        prev.push([curr, serviceDate]);
+        if (
+          modUtils.dateDifference(
+            dateInitial.dateAsDate,
+            serviceDate,
+            'days'
+          ) < 0
+        ) {
+          prev.push([curr, serviceDate]);
 
-        return prev;
+          return prev;
+        }
       }
 
       return prev;

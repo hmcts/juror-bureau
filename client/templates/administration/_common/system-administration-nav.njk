@@ -8,7 +8,7 @@
   items: [
     {
       text: "Users",
-      href: '#',
+      href: url('administration.users.get'),
       active: nav === "users",
       attributes: {
         id: "usersAnchor"
@@ -16,8 +16,8 @@
     },
     {
       text: "Courts and bureau",
-      href: '#',
-      active: nav === "courstAndBureau",
+      href: url('administration.courts-and-bureau.get'),
+      active: nav === "courtsAndBureau",
       attributes: {
         id: "courtsAndBureauAnchor"
       }
@@ -32,7 +32,7 @@
     },
     {
       text: "Bank holidays",
-      href: '#',
+      href: url('administration.bank-holidays.get'),
       active: nav === "bankHolidays",
       attributes: {
         id: "bankHolidaysAnchor"

@@ -1,0 +1,66 @@
+<div class="flex mod-flex mod-gap-x-4"></div>
+
+<form action="{{ processUrl }}" method="post" id="assignCourtsForm" >
+
+  {% if errors.items["selectedCourts"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
+
+  {% if errors.items["selectedCourts"] %}
+    <div class="error-allocation">
+      <p class="govuk-error-message">{{ errors.items['selectedCourts'][0].details }}</p>
+    </div>
+  {% endif %}
+
+  <div class="govuk-body govuk-!-margin-bottom-0"> <span id="checkedCourts"></span> of <span id="totalCourts"></span> selected</div>
+
+  <div class="fixTableHead">
+    <table class="govuk-table mod-assign-courts-table" data-module="moj-sortable-table" data-multi-select-checkbox="#select-all" id="courts" name="courts">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header" >
+            <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox" onclick="selectAll()">
+              <input type="checkbox" class="govuk-checkboxes__input select-check court-select-check" id="selectAllCheckbox" name="selectAllCheckbox"/>
+              <label class="govuk-label govuk-checkboxes__label">
+                <span class="govuk-visually-hidden">Select All</span>
+              </label>
+            </div>
+          </th>
+          <th scope="col" class="govuk-table__header jd-middle-align" aria-sort="ascending">Court name</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body ">
+    
+      {% for court in courts %}
+
+        <tr class="govuk-table__row govuk-table__row--selected">
+          <td class="govuk-table__cell">
+            <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox" onclick="checkSet()">
+              <input type="checkbox" class="govuk-checkboxes__input select-check court-select-check" id="select-{{ court.locCode }}" name="selectedCourts" value="{{ court.locCode }}">
+              <label class="govuk-label govuk-checkboxes__label" for="select-{{ court.locCode }}">
+                <span class="govuk-visually-hidden">Select {{ court.locCode }}</span>
+              </label>
+            </div>
+          </td>
+          <td id="{{court.locCode}}-courtName" class="govuk-table__cell jd-middle-align">{{ court.courtName | trim | replace(',', '') | capitalizeFully }} ({{court.locCode}})</td>
+        </tr>
+
+      {% endfor %}
+
+      </tbody>
+    </table>
+  </div>
+
+  {% if errors.items["selectedCourts"] %}</div>{% endif %}
+
+  <div class="govuk-button-group govuk-!-padding-top-5">
+    {{ govukButton({
+      text: "Assign to courts",
+      type: "submit",
+      attributes: {
+        id: 'assignToCourtButton'
+      }
+    }) }}
+    <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+  </div>
+
+  {{ csrfProtection(csrftoken) }}
+</form>

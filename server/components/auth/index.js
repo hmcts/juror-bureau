@@ -16,7 +16,7 @@
     , errors = require('../errors')
     , authObj = require('../../objects/auth').object
     , msgMappings = require('../errors/message-mapping')
-    , { isBureauUser, isCourtUser, isSJOUser, isBureauManager, isCourtManager, isSystemAdministrator } = require('./user-type')
+    , { isBureauUser, isCourtUser, isSJOUser, isBureauManager, isCourtManager, isSystemAdministrator, isManager } = require('./user-type')
 
     , createJWTToken = function(req, body, key) {
       // if user is found create a token
@@ -45,6 +45,10 @@
           password: req.body.password,
         }
         , authSuccess = function(resp) {
+
+          // TODO - REMOVE LINE AS SOON AS NEW TOKEN CHANGES ARE MERGED INTO API
+          resp.locCode = resp.owner;
+
           createJWTToken(req, resp, secretsConfig.get('secrets.juror.bureau-jwtKey'));
           return successCB(resp);
         }
@@ -116,6 +120,7 @@
           res.locals.isSJO = isSJOUser(req, res);
           res.locals.isCourtUser = isCourtUser(req, res);
           res.locals.isBureauUser = isBureauUser(req, res);
+          res.locals.isManager = isManager(req, res);
           res.locals.isBureauManager = isBureauManager(req, res);
           res.locals.isCourtManager = isCourtManager(req, res);
           res.locals.isSystemAdministrator = isSystemAdministrator(req, res);

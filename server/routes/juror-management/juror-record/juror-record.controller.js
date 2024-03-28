@@ -207,6 +207,9 @@ const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/ex
             break;
           };
 
+          req.session.jurorNameChangeAttendance = response.data.commonDetails.firstName
+          + ' ' + response.data.commonDetails.lastName;
+
           // TODO: handle the backLink
           return res.render('juror-management/juror-record/overview', {
             backLinkUrl: 'homepage.get',
@@ -438,7 +441,8 @@ const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/ex
 
         jurorOverview.data.commonDetails.onCall = attendance['on_call'];
         cacheJurorCommonDetails(req, jurorOverview.data.commonDetails);
-
+        req.session.jurorAttendanceName = jurorOverview.data.commonDetails.firstName + ' '
+        + jurorOverview.data.commonDetails.lastName;
         return res.render('juror-management/juror-record/attendance', {
           backLinkUrl: 'homepage.get',
           currentTab: 'attendance',

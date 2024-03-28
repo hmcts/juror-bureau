@@ -107,7 +107,9 @@
   <span>
     {{ govukButton({
       text: "Add attendance day",
-      href: '#',
+      href: url('juror-record.attendance.add-attendance-date.get', {
+        jurorNumber: juror.commonDetails.jurorNumber
+      }),
       classes: "govuk-button--secondary",
       attributes: {
         id: "addAttendanceDayButton"

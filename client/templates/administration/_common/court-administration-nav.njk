@@ -8,7 +8,7 @@
   items: [
     {
       text: "Users",
-      href: '#',
+      href: url('administration.court-bureau.users.get', { location: 'court' }),
       active: nav === "users",
       attributes: {
         id: "usersAnchor"
@@ -16,7 +16,7 @@
     },
     {
       text: "Judges",
-      href: '#',
+      href: url('administration.judges.get'),
       active: nav === "judges",
       attributes: {
         id: "judgesAnchor"
@@ -24,7 +24,7 @@
     },
     {
       text: "Room locations",
-      href: '#',
+      href: url('administration.room-locations.get', { locationCode: authentication.locCode }),
       active: nav === "roomLocations",
       attributes: {
         id: "roomLocationsAnchor"
@@ -32,7 +32,7 @@
     },
     {
       text: "Court details",
-      href: '#',
+      href: url('administration.court-details.get', { locationCode: authentication.locCode }),
       active: nav === "courtDetails",
       attributes: {
         id: "courtDetailsAnchor"
@@ -40,7 +40,7 @@
     },
     {
       text: "Non-sitting days",
-      href: '#',
+      href: url('administration.non-sitting-days.get'),
       active: nav === "nonSittingDays",
       attributes: {
         id: "nonSittingDaysAnchor"
@@ -48,10 +48,10 @@
     },
     {
       text: "Expense limits",
-      href: '#',
-      active: nav === "expenseLimits",
+      href: url('administration.expense-limits-court.get'),
+      active: nav === "expenseLimitsCourt",
       attributes: {
-        id: "expenseLimitsAnchor"
+        id: "expenseLimitsCourtAnchor"
       }
     },
     {

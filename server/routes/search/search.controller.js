@@ -6,6 +6,7 @@
   const validate = require('validate.js');
   const { searchResponsesDAO } = require('../../objects/search.js');
   const validator = require('../../config/validation/search.js');
+  const { dateFilter } = require('../../components/filters');
 
   module.exports.index = function(app) {
     return async function(req, res) {
@@ -29,7 +30,7 @@
         req.session.staffList = _.clone(staffList);
 
         return res.render('search/index', {
-          staffList: flattenStaffList(staffList),
+          staffList: staffList ? flattenStaffList(staffList) : [],
           searchParams: tmpFields,
           errors: {
             message: '',
@@ -89,20 +90,25 @@
         };
       }
 
-      const staffToSearch = req.session.staffList
-        .find((staff) => staff.name.toLowerCase() === req.body['officer_assigned'].toLowerCase());
+      let staffToSearch = null;
 
-      if (!staffToSearch && !!req.body['officer_assigned']) {
-        validatorResult = {
-          ...validatorResult,
-          officerAssigned: [
-            {
-              details: 'Select a staff from the list provided',
-              summary: 'Select a staff from the list provided',
-              summaryLink: 'officerAssigned',
-            },
-          ],
-        };
+      if (req.session.staffList) {
+
+        staffToSearch = req.session.staffList
+          .find((staff) => staff.name.toLowerCase() === req.body['officer_assigned'].toLowerCase());
+
+        if (!staffToSearch && !!req.body['officer_assigned']) {
+          validatorResult = {
+            ...validatorResult,
+            officerAssigned: [
+              {
+                details: 'Select a staff from the list provided',
+                summary: 'Select a staff from the list provided',
+                summaryLink: 'officerAssigned',
+              },
+            ],
+          };
+        }
       }
 
       if (typeof validatorResult !== 'undefined') {
@@ -256,6 +262,11 @@
     if (payload.is_urgent) {
       str.push('"is urgent"');
     }
+    if (payload.processing_status) {
+      for (const status of payload.processing_status) {
+        str.push(`"${resolveProcessingStatus(status)}"`);
+      }
+    }
 
     return str.join(', ');
   }
@@ -263,7 +274,7 @@
   function responsesListIterator(staff) {
     return function(r) {
       r['juror_name'] = r.first_name + ' ' + r.last_name;
-      r['date_received'] = r.date_received.join('-');
+      r['date_received'] = dateFilter(r.date_received, null, 'YYYY-MM-DD');
 
       const staffAssigned = staff.find((s) => s.login === r.officer_assigned);
 

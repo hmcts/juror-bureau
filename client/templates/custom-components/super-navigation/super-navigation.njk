@@ -45,17 +45,19 @@
             <li>
               <a href="{{ url('messaging.export-contacts.get') if isBureauUser else url('messaging.send.get') }}" class="govuk-link govuk-!-font-weight-bold">Messaging</a>
             </li>
-            <li>
-              <a href="{{ url('administration.system-codes.get') }}" class="govuk-link govuk-!-font-weight-bold">
-                {% if isSystemAdministrator %}
-                  System administration
-                {% elif isCourtUser %}
+            {% if isCourtManager %}
+              <li>
+                <a href="{{ url('administration.court-bureau.users.get', { location: 'court' }) }}" class="govuk-link govuk-!-font-weight-bold">
                   Court administration
-                {% elif isBureauUser %}
+                </a>
+              <li>
+            {% elif isBureauManager %}
+              <li>
+                <a href="{{ url('administration.court-bureau.users.get', { location: 'bureau' }) }}" class="govuk-link govuk-!-font-weight-bold">
                   Bureau administration
-                {% endif %}
-              </a>
-            </li>
+                </a>
+              <li>
+            {% endif %}
           </ul>
         </div>
       </div>

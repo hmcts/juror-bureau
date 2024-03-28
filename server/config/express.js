@@ -6,7 +6,7 @@
   'use strict';
 
   var express = require('express')
-    , nunjucks = require('express-nunjucks')
+    , nunjucks = require('express-nunjucks').default
     , njk = require('nunjucks')
     , csrf = require('csurf')
     , helmet = require('helmet')
@@ -74,6 +74,7 @@
     app.use(bodyParser.json());
     app.use(methodOverride());
 
+    app.set('trust proxy', 1);
     new SessionConfig().start(app);
 
     // CSRF Protection

@@ -17,6 +17,7 @@ module.exports.getProcessReply = function(app) {
 
     delete req.session.errors;
     delete req.session.formFields;
+    delete req.session.processLateSummons;
 
     processUrl = app.namedRoutes.build('process-reply.post', routeParameters);
     if (req.params['type'] === 'paper') {
@@ -47,9 +48,12 @@ module.exports.postProcessReply = function(app) {
         deferral: 'process-deferral-dates.get',
         excusal: 'process-excusal.get',
         disqualify: 'process-disqualify.get',
+        reassign: 'juror-management.reassign.get',
+        postpone: 'juror.update.postpone-date.get',
       }
       , routeParameters = {
         id: req.params['id'],
+        jurorNumber: req.params['id'],
       };
 
     if (req.params['type'] === 'paper') {
@@ -71,17 +75,6 @@ module.exports.postProcessReply = function(app) {
       return res.redirect(app.namedRoutes.build('process-reply.get', routeParameters));
     }
 
-    if (typeof processActionType[req.body.processActionType] === 'undefined') {
-      req.session.errors = {
-        processActionType: [{
-          summary: 'This option is not implemented yet',
-          details: 'This option is not implemented yet',
-        }],
-      };
-
-      return res.redirect(app.namedRoutes.build('process-reply.get', routeParameters));
-    }
-
     if (req.session.catchmentWarning && req.session.catchmentWarning.isOutwithCatchment) {
       routeParameters.action = req.body.processActionType;
 
@@ -90,6 +83,14 @@ module.exports.postProcessReply = function(app) {
       }
 
       return res.redirect(app.namedRoutes.build('reassign-before-process.get', routeParameters));
+    }
+
+    if (req.body.processActionType === 'reassign' || req.body.processActionType === 'postpone') {
+      req.session.processLateSummons = {
+        backUrl: app.namedRoutes.build('process-reply.get', routeParameters),
+        cancelUrl: app.namedRoutes.build(req.params['type'] === 'paper' ?
+          'response.paper.details.get' : 'response.detail.get', routeParameters),
+      };
     }
 
     return res.redirect(app.namedRoutes.build(processActionType[req.body.processActionType], routeParameters));

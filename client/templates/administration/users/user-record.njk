@@ -1,0 +1,170 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+
+
+{% block page_title %}{{ serviceName }} - administration{% endblock %}
+{% block page_identifier %}administration - user record{% endblock %}
+
+{% set currentApp = "Court administration" if isCourtManager else ("Bureau administration" if isBureauManager else "System administration") %} 
+{% set nav = "users" %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back to users",
+    href: backLinkUrl,
+    attributes: {
+      id: "backLinkAnchor"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+  {% if successBanner %}
+    {{ mojBanner({
+      type: "success",
+      html: successBanner,
+      iconFallbackText: "Success"
+    }) }}
+  {% endif %}
+
+  {% set extraPermissions = [] %}
+  {% for role in user.roles %}
+    {% set extraPermissions = (extraPermissions.push(roles[role].title), extraPermissions) %}
+  {% endfor %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      {{govukTag({
+        text: "User record",
+        classes: "govuk-tag"
+      })}}
+      {{govukTag({
+        text: "Active" if user.isActive else "Inactive",
+        classes: "govuk-tag--blue" if user.isActive else "govuk-tag--grey"
+      })}}
+      <h1 class="govuk-heading-xl govuk-!-margin-top-3 govuk-!-margin-bottom-3">{{ user.name }}</h1>
+    </div>
+    <div class="govuk-grid-column-one-half mod-flex mod-justify-end">
+      {{ govukButton({
+        text: "Edit user",
+        classes: "govuk-button--secondary",
+        href: editUserUrl
+      }) }}
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-5">
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="mod-juror-record__title govuk-body govuk-!-margin-bottom-0">
+        <h2 id="userDetailsLabel" class="govuk-heading-m govuk-!-margin-bottom-2">User details</h2>
+      </div>
+      {{ govukSummaryList({
+          rows: [
+            {
+              key: {
+                text: "Full name"
+              },
+              value: {
+                text: user.name
+              }
+            },
+            {
+              key: {
+                text: "Email"
+              },
+              value: {
+                html: user.email
+              }
+            },
+            {
+              key: {
+                text: "User type"
+              },
+              value: {
+                text: user.userType | capitalize
+              }
+            },
+            {
+              key: {
+                text: "Extra permissions"
+              },
+              value: {
+                text: extraPermissions| join(", ")
+              }
+            } if extraPermissions | length
+          ]
+        }) }}
+    </div>
+  </div>
+
+  {% if user.userType === "COURT" %}
+
+    {% set courtsTableData = [] %}
+    {% for court in user.courts %}
+      {% set satelliteCourtsData = [] %}
+      {% for satellite in court.satelliteCourts %}
+        {% set satelliteCourtsData = (satelliteCourtsData.push(satellite.name + ' (' + satellite.locCode + ')'), satelliteCourtsData) %}
+      {% endfor %}
+      {% set courtsTableData = (courtsTableData.push([
+        {
+          text: (court.primaryCourt.name + ' (' + court.primaryCourt.locCode + ')') | capitalizeFully
+        },
+        {
+          text: satelliteCourtsData | join(", ") | capitalizeFully if satelliteCourtsData | length else "-"
+        },
+        {
+          html: "<a class='govuk-link govuk-link--no-visited-state' href='"
+            + url('administration.users.remove-court.get', { username: user.username, locCode: court.primaryCourt.locCode })
+            + "'>Remove</a>",
+          format: "numeric"
+        }
+      ]), courtsTableData) %}
+    {% endfor %}
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <div class="mod-juror-record__title">
+          <h2 id="assignedCourtsLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Assigned to courts</h2>
+        </div>
+        {% if isSystemAdministrator %}
+          {{ govukButton({
+            text: "Assign to courts",
+            classes: "govuk-button--secondary govuk-!-margin-bottom-2 govuk-body govuk-!-margin-top-4",
+            href: assignCourtsUrl
+          }) }}
+        {% endif %}
+        {% if courtsTableData | length %}
+          {{ govukTable({
+            head: [
+              {
+                text: "Main courts"
+              },
+              {
+                text: "Satellite courts"
+              },
+              {}
+            ],
+            rows: courtsTableData
+          }) }}
+        {% else %}
+        <p class="govuk-body">This user is not assigned to any courts.</p>
+        {% endif %}
+      </div>
+    </div>
+
+  {% endif %}
+
+{% endblock %}

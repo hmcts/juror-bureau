@@ -1,0 +1,183 @@
+{% extends "layouts/default.njk" if isCourtManager else "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "custom-components/time-input-12-hour/macro.njk" import timeInput12Hour %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - administration{% endblock %}
+{% block page_identifier %}administration - court details{% endblock %}
+
+{% set currentApp = "Court administration" if isCourtManager else "System administration" %} 
+{% set nav = "courtDetails" %}
+
+{% block content %}
+
+  {% set mainPhoneNumberError = undefined %}
+  {% if errors.items["mainPhoneNumber"] %}
+    {% set mainPhoneNumberError = {"text": errors.items['mainPhoneNumber'][0].details} %}
+  {% endif %}
+  {% set assemblyRoomIdError = undefined %}
+  {% if errors.items["assemblyRoomId"] %}
+    {% set assemblyRoomIdError = {"text": errors.items['assemblyRoomId'][0].details} %}
+  {% endif %}
+  {% set costCentreError = undefined %}
+  {% if errors.items["costCentre"] %}
+    {% set costCentreError = {"text": errors.items['costCentre'][0].details} %}
+  {% endif %}
+  {% set signatureError = undefined %}
+  {% if errors.items["signature"] %}
+    {% set signatureError = {"text": errors.items['signature'][0].details} %}
+  {% endif %}
+
+  {% set courtroomSelectItems = [] %}
+  {% for room in courtrooms %}
+    {% set courtroomSelectItems = (courtroomSelectItems.push({
+          value: room.id, 
+          text: room.roomName
+      }), courtroomSelectItems) %}
+  {% endfor %}
+
+  {% include "includes/errors.njk" %}  
+
+  <form method="post">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {% if isCourtManager %}
+          <h1 class="govuk-heading-xl">Court details</h1>
+        {% elif isSystemAdministrator %}
+          <h1 class="govuk-heading-xl">{{ { locationCode: courtDetails.courtCode, locationName: courtDetails.englishCourtName } | transformCourtName }}</h1>
+        {% endif %}
+        <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-2">Court code</h2>
+        <p class="govuk-body">{{ courtDetails.courtCode }}</p>
+        <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-2">Court name{% if courtDetails.welsh %} (English){% endif %}</h2>
+        <p class="govuk-body">{{ courtDetails.englishCourtName | capitalizeFully }}</p>
+        <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-2">Address{% if courtDetails.welsh %} (English){% endif %}</h2>
+        <p class="govuk-body">
+          {% for key, value in courtDetails.englishAddress %}
+            {% if value %}
+              {% if key == 'postcode' %}
+                {{ value }}<br />
+              {% else %}
+                {{ value | capitalizeFully }}<br />
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+        </p>
+
+        {% if courtDetails.welsh %}
+          <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-2">Court name (Welsh)</h2>
+          <p class="govuk-body">{{ courtDetails.welshCourtName | capitalizeFully }}</p>
+          <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-2">Address (Welsh)</h2>
+          <p class="govuk-body">
+            {% for key, value in courtDetails.welshAddress %}
+              {% if value %}
+                {% if key == 'postcode' %}
+                  {{ value }}<br />
+                {% else %}
+                  {{ value | capitalizeFully }}<br />
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          </p>
+        {% endif %}
+
+        {{ govukInput({
+          label: {
+            text: "Main telephone",
+            classes: "govuk-label--s govuk-!-margin-top-4 govuk-!-margin-bottom-2",
+            isPageHeading: true
+          },
+          id: "mainPhoneNumber",
+          classes: "govuk-!-width-one-quarter",
+          name: "mainPhoneNumber",
+          value: tmpBody.mainPhoneNumber if tmpBody else courtDetails.mainPhone,
+          errorMessage: mainPhoneNumberError
+        }) }}
+
+        <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-2">Default attendance time</h2>
+        {{ timeInput12Hour({
+          id: "defaultAttendanceTime",
+          name: "defaultAttendanceTime",
+          items: {
+            hour: {
+              value: tmpBody.defaultAttendanceTimeHour if tmpBody else attendanceTime.hour,
+              attributes: {
+                minLength: "1",
+                maxLength: "2"
+              }
+            },
+            minute: {
+              value: tmpBody.defaultAttendanceTimeMinute if tmpBody else attendanceTime.minute,
+              attributes: {
+                minLength: "1",
+                maxLength: "2"
+              }
+            },
+            period: {
+              value: tmpBody.defaultAttendanceTimePeriod if tmpBody else attendanceTime.period
+            }
+          },
+          errors: errors.items
+        }) }}
+
+        {{ govukSelect({
+          label: {
+            text: "Assembly room",
+            classes: "govuk-label--s govuk-!-margin-top-4 govuk-!-margin-bottom-2",
+            isPageHeading: true
+          },
+          id: "assemblyRoomId",
+          name: "assemblyRoomId",
+          items: courtroomSelectItems,
+          value: tmpBody.assemblyRoomId if tmpBody.assemblyRoomId else originalCourtRoomId,
+          errorMessage: assemblyRoomIdError
+        }) }}
+       
+        {{ govukInput({
+          label: {
+            text: "Cost centre",
+            classes: "govuk-label--s govuk-!-margin-top-4 govuk-!-margin-bottom-2",
+            isPageHeading: true
+          },
+          id: "costCentre",
+          classes: "govuk-!-width-one-half",
+          name: "costCentre",
+          value: tmpBody.costCentre if tmpBody else courtDetails.costCentre,
+          errorMessage: costCentreError
+        }) }}
+
+        {{ govukInput({
+          label: {
+            text: "Signature",
+            classes: "govuk-label--s govuk-!-margin-top-4 govuk-!-margin-bottom-2",
+            isPageHeading: true
+          },
+          id: "signature",
+          classes: "govuk-!-width-one-half",
+          name: "signature",
+          value: tmpBody.signature if tmpBody else courtDetails.signature,
+          errorMessage: signatureError
+        }) }}
+
+      </div>
+    </div>
+
+    {{ csrfProtection(csrftoken) }}
+
+    <div class="govuk-button-group govuk-!-margin-top-4">
+      {{ govukButton({
+        text: "Save",
+        type: "submit",
+        attributes: {
+          id: "saveButton",
+          formAction: postUrl
+        }
+      }) }}
+      <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+    </div>
+
+  </form>
+{% endblock %}

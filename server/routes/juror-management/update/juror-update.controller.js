@@ -31,6 +31,7 @@
           delete req.session.updateOption;
           delete req.session.thirdPartyDeceased;
           delete req.session.replyMethod;
+          delete req.session.processLateSummons;
 
           req.session.replyMethod = response.data.replyMethod;
 

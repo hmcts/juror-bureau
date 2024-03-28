@@ -35,4 +35,5 @@
     };
 
   module.exports.courtLocationsFromPostcodeObj = courtLocationsFromPostcode;
+
 })();

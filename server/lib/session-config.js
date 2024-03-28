@@ -64,13 +64,16 @@ module.exports.SessionConfig = class SessionConfig {
   }
 
   _config(secret) {
+    const isProduction = process.env.NODE_ENV === 'production';
+
     return {
       secret,
       resave: false,
       saveUninitialized: false,
       maxAge: this._sessionExpires,
-      name : 'sessionId',
+      name : 'Juror-Bureau-Session',
       cookie: {
+        secure: isProduction,
         httpOnly: true,
       },
     };

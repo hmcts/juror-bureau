@@ -1,0 +1,165 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
+{% from "custom-components/autocomplete/macro.njk" import modAutocomplete %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - administration{% endblock %}
+{% block page_identifier %}administration - users{% endblock %}
+
+{% set currentApp = "System administration" %} 
+{% set nav = "users" %}
+
+{% block content %}
+
+{% set advancedSearchHtml %}
+  {{ modAutocomplete({
+    label: {
+      text: "Court"
+    },
+    classes: "mod-autocomplete--width-20",
+    value:  searchOpts.court,
+    name: 'courtSearch',
+    id: 'courtSearch',
+    data: courtsToDisplay,
+    errorMessage: courtSearchError
+  }) }}
+  
+  {{ govukRadios({
+    classes: "govuk-radios--small",
+    name: "userTypeSearch",
+    fieldset: {
+      legend: {
+        text: "User type",
+        isPageHeading: true,
+        classes: "govuk-fieldset__legend--m"
+      }
+    },
+    items: [
+      {
+        value: "COURT",
+        text: "Court"
+      },
+      {
+        value: "BUREAU",
+        text: "Bureau"
+      },
+      {
+        value: "ADMINISTRATOR",
+        text: "Administrator"
+      }
+    ],
+    value: searchOpts.userType
+  }) }}
+{% endset %}
+
+{% include "includes/errors.njk" %}  
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <h1 class="govuk-heading-l">Users</h1>
+    </div>
+    <div class="govuk-grid-column-one-half mod-flex mod-justify-end">
+      {{ govukButton({
+        text: "Create new user",
+        classes: "govuk-button--secondary",
+        href: createUserUrl
+      }) }}
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <form action="{{ searchUrl }}" method="post" id="numberOfJurorsForm">
+        <h1 class="govuk-heading-m">Search for a user</h1>
+        {{ govukInput({
+          label: {
+            text: "User name"
+          },
+          classes: "govuk-input--width-20",
+          id: "userNameSearch",
+          name: "userNameSearch",
+          value: searchOpts.userName
+        }) }}
+        {{ govukDetails({
+          summaryText: "Advanced search",
+          html: advancedSearchHtml,
+          open: searchOpts.court or searchOpts.userType
+        }) }}
+        {{ govukButton({
+          text: "Search",
+          classes: "govuk-button",
+          type: "submit"
+        }) }}
+        {{ csrfProtection(csrftoken) }}
+      </form>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <fieldset class="govuk-fieldset">
+        <div class="govuk-radios govuk-radios--small govuk-radios--inline" data-module="govuk-radios">
+        <div class="govuk-radios__item govuk-!-margin-right-0">
+            <input
+                class="govuk-radios__input" 
+                id="activeUsersRadio" 
+                name="activeUsersRadio" 
+                type="radio" 
+                value="active"
+                {% if isActive === 'active' %}checked{% endif %}
+                onclick="window.location.href = '{{radioUrls.activeUrl}}';"
+            >
+          <label class="govuk-label govuk-radios__label" for="activeUsersRadio">Active users</label>
+        </div>
+        <div class="govuk-radios__item govuk-!-margin-right-0" >
+            <input 
+                class="govuk-radios__input" 
+                id="allUsersRadio" 
+                name="allUsersRadio" 
+                type="radio" 
+                value="all"
+                {% if isActive === 'all' %}checked{% endif %}
+                onclick="window.location.href = '{{radioUrls.allUrl}}';"
+            >
+            <label class="govuk-label govuk-radios__label" for="allUsersRadio">All users</label>
+        </div>
+        </div>
+      </fieldset>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full govuk-body">
+      {% if users.rows | length %}
+        {{ modSortableTable({
+          id: "usersTable",
+          head: users.head,
+          rows: users.rows,
+          url: sortUrlPrefix
+        }) }}
+
+        {{ govukPagination({
+          previous: {
+            href: pagination.prev
+          },
+          next: {
+            href: pagination.next
+          },
+          items: pagination.items
+        }) }}
+      {% else %}
+        <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-3">
+        <h2>There are no matching results</h2>
+        <p class="govuk-body">Improve your search by double-checking your spelling.</p>
+      {% endif %}
+    </div>
+  </div>
+
+{% endblock %}
