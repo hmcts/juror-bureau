@@ -12,7 +12,9 @@ const { snakeToCamel } = require('../../../lib/mod-utils');
   // type IReportKey = {[key:string]: {
   //   title: string,
   //   apiKey: string,
-  //   search?: 'poolNumber' | 'dateRange' // etc
+  //   search?: 'poolNumber' | 'dateRange', // etc only poolNumber is currently implemented
+  //   headings: string[], // corresponds to the ids provided for the headings in the API
+  //                       // (except report created dateTime)
   // }};
   const reportKeys = {
     'next-due': {
@@ -124,7 +126,7 @@ const { snakeToCamel } = require('../../../lib/mod-utils');
         attributes: {
           'aria-sort': index === 0 ? 'ascending' : 'none',
         }}));
-console.log(tableData.headings)
+
       const tableRows = tableData.data.map(data => tableData.headings.map(header => {
         let output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
 
