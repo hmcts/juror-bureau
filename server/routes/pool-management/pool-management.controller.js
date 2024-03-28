@@ -5,8 +5,8 @@
     , validate = require('validate.js')
     , modUtils = require('../../lib/mod-utils')
     , poolRequests = require('../../objects/pool-list').poolRequests
-    , fetchCourts = require('../../objects/request-pool').fetchCourts
-    , poolTypeSelectValidator = require('../../config/validation/pool-create-select');
+    , poolTypeSelectValidator = require('../../config/validation/pool-create-select')
+    , { fetchCourtsDAO } = require('../../objects/index');
 
   module.exports.index = function(app) {
     return function(req, res) {
@@ -114,7 +114,7 @@
       // this can later be replaced by a "in memory" cached version of the courts list
       // having this stored in a memory ds/db can make faster reads and improves our code
       // because we do not have to rely in the session data anymore
-      promiseArr.push(fetchCourts.get(require('request-promise'), app, req.session.authToken, req));
+      promiseArr.push(fetchCourtsDAO.get(req));
       Promise.all(promiseArr)
         .then(successCB)
         .catch(errorCB);

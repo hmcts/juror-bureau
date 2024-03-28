@@ -7,7 +7,7 @@
 
   var express = require('express')
     , config = require('./config/environment')()
-    , logger = require('./components/logger')(config)
+    , { Logger } = require('./components/logger')
     , http = require('http')
     , app = express()
     , server = http.createServer(app)
@@ -15,16 +15,13 @@
     , { LaunchDarkly } = require('./lib/launchdarkly')
     , { AppInsights } = require('./lib/appinsights');
 
-  // Attach logger to app
-  app.logger = logger;
-
+  // initialize helpers
+  new Logger(config).initLogger(app);
+  new LaunchDarkly();
+  new AppInsights();
 
   require('./config/express')(app);
   require('./routes')(app);
-
-  // This will initiate a laundarkly connection and keep it open waiting for flag checks
-  new LaunchDarkly();
-  new AppInsights();
 
   // A bit of conditional shiny
   if (config.logConsole !== false) {
