@@ -90,7 +90,7 @@
         };
       }
 
-      const staffToSearch = null;
+      let staffToSearch = null;
 
       if (req.session.staffList) {
 
