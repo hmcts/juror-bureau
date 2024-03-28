@@ -44,7 +44,7 @@ After running all the above, you should see the application running. If you get 
 
 #### Configurations
 
-We prove a `/config` in the root of the project that contains a template file. For local development, copy the file and rename it `development.json`. If you need help finding any of the development keys, get in touch with DevOps.
+We provide a `/config` in the root of the project that contains a template file. For local development, copy the file and rename it `development.json`. If you need help finding any of the development keys, get in touch with DevOps.
 
 ### Redis
 
