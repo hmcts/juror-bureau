@@ -90,13 +90,13 @@
         juror_number: jurorNumber,
         juror_name: jurorName,
         pool_number: poolNumber,
-        court,
+        court_name: courtName,
         date_deferred_to: dateDeferredTo,
       } = req.query;
       const isEmpty = v => !v || v === '';
 
       // eslint-disable-next-line max-len
-      if (isEmpty(searchBy) || (isEmpty(jurorNumber) && isEmpty(jurorName) && isEmpty(poolNumber) && isEmpty(court) && isEmpty(dateDeferredTo))) {
+      if (isEmpty(searchBy) || (isEmpty(jurorNumber) && isEmpty(jurorName) && isEmpty(poolNumber) && isEmpty(courtName) && isEmpty(dateDeferredTo))) {
         return res.redirect(app.namedRoutes.build('messaging.export-contacts.get'));
       }
 
