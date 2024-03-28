@@ -445,4 +445,24 @@ dt.govuk-summary-list-mod {
   .govuk-checkboxes__item {
     z-index: 0;
   }
-} 
+}
+
+.report-headings {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  gap: 1rem;
+  grid-auto-flow: row;
+  padding-bottom: 20px;
+
+  .heading-element {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    gap: 0;
+    border-bottom: 1px solid lightgrey;
+    padding-bottom: 10px;
+
+    .title {
+      font-weight: bold;
+    }
+  }
+}

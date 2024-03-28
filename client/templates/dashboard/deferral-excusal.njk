@@ -168,8 +168,8 @@
                     {% set itemSelected = 'checked="checked"' %}
                   {% endif %}
                 {% endif %}
-                <input type="checkbox" id="chkReason{{reason.excusalCode}}" name="chkReason" value="{{reason.keyValue}}" {{itemSelected}}/>
-                <label id="chkReason{{reason.excusalCode}}Label" for="chkReason{{reason.excusalCode}}">{{reason.description}}</label>
+                <input type="checkbox" id="chkReason{{reason.code}}" name="chkReason" value="{{reason.keyValue}}" {{itemSelected}}/>
+                <label id="chkReason{{reason.code}}Label" for="chkReason{{reason.code}}">{{reason.description}}</label>
                 <br/>
               {% endfor %}
                         

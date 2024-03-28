@@ -45,13 +45,13 @@
     {% set reasonList = [{value: "", text: "Select a reason...", selected: true}] %}
     {% for reason in excusalReasons %}
 
-      {% if (reason.excusalCode === excusalDetails.excusalCode) %}
+      {% if (reason.code === excusalDetails.excusalCode) %}
         {% set codeSelected = true %}
       {% else %}
         {% set codeSelected = false %}
       {% endif %}
       
-      {% set reasonList = (reasonList.push({value: reason.excusalCode, text: reason.excusalCode + " - " + reason.description, selected: codeSelected }), reasonList) %}
+      {% set reasonList = (reasonList.push({value: reason.code, text: reason.code + " - " + reason.description, selected: codeSelected }), reasonList) %}
     {% endfor %}
   {% endif %}
 
