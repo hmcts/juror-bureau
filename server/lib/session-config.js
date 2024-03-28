@@ -73,7 +73,7 @@ module.exports.SessionConfig = class SessionConfig {
       maxAge: this._sessionExpires,
       name : 'Juror-Bureau-Session',
       cookie: {
-        secure: isProduction,
+        secure: true,
         httpOnly: true,
       },
     };
