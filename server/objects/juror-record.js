@@ -33,16 +33,20 @@
         reqOptions.method = 'GET';
         reqOptions.transform = includeHeaders;
 
-        if (tab === 'notes' || tab === 'contact-log' || tab === 'contact-log/enquiry-types') {
+        if (tab === 'notes' || tab === 'contact-log') {
           reqOptions.uri = urljoin(reqOptions.uri,
             this.resource,
             tab,
             jurorNumber);
+        } else if (tab === 'contact-log/enquiry-types') {
+          reqOptions.uri = urljoin(reqOptions.uri,
+            this.resource,
+            tab);
         } else {
           reqOptions.uri = urljoin(reqOptions.uri,
             this.resource,
             tab,
-            jurorNumber,
+            `${jurorNumber}`,
             locCode);
         }
 
