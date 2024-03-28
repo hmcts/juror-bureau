@@ -11,7 +11,7 @@
     , jurorUndeliverableObject = require('../../../objects/juror-undeliverable').jurorUndeliverableObject
     , jurorTransfer = require('../../../objects/juror-transfer').jurorTransfer
     , { dateFilter } = require('../../../components/filters')
-    , { administrationCodes } = require('../../../objects/administration-codes');
+    , { systemCodesDAO } = require('../../../objects/administration');
   const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
 
   module.exports.index = function(app) {
@@ -192,7 +192,7 @@
 
       cancelUrl = app.namedRoutes.build('juror-record.overview.get', { jurorNumber: req.params['jurorNumber'] });
 
-      administrationCodes.get(require('request-promise'), app, req.session.authToken, 'EXCUSAL_AND_DEFERRAL')
+      systemCodesDAO.get(app, req, 'EXCUSAL_AND_DEFERRAL')
         .then(successCB)
         .catch(errorCB);
 

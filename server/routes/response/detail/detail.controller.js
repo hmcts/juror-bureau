@@ -28,7 +28,7 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
     , welshLanguageText = require('../../../../client/js/i18n/cy/PDF.json')
     , paperUpdateStatus = require('../../../objects/summons-management').updateStatus
     , opticReferenceObj = require('../../../objects/juror-record').opticReferenceObject
-    , { administrationCodes } = require('../../../objects/administration-codes')
+    , { systemCodesDAO } = require('../../../objects/administration')
     , { dateFilter } = require('../../../components/filters');
 
   module.exports.index = function(app) {
@@ -413,13 +413,7 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
       promiseArr.push(
         courtObj.getCatchmentStatus(require('request-promise'), app, req.session.authToken, req.params.id));
       promiseArr.push(
-        administrationCodes.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
-          'REASONABLE_ADJUSTMENTS'
-        )
-      );
+        systemCodesDAO.get(app, req, 'REASONABLE_ADJUSTMENTS'));
 
       executeAllPromises(promiseArr)
         .then(successCB)
@@ -1036,8 +1030,8 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
           return res.render('index.njk');
         };
 
-      promiseArr.push(administrationCodes.get(
-        require('request-promise'), app, req.session.authToken, 'EXCUSAL_AND_DEFERRAL'));
+      promiseArr.push(systemCodesDAO.get(
+        app, req, 'EXCUSAL_AND_DEFERRAL'));
       promiseArr.push(responseDetailObj.get(require('request-promise'), app, req.session.authToken, req.params.id));
       Promise.all(promiseArr)
         .then(successCB)
@@ -1209,8 +1203,8 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
           return res.render('index.njk');
         };
 
-      promiseArr.push(administrationCodes.get(
-        require('request-promise'), app, req.session.authToken, 'EXCUSAL_AND_DEFERRAL'));
+      promiseArr.push(systemCodesDAO.get(
+        app, req, 'EXCUSAL_AND_DEFERRAL'));
       promiseArr.push(responseDetailObj.get(require('request-promise'), app, req.session.authToken, req.params.id));
       Promise.all(promiseArr)
         .then(successCB)

@@ -19,7 +19,7 @@
     , deferralDatePickerValidator = require('../../config/validation/date-picker').deferralDatePicker
     , otherDeferralDateValidater = require('../../config/validation/deferral-mod').deferralDateAndReason
     , courtLocationsFromPostcodeObj = require('../../objects/court-location').courtLocationsFromPostcodeObj
-    , { administrationCodes } = require('../../objects/administration-codes');
+    , { systemCodesDAO } = require('../../objects/administration');
   const { flowLetterPost, flowLetterGet } = require('../../lib/flowLetter');
 
   const dateHint = 'Use dd/mm/yyyy format. For example, 31/01/2023.';
@@ -265,7 +265,7 @@
           });
 
           //GET DEFFERAL CODES FROM BACKEND
-          administrationCodes.get(require('request-promise'), app, req.session.authToken, 'EXCUSAL_AND_DEFERRAL')
+          systemCodesDAO.get(app, req, 'EXCUSAL_AND_DEFERRAL')
             .then((data) => {
               app.logger.info('Retrieved excusal codes: ', {
                 auth: req.session.authentication,
@@ -595,7 +595,7 @@
         cancelUrl = app.namedRoutes.build('response.detail.get', routeParameters);
       }
 
-      administrationCodes.get(require('request-promise'), app, req.session.authToken, 'EXCUSAL_AND_DEFERRAL')
+      systemCodesDAO.get(app, req, 'EXCUSAL_AND_DEFERRAL')
         .then(successCB)
         .catch(errorCB);
     };
@@ -869,7 +869,7 @@
         };
 
       promiseArr.push(paperReplyObj.get(require('request-promise'), app, req.session.authToken, req.params['id']));
-      promiseArr.push(administrationCodes.get(
+      promiseArr.push(systemCodesDAO.get(
         require('request-promise'), app, req.session.authToken, 'REASONABLE_ADJUSTMENTS'));
       Promise.all(promiseArr)
         .then(successCB)
