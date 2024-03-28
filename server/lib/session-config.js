@@ -47,7 +47,7 @@ module.exports.SessionConfig = class SessionConfig {
   redisStore() {
     return new RedisStore({
       client: this._redisClient,
-      prefix: 'JurorMod:',
+      prefix: 'JurorBureau:',
     });
   }
 
@@ -71,9 +71,9 @@ module.exports.SessionConfig = class SessionConfig {
       resave: false,
       saveUninitialized: false,
       maxAge: this._sessionExpires,
-      name : 'Juror-Bureau-Session',
+      name: 'juror_bureau_session-' + process.env.NODE_ENV,
       cookie: {
-        secure: true,
+        secure: isProduction,
         httpOnly: true,
       },
     };
