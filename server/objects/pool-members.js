@@ -2,7 +2,7 @@
 (function() {
   'use strict';
   
-  const { constants } = require('../lib/mod-utils');
+  const { constants, mapSnakeToCamel, mapCamelToSnake } = require('../lib/mod-utils');
   var _ = require('lodash')
     , urljoin = require('url-join')
     , config = require('../config/environment')()
@@ -14,7 +14,7 @@
         'Content-Type': 'application/vnd.api+json',
       },
       json: true,
-      transform: utils.snakeToCamel,
+      transform: mapSnakeToCamel,
     }
 
     , poolMemebersObject = {
@@ -50,7 +50,7 @@
         reqOptions.body['page_number'] = reqOptions.body['page_number'] || 1;
         reqOptions.body['page_limit'] = constants.PAGE_SIZE;
         reqOptions.body['sort_method'] = reqOptions.body['sort_method'] === 'ascending' ? 'ASC' : 'DESC';
-        reqOptions.body['sort_field'] = utils.camelToSnake(reqOptions.body['sort_field'])?.toUpperCase();
+        reqOptions.body['sort_field'] = mapCamelToSnake(reqOptions.body['sort_field'])?.toUpperCase();
 
         app.logger.debug('Sending request to API: ', {
           uri: reqOptions.uri,

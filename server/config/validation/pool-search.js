@@ -65,8 +65,8 @@
     if (value === '') return null;
 
     if (isNaN(value)) {
-      message.summary = 'Pool number must only numbers';
-      message.details.push('Pool number must only numbers');
+      message.summary = 'Pool number must only contain numbers';
+      message.details.push('Pool number must only contain numbers');
     } else if (value.toString().length > 9 || value.toString().length < 3) {
       message.summary = 'Pool number must have between 3 and 9 numbers';
       message.details.push('Pool number must have between 3 and 9 numbers');

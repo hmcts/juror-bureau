@@ -1,0 +1,203 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "custom-components/autocomplete/macro.njk" import modAutocomplete %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+
+{% block page_title %}
+  Reports
+{% endblock %}
+
+{% block page_identifier %}Reports - {{ title }}{% endblock %}
+
+{% set currentApp = "Reports" %}
+
+{% block content %}
+  {% include "includes/errors.njk" %}
+
+  <form method="post" id="poolSearchForm">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+
+        {% set poolNumberError = undefined %}
+        {% if errors.items["poolNumber"] %}
+          {% set poolNumberError = { html: errors.items["poolNumber"][0].details } %}
+        {% endif %}
+
+          {% call govukFieldset({
+            legend: {
+              text: title,
+              classes: "govuk-fieldset__legend--l",
+              isPageHeading: true
+            }
+          }) %}
+            <div class="govuk-grid-column-half">
+
+              {{ govukInput({
+                label: {
+                  text: 'Enter a pool number'
+                },
+                classes: 'govuk-!-width-one-third',
+                id: "poolNumber",
+                name: "poolNumber",
+                type: "text",
+                errorMessage: poolNumberError,
+                value: filter
+              }) }}
+
+            </div>
+            {# layout here is not quite right #}
+            <div class="govuk-grid-column-half govuk-button-group">
+
+              {{ govukButton({
+                text: "Search",
+                type: "submit",
+                attributes: {
+                  id: "searchButton",
+                  formAction: filterUrl
+                }
+              }) }}
+
+              <a class="govuk-link" href="{{ url(reportKey + '.filter.get') }}">Clear search</a>
+
+            </div>
+          {% endcall %}
+
+
+          <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+          <input type="hidden" name="filter" value="{{ filter }}">
+      </div>
+    </div>
+
+    {% if resultsCount === 0 and errors.count === 0 and filter !== undefined %}
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <hr class="govuk-section-break govuk-section-break--visible">
+          <h2 class="govuk-heading-m govuk-!-margin-top-4">There are no matching results</h2>
+          <p class="govuk-body">Improve your search by:</p>
+          <ul class="govuk-list govuk-list--bullet">
+            <li>double-checking your spelling</li>
+          </ul>
+        </div>
+      </div>
+    {% elif resultsCount > 0 %}
+
+      {% set poolRows = [] %}
+      {% for pool in poolList %}
+        {% set poolRows = (poolRows.push(
+          [
+            {
+              html: '<div class="govuk-radios__item govuk-!-padding-left-0">' +
+                '  <input' +
+                '    class="govuk-radios__input"' +
+                '    id="reportPool"' +
+                '    name="reportPool"' +
+                '    type="radio"' +
+                '    value="' + pool.poolNumber + '"' +
+                '    aria-controls="conditional-reportPool"' +
+                '    aria-expanded="false"' +
+                '  >' +
+                '  <label class="govuk-label govuk-radios__label" for="reportPool">' +
+                '</div>'
+            },
+            {
+              text: pool.poolNumber
+            },
+            {
+              text: pool.courtName
+            },
+            {
+              text: pool.poolStage
+            },
+            {
+              text: pool.poolStatus
+            },
+            {
+              text: pool.poolType
+            },
+            {
+              text: pool.serviceStartDate | dateFilter("YYYY-mm-dd", "ddd D MMM YYYY")
+            }
+          ]
+        ), poolRows) %}
+      {% endfor %}
+
+
+      <div class="govuk-grid-row">
+        <hr>
+          <div class="govuk-grid-column-full">
+            <h2 class="govuk-heading-m govuk-!-margin-top-4">Select a pool</h2>
+            {{ govukTable({
+              attributes: {
+                'data-module': 'moj-sortable-table'
+              },
+              head: [
+                {},
+                {
+                  text: "Pool number",
+                  attributes: {
+                    "aria-sort": "ascending"
+                  }
+                },
+                {
+                  text: "Court name",
+                  attributes: {
+                    "aria-sort": "none"
+                  }
+                },
+                {
+                  text: "Pool stage",
+                  attributes: {
+                    "aria-sort": "none"
+                  }
+                },
+                {
+                  text: "Pool status",
+                  attributes: {
+                    "aria-sort": "none"
+                  }
+                },
+                {
+                  text: "Pool type",
+                  attributes: {
+                    "aria-sort": "none"
+                  },
+                  format: "date"
+                },
+                {
+                  text: "Service start date",
+                  attributes: {
+                    "aria-sort": "none"
+                  },
+                  format: "date"
+                }
+              ],
+              rows: poolRows
+            }) }}
+          </div>
+          <div class="govuk-grid-column-half govuk-button-group">
+
+            {{ govukButton({
+              text: "Continue",
+              type: "submit",
+              attributes: {
+                id: "continueButton",
+                formAction: reportUrl
+              }
+            }) }}
+
+            <a class="govuk-link" href="{{ url('reports.get') }}">Cancel</a>
+
+          </div>
+        </form>
+      </div>
+    {% endif %}
+  </form>
+
+{% endblock %}
