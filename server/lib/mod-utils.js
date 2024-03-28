@@ -964,6 +964,10 @@
       return 'Deferral granted (' + description.toLowerCase() + ')';
     }
 
+    if (status === 'Disqualified') {
+      return 'Disqualified (' + description.toLowerCase() + ')';
+    }
+
     if (status === 'Responded') {
       return status;
     }
