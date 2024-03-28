@@ -133,7 +133,7 @@ module.exports.getReturnCheckOut = (app) => (req, res) => {
   jurorAttendanceDao.get(
     app,
     req,
-    body
+    body,
   )
     .then((attendanceRecords) => {
       let earliestCheckInTime;
@@ -346,7 +346,7 @@ module.exports.postReturnConfirm = (app) => (req, res) => {
     panelType,
     trialNumber,
     locCode,
-    payload
+    payload,
   )
     .then(() => {
       req.session.bannerMessage =

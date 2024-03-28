@@ -17,13 +17,13 @@ module.exports.getCreateTrial = function (app) {
     promiseArr.push(courtroomsObject.get(
       require('request-promise'),
       app,
-      req.session.authToken
+      req.session.authToken,
     ));
 
     promiseArr.push(judgesObject.get(
       require('request-promise'),
       app,
-      req.session.authToken
+      req.session.authToken,
     ));
 
     Promise.all(promiseArr)
@@ -54,7 +54,7 @@ module.exports.getCreateTrial = function (app) {
               displayName: court.display_name,
               courtLocationName: court.court_location,
               courtrooms: court.court_rooms.map(room => room.description),
-            }
+            },
           );
 
           return court;
@@ -187,7 +187,7 @@ function createTrial (app, req, res, payload) {
     require('request-promise'),
     app,
     req.session.authToken,
-    payload
+    payload,
   )
     .then((resp) => {
       app.logger.info('Created a new trial', {
@@ -205,7 +205,7 @@ function createTrial (app, req, res, payload) {
         app.namedRoutes.build('trial-management.trials.detail.get', {
           trialNumber: resp.trial_number,
           locationCode: payload.court_location,
-        })
+        }),
       );
     })
     .catch((err) => {

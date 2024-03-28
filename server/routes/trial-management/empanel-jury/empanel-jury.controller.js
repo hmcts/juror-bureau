@@ -11,7 +11,7 @@ module.exports.getEmpanelAmount = function (app) {
       app,
       req.session.authToken,
       req.params.trialNumber,
-      req.params.locationCode
+      req.params.locationCode,
     ).then(trialData => {
       req.session.trial = trialData;
 
@@ -60,7 +60,7 @@ module.exports.postEmpanelAmount = function (app) {
       req,
       req.params.trialNumber,
       req.params.locationCode,
-      req.body.numberOfJurors
+      req.body.numberOfJurors,
     ).then(resp => {
       const noOfJurors = resp.length;
       const validatorResult = validate(req.body, validator.numberOfJurors(noOfJurors));

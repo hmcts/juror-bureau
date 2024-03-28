@@ -64,7 +64,7 @@ module.exports.postEditTrial = function (app) {
       req.session.formFields = req.body;
 
       return res.redirect(
-        app.namedRoutes.build('trial-management.edit-trial.get', { trialNumber: req.params.trialNumber })
+        app.namedRoutes.build('trial-management.edit-trial.get', { trialNumber: req.params.trialNumber }),
       );
     }
 
@@ -79,7 +79,7 @@ module.exports.postEditTrial = function (app) {
     req.session.trials.push(payload);
 
     return res.redirect(
-      app.namedRoutes.build('trial-management.trials.detail.get', { trialNumber: payload.trialNumber })
+      app.namedRoutes.build('trial-management.trials.detail.get', { trialNumber: payload.trialNumber }),
     );
   };
 };
