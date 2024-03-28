@@ -8,7 +8,7 @@
     , paperReplyObjectObj = require('../../../objects/paper-reply').paperReplyObject
     , getJurorDetailsObj = require('../../../objects/juror-record').record
     , { changeName: fixNameObj } = require('../../../objects/juror-record')
-    , { administrationCodes } = require('../../../objects/administration-codes')
+    , { systemCodesDAO } = require('../../../objects/administration')
     , paperReplyValidator = require('../../../config/validation/paper-reply')
     , { updateStatus } = require('../../../objects/summons-management')
     , validate = require('validate.js')
@@ -661,12 +661,7 @@
       }
 
       try {
-        let adjustmentsReasons = modUtils.reasonsArrToObj(await administrationCodes.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
-          'REASONABLE_ADJUSTMENTS'
-        ));
+        let adjustmentsReasons = modUtils.reasonsArrToObj(await systemCodesDAO.get(app, req, 'REASONABLE_ADJUSTMENTS'));
 
         Object.keys(adjustmentsReasons).forEach((key) => {
           reasons.push(

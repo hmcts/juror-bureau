@@ -3,7 +3,7 @@
 
   const _ = require('lodash');
   const paperReplyObj = require('../../../objects/paper-reply').paperReplyObject;
-  const { administrationCodes } = require('../../../objects/administration-codes');
+  const { systemCodesDAO } = require('../../../objects/administration');
   const summonsUpdate = require('../../../objects/summons-management').summonsUpdate;
   const validate = require('validate.js');
   const validator = require('../../../config/validation/paper-reply').reasonableAdjustments;
@@ -48,12 +48,7 @@
           assistanceTypeDetails = data.specialNeeds[0].assistanceTypeDetails;
         }
 
-        const adjustmentReasons = reasonsArrToObj(await administrationCodes.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
-          'REASONABLE_ADJUSTMENTS'
-        ));
+        const adjustmentReasons = reasonsArrToObj(await systemCodesDAO.get(app, req, 'REASONABLE_ADJUSTMENTS'));
 
         const reasons = Object.keys(adjustmentReasons).reduce((prev, key) => {
           prev.push({

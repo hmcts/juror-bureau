@@ -18,12 +18,12 @@
     , editJurorDetailsObject = require('../../../objects/juror-record').editDetails
     , deleteDeferralObject = require('../../../objects/deferral-mod').deleteDeferralObject
     , paperReplyValidator = require('../../../config/validation/paper-reply')
-    , { administrationCodes } = require('../../../objects/administration-codes')
+    , { systemCodesDAO } = require('../../../objects/administration')
     , { changeName: fixNameObj, disqualifyAgeDAO } = require('../../../objects/juror-record');
 
   module.exports.getEditDeferral = (app) => {
     return (req, res) => {
-      administrationCodes.get(require('request-promise'), app, req.session.authToken, 'EXCUSAL_AND_DEFERRAL')
+      systemCodesDAO.get(app, req, 'EXCUSAL_AND_DEFERRAL')
         .then((data) => {
           app.logger.info('Retrieved excusal codes: ', {
             auth: req.session.authentication,
@@ -353,12 +353,8 @@
       req.session.dateMax = moment().subtract(1, 'days');
 
       try {
-        let adjustmentReasonsObj = modUtils.reasonsArrToObj(await administrationCodes.get(
-            require('request-promise'),
-            app,
-            req.session.authToken,
-            'REASONABLE_ADJUSTMENTS'
-          )),
+        let adjustmentReasonsObj = modUtils.reasonsArrToObj(await systemCodesDAO.get(
+            app, req, 'REASONABLE_ADJUSTMENTS')),
           reasons = [{value: '', text: 'Select a reason...', selected: true}];
 
         Object.keys(adjustmentReasonsObj).forEach((key) => {
