@@ -869,8 +869,7 @@
         };
 
       promiseArr.push(paperReplyObj.get(require('request-promise'), app, req.session.authToken, req.params['id']));
-      promiseArr.push(systemCodesDAO.get(
-        require('request-promise'), app, req.session.authToken, 'REASONABLE_ADJUSTMENTS'));
+      promiseArr.push(systemCodesDAO.get(app, req, 'REASONABLE_ADJUSTMENTS'));
       Promise.all(promiseArr)
         .then(successCB)
         .catch(errorCB);
