@@ -28,6 +28,7 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
     , welshLanguageText = require('../../../../client/js/i18n/cy/PDF.json')
     , paperUpdateStatus = require('../../../objects/summons-management').updateStatus
     , opticReferenceObj = require('../../../objects/juror-record').opticReferenceObject
+    , { systemCodesDAO } = require('../../../objects/administration')
     , { dateFilter } = require('../../../components/filters');
 
   module.exports.index = function(app) {
@@ -71,12 +72,12 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
                 additionalChangeDetails.ageIneligible === false
               ),
               cjsEmployment: (
-                (data.cjsEmployments.length > 0) &&
+                (data.cjsEmployments && data.cjsEmployments.length > 0) &&
                 thirdPartyDetails.reason !== 'Deceased' &&
                 additionalChangeDetails.ageIneligible === false
               ),
               adjustments: (
-                (data.specialNeedsArrangements !== null || data.specialNeeds.length > 0) &&
+                (data.specialNeedsArrangements || (data.specialNeeds && data.specialNeeds.length > 0)) &&
                 thirdPartyDetails.reason !== 'Deceased' &&
                 additionalChangeDetails.ageIneligible === false
               ),
@@ -106,8 +107,8 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
             },
             poolNumber: data.poolNumber,
             replyType: 'digital',
-            specialNeeds: data.specialNeeds.length ? [{
-              assistanceType: modUtils.adjustmentsReasons[data.specialNeeds[0].code],
+            specialNeeds: data.specialNeeds.length > 0 ? [{
+              assistanceType: modUtils.reasonsArrToObj(response.results[2])[data.specialNeeds[0].code],
               assistanceTypeDetails: data.specialNeedsArrangements || data.specialNeeds[0].detail,
             }] : [],
           };
@@ -411,10 +412,12 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
       );
       promiseArr.push(
         courtObj.getCatchmentStatus(require('request-promise'), app, req.session.authToken, req.params.id));
+      promiseArr.push(
+        systemCodesDAO.get(app, req, 'REASONABLE_ADJUSTMENTS'));
 
       executeAllPromises(promiseArr)
-        .then(successCB);
-
+        .then(successCB)
+        .catch(errorCB);
 
     };
   };
@@ -1002,7 +1005,7 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
           //return res.render('response/_modals/excusal.njk', {
           return res.render('response/process/excusal.njk', {
             excusalDetails: tmpFields,
-            excusalReasons: getExcusalReasons(data[0]),
+            excusalReasons: data[0],
             nameDetails: getNameDetails(data[1]),
             jurorNumber: req.params.id,
             version: data[1].version,
@@ -1027,15 +1030,12 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
           return res.render('index.njk');
         };
 
-      promiseArr.push(excusalObj.get(require('request-promise'), app, req.session.authToken));
+      promiseArr.push(systemCodesDAO.get(
+        app, req, 'EXCUSAL_AND_DEFERRAL'));
       promiseArr.push(responseDetailObj.get(require('request-promise'), app, req.session.authToken, req.params.id));
       Promise.all(promiseArr)
         .then(successCB)
         .catch(errorCB);
-
-      //excusalObj.get(require('request-promise'), app, req.session.authToken)
-      //  .then(successCB)
-      //  .catch(errorCB);
     };
   };
 
@@ -1175,7 +1175,7 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
           //return res.render('response/_modals/deferral.njk', {
           return res.render('response/process/deferral.njk', {
             deferralDetails: tmpFields,
-            deferralReasons: getExcusalReasons(data[0]),
+            deferralReasons: data[0],
             deferralDates: deferralDates,
             defaultDate: defaultDate,
             nameDetails: getNameDetails(data[1]),
@@ -1203,7 +1203,8 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
           return res.render('index.njk');
         };
 
-      promiseArr.push(excusalObj.get(require('request-promise'), app, req.session.authToken));
+      promiseArr.push(systemCodesDAO.get(
+        app, req, 'EXCUSAL_AND_DEFERRAL'));
       promiseArr.push(responseDetailObj.get(require('request-promise'), app, req.session.authToken, req.params.id));
       Promise.all(promiseArr)
         .then(successCB)
@@ -2567,18 +2568,6 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
 
     return returnDates;
 
-  }
-
-  function getExcusalReasons(arrCodes){
-    var sortedCodes = [];
-
-    if (arrCodes){
-      sortedCodes = arrCodes.sort(function(a, b) {
-        return a.excusalCode.localeCompare(b.excusalCode);
-      });
-    }
-
-    return sortedCodes;
   }
 
 })();

@@ -13,3 +13,5 @@ ENV NODE_ENV=production
 COPY --from=build $WORKDIR ./
 USER hmcts
 EXPOSE 3000
+
+CMD ["yarn", "serve"]

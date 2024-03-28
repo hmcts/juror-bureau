@@ -663,42 +663,27 @@
     hgh: 'HGH',
   };
 
-  module.exports.adjustmentsReasons = {
-    C: 'C - Childcare problems',
-    D: 'D - Diet',
-    H: 'H - Hearing impairment',
-    I: 'I - Diabetic',
-    L: 'L - Limited mobility',
-    M: 'M - Multiple',
-    O: 'O - Other',
-    P: 'P - Pregnancy',
-    R: 'R - Reading',
-    U: 'U - Drug dependent',
-    V: 'V - Visual impairment',
-    W: 'W - Wheelchair access',
-  };
+  module.exports.reasonsArrToObj = function(list) {
+    let reasonsObject = {};
 
-  module.exports.deferralReasons = {
-    '': 'Select a reason...',
-    A: 'A-Moved from the area',
-    B: 'B-Student',
-    C: 'C-Childcare',
-    F: 'F-Forces',
-    G: 'G-Financial hardship',
-    I: 'I-Ill',
-    J: 'J-Excused by bureau, too many jurors',
-    K: 'K-Criminal record',
-    L: 'L-Language difficulties',
-    M: 'M-Medical',
-    N: 'N-Mental health',
-    O: 'O-Other',
-    R: 'R-Religious reason',
-    S: 'S-Recently served',
-    T: 'T-Travelling difficulties',
-    W: 'W-Work related',
-    X: 'X-Carer',
-    Y: 'Y-Holiday',
-    Z: 'Z-Bereavement',
+    list.forEach(reason => {
+      if (reason.code === ' ' || reason.code === '') {
+        reasonsObject[reason.code] = capitalizeFully(reason.description);
+      } else {
+        reasonsObject[reason.code] = reason.code + ' - ' + capitalizeFully(reason.description);
+      }
+      if (reasonsObject[reason.code].includes('Cjs')) {
+        reasonsObject[reason.code] = reasonsObject[reason.code].replace('Cjs', 'CJS');
+      }
+      if (reasonsObject[reason.code].includes('(') && reasonsObject[reason.code].includes(')')) {
+        const insideParen = reasonsObject[reason.code].substring(
+          (reasonsObject[reason.code].indexOf('(') + 1), reasonsObject[reason.code].indexOf(')'));
+
+        reasonsObject[reason.code] = reasonsObject[reason.code].replace(insideParen, insideParen.toLowerCase());
+      }
+    });
+
+    return reasonsObject;
   };
 
   module.exports.buildSuggestedDate = function(date) {
@@ -979,6 +964,10 @@
       return 'Deferral granted (' + description.toLowerCase() + ')';
     }
 
+    if (status === 'Disqualified') {
+      return 'Disqualified (' + description.toLowerCase() + ')';
+    }
+
     if (status === 'Responded') {
       return status;
     }
@@ -1060,6 +1049,21 @@
     }
 
     return `${hour}:${minute}`;
+  };
+
+  module.exports.convertTimeToHHMM = function(hour, minute, period) {
+    let convertedHours = parseInt(hour, 10);
+
+    if (period.toLowerCase() === 'pm' && convertedHours !== 12) {
+      convertedHours += 12;
+    } else if (period.toLowerCase() === 'am' && convertedHours === 12) {
+      convertedHours = 0;
+    }
+
+    const formattedHours = convertedHours.toString().padStart(2, '0');
+    const formattedMinutes = minute.toString().padStart(2, '0');
+
+    return `${formattedHours}:${formattedMinutes}`;
   };
 
   module.exports.buildMovementProblems = function(data) {

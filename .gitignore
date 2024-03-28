@@ -97,3 +97,8 @@ build/
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# environment configs
+config/*
+!config/environment.template.json
+server/config/environment/bk_development.js
