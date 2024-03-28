@@ -14,14 +14,28 @@
       },
 
       jurorNumber: () => {
-        if (!body.searchBy || body.searchBy !== 'juror') return null;
+        if (!body.searchBy || body.searchBy !== 'jurorNumber') return null;
 
         return {
           presence: {
             allowEmpty: false,
             message: {
-              details: 'Enter juror name, number or postcode',
-              summary: 'Enter juror name, number or postcode',
+              details: 'Enter juror number',
+              summary: 'Enter juror number',
+            },
+          },
+        };
+      },
+
+      jurorName: () => {
+        if (!body.searchBy || body.searchBy !== 'jurorName') return null;
+
+        return {
+          presence: {
+            allowEmpty: false,
+            message: {
+              details: 'Enter juror name',
+              summary: 'Enter juror name',
             },
           },
         };

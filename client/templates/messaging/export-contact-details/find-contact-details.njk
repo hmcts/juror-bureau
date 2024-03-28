@@ -20,14 +20,32 @@
   {% set jurorNumberError = { "text": errors.items["jurorNumber"][0].details } %}
 {% endif %}
 
-{% set byJurorHtml %}
+{% set byJurorNumberHtml %}
   {{ govukInput({
     label: {
-      text: "Enter juror name, number or postcode"
+      text: "Enter juror number"
     },
+    classes: "govuk-input--width-10",
     id: "jurorNumber",
     name: "jurorNumber",
     errorMessage: jurorNumberError
+  }) }}
+{% endset %}
+
+{# juror name infos #}
+{% set jurorNameError = undefined %}
+{% if errors.items["jurorName"] %}
+  {% set jurorNameError = { "text": errors.items["jurorName"][0].details } %}
+{% endif %}
+
+{% set byJurorNameHtml %}
+  {{ govukInput({
+    label: {
+      text: "Enter juror name"
+    },
+    id: "jurorName",
+    name: "jurorName",
+    errorMessage: jurorNameError
   }) }}
 {% endset %}
 
@@ -112,10 +130,16 @@
           },
           items: [
             {
-              value: "juror",
-              text: "Juror",
-              conditional: { html: byJurorHtml },
+              value: "jurorNumber",
+              text: "Juror number",
+              conditional: { html: byJurorNumberHtml },
               checked: jurorNumberError !== undefined
+            },
+            {
+              value: "jurorName",
+              text: "Juror name",
+              conditional: { html: byJurorNameHtml },
+              checked: jurorNameError !== undefined
             },
             {
               value: "pool",
