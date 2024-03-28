@@ -3,9 +3,11 @@
 
   const rp = require('request-promise');
   const urljoin = require('url-join');
+  const config = require('../config/environment')();
+  const { mapCamelToSnake, mapSnakeToCamel } = require('../lib/mod-utils');
 
   module.exports.standardReportDAO = {
-    post: function(app, req, endpoint, config) {
+    post: function(app, req, endpoint, requestConfig) {
       const payload = {
         uri: urljoin(config.apiEndpoint, 'moj/reports/standard'),
         method: 'POST',
@@ -15,6 +17,11 @@
           Authorization: req.session.authToken,
         },
         json: true,
+        body: mapCamelToSnake({
+          ...requestConfig,
+          reportType: endpoint,
+        }),
+        transform: mapSnakeToCamel,
       };
 
       app.logger.info('Sending request to API: ', payload);

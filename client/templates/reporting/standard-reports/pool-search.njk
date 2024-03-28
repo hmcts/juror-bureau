@@ -52,6 +52,7 @@
               }) }}
 
             </div>
+            {# layout here is not quite right #}
             <div class="govuk-grid-column-half govuk-button-group">
 
               {{ govukButton({
@@ -131,7 +132,7 @@
       <div class="govuk-grid-row">
         <hr>
           <div class="govuk-grid-column-full">
-            <h3 class="govuk-heading-s govuk-!-margin-top-4">{{ resultsCount }} results</h3>
+            <h2 class="govuk-heading-m govuk-!-margin-top-4">Select a pool</h2>
             {{ govukTable({
               attributes: {
                 'data-module': 'moj-sortable-table'
