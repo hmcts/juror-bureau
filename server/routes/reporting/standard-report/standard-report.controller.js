@@ -1,8 +1,7 @@
-const { snakeToCamel } = require('../../../lib/mod-utils');
-
 (() => {
   'use strict';
 
+  const { snakeToCamel } = require('../../../lib/mod-utils');
   const { dateFilter, capitalizeFully } = require('../../../components/filters');
   const { standardReportDAO } = require('../../../objects/reports');
   const { validate } = require('validate.js');
