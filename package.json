@@ -8,6 +8,8 @@
   "main": "server/index.js",
   "scripts": {
     "start": "grunt serve",
+    "debug": "NODE_ENV=dist grunt build && node --inspect-brk ./tmp/server/index.js",
+    "start:lb": "NODE_ENV=development node ./tmp/server/index.js",
     "test": "grunt test:intergration --force",
     "test:coverage": "grunt test:coverage --force",
     "test:a11y": "echo TODO: a11y",

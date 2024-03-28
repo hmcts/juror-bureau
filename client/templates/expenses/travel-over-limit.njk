@@ -1,0 +1,89 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - juror-management - unpaid attendance - daily expenses - travel limits{% endblock %}
+{% block page_identifier %}juror-management - unpaid attendance - daily expenses - travel limits{% endblock %}
+
+{% set currentApp = "Jurors" %}
+
+{% block content %}
+  <form method="post" action="{{ continueUrl }}" id="travelLimitsForm">
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-half">
+        <h1 class="govuk-heading-l">Some amounts entered are more than your court’s suggested daily limits</h1>
+      </div>
+    </div>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-half">
+        <h2 class="govuk-heading-m">Public transport</h2>
+        {{ govukSummaryList({
+          rows: [
+            {
+              key: {
+                text: "Daily limit"
+              },
+              value: {
+                text: ("£" + travelOverLimit.publicTransportLimit) if travelOverLimit.publicTransportLimit else "-"
+              }
+            },
+            {
+              key: {
+                text: "Amount entered"
+              },
+              value: {
+                text: "£" + body.publicTransport,
+                classes: "mod-red-text" if (body.publicTransport > travelOverLimit.publicTransportLimit and travelOverLimit.publicTransportLimit) else ""
+              }
+            }
+          ]
+        }) }}
+      </div>
+    </div>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-half">
+        <h2 class="govuk-heading-m">Taxi</h2>
+        {{ govukSummaryList({
+          rows: [
+            {
+              key: {
+                text: "Daily limit"
+              },
+              value: {
+                text: ("£" + travelOverLimit.taxiLimit) if travelOverLimit.taxiLimit else "-"
+              }
+            },
+            {
+              key: {
+                text: "Amount entered"
+              },
+              value: {
+                text: "£" + body.taxi,
+                classes: "mod-red-text" if (body.taxi > travelOverLimit.taxiLimit and travelOverLimit.taxiLimit) else ""
+              }
+            }
+          ]
+        }) }}
+      </div>
+    </div>
+
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Pay amount entered",
+        attributes: {
+          id: "payAmountEnteredButton"
+        }
+      }) }}
+
+      <a class="govuk-link" id="cancelAnchor" href="{{ cancelUrl }}">Go back and change</a>
+    </div>
+
+    {{ csrfProtection(csrftoken) }}
+
+  </form>
+{% endblock %}

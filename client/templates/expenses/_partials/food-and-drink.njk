@@ -49,7 +49,7 @@
     classes: "govuk-!-margin-top-3 govuk-input--width-5",
     id: "smartcardSpend",
     name: "smartcardSpend",
-    value: expensesData.food_and_drink.smart_card_amount | toFixed(2),
+    value: (tmpBody.smartcardSpend | toFixed(2)) if tmpBody.smartcardSpend,
     label: {
       text: "Amount spent on smartcard for this day"
     },

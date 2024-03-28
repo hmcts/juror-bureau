@@ -11,17 +11,18 @@
     return function(req, res) {
       const tmpErrors = _.clone(req.session.errors);
       const tmpFields = _.clone(req.session.formFields);
-      const jurorNumber = req.params.jurorNumber,
-        poolNumber = req.params.poolNumber;
+      const { jurorNumber, poolNumber } = req.params;
+      const { status } = req.query;
+
       let cancelUrl = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
         jurorNumber,
         poolNumber,
-        status: 'draft',
+        status: status || 'draft',
       });
       let postUrl = app.namedRoutes.build('juror-management.non-attendance-day.post', {
         jurorNumber,
         poolNumber,
-      });
+      }) + `?status=${status || 'draft'}`;
 
       if (req.url.includes('record')) {
         postUrl = app.namedRoutes.build('juror-record.attendance.non-attendance-day.post', {
@@ -51,19 +52,22 @@
 
   module.exports.postNonAttendanceDay = (app) => {
     return async function(req, res) {
+      const { jurorNumber, poolNumber } = req.params;
+      const { status } = req.query;
+
       const validatorResult = validate(req.body, nonAttendanceDayValidator());
       let errorUrl = app.namedRoutes.build('juror-management.non-attendance-day.get', {
-        jurorNumber: req.params.jurorNumber, poolNumber: req.params.poolNumber,
+        jurorNumber, poolNumber,
       });
       let successUrl = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
-        jurorNumber: req.params.jurorNumber, poolNumber: req.params.poolNumber, status: 'draft',
+        jurorNumber, poolNumber, status: 'draft',
       });
 
       if (req.url.includes('record')) {
         errorUrl = app.namedRoutes.build('juror-record.attendance.non-attendance-day.get', {
-          jurorNumber: req.params.jurorNumber, poolNumber: req.params.poolNumber,
+          jurorNumber, poolNumber,
         });
-        successUrl = app.namedRoutes.build('juror-record.attendance.get', {jurorNumber: req.params.jurorNumber});
+        successUrl = app.namedRoutes.build('juror-record.attendance.get', { jurorNumber });
       }
 
       if (typeof validatorResult !== 'undefined') {
@@ -75,15 +79,27 @@
 
       try {
         const payload = {
-          'juror_number': req.params.jurorNumber,
+          'juror_number': jurorNumber,
           'location_code': req.session.authentication.owner,
-          'pool_number': req.params.poolNumber,
+          'pool_number': poolNumber,
           'non_attendance_date': dateFilter(
             req.body.nonAttendanceDay.split('/').map(d => d.padStart(2, '0')).join('/'), 'DD/MM/YYYY', 'YYYY-MM-DD',
           ),
         };
 
         await jurorNonAttendanceDao.post(app, req, payload);
+
+        if (status && status !== 'draft') {
+          // We do not need to add the non-attendance date to the dates list
+          // because it will always be draft to start with
+          // req.session.editApprovalDates.push(payload.non_attendance_date);
+
+          return res.redirect(app.namedRoutes.build('juror-management.edit-expense.get', {
+            jurorNumber,
+            poolNumber,
+            status,
+          }));
+        }
 
         return res.redirect(successUrl);
       } catch (err) {

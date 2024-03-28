@@ -10,10 +10,11 @@
     postDraftExpenseDAO,
     postRecalculateSummaryTotalsDAO,
   } = require('../../../../objects/expense-record');
+  const { getCourtLocationRates } = require('../../../../objects/court-location');
 
   module.exports.getEnterExpenses = (app) => {
     return async function(req, res) {
-      const { jurorNumber, poolNumber, status } = req.params;
+      const { jurorNumber, poolNumber } = req.params;
       const { date } = req.query;
       const page = parseInt(req.query.page);
 
@@ -115,6 +116,12 @@
 
       const [timeSpentAtCourtHour, timeSpentAtCourtMinute] = expensesData.time.time_spent_at_court.split(':');
 
+      if (req.session.editExpenseTravelOverLimit && req.session.editExpenseTravelOverLimit.body) {
+        tmpBody = req.session.editExpenseTravelOverLimit.body;
+      }
+
+      delete req.session.editExpenseTravelOverLimit;
+
       return res.render(renderTemplate, {
         postUrls,
         cancelUrl,
@@ -141,12 +148,18 @@
   module.exports.postEnterExpenses = (app) => {
     return async function(req, res) {
       const { jurorNumber, poolNumber } = req.params;
-      const { date, action } = req.query;
+      const { date, action, ['travel-over-limit']: travelOverLimit } = req.query;
       const page = parseInt(req.query['page']);
       const nonAttendanceDay = _.clone(req.session.nonAttendanceDay);
+      const nextDate = req.session.expensesData.dates[page];
+      const nextPage = page + 1;
       let validatorResult;
 
       delete req.session.nonAttendanceDay;
+
+      if (travelOverLimit === 'true') {
+        req.body = req.session.editExpenseTravelOverLimit.body;
+      }
 
       req.body.applyToAllDays =
         !Array.isArray(req.body.applyToAllDays) ? [req.body.applyToAllDays] : req.body.applyToAllDays;
@@ -170,24 +183,91 @@
         }) + `?date=${date}&page=${page}`);
       }
 
-      if (parseFloat(req.body.total) < 0){
-        req.session.tmpBody = req.body;
-        return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.total-less-zero.get', {
-          jurorNumber,
-          poolNumber,
-        }));
-      }
-
       const data = buildDataPayload(req.body, nonAttendanceDay);
 
       data['date_of_expense'] = date;
       data['pool_number'] = poolNumber;
 
+      if (!travelOverLimit) {
+        const { showTravelOverLimit, error } = await isTravelOverLimit(app, req);
+
+        req.session.editExpenseTravelOverLimit = {
+          body: req.body,
+        };
+
+        if (error) {
+          app.logger.crit('Failed to check if travel is over the limit', {
+            auth: req.session.authentication,
+            jwt: req.session.authToken,
+            data: {
+              jurorNumber,
+              poolNumber,
+            },
+            error: typeof error.error !== 'undefined' ? error.error : error.toString(),
+          });
+
+          return res.render('_errors/generic');
+        }
+
+        if (showTravelOverLimit) {
+          const cancelUrl = app.namedRoutes.build('juror-management.enter-expenses.get', {
+            jurorNumber,
+            poolNumber,
+          }) + `?date=${date}&page=${page}`;
+          let continueUrl = app.namedRoutes.build('juror-management.enter-expenses.post', {
+            jurorNumber,
+            poolNumber,
+          }) + `?date=${date}&page=${page}&action=back&travel-over-limit=true`;
+
+          if (action === 'next' && nextDate) {
+            continueUrl = app.namedRoutes.build('juror-management.enter-expenses.post', {
+              jurorNumber,
+              poolNumber,
+            }) + `?date=${date}&page=${page}&action=next&travel-over-limit=true`;
+          }
+
+          req.session.editExpenseTravelOverLimit.continueUrl = continueUrl;
+          req.session.editExpenseTravelOverLimit.cancelUrl = cancelUrl;
+          req.session.editExpenseTravelOverLimit.travelOverLimit = {
+            ...showTravelOverLimit,
+          };
+
+          return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.travel-over-limit.get', {
+            jurorNumber,
+            poolNumber,
+          }));
+        }
+      }
+
+      // clear any data related to the edit expense travel over limit
+      delete req.session.editExpenseTravelOverLimit;
+
+      try {
+        const payload = {
+          'juror_number': jurorNumber,
+          'pool_number': poolNumber,
+          'expense_list': [{ ...data }],
+        };
+
+        delete payload.expense_list[0].pool_number;
+
+        await postRecalculateSummaryTotalsDAO.post(app, req, payload);
+      } catch (err) {
+        if (err.error.code === 'EXPENSES_CANNOT_BE_LESS_THAN_ZERO') {
+          req.session.tmpBody = {
+            ...req.body,
+            date,
+            page,
+          };
+          return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.total-less-zero.get', {
+            jurorNumber,
+            poolNumber,
+          }));
+        }
+      }
+
       try {
         const response = await postDraftExpenseDAO.post(app, req, jurorNumber, data, nonAttendanceDay);
-
-        const nextDate = req.session.expensesData.dates[page];
-        const nextPage = page + 1;
 
         if (response.financial_loss_warning) {
           req.session.financialLossWarning = response.financial_loss_warning;
@@ -253,6 +333,14 @@
       delete req.session.nextExpensePage;
       delete req.session.nextExpenseDate;
 
+      if (req.session.editExpenseLossOverLimitNextUrl) {
+        const nextUrl = req.session.editExpenseLossOverLimitNextUrl;
+
+        delete req.session.editExpenseLossOverLimitNextUrl;
+
+        return res.redirect(nextUrl);
+      }
+
       if (date && page) {
         return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.get', {
           jurorNumber,
@@ -265,6 +353,19 @@
         poolNumber,
         status: 'draft',
       }));
+    };
+  };
+
+  module.exports.getTravelOverLimit = () => {
+    return async function(req, res) {
+      const { continueUrl, cancelUrl, travelOverLimit, body } = req.session.editExpenseTravelOverLimit;
+
+      return res.render('expenses/travel-over-limit.njk', {
+        continueUrl,
+        cancelUrl,
+        travelOverLimit,
+        body,
+      });
     };
   };
 
@@ -335,15 +436,18 @@
 
   module.exports.getTotalLessThanZero = (app) => {
     return function(req, res) {
+      const { jurorNumber, poolNumber } = req.params;
+      const { date, page } = req.session.tmpBody;
+
       return res.render('expenses/total-less-than-zero.njk', {
         defaultExpensesUrl: app.namedRoutes.build('juror-management.default-expenses.get', {
-          jurorNumber: req.params.jurorNumber,
-          poolNumber: req.params.poolNumber,
+          jurorNumber,
+          poolNumber,
         }),
         cancelUrl: app.namedRoutes.build('juror-management.enter-expenses.get', {
-          jurorNumber: req.params.jurorNumber,
-          poolNumber: req.params.poolNumber,
-        }),
+          jurorNumber,
+          poolNumber,
+        }) + `?date=${date}&page=${page}`,
       });
     };
   };
@@ -388,9 +492,9 @@
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
-        console.log(err);
-
-        return res.render('expenses/_partials/recalculate-error-banner.njk');
+        return res.render('expenses/_partials/recalculate-error-banner.njk', {
+          isLessThanPaid: err.error.code === 'EXPENSE_VALUES_REDUCED_LESS_THAN_PAID',
+        });
       }
     };
   };
@@ -514,6 +618,37 @@
     }
 
     return formData;
+  }
+
+  async function isTravelOverLimit(app, req) {
+    let showTravelOverLimit;
+
+    try {
+      const { publicTransport, taxi } = req.body;
+      const response = await getCourtLocationRates(app, req);
+
+      const publicTransportLimit = response.public_transport_soft_limit;
+      const taxiLimit = response.taxi_soft_limit;
+
+      if (!publicTransportLimit && !taxiLimit) {
+        return { showTravelOverLimit, error: false };
+      }
+
+      if (
+        (publicTransportLimit && (Number(publicTransportLimit) < Number(publicTransport)))
+        || (taxiLimit && (Number(taxiLimit) < Number(taxi)))
+      ) {
+        showTravelOverLimit = {
+          publicTransportLimit: response.public_transport_soft_limit,
+          taxiLimit: response.taxi_soft_limit,
+        };
+      }
+
+    } catch (error) {
+      return { showTravelOverLimit, error };
+    }
+
+    return { showTravelOverLimit, error: false };
   }
 
 })();
