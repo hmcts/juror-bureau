@@ -26,27 +26,36 @@
 
 {% block content %}
 
-    {% if tableRows.length === 0 %}
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-          <hr class="govuk-section-break govuk-section-break--visible">
-          <h2 class="govuk-heading-m govuk-!-margin-top-4">This report has no matching data</h2>
-        </div>
+  <h1 class="govuk-heading-l">{{title}}</h1>
+
+  <div class="report-headings">
+    {% for heading in pageHeadings %}
+      <div class="heading-element">
+        <div class="title">{{heading.title}}</div>
+        <div class="value">{{heading.data}}</div>
       </div>
-    {% else %}
-      <div class="govuk-grid-row">
-        <hr>
-        <div class="govuk-grid-column-full">
-          <h2 class="govuk-heading-m govuk-!-margin-top-4">{{title}}</h2>
-          {{ govukTable({
-            attributes: {
-              'data-module': 'moj-sortable-table'
-            },
-            head: tableHeaders,
-            rows: tableRows
-          }) }}
-        </div>
+    {% endfor %}
+  </div>
+
+  {% if tableRows.length === 0 %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <hr class="govuk-section-break govuk-section-break--visible">
+        <h2 class="govuk-heading-m govuk-!-margin-top-4">This report has no matching data</h2>
       </div>
-    {% endif %}
+    </div>
+  {% else %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        {{ govukTable({
+          attributes: {
+            'data-module': 'moj-sortable-table'
+          },
+          head: tableHeaders,
+          rows: tableRows
+        }) }}
+      </div>
+    </div>
+  {% endif %}
 
 {% endblock %}

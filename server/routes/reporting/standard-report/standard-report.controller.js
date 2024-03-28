@@ -19,12 +19,36 @@ const { snakeToCamel } = require('../../../lib/mod-utils');
       title: 'Next attendance date report',
       apiKey: 'NextAttendanceDayReport',
       search: 'poolNumber',
+      headings: [
+        'poolNumber',
+        'reportDate',
+        'poolType',
+        'reportTime',
+        'serviceStartDate',
+        'courtName',
+      ],
     },
   };
 
-  const dataMappers = {
+  const tableDataMappers = {
     String: (data) => capitalizeFully(data),
     LocalDate: (data) => dateFilter(data, 'YYYY-mm-dd', 'ddd D MMM YYYY'),
+  };
+
+  const headingDataMappers ={
+    String: (data) => capitalizeFully(data),
+    LocalDate: (data) => dateFilter(data, 'YYYY-mm-dd', 'dddd D MMMM YYYY'),
+    timeFromISO: (data) => {
+      const time = data.split('T')[1].split('.')[0];
+
+      if (time.split(':')[0] === 12) {
+        return time + 'pm';
+      } else if (time.split(':')[0] > 12) {
+        return `${time.split(':')[0] - 12}:${time.split(':').slice(1).join(':')}pm`;
+      }
+
+      return time + 'am';
+    },
   };
 
   const standardFilterGet = (app, reportKey) => async (req, res) => {
@@ -100,9 +124,19 @@ const { snakeToCamel } = require('../../../lib/mod-utils');
         attributes: {
           'aria-sort': index === 0 ? 'ascending' : 'none',
         }}));
-
+console.log(tableData.headings)
       const tableRows = tableData.data.map(data => tableData.headings.map(header => {
-        let output = dataMappers[header.dataType](data[snakeToCamel(header.id)]);
+        let output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
+
+        if (header.id === 'juror_number') {
+          return ({
+            html: `<a href=${
+              app.namedRoutes.build('juror-record.overview.get', {jurorNumber: output})
+            }>${
+              output
+            }</a>`,
+          });
+        }
 
         if (header.id === 'postcode') {
           output = output.toUpperCase();
@@ -113,12 +147,22 @@ const { snakeToCamel } = require('../../../lib/mod-utils');
         });
       }));
 
-      console.log(tableData.headings)
+      const pageHeadings = reportType.headings.map(heading => {
+        if (heading === 'reportDate') {
+          return { title: 'Report created', data: headingDataMappers.LocalDate(headings.reportCreated.value) };
+        } else if (heading === 'reportTime') {
+          return { title: 'Time created', data: headingDataMappers.timeFromISO(headings.reportCreated.value) };
+        }
+        const headingData = headings[heading];
+
+        return { title: headingData.displayName, data: headingDataMappers[headingData.dataType](headingData.value)};
+      });
+
       return res.render('reporting/standard-reports/standard-report', {
         title: reportType.title,
         tableRows,
         tableHeaders,
-        headings,
+        pageHeadings,
         backLinkUrl: {
           built: true,
           url: app.namedRoutes.build(`${reportKey}.filter.get`) + (filter ? '?filter=' + filter : ''),
