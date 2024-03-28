@@ -17,7 +17,7 @@
     "comma-dangle": ["error", "always-multiline"],
     "no-console": "warn",
     "quotes": ["error", "single"],
-    "indent": ["error", 2],
+    "indent": ["error", 2, { "SwitchCase": 1 }],
     "eqeqeq": [2, "smart"],
     "dot-location": [2, "property"],
     "no-else-return": 2,
@@ -31,7 +31,7 @@
     "space-in-parens": "error",
     "space-before-blocks": "error",
     "semi-spacing": "error",
-    "object-curly-spacing": "error",
+    "object-curly-spacing": ["error", "always"],
     "no-lonely-if": "error",
     "no-mixed-spaces-and-tabs": "error",
     "no-multiple-empty-lines": "error",
@@ -45,6 +45,7 @@
     "no-script-url": "error",
     "no-self-compare": "error",
     "one-var": ["error", "never"],
+    "switch-colon-spacing": "error",
 
     // In some cases I have seen it useful to allow undefined assignements
     // "no-undef-init": 2,

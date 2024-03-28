@@ -13,3 +13,4 @@ test/**
 tests/**
 server/**/pdfExport.js
 server/**/*.spec.js
+server/stores/**

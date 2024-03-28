@@ -1,7 +1,7 @@
-;(function(){
+;(function () {
   'use strict';
 
-  var chai = require('chai');
+  let chai = require('chai');
 
   // Load Chai assertions
   global.expect = chai.expect;
@@ -14,6 +14,6 @@
   // Initialize Chai plugins
   chai.use(require('sinon-chai'));
   chai.use(require('chai-as-promised'));
-  chai.use(require('chai-things'))
+  chai.use(require('chai-things'));
 
 })();
