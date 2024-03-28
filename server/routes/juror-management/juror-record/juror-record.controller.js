@@ -10,28 +10,6 @@ const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/ex
     , validate = require('validate.js')
     , modUtils = require('../../../lib/mod-utils');
 
-  function render(req, res, tab, jurorNumber, other) {
-
-    return res.render('juror-management/juror-record/' + tab, {
-      backLinkUrl: 'homepage.get',
-      juror: {
-        commonDetails: {
-          title: 'Rev',
-          firstName: 'James',
-          lastName: 'Rashad',
-          jurorNumber: jurorNumber,
-          jurorStatus: 'Summoned',
-          poolNumber: '101',
-          startDate: ['2022', '1', '1'],
-          courtName: 'PRESTON COMBINED COURT CENTRE',
-        },
-      },
-      currentTab: tab,
-      hasSummons: req.session.hasSummonsResponse,
-      ...other,
-    });
-  }
-
   // TODO: this will probably be removed when we move to a single juror / summons record
   module.exports.checkResponse = function(app) {
     return async function(req, res, next) {
