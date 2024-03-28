@@ -1047,6 +1047,21 @@
     return `${hour}:${minute}`;
   };
 
+  module.exports.convertTimeToHHMM = function(hour, minute, period) {
+    let convertedHours = parseInt(hour, 10);
+
+    if (period.toLowerCase() === 'pm' && convertedHours !== 12) {
+      convertedHours += 12;
+    } else if (period.toLowerCase() === 'am' && convertedHours === 12) {
+      convertedHours = 0;
+    }
+
+    const formattedHours = convertedHours.toString().padStart(2, '0');
+    const formattedMinutes = minute.toString().padStart(2, '0');
+
+    return `${formattedHours}:${formattedMinutes}`;
+  };
+
   module.exports.buildMovementProblems = function(data) {
     if (data.unavailableForMove.length){
       let unavailableReasons = {ageIneligible: [], invalidStatus: [], noActiveRecord: []};
