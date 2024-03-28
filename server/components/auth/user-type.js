@@ -76,7 +76,8 @@
   function isManager(req, res, next) {
     if (
       req.session.authentication.hasOwnProperty('roles') === true &&
-      req.session.authentication.roles.includes('MANAGER')
+      req.session.authentication.roles.includes('MANAGER') ||
+      req.session.authentication.roles.includes('TEAM_LEADER')
     ) {
       if (typeof next !== 'undefined') {
         return next();
