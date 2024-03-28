@@ -60,7 +60,7 @@
   },
   "devDependencies": {
     "@scottish-government/pattern-library": "0.0.381",
-    "chai": "^4.1.2",
+    "chai": "^5.0.0",
     "chai-as-promised": "^7.1.1",
     "chai-things": "^0.2.0",
     "eslint": "^4.12.1",
