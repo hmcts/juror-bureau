@@ -40,7 +40,11 @@ yarn install
 yarn start
 ```
 
-After running all the above, you should see the application running (or some errors for missing keys). If you get the errors, contact DevOps or other Senior Devs to help you with those keys.
+After running all the above, you should see the application running. If you get any errors about the environemnt files missing, read below.
+
+#### Configurations
+
+We prove a `/config` in the root of the project that contains a template file. For local development, copy the file and rename it `development.json`. If you need help finding any of the development keys, get in touch with DevOps.
 
 ### Redis
 
