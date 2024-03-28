@@ -2,3 +2,14 @@
 Gruntfile.js
 bundle.js
 bundle.min.js
+
+tmp/**
+dist/**
+coverage/**
+reports/**
+.git/**
+client/**
+test/**
+tests/**
+server/**/pdfExport.js
+server/**/*.spec.js
