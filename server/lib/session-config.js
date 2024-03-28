@@ -71,7 +71,7 @@ module.exports.SessionConfig = class SessionConfig {
       resave: false,
       saveUninitialized: false,
       maxAge: this._sessionExpires,
-      name: 'juror_bureau_session-' + process.env.NODE_ENV,
+      name: 'juror_bureau_session',
       cookie: {
         secure: isProduction,
         httpOnly: true,
