@@ -1176,10 +1176,10 @@
         Stu: { vwx: 'vwx', y: { Z: 'z' }},
       }, capitalise);
   */
-  module.exports.replaceAllObjKeys = (obj, getNewKey) => {
+  const replaceAllObjKeys = (obj, getNewKey) => {
     if (Array.isArray(obj)) {
       for (let i = 0; i < obj.length; i++) {
-        modUtils.replaceAllObjKeys(obj[i], getNewKey);
+        replaceAllObjKeys(obj[i], getNewKey);
       }
     } else if (typeof obj === 'object') {
       // eslint-disable-next-line guard-for-in
@@ -1190,12 +1190,28 @@
         if (key !== newKey) {
           delete obj[key];
         }
-        modUtils.replaceAllObjKeys(obj[newKey], getNewKey);
+        replaceAllObjKeys(obj[newKey], getNewKey);
       }
     }
 
     return obj;
   };
+
+  module.exports.replaceAllObjKeys = replaceAllObjKeys;
+
+  const snakeToCamel = (item) => item.split('_').reduce((prev, curr) => prev + curr[0].toUpperCase() + curr.slice(1));
+
+  const mapSnakeToCamel = (object) => replaceAllObjKeys(object, snakeToCamel);
+
+  module.exports.snakeToCamel = snakeToCamel;
+  module.exports.mapSnakeToCamel = mapSnakeToCamel;
+
+  const camelToSnake = (item) => item.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
+
+  const mapCamelToSnake = (object) => replaceAllObjKeys(object, camelToSnake);
+
+  module.exports.camelToSnake = camelToSnake;
+  module.exports.mapCamelToSnake = mapCamelToSnake;
 
   module.exports.messagingCodes = {
     'reminder-to-attend': 'REMIND_TO_ATTEND',
