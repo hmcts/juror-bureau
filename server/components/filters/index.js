@@ -1,174 +1,171 @@
-;(function(){
-  'use strict';
+const _ = require('lodash');
+const moment = require('moment');
 
-  var _ = require('lodash')
-    , moment = require('moment');
+module.exports = {
+  prettify: function (str, upperFirst) {
+    const bUpperFirst = (typeof upperFirst === 'undefined');
+    const tmpStr = str
+      .replace(/([A-Z]+)/g, ' $1')
+      .replace(/([A-Z][a-z])/g, ' $1')
+      .replace(/\s\s+/g, ' ')
+      .toLowerCase();
 
-  module.exports = {
-    prettify: function(str, upperFirst) {
-      var bUpperFirst = (typeof upperFirst === 'undefined')
-        , tmpStr = str
-          .replace(/([A-Z]+)/g, ' $1')
-          .replace(/([A-Z][a-z])/g, ' $1')
-          .replace(/\s\s+/g, ' ')
-          .toLowerCase();
+    if (bUpperFirst) {
+      return tmpStr.charAt(0).toUpperCase() + tmpStr.slice(1);
+    }
+    return tmpStr;
+  },
 
-      if (bUpperFirst) {
-        return tmpStr.charAt(0).toUpperCase() + tmpStr.slice(1);
+  isString: function (obj) {
+    return typeof obj === 'string';
+  },
+
+  changelogKeyName: function (str) {
+    let result = str;
+    const replacementMap = {
+      'L': 'Limited Mobility',
+      'H': 'Hearing Impairment',
+      'I': 'Diabetes',
+      'V': 'Visual Impairment',
+      'R': 'Learning Disability',
+      'O': 'Other Adjustment',
+      'Other': 'Other CJS',
+      'third PartyF Name': 'Third Party First Name',
+      'third PartyL Name': 'Third Party Last Name',
+    };
+
+    if (typeof str === 'undefined' || !str) {
+      return;
+    }
+
+    result = result.replace(/([A-Z][a-z])/g, ' $1');
+
+    result = replacementMap[result] || result;
+
+    return result.charAt(0).toUpperCase() + result.slice(1);
+  },
+
+  changelogValue: function (str) {
+    let result = str;
+    const replacementMap = {
+      'L': 'Yes',
+      'H': 'Yes',
+      'I': 'Yes',
+      'V': 'Yes',
+      'R': 'Yes',
+      'true': 'Yes',
+      'false': 'No',
+    };
+
+    if (typeof str === 'undefined' || !str) {
+      return;
+    }
+
+    result = replacementMap[result] || result;
+    return result;
+  },
+
+  checkCjsEmployer: function (employerList, employer, outputMatch, outputNoMatch) {
+    const matched = _.find(employerList, { employer: employer });
+
+    return (typeof matched !== 'undefined') ? outputMatch : outputNoMatch;
+  },
+
+  getCjsEmployer: function (employerList, employer, returnKey) {
+    const matched = _.find(employerList, { employer: employer });
+
+    if (typeof matched === 'undefined') {
+      return;
+    }
+
+    if (typeof returnKey !== 'undefined') {
+      return (Object.prototype.hasOwnProperty.call(matched, returnKey)) ? matched[returnKey] : null;
+    }
+
+    return matched;
+  },
+
+  checkArr: function (arr, key, value, outputMatch, outputNoMatch) {
+    const matched = _.find(arr, function (o) {
+      return o[key] === value;
+    });
+
+    return (typeof matched !== 'undefined') ? outputMatch : outputNoMatch;
+  },
+
+  getArr: function (arr, key, value, returnKey) {
+    const matched = _.find(arr, function (o) {
+      return o[key] === value;
+    });
+
+    if (typeof matched === 'undefined') {
+      return;
+    }
+
+    if (typeof returnKey !== 'undefined') {
+      return (Object.prototype.hasOwnProperty.call(matched, returnKey)) ? matched[returnKey] : null;
+    }
+
+    return matched;
+  },
+
+  dateFilter: function (date, sourceFormat, outputFormat) {
+    let result;
+    let errs = [];
+    let args = [];
+    let mnt = null;
+    let dateFilterDefaultFormat = 'DD/MM/YYYY';
+    let inputFormat;
+
+    if (typeof date === 'string') {
+      if (/\d\d[-/]\d\d[-/]\d\d\d\d/.exec(date)) {
+        inputFormat = 'DD/MM/YYYY';
       }
-      return tmpStr;
-    },
+    }
 
-    isString: function(obj) {
-      return typeof obj === 'string';
-    },
+    if (date && date.length === 3) {
+      date[1] = date[1] - 1;
+    }
 
-    changelogKeyName: function(str) {
-      var result = str
-        , replacementMap = {
-          'L': 'Limited Mobility',
-          'H': 'Hearing Impairment',
-          'I': 'Diabetes',
-          'V': 'Visual Impairment',
-          'R': 'Learning Disability',
-          'O': 'Other Adjustment',
-          'Other': 'Other CJS',
-          'third PartyF Name': 'Third Party First Name',
-          'third PartyL Name': 'Third Party Last Name',
-        };
-
-      if (typeof str === 'undefined' || !str) {
-        return;
-      }
-
-      result = result.replace(/([A-Z][a-z])/g, ' $1');
-
-      result = replacementMap[result] || result;
-
-      return result.charAt(0).toUpperCase() + result.slice(1);
-    },
-
-    changelogValue: function(str) {
-      var result = str
-        , replacementMap = {
-          'L': 'Yes',
-          'H': 'Yes',
-          'I': 'Yes',
-          'V': 'Yes',
-          'R': 'Yes',
-          'true': 'Yes',
-          'false': 'No',
-        };
-
-      if (typeof str === 'undefined' || !str) {
-        return;
-      }
-
-      result = replacementMap[result] || result;
-      return result;
-    },
-
-    checkCjsEmployer: function(employerList, employer, outputMatch, outputNoMatch) {
-      var matched = _.find(employerList, { employer: employer });
-
-      return (typeof matched !== 'undefined') ? outputMatch : outputNoMatch;
-    },
-
-    getCjsEmployer: function(employerList, employer, returnKey) {
-      var matched = _.find(employerList, { employer: employer });
-
-      if (typeof matched === 'undefined') {
-        return;
-      }
-
-      if (typeof returnKey !== 'undefined') {
-        return (Object.prototype.hasOwnProperty.call(matched, returnKey)) ? matched[returnKey] : null;
-      }
-
-      return matched;
-    },
-
-    checkArr: function(arr, key, value, outputMatch, outputNoMatch) {
-      var matched = _.find(arr, function(o) {
-        return o[key] === value;
-      });
-
-      return (typeof matched !== 'undefined') ? outputMatch : outputNoMatch;
-    },
-
-    getArr: function(arr, key, value, returnKey) {
-      var matched = _.find(arr, function(o) {
-        return o[key] === value;
-      });
-
-      if (typeof matched === 'undefined') {
-        return;
-      }
-
-      if (typeof returnKey !== 'undefined') {
-        return (Object.prototype.hasOwnProperty.call(matched, returnKey)) ? matched[returnKey] : null;
-      }
-
-      return matched;
-    },
-
-    dateFilter:function(date, sourceFormat, outputFormat) {
-      var result,
-        errs = [],
-        args = [],
-        mnt = null,
-        dateFilterDefaultFormat = 'DD/MM/YYYY';
-      let inputFormat;
-
-      if (typeof date === 'string') {
-        if (/\d\d[-/]\d\d[-/]\d\d\d\d/.exec(date)) {
-          inputFormat = 'DD/MM/YYYY';
-        }
-      }
-
-      if (date && date.length === 3) {
-        date[1] = date[1] - 1;
-      }
-
-      Array.prototype.push.apply(args, arguments);
+    Array.prototype.push.apply(args, arguments);
+    try {
+      mnt = moment(date, inputFormat);
+    } catch (err) {
+      errs.push(err);
+    }
+    if (mnt) {
       try {
-        mnt = moment(date, inputFormat);
+        if (dateFilterDefaultFormat !== null) {
+          result = mnt.format(outputFormat || dateFilterDefaultFormat);
+        } else {
+          result = mnt.format(outputFormat);
+        }
       } catch (err) {
         errs.push(err);
       }
-      if (mnt) {
-        try {
-          if (dateFilterDefaultFormat!==null) {
-            result = mnt.format(outputFormat || dateFilterDefaultFormat);
-          } else {
-            result = mnt.format(outputFormat);
-          }
-        } catch (err) {
-          errs.push(err);
-        }
-      }
+    }
 
-      if (errs.length) {
-        return errs.join('\n');
-      }
-      return result;
-    },
+    if (errs.length) {
+      return errs.join('\n');
+    }
+    return result;
+  },
 
-    capitalise:function(str) {
-      var result = str;
+  capitalise: function (str) {
+    let result = str;
 
-      if (typeof str === 'string'){
-        result = str.toUpperCase();
-      }
+    if (typeof str === 'string') {
+      result = str.toUpperCase();
+    }
 
-      return result;
-    },
+    return result;
+  },
 
-    replyTypeSort:function(replyType) {
-      var result = '0';
+  replyTypeSort: function (replyType) {
+    let result = '0';
 
-      if (typeof replyType === 'string'){
-        switch (replyType.toUpperCase()) {
+    if (typeof replyType === 'string') {
+      switch (replyType.toUpperCase()) {
         case 'INELIGIBLE':
           result = '4';
           break;
@@ -182,119 +179,120 @@
           result = '1';
           break;
         default:
-          result='0';
-        }
+          result = '0';
       }
+    }
 
-      return result;
-    },
+    return result;
+  },
 
-    translateDate: function(dateValue, sourceFormat, displayFormat, lang) {
+  translateDate: function (dateValue, sourceFormat, displayFormat, lang) {
 
-      var mnt = require('moment')
-        , returnValue;
+    const mnt = require('moment');
+    let returnValue;
 
-      // Set defaults
-      returnValue = dateValue;
-      mnt.locale('en-gb');
+    // Set defaults
+    returnValue = dateValue;
+    mnt.locale('en-gb');
 
-      if (lang === 'en'){
-        lang = 'en-gb';
-      }
+    if (lang === 'en') {
+      // eslint-disable-next-line no-param-reassign
+      lang = 'en-gb';
+    }
 
-      try {
-        mnt.locale(lang);
-        returnValue = mnt(dateValue, sourceFormat).format(displayFormat);
-      } catch (ex){
-        console.error(ex);
-      }
+    try {
+      mnt.locale(lang);
+      returnValue = mnt(dateValue, sourceFormat).format(displayFormat);
+    } catch (ex) {
+      console.error(ex);
+    }
 
-      mnt.locale('en-gb');
-      return returnValue;
+    mnt.locale('en-gb');
+    return returnValue;
 
-    },
+  },
 
-    capitalizeFully: function(string) {
-      var parts
-        , capitalizedParts;
+  capitalizeFully: function (string) {
+    let parts;
+    let capitalizedParts;
 
-      if (!string) return;
+    if (!string) return;
 
-      parts = string.split(' ');
+    parts = string.split(' ');
 
-      capitalizedParts = parts.map(function(part) {
-        return part.trim().charAt(0).toUpperCase() + part.trim().slice(1).toLowerCase();
-      });
+    capitalizedParts = parts.map(function (part) {
+      return part.trim().charAt(0).toUpperCase() + part.trim().slice(1).toLowerCase();
+    });
 
-      return capitalizedParts.join(' ');
-    },
+    return capitalizedParts.join(' ');
+  },
 
-    transformPoolType: function(poolType) {
-      var poolTypes = {
-        CRO: 'Crown court',
-        COR: 'Coroner’s court',
-        CIV: 'Civil court',
-        HGH: 'High court',
-      };
+  transformPoolType: function (poolType) {
+    const poolTypes = {
+      CRO: 'Crown court',
+      COR: 'Coroner’s court',
+      CIV: 'Civil court',
+      HGH: 'High court',
+    };
 
-      return poolTypes[poolType];
-    },
+    return poolTypes[poolType];
+  },
 
-    // I dont like this... needs improvement
-    buildRecordAddress: function(lines) {
-      return lines.filter(function(x, i) {
-        return (typeof x !== 'undefined' && x !== null && x !== '' && i < lines.length);
-      }).join('<br> ');
-    },
+  // I dont like this... needs improvement
+  buildRecordAddress: function (lines) {
+    return lines.filter(function (x, i) {
+      return (typeof x !== 'undefined' && x !== null && x !== '' && i < lines.length);
+    }).join('<br> ');
+  },
 
-    /**
-     * just a date builder from an array or empty data
-     * @param {number[]} date An array of numbers representing a date
-     * @returns {date} The formated date
-     */
-    makeDate: function(date) {
-      const dateRegex = /\d{4}-\d{2}-\d{2}/g;
+  /**
+   * just a date builder from an array or empty data
+   * @param {number[]} date An array of numbers representing a date
+   * @returns {date} The formated date
+   */
+  makeDate: function (date) {
+    const dateRegex = /\d{4}-\d{2}-\d{2}/g;
 
-      // eslint is flagging this but sonar will also flagging if I dont do this........
-      if ((!date?.length || !(date instanceof Array)) && !dateRegex.test(date)) {
-        return new Date();
-      }
+    // eslint is flagging this but sonar will also flagging if I dont do this........
+    if ((!date?.length || !(date instanceof Array)) && !dateRegex.test(date)) {
+      return new Date();
+    }
 
-      return new Date(date);
-    },
+    return new Date(date);
+  },
 
-    console: function(obj) {
-      return JSON.stringify(obj);
-    },
+  console: function (obj) {
+    return JSON.stringify(obj);
+  },
 
-    /**
-     *
-     * @param {string} name The name of the officer that processed the response or AUTO
-     * @returns {string} With System if AUTO or the officer's name
-     */
-    isAutoProcessed: function(name) {
-      if (!name || name.toLowerCase() === 'auto') return 'System';
-      return name;
-    },
+  /**
+   *
+   * @param {string} name The name of the officer that processed the response or AUTO
+   * @returns {string} With System if AUTO or the officer's name
+   */
+  isAutoProcessed: function (name) {
+    if (!name || name.toLowerCase() === 'auto') return 'System';
+    return name;
+  },
 
-    /**
-     *
-     * @param {string} time The time to be converted (10:00am or 2:30pm)
-     * @returns {number | undefined} the converted time (1000 or 1430)
-     */
-    convertAmPmToLong: function(time) {
-      let period = time.match(/(am|pm)/g);
-      let digits = time.match(/\d+/g);
-      let finalTime;
+  /**
+   *
+   * @param {string} time The time to be converted (10:00am or 2:30pm)
+   * @returns {number | undefined} the converted time (1000 or 1430)
+   */
+  convertAmPmToLong: function (time) {
+    let period = time.match(/(am|pm)/g);
+    let digits = time.match(/\d+/g);
+    let finalTime;
 
-      if (!period || !digits) return;
-      period = period[0];
+    if (!period || !digits) return;
+    period = period[0];
 
-      if (digits[0] === '12') {
-        digits[0] = '0';
-      }
+    if (digits[0] === '12') {
+      digits[0] = '0';
+    }
 
-      switch (period) {
+    switch (period) {
       case 'am':
         finalTime = +digits.join('');
         break;
@@ -302,87 +300,87 @@
         digits[0] = +digits[0] + 12;
         finalTime = +digits.join('');
         break;
-      }
+    }
 
-      if (finalTime > 2359) {
-        finalTime = finalTime - 1200;
-      }
+    if (finalTime > 2359) {
+      finalTime = finalTime - 1200;
+    }
 
-      return finalTime;
-    },
+    return finalTime;
+  },
 
-    timeArrayToString: function(timeArray) {
-      if (typeof timeArray === 'string') return timeArray;
+  timeArrayToString: function (timeArray) {
+    if (typeof timeArray === 'string') return timeArray;
 
-      let period = 'am';
+    let period = 'am';
 
-      if (timeArray[0] > 12 && timeArray[0] <= 24) {
-        period = 'pm';
-      }
+    if (timeArray[0] > 12 && timeArray[0] <= 24) {
+      period = 'pm';
+    }
 
-      if (timeArray[1].toString().length === 1) {
-        timeArray[1] = '0' + timeArray[1];
-      }
+    if (timeArray[1].toString().length === 1) {
+      timeArray[1] = '0' + timeArray[1];
+    }
 
-      return timeArray.join(':') + period;
-    },
+    return timeArray.join(':') + period;
+  },
 
-    timeStringToArray: function(timeString) {
-      if (Array.isArray(timeString)) return timeString;
+  timeStringToArray: function (timeString) {
+    if (Array.isArray(timeString)) return timeString;
 
-      let timeArray = [];
-      let period = timeString.slice(-2);
+    let timeArray = [];
+    let period = timeString.slice(-2);
 
-      timeArray.push(timeString.slice(0, -5));
-      timeArray.push(timeString.slice(-4, -2));
+    timeArray.push(timeString.slice(0, -5));
+    timeArray.push(timeString.slice(-4, -2));
 
-      if (period === 'pm' && timeArray[0] < 12) {
-        timeArray[0] = +timeArray[0] + 12;
-      }
+    if (period === 'pm' && timeArray[0] < 12) {
+      timeArray[0] = +timeArray[0] + 12;
+    }
 
-      return timeArray;
-    },
+    return timeArray;
+  },
 
-    convert12to24: function(time12) {
-      const [time, period] = time12.split(/(?=[APap])/);
-      let [hours, minutes] = time.split(':');
+  convert12to24: function (time12) {
+    const [time, period] = time12.split(/(?=[APap])/);
+    let [hours, minutes] = time.split(':');
 
-      hours = parseInt(hours, 10);
-      minutes = parseInt(minutes, 10);
+    hours = parseInt(hours, 10);
+    minutes = parseInt(minutes, 10);
 
-      if (period.toLowerCase() === 'pm' && hours !== 12) {
-        hours += 12;
-      } else if (period.toLowerCase() === 'am' && hours === 12) {
-        hours = 0;
-      }
+    if (period.toLowerCase() === 'pm' && hours !== 12) {
+      hours += 12;
+    } else if (period.toLowerCase() === 'am' && hours === 12) {
+      hours = 0;
+    }
 
-      if (minutes.toString().length === 1) minutes = `0${minutes}`;
-      if (hours.toString().length === 1) hours = `0${hours}`;
+    if (minutes.toString().length === 1) minutes = `0${minutes}`;
+    if (hours.toString().length === 1) hours = `0${hours}`;
 
-      return `${hours}:${minutes}`;
-    },
+    return `${hours}:${minutes}`;
+  },
 
-    convert24to12: function(time24) {
-      let [hours, minutes] = time24.split(':');
+  convert24to12: function (time24) {
+    let [hours, minutes] = time24.split(':');
 
-      hours = parseInt(hours, 10);
-      minutes = parseInt(minutes, 10);
+    hours = parseInt(hours, 10);
+    minutes = parseInt(minutes, 10);
 
-      const period = hours >= 12 ? 'pm' : 'am';
+    const period = hours >= 12 ? 'pm' : 'am';
 
-      if (hours > 12) {
-        hours -= 12;
-      } else if (hours === 0) {
-        hours = 12;
-      }
+    if (hours > 12) {
+      hours -= 12;
+    } else if (hours === 0) {
+      hours = 12;
+    }
 
-      if (minutes.toString().length === 1) minutes = `0${minutes}`;
+    if (minutes.toString().length === 1) minutes = `0${minutes}`;
 
-      return `${hours}:${minutes}${period}`;
-    },
+    return `${hours}:${minutes}${period}`;
+  },
 
-    attendanceType: function(type) {
-      switch (type) {
+  attendanceType: function (type) {
+    switch (type) {
       case 'FULL_DAY':
         return 'Full day';
       case 'FULL_DAY_LONG_TRIAL':
@@ -397,42 +395,42 @@
         return 'Non-attendance day (>10 days)';
       case 'ABSENT':
         return 'Absent';
-      };
-    },
+    };
+  },
 
-    toFixed: function(num, length) {
-      const zeros = length || 2;
+  toFixed: function (num, length) {
+    const zeros = length || 2;
 
-      if (!num) {
-        // LESS GO JS
-        return '0.00';
-      }
+    if (!num) {
+      // LESS GO JS
+      return '0.00';
+    }
 
-      if (isNaN(num)) {
-        return num;
-      }
+    if (isNaN(num)) {
+      return num;
+    }
 
-      return parseFloat(num).toFixed(zeros);
-    },
+    return parseFloat(num).toFixed(zeros);
+  },
 
-    /**
-     * Takes in an array/list and returns a grammatically correct string output.
-     * @param {array} inputList input list
-     * @returns {string} gramatically correct output
-     */
-    prettyList: (inputList) => {
-      return inputList.reduce(
-        (acc, current, index) => {
-          if (index === inputList.length - 1) {
-            return acc + ' and ' + current;
-          }
-          return acc + ', ' + current;
-        },
-      );
-    },
+  /**
+   * Takes in an array/list and returns a grammatically correct string output.
+   * @param {array} inputList input list
+   * @returns {string} gramatically correct output
+   */
+  prettyList: (inputList) => {
+    return inputList.reduce(
+      (acc, current, index) => {
+        if (index === inputList.length - 1) {
+          return acc + ' and ' + current;
+        }
+        return acc + ', ' + current;
+      },
+    );
+  },
 
-    fullCourtType: function(court) {
-      switch (court) {
+  fullCourtType: function (court) {
+    switch (court) {
       case 'CRO':
         return 'Crown court';
       case 'COR':
@@ -441,50 +439,49 @@
         return 'Civil court';
       case 'HGH':
         return 'High court';
-      }
-    },
+    }
+  },
 
-    convert24toHours: function(time24) {
-      let [hours, minutes] = time24.split(':');
+  convert24toHours: function (time24) {
+    let [hours, minutes] = time24.split(':');
 
-      hours = parseInt(hours) * 60;
-      minutes = parseInt(minutes);
+    hours = parseInt(hours) * 60;
+    minutes = parseInt(minutes);
 
-      let time = hours + minutes;
+    let time = hours + minutes;
 
-      return Math.round((time / 60) * 100) / 100;
-    },
+    return Math.round((time / 60) * 100) / 100;
+  },
 
-    toCamelCase: function(str) {
-      return _.camelCase(str);
-    },
+  toCamelCase: function (str) {
+    return _.camelCase(str);
+  },
 
-    toKebabCase: function(str) {
-      return _.kebabCase(str);
-    },
+  toKebabCase: function (str) {
+    return _.kebabCase(str);
+  },
 
-    toSentenceCase: function(str) {
-      return _.upperFirst(_.lowerCase(str));
-    },
+  toSentenceCase: function (str) {
+    return _.upperFirst(_.lowerCase(str));
+  },
 
-    sortCode: function(str) {
-      return `${str[0]}${str[1]}-${str[2]}${str[3]}-${str[4]}${str[5]}`
-    },
+  sortCode: function (str) {
+    return `${str[0]}${str[1]}-${str[2]}${str[3]}-${str[4]}${str[5]}`;
+  },
 
-    hoursStringToHoursAndMinutes: function(time) {
-      const hours = parseInt(time.split(':')[0]);
-      const mins = parseInt(time.split(':')[1]);
+  hoursStringToHoursAndMinutes: function (time) {
+    const hours = parseInt(time.split(':')[0]);
+    const mins = parseInt(time.split(':')[1]);
 
-      return `${hours > 0 ? hours + (hours > 1 ? ' hours ' : ' hour ') : ''}${mins > 0 ? mins + (mins > 1 ? ' minutes' : ' minute') : ''}`
-    },
+    // eslint-disable-next-line max-len
+    return `${hours > 0 ? hours + (hours > 1 ? ' hours ' : ' hour ') : ''}${mins > 0 ? mins + (mins > 1 ? ' minutes' : ' minute') : ''}`;
+  },
 
-    transformCourtName: function(courtObj) {
-      return _.startCase(_.toLower(courtObj.locationName)).trim().replace(',', '') + ' (' + courtObj.locationCode + ')';
-    },
+  transformCourtName: function (courtObj) {
+    return _.startCase(_.toLower(courtObj.locationName)).trim().replace(',', '') + ' (' + courtObj.locationCode + ')';
+  },
 
-    arrayIncludes: function(arr, value) {
-      return arr.includes(value);
-    },
-  };
-
-})();
+  arrayIncludes: function (arr, value) {
+    return arr.includes(value);
+  },
+};

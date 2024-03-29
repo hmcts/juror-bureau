@@ -1,19 +1,16 @@
-/* eslint-disable strict */
-'use strict';
-
 const _ = require('lodash');
 const summonsValidator = require('../../../config/validation/summons-management');
 const validate = require('validate.js');
 
-module.exports.getProcessReply = function(app) {
-  return function(req, res) {
-    var tmpErrors = _.clone(req.session.errors)
-      , routeParameters = {
-        id: req.params['id'],
-        type: req.params['type'],
-      }
-      , processUrl
-      , cancelUrl;
+module.exports.getProcessReply = function (app) {
+  return function (req, res) {
+    const tmpErrors = _.clone(req.session.errors);
+    const routeParameters = {
+      id: req.params['id'],
+      type: req.params['type'],
+    };
+    let processUrl;
+    let cancelUrl;
 
     delete req.session.errors;
     delete req.session.formFields;
@@ -40,21 +37,20 @@ module.exports.getProcessReply = function(app) {
   };
 };
 
-module.exports.postProcessReply = function(app) {
-  return function(req, res) {
-    var validatorResult
-      , processActionType = {
-        responded: 'response.detail.responded.get',
-        deferral: 'process-deferral-dates.get',
-        excusal: 'process-excusal.get',
-        disqualify: 'process-disqualify.get',
-        reassign: 'juror-management.reassign.get',
-        postpone: 'juror.update.postpone-date.get',
-      }
-      , routeParameters = {
-        id: req.params['id'],
-        jurorNumber: req.params['id'],
-      };
+module.exports.postProcessReply = function (app) {
+  return function (req, res) {
+    const processActionType = {
+      responded: 'response.detail.responded.get',
+      deferral: 'process-deferral-dates.get',
+      excusal: 'process-excusal.get',
+      disqualify: 'process-disqualify.get',
+      reassign: 'juror-management.reassign.get',
+      postpone: 'juror.update.postpone-date.get',
+    };
+    const routeParameters = {
+      id: req.params['id'],
+      jurorNumber: req.params['id'],
+    };
 
     if (req.params['type'] === 'paper') {
       routeParameters.type = 'paper';
@@ -67,7 +63,7 @@ module.exports.postProcessReply = function(app) {
     delete req.session.deferralDates;
     delete req.session.deferralSelectedReason;
 
-    validatorResult = validate(req.body, summonsValidator.processAction());
+    const validatorResult = validate(req.body, summonsValidator.processAction());
     if (typeof validatorResult !== 'undefined') {
       req.session.errors = validatorResult;
       req.session.formFields = req.body;

@@ -1,14 +1,13 @@
 {
   "env": {
-    "browser": true,
-    "es6": true
+    "browser": true
   },
   "globals": {
     "module": true,
     "require": true
   },
   "parserOptions": {
-    "ecmaVersion": 2018
+    "ecmaVersion": 2022
   },
   "rules": {
     "max-len": ["error", { "code": 120 }],
@@ -31,6 +30,7 @@
     "space-in-parens": "error",
     "space-before-blocks": "error",
     "semi-spacing": "error",
+    "no-trailing-spaces": "error",
     "object-curly-spacing": ["error", "always"],
     "no-lonely-if": "error",
     "no-mixed-spaces-and-tabs": "error",
@@ -52,6 +52,6 @@
     // "no-undefined": 2,
 
     // Legacy
-    "no-bitwise": 2,
+    "no-bitwise": 2
   }
 }

@@ -1,6 +1,3 @@
-/* eslint-disable strict */
-'use strict';
-
 const _ = require('lodash');
 const { failedToAttendObject } = require('../../../objects/juror-record');
 const { isSJOUser } = require('../../../components/auth/user-type');
@@ -8,8 +5,8 @@ const { isSJOUser } = require('../../../components/auth/user-type');
 // TODO: we need to revisit this when the attendances are implemented as the juror cannot be marked
 // as failed to attend if they have attendances to their name
 
-module.exports.getFailedToAttend = function() {
-  return function(req, res) {
+module.exports.getFailedToAttend = function () {
+  return function (req, res) {
     const { jurorNumber } = req.params;
     const tmpErrors = _.clone(req.session.errors);
     const jurorName = resolveJurorName(req.session.jurorCommonDetails);
@@ -28,8 +25,8 @@ module.exports.getFailedToAttend = function() {
   };
 };
 
-module.exports.postFailedToAttend = function(app) {
-  return async function(req, res) {
+module.exports.postFailedToAttend = function (app) {
+  return async function (req, res) {
     const { jurorNumber } = req.params;
     const { poolNumber } = req.session.jurorCommonDetails;
 
@@ -63,8 +60,8 @@ module.exports.postFailedToAttend = function(app) {
   };
 };
 
-module.exports.getUndoFailedToAttend = function() {
-  return function(req, res) {
+module.exports.getUndoFailedToAttend = function () {
+  return function (req, res) {
     const { jurorNumber } = req.params;
     const jurorName = resolveJurorName(req.session.jurorCommonDetails);
     const tmpErrors = _.clone(req.session.errors);
@@ -83,8 +80,8 @@ module.exports.getUndoFailedToAttend = function() {
   };
 };
 
-module.exports.postUndoFailedToAttend = function(app) {
-  return async function(req, res) {
+module.exports.postUndoFailedToAttend = function (app) {
+  return async function (req, res) {
     const { jurorNumber } = req.params;
     const { poolNumber } = req.session.jurorCommonDetails;
 
@@ -99,7 +96,7 @@ module.exports.postUndoFailedToAttend = function(app) {
         req.session.authToken,
         jurorNumber,
         poolNumber,
-        'undo'
+        'undo',
       );
 
       req.session.failedToAttend = {
@@ -116,19 +113,19 @@ module.exports.postUndoFailedToAttend = function(app) {
   };
 };
 
-function resolveJurorName(jurorDetails) {
+function resolveJurorName (jurorDetails) {
   return [jurorDetails.title, jurorDetails.firstName, jurorDetails.lastName].join(' ');
 }
 
-function redirectTo(req, res) {
-  return function(action) {
+function redirectTo (req, res) {
+  return function (action) {
     return isSJOUser(req, res) && action === 'undo-failed-to-attend'
       ? 'juror.update.failed-to-attend.undo.get'
       : 'juror.update.failed-to-attend.get';
   };
 }
 
-function hasFormErrors(app, req, res, action) {
+function hasFormErrors (app, req, res, action) {
   const { jurorNumber } = req.params;
   const { jurorStatus } = req.session.jurorCommonDetails;
   const errorMessages = {
@@ -147,7 +144,7 @@ function hasFormErrors(app, req, res, action) {
   }));
 }
 
-function jurorStatusUpdateFailed(app, req, res, err, action) {
+function jurorStatusUpdateFailed (app, req, res, err, action) {
   const { jurorNumber } = req.params;
   const status = {
     'failed-to-attend': 'Failed to attend',

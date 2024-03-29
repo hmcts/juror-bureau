@@ -10,6 +10,7 @@ client/**
 test/**
 tests/**
 server/stores/*
+server/routes/dashboard/**
 
 # single files
 server/**/pdfExport.js
@@ -20,3 +21,7 @@ bundle.min.js
 
 # validation files
 server/config/validation/*
+
+# we should ignore DAO files and logger for now since they are getting refactored
+server/objects/*
+server/components/logger/*

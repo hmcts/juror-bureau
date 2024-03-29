@@ -1,14 +1,9 @@
-;(function(){
-  'use strict';
+// Production specific configuration
+// =================================
+module.exports = {
+  // If true, logs will be output in terminal as well as saved to file
+  logConsole: false,
 
-  // Production specific configuration
-  // =================================
-  module.exports = {
-    // If true, logs will be output in terminal as well as saved to file
-    logConsole: 'debug',
-
-    // Response editing,  default=false
-    responseEditEnabled: false,
-  };
-
-})();
+  // Response editing,  default=false
+  responseEditEnabled: false,
+};

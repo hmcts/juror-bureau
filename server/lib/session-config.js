@@ -18,7 +18,7 @@ module.exports.SessionConfig = class SessionConfig {
       this.redisClient();
       config.store = this.redisStore();
     }
-    
+
     this.logger = app.logger;
 
     app.set('trust proxy', 1);
@@ -33,7 +33,7 @@ module.exports.SessionConfig = class SessionConfig {
         keepAlive: true,
       },
     });
-    
+
     const errorCB = (error) => this.logger.crit('Error connecting redis client: ', error);
     const successCB = () => this.logger.info(`${new Date().toLocaleString()} - Connected to redis successfully`);
 

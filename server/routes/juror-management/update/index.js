@@ -79,7 +79,7 @@ module.exports = function (app) {
     auth.verify,
     auth.isSJO,
     failedToAttendController.postUndoFailedToAttend(app));
-  
+
   app.get('/juror-management/juror/:jurorNumber/update/disqualify',
     'juror.update.disqualify.get',
     auth.verify,

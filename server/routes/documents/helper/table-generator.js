@@ -1,39 +1,36 @@
-(function() {
-  'use strict';
+const { dateFilter } = require('../../../components/filters');
 
-  const { dateFilter } = require('../../../components/filters');
+function tableGenerator (isBureauUser) {
+  return tableBuilder(this.response, this.checkedJurors, isBureauUser);
+}
 
-  function tableGenerator(isBureauUser) {
-    return tableBuilder(this.response, this.checkedJurors, isBureauUser);
-  }
+function tableBuilder ({ headings, data_types: dataTypes, data }, checkedJurors, isBureauUser) {
+  const _thead = headings.reduce(headingsReducer.bind({ headings, dataTypes }), '');
 
-  function tableBuilder({ headings, data_types: dataTypes, data }, checkedJurors, isBureauUser) {
-    const _thead = headings.reduce(headingsReducer.bind({ headings, dataTypes }), '');
-
-    const tableHeader = `
+  const tableHeader = `
       <tr class="govuk-table__row">
         <th class="govuk-table__header"></th>
         ${_thead}
       </tr>
     `;
 
-    const tableRows = isBureauUser
-      ? data.reduce(rowsReducerBureau.bind({ headings, dataTypes, checkedJurors }), '')
-      : data.reduce(rowsReducerCourt.bind({ headings, dataTypes, checkedJurors }), '');
+  const tableRows = isBureauUser
+    ? data.reduce(rowsReducerBureau.bind({ headings, dataTypes, checkedJurors }), '')
+    : data.reduce(rowsReducerCourt.bind({ headings, dataTypes, checkedJurors }), '');
 
-    return { tableHeader, tableRows };
-  }
+  return { tableHeader, tableRows };
+}
 
-  function headingsReducer(prev, curr, i) {
-    const sortDirection = i === this.headings.length - 2 ? 'descending' : 'none';
-    const numberTypeClass = this.dataTypes[i] === 'number'
-      ? 'govuk-table__header--numeric' : '';
-    const isHidden = curr.includes('hidden_') || this.dataTypes[i] === 'hidden';
+function headingsReducer (prev, curr, i) {
+  const sortDirection = i === this.headings.length - 2 ? 'descending' : 'none';
+  const numberTypeClass = this.dataTypes[i] === 'number'
+    ? 'govuk-table__header--numeric' : '';
+  const isHidden = curr.includes('hidden_') || this.dataTypes[i] === 'hidden';
 
-    let row = '';
+  let row = '';
 
-    if (!isHidden) {
-      row = `
+  if (!isHidden) {
+    row = `
         <th
           scope="col"
           class="govuk-table__header ${numberTypeClass}"
@@ -42,30 +39,30 @@
           ${curr}
         </th>
       `;
-    }
-
-    row = prev + row;
-
-    return row;
   }
 
-  function rowsReducerCourt(prev, curr) {
-    const jurorInfo = Object.values(curr);
+  row = prev + row;
 
-    const datePrintedIdx = this.headings.indexOf('Date printed');
+  return row;
+}
 
-    const _isPrinted = jurorInfo[datePrintedIdx] !== null;
-    const isPrintedHighlight = _isPrinted ? 'mod-highlight-table-row__grey' : '';
+function rowsReducerCourt (prev, curr) {
+  const jurorInfo = Object.values(curr);
 
-    const checkedJuror = this.checkedJurors.filter((juror) => (
-      juror.juror_number === jurorInfo[0]
-      && parseInt(juror.form_code) === curr.id
-      && juror.date_printed === (curr.date_printed || 'null')
-    ));
+  const datePrintedIdx = this.headings.indexOf('Date printed');
 
-    const isChecked = (checkedJuror && checkedJuror.length) ? 'checked' : '';
+  const _isPrinted = jurorInfo[datePrintedIdx] !== null;
+  const isPrintedHighlight = _isPrinted ? 'mod-highlight-table-row__grey' : '';
 
-    let row = `
+  const checkedJuror = this.checkedJurors.filter((juror) => (
+    juror.juror_number === jurorInfo[0]
+    && parseInt(juror.form_code) === curr.id
+    && juror.date_printed === (curr.date_printed || 'null')
+  ));
+
+  const isChecked = (checkedJuror && checkedJuror.length) ? 'checked' : '';
+
+  let row = `
         <td class="govuk-table__cell mod-padding-block--0">
           <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
             <input type="checkbox" class="govuk-checkboxes__input"
@@ -82,23 +79,23 @@
         </td>
       `;
 
-    // eslint-disable-next-line guard-for-in
-    for (let index in jurorInfo) {
-      const isDate = this.dataTypes[index] === 'date';
-      const isNumber = this.dataTypes[index] === 'number';
-      const value = jurorInfo[index];
-      const isHidden = this.dataTypes[index] === 'hidden';
+  // eslint-disable-next-line guard-for-in
+  for (let index in jurorInfo) {
+    const isDate = this.dataTypes[index] === 'date';
+    const isNumber = this.dataTypes[index] === 'number';
+    const value = jurorInfo[index];
+    const isHidden = this.dataTypes[index] === 'hidden';
 
-      const _formatValue = {
-        isDate,
-        value,
-        version: jurorInfo[jurorInfo.length - 1],
-        jurorNumber: jurorInfo[0],
-        isCourtPending: parseInt(index) === datePrintedIdx && !_isPrinted,
-      };
+    const _formatValue = {
+      isDate,
+      value,
+      version: jurorInfo[jurorInfo.length - 1],
+      jurorNumber: jurorInfo[0],
+      isCourtPending: parseInt(index) === datePrintedIdx && !_isPrinted,
+    };
 
-      if (!isHidden) {
-        row += `
+    if (!isHidden) {
+      row += `
           <td
             class="govuk-table__cell jd-middle-align mod-padding-block--0"
             ${sortValue(isDate, isNumber, value)}
@@ -106,37 +103,37 @@
             ${formatValue(_formatValue)}
           </td>
         `;
-      }
     }
-
-    row = prev + `<tr id="row-${jurorInfo[0]}" class="govuk-table__row ${isPrintedHighlight}">${row}</tr>`;
-
-    return row;
   }
 
-  function rowsReducerBureau(prev, curr) {
-    const jurorInfo = Object.values(curr);
+  row = prev + `<tr id="row-${jurorInfo[0]}" class="govuk-table__row ${isPrintedHighlight}">${row}</tr>`;
 
-    const datePrintedIdx = this.headings.indexOf('Date printed');
-    const isPrintedIdx = this.headings.indexOf('hidden_extracted_flag');
-    const formCodeIdx = this.headings.indexOf('hidden_form_code');
+  return row;
+}
 
-    const _isPrinted = isPrinted(jurorInfo[isPrintedIdx]);
-    const isPrintedHighlight = _isPrinted ? 'mod-highlight-table-row__grey' : '';
+function rowsReducerBureau (prev, curr) {
+  const jurorInfo = Object.values(curr);
 
-    const _neverPrinted = !_isPrinted && jurorInfo[datePrintedIdx] === null;
+  const datePrintedIdx = this.headings.indexOf('Date printed');
+  const isPrintedIdx = this.headings.indexOf('hidden_extracted_flag');
+  const formCodeIdx = this.headings.indexOf('hidden_form_code');
 
-    const checkedJuror = this.checkedJurors.filter((juror) => (
-      juror.juror_number === jurorInfo[0]
-      && juror.form_code === jurorInfo[formCodeIdx]
-      && juror.date_printed === jurorInfo[datePrintedIdx]
-    ));
+  const _isPrinted = isPrinted(jurorInfo[isPrintedIdx]);
+  const isPrintedHighlight = _isPrinted ? 'mod-highlight-table-row__grey' : '';
 
-    const isChecked = (checkedJuror && checkedJuror.length) ? 'checked' : '';
+  const _neverPrinted = !_isPrinted && jurorInfo[datePrintedIdx] === null;
 
-    let row = isPending(jurorInfo[jurorInfo.length - 2]) && !_neverPrinted
-      ? '<td class="govuk-table__cell"></td>'
-      : `
+  const checkedJuror = this.checkedJurors.filter((juror) => (
+    juror.juror_number === jurorInfo[0]
+    && juror.form_code === jurorInfo[formCodeIdx]
+    && juror.date_printed === jurorInfo[datePrintedIdx]
+  ));
+
+  const isChecked = (checkedJuror && checkedJuror.length) ? 'checked' : '';
+
+  let row = isPending(jurorInfo[jurorInfo.length - 2]) && !_neverPrinted
+    ? '<td class="govuk-table__cell"></td>'
+    : `
         <td class="govuk-table__cell mod-padding-block--0">
           <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
             <input type="checkbox" class="govuk-checkboxes__input"
@@ -153,26 +150,26 @@
         </td>
       `;
 
-    const paddingClass = _isPrinted ? 'mod-padding-block--0' : '';
+  const paddingClass = _isPrinted ? 'mod-padding-block--0' : '';
 
-    // eslint-disable-next-line guard-for-in
-    for (let index in jurorInfo) {
-      const isDate = this.dataTypes[index] === 'date';
-      const isNumber = this.dataTypes[index] === 'number';
-      const value = jurorInfo[index];
-      const isHidden = this.headings[index].includes('hidden_');
-      const showPending = parseInt(index) === datePrintedIdx && !_isPrinted && !_neverPrinted;
+  // eslint-disable-next-line guard-for-in
+  for (let index in jurorInfo) {
+    const isDate = this.dataTypes[index] === 'date';
+    const isNumber = this.dataTypes[index] === 'number';
+    const value = jurorInfo[index];
+    const isHidden = this.headings[index].includes('hidden_');
+    const showPending = parseInt(index) === datePrintedIdx && !_isPrinted && !_neverPrinted;
 
-      const _formatValue = {
-        isDate,
-        value,
-        version: jurorInfo[jurorInfo.length - 1],
-        jurorNumber: jurorInfo[0],
-        showPending,
-      };
+    const _formatValue = {
+      isDate,
+      value,
+      version: jurorInfo[jurorInfo.length - 1],
+      jurorNumber: jurorInfo[0],
+      showPending,
+    };
 
-      if (!isHidden) {
-        row += `
+    if (!isHidden) {
+      row += `
           <td
             class="govuk-table__cell jd-middle-align ${paddingClass}"
             ${sortValue(isDate, isNumber, value)}
@@ -180,33 +177,33 @@
             ${formatValue(_formatValue)}
           </td>
         `;
-      }
     }
-
-    row = prev + `<tr id="row-${jurorInfo[0]}" class="govuk-table__row ${isPrintedHighlight}">${row}</tr>`;
-
-    return row;
   }
 
-  function isPrinted(value) {
-    return value && value !== '-';
+  row = prev + `<tr id="row-${jurorInfo[0]}" class="govuk-table__row ${isPrintedHighlight}">${row}</tr>`;
+
+  return row;
+}
+
+function isPrinted (value) {
+  return value && value !== '-';
+}
+
+function isPending (value) {
+  return !value;
+}
+
+function sortValue (isDate, isNumber, value) {
+  if (isDate || isNumber) {
+    return `data-sort-value="${value === '-' ? 'top' : value}"`;
   }
 
-  function isPending(value) {
-    return !value;
-  }
+  return '';
+}
 
-  function sortValue(isDate, isNumber, value) {
-    if (isDate || isNumber) {
-      return `data-sort-value="${value === '-' ? 'top' : value}"`;
-    }
-
-    return '';
-  }
-
-  function formatValue({ isDate, value, version, jurorNumber, showPending, isCourtPending }) {
-    if (showPending) {
-      return `
+function formatValue ({ isDate, value, version, jurorNumber, showPending, isCourtPending }) {
+  if (showPending) {
+    return `
         <span class="mod-flex mod-gap-x-4">
           Pending
           <a
@@ -221,16 +218,15 @@
           </a>
         </span>
       `;
-    }
-    if (isCourtPending) {
-      return '-';
-    }
-    if (isDate) {
-      return value ? dateFilter(value, 'YYYY-MM-DD', 'ddd D MMM YYYY') : '-';
-    }
-
-    return value;
+  }
+  if (isCourtPending) {
+    return '-';
+  }
+  if (isDate) {
+    return value ? dateFilter(value, 'YYYY-MM-DD', 'ddd D MMM YYYY') : '-';
   }
 
-  module.exports.tableGenerator = tableGenerator;
-})();
+  return value;
+}
+
+module.exports.tableGenerator = tableGenerator;
