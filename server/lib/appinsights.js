@@ -3,11 +3,11 @@ const secretsConfig = require('config');
 
 module.exports.AppInsights = class AppInsights {
 
-  constructor() {
+  constructor (app) {
     const appInsightsString = secretsConfig.get('secrets.juror.app-insights-connection-string');
 
     if (appInsightsString) {
-      console.log('Starting Appinsights');
+      app.logger.info('Starting Appinsights');
 
       appInsights.setup(appInsightsString)
         .setAutoCollectConsole(true, true)

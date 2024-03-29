@@ -3,14 +3,14 @@ const secretsConfig = require('config');
 
 module.exports.LaunchDarkly = class LaunchDarkly {
 
-  constructor() {
-    console.log('Opening a LaunchDarkly connection...');
+  constructor (app) {
+    app.logger.info('Opening a LaunchDarkly connection...');
 
     LaunchDarkly.instance = launchDarklySdk
       .init(secretsConfig.get('secrets.juror.launchDarklyKey'));
 
     LaunchDarkly.instance.once('ready', () => {
-      console.log('Launchdarkly is on and ready to read flag statuses.');
+      app.logger.info('Launchdarkly is on and ready to read flag statuses.');
     });
   }
 
