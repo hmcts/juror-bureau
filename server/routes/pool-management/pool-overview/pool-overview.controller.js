@@ -889,18 +889,21 @@ const filters = require('../../../components/filters');
           attributes: {
             'data-sort-value': juror.jurorNumber,
           },
+          classes: 'mod-middle-align'
         },
         {
           text: filters.capitalizeFully(juror.firstName?.toLowerCase()),
           attributes: {
             'data-sort-value': juror.firstName,
           },
+          classes: 'mod-middle-align'
         },
         {
           text: filters.capitalizeFully(juror.lastName?.toLowerCase()),
           attributes: {
             'data-sort-value': juror.lastName,
           },
+          classes: 'mod-middle-align'
         }];
         
       if (isCourt) {
@@ -910,18 +913,21 @@ const filters = require('../../../components/filters');
             attributes: {
               'data-sort-value': juror.attendance,
             },
+            classes: 'mod-middle-align'
           },
           {
             text: juror.checkedIn ? filters.convert24to12(filters.timeArrayToString(juror.checkedIn)) : '',
             attributes: {
               'data-sort-value': juror.checkedIn,
             },
+            classes: 'mod-middle-align'
           },
           {
             text: juror.nextDate && filters.dateFilter(juror.nextDate),
             attributes: {
               'data-sort-value': juror.nextDate,
             },
+            classes: 'mod-middle-align'
           },
         ])
       } else {
@@ -930,6 +936,7 @@ const filters = require('../../../components/filters');
           attributes: {
             'data-sort-value': juror.postcode,
           },
+          classes: 'mod-middle-align' 
         })
       }
       row.push({
@@ -937,6 +944,7 @@ const filters = require('../../../components/filters');
         attributes: {
           'data-sort-value': juror.status,
         },
+        classes: 'mod-middle-align'
       });
       
       return row;

@@ -47,9 +47,25 @@
     return false;
   };
 
-  // TODO: update this in the future to be used as middleware if needed
-  function isTeamLeader(req) {
-    return req.session.authentication.staff.rank > 0;
+  function isTeamLeader(req, res, next) {
+    if (
+      isBureauUser(req, res) &&
+      req.session.authentication.hasOwnProperty('roles') === true &&
+      req.session.authentication.roles.includes('TEAM_LEADER')
+    ) {
+      if (typeof next !== 'undefined') {
+        return next();
+      }
+
+      return true;
+    }
+
+
+    if (typeof next !== 'undefined') {
+      return errors(req, res, 403);
+    }
+
+    return false;
   };
 
   function isSJOUser(req, res, next) {

@@ -107,7 +107,7 @@
           }
         }) }}
       {% endif %}
-      {% if isNil === false and poolDetails.isActive %}
+      {% if isNil === false and poolDetails.isActive and isTeamLeader %}
         {{ govukButton({
           text: "Edit pool",
           href: url('pool-management.edit-pool.get', {

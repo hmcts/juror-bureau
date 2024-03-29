@@ -16,7 +16,7 @@
     , errors = require('../errors')
     , authObj = require('../../objects/auth').object
     , msgMappings = require('../errors/message-mapping')
-    , { isBureauUser, isCourtUser, isSJOUser, isBureauManager, isCourtManager, isSystemAdministrator, isManager } = require('./user-type')
+    , { isBureauUser, isCourtUser, isSJOUser, isBureauManager, isCourtManager, isSystemAdministrator, isManager, isTeamLeader } = require('./user-type')
 
     , createJWTToken = function(req, body, key) {
       // if user is found create a token
@@ -120,6 +120,7 @@
           res.locals.isSJO = isSJOUser(req, res);
           res.locals.isCourtUser = isCourtUser(req, res);
           res.locals.isBureauUser = isBureauUser(req, res);
+          res.locals.isTeamLeader = isTeamLeader(req, res);
           res.locals.isManager = isManager(req, res);
           res.locals.isBureauManager = isBureauManager(req, res);
           res.locals.isCourtManager = isCourtManager(req, res);

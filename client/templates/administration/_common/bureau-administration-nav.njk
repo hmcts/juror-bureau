@@ -1,11 +1,8 @@
 {% from "moj/components/primary-navigation/macro.njk" import mojPrimaryNavigation %}
 
-{{ mojPrimaryNavigation({
-  label: "Bureau administration navigation",
-  attributes: {
-    id: "bureauadministrationNav"
-  },
-  items: [
+{% set navItems = [] %}
+{% if isBureauManager %}
+  {% set navItems = (navItems.push(
     {
       text: "Users",
       href: url('administration.court-bureau.users.get', { location: 'bureau' }),
@@ -13,14 +10,25 @@
       attributes: {
         id: "usersAnchor"
       }
-    },
-    {
-      text: "System codes",
-      href: url('administration.system-codes.get'),
-      active: nav === "systemCodes",
-      attributes: {
-        id: "systemCodesAnchor"
-      }
     }
-  ]
+  ), navItems) %}
+{% endif %}
+{% set navItems = (navItems.push(
+  {
+    text: "System codes",
+    href: url('administration.system-codes.get'),
+    active: nav === "systemCodes",
+    attributes: {
+      id: "systemCodesAnchor"
+    }
+  }
+), navItems) %}
+
+
+{{ mojPrimaryNavigation({
+  label: "Bureau administration navigation",
+  attributes: {
+    id: "bureauadministrationNav"
+  },
+  items: navItems
 }) }}

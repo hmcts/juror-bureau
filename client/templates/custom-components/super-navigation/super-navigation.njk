@@ -51,9 +51,9 @@
                   Court administration
                 </a>
               <li>
-            {% elif isBureauManager %}
+            {% elif isBureauUser %}
               <li>
-                <a href="{{ url('administration.court-bureau.users.get', { location: 'bureau' }) }}" class="govuk-link govuk-!-font-weight-bold">
+                <a href="{{ url('administration.get') }}" class="govuk-link govuk-!-font-weight-bold">
                   Bureau administration
                 </a>
               <li>
