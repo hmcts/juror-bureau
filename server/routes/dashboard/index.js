@@ -1,12 +1,6 @@
-;(function(){
-  'use strict';
+const controller = require('./dashboard.controller');
 
-  var controller = require('./dashboard.controller')
-
-  module.exports = function(app) {
-    app.get('/dashboard', 'dashboard.get', controller.index(app));
-
-    app.post('/dashboard', 'dashboard.post', controller.getData(app));
-  };
-
-})();
+module.exports = function (app) {
+  app.get('/dashboard', 'dashboard.get', controller.index(app));
+  app.post('/dashboard', 'dashboard.post', controller.getData(app));
+};

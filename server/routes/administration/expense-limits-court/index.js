@@ -1,25 +1,21 @@
-(function() {
-  'use strict';
+const auth = require('../../../components/auth');
+const controller = require('./expense-limits-court.controller');
+const { isCourtManager } = require('../../../components/auth/user-type');
 
-  const auth = require('../../../components/auth');
-  const controller = require('./expense-limits-court.controller');
-  const { isCourtManager } = require('../../../components/auth/user-type');
+module.exports = function (app) {
 
-  module.exports = function(app) {
+  app.get('/administration/expense-limits-court',
+    'administration.expense-limits-court.get',
+    auth.verify,
+    isCourtManager,
+    controller.getExpenseLimitsCourt(app),
+  );
 
-    app.get('/administration/expense-limits-court',
-      'administration.expense-limits-court.get',
-      auth.verify,
-      isCourtManager,
-      controller.getExpenseLimitsCourt(app),
-    );
+  app.post('/administration/expense-limits-court',
+    'administration.expense-limits-court.post',
+    auth.verify,
+    isCourtManager,
+    controller.postExpenseLimitsCourt(app),
+  );
 
-    app.post('/administration/expense-limits-court',
-      'administration.expense-limits-court.post',
-      auth.verify,
-      isCourtManager,
-      controller.postExpenseLimitsCourt(app)
-    );
-
-  };
-})();
+};

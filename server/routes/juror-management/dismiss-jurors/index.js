@@ -1,11 +1,8 @@
-/* eslint-disable strict */
-'use strict';
-
 const auth = require('../../../components/auth');
 const { isCourtUser } = require('../../../components/auth/user-type');
 const controller = require('./dismiss-jurors.controller');
 
-module.exports = function(app) {
+module.exports = function (app) {
   app.get('/juror-management/dismiss-jurors/pools',
     'juror-management.dismiss-jurors.pools.get',
     auth.verify,

@@ -1,124 +1,120 @@
-(function() {
-  'use strict';
+const auth = require('../../components/auth');
+const sendController = require('./send-messages.controller');
+const exportController = require('./export-contacts-controller');
+const { isCourtUser } = require('../../components/auth/user-type');
 
-  const auth = require('../../components/auth');
-  const sendController = require('./send-messages.controller');
-  const exportController = require('./export-contacts-controller');
-  const { isCourtUser } = require('../../components/auth/user-type');
+module.exports = function (app) {
+  app.get('/messaging/send',
+    'messaging.send.get',
+    auth.verify,
+    isCourtUser,
+    sendController.getMessages(app),
+  );
 
-  module.exports = function(app) {
-    app.get('/messaging/send',
-      'messaging.send.get',
-      auth.verify,
-      isCourtUser,
-      sendController.getMessages(app),
-    );
+  app.get('/messaging/send/:message',
+    'messaging.send.template.get',
+    auth.verify,
+    isCourtUser,
+    sendController.getMessageTemplate(app),
+  );
 
-    app.get('/messaging/send/:message',
-      'messaging.send.template.get',
-      auth.verify,
-      isCourtUser,
-      sendController.getMessageTemplate(app),
-    );
+  app.post('/messaging/send/:message',
+    'messaging.send.template.post',
+    auth.verify,
+    isCourtUser,
+    sendController.postMessageTemplate(app),
+  );
 
-    app.post('/messaging/send/:message',
-      'messaging.send.template.post',
-      auth.verify,
-      isCourtUser,
-      sendController.postMessageTemplate(app),
-    );
+  app.get('/messaging/send/:message/find-jurors',
+    'messaging.send.find-jurors.get',
+    auth.verify,
+    isCourtUser,
+    sendController.getFindJurors(app),
+  );
 
-    app.get('/messaging/send/:message/find-jurors',
-      'messaging.send.find-jurors.get',
-      auth.verify,
-      isCourtUser,
-      sendController.getFindJurors(app),
-    );
+  app.post('/messaging/send/:message/find-jurors',
+    'messaging.send.find-jurors.post',
+    auth.verify,
+    isCourtUser,
+    sendController.postFindJurors(app),
+  );
 
-    app.post('/messaging/send/:message/find-jurors',
-      'messaging.send.find-jurors.post',
-      auth.verify,
-      isCourtUser,
-      sendController.postFindJurors(app),
-    );
+  app.get('/messaging/send/:message/select-trial',
+    'messaging.send.select-trial.get',
+    auth.verify,
+    isCourtUser,
+    sendController.getSelectTrial(app),
+  );
 
-    app.get('/messaging/send/:message/select-trial',
-      'messaging.send.select-trial.get',
-      auth.verify,
-      isCourtUser,
-      sendController.getSelectTrial(app),
-    );
+  app.post('/messaging/send/:message/select-trial/filter',
+    'messaging.send.select-trial.filter.post',
+    auth.verify,
+    isCourtUser,
+    sendController.postFilterTrial(app),
+  );
 
-    app.post('/messaging/send/:message/select-trial/filter',
-      'messaging.send.select-trial.filter.post',
-      auth.verify,
-      isCourtUser,
-      sendController.postFilterTrial(app),
-    );
+  app.post('/messaging/send/:message/select-trial',
+    'messaging.send.select-trial.post',
+    auth.verify,
+    isCourtUser,
+    sendController.postSelectTrial(app),
+  );
 
-    app.post('/messaging/send/:message/select-trial',
-      'messaging.send.select-trial.post',
-      auth.verify,
-      isCourtUser,
-      sendController.postSelectTrial(app),
-    );
+  app.get('/messaging/send/:message/select-jurors',
+    'messaging.send.select-jurors.get',
+    auth.verify,
+    isCourtUser,
+    sendController.getSelectJurors(app),
+  );
 
-    app.get('/messaging/send/:message/select-jurors',
-      'messaging.send.select-jurors.get',
-      auth.verify,
-      isCourtUser,
-      sendController.getSelectJurors(app),
-    );
+  app.post('/messaging/send/:message/select-jurors',
+    'messaging.send.select-jurors.post',
+    auth.verify,
+    isCourtUser,
+    sendController.postSelectJurors(app),
+  );
 
-    app.post('/messaging/send/:message/select-jurors',
-      'messaging.send.select-jurors.post',
-      auth.verify,
-      isCourtUser,
-      sendController.postSelectJurors(app),
-    );
+  //Route to filter to send filter jurors request
+  app.post('/messaging/send/:message/select-jurors/filter',
+    'messaging.send.select-jurors.filter.post',
+    auth.verify,
+    isCourtUser,
+    sendController.postFilterJurors(app),
+  );
 
-    //Route to filter to send filter jurors request
-    app.post('/messaging/send/:message/select-jurors/filter',
-      'messaging.send.select-jurors.filter.post',
-      auth.verify,
-      isCourtUser,
-      sendController.postFilterJurors(app),
-    );
+  app.get('/messaging/send/:message/confirmation',
+    'messaging.send.confirmation.get',
+    auth.verify,
+    isCourtUser,
+    sendController.getMessageConfirmation(app),
+  );
 
-    app.get('/messaging/send/:message/confirmation',
-      'messaging.send.confirmation.get',
-      auth.verify,
-      isCourtUser,
-      sendController.getMessageConfirmation(app),
-    );
+  app.post('/messaging/send/:message/confirmation',
+    'messaging.send.confirmation.post',
+    auth.verify,
+    isCourtUser,
+    sendController.postMessageConfirmation(app),
+  );
 
-    app.post('/messaging/send/:message/confirmation',
-      'messaging.send.confirmation.post',
-      auth.verify,
-      isCourtUser,
-      sendController.postMessageConfirmation(app),
-    );
+  // ajax route to check / uncheck jurors
+  app.post('/messaging/send/select-jurors/check',
+    'messaging.send.select-jurors.check.post',
+    auth.verify,
+    isCourtUser,
+    sendController.postCheckJuror(app),
+  );
 
-    // ajax route to check / uncheck jurors
-    app.post('/messaging/send/select-jurors/check',
-      'messaging.send.select-jurors.check.post',
-      auth.verify,
-      isCourtUser,
-      sendController.postCheckJuror(app),
-    );
+  // ajax route to change notification method for juror
+  app.post('/messaging/send/select-jurors/method',
+    'messaging.send.select-jurors.method.post',
+    auth.verify,
+    isCourtUser,
+    sendController.postChangeMethod(app),
+  );
 
-    // ajax route to change notification method for juror
-    app.post('/messaging/send/select-jurors/method',
-      'messaging.send.select-jurors.method.post',
-      auth.verify,
-      isCourtUser,
-      sendController.postChangeMethod(app),
-    );
-
-    app.get('/messaging/export-contact-details',
-      'messaging.export-contacts.get',
-      auth.verify,
-      exportController.getExportContacts(app),
-    );
-  };
-})();
+  app.get('/messaging/export-contact-details',
+    'messaging.export-contacts.get',
+    auth.verify,
+    exportController.getExportContacts(app),
+  );
+};

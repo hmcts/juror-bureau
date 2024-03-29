@@ -6,7 +6,7 @@ const auth = require('../../../components/auth/');
 const disqualifyController = require('./juror-update.disqualify.controller');
 const respondedController = require('./juror-update.responded.controller');
 
-module.exports = function(app) {
+module.exports = function (app) {
 
   // Juror record update page
   app.get('/juror-management/juror/:jurorNumber/update', 'juror.update.get', auth.verify, controller.index(app));
