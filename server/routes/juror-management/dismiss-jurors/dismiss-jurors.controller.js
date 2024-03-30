@@ -1,6 +1,3 @@
-/* eslint-disable strict */
-'use strict';
-
 const _ = require('lodash');
 const moment = require('moment');
 const validate = require('validate.js');
@@ -12,8 +9,8 @@ const { fetchPoolsAtCourt } = require('../../../objects/request-pool');
 const { convertAmPmToLong, dateFilter, timeArrayToString, convert12to24 } = require('../../../components/filters');
 const { jurorAttendanceDao } = require('../../../objects/juror-attendance');
 
-module.exports.getDismissJurorsPools = function(app) {
-  return async function(req, res) {
+module.exports.getDismissJurorsPools = function (app) {
+  return async function (req, res) {
     let tmpForm = {};
 
     const tmpErrors = _.clone(req.session.errors);
@@ -34,7 +31,7 @@ module.exports.getDismissJurorsPools = function(app) {
         require('request-promise'),
         app,
         req.session.authToken,
-        req.session.authentication.owner
+        req.session.authentication.owner,
       );
 
       req.session.poolsAtCourt = pools.pools_at_court_location.filter(pool => pool.total_jurors !== 0);
@@ -66,8 +63,8 @@ module.exports.getDismissJurorsPools = function(app) {
   };
 };
 
-module.exports.postDismissJurorsPools = function(app) {
-  return function(req, res) {
+module.exports.postDismissJurorsPools = function (app) {
+  return function (req, res) {
     const { action } = req.query;
     const calculateAvailableJurors = 'calculate_available_jurors';
     const availablePools = _.clone(req.session.poolsAtCourt);
@@ -95,8 +92,8 @@ module.exports.postDismissJurorsPools = function(app) {
   };
 };
 
-module.exports.getJurorsList = function(app) {
-  return async function(req, res) {
+module.exports.getJurorsList = function (app) {
+  return async function (req, res) {
     const currentPage = req.query.page || 1;
     const tmpErrors = _.clone(req.session.errors);
     let pagination;
@@ -110,7 +107,7 @@ module.exports.getJurorsList = function(app) {
             app,
             req.session.authToken,
             req.session.dismissJurors,
-            req.session.authentication.owner
+            req.session.authentication.owner,
           );
 
         req.session.dismissJurors.jurors = jurorList.jurors_to_dismiss_request_data;
@@ -158,8 +155,8 @@ module.exports.getJurorsList = function(app) {
   };
 };
 
-module.exports.postJurorsList = function(app) {
-  return async function(req, res) {
+module.exports.postJurorsList = function (app) {
+  return async function (req, res) {
     const urls = {
       jurors: 'juror-management.dismiss-jurors.jurors.get',
       checkOut: 'juror-management.dismiss-jurors.check-out.get',
@@ -202,8 +199,8 @@ module.exports.postJurorsList = function(app) {
   };
 };
 
-module.exports.getCompleteService = function() {
-  return function(req, res) {
+module.exports.getCompleteService = function () {
+  return function (req, res) {
     const today = new Date();
     const dateLimit = new Date([today.getFullYear(), today.getMonth() + 1, today.getDate()]);
     const tmpErrors = _.clone(req.session.errors);
@@ -236,8 +233,8 @@ module.exports.getCompleteService = function() {
   };
 };
 
-module.exports.postCompleteService = function(app) {
-  return async function(req, res) {
+module.exports.postCompleteService = function (app) {
+  return async function (req, res) {
 
     const validatorResult = validate({ dateToCheck: req.body.completionDate }, completeService());
 
@@ -297,8 +294,8 @@ module.exports.postCompleteService = function(app) {
   };
 };
 
-module.exports.getCheckOutJurors = function() {
-  return function(req, res) {
+module.exports.getCheckOutJurors = function () {
+  return function (req, res) {
     const tmpErrors = _.clone(req.session.errors);
     let _checkOutTime;
 
@@ -320,8 +317,8 @@ module.exports.getCheckOutJurors = function() {
   };
 };
 
-module.exports.postCheckOutJurors = function(app) {
-  return async function(req, res) {
+module.exports.postCheckOutJurors = function (app) {
+  return async function (req, res) {
     const { checkOutTimeHour, checkOutTimeMinute, checkOutTimePeriod } = req.body;
 
     req.session.dismissJurors.checkOutTime = {
@@ -358,7 +355,7 @@ module.exports.postCheckOutJurors = function(app) {
           attendanceDate: dateFilter(new Date(), null, 'YYYY-MM-DD'),
           locationCode: req.session.authentication.owner,
           checkOutTime: modUtils.padTimeForApi(
-            convert12to24(checkOutTimeHour + ':' + checkOutTimeMinute + checkOutTimePeriod)
+            convert12to24(checkOutTimeHour + ':' + checkOutTimeMinute + checkOutTimePeriod),
           ),
           singleJuror: false,
         },
@@ -392,8 +389,8 @@ module.exports.postCheckOutJurors = function(app) {
   };
 };
 
-module.exports.postCheckJuror = function(app) {
-  return function(req, res) {
+module.exports.postCheckJuror = function (app) {
+  return function (req, res) {
     const { jurorNumber, action } = req.query;
 
     if (jurorNumber === 'check-all-jurors') {
@@ -420,7 +417,7 @@ module.exports.postCheckJuror = function(app) {
 
 // the checked pools can be posted as a single string or as an array of pool numbers
 // to calculate how many is selected we need first to check what it is to count
-function totalCurrentlySelected(checkedPools) {
+function totalCurrentlySelected (checkedPools) {
   const checkedPoolsType = typeof checkedPools;
 
   if (checkedPoolsType === 'string') return 1;
@@ -428,8 +425,8 @@ function totalCurrentlySelected(checkedPools) {
   return 0;
 }
 
-function calculateTotalJurorsAvailable(selections, allPools){
-  if (selections['checked-pools']){
+function calculateTotalJurorsAvailable (selections, allPools) {
+  if (selections['checked-pools']) {
     const selectedPools = allPools.filter((pool) => selections['checked-pools'].includes(pool.pool_number));
     let totalAvailable = 0;
 
@@ -451,7 +448,7 @@ function calculateTotalJurorsAvailable(selections, allPools){
   return 0;
 }
 
-function paginateJurorsList(jurors, params, currentPage) {
+function paginateJurorsList (jurors, params, currentPage) {
   return new Promise((resolve) => {
     let start = 0;
     let end = params.jurorsToDismiss;
@@ -467,7 +464,7 @@ function paginateJurorsList(jurors, params, currentPage) {
   });
 }
 
-function compareCheckInAndCheckOutTimes({ notCheckedOut, checkOutTime: time }) {
+function compareCheckInAndCheckOutTimes ({ notCheckedOut, checkOutTime: time }) {
   const _checkOutTime = convertAmPmToLong(`${time.hour}:${time.minute}${time.period}`);
 
   return notCheckedOut
