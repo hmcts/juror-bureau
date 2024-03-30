@@ -605,7 +605,8 @@ async function courtView (app, req, res, pool, membersList, _errors, selectedJur
   const specifiedStatuses = ['responded', 'panel', 'juror'];
   const _filters = req.query;
 
-  if (typeof _filters !== 'undefined' && typeof _filters.status !== 'undefined') {
+
+  if (_filters?.status && typeof _filters.status === 'string') {
     if (specifiedStatuses.every(i => _filters.status.includes(i)) && _filters.status.split(',').length === 3) {
       jurorStatuses = 'responded';
     }
