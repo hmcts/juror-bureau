@@ -241,11 +241,10 @@ function getAllocationList (responseData) {
   let urgentCount = getCountInt(responseData.allocateUrgent);
   let superUrgentCount = getCountInt(responseData.allocateSuperUrgent);
   let selectedStaff = responseData.selectedstaff;
-  let index = 0;
   let officerList = [];
 
-  if ((!!selectedStaff) && (selectedStaff.constructor === Array)) {
-    for (index = 0; index < selectedStaff.length; index++) {
+  if ((!!selectedStaff) && (selectedStaff instanceof Array)) {
+    for (let index = 0; index < selectedStaff.length; index++) {
       officerList.push(
         {
           'userId': selectedStaff[index],
