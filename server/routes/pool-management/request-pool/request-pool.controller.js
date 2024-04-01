@@ -8,6 +8,8 @@ const dateFilter = require('../../../components/filters').dateFilter;
 const checkDayType = require('../check-day-type');
 const { fetchCourtsDAO } = require('../../../objects');
 
+let courtsList;
+
 // this middleware checks if the user has already started a pool request
 // caching the pool details on the session object helps with that
 // it allows us to have a multi step form for a pool request
