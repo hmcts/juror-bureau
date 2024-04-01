@@ -120,6 +120,7 @@
       };
 
       try {
+        console.log(payload);
         await reissueLetterDAO.postList(app, req, payload);
 
         const documentCount = req.session.documentsJurorsList.checkedJurors.length;
@@ -161,6 +162,8 @@
       };
 
       try {
+
+        console.log(payload);
         await reissueLetterDAO.deletePending(app, req, payload);
 
         const index = req.session.documentsJurorsList.data
@@ -272,7 +275,7 @@
     case 'initial-summons':
       return 'Resend initial summons';
     case 'summons-reminders':
-      return 'Resend summons reminder';
+      return 'Send summons reminder';
     case 'further-information':
       return 'Resend request for further information';
     case 'confirmation':
@@ -301,7 +304,11 @@
       return data.length;
     }
 
-    return data.filter((doc) => doc[doc.length - 2] !== false).length;
+    return data.filter((doc) => {
+      const _neverPrinted = doc[doc.length - 3] === null && doc[doc.length - 2] === false;
+
+      return doc[doc.length - 2] !== false || _neverPrinted;
+    }).length;
   }
 
 })();
