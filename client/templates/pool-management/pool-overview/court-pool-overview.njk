@@ -60,6 +60,30 @@
         {% endif %}
       </div>
     </div>
+    <span>
+      {% if isNil === false and poolDetails.isActive and isCourtManager %}
+        {{ govukButton({
+          text: "Edit pool",
+          href: url('pool-management.edit-pool.get', {
+            poolNumber: poolDetails.poolNumber
+          }),
+          classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+          attributes: {
+            id: "editPoolButton"
+          }
+        }) }}
+      {% endif %}
+      {% if poolDetails.locCode === authentication.locCode and isCourtManager %}
+        {{ govukButton({
+          text: "Delete pool" if (poolDetails.isActive or bureauSummoning.required === 0) else "Delete pool request",
+          href: url('pool-management.delete-pool.get'),
+          classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+          attributes: {
+            id: "deletePoolButton"
+          }
+        }) }}
+      {% endif %}
+    </span>
 
   </div>
 

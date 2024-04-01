@@ -5,44 +5,52 @@
   const controller = require('./edit-bank-details.controller');
   const jurorRecordController = require('../../juror-record/juror-record.controller');
   const editJurorController = require('../../edit/juror-edit.controller');
+  const { isCourtUser } = require('../../../../components/auth/user-type');
 
   module.exports = function(app) {
 
     app.get('/juror-management/expenses/:jurorNumber/:poolNumber/bank-details',
       'juror-management.bank-details.get',
       auth.verify,
+      isCourtUser,
       controller.getBankDetails(app));
 
     app.post('/juror-management/expenses/:jurorNumber/:poolNumber/bank-details',
       'juror-management.bank-details.post',
       auth.verify,
+      isCourtUser,
       controller.postBankDetails(app));
 
     // EDITING NOTES ROUTES
     app.get('/juror-management/expenses/:jurorNumber/:poolNumber/bank-details/notes/edit',
       'juror-management.bank-details.notes-edit.get',
       auth.verify,
+      isCourtUser,
       jurorRecordController.getEditNotes(app));
 
     app.post('/juror-management/expenses/:jurorNumber/:poolNumber/bank-details/notes/edit',
       'juror-management.bank-details.notes-edit.post',
       auth.verify,
+      isCourtUser,
       jurorRecordController.postEditNotes(app));
 
     // EDITING ADDRESS ROUTES
     app.get('/juror-management/expenses/:jurorNumber/:poolNumber/bank-details/address',
       'juror-management.bank-details.address.get',
       auth.verify,
+      isCourtUser,
       editJurorController.getEditDetails(app));
 
     app.get('/juror-management/expenses/:jurorNumber/:poolNumber/bank-details/address/edit',
       'juror-management.bank-details.address-edit.get',
       auth.verify,
+      isCourtUser,
       editJurorController.getEditDetailsAddress(app));
 
     app.post('/juror-management/expenses/:jurorNumber/:poolNumber/bank-details/address/edit',
       'juror-management.bank-details.address-edit.post',
       auth.verify,
+      isCourtUser,
       editJurorController.postEditDetailsAddress(app));
 
 

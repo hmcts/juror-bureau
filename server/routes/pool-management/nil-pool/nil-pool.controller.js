@@ -20,8 +20,8 @@
       }
 
       next();
-    }
-  }
+    };
+  };
 
   module.exports.index = function(app) {
     return function(req, res) {
@@ -63,7 +63,7 @@
           title: 'Please check the form',
           count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
           items: tmpErrors,
-        }
+        },
       });
     };
   };
@@ -85,7 +85,7 @@
             // still undecided if I should just render or redirect to another page 🤔
             return res.render('pool-management/nil-pool/has-deferrals', {
               deferrals: data.deferrals,
-            })
+            });
           }
 
           // add the newly created pool number to the poolDetails
@@ -137,7 +137,7 @@
         courts: transformedCourtNames,
         submitUrl: app.namedRoutes.build('nil-pool.change-court.post'),
         cancelUrl: app.namedRoutes.build('nil-pool.get'),
-        pageIdentifier: 'Create a Nil Pool'
+        pageIdentifier: 'Create a Nil Pool',
       });
     };
   };
@@ -163,8 +163,8 @@
           req.session.errors = {
             courtNameOrLocation: [{
               summary: 'Please check the court name or location',
-              details: 'This court does not exist. Please enter a name or code of an existing court'
-            }]
+              details: 'This court does not exist. Please enter a name or code of an existing court',
+            }],
           };
 
           res.redirect(app.namedRoutes.build('nil-pool.change-court.get'));
@@ -212,7 +212,7 @@
           title: 'Please check the form',
           count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
           items: tmpErrors,
-        }
+        },
       });
     };
   };
@@ -295,6 +295,8 @@
 
           return res.redirect(app.namedRoutes.build('pool-management.get'));
         };
+
+      console.log(req.body);
 
       nilPoolCreate.post(require('request-promise'), app, req.session.authToken, req.body)
         .then(successCB)

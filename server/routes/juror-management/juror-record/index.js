@@ -4,7 +4,7 @@
   const auth = require('../../../components/auth');
   const controller = require('./juror-record.controller')
     , attendanceTimeController = require('../attendance/change-times/change-times.controller')
-    , attendanceDateController = require('../attendance/change-attendance-date/change-attendance-date.controller')
+    , nextDueDateController = require('../attendance/change-attendance-date/change-next-due-date.controller')
     , nonAttendanceDateController = require('../expenses/non-attendance-day/non-attendance-day.controller')
     , addAttendanceDateController = require('../attendance/add-attendance-date/add-attendance-date.controller')
     , changeJurorAttendanceController = require('../juror-record/change-attendance/change-attendance.controller')
@@ -48,16 +48,18 @@
       auth.verify,
       controller.checkResponse(app),
       controller.getAttendanceTab(app));
+
     app.get('/juror-management/record/:jurorNumber/change-attendance-date',
-      'juror-record.attendance.change-attendance-date.get',
+      'juror-record.attendance.change-next-due-date.get',
       auth.verify,
-      attendanceDateController.getChangeAttendanceDate(app)
+      nextDueDateController.getChangeNextDueDate(app)
     );
     app.post('/juror-management/record/:jurorNumber/change-attendance-date',
-      'juror-record.attendance.change-attendance-date.post',
+      'juror-record.attendance.change-next-due-date.post',
       auth.verify,
-      attendanceDateController.postChangeAttendanceDate(app)
+      nextDueDateController.postChangeNextDueDate(app)
     );
+
     app.get('/juror-management/record/:jurorNumber/add-attendance-date',
       'juror-record.attendance.add-attendance-date.get',
       auth.verify,

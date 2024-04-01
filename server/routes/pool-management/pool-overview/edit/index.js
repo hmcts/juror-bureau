@@ -1,4 +1,4 @@
-const { isTeamLeader } = require('../../../../components/auth/user-type');
+const { isManager } = require('../../../../components/auth/user-type');
 
 (function() {
   'use strict';
@@ -10,12 +10,12 @@ const { isTeamLeader } = require('../../../../components/auth/user-type');
     app.get('/pool-management/pool/:poolNumber/edit',
       'pool-management.edit-pool.get',
       auth.verify,
-      isTeamLeader,
+      isManager,
       controller.index(app));
     app.post('/pool-management/pool/:poolNumber/edit',
       'pool-management.edit-pool.post',
       auth.verify,
-      isTeamLeader,
+      isManager,
       controller.post(app));
   };
 

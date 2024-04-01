@@ -7,7 +7,7 @@
     , jurorRecordObject = require('../../../../objects/juror-record')
     , attendanceDateValidator = require('../../../../config/validation/change-attendance-date').attendanceDate;
 
-  module.exports.getChangeAttendanceDate = function(app) {
+  module.exports.getChangeNextDueDate = function(app) {
     return async function(req, res) {
       const tmpErrors = _.clone(req.session.errors)
         , tmpBody = _.clone(req.session.formFields)
@@ -49,7 +49,7 @@
 
         return res.render('juror-management/attendance/change-attendance-date', {
           processUrl: app.namedRoutes.build(
-            'juror-record.attendance.change-attendance-date.post',
+            'juror-record.attendance.change-next-due-date.post',
             { jurorNumber: juror.jurorNumber }
           ),
           cancelUrl: app.namedRoutes.build('juror-record.attendance.get', { jurorNumber: juror.jurorNumber }),
@@ -83,7 +83,7 @@
     };
   };
 
-  module.exports.postChangeAttendanceDate = function(app) {
+  module.exports.postChangeNextDueDate = function(app) {
     return function(req, res) {
       const jurorNumber = req.params.jurorNumber;
       var successCB = function() {
@@ -134,7 +134,7 @@
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
         return res.redirect(
-          app.namedRoutes.build('juror-record.attendance.change-attendance-date.get', { jurorNumber: jurorNumber })
+          app.namedRoutes.build('juror-record.attendance.change-next-due-date.get', { jurorNumber: jurorNumber })
         );
       }
 

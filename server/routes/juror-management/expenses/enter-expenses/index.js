@@ -1,10 +1,9 @@
-const { isCourtUser } = require('../../../../components/auth/user-type');
-
 (function() {
   'use strict';
 
   const auth = require('../../../../components/auth');
   const controller = require('./enter-expenses.controller');
+  const { isCourtUser } = require('../../../../components/auth/user-type');
 
   module.exports = function(app) {
     app.get('/juror-management/expenses/:jurorNumber/:poolNumber/enter-expenses',

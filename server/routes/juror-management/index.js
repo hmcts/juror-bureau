@@ -3,6 +3,7 @@
 
   const auth = require('../../components/auth');
   const controller = require('./juror-management.controller');
+  const { isCourtUser } = require('../../components/auth/user-type');
 
   module.exports = function(app) {
     require('./juror-record/index')(app);
@@ -25,6 +26,7 @@
     app.get('/juror-management/attendance/:status?',
       'juror-management.attendance.get',
       auth.verify,
+      isCourtUser,
       controller.getAttendance(app),
     );
 

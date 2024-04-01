@@ -1,3 +1,5 @@
+const { isCourtUser } = require('../../../components/auth/user-type');
+
 (function() {
   'use strict';
 
@@ -11,12 +13,14 @@
     app.get('/juror-management/unpaid-attendance',
       'juror-management.unpaid-attendance.get',
       auth.verify,
+      isCourtUser,
       controller.getUnpaidAttendance(app),
     );
 
     app.post('/juror-management/unpaid-attendance',
       'juror-management.unpaid-attendance.post',
       auth.verify,
+      isCourtUser,
       controller.postUnpaidAttendance(app),
     );
 

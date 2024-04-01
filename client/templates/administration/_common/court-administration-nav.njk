@@ -1,11 +1,13 @@
 {% from "moj/components/primary-navigation/macro.njk" import mojPrimaryNavigation %}
 
-{{ mojPrimaryNavigation({
-  label: "Court administration navigation",
-  attributes: {
-    id: "courtadministrationNav"
-  },
-  items: [
+
+{% set managerOnlyTabs = [
+    "Users",
+    "Expense limits"
+  ]
+%}
+
+{% set allNavBarElements = [
     {
       text: "Users",
       href: url('administration.court-bureau.users.get', { location: 'court' }),
@@ -63,4 +65,23 @@
       }
     }
   ]
+%}
+{% set navBarElements = [] %}
+{% for item in allNavBarElements %}
+  {% if managerOnlyTabs.includes(item.text)%}
+      {% if isCourtManager %}
+        {% set navBarElements = (navBarElements.push(item), navBarElements) %}
+      {% endif %}
+  {% else %}
+    {% set navBarElements = (navBarElements.push(item), navBarElements)  %}
+  {% endif %}
+{% endfor %}
+
+
+{{ mojPrimaryNavigation({
+  label: "Court administration navigation",
+  attributes: {
+    id: "courtAdministrationNav"
+  },
+  items: navBarElements
 }) }}

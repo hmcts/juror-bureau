@@ -7,8 +7,8 @@
     if (
       !isSystemAdministrator(req, res) &&
       req.session.hasOwnProperty('authentication') === true &&
-      req.session.authentication.hasOwnProperty('owner') === true &&
-      req.session.authentication.owner === '400'
+      req.session.authentication.hasOwnProperty('locCode') === true &&
+      req.session.authentication.locCode === '400'
     ) {
       if (typeof next !== 'undefined') {
         return next();
@@ -29,8 +29,8 @@
     if (
       !isSystemAdministrator(req, res) &&
       req.session.hasOwnProperty('authentication') === true &&
-      req.session.authentication.hasOwnProperty('owner') === true &&
-      req.session.authentication.owner !== '400'
+      req.session.authentication.hasOwnProperty('locCode') === true &&
+      req.session.authentication.locCode !== '400'
     ) {
       if (typeof next !== 'undefined') {
         return next();
@@ -71,8 +71,8 @@
   function isSJOUser(req, res, next) {
     if (
       isCourtUser(req, res) &&
-      req.session.authentication.hasOwnProperty('userLevel') === true &&
-      req.session.authentication.userLevel === '9'
+      req.session.authentication.hasOwnProperty('roles') === true &&
+      req.session.authentication.roles.includes('SENIOR_JUROR_OFFICER')
     ) {
       if (typeof next !== 'undefined') {
         return next();

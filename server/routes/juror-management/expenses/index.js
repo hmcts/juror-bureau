@@ -3,6 +3,7 @@
 
   const auth = require('../../../components/auth');
   const controller = require('./expenses.controller');
+  const { isCourtUser } = require('../../../components/auth/user-type');
 
   module.exports = function(app) {
 
@@ -14,11 +15,13 @@
     app.get('/juror-management/expenses/:jurorNumber/:poolNumber/default-expenses',
       'juror-management.default-expenses.get',
       auth.verify,
+      isCourtUser,
       controller.getDefaultExpenses(app));
 
     app.post('/juror-management/expenses/:jurorNumber/:poolNumber/default-expenses',
       'juror-management.default-expenses.post',
       auth.verify,
+      isCourtUser,
       controller.postDefaultExpenses(app));
 
   };

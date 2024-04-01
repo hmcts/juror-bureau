@@ -118,7 +118,7 @@
           Authorization: req.session.authToken,
         },
         json: true,
-        body: utils.camelToSnake(body),
+        body: _.mapKeys(body, (__, key) => _.snakeCase(key)),
       };
 
       app.logger.info('Sending request to API: ', payload);

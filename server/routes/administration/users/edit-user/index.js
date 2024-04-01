@@ -4,18 +4,35 @@
   const auth = require('../../../../components/auth');
   const controller = require('./edit-user.controller');
   const createUserController = require('../create-users/create-users.controller');
-  const { isSystemAdministrator } = require('../../../../components/auth/user-type');
+  const { isSystemAdministrator, isCourtManager, isBureauManager } = require('../../../../components/auth/user-type');
+
+  const canEditUser = function(req, res, next) {
+    if (
+      isSystemAdministrator(req, res) || isCourtManager(req, res) || isBureauManager(req, res)
+    ) {
+      if (typeof next !== 'undefined') {
+        return next();
+      }
+      return true;
+    }
+    if (typeof next !== 'undefined') {
+      return errors(req, res, 403);
+    }
+    return false;
+  };
 
   module.exports = function(app) {
     app.get('/administration/users/edit-user/:username',
       'administration.users.edit.get',
       auth.verify,
+      canEditUser,
       controller.getEditUser(app),
     );
 
     app.post('/administration/users/edit-user/:username',
       'administration.users.edit.post',
       auth.verify,
+      canEditUser,
       controller.postEditUser(app),
     );
 
