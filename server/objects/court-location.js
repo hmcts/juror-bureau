@@ -36,4 +36,26 @@
 
   module.exports.courtLocationsFromPostcodeObj = courtLocationsFromPostcode;
 
+  // refactor above
+
+  const rp = require('request-promise');
+
+  module.exports.getCourtLocationRates = function(app, req) {
+    const resource = 'moj/court-location/{loc_code}/rates'.replace('{loc_code}', req.session.authentication.owner);
+    const payload = {
+      uri: urljoin(config.apiEndpoint, resource),
+      method: 'GET',
+      headers: {
+        'User-Agent': 'Request-Promise',
+        'Content-Type': 'application/vnd.api+json',
+        Authorization: req.session.authToken,
+      },
+      json: true,
+    };
+
+    app.logger.info('Sending request to API: ', payload);
+
+    return rp(payload);
+  };
+
 })();

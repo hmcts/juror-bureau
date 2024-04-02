@@ -37,6 +37,12 @@ const { isCourtUser } = require('../../../../components/auth/user-type');
       isCourtUser,
       controller.postLossOverLimit(app));
 
+    app.get('/juror-management/expenses/:jurorNumber/:poolNumber/enter-expenses/travel-over-limit',
+      'juror-management.enter-expenses.travel-over-limit.get',
+      auth.verify,
+      isCourtUser,
+      controller.getTravelOverLimit(app));
+
     app.get('/juror-management/expenses/:jurorNumber/:poolNumber/enter-expenses/total-less-zero',
       'juror-management.enter-expenses.total-less-zero.get',
       auth.verify,
