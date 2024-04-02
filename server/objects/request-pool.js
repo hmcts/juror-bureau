@@ -274,4 +274,10 @@
   module.exports.addCoronerCitizens = addCoronerCitizens;
   module.exports.fetchPoolsAtCourt = fetchPoolsAtCourt;
 
+  // new DAOs
+  const { DAO } = require('./dataAccessObject');
+
+  module.exports.fetchCourtsDAO = new DAO('moj/pool-request/court-locations', 'get');
+  module.exports.fetchAllCourtsDAO = new DAO('moj/court-location/all-court-locations', 'get');
+
 })();
