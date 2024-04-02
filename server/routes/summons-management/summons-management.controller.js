@@ -147,6 +147,7 @@ module.exports.postDeferralDates = function (app) {
   return function (req, res) {
     // validate if we have at least one date, and if so then on to getDeferral
     let deferralDatesSelected = [];
+    let deferralDates = [];
     let tmpErrors = {
       deferredToDate1: null,
       deferredToDate2: null,
