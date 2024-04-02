@@ -6,6 +6,14 @@
   If problem persists, contact Crown IT support.
 {% endset %}
 
+{% if isLessThanPaid %}
+  {% set messageHtml %}
+    Failed to recalculate totals. New values cannot be less than old values.
+    <br><br>
+    Press save to verify which values are incorrect.
+  {% endset %}
+{% endif %}
+
 {{ mojBanner({
   type: "warning",
   html: messageHtml,
