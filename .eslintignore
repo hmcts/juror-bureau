@@ -24,4 +24,3 @@ server/config/validation/*
 
 # we should ignore DAO files and logger for now since they are getting refactored
 server/objects/*
-server/components/logger/*
