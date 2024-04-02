@@ -46,7 +46,6 @@
           document: document,
         }), urlBuilder(req.body)));
       } catch (err) {
-        console.log(err);
         // A 404 means no results were found
         if (err.statusCode === 404) {
           req.session.documentsJurorsList = {
