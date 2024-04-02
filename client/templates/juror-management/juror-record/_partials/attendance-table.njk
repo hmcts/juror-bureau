@@ -52,7 +52,7 @@
             </td>
             <td class="govuk-table__cell">
               {% if day["attendance_type"] === "ABSENT" %}
-                <a href="#" class="govuk-link">Print FTA letter</a>
+                <a href="{{ url('printing.failed-to-attend.get', { document: 'failed-to-attend'}) + '?jurorNumber=' + juror.commonDetails.jurorNumber + '&singleFTAdate=' +   attendanceDate | dateFilter(null, 'YYYY-MM-DD') }}" class="govuk-link">Print FTA letter</a>
               {% endif %}
             </td>
             <td class="govuk-table__cell govuk-table__cell--numeric">
