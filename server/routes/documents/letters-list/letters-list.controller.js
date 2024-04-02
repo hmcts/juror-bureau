@@ -12,80 +12,89 @@
 
   module.exports.getListLetters = function(app) {
     return function(req, res) {
-      const { document } = req.params;
-      const _isBureauUser = isBureauUser(req, res);
-      const backLinkUrl = app.namedRoutes.build('documents.get');
-      const changeUrl = app.namedRoutes.build('documents.form.get', {
-        document,
-      });
-      const tmpErrors = _.clone(req.session.errors);
+      try {
+        const { document } = req.params;
+        const _isBureauUser = isBureauUser(req, res);
+        const backLinkUrl = app.namedRoutes.build('documents.get');
+        const changeUrl = app.namedRoutes.build('documents.form.get', {
+          document,
+        });
+        const tmpErrors = _.clone(req.session.errors);
 
-      const { documentSearchBy, jurorDetails, poolDetails, page } = req.query;
-      let searchBy, paginationObject;
+        const { documentSearchBy, jurorDetails, poolDetails, page } = req.query;
+        let searchBy, paginationObject;
 
-      delete req.session.errors;
-      if (documentSearchBy === 'juror'){
-        searchBy = jurorDetails;
-      } else {
-        searchBy = poolDetails;
+        delete req.session.errors;
+        if (documentSearchBy === 'juror'){
+          searchBy = jurorDetails;
+        } else {
+          searchBy = poolDetails;
+        }
+
+        if (!req.session.documentsJurorsList) {
+          return res.redirect(app.namedRoutes.build('documents.get'));
+        }
+
+        if (req.session.documentsJurorsList.data.length > modUtils.constants.PAGE_SIZE) {
+          paginationObject = modUtils.paginationBuilder(
+            req.session.documentsJurorsList.data.length,
+            page || 1,
+            req.url,
+          );
+        }
+
+        const slicedJurorList = {
+          headings: req.session.documentsJurorsList.headings,
+          'data_types': req.session.documentsJurorsList.data_types,
+          data: paginateJurorsList(req.session.documentsJurorsList.data, page || 1),
+        };
+
+        const { tableHeader, tableRows } = tableGenerator.bind({
+          response: slicedJurorList,
+          checkedJurors: req.session.documentsJurorsList.checkedJurors || [],
+        })(_isBureauUser);
+
+        const postUrl = urljoin(app.namedRoutes.build('documents.letters-list.post', {
+          document,
+        }), urlBuilder(req.query));
+
+        const printUrl = urljoin(app.namedRoutes.build('documents.letters-list.print', {
+          document,
+        }), urlBuilder(req.query));
+
+        const selectedJurors = (req.session.documentsJurorsList.checkedJurors
+          && req.session.documentsJurorsList.checkedJurors.length) || 0;
+
+        return res.render('documents/_common/letters-list.njk', {
+          pageIdentifier: modUtils.getLetterIdentifier(document),
+          backLinkUrl,
+          postUrl,
+          changeUrl,
+          printUrl,
+          searchBy,
+          headings: tableHeader,
+          rows: tableRows,
+          paginationObject,
+          buttonLabel: buttonLabel(document, _isBureauUser),
+          selectedJurors,
+          totalJurors: req.session.documentsJurorsList.data.length,
+          totalCheckableJurors: calculateTotalJurors(req.session.documentsJurorsList.data, documentSearchBy),
+          document,
+          documentSearchBy,
+          errors: {
+            title: 'There is a problem',
+            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+            items: tmpErrors,
+          },
+        });
+      } catch (error) {
+        app.logger.crit('Failed to retrive letters: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+        });
+
+        return res.render('_errors/generic');
       }
-
-      if (!req.session.documentsJurorsList) {
-        return res.redirect(app.namedRoutes.build('documents.get'));
-      }
-
-      if (req.session.documentsJurorsList.data.length > modUtils.constants.PAGE_SIZE) {
-        paginationObject = modUtils.paginationBuilder(
-          req.session.documentsJurorsList.data.length,
-          page || 1,
-          req.url,
-        );
-      }
-
-      const slicedJurorList = {
-        headings: req.session.documentsJurorsList.headings,
-        'data_types': req.session.documentsJurorsList.data_types,
-        data: paginateJurorsList(req.session.documentsJurorsList.data, page || 1),
-      };
-
-      const { tableHeader, tableRows } = tableGenerator.bind({
-        response: slicedJurorList,
-        checkedJurors: req.session.documentsJurorsList.checkedJurors || [],
-      })(_isBureauUser);
-
-      const postUrl = urljoin(app.namedRoutes.build('documents.letters-list.post', {
-        document,
-      }), urlBuilder(req.query));
-
-      const printUrl = urljoin(app.namedRoutes.build('documents.letters-list.print', {
-        document,
-      }), urlBuilder(req.query));
-
-      const selectedJurors = (req.session.documentsJurorsList.checkedJurors
-        && req.session.documentsJurorsList.checkedJurors.length) || 0;
-
-      return res.render('documents/_common/letters-list.njk', {
-        pageIdentifier: modUtils.getLetterIdentifier(document),
-        backLinkUrl,
-        postUrl,
-        changeUrl,
-        printUrl,
-        searchBy,
-        headings: tableHeader,
-        rows: tableRows,
-        paginationObject,
-        buttonLabel: buttonLabel(document, _isBureauUser),
-        selectedJurors,
-        totalJurors: req.session.documentsJurorsList.data.length,
-        totalCheckableJurors: calculateTotalJurors(req.session.documentsJurorsList.data, documentSearchBy),
-        document,
-        documentSearchBy,
-        errors: {
-          title: 'There is a problem',
-          count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-          items: tmpErrors,
-        },
-      });
     };
   };
 
@@ -282,6 +291,8 @@
       return _isBureauUser ? 'Resend withdrawal letter' : 'Print withdrawal letter';
     case 'show-cause':
       return 'Print show cause letter';
+    case 'failed-to-attend':
+      return 'Print failed to attend letter';
     }
   };
 
