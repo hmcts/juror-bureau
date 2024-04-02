@@ -9,6 +9,8 @@
 
 {% block content %}
 
+  {% include "includes/errors.njk" %}
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <span class="govuk-caption-xl">Export contact details</span>
@@ -17,7 +19,5 @@
   </div>
 
   {% include "./../_partials/juror-list-results.njk" %}
-
-  {{ jurorsList | console }}
 
 {% endblock %}

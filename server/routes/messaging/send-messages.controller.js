@@ -438,7 +438,7 @@
       try {
         let jurorsData = await jurorSearchDAO.post(
           app,
-          req.session.authToken,
+          req,
           req.session.authentication.owner,
           opts
         );

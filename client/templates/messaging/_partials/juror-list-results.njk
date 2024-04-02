@@ -32,7 +32,11 @@
       {% endif %}
     </div>
     <form id="jurorSelectionForm" method="POST">
-      {% include "./jurors-table.njk" %}
+      {% if origin === "EXPORT_DETAILS" %}
+        {% include "../export-contact-details/jurors-table.njk" %}
+      {% else %}
+        {% include "./jurors-table.njk" %}
+      {% endif %}
       <input type="hidden" id="csrfToken" name="_csrf" value="{{ csrftoken }}"/>
     </form>
   </div>

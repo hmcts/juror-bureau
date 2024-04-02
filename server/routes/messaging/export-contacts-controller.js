@@ -3,6 +3,7 @@
 
   const _ = require('lodash');
   const validate = require('validate.js');
+  const modUtils = require('../../lib/mod-utils');
   const {
     exportContactDetailsValidator,
     detailsToExportValidator,
@@ -59,25 +60,7 @@
       }
 
       const postUrl = app.namedRoutes.build('messaging.export-contacts.jurors.get');
-      let queryParams;
-
-      switch (searchBy) {
-      case 'jurorNumber':
-        queryParams = `?search_by=juror&juror_number=${req.body.jurorNumber}`;
-        break;
-      case 'jurorName':
-        queryParams = `?search_by=juror&juror_name=${req.body.jurorName}`;
-        break;
-      case 'pool':
-        queryParams = `?search_by=pool&pool_number=${req.body.poolNumber}`;
-        break;
-      case 'court':
-        queryParams = `?search_by=court&court_name=${req.body.courtName}`;
-        break;
-      case 'deferredTo':
-        queryParams = `?search_by=date&date_deferred_to=${req.body.deferredTo}`;
-        break;
-      }
+      const queryParams = buildQueryParams(searchBy, req.body);
 
       return res.redirect(postUrl + queryParams);
     };
@@ -94,43 +77,71 @@
         date_deferred_to: dateDeferredTo,
       } = req.query;
       const isEmpty = v => !v || v === '';
+      const tmpErrors = _.clone(req.session.errors);
+
+      delete req.session.errors;
 
       // eslint-disable-next-line max-len
       if (isEmpty(searchBy) || (isEmpty(jurorNumber) && isEmpty(jurorName) && isEmpty(poolNumber) && isEmpty(courtName) && isEmpty(dateDeferredTo))) {
         return res.redirect(app.namedRoutes.build('messaging.export-contacts.get'));
       }
 
-      const locCode = req.session.authentication.locCode;
-      const payload = buildSearchPayload(req.body);
-      let jurorsList;
+      const renderView = (totalJurors, jurors) => {
+        res.render('messaging/export-contact-details/jurors-list.njk', {
+          origin: 'EXPORT_DETAILS',
+          totalJurors,
+          jurors,
+          backLinkUrl: {
+            built: true,
+            url: app.namedRoutes.build('messaging.export-contacts.get'),
+          },
+          errors: {
+            title: 'Please check the form',
+            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+            items: tmpErrors,
+          },
+        });
+      };
 
-      debugger;
+      const locCode = req.session.authentication.locCode;
+      const payload = buildSearchPayload(req.query);
+      let jurorsList;
+      let formatedList;
 
       try {
-        jurorsList = await jurorSearchDAO.post(app, req, locCode, payload, true);
+        jurorsList = await jurorSearchDAO.post(app, req, locCode, payload);
 
-        debugger;
+        formatedList = modUtils.replaceAllObjKeys(jurorsList.data, _.camelCase);
       } catch (err) {
-        console.log(err);
-        return; // do not continue on the error
+        return renderView(0, []);
       }
 
-      debugger;
-
-      return res.render('messaging/export-contact-details/jurors-list.njk', {
-        origin: 'EXPORT_DETAILS',
-        totalJurors: jurorsList.total_items,
-        jurorsList: jurorsList.data,
-        backLinkUrl: {
-          built: true,
-          url: app.namedRoutes.build('messaging.export-contacts.get'),
-        },
-      });
+      return renderView(jurorsList.total_items, formatedList);
     };
   };
 
   module.exports.postJurorsList = function(app) {
     return function(req, res) {
+      const { selectedJurors } = req.body;
+      const { search_by: searchBy } = req.query;
+
+      const queryParams = buildQueryParams(searchBy, req.query);
+
+      if (!selectedJurors || selectedJurors.length === 0) {
+        req.session.errors = {
+          selectedJurors: [{
+            details: 'Please select at least one juror to export',
+            summary: 'Please select at least one juror to export',
+          }],
+        };
+
+        return res.redirect(app.namedRoutes.build('messaging.export-contacts.jurors.get') + queryParams);
+      }
+
+      req.session.messaging = {
+        selectedJurors,
+      };
+
       return res.redirect(app.namedRoutes.build('messaging.export-contacts.details-to-export.get'));
     };
   };
@@ -189,6 +200,7 @@
           auth: req.session.authentication,
           jwt: req.session.authToken,
           data: payload,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
         return res.redirect(app.namedRoutes.build('messaging.export-contacts.details-to-export.get'));
@@ -196,30 +208,54 @@
     };
   };
 
-  function buildSearchPayload(body) {
+  function buildSearchPayload(query) {
     const payload = {
       pageLimit: 25,
       pageNumber: 1,
     };
 
-    if (body.search_by === 'jurorNumber') {
-      payload['juror_number'] = body.jurorNumber;
+    if (query.search_by === 'jurorNumber') {
+      payload['juror_number'] = query.juror_number;
     }
-    if (body.search_by === 'jurorName') {
-      payload['juror_name'] = body.jurorName;
+    if (query.search_by === 'jurorName') {
+      payload['juror_name'] = query.juror_name;
     }
-    if (body.search_by === 'pool') {
-      payload['pool_number'] = body.poolNumber;
+    if (query.search_by === 'pool') {
+      payload['pool_number'] = query.pool_number;
     }
-    if (body.search_by === 'court') {
-      payload['court_name'] = body.courtName;
+    if (query.search_by === 'court') {
+      payload['court_name'] = query.court_name;
     }
-    if (body.search_by === 'deferredTo') {
-      payload['date_deferred_to'] = body.deferredTo;
+    if (query.search_by === 'deferredTo') {
+      payload['date_deferred_to'] = query.deferred_to;
     }
 
     return payload;
   }
+
+  function buildQueryParams(searchBy, query) {
+    let queryParams = '';
+
+    switch (searchBy) {
+    case 'jurorNumber':
+      queryParams = `?search_by=juror&juror_number=${query.juror_number || query.jurorNumber}`;
+      break;
+    case 'jurorName':
+      queryParams = `?search_by=juror&juror_name=${query.juror_name || query.jurorName}`;
+      break;
+    case 'pool':
+      queryParams = `?search_by=pool&pool_number=${query.pool_number || query.poolNumber}`;
+      break;
+    case 'court':
+      queryParams = `?search_by=court&court_name=${query.court_name || query.courtName}`;
+      break;
+    case 'deferredTo':
+      queryParams = `?search_by=date&date_deferred_to=${query.deferred_to || query.deferredTo}`;
+      break;
+    }
+
+    return queryParams;
+  };
 
 
   function populateContactExportProperties(payload, body) {
