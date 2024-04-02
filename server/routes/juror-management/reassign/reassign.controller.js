@@ -283,7 +283,7 @@
           req.session.poolJurorsReassign.selectedJurors : [req.params['jurorNumber']],
       };
 
-      const cancelUrl = req.session.poolJurorsReassign
+      let cancelUrl = req.session.poolJurorsReassign
         ? app.namedRoutes.build('pool-overview.get', {poolNumber: req.params['poolNumber']})
         : app.namedRoutes.build('juror-record.overview.get', {jurorNumber: req.params['jurorNumber']});
       const continueUrl = req.session.poolJurorsReassign
