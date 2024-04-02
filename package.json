@@ -29,6 +29,7 @@
     "axios": "^1.6.8",
     "basic-auth": "^2.0.0",
     "body-parser": "^1.15.2",
+    "browser-sync": "^3.0.2",
     "chart.js": "^2.9.3",
     "compression": "^1.6.2",
     "config": "^3.3.9",
