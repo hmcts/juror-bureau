@@ -2,57 +2,14 @@
   'use strict';
 
   const { snakeToCamel } = require('../../../lib/mod-utils');
-  const { dateFilter, capitalizeFully } = require('../../../components/filters');
   const { standardReportDAO } = require('../../../objects/reports');
   const { validate } = require('validate.js');
   const { poolSearchObject } = require('../../../objects/pool-search');
   const rp = require('request-promise');
+  const { reportKeys, tableDataMappers, headingDataMappers } = require('./utils');
+  const { standardReportPrint } = require('./standard-report-print');
 
-  // type IReportKey = {[key:string]: {
-  //   title: string,
-  //   apiKey: string,
-  //   search?: 'poolNumber' | 'dateRange', // etc only poolNumber is currently implemented
-  //   headings: string[], // corresponds to the ids provided for the headings in the API
-  //                       // (except report created dateTime)
-  // }};
-  const reportKeys = {
-    'next-due': {
-      title: 'Next attendance date report',
-      apiKey: 'NextAttendanceDayReport',
-      search: 'poolNumber',
-      headings: [
-        'poolNumber',
-        'reportDate',
-        'poolType',
-        'reportTime',
-        'serviceStartDate',
-        'courtName',
-      ],
-    },
-  };
-
-  const tableDataMappers = {
-    String: (data) => capitalizeFully(data),
-    LocalDate: (data) => dateFilter(data, 'YYYY-mm-dd', 'ddd D MMM YYYY'),
-  };
-
-  const headingDataMappers ={
-    String: (data) => capitalizeFully(data),
-    LocalDate: (data) => dateFilter(data, 'YYYY-mm-dd', 'dddd D MMMM YYYY'),
-    timeFromISO: (data) => {
-      const time = data.split('T')[1].split('.')[0];
-
-      if (time.split(':')[0] === 12) {
-        return time + 'pm';
-      } else if (time.split(':')[0] > 12) {
-        return `${time.split(':')[0] - 12}:${time.split(':').slice(1).join(':')}pm`;
-      }
-
-      return time + 'am';
-    },
-  };
-
-  const standardFilterGet = (app, reportKey) => async (req, res) => {
+  const standardFilterGet = (app, reportKey) => async(req, res) => {
     const reportType = reportKeys[reportKey];
 
     if (reportType.search) {
@@ -106,7 +63,7 @@
     return res.redirect(app.namedRoutes.build(`${reportKey}.filter.get`) + '?filter=' + filter);
   };
 
-  const standardReportGet = (app, reportKey) => async (req, res) => {
+  const standardReportGet = (app, reportKey, isPrint = false) => async(req, res) => {
     const reportType = reportKeys[reportKey];
     const config = {};
     const filter = req.session.reportFilter;
@@ -119,6 +76,8 @@
 
     try {
       const { headings, tableData } = await standardReportDAO.post(app, req, reportType.apiKey, config);
+
+      if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
 
       const tableHeaders = tableData.headings.map((data, index) => ({
         text: data.name,
@@ -139,7 +98,7 @@
           });
         }
 
-        if (header.id === 'postcode') {
+        if (header.id === 'juror_postcode') {
           output = output.toUpperCase();
         }
 
@@ -164,6 +123,8 @@
         tableRows,
         tableHeaders,
         pageHeadings,
+        reportKey,
+        filter: req.params.filter,
         backLinkUrl: {
           built: true,
           url: app.namedRoutes.build(`${reportKey}.filter.get`) + (filter ? '?filter=' + filter : ''),

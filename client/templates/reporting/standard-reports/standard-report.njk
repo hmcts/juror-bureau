@@ -26,7 +26,18 @@
 
 {% block content %}
 
-  <h1 class="govuk-heading-l">{{title}}</h1>
+  <div class="mod-flex mod-space-between">
+    <h1 class="govuk-heading-l">{{title}}</h1>
+    
+    {{ govukButton({
+      text: "Print",
+      href: url(reportKey + ".report.print", { filter: filter }),
+      classes: "govuk-button--secondary",
+      attributes: {
+        target: "_blank"
+      }
+    }) }}
+  </div>
 
   <div class="report-headings">
     {% for heading in pageHeadings %}
