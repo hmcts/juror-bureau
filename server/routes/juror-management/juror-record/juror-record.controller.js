@@ -10,28 +10,6 @@ const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/ex
     , validate = require('validate.js')
     , modUtils = require('../../../lib/mod-utils');
 
-  function render(req, res, tab, jurorNumber, other) {
-
-    return res.render('juror-management/juror-record/' + tab, {
-      backLinkUrl: 'homepage.get',
-      juror: {
-        commonDetails: {
-          title: 'Rev',
-          firstName: 'James',
-          lastName: 'Rashad',
-          jurorNumber: jurorNumber,
-          jurorStatus: 'Summoned',
-          poolNumber: '101',
-          startDate: ['2022', '1', '1'],
-          courtName: 'PRESTON COMBINED COURT CENTRE',
-        },
-      },
-      currentTab: tab,
-      hasSummons: req.session.hasSummonsResponse,
-      ...other,
-    });
-  }
-
   // TODO: this will probably be removed when we move to a single juror / summons record
   module.exports.checkResponse = function(app) {
     return async function(req, res, next) {
@@ -210,6 +188,14 @@ const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/ex
           req.session.jurorNameChangeAttendance = response.data.commonDetails.firstName
           + ' ' + response.data.commonDetails.lastName;
 
+          let canRunPoliceCheck = true;
+
+          if ((response.data.addressLineOne === '' || response.data.addressLineOne === null)
+          || (response.data.addressTown === '' || response.data.addressTown === null)
+          || (response.data.addressPostcode === '' || response.data.addressPostcode === null)) {
+            canRunPoliceCheck = false;
+          }
+
           // TODO: handle the backLink
           return res.render('juror-management/juror-record/overview', {
             backLinkUrl: 'homepage.get',
@@ -217,6 +203,7 @@ const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/ex
             canSummon,
             currentTab: 'overview',
             jurorStatus,
+            canRunPoliceCheck,
             bannerMessage: bannerMessage,
             availableMessage: availableMessage,
             hasSummons: req.session.hasSummonsResponse,
@@ -250,7 +237,7 @@ const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/ex
         require('request-promise'),
         app,
         req.session.authToken,
-        'overview',
+        'detail',
         req.params['jurorNumber'],
         req.session.locCode,
       )

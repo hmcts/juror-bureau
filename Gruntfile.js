@@ -1,11 +1,8 @@
 ;(function(){
   'use strict';
   var path = require('path');
-  var exec = require('child_process').exec
-    , readline = require('readline')
-    , config = {
+  var config = {
       EXPRESS_PORT: 3000,
-      BROWSERSYNC_PORT: 3001
     }
     , sass = require('sass');
 
@@ -354,36 +351,6 @@
         }
       },
 
-
-      // Browser dev tools
-      browserSync: {
-        bsFiles: {
-          src : [
-            './tmp/client/css/**/*.css',
-            './tmp/client/**/*.html',
-            './tmp/client/**/*.njk',
-            './tmp/client/**/*.js',
-            './tmp/client/**/*.{png,jpg,jpeg,gif,svg}',
-            './tmp/client/js/i18n/*.json',
-            './tmp/.rebooted'
-          ]
-        },
-        options: {
-          proxy: "localhost:" + (process.env.PORT || config.EXPRESS_PORT),
-          watchTask: true,
-          port: config.BROWSERSYNC_PORT,
-          open: false,
-          notify: {
-            styles: {
-              top: 'auto',
-              bottom: '0'
-            }
-          }
-        }
-      },
-
-
-
       // Run server
       express: {
         options: {
@@ -660,7 +627,6 @@
       return grunt.task.run([
         'env:dev',
         'build:dev',
-        'browserSync',
         'concurrent:dev'
       ]);
     });

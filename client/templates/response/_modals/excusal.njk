@@ -43,7 +43,7 @@
         <select class="govuk-select" name="excusal_reason" id="excusal_reason">
           <option value="" class="u-hide--small" selected data-title="Select reason">Select reason</option>
           {% for reason in excusalReasons %}
-          <option value="{{ reason.excusalCode }}" data-title="{{ reason.description }}">{{ reason.excusalCode }} - {{ reason.description }}</option>
+          <option value="{{ reason.code }}" data-title="{{ reason.description }}">{{ reason.code }} - {{ reason.description }}</option>
           {% endfor %}
         </select>
       </div>

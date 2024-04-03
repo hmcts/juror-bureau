@@ -3,11 +3,12 @@
 
   const _ = require('lodash');
   const paperReplyObj = require('../../../objects/paper-reply').paperReplyObject;
+  const { systemCodesDAO } = require('../../../objects/administration');
   const summonsUpdate = require('../../../objects/summons-management').summonsUpdate;
-  const adjustmentReasons = require('../../../lib/mod-utils').adjustmentsReasons;
   const validate = require('validate.js');
   const validator = require('../../../config/validation/paper-reply').reasonableAdjustments;
   const hasBeenModified = require('./summons-update-common').hasBeenModified;
+  const { reasonsArrToObj } = require('../../../lib/mod-utils');
 
   module.exports.get = function(app) {
     return async function(req, res) {
@@ -46,6 +47,8 @@
           adjustmentsResponse['value'] = 'yes';
           assistanceTypeDetails = data.specialNeeds[0].assistanceTypeDetails;
         }
+
+        const adjustmentReasons = reasonsArrToObj(await systemCodesDAO.get(app, req, 'REASONABLE_ADJUSTMENTS'));
 
         const reasons = Object.keys(adjustmentReasons).reduce((prev, key) => {
           prev.push({

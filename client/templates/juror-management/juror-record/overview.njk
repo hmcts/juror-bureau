@@ -60,7 +60,7 @@
   %}
  
   {% if isCourtUser %}
-    {% if juror.commonDetails.policeCheck === "Not Checked" %}
+    {% if juror.commonDetails.policeCheck === "Not Checked" and canRunPoliceCheck %}
       {% set policeCheckStatus =
         {
           key: {
