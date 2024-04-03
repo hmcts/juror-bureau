@@ -73,7 +73,6 @@
 
   module.exports.getSingleFailedToAttend = function(app) {
     return async function(req, res) {
-      const { document } = req.params;
       const { jurorNumber } = req.query;
       const { singleFTAdate } = req.query;
 
@@ -92,35 +91,7 @@
           completeRoute: app.namedRoutes.build('juror-record.attendance.get', {
             jurorNumber,
           }),
-          // eslint-disable-next-line max-len
         });
-      }
-
-      try {
-
-
-      } catch (err) {
-        // A 404 means no results were found
-        if (err.statusCode === 404) {
-          req.session.documentsJurorsList = {
-            headings: [],
-            'data_types': [],
-            data: [],
-          };
-
-          return res.redirect(urljoin(app.namedRoutes.build('documents.letters-list.get', {
-            document,
-          })));
-        }
-
-        app.logger.crit('Failed to fetch documents / jurors list: ', {
-          auth: req.session.authentication,
-          jwt: req.session.authToken,
-          data: { ...req.body },
-          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-        });
-
-        return res.render('_errors/generic.njk');
       }
 
     };
