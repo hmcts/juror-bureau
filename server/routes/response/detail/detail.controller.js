@@ -2521,10 +2521,10 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
       isDeferral = true;
     }
 
-    if (responseData.bail === valYes ||
-      responseData.residency === valNo ||
-      responseData.convictions === valYes ||
-      responseData.mentalHealthAct === valYes) {
+    if (responseData.bail ||
+      responseData.residency ||
+      responseData.convictions ||
+      responseData.mentalHealthAct) {
       isIneligible = true;
     }
 
