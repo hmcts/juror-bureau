@@ -151,5 +151,11 @@
       auth.verify,
       exportController.postSelectDetailsToExport(app),
     );
+
+    app.post('/messaging/export-contact-details/jurors/check',
+      'messaging.export-contacts.jurors.check.post',
+      auth.verify,
+      exportController.postCheckJuror(app),
+    );
   };
 })();

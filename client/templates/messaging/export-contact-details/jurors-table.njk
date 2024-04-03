@@ -18,7 +18,7 @@
       {
         html: '<div class="govuk-checkboxes__item govuk-checkboxes--small">' + 
               '<input class="govuk-checkboxes__input" id="' + juror['jurorNumber'] + '" name="selectedJurors" type="checkbox"' +
-              ' value="' + juror['jurorNumber'] + '" aria-label="check-juror"' + _checked + '/>' +
+              ' value="' + juror['jurorNumber'] + '" aria-label="check-juror"' + _checked + ' data-poolnumber="' + juror['poolNumber'] + '"/>' +
               '<label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="' + juror['jurorNumber'] + '"></label>' +
               '</div>' | safe,
         classes: "govuk-!-padding-right-2 govuk-!-padding-left-2"

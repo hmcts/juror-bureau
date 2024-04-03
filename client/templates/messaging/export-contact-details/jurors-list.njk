@@ -21,3 +21,9 @@
   {% include "./../_partials/juror-list-results.njk" %}
 
 {% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script src="{{ assetPath }}js/export-contact-details.js"></script>
+{% endblock %}

@@ -20,6 +20,8 @@
       delete req.session.messaging;
       delete req.session.errors;
 
+      req.session.messaging = {};
+
       try {
         courtsResponse = await fetchAllCourts.get(require('request-promise'), app, req.session.authToken);
       } catch (err) {
@@ -78,6 +80,7 @@
       } = req.query;
       const isEmpty = v => !v || v === '';
       const tmpErrors = _.clone(req.session.errors);
+      const currentPage = req.query.page || 1;
 
       delete req.session.errors;
 
@@ -86,11 +89,13 @@
         return res.redirect(app.namedRoutes.build('messaging.export-contacts.get'));
       }
 
-      const renderView = (totalJurors, jurors) => {
+      const renderView = (totalJurors, jurors, pagination = null) => {
         res.render('messaging/export-contact-details/jurors-list.njk', {
           origin: 'EXPORT_DETAILS',
           totalJurors,
           jurors,
+          pagination,
+          checkedJurors: req.session.messaging.checkedJurors,
           backLinkUrl: {
             built: true,
             url: app.namedRoutes.build('messaging.export-contacts.get'),
@@ -104,19 +109,26 @@
       };
 
       const locCode = req.session.authentication.locCode;
-      const payload = buildSearchPayload(req.query);
+      const payload = buildSearchPayload(req.query, currentPage);
       let jurorsList;
       let formatedList;
+      let pagination;
 
       try {
         jurorsList = await jurorSearchDAO.post(app, req, locCode, payload);
 
         formatedList = modUtils.replaceAllObjKeys(jurorsList.data, _.camelCase);
+
+        if (jurorsList.total_items > modUtils.constants.PAGE_SIZE) {
+          pagination = modUtils.paginationBuilder(jurorsList.total_items, currentPage, req.url);
+        }
       } catch (err) {
+        console.log(err);
+
         return renderView(0, []);
       }
 
-      return renderView(jurorsList.total_items, formatedList);
+      return renderView(jurorsList.total_items, formatedList, pagination);
     };
   };
 
@@ -137,10 +149,6 @@
 
         return res.redirect(app.namedRoutes.build('messaging.export-contacts.jurors.get') + queryParams);
       }
-
-      req.session.messaging = {
-        selectedJurors,
-      };
 
       return res.redirect(app.namedRoutes.build('messaging.export-contacts.details-to-export.get'));
     };
@@ -174,11 +182,14 @@
 
       const locCode = req.session.authentication.locCode;
       const payload = {
-        jurors: [
-          { 'juror_number': '641500001', 'pool_number': '415240501' },
-          { 'juror_number': '641500002', 'pool_number': '415240501' },
-          { 'juror_number': '641500007', 'pool_number': '415240501' },
-        ],
+        jurors: req.session.messaging.checkedJurors.reduce((jurors, juror) => {
+          jurors.push({
+            'juror_number': juror.jurorNumber,
+            'pool_number': juror.poolNumber,
+          });
+
+          return jurors;
+        }, []),
       };
 
       populateContactExportProperties(payload, req.body);
@@ -208,10 +219,73 @@
     };
   };
 
-  function buildSearchPayload(query) {
+  module.exports.postCheckJuror = function(app) {
+    return async function(req, res) {
+      const { jurorNumber, poolNumber, action } = req.query;
+
+      if (!req.session.messaging.checkedJurors) req.session.messaging.checkedJurors = [];
+
+      if (jurorNumber === 'check-all-jurors') {
+        if (action === 'check') {
+
+          try {
+            const opts = {
+              // ...searchOptions,
+              // 'filters': [...filters.showOnly || [], ...filters.include || []],
+              pageNumber: 1,
+              pageLimit: 500,
+            };
+
+            let jurorsData = await jurorSearchDAO.post(
+              app,
+              req,
+              req.session.authentication.owner,
+              opts,
+              true,
+            );
+
+            // clear the array quickly
+            req.session.messaging.checkedJurors = [];
+
+            jurorsData.data.forEach(juror => {
+              req.session.messaging.checkedJurors.push({
+                jurorNumber: juror.juror_number,
+                poolNumber: juror.pool_number,
+              });
+            });
+
+          } catch (err) {
+            // TODO: handle error
+          }
+
+        } else {
+          // uncheck everyone
+          req.session.messaging.checkedJurors = [];
+        }
+      } else {
+        if (action === 'check') {
+          req.session.messaging.checkedJurors.push({ jurorNumber, poolNumber });
+        }
+
+        if (action === 'uncheck') {
+          req.session.messaging.checkedJurors = req.session.messaging.checkedJurors
+            .filter(juror => (juror.jurorNumber !== jurorNumber));
+        }
+      }
+
+      app.logger.info('Checked a juror to export contact details for', {
+        auth: req.session.authentication,
+        jwt: req.session.authToken,
+      });
+
+      res.status(200).send(req.session.messaging.checkedJurors.length.toString());
+    };
+  };
+
+  function buildSearchPayload(query, currentPage) {
     const payload = {
-      pageLimit: 25,
-      pageNumber: 1,
+      pageLimit: modUtils.constants.PAGE_SIZE,
+      pageNumber: currentPage,
     };
 
     if (query.search_by === 'jurorNumber') {
