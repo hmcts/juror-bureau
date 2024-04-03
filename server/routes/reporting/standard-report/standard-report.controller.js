@@ -98,7 +98,7 @@
           });
         }
 
-        if (header.id === 'juror_postcode') {
+        if (header.id === 'postcode') {
           output = output.toUpperCase();
         }
 

@@ -27,7 +27,13 @@ async function standardReportPrint(app, req, res, reportKey, data) {
 
   const tableRows = [
     ...tableData.data.map(row => tableData.headings.map(header => {
-      return { text: tableDataMappers[header.dataType](row[snakeToCamel(header.id)]) };
+      let text = tableDataMappers[header.dataType](row[snakeToCamel(header.id)]);
+
+      if (header.id === 'postcode') {
+        text = text.toUpperCase();
+      }
+
+      return { text };
     })),
   ];
 
