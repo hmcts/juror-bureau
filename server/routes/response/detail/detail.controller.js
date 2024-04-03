@@ -29,7 +29,8 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
     , paperUpdateStatus = require('../../../objects/summons-management').updateStatus
     , opticReferenceObj = require('../../../objects/juror-record').opticReferenceObject
     , { systemCodesDAO } = require('../../../objects/administration')
-    , { dateFilter } = require('../../../components/filters');
+    , { dateFilter } = require('../../../components/filters')
+    , jurorRecordObject = require('../../../objects/juror-record');
 
   module.exports.index = function(app) {
     return function(req, res) {
@@ -197,6 +198,8 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
               },
             });
           }
+
+          data.phoneLogs = response.results[3].data.contactLogs;
 
           return opticReferenceObj.get(require('request-promise'),
             app,
@@ -414,6 +417,15 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
         courtObj.getCatchmentStatus(require('request-promise'), app, req.session.authToken, req.params.id));
       promiseArr.push(
         systemCodesDAO.get(app, req, 'REASONABLE_ADJUSTMENTS'));
+      promiseArr.push(
+        jurorRecordObject.record.get(
+          require('request-promise'),
+          app,
+          req.session.authToken,
+          'contact-log',
+          req.params['id'],
+        ),
+      );
 
       executeAllPromises(promiseArr)
         .then(successCB)
