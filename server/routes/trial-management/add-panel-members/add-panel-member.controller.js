@@ -113,7 +113,7 @@
       const noJurorsRequired = req.session.noPanelJurors;
 
       availableJurorsDAO.get(app, req, req.params.locationCode).then(pools => {
-        console.log(pools);
+
         return res.render('trial-management/generate-panel/select-pools.njk', {
           pools,
           processUrl: app.namedRoutes.build('trial-management.add-panel-members.select-pools.post', {

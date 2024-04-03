@@ -24,7 +24,7 @@
     );
 
     app.post('/trial-management/:locationCode/:trialNumber/add-panel-members/select-pools',
-      'trial-management.add-panel-members .select-pools.post',
+      'trial-management.add-panel-members.select-pools.post',
       auth.verify,
       controller.postSelectPools(app),
     );
