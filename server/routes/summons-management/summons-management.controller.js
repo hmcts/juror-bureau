@@ -932,6 +932,11 @@
               isBureauUser: isBureauUser(req),
               isAddChangeVisible: data.responseClone.processingStatus !== 'Closed',
               catchmentWarning: req.session.catchmentWarning,
+              assignedSelf: !(
+                data.responseClone.assignedStaffMember === null ||
+                data.responseClone.assignedStaffMember.username === null ||
+                data.responseClone.assignedStaffMember.username !== req.session.authentication.login
+              ),
             });
 
           }
@@ -973,6 +978,11 @@
                 isBureauUser: isBureauUser(req),
                 isAddChangeVisible: data.responseClone.processingStatus !== 'Closed',
                 catchmentWarning: req.session.catchmentWarning,
+                assignedSelf: !(
+                  data.responseClone.assignedStaffMember === null ||
+                  data.responseClone.assignedStaffMember.username === null ||
+                  data.responseClone.assignedStaffMember.username !== req.session.authentication.login
+                ),
               });
             }
 
@@ -997,6 +1007,11 @@
       processedBannerMessage: data.processedBannerMessage,
       isAddChangeVisible: data.responseClone.processingStatus !== 'Closed',
       isBureauUser: isBureauUser(req),
+      assignedSelf: !(
+        data.responseClone.assignedStaffMember === null ||
+        data.responseClone.assignedStaffMember.username === null ||
+        data.responseClone.assignedStaffMember.username !== req.session.authentication.login
+      ),
     });
   }
 

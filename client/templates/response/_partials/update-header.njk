@@ -50,7 +50,7 @@
                 </a>
               {% endif %}
 
-              {% if (assignedSelf === true) or (authentication.staff.rank > 0) %}
+              {% if (assignedSelf === true) or isTeamLeader %}
                 <a id="processSendTo" href="{{ url('response.assign.get', { id: response.jurorNumber }) }}" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " value="send_to" data-module="govuk-button">
                 {#<a id="processSendTo" href="#" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " value="send_to" data-module="govuk-button">#}
                   Send to a colleague...
