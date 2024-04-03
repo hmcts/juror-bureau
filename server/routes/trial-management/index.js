@@ -10,6 +10,7 @@
     require('./edit-trial')(app);
     require('./generate-panel')(app);
     require('./empanel-jury')(app);
+    require('./add-panel-members')(app);
 
     app.get('/trial-management/trials',
       'trial-management.trials.get',

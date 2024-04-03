@@ -1,0 +1,76 @@
+{% extends "../../layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+
+{% block page_identifier %} Add panel members {% endblock %}
+
+{% if errors.items["jurorType"] %}
+  {% set jurorTypeError = {"text": errors.items['jurorType'][0].details} %}
+{% endif %}
+{% if errors.items["noJurors"] %}
+  {% set noJurorsError = {"text": errors.items['noJurors'][0].details} %}
+{% endif %}
+
+{% block content %}
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <h1 class="govuk-heading-l">Add panel members</h1>
+
+      <form action="{{ submitUrl }}" method="post" id="numberOfJurorsForm">
+
+        {{ govukRadios({
+          fieldset: {
+            legend: {
+              text: "Select where to add more panel members from",
+              classes: "govuk-!-font-weight-bold"
+            }
+          },
+          classes: "govuk-radios",
+          name: "jurorType",
+          items: [
+            {
+              value: "availableJurors",
+              text: "All available jurors"
+            },
+            {
+              value: "specificPools",
+              text: "Jurors from one or more specific pools"
+            }
+          ],
+          value: panelDetails.jurorType,
+          errorMessage: jurorTypeError
+        }) }}
+
+        {{ govukInput({
+          label: {
+            text: "Number of extra jurors needed on this panel"
+          },
+          id: "noJurors",
+          name: "noJurors",
+          classes: "govuk-input--width-3",
+          value: panelDetails.noJurors,
+          type: "number",
+          errorMessage: noJurorsError
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            type: "submit" 
+          }) }}
+
+          <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

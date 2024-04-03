@@ -119,6 +119,12 @@
             classes: "govuk-button--secondary",
             href: url('trial-management.empanel.get', {trialNumber: trial.trial_number, locationCode: locationCode})
           }) if not trial.is_jury_empanelled }}
+          {{ govukButton({
+            text: "Add panel members",
+            classes: "govuk-button--secondary",
+            href: url('trial-management.add-panel-members.get', {trialNumber: trial.trial_number, locationCode: locationCode})
+          }) }}
+          
         {% else %}
           {{ govukButton({
             text: "Generate panel",
