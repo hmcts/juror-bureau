@@ -93,7 +93,7 @@
         {% set poolRows = (poolRows.push(
           [
             {
-              html: '<div class="govuk-radios__item govuk-!-padding-left-0">' +
+              html: '<div class="govuk-radios__item govuk-radios--small govuk-!-padding-left-0">' +
                 '  <input' +
                 '    class="govuk-radios__input"' +
                 '    id="reportPool"' +
@@ -103,26 +103,32 @@
                 '    aria-controls="conditional-reportPool"' +
                 '    aria-expanded="false"' +
                 '  >' +
-                '  <label class="govuk-label govuk-radios__label" for="reportPool">' +
+                '  <label class="govuk-label govuk-radios__label" for="reportPool"/>' +
                 '</div>'
             },
             {
-              text: pool.poolNumber
+              text: pool.poolNumber,
+              classes: "mod-middle-align"
             },
             {
-              text: pool.courtName
+              text: pool.courtName,
+              classes: "mod-middle-align"
             },
             {
-              text: pool.poolStage
+              text: pool.poolStage,
+              classes: "mod-middle-align"
             },
             {
-              text: pool.poolStatus
+              text: pool.poolStatus,
+              classes: "mod-middle-align"
             },
             {
-              text: pool.poolType
+              text: pool.poolType,
+              classes: "mod-middle-align"
             },
             {
-              text: pool.serviceStartDate | dateFilter("YYYY-mm-dd", "ddd D MMM YYYY")
+              text: pool.serviceStartDate | dateFilter("YYYY-mm-dd", "ddd D MMM YYYY"),
+              classes: "mod-middle-align"
             }
           ]
         ), poolRows) %}
