@@ -26,6 +26,26 @@
   };
 
   module.exports.addPanelMembersDAO = {
+    getStatus: function(app, req, trialNumber, courtLocationCode) {
+      const payload = {
+        uri: urljoin(
+          config.apiEndpoint,
+          `moj/trial/panel/status?trial_number=${trialNumber}&court_location_code=${courtLocationCode}`,
+        ),
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+      };
+
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
+    },
+
     post: function(app, req, body) {
       const payload = {
         uri: urljoin(config.apiEndpoint, 'moj/trial/panel/add-panel-members'),
