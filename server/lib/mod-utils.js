@@ -1274,4 +1274,22 @@
     });
   };
 
+  module.exports.setPreviousWorkingDay = (date) => {
+    const dayOfWeek = date.getDay();
+  
+    switch (dayOfWeek) {
+    case 1:
+      date.setDate(date.getDate() - 3);
+      break;
+    case 0:
+      date.setDate(date.getDate() - 2);
+      break;
+    default:
+      date.setDate(date.getDate() - 1);
+      break;
+    }
+  
+    return date;
+  }
+
 })();
