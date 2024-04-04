@@ -29,6 +29,11 @@
       `${key}.report.post`,
       auth.verify,
       standardReportPost(app, key));
+
+    app.get(`/reporting/${key}/report/:filter/print`,
+      `${key}.report.print`,
+      auth.verify,
+      standardReportGet(app, key, true));
   };
 
   // Add standard report keys to this object, the function will populate them
