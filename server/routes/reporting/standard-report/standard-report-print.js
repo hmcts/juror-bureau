@@ -15,6 +15,10 @@ async function standardReportPrint(app, req, res, reportKey, data) {
       return { key: 'Time created', value: headingDataMappers.timeFromISO(headings.reportCreated.value) };
     }
 
+    if (headings[heading].dataType === 'LocalDate') {
+      return { key: headings[heading].displayName, value: headingDataMappers.LocalDate(headings[heading].value) };
+    }
+
     const _key = headings[heading].displayName;
     const _value = headings[heading].value;
 

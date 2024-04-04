@@ -26,11 +26,34 @@ module.exports.reportKeys = {
       right: ['reportDate', 'reportTime', 'courtName'],
     },
   },
+  'undelivered': {
+    title: 'Undelivered list',
+    apiKey: 'UndeliverableListReport',
+    search: 'poolNumber',
+    headings: [
+      'poolNumber',
+      'reportDate',
+      'poolType',
+      'reportTime',
+      'serviceStartDate',
+      'courtName',
+      'totalUndelivered',
+    ],
+    pageHeadings: {
+      left: ['poolNumber', 'poolType', 'serviceStartDate', 'totalUndelivered'],
+      right: ['reportDate', 'reportTime', 'courtName'],
+    },
+  },
 };
 
 module.exports.tableDataMappers = {
   String: (data) => capitalizeFully(data),
   LocalDate: (data) => dateFilter(data, 'YYYY-mm-dd', 'ddd D MMM YYYY'),
+  List: (data) => Object.values(data).reduce(
+    (acc, current) => {
+      return acc + ', ' + current;
+    },
+  ),
 };
 
 module.exports.headingDataMappers ={
@@ -47,4 +70,5 @@ module.exports.headingDataMappers ={
 
     return time + 'am';
   },
+  Long: (data) => data,
 };
