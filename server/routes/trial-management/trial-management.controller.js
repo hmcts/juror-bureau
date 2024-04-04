@@ -115,7 +115,7 @@
 
         return {};
       })])
-        .then(([trialData, panelData, addPanelStatus]) => {
+        .then(([trialData, panelData, addPanelStatus ]) => {
 
           if (typeof tmpFields === 'undefined') {
             req.session.originalTrialNumber = trialData.trialNumber;
@@ -140,7 +140,7 @@
             trial: trialData,
             locationCode,
             successBanner,
-            addPanelStatus,
+            addPanelStatus: addPanelStatus.data,
             formActions: {
               returnUrl: app.namedRoutes.build('trial-management.trials.return.post',
                 {

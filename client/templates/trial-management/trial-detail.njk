@@ -76,7 +76,7 @@
 {% endif %}
 
 {% block content %}
-{{errors.message}}
+
   {% include "includes/errors.njk" %}
 
   {% if successBanner %}
@@ -100,60 +100,62 @@
     </div>
     <div class="govuk-grid-column-one-half">
       <div class="govuk-button-group mod-flex mod-justify-end">
-        {% if addPanelStatus %}
-          {{ govukButton({
-            text: "Add panel members",
-            classes: "govuk-button--secondary",
-            href: url('trial-management.add-panel-members.get', {trialNumber: trial.trial_number, locationCode: locationCode})
-          }) }}
-        {% endif %}
-
-        {% if trial.panelledJurors | length > 0 %}
-          {{ govukButton({
-            text: "Print panel list",
-            classes: "govuk-button--secondary",
-            href: '#'
-          }) }}
-
-          {{ govukButton({
-            text: "Print ballot cards",
-            classes: "govuk-button--secondary",
-            href: '#'
-          }) }}
-
-          {{ govukButton({
-            text: "Empanel jury",
-            classes: "govuk-button--secondary",
-            href: url('trial-management.empanel.get', {trialNumber: trial.trial_number, locationCode: locationCode})
-          }) if not trial.is_jury_empanelled }}
-         
-        
-
-        {% else %}
-          {{ govukButton({
-            text: "Generate panel",
-            classes: "govuk-button--secondary",
-            href: url('trial-management.generate-panel.get', {trialNumber: trial.trial_number, locationCode: locationCode})
-          }) }}
-
-          {{ govukButton({
-            text: "Edit trial",
-            classes: "govuk-button--secondary",
-            href: '#',
-            disabled: true
-          }) }}
-            {# Due to the trial BE being implemented, the stub edit trial code no longer works
-            href: url('trial-management.edit-trial.get', {trialNumber: trial.trial_number, locationCode: locationCode})
-          }) }} #}
-        {% endif %}
-
         {% if trial.is_active %}
-          {{ govukButton({
-            text: "End trial",
-            classes: "govuk-button--secondary",
-            href: url('trial-management.trials.end-trial.get', {trialNumber: trial.trial_number, locationCode: locationCode})
-          }) }}
-        {% endif %}
+          {% if addPanelStatus %}
+            {{ govukButton({
+              text: "Add panel members",
+              classes: "govuk-button--secondary",
+              href: url('trial-management.add-panel-members.get', {trialNumber: trial.trial_number, locationCode: locationCode})
+            }) }}
+          {% endif %}
+
+          {% if trial.panelledJurors | length > 0 %}
+            {{ govukButton({
+              text: "Print panel list",
+              classes: "govuk-button--secondary",
+              href: '#'
+            }) }}
+
+            {{ govukButton({
+              text: "Print ballot cards",
+              classes: "govuk-button--secondary",
+              href: '#'
+            }) }}
+
+            {{ govukButton({
+              text: "Empanel jury",
+              classes: "govuk-button--secondary",
+              href: url('trial-management.empanel.get', {trialNumber: trial.trial_number, locationCode: locationCode})
+            }) if not trial.is_jury_empanelled }}
+          
+          
+
+          {% else %}
+            {{ govukButton({
+              text: "Generate panel",
+              classes: "govuk-button--secondary",
+              href: url('trial-management.generate-panel.get', {trialNumber: trial.trial_number, locationCode: locationCode})
+            }) }}
+
+            {{ govukButton({
+              text: "Edit trial",
+              classes: "govuk-button--secondary",
+              href: '#',
+              disabled: true
+            }) }}
+              {# Due to the trial BE being implemented, the stub edit trial code no longer works
+              href: url('trial-management.edit-trial.get', {trialNumber: trial.trial_number, locationCode: locationCode})
+            }) }} #}
+          {% endif %}
+
+          {% if trial.is_active %}
+            {{ govukButton({
+              text: "End trial",
+              classes: "govuk-button--secondary",
+              href: url('trial-management.trials.end-trial.get', {trialNumber: trial.trial_number, locationCode: locationCode})
+            }) }}
+          {% endif %}
+        {% endif %}  
       </div>
     </div>
   </div>

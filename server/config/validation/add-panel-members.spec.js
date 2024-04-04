@@ -2,16 +2,11 @@
 (function() {
     'use strict';
   
-    const validate = require('validate.js')
-      , validator = require('./generate-panel')
-      , validatorResult = null;
+    const validate = require('validate.js');
+    const validator = require('./generate-panel');
   
     // TODO Not yet implemented
     describe('Trials - Generate panel validators:', function() {
-  
-      beforeEach(function() {
-        validatorResult = null;
-      });
   
       it('should validate a valid request', function() {
         const mockRequest = {
@@ -19,18 +14,18 @@
           noJurors: '7',
         };
   
-        validatorResult = validate(mockRequest, validator());
+        const validatorResult = validate(mockRequest, validator());
 
         expect(validatorResult).to.be.undefined;
       });
   
       it('should try to validate an invalid request - missing all fields', function() {
         const mockRequest = {
-            jurorType: '',
-            noJurors: '',
-          };
+          jurorType: '',
+          noJurors: '',
+        };
 
-        validatorResult = validate(mockRequest, validator());
+        const validatorResult = validate(mockRequest, validator());
 
         expect(validatorResult).to.be.an('object');
         expect(validatorResult.jurorType[0]).to.have.ownPropertyDescriptor('summary');

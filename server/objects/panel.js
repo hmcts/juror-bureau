@@ -26,7 +26,6 @@
     },
   };
 
-
   module.exports.panelMemberStatusDAO = new DAO('moj/trial/panel/status', {
     get: function(trialNumber, courtLocationCode) {
       const uri = urljoin(this.resource, `?trial_number=${trialNumber}&court_location_code=${courtLocationCode}`);

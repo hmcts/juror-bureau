@@ -3,7 +3,7 @@
 
   const  _ = require('lodash');
   const addPanelMembersValidator = require('../../../config/validation/add-panel-members');
-  const { addPanelMembersDAO, availableJurorsDAO } = require('../../../objects/panel');
+  const { addPanelMembersDAO, availableJurorsDAO } = require('../../../objects');
   const poolsValidator = require('../../../config/validation/generate-panel-pools');
   const validate = require('validate.js');
   const countErrors = (tmpErrors) => typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0;
@@ -57,11 +57,11 @@
       }
 
       return addPanelMembersDAO.post(req, {
-        trial_number: req.params.trialNumber,
-        number_requested: +req.body.noJurors,
-        pool_numbers: [],
-        court_location_code: req.params.locationCode,
-      }).then((success) => {
+        'trial_number': req.params.trialNumber,
+        'number_requested': +req.body.noJurors,
+        'pool_numbers': [],
+        'court_location_code': req.params.locationCode,
+      }).then(() => {
         return res.redirect(app.namedRoutes.build('trial-management.trials.detail.get', {
           trialNumber: req.params.trialNumber,
           locationCode: req.params.locationCode,
@@ -165,11 +165,11 @@
         selectedPools = req.body.selectedPools;
       }
       return addPanelMembersDAO.post(req, {
-        trial_number: req.params.trialNumber,
-        number_requested: +req.session.noPanelJurors,
-        pool_numbers: selectedPools,
-        court_location_code: req.params.locationCode,
-      }).then((success) => {
+        'trial_number': req.params.trialNumber,
+        'number_requested': +req.session.noPanelJurors,
+        'pool_numbers': selectedPools,
+        'court_location_code': req.params.locationCode,
+      }).then(() => {
         delete req.session.noPanelJurors;
 
         return res.redirect(app.namedRoutes.build('trial-management.trials.detail.get', {
