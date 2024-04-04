@@ -31,8 +31,6 @@ module.exports.reportKeys = {
     apiKey: 'UndeliverableListReport',
     search: 'poolNumber',
     headings: [
-      // 'dateFrom',
-      // 'dateTo',
       'poolNumber',
       'reportDate',
       'poolType',
