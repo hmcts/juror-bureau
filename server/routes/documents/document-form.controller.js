@@ -90,9 +90,7 @@
         let response;
 
         if (isCourtUser(req, res)) {
-          //create another payload object
           response = await reissueLetterDAO.getListCourt(app, req, payload);
-          //another endpoint call with new payload
           response.data_types.push('hidden');
           response.headings.push('Row Id');
           response.data.forEach((juror, i) => {

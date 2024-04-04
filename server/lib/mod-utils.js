@@ -1124,6 +1124,8 @@
       return 'Withdrawal letters';
     case 'show-cause':
       return 'Show cause letters';
+    case 'certificate-attendance':
+      return 'Certificates of attendance';
     default: return '';
     }
   };
@@ -1140,6 +1142,7 @@
     'postponement': 'POSTPONED',
     'withdrawal': 'WITHDRAWAL',
     'show-cause': 'SHOW_CAUSE',
+    'certificate-attendance': 'CERTIFICATE_OF_ATTENDANCE',
   };
 
   module.exports.formatLetterDate = function(date, format, welsh) {
