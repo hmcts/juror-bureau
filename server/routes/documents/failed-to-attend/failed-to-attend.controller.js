@@ -1,11 +1,11 @@
 (function() {
   'use strict';
 
-  const _ = require('lodash')
-    , urljoin = require('url-join')
-    , { reissueLetterDAO } = require('../../../objects/documents')
-    , modUtils = require('../../../lib/mod-utils')
-    , { isCourtUser } = require('../../../components/auth/user-type');
+  const _ = require('lodash');
+  const urljoin = require('url-join');
+  const { reissueLetterDAO } = require('../../../objects/documents');
+  const modUtils = require('../../../lib/mod-utils');
+  const { isCourtUser } = require('../../../components/auth/user-type');
 
   module.exports.getFailedToAttend = function(app) {
     return async function(req, res) {
