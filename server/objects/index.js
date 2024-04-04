@@ -5,9 +5,11 @@
 
   // new DAOs
   const requestPool = require('./request-pool');
+  const panel = require('./panel');
 
   module.exports = {
     ...requestPool,
+    ...panel,
   };
 
 })();
