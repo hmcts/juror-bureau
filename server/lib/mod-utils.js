@@ -1124,6 +1124,8 @@
       return 'Withdrawal letters';
     case 'show-cause':
       return 'Show cause letters';
+    case 'failed-to-attend':
+      return 'Failed to attend letters';
     default: return '';
     }
   };
@@ -1140,6 +1142,7 @@
     'postponement': 'POSTPONED',
     'withdrawal': 'WITHDRAWAL',
     'show-cause': 'SHOW_CAUSE',
+    'failed-to-attend': 'FAILED_TO_ATTEND',
   };
 
   module.exports.formatLetterDate = function(date, format, welsh) {
