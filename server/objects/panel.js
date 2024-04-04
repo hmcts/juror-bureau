@@ -4,6 +4,7 @@
   const rp = require('request-promise');
   const config = require('../config/environment')();
   const urljoin = require('url-join');
+  const { DAO } = require('./dataAccessObject');
 
   module.exports.generatePanelDAO = {
     post: function(app, req, body) {
@@ -24,6 +25,20 @@
       return rp(payload);
     },
   };
+
+  module.exports.panelMemberStatusDAO = new DAO('moj/trial/panel/status', {
+    get: function(trialNumber, courtLocationCode) {
+      const uri = urljoin(this.resource, `?trial_number=${trialNumber}&court_location_code=${courtLocationCode}`);
+
+      return { uri };
+    },
+  });
+
+  module.exports.addPanelMembersDAO = new DAO('moj/trial/panel/add-panel-members', {
+    post: function(body) {
+      return { body };
+    },
+  });
 
   module.exports.panelListDAO = {
     get: function(app, req, trialNumber, courtLocationCode) {
