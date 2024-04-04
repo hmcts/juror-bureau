@@ -52,7 +52,7 @@ module.exports.tableDataMappers = {
   List: (data) => Object.values(data).reduce(
     (acc, current) => {
       return acc + ', ' + current;
-    }
+    },
   ),
 };
 
