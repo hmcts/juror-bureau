@@ -1,22 +1,18 @@
 (function() {
   'use strict';
 
-  const  _ = require('lodash')
-    , addPanelMembersValidator = require('../../../config/validation/add-panel-members')
-    , { addPanelMembersDAO, availableJurorsDAO } = require('../../../objects/panel')
-    , poolsValidator = require('../../../config/validation/generate-panel-pools')
-    , validate = require('validate.js');
-
+  const  _ = require('lodash');
+  const addPanelMembersValidator = require('../../../config/validation/add-panel-members');
+  const { addPanelMembersDAO, availableJurorsDAO } = require('../../../objects/panel');
+  const poolsValidator = require('../../../config/validation/generate-panel-pools');
+  const validate = require('validate.js');
   const countErrors = (tmpErrors) => typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0;
-
 
   module.exports.getAddPanelMember = function(app) {
     return function(req, res) {
-      let tmpErrors
-        , tmpFields;
+      const tmpErrors = _.clone(req.session.errors);
+      const tmpFields = _.clone(req.session.formFields);
 
-      tmpErrors = _.clone(req.session.errors);
-      tmpFields = _.clone(req.session.formFields);
       delete req.session.errors;
       delete req.session.formFields;
 
@@ -40,9 +36,8 @@
 
   module.exports.postAddPanelMember = function(app) {
     return function(req, res) {
-      let validatorResult;
+      const validatorResult = validate(req.body, addPanelMembersValidator());
 
-      validatorResult = validate(req.body, addPanelMembersValidator());
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
@@ -61,7 +56,7 @@
         }));
       }
 
-      return addPanelMembersDAO.post(app, req, {
+      return addPanelMembersDAO.post(req, {
         trial_number: req.params.trialNumber,
         number_requested: +req.body.noJurors,
         pool_numbers: [],
@@ -105,9 +100,8 @@
 
   module.exports.getSelectPools = function(app) {
     return async function(req, res) {
-      let tmpErrors;
+      const tmpErrors = _.clone(req.session.errors);
 
-      tmpErrors = _.clone(req.session.errors);
       delete req.session.errors;
 
       const noJurorsRequired = req.session.noPanelJurors;
@@ -151,10 +145,9 @@
 
   module.exports.postSelectPools = function(app) {
     return function(req, res) {
-      let validatorResult
-        , selectedPools;
+      let selectedPools;
+      const validatorResult = validate(req.body, poolsValidator());
 
-      validatorResult = validate(req.body, poolsValidator());
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         return res.redirect(app.namedRoutes.build('trial-management.add-panel-members.select-pools.get', {
@@ -171,7 +164,7 @@
       } else {
         selectedPools = req.body.selectedPools;
       }
-      return addPanelMembersDAO.post(app, req, {
+      return addPanelMembersDAO.post(req, {
         trial_number: req.params.trialNumber,
         number_requested: +req.session.noPanelJurors,
         pool_numbers: selectedPools,

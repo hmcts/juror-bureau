@@ -4,6 +4,7 @@
   const rp = require('request-promise');
   const config = require('../config/environment')();
   const urljoin = require('url-join');
+  const { DAO } = require('./dataAccessObject');
 
   module.exports.generatePanelDAO = {
     post: function(app, req, body) {
@@ -25,45 +26,20 @@
     },
   };
 
-  module.exports.addPanelMembersDAO = {
-    getStatus: function(app, req, trialNumber, courtLocationCode) {
-      const payload = {
-        uri: urljoin(
-          config.apiEndpoint,
-          `moj/trial/panel/status?trial_number=${trialNumber}&court_location_code=${courtLocationCode}`,
-        ),
-        method: 'GET',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-      };
 
-      app.logger.info('Sending request to API: ', payload);
+  module.exports.panelMemberStatusDAO = new DAO('moj/trial/panel/status', {
+    get: function(trialNumber, courtLocationCode) {
+      const uri = urljoin(this.resource, `?trial_number=${trialNumber}&court_location_code=${courtLocationCode}`);
 
-      return rp(payload);
+      return { uri };
     },
+  });
 
-    post: function(app, req, body) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/trial/panel/add-panel-members'),
-        method: 'POST',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-        body,
-      };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
+  module.exports.addPanelMembersDAO = new DAO('moj/trial/panel/add-panel-members', {
+    post: function(body) {
+      return { body };
     },
-  };
+  });
 
   module.exports.panelListDAO = {
     get: function(app, req, trialNumber, courtLocationCode) {

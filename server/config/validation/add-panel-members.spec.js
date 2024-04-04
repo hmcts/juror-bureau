@@ -2,7 +2,7 @@
 (function() {
     'use strict';
   
-    var validate = require('validate.js')
+    const validate = require('validate.js')
       , validator = require('./generate-panel')
       , validatorResult = null;
   
@@ -14,7 +14,7 @@
       });
   
       it('should validate a valid request', function() {
-        var mockRequest = {
+        const mockRequest = {
           jurorType: 'availablePools',
           noJurors: '7',
         };
@@ -25,7 +25,7 @@
       });
   
       it('should try to validate an invalid request - missing all fields', function() {
-        var mockRequest = {
+        const mockRequest = {
             jurorType: '',
             noJurors: '',
           };
