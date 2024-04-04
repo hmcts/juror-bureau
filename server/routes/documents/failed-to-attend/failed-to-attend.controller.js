@@ -12,11 +12,9 @@
       const document  = 'failed-to-attend';
 
       try {
-        const payload = buildPayload(req);
-
-        payload['letter_type'] = modUtils.LetterType[document];
-
-        delete payload._csrf;
+        const payload = {
+          'letter_type': modUtils.LetterType[document],
+        };
 
         let response;
 
@@ -32,8 +30,6 @@
           response.data.forEach((juror, i) => {
             juror.id = i;
           });
-        } else {
-          response = await reissueLetterDAO.getList(app, req, payload);
         }
 
         req.session.documentsJurorsList = response;
@@ -44,7 +40,7 @@
         });
         return res.redirect(urljoin(app.namedRoutes.build('documents.letters-list.get', {
           document: document,
-        }), urlBuilder(req.body)));
+        })));
       } catch (err) {
         // A 404 means no results were found
         if (err.statusCode === 404) {
@@ -56,7 +52,7 @@
 
           return res.redirect(urljoin(app.namedRoutes.build('documents.letters-list.get', {
             document,
-          }), urlBuilder(req.body)));
+          })));
         }
 
         app.logger.crit('Failed to fetch documents / jurors list: ', {
@@ -93,32 +89,7 @@
           }),
         });
       }
-
     };
-
-
   };
-
-  function urlBuilder(params) {
-    var parameters = [];
-
-    if (params.durationType) {
-      parameters.push('durationType=' + params.durationType);
-    }
-
-    if (params.durationYears) {
-      parameters.push('durationYears=' + params.durationYears);
-    }
-
-    return  '?' + parameters.join('&');
-  }
-
-  function buildPayload(req) {
-    let payload = {};
-
-    payload['include_printed'] = true;
-
-    return payload;
-  }
 
 })();

@@ -257,10 +257,9 @@
           );
         };
       }
-
     });
-    return letterPayload;
 
+    return letterPayload;
   }
 
 
