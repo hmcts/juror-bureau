@@ -3,7 +3,7 @@
 
   const { reissueLetterDAO } = require('../../objects/documents');
   const letterTemplates = require('./pdf/letter-templates');
-  const { LetterType } = require('../../lib/mod-utils');
+  const { LetterType, formatLetterDate } = require('../../lib/mod-utils');
   const { convert24to12, dateFilter } = require('../../components/filters/index');
 
   module.exports.printDocuments = function(app) {
@@ -33,6 +33,63 @@
         const response = await reissueLetterDAO.printCourtLetters(app, req, payload);
 
         const content = getLetterTemplate(document, response);
+
+        if (document === 'certificate-attendance'){
+          const formatAsCurrency = num => {
+            const parsedNum = parseFloat(num);
+
+            if (isNaN(parsedNum)) {
+              return num;
+            }
+            return '£' + parsedNum.toFixed(2);
+          };
+
+          response.forEach((juror) => {
+            let totals = ['', juror.welsh ? 'Cyfanswm' : 'Total', 0, 0, 0]; // [Loss of earnings, childcare, misc]
+            let englishBody = [[{text: '', style: 'tableHeader'}, {text: '', style: 'tableHeader'},
+              {text: 'Loss of Earnings', style: 'tableHeader', bold: true},
+              {text: 'Child Care', style: 'tableHeader', bold: true},
+              {text: 'Miscellaneous', style: 'tableHeader', bold: true}]];
+
+            let welshBody = [[{text: '', style: 'tableHeader'}, {text: '', style: 'tableHeader'},
+              {text: 'Colli Enillion', style: 'tableHeader', bold: true},
+              {text: 'Gofal Plant', style: 'tableHeader', bold: true},
+              {text: 'Treuliau Eraill', style: 'tableHeader', bold: true}]];
+            let body = juror.welsh ? welshBody : englishBody;
+
+            content.documentType = document;
+
+            juror.attendance_data_list.forEach((expense) => {
+              let row = [];
+
+              row.push(formatLetterDate(expense.attendanceDate, 'dddd, DD MMMM, YYYY', juror.welsh));
+              if (expense.nonAttendance === 'false'){
+                row.push(juror.welsh ? '(Heb Fynychu)' : '(Non Attendance)');
+
+              } else {
+                row.push('');
+              }
+              row.push('£' + expense.lossOfEarnings.toFixed(2));
+              row.push('£' + expense.childCare.toFixed(2));
+              row.push('£' + expense.misc.toFixed(2));
+              body.push(row);
+
+              totals[2] += expense.lossOfEarnings;
+              totals[3] += expense.childCare;
+              totals[4] += expense.misc;
+            });
+            const formattedTotals = totals.map(formatAsCurrency);
+
+            body.push(formattedTotals);
+
+            content[response.indexOf(juror)].table = {
+              headerRows: 1,
+              body,
+            };
+
+          });
+        }
+        console.log(content);
         const letter = await generateDocument(content, req.session.authentication.staff.name);
 
         app.logger.info('Generated documents for the selected jurors', {
@@ -70,6 +127,8 @@
       return withdrawal(data);
     case 'show-cause':
       return showCause(data);
+    case 'certificate-attendance':
+      return certificateOfAttendance(data);
     }
   }
 
@@ -210,6 +269,25 @@
       });
 
       juror.title = isWelsh ? 'GWASANAETH RHEITHGOR' : 'JURY SERVICE';
+
+      return juror;
+    });
+
+    return documents;
+  }
+
+  function certificateOfAttendance(data) {
+    const documents = data.map((juror) => {
+      const isWelsh = juror.welsh;
+
+      juror.content = letterTemplates('certificate-attendance', {
+        welsh: isWelsh,
+        firstName: juror.juror_first_name,
+        lastName: juror.juror_last_name,
+        signature: juror.signature,
+      });
+
+      juror.title = isWelsh ? 'PRAWF O WASANAETHU AR REITHGOR': 'CERTIFICATE OF ATTENDANCE AS A JUROR';
 
       return juror;
     });
