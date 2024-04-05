@@ -124,6 +124,8 @@
     const _isPrinted = isPrinted(jurorInfo[isPrintedIdx]);
     const isPrintedHighlight = _isPrinted ? 'mod-highlight-table-row__grey' : '';
 
+    const _neverPrinted = !_isPrinted && jurorInfo[datePrintedIdx] === null;
+
     const checkedJuror = this.checkedJurors.filter((juror) => (
       juror.juror_number === jurorInfo[0]
       && juror.form_code === jurorInfo[formCodeIdx]
@@ -132,7 +134,7 @@
 
     const isChecked = (checkedJuror && checkedJuror.length) ? 'checked' : '';
 
-    let row = isPending(jurorInfo[jurorInfo.length - 2])
+    let row = isPending(jurorInfo[jurorInfo.length - 2]) && !_neverPrinted
       ? '<td class="govuk-table__cell"></td>'
       : `
         <td class="govuk-table__cell mod-padding-block--0">
@@ -159,7 +161,7 @@
       const isNumber = this.dataTypes[index] === 'number';
       const value = jurorInfo[index];
       const isHidden = this.headings[index].includes('hidden_');
-      const showPending = parseInt(index) === datePrintedIdx && !_isPrinted;
+      const showPending = parseInt(index) === datePrintedIdx && !_isPrinted && !_neverPrinted;
 
       const _formatValue = {
         isDate,
@@ -224,7 +226,7 @@
       return '-';
     }
     if (isDate) {
-      return dateFilter(value, 'YYYY-MM-DD', 'ddd D MMM YYYY');
+      return value ? dateFilter(value, 'YYYY-MM-DD', 'ddd D MMM YYYY') : '-';
     }
 
     return value;

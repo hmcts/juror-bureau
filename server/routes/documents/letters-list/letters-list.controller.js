@@ -9,6 +9,7 @@
   const { isBureauUser } = require('../../../components/auth/user-type');
   const { reissueLetterDAO } = require('../../../objects/documents');
   const { tableGenerator } = require('../helper/table-generator');
+  const { dateFilter } = require('../../../components/filters');
 
   module.exports.getListLetters = function(app) {
     return function(req, res) {
@@ -115,8 +116,16 @@
 
       delete req.session.errors;
 
+      const checkedJurors = _.clone(req.session.documentsJurorsList.checkedJurors);
+
+      checkedJurors.forEach((juror) => {
+        if (juror['date_printed'] === 'null') {
+          juror['date_printed'] = dateFilter(new Date(), null, 'YYYY-MM-DD');
+        }
+      });
+
       const payload = {
-        'letters_list': req.session.documentsJurorsList.checkedJurors,
+        'letters_list': checkedJurors,
       };
 
       try {
@@ -272,7 +281,7 @@
     case 'initial-summons':
       return 'Resend initial summons';
     case 'summons-reminders':
-      return 'Resend summons reminder';
+      return 'Send summons reminder';
     case 'further-information':
       return 'Resend request for further information';
     case 'confirmation':
@@ -301,7 +310,11 @@
       return data.length;
     }
 
-    return data.filter((doc) => doc[doc.length - 2] !== false).length;
+    return data.filter((doc) => {
+      const _neverPrinted = doc[doc.length - 3] === null && doc[doc.length - 2] === false;
+
+      return doc[doc.length - 2] !== false || _neverPrinted;
+    }).length;
   }
 
 })();
