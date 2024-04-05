@@ -27,6 +27,9 @@
       if (document === 'show-cause'){
         payload['show_cause_date'] = dateFilter(req.query.hearingDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
         payload['show_cause_time'] = req.query.hearingTime;
+      } else if (document === 'failed-to-attend'){
+
+        payload['details_per_letter'] = FTAPayloadBuilder(jurorNumbers, req.session.documentsJurorsList.data);
       }
 
       try {
@@ -89,7 +92,6 @@
 
           });
         }
-        console.log(content);
         const letter = await generateDocument(content, req.session.authentication.staff.name);
 
         app.logger.info('Generated documents for the selected jurors', {
@@ -127,6 +129,8 @@
       return withdrawal(data);
     case 'show-cause':
       return showCause(data);
+    case 'failed-to-attend':
+      return failedToAttend(data);
     case 'certificate-attendance':
       return certificateOfAttendance(data);
     }
@@ -275,6 +279,47 @@
 
     return documents;
   }
+
+  function failedToAttend(data) {
+    const documents = data.map((juror) => {
+      const isWelsh = juror.welsh;
+
+      juror.content = letterTemplates('failed-to-attend', {
+        welsh: isWelsh,
+        attendanceDate: dateFilter(juror.attendance_date, 'DD MMMM YYYY', 'dddd, DD MMMM, YYYY'),
+        replyByDate: dateFilter(juror.reply_by_date, 'DD MMMM YYYY', 'dddd, DD MMMM, YYYY'),
+      });
+
+      juror.title = isWelsh ? 'GWASANAETH RHEITHGOR' : 'JURY SERVICE';
+
+      return juror;
+    });
+
+    return documents;
+  }
+
+  function FTAPayloadBuilder(jurorNumbers, jurorData) {
+    let letterPayload = [];
+
+    jurorData.forEach(function(juror){
+      if (jurorNumbers.find((jurorNumber) => jurorNumber === juror.juror_number)) {
+        let tmpJuror = {
+          'juror_number': juror.juror_number,
+          'letter_date': juror.absent_date,
+        };
+
+        if (!(letterPayload.find((jurorObj) =>
+          (jurorObj.juror_number === tmpJuror.juror_number && jurorObj.letter_date === tmpJuror.letter_date)))){
+          letterPayload.push(
+            tmpJuror,
+          );
+        };
+      }
+    });
+
+    return letterPayload;
+  }
+
 
   function certificateOfAttendance(data) {
     const documents = data.map((juror) => {

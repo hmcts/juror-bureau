@@ -63,13 +63,17 @@
 
               <tr class="govuk-table__row">
                 <td class="govuk-table__cell">
-                  <a href="/response/{{ response.jurorNumber }}" class="govuk-link">{{ response.jurorNumber }}</a>
+                  {% if response.replyMethod === "Paper" %}
+                    <a href="/summons-replies/response/{{ response.jurorNumber }}/paper" class="govuk-link">{{ response.jurorNumber }}</a>                
+                  {% else %}
+                     <a href="/response/{{ response.jurorNumber }}" class="govuk-link">{{ response.jurorNumber }}</a>
+                  {% endif %}
                 </td>
                 <td class="govuk-table__cell" data-sort-value="{{ response.firstName }} {{ response.lastName }}">{{ response.firstName }} {{ response.lastName }}</td>
                 <td class="govuk-table__cell">{{ response.courtName }}</td>
                 <td class="govuk-table__cell" data-sort-value="{{response.processingStatus | capitalise}}">{{ statusHTML | safe }}</td>
-                <td class="govuk-table__cell" data-sort-value="{{response.receivedAt | dateFilter('DD/MM/YYYY', 'YYYYMMDD')}}">
-                  {{response.receivedAt | dateFilter("DD/MM/YYYY", "D MMM YYYY")}}
+                <td class="govuk-table__cell" data-sort-value="{{response.receivedAt | dateFilter('yyyy-MM-dd', 'YYYYMMDD')}}">
+                  {{response.receivedAt | dateFilter("yyyy-MM-dd", "D MMM YYYY")}}
                 </td>
                 <td class="govuk-table__cell" data-sort-value="{{response.alert.alertSort}}">{{ alertHTML | safe }}</td>
               </tr>

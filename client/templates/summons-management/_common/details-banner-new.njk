@@ -82,7 +82,7 @@
         </div>
         <div class="govuk-grid-column-one-third">
           <div class="label info">Reply method</div>
-          <div class="info">{{ (response.replyMethod or "digital") | capitalizeFully }}</div>
+          <div class="info">{{ (method or response.replyMethod) | capitalizeFully }}</div>
         </div>
         {% if response.welshCourt %}
           <div class="govuk-grid-column-one-third">

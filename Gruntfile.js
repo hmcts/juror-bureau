@@ -1,11 +1,8 @@
 ;(function(){
   'use strict';
   var path = require('path');
-  var exec = require('child_process').exec
-    , readline = require('readline')
-    , config = {
+  var config = {
       EXPRESS_PORT: 3000,
-      BROWSERSYNC_PORT: 3001
     }
     , sass = require('sass');
 
@@ -169,18 +166,6 @@
             {expand: true, cwd: 'config/', src: ['*.*'], dest: 'test/config'}
           ]
         },
-
-        /*
-        govuk: {
-          files: [
-            {cwd: 'node_modules/govuk_frontend_toolkit/', src: ['**'], dest: 'govuk_modules/govuk_frontend_toolkit/'},
-            {cwd: 'node_modules/govuk_template_jinja/assets/', src: ['**'], dest: 'govuk_modules/govuk_template/assets/'},
-            {cwd: 'node_modules/govuk_template_jinja/views/layouts/', src: ['**'], dest: 'govuk_modules/govuk_template/views/layouts/'},
-            {cwd: 'node_modules/govuk-elements-sass/public/sass/', src: ['**', '!node_modules', '!elements-page.scss', '!elements-page-ie6.scss', '!elements-page-ie7.scss', '!elements-page-ie8.scss', '!main.scss', '!main-ie6.scss', '!main-ie7.scss', '!main-ie8.scss', '!prism.scss'], dest: 'govuk_modules/govuk-elements-sass/'}
-          ]
-        }
-        */
-
       },
 
 
@@ -365,36 +350,6 @@
           ]
         }
       },
-
-
-      // Browser dev tools
-      browserSync: {
-        bsFiles: {
-          src : [
-            './tmp/client/css/**/*.css',
-            './tmp/client/**/*.html',
-            './tmp/client/**/*.njk',
-            './tmp/client/**/*.js',
-            './tmp/client/**/*.{png,jpg,jpeg,gif,svg}',
-            './tmp/client/js/i18n/*.json',
-            './tmp/.rebooted'
-          ]
-        },
-        options: {
-          proxy: "localhost:" + (process.env.PORT || config.EXPRESS_PORT),
-          watchTask: true,
-          port: config.BROWSERSYNC_PORT,
-          open: false,
-          notify: {
-            styles: {
-              top: 'auto',
-              bottom: '0'
-            }
-          }
-        }
-      },
-
-
 
       // Run server
       express: {
@@ -672,7 +627,6 @@
       return grunt.task.run([
         'env:dev',
         'build:dev',
-        'browserSync',
         'concurrent:dev'
       ]);
     });

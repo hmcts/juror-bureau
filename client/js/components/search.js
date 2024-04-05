@@ -351,7 +351,9 @@
     e.preventDefault();
 
     $('.multi-select').each(function() {
-      $(this).prop('checked', true).change();
+      if (!$(this).is(':disabled')) {
+        $(this).prop('checked', true).change();
+      }
     });
   });
 

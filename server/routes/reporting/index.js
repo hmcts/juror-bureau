@@ -14,6 +14,7 @@
   const { generateBulk } = require('./expenses-bulk/expenses-bulk.controller');
 
   module.exports = function(app) {
+    require('./standard-report/index')(app);
 
     app.get('/reports',
       'reports.get',

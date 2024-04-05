@@ -73,11 +73,11 @@
     return false;
   };
 
-  function isBureauManager(req, res, next) {
+  function isManager(req, res, next) {
     if (
-      isBureauUser(req, res) &&
       req.session.authentication.hasOwnProperty('roles') === true &&
-      req.session.authentication.roles.includes('MANAGER')
+      req.session.authentication.roles.includes('MANAGER') ||
+      req.session.authentication.roles.includes('TEAM_LEADER')
     ) {
       if (typeof next !== 'undefined') {
         return next();
@@ -93,12 +93,24 @@
     return false;
   }
 
+  function isBureauManager(req, res, next) {
+    if (isBureauUser(req, res) && isManager(req, res)) {
+      if (typeof next !== 'undefined') {
+        return next();
+      }
+
+      return true;
+    }
+
+    if (typeof next !== 'undefined') {
+      return errors(req, res, 403);
+    }
+
+    return false;
+  }
+
   function isCourtManager(req, res, next) {
-    if (
-      isCourtUser(req, res) &&
-      req.session.authentication.hasOwnProperty('roles') === true &&
-      req.session.authentication.roles.includes('MANAGER')
-    ) {
+    if (isCourtUser(req, res) && isManager(req, res)) {
       if (typeof next !== 'undefined') {
         return next();
       }
@@ -137,6 +149,7 @@
   module.exports.isCourtUser = isCourtUser;
   module.exports.isSJOUser = isSJOUser;
   module.exports.isTeamLeader = isTeamLeader;
+  module.exports.isManager = isManager;
   module.exports.isBureauManager = isBureauManager;
   module.exports.isCourtManager = isCourtManager;
   module.exports.isSystemAdministrator = isSystemAdministrator;

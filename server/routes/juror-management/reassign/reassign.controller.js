@@ -20,6 +20,7 @@
             , postUrl
             , cancelUrl
             , changeCourtUrl
+            , backUrl
             , filteredPools = response.availablePools
               .filter(pool => pool.poolNumber !==
                 (req.params['poolNumber'] ? req.params['poolNumber'] : req.session.jurorCommonDetails.poolNumber));
@@ -36,7 +37,7 @@
             },
           });
 
-          if (req.session.poolJurorsReassign) {
+          if (typeof req.session.poolJurorsReassign !== 'undefined') {
             postUrl = app.namedRoutes.build('pool-management.reassign.post', {
               poolNumber: req.params['poolNumber']});
             cancelUrl = app.namedRoutes.build('pool-overview.get', {
@@ -52,6 +53,11 @@
               jurorNumber: req.params['jurorNumber']});
           }
 
+          if (typeof req.session.processLateSummons !== 'undefined') {
+            cancelUrl = req.session.processLateSummons.cancelUrl;
+            backUrl = req.session.processLateSummons.backUrl;
+          }
+
           return res.render('juror-management/reassign/pools', {
             jurorNumber: req.session.poolJurorsReassign ?
               req.session.poolJurorsReassign.selectedJurors : req.params['jurorNumber'],
@@ -60,6 +66,10 @@
             cancelUrl: cancelUrl,
             changeCourtUrl: changeCourtUrl,
             court,
+            backLinkUrl : {
+              built: true,
+              url: backUrl,
+            },
             errors: {
               title: 'Please check the form',
               count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -273,12 +283,16 @@
           req.session.poolJurorsReassign.selectedJurors : [req.params['jurorNumber']],
       };
 
-      const cancelUrl = req.session.poolJurorsReassign
+      let cancelUrl = req.session.poolJurorsReassign
         ? app.namedRoutes.build('pool-overview.get', {poolNumber: req.params['poolNumber']})
         : app.namedRoutes.build('juror-record.overview.get', {jurorNumber: req.params['jurorNumber']});
       const continueUrl = req.session.poolJurorsReassign
         ? app.namedRoutes.build('pool-management.reassign.confirm.post', {poolNumber: req.params['poolNumber']})
         : app.namedRoutes.build('juror-management.reassign.confirm.post', {jurorNumber: req.params['jurorNumber']});
+
+      if (typeof req.session.processLateSummons !== 'undefined') {
+        cancelUrl = req.session.processLateSummons.cancelUrl;
+      }
 
       return validateMovementObj.validateMovement.put(
         require('request-promise'),
@@ -294,7 +308,7 @@
             return res.render('pool-management/movement/bulk-validate', {
               cancelUrl: cancelUrl,
               continueUrl: continueUrl,
-              problems: modUtils.buildMovementProblems(data, req.session.jurorDetails),
+              problems: modUtils.buildMovementProblems(data),
             });
           }
 
@@ -361,6 +375,7 @@
       .then(() => {
         req.session.locCode = req.session.receivingCourtLocCode;
         delete req.session.receivingCourtLocCode;
+        delete req.session.processLateSummons;
 
         let poolUrl = app.namedRoutes.build('pool-overview.get', {
           poolNumber: payload.receivingPoolNumber,

@@ -9,7 +9,7 @@
 
       <h2 class="govuk-heading-m">Pool</h2>
       <ul class="govuk-list">
-        <li><a class="govuk-link" href="{{ url('some-report.get') }}">Some report</a></li>
+        <li><a class="govuk-link" href="{{ url('next-due.filter.get') }}">Next due date</a></li>
         <li><a class="govuk-link" href="#">Pool Status.Pool Status Spreadsheet by Month</a></li>
         <li><a class="govuk-link" href="#">Pool Status.Pool Status/Graph</a></li>
       </ul>
@@ -30,7 +30,7 @@
         <li><a href="#" class="govuk-link">Postponed List.By Pool</a></li>
         <li><a href="#" class="govuk-link">Special Needs</a></li>
         <li><a href="#" class="govuk-link">Summary</a></li>
-        <li><a href="#" class="govuk-link">Undelivered List</a></li>
+        <li><a href="{{ url('undelivered.filter.get') }}" class="govuk-link">Undelivered List</a></li>
       </ul>
 
       <h2 class="govuk-heading-m">Statistics</h2>

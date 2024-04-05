@@ -418,3 +418,51 @@ dt.govuk-summary-list-mod {
 .mod-bold {
   font-weight: bold;
 }
+
+.mod-autocomplete--width-20 {
+  max-width: 20.5em;
+}
+
+.mod-assign-courts-table {
+  tbody { height: 1px !important; overflow-y: scroll; }
+}
+
+.fixTableHead { 
+  overflow-y: auto; 
+  height: 75vh; 
+  thead th { 
+    position: sticky; 
+    top: 0; 
+    z-index: 1;
+  } 
+  table { 
+    border-collapse: collapse;         
+    width: 100%; 
+  } 
+  th { 
+    background: govuk-colour("white"); 
+  } 
+  .govuk-checkboxes__item {
+    z-index: 0;
+  }
+}
+
+.report-headings {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  gap: 1rem;
+  grid-auto-flow: row;
+  padding-bottom: 20px;
+
+  .heading-element {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    gap: 0;
+    border-bottom: 1px solid lightgrey;
+    padding-bottom: 10px;
+
+    .title {
+      font-weight: bold;
+    }
+  }
+}

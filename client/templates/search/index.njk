@@ -338,11 +338,13 @@
             <tbody class="govuk-table__body">
 
               {% for item in responses.juror_response %}
+
                 <tr class="govuk-table__row search-results-row">
 
                   <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="{{item.juror_number}}">
-                    <div>
-                      {% if authentication.staff.rank > 0 and item.processingStatus !== "COMPLETED" %}
+                    <div class="mod-flex mod-items-center">
+                      
+                      {% if isBureauManager %}
                         <div class="govuk-checkboxes__item govuk-checkboxes--small jd-block-align">
                           <input
                             class="govuk-checkboxes__input multi-select"
@@ -352,6 +354,7 @@
                             id="selectedResponse_{{item.juror_number}}"
                             data-value="{{ item.juror_number }}"
                             value="{{ item.juror_number }}"
+                            {% if item.reply_status === "Completed" %}disabled{% endif %}
                           >
                           <label class="govuk-label govuk-checkboxes__label " for="selectedResponse_{{item.juror_number}}"></label>
                         </div>
@@ -385,9 +388,9 @@
 
                   <td
                     class="govuk-table__cell jd-middle-align date-col {% if item.slaOverdue %}jd-response-overdue{% endif %}"
-                    data-sort-value="{{item.date_received | dateFilter('YYYY-MM-DD', 'YYYYMMDD')}}"
-                  >
-                    {{ item.date_received | dateFilter("YYYY-MM-DD", "D MMM YYYY") }}
+                    data-sort-value="{{item.date_received | dateFilter('yyyy-MM-dd HH:mm:ss', 'YYYYMMDD')}}"
+                  > 
+                    {{ item.date_received | dateFilter("yyyy-MM-dd HH:mm:ss", "D MMM YYYY") }}
                   </td>
                               
                 </tr>

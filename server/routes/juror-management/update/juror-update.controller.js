@@ -6,12 +6,12 @@
     , { isCourtUser } = require('../../../components/auth/user-type')
     , jurorUpdateValidator = require('../../../config/validation/juror-record-update')
     , jurorRecordObject = require('../../../objects/juror-record')
-    , excusalObj = require('../../../objects/excusal').object
     , deferralObject = require('../../../objects/deferral-mod').deferralObject
     , jurorDeceasedObject = require('../../../objects/juror-deceased').jurorDeceasedObject
     , jurorUndeliverableObject = require('../../../objects/juror-undeliverable').jurorUndeliverableObject
     , jurorTransfer = require('../../../objects/juror-transfer').jurorTransfer
-    , { dateFilter } = require('../../../components/filters');
+    , { dateFilter } = require('../../../components/filters')
+    , { systemCodesDAO } = require('../../../objects/administration');
   const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
 
   module.exports.index = function(app) {
@@ -31,6 +31,7 @@
           delete req.session.updateOption;
           delete req.session.thirdPartyDeceased;
           delete req.session.replyMethod;
+          delete req.session.processLateSummons;
 
           req.session.replyMethod = response.data.replyMethod;
 
@@ -151,11 +152,11 @@
           delete req.session.errors;
 
           processURL = app.namedRoutes.build('juror.update.deferral.post', { jurorNumber: req.params.jurorNumber });
-          req.session.deferralReasons = getExcusalReasons(data);
+          req.session.deferralReasons = data;
 
           return res.render('response/process/deferral.njk', {
             deferralDetails: tmpFields,
-            deferralReasons: getExcusalReasons(data),
+            deferralReasons: data,
             jurorNumber: req.params.jurorNumber,
             processURL : processURL,
             cancelUrl : cancelUrl,
@@ -191,7 +192,7 @@
 
       cancelUrl = app.namedRoutes.build('juror-record.overview.get', { jurorNumber: req.params['jurorNumber'] });
 
-      excusalObj.get(require('request-promise'), app, req.session.authToken)
+      systemCodesDAO.get(app, req, 'EXCUSAL_AND_DEFERRAL')
         .then(successCB)
         .catch(errorCB);
 
@@ -278,7 +279,7 @@
       }
 
       deferralReason = tmpReasons
-        .find(reason => reason.excusalCode === req.body.deferralReason).description.toLowerCase();
+        .find(reason => reason.code === req.body.deferralReason).description.toLowerCase();
 
       deferralObject.put(require('request-promise'), app, req.session.authToken, req.body, req.params.jurorNumber)
         .then(successCB)
@@ -485,18 +486,6 @@
     jurorUndeliverableObject.put(require('request-promise'), app, req.session.authToken, req.params.jurorNumber)
       .then(successCB)
       .catch(errorCB);
-  }
-
-  function getExcusalReasons(arrCodes){
-    var sortedCodes = [];
-
-    if (arrCodes){
-      sortedCodes = arrCodes.sort(function(a, b) {
-        return a.excusalCode.localeCompare(b.excusalCode);
-      });
-    }
-
-    return sortedCodes;
   }
 
 })();
