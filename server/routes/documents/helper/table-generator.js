@@ -121,8 +121,6 @@
     const isPrintedIdx = this.headings.indexOf('hidden_extracted_flag');
     const formCodeIdx = this.headings.indexOf('hidden_form_code');
 
-    console.log(jurorInfo);
-
     const _isPrinted = isPrinted(jurorInfo[isPrintedIdx]);
     const isPrintedHighlight = _isPrinted ? 'mod-highlight-table-row__grey' : '';
 
