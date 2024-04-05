@@ -1,8 +1,9 @@
 /* eslint-disable strict */
 
 const _ = require('lodash');
-const { dateFilter } = require('../../../components/filters');
+const { dateFilter, convert12to24 } = require('../../../components/filters');
 const { jurorsOnTrialDAO } = require('../../../objects');
+const { jurorAttendanceDao } = require('../../../objects/juror-attendance');
 const { panelListDAO } = require('../../../objects/panel');
 const { Logger } = require('../../../components/logger');
 const { setPreviousWorkingDay } = require('../../../lib/mod-utils');
@@ -124,6 +125,15 @@ module.exports.postConfirmAttendance = function(app) {
 
     console.log(payload);
 
+    try {
+      const response = await jurorAttendanceDao.patch(app, req, payload);
+
+      console.log(response);
+    } catch (err) {
+      console.log(err);
+      // TODO: handle error
+    }
+
     return res.redirect(app.namedRoutes.build('juror-management.jurors-on-trial.confirm-attendance.get', {
       trialNumber,
     }));
@@ -133,24 +143,30 @@ module.exports.postConfirmAttendance = function(app) {
 function buildConfirmAttendancePayload(req) {
   const { body } = req;
   const payload = {};
+  const commonData = {
+    status: 'CONFIRM_ATTENDANCE',
+    singleJuror: body.selectedJurors.length === 1,
+  };
 
   if (body.attendanceDate === 'differentDate') {
-    payload.attendanceDate = body.differentDate;
+    commonData.attendanceDate = body.differentDate;
   }
-  if (payload.attendanceDate === 'previousWorkingDay') {
-    payload.attendanceDate = req.session.jurorsOnTrial.yesterday;
+  if (body.attendanceDate === 'previousWorkingDay') {
+    commonData.attendanceDate = req.session.jurorsOnTrial.yesterday;
   }
-  if (payload.attendanceDate === 'today') {
-    payload.attendanceDate = req.session.jurorsOnTrial.today;
+  if (body.attendanceDate === 'today') {
+    commonData.attendanceDate = req.session.jurorsOnTrial.today;
   }
 
   const checkInTime = `${body.checkInTimeHour}:${body.checkInTimeMinute} ${body.checkInTimePeriod}`;
   const checkOutTime = `${body.checkOutTimeHour}:${body.checkOutTimeMinute} ${body.checkOutTimePeriod}`;
 
-  payload.checkInTime = checkInTime;
-  payload.checkOutTime = checkOutTime;
+  commonData.checkInTime = convert12to24(checkInTime);
+  commonData.checkOutTime = convert12to24(checkOutTime);
+  commonData.locationCode = req.session.authentication.locCode;
 
-  payload.jurors = Array.isArray(body.selectedJurors) ? body.selectedJurors : [body.selectedJurors];
+  payload.juror = Array.isArray(body.selectedJurors) ? body.selectedJurors : [body.selectedJurors];
+  payload.commonData = commonData;
 
   return payload;
 }
