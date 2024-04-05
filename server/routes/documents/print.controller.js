@@ -3,7 +3,7 @@
 
   const { reissueLetterDAO } = require('../../objects/documents');
   const letterTemplates = require('./pdf/letter-templates');
-  const { LetterType, formatLetterDate, formatLetterDate } = require('../../lib/mod-utils');
+  const { LetterType, formatLetterDate } = require('../../lib/mod-utils');
   const { convert24to12, dateFilter } = require('../../components/filters/index');
 
   module.exports.printDocuments = function(app) {
