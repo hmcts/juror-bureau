@@ -69,12 +69,12 @@
       addAttendanceDateController.postAddAttendanceDate(app)
     );
     app.get('/juror-management/record/:jurorNumber/change-juror-attendance',
-      'juror-record.attendance.change-attendance-date.get',
+      'juror-record.attendance.change-attendance-date-times.get',
       auth.verify,
       changeJurorAttendanceController.getChangeAttendance(app)
     );
     app.post('/juror-management/record/:jurorNumber/change-juror-attendance',
-      'juror-record.attendance.change-attendance-date.post',
+      'juror-record.attendance.change-attendance-date-times.post',
       auth.verify,
       changeJurorAttendanceController.postChangeAttendance(app)
     );
