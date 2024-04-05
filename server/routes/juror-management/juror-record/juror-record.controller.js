@@ -557,9 +557,6 @@ const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/ex
   module.exports.getEditNotes = function(app) {
     return function(req, res) {
       var successCB = function(response) {
-
-        debugger;
-
           req.session.etag = response.headers.etag;
 
           const jurorNotes = typeof req.session.jurorNotes !== 'undefined'
