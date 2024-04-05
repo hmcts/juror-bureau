@@ -559,7 +559,9 @@
     requestBody.secondaryPhone = req.session.formFields.secondaryPhone === ''
       ? null
       : req.session.formFields.secondaryPhone;
-    requestBody.dateOfBirth = dateFilter(req.session.formFields.dateOfBirth, 'DD/MM/YYYY', 'YYYY-MM-DD');
+    requestBody.dateOfBirth = req.session.formFields.dateOfBirth
+      ? dateFilter(req.session.formFields.dateOfBirth, 'DD/MM/YYYY', 'YYYY-MM-DD')
+      : null;
     requestBody.emailAddress = req.session.formFields.emailAddress;
     requestBody.opticReference = req.session.formFields.opticReference === ''
       ? null
@@ -687,14 +689,14 @@
     return (req, res) => {
       let validatorResult = validate(req.body, paperReplyValidator.jurorAddress());
 
-      const formErrorUrl = app.namedRoutes.build('juror-record.details-edit-address.get', {
+      let formErrorUrl = app.namedRoutes.build('juror-record.details-edit-address.get', {
         jurorNumber: req.params['jurorNumber'],
       });
 
       if (req.url.includes('bank-details')){
         const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
 
-        app.namedRoutes.build(`${routePrefix}.bank-details.address-edit.get`, {
+        formErrorUrl = app.namedRoutes.build(`${routePrefix}.bank-details.address-edit.get`, {
           jurorNumber: req.params['jurorNumber'],
           poolNumber: req.params['poolNumber'],
         });
