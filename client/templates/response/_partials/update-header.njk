@@ -4,6 +4,12 @@
 
     <div class="reply-view-header-menus">
 
+      {% set canProcessReply = false %}
+      
+      {% if response.current_owner === authentication.owner %}
+        {% set canProcessReply = true %}
+      {% endif %}
+
       {% if hasModAccess and (response.processingStatus | capitalise !== 'CLOSED') %}
 
         {% if (method === "paper" and response.jurorDetailsComplete and response.eligibilityComplete and response.signed === true) or method !== "paper" or thirdPartyDetails.reason === "Deceased" %}
@@ -12,14 +18,16 @@
           {% else %}
             {% set processUrl = url('process-reply.get', { id: response.jurorNumber, type: "digital" }) %}
           {% endif %}
-          {{ govukButton({
-            text: "Process reply",
-            name: "processReply",
-            href: processUrl,
-            attributes: {
-              id: "processReply"
-            }
-          }) }}
+          {% if canProcessReply %}
+            {{ govukButton({
+              text: "Process reply",
+              name: "processReply",
+              href: processUrl,
+              attributes: {
+                id: "processReply"
+              }
+            }) }}
+          {% endif %}
         {% endif %}
 
       {% endif %}

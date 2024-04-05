@@ -3,7 +3,7 @@
 
   const { reissueLetterDAO } = require('../../objects/documents');
   const letterTemplates = require('./pdf/letter-templates');
-  const { LetterType, formatLetterDate } = require('../../lib/mod-utils');
+  const { LetterType, formatLetterDate, formatLetterDate } = require('../../lib/mod-utils');
   const { convert24to12, dateFilter } = require('../../components/filters/index');
 
   module.exports.printDocuments = function(app) {
@@ -129,6 +129,8 @@
       return withdrawal(data);
     case 'show-cause':
       return showCause(data);
+    case 'certificate-attendance':
+      return certificateOfAttendance(data);
     case 'failed-to-attend':
       return failedToAttend(data);
     case 'certificate-attendance':
@@ -277,6 +279,25 @@
       return juror;
     });
 
+    return documents;
+  }
+
+  function certificateOfAttendance(data) {
+    const documents = data.map((juror) => {
+      const isWelsh = juror.welsh;
+
+      juror.content = letterTemplates('certificate-attendance', {
+        welsh: isWelsh,
+        firstName: juror.juror_first_name,
+        lastName: juror.juror_last_name,
+        signature: juror.signature,
+      });
+
+      juror.title = isWelsh ? 'PRAWF O WASANAETHU AR REITHGOR': 'CERTIFICATE OF ATTENDANCE AS A JUROR';
+      
+      return juror;
+    });
+    
     return documents;
   }
 

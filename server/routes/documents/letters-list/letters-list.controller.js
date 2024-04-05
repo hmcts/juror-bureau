@@ -291,6 +291,8 @@
       return _isBureauUser ? 'Resend withdrawal letter' : 'Print withdrawal letter';
     case 'show-cause':
       return 'Print show cause letter';
+    case 'certificate-attendance':
+      return 'Print certificate of attendance';
     case 'failed-to-attend':
       return 'Print failed to attend letter';
     case 'certificate-attendance':
