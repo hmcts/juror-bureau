@@ -20,7 +20,7 @@
   validate.validators.accountNumber = function(value, options, key, attributes) {
     let tmpErrors = [];
 
-    if ((value === '' && attributes.sortCode === '' && attributes.accountHolderName === '') || value === '########') {
+    if (value === '########') {
       return null;
     }
 
@@ -54,8 +54,7 @@
 
     const sortCode = value.replace(/-/g, '') || '';
 
-    if ((sortCode === '' && attributes.accountNumber === '' && attributes.accountHolderName === '')
-    || sortCode === '######') {
+    if (sortCode === '######') {
       return null;
     }
 
@@ -86,10 +85,6 @@
 
   validate.validators.accountHolderName = function(value, options, key, attributes) {
     let tmpErrors = [];
-
-    if (value === '' && attributes.accountNumber === '' && attributes.sortCode === '') {
-      return null;
-    }
 
     if (value === '') {
       tmpErrors = {
