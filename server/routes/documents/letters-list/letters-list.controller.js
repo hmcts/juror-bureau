@@ -1,5 +1,3 @@
-const { dateFilter } = require('../../../components/filters');
-
 (function() {
   'use strict';
 
@@ -11,6 +9,7 @@ const { dateFilter } = require('../../../components/filters');
   const { isBureauUser } = require('../../../components/auth/user-type');
   const { reissueLetterDAO } = require('../../../objects/documents');
   const { tableGenerator } = require('../helper/table-generator');
+  const { dateFilter } = require('../../../components/filters');
 
   module.exports.getListLetters = function(app) {
     return function(req, res) {
