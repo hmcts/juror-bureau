@@ -66,6 +66,7 @@
       printDocuments(app));
 
     require('./show-cause')(app);
+    require('./failed-to-attend')(app);
   };
 
 })();

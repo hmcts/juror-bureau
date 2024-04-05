@@ -4,7 +4,7 @@
   const _ = require('lodash')
     , modUtils = require('../../lib/mod-utils')
     , validate = require('validate.js')
-    , { panelListDAO } = require('../../objects/panel')
+    , { panelListDAO, panelMemberStatusDAO} = require('../../objects/panel')
     , { trialsListObject, trialDetailsObject } = require('../../objects/create-trial')
     , { endTrialObject } = require('../../objects/end-trial')
     , { dateFilter, capitalizeFully, makeDate } = require('../../components/filters')
@@ -104,6 +104,8 @@
         locationCode
       ), panelListDAO.get(
         app, req, req.params.trialNumber, req.params.locationCode
+      ), panelMemberStatusDAO.get(
+        req, req.params.trialNumber, req.params.locationCode
       ).catch(err => {
         app.logger.crit('Unable to fetch panel details, continuing to trial details', {
           auth: req.session.authentication,
@@ -113,7 +115,7 @@
 
         return {};
       })])
-        .then(([trialData, panelData]) => {
+        .then(([trialData, panelData, addPanelStatus ]) => {
 
           if (typeof tmpFields === 'undefined') {
             req.session.originalTrialNumber = trialData.trialNumber;
@@ -138,6 +140,7 @@
             trial: trialData,
             locationCode,
             successBanner,
+            addPanelStatus: addPanelStatus.data,
             formActions: {
               returnUrl: app.namedRoutes.build('trial-management.trials.return.post',
                 {
