@@ -1136,7 +1136,7 @@
 
   module.exports.LetterType = {
     'initial-summons': 'SUMMONS',
-    'summons-reminders': 'REMINDERS',
+    'summons-reminders': 'SUMMONED_REMINDER',
     'further-information': 'INFORMATION',
     'confirmation': 'CONFIRMATION',
     'deferral-granted': 'DEFERRAL_GRANTED',
