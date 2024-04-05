@@ -15,12 +15,7 @@
 {% set currentApp = "Summons replies" %}
 
 {% block beforeContent %}
-  {# back link #}
-  {% if hasModAccess === false %}
-    <a href="#" class="govuk-back-link link-back--static {% if nav.lastPage === 'search' %}link-search{% elseif response.rawProcessingStatus === 'TODO' %}link-inbox{%elseif response.rawProcessingStatus === 'CLOSED' %}link-complete{% else %}link-pending{% endif %}">Back</a>
-  {% endif %}
-
-  {% if hasModAccess and (response.rawProcessingStatus === 'CLOSED' or response.processingStatus === 'Closed') %}
+  {% if response.processingStatus === 'Closed' %}
     <div class="govuk-!-margin-top-3">
       {% set bannerMessageHtml %}
         Summons reply processed on {{ response.completedAt | dateFilter('DD/MM/YYYY', 'D MMMM YYYY') }} by {{ response.assignedStaffMember.name | isAutoProcessed }}: <b>{{ processedBannerMessage }}</b>
@@ -34,10 +29,9 @@
     </div>
   {% endif %}
 
-  {% if hasModAccess
-    and method === "paper"
+  {% if method === "paper"
     and (response.jurorDetailsComplete === false or response.eligibilityComplete === false or response.signed !== true)
-    and not (response.rawProcessingStatus === 'CLOSED' or response.processingStatus === 'Closed' or thirdPartyDetails.reason === 'Deceased') %}
+    and not (response.processingStatus === 'Closed' or thirdPartyDetails.reason === 'Deceased') %}
     {{ mojBanner({
       type: 'information',
       text: 'Summons reply is missing essential information - reply cannot be processed until this information is entered.',
@@ -46,7 +40,7 @@
     }) }}
   {% endif %}
 
-  {% if hasModAccess and response.isLateSummons %}
+  {% if response.isLateSummons %}
     <div class="govuk-!-margin-top-3">
       {{ mojBanner({
         type: "warning",
@@ -60,11 +54,9 @@
 {% block content %}
 
   {# set alert badge - as displayed on To do list #}
-  {% if (response.rawProcessingStatus !== 'CLOSED') %}
-    {% if hasModAccess and response.isLateSummons %}
-      {% set urgencyBadge = undefined %}
-    {% elif response.superUrgent %}
-      {% set urgencyBadge = "Super Urgent" if hasModAccess and method === "paper" else "Send to court" %}
+  {% if response.processingStatus !== 'Closed' and response.isLateSummons %}
+    {% if response.superUrgent %}
+      {% set urgencyBadge = "Urgent" if method === "paper" else "Send to court" %}
     {% elif response.urgent %}
       {% set urgencyBadge = "Urgent" %}
     {% elif response.slaOverdue %}
