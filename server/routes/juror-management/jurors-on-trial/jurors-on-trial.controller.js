@@ -120,8 +120,37 @@ module.exports.postConfirmAttendance = function(app) {
       }));
     }
 
+    const payload = buildConfirmAttendancePayload(req);
+
+    console.log(payload);
+
     return res.redirect(app.namedRoutes.build('juror-management.jurors-on-trial.confirm-attendance.get', {
       trialNumber,
     }));
   };
 };
+
+function buildConfirmAttendancePayload(req) {
+  const { body } = req;
+  const payload = {};
+
+  if (body.attendanceDate === 'differentDate') {
+    payload.attendanceDate = body.differentDate;
+  }
+  if (payload.attendanceDate === 'previousWorkingDay') {
+    payload.attendanceDate = req.session.jurorsOnTrial.yesterday;
+  }
+  if (payload.attendanceDate === 'today') {
+    payload.attendanceDate = req.session.jurorsOnTrial.today;
+  }
+
+  const checkInTime = `${body.checkInTimeHour}:${body.checkInTimeMinute} ${body.checkInTimePeriod}`;
+  const checkOutTime = `${body.checkOutTimeHour}:${body.checkOutTimeMinute} ${body.checkOutTimePeriod}`;
+
+  payload.checkInTime = checkInTime;
+  payload.checkOutTime = checkOutTime;
+
+  payload.jurors = Array.isArray(body.selectedJurors) ? body.selectedJurors : [body.selectedJurors];
+
+  return payload;
+}
