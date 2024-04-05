@@ -15,11 +15,6 @@
 {% set currentApp = "Summons replies" %}
 
 {% block beforeContent %}
-  {# back link #}
-  {% if hasModAccess === false %}
-    <a href="#" class="govuk-back-link link-back--static {% if nav.lastPage === 'search' %}link-search{% elseif response.rawProcessingStatus === 'TODO' %}link-inbox{%elseif response.rawProcessingStatus === 'CLOSED' %}link-complete{% else %}link-pending{% endif %}">Back</a>
-  {% endif %}
-
   {% if response.processingStatus === 'Closed' %}
     <div class="govuk-!-margin-top-3">
       {% set bannerMessageHtml %}
@@ -59,7 +54,7 @@
 {% block content %}
 
   {# set alert badge - as displayed on To do list #}
-  {% if response.processingStatus !== 'CLOSED' and response.isLateSummons %}
+  {% if response.processingStatus !== 'Closed' and response.isLateSummons %}
     {% if response.superUrgent %}
       {% set urgencyBadge = "Urgent" if method === "paper" else "Send to court" %}
     {% elif response.urgent %}
