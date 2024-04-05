@@ -1,3 +1,5 @@
+const { dateFilter } = require('../../../components/filters');
+
 (function() {
   'use strict';
 
@@ -115,12 +117,19 @@
 
       delete req.session.errors;
 
+      const checkedJurors = _.clone(req.session.documentsJurorsList.checkedJurors);
+
+      checkedJurors.forEach((juror) => {
+        if (juror['date_printed'] === 'null') {
+          juror['date_printed'] = dateFilter(new Date(), null, 'YYYY-MM-DD');
+        }
+      });
+
       const payload = {
-        'letters_list': req.session.documentsJurorsList.checkedJurors,
+        'letters_list': checkedJurors,
       };
 
       try {
-        console.log(payload);
         await reissueLetterDAO.postList(app, req, payload);
 
         const documentCount = req.session.documentsJurorsList.checkedJurors.length;
@@ -162,8 +171,6 @@
       };
 
       try {
-
-        console.log(payload);
         await reissueLetterDAO.deletePending(app, req, payload);
 
         const index = req.session.documentsJurorsList.data
