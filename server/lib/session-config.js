@@ -74,6 +74,7 @@ module.exports.SessionConfig = class SessionConfig {
       name: 'juror_bureau_session',
       cookie: {
         secure: isProduction,
+        sameSite: true,
         httpOnly: true,
       },
     };
