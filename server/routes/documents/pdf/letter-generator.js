@@ -97,7 +97,7 @@
     };
   }
 
-  function documentContent(content) {
+  function documentContent(content, jurorData) {
     const isWelsh = content.welsh;
     const contentArray = [
       {
@@ -122,7 +122,8 @@
         ],
       },
       {
-        text: `${content.welsh ? 'Annwyl' : 'Dear'} ${content.juror_first_name} ${content.juror_last_name},`,
+        text: (typeof jurorData.documentType !== 'undefined' && jurorData.documentType === 'certificate-attendance') ? '' : `${content.welsh ?
+          'Annwyl' : 'Dear'} ${content.juror_first_name} ${content.juror_last_name},`,
         marginTop: 15,
       },
       {
@@ -145,6 +146,23 @@
     contentArray.push({
       text: content.content,
     });
+    if (typeof jurorData.table !== 'undefined') {
+      contentArray.push(
+        {
+          style: 'tableExample',
+          table: jurorData.table,
+          layout: 'noBorders',
+        }
+      );
+
+      if (content.signature) {
+        contentArray.push({
+          text: content.signature,
+          marginTop: 20,
+          marginBottom: 15,
+        });
+      }
+    };
 
     return contentArray;
   };
@@ -176,7 +194,7 @@
         _documentContent.push({
           stack: [
             { ...documentHeader(data, i) },
-            ...documentContent(data),
+            ...documentContent(data, content[i]),
           ],
           // these are important for the footer notes / text
           footerText: officer,

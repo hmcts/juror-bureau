@@ -90,6 +90,11 @@
         + 'Yours sincerely,';
 
       },
+
+      'certificate-attendance': (data) => {
+        return `I certify that ${data.firstName} ${data.lastName} served as a juror on the following days:- \n\n`;
+
+      },
     },
     'cy': {
       'show-cause': (data) => {
@@ -170,6 +175,10 @@
           + `${data.firstName} ${data.lastName} gael ei h/esgusodi o orfod Gwasanaethu ar Reithgor ${data.exemptionPeriod === 'indefinite' ? 'amhenodol' : `am gyfnod o ${data.exemptionPeriod} flynyddoedd.`}.\n\n`
           + 'Yn gywir\n\n\n'
           + `${data.signature}`;
+      },
+      'certificate-attendance': (data) => {
+        return `Cadarnhaf fod ${data.firstName} ${data.lastName} swedi gwasanaethu fel reithiwr ar y dyddiau a ganlyn:- \n\n`;
+
       },
     },
   };
