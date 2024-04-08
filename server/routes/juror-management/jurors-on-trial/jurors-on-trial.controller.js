@@ -8,6 +8,7 @@ const { Logger } = require('../../../components/logger');
 const { setPreviousWorkingDay } = require('../../../lib/mod-utils');
 const validate = require('validate.js');
 const { jurorsOnTrial: jurorsOnTrialValidator } = require('../../../config/validation/jurors-on-trial');
+const { changeAttendanceTimes } = require('../../../config/validation/change-attendance-times');
 
 module.exports.getJurorsOnTrial = function() {
   return async function(req, res) {
@@ -19,7 +20,7 @@ module.exports.getJurorsOnTrial = function() {
     let trialsList;
 
     try {
-      ({trials_list: trialsList} = await jurorsOnTrialDAO
+      ({ trials_list: trialsList } = await jurorsOnTrialDAO
         .get(req, locCode, dateFilter(attendanceDate, null, 'YYYY-MM-DD')));
 
       Logger.instance.info('Fetched trials list', {
@@ -86,6 +87,15 @@ module.exports.getConfirmAttendance = function(app) {
 
     const tmpErrors = _.clone(req.session.errors);
     const tmpBody = _.clone(req.session.tmpBody);
+    const selectedJurors = [];
+
+    if (tmpBody && tmpBody.selectedJurors) {
+      if (Array.isArray(tmpBody.selectedJurors)) {
+        selectedJurors.push(...tmpBody.selectedJurors);
+      } else {
+        selectedJurors.push(tmpBody.selectedJurors);
+      }
+    }
 
     delete req.session.errors;
     delete req.session.tmpBody;
@@ -96,6 +106,7 @@ module.exports.getConfirmAttendance = function(app) {
       today,
       yesterday,
       tmpBody,
+      selectedJurors,
       errors: {
         message: '',
         count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -109,20 +120,18 @@ module.exports.postConfirmAttendance = function(app) {
   return async function(req, res) {
     const { trialNumber } = req.params;
 
-    const validatorResult = validate(req.body, jurorsOnTrialValidator(req.body));
+    const validatorResult = validatePostConfirm(req);
 
-    if (validatorResult) {
+    if (Object.keys(validatorResult).length > 0) {
       req.session.errors = validatorResult;
       req.session.tmpBody = req.body;
 
       return res.redirect(app.namedRoutes.build('juror-management.jurors-on-trial.confirm-attendance.get', {
         trialNumber,
       }));
-    }
+    };
 
     const payload = buildConfirmAttendancePayload(req);
-
-    console.log(payload);
 
     try {
       await confirmAttendanceDAO.patch(req, payload);
@@ -132,16 +141,18 @@ module.exports.postConfirmAttendance = function(app) {
         jwt: req.session.authToken,
         data: { trialNumber, payload },
       });
-
-      return res.redirect(app.namedRoutes.build('juror-management.jurors-on-trial.get'));
     } catch (err) {
-      console.log(err);
-      // TODO: handle error
+      Logger.instance.crit('Failed to confirm the jurors in a trial', {
+        auth: req.session.authentication,
+        jwt: req.session.authToken,
+        data: { trialNumber, payload },
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+
+      return res.render('_errors/generic');
     }
 
-    // return res.redirect(app.namedRoutes.build('juror-management.jurors-on-trial.confirm-attendance.get', {
-    //   trialNumber,
-    // }));
+    return res.redirect(app.namedRoutes.build('juror-management.jurors-on-trial.get'));
   };
 };
 
@@ -174,4 +185,46 @@ function buildConfirmAttendancePayload(req) {
   payload.commonData = commonData;
 
   return payload;
+}
+
+function validatePostConfirm(req) {
+  const checkInTimeHour = req.body.checkInTimeHour;
+  const checkInTimeMinute = req.body.checkInTimeMinute;
+  const checkInTimePeriod = req.body.checkInTimePeriod;
+  const checkOutTimeHour = req.body.checkOutTimeHour;
+  const checkOutTimeMinute = req.body.checkOutTimeMinute;
+  const checkOutTimePeriod = req.body.checkOutTimePeriod;
+
+  const validatorResult = validate(req.body, jurorsOnTrialValidator(req.body));
+  const timeValidatorResult = validate({
+    checkInTime: {
+      hour: checkInTimeHour,
+      minute: checkInTimeMinute,
+      period: checkInTimePeriod,
+    },
+    checkOutTime: {
+      hour: checkOutTimeHour,
+      minute: checkOutTimeMinute,
+      period: checkOutTimePeriod,
+      isMandatory: true,
+    },
+  }, changeAttendanceTimes());
+
+  let validationErrors = {};
+
+  if (validatorResult || timeValidatorResult) {
+    if (validatorResult) {
+      validationErrors = Object.assign(validationErrors, validatorResult);
+    }
+
+    if (timeValidatorResult && timeValidatorResult.checkInTime) {
+      validationErrors = Object.assign(validationErrors, timeValidatorResult.checkInTime[0]);
+    }
+
+    if (timeValidatorResult && timeValidatorResult.checkOutTime) {
+      validationErrors = Object.assign(validationErrors, timeValidatorResult.checkOutTime[0]);
+    }
+  }
+
+  return validationErrors;
 }

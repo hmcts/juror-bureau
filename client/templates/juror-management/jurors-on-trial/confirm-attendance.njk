@@ -26,14 +26,13 @@
   {% set selectedJurorsError = { text: errors.items["selectedJurors"][0].details } %}
 {% endif %}
 
-
 {% block content %}
 
   {% include "includes/errors.njk" %}
 
-  {% macro checkJurorInput(jurorNumber) %}
+  {% macro checkJurorInput(jurorNumber, checked) %}
     <div class="govuk-checkboxes__item govuk-checkboxes--small">
-      <input class="govuk-checkboxes__input" id="juror-{{ jurorNumber }}" name="selectedJurors" type="checkbox" value="{{ jurorNumber }}">
+      <input class="govuk-checkboxes__input" id="juror-{{ jurorNumber }}" name="selectedJurors" type="checkbox" value="{{ jurorNumber }}" {% if checked %}checked{% endif %}>
       <label class="govuk-label govuk-checkboxes__label" for="juror-{{ jurorNumber }}">
         <span class="govuk-visually-hidden">check juror number {{ jurorNumber }}</span>
       </label>
@@ -42,7 +41,7 @@
 
   {% set checkAllInput %}
     <div class="govuk-checkboxes__item govuk-checkboxes--small">
-      <input class="govuk-checkboxes__input" id="check-all" name="check-all" type="checkbox" value="check-all">
+      <input class="govuk-checkboxes__input" id="check-all" name="check-all" type="checkbox" value="check-all" {% if selectedJurors.length === jurorsList.length %}checked{% endif %}>
       <label class="govuk-label govuk-checkboxes__label" for="check-all">
         <span class="govuk-visually-hidden">check all available jurors</span>
       </label>
@@ -54,7 +53,7 @@
     {% set rows = (rows.push(
       [
         {
-          html: checkJurorInput(juror.juror_number),
+          html: checkJurorInput(juror.juror_number, selectedJurors | arrayIncludes(juror.juror_number)),
           classes: "jd-middle-align"
         },
         {
@@ -144,21 +143,21 @@
           classes: "govuk-!-margin-top-3",
           items: {
             hour: {
-              value: checkInTime.hour,
+              value: tmpBody.checkInTimeHour,
               attributes: {
                 minLength: "1",
                 maxLength: "2"
               }
             },
             minute: {
-              value: checkInTime.minute,
+              value: tmpBody.checkInTimeMinute,
               attributes: {
                 minLength: "1",
                 maxLength: "2"
               }
             },
             period: {
-              value: checkInTime.period
+              value: tmpBody.checkInTimePeriod
             }
           },
           errors: errors.items
@@ -175,21 +174,21 @@
           name: "checkOutTime",
           items: {
             hour: {
-              value: checkOutTime.hour,
+              value: tmpBody.checkOutTimeHour,
               attributes: {
                 minLength: "1",
                 maxLength: "2"
               }
             },
             minute: {
-              value: checkOutTime.minute,
+              value: tmpBody.checkOutTimeMinute,
               attributes: {
                 minLength: "1",
                 maxLength: "2"
               }
             },
             period: {
-              value: checkOutTime.period
+              value: tmpBody.checkOutTimePeriod
             }
           },
           errors: errors.items
@@ -213,7 +212,7 @@
         {% endif %}
 
         <span class="govuk-caption-m">
-          <span id="total-selected">0</span> of {{ jurorsList.length }} selected
+          <span id="total-selected">{{ selectedJurors.length }}</span> of {{ jurorsList.length }} selected
         </span>
 
         {{ govukTable({
