@@ -2,8 +2,7 @@
 
 const _ = require('lodash');
 const { dateFilter, convert12to24 } = require('../../../components/filters');
-const { jurorsOnTrialDAO } = require('../../../objects');
-const { jurorAttendanceDao } = require('../../../objects/juror-attendance');
+const { jurorsOnTrialDAO, confirmAttendanceDAO } = require('../../../objects');
 const { panelListDAO } = require('../../../objects/panel');
 const { Logger } = require('../../../components/logger');
 const { setPreviousWorkingDay } = require('../../../lib/mod-utils');
@@ -43,7 +42,7 @@ module.exports.getJurorsOnTrial = function() {
     const _previousDay = setPreviousWorkingDay(attendanceDate);
 
     req.session.jurorsOnTrial = {
-      today: new Date(currentDay).toISOString().split('T')[0],
+      today: dateFilter(currentDay, 'dddd D MMMM YYYY', 'YYYY-MM-DD'),
       yesterday: new Date(_previousDay).toISOString().split('T')[0],
     };
 
@@ -126,17 +125,23 @@ module.exports.postConfirmAttendance = function(app) {
     console.log(payload);
 
     try {
-      const response = await jurorAttendanceDao.patch(app, req, payload);
+      await confirmAttendanceDAO.patch(req, payload);
 
-      console.log(response);
+      Logger.instance.info('Successfully confirmed attendance', {
+        auth: req.session.authentication,
+        jwt: req.session.authToken,
+        data: { trialNumber, payload },
+      });
+
+      return res.redirect(app.namedRoutes.build('juror-management.jurors-on-trial.get'));
     } catch (err) {
       console.log(err);
       // TODO: handle error
     }
 
-    return res.redirect(app.namedRoutes.build('juror-management.jurors-on-trial.confirm-attendance.get', {
-      trialNumber,
-    }));
+    // return res.redirect(app.namedRoutes.build('juror-management.jurors-on-trial.confirm-attendance.get', {
+    //   trialNumber,
+    // }));
   };
 };
 
