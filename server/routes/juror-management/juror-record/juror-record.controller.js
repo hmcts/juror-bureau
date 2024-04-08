@@ -1,14 +1,14 @@
-const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/expenses');
-
 (function() {
   'use strict';
 
-  const _ = require('lodash')
-    , { dateFilter, capitalizeFully, makeDate } = require('../../../components/filters')
-    , { isCourtUser } = require('../../../components/auth/user-type')
-    , jurorRecordObject = require('../../../objects/juror-record')
-    , validate = require('validate.js')
-    , modUtils = require('../../../lib/mod-utils');
+  const _ = require('lodash');
+  const { dateFilter, capitalizeFully, makeDate } = require('../../../components/filters');
+  const { isCourtUser } = require('../../../components/auth/user-type');
+  const jurorRecordObject = require('../../../objects/juror-record');
+  const validate = require('validate.js');
+  const modUtils = require('../../../lib/mod-utils');
+  const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/expenses');
+  const { systemCodesDAO } = require('../../../objects');
 
   // TODO: this will probably be removed when we move to a single juror / summons record
   module.exports.checkResponse = function(app) {
@@ -139,22 +139,22 @@ const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/ex
 
   module.exports.getOverviewTab = function(app) {
     return function(req, res) {
-      var successCB = function(response) {
+      var successCB = async function(response) {
           var availableMessage = false
             , bannerMessage
             , canSummon = true
-            , jurorStatus = resolveJurorStatus(response.data.commonDetails);
+            , jurorStatus = resolveJurorStatus(response[0].data.commonDetails);
 
           app.logger.info('Fetched the juror record overview: ', {
             auth: req.session.authentication,
             jwt: req.session.authToken,
             data: {
               jurorNumber: req.params['jurorNumber'],
-              response: response.data,
+              response: response[0].data,
             },
           });
 
-          if (typeof response.data === 'undefined') {
+          if (typeof response[0].data === 'undefined') {
             return res.render('_errors/generic');
           }
 
@@ -166,14 +166,14 @@ const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/ex
           delete req.session.bannerMessage;
 
           req.session.jurorUpdate = {
-            poolNumber: response.data.commonDetails.poolNumber,
-            currentAttendanceDate: response.data.commonDetails.startDate,
+            poolNumber: response[0].data.commonDetails.poolNumber,
+            currentAttendanceDate: response[0].data.commonDetails.startDate,
           };
-          cacheJurorCommonDetails(req, response.data.commonDetails);
+          cacheJurorCommonDetails(req, response[0].data.commonDetails);
 
-          const poolDetails = buildPooldetailsRows(app.namedRoutes, response.data.commonDetails);
+          const poolDetails = buildPooldetailsRows(app.namedRoutes, response[0].data.commonDetails);
 
-          if (response.data.commonDetails.owner !== '400' && !isCourtUser(req)) {
+          if (response[0].data.commonDetails.owner !== '400' && !isCourtUser(req)) {
             canSummon = false;
           };
 
@@ -185,21 +185,23 @@ const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/ex
             break;
           };
 
-          req.session.jurorNameChangeAttendance = response.data.commonDetails.firstName
-          + ' ' + response.data.commonDetails.lastName;
+          req.session.jurorNameChangeAttendance = response[0].data.commonDetails.firstName
+          + ' ' + response[0].data.commonDetails.lastName;
 
           let canRunPoliceCheck = true;
 
-          if ((response.data.addressLineOne === '' || response.data.addressLineOne === null)
-          || (response.data.addressTown === '' || response.data.addressTown === null)
-          || (response.data.addressPostcode === '' || response.data.addressPostcode === null)) {
+          if ((response[1].data.addressLineOne === '' || response[1].data.addressLineOne === null)
+          || (response[1].data.addressTown === '' || response[1].data.addressTown === null)
+          || (response[1].data.addressPostcode === '' || response[1].data.addressPostcode === null)) {
             canRunPoliceCheck = false;
           }
+
+          const idCheckDescription = await resolveIdCheckDescription(app, req, response[0].data.idCheckCode);
 
           // TODO: handle the backLink
           return res.render('juror-management/juror-record/overview', {
             backLinkUrl: 'homepage.get',
-            juror: response.data,
+            juror: response[0].data,
             canSummon,
             currentTab: 'overview',
             jurorStatus,
@@ -209,6 +211,7 @@ const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/ex
             availableMessage: availableMessage,
             hasSummons: req.session.hasSummonsResponse,
             poolDetails,
+            idCheckDescription,
             // Next service date attributes are hardcoded and
             // hidden behind a specific query param until backend for this data has been implemented
             showServiceAttributes: req.query.serviceAttributes,
@@ -234,14 +237,27 @@ const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/ex
 
       clearInvalidSessionData(req);
 
-      jurorRecordObject.record.get(
+      const promiseArr = [];
+
+      promiseArr.push(jurorRecordObject.record.get(
+        require('request-promise'),
+        app,
+        req.session.authToken,
+        'overview',
+        req.params['jurorNumber'],
+        req.session.locCode,
+      ));
+
+      promiseArr.push(jurorRecordObject.record.get(
         require('request-promise'),
         app,
         req.session.authToken,
         'detail',
         req.params['jurorNumber'],
         req.session.locCode,
-      )
+      ));
+
+      Promise.all(promiseArr)
         .then(successCB)
         .catch(errorCB);
     };
@@ -1044,6 +1060,14 @@ const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/ex
     }
 
     return { status: _status, rawStatus: status || 'NOT_CHECKED', canRetry, errorArray };
+  }
+
+  async function resolveIdCheckDescription(app, req, idCheckCode) {
+    if (!idCheckCode) return Promise.resolve('');
+
+    const { description } = (await systemCodesDAO.get(app, req, 'ID_CHECK')).find(({ code }) => code === idCheckCode);
+
+    return Promise.resolve(description);
   }
 
 })();
