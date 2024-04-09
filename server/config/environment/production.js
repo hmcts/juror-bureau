@@ -5,7 +5,7 @@
   // =================================
   module.exports = {
     // If true, logs will be output in terminal as well as saved to file
-    logConsole: false,
+    logConsole: 'debug',
 
     // Response editing,  default=false
     responseEditEnabled: false,
