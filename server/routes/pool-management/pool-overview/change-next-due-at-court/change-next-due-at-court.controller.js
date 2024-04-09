@@ -32,7 +32,9 @@
       delete req.session.filteredMembers;
       delete req.session.filters;
 
-      req.session.selectedJurors = req.body.selectedJurors;
+      req.session.selectedJurors = Array.isArray(req.body.selectedJurors)
+        ? req.body.selectedJurors
+        : [req.body.selectedJurors];
 
       return res.redirect(app.namedRoutes.build('pool-overview.change-next-due-at-court.continue.get', {
         poolNumber: req.params.poolNumber,
