@@ -91,7 +91,7 @@
       return res.render('pool-management/_common/select-court', {
         courts: transformedCourtNames,
         pageTitle: 'Select a court for this pool',
-        submitUrl: app.namedRoutes.build('request-pool.select-court.post'),
+        submitUrl: app.namedRoutes.build('request-pool.select-court.post') + (req.query['nil'] ? '?nil=true' : ''),
         cancelUrl:
           app.namedRoutes.build((typeof req.session.poolDetails !== 'undefined')
             ? 'request-pool.pool-details.get' : 'pool-management.get'),
@@ -117,6 +117,10 @@
               minute: result.attendanceTime.split(':')[1],
             },
           };
+
+          if (req.query['nil'] === 'true') {
+            return res.redirect(app.namedRoutes.build('nil-pool.get'));
+          }
 
           res.redirect(app.namedRoutes.build('request-pool.pool-details.get'));
         }
