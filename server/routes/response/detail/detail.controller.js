@@ -3,9 +3,6 @@
  * GET    /    ->    index
  */
 
-const { courtLocationsFromPostcodeObj } = require('../../../objects/court-location.js');
-const { resolveCatchmentResponse } = require('../../summons-management/summons-management.controller.js');
-
 ;(function(){
   'use strict';
 
@@ -19,8 +16,6 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
     , disqualifyObj = require('../../../objects/disqualify').object
     , excusalObj = require('../../../objects/excusal').object
     , deferralObj = require('../../../objects/deferral').object
-    , statusObj = require('../../../objects/status').object
-    , bureauStatusObj = require('../../../objects/bureau-status').object
     , sendCourtObj = require('../../../objects/send-court').object
     , courtObj = require('../../../objects/court').object
     , pdfExport = require('../../../lib/pdfExport')
@@ -31,6 +26,10 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
     , { systemCodesDAO } = require('../../../objects/administration')
     , { dateFilter } = require('../../../components/filters')
     , jurorRecordObject = require('../../../objects/juror-record');
+
+  const { courtLocationsFromPostcodeObj } = require('../../../objects/court-location.js');
+  const { resolveCatchmentResponse } = require('../../summons-management/summons-management.controller.js');
+  const { updateStatus } = require('../../../objects');
 
   module.exports.index = function(app) {
     return function(req, res) {
@@ -486,14 +485,13 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
       // Remove errors each time
       delete req.session.errors;
 
-      statusObj.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
-        req.body.jurorNumber,
-        req.body.processingStatus,
-        req.body.version
-      )
+      const payload = {
+        jurorNumber: req.body.jurorNumber,
+        status: req.body.processingStatus,
+        version: req.body.version,
+      };
+
+      updateStatus.post(req, payload, req.body.jurorNumber)
         .then(successCB)
         .catch(errorCB);
     };
@@ -1733,15 +1731,13 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
         }).catch(errorCB);
       }
 
-      statusObj.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
-        req.params.id,
-        'CLOSED',
-        req.body.version,
-        req.session.hasModAccess,
-      )
+      const payload = {
+        jurorNumber: req.body.jurorNumber,
+        status: 'CLOSED',
+        version: req.body.version,
+      };
+
+      updateStatus.post(req, req.body.jurorNumber, payload)
         .then(successCB)
         .catch(errorCB);
     };
@@ -1857,15 +1853,13 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
         });
       }
 
-      statusObj.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
-        req.params.id,
-        req.body.awaitingInformation,
-        req.body.version,
-        req.session.hasModAccess || false
-      )
+      const payload = {
+        jurorNumber: req.body.jurorNumber,
+        status: req.body.awaitingInformation,
+        version: req.body.version,
+      };
+
+      updateStatus.post(req, req.body.jurorNumber, payload)
         .then(successCB)
         .catch(errorCB);
 
@@ -2089,18 +2083,15 @@ const { resolveCatchmentResponse } = require('../../summons-management/summons-m
           return res.status(err.statusCode).send(err.error);
         };
 
+      const payload = {
+        jurorNumber: req.params.id,
+        status: req.body.status,
+        version: req.body.version,
+      };
 
-      bureauStatusObj.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
-        req.params.id,
-        req.body.status,
-        req.body.version
-      )
+      updateStatus.post(req, payload, req.body.jurorNumber)
         .then(successCB)
         .catch(errorCB);
-
     };
   };
 
