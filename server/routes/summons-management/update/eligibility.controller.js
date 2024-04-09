@@ -4,7 +4,7 @@
   const _ = require('lodash');
   const paperReplyObj = require('../../../objects/paper-reply').paperReplyObject;
   const summonsUpdate = require('../../../objects/summons-management').summonsUpdate;
-  const hasBeenModified = require('./summons-update-common').hasBeenModified;
+  const { hasBeenModified, generalError } = require('./summons-update-common');
 
   module.exports.get = function(app) {
     return async function(req, res) {
@@ -125,12 +125,13 @@
           type: 'paper',
         }));
       } catch (err) {
-
         app.logger.crit('Could not update the summons eligibility details', {
           auth: req.session.authentication,
           token: req.session.authToken,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
+
+        generalError(req);
 
         return res.redirect(app.namedRoutes.build('summons.update-eligibility.get', {
           id: req.params['id'],

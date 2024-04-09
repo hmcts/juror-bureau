@@ -111,6 +111,13 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
+        req.session.errors = {
+          replyTypeError: [{
+            summary: 'Something went wrong when trying to update the summons reply type',
+            details: 'Something went wrong when trying to update the summons reply type',
+          }],
+        };
+
         return res.redirect(app.namedRoutes.build('summons.update-reply-type.get', {
           id: req.params['id'],
           type: 'paper',

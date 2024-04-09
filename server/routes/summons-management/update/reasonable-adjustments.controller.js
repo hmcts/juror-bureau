@@ -147,8 +147,8 @@
 
         req.session.errors = {
           reasonableAdjustmentError: [{
-            summary: 'Unable to update the summons reasonable adjustments',
-            details: 'Unable to update the summons reasonable adjustments',
+            summary: 'Something went wrong when trying to update the summons reasonable adjustments',
+            details: 'Something went wrong when trying to update the summons reasonable adjustments',
           }],
         };
 

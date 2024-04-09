@@ -4,7 +4,7 @@
   const _ = require('lodash');
   const paperReplyObj = require('../../../objects/paper-reply').paperReplyObject;
   const summonsUpdate = require('../../../objects/summons-management').summonsUpdate;
-  const hasBeenModified = require('./summons-update-common').hasBeenModified;
+  const { hasBeenModified, generalError } = require('./summons-update-common');
 
   module.exports.get = function(app) {
     return async function(req, res) {
@@ -110,6 +110,8 @@
           data: payload,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
+
+        generalError(req);
 
         return res.redirect(app.namedRoutes.build('summons.update-signature.get', {
           id: req.params['id'],
