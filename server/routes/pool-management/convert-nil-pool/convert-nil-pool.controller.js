@@ -64,8 +64,8 @@
         };
 
       if (!req.session.hasOwnProperty('poolDetails') ||
-        !req.session.poolDetails.hasOwnProperty('canConvert') ||
-        !req.session.poolDetails.canConvert) {
+        !req.session.poolDetails.poolDetails.hasOwnProperty('is_nil_pool') ||
+        !req.session.poolDetails.poolDetails.is_nil_pool) {
         return res.redirect(app.namedRoutes.build('pool-management.get'));
       }
 
