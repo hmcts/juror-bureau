@@ -88,7 +88,7 @@
           locationCode: req.session.authentication.owner,
           singleJuror: false,
         },
-        jurors: [],
+        juror: [],
       };
 
       try {
