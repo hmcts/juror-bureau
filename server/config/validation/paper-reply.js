@@ -3,7 +3,7 @@
 
   var validate = require('validate.js')
     , moment = require('moment')
-    , phoneRegex = /^[0-9(+][0-9\s-()]{8,14}$/
+    , phoneRegex = /^[04(+][0-9\s-()]{8,14}$/
     , messageMap = {
       primaryPhone: 'Enter a valid main phone number',
       secondaryPhone: 'Enter a valid alternative phone number',
