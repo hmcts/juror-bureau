@@ -98,6 +98,7 @@
         if (wasModified) {
           return res.redirect(app.namedRoutes.build('summons.update-eligibility.get', {
             id: req.params['id'],
+            type: 'paper',
           }));
         }
 
@@ -133,6 +134,7 @@
 
         return res.redirect(app.namedRoutes.build('summons.update-eligibility.get', {
           id: req.params['id'],
+          type: 'paper',
         }));
       }
     };

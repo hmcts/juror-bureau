@@ -73,6 +73,7 @@
 
         return res.redirect(app.namedRoutes.build('summons.update-employment.get', {
           id: req.params['id'],
+          type: 'paper',
         }));
       }
 
@@ -82,6 +83,7 @@
         if (wasModified) {
           return res.redirect(app.namedRoutes.build('summons.update-employment.get', {
             id: req.params['id'],
+            type: 'paper',
           }));
         }
 
@@ -116,6 +118,7 @@
 
         return res.redirect(app.namedRoutes.build('summons.update-employment.get', {
           id: req.params['id'],
+          type: 'paper',
         }));
       }
     };

@@ -79,6 +79,7 @@
         if (wasModified) {
           return res.redirect(app.namedRoutes.build('summons.update-reply-type.get', {
             id: req.params['id'],
+            type: 'paper',
           }));
         }
 
@@ -112,6 +113,7 @@
 
         return res.redirect(app.namedRoutes.build('summons.update-reply-type.get', {
           id: req.params['id'],
+          type: 'paper',
         }));
       }
     };

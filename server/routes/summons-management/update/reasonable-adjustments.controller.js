@@ -104,6 +104,7 @@
 
         return res.redirect(app.namedRoutes.build('summons.update-adjustments.get', {
           id: req.params['id'],
+          type: 'paper',
         }));
       }
 
@@ -113,6 +114,7 @@
         if (wasModified) {
           return res.redirect(app.namedRoutes.build('summons.update-adjustments.get', {
             id: req.params['id'],
+            type: 'paper',
           }));
         }
 
@@ -143,8 +145,16 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
+        req.session.errors = {
+          reasonableAdjustmentError: [{
+            summary: 'Unable to update the summons reasonable adjustments',
+            details: 'Unable to update the summons reasonable adjustments',
+          }],
+        };
+
         return res.redirect(app.namedRoutes.build('summons.update-adjustments.get', {
           id: req.params['id'],
+          type: 'paper',
         }));
       }
     };

@@ -78,7 +78,7 @@
         if (wasModified) {
           return res.redirect(app.namedRoutes.build('summons.update-signature.get', {
             id: req.params['id'],
-            replyMethod: 'paper',
+            type: 'paper',
           }));
         }
 
@@ -113,7 +113,7 @@
 
         return res.redirect(app.namedRoutes.build('summons.update-signature.get', {
           id: req.params['id'],
-          replyMethod: 'paper',
+          type: 'paper',
         }));
       }
     };
