@@ -128,15 +128,14 @@
               href: url('trial-management.empanel.get', {trialNumber: trial.trial_number, locationCode: locationCode})
             }) if not trial.is_jury_empanelled }}
           
-          
-
           {% else %}
-            {{ govukButton({
-              text: "Generate panel",
-              classes: "govuk-button--secondary",
-              href: url('trial-management.generate-panel.get', {trialNumber: trial.trial_number, locationCode: locationCode})
-            }) }}
-
+            {% if addPanelStatus === false %}
+              {{ govukButton({
+                text: "Generate panel",
+                classes: "govuk-button--secondary",
+                href: url('trial-management.generate-panel.get', {trialNumber: trial.trial_number, locationCode: locationCode})
+              }) }}
+            {% endif %}
             {{ govukButton({
               text: "Edit trial",
               classes: "govuk-button--secondary",
