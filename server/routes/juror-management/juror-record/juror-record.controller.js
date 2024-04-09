@@ -139,22 +139,22 @@
 
   module.exports.getOverviewTab = function(app) {
     return function(req, res) {
-      var successCB = async function(response) {
+      var successCB = async function([overview, detail]) {
           var availableMessage = false
             , bannerMessage
             , canSummon = true
-            , jurorStatus = resolveJurorStatus(response[0].data.commonDetails);
+            , jurorStatus = resolveJurorStatus(overview.data.commonDetails);
 
           app.logger.info('Fetched the juror record overview: ', {
             auth: req.session.authentication,
             jwt: req.session.authToken,
             data: {
               jurorNumber: req.params['jurorNumber'],
-              response: response[0].data,
+              response: overview.data,
             },
           });
 
-          if (typeof response[0].data === 'undefined') {
+          if (typeof overview.data === 'undefined') {
             return res.render('_errors/generic');
           }
 
@@ -166,14 +166,14 @@
           delete req.session.bannerMessage;
 
           req.session.jurorUpdate = {
-            poolNumber: response[0].data.commonDetails.poolNumber,
-            currentAttendanceDate: response[0].data.commonDetails.startDate,
+            poolNumber: overview.data.commonDetails.poolNumber,
+            currentAttendanceDate: overview.data.commonDetails.startDate,
           };
-          cacheJurorCommonDetails(req, response[0].data.commonDetails);
+          cacheJurorCommonDetails(req, overview.data.commonDetails);
 
-          const poolDetails = buildPooldetailsRows(app.namedRoutes, response[0].data.commonDetails);
+          const poolDetails = buildPooldetailsRows(app.namedRoutes, overview.data.commonDetails);
 
-          if (response[0].data.commonDetails.owner !== '400' && !isCourtUser(req)) {
+          if (overview.data.commonDetails.owner !== '400' && !isCourtUser(req)) {
             canSummon = false;
           };
 
@@ -185,23 +185,23 @@
             break;
           };
 
-          req.session.jurorNameChangeAttendance = response[0].data.commonDetails.firstName
-          + ' ' + response[0].data.commonDetails.lastName;
+          req.session.jurorNameChangeAttendance = overview.data.commonDetails.firstName
+          + ' ' + overview.data.commonDetails.lastName;
 
           let canRunPoliceCheck = true;
 
-          if ((response[1].data.addressLineOne === '' || response[1].data.addressLineOne === null)
-          || (response[1].data.addressTown === '' || response[1].data.addressTown === null)
-          || (response[1].data.addressPostcode === '' || response[1].data.addressPostcode === null)) {
+          if ((detail.data.addressLineOne === '' || detail.data.addressLineOne === null)
+          || (detail.data.addressTown === '' || detail.data.addressTown === null)
+          || (detail.data.addressPostcode === '' || detail.data.addressPostcode === null)) {
             canRunPoliceCheck = false;
           }
 
-          const idCheckDescription = await resolveIdCheckDescription(app, req, response[0].data.idCheckCode);
+          const idCheckDescription = await resolveIdCheckDescription(app, req, overview.data.idCheckCode);
 
           // TODO: handle the backLink
           return res.render('juror-management/juror-record/overview', {
             backLinkUrl: 'homepage.get',
-            juror: response[0].data,
+            juror: overview.data,
             canSummon,
             currentTab: 'overview',
             jurorStatus,

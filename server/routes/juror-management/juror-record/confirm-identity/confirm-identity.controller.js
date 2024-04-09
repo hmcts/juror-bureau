@@ -10,17 +10,17 @@ module.exports.getConfirmIdentity = function(app) {
   return async function(req, res) {
     const { jurorNumber } = req.params;
 
-    let idCheckCodes = [{ value: '', text: 'Select ID type' }];
+    let idCheckCodes;
 
     try {
-      (await systemCodesDAO.get(app, req, 'ID_CHECK')).reduce((acc, code) => {
+      idCheckCodes = (await systemCodesDAO.get(app, req, 'ID_CHECK')).reduce((acc, code) => {
         acc.push({
           value: code.code,
           text: code.description,
         });
 
         return acc;
-      }, idCheckCodes);
+      }, [{ value: '', text: 'Select ID type' }]);
     } catch (err) {
       Logger.instance.crit('Failed to fetch system codes for id check', {
         auth: req.session.authentication,
