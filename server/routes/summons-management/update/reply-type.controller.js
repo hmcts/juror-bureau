@@ -4,7 +4,7 @@
   const _ = require('lodash');
   const paperReplyObject = require('../../../objects/paper-reply').paperReplyObject;
   const summonsUpdate = require('../../../objects/summons-management').summonsUpdate;
-  const hasBeenModified = require('./summons-update-common').hasBeenModified;
+  const { hasBeenModified, generalError } = require('./summons-update-common');
 
   module.exports.get = function(app) {
     return async function(req, res) {
@@ -111,12 +111,7 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        req.session.errors = {
-          replyTypeError: [{
-            summary: 'Something went wrong when trying to update the summons reply type',
-            details: 'Something went wrong when trying to update the summons reply type',
-          }],
-        };
+        generalError(req);
 
         return res.redirect(app.namedRoutes.build('summons.update-reply-type.get', {
           id: req.params['id'],

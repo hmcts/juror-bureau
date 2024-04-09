@@ -7,7 +7,7 @@
   const summonsUpdate = require('../../../objects/summons-management').summonsUpdate;
   const validate = require('validate.js');
   const validator = require('../../../config/validation/paper-reply').reasonableAdjustments;
-  const hasBeenModified = require('./summons-update-common').hasBeenModified;
+  const { hasBeenModified, generalError } = require('./summons-update-common');
   const { reasonsArrToObj } = require('../../../lib/mod-utils');
 
   module.exports.get = function(app) {
@@ -145,12 +145,7 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        req.session.errors = {
-          reasonableAdjustmentError: [{
-            summary: 'Something went wrong when trying to update the summons reasonable adjustments',
-            details: 'Something went wrong when trying to update the summons reasonable adjustments',
-          }],
-        };
+        generalError(req);
 
         return res.redirect(app.namedRoutes.build('summons.update-adjustments.get', {
           id: req.params['id'],
