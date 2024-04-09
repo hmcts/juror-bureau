@@ -96,7 +96,7 @@
 
         return res.redirect(app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate);
       } catch (err) {
-        app.logger.crit('Failes to confir the attendance', {
+        app.logger.crit('Failed to confirm the attendance for the jurors', {
           auth: req.session.authentication,
           token: req.session.authToken,
           data: payload,
