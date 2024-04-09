@@ -11,8 +11,4 @@ module.exports.jurorsOnTrialDAO = new DAO('moj/juror-management/jurors-on-trial'
   },
 });
 
-module.exports.confirmAttendanceDAO = new DAO('moj/juror-management/confirm-jury-attendance', {
-  patch: function(body) {
-    return { body };
-  },
-});
+module.exports.confirmAttendanceDAO = new DAO('moj/juror-management/confirm-jury-attendance');
