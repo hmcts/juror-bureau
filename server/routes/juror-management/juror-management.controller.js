@@ -99,7 +99,8 @@
     if (!attendees.length) return false;
 
     return attendees.filter(
-      (attendee) => !attendee.noShow && attendee.appStage !== 'APPEARANCE_CONFIRMED'
+      (attendee) => !attendee.noShow
+        && !['EXPENSE_ENTERED', 'EXPENSE_AUTHORISED', 'EXPENSE_EDITED'].includes(attendee.appStage),
     ).length === 0;
   }
 

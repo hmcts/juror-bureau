@@ -227,7 +227,7 @@
               locationCode: req.session.authentication.owner,
               singleJuror: true,
             },
-            jurors: [jurorNumber],
+            juror: [jurorNumber],
           };
 
           try {
