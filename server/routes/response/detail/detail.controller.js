@@ -29,7 +29,7 @@
 
   const { courtLocationsFromPostcodeObj } = require('../../../objects/court-location.js');
   const { resolveCatchmentResponse } = require('../../summons-management/summons-management.controller.js');
-  const { updateStatus } = require('../../../objects');
+  const { updateStatusDAO } = require('../../../objects');
 
   module.exports.index = function(app) {
     return function(req, res) {
@@ -491,7 +491,7 @@
         version: req.body.version,
       };
 
-      updateStatus.post(req, payload, req.body.jurorNumber)
+      updateStatusDAO.post(req, payload, req.body.jurorNumber)
         .then(successCB)
         .catch(errorCB);
     };
@@ -1737,7 +1737,7 @@
         version: req.body.version,
       };
 
-      updateStatus.post(req, req.body.jurorNumber, payload)
+      updateStatusDAO.post(req, req.body.jurorNumber, payload)
         .then(successCB)
         .catch(errorCB);
     };
@@ -1859,7 +1859,7 @@
         version: req.body.version,
       };
 
-      updateStatus.post(req, req.body.jurorNumber, payload)
+      updateStatusDAO.post(req, req.body.jurorNumber, payload)
         .then(successCB)
         .catch(errorCB);
 
@@ -2089,7 +2089,7 @@
         version: req.body.version,
       };
 
-      updateStatus.post(req, payload, req.body.jurorNumber)
+      updateStatusDAO.post(req, payload, req.body.jurorNumber)
         .then(successCB)
         .catch(errorCB);
     };
