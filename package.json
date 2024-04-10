@@ -49,7 +49,7 @@
     "moment": "^2.19.3",
     "named-routes": "^2.0.6",
     "nunjucks": "3.2.4",
-    "nunjucks-async-loader": "1.1.5",
+    "nunjucks-async-loader": "2.1.3",
     "pdfmake": "^0.2.0",
     "redis": "^4.6.12",
     "referrer-policy": "^1.0.0",
