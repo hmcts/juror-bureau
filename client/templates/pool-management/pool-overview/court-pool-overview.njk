@@ -96,6 +96,8 @@
     <div class="govuk-grid-row">
       {% include "./pool-history.njk" %}
     </div>
+  {% elif isNil %}
+    {% include "./nil-pool-summary.njk" %}
   {% else %}
 
     {{ govukRadios({

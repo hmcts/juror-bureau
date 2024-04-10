@@ -7,7 +7,7 @@
   const summonsUpdate = require('../../../objects/summons-management').summonsUpdate;
   const validate = require('validate.js');
   const validator = require('../../../config/validation/paper-reply').reasonableAdjustments;
-  const hasBeenModified = require('./summons-update-common').hasBeenModified;
+  const { hasBeenModified, generalError } = require('./summons-update-common');
   const { reasonsArrToObj } = require('../../../lib/mod-utils');
 
   module.exports.get = function(app) {
@@ -104,6 +104,7 @@
 
         return res.redirect(app.namedRoutes.build('summons.update-adjustments.get', {
           id: req.params['id'],
+          type: 'paper',
         }));
       }
 
@@ -113,6 +114,7 @@
         if (wasModified) {
           return res.redirect(app.namedRoutes.build('summons.update-adjustments.get', {
             id: req.params['id'],
+            type: 'paper',
           }));
         }
 
@@ -143,8 +145,11 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
+        generalError(req);
+
         return res.redirect(app.namedRoutes.build('summons.update-adjustments.get', {
           id: req.params['id'],
+          type: 'paper',
         }));
       }
     };

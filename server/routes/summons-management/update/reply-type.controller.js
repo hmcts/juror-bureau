@@ -4,7 +4,7 @@
   const _ = require('lodash');
   const paperReplyObject = require('../../../objects/paper-reply').paperReplyObject;
   const summonsUpdate = require('../../../objects/summons-management').summonsUpdate;
-  const hasBeenModified = require('./summons-update-common').hasBeenModified;
+  const { hasBeenModified, generalError } = require('./summons-update-common');
 
   module.exports.get = function(app) {
     return async function(req, res) {
@@ -79,6 +79,7 @@
         if (wasModified) {
           return res.redirect(app.namedRoutes.build('summons.update-reply-type.get', {
             id: req.params['id'],
+            type: 'paper',
           }));
         }
 
@@ -110,8 +111,11 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
+        generalError(req);
+
         return res.redirect(app.namedRoutes.build('summons.update-reply-type.get', {
           id: req.params['id'],
+          type: 'paper',
         }));
       }
     };
