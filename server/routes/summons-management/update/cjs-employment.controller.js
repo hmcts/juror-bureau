@@ -6,7 +6,7 @@
   const summonsUpdate = require('../../../objects/summons-management').summonsUpdate;
   const validate = require('validate.js');
   const validator = require('../../../config/validation/paper-reply').cjsEmployment;
-  const hasBeenModified = require('./summons-update-common').hasBeenModified;
+  const { hasBeenModified, generalError } = require('./summons-update-common');
 
   module.exports.get = function(app) {
     return async function(req, res) {
@@ -73,6 +73,7 @@
 
         return res.redirect(app.namedRoutes.build('summons.update-employment.get', {
           id: req.params['id'],
+          type: 'paper',
         }));
       }
 
@@ -82,6 +83,7 @@
         if (wasModified) {
           return res.redirect(app.namedRoutes.build('summons.update-employment.get', {
             id: req.params['id'],
+            type: 'paper',
           }));
         }
 
@@ -114,8 +116,11 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
+        generalError(req);
+
         return res.redirect(app.namedRoutes.build('summons.update-employment.get', {
           id: req.params['id'],
+          type: 'paper',
         }));
       }
     };
