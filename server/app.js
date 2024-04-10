@@ -1,50 +1,39 @@
-/**
- * Main application file
- */
+/* eslint-disable strict */
 
-;(function(){
-  'use strict';
+const express = require('express');
+const config = require('./config/environment')();
+const http = require('http');
+const app = express();
+const server = http.createServer(app);
+const releaseVersion = require(__dirname + '/../package.json').version;
+const { LaunchDarkly } = require('./lib/launchdarkly');
+const { AppInsights } = require('./lib/appinsights');
+const { Logger } = require('./components/logger');
 
-  var express = require('express')
-    , config = require('./config/environment')()
-    , { Logger } = require('./components/logger')
-    , http = require('http')
-    , app = express()
-    , server = http.createServer(app)
-    , releaseVersion = require(__dirname + '/../package.json').version
-    , { LaunchDarkly } = require('./lib/launchdarkly')
-    , { AppInsights } = require('./lib/appinsights');
+// initialize helpers
+new AppInsights();
+new LaunchDarkly();
+new Logger(config).initLogger(app);
 
-  // initialize helpers
-  new Logger(config).initLogger(app);
-  new LaunchDarkly();
-  new AppInsights();
-
-  require('./config/express')(app);
-  require('./routes')(app);
-
-  // A bit of conditional shiny
-  if (config.logConsole !== false) {
-    console.info('\n\n');
-    console.info('################################');
-    console.info('##    ODSC Framework v' + releaseVersion + '   ##');
-    console.info('################################');
-    console.info('\n\n');
-  }
+require('./config/express')(app);
+require('./routes')(app);
 
 
-  // Start server
-  function startServer() {
-    app.juror = server.listen(config.port, config.ip, function() {
-      if (config.logConsole !== false) {
-        console.info('Express server listening on http://%s:%s', config.ip, config.port);
-      }
-    });
-  }
+console.info('\n\n');
+console.info('################################');
+console.info('##    Juror-Bureau v' + releaseVersion + '    ##');
+console.info('################################');
+console.info('\n\n');
 
-  setImmediate(startServer);
 
-  // Expose app
-  exports = module.exports = app;
+// Start server
+function startServer() {
+  app.juror = server.listen(config.port, config.ip, function() {
+    Logger.instance.info('Application started: http://localhost:%s', config.port);
+  });
+}
 
-})();
+setImmediate(startServer);
+
+// Expose app
+exports = module.exports = app;
