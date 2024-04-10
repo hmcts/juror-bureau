@@ -163,7 +163,14 @@
             {expand: true, cwd: 'node_modules/accessible-autocomplete/dist/', src: ['accessible-autocomplete.min.js.map'], dest: 'test/client/js'},
             {expand: true, cwd: 'node_modules/accessible-autocomplete/dist/', src: ['accessible-autocomplete.min.css'], dest: 'test/client/css'},
 
-            {expand: true, cwd: 'config/', src: ['*.*'], dest: 'test/config'}
+            {
+              expand: true,
+              src: 'config/environment.template.json',
+              dest: 'test/config',
+              rename: function(dest) {
+                return dest + '/test.json';
+              },
+            },
           ]
         },
       },
@@ -374,8 +381,7 @@
           options: {
             script: './test/server/index.js',
             node_env: 'test',
-            background: false,
-            debug: 5858
+            background: false
           }
         },
         jenkins: {
