@@ -1,9 +1,9 @@
 {% extends "layouts/default.njk" %}
 
-{% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/tag/macro.njk" import govukTag %}
 {% from "custom-components/macros/arrows.njk" import leftArrowSVG %}
+{% from "./_partials/attendance-sub-nav.njk" import attendanceSubNav %}
 
 {% block page_title %}{{ serviceName }} - juror-management - attendance{% endblock %}
 {% block page_identifier %}juror-management - attendance{% endblock %}
@@ -11,17 +11,10 @@
 {% set currentApp = "Jurors" %}
 
 {% block beforeContent %}
-  {{ mojSubNavigation({
-    label: "Jurors attendance navigation",
-    classes: "govuk-!-margin-bottom-5",
-    items: [{
-      text: "Jurors in waiting",
-      href: "#",
-      active: true
-    }, {
-      text: "Jurors on a trial",
-      href: "#"
-    }]
+  {{ attendanceSubNav({
+    inWaitingUrl: url("juror-management.attendance.get"),
+    onTrialUrl: url("juror-management.jurors-on-trial.get"),
+    currentView: "in-waiting"
   }) }}
 
   {% if tmpFields !== undefined %}

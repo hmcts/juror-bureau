@@ -1,6 +1,7 @@
 (function() {
   'use strict';
 
+  const { DAO } = require('./dataAccessObject');
   const _ = require('lodash');
   const config = require('../config/environment')();
   const utils = require('../lib/utils');

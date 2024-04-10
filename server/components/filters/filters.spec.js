@@ -283,6 +283,24 @@
       expect(output).to.be.equal(expected);
     });
 
+    it('should return true if an arry includes a value', function() {
+      const arr = ['a', 'b', 'c'];
+      const val = 'b';
+
+      let output = filter.arrayIncludes(arr, val);
+
+      expect(output).to.be.true;
+    });
+
+    it('should return false if an arry does not include a value', function() {
+      const arr = ['a', 'b', 'c'];
+      const val = 'e';
+
+      let output = filter.arrayIncludes(arr, val);
+
+      expect(output).to.be.false;
+    });
+
   });
 
 })();

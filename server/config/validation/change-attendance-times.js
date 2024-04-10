@@ -40,7 +40,14 @@
   };
 
   validate.validators.checkOutTime = function(value, options, key, attributes) {
-    // eslint-disable-next-line max-len
+    const fieldName = 'checkOut';
+
+    if (value.isMandatory
+      && (typeof value.hour === 'undefined' || value.hour === '')
+      && (typeof value.minute === 'undefined' || value.minute === '')){
+      return { checkOutTime: [timeMessageMapping[fieldName].missingWholeTime]};
+    }
+
     if (value.hour !== '' || value.minute !== '' || typeof value.period !== 'undefined'){
       let validatorResult = validate({
         checkOutTimeHour: value.hour,

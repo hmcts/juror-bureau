@@ -1,0 +1,304 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "includes/csrf.njk" import csrfProtection %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "custom-components/time-input-12-hour/macro.njk" import timeInput12Hour %}
+
+{% block page_title %}{{ serviceName }} - juror-management - jurors on trial - confirm attendance{% endblock %}
+{% block page_identifier %}juror-management - jurors on trial - confirm attendance{% endblock %}
+
+{# define error components #}
+{% set attendanceDateError = undefined %}
+{% if errors.items["attendanceDate"] %}
+  {% set attendanceDateError = { text: errors.items["attendanceDate"][0].details } %}
+{% endif %}
+
+{% set differentDateError = undefined %}
+{% if errors.items["differentDate"] %}
+  {% set differentDateError = errors.items["differentDate"][0].details %}
+{% endif %}
+
+{% set selectedJurorsError = undefined %}
+{% if errors.items["selectedJurors"] %}
+  {% set selectedJurorsError = { text: errors.items["selectedJurors"][0].details } %}
+{% endif %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {% macro checkJurorInput(jurorNumber, checked) %}
+    <div class="govuk-checkboxes__item govuk-checkboxes--small">
+      <input class="govuk-checkboxes__input" id="juror-{{ jurorNumber }}" name="selectedJurors" type="checkbox" value="{{ jurorNumber }}" {% if checked %}checked{% endif %}>
+      <label class="govuk-label govuk-checkboxes__label" for="juror-{{ jurorNumber }}">
+        <span class="govuk-visually-hidden">check juror number {{ jurorNumber }}</span>
+      </label>
+    </div>
+  {% endmacro %}
+
+  {% set checkAllInput %}
+    <div class="govuk-checkboxes__item govuk-checkboxes--small">
+      <input class="govuk-checkboxes__input" id="check-all" name="check-all" type="checkbox" value="check-all" {% if selectedJurors.length === jurorsList.length %}checked{% endif %}>
+      <label class="govuk-label govuk-checkboxes__label" for="check-all">
+        <span class="govuk-visually-hidden">check all available jurors</span>
+      </label>
+    </div>
+  {% endset %}
+
+  {% set rows = [] %}
+  {% for juror in jurorsList %}
+    {% set rows = (rows.push(
+      [
+        {
+          html: checkJurorInput(juror.juror_number, selectedJurors | arrayIncludes(juror.juror_number)),
+          classes: "jd-middle-align"
+        },
+        {
+          text: juror.juror_number,
+          classes: "jd-middle-align"
+        },
+        {
+          text: juror.first_name,
+          classes: "jd-middle-align"
+        },
+        {
+          text: juror.last_name,
+          classes: "jd-middle-align"
+        },
+        {
+          text: juror.juror_status,
+          classes: "jd-middle-align"
+        }
+      ]
+    ), rows) %}
+  {% endfor %}
+
+  {% set datePickerHtml %}
+    {{ datePicker({
+      id: "differentDate",
+      label: {
+        text: "Enter date"
+      },
+      hint: "Use dd/mm/yyyy format. For example 21/01/2023",
+      dateValue: tmpBody.differentDate,
+      dateError: differentDateError
+    }) }}
+  {% endset %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <span class="govuk-caption-l">{{ trialNumber }}</span>
+      <h1 class="govuk-heading-l">Confirm attendance</h1>
+    </div>
+  </div>
+
+  <form method="POST" action="#">
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {{ govukRadios({
+          name: "attendanceDate",
+          fieldset: {
+            legend: {
+              text: "Which day are confirming attendance for?",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          items: [
+            {
+              value: "previousWorkingDay",
+              text: "Previous working day",
+              checked: tmpBody.attendanceDate === "previousWorkingDay"
+            },
+            {
+              value: "today",
+              text: "Today",
+              checked: tmpBody.attendanceDate === "today"
+            },
+            {
+              value: "differentDate",
+              text: "A different date",
+              conditional: {
+                html: datePickerHtml | safe
+              },
+              checked: tmpBody.attendanceDate === "differentDate"
+            }
+          ],
+          errorMessage: attendanceDateError
+        }) }}
+      </div>
+    </div>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h2 class="govuk-heading-m">Enter check in time</h2>
+        <span class="govuk-caption-m">If a juror has already been checked in, this time will not be applied.</span>
+
+        {{ timeInput12Hour({
+          id: "checkInTime",
+          name: "checkInTime",
+          classes: "govuk-!-margin-top-3",
+          items: {
+            hour: {
+              value: tmpBody.checkInTimeHour,
+              attributes: {
+                minLength: "1",
+                maxLength: "2"
+              }
+            },
+            minute: {
+              value: tmpBody.checkInTimeMinute,
+              attributes: {
+                minLength: "1",
+                maxLength: "2"
+              }
+            },
+            period: {
+              value: tmpBody.checkInTimePeriod
+            }
+          },
+          errors: errors.items
+        }) }}
+      </div>
+    </div>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h2 class="govuk-heading-m">Enter check out time</h2>
+
+        {{ timeInput12Hour({
+          id: "checkOutTime",
+          name: "checkOutTime",
+          items: {
+            hour: {
+              value: tmpBody.checkOutTimeHour,
+              attributes: {
+                minLength: "1",
+                maxLength: "2"
+              }
+            },
+            minute: {
+              value: tmpBody.checkOutTimeMinute,
+              attributes: {
+                minLength: "1",
+                maxLength: "2"
+              }
+            },
+            period: {
+              value: tmpBody.checkOutTimePeriod
+            }
+          },
+          errors: errors.items
+        }) }}
+      </div>
+    </div>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+
+        {% if selectedJurorsError %}
+          <div class="govuk-form-group--error">
+        {% endif %}
+
+        <h2 class="govuk-heading-m">Confirm selected jurors attended at these times</h2>
+
+        {% if selectedJurorsError %}
+          <p id="selected-jurors-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> Select which jurors attended at these times
+          </p>
+        {% endif %}
+
+        <span class="govuk-caption-m">
+          <span id="total-selected">{{ selectedJurors.length }}</span> of {{ jurorsList.length }} selected
+        </span>
+
+        {{ govukTable({
+          attributes: {
+            "data-module": "moj-sortable-table"
+          },
+          head: [
+            {
+              html: checkAllInput,
+              classes: "mod-width-0"
+            },
+            {
+              text: "Juror number",
+              attributes: {
+                "aria-sort": "none"
+              }
+            },
+            {
+              text: "First name",
+              attributes: {
+                "aria-sort": "none"
+              }
+            },
+            {
+              text: "Last name",
+              attributes: {
+                "aria-sort": "none"
+              }
+            },
+            {
+              text: "Status",
+              attributes: {
+                "aria-sort": "none"
+              }
+            }
+          ],
+          rows: rows
+        }) }}
+
+        {% if selectedJurorsError %}
+          </div>
+        {% endif %}
+
+      </div>
+    </div>
+
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Confirm",
+        attributes: {
+          id: "confirmButton"
+        }
+      }) }}
+    
+      <a class="govuk-link" id="cancelAnchor" href="{{ url('juror-management.jurors-on-trial.get') }}">Cancel</a>
+    </div>
+
+    {{ csrfProtection(csrftoken) }}
+
+  </form>
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+
+  <script type="application/javascript">
+    $(document).ready(function() {
+      var $checkAll = $('#check-all');
+      var $jurorCheckboxes = $('input[name="selectedJurors"]');
+      var $totalSelected = $('#total-selected');
+
+      $checkAll.on('change', function() {
+        $jurorCheckboxes.prop('checked', $checkAll.prop('checked'));
+        $totalSelected.text($jurorCheckboxes.filter(':checked').length);
+      });
+
+      $jurorCheckboxes.on('change', function() {
+        $checkAll.prop('checked', $jurorCheckboxes.length === $jurorCheckboxes.filter(':checked').length);
+        $totalSelected.text($jurorCheckboxes.filter(':checked').length);
+      });
+    });
+
+    const datePickers = []
+      .slice
+      .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
+    datePickers.forEach(dp => new DSDatePicker(dp, { imagePath: '{{ assetPath }}assets/images/icons/' }).init());
+  </script>
+{% endblock %}

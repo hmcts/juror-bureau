@@ -823,7 +823,7 @@ const { capitalise, toSentenceCase } = require('../components/filters');
           Mno: [ { Onm: 'onm' }, {'N om': 'nom' } ],
           'P q r': 'pqr',
           Stu: { Vwx: 'vwx', Y: { Z: 'z' } },
-        }
+        },
       );
 
       formattedObject = modUtils.replaceAllObjKeys(_.cloneDeep(deeplyNestedObj), capitalise);
@@ -835,7 +835,7 @@ const { capitalise, toSentenceCase } = require('../components/filters');
           MNO: [ { ONM: 'onm' }, { NOM: 'nom' } ],
           'P Q R': 'pqr',
           STU: { VWX: 'vwx', Y: { Z: 'z' } },
-        }
+        },
       );
 
       formattedObject = modUtils.replaceAllObjKeys(_.cloneDeep(deeplyNestedObj), _.camelCase);
@@ -847,7 +847,7 @@ const { capitalise, toSentenceCase } = require('../components/filters');
           aBC: { dEF: { ghi: 'ghi', jkL: 'jkl' } },
           pQR: 'pqr',
           stu: { vwx: 'vwx', y: { z: 'z' } },
-        }
+        },
       );
 
       formattedObject = modUtils.replaceAllObjKeys(_.cloneDeep(deeplyNestedObj), _.snakeCase);
@@ -859,9 +859,36 @@ const { capitalise, toSentenceCase } = require('../components/filters');
           'a_b_c': { 'd_e_f': { ghi: 'ghi', 'jk_l': 'jkl' } },
           'p_q_r': 'pqr',
           stu: { vwx: 'vwx', y: { z: 'z' } },
-        }
+        },
       );
+    });
 
+    it('Should set the correct previous working day given a day of the week - Monday', () => {
+      const date = new Date([2024, 1, 1]);
+      const previousWorkingDay = modUtils.setPreviousWorkingDay(date);
+
+      expect(previousWorkingDay.toISOString()).to.equal(new Date([2023, 12, 29]).toISOString());
+    });
+
+    it('Should set the correct previous working day given a day of the week - Sunday', () => {
+      const date = new Date([2024, 1, 7]);
+      const previousWorkingDay = modUtils.setPreviousWorkingDay(date);
+
+      expect(previousWorkingDay.toISOString()).to.equal(new Date([2024, 1, 5]).toISOString());
+    });
+
+    it('Should set the correct previous working day given a day of the week - Saturday', () => {
+      const date = new Date([2024, 1, 6]);
+      const previousWorkingDay = modUtils.setPreviousWorkingDay(date);
+
+      expect(previousWorkingDay.toISOString()).to.equal(new Date([2024, 1, 5]).toISOString());
+    });
+
+    it('Should set the correct previous working day given a day of the week - Rest of the week', () => {
+      const date = new Date([2024, 1, 5]);
+      const previousWorkingDay = modUtils.setPreviousWorkingDay(date);
+
+      expect(previousWorkingDay.toISOString()).to.equal(new Date([2024, 1, 4]).toISOString());
     });
 
   });
