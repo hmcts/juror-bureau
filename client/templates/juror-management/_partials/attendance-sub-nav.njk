@@ -1,0 +1,20 @@
+{% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
+
+{% macro attendanceSubNav(params) %}
+  {{ mojSubNavigation({
+    label: "Jurors attendance navigation",
+    classes: "govuk-!-margin-bottom-5",
+    items: [
+      {
+        text: "Jurors in waiting",
+        href: params.inWaitingUrl,
+        active: params.currentView === "in-waiting"
+      },
+      {
+        text: "Jurors on a trial",
+        href: params.onTrialUrl,
+        active: params.currentView === "on-trial"
+      }
+    ]
+  }) }}
+{% endmacro %}

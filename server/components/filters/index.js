@@ -480,7 +480,11 @@
 
     transformCourtName: function(courtObj) {
       return _.startCase(_.toLower(courtObj.locationName)).trim().replace(',', '') + ' (' + courtObj.locationCode + ')';
-    }
+    },
+
+    arrayIncludes: function(arr, value) {
+      return arr.includes(value);
+    },
   };
 
 })();

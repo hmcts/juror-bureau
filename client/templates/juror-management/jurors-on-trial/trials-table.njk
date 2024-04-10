@@ -1,0 +1,100 @@
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{% macro jurorsAttendedCell(params) %}
+  {% if params.totalAttended > 0 %}
+    {{ params.totalAttended }} of {{ params.totalJurors }}
+  {% else %}
+    <a href="{{ url('juror-management.jurors-on-trial.confirm-attendance.get', { trialNumber: params.trialNumber }) }}" class="govuk-link govuk-link--no-visited-state">
+      Confirm attendance
+    </a>
+  {% endif %}
+{% endmacro %}
+
+{% set rows = [] %}
+{% for trial in trialsList %}
+  {% set rows = (rows.push([
+    {
+      html: "<a href="+ url('trial-management.trials.detail.get', {
+        trialNumber: trial.trial_number,
+        locationCode: locCode
+      }) +' class="govuk-link govuk-link--no-visited-state">' + trial.trial_number + "</a>"
+    },
+    {
+      text: trial.parties
+    },
+    {
+      text: trial.trial_type
+    },
+    {
+      text: trial.courtroom
+    },
+    {
+      text: trial.judge
+    },
+    {
+      html: jurorsAttendedCell({
+        totalAttended: trial.jurors_attended,
+        totalJurors: trial.total_jurors,
+        trialNumber: trial.trial_number
+      }) | safe
+    },
+    {
+      text: trial.attendance_audit or "-"
+    }
+  ]), rows) %}
+{% endfor %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    {{ govukTable({
+      attributes: {
+        "data-module": "moj-sortable-table"
+      },
+      head: [
+        {
+          text: "Trial number",
+          attributes: {
+            "aria-sort": "none"
+          }
+        },
+        {
+          text: "Parties",
+          attributes: {
+            "aria-sort": "none"
+          }
+        },
+        {
+          text: "Trial type",
+          attributes: {
+            "aria-sort": "none"
+          }
+        },
+        {
+          text: "Courtroom",
+          attributes: {
+            "aria-sort": "none"
+          }
+        },
+        {
+          text: "Judge",
+          attributes: {
+            "aria-sort": "none"
+          }
+        },
+        {
+          text: "Jurors attended",
+          attributes: {
+            "aria-sort": "ascending"
+          }
+        },
+        {
+          text: "Attendance audit",
+          attributes: {
+            "aria-sort": "none"
+          }
+        }
+      ],
+      rows: rows
+    }) }}
+  </div>
+</div>

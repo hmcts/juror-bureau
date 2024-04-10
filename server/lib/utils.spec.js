@@ -3,8 +3,7 @@
 
   var utils = require('./utils')
     , fse = require('fs-extra')
-    , config = require('../config/environment')()
-    , logger = require('../components/logger')(config);
+    , { Logger } = require('../components/logger');
 
   describe('Utility Component:', function() {
 
@@ -59,7 +58,7 @@
       var username
         , password
         , basicAuthStub = function() {}
-        , basicAuth = utils.basicAuth(logger, username, password, basicAuthStub)
+        , basicAuth = utils.basicAuth(Logger.instance, username, password, basicAuthStub)
         , reqStub = {}
         , resStub = {
           statusValue: '',
@@ -90,7 +89,7 @@
             pass: req.pass
           };
         }
-        , basicAuth = utils.basicAuth(logger, username, password, basicAuthStub)
+        , basicAuth = utils.basicAuth(Logger.instance, username, password, basicAuthStub)
         , reqStub = {
           name: 'bob',
           pass: 'test'
@@ -130,7 +129,7 @@
             pass: req.pass
           };
         }
-        , basicAuth = utils.basicAuth(logger, username, password, basicAuthStub)
+        , basicAuth = utils.basicAuth(Logger.instance, username, password, basicAuthStub)
         , reqStub = {
           name: 'admin',
           pass: 'password'
