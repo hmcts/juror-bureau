@@ -45,7 +45,7 @@
         trackingCode: process.env.TRACKING_CODE || '',
 
         // If true, logs will be output in terminal as well as saved to file
-        logConsole: false,
+        logConsole: 'debug',
       };
 
       // Export the config object based on the NODE_ENV
