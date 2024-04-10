@@ -92,7 +92,7 @@
       details: [],
     };
 
-    if (attributes.selectedJurors.length === 0) {
+    if (!attributes.selectedJurors || attributes.selectedJurors.length === 0) {
       message.summary =
         'You need to select at least one juror before you can change the date they’re next due at court';
       message.details.push('Select at least one juror');
