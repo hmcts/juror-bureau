@@ -6,6 +6,8 @@
     , generatePanelValidator = require('../../../config/validation/generate-panel')
     , poolsValidator = require('../../../config/validation/generate-panel-pools')
     , validate = require('validate.js');
+  const { makeManualError } = require('../../../lib/mod-utils');
+
 
   const countErrors = (tmpErrors) => typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0;
 
@@ -112,7 +114,6 @@
       const noJurorsRequired = req.session.noPanelJurors;
 
       availableJurorsDAO.get(app, req, req.params.locationCode).then(pools => {
-        console.log(pools);
         return res.render('trial-management/generate-panel/select-pools.njk', {
           pools,
           processUrl: app.namedRoutes.build('trial-management.generate-panel.select-pools.post', {
@@ -189,8 +190,12 @@
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic.njk');
+        req.session.errors = makeManualError('Pool selection', err.error.message);
 
+        return res.redirect(app.namedRoutes.build('trial-management.generate-panel.select-pools.get', {
+          trialNumber: req.params.trialNumber,
+          locationCode: req.params.locationCode,
+        }));
       });
     };
   };
