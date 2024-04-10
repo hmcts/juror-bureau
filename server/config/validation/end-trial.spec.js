@@ -18,7 +18,7 @@
         };
   
         validatorResult = validate(mockRequest, validator());
-        expect(validatorResult).to.be.undefined;
+        expect(validatorResult).toBeUndefined();
       });
   
       it('should try to validate an invalid request - radio option not selected', function() {
@@ -29,11 +29,11 @@
   
         validatorResult = validate(mockRequest, validator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.endTrial[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.endTrial[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.endTrial[0].summary).to.equal('Select whether you want to end this trial or not');
-        expect(validatorResult.endTrial[0].details).to.equal('Select whether you want to end this trial or not');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.endTrial[0]).toHaveProperty('summary');
+        expect(validatorResult.endTrial[0]).toHaveProperty('details');
+        expect(validatorResult.endTrial[0].summary).toEqual('Select whether you want to end this trial or not');
+        expect(validatorResult.endTrial[0].details).toEqual('Select whether you want to end this trial or not');
   
       });
   
@@ -45,11 +45,11 @@
   
         validatorResult = validate(mockRequest, validator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.endTrialDate[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.endTrialDate[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.endTrialDate[0].summary).to.equal('Enter a trial end date');
-        expect(validatorResult.endTrialDate[0].details).to.equal('Enter a trial end date');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.endTrialDate[0]).toHaveProperty('summary');
+        expect(validatorResult.endTrialDate[0]).toHaveProperty('details');
+        expect(validatorResult.endTrialDate[0].summary).toEqual('Enter a trial end date');
+        expect(validatorResult.endTrialDate[0].details).toEqual('Enter a trial end date');
   
       });
   
@@ -61,11 +61,11 @@
   
         validatorResult = validate(mockRequest, validator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.endTrialDate[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.endTrialDate[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.endTrialDate[0].summary).to.equal('Trial end date must only include numbers and forward slashes');
-        expect(validatorResult.endTrialDate[0].details).to.equal('Trial end date must only include numbers and forward slashes');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.endTrialDate[0]).toHaveProperty('summary');
+        expect(validatorResult.endTrialDate[0]).toHaveProperty('details');
+        expect(validatorResult.endTrialDate[0].summary).toEqual('Trial end date must only include numbers and forward slashes');
+        expect(validatorResult.endTrialDate[0].details).toEqual('Trial end date must only include numbers and forward slashes');
   
       });
   
@@ -77,11 +77,11 @@
   
         validatorResult = validate(mockRequest, validator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.endTrialDate[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.endTrialDate[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.endTrialDate[0].summary).to.equal('Enter a trial end date in the correct format, for example, 31/01/2023');
-        expect(validatorResult.endTrialDate[0].details).to.equal('Enter a trial end date in the correct format, for example, 31/01/2023');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.endTrialDate[0]).toHaveProperty('summary');
+        expect(validatorResult.endTrialDate[0]).toHaveProperty('details');
+        expect(validatorResult.endTrialDate[0].summary).toEqual('Enter a trial end date in the correct format, for example, 31/01/2023');
+        expect(validatorResult.endTrialDate[0].details).toEqual('Enter a trial end date in the correct format, for example, 31/01/2023');
   
       });
   
@@ -93,11 +93,11 @@
   
         validatorResult = validate(mockRequest, validator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.endTrialDate[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.endTrialDate[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.endTrialDate[0].summary).to.equal('Enter a real date');
-        expect(validatorResult.endTrialDate[0].details).to.equal('Enter a real date');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.endTrialDate[0]).toHaveProperty('summary');
+        expect(validatorResult.endTrialDate[0]).toHaveProperty('details');
+        expect(validatorResult.endTrialDate[0].summary).toEqual('Enter a real date');
+        expect(validatorResult.endTrialDate[0].details).toEqual('Enter a real date');
   
       });
     });

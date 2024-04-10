@@ -11,7 +11,7 @@
     "serve": "grunt serve:dist",
     "debug": "NODE_ENV=dist grunt build && node --inspect-brk ./tmp/server/index.js",
     "start:lb": "NODE_ENV=development node ./tmp/server/index.js",
-    "test": "jest .",
+    "test": "jest ./server/**/*.spec.js",
     "test:coverage": "grunt test:coverage --force",
     "test:a11y": "echo TODO: a11y",
     "test:smoke": "echo TODO: smoke",

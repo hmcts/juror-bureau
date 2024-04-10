@@ -24,17 +24,17 @@
         , testObj = summonsManagementObj.requestInfoObject.post(rpStub, appStub, 'test-token', jurorNumber, testBody, replyMethod)
         , realUri = urljoin('http://localhost:8080/api/v1', 'moj/letter/request-information');
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('POST');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('POST');
 
-      expect(testObj.body.hasOwnProperty('replyMethod')).to.equal(true);
-      expect(testObj.body.replyMethod).to.equal('PAPER');
+      expect(testObj.body.hasOwnProperty('replyMethod')).toEqual(true);
+      expect(testObj.body.replyMethod).toEqual('PAPER');
 
-      expect(testObj.body.hasOwnProperty('informationRequired')).to.equal(true);
-      expect(testObj.body.informationRequired[0]).to.equal('RESIDENCY');
+      expect(testObj.body.hasOwnProperty('informationRequired')).toEqual(true);
+      expect(testObj.body.informationRequired[0]).toEqual('RESIDENCY');
 
-      expect(testObj.body.hasOwnProperty('jurorNumber')).to.equal(true);
-      expect(testObj.body.jurorNumber).to.equal('123456789');
+      expect(testObj.body.hasOwnProperty('jurorNumber')).toEqual(true);
+      expect(testObj.body.jurorNumber).toEqual('123456789');
     });
 
     it('Should call the correct endpoint to update the awaiting information status', function() {
@@ -45,8 +45,8 @@
         // eslint-disable-next-line max-len
         , realUri = urljoin('http://localhost:8080/api/v1', 'moj/juror-paper-response/update-status/', jurorNumber, status);
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('PUT');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('PUT');
     });
 
     it('Should call the correct endpoint to update the paper summons - Personal Details', function() {
@@ -58,8 +58,8 @@
       const realUri = urljoin('http://localhost:8080/api/v1',
         `moj/juror-response/juror/${jurorNumber}/details/personal`);
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('PATCH');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('PATCH');
     });
 
     it('Should call the correct endpoint to update the paper summons - Eligibility', function() {
@@ -71,8 +71,8 @@
       const realUri = urljoin('http://localhost:8080/api/v1',
         `moj/juror-paper-response/juror/${jurorNumber}/details/eligibility`);
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('PATCH');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('PATCH');
     });
 
     it('Should call the correct endpoint to update the paper summons - Reply type', function() {
@@ -84,8 +84,8 @@
       const realUri = urljoin('http://localhost:8080/api/v1',
         `moj/juror-paper-response/juror/${jurorNumber}/details/reply-type`);
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('PATCH');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('PATCH');
     });
 
     it('Should call the correct endpoint to update the paper summons - Cjs employment', function() {
@@ -97,8 +97,8 @@
       const realUri = urljoin('http://localhost:8080/api/v1',
         `moj/juror-paper-response/juror/${jurorNumber}/details/cjs`);
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('PATCH');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('PATCH');
     });
 
     it('Should call the correct endpoint to update the paper summons - Reasonable adjustments', function() {
@@ -110,8 +110,8 @@
       const realUri = urljoin('http://localhost:8080/api/v1',
         `moj/juror-paper-response/juror/${jurorNumber}/details/special-needs`);
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('PATCH');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('PATCH');
     });
 
     it('Should call the correct endpoint to update the paper summons - Signature', function() {
@@ -123,8 +123,8 @@
       const realUri = urljoin('http://localhost:8080/api/v1',
         `moj/juror-paper-response/juror/${jurorNumber}/details/signature`);
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('PATCH');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('PATCH');
     });
 
   });

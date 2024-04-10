@@ -26,14 +26,14 @@
 
       queryParams = Object.fromEntries(new URL(testUri.uri).searchParams);
 
-      expect(queryParams.hasOwnProperty('locationCode')).to.be.true;
-      expect(queryParams.locationCode).to.equal('415');
+      expect(queryParams.hasOwnProperty('locationCode')).toEqual(true);
+      expect(queryParams.locationCode).toEqual('415');
 
-      expect(queryParams.hasOwnProperty('deferredTo')).to.be.true;
-      expect(queryParams.deferredTo).to.equal('2023-01-01');
+      expect(queryParams.hasOwnProperty('deferredTo')).toEqual(true);
+      expect(queryParams.deferredTo).toEqual('2023-01-01');
 
-      expect(testUri.uri).to.equal(realUri);
-      expect(testUri.method).to.equal('GET');
+      expect(testUri.uri).toEqual(realUri);
+      expect(testUri.method).toEqual('GET');
     });
 
   });

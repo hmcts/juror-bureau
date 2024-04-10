@@ -22,7 +22,7 @@
   
         validatorResult = validate(mockRequest, allocationValidator());
 
-        expect(validatorResult).to.be.undefined;
+        expect(validatorResult).toBeUndefined();
       });
   
       it('should try to validate an invalid request - empty replies', function() {
@@ -35,9 +35,9 @@
 
         validatorResult = validate(mockRequest, allocationValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.replies[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.replies[0].summary).to.equal('Enter how many replies you want to assign to each selected officer - you must enter a number in at least one box');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.replies[0]).toHaveProperty('summary');
+        expect(validatorResult.replies[0].summary).toEqual('Enter how many replies you want to assign to each selected officer - you must enter a number in at least one box');
       });
       
       it('should try to validate an invalid request - staff not selected', function() {
@@ -49,9 +49,9 @@
 
         validatorResult = validate(mockRequest, allocationValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.staff[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.staff[0].summary).to.equal('Select at least 1 officer to assign replies to');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.staff[0]).toHaveProperty('summary');
+        expect(validatorResult.staff[0].summary).toEqual('Select at least 1 officer to assign replies to');
       });
   
     });

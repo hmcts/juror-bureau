@@ -25,8 +25,8 @@
           jurorNumber
         );
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('PUT');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('PUT');
     });
 
   });

@@ -21,7 +21,7 @@
   
         validatorResult = validate(mockRequest, validator());
 
-        expect(validatorResult).to.be.undefined;
+        expect(validatorResult).toBeUndefined();
       });
   
       it('should try to validate an invalid request - missing all fields', function() {
@@ -32,13 +32,13 @@
 
         validatorResult = validate(mockRequest, validator());
 
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.jurorType[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.jurorType[0].summary).to.equal('Select which group of jurors you want to generate a panel from');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.jurorType[0]).toHaveProperty('summary');
+        expect(validatorResult.jurorType[0].summary).toEqual('Select which group of jurors you want to generate a panel from');
 
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.noJurors[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.noJurors[0].summary).to.equal('Enter how many jurors are needed on this panel');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.noJurors[0]).toHaveProperty('summary');
+        expect(validatorResult.noJurors[0].summary).toEqual('Enter how many jurors are needed on this panel');
 
       });
   

@@ -18,7 +18,7 @@
 
       const validatorResult = validate(mockRequest, allocationValidator());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should try to validate an invalid request - empty fields', function() {
@@ -29,13 +29,13 @@
 
       const validatorResult = validate(mockRequest, allocationValidator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('deferralReason');
-      expect(validatorResult.deferralReason[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.deferralReason[0].details).to.equal('Select a reason for this deferral request');
-      expect(validatorResult).to.have.ownPropertyDescriptor('deferralDecision');
-      expect(validatorResult.deferralDecision[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.deferralDecision[0].details).to.equal('Select whether you want to grant or refuse this deferral');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('deferralReason');
+      expect(validatorResult.deferralReason[0]).toHaveProperty('details');
+      expect(validatorResult.deferralReason[0].details).toEqual('Select a reason for this deferral request');
+      expect(validatorResult).toHaveProperty('deferralDecision');
+      expect(validatorResult.deferralDecision[0]).toHaveProperty('details');
+      expect(validatorResult.deferralDecision[0].details).toEqual('Select whether you want to grant or refuse this deferral');
     });
 
     it('should validate deferral update - granted and deferral date selection checked', function() {
@@ -47,7 +47,7 @@
 
       const validatorResult = validate(mockRequest, allocationValidator());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate deferral update - granted and no deferral date selection checked', function() {
@@ -59,10 +59,10 @@
 
       const validatorResult = validate(mockRequest, allocationValidator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('deferralDateSelection');
-      expect(validatorResult.deferralDateSelection[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.deferralDateSelection[0].details).to.equal('Select a date to defer to');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('deferralDateSelection');
+      expect(validatorResult.deferralDateSelection[0]).toHaveProperty('details');
+      expect(validatorResult.deferralDateSelection[0].details).toEqual('Select a date to defer to');
     });
 
     it('should validate deferral update - granted and other deferral date checked - and date entered', function() {
@@ -75,7 +75,7 @@
 
       const validatorResult = validate(mockRequest, allocationValidator());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate deferral update - granted and other deferral date checked - and no date entered', function() {
@@ -88,10 +88,10 @@
 
       const validatorResult = validate(mockRequest, allocationValidator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('deferralDate');
-      expect(validatorResult.deferralDate[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.deferralDate[0].details).to.equal('Enter a date to defer to');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('deferralDate');
+      expect(validatorResult.deferralDate[0]).toHaveProperty('details');
+      expect(validatorResult.deferralDate[0].details).toEqual('Enter a date to defer to');
     });
 
     it('should try to validate an invalid request - missing deferral code', function() {
@@ -102,10 +102,10 @@
 
       const validatorResult = validate(mockRequest, allocationValidator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('deferralReason');
-      expect(validatorResult.deferralReason[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.deferralReason[0].details).to.equal('Select a reason for this deferral request');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('deferralReason');
+      expect(validatorResult.deferralReason[0]).toHaveProperty('details');
+      expect(validatorResult.deferralReason[0].details).toEqual('Select a reason for this deferral request');
     });
 
     it('should try to validate an invalid request - missing deferral decision', function() {
@@ -116,10 +116,10 @@
 
       const validatorResult = validate(mockRequest, allocationValidator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('deferralDecision');
-      expect(validatorResult.deferralDecision[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.deferralDecision[0].details).to.equal('Select whether you want to grant or refuse this deferral');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('deferralDecision');
+      expect(validatorResult.deferralDecision[0]).toHaveProperty('details');
+      expect(validatorResult.deferralDecision[0].details).toEqual('Select whether you want to grant or refuse this deferral');
     });
 
   });
@@ -137,7 +137,7 @@
 
       const validatorResult = validate(mockRequest, deferralDateAndReason(minDate, maxDate));
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate an invalid request - empty fields', () => {
@@ -148,13 +148,13 @@
 
       const validatorResult = validate(mockRequest, deferralDateAndReason(minDate, maxDate));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('deferralDate');
-      expect(validatorResult.deferralDate[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.deferralDate[0].details).to.equal('Enter a date to defer this juror to');
-      expect(validatorResult).to.have.ownPropertyDescriptor('deferralReason');
-      expect(validatorResult.deferralReason[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.deferralReason[0].details).to.equal('Select a reason for the deferral request');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('deferralDate');
+      expect(validatorResult.deferralDate[0]).toHaveProperty('details');
+      expect(validatorResult.deferralDate[0].details).toEqual('Enter a date to defer this juror to');
+      expect(validatorResult).toHaveProperty('deferralReason');
+      expect(validatorResult.deferralReason[0]).toHaveProperty('details');
+      expect(validatorResult.deferralReason[0].details).toEqual('Select a reason for the deferral request');
     });
 
     it('should validate an invalid request - missing deferral date', () => {
@@ -165,10 +165,10 @@
 
       const validatorResult = validate(mockRequest, deferralDateAndReason(minDate, maxDate));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('deferralDate');
-      expect(validatorResult.deferralDate[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.deferralDate[0].details).to.equal('Enter a date to defer this juror to');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('deferralDate');
+      expect(validatorResult.deferralDate[0]).toHaveProperty('details');
+      expect(validatorResult.deferralDate[0].details).toEqual('Enter a date to defer this juror to');
     });
 
     it('should validate an invalid request - missing deferral reason', () => {
@@ -179,10 +179,10 @@
 
       const validatorResult = validate(mockRequest, deferralDateAndReason(minDate, maxDate));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('deferralReason');
-      expect(validatorResult.deferralReason[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.deferralReason[0].details).to.equal('Select a reason for the deferral request');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('deferralReason');
+      expect(validatorResult.deferralReason[0]).toHaveProperty('details');
+      expect(validatorResult.deferralReason[0].details).toEqual('Select a reason for the deferral request');
     });
 
   });
@@ -196,7 +196,7 @@
 
       const validatorResult = validate(mockRequest, deferralDateAndPool());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate a invalid request - empty field', () => {
@@ -206,10 +206,10 @@
 
       const validatorResult = validate(mockRequest, deferralDateAndPool());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('deferralDateAndPool');
-      expect(validatorResult.deferralDateAndPool[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.deferralDateAndPool[0].details).to.equal('Select a pool for this date');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('deferralDateAndPool');
+      expect(validatorResult.deferralDateAndPool[0]).toHaveProperty('details');
+      expect(validatorResult.deferralDateAndPool[0].details).toEqual('Select a pool for this date');
     });
 
   });

@@ -31,20 +31,20 @@
           , postponePayload)
         , realUri = urljoin('http://localhost:8080/api/v1', 'moj/deferral-maintenance/juror/postpone');
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('POST');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('POST');
 
-      expect(testObj.body.hasOwnProperty('juror_numbers')).to.equal(true);
-      expect(testObj.body.juror_numbers[0]).to.equal('641500001');
+      expect(testObj.body.hasOwnProperty('juror_numbers')).toEqual(true);
+      expect(testObj.body.juror_numbers[0]).toEqual('641500001');
 
-      expect(testObj.body.hasOwnProperty('deferralDate')).to.equal(true);
-      expect(testObj.body.deferralDate).to.equal('2024-04-02');
+      expect(testObj.body.hasOwnProperty('deferralDate')).toEqual(true);
+      expect(testObj.body.deferralDate).toEqual('2024-04-02');
 
-      expect(testObj.body.hasOwnProperty('poolNumber')).to.equal(true);
-      expect(testObj.body.poolNumber).to.equal('415240401');
+      expect(testObj.body.hasOwnProperty('poolNumber')).toEqual(true);
+      expect(testObj.body.poolNumber).toEqual('415240401');
 
-      expect(testObj.body.hasOwnProperty('excusalReasonCode')).to.equal(true);
-      expect(testObj.body.excusalReasonCode).to.equal('P');
+      expect(testObj.body.hasOwnProperty('excusalReasonCode')).toEqual(true);
+      expect(testObj.body.excusalReasonCode).toEqual('P');
 
 
     });

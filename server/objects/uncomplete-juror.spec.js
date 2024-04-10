@@ -29,17 +29,17 @@
           rpStub, appStub, 'test-token', searchParams)
         , realUri = urljoin('http://localhost:8080/api/v1', 'moj/complete-service');
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('POST');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('POST');
 
-      expect(testObj.body.hasOwnProperty('juror_number')).to.equal(true);
-      expect(testObj.body.juror_number).to.equal('641500010');
+      expect(testObj.body.hasOwnProperty('juror_number')).toEqual(true);
+      expect(testObj.body.juror_number).toEqual('641500010');
 
-      expect(testObj.body.hasOwnProperty('page_number')).to.equal(true);
-      expect(testObj.body.page_number).to.equal(1);
+      expect(testObj.body.hasOwnProperty('page_number')).toEqual(true);
+      expect(testObj.body.page_number).toEqual(1);
 
-      expect(testObj.body.hasOwnProperty('page_limit')).to.equal(true);
-      expect(testObj.body.page_limit).to.equal(25);
+      expect(testObj.body.hasOwnProperty('page_limit')).toEqual(true);
+      expect(testObj.body.page_limit).toEqual(25);
     });
 
   });
@@ -55,14 +55,14 @@
           rpStub, appStub, 'test-token', searchParams)
         , realUri = urljoin('http://localhost:8080/api/v1', 'moj/complete-service/uncomplete');
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('PATCH');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('PATCH');
 
-      expect(testObj.body.hasOwnProperty('juror_number')).to.equal(true);
-      expect(testObj.body.juror_number).to.equal('641500010');
+      expect(testObj.body.hasOwnProperty('juror_number')).toEqual(true);
+      expect(testObj.body.juror_number).toEqual('641500010');
 
-      expect(testObj.body.hasOwnProperty('pool_number')).to.equal(true);
-      expect(testObj.body.pool_number).to.equal('415220901');
+      expect(testObj.body.hasOwnProperty('pool_number')).toEqual(true);
+      expect(testObj.body.pool_number).toEqual('415220901');
     });
 
   });

@@ -18,7 +18,7 @@
       };
 
       validatorResult = validate(mockRequest, validator());
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should try to validate an invalid request - missing all fields', function() {
@@ -29,14 +29,14 @@
 
       validatorResult = validate(mockRequest, validator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.unpaidAttendanceFromDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.unpaidAttendanceFromDate[0].summary).to.equal('Enter a date to filter unpaid attendance from');
-      expect(validatorResult.unpaidAttendanceFromDate[0].details).to.equal('Enter a date to filter unpaid attendance from');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.unpaidAttendanceFromDate[0]).toHaveProperty('summary');
+      expect(validatorResult.unpaidAttendanceFromDate[0].summary).toEqual('Enter a date to filter unpaid attendance from');
+      expect(validatorResult.unpaidAttendanceFromDate[0].details).toEqual('Enter a date to filter unpaid attendance from');
    
-      expect(validatorResult.unpaidAttendanceToDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.unpaidAttendanceToDate[0].summary).to.equal('Enter a date to filter unpaid attendance to');
-      expect(validatorResult.unpaidAttendanceToDate[0].details).to.equal('Enter a date to filter unpaid attendance to');
+      expect(validatorResult.unpaidAttendanceToDate[0]).toHaveProperty('summary');
+      expect(validatorResult.unpaidAttendanceToDate[0].summary).toEqual('Enter a date to filter unpaid attendance to');
+      expect(validatorResult.unpaidAttendanceToDate[0].details).toEqual('Enter a date to filter unpaid attendance to');
 
     });
 
@@ -48,14 +48,14 @@
 
       validatorResult = validate(mockRequest, validator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.unpaidAttendanceFromDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.unpaidAttendanceFromDate[0].summary).to.equal('‘Date from’ can only include numbers and forward slashes');
-      expect(validatorResult.unpaidAttendanceFromDate[0].details).to.equal('‘Date from’ can only include numbers and forward slashes');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.unpaidAttendanceFromDate[0]).toHaveProperty('summary');
+      expect(validatorResult.unpaidAttendanceFromDate[0].summary).toEqual('‘Date from’ can only include numbers and forward slashes');
+      expect(validatorResult.unpaidAttendanceFromDate[0].details).toEqual('‘Date from’ can only include numbers and forward slashes');
 
-      expect(validatorResult.unpaidAttendanceToDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.unpaidAttendanceToDate[0].summary).to.equal('‘Date to’ can only include numbers and forward slashes');
-      expect(validatorResult.unpaidAttendanceToDate[0].details).to.equal('‘Date to’ can only include numbers and forward slashes');
+      expect(validatorResult.unpaidAttendanceToDate[0]).toHaveProperty('summary');
+      expect(validatorResult.unpaidAttendanceToDate[0].summary).toEqual('‘Date to’ can only include numbers and forward slashes');
+      expect(validatorResult.unpaidAttendanceToDate[0].details).toEqual('‘Date to’ can only include numbers and forward slashes');
     });
 
     it('should try to validate an invalid request - date in the wrong format', function() {
@@ -66,14 +66,14 @@
 
       validatorResult = validate(mockRequest, validator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.unpaidAttendanceFromDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.unpaidAttendanceFromDate[0].summary).to.equal('Enter ‘date from’  in the correct format, for example, 31/01/2023');
-      expect(validatorResult.unpaidAttendanceFromDate[0].details).to.equal('Enter ‘date from’  in the correct format, for example, 31/01/2023');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.unpaidAttendanceFromDate[0]).toHaveProperty('summary');
+      expect(validatorResult.unpaidAttendanceFromDate[0].summary).toEqual('Enter ‘date from’  in the correct format, for example, 31/01/2023');
+      expect(validatorResult.unpaidAttendanceFromDate[0].details).toEqual('Enter ‘date from’  in the correct format, for example, 31/01/2023');
 
-      expect(validatorResult.unpaidAttendanceToDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.unpaidAttendanceToDate[0].summary).to.equal('Enter ‘date to‘  in the correct format, for example, 31/01/2023');
-      expect(validatorResult.unpaidAttendanceToDate[0].details).to.equal('Enter ‘date to‘  in the correct format, for example, 31/01/2023');
+      expect(validatorResult.unpaidAttendanceToDate[0]).toHaveProperty('summary');
+      expect(validatorResult.unpaidAttendanceToDate[0].summary).toEqual('Enter ‘date to‘  in the correct format, for example, 31/01/2023');
+      expect(validatorResult.unpaidAttendanceToDate[0].details).toEqual('Enter ‘date to‘  in the correct format, for example, 31/01/2023');
     });
 
     it('should try to validate an invalid request - not a real', function() {
@@ -84,14 +84,14 @@
 
       validatorResult = validate(mockRequest, validator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.unpaidAttendanceFromDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.unpaidAttendanceFromDate[0].summary).to.equal('Enter a real date');
-      expect(validatorResult.unpaidAttendanceFromDate[0].details).to.equal('Enter a real date');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.unpaidAttendanceFromDate[0]).toHaveProperty('summary');
+      expect(validatorResult.unpaidAttendanceFromDate[0].summary).toEqual('Enter a real date');
+      expect(validatorResult.unpaidAttendanceFromDate[0].details).toEqual('Enter a real date');
 
-      expect(validatorResult.unpaidAttendanceToDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.unpaidAttendanceToDate[0].summary).to.equal('Enter a real date');
-      expect(validatorResult.unpaidAttendanceToDate[0].details).to.equal('Enter a real date');
+      expect(validatorResult.unpaidAttendanceToDate[0]).toHaveProperty('summary');
+      expect(validatorResult.unpaidAttendanceToDate[0].summary).toEqual('Enter a real date');
+      expect(validatorResult.unpaidAttendanceToDate[0].details).toEqual('Enter a real date');
     });
   });
 

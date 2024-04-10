@@ -19,7 +19,7 @@
 
       validatorResult = validate(mockRequest, validator());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate an invalid request - no trial selected', function() {
@@ -29,10 +29,10 @@
 
       validatorResult = validate(mockRequest, validator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('exemptionCaseNumber');
-      expect(validatorResult.exemptionCaseNumber[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.exemptionCaseNumber[0].details).to.equal('Select a trial that relates to this exemption');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('exemptionCaseNumber');
+      expect(validatorResult.exemptionCaseNumber[0]).toHaveProperty('details');
+      expect(validatorResult.exemptionCaseNumber[0].details).toEqual('Select a trial that relates to this exemption');
     });
   });
 

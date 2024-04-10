@@ -23,8 +23,8 @@
           'moj/pool-history/416221101'
         );
 
-      expect(testUri.uri).to.equal(realUri);
-      expect(testUri.method).to.equal('GET');
+      expect(testUri.uri).toEqual(realUri);
+      expect(testUri.method).toEqual('GET');
     });
 
   });

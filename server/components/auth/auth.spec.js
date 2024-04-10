@@ -16,7 +16,7 @@
 
         , token = auth.createJWTToken(reqStub, bodyStub, '[super-secret-key][super-secret-key][super-secret-key]');
 
-      expect(typeof token).to.equal('string');
+      expect(typeof token).toEqual('string');
     });
 
     it('should decode existing JWT token', function() {
@@ -30,7 +30,7 @@
 
         , decoded = auth.getToken(reqStub);
 
-      expect(decoded.hello).to.equal('world');
+      expect(decoded.hello).toEqual('world');
     });
   });
 

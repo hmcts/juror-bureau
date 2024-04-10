@@ -19,7 +19,7 @@
   
         validatorResult = validate(mockRequest, disqualifyValidator());
   
-        expect(validatorResult).to.be.undefined;
+        expect(validatorResult).toBeUndefined();
       });
   
       it('should return an error when disqualify reason is missing', function() {
@@ -29,10 +29,10 @@
   
         validatorResult = validate(mockRequest, disqualifyValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult).to.have.ownPropertyDescriptor('disqualifyReason');
-        expect(validatorResult.disqualifyReason[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.disqualifyReason[0].details).to.equal('Select the reason why you\'re disqualifying this juror');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult).toHaveProperty('disqualifyReason');
+        expect(validatorResult.disqualifyReason[0]).toHaveProperty('details');
+        expect(validatorResult.disqualifyReason[0].details).toEqual('Select the reason why you\'re disqualifying this juror');
       });
     })
   })();

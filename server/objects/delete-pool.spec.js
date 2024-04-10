@@ -26,10 +26,10 @@
 
       queryParams = Object.fromEntries(new URL(testUri.uri).searchParams);
 
-      expect(queryParams.hasOwnProperty('poolNumber')).to.equal(true);
-      expect(queryParams.poolNumber).to.equal('415230101');
-      expect(testUri.uri).to.equal(realUri);
-      expect(testUri.method).to.equal('DELETE');
+      expect(queryParams.hasOwnProperty('poolNumber')).toEqual(true);
+      expect(queryParams.poolNumber).toEqual('415230101');
+      expect(testUri.uri).toEqual(realUri);
+      expect(testUri.method).toEqual('DELETE');
     });
 
   });

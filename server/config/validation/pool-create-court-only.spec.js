@@ -21,7 +21,7 @@
       };
 
       validatorResult = validate(mockRequest, validator());
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate the court only pool details - no pool type selected', function() {
@@ -32,12 +32,12 @@
 
       validatorResult = validate(mockRequest, validator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('poolType');
-      expect(validatorResult.poolType[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.poolType[0].summary).to.equal('Select the type of pool');
-      expect(validatorResult.poolType[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.poolType[0].details).to.equal('Select the type of pool');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('poolType');
+      expect(validatorResult.poolType[0]).toHaveProperty('summary');
+      expect(validatorResult.poolType[0].summary).toEqual('Select the type of pool');
+      expect(validatorResult.poolType[0]).toHaveProperty('details');
+      expect(validatorResult.poolType[0].details).toEqual('Select the type of pool');
     });
 
     it('should validate the court only pool details - empty date field', function() {
@@ -48,12 +48,12 @@
 
       validatorResult = validate(mockRequest, validator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('serviceStartDate');
-      expect(validatorResult.serviceStartDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.serviceStartDate[0].summary).to.equal('Enter a service start date');
-      expect(validatorResult.serviceStartDate[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.serviceStartDate[0].details[0]).to.equal('Enter a service start date');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('serviceStartDate');
+      expect(validatorResult.serviceStartDate[0]).toHaveProperty('summary');
+      expect(validatorResult.serviceStartDate[0].summary).toEqual('Enter a service start date');
+      expect(validatorResult.serviceStartDate[0]).toHaveProperty('details');
+      expect(validatorResult.serviceStartDate[0].details[0]).toEqual('Enter a service start date');
     });
 
 
@@ -65,12 +65,12 @@
 
       validatorResult = validate(mockRequest, validator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('serviceStartDate');
-      expect(validatorResult.serviceStartDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.serviceStartDate[0].summary).to.equal('Service start date must only include numbers and forward slashes');
-      expect(validatorResult.serviceStartDate[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.serviceStartDate[0].details[0]).to.equal('Service start date must only include numbers and forward slashes');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('serviceStartDate');
+      expect(validatorResult.serviceStartDate[0]).toHaveProperty('summary');
+      expect(validatorResult.serviceStartDate[0].summary).toEqual('Service start date must only include numbers and forward slashes');
+      expect(validatorResult.serviceStartDate[0]).toHaveProperty('details');
+      expect(validatorResult.serviceStartDate[0].details[0]).toEqual('Service start date must only include numbers and forward slashes');
     });
 
     it('should validate the court only pool details - date in wrong format', function() {
@@ -82,12 +82,12 @@
 
       validatorResult = validate(mockRequest, validator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('serviceStartDate');
-      expect(validatorResult.serviceStartDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.serviceStartDate[0].summary).to.equal('Enter a real date in the correct format, for example, 31/01/2023');
-      expect(validatorResult.serviceStartDate[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.serviceStartDate[0].details[0]).to.equal('Enter a real date in the correct format, for example, 31/01/2023');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('serviceStartDate');
+      expect(validatorResult.serviceStartDate[0]).toHaveProperty('summary');
+      expect(validatorResult.serviceStartDate[0].summary).toEqual('Enter a real date in the correct format, for example, 31/01/2023');
+      expect(validatorResult.serviceStartDate[0]).toHaveProperty('details');
+      expect(validatorResult.serviceStartDate[0].details[0]).toEqual('Enter a real date in the correct format, for example, 31/01/2023');
     });
 
     it('should validate the court only pool details - date in the past', function() {
@@ -98,12 +98,12 @@
 
       validatorResult = validate(mockRequest, validator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('serviceStartDate');
-      expect(validatorResult.serviceStartDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.serviceStartDate[0].summary).to.equal('Service start date must be in the future');
-      expect(validatorResult.serviceStartDate[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.serviceStartDate[0].details[0]).to.equal('Service start date must be in the future');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('serviceStartDate');
+      expect(validatorResult.serviceStartDate[0]).toHaveProperty('summary');
+      expect(validatorResult.serviceStartDate[0].summary).toEqual('Service start date must be in the future');
+      expect(validatorResult.serviceStartDate[0]).toHaveProperty('details');
+      expect(validatorResult.serviceStartDate[0].details[0]).toEqual('Service start date must be in the future');
     });
 
     it('should validate the court only pool details - both fields empty', function() {
@@ -114,19 +114,19 @@
 
       validatorResult = validate(mockRequest, validator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('serviceStartDate');
-      expect(validatorResult.serviceStartDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.serviceStartDate[0].summary).to.equal('Enter a service start date');
-      expect(validatorResult.serviceStartDate[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.serviceStartDate[0].details[0]).to.equal('Enter a service start date');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('serviceStartDate');
+      expect(validatorResult.serviceStartDate[0]).toHaveProperty('summary');
+      expect(validatorResult.serviceStartDate[0].summary).toEqual('Enter a service start date');
+      expect(validatorResult.serviceStartDate[0]).toHaveProperty('details');
+      expect(validatorResult.serviceStartDate[0].details[0]).toEqual('Enter a service start date');
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('poolType');
-      expect(validatorResult.poolType[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.poolType[0].summary).to.equal('Select the type of pool');
-      expect(validatorResult.poolType[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.poolType[0].details).to.equal('Select the type of pool');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('poolType');
+      expect(validatorResult.poolType[0]).toHaveProperty('summary');
+      expect(validatorResult.poolType[0].summary).toEqual('Select the type of pool');
+      expect(validatorResult.poolType[0]).toHaveProperty('details');
+      expect(validatorResult.poolType[0].details).toEqual('Select the type of pool');
     });
 
   });

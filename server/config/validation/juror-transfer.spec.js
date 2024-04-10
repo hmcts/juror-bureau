@@ -24,7 +24,7 @@
   
         validatorResult = validate(mockRequest, transferValidator());
 
-        expect(validatorResult).to.be.undefined;
+        expect(validatorResult).toBeUndefined();
       });
   
       it('should try to validate an invalid request - missing all fields', function() {
@@ -38,13 +38,13 @@
 
         validatorResult = validate(mockRequest, transferValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.courtNameOrLocation[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.courtNameOrLocation[0].summary).to.equal('Enter a court name or location code to transfer to');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.courtNameOrLocation[0]).toHaveProperty('summary');
+        expect(validatorResult.courtNameOrLocation[0].summary).toEqual('Enter a court name or location code to transfer to');
 
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.jurorTransferDate[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.jurorTransferDate[0].summary).to.equal('Enter a transfer date in the correct format, for example, 31/01/2023');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.jurorTransferDate[0]).toHaveProperty('summary');
+        expect(validatorResult.jurorTransferDate[0].summary).toEqual('Enter a transfer date in the correct format, for example, 31/01/2023');
 
       });
 
@@ -59,9 +59,9 @@
 
         validatorResult = validate(mockRequest, transferValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.jurorTransferDate[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.jurorTransferDate[0].summary).to.equal('Enter a transfer date in the correct format, for example, 31/01/2023');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.jurorTransferDate[0]).toHaveProperty('summary');
+        expect(validatorResult.jurorTransferDate[0].summary).toEqual('Enter a transfer date in the correct format, for example, 31/01/2023');
 
       });
 
@@ -76,9 +76,9 @@
 
         validatorResult = validate(mockRequest, transferValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.jurorTransferDate[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.jurorTransferDate[0].summary).to.equal('Enter a transfer date in the correct format, for example, 31/01/2023');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.jurorTransferDate[0]).toHaveProperty('summary');
+        expect(validatorResult.jurorTransferDate[0].summary).toEqual('Enter a transfer date in the correct format, for example, 31/01/2023');
 
       });
 
@@ -93,9 +93,9 @@
 
         validatorResult = validate(mockRequest, transferValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.jurorTransferDate[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.jurorTransferDate[0].summary).to.equal('Enter a transfer date in the correct format, for example, 31/01/2023');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.jurorTransferDate[0]).toHaveProperty('summary');
+        expect(validatorResult.jurorTransferDate[0].summary).toEqual('Enter a transfer date in the correct format, for example, 31/01/2023');
 
       });
 
@@ -110,9 +110,9 @@
 
         validatorResult = validate(mockRequest, transferValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.jurorTransferDate[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.jurorTransferDate[0].summary).to.equal('Enter a transfer date in the correct format, for example, 31/01/2023');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.jurorTransferDate[0]).toHaveProperty('summary');
+        expect(validatorResult.jurorTransferDate[0].summary).toEqual('Enter a transfer date in the correct format, for example, 31/01/2023');
 
       });
 
@@ -127,9 +127,9 @@
 
         validatorResult = validate(mockRequest, transferValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.jurorTransferDate[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.jurorTransferDate[0].summary).to.equal('Enter a transfer date in the correct format, for example, 31/01/2023');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.jurorTransferDate[0]).toHaveProperty('summary');
+        expect(validatorResult.jurorTransferDate[0].summary).toEqual('Enter a transfer date in the correct format, for example, 31/01/2023');
 
       });
 
@@ -144,9 +144,9 @@
 
         validatorResult = validate(mockRequest, transferValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.jurorTransferDate[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.jurorTransferDate[0].summary).to.equal('Enter a transfer date in the correct format, for example, 31/01/2023');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.jurorTransferDate[0]).toHaveProperty('summary');
+        expect(validatorResult.jurorTransferDate[0].summary).toEqual('Enter a transfer date in the correct format, for example, 31/01/2023');
 
       });
 
@@ -161,9 +161,9 @@
 
         validatorResult = validate(mockRequest, transferValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.jurorTransferDate[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.jurorTransferDate[0].summary).to.equal('Enter a date in the correct format, for example, 31/01/2023');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.jurorTransferDate[0]).toHaveProperty('summary');
+        expect(validatorResult.jurorTransferDate[0].summary).toEqual('Enter a date in the correct format, for example, 31/01/2023');
 
       });
 
@@ -178,9 +178,9 @@
 
         validatorResult = validate(mockRequest, transferValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.jurorTransferDate[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.jurorTransferDate[0].summary).to.equal('Enter a date in the correct format, for example, 31/01/2023');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.jurorTransferDate[0]).toHaveProperty('summary');
+        expect(validatorResult.jurorTransferDate[0].summary).toEqual('Enter a date in the correct format, for example, 31/01/2023');
 
       });
 
@@ -195,9 +195,9 @@
 
         validatorResult = validate(mockRequest, transferValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.jurorTransferDate[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.jurorTransferDate[0].summary).to.equal('Year must have 4 numbers');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.jurorTransferDate[0]).toHaveProperty('summary');
+        expect(validatorResult.jurorTransferDate[0].summary).toEqual('Year must have 4 numbers');
 
       });
 
@@ -212,9 +212,9 @@
 
         validatorResult = validate(mockRequest, transferValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.jurorTransferDate[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.jurorTransferDate[0].summary).to.equal('Enter a date in the correct format, for example, 31/01/2023');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.jurorTransferDate[0]).toHaveProperty('summary');
+        expect(validatorResult.jurorTransferDate[0].summary).toEqual('Enter a date in the correct format, for example, 31/01/2023');
 
       });
 
@@ -229,9 +229,9 @@
 
         validatorResult = validate(mockRequest, transferValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.jurorTransferDate[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.jurorTransferDate[0].summary).to.equal('Service start date must be within the next 12 months');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.jurorTransferDate[0]).toHaveProperty('summary');
+        expect(validatorResult.jurorTransferDate[0].summary).toEqual('Service start date must be within the next 12 months');
 
       });
 
@@ -246,9 +246,9 @@
 
         validatorResult = validate(mockRequest, transferValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.jurorTransferDate[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.jurorTransferDate[0].summary).to.equal('You cannot enter a date that’s earlier than the original service start date');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.jurorTransferDate[0]).toHaveProperty('summary');
+        expect(validatorResult.jurorTransferDate[0].summary).toEqual('You cannot enter a date that’s earlier than the original service start date');
 
       });
   

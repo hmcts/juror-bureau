@@ -30,7 +30,7 @@
         fse.renameSync(environmentFile, environmentFileBackup);
 
         config = require('./')();
-        expect(config.unitTesting).to.be.undefined;
+        expect(config.unitTesting).toBeUndefined();
       } catch (e) {
         throw new Error(e);
       }
@@ -45,7 +45,7 @@
         fse.renameSync(secretFile, secretFileBackup);
 
         config = require('./')();
-        expect(config.sessionSecret).to.be.undefined;
+        expect(config.sessionSecret).toBeUndefined();
       } catch (e) {
         throw new Error(e);
       }
@@ -56,9 +56,9 @@
       var config = require('./')()
         , secretsConfig = require('config');
 
-      expect(config.logConsole).to.equal('trace');
+      expect(config.logConsole).toEqual('debug');
       expect(secretsConfig.get('secrets.juror.bureau-sessionSecret'))
-        .to.equal('[super-secret-key][super-secret-key][super-secret-key]');
+        .toEqual('[super-secret-key][super-secret-key][super-secret-key]');
     });
 
   });

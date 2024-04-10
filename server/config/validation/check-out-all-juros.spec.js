@@ -19,7 +19,7 @@
         };
   
         validatorResult = validate(mockRequest, validator());
-        expect(validatorResult).to.be.undefined;
+        expect(validatorResult).toBeUndefined();
       });
   
       it('should try to validate an invalid request - missing all fields', function() {
@@ -31,19 +31,19 @@
   
         validatorResult = validate(mockRequest, validator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.checkOutTimeHour[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.checkOutTimeHour[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.checkOutTimeHour[0].summary).to.equal('Enter an hour for check out time');
-        expect(validatorResult.checkOutTimeHour[0].details).to.equal('Enter an hour for check out time');
-        expect(validatorResult.checkOutTimeMinute[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.checkOutTimeMinute[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.checkOutTimeMinute[0].summary).to.equal('Enter minutes for check out time');
-        expect(validatorResult.checkOutTimeMinute[0].details).to.equal('Enter minutes for check out time');
-        expect(validatorResult.checkOutTimePeriod[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.checkOutTimePeriod[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.checkOutTimePeriod[0].summary).to.equal('Select whether check out time is am or pm');
-        expect(validatorResult.checkOutTimePeriod[0].details).to.equal('Select whether check out time is am or pm');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.checkOutTimeHour[0]).toHaveProperty('summary');
+        expect(validatorResult.checkOutTimeHour[0]).toHaveProperty('details');
+        expect(validatorResult.checkOutTimeHour[0].summary).toEqual('Enter an hour for check out time');
+        expect(validatorResult.checkOutTimeHour[0].details).toEqual('Enter an hour for check out time');
+        expect(validatorResult.checkOutTimeMinute[0]).toHaveProperty('summary');
+        expect(validatorResult.checkOutTimeMinute[0]).toHaveProperty('details');
+        expect(validatorResult.checkOutTimeMinute[0].summary).toEqual('Enter minutes for check out time');
+        expect(validatorResult.checkOutTimeMinute[0].details).toEqual('Enter minutes for check out time');
+        expect(validatorResult.checkOutTimePeriod[0]).toHaveProperty('summary');
+        expect(validatorResult.checkOutTimePeriod[0]).toHaveProperty('details');
+        expect(validatorResult.checkOutTimePeriod[0].summary).toEqual('Select whether check out time is am or pm');
+        expect(validatorResult.checkOutTimePeriod[0].details).toEqual('Select whether check out time is am or pm');
   
       });
 
@@ -56,11 +56,11 @@
   
         validatorResult = validate(mockRequest, validator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.checkOutTimeHour[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.checkOutTimeHour[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.checkOutTimeHour[0].summary).to.equal('Enter an hour for check out time');
-        expect(validatorResult.checkOutTimeHour[0].details).to.equal('Enter an hour for check out time');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.checkOutTimeHour[0]).toHaveProperty('summary');
+        expect(validatorResult.checkOutTimeHour[0]).toHaveProperty('details');
+        expect(validatorResult.checkOutTimeHour[0].summary).toEqual('Enter an hour for check out time');
+        expect(validatorResult.checkOutTimeHour[0].details).toEqual('Enter an hour for check out time');
   
       });
   
@@ -73,10 +73,10 @@
   
         validatorResult = validate(mockRequest, validator());
 
-        expect(validatorResult.checkOutTimeMinute[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.checkOutTimeMinute[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.checkOutTimeMinute[0].summary).to.equal('Enter minutes for check out time');
-        expect(validatorResult.checkOutTimeMinute[0].details).to.equal('Enter minutes for check out time');
+        expect(validatorResult.checkOutTimeMinute[0]).toHaveProperty('summary');
+        expect(validatorResult.checkOutTimeMinute[0]).toHaveProperty('details');
+        expect(validatorResult.checkOutTimeMinute[0].summary).toEqual('Enter minutes for check out time');
+        expect(validatorResult.checkOutTimeMinute[0].details).toEqual('Enter minutes for check out time');
   
       });
   
@@ -89,10 +89,10 @@
   
         validatorResult = validate(mockRequest, validator());
 
-        expect(validatorResult.checkOutTimePeriod[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.checkOutTimePeriod[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.checkOutTimePeriod[0].summary).to.equal('Select whether check out time is am or pm');
-        expect(validatorResult.checkOutTimePeriod[0].details).to.equal('Select whether check out time is am or pm');
+        expect(validatorResult.checkOutTimePeriod[0]).toHaveProperty('summary');
+        expect(validatorResult.checkOutTimePeriod[0]).toHaveProperty('details');
+        expect(validatorResult.checkOutTimePeriod[0].summary).toEqual('Select whether check out time is am or pm');
+        expect(validatorResult.checkOutTimePeriod[0].details).toEqual('Select whether check out time is am or pm');
   
       });
     });

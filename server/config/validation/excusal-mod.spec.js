@@ -20,7 +20,7 @@
 
       validatorResult = validate(mockRequest, excusalValidator());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should try to validate an invalid request - empty fields', function() {
@@ -31,13 +31,13 @@
 
       validatorResult = validate(mockRequest, excusalValidator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('excusalCode');
-      expect(validatorResult.excusalCode[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.excusalCode[0].details).to.equal('Select the juror’s reason for requesting this excusal');
-      expect(validatorResult).to.have.ownPropertyDescriptor('excusalDecision');
-      expect(validatorResult.excusalDecision[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.excusalDecision[0].details).to.equal('Select whether you want to grant or refuse an excusal for this juror');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('excusalCode');
+      expect(validatorResult.excusalCode[0]).toHaveProperty('details');
+      expect(validatorResult.excusalCode[0].details).toEqual('Select the juror’s reason for requesting this excusal');
+      expect(validatorResult).toHaveProperty('excusalDecision');
+      expect(validatorResult.excusalDecision[0]).toHaveProperty('details');
+      expect(validatorResult.excusalDecision[0].details).toEqual('Select whether you want to grant or refuse an excusal for this juror');
     });
 
     it('should try to validate an invalid request - missing excusal code', function() {
@@ -48,10 +48,10 @@
 
       validatorResult = validate(mockRequest, excusalValidator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('excusalCode');
-      expect(validatorResult.excusalCode[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.excusalCode[0].details).to.equal('Select the juror’s reason for requesting this excusal');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('excusalCode');
+      expect(validatorResult.excusalCode[0]).toHaveProperty('details');
+      expect(validatorResult.excusalCode[0].details).toEqual('Select the juror’s reason for requesting this excusal');
       });
 
       it('should try to validate an invalid request - missing excusal decision', function() {
@@ -62,10 +62,10 @@
   
         validatorResult = validate(mockRequest, excusalValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult).to.have.ownPropertyDescriptor('excusalDecision');
-        expect(validatorResult.excusalDecision[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.excusalDecision[0].details).to.equal('Select whether you want to grant or refuse an excusal for this juror');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult).toHaveProperty('excusalDecision');
+        expect(validatorResult.excusalDecision[0]).toHaveProperty('details');
+        expect(validatorResult.excusalDecision[0].details).toEqual('Select whether you want to grant or refuse an excusal for this juror');
       });
 
   });

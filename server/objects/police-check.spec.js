@@ -24,8 +24,8 @@
           'moj/pnc/manual?juror_number=111000006'
         );
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('PATCH');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('PATCH');
 
     });
 

@@ -30,7 +30,7 @@
 
       validatorResult = validate(mockRequest, validator.attendanceDay());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate a valid request', function() {
@@ -51,7 +51,7 @@
 
       validatorResult = validate(mockRequest, validator.attendanceDay());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should try to validate an invalid request - invalid travel time', function() {
@@ -72,9 +72,9 @@
 
       validatorResult = validate(mockRequest, validator.attendanceDay());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult['totalTravelTime-minute'][0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult['totalTravelTime-minute'][0].details).to.equal('Enter minutes between 0 and 59');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult['totalTravelTime-minute'][0]).toHaveProperty('details');
+      expect(validatorResult['totalTravelTime-minute'][0].details).toEqual('Enter minutes between 0 and 59');
     });
 
     it('should try to validate an invalid request - special chars / letters in input fields', function() {
@@ -95,48 +95,48 @@
 
       validatorResult = validate(mockRequest, validator.attendanceDay());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult['totalTravelTime-hour'][0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult['totalTravelTime-hour'][0].details).to.equal('Total travel time can only include numbers');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult['totalTravelTime-hour'][0]).toHaveProperty('details');
+      expect(validatorResult['totalTravelTime-hour'][0].details).toEqual('Total travel time can only include numbers');
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult['totalTravelTime-minute'][0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult['totalTravelTime-minute'][0].details).to.equal('Total travel time can only include numbers');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult['totalTravelTime-minute'][0]).toHaveProperty('details');
+      expect(validatorResult['totalTravelTime-minute'][0].details).toEqual('Total travel time can only include numbers');
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.passengers[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.passengers[0].details).to.equal('Number of other jurors taken as passengers can only include numbers');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.passengers[0]).toHaveProperty('details');
+      expect(validatorResult.passengers[0].details).toEqual('Number of other jurors taken as passengers can only include numbers');
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.milesTravelled[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.milesTravelled[0].details).to.equal('Miles travelled can only include numbers');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.milesTravelled[0]).toHaveProperty('details');
+      expect(validatorResult.milesTravelled[0].details).toEqual('Miles travelled can only include numbers');
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.parking[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.parking[0].details).to.equal('Parking amount can only include numbers and a decimal point');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.parking[0]).toHaveProperty('details');
+      expect(validatorResult.parking[0].details).toEqual('Parking amount can only include numbers and a decimal point');
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.publicTransport[0]).to.have.ownPropertyDescriptor('details');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.publicTransport[0]).toHaveProperty('details');
       
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.taxi[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.taxi[0].details).to.equal('Taxi amount can only include numbers and a decimal point');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.taxi[0]).toHaveProperty('details');
+      expect(validatorResult.taxi[0].details).toEqual('Taxi amount can only include numbers and a decimal point');
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.lossOfEarnings[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.lossOfEarnings[0].details).to.equal('Loss of earnings or benefits per day can only include numbers and a decimal point');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.lossOfEarnings[0]).toHaveProperty('details');
+      expect(validatorResult.lossOfEarnings[0].details).toEqual('Loss of earnings or benefits per day can only include numbers and a decimal point');
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.extraCareCosts[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.extraCareCosts[0].details).to.equal('Extra care costs can only include numbers and a decimal point');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.extraCareCosts[0]).toHaveProperty('details');
+      expect(validatorResult.extraCareCosts[0].details).toEqual('Extra care costs can only include numbers and a decimal point');
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.otherCosts[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.otherCosts[0].details).to.equal('Other costs can only include numbers and a decimal point');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.otherCosts[0]).toHaveProperty('details');
+      expect(validatorResult.otherCosts[0].details).toEqual('Other costs can only include numbers and a decimal point');
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.smartcardSpend[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.smartcardSpend[0].details).to.equal('Amount spent on smartcard can only include numbers and a decimal point');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.smartcardSpend[0]).toHaveProperty('details');
+      expect(validatorResult.smartcardSpend[0].details).toEqual('Amount spent on smartcard can only include numbers and a decimal point');
     });
 
     it('should validate an invalid request - other costs description too long', function() {
@@ -157,9 +157,9 @@
 
       validatorResult = validate(mockRequest, validator.attendanceDay());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.otherCostsDescription[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.otherCostsDescription[0].details).to.equal('Description of other costs must be [x] characters or fewer');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.otherCostsDescription[0]).toHaveProperty('details');
+      expect(validatorResult.otherCostsDescription[0].details).toEqual('Description of other costs must be [x] characters or fewer');
     });
 
     it('should validate an invalid request - miles travelled not whole number', function() {
@@ -180,9 +180,9 @@
 
       validatorResult = validate(mockRequest, validator.attendanceDay());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.milesTravelled[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.milesTravelled[0].details).to.equal('Miles travelled must be a whole number');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.milesTravelled[0]).toHaveProperty('details');
+      expect(validatorResult.milesTravelled[0].details).toEqual('Miles travelled must be a whole number');
     });
 
   });
@@ -203,7 +203,7 @@
 
       validatorResult = validate(mockRequest, validator.nonAttendanceDay());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate a valid request', function() {
@@ -216,7 +216,7 @@
 
       validatorResult = validate(mockRequest, validator.nonAttendanceDay());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should try to validate an invalid request - special chars / letters in input fields', function() {
@@ -229,17 +229,17 @@
 
       validatorResult = validate(mockRequest, validator.nonAttendanceDay());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.lossOfEarnings[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.lossOfEarnings[0].details).to.equal('Loss of earnings or benefits can only include numbers and a decimal point');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.lossOfEarnings[0]).toHaveProperty('details');
+      expect(validatorResult.lossOfEarnings[0].details).toEqual('Loss of earnings or benefits can only include numbers and a decimal point');
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.extraCareCosts[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.extraCareCosts[0].details).to.equal('Extra care costs can only include numbers and a decimal point');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.extraCareCosts[0]).toHaveProperty('details');
+      expect(validatorResult.extraCareCosts[0].details).toEqual('Extra care costs can only include numbers and a decimal point');
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.otherCosts[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.otherCosts[0].details).to.equal('Other costs can only include numbers and a decimal point');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.otherCosts[0]).toHaveProperty('details');
+      expect(validatorResult.otherCosts[0].details).toEqual('Other costs can only include numbers and a decimal point');
 
     });
 
@@ -253,9 +253,9 @@
 
       validatorResult = validate(mockRequest, validator.nonAttendanceDay());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.otherCostsDescription[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.otherCostsDescription[0].details).to.equal('Description of other costs must be [x] characters or fewer');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.otherCostsDescription[0]).toHaveProperty('details');
+      expect(validatorResult.otherCostsDescription[0].details).toEqual('Description of other costs must be [x] characters or fewer');
     });
 
   });

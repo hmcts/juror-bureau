@@ -20,7 +20,7 @@
   
         validatorResult = validate(mockRequest, attendanceDateValidator());
   
-        expect(validatorResult).to.be.undefined;
+        expect(validatorResult).toBeUndefined();
       });
   
       it('should not be empty', function() {
@@ -30,12 +30,12 @@
   
         validatorResult = validate(mockRequest, attendanceDateValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult).to.have.ownPropertyDescriptor('attendanceDay');
-        expect(validatorResult.attendanceDay[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.attendanceDay[0].details).to.equal('Enter a date for the attendance day');
-        expect(validatorResult.attendanceDay[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.attendanceDay[0].summary).to.equal('Enter a date for the attendance day');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult).toHaveProperty('attendanceDay');
+        expect(validatorResult.attendanceDay[0]).toHaveProperty('details');
+        expect(validatorResult.attendanceDay[0].details).toEqual('Enter a date for the attendance day');
+        expect(validatorResult.attendanceDay[0]).toHaveProperty('summary');
+        expect(validatorResult.attendanceDay[0].summary).toEqual('Enter a date for the attendance day');
       });
   
       it('should validate an invalid request - empty field', function() {
@@ -45,12 +45,12 @@
   
         validatorResult = validate(mockRequest, attendanceDateValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult).to.have.ownPropertyDescriptor('attendanceDay');
-        expect(validatorResult.attendanceDay[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.attendanceDay[0].details).to.equal('Attendance date must only include numbers');
-        expect(validatorResult.attendanceDay[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.attendanceDay[0].summary).to.equal('Attendance date must only include numbers');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult).toHaveProperty('attendanceDay');
+        expect(validatorResult.attendanceDay[0]).toHaveProperty('details');
+        expect(validatorResult.attendanceDay[0].details).toEqual('Attendance date must only include numbers');
+        expect(validatorResult.attendanceDay[0]).toHaveProperty('summary');
+        expect(validatorResult.attendanceDay[0].summary).toEqual('Attendance date must only include numbers');
       });
   
       it('should validate an invalid request - invalid date', function() {
@@ -60,12 +60,12 @@
   
         validatorResult = validate(mockRequest, attendanceDateValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult).to.have.ownPropertyDescriptor('attendanceDay');
-        expect(validatorResult.attendanceDay[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.attendanceDay[0].details).to.equal('Please enter a valid date for the attendance day');
-        expect(validatorResult.attendanceDay[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.attendanceDay[0].summary).to.equal('Please enter a valid date for the attendance day');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult).toHaveProperty('attendanceDay');
+        expect(validatorResult.attendanceDay[0]).toHaveProperty('details');
+        expect(validatorResult.attendanceDay[0].details).toEqual('Please enter a valid date for the attendance day');
+        expect(validatorResult.attendanceDay[0]).toHaveProperty('summary');
+        expect(validatorResult.attendanceDay[0].summary).toEqual('Please enter a valid date for the attendance day');
   
       });
   
@@ -76,12 +76,12 @@
   
         validatorResult = validate(mockRequest, attendanceDateValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult).to.have.ownPropertyDescriptor('attendanceDay');
-        expect(validatorResult.attendanceDay[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.attendanceDay[0].details).to.equal('Enter an attendance date in the correct format, for example, 31/01/2023');
-        expect(validatorResult.attendanceDay[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.attendanceDay[0].summary).to.equal('Enter an attendance date in the correct format, for example, 31/01/2023');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult).toHaveProperty('attendanceDay');
+        expect(validatorResult.attendanceDay[0]).toHaveProperty('details');
+        expect(validatorResult.attendanceDay[0].details).toEqual('Enter an attendance date in the correct format, for example, 31/01/2023');
+        expect(validatorResult.attendanceDay[0]).toHaveProperty('summary');
+        expect(validatorResult.attendanceDay[0].summary).toEqual('Enter an attendance date in the correct format, for example, 31/01/2023');
   
       });
 
@@ -97,7 +97,7 @@
   
         validatorResult = validate(mockRequest, attendanceTimeValidator());
   
-        expect(validatorResult).to.be.undefined;
+        expect(validatorResult).toBeUndefined();
       });
 
       it('should validate a valid request- check in hour is missing', function() {
@@ -112,12 +112,12 @@
   
         validatorResult = validate(mockRequest, attendanceTimeValidator());
   
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('checkInTime');
-      expect(validatorResult.checkInTime[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.checkInTime[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.checkInTime[0].details).to.equal('Enter an hour for check in time');
-      expect(validatorResult.checkInTime[0].summary).to.equal('Enter an hour for check in time');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('checkInTime');
+      expect(validatorResult.checkInTime[0]).toHaveProperty('summary');
+      expect(validatorResult.checkInTime[0]).toHaveProperty('details');
+      expect(validatorResult.checkInTime[0].details).toEqual('Enter an hour for check in time');
+      expect(validatorResult.checkInTime[0].summary).toEqual('Enter an hour for check in time');
       });
 
       it('should validate a valid request- check in hour is not a number', function() {
@@ -132,12 +132,12 @@
   
         validatorResult = validate(mockRequest, attendanceTimeValidator());
   
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('checkInTime');
-      expect(validatorResult.checkInTime[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.checkInTime[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.checkInTime[0].details).to.equal('Check in time must only include numbers - you cannot enter letters or special characters');
-      expect(validatorResult.checkInTime[0].summary).to.equal('Check in time must only include numbers - you cannot enter letters or special characters');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('checkInTime');
+      expect(validatorResult.checkInTime[0]).toHaveProperty('summary');
+      expect(validatorResult.checkInTime[0]).toHaveProperty('details');
+      expect(validatorResult.checkInTime[0].details).toEqual('Check in time must only include numbers - you cannot enter letters or special characters');
+      expect(validatorResult.checkInTime[0].summary).toEqual('Check in time must only include numbers - you cannot enter letters or special characters');
       });
 
       it('should validate a valid request- check in hour is out of range', function() {
@@ -152,12 +152,12 @@
   
         validatorResult = validate(mockRequest, attendanceTimeValidator());
   
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('checkInTime');
-      expect(validatorResult.checkInTime[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.checkInTime[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.checkInTime[0].details).to.equal('Enter an hour between 0 and 12');
-      expect(validatorResult.checkInTime[0].summary).to.equal('Enter an hour between 0 and 12');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('checkInTime');
+      expect(validatorResult.checkInTime[0]).toHaveProperty('summary');
+      expect(validatorResult.checkInTime[0]).toHaveProperty('details');
+      expect(validatorResult.checkInTime[0].details).toEqual('Enter an hour between 0 and 12');
+      expect(validatorResult.checkInTime[0].summary).toEqual('Enter an hour between 0 and 12');
       });
       
 
@@ -173,12 +173,12 @@
   
         validatorResult = validate(mockRequest, attendanceTimeValidator());
   
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('checkInTime');
-      expect(validatorResult.checkInTime[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.checkInTime[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.checkInTime[0].details).to.equal('Enter a minute for check in time');
-      expect(validatorResult.checkInTime[0].summary).to.equal('Enter a minute for check in time');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('checkInTime');
+      expect(validatorResult.checkInTime[0]).toHaveProperty('summary');
+      expect(validatorResult.checkInTime[0]).toHaveProperty('details');
+      expect(validatorResult.checkInTime[0].details).toEqual('Enter a minute for check in time');
+      expect(validatorResult.checkInTime[0].summary).toEqual('Enter a minute for check in time');
       });
 
       it('should validate a valid request- check in minute is not a number', function() {
@@ -193,12 +193,12 @@
   
         validatorResult = validate(mockRequest, attendanceTimeValidator());
   
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('checkInTime');
-      expect(validatorResult.checkInTime[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.checkInTime[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.checkInTime[0].details).to.equal('Check in time must only include numbers - you cannot enter letters or special characters');
-      expect(validatorResult.checkInTime[0].summary).to.equal('Check in time must only include numbers - you cannot enter letters or special characters');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('checkInTime');
+      expect(validatorResult.checkInTime[0]).toHaveProperty('summary');
+      expect(validatorResult.checkInTime[0]).toHaveProperty('details');
+      expect(validatorResult.checkInTime[0].details).toEqual('Check in time must only include numbers - you cannot enter letters or special characters');
+      expect(validatorResult.checkInTime[0].summary).toEqual('Check in time must only include numbers - you cannot enter letters or special characters');
       });
 
       it('should validate a valid request- check in minute is out of range', function() {
@@ -213,12 +213,12 @@
   
         validatorResult = validate(mockRequest, attendanceTimeValidator());
   
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('checkInTime');
-      expect(validatorResult.checkInTime[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.checkInTime[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.checkInTime[0].details).to.equal('Enter minutes between 0 and 59');
-      expect(validatorResult.checkInTime[0].summary).to.equal('Enter minutes between 0 and 59');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('checkInTime');
+      expect(validatorResult.checkInTime[0]).toHaveProperty('summary');
+      expect(validatorResult.checkInTime[0]).toHaveProperty('details');
+      expect(validatorResult.checkInTime[0].details).toEqual('Enter minutes between 0 and 59');
+      expect(validatorResult.checkInTime[0].summary).toEqual('Enter minutes between 0 and 59');
       });
 
       it('should validate a valid request- check in period is missing', function() {
@@ -233,12 +233,12 @@
   
         validatorResult = validate(mockRequest, attendanceTimeValidator());
   
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('checkInTime');
-      expect(validatorResult.checkInTime[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.checkInTime[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.checkInTime[0].details).to.equal('Select whether check in time is am or pm');
-      expect(validatorResult.checkInTime[0].summary).to.equal('Select whether check in time is am or pm');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('checkInTime');
+      expect(validatorResult.checkInTime[0]).toHaveProperty('summary');
+      expect(validatorResult.checkInTime[0]).toHaveProperty('details');
+      expect(validatorResult.checkInTime[0].details).toEqual('Select whether check in time is am or pm');
+      expect(validatorResult.checkInTime[0].summary).toEqual('Select whether check in time is am or pm');
       });
 
       it('should validate a valid request- check out hour is missing', function() {
@@ -253,12 +253,12 @@
   
         validatorResult = validate(mockRequest, attendanceTimeValidator());
   
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('checkOutTime');
-      expect(validatorResult.checkOutTime[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.checkOutTime[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.checkOutTime[0].details).to.equal('Enter an hour for check out time');
-      expect(validatorResult.checkOutTime[0].summary).to.equal('Enter an hour for check out time');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('checkOutTime');
+      expect(validatorResult.checkOutTime[0]).toHaveProperty('summary');
+      expect(validatorResult.checkOutTime[0]).toHaveProperty('details');
+      expect(validatorResult.checkOutTime[0].details).toEqual('Enter an hour for check out time');
+      expect(validatorResult.checkOutTime[0].summary).toEqual('Enter an hour for check out time');
       });
 
       it('should validate a valid request- check out hour is not a number', function() {
@@ -273,12 +273,12 @@
   
         validatorResult = validate(mockRequest, attendanceTimeValidator());
   
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('checkOutTime');
-      expect(validatorResult.checkOutTime[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.checkOutTime[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.checkOutTime[0].details).to.equal('Check out time must only include numbers - you cannot enter letters or special characters');
-      expect(validatorResult.checkOutTime[0].summary).to.equal('Check out time must only include numbers - you cannot enter letters or special characters');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('checkOutTime');
+      expect(validatorResult.checkOutTime[0]).toHaveProperty('summary');
+      expect(validatorResult.checkOutTime[0]).toHaveProperty('details');
+      expect(validatorResult.checkOutTime[0].details).toEqual('Check out time must only include numbers - you cannot enter letters or special characters');
+      expect(validatorResult.checkOutTime[0].summary).toEqual('Check out time must only include numbers - you cannot enter letters or special characters');
       });
 
       it('should validate a valid request- check out hour is out of range', function() {
@@ -293,12 +293,12 @@
   
         validatorResult = validate(mockRequest, attendanceTimeValidator());
   
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('checkOutTime');
-      expect(validatorResult.checkOutTime[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.checkOutTime[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.checkOutTime[0].details).to.equal('Enter an hour between 0 and 12');
-      expect(validatorResult.checkOutTime[0].summary).to.equal('Enter an hour between 0 and 12');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('checkOutTime');
+      expect(validatorResult.checkOutTime[0]).toHaveProperty('summary');
+      expect(validatorResult.checkOutTime[0]).toHaveProperty('details');
+      expect(validatorResult.checkOutTime[0].details).toEqual('Enter an hour between 0 and 12');
+      expect(validatorResult.checkOutTime[0].summary).toEqual('Enter an hour between 0 and 12');
       });
       
 
@@ -314,12 +314,12 @@
   
         validatorResult = validate(mockRequest, attendanceTimeValidator());
   
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('checkOutTime');
-      expect(validatorResult.checkOutTime[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.checkOutTime[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.checkOutTime[0].details).to.equal('Enter a minute for check out time');
-      expect(validatorResult.checkOutTime[0].summary).to.equal('Enter a minute for check out time');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('checkOutTime');
+      expect(validatorResult.checkOutTime[0]).toHaveProperty('summary');
+      expect(validatorResult.checkOutTime[0]).toHaveProperty('details');
+      expect(validatorResult.checkOutTime[0].details).toEqual('Enter a minute for check out time');
+      expect(validatorResult.checkOutTime[0].summary).toEqual('Enter a minute for check out time');
       });
 
       it('should validate a valid request- check out minute is not a number', function() {
@@ -334,12 +334,12 @@
   
         validatorResult = validate(mockRequest, attendanceTimeValidator());
   
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('checkOutTime');
-      expect(validatorResult.checkOutTime[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.checkOutTime[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.checkOutTime[0].details).to.equal('Check out time must only include numbers - you cannot enter letters or special characters');
-      expect(validatorResult.checkOutTime[0].summary).to.equal('Check out time must only include numbers - you cannot enter letters or special characters');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('checkOutTime');
+      expect(validatorResult.checkOutTime[0]).toHaveProperty('summary');
+      expect(validatorResult.checkOutTime[0]).toHaveProperty('details');
+      expect(validatorResult.checkOutTime[0].details).toEqual('Check out time must only include numbers - you cannot enter letters or special characters');
+      expect(validatorResult.checkOutTime[0].summary).toEqual('Check out time must only include numbers - you cannot enter letters or special characters');
       });
 
       it('should validate a valid request- check out minute is out of range', function() {
@@ -354,12 +354,12 @@
   
         validatorResult = validate(mockRequest, attendanceTimeValidator());
   
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('checkOutTime');
-      expect(validatorResult.checkOutTime[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.checkOutTime[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.checkOutTime[0].details).to.equal('Enter minutes between 0 and 59');
-      expect(validatorResult.checkOutTime[0].summary).to.equal('Enter minutes between 0 and 59');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('checkOutTime');
+      expect(validatorResult.checkOutTime[0]).toHaveProperty('summary');
+      expect(validatorResult.checkOutTime[0]).toHaveProperty('details');
+      expect(validatorResult.checkOutTime[0].details).toEqual('Enter minutes between 0 and 59');
+      expect(validatorResult.checkOutTime[0].summary).toEqual('Enter minutes between 0 and 59');
       });
 
       it('should validate a valid request- check out period is missing', function() {
@@ -374,12 +374,12 @@
   
         validatorResult = validate(mockRequest, attendanceTimeValidator());
   
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('checkOutTime');
-      expect(validatorResult.checkOutTime[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.checkOutTime[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.checkOutTime[0].details).to.equal('Select whether check out time is am or pm');
-      expect(validatorResult.checkOutTime[0].summary).to.equal('Select whether check out time is am or pm');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('checkOutTime');
+      expect(validatorResult.checkOutTime[0]).toHaveProperty('summary');
+      expect(validatorResult.checkOutTime[0]).toHaveProperty('details');
+      expect(validatorResult.checkOutTime[0].details).toEqual('Select whether check out time is am or pm');
+      expect(validatorResult.checkOutTime[0].summary).toEqual('Select whether check out time is am or pm');
       }); 
   
     });

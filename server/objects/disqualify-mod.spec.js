@@ -24,8 +24,8 @@
             'moj/disqualify/reasons'
           );
 
-        expect(testUri.uri).to.equal(realUri);
-        expect(testUri.method).to.equal('GET');
+        expect(testUri.uri).toEqual(realUri);
+        expect(testUri.method).toEqual('GET');
       });
 
   });
@@ -44,14 +44,14 @@
             'moj/disqualify/juror/' + jurorNumber
           );
 
-        expect(testObj.uri).to.equal(realUri);
-        expect(testObj.method).to.equal('PATCH');
+        expect(testObj.uri).toEqual(realUri);
+        expect(testObj.method).toEqual('PATCH');
 
-        expect(testObj.body.hasOwnProperty('code')).to.equal(true);
-        expect(testObj.body.code).to.equal('A');
+        expect(testObj.body.hasOwnProperty('code')).toEqual(true);
+        expect(testObj.body.code).toEqual('A');
 
-        expect(testObj.body.hasOwnProperty('replyMethod')).to.equal(true);
-        expect(testObj.body.replyMethod).to.equal('PAPER');
+        expect(testObj.body.hasOwnProperty('replyMethod')).toEqual(true);
+        expect(testObj.body.replyMethod).toEqual('PAPER');
       });
 
   });

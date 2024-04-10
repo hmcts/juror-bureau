@@ -30,8 +30,8 @@
           'moj/trial/end-trial'
         );
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('PATCH');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('PATCH');
     });
   });
 

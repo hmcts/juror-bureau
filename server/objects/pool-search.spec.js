@@ -25,17 +25,17 @@
         , testObj = poolSearchObject.poolSearchObject.post(rpStub, appStub, 'test-token', bodyObj)
         , realUri = urljoin('http://localhost:8080/api/v1', 'moj/pool-search');
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('POST');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('POST');
 
-      expect(testObj.body.hasOwnProperty('locCode')).to.equal(true);
-      expect(testObj.body.locCode).to.equal('415');
+      expect(testObj.body.hasOwnProperty('locCode')).toEqual(true);
+      expect(testObj.body.locCode).toEqual('415');
 
-      expect(testObj.body.hasOwnProperty('serviceStartDate')).to.equal(true);
-      expect(testObj.body.serviceStartDate).to.equal('2023-02-15');
+      expect(testObj.body.hasOwnProperty('serviceStartDate')).toEqual(true);
+      expect(testObj.body.serviceStartDate).toEqual('2023-02-15');
 
-      expect(testObj.body.hasOwnProperty('poolNumber')).to.equal(true);
-      expect(testObj.body.poolNumber).to.equal('415220110');
+      expect(testObj.body.hasOwnProperty('poolNumber')).toEqual(true);
+      expect(testObj.body.poolNumber).toEqual('415220110');
     });
 
   });

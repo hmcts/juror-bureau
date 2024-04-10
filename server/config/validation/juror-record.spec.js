@@ -20,7 +20,7 @@
 
       validatorResult = validate(mockRequest, jurorRecordVal.contactLog());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate the contact log form - missing repeat enquiry', function() {
@@ -31,13 +31,13 @@
 
       validatorResult = validate(mockRequest, jurorRecordVal.contactLog());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('repeatEnquiry');
-      expect(validatorResult.repeatEnquiry).to.be.instanceof(Array);
-      expect(validatorResult.repeatEnquiry[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.repeatEnquiry[0].summary).to.equal('Please indicate if this is a repeated enquiry');
-      expect(validatorResult.repeatEnquiry[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.repeatEnquiry[0].details).to.equal('Repeated enquiry is missing');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('repeatEnquiry');
+      expect(validatorResult.repeatEnquiry).toBeInstanceOf(Array);
+      expect(validatorResult.repeatEnquiry[0]).toHaveProperty('summary');
+      expect(validatorResult.repeatEnquiry[0].summary).toEqual('Please indicate if this is a repeated enquiry');
+      expect(validatorResult.repeatEnquiry[0]).toHaveProperty('details');
+      expect(validatorResult.repeatEnquiry[0].details).toEqual('Repeated enquiry is missing');
     });
 
     it('should validate the contact log form - missing enquiry type', function() {
@@ -48,13 +48,13 @@
 
       validatorResult = validate(mockRequest, jurorRecordVal.contactLog());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('enquiryType');
-      expect(validatorResult.enquiryType).to.be.instanceof(Array);
-      expect(validatorResult.enquiryType[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.enquiryType[0].summary).to.equal('Please select the enquiry type');
-      expect(validatorResult.enquiryType[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.enquiryType[0].details).to.equal('Enquiry type is missing');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('enquiryType');
+      expect(validatorResult.enquiryType).toBeInstanceOf(Array);
+      expect(validatorResult.enquiryType[0]).toHaveProperty('summary');
+      expect(validatorResult.enquiryType[0].summary).toEqual('Please select the enquiry type');
+      expect(validatorResult.enquiryType[0]).toHaveProperty('details');
+      expect(validatorResult.enquiryType[0].details).toEqual('Enquiry type is missing');
     });
 
     it('should validate the contact log form - missing notes', function() {
@@ -65,13 +65,13 @@
 
       validatorResult = validate(mockRequest, jurorRecordVal.contactLog());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('notes');
-      expect(validatorResult.notes).to.be.instanceof(Array);
-      expect(validatorResult.notes[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.notes[0].summary).to.equal('Please enter the contact-log notes');
-      expect(validatorResult.notes[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.notes[0].details).to.equal('Notes is missing');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('notes');
+      expect(validatorResult.notes).toBeInstanceOf(Array);
+      expect(validatorResult.notes[0]).toHaveProperty('summary');
+      expect(validatorResult.notes[0].summary).toEqual('Please enter the contact-log notes');
+      expect(validatorResult.notes[0]).toHaveProperty('details');
+      expect(validatorResult.notes[0].details).toEqual('Notes is missing');
     });
 
     it('should validate the approve or reject form - happy path', function() {
@@ -86,11 +86,11 @@
 
       const approvedValidation = jurorRecordVal.nameChangeValidator(approved);
 
-      expect(approvedValidation).to.be.null;
+      expect(approvedValidation).toEqual(null);
 
       const rejectedValidation = jurorRecordVal.nameChangeValidator(rejected);
 
-      expect(rejectedValidation).to.be.null;
+      expect(rejectedValidation).toEqual(null);
     });
 
     it('should validate the approve or reject form - empty messages', function() {
@@ -105,27 +105,27 @@
 
       const approvedValidation = jurorRecordVal.nameChangeValidator(approved);
 
-      expect(approvedValidation).to.be.an('object');
-      expect(approvedValidation).to.have.ownProperty('approve-message');
-      expect(approvedValidation['approve-message']).to.be.instanceof(Array);
-      expect(approvedValidation['approve-message'][0]).to.have.ownPropertyDescriptor('summary');
+      expect(approvedValidation).toEqual(expect.any(Object));
+      expect(approvedValidation).toHaveProperty('approve-message');
+      expect(approvedValidation['approve-message']).toBeInstanceOf(Array);
+      expect(approvedValidation['approve-message'][0]).toHaveProperty('summary');
       expect(approvedValidation['approve-message'][0].summary)
-        .to.equal('Enter what evidence the juror provided for their change of name');
-      expect(approvedValidation['approve-message'][0]).to.have.ownPropertyDescriptor('details');
+        .toEqual('Enter what evidence the juror provided for their change of name');
+      expect(approvedValidation['approve-message'][0]).toHaveProperty('details');
       expect(approvedValidation['approve-message'][0].details)
-        .to.equal('Enter what evidence the juror provided for their change of name');
+        .toEqual('Enter what evidence the juror provided for their change of name');
 
       const rejectedValidation = jurorRecordVal.nameChangeValidator(rejected);
 
-      expect(rejectedValidation).to.be.an('object');
-      expect(rejectedValidation).to.have.ownProperty('reject-message');
-      expect(rejectedValidation['reject-message']).to.be.instanceof(Array);
-      expect(rejectedValidation['reject-message'][0]).to.have.ownPropertyDescriptor('summary');
+      expect(rejectedValidation).toEqual(expect.any(Object));
+      expect(rejectedValidation).toHaveProperty('reject-message');
+      expect(rejectedValidation['reject-message']).toBeInstanceOf(Array);
+      expect(rejectedValidation['reject-message'][0]).toHaveProperty('summary');
       expect(rejectedValidation['reject-message'][0].summary)
-        .to.equal('Enter why you rejected the juror’s name change');
-      expect(rejectedValidation['reject-message'][0]).to.have.ownPropertyDescriptor('details');
+        .toEqual('Enter why you rejected the juror’s name change');
+      expect(rejectedValidation['reject-message'][0]).toHaveProperty('details');
       expect(rejectedValidation['reject-message'][0].details)
-        .to.equal('Enter why you rejected the juror’s name change');
+        .toEqual('Enter why you rejected the juror’s name change');
     });
 
     it('should validate the approve or reject form - messages too long', function() {
@@ -142,27 +142,27 @@
 
       const approvedValidation = jurorRecordVal.nameChangeValidator(approved);
 
-      expect(approvedValidation).to.be.an('object');
-      expect(approvedValidation).to.have.ownProperty('approve-message');
-      expect(approvedValidation['approve-message']).to.be.instanceof(Array);
-      expect(approvedValidation['approve-message'][0]).to.have.ownPropertyDescriptor('summary');
+      expect(approvedValidation).toEqual(expect.any(Object));
+      expect(approvedValidation).toHaveProperty('approve-message');
+      expect(approvedValidation['approve-message']).toBeInstanceOf(Array);
+      expect(approvedValidation['approve-message'][0]).toHaveProperty('summary');
       expect(approvedValidation['approve-message'][0].summary)
-        .to.equal('Change of name evidence must be 2000 characters or less');
-      expect(approvedValidation['approve-message'][0]).to.have.ownPropertyDescriptor('details');
+        .toEqual('Change of name evidence must be 2000 characters or less');
+      expect(approvedValidation['approve-message'][0]).toHaveProperty('details');
       expect(approvedValidation['approve-message'][0].details)
-        .to.equal('Change of name evidence must be 2000 characters or less');
+        .toEqual('Change of name evidence must be 2000 characters or less');
 
       const rejectedValidation = jurorRecordVal.nameChangeValidator(rejected);
 
-      expect(rejectedValidation).to.be.an('object');
-      expect(rejectedValidation).to.have.ownProperty('reject-message');
-      expect(rejectedValidation['reject-message']).to.be.instanceof(Array);
-      expect(rejectedValidation['reject-message'][0]).to.have.ownPropertyDescriptor('summary');
+      expect(rejectedValidation).toEqual(expect.any(Object));
+      expect(rejectedValidation).toHaveProperty('reject-message');
+      expect(rejectedValidation['reject-message']).toBeInstanceOf(Array);
+      expect(rejectedValidation['reject-message'][0]).toHaveProperty('summary');
       expect(rejectedValidation['reject-message'][0].summary)
-        .to.equal('Reason for rejecting the name change must be 2000 characters or less');
-      expect(rejectedValidation['reject-message'][0]).to.have.ownPropertyDescriptor('details');
+        .toEqual('Reason for rejecting the name change must be 2000 characters or less');
+      expect(rejectedValidation['reject-message'][0]).toHaveProperty('details');
       expect(rejectedValidation['reject-message'][0].details)
-        .to.equal('Reason for rejecting the name change must be 2000 characters or less');
+        .toEqual('Reason for rejecting the name change must be 2000 characters or less');
     });
 
   });

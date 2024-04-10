@@ -23,7 +23,7 @@
 
       validatorResult = validate(mockRequest, validator.messageTemplate());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate a valid request - no attendance time', function() {
@@ -34,7 +34,7 @@
 
       validatorResult = validate(mockRequest, validator.messageTemplate());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate a valid request - no sentence date', function() {
@@ -47,7 +47,7 @@
 
       validatorResult = validate(mockRequest, validator.messageTemplate());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate a valid request - no attendance date', function() {
@@ -60,7 +60,7 @@
 
       validatorResult = validate(mockRequest, validator.messageTemplate());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate a valid request - only attendance date', function() {
@@ -70,7 +70,7 @@
 
       validatorResult = validate(mockRequest, validator.messageTemplate());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate a valid request - only sentence date', function() {
@@ -80,7 +80,7 @@
 
       validatorResult = validate(mockRequest, validator.messageTemplate());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate a valid request - only attendance time', function() {
@@ -92,7 +92,7 @@
 
       validatorResult = validate(mockRequest, validator.messageTemplate());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate a invalid request - empty attendance date', function() {
@@ -102,9 +102,9 @@
 
       validatorResult = validate(mockRequest, validator.messageTemplate());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.attendanceDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.attendanceDate[0].summary).to.equal('Enter an attendance date');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.attendanceDate[0]).toHaveProperty('summary');
+      expect(validatorResult.attendanceDate[0].summary).toEqual('Enter an attendance date');
     });
 
     it('should validate a invalid request - invalid chars in attendance date', function() {
@@ -114,9 +114,9 @@
 
       validatorResult = validate(mockRequest, validator.messageTemplate());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.attendanceDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.attendanceDate[0].summary).to.equal('Attendance date can only include numbers and forward slashes');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.attendanceDate[0]).toHaveProperty('summary');
+      expect(validatorResult.attendanceDate[0].summary).toEqual('Attendance date can only include numbers and forward slashes');
     });
 
     it('should validate a invalid request - invalid format in attendance date', function() {
@@ -126,9 +126,9 @@
 
       validatorResult = validate(mockRequest, validator.messageTemplate());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.attendanceDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.attendanceDate[0].summary).to.equal('Enter attendance date in the correct format, for example, 31/01/2023');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.attendanceDate[0]).toHaveProperty('summary');
+      expect(validatorResult.attendanceDate[0].summary).toEqual('Enter attendance date in the correct format, for example, 31/01/2023');
     });
 
     it('should validate a invalid request - invalid attendance date', function() {
@@ -138,9 +138,9 @@
 
       validatorResult = validate(mockRequest, validator.messageTemplate());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.attendanceDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.attendanceDate[0].summary).to.equal('Enter a real date');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.attendanceDate[0]).toHaveProperty('summary');
+      expect(validatorResult.attendanceDate[0].summary).toEqual('Enter a real date');
     });
 
     it('should validate a invalid request - empty sentence date', function() {
@@ -150,9 +150,9 @@
 
       validatorResult = validate(mockRequest, validator.messageTemplate());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.sentenceDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.sentenceDate[0].summary).to.equal('Enter a sentence date');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.sentenceDate[0]).toHaveProperty('summary');
+      expect(validatorResult.sentenceDate[0].summary).toEqual('Enter a sentence date');
     });
 
     it('should validate a invalid request - invalid chars in sentence date', function() {
@@ -162,9 +162,9 @@
 
       validatorResult = validate(mockRequest, validator.messageTemplate());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.sentenceDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.sentenceDate[0].summary).to.equal('Sentence date can only include numbers and forward slashes');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.sentenceDate[0]).toHaveProperty('summary');
+      expect(validatorResult.sentenceDate[0].summary).toEqual('Sentence date can only include numbers and forward slashes');
     });
 
     it('should validate a invalid request - invalid format in sentence date', function() {
@@ -174,9 +174,9 @@
 
       validatorResult = validate(mockRequest, validator.messageTemplate());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.sentenceDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.sentenceDate[0].summary).to.equal('Enter sentence date in the correct format, for example, 31/01/2023');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.sentenceDate[0]).toHaveProperty('summary');
+      expect(validatorResult.sentenceDate[0].summary).toEqual('Enter sentence date in the correct format, for example, 31/01/2023');
     });
 
     it('should validate a invalid request - invalid sentence date', function() {
@@ -186,9 +186,9 @@
 
       validatorResult = validate(mockRequest, validator.messageTemplate());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.sentenceDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.sentenceDate[0].summary).to.equal('Enter a real date');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.sentenceDate[0]).toHaveProperty('summary');
+      expect(validatorResult.sentenceDate[0].summary).toEqual('Enter a real date');
     });
 
     it('should validate an invalid request - attendance time fields are empty', function() {
@@ -200,9 +200,9 @@
 
       validatorResult = validate(mockRequest, validator.messageTemplate());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.attendanceTimeHour[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.attendanceTimeHour[0].details).to.equal('Enter an attendance time');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.attendanceTimeHour[0]).toHaveProperty('details');
+      expect(validatorResult.attendanceTimeHour[0].details).toEqual('Enter an attendance time');
     });
 
     it('should validate an invalid request - attendance time missing hours', function() {
@@ -214,9 +214,9 @@
 
       validatorResult = validate(mockRequest, validator.messageTemplate());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.attendanceTimeHour[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.attendanceTimeHour[0].details).to.equal('Enter an hour for attendance time');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.attendanceTimeHour[0]).toHaveProperty('details');
+      expect(validatorResult.attendanceTimeHour[0].details).toEqual('Enter an hour for attendance time');
     });
 
     it('should validate an invalid request - attendance time missing minutes', function() {
@@ -228,9 +228,9 @@
 
       validatorResult = validate(mockRequest, validator.messageTemplate());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.attendanceTimeMinute[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.attendanceTimeMinute[0].details).to.equal('Enter minutes for attendance time');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.attendanceTimeMinute[0]).toHaveProperty('details');
+      expect(validatorResult.attendanceTimeMinute[0].details).toEqual('Enter minutes for attendance time');
     });
 
     it('should validate an invalid request - attendance time contains non number values', function() {
@@ -242,11 +242,11 @@
 
       validatorResult = validate(mockRequest, validator.messageTemplate());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.attendanceTimeHour[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.attendanceTimeHour[0].details).to.equal('Attendance time must only include numbers - you cannot enter letters or special characters');
-      expect(validatorResult.attendanceTimeMinute[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.attendanceTimeMinute[0].details).to.equal('Attendance time must only include numbers - you cannot enter letters or special characters');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.attendanceTimeHour[0]).toHaveProperty('details');
+      expect(validatorResult.attendanceTimeHour[0].details).toEqual('Attendance time must only include numbers - you cannot enter letters or special characters');
+      expect(validatorResult.attendanceTimeMinute[0]).toHaveProperty('details');
+      expect(validatorResult.attendanceTimeMinute[0].details).toEqual('Attendance time must only include numbers - you cannot enter letters or special characters');
     });
 
     it('should validate an invalid request - attendance time hours and minutes out of bounds', function() {
@@ -258,11 +258,11 @@
 
       validatorResult = validate(mockRequest, validator.messageTemplate());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.attendanceTimeHour[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.attendanceTimeHour[0].details).to.equal('Enter an hour between 0 and 12');
-      expect(validatorResult.attendanceTimeMinute[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.attendanceTimeMinute[0].details).to.equal('Enter minutes between 0 and 59');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.attendanceTimeHour[0]).toHaveProperty('details');
+      expect(validatorResult.attendanceTimeHour[0].details).toEqual('Enter an hour between 0 and 12');
+      expect(validatorResult.attendanceTimeMinute[0]).toHaveProperty('details');
+      expect(validatorResult.attendanceTimeMinute[0].details).toEqual('Enter minutes between 0 and 59');
     });
 
     it('should validate an invalid request - attendance time period missing', function() {
@@ -274,9 +274,9 @@
 
       validatorResult = validate(mockRequest, validator.messageTemplate());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.attendanceTimePeriod[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.attendanceTimePeriod[0].details).to.equal('Select whether attendance time is am or pm');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.attendanceTimePeriod[0]).toHaveProperty('details');
+      expect(validatorResult.attendanceTimePeriod[0].details).toEqual('Select whether attendance time is am or pm');
     });
 
   });
@@ -295,7 +295,7 @@
 
       validatorResult = validate(mockRequest, validator.findJurors());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate an invalid request - juror number search - empty field', function() {
@@ -306,9 +306,9 @@
 
       validatorResult = validate(mockRequest, validator.findJurors());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.jurorNumberSearch[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.jurorNumberSearch[0].details).to.equal('Enter juror number');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.jurorNumberSearch[0]).toHaveProperty('details');
+      expect(validatorResult.jurorNumberSearch[0].details).toEqual('Enter juror number');
     });
 
     it('should validate an invalid request - juror number search - invalid chars', function() {
@@ -319,9 +319,9 @@
 
       validatorResult = validate(mockRequest, validator.findJurors());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.jurorNumberSearch[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.jurorNumberSearch[0].details).to.equal('Juror number can only include numbers');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.jurorNumberSearch[0]).toHaveProperty('details');
+      expect(validatorResult.jurorNumberSearch[0].details).toEqual('Juror number can only include numbers');
     });
 
     it('should validate an invalid request - juror number search - longer than 9 numbers', function() {
@@ -332,9 +332,9 @@
 
       validatorResult = validate(mockRequest, validator.findJurors());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.jurorNumberSearch[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.jurorNumberSearch[0].details).to.equal('Juror number must be 9 numbers');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.jurorNumberSearch[0]).toHaveProperty('details');
+      expect(validatorResult.jurorNumberSearch[0].details).toEqual('Juror number must be 9 numbers');
     });
 
     it('should validate a valid request - juror name search', function() {
@@ -345,7 +345,7 @@
 
       validatorResult = validate(mockRequest, validator.findJurors());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate an invalid request - juror name search - empty field', function() {
@@ -356,9 +356,9 @@
 
       validatorResult = validate(mockRequest, validator.findJurors());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.jurorNameSearch[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.jurorNameSearch[0].details).to.equal('Enter juror name');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.jurorNameSearch[0]).toHaveProperty('details');
+      expect(validatorResult.jurorNameSearch[0].details).toEqual('Enter juror name');
     });
 
     it('should validate a valid request - pool no search', function() {
@@ -369,7 +369,7 @@
 
       validatorResult = validate(mockRequest, validator.findJurors());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate an invalid request - pool no search - empty field', function() {
@@ -380,9 +380,9 @@
 
       validatorResult = validate(mockRequest, validator.findJurors());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.poolSearch[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.poolSearch[0].details).to.equal('Enter pool number');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.poolSearch[0]).toHaveProperty('details');
+      expect(validatorResult.poolSearch[0].details).toEqual('Enter pool number');
     });
 
     it('should validate an invalid request - pool no search - invalid chars', function() {
@@ -393,9 +393,9 @@
 
       validatorResult = validate(mockRequest, validator.findJurors());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.poolSearch[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.poolSearch[0].details).to.equal('Pool number can only include numbers');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.poolSearch[0]).toHaveProperty('details');
+      expect(validatorResult.poolSearch[0].details).toEqual('Pool number can only include numbers');
     });
 
     it('should validate an invalid request - pool no search - longer than 9 chars', function() {
@@ -406,9 +406,9 @@
 
       validatorResult = validate(mockRequest, validator.findJurors());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.poolSearch[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.poolSearch[0].details).to.equal('Pool number must be 9 numbers');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.poolSearch[0]).toHaveProperty('details');
+      expect(validatorResult.poolSearch[0].details).toEqual('Pool number must be 9 numbers');
     });
 
     it('should validate a valid request - next due at court date search', function() {
@@ -419,7 +419,7 @@
 
       validatorResult = validate(mockRequest, validator.findJurors());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate a invalid request - next due at court date search - empty date', function() {
@@ -430,9 +430,9 @@
 
       validatorResult = validate(mockRequest, validator.findJurors());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.nextDueAtCourtDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.nextDueAtCourtDate[0].summary).to.equal('Enter date next due at court');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.nextDueAtCourtDate[0]).toHaveProperty('summary');
+      expect(validatorResult.nextDueAtCourtDate[0].summary).toEqual('Enter date next due at court');
     });
 
     it('should validate a invalid request - next due at court date search - invalid chars', function() {
@@ -443,9 +443,9 @@
 
       validatorResult = validate(mockRequest, validator.findJurors());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.nextDueAtCourtDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.nextDueAtCourtDate[0].summary).to.equal('Date next due at court can only include numbers and forward slashes');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.nextDueAtCourtDate[0]).toHaveProperty('summary');
+      expect(validatorResult.nextDueAtCourtDate[0].summary).toEqual('Date next due at court can only include numbers and forward slashes');
     });
 
     it('should validate a invalid request - next due at court date search - invalid format', function() {
@@ -456,9 +456,9 @@
 
       validatorResult = validate(mockRequest, validator.findJurors());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.nextDueAtCourtDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.nextDueAtCourtDate[0].summary).to.equal('Enter next due at court date in the correct format, for example, 31/01/2023');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.nextDueAtCourtDate[0]).toHaveProperty('summary');
+      expect(validatorResult.nextDueAtCourtDate[0].summary).toEqual('Enter next due at court date in the correct format, for example, 31/01/2023');
     });
 
     it('should validate a invalid request - next due at court date search - invalid date', function() {
@@ -469,9 +469,9 @@
 
       validatorResult = validate(mockRequest, validator.findJurors());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.nextDueAtCourtDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.nextDueAtCourtDate[0].summary).to.equal('Enter a real date');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.nextDueAtCourtDate[0]).toHaveProperty('summary');
+      expect(validatorResult.nextDueAtCourtDate[0].summary).toEqual('Enter a real date');
     });
 
     it('should validate a valid request - deferral date search', function() {
@@ -482,7 +482,7 @@
 
       validatorResult = validate(mockRequest, validator.findJurors());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate a invalid request - deferral date search - empty date', function() {
@@ -493,9 +493,9 @@
 
       validatorResult = validate(mockRequest, validator.findJurors());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.deferralDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.deferralDate[0].summary).to.equal('Enter date deferred to');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.deferralDate[0]).toHaveProperty('summary');
+      expect(validatorResult.deferralDate[0].summary).toEqual('Enter date deferred to');
     });
 
     it('should validate a invalid request - deferral date search - invalid chars', function() {
@@ -506,9 +506,9 @@
 
       validatorResult = validate(mockRequest, validator.findJurors());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.deferralDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.deferralDate[0].summary).to.equal('Date deferred to can only include numbers and forward slashes');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.deferralDate[0]).toHaveProperty('summary');
+      expect(validatorResult.deferralDate[0].summary).toEqual('Date deferred to can only include numbers and forward slashes');
     });
 
     it('should validate a invalid request - deferral date search - invalid format', function() {
@@ -519,9 +519,9 @@
 
       validatorResult = validate(mockRequest, validator.findJurors());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.deferralDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.deferralDate[0].summary).to.equal('Enter date deferred to in the correct format, for example, 31/01/2023');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.deferralDate[0]).toHaveProperty('summary');
+      expect(validatorResult.deferralDate[0].summary).toEqual('Enter date deferred to in the correct format, for example, 31/01/2023');
     });
 
     it('should validate a invalid request - deferral date search - invalid date', function() {
@@ -532,9 +532,9 @@
 
       validatorResult = validate(mockRequest, validator.findJurors());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.deferralDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.deferralDate[0].summary).to.equal('Enter a real date');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.deferralDate[0]).toHaveProperty('summary');
+      expect(validatorResult.deferralDate[0].summary).toEqual('Enter a real date');
     });
 
     it('should validate a invalid request - no search by option selected', function() {
@@ -544,9 +544,9 @@
 
       validatorResult = validate(mockRequest, validator.findJurors());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.searchBy[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.searchBy[0].summary).to.equal('Select how you want to search for jurors to send message to');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.searchBy[0]).toHaveProperty('summary');
+      expect(validatorResult.searchBy[0].summary).toEqual('Select how you want to search for jurors to send message to');
     });
 
   });
@@ -564,7 +564,7 @@
 
       validatorResult = validate(mockRequest, validator.trialSearch());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate an invalid request - empty field', function() {
@@ -574,9 +574,9 @@
 
       validatorResult = validate(mockRequest, validator.trialSearch());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.searchTrialNumber[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.searchTrialNumber[0].summary).to.equal('Enter a trial number');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.searchTrialNumber[0]).toHaveProperty('summary');
+      expect(validatorResult.searchTrialNumber[0].summary).toEqual('Enter a trial number');
     });
 
     it('should validate an invalid request - lower case letters', function() {
@@ -586,9 +586,9 @@
 
       validatorResult = validate(mockRequest, validator.trialSearch());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.searchTrialNumber[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.searchTrialNumber[0].summary).to.equal('Enter a trial number using uppercase letters only');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.searchTrialNumber[0]).toHaveProperty('summary');
+      expect(validatorResult.searchTrialNumber[0].summary).toEqual('Enter a trial number using uppercase letters only');
     });
 
     it('should validate an invalid request - more than 16 chars', function() {
@@ -598,9 +598,9 @@
 
       validatorResult = validate(mockRequest, validator.trialSearch());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.searchTrialNumber[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.searchTrialNumber[0].summary).to.equal('Trial number must be 16 characters or less');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.searchTrialNumber[0]).toHaveProperty('summary');
+      expect(validatorResult.searchTrialNumber[0].summary).toEqual('Trial number must be 16 characters or less');
     });
 
   });

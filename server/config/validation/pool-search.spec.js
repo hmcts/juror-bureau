@@ -20,7 +20,7 @@
   
         validatorResult = validate(mockRequest, poolSearchValidator());
 
-        expect(validatorResult).to.be.undefined;
+        expect(validatorResult).toBeUndefined();
       });
 
       it('should try to validate an invalid date', function() {
@@ -31,9 +31,9 @@
 
         validatorResult = validate(mockRequest, poolSearchValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.serviceStartDate[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.serviceStartDate[0].summary).to.equal('Enter a valid service start date');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.serviceStartDate[0]).toHaveProperty('summary');
+        expect(validatorResult.serviceStartDate[0].summary).toEqual('Enter a valid service start date');
       });
 
       it('should try to validate an invalid date - letters', function() {
@@ -44,9 +44,9 @@
 
         validatorResult = validate(mockRequest, poolSearchValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.serviceStartDate[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.serviceStartDate[0].summary).to.equal('Service start date must only include numbers');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.serviceStartDate[0]).toHaveProperty('summary');
+        expect(validatorResult.serviceStartDate[0].summary).toEqual('Service start date must only include numbers');
       });
 
       it('should try to validate an invalid date - invalid format', function() {
@@ -57,9 +57,9 @@
 
         validatorResult = validate(mockRequest, poolSearchValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.serviceStartDate[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.serviceStartDate[0].summary).to.equal('Enter a service start date in the correct format, for example, 31/01/2023');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.serviceStartDate[0]).toHaveProperty('summary');
+        expect(validatorResult.serviceStartDate[0].summary).toEqual('Enter a service start date in the correct format, for example, 31/01/2023');
       });
 
       it('should try to validate an invalid pool number', function() {
@@ -70,9 +70,9 @@
 
         validatorResult = validate(mockRequest, poolSearchValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.poolNumber[0].summary).to.equal('Pool number must only numbers');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.poolNumber[0]).toHaveProperty('summary');
+        expect(validatorResult.poolNumber[0].summary).toEqual('Pool number must only contain numbers');
       });
 
       it('should try to validate an invalid pool number - chars < 3', function() {
@@ -83,9 +83,9 @@
 
         validatorResult = validate(mockRequest, poolSearchValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.poolNumber[0].summary).to.equal('Pool number must have between 3 and 9 numbers');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.poolNumber[0]).toHaveProperty('summary');
+        expect(validatorResult.poolNumber[0].summary).toEqual('Pool number must have between 3 and 9 numbers');
       });
 
       it('should try to validate an invalid pool number - chars > 9', function() {
@@ -96,9 +96,9 @@
 
         validatorResult = validate(mockRequest, poolSearchValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.poolNumber[0].summary).to.equal('Pool number must have between 3 and 9 numbers');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.poolNumber[0]).toHaveProperty('summary');
+        expect(validatorResult.poolNumber[0].summary).toEqual('Pool number must have between 3 and 9 numbers');
       });
   
     });

@@ -20,7 +20,7 @@
   
         validatorResult = validate(mockRequest, validator());
 
-        expect(validatorResult).to.be.undefined;
+        expect(validatorResult).toBeUndefined();
       });
   
       it('should try to validate an invalid request - no pools selected', function() {
@@ -30,9 +30,9 @@
 
         validatorResult = validate(mockRequest, validator());
 
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.selectedPools[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.selectedPools[0].summary).to.equal('Select which pools you want to use jurors from');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.selectedPools[0]).toHaveProperty('summary');
+        expect(validatorResult.selectedPools[0].summary).toEqual('Select which pools you want to use jurors from');
         
       });
   

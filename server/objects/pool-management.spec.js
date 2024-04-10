@@ -21,8 +21,8 @@
         , testObj = requestObj.deferralMaintenance.deferrals.get(rpStub, appStub, 'test-token', locationCode)
         , realUri = urljoin('http://localhost:8080/api/v1', 'moj/deferral-maintenance/deferrals', locationCode);
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('GET');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('GET');
     });
 
     // eslint-disable-next-line max-len
@@ -31,8 +31,8 @@
         , testObj = requestObj.deferralMaintenance.availablePools.get(rpStub, appStub, 'test-token', locationCode)
         , realUri = urljoin('http://localhost:8080/api/v1', 'moj/deferral-maintenance/available-pools', locationCode);
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('GET');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('GET');
     });
 
     it('should vall the correct endpoint to post the jurors to be deferred', function() {
@@ -43,13 +43,13 @@
         , realUri = urljoin('http://localhost:8080/api/v1',
           'moj/deferral-maintenance/deferrals/allocate-jurors-to-pool');
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('POST');
-      expect(testObj.body).to.not.be.undefined;
-      expect(testObj.body.hasOwnProperty('jurors')).to.be.true;
-      expect(testObj.body.hasOwnProperty('poolNumber')).to.be.true;
-      expect(testObj.body.jurors).to.be.eql(jurors);
-      expect(testObj.body.poolNumber).to.be.equal(poolNumber);
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('POST');
+      expect(testObj.body).toBeTruthy();
+      expect(testObj.body.hasOwnProperty('jurors')).toEqual(true);
+      expect(testObj.body.hasOwnProperty('poolNumber')).toEqual(true);
+      expect(testObj.body.jurors).toEqual(jurors);
+      expect(testObj.body.poolNumber).toEqual(poolNumber);
     });
 
     // eslint-disable-next-line max-len
@@ -58,8 +58,8 @@
         , testObj = requestObj.reassignJurors.availablePools.get(rpStub, appStub, 'test-token', locationCode)
         , realUri = urljoin('http://localhost:8080/api/v1', 'moj/manage-pool/available-pools', locationCode);
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('GET');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('GET');
     });
 
     // eslint-disable-next-line max-len
@@ -69,8 +69,8 @@
         // eslint-disable-next-line max-len
         , realUri = urljoin('http://localhost:8080/api/v1', 'moj/manage-pool/available-pools-court-owned', locationCode);
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('GET');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('GET');
     });
 
     it('shout call the correct endpoint to reassign the selected juror to a different pool', function() {
@@ -84,19 +84,19 @@
         , testObj = requestObj.reassignJurors.reassignJuror.put(rpStub, appStub, 'test-token', payload)
         , realUri = urljoin('http://localhost:8080/api/v1', 'moj/manage-pool/reassign-jurors');
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('PUT');
-      expect(testObj.body).to.not.be.undefined;
-      expect(testObj.body.hasOwnProperty('jurorNumbers')).to.be.true;
-      expect(testObj.body.jurorNumbers).to.be.eql(payload.jurorNumbers);
-      expect(testObj.body.hasOwnProperty('receivingCourtLocCode')).to.be.true;
-      expect(testObj.body.receivingCourtLocCode).to.be.equal(payload.receivingCourtLocCode);
-      expect(testObj.body.hasOwnProperty('receivingPoolNumber')).to.be.true;
-      expect(testObj.body.receivingPoolNumber).to.be.equal(payload.receivingPoolNumber);
-      expect(testObj.body.hasOwnProperty('sourceCourtLocCode')).to.be.true;
-      expect(testObj.body.sourceCourtLocCode).to.be.equal(payload.sourceCourtLocCode);
-      expect(testObj.body.hasOwnProperty('sourcePoolNumber')).to.be.true;
-      expect(testObj.body.sourcePoolNumber).to.be.equal(payload.sourcePoolNumber);
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('PUT');
+      expect(testObj.body).toBeTruthy();
+      expect(testObj.body.hasOwnProperty('jurorNumbers')).toEqual(true);
+      expect(testObj.body.jurorNumbers).toEqual(payload.jurorNumbers);
+      expect(testObj.body.hasOwnProperty('receivingCourtLocCode')).toEqual(true);
+      expect(testObj.body.receivingCourtLocCode).toEqual(payload.receivingCourtLocCode);
+      expect(testObj.body.hasOwnProperty('receivingPoolNumber')).toEqual(true);
+      expect(testObj.body.receivingPoolNumber).toEqual(payload.receivingPoolNumber);
+      expect(testObj.body.hasOwnProperty('sourceCourtLocCode')).toEqual(true);
+      expect(testObj.body.sourceCourtLocCode).toEqual(payload.sourceCourtLocCode);
+      expect(testObj.body.hasOwnProperty('sourcePoolNumber')).toEqual(true);
+      expect(testObj.body.sourcePoolNumber).toEqual(payload.sourcePoolNumber);
     });
 
   });

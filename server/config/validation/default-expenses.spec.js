@@ -20,7 +20,7 @@
 
       const validatorResult = validate(mockRequest, expensesValidator());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate an invalid input for finanical loss', function() {
@@ -37,14 +37,14 @@
 
       const validatorResult = validate(mockRequest, expensesValidator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownProperty('financialLoss');
-      expect(validatorResult.financialLoss[0]).to.have.ownProperty('summary');
-      expect(validatorResult.financialLoss[0]).to.have.ownProperty('details');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('financialLoss');
+      expect(validatorResult.financialLoss[0]).toHaveProperty('summary');
+      expect(validatorResult.financialLoss[0]).toHaveProperty('details');
       // eslint-disable-next-line
-      expect(validatorResult.financialLoss[0].summary).to.be.equal('Loss of earnings or benefits per day can only include numbers and a decimal point');
+      expect(validatorResult.financialLoss[0].summary).toEqual('Loss of earnings or benefits per day can only include numbers and a decimal point');
       // eslint-disable-next-line
-      expect(validatorResult.financialLoss[0].details).to.be.equal('Loss of earnings or benefits per day can only include numbers and a decimal point');
+      expect(validatorResult.financialLoss[0].details).toEqual('Loss of earnings or benefits per day can only include numbers and a decimal point');
 
     });
 
@@ -62,14 +62,14 @@
 
       const validatorResult = validate(mockRequest, expensesValidator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownProperty('smartCard');
-      expect(validatorResult.smartCard[0]).to.have.ownProperty('summary');
-      expect(validatorResult.smartCard[0]).to.have.ownProperty('details');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('smartCard');
+      expect(validatorResult.smartCard[0]).toHaveProperty('summary');
+      expect(validatorResult.smartCard[0]).toHaveProperty('details');
       // eslint-disable-next-line
-      expect(validatorResult.smartCard[0].summary).to.be.equal('Smartcard number must be 20 characters or fewer');
+      expect(validatorResult.smartCard[0].summary).toEqual('Smartcard number must be 20 characters or fewer');
       // eslint-disable-next-line
-      expect(validatorResult.smartCard[0].details).to.be.equal('Smartcard number must be 20 characters or fewer');
+      expect(validatorResult.smartCard[0].details).toEqual('Smartcard number must be 20 characters or fewer');
 
     });
 
@@ -87,14 +87,14 @@
 
       const validatorResult = validate(mockRequest, expensesValidator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownProperty('mileage');
-      expect(validatorResult.mileage[0]).to.have.ownProperty('summary');
-      expect(validatorResult.mileage[0]).to.have.ownProperty('details');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('mileage');
+      expect(validatorResult.mileage[0]).toHaveProperty('summary');
+      expect(validatorResult.mileage[0]).toHaveProperty('details');
       // eslint-disable-next-line
-      expect(validatorResult.mileage[0].summary).to.be.equal('Miles travelled can only include numbers');
+      expect(validatorResult.mileage[0].summary).toEqual('Miles travelled can only include numbers');
       // eslint-disable-next-line
-      expect(validatorResult.mileage[0].details[0]).to.be.equal('Miles travelled can only include numbers');
+      expect(validatorResult.mileage[0].details[0]).toEqual('Miles travelled can only include numbers');
 
     });
 
@@ -112,14 +112,14 @@
 
       const validatorResult = validate(mockRequest, expensesValidator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownProperty('mileage');
-      expect(validatorResult.mileage[0]).to.have.ownProperty('summary');
-      expect(validatorResult.mileage[0]).to.have.ownProperty('details');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('mileage');
+      expect(validatorResult.mileage[0]).toHaveProperty('summary');
+      expect(validatorResult.mileage[0]).toHaveProperty('details');
       // eslint-disable-next-line
-      expect(validatorResult.mileage[0].summary).to.be.equal('Miles travelled must be a whole number');
+      expect(validatorResult.mileage[0].summary).toEqual('Miles travelled must be a whole number');
       // eslint-disable-next-line
-      expect(validatorResult.mileage[0].details[0]).to.be.equal('Miles travelled must be a whole number');
+      expect(validatorResult.mileage[0].details[0]).toEqual('Miles travelled must be a whole number');
 
     });
 
@@ -137,14 +137,14 @@
 
       const validatorResult = validate(mockRequest, expensesValidator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownProperty('travelTime');
-      expect(validatorResult.travelTime[0]).to.have.ownProperty('summary');
-      expect(validatorResult.travelTime[0]).to.have.ownProperty('details');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('travelTime');
+      expect(validatorResult.travelTime[0]).toHaveProperty('summary');
+      expect(validatorResult.travelTime[0]).toHaveProperty('details');
       // eslint-disable-next-line
-      expect(validatorResult.travelTime[0].summary).to.be.equal('Total travel time can only include numbers');
+      expect(validatorResult.travelTime[0].summary).toEqual('Total travel time can only include numbers');
       // eslint-disable-next-line
-      expect(validatorResult.travelTime[0].details[0]).to.be.equal('Total travel time can only include numbers');
+      expect(validatorResult.travelTime[0].details[0]).toEqual('Total travel time can only include numbers');
 
     });
 
@@ -162,14 +162,14 @@
 
       const validatorResult = validate(mockRequest, expensesValidator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownProperty('travelTime');
-      expect(validatorResult.travelTime[0]).to.have.ownProperty('summary');
-      expect(validatorResult.travelTime[0]).to.have.ownProperty('details');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('travelTime');
+      expect(validatorResult.travelTime[0]).toHaveProperty('summary');
+      expect(validatorResult.travelTime[0]).toHaveProperty('details');
       // eslint-disable-next-line
-      expect(validatorResult.travelTime[0].summary).to.be.equal('Hours entered cannot be negative');
+      expect(validatorResult.travelTime[0].summary).toEqual('Hours entered cannot be negative');
       // eslint-disable-next-line
-      expect(validatorResult.travelTime[0].details[0]).to.be.equal('Hours entered cannot be negative');
+      expect(validatorResult.travelTime[0].details[0]).toEqual('Hours entered cannot be negative');
 
     });
 
@@ -188,14 +188,14 @@
 
       const validatorResult = validate(mockRequest, expensesValidator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownProperty('travelTime');
-      expect(validatorResult.travelTime[0]).to.have.ownProperty('summary');
-      expect(validatorResult.travelTime[0]).to.have.ownProperty('details');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('travelTime');
+      expect(validatorResult.travelTime[0]).toHaveProperty('summary');
+      expect(validatorResult.travelTime[0]).toHaveProperty('details');
       // eslint-disable-next-line
-      expect(validatorResult.travelTime[0].summary).to.be.equal('Total travel time can only include numbers');
+      expect(validatorResult.travelTime[0].summary).toEqual('Total travel time can only include numbers');
       // eslint-disable-next-line
-      expect(validatorResult.travelTime[0].details[0]).to.be.equal('Total travel time can only include numbers');
+      expect(validatorResult.travelTime[0].details[0]).toEqual('Total travel time can only include numbers');
 
     });
 
@@ -214,14 +214,14 @@
 
       const validatorResult = validate(mockRequest, expensesValidator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownProperty('travelTime');
-      expect(validatorResult.travelTime[0]).to.have.ownProperty('summary');
-      expect(validatorResult.travelTime[0]).to.have.ownProperty('details');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('travelTime');
+      expect(validatorResult.travelTime[0]).toHaveProperty('summary');
+      expect(validatorResult.travelTime[0]).toHaveProperty('details');
       // eslint-disable-next-line
-      expect(validatorResult.travelTime[0].summary).to.be.equal('Enter minutes between 0 and 59');
+      expect(validatorResult.travelTime[0].summary).toEqual('Enter minutes between 0 and 59');
       // eslint-disable-next-line
-      expect(validatorResult.travelTime[0].details[0]).to.be.equal('Enter minutes between 0 and 59');
+      expect(validatorResult.travelTime[0].details[0]).toEqual('Enter minutes between 0 and 59');
 
     });
 

@@ -20,7 +20,7 @@
 
       validatorResult = validate(mockRequest, requestPoolVal.poolDetails(mockRequest));
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate the pool details - empty pool type', function() {
@@ -30,19 +30,19 @@
 
       validatorResult = validate(mockRequest, requestPoolVal.poolDetails(mockRequest));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('poolType');
-      expect(validatorResult.poolType).to.be.an.instanceof(Array);
-      expect(validatorResult.poolType).to.be.of.length(1);
-      expect(validatorResult.poolType[0]).to.be.an('object');
-      expect(validatorResult.poolType[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.poolType[0]).to.have.ownPropertyDescriptor('fields');
-      expect(validatorResult.poolType[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.poolType[0].summary).to.equal('Pool type is missing');
-      expect(validatorResult.poolType[0].fields).to.be.of.length(1);
-      expect(validatorResult.poolType[0].fields[0]).to.equal('poolType');
-      expect(validatorResult.poolType[0].details).to.be.of.length(1);
-      expect(validatorResult.poolType[0].details[0]).to.equal('Select a pool type');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('poolType');
+      expect(validatorResult.poolType).toBeInstanceOf(Array);
+      expect(validatorResult.poolType).toHaveLength(1);
+      expect(validatorResult.poolType[0]).toEqual(expect.any(Object));
+      expect(validatorResult.poolType[0]).toHaveProperty('summary');
+      expect(validatorResult.poolType[0]).toHaveProperty('fields');
+      expect(validatorResult.poolType[0]).toHaveProperty('details');
+      expect(validatorResult.poolType[0].summary).toEqual('Pool type is missing');
+      expect(validatorResult.poolType[0].fields).toHaveLength(1);
+      expect(validatorResult.poolType[0].fields[0]).toEqual('poolType');
+      expect(validatorResult.poolType[0].details).toHaveLength(1);
+      expect(validatorResult.poolType[0].details[0]).toEqual('Select a pool type');
     });
 
     it('should validate the pool details - empty number of jurors required', function() {
@@ -53,19 +53,19 @@
 
       validatorResult = validate(mockRequest, requestPoolVal.poolDetails(mockRequest));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('numberOfJurorsRequired');
-      expect(validatorResult.numberOfJurorsRequired).to.be.an.instanceof(Array);
-      expect(validatorResult.numberOfJurorsRequired).to.be.of.length(1);
-      expect(validatorResult.numberOfJurorsRequired[0]).to.be.an('object');
-      expect(validatorResult.numberOfJurorsRequired[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.numberOfJurorsRequired[0]).to.have.ownPropertyDescriptor('fields');
-      expect(validatorResult.numberOfJurorsRequired[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.numberOfJurorsRequired[0].summary).to.equal('Number of jurors required is missing');
-      expect(validatorResult.numberOfJurorsRequired[0].fields).to.be.of.length(1);
-      expect(validatorResult.numberOfJurorsRequired[0].fields[0]).to.equal('numberOfJurorsRequired');
-      expect(validatorResult.numberOfJurorsRequired[0].details).to.be.of.length(1);
-      expect(validatorResult.numberOfJurorsRequired[0].details[0]).to.equal('Enter the number of jurors required');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('numberOfJurorsRequired');
+      expect(validatorResult.numberOfJurorsRequired).toBeInstanceOf(Array);
+      expect(validatorResult.numberOfJurorsRequired).toHaveLength(1);
+      expect(validatorResult.numberOfJurorsRequired[0]).toEqual(expect.any(Object));
+      expect(validatorResult.numberOfJurorsRequired[0]).toHaveProperty('summary');
+      expect(validatorResult.numberOfJurorsRequired[0]).toHaveProperty('fields');
+      expect(validatorResult.numberOfJurorsRequired[0]).toHaveProperty('details');
+      expect(validatorResult.numberOfJurorsRequired[0].summary).toEqual('Number of jurors required is missing');
+      expect(validatorResult.numberOfJurorsRequired[0].fields).toHaveLength(1);
+      expect(validatorResult.numberOfJurorsRequired[0].fields[0]).toEqual('numberOfJurorsRequired');
+      expect(validatorResult.numberOfJurorsRequired[0].details).toHaveLength(1);
+      expect(validatorResult.numberOfJurorsRequired[0].details[0]).toEqual('Enter the number of jurors required');
     });
 
     it('should validate the pool details - invalid number of jurors required', function() {
@@ -76,19 +76,19 @@
 
       validatorResult = validate(mockRequest, requestPoolVal.poolDetails(mockRequest));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('numberOfJurorsRequired');
-      expect(validatorResult.numberOfJurorsRequired).to.be.an.instanceof(Array);
-      expect(validatorResult.numberOfJurorsRequired).to.be.of.length(1);
-      expect(validatorResult.numberOfJurorsRequired[0]).to.be.an('object');
-      expect(validatorResult.numberOfJurorsRequired[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.numberOfJurorsRequired[0]).to.have.ownPropertyDescriptor('fields');
-      expect(validatorResult.numberOfJurorsRequired[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.numberOfJurorsRequired[0].summary).to.equal('Number of jurors required is wrong');
-      expect(validatorResult.numberOfJurorsRequired[0].fields).to.be.of.length(1);
-      expect(validatorResult.numberOfJurorsRequired[0].fields[0]).to.equal('numberOfJurorsRequired');
-      expect(validatorResult.numberOfJurorsRequired[0].details).to.be.of.length(1);
-      expect(validatorResult.numberOfJurorsRequired[0].details[0]).to.equal('Number of pool members must be a number');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('numberOfJurorsRequired');
+      expect(validatorResult.numberOfJurorsRequired).toBeInstanceOf(Array);
+      expect(validatorResult.numberOfJurorsRequired).toHaveLength(1);
+      expect(validatorResult.numberOfJurorsRequired[0]).toEqual(expect.any(Object));
+      expect(validatorResult.numberOfJurorsRequired[0]).toHaveProperty('summary');
+      expect(validatorResult.numberOfJurorsRequired[0]).toHaveProperty('fields');
+      expect(validatorResult.numberOfJurorsRequired[0]).toHaveProperty('details');
+      expect(validatorResult.numberOfJurorsRequired[0].summary).toEqual('Number of jurors required is wrong');
+      expect(validatorResult.numberOfJurorsRequired[0].fields).toHaveLength(1);
+      expect(validatorResult.numberOfJurorsRequired[0].fields[0]).toEqual('numberOfJurorsRequired');
+      expect(validatorResult.numberOfJurorsRequired[0].details).toHaveLength(1);
+      expect(validatorResult.numberOfJurorsRequired[0].details[0]).toEqual('Number of pool members must be a number');
     });
 
     it('should validate the pool details - high number of jurors required', function() {
@@ -99,19 +99,19 @@
 
       validatorResult = validate(mockRequest, requestPoolVal.poolDetails(mockRequest));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('numberOfJurorsRequired');
-      expect(validatorResult.numberOfJurorsRequired).to.be.an.instanceof(Array);
-      expect(validatorResult.numberOfJurorsRequired).to.be.of.length(1);
-      expect(validatorResult.numberOfJurorsRequired[0]).to.be.an('object');
-      expect(validatorResult.numberOfJurorsRequired[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.numberOfJurorsRequired[0]).to.have.ownPropertyDescriptor('fields');
-      expect(validatorResult.numberOfJurorsRequired[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.numberOfJurorsRequired[0].summary).to.equal('Number of jurors required is too high');
-      expect(validatorResult.numberOfJurorsRequired[0].fields).to.be.of.length(1);
-      expect(validatorResult.numberOfJurorsRequired[0].fields[0]).to.equal('numberOfJurorsRequired');
-      expect(validatorResult.numberOfJurorsRequired[0].details).to.be.of.length(1);
-      expect(validatorResult.numberOfJurorsRequired[0].details[0]).to.equal('Enter a number that is less than 3,000');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('numberOfJurorsRequired');
+      expect(validatorResult.numberOfJurorsRequired).toBeInstanceOf(Array);
+      expect(validatorResult.numberOfJurorsRequired).toHaveLength(1);
+      expect(validatorResult.numberOfJurorsRequired[0]).toEqual(expect.any(Object));
+      expect(validatorResult.numberOfJurorsRequired[0]).toHaveProperty('summary');
+      expect(validatorResult.numberOfJurorsRequired[0]).toHaveProperty('fields');
+      expect(validatorResult.numberOfJurorsRequired[0]).toHaveProperty('details');
+      expect(validatorResult.numberOfJurorsRequired[0].summary).toEqual('Number of jurors required is too high');
+      expect(validatorResult.numberOfJurorsRequired[0].fields).toHaveLength(1);
+      expect(validatorResult.numberOfJurorsRequired[0].fields[0]).toEqual('numberOfJurorsRequired');
+      expect(validatorResult.numberOfJurorsRequired[0].details).toHaveLength(1);
+      expect(validatorResult.numberOfJurorsRequired[0].details[0]).toEqual('Enter a number that is less than 3,000');
     });
 
     it('should validate the pool details - low number of jurors required', function() {
@@ -122,19 +122,19 @@
 
       validatorResult = validate(mockRequest, requestPoolVal.poolDetails(mockRequest));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('numberOfJurorsRequired');
-      expect(validatorResult.numberOfJurorsRequired).to.be.an.instanceof(Array);
-      expect(validatorResult.numberOfJurorsRequired).to.be.of.length(1);
-      expect(validatorResult.numberOfJurorsRequired[0]).to.be.an('object');
-      expect(validatorResult.numberOfJurorsRequired[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.numberOfJurorsRequired[0]).to.have.ownPropertyDescriptor('fields');
-      expect(validatorResult.numberOfJurorsRequired[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.numberOfJurorsRequired[0].summary).to.equal('Number of jurors required is wrong');
-      expect(validatorResult.numberOfJurorsRequired[0].fields).to.be.of.length(1);
-      expect(validatorResult.numberOfJurorsRequired[0].fields[0]).to.equal('numberOfJurorsRequired');
-      expect(validatorResult.numberOfJurorsRequired[0].details).to.be.of.length(1);
-      expect(validatorResult.numberOfJurorsRequired[0].details[0]).to.equal('Number of pool members cannot be negative');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('numberOfJurorsRequired');
+      expect(validatorResult.numberOfJurorsRequired).toBeInstanceOf(Array);
+      expect(validatorResult.numberOfJurorsRequired).toHaveLength(1);
+      expect(validatorResult.numberOfJurorsRequired[0]).toEqual(expect.any(Object));
+      expect(validatorResult.numberOfJurorsRequired[0]).toHaveProperty('summary');
+      expect(validatorResult.numberOfJurorsRequired[0]).toHaveProperty('fields');
+      expect(validatorResult.numberOfJurorsRequired[0]).toHaveProperty('details');
+      expect(validatorResult.numberOfJurorsRequired[0].summary).toEqual('Number of jurors required is wrong');
+      expect(validatorResult.numberOfJurorsRequired[0].fields).toHaveLength(1);
+      expect(validatorResult.numberOfJurorsRequired[0].fields[0]).toEqual('numberOfJurorsRequired');
+      expect(validatorResult.numberOfJurorsRequired[0].details).toHaveLength(1);
+      expect(validatorResult.numberOfJurorsRequired[0].details[0]).toEqual('Number of pool members cannot be negative');
     });
 
     it('should validate the pool type alone - happy path', function() {
@@ -144,7 +144,7 @@
 
       validatorResult = validate(mockRequest, requestPoolVal.poolType(mockRequest));
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate the court name or location - happy path', function() {
@@ -154,7 +154,7 @@
 
       validatorResult = validate(mockRequest, requestPoolVal.courtNameOrLocation(mockRequest));
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate the court name or location - empty court name or location', function() {
@@ -162,15 +162,15 @@
 
       validatorResult = validate(mockRequest, requestPoolVal.courtNameOrLocation(mockRequest));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('courtNameOrLocation');
-      expect(validatorResult.courtNameOrLocation).to.be.instanceof(Array);
-      expect(validatorResult.courtNameOrLocation).to.be.of.length(1);
-      expect(validatorResult.courtNameOrLocation[0]).to.be.an('object');
-      expect(validatorResult.courtNameOrLocation[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.courtNameOrLocation[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.courtNameOrLocation[0].summary).to.equal('Enter the name or location code for a court');
-      expect(validatorResult.courtNameOrLocation[0].details).to.equal('Court name or location is missing');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('courtNameOrLocation');
+      expect(validatorResult.courtNameOrLocation).toBeInstanceOf(Array);
+      expect(validatorResult.courtNameOrLocation).toHaveLength(1);
+      expect(validatorResult.courtNameOrLocation[0]).toEqual(expect.any(Object));
+      expect(validatorResult.courtNameOrLocation[0]).toHaveProperty('summary');
+      expect(validatorResult.courtNameOrLocation[0]).toHaveProperty('details');
+      expect(validatorResult.courtNameOrLocation[0].summary).toEqual('Enter the name or location code for a court');
+      expect(validatorResult.courtNameOrLocation[0].details).toEqual('Court name or location is missing');
     });
 
     it('should validate the pool number - happy path', function() {
@@ -189,7 +189,7 @@
 
       validatorResult = validate(mockRequest.body, requestPoolVal.poolNumber(mockRequest));
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate the pool number - pool number exists', function() {
@@ -210,19 +210,19 @@
 
       validatorResult = validate(mockRequest.body, requestPoolVal.poolNumber(mockRequest));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('poolNumber');
-      expect(validatorResult.poolNumber).to.be.an.instanceof(Array);
-      expect(validatorResult.poolNumber).to.be.of.length(1);
-      expect(validatorResult.poolNumber[0]).to.be.an('object');
-      expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('fields');
-      expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.poolNumber[0].summary).to.equal('Pool number is wrong');
-      expect(validatorResult.poolNumber[0].fields).to.be.of.length(1);
-      expect(validatorResult.poolNumber[0].fields[0]).to.equal('poolNumber');
-      expect(validatorResult.poolNumber[0].details).to.be.of.length(1);
-      expect(validatorResult.poolNumber[0].details[0]).to.equal('Pool number is already being used');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('poolNumber');
+      expect(validatorResult.poolNumber).toBeInstanceOf(Array);
+      expect(validatorResult.poolNumber).toHaveLength(1);
+      expect(validatorResult.poolNumber[0]).toEqual(expect.any(Object));
+      expect(validatorResult.poolNumber[0]).toHaveProperty('summary');
+      expect(validatorResult.poolNumber[0]).toHaveProperty('fields');
+      expect(validatorResult.poolNumber[0]).toHaveProperty('details');
+      expect(validatorResult.poolNumber[0].summary).toEqual('Pool number is wrong');
+      expect(validatorResult.poolNumber[0].fields).toHaveLength(1);
+      expect(validatorResult.poolNumber[0].fields[0]).toEqual('poolNumber');
+      expect(validatorResult.poolNumber[0].details).toHaveLength(1);
+      expect(validatorResult.poolNumber[0].details[0]).toEqual('Pool number is already being used');
     });
 
     it('should validate the pool number - pool number is empty', function() {
@@ -241,19 +241,19 @@
 
       validatorResult = validate(mockRequest.body, requestPoolVal.poolNumber(mockRequest));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('poolNumber');
-      expect(validatorResult.poolNumber).to.be.an.instanceof(Array);
-      expect(validatorResult.poolNumber).to.be.of.length(1);
-      expect(validatorResult.poolNumber[0]).to.be.an('object');
-      expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('fields');
-      expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.poolNumber[0].summary).to.equal('Pool number is wrong');
-      expect(validatorResult.poolNumber[0].fields).to.be.of.length(1);
-      expect(validatorResult.poolNumber[0].fields[0]).to.equal('poolNumber');
-      expect(validatorResult.poolNumber[0].details).to.be.of.length(1);
-      expect(validatorResult.poolNumber[0].details[0]).to.equal('Please enter a pool number');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('poolNumber');
+      expect(validatorResult.poolNumber).toBeInstanceOf(Array);
+      expect(validatorResult.poolNumber).toHaveLength(1);
+      expect(validatorResult.poolNumber[0]).toEqual(expect.any(Object));
+      expect(validatorResult.poolNumber[0]).toHaveProperty('summary');
+      expect(validatorResult.poolNumber[0]).toHaveProperty('fields');
+      expect(validatorResult.poolNumber[0]).toHaveProperty('details');
+      expect(validatorResult.poolNumber[0].summary).toEqual('Pool number is wrong');
+      expect(validatorResult.poolNumber[0].fields).toHaveLength(1);
+      expect(validatorResult.poolNumber[0].fields[0]).toEqual('poolNumber');
+      expect(validatorResult.poolNumber[0].details).toHaveLength(1);
+      expect(validatorResult.poolNumber[0].details[0]).toEqual('Please enter a pool number');
     });
 
     it('should validate the pool number - pool number is less than the required length of 9', function() {
@@ -272,19 +272,19 @@
 
       validatorResult = validate(mockRequest.body, requestPoolVal.poolNumber(mockRequest));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('poolNumber');
-      expect(validatorResult.poolNumber).to.be.an.instanceof(Array);
-      expect(validatorResult.poolNumber).to.be.of.length(1);
-      expect(validatorResult.poolNumber[0]).to.be.an('object');
-      expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('fields');
-      expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.poolNumber[0].summary).to.equal('Pool number is wrong');
-      expect(validatorResult.poolNumber[0].fields).to.be.of.length(1);
-      expect(validatorResult.poolNumber[0].fields[0]).to.equal('poolNumber');
-      expect(validatorResult.poolNumber[0].details).to.be.of.length(1);
-      expect(validatorResult.poolNumber[0].details[0]).to.equal('Pool number must have a minimum of 9 characters');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('poolNumber');
+      expect(validatorResult.poolNumber).toBeInstanceOf(Array);
+      expect(validatorResult.poolNumber).toHaveLength(1);
+      expect(validatorResult.poolNumber[0]).toEqual(expect.any(Object));
+      expect(validatorResult.poolNumber[0]).toHaveProperty('summary');
+      expect(validatorResult.poolNumber[0]).toHaveProperty('fields');
+      expect(validatorResult.poolNumber[0]).toHaveProperty('details');
+      expect(validatorResult.poolNumber[0].summary).toEqual('Pool number is wrong');
+      expect(validatorResult.poolNumber[0].fields).toHaveLength(1);
+      expect(validatorResult.poolNumber[0].fields[0]).toEqual('poolNumber');
+      expect(validatorResult.poolNumber[0].details).toHaveLength(1);
+      expect(validatorResult.poolNumber[0].details[0]).toEqual('Pool number must have a minimum of 9 characters');
     });
 
     it('should validate the pool number - pool number is more than the required length of 9', function() {
@@ -303,19 +303,19 @@
 
       validatorResult = validate(mockRequest.body, requestPoolVal.poolNumber(mockRequest));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('poolNumber');
-      expect(validatorResult.poolNumber).to.be.an.instanceof(Array);
-      expect(validatorResult.poolNumber).to.be.of.length(1);
-      expect(validatorResult.poolNumber[0]).to.be.an('object');
-      expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('fields');
-      expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.poolNumber[0].summary).to.equal('Pool number is wrong');
-      expect(validatorResult.poolNumber[0].fields).to.be.of.length(1);
-      expect(validatorResult.poolNumber[0].fields[0]).to.equal('poolNumber');
-      expect(validatorResult.poolNumber[0].details).to.be.of.length(1);
-      expect(validatorResult.poolNumber[0].details[0]).to.equal('Pool number must have a maximum of 9 characters');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('poolNumber');
+      expect(validatorResult.poolNumber).toBeInstanceOf(Array);
+      expect(validatorResult.poolNumber).toHaveLength(1);
+      expect(validatorResult.poolNumber[0]).toEqual(expect.any(Object));
+      expect(validatorResult.poolNumber[0]).toHaveProperty('summary');
+      expect(validatorResult.poolNumber[0]).toHaveProperty('fields');
+      expect(validatorResult.poolNumber[0]).toHaveProperty('details');
+      expect(validatorResult.poolNumber[0].summary).toEqual('Pool number is wrong');
+      expect(validatorResult.poolNumber[0].fields).toHaveLength(1);
+      expect(validatorResult.poolNumber[0].fields[0]).toEqual('poolNumber');
+      expect(validatorResult.poolNumber[0].details).toHaveLength(1);
+      expect(validatorResult.poolNumber[0].details[0]).toEqual('Pool number must have a maximum of 9 characters');
     });
 
     it('should validate the pool number - pool number does not match the court code', function() {
@@ -334,19 +334,19 @@
 
       validatorResult = validate(mockRequest.body, requestPoolVal.poolNumber(mockRequest));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('poolNumber');
-      expect(validatorResult.poolNumber).to.be.an.instanceof(Array);
-      expect(validatorResult.poolNumber).to.be.of.length(1);
-      expect(validatorResult.poolNumber[0]).to.be.an('object');
-      expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('fields');
-      expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.poolNumber[0].summary).to.equal('Pool number is wrong');
-      expect(validatorResult.poolNumber[0].fields).to.be.of.length(1);
-      expect(validatorResult.poolNumber[0].fields[0]).to.equal('poolNumber');
-      expect(validatorResult.poolNumber[0].details).to.be.of.length(1);
-      expect(validatorResult.poolNumber[0].details[0]).to.equal('Pool number must use court location code');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('poolNumber');
+      expect(validatorResult.poolNumber).toBeInstanceOf(Array);
+      expect(validatorResult.poolNumber).toHaveLength(1);
+      expect(validatorResult.poolNumber[0]).toEqual(expect.any(Object));
+      expect(validatorResult.poolNumber[0]).toHaveProperty('summary');
+      expect(validatorResult.poolNumber[0]).toHaveProperty('fields');
+      expect(validatorResult.poolNumber[0]).toHaveProperty('details');
+      expect(validatorResult.poolNumber[0].summary).toEqual('Pool number is wrong');
+      expect(validatorResult.poolNumber[0].fields).toHaveLength(1);
+      expect(validatorResult.poolNumber[0].fields[0]).toEqual('poolNumber');
+      expect(validatorResult.poolNumber[0].details).toHaveLength(1);
+      expect(validatorResult.poolNumber[0].details[0]).toEqual('Pool number must use court location code');
     });
 
     it('should validate the pool number - pool number does not match the year of attendance', function() {
@@ -365,19 +365,19 @@
 
       validatorResult = validate(mockRequest.body, requestPoolVal.poolNumber(mockRequest));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('poolNumber');
-      expect(validatorResult.poolNumber).to.be.an.instanceof(Array);
-      expect(validatorResult.poolNumber).to.be.of.length(1);
-      expect(validatorResult.poolNumber[0]).to.be.an('object');
-      expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('fields');
-      expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.poolNumber[0].summary).to.equal('Pool number is wrong');
-      expect(validatorResult.poolNumber[0].fields).to.be.of.length(1);
-      expect(validatorResult.poolNumber[0].fields[0]).to.equal('poolNumber');
-      expect(validatorResult.poolNumber[0].details).to.be.of.length(1);
-      expect(validatorResult.poolNumber[0].details[0]).to.equal('Pool number must use year of attendance date');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('poolNumber');
+      expect(validatorResult.poolNumber).toBeInstanceOf(Array);
+      expect(validatorResult.poolNumber).toHaveLength(1);
+      expect(validatorResult.poolNumber[0]).toEqual(expect.any(Object));
+      expect(validatorResult.poolNumber[0]).toHaveProperty('summary');
+      expect(validatorResult.poolNumber[0]).toHaveProperty('fields');
+      expect(validatorResult.poolNumber[0]).toHaveProperty('details');
+      expect(validatorResult.poolNumber[0].summary).toEqual('Pool number is wrong');
+      expect(validatorResult.poolNumber[0].fields).toHaveLength(1);
+      expect(validatorResult.poolNumber[0].fields[0]).toEqual('poolNumber');
+      expect(validatorResult.poolNumber[0].details).toHaveLength(1);
+      expect(validatorResult.poolNumber[0].details[0]).toEqual('Pool number must use year of attendance date');
     });
 
     it('should validate the pool number - pool number does not match the month of attendance', function() {
@@ -396,19 +396,19 @@
 
       validatorResult = validate(mockRequest.body, requestPoolVal.poolNumber(mockRequest));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('poolNumber');
-      expect(validatorResult.poolNumber).to.be.an.instanceof(Array);
-      expect(validatorResult.poolNumber).to.be.of.length(1);
-      expect(validatorResult.poolNumber[0]).to.be.an('object');
-      expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('fields');
-      expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.poolNumber[0].summary).to.equal('Pool number is wrong');
-      expect(validatorResult.poolNumber[0].fields).to.be.of.length(1);
-      expect(validatorResult.poolNumber[0].fields[0]).to.equal('poolNumber');
-      expect(validatorResult.poolNumber[0].details).to.be.of.length(1);
-      expect(validatorResult.poolNumber[0].details[0]).to.equal('Pool number must use month of attendance date');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('poolNumber');
+      expect(validatorResult.poolNumber).toBeInstanceOf(Array);
+      expect(validatorResult.poolNumber).toHaveLength(1);
+      expect(validatorResult.poolNumber[0]).toEqual(expect.any(Object));
+      expect(validatorResult.poolNumber[0]).toHaveProperty('summary');
+      expect(validatorResult.poolNumber[0]).toHaveProperty('fields');
+      expect(validatorResult.poolNumber[0]).toHaveProperty('details');
+      expect(validatorResult.poolNumber[0].summary).toEqual('Pool number is wrong');
+      expect(validatorResult.poolNumber[0].fields).toHaveLength(1);
+      expect(validatorResult.poolNumber[0].fields[0]).toEqual('poolNumber');
+      expect(validatorResult.poolNumber[0].details).toHaveLength(1);
+      expect(validatorResult.poolNumber[0].details[0]).toEqual('Pool number must use month of attendance date');
     });
 
     it('should validate the pool number - invalid pool number sequence', function() {
@@ -427,19 +427,19 @@
 
       validatorResult = validate(mockRequest.body, requestPoolVal.poolNumber(mockRequest));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('poolNumber');
-      expect(validatorResult.poolNumber).to.be.an.instanceof(Array);
-      expect(validatorResult.poolNumber).to.be.of.length(1);
-      expect(validatorResult.poolNumber[0]).to.be.an('object');
-      expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('fields');
-      expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.poolNumber[0].summary).to.equal('Pool number is wrong');
-      expect(validatorResult.poolNumber[0].fields).to.be.of.length(1);
-      expect(validatorResult.poolNumber[0].fields[0]).to.equal('poolNumber');
-      expect(validatorResult.poolNumber[0].details).to.be.of.length(1);
-      expect(validatorResult.poolNumber[0].details[0]).to.equal('Pool number sequence must be between 00 and 99');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('poolNumber');
+      expect(validatorResult.poolNumber).toBeInstanceOf(Array);
+      expect(validatorResult.poolNumber).toHaveLength(1);
+      expect(validatorResult.poolNumber[0]).toEqual(expect.any(Object));
+      expect(validatorResult.poolNumber[0]).toHaveProperty('summary');
+      expect(validatorResult.poolNumber[0]).toHaveProperty('fields');
+      expect(validatorResult.poolNumber[0]).toHaveProperty('details');
+      expect(validatorResult.poolNumber[0].summary).toEqual('Pool number is wrong');
+      expect(validatorResult.poolNumber[0].fields).toHaveLength(1);
+      expect(validatorResult.poolNumber[0].fields[0]).toEqual('poolNumber');
+      expect(validatorResult.poolNumber[0].details).toHaveLength(1);
+      expect(validatorResult.poolNumber[0].details[0]).toEqual('Pool number sequence must be between 00 and 99');
     });
 
     it('should validate the attendance time - happy path', function() {
@@ -450,7 +450,7 @@
 
       validatorResult = validate(mockRequest, requestPoolVal.attendanceTime(mockRequest));
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate the attendance time - empty hour and empty minute', function() {
@@ -461,17 +461,17 @@
 
       validatorResult = validate(mockRequest, requestPoolVal.attendanceTime(mockRequest));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('attendanceTimeHour');
-      expect(validatorResult.attendanceTimeHour).to.be.instanceof(Array);
-      expect(validatorResult.attendanceTimeHour[0]).to.be.an('object');
-      expect(validatorResult.attendanceTimeHour[0].summary).to.equal('Please enter an attendance hour');
-      expect(validatorResult.attendanceTimeHour[0].details).to.equal('Please enter an attendance hour');
-      expect(validatorResult).to.have.ownPropertyDescriptor('attendanceTimeMinute');
-      expect(validatorResult.attendanceTimeMinute).to.be.instanceof(Array);
-      expect(validatorResult.attendanceTimeMinute[0]).to.be.an('object');
-      expect(validatorResult.attendanceTimeMinute[0].summary).to.equal('Please enter an attendance minute');
-      expect(validatorResult.attendanceTimeMinute[0].details).to.equal('Please enter an attendance minute');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('attendanceTimeHour');
+      expect(validatorResult.attendanceTimeHour).toBeInstanceOf(Array);
+      expect(validatorResult.attendanceTimeHour[0]).toEqual(expect.any(Object));
+      expect(validatorResult.attendanceTimeHour[0].summary).toEqual('Please enter an attendance hour');
+      expect(validatorResult.attendanceTimeHour[0].details).toEqual('Please enter an attendance hour');
+      expect(validatorResult).toHaveProperty('attendanceTimeMinute');
+      expect(validatorResult.attendanceTimeMinute).toBeInstanceOf(Array);
+      expect(validatorResult.attendanceTimeMinute[0]).toEqual(expect.any(Object));
+      expect(validatorResult.attendanceTimeMinute[0].summary).toEqual('Please enter an attendance minute');
+      expect(validatorResult.attendanceTimeMinute[0].details).toEqual('Please enter an attendance minute');
     });
 
     it('should validate the attendance time - invalid hour and invalid minute', function() {
@@ -482,17 +482,17 @@
 
       validatorResult = validate(mockRequest, requestPoolVal.attendanceTime(mockRequest));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('attendanceTimeHour');
-      expect(validatorResult.attendanceTimeHour).to.be.instanceof(Array);
-      expect(validatorResult.attendanceTimeHour[0]).to.be.an('object');
-      expect(validatorResult.attendanceTimeHour[0].summary).to.equal('Please check your attendance hour');
-      expect(validatorResult.attendanceTimeHour[0].details).to.equal('Please enter the hour as a number. For example, 6 for 6am or 18 for 6pm');
-      expect(validatorResult).to.have.ownPropertyDescriptor('attendanceTimeMinute');
-      expect(validatorResult.attendanceTimeMinute).to.be.instanceof(Array);
-      expect(validatorResult.attendanceTimeMinute[0]).to.be.an('object');
-      expect(validatorResult.attendanceTimeMinute[0].summary).to.equal('Please check your attendance minute');
-      expect(validatorResult.attendanceTimeMinute[0].details).to.equal('Please enter the minute as a number. For example, 15');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('attendanceTimeHour');
+      expect(validatorResult.attendanceTimeHour).toBeInstanceOf(Array);
+      expect(validatorResult.attendanceTimeHour[0]).toEqual(expect.any(Object));
+      expect(validatorResult.attendanceTimeHour[0].summary).toEqual('Please check your attendance hour');
+      expect(validatorResult.attendanceTimeHour[0].details).toEqual('Please enter the hour as a number. For example, 6 for 6am or 18 for 6pm');
+      expect(validatorResult).toHaveProperty('attendanceTimeMinute');
+      expect(validatorResult.attendanceTimeMinute).toBeInstanceOf(Array);
+      expect(validatorResult.attendanceTimeMinute[0]).toEqual(expect.any(Object));
+      expect(validatorResult.attendanceTimeMinute[0].summary).toEqual('Please check your attendance minute');
+      expect(validatorResult.attendanceTimeMinute[0].details).toEqual('Please enter the minute as a number. For example, 15');
     });
 
     it('should validate the attendance time - out of range', function() {
@@ -503,17 +503,17 @@
 
       validatorResult = validate(mockRequest, requestPoolVal.attendanceTime(mockRequest));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('attendanceTimeHour');
-      expect(validatorResult.attendanceTimeHour).to.be.instanceof(Array);
-      expect(validatorResult.attendanceTimeHour[0]).to.be.an('object');
-      expect(validatorResult.attendanceTimeHour[0].summary).to.equal('Please check your attendance hour');
-      expect(validatorResult.attendanceTimeHour[0].details).to.equal('Please enter an hour between 0 and 23');
-      expect(validatorResult).to.have.ownPropertyDescriptor('attendanceTimeMinute');
-      expect(validatorResult.attendanceTimeMinute).to.be.instanceof(Array);
-      expect(validatorResult.attendanceTimeMinute[0]).to.be.an('object');
-      expect(validatorResult.attendanceTimeMinute[0].summary).to.equal('Please check your attendance minute');
-      expect(validatorResult.attendanceTimeMinute[0].details).to.equal('Please enter a minute between 0 and 59');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('attendanceTimeHour');
+      expect(validatorResult.attendanceTimeHour).toBeInstanceOf(Array);
+      expect(validatorResult.attendanceTimeHour[0]).toEqual(expect.any(Object));
+      expect(validatorResult.attendanceTimeHour[0].summary).toEqual('Please check your attendance hour');
+      expect(validatorResult.attendanceTimeHour[0].details).toEqual('Please enter an hour between 0 and 23');
+      expect(validatorResult).toHaveProperty('attendanceTimeMinute');
+      expect(validatorResult.attendanceTimeMinute).toBeInstanceOf(Array);
+      expect(validatorResult.attendanceTimeMinute[0]).toEqual(expect.any(Object));
+      expect(validatorResult.attendanceTimeMinute[0].summary).toEqual('Please check your attendance minute');
+      expect(validatorResult.attendanceTimeMinute[0].details).toEqual('Please enter a minute between 0 and 59');
     });
 
     it('should validate the number of deferrals - happy path', function() {
@@ -523,7 +523,7 @@
 
       validatorResult = validate({ numberOfDeferrals: 100 }, requestPoolVal.numberOfDeferrals(mockRequest));
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate the number of deferrals - number of deferrals is missing', function() {
@@ -533,17 +533,17 @@
 
       validatorResult = validate({ numberOfDeferrals: 100 }, requestPoolVal.numberOfDeferrals(mockRequest));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('numberOfDeferrals');
-      expect(validatorResult.numberOfDeferrals).to.be.instanceof(Array);
-      expect(validatorResult.numberOfDeferrals[0]).to.be.an('object');
-      expect(validatorResult.numberOfDeferrals[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.numberOfDeferrals[0].summary).to.equal('Number of deferrals is missing');
-      expect(validatorResult.numberOfDeferrals[0]).to.have.ownPropertyDescriptor('fields');
-      expect(validatorResult.numberOfDeferrals[0].fields).to.equal('numberOfDeferrals');
-      expect(validatorResult.numberOfDeferrals[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.numberOfDeferrals[0].details).to.be.length(1);
-      expect(validatorResult.numberOfDeferrals[0].details[0]).to.equal('Enter the number of deferrals to be included. For no deferrals enter 0');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('numberOfDeferrals');
+      expect(validatorResult.numberOfDeferrals).toBeInstanceOf(Array);
+      expect(validatorResult.numberOfDeferrals[0]).toEqual(expect.any(Object));
+      expect(validatorResult.numberOfDeferrals[0]).toHaveProperty('summary');
+      expect(validatorResult.numberOfDeferrals[0].summary).toEqual('Number of deferrals is missing');
+      expect(validatorResult.numberOfDeferrals[0]).toHaveProperty('fields');
+      expect(validatorResult.numberOfDeferrals[0].fields).toEqual('numberOfDeferrals');
+      expect(validatorResult.numberOfDeferrals[0]).toHaveProperty('details');
+      expect(validatorResult.numberOfDeferrals[0].details).toHaveLength(1);
+      expect(validatorResult.numberOfDeferrals[0].details[0]).toEqual('Enter the number of deferrals to be included. For no deferrals enter 0');
     });
 
     it('should validate the number of deferrals - invalid number of deferrals', function() {
@@ -553,17 +553,17 @@
 
       validatorResult = validate({ numberOfDeferrals: 100 }, requestPoolVal.numberOfDeferrals(mockRequest));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('numberOfDeferrals');
-      expect(validatorResult.numberOfDeferrals).to.be.instanceof(Array);
-      expect(validatorResult.numberOfDeferrals[0]).to.be.an('object');
-      expect(validatorResult.numberOfDeferrals[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.numberOfDeferrals[0].summary).to.equal('Number of deferrals is wrong');
-      expect(validatorResult.numberOfDeferrals[0]).to.have.ownPropertyDescriptor('fields');
-      expect(validatorResult.numberOfDeferrals[0].fields).to.equal('numberOfDeferrals');
-      expect(validatorResult.numberOfDeferrals[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.numberOfDeferrals[0].details).to.be.length(1);
-      expect(validatorResult.numberOfDeferrals[0].details[0]).to.equal('Enter only numbers, not letters');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('numberOfDeferrals');
+      expect(validatorResult.numberOfDeferrals).toBeInstanceOf(Array);
+      expect(validatorResult.numberOfDeferrals[0]).toEqual(expect.any(Object));
+      expect(validatorResult.numberOfDeferrals[0]).toHaveProperty('summary');
+      expect(validatorResult.numberOfDeferrals[0].summary).toEqual('Number of deferrals is wrong');
+      expect(validatorResult.numberOfDeferrals[0]).toHaveProperty('fields');
+      expect(validatorResult.numberOfDeferrals[0].fields).toEqual('numberOfDeferrals');
+      expect(validatorResult.numberOfDeferrals[0]).toHaveProperty('details');
+      expect(validatorResult.numberOfDeferrals[0].details).toHaveLength(1);
+      expect(validatorResult.numberOfDeferrals[0].details[0]).toEqual('Enter only numbers, not letters');
     });
 
     it('should validate the number of deferrals - negative number of deferrals', function() {
@@ -573,17 +573,17 @@
 
       validatorResult = validate({ numberOfDeferrals: 100 }, requestPoolVal.numberOfDeferrals(mockRequest));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('numberOfDeferrals');
-      expect(validatorResult.numberOfDeferrals).to.be.instanceof(Array);
-      expect(validatorResult.numberOfDeferrals[0]).to.be.an('object');
-      expect(validatorResult.numberOfDeferrals[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.numberOfDeferrals[0].summary).to.equal('Number of deferrals cannot be negative');
-      expect(validatorResult.numberOfDeferrals[0]).to.have.ownPropertyDescriptor('fields');
-      expect(validatorResult.numberOfDeferrals[0].fields).to.equal('numberOfDeferrals');
-      expect(validatorResult.numberOfDeferrals[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.numberOfDeferrals[0].details).to.be.length(1);
-      expect(validatorResult.numberOfDeferrals[0].details[0]).to.equal('Number of deferrals cannot be negative');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('numberOfDeferrals');
+      expect(validatorResult.numberOfDeferrals).toBeInstanceOf(Array);
+      expect(validatorResult.numberOfDeferrals[0]).toEqual(expect.any(Object));
+      expect(validatorResult.numberOfDeferrals[0]).toHaveProperty('summary');
+      expect(validatorResult.numberOfDeferrals[0].summary).toEqual('Number of deferrals cannot be negative');
+      expect(validatorResult.numberOfDeferrals[0]).toHaveProperty('fields');
+      expect(validatorResult.numberOfDeferrals[0].fields).toEqual('numberOfDeferrals');
+      expect(validatorResult.numberOfDeferrals[0]).toHaveProperty('details');
+      expect(validatorResult.numberOfDeferrals[0].details).toHaveLength(1);
+      expect(validatorResult.numberOfDeferrals[0].details[0]).toEqual('Number of deferrals cannot be negative');
     });
 
     it('should validate the number of deferrals - number of deferrals too high', function() {
@@ -593,17 +593,17 @@
 
       validatorResult = validate({ numberOfDeferrals: 100 }, requestPoolVal.numberOfDeferrals(mockRequest));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('numberOfDeferrals');
-      expect(validatorResult.numberOfDeferrals).to.be.instanceof(Array);
-      expect(validatorResult.numberOfDeferrals[0]).to.be.an('object');
-      expect(validatorResult.numberOfDeferrals[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.numberOfDeferrals[0].summary).to.equal('Number of deferrals is too high');
-      expect(validatorResult.numberOfDeferrals[0]).to.have.ownPropertyDescriptor('fields');
-      expect(validatorResult.numberOfDeferrals[0].fields).to.equal('numberOfDeferrals');
-      expect(validatorResult.numberOfDeferrals[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.numberOfDeferrals[0].details).to.be.length(1);
-      expect(validatorResult.numberOfDeferrals[0].details[0]).to.equal('Enter the same  or less than the number available');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('numberOfDeferrals');
+      expect(validatorResult.numberOfDeferrals).toBeInstanceOf(Array);
+      expect(validatorResult.numberOfDeferrals[0]).toEqual(expect.any(Object));
+      expect(validatorResult.numberOfDeferrals[0]).toHaveProperty('summary');
+      expect(validatorResult.numberOfDeferrals[0].summary).toEqual('Number of deferrals is too high');
+      expect(validatorResult.numberOfDeferrals[0]).toHaveProperty('fields');
+      expect(validatorResult.numberOfDeferrals[0].fields).toEqual('numberOfDeferrals');
+      expect(validatorResult.numberOfDeferrals[0]).toHaveProperty('details');
+      expect(validatorResult.numberOfDeferrals[0].details).toHaveLength(1);
+      expect(validatorResult.numberOfDeferrals[0].details[0]).toEqual('Enter the same  or less than the number available');
     });
 
     it('should validate the attendance date - happy path', function() {
@@ -613,7 +613,7 @@
 
       validatorResult = validate(mockRequest, requestPoolVal.validateDate(mockRequest));
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate the attendance date - in the past', function() {
@@ -623,18 +623,18 @@
 
       validatorResult = validate(mockRequest, requestPoolVal.validateDate(mockRequest));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('attendanceDate');
-      expect(validatorResult.attendanceDate).to.be.instanceof(Array);
-      expect(validatorResult.attendanceDate[0]).to.be.an('object');
-      expect(validatorResult.attendanceDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.attendanceDate[0].summary).to.equal('Service start date must be in the future');
-      expect(validatorResult.attendanceDate[0]).to.have.ownPropertyDescriptor('fields');
-      expect(validatorResult.attendanceDate[0].fields).to.be.length(1);
-      expect(validatorResult.attendanceDate[0].fields[0]).to.equal('attendanceDate');
-      expect(validatorResult.attendanceDate[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.attendanceDate[0].details).to.be.length(1);
-      expect(validatorResult.attendanceDate[0].details[0]).to.equal('Service start date must be in the future');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('attendanceDate');
+      expect(validatorResult.attendanceDate).toBeInstanceOf(Array);
+      expect(validatorResult.attendanceDate[0]).toEqual(expect.any(Object));
+      expect(validatorResult.attendanceDate[0]).toHaveProperty('summary');
+      expect(validatorResult.attendanceDate[0].summary).toEqual('Service start date must be in the future');
+      expect(validatorResult.attendanceDate[0]).toHaveProperty('fields');
+      expect(validatorResult.attendanceDate[0].fields).toHaveLength(1);
+      expect(validatorResult.attendanceDate[0].fields[0]).toEqual('attendanceDate');
+      expect(validatorResult.attendanceDate[0]).toHaveProperty('details');
+      expect(validatorResult.attendanceDate[0].details).toHaveLength(1);
+      expect(validatorResult.attendanceDate[0].details[0]).toEqual('Service start date must be in the future');
     });
 
     it('should validate the attendance date - missing date', function() {
@@ -644,18 +644,18 @@
 
       validatorResult = validate(mockRequest, requestPoolVal.validateDate(mockRequest));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('attendanceDate');
-      expect(validatorResult.attendanceDate).to.be.instanceof(Array);
-      expect(validatorResult.attendanceDate[0]).to.be.an('object');
-      expect(validatorResult.attendanceDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.attendanceDate[0].summary).to.equal('Enter a new service start date for this pool');
-      expect(validatorResult.attendanceDate[0]).to.have.ownPropertyDescriptor('fields');
-      expect(validatorResult.attendanceDate[0].fields).to.be.length(1);
-      expect(validatorResult.attendanceDate[0].fields[0]).to.equal('attendanceDate');
-      expect(validatorResult.attendanceDate[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.attendanceDate[0].details).to.be.length(1);
-      expect(validatorResult.attendanceDate[0].details[0]).to.equal('Enter a new service start date for this pool');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('attendanceDate');
+      expect(validatorResult.attendanceDate).toBeInstanceOf(Array);
+      expect(validatorResult.attendanceDate[0]).toEqual(expect.any(Object));
+      expect(validatorResult.attendanceDate[0]).toHaveProperty('summary');
+      expect(validatorResult.attendanceDate[0].summary).toEqual('Enter a new service start date for this pool');
+      expect(validatorResult.attendanceDate[0]).toHaveProperty('fields');
+      expect(validatorResult.attendanceDate[0].fields).toHaveLength(1);
+      expect(validatorResult.attendanceDate[0].fields[0]).toEqual('attendanceDate');
+      expect(validatorResult.attendanceDate[0]).toHaveProperty('details');
+      expect(validatorResult.attendanceDate[0].details).toHaveLength(1);
+      expect(validatorResult.attendanceDate[0].details[0]).toEqual('Enter a new service start date for this pool');
     });
 
     it('should validate the coroner pool postcode selected values - happy path', function() {
@@ -682,7 +682,7 @@
 
       validatorResult = validate(mockRequest, requestPoolVal.coronerPoolPostcodes(liveDataMock, postcodeAndNumbers));
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate the coroner pool postcode selected values - over the limit single', function() {
@@ -709,19 +709,19 @@
 
       validatorResult = validate(mockRequest, requestPoolVal.coronerPoolPostcodes(liveDataMock, postcodeAndNumbers, 0));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('coronerPostcodes');
-      expect(validatorResult.coronerPostcodes).to.be.instanceof(Array);
-      expect(validatorResult.coronerPostcodes[0]).to.be.an('object');
-      expect(validatorResult.coronerPostcodes[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.coronerPostcodes[0].summary).to.be.instanceof(Array);
-      expect(validatorResult.coronerPostcodes[0].summary[0]).to.equal('The number of citizens you can enter for postcode CH1 must be 20 or fewer');
-      expect(validatorResult.coronerPostcodes[0]).to.have.ownPropertyDescriptor('fields');
-      expect(validatorResult.coronerPostcodes[0].fields).to.be.instanceof(Array);
-      expect(validatorResult.coronerPostcodes[0].fields[0]).to.equal('CH1');
-      expect(validatorResult.coronerPostcodes[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.coronerPostcodes[0].details).to.be.instanceof(Array);
-      expect(validatorResult.coronerPostcodes[0].details[0]).to.equal('The number of citizens you can enter for postcode CH1 must be 20 or fewer');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('coronerPostcodes');
+      expect(validatorResult.coronerPostcodes).toBeInstanceOf(Array);
+      expect(validatorResult.coronerPostcodes[0]).toEqual(expect.any(Object));
+      expect(validatorResult.coronerPostcodes[0]).toHaveProperty('summary');
+      expect(validatorResult.coronerPostcodes[0].summary).toBeInstanceOf(Array);
+      expect(validatorResult.coronerPostcodes[0].summary[0]).toEqual('The number of citizens you can enter for postcode CH1 must be 20 or fewer');
+      expect(validatorResult.coronerPostcodes[0]).toHaveProperty('fields');
+      expect(validatorResult.coronerPostcodes[0].fields).toBeInstanceOf(Array);
+      expect(validatorResult.coronerPostcodes[0].fields[0]).toEqual('CH1');
+      expect(validatorResult.coronerPostcodes[0]).toHaveProperty('details');
+      expect(validatorResult.coronerPostcodes[0].details).toBeInstanceOf(Array);
+      expect(validatorResult.coronerPostcodes[0].details[0]).toEqual('The number of citizens you can enter for postcode CH1 must be 20 or fewer');
     });
 
     it('should validate the coroner pool postcode selected values - over the limit multiple', function() {
@@ -748,22 +748,22 @@
 
       validatorResult = validate(mockRequest, requestPoolVal.coronerPoolPostcodes(liveDataMock, postcodeAndNumbers, 0));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('coronerPostcodes');
-      expect(validatorResult.coronerPostcodes).to.be.instanceof(Array);
-      expect(validatorResult.coronerPostcodes[0]).to.be.an('object');
-      expect(validatorResult.coronerPostcodes[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.coronerPostcodes[0].summary).to.be.instanceof(Array);
-      expect(validatorResult.coronerPostcodes[0].summary).to.include('The number of citizens you can enter for postcode CH1 must be 20 or fewer');
-      expect(validatorResult.coronerPostcodes[0].summary).to.include('The number of citizens you can enter for postcode CH2 must be 20 or fewer');
-      expect(validatorResult.coronerPostcodes[0]).to.have.ownPropertyDescriptor('fields');
-      expect(validatorResult.coronerPostcodes[0].fields).to.be.instanceof(Array);
-      expect(validatorResult.coronerPostcodes[0].fields).to.include('CH1');
-      expect(validatorResult.coronerPostcodes[0].fields).to.include('CH2');
-      expect(validatorResult.coronerPostcodes[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.coronerPostcodes[0].details).to.be.instanceof(Array);
-      expect(validatorResult.coronerPostcodes[0].details).to.include('The number of citizens you can enter for postcode CH1 must be 20 or fewer');
-      expect(validatorResult.coronerPostcodes[0].details).to.include('The number of citizens you can enter for postcode CH2 must be 20 or fewer');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('coronerPostcodes');
+      expect(validatorResult.coronerPostcodes).toBeInstanceOf(Array);
+      expect(validatorResult.coronerPostcodes[0]).toEqual(expect.any(Object));
+      expect(validatorResult.coronerPostcodes[0]).toHaveProperty('summary');
+      expect(validatorResult.coronerPostcodes[0].summary).toBeInstanceOf(Array);
+      expect(validatorResult.coronerPostcodes[0].summary).toContain('The number of citizens you can enter for postcode CH1 must be 20 or fewer');
+      expect(validatorResult.coronerPostcodes[0].summary).toContain('The number of citizens you can enter for postcode CH2 must be 20 or fewer');
+      expect(validatorResult.coronerPostcodes[0]).toHaveProperty('fields');
+      expect(validatorResult.coronerPostcodes[0].fields).toBeInstanceOf(Array);
+      expect(validatorResult.coronerPostcodes[0].fields).toContain('CH1');
+      expect(validatorResult.coronerPostcodes[0].fields).toContain('CH2');
+      expect(validatorResult.coronerPostcodes[0]).toHaveProperty('details');
+      expect(validatorResult.coronerPostcodes[0].details).toBeInstanceOf(Array);
+      expect(validatorResult.coronerPostcodes[0].details).toContain('The number of citizens you can enter for postcode CH1 must be 20 or fewer');
+      expect(validatorResult.coronerPostcodes[0].details).toContain('The number of citizens you can enter for postcode CH2 must be 20 or fewer');
     });
 
     it('should validate the coroner pool postcode selected values - nothing selected', function() {
@@ -778,16 +778,16 @@
 
       validatorResult = validate(mockRequest, requestPoolVal.coronerPoolPostcodes(liveDataMock, postcodeAndNumbers, 0));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('coronerPostcodes');
-      expect(validatorResult.coronerPostcodes).to.be.instanceof(Array);
-      expect(validatorResult.coronerPostcodes[0]).to.be.an('object');
-      expect(validatorResult.coronerPostcodes[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.coronerPostcodes[0].summary).to.be.instanceof(Array);
-      expect(validatorResult.coronerPostcodes[0].summary).to.include('Please enter the amount of citizens you need from each postcode below');
-      expect(validatorResult.coronerPostcodes[0]).to.have.ownPropertyDescriptor('fields');
-      expect(validatorResult.coronerPostcodes[0].fields).to.be.instanceof(Array);
-      expect(validatorResult.coronerPostcodes[0].fields).to.include('postcodesList');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('coronerPostcodes');
+      expect(validatorResult.coronerPostcodes).toBeInstanceOf(Array);
+      expect(validatorResult.coronerPostcodes[0]).toEqual(expect.any(Object));
+      expect(validatorResult.coronerPostcodes[0]).toHaveProperty('summary');
+      expect(validatorResult.coronerPostcodes[0].summary).toBeInstanceOf(Array);
+      expect(validatorResult.coronerPostcodes[0].summary).toContain('Please enter the amount of citizens you need from each postcode below');
+      expect(validatorResult.coronerPostcodes[0]).toHaveProperty('fields');
+      expect(validatorResult.coronerPostcodes[0].fields).toBeInstanceOf(Array);
+      expect(validatorResult.coronerPostcodes[0].fields).toContain('postcodesList');
     });
 
     it('should validate the coroner pool postcode selected values - max jurors reached', function() {
@@ -805,16 +805,16 @@
 
       validatorResult = validate(mockRequest, requestPoolVal.coronerPoolPostcodes(liveDataMock, postcodeAndNumbers, 20));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('coronerPostcodes');
-      expect(validatorResult.coronerPostcodes).to.be.instanceof(Array);
-      expect(validatorResult.coronerPostcodes[0]).to.be.an('object');
-      expect(validatorResult.coronerPostcodes[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.coronerPostcodes[0].summary).to.be.instanceof(Array);
-      expect(validatorResult.coronerPostcodes[0].summary).to.include('You cannot enter more than ' + (250 - 20) + ' citizens in total across all postcodes');
-      expect(validatorResult.coronerPostcodes[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.coronerPostcodes[0].details).to.be.instanceof(Array);
-      expect(validatorResult.coronerPostcodes[0].details).to.include('You cannot enter more than ' + (250 - 20) + ' citizens in total across all postcodes');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('coronerPostcodes');
+      expect(validatorResult.coronerPostcodes).toBeInstanceOf(Array);
+      expect(validatorResult.coronerPostcodes[0]).toEqual(expect.any(Object));
+      expect(validatorResult.coronerPostcodes[0]).toHaveProperty('summary');
+      expect(validatorResult.coronerPostcodes[0].summary).toBeInstanceOf(Array);
+      expect(validatorResult.coronerPostcodes[0].summary).toContain('You cannot enter more than ' + (250 - 20) + ' citizens in total across all postcodes');
+      expect(validatorResult.coronerPostcodes[0]).toHaveProperty('details');
+      expect(validatorResult.coronerPostcodes[0].details).toBeInstanceOf(Array);
+      expect(validatorResult.coronerPostcodes[0].details).toContain('You cannot enter more than ' + (250 - 20) + ' citizens in total across all postcodes');
     });
 
     it('should validate the court location or name and pool type values are present', function() {
@@ -825,7 +825,7 @@
 
       validatorResult = validate(mockRequest, requestPoolVal.poolTypeAndCourtNameOrLocation(mockRequest));
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should return an error when courtNameOrLocation is empty', function() {
@@ -835,15 +835,15 @@
 
       validatorResult = validate(mockRequest, requestPoolVal.poolTypeAndCourtNameOrLocation(mockRequest));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('courtNameOrLocation');
-      expect(validatorResult.courtNameOrLocation).to.be.instanceof(Array);
-      expect(validatorResult.courtNameOrLocation).to.be.of.length(1);
-      expect(validatorResult.courtNameOrLocation[0]).to.be.an('object');
-      expect(validatorResult.courtNameOrLocation[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.courtNameOrLocation[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.courtNameOrLocation[0].summary).to.equal('Enter the name or location code for a court');
-      expect(validatorResult.courtNameOrLocation[0].details).to.equal('Court name or location is missing');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('courtNameOrLocation');
+      expect(validatorResult.courtNameOrLocation).toBeInstanceOf(Array);
+      expect(validatorResult.courtNameOrLocation).toHaveLength(1);
+      expect(validatorResult.courtNameOrLocation[0]).toEqual(expect.any(Object));
+      expect(validatorResult.courtNameOrLocation[0]).toHaveProperty('summary');
+      expect(validatorResult.courtNameOrLocation[0]).toHaveProperty('details');
+      expect(validatorResult.courtNameOrLocation[0].summary).toEqual('Enter the name or location code for a court');
+      expect(validatorResult.courtNameOrLocation[0].details).toEqual('Court name or location is missing');
     });
 
     it('should return an error when poolType is missing', function() {
@@ -853,19 +853,19 @@
 
       validatorResult = validate(mockRequest, requestPoolVal.poolTypeAndCourtNameOrLocation(mockRequest));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('poolType');
-      expect(validatorResult.poolType).to.be.an.instanceof(Array);
-      expect(validatorResult.poolType).to.be.of.length(1);
-      expect(validatorResult.poolType[0]).to.be.an('object');
-      expect(validatorResult.poolType[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.poolType[0]).to.have.ownPropertyDescriptor('fields');
-      expect(validatorResult.poolType[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.poolType[0].summary).to.equal('Pool type is missing');
-      expect(validatorResult.poolType[0].fields).to.be.of.length(1);
-      expect(validatorResult.poolType[0].fields[0]).to.equal('poolType');
-      expect(validatorResult.poolType[0].details).to.be.of.length(1);
-      expect(validatorResult.poolType[0].details[0]).to.equal('Select a pool type');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('poolType');
+      expect(validatorResult.poolType).toBeInstanceOf(Array);
+      expect(validatorResult.poolType).toHaveLength(1);
+      expect(validatorResult.poolType[0]).toEqual(expect.any(Object));
+      expect(validatorResult.poolType[0]).toHaveProperty('summary');
+      expect(validatorResult.poolType[0]).toHaveProperty('fields');
+      expect(validatorResult.poolType[0]).toHaveProperty('details');
+      expect(validatorResult.poolType[0].summary).toEqual('Pool type is missing');
+      expect(validatorResult.poolType[0].fields).toHaveLength(1);
+      expect(validatorResult.poolType[0].fields[0]).toEqual('poolType');
+      expect(validatorResult.poolType[0].details).toHaveLength(1);
+      expect(validatorResult.poolType[0].details[0]).toEqual('Select a pool type');
     });
 
     it('should return an error when poolType and courtNameOrLocation is empty', function() {
@@ -873,27 +873,27 @@
 
       validatorResult = validate(mockRequest, requestPoolVal.poolTypeAndCourtNameOrLocation(mockRequest));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('courtNameOrLocation');
-      expect(validatorResult.courtNameOrLocation).to.be.instanceof(Array);
-      expect(validatorResult.courtNameOrLocation).to.be.of.length(1);
-      expect(validatorResult.courtNameOrLocation[0]).to.be.an('object');
-      expect(validatorResult.courtNameOrLocation[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.courtNameOrLocation[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.courtNameOrLocation[0].summary).to.equal('Enter the name or location code for a court');
-      expect(validatorResult.courtNameOrLocation[0].details).to.equal('Court name or location is missing');
-      expect(validatorResult).to.have.ownPropertyDescriptor('poolType');
-      expect(validatorResult.poolType).to.be.an.instanceof(Array);
-      expect(validatorResult.poolType).to.be.of.length(1);
-      expect(validatorResult.poolType[0]).to.be.an('object');
-      expect(validatorResult.poolType[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.poolType[0]).to.have.ownPropertyDescriptor('fields');
-      expect(validatorResult.poolType[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.poolType[0].summary).to.equal('Pool type is missing');
-      expect(validatorResult.poolType[0].fields).to.be.of.length(1);
-      expect(validatorResult.poolType[0].fields[0]).to.equal('poolType');
-      expect(validatorResult.poolType[0].details).to.be.of.length(1);
-      expect(validatorResult.poolType[0].details[0]).to.equal('Select a pool type');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('courtNameOrLocation');
+      expect(validatorResult.courtNameOrLocation).toBeInstanceOf(Array);
+      expect(validatorResult.courtNameOrLocation).toHaveLength(1);
+      expect(validatorResult.courtNameOrLocation[0]).toEqual(expect.any(Object));
+      expect(validatorResult.courtNameOrLocation[0]).toHaveProperty('summary');
+      expect(validatorResult.courtNameOrLocation[0]).toHaveProperty('details');
+      expect(validatorResult.courtNameOrLocation[0].summary).toEqual('Enter the name or location code for a court');
+      expect(validatorResult.courtNameOrLocation[0].details).toEqual('Court name or location is missing');
+      expect(validatorResult).toHaveProperty('poolType');
+      expect(validatorResult.poolType).toBeInstanceOf(Array);
+      expect(validatorResult.poolType).toHaveLength(1);
+      expect(validatorResult.poolType[0]).toEqual(expect.any(Object));
+      expect(validatorResult.poolType[0]).toHaveProperty('summary');
+      expect(validatorResult.poolType[0]).toHaveProperty('fields');
+      expect(validatorResult.poolType[0]).toHaveProperty('details');
+      expect(validatorResult.poolType[0].summary).toEqual('Pool type is missing');
+      expect(validatorResult.poolType[0].fields).toHaveLength(1);
+      expect(validatorResult.poolType[0].fields[0]).toEqual('poolType');
+      expect(validatorResult.poolType[0].details).toHaveLength(1);
+      expect(validatorResult.poolType[0].details[0]).toEqual('Select a pool type');
 
     })
   });

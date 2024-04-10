@@ -56,8 +56,8 @@ const { postDraftExpenseDAO } = require('./expense-record');
           'draft/attended_day'
         );
 
-      expect(testObj.uri.href).to.equal(realUri);
-      expect(testObj.method).to.equal('POST');
+      expect(testObj.uri.href).toEqual(realUri);
+      expect(testObj.method).toEqual('POST');
     });
 
     it('should send call the correct endpoint to submit a non-attendance day draft expense', function() {
@@ -93,8 +93,8 @@ const { postDraftExpenseDAO } = require('./expense-record');
           'draft/non_attended_day'
         );
 
-      expect(testObj.uri.href).to.equal(realUri);
-      expect(testObj.method).to.equal('POST');
+      expect(testObj.uri.href).toEqual(realUri);
+      expect(testObj.method).toEqual('POST');
     });
   });
 

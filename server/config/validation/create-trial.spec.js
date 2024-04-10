@@ -51,7 +51,7 @@
 
       validatorResult = validate(mockRequest, trialDetailsValidator(courtsList, judgesList));
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate an invalid request - all empty fields', function() {
@@ -65,25 +65,25 @@
 
       validatorResult = validate(mockRequest, trialDetailsValidator(courtsList, judgesList));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('trialNumber');
-      expect(validatorResult.trialNumber[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.trialNumber[0].details).to.equal('Enter a trial number');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('trialNumber');
+      expect(validatorResult.trialNumber[0]).toHaveProperty('details');
+      expect(validatorResult.trialNumber[0].details).toEqual('Enter a trial number');
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('trialType');
-      expect(validatorResult.trialType[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.trialType[0].details).to.equal('Select whether this is a criminal or civil trial');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('trialType');
+      expect(validatorResult.trialType[0]).toHaveProperty('details');
+      expect(validatorResult.trialType[0].details).toEqual('Select whether this is a criminal or civil trial');
       
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('startDate');
-      expect(validatorResult.startDate[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.startDate[0].details).to.equal('Enter a start date for this trial');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('startDate');
+      expect(validatorResult.startDate[0]).toHaveProperty('details');
+      expect(validatorResult.startDate[0].details).toEqual('Enter a start date for this trial');
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('judge');
-      expect(validatorResult.judge[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.judge[0].details).to.equal('Enter the judge’s name');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('judge');
+      expect(validatorResult.judge[0]).toHaveProperty('details');
+      expect(validatorResult.judge[0].details).toEqual('Enter the judge’s name');
 
     });
 
@@ -101,10 +101,10 @@
 
       validatorResult = validate(mockRequest, trialDetailsValidator(courtsList, judgesList));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('defendants');
-      expect(validatorResult.defendants[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.defendants[0].details).to.equal('Enter defendants');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('defendants');
+      expect(validatorResult.defendants[0]).toHaveProperty('details');
+      expect(validatorResult.defendants[0].details).toEqual('Enter defendants');
 
     });
 
@@ -122,10 +122,10 @@
 
       validatorResult = validate(mockRequest, trialDetailsValidator(courtsList, judgesList));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('respondents');
-      expect(validatorResult.respondents[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.respondents[0].details).to.equal('Enter respondents');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('respondents');
+      expect(validatorResult.respondents[0]).toHaveProperty('details');
+      expect(validatorResult.respondents[0].details).toEqual('Enter respondents');
 
     });
 
@@ -143,10 +143,10 @@
 
       validatorResult = validate(mockRequest, trialDetailsValidator(courtsList, judgesList));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('judge');
-      expect(validatorResult.judge[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.judge[0].details).to.equal('Select a judge from provided list');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('judge');
+      expect(validatorResult.judge[0]).toHaveProperty('details');
+      expect(validatorResult.judge[0].details).toEqual('Select a judge from provided list');
     });
 
     it('should validate an invalid request - court selected - no courtroom', function() {
@@ -163,10 +163,10 @@
 
       validatorResult = validate(mockRequest, trialDetailsValidator(courtsList, judgesList));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('courtroom');
-      expect(validatorResult.courtroom[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.courtroom[0].details).to.equal('Enter courtroom');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('courtroom');
+      expect(validatorResult.courtroom[0]).toHaveProperty('details');
+      expect(validatorResult.courtroom[0].details).toEqual('Enter courtroom');
 
     });
 
@@ -184,10 +184,10 @@
 
       validatorResult = validate(mockRequest, trialDetailsValidator(courtsList, judgesList));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('courtroom');
-      expect(validatorResult.courtroom[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.courtroom[0].details).to.equal('Select courtroom from provided list');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('courtroom');
+      expect(validatorResult.courtroom[0]).toHaveProperty('details');
+      expect(validatorResult.courtroom[0].details).toEqual('Select courtroom from provided list');
 
     });
 
@@ -205,10 +205,10 @@
 
       validatorResult = validate(mockRequest, trialDetailsValidator(courtsList, judgesList));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('trialNumber');
-      expect(validatorResult.trialNumber[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.trialNumber[0].details).to.equal('Enter a trial number using uppercase letters only');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('trialNumber');
+      expect(validatorResult.trialNumber[0]).toHaveProperty('details');
+      expect(validatorResult.trialNumber[0].details).toEqual('Enter a trial number using uppercase letters only');
 
     });
 
@@ -226,10 +226,10 @@
 
       validatorResult = validate(mockRequest, trialDetailsValidator(courtsList, judgesList));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('trialNumber');
-      expect(validatorResult.trialNumber[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.trialNumber[0].details).to.equal('Trial number must be 16 characters or less');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('trialNumber');
+      expect(validatorResult.trialNumber[0]).toHaveProperty('details');
+      expect(validatorResult.trialNumber[0].details).toEqual('Trial number must be 16 characters or less');
 
     });
 
@@ -248,10 +248,10 @@
 
       validatorResult = validate(mockRequest, trialDetailsValidator(courtsList, judgesList));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('startDate');
-      expect(validatorResult.startDate[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.startDate[0].details).to.equal('Trial start date must only include numbers');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('startDate');
+      expect(validatorResult.startDate[0]).toHaveProperty('details');
+      expect(validatorResult.startDate[0].details).toEqual('Trial start date must only include numbers');
 
     });
 
@@ -269,10 +269,10 @@
 
       validatorResult = validate(mockRequest, trialDetailsValidator(courtsList, judgesList));
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('startDate');
-      expect(validatorResult.startDate[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.startDate[0].details).to.equal('Enter a date in the correct format, for example, 31/01/2023');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('startDate');
+      expect(validatorResult.startDate[0]).toHaveProperty('details');
+      expect(validatorResult.startDate[0].details).toEqual('Enter a date in the correct format, for example, 31/01/2023');
 
     });
 

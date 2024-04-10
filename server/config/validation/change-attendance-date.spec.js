@@ -20,7 +20,7 @@
 
       validatorResult = validate(mockRequest, attendanceDateValidator());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate a valid request - on call selected', function() {
@@ -31,7 +31,7 @@
 
       validatorResult = validate(mockRequest, attendanceDateValidator());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate an invalid request - empty field', function() {
@@ -42,10 +42,10 @@
 
       validatorResult = validate(mockRequest, attendanceDateValidator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('attendanceDate');
-      expect(validatorResult.attendanceDate[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.attendanceDate[0].details).to.equal('Enter when the juror is next due at court or put the juror on call');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('attendanceDate');
+      expect(validatorResult.attendanceDate[0]).toHaveProperty('details');
+      expect(validatorResult.attendanceDate[0].details).toEqual('Enter when the juror is next due at court or put the juror on call');
     });
 
     it('should validate an invalid request - special chars in date', function() {
@@ -56,10 +56,10 @@
 
       validatorResult = validate(mockRequest, attendanceDateValidator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('attendanceDate');
-      expect(validatorResult.attendanceDate[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.attendanceDate[0].details).to.equal('Date next due at court can only include numbers and forward slashes');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('attendanceDate');
+      expect(validatorResult.attendanceDate[0]).toHaveProperty('details');
+      expect(validatorResult.attendanceDate[0].details).toEqual('Date next due at court can only include numbers and forward slashes');
 
     });
 
@@ -71,10 +71,10 @@
 
       validatorResult = validate(mockRequest, attendanceDateValidator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('attendanceDate');
-      expect(validatorResult.attendanceDate[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.attendanceDate[0].details).to.equal('Enter a real date');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('attendanceDate');
+      expect(validatorResult.attendanceDate[0]).toHaveProperty('details');
+      expect(validatorResult.attendanceDate[0].details).toEqual('Enter a real date');
 
     });
 
@@ -86,10 +86,10 @@
 
       validatorResult = validate(mockRequest, attendanceDateValidator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('attendanceDate');
-      expect(validatorResult.attendanceDate[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.attendanceDate[0].details).to.equal('Date must be in the future');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('attendanceDate');
+      expect(validatorResult.attendanceDate[0]).toHaveProperty('details');
+      expect(validatorResult.attendanceDate[0].details).toEqual('Date must be in the future');
 
     });
 

@@ -16,7 +16,7 @@
       };
 
       validatorResult = validate(mockRequest, validator.userType());
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should try to validate an invalid request - no user type selected', function() {
@@ -26,10 +26,10 @@
 
       validatorResult = validate(mockRequest, validator.userType());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.userType[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.userType[0].summary).to.equal('Select a user type');
-      expect(validatorResult.userType[0].details).to.equal('Select a user type');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.userType[0]).toHaveProperty('summary');
+      expect(validatorResult.userType[0].summary).toEqual('Select a user type');
+      expect(validatorResult.userType[0].details).toEqual('Select a user type');
     });
 
     it('should successfully validate entered user details', function() {
@@ -39,7 +39,7 @@
       };
 
       validatorResult = validate(mockRequest, validator.userDetails());
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should try to validate an invalid request - no user details entered', function() {
@@ -50,13 +50,13 @@
 
       validatorResult = validate(mockRequest, validator.userDetails());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.name[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.name[0].summary).to.equal('Enter the user\'s full name');
-      expect(validatorResult.name[0].details).to.equal('Enter the user\'s full name');
-      expect(validatorResult.email[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.email[0].summary).to.equal('Enter the user\'s email');
-      expect(validatorResult.email[0].details).to.equal('Enter the user\'s email');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.name[0]).toHaveProperty('summary');
+      expect(validatorResult.name[0].summary).toEqual('Enter the user\'s full name');
+      expect(validatorResult.name[0].details).toEqual('Enter the user\'s full name');
+      expect(validatorResult.email[0]).toHaveProperty('summary');
+      expect(validatorResult.email[0].summary).toEqual('Enter the user\'s email');
+      expect(validatorResult.email[0].details).toEqual('Enter the user\'s email');
     });
 
     it('should try to validate an invalid request - invalid email entered', function() {
@@ -67,9 +67,9 @@
 
       validatorResult = validate(mockRequest, validator.userDetails());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.email[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.email[0].summary).to.equal(
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.email[0]).toHaveProperty('summary');
+      expect(validatorResult.email[0].summary).toEqual(
         'Enter the email address in the correct format, like name@email.com'
       );
     });

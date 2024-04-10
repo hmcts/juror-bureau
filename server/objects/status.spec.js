@@ -25,12 +25,12 @@
       , testObj;
 
     testObj = updateStatusObj.post(rpStub, appStub, 'test-token', jurorNumber, newStatus, version, true);
-    expect(testObj.uri).to.equal(urljoin('http://localhost:8080/api/v1', uri.mod, jurorNumber));
-    expect(testObj.body.hasOwnProperty('jurorNumber')).to.be.true;
+    expect(testObj.uri).toEqual(urljoin('http://localhost:8080/api/v1', uri.mod, jurorNumber));
+    expect(testObj.body.hasOwnProperty('jurorNumber')).toEqual(true);
 
     testObj = updateStatusObj.post(rpStub, appStub, 'test-token', jurorNumber, newStatus, version, false);
-    expect(testObj.uri).to.equal(urljoin('http://localhost:8080/api/v1', uri.legacy, jurorNumber));
-    expect(testObj.body.hasOwnProperty('jurorNumber')).to.be.false;
+    expect(testObj.uri).toEqual(urljoin('http://localhost:8080/api/v1', uri.legacy, jurorNumber));
+    expect(testObj.body.hasOwnProperty('jurorNumber')).toEqual(false);
   });
 
 })();

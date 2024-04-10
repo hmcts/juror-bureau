@@ -16,7 +16,7 @@
       };
 
       validatorResult = validate(mockRequest, validator());
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should try to validate an invalid request - no courts selected', function() {
@@ -26,10 +26,10 @@
 
       validatorResult = validate(mockRequest, validator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.selectedCourts[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.selectedCourts[0].summary).to.equal('Select one or more courts');
-      expect(validatorResult.selectedCourts[0].details).to.equal('Select one or more courts');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.selectedCourts[0]).toHaveProperty('summary');
+      expect(validatorResult.selectedCourts[0].summary).toEqual('Select one or more courts');
+      expect(validatorResult.selectedCourts[0].details).toEqual('Select one or more courts');
 
     });
   });

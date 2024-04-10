@@ -17,7 +17,7 @@
       };
 
       validatorResult = validate(mockRequest, validator());
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should try to validate an invalid request - missing all fields', function() {
@@ -28,17 +28,17 @@
 
       validatorResult = validate(mockRequest, validator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.approveExpensesFromDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.approveExpensesFromDate[0].summary).to.equal(
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.approveExpensesFromDate[0]).toHaveProperty('summary');
+      expect(validatorResult.approveExpensesFromDate[0].summary).toEqual(
         'Enter a date you want to filter expenses from');
-      expect(validatorResult.approveExpensesFromDate[0].details).to.equal(
+      expect(validatorResult.approveExpensesFromDate[0].details).toEqual(
         'Enter a date you want to filter expenses from');
 
-      expect(validatorResult.approveExpensesToDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.approveExpensesToDate[0].summary).to.equal(
+      expect(validatorResult.approveExpensesToDate[0]).toHaveProperty('summary');
+      expect(validatorResult.approveExpensesToDate[0].summary).toEqual(
         'Enter date  you want to filter expenses up until');
-      expect(validatorResult.approveExpensesToDate[0].details).to.equal(
+      expect(validatorResult.approveExpensesToDate[0].details).toEqual(
         'Enter date  you want to filter expenses up until');
 
     });
@@ -51,17 +51,17 @@
 
       validatorResult = validate(mockRequest, validator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.approveExpensesFromDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.approveExpensesFromDate[0].summary).to.equal(
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.approveExpensesFromDate[0]).toHaveProperty('summary');
+      expect(validatorResult.approveExpensesFromDate[0].summary).toEqual(
         '‘Date from’ can only include numbers and forward slashes');
-      expect(validatorResult.approveExpensesFromDate[0].details).to.equal(
+      expect(validatorResult.approveExpensesFromDate[0].details).toEqual(
         '‘Date from’ can only include numbers and forward slashes');
 
-      expect(validatorResult.approveExpensesToDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.approveExpensesToDate[0].summary).to.equal(
+      expect(validatorResult.approveExpensesToDate[0]).toHaveProperty('summary');
+      expect(validatorResult.approveExpensesToDate[0].summary).toEqual(
         '‘Date to’ can only include numbers and forward slashes');
-      expect(validatorResult.approveExpensesToDate[0].details).to.equal(
+      expect(validatorResult.approveExpensesToDate[0].details).toEqual(
         '‘Date to’ can only include numbers and forward slashes');
     });
 
@@ -73,17 +73,17 @@
 
       validatorResult = validate(mockRequest, validator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.approveExpensesFromDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.approveExpensesFromDate[0].summary).to.equal(
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.approveExpensesFromDate[0]).toHaveProperty('summary');
+      expect(validatorResult.approveExpensesFromDate[0].summary).toEqual(
         'Enter ‘date from’  in the correct format, for example, 31/01/2023');
-      expect(validatorResult.approveExpensesFromDate[0].details).to.equal(
+      expect(validatorResult.approveExpensesFromDate[0].details).toEqual(
         'Enter ‘date from’  in the correct format, for example, 31/01/2023');
 
-      expect(validatorResult.approveExpensesToDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.approveExpensesToDate[0].summary).to.equal(
+      expect(validatorResult.approveExpensesToDate[0]).toHaveProperty('summary');
+      expect(validatorResult.approveExpensesToDate[0].summary).toEqual(
         'Enter ‘date to‘  in the correct format, for example, 31/01/2023');
-      expect(validatorResult.approveExpensesToDate[0].details).to.equal(
+      expect(validatorResult.approveExpensesToDate[0].details).toEqual(
         'Enter ‘date to‘  in the correct format, for example, 31/01/2023');
     });
 
@@ -95,14 +95,14 @@
 
       validatorResult = validate(mockRequest, validator());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.approveExpensesFromDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.approveExpensesFromDate[0].summary).to.equal('Enter a real date');
-      expect(validatorResult.approveExpensesFromDate[0].details).to.equal('Enter a real date');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.approveExpensesFromDate[0]).toHaveProperty('summary');
+      expect(validatorResult.approveExpensesFromDate[0].summary).toEqual('Enter a real date');
+      expect(validatorResult.approveExpensesFromDate[0].details).toEqual('Enter a real date');
 
-      expect(validatorResult.approveExpensesToDate[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.approveExpensesToDate[0].summary).to.equal('Enter a real date');
-      expect(validatorResult.approveExpensesToDate[0].details).to.equal('Enter a real date');
+      expect(validatorResult.approveExpensesToDate[0]).toHaveProperty('summary');
+      expect(validatorResult.approveExpensesToDate[0].summary).toEqual('Enter a real date');
+      expect(validatorResult.approveExpensesToDate[0].details).toEqual('Enter a real date');
     });
   });
 

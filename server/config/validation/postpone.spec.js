@@ -21,7 +21,7 @@
         };
   
         validatorResult = validate(mockRequest, postponeValidator.postponeDate(originalDate));
-        expect(validatorResult).to.be.undefined;
+        expect(validatorResult).toBeUndefined();
       });
   
   
@@ -35,11 +35,11 @@
         validatorResult = validate(mockRequest, postponeValidator.postponeDate(originalDate));
        
 
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.postponeTo[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.postponeTo[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.postponeTo[0].summary).to.equal('Enter a new service start date to postpone to');
-        expect(validatorResult.postponeTo[0].details[0]).to.equal('Enter a new service start date to postpone to');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.postponeTo[0]).toHaveProperty('summary');
+        expect(validatorResult.postponeTo[0]).toHaveProperty('details');
+        expect(validatorResult.postponeTo[0].summary).toEqual('Enter a new service start date to postpone to');
+        expect(validatorResult.postponeTo[0].details[0]).toEqual('Enter a new service start date to postpone to');
 
       });
 
@@ -52,11 +52,11 @@
   
         validatorResult = validate(mockRequest, postponeValidator.postponeDate(originalDate));
 
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.postponeTo[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.postponeTo[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.postponeTo[0].summary).to.equal('Enter a new service start date in the correct format, for example, 31/01/2023');
-        expect(validatorResult.postponeTo[0].details[0]).to.equal('Enter a new service start date in the correct format, for example, 31/01/2023');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.postponeTo[0]).toHaveProperty('summary');
+        expect(validatorResult.postponeTo[0]).toHaveProperty('details');
+        expect(validatorResult.postponeTo[0].summary).toEqual('Enter a new service start date in the correct format, for example, 31/01/2023');
+        expect(validatorResult.postponeTo[0].details[0]).toEqual('Enter a new service start date in the correct format, for example, 31/01/2023');
 
       });
 
@@ -69,11 +69,11 @@
   
         validatorResult = validate(mockRequest, postponeValidator.postponeDate(originalDate));
 
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.postponeTo[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.postponeTo[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.postponeTo[0].summary).to.equal('Enter a new service start date in the correct format, for example, 31/01/2023');
-        expect(validatorResult.postponeTo[0].details[0]).to.equal('Enter a new service start date in the correct format, for example, 31/01/2023');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.postponeTo[0]).toHaveProperty('summary');
+        expect(validatorResult.postponeTo[0]).toHaveProperty('details');
+        expect(validatorResult.postponeTo[0].summary).toEqual('Enter a new service start date in the correct format, for example, 31/01/2023');
+        expect(validatorResult.postponeTo[0].details[0]).toEqual('Enter a new service start date in the correct format, for example, 31/01/2023');
 
       });
 
@@ -86,11 +86,11 @@
   
         validatorResult = validate(mockRequest, postponeValidator.postponeDate(originalDate));
 
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.postponeTo[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.postponeTo[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.postponeTo[0].summary).to.equal('Enter a new service start date in the correct format, for example, 31/01/2023');
-        expect(validatorResult.postponeTo[0].details[0]).to.equal('Enter a new service start date in the correct format, for example, 31/01/2023');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.postponeTo[0]).toHaveProperty('summary');
+        expect(validatorResult.postponeTo[0]).toHaveProperty('details');
+        expect(validatorResult.postponeTo[0].summary).toEqual('Enter a new service start date in the correct format, for example, 31/01/2023');
+        expect(validatorResult.postponeTo[0].details[0]).toEqual('Enter a new service start date in the correct format, for example, 31/01/2023');
 
       });
 
@@ -103,11 +103,11 @@
   
         validatorResult = validate(mockRequest, postponeValidator.postponeDate(originalDate));
 
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.postponeTo[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.postponeTo[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.postponeTo[0].summary).to.equal('New service start date cannot be earlier than the original summons start date');
-        expect(validatorResult.postponeTo[0].details[0]).to.equal('New service start date cannot be earlier than the original summons start date');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.postponeTo[0]).toHaveProperty('summary');
+        expect(validatorResult.postponeTo[0]).toHaveProperty('details');
+        expect(validatorResult.postponeTo[0].summary).toEqual('New service start date cannot be earlier than the original summons start date');
+        expect(validatorResult.postponeTo[0].details[0]).toEqual('New service start date cannot be earlier than the original summons start date');
 
       });
 
@@ -120,11 +120,11 @@
   
         validatorResult = validate(mockRequest, postponeValidator.postponeDate(originalDate));
 
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.postponeTo[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.postponeTo[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.postponeTo[0].summary).to.equal('New service start date cannot be more than 12 months after the original summons start date');
-        expect(validatorResult.postponeTo[0].details[0]).to.equal('New service start date cannot be more than 12 months after the original summons start date');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.postponeTo[0]).toHaveProperty('summary');
+        expect(validatorResult.postponeTo[0]).toHaveProperty('details');
+        expect(validatorResult.postponeTo[0].summary).toEqual('New service start date cannot be more than 12 months after the original summons start date');
+        expect(validatorResult.postponeTo[0].details[0]).toEqual('New service start date cannot be more than 12 months after the original summons start date');
 
       });
   
@@ -136,7 +136,7 @@
         };
   
         validatorResult = validate(mockRequest, postponeValidator.postponePool());
-        expect(validatorResult).to.be.undefined;
+        expect(validatorResult).toBeUndefined();
       });
 
       it('should validate selecting an empty pool', function() {
@@ -145,11 +145,11 @@
         };
   
         validatorResult = validate(mockRequest, postponeValidator.postponePool());
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult.deferralDateAndPool[0]).to.have.ownPropertyDescriptor('summary');
-        expect(validatorResult.deferralDateAndPool[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.deferralDateAndPool[0].summary).to.equal('Select a pool');
-        expect(validatorResult.deferralDateAndPool[0].details).to.equal('Select a pool');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult.deferralDateAndPool[0]).toHaveProperty('summary');
+        expect(validatorResult.deferralDateAndPool[0]).toHaveProperty('details');
+        expect(validatorResult.deferralDateAndPool[0].summary).toEqual('Select a pool');
+        expect(validatorResult.deferralDateAndPool[0].details).toEqual('Select a pool');
       });
   
   })();

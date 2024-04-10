@@ -24,7 +24,7 @@
   
         validatorResult = validate(mockRequest, overviewValidator());
   
-        expect(validatorResult).to.be.undefined;
+        expect(validatorResult).toBeUndefined();
       });
 
       it('should validate a valid request - optional fields are empty', function() {
@@ -37,7 +37,7 @@
   
         validatorResult = validate(mockRequest, overviewValidator());
   
-        expect(validatorResult).to.be.undefined;
+        expect(validatorResult).toBeUndefined();
       });
 
       it('should validate an invalid request - mandatory fields are empty', function() {
@@ -50,10 +50,10 @@
   
         validatorResult = validate(mockRequest, overviewValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult).to.have.ownPropertyDescriptor('dateOfBirth');
-        expect(validatorResult.dateOfBirth[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.dateOfBirth[0].details).to.equal('Date of birth cannot be empty');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult).toHaveProperty('dateOfBirth');
+        expect(validatorResult.dateOfBirth[0]).toHaveProperty('details');
+        expect(validatorResult.dateOfBirth[0].details).toEqual('Date of birth cannot be empty');
       });
 
       // move this into date-picker spec when created
@@ -68,10 +68,10 @@
   
         validatorResult = validate(mockRequest, overviewValidator());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult).to.have.ownPropertyDescriptor('dateOfBirth');
-        expect(validatorResult.dateOfBirth[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.dateOfBirth[0].details).to.equal('Date of birth must be in the past');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult).toHaveProperty('dateOfBirth');
+        expect(validatorResult.dateOfBirth[0]).toHaveProperty('details');
+        expect(validatorResult.dateOfBirth[0].details).toEqual('Date of birth must be in the past');
       });
 
       // phone number and email address should be validated centrally.
@@ -92,7 +92,7 @@
       
           validatorResult = validate(mockRequest, extraSupportValidator());
       
-          expect(validatorResult).to.be.undefined;
+          expect(validatorResult).toBeUndefined();
       });
 
       it('should validate a valid request - optional fields are empty', function() {
@@ -104,7 +104,7 @@
     
         validatorResult = validate(mockRequest, extraSupportValidator());
     
-        expect(validatorResult).to.be.undefined;
+        expect(validatorResult).toBeUndefined();
       });
 
 
@@ -117,16 +117,16 @@
     
         validatorResult = validate(mockRequest, extraSupportValidator());
     
-        expect(validatorResult).to.be.an('object');
+        expect(validatorResult).toEqual(expect.any(Object));
 
-        expect(validatorResult).to.have.ownPropertyDescriptor('specNeedValue');
-        expect(validatorResult.specNeedValue[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.specNeedValue[0].details).to.equal(
+        expect(validatorResult).toHaveProperty('specNeedValue');
+        expect(validatorResult.specNeedValue[0]).toHaveProperty('details');
+        expect(validatorResult.specNeedValue[0].details).toEqual(
           'Select a reason for the extra support the juror will need');
 
-        expect(validatorResult).to.have.ownPropertyDescriptor('specNeedMsg');
-        expect(validatorResult.specNeedMsg[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.specNeedMsg[0].details).to.equal(
+        expect(validatorResult).toHaveProperty('specNeedMsg');
+        expect(validatorResult.specNeedMsg[0]).toHaveProperty('details');
+        expect(validatorResult.specNeedMsg[0].details).toEqual(
           'Enter details about the help that the juror will need at court');
       });
 

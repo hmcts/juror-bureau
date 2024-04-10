@@ -29,11 +29,11 @@
 
       queryParams = Object.fromEntries(new URL(testObj.uri).searchParams);
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('GET');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('GET');
 
-      expect(queryParams.hasOwnProperty('areaCode')).to.equal(true);
-      expect(queryParams.areaCode).to.equal(areaCode);
+      expect(queryParams.hasOwnProperty('areaCode')).toEqual(true);
+      expect(queryParams.areaCode).toEqual(areaCode);
     });
 
     it('should call the correct endpoint to fetch all available postcodes - coroners court pool', function() {
@@ -49,11 +49,11 @@
 
       queryParams = Object.fromEntries(new URL(testObj.uri).searchParams);
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('GET');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('GET');
 
-      expect(queryParams.hasOwnProperty('areaCode')).to.equal(true);
-      expect(queryParams.areaCode).to.equal(areaCode);
+      expect(queryParams.hasOwnProperty('areaCode')).toEqual(true);
+      expect(queryParams.areaCode).toEqual(areaCode);
     });
 
   });

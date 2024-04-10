@@ -30,23 +30,23 @@
         , testObj = summonsFormObject.poolSummaryObject.post(rpStub, appStub, 'test-token', bodyObj)
         , realUri = urljoin('http://localhost:8080/api/v1', 'moj/pool-create/summons-form');
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('POST');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('POST');
 
-      expect(testObj.body.hasOwnProperty('attendTime')).to.equal(true);
-      expect(testObj.body.attendTime).to.equal('2022-12-30 00:00');
+      expect(testObj.body.hasOwnProperty('attendTime')).toEqual(true);
+      expect(testObj.body.attendTime).toEqual('2022-12-30 00:00');
 
-      expect(testObj.body.hasOwnProperty('catchmentArea')).to.equal(true);
-      expect(testObj.body.catchmentArea).to.equal('415');
+      expect(testObj.body.hasOwnProperty('catchmentArea')).toEqual(true);
+      expect(testObj.body.catchmentArea).toEqual('415');
 
-      expect(testObj.body.hasOwnProperty('nextDate')).to.equal(true);
-      expect(testObj.body.nextDate).to.equal('2022-12-30');
+      expect(testObj.body.hasOwnProperty('nextDate')).toEqual(true);
+      expect(testObj.body.nextDate).toEqual('2022-12-30');
 
-      expect(testObj.body.hasOwnProperty('noRequested')).to.equal(true);
-      expect(testObj.body.noRequested).to.equal(150);
+      expect(testObj.body.hasOwnProperty('noRequested')).toEqual(true);
+      expect(testObj.body.noRequested).toEqual(150);
 
-      expect(testObj.body.hasOwnProperty('poolNumber')).to.equal(true);
-      expect(testObj.body.poolNumber).to.equal('755221201');
+      expect(testObj.body.hasOwnProperty('poolNumber')).toEqual(true);
+      expect(testObj.body.poolNumber).toEqual('755221201');
     });
 
   });

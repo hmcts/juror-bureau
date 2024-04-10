@@ -30,17 +30,17 @@
           jurorNumber
         );
 
-      expect(testUri.uri).to.equal(realUri);
-      expect(testUri.method).to.equal('PUT');
+      expect(testUri.uri).toEqual(realUri);
+      expect(testUri.method).toEqual('PUT');
 
-      expect(testUri.body.hasOwnProperty('excusalDecision')).to.be.true;
-      expect(testUri.body.excusalDecision).to.equal('REFUSE');
+      expect(testUri.body.hasOwnProperty('excusalDecision')).toEqual(true);
+      expect(testUri.body.excusalDecision).toEqual('REFUSE');
 
-      expect(testUri.body.hasOwnProperty('excusalReasonCode')).to.be.true;
-      expect(testUri.body.excusalReasonCode).to.equal('A');
+      expect(testUri.body.hasOwnProperty('excusalReasonCode')).toEqual(true);
+      expect(testUri.body.excusalReasonCode).toEqual('A');
 
-      expect(testUri.body.hasOwnProperty('replyMethod')).to.be.true;
-      expect(testUri.body.replyMethod).to.equal('PAPER');
+      expect(testUri.body.hasOwnProperty('replyMethod')).toEqual(true);
+      expect(testUri.body.replyMethod).toEqual('PAPER');
     });
 
     it('should send call the correct endpoint to GRANT an excusal', function() {
@@ -57,17 +57,17 @@
           jurorNumber
         );
 
-      expect(testUri.uri).to.equal(realUri);
-      expect(testUri.method).to.equal('PUT');
+      expect(testUri.uri).toEqual(realUri);
+      expect(testUri.method).toEqual('PUT');
 
-      expect(testUri.body.hasOwnProperty('excusalDecision')).to.be.true;
-      expect(testUri.body.excusalDecision).to.equal('GRANT');
+      expect(testUri.body.hasOwnProperty('excusalDecision')).toEqual(true);
+      expect(testUri.body.excusalDecision).toEqual('GRANT');
 
-      expect(testUri.body.hasOwnProperty('excusalReasonCode')).to.be.true;
-      expect(testUri.body.excusalReasonCode).to.equal('B');
+      expect(testUri.body.hasOwnProperty('excusalReasonCode')).toEqual(true);
+      expect(testUri.body.excusalReasonCode).toEqual('B');
 
-      expect(testUri.body.hasOwnProperty('replyMethod')).to.be.true;
-      expect(testUri.body.replyMethod).to.equal('DIGITAL');
+      expect(testUri.body.hasOwnProperty('replyMethod')).toEqual(true);
+      expect(testUri.body.replyMethod).toEqual('DIGITAL');
     });
 
   });

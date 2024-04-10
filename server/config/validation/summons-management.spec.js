@@ -18,7 +18,7 @@
 
       validatorResult = validate(mockBody, validator.processAction());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate the process reply action select - unhappy path', function() {
@@ -26,15 +26,15 @@
 
       validatorResult = validate(mockBody, validator.processAction());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('processActionType');
-      expect(validatorResult.processActionType).to.be.an.instanceof(Array);
-      expect(validatorResult.processActionType).to.be.of.length(1);
-      expect(validatorResult.processActionType[0]).to.be.an('object');
-      expect(validatorResult.processActionType[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.processActionType[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.processActionType[0].summary).to.equal('Please select a response process type');
-      expect(validatorResult.processActionType[0].details).to.equal('Please select a response process type');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('processActionType');
+      expect(validatorResult.processActionType).toBeInstanceOf(Array);
+      expect(validatorResult.processActionType).toHaveLength(1);
+      expect(validatorResult.processActionType[0]).toEqual(expect.any(Object));
+      expect(validatorResult.processActionType[0]).toHaveProperty('summary');
+      expect(validatorResult.processActionType[0]).toHaveProperty('details');
+      expect(validatorResult.processActionType[0].summary).toEqual('Please select a response process type');
+      expect(validatorResult.processActionType[0].details).toEqual('Please select a response process type');
     });
 
     it('should validate the request more info from juror form - happy path', function() {
@@ -45,7 +45,7 @@
 
       validatorResult = validate(mockBody, validator.requestInfo());
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate the request more info from juror form - unhappy path', function() {
@@ -55,16 +55,16 @@
 
       validatorResult = validate(mockBody, validator.requestInfo());
 
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownPropertyDescriptor('requestInfo');
-      expect(validatorResult.requestInfo).to.be.an.instanceof(Array);
-      expect(validatorResult.requestInfo).to.be.of.length(1);
-      expect(validatorResult.requestInfo[0]).to.be.an('object');
-      expect(validatorResult.requestInfo[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.requestInfo[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.requestInfo[0].summary).to.equal('Select what information you need from the juror');
-      expect(validatorResult.requestInfo[0].details).to.be.of.length(1);
-      expect(validatorResult.requestInfo[0].details[0]).to.equal('Select what information you need from the juror');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult).toHaveProperty('requestInfo');
+      expect(validatorResult.requestInfo).toBeInstanceOf(Array);
+      expect(validatorResult.requestInfo).toHaveLength(1);
+      expect(validatorResult.requestInfo[0]).toEqual(expect.any(Object));
+      expect(validatorResult.requestInfo[0]).toHaveProperty('summary');
+      expect(validatorResult.requestInfo[0]).toHaveProperty('details');
+      expect(validatorResult.requestInfo[0].summary).toEqual('Select what information you need from the juror');
+      expect(validatorResult.requestInfo[0].details).toHaveLength(1);
+      expect(validatorResult.requestInfo[0].details[0]).toEqual('Select what information you need from the juror');
     });
 
   });

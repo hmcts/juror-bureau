@@ -35,8 +35,8 @@
         }
         , result = utils.forceHttps(reqStub, resStub, cb);
 
-      expect(result.status).to.equal(302);
-      expect(result.host).to.equal('https://localhost:3000/');
+      expect(result.status).toEqual(302);
+      expect(result.host).toEqual('https://localhost:3000/');
     });
 
     it('should not redirect if already on https', function() {
@@ -50,7 +50,7 @@
         }
         , result = utils.forceHttps(reqStub, resStub, cb);
 
-      expect(result).to.equal(true);
+      expect(result).toEqual(true);
     });
 
 
@@ -76,7 +76,7 @@
 
         , result = basicAuth(reqStub, resStub, cb);
 
-      expect(result.statusValue).to.equal(401);
+      expect(result.statusValue).toEqual(401);
     });
 
     // eslint-disable-next-line max-len
@@ -115,8 +115,8 @@
 
         , result = basicAuth(reqStub, resStub, cb);
 
-      expect(result.values['WWW-Authenticate']).to.equal('Basic realm=Authorization Required');
-      expect(result.values['status']).to.equal(401);
+      expect(result.values['WWW-Authenticate']).toEqual('Basic realm=Authorization Required');
+      expect(result.values['status']).toEqual(401);
     });
 
     // eslint-disable-next-line max-len
@@ -141,7 +141,7 @@
 
         , result = basicAuth(reqStub, resStub, cb);
 
-      expect(result).to.equal(true);
+      expect(result).toEqual(true);
     });
 
 
@@ -172,7 +172,7 @@
         , tmpSortedResp = utils.sortResponseData(respData, 'receivedAt');
 
       // Compare first element in each array to ensure they are equal
-      expect(expectedSortResp[0].id).to.equal(tmpSortedResp[0].id);
+      expect(expectedSortResp[0].id).toEqual(tmpSortedResp[0].id);
     });
 
     it('should sort response list by descending date', function() {
@@ -199,7 +199,7 @@
         , tmpSortedResp = utils.sortResponseData(respData, 'receivedAt', true);
 
       // Compare first element in each array to ensure they are equal
-      expect(expectedSortResp[0].id).to.equal(tmpSortedResp[0].id);
+      expect(expectedSortResp[0].id).toEqual(tmpSortedResp[0].id);
     });
 
     it('should keep urgent replies at top of list', function() {
@@ -240,7 +240,7 @@
         , tmpSortedResp = utils.sortResponseData(respData, 'receivedAt', 'urgent');
 
       // Compare first element in each array to ensure they are equal
-      expect(expectedSortResp[0].id).to.equal(tmpSortedResp[0].id);
+      expect(expectedSortResp[0].id).toEqual(tmpSortedResp[0].id);
     });
 
     it('should create directory if not already present', function() {
@@ -266,8 +266,8 @@
       }
 
       // Verify
-      expect(result).to.equal(true);
-      expect(verify).to.equal(true);
+      expect(result).toEqual(true);
+      expect(verify).toEqual(true);
     });
 
     it('should not create directory if permissions check fails', function() {
@@ -293,8 +293,8 @@
       }
 
       // Verify
-      expect(result).to.equal(false);
-      expect(verify).to.equal(false);
+      expect(result).toEqual(false);
+      expect(verify).toEqual(false);
     });
 
     it('should transform object to expected format', function() {
@@ -307,8 +307,8 @@
         , transformedBodyWithData = utils.basicDataTransform(bodyStub)
         , transformedBodyWithoutData = utils.basicDataTransform(bodyStub.data);
 
-      expect(transformedBodyWithData).to.equal(bodyStub.data);
-      expect(transformedBodyWithoutData).to.equal(bodyStub.data);
+      expect(transformedBodyWithData).toEqual(bodyStub.data);
+      expect(transformedBodyWithoutData).toEqual(bodyStub.data);
     });
 
   });

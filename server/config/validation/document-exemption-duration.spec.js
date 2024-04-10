@@ -29,7 +29,7 @@
 
       validatorResult = validate(mockRequest, validator(judgesList));
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate a valid request - speicifc years', function() {
@@ -41,7 +41,7 @@
 
       validatorResult = validate(mockRequest, validator(judgesList));
 
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
     });
 
     it('should validate an invalid request - all fields missing', function() {
@@ -53,15 +53,15 @@
 
       validatorResult = validate(mockRequest, validator(judgesList));
 
-      expect(validatorResult).to.be.an('object');
+      expect(validatorResult).toEqual(expect.any(Object));
 
-      expect(validatorResult).to.have.ownPropertyDescriptor('durationType');
-      expect(validatorResult.durationType[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.durationType[0].details).to.equal('Select a time period to exempt jurors');
+      expect(validatorResult).toHaveProperty('durationType');
+      expect(validatorResult.durationType[0]).toHaveProperty('details');
+      expect(validatorResult.durationType[0].details).toEqual('Select a time period to exempt jurors');
 
-      expect(validatorResult).to.have.ownPropertyDescriptor('judge');
-      expect(validatorResult.judge[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.judge[0].details).to.equal('Select a judge');
+      expect(validatorResult).toHaveProperty('judge');
+      expect(validatorResult.judge[0]).toHaveProperty('details');
+      expect(validatorResult.judge[0].details).toEqual('Select a judge');
     });
 
     it('should validate an invalid request - judge not in list', function() {
@@ -73,11 +73,11 @@
 
       validatorResult = validate(mockRequest, validator(judgesList));
 
-      expect(validatorResult).to.be.an('object');
+      expect(validatorResult).toEqual(expect.any(Object));
 
-      expect(validatorResult).to.have.ownPropertyDescriptor('judge');
-      expect(validatorResult.judge[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.judge[0].details).to.equal('Select a judge');
+      expect(validatorResult).toHaveProperty('judge');
+      expect(validatorResult.judge[0]).toHaveProperty('details');
+      expect(validatorResult.judge[0].details).toEqual('Select a judge');
     });
 
     it('should validate an invalid request - no judges available', function() {
@@ -89,11 +89,11 @@
 
       validatorResult = validate(mockRequest, validator([]));
 
-      expect(validatorResult).to.be.an('object');
+      expect(validatorResult).toEqual(expect.any(Object));
 
-      expect(validatorResult).to.have.ownPropertyDescriptor('judge');
-      expect(validatorResult.judge[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.judge[0].details).to.equal('Select a judge');
+      expect(validatorResult).toHaveProperty('judge');
+      expect(validatorResult.judge[0]).toHaveProperty('details');
+      expect(validatorResult.judge[0].details).toEqual('Select a judge');
     });
 
     it('should validate an invalid request - no years specified', function() {
@@ -105,11 +105,11 @@
 
       validatorResult = validate(mockRequest, validator(judgesList));
 
-      expect(validatorResult).to.be.an('object');
+      expect(validatorResult).toEqual(expect.any(Object));
 
-      expect(validatorResult).to.have.ownPropertyDescriptor('judge');
-      expect(validatorResult.durationYears[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.durationYears[0].details).to.equal('Enter how many years the jurors should be exempt for');
+      expect(validatorResult).toHaveProperty('judge');
+      expect(validatorResult.durationYears[0]).toHaveProperty('details');
+      expect(validatorResult.durationYears[0].details).toEqual('Enter how many years the jurors should be exempt for');
     });
   });
 

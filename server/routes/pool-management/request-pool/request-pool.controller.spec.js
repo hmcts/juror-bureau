@@ -13,7 +13,7 @@
 
       poolNumberPrefix = poolNumberPrefixBuilder(sessionStub);
 
-      expect(poolNumberPrefix).to.equal('4152201');
+      expect(poolNumberPrefix).toEqual('4152201');
     });
 
   });

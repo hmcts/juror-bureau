@@ -18,14 +18,14 @@
       };
 
       validatorResult = validate(mockRequest, validator.courtNameOrLocation());
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
 
       validatorResult = validate({}, validator.courtNameOrLocation());
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.courtNameOrLocationCode[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.courtNameOrLocationCode[0].summary).to.equal('Enter a court name or location code');
-      expect(validatorResult.courtNameOrLocationCode[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.courtNameOrLocationCode[0].details).to.equal('Enter a court name or location code');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.courtNameOrLocationCode[0]).toHaveProperty('summary');
+      expect(validatorResult.courtNameOrLocationCode[0].summary).toEqual('Enter a court name or location code');
+      expect(validatorResult.courtNameOrLocationCode[0]).toHaveProperty('details');
+      expect(validatorResult.courtNameOrLocationCode[0].details).toEqual('Enter a court name or location code');
     });
 
     it('should validate the deferral maintenance active pool selection input', function() {
@@ -34,14 +34,14 @@
       };
 
       validatorResult = validate(mockRequest, validator.selectedActivePool());
-      expect(validatorResult).to.be.undefined;
+      expect(validatorResult).toBeUndefined();
 
       validatorResult = validate({}, validator.selectedActivePool());
-      expect(validatorResult).to.be.an('object');
-      expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('summary');
-      expect(validatorResult.poolNumber[0].summary).to.equal('Choose an active pool to add selected jurors to');
-      expect(validatorResult.poolNumber[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.poolNumber[0].details).to.equal('Choose an active pool to add selected jurors to');
+      expect(validatorResult).toEqual(expect.any(Object));
+      expect(validatorResult.poolNumber[0]).toHaveProperty('summary');
+      expect(validatorResult.poolNumber[0].summary).toEqual('Choose an active pool to add selected jurors to');
+      expect(validatorResult.poolNumber[0]).toHaveProperty('details');
+      expect(validatorResult.poolNumber[0].details).toEqual('Choose an active pool to add selected jurors to');
     });
 
   });

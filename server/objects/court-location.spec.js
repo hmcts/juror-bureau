@@ -24,8 +24,8 @@
           'moj/court-location/catchment-areas?postcode=AB1'
         );
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('GET');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('GET');
     });
   });
 })();

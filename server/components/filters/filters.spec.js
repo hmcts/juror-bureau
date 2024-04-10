@@ -12,10 +12,10 @@
 
       output = filter.capitalizeFully(sentence);
 
-      expect(output).to.be.equal(expected);
+      expect(output).toEqual(expected);
 
       output = filter.capitalizeFully();
-      expect(output).to.be.undefined;
+      expect(output).toBeUndefined();
     });
 
     it('should capitalise every word of a sentence - unhappy path', function() {
@@ -24,7 +24,7 @@
 
       output = filter.capitalizeFully(sentence);
 
-      expect(output).to.be.undefined;
+      expect(output).toBeUndefined();
     });
 
     it('should transform the pool type from a 3 letter tag to a full word', function() {
@@ -33,16 +33,16 @@
         , output;
 
       output = filter.transformPoolType(poolTypes[0]);
-      expect(output).to.be.equal(expected[0]);
+      expect(output).toEqual(expected[0]);
 
       output = filter.transformPoolType(poolTypes[1]);
-      expect(output).to.be.equal(expected[1]);
+      expect(output).toEqual(expected[1]);
 
       output = filter.transformPoolType(poolTypes[2]);
-      expect(output).to.be.equal(expected[2]);
+      expect(output).toEqual(expected[2]);
 
       output = filter.transformPoolType(poolTypes[3]);
-      expect(output).to.be.equal(expected[3]);
+      expect(output).toEqual(expected[3]);
     });
 
     it('should build a juror record address from multiple lines', function() {
@@ -58,7 +58,7 @@
 
       output = filter.buildRecordAddress(address);
 
-      expect(output).to.be.equal(expected);
+      expect(output).toEqual(expected);
     });
 
     it('should build a juror record address from multiple lines with null lines', function() {
@@ -74,7 +74,7 @@
 
       output = filter.buildRecordAddress(address);
 
-      expect(output).to.be.equal(expected);
+      expect(output).toEqual(expected);
     });
 
     it('should build a juror record address from multiple lines with null lines and capitalized properly', function() {
@@ -90,7 +90,7 @@
 
       output = filter.capitalizeFully(filter.buildRecordAddress(address));
 
-      expect(output).to.be.equal(expected);
+      expect(output).toEqual(expected);
     });
 
     it('should make a date from an array', function() {
@@ -99,7 +99,7 @@
 
       output = filter.makeDate(dateArr);
 
-      expect(output.toISOString()).to.be.equal('2023-01-01T00:00:00.000Z');
+      expect(output.toISOString()).toEqual('2023-01-01T00:00:00.000Z');
     });
 
     it('should make a new date if an invalid date or no date is passed in', function() {
@@ -118,10 +118,10 @@
       output3 = filter.makeDate(dateStr2).toDateString();
       output4 = filter.makeDate(dateInvalid).toDateString();
 
-      expect(output1).to.be.equal(today);
-      expect(output2).to.be.equal(today);
-      expect(output3).to.be.equal(today);
-      expect(output4).to.be.equal(today);
+      expect(output1).toEqual(today);
+      expect(output2).toEqual(today);
+      expect(output3).toEqual(today);
+      expect(output4).toEqual(today);
     });
 
     it('should stringify an object', function() {
@@ -133,23 +133,23 @@
 
       output = filter.console(obj);
 
-      expect(output).to.be.equal(str);
+      expect(output).toEqual(str);
     });
 
     it('should show System if a response was auto processed', function() {
       var output;
 
       output = filter.isAutoProcessed('AUTO');
-      expect(output).to.be.equal('System');
+      expect(output).toEqual('System');
 
       output = filter.isAutoProcessed('Fname Lname');
-      expect(output).to.be.equal('Fname Lname');
+      expect(output).toEqual('Fname Lname');
 
       output = filter.isAutoProcessed('');
-      expect(output).to.be.equal('System');
+      expect(output).toEqual('System');
 
       output = filter.isAutoProcessed();
-      expect(output).to.be.equal('System');
+      expect(output).toEqual('System');
     });
 
     it('should build a grammatically correct string output for a list - 1 item',
@@ -158,7 +158,7 @@
           expected = 'item1',
           output = filter.prettyList(input);
 
-        expect(output).to.be.equal(expected);
+        expect(output).toEqual(expected);
       }
     );
 
@@ -168,7 +168,7 @@
           expected = 'item1 and item2',
           output = filter.prettyList(input);
 
-        expect(output).to.be.equal(expected);
+        expect(output).toEqual(expected);
       }
     );
 
@@ -178,7 +178,7 @@
           expected = 'item1, item2 and item3',
           output = filter.prettyList(input);
 
-        expect(output).to.be.equal(expected);
+        expect(output).toEqual(expected);
       }
     );
 
@@ -188,20 +188,20 @@
       let output;
 
       output = filter.toCamelCase(string);
-      expect(output).to.be.equal(expected);
+      expect(output).toEqual(expected);
 
       string = '--string-to-camel-case-';
 
       output = filter.toCamelCase(string);
-      expect(output).to.be.equal(expected);
+      expect(output).toEqual(expected);
 
       string = '__STRING_TO_CAMEL_CASE__';
 
       output = filter.toCamelCase(string);
-      expect(output).to.be.equal(expected);
+      expect(output).toEqual(expected);
 
       output = filter.toCamelCase();
-      expect(output).to.be.equal('');
+      expect(output).toEqual('');
     });
 
     it('should convert a string to kebab case', function() {
@@ -210,20 +210,20 @@
       let output;
 
       output = filter.toKebabCase(string);
-      expect(output).to.be.equal(expected);
+      expect(output).toEqual(expected);
 
       string = '--string-to-kebab-case-';
 
       output = filter.toKebabCase(string);
-      expect(output).to.be.equal(expected);
+      expect(output).toEqual(expected);
 
       string = '__STRING_TO_KEBAB_CASE__';
 
       output = filter.toKebabCase(string);
-      expect(output).to.be.equal(expected);
+      expect(output).toEqual(expected);
 
       output = filter.toKebabCase();
-      expect(output).to.be.equal('');
+      expect(output).toEqual('');
     });
 
     it('should convert a string to sentence case', function() {
@@ -232,20 +232,20 @@
       let output;
 
       output = filter.toSentenceCase(string);
-      expect(output).to.be.equal(expected);
+      expect(output).toEqual(expected);
 
       string = '--string-to-sentence-case-';
 
       output = filter.toSentenceCase(string);
-      expect(output).to.be.equal(expected);
+      expect(output).toEqual(expected);
 
       string = '__STRING_TO_SENTENCE_CASE__';
 
       output = filter.toSentenceCase(string);
-      expect(output).to.be.equal(expected);
+      expect(output).toEqual(expected);
 
       output = filter.toSentenceCase();
-      expect(output).to.be.equal('');
+      expect(output).toEqual('');
     });
 
     it('should add hyphens to a sort code', function() {
@@ -254,7 +254,7 @@
 
       const output = filter.sortCode(string);
 
-      expect(output).to.be.equal(expected);
+      expect(output).toEqual(expected);
     });
 
     it('should convert a time string to hours and minutes', function() {
@@ -265,22 +265,22 @@
       string = '01:45';
       expected = '1 hour 45 minutes';
       output = filter.hoursStringToHoursAndMinutes(string);
-      expect(output).to.be.equal(expected);
+      expect(output).toEqual(expected);
 
       string = '00:45';
       expected = '45 minutes';
       output = filter.hoursStringToHoursAndMinutes(string);
-      expect(output).to.be.equal(expected);
+      expect(output).toEqual(expected);
 
       string = '01:00';
       expected = '1 hour ';
       output = filter.hoursStringToHoursAndMinutes(string);
-      expect(output).to.be.equal(expected);
+      expect(output).toEqual(expected);
 
       string = '02:01';
       expected = '2 hours 1 minute';
       output = filter.hoursStringToHoursAndMinutes(string);
-      expect(output).to.be.equal(expected);
+      expect(output).toEqual(expected);
     });
 
     it('should return true if an arry includes a value', function() {
@@ -289,7 +289,7 @@
 
       let output = filter.arrayIncludes(arr, val);
 
-      expect(output).to.be.true;
+      expect(output).toEqual(true);
     });
 
     it('should return false if an arry does not include a value', function() {
@@ -298,7 +298,7 @@
 
       let output = filter.arrayIncludes(arr, val);
 
-      expect(output).to.be.false;
+      expect(output).toEqual(false);
     });
 
   });

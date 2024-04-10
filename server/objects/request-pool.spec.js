@@ -23,8 +23,8 @@
       var testUri = poolRequestObject.fetchCourts.get(rpStub, appStub, 'test-token')
         , realUri = urljoin('http://localhost:8080/api/v1', 'moj/pool-request/court-locations');
 
-      expect(testUri.uri).to.equal(realUri);
-      expect(testUri.method).to.equal('GET');
+      expect(testUri.uri).toEqual(realUri);
+      expect(testUri.method).toEqual('GET');
     });
 
     it('should call the correct endpoint to post the pool request data', function() {
@@ -34,8 +34,8 @@
         , testUri = poolRequestObject.createPoolRequest.post(rpStub, appStub, 'test-token', bodyStub)
         , realUri = urljoin('http://localhost:8080/api/v1', 'moj/pool-request/new-pool');
 
-      expect(testUri.uri).to.equal(realUri);
-      expect(testUri.method).to.equal('POST');
+      expect(testUri.uri).toEqual(realUri);
+      expect(testUri.method).toEqual('POST');
     });
 
     it('should call the correct endpoint to check a type of day', function() {
@@ -45,8 +45,8 @@
           'moj/pool-request/day-type?locationCode=100&attendanceDate=2022-10-10'
         );
 
-      expect(testUri.uri).to.equal(realUri);
-      expect(testUri.method).to.equal('GET');
+      expect(testUri.uri).toEqual(realUri);
+      expect(testUri.method).toEqual('GET');
     });
 
     it('should call the correct endpoint to generate a pool number', function() {
@@ -56,8 +56,8 @@
           'moj/pool-request/generate-pool-number?locationCode=100&attendanceDate=2022-10-10'
         );
 
-      expect(testUri.uri).to.equal(realUri);
-      expect(testUri.method).to.equal('GET');
+      expect(testUri.uri).toEqual(realUri);
+      expect(testUri.method).toEqual('GET');
     });
 
     it('should call the correct endpoint to fetch court deferrals', function() {
@@ -67,8 +67,8 @@
           'moj/pool-request/deferrals?locationCode=100&deferredTo=2022-10-10'
         );
 
-      expect(testUri.uri).to.equal(realUri);
-      expect(testUri.method).to.equal('GET');
+      expect(testUri.uri).toEqual(realUri);
+      expect(testUri.method).toEqual('GET');
     });
 
     it('should call the correct endpoint to fetch pool numbers', function() {
@@ -78,8 +78,8 @@
           'moj/pool-request/pool-numbers?poolNumberPrefix=4152201'
         );
 
-      expect(testUri.uri).to.equal(realUri);
-      expect(testUri.method).to.equal('GET');
+      expect(testUri.uri).toEqual(realUri);
+      expect(testUri.method).toEqual('GET');
     });
 
     it('should call the correct endpoint to create a coroner court pool', function() {
@@ -89,8 +89,8 @@
           'moj/pool-create/create-coroner-pool'
         );
 
-      expect(testUri.uri).to.equal(realUri);
-      expect(testUri.method).to.equal('POST');
+      expect(testUri.uri).toEqual(realUri);
+      expect(testUri.method).toEqual('POST');
     });
 
     it('should call the correct endpoint to fetch a coroner court pool', function() {
@@ -100,8 +100,8 @@
           'moj/pool-create/coroner-pool?poolNumber=923040001'
         );
 
-      expect(testUri.uri).to.equal(realUri);
-      expect(testUri.method).to.equal('GET');
+      expect(testUri.uri).toEqual(realUri);
+      expect(testUri.method).toEqual('GET');
     });
 
     it('should call the correct endpoint to add voters into a coroner court pool', function() {
@@ -111,8 +111,8 @@
           'moj/pool-create/add-citizens'
         );
 
-      expect(testUri.uri).to.equal(realUri);
-      expect(testUri.method).to.equal('POST');
+      expect(testUri.uri).toEqual(realUri);
+      expect(testUri.method).toEqual('POST');
     });
 
   });

@@ -23,7 +23,7 @@
   
         validatorResult = validate(mockRequest, checkInOutTimeValidator.checkInTimeEmpty());
   
-        expect(validatorResult).to.be.undefined;
+        expect(validatorResult).toBeUndefined();
       });
 
       it('should validate a valid request - time period is missing', function() {
@@ -36,7 +36,7 @@
   
         validatorResult = validate(mockRequest, checkInOutTimeValidator.checkInTimeEmpty());
   
-        expect(validatorResult).to.be.undefined;
+        expect(validatorResult).toBeUndefined();
       });
 
       it('should validate an invalid request - mandatory fields are empty', function() {
@@ -49,10 +49,10 @@
   
         validatorResult = validate(mockRequest, checkInOutTimeValidator.checkInTimeEmpty());
   
-        expect(validatorResult).to.be.an('object');
-        expect(validatorResult).to.have.ownPropertyDescriptor('checkInTime');
-        expect(validatorResult.checkInTime[0]).to.have.ownPropertyDescriptor('details');
-        expect(validatorResult.checkInTime[0].details).to.equal('Enter a check in time or delete this juror\'s attendance');
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult).toHaveProperty('checkInTime');
+        expect(validatorResult.checkInTime[0]).toHaveProperty('details');
+        expect(validatorResult.checkInTime[0].details).toEqual('Enter a check in time or delete this juror\'s attendance');
       });
     });
 
@@ -72,7 +72,7 @@
     
           validatorResult = validate(mockRequest, checkInOutTimeValidator.checkOutTimeEmpty());
     
-          expect(validatorResult).to.be.undefined;
+          expect(validatorResult).toBeUndefined();
         });
   
         it('should validate a valid request - time period is missing', function() {
@@ -85,7 +85,7 @@
     
           validatorResult = validate(mockRequest, checkInOutTimeValidator.checkOutTimeEmpty());
     
-          expect(validatorResult).to.be.undefined;
+          expect(validatorResult).toBeUndefined();
         });
   
         it('should validate an invalid request - mandatory fields are empty', function() {
@@ -98,10 +98,10 @@
     
           validatorResult = validate(mockRequest, checkInOutTimeValidator.checkOutTimeEmpty());
     
-          expect(validatorResult).to.be.an('object');
-          expect(validatorResult).to.have.ownPropertyDescriptor('checkOutTime');
-          expect(validatorResult.checkOutTime[0]).to.have.ownPropertyDescriptor('details');
-          expect(validatorResult.checkOutTime[0].details).to.equal('Enter a check out time');
+          expect(validatorResult).toEqual(expect.any(Object));
+          expect(validatorResult).toHaveProperty('checkOutTime');
+          expect(validatorResult.checkOutTime[0]).toHaveProperty('details');
+          expect(validatorResult.checkOutTime[0].details).toEqual('Enter a check out time');
         });
       });
   
@@ -120,7 +120,7 @@
     
           validatorResult = validate(mockRequest, checkInOutTimeValidator.checkInTime());
     
-          expect(validatorResult).to.be.undefined;
+          expect(validatorResult).toBeUndefined();
         });
   
         it('should validate an invalid request - hour is missing', function() {
@@ -132,10 +132,10 @@
     
           validatorResult = validate(mockRequest, checkInOutTimeValidator.checkInTime());
 
-          expect(validatorResult).to.be.an('object');
-          expect(validatorResult).to.have.ownPropertyDescriptor('checkInTimeHour');
-          expect(validatorResult.checkInTimeHour[0]).to.have.ownPropertyDescriptor('details');
-          expect(validatorResult.checkInTimeHour[0].details).to.equal('Enter an hour for check in time or delete this juror\'s attendance');
+          expect(validatorResult).toEqual(expect.any(Object));
+          expect(validatorResult).toHaveProperty('checkInTimeHour');
+          expect(validatorResult.checkInTimeHour[0]).toHaveProperty('details');
+          expect(validatorResult.checkInTimeHour[0].details).toEqual('Enter an hour for check in time or delete this juror\'s attendance');
         });
 
         it('should validate an invalid request - hours is invalid', function() {
@@ -147,10 +147,10 @@
     
           validatorResult = validate(mockRequest, checkInOutTimeValidator.checkInTime());
 
-          expect(validatorResult).to.be.an('object');
-          expect(validatorResult).to.have.ownPropertyDescriptor('checkInTimeHour');
-          expect(validatorResult.checkInTimeHour[0]).to.have.ownPropertyDescriptor('details');
-          expect(validatorResult.checkInTimeHour[0].details).to.equal('Enter an hour between 1 and 12');
+          expect(validatorResult).toEqual(expect.any(Object));
+          expect(validatorResult).toHaveProperty('checkInTimeHour');
+          expect(validatorResult.checkInTimeHour[0]).toHaveProperty('details');
+          expect(validatorResult.checkInTimeHour[0].details).toEqual('Enter an hour between 1 and 12');
         });
 
         it('should validate an invalid request - minutes are missing', function() {
@@ -162,10 +162,10 @@
     
           validatorResult = validate(mockRequest, checkInOutTimeValidator.checkInTime());
 
-          expect(validatorResult).to.be.an('object');
-          expect(validatorResult).to.have.ownPropertyDescriptor('checkInTimeMinute');
-          expect(validatorResult.checkInTimeMinute[0]).to.have.ownPropertyDescriptor('details');
-          expect(validatorResult.checkInTimeMinute[0].details).to.equal('Enter minutes for check in time or delete this juror\'s attendance');
+          expect(validatorResult).toEqual(expect.any(Object));
+          expect(validatorResult).toHaveProperty('checkInTimeMinute');
+          expect(validatorResult.checkInTimeMinute[0]).toHaveProperty('details');
+          expect(validatorResult.checkInTimeMinute[0].details).toEqual('Enter minutes for check in time or delete this juror\'s attendance');
         });
 
         it('should validate an invalid request - minutes are invalid', function() {
@@ -177,10 +177,10 @@
     
           validatorResult = validate(mockRequest, checkInOutTimeValidator.checkInTime());
 
-          expect(validatorResult).to.be.an('object');
-          expect(validatorResult).to.have.ownPropertyDescriptor('checkInTimeMinute');
-          expect(validatorResult.checkInTimeMinute[0]).to.have.ownPropertyDescriptor('details');
-          expect(validatorResult.checkInTimeMinute[0].details).to.equal('Enter minutes between 0 and 59');
+          expect(validatorResult).toEqual(expect.any(Object));
+          expect(validatorResult).toHaveProperty('checkInTimeMinute');
+          expect(validatorResult.checkInTimeMinute[0]).toHaveProperty('details');
+          expect(validatorResult.checkInTimeMinute[0].details).toEqual('Enter minutes between 0 and 59');
         });
 
         it('should validate an invalid request - period is missing', function() {
@@ -192,10 +192,10 @@
     
           validatorResult = validate(mockRequest, checkInOutTimeValidator.checkInTime());
 
-          expect(validatorResult).to.be.an('object');
-          expect(validatorResult).to.have.ownPropertyDescriptor('checkInTimePeriod');
-          expect(validatorResult.checkInTimePeriod[0]).to.have.ownPropertyDescriptor('details');
-          expect(validatorResult.checkInTimePeriod[0].details).to.equal('Select whether check in time is am or pm or delete this juror\'s attendance');
+          expect(validatorResult).toEqual(expect.any(Object));
+          expect(validatorResult).toHaveProperty('checkInTimePeriod');
+          expect(validatorResult.checkInTimePeriod[0]).toHaveProperty('details');
+          expect(validatorResult.checkInTimePeriod[0].details).toEqual('Select whether check in time is am or pm or delete this juror\'s attendance');
         });
 
         it('should validate an invalid request - invalid characters', function() {
@@ -207,10 +207,10 @@
     
           validatorResult = validate(mockRequest, checkInOutTimeValidator.checkInTime());
 
-          expect(validatorResult).to.be.an('object');
-          expect(validatorResult).to.have.ownPropertyDescriptor('checkInTimeHour');
-          expect(validatorResult.checkInTimeHour[0]).to.have.ownPropertyDescriptor('details');
-          expect(validatorResult.checkInTimeHour[0].details).to.equal('Check in time must only include numbers - you cannot enter letters or special characters');
+          expect(validatorResult).toEqual(expect.any(Object));
+          expect(validatorResult).toHaveProperty('checkInTimeHour');
+          expect(validatorResult.checkInTimeHour[0]).toHaveProperty('details');
+          expect(validatorResult.checkInTimeHour[0].details).toEqual('Check in time must only include numbers - you cannot enter letters or special characters');
         });
 
       });
@@ -230,7 +230,7 @@
     
           validatorResult = validate(mockRequest, checkInOutTimeValidator.checkOutTime());
     
-          expect(validatorResult).to.be.undefined;
+          expect(validatorResult).toBeUndefined();
         });
   
         it('should validate an invalid request - hour is missing', function() {
@@ -242,10 +242,10 @@
     
           validatorResult = validate(mockRequest, checkInOutTimeValidator.checkOutTime());
 
-          expect(validatorResult).to.be.an('object');
-          expect(validatorResult).to.have.ownPropertyDescriptor('checkOutTimeHour');
-          expect(validatorResult.checkOutTimeHour[0]).to.have.ownPropertyDescriptor('details');
-          expect(validatorResult.checkOutTimeHour[0].details).to.equal('Enter an hour for check out time');
+          expect(validatorResult).toEqual(expect.any(Object));
+          expect(validatorResult).toHaveProperty('checkOutTimeHour');
+          expect(validatorResult.checkOutTimeHour[0]).toHaveProperty('details');
+          expect(validatorResult.checkOutTimeHour[0].details).toEqual('Enter an hour for check out time');
         });
 
         it('should validate an invalid request - hours is invalid', function() {
@@ -257,10 +257,10 @@
     
           validatorResult = validate(mockRequest, checkInOutTimeValidator.checkOutTime());
 
-          expect(validatorResult).to.be.an('object');
-          expect(validatorResult).to.have.ownPropertyDescriptor('checkOutTimeHour');
-          expect(validatorResult.checkOutTimeHour[0]).to.have.ownPropertyDescriptor('details');
-          expect(validatorResult.checkOutTimeHour[0].details).to.equal('Enter an hour between 1 and 12');
+          expect(validatorResult).toEqual(expect.any(Object));
+          expect(validatorResult).toHaveProperty('checkOutTimeHour');
+          expect(validatorResult.checkOutTimeHour[0]).toHaveProperty('details');
+          expect(validatorResult.checkOutTimeHour[0].details).toEqual('Enter an hour between 1 and 12');
         });
 
         it('should validate an invalid request - minutes are missing', function() {
@@ -272,10 +272,10 @@
     
           validatorResult = validate(mockRequest, checkInOutTimeValidator.checkOutTime());
 
-          expect(validatorResult).to.be.an('object');
-          expect(validatorResult).to.have.ownPropertyDescriptor('checkOutTimeMinute');
-          expect(validatorResult.checkOutTimeMinute[0]).to.have.ownPropertyDescriptor('details');
-          expect(validatorResult.checkOutTimeMinute[0].details).to.equal('Enter minutes for check out time');
+          expect(validatorResult).toEqual(expect.any(Object));
+          expect(validatorResult).toHaveProperty('checkOutTimeMinute');
+          expect(validatorResult.checkOutTimeMinute[0]).toHaveProperty('details');
+          expect(validatorResult.checkOutTimeMinute[0].details).toEqual('Enter minutes for check out time');
         });
 
         it('should validate an invalid request - minutes are invalid', function() {
@@ -287,10 +287,10 @@
     
           validatorResult = validate(mockRequest, checkInOutTimeValidator.checkOutTime());
 
-          expect(validatorResult).to.be.an('object');
-          expect(validatorResult).to.have.ownPropertyDescriptor('checkOutTimeMinute');
-          expect(validatorResult.checkOutTimeMinute[0]).to.have.ownPropertyDescriptor('details');
-          expect(validatorResult.checkOutTimeMinute[0].details).to.equal('Enter minutes between 0 and 59');
+          expect(validatorResult).toEqual(expect.any(Object));
+          expect(validatorResult).toHaveProperty('checkOutTimeMinute');
+          expect(validatorResult.checkOutTimeMinute[0]).toHaveProperty('details');
+          expect(validatorResult.checkOutTimeMinute[0].details).toEqual('Enter minutes between 0 and 59');
         });
 
         it('should validate an invalid request - period is missing', function() {
@@ -302,10 +302,10 @@
     
           validatorResult = validate(mockRequest, checkInOutTimeValidator.checkOutTime());
 
-          expect(validatorResult).to.be.an('object');
-          expect(validatorResult).to.have.ownPropertyDescriptor('checkOutTimePeriod');
-          expect(validatorResult.checkOutTimePeriod[0]).to.have.ownPropertyDescriptor('details');
-          expect(validatorResult.checkOutTimePeriod[0].details).to.equal('Select whether check out time is am or pm');
+          expect(validatorResult).toEqual(expect.any(Object));
+          expect(validatorResult).toHaveProperty('checkOutTimePeriod');
+          expect(validatorResult.checkOutTimePeriod[0]).toHaveProperty('details');
+          expect(validatorResult.checkOutTimePeriod[0].details).toEqual('Select whether check out time is am or pm');
         });
 
         it('should validate an invalid request - invalid characters', function() {
@@ -317,10 +317,10 @@
     
           validatorResult = validate(mockRequest, checkInOutTimeValidator.checkOutTime());
 
-          expect(validatorResult).to.be.an('object');
-          expect(validatorResult).to.have.ownPropertyDescriptor('checkOutTimeHour');
-          expect(validatorResult.checkOutTimeHour[0]).to.have.ownPropertyDescriptor('details');
-          expect(validatorResult.checkOutTimeHour[0].details).to.equal('Check out time must only include numbers - you cannot enter letters or special characters');
+          expect(validatorResult).toEqual(expect.any(Object));
+          expect(validatorResult).toHaveProperty('checkOutTimeHour');
+          expect(validatorResult.checkOutTimeHour[0]).toHaveProperty('details');
+          expect(validatorResult.checkOutTimeHour[0].details).toEqual('Check out time must only include numbers - you cannot enter letters or special characters');
         });
 
       });

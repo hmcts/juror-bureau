@@ -19,10 +19,10 @@ const { capitalise, toSentenceCase } = require('../components/filters');
 
       transformedCourtNames = modUtils.transformCourtNames(courtList);
 
-      expect(transformedCourtNames).to.be.of.length(3);
-      expect(transformedCourtNames[0]).to.equal('Test Court (100)');
-      expect(transformedCourtNames[1]).to.equal('Test Court (101)');
-      expect(transformedCourtNames[2]).to.equal('Test Court (102)');
+      expect(transformedCourtNames).toHaveLength(3);
+      expect(transformedCourtNames[0]).toEqual('Test Court (100)');
+      expect(transformedCourtNames[1]).toEqual('Test Court (101)');
+      expect(transformedCourtNames[2]).toEqual('Test Court (102)');
     });
 
     it('should return a court if the current user court matches any court of the list', function(done) {
@@ -42,9 +42,9 @@ const { capitalise, toSentenceCase } = require('../components/filters');
         .then(function(response) {
           matchedCourt = response;
 
-          expect(matchedCourt.locationName).to.equal('The Test Court');
-          expect(Number(matchedCourt.locationCode)).to.equal(Number(bodyStub.courtNameOrLocation));
-          expect(matchedCourt.attendanceTime).to.equal('10:00');
+          expect(matchedCourt.locationName).toEqual('The Test Court');
+          expect(Number(matchedCourt.locationCode)).toEqual(Number(bodyStub.courtNameOrLocation));
+          expect(matchedCourt.attendanceTime).toEqual('10:00');
 
           done();
         })
@@ -69,9 +69,9 @@ const { capitalise, toSentenceCase } = require('../components/filters');
         .then(function(response) {
           matchedCourt = response;
 
-          expect(matchedCourt.locationName).to.equal('The Test Court');
-          expect(Number(matchedCourt.locationCode)).to.equal(Number(bodyStub.courtNameOrLocation));
-          expect(matchedCourt.attendanceTime).to.equal('10:00');
+          expect(matchedCourt.locationName).toEqual('The Test Court');
+          expect(Number(matchedCourt.locationCode)).toEqual(Number(bodyStub.courtNameOrLocation));
+          expect(matchedCourt.attendanceTime).toEqual('10:00');
 
           done();
         })
@@ -95,7 +95,7 @@ const { capitalise, toSentenceCase } = require('../components/filters');
         .catch(function(response) {
           matchedCourt = response;
 
-          expect(matchedCourt).to.equal(false);
+          expect(matchedCourt).toEqual(false);
 
           done();
         });
@@ -105,8 +105,8 @@ const { capitalise, toSentenceCase } = require('../components/filters');
       var statusCreated = 'created'
         , statusRequested = 'requested';
 
-      expect(modUtils.poolStatus[statusCreated]).to.equal('CREATED');
-      expect(modUtils.poolStatus[statusRequested]).to.equal('REQUESTED');
+      expect(modUtils.poolStatus[statusCreated]).toEqual('CREATED');
+      expect(modUtils.poolStatus[statusRequested]).toEqual('REQUESTED');
     });
 
     it('should return the correct pool type', function() {
@@ -115,10 +115,10 @@ const { capitalise, toSentenceCase } = require('../components/filters');
         , civilCourt = 'civ'
         , highCourt = 'hgh';
 
-      expect(modUtils.poolType[crownCourt]).to.equal('CRO');
-      expect(modUtils.poolType[coronersCourt]).to.equal('COR');
-      expect(modUtils.poolType[civilCourt]).to.equal('CIV');
-      expect(modUtils.poolType[highCourt]).to.equal('HGH');
+      expect(modUtils.poolType[crownCourt]).toEqual('CRO');
+      expect(modUtils.poolType[coronersCourt]).toEqual('COR');
+      expect(modUtils.poolType[civilCourt]).toEqual('CIV');
+      expect(modUtils.poolType[highCourt]).toEqual('HGH');
     });
 
     it('should transform the pool list before rendering: requested pools', function() {
@@ -135,21 +135,21 @@ const { capitalise, toSentenceCase } = require('../components/filters');
 
       transformedPools = modUtils.transformPoolList(poolList);
 
-      expect(transformedPools.head).to.be.length(5);
-      expect(transformedPools.rows).to.be.length(1);
-      expect(transformedPools.rows[0]).to.be.length(5);
-      expect(transformedPools.rows[0][0].hasOwnProperty('html')).to.be.true;
-      expect(transformedPools.rows[0][0].html).to.equal(
+      expect(transformedPools.head).toHaveLength(5);
+      expect(transformedPools.rows).toHaveLength(1);
+      expect(transformedPools.rows[0]).toHaveLength(5);
+      expect(transformedPools.rows[0][0].hasOwnProperty('html')).toEqual(true);
+      expect(transformedPools.rows[0][0].html).toEqual(
         '<a href="/pool-management/pool-overview/415230101" class="govuk-link">415230101</a>');
-      expect(transformedPools.rows[0][1].hasOwnProperty('text')).to.be.true;
-      expect(transformedPools.rows[0][1].text).to.equal(100);
-      expect(transformedPools.rows[0][2].hasOwnProperty('text')).to.be.true;
-      expect(transformedPools.rows[0][2].text).to.equal('Court Name');
-      expect(transformedPools.rows[0][3].hasOwnProperty('text')).to.be.true;
-      expect(transformedPools.rows[0][3].text).to.equal('Crown court');
-      expect(transformedPools.rows[0][4].hasOwnProperty('text')).to.be.true;
-      expect(transformedPools.rows[0][4].hasOwnProperty('classes')).to.be.true;
-      expect(transformedPools.rows[0][4].text).to.equal('Sun 01 Jan 2023');
+      expect(transformedPools.rows[0][1].hasOwnProperty('text')).toEqual(true);
+      expect(transformedPools.rows[0][1].text).toEqual(100);
+      expect(transformedPools.rows[0][2].hasOwnProperty('text')).toEqual(true);
+      expect(transformedPools.rows[0][2].text).toEqual('Court Name');
+      expect(transformedPools.rows[0][3].hasOwnProperty('text')).toEqual(true);
+      expect(transformedPools.rows[0][3].text).toEqual('Crown court');
+      expect(transformedPools.rows[0][4].hasOwnProperty('text')).toEqual(true);
+      expect(transformedPools.rows[0][4].hasOwnProperty('classes')).toEqual(true);
+      expect(transformedPools.rows[0][4].text).toEqual('Sun 01 Jan 2023');
     });
 
     it('should transform the pool list before rendering: active pools and bureau tab', function() {
@@ -167,23 +167,23 @@ const { capitalise, toSentenceCase } = require('../components/filters');
 
       transformedPools = modUtils.transformPoolList(poolList, 'created', 'bureau');
 
-      expect(transformedPools.head).to.be.length(6);
-      expect(transformedPools.rows).to.be.length(1);
-      expect(transformedPools.rows[0]).to.be.length(6);
-      expect(transformedPools.rows[0][0].hasOwnProperty('html')).to.be.true;
-      expect(transformedPools.rows[0][0].html).to.equal(
+      expect(transformedPools.head).toHaveLength(6);
+      expect(transformedPools.rows).toHaveLength(1);
+      expect(transformedPools.rows[0]).toHaveLength(6);
+      expect(transformedPools.rows[0][0].hasOwnProperty('html')).toEqual(true);
+      expect(transformedPools.rows[0][0].html).toEqual(
         '<a href="/pool-management/pool-overview/415230101" class="govuk-link">415230101</a>');
-      expect(transformedPools.rows[0][1].hasOwnProperty('text')).to.be.true;
-      expect(transformedPools.rows[0][1].text).to.equal(100);
-      expect(transformedPools.rows[0][2].hasOwnProperty('text')).to.be.true;
-      expect(transformedPools.rows[0][2].text).to.equal(50);
-      expect(transformedPools.rows[0][3].hasOwnProperty('text')).to.be.true;
-      expect(transformedPools.rows[0][3].text).to.equal('Court Name');
-      expect(transformedPools.rows[0][4].hasOwnProperty('text')).to.be.true;
-      expect(transformedPools.rows[0][4].text).to.equal('Crown Court');
-      expect(transformedPools.rows[0][5].hasOwnProperty('text')).to.be.true;
-      expect(transformedPools.rows[0][5].hasOwnProperty('classes')).to.be.true;
-      expect(transformedPools.rows[0][5].text).to.equal('Sun 01 Jan 2023');
+      expect(transformedPools.rows[0][1].hasOwnProperty('text')).toEqual(true);
+      expect(transformedPools.rows[0][1].text).toEqual(100);
+      expect(transformedPools.rows[0][2].hasOwnProperty('text')).toEqual(true);
+      expect(transformedPools.rows[0][2].text).toEqual(50);
+      expect(transformedPools.rows[0][3].hasOwnProperty('text')).toEqual(true);
+      expect(transformedPools.rows[0][3].text).toEqual('Court Name');
+      expect(transformedPools.rows[0][4].hasOwnProperty('text')).toEqual(true);
+      expect(transformedPools.rows[0][4].text).toEqual('Crown Court');
+      expect(transformedPools.rows[0][5].hasOwnProperty('text')).toEqual(true);
+      expect(transformedPools.rows[0][5].hasOwnProperty('classes')).toEqual(true);
+      expect(transformedPools.rows[0][5].text).toEqual('Sun 01 Jan 2023');
     });
 
     it('should transform the pool list before rendering: active pools and court tab', function() {
@@ -201,23 +201,23 @@ const { capitalise, toSentenceCase } = require('../components/filters');
 
       transformedPools = modUtils.transformPoolList(poolList, 'created', 'court');
 
-      expect(transformedPools.head).to.be.length(6);
-      expect(transformedPools.rows).to.be.length(1);
-      expect(transformedPools.rows[0]).to.be.length(6);
-      expect(transformedPools.rows[0][0].hasOwnProperty('html')).to.be.true;
-      expect(transformedPools.rows[0][0].html).to.equal(
+      expect(transformedPools.head).toHaveLength(6);
+      expect(transformedPools.rows).toHaveLength(1);
+      expect(transformedPools.rows[0]).toHaveLength(6);
+      expect(transformedPools.rows[0][0].hasOwnProperty('html')).toEqual(true);
+      expect(transformedPools.rows[0][0].html).toEqual(
         '<a href="/pool-management/pool-overview/415230101" class="govuk-link">415230101</a>');
-      expect(transformedPools.rows[0][1].hasOwnProperty('text')).to.be.true;
-      expect(transformedPools.rows[0][1].text).to.equal(100);
-      expect(transformedPools.rows[0][2].hasOwnProperty('text')).to.be.true;
-      expect(transformedPools.rows[0][2].text).to.equal(50);
-      expect(transformedPools.rows[0][3].hasOwnProperty('text')).to.be.true;
-      expect(transformedPools.rows[0][3].text).to.equal('Court Name');
-      expect(transformedPools.rows[0][4].hasOwnProperty('text')).to.be.true;
-      expect(transformedPools.rows[0][4].text).to.equal('Crown Court');
-      expect(transformedPools.rows[0][5].hasOwnProperty('text')).to.be.true;
-      expect(transformedPools.rows[0][5].hasOwnProperty('classes')).to.be.true;
-      expect(transformedPools.rows[0][5].text).to.equal('Sun 01 Jan 2023');
+      expect(transformedPools.rows[0][1].hasOwnProperty('text')).toEqual(true);
+      expect(transformedPools.rows[0][1].text).toEqual(100);
+      expect(transformedPools.rows[0][2].hasOwnProperty('text')).toEqual(true);
+      expect(transformedPools.rows[0][2].text).toEqual(50);
+      expect(transformedPools.rows[0][3].hasOwnProperty('text')).toEqual(true);
+      expect(transformedPools.rows[0][3].text).toEqual('Court Name');
+      expect(transformedPools.rows[0][4].hasOwnProperty('text')).toEqual(true);
+      expect(transformedPools.rows[0][4].text).toEqual('Crown Court');
+      expect(transformedPools.rows[0][5].hasOwnProperty('text')).toEqual(true);
+      expect(transformedPools.rows[0][5].hasOwnProperty('classes')).toEqual(true);
+      expect(transformedPools.rows[0][5].text).toEqual('Sun 01 Jan 2023');
     });
 
     it('should transform the unpaid attendance list before rendering', function() {
@@ -233,22 +233,22 @@ const { capitalise, toSentenceCase } = require('../components/filters');
 
       const transformedUnpaidAttendance = modUtils.transformUnpaidAttendanceList(unpaidAttendanceList);
 
-      expect(transformedUnpaidAttendance.head).to.be.length(6);
-      expect(transformedUnpaidAttendance.rows).to.be.length(1);
-      expect(transformedUnpaidAttendance.rows[0][0].hasOwnProperty('html')).to.be.true;
-      expect(transformedUnpaidAttendance.rows[0][0].html).to.equal(
+      expect(transformedUnpaidAttendance.head).toHaveLength(6);
+      expect(transformedUnpaidAttendance.rows).toHaveLength(1);
+      expect(transformedUnpaidAttendance.rows[0][0].hasOwnProperty('html')).toEqual(true);
+      expect(transformedUnpaidAttendance.rows[0][0].html).toEqual(
         '<a href="/juror-management/record/123456/expenses" class="govuk-link">123456</a>');
-      expect(transformedUnpaidAttendance.rows[0][1].hasOwnProperty('text')).to.be.true;
-      expect(transformedUnpaidAttendance.rows[0][1].text).to.equal('12345');
-      expect(transformedUnpaidAttendance.rows[0][2].hasOwnProperty('text')).to.be.true;
-      expect(transformedUnpaidAttendance.rows[0][2].text).to.equal('First');
-      expect(transformedUnpaidAttendance.rows[0][3].hasOwnProperty('text')).to.be.true;
-      expect(transformedUnpaidAttendance.rows[0][3].text).to.equal('Last');
-      expect(transformedUnpaidAttendance.rows[0][4].hasOwnProperty('text')).to.be.true;
-      expect(transformedUnpaidAttendance.rows[0][4].text).to.equal('£80.00');
-      expect(transformedUnpaidAttendance.rows[0][5].hasOwnProperty('html')).to.be.true;
+      expect(transformedUnpaidAttendance.rows[0][1].hasOwnProperty('text')).toEqual(true);
+      expect(transformedUnpaidAttendance.rows[0][1].text).toEqual('12345');
+      expect(transformedUnpaidAttendance.rows[0][2].hasOwnProperty('text')).toEqual(true);
+      expect(transformedUnpaidAttendance.rows[0][2].text).toEqual('First');
+      expect(transformedUnpaidAttendance.rows[0][3].hasOwnProperty('text')).toEqual(true);
+      expect(transformedUnpaidAttendance.rows[0][3].text).toEqual('Last');
+      expect(transformedUnpaidAttendance.rows[0][4].hasOwnProperty('text')).toEqual(true);
+      expect(transformedUnpaidAttendance.rows[0][4].text).toEqual('£80.00');
+      expect(transformedUnpaidAttendance.rows[0][5].hasOwnProperty('html')).toEqual(true);
       // eslint-disable-next-line max-len
-      expect(transformedUnpaidAttendance.rows[0][5].html).to.equal('<a href="/juror-management/unpaid-attendance/expense-record/123456/12345/draft" class="govuk-link">View expenses</a>');
+      expect(transformedUnpaidAttendance.rows[0][5].html).toEqual('<a href="/juror-management/unpaid-attendance/expense-record/123456/12345/draft" class="govuk-link">View expenses</a>');
     });
 
     it('should transform the messaging trials list before rendering', function() {
@@ -268,10 +268,10 @@ const { capitalise, toSentenceCase } = require('../components/filters');
 
       const transforedTrialsTable = modUtils.transformMessagingTrialsList(trialsList);
 
-      expect(transforedTrialsTable.head).to.be.length(7);
-      expect(transforedTrialsTable.rows).to.be.length(1);
-      expect(transforedTrialsTable.rows[0][0].hasOwnProperty('html')).to.be.true;
-      expect(transforedTrialsTable.rows[0][0].html).to.equal(
+      expect(transforedTrialsTable.head).toHaveLength(7);
+      expect(transforedTrialsTable.rows).toHaveLength(1);
+      expect(transforedTrialsTable.rows[0][0].hasOwnProperty('html')).toEqual(true);
+      expect(transforedTrialsTable.rows[0][0].html).toEqual(
         '<div class="govuk-radios govuk-radios--small" data-module="govuk-radios">' +
           '<div class="govuk-radios__item">' +
             '<input class="govuk-radios__input" id="T100000000" name="selectedTrial" type="radio" value="T100000000">' +
@@ -281,18 +281,18 @@ const { capitalise, toSentenceCase } = require('../components/filters');
           '</div>' +
         '</div>'
       );
-      expect(transforedTrialsTable.rows[0][1].hasOwnProperty('text')).to.be.true;
-      expect(transforedTrialsTable.rows[0][1].text).to.equal('Test Defendant');
-      expect(transforedTrialsTable.rows[0][2].hasOwnProperty('text')).to.be.true;
-      expect(transforedTrialsTable.rows[0][2].text).to.equal('Civil');
-      expect(transforedTrialsTable.rows[0][3].hasOwnProperty('text')).to.be.true;
-      expect(transforedTrialsTable.rows[0][3].text).to.equal('Chester');
-      expect(transforedTrialsTable.rows[0][4].hasOwnProperty('text')).to.be.true;
-      expect(transforedTrialsTable.rows[0][4].text).to.equal('Large Room');
-      expect(transforedTrialsTable.rows[0][5].hasOwnProperty('text')).to.be.true;
-      expect(transforedTrialsTable.rows[0][5].text).to.equal('Judge Test');
-      expect(transforedTrialsTable.rows[0][6].hasOwnProperty('text')).to.be.true;
-      expect(transforedTrialsTable.rows[0][6].text).to.equal('Wed 07 Feb 2024');
+      expect(transforedTrialsTable.rows[0][1].hasOwnProperty('text')).toEqual(true);
+      expect(transforedTrialsTable.rows[0][1].text).toEqual('Test Defendant');
+      expect(transforedTrialsTable.rows[0][2].hasOwnProperty('text')).toEqual(true);
+      expect(transforedTrialsTable.rows[0][2].text).toEqual('Civil');
+      expect(transforedTrialsTable.rows[0][3].hasOwnProperty('text')).toEqual(true);
+      expect(transforedTrialsTable.rows[0][3].text).toEqual('Chester');
+      expect(transforedTrialsTable.rows[0][4].hasOwnProperty('text')).toEqual(true);
+      expect(transforedTrialsTable.rows[0][4].text).toEqual('Large Room');
+      expect(transforedTrialsTable.rows[0][5].hasOwnProperty('text')).toEqual(true);
+      expect(transforedTrialsTable.rows[0][5].text).toEqual('Judge Test');
+      expect(transforedTrialsTable.rows[0][6].hasOwnProperty('text')).toEqual(true);
+      expect(transforedTrialsTable.rows[0][6].text).toEqual('Wed 07 Feb 2024');
     });
 
     it('should pad the time unit if single numeric values are input', function() {
@@ -322,10 +322,10 @@ const { capitalise, toSentenceCase } = require('../components/filters');
       finalTimePadHour = modUtils.padTime(testTimePadHour);
       finalTimePadMinute = modUtils.padTime(testTimePadMinute);
 
-      expect(finalTimePadBoth).to.deep.equal({ hour: '08', minute: '05' });
-      expect(finalTimePadNone).to.deep.equal({ hour: '10', minute: '15' });
-      expect(finalTimePadHour).to.deep.equal({ hour: '08', minute: '15' });
-      expect(finalTimePadMinute).to.deep.equal({ hour: '10', minute: '05' });
+      expect(finalTimePadBoth).toEqual({ hour: '08', minute: '05' });
+      expect(finalTimePadNone).toEqual({ hour: '10', minute: '15' });
+      expect(finalTimePadHour).toEqual({ hour: '08', minute: '15' });
+      expect(finalTimePadMinute).toEqual({ hour: '10', minute: '05' });
     });
 
     it('should transform the pool numbers response into key.html and value.text objects', function() {
@@ -338,12 +338,12 @@ const { capitalise, toSentenceCase } = require('../components/filters');
 
       transformedPoolNumbers = modUtils.transformPoolNumbers(poolNumbersStub);
 
-      expect(transformedPoolNumbers).to.be.of.length(3);
-      expect(Object.keys(transformedPoolNumbers[0])).to.be.of.length(2);
-      expect(transformedPoolNumbers[0].hasOwnProperty('key')).to.equal(true);
-      expect(transformedPoolNumbers[0].hasOwnProperty('value')).to.equal(true);
-      expect(transformedPoolNumbers[1]['key'].hasOwnProperty('html')).to.equal(true);
-      expect(transformedPoolNumbers[1]['value'].hasOwnProperty('text')).to.equal(true);
+      expect(transformedPoolNumbers).toHaveLength(3);
+      expect(Object.keys(transformedPoolNumbers[0])).toHaveLength(2);
+      expect(transformedPoolNumbers[0].hasOwnProperty('key')).toEqual(true);
+      expect(transformedPoolNumbers[0].hasOwnProperty('value')).toEqual(true);
+      expect(transformedPoolNumbers[1]['key'].hasOwnProperty('html')).toEqual(true);
+      expect(transformedPoolNumbers[1]['value'].hasOwnProperty('text')).toEqual(true);
     });
 
     it('should return an empty array if there are no pool numbers to transform', function() {
@@ -352,7 +352,7 @@ const { capitalise, toSentenceCase } = require('../components/filters');
 
       transformedPoolNumbers = modUtils.transformPoolNumbers(poolNumbersStub);
 
-      expect(transformedPoolNumbers).to.be.of.length(0);
+      expect(transformedPoolNumbers).toHaveLength(0);
     });
 
     it('should return the correct day type if the key passed in is valid', function() {
@@ -360,24 +360,24 @@ const { capitalise, toSentenceCase } = require('../components/filters');
         , businessDay = 'BUSINESS_DAY'
         , weekend = 'WEEKEND';
 
-      expect(modUtils.dayTypes[holiday]).to.equal(holiday);
+      expect(modUtils.dayTypes[holiday]).toEqual(holiday);
 
-      expect(modUtils.dayTypes[businessDay]).to.equal(businessDay);
+      expect(modUtils.dayTypes[businessDay]).toEqual(businessDay);
 
-      expect(modUtils.dayTypes[weekend]).to.equal(weekend);
+      expect(modUtils.dayTypes[weekend]).toEqual(weekend);
     });
 
     it('should return true if a legacy (juror-digital) module is visited by a court user', function() {
       var pathParts = ['inbox', 'pending', 'completed', 'search', 'new-replies', 'staff', 'response', 'whatever'];
 
-      expect(modUtils.jurorDigitalPath[pathParts[0]]).to.be.true; // /inbox
-      expect(modUtils.jurorDigitalPath[pathParts[1]]).to.be.true; // /pending
-      expect(modUtils.jurorDigitalPath[pathParts[2]]).to.be.true; // /completed
-      expect(modUtils.jurorDigitalPath[pathParts[3]]).to.be.true; // /search
-      expect(modUtils.jurorDigitalPath[pathParts[4]]).to.be.true; // /new-replies
-      expect(modUtils.jurorDigitalPath[pathParts[5]]).to.be.true; // /staff
-      // expect(modUtils.jurorDigitalPath[pathParts[6]]).to.be.true; // /response
-      expect(modUtils.jurorDigitalPath[pathParts[7]]).to.be.undefined;  // /everything-else
+      expect(modUtils.jurorDigitalPath[pathParts[0]]).toEqual(true); // /inbox
+      expect(modUtils.jurorDigitalPath[pathParts[1]]).toEqual(true); // /pending
+      expect(modUtils.jurorDigitalPath[pathParts[2]]).toEqual(true); // /completed
+      expect(modUtils.jurorDigitalPath[pathParts[3]]).toEqual(true); // /search
+      expect(modUtils.jurorDigitalPath[pathParts[4]]).toEqual(true); // /new-replies
+      expect(modUtils.jurorDigitalPath[pathParts[5]]).toEqual(true); // /staff
+      // expect(modUtils.jurorDigitalPath[pathParts[6]]).toEqual(true); // /response
+      expect(modUtils.jurorDigitalPath[pathParts[7]]).toBeUndefined();  // /everything-else
     });
 
     it('should transform postcodes to expected format, sorted and with total court yield', function() {
@@ -388,25 +388,25 @@ const { capitalise, toSentenceCase } = require('../components/filters');
         ]
         , transformedPostcodes = modUtils.transformPostcodes(dataStub);
 
-      expect(transformedPostcodes).to.be.length(2);
-      expect(transformedPostcodes[0]).to.be.length(3);
-      expect(transformedPostcodes[1]).to.be.a('number');
-      expect(transformedPostcodes[1]).to.equal(28);
+      expect(transformedPostcodes).toHaveLength(2);
+      expect(transformedPostcodes[0]).toHaveLength(3);
+      expect(typeof transformedPostcodes[1]).toBe('number');
+      expect(transformedPostcodes[1]).toEqual(28);
 
-      expect(transformedPostcodes[0][0].id).to.equal('PC1');
-      expect(transformedPostcodes[0][0].value).to.equal('PC1');
-      expect(transformedPostcodes[0][0].text).to.equal('PC1 (10)');
-      expect(transformedPostcodes[0][0].checked).to.be.true;
+      expect(transformedPostcodes[0][0].id).toEqual('PC1');
+      expect(transformedPostcodes[0][0].value).toEqual('PC1');
+      expect(transformedPostcodes[0][0].text).toEqual('PC1 (10)');
+      expect(transformedPostcodes[0][0].checked).toEqual(true);
 
-      expect(transformedPostcodes[0][1].id).to.equal('PC2');
-      expect(transformedPostcodes[0][1].value).to.equal('PC2');
-      expect(transformedPostcodes[0][1].text).to.equal('PC2 (6)');
-      expect(transformedPostcodes[0][1].checked).to.be.true;
+      expect(transformedPostcodes[0][1].id).toEqual('PC2');
+      expect(transformedPostcodes[0][1].value).toEqual('PC2');
+      expect(transformedPostcodes[0][1].text).toEqual('PC2 (6)');
+      expect(transformedPostcodes[0][1].checked).toEqual(true);
 
-      expect(transformedPostcodes[0][2].id).to.equal('PC3');
-      expect(transformedPostcodes[0][2].value).to.equal('PC3');
-      expect(transformedPostcodes[0][2].text).to.equal('PC3 (12)');
-      expect(transformedPostcodes[0][2].checked).to.be.true;
+      expect(transformedPostcodes[0][2].id).toEqual('PC3');
+      expect(transformedPostcodes[0][2].value).toEqual('PC3');
+      expect(transformedPostcodes[0][2].text).toEqual('PC3 (12)');
+      expect(transformedPostcodes[0][2].checked).toEqual(true);
     });
 
     it('should convert postcodes to array and transform as expected if single postcode object is passed', function() {
@@ -417,15 +417,15 @@ const { capitalise, toSentenceCase } = require('../components/filters');
         }
         , transformedPostcode = modUtils.transformPostcodes(dataStub);
 
-      expect(transformedPostcode).to.be.length(2);
-      expect(transformedPostcode[0]).to.be.length(1);
-      expect(transformedPostcode[1]).to.be.a('number');
-      expect(transformedPostcode[1]).to.equal(10);
+      expect(transformedPostcode).toHaveLength(2);
+      expect(transformedPostcode[0]).toHaveLength(1);
+      expect(typeof transformedPostcode[1]).toBe('number');
+      expect(transformedPostcode[1]).toEqual(10);
 
-      expect(transformedPostcode[0][0].id).to.equal('PC1');
-      expect(transformedPostcode[0][0].value).to.equal('PC1');
-      expect(transformedPostcode[0][0].text).to.equal('PC1 (10)');
-      expect(transformedPostcode[0][0].checked).to.be.true;
+      expect(transformedPostcode[0][0].id).toEqual('PC1');
+      expect(transformedPostcode[0][0].value).toEqual('PC1');
+      expect(transformedPostcode[0][0].text).toEqual('PC1 (10)');
+      expect(transformedPostcode[0][0].checked).toEqual(true);
     });
 
     it('should generate a date 9 weeks in the future', function() {
@@ -434,7 +434,7 @@ const { capitalise, toSentenceCase } = require('../components/filters');
 
       generatedDate = modUtils.buildSuggestedDate('2022-09-13');
 
-      expect(dateFilter(generatedDate, null, 'YYYY-MM-DD')).to.equal(testDate);
+      expect(dateFilter(generatedDate, null, 'YYYY-MM-DD')).toEqual(testDate);
     });
 
     /* eslint-disable max-len */
@@ -446,29 +446,29 @@ const { capitalise, toSentenceCase } = require('../components/filters');
 
       paginationItems = modUtils.paginationBuilder(totalResults, currentPage, url);
 
-      expect(paginationItems.prev).to.be.undefined;
-      expect(paginationItems.next).to.equal('/some-url?page=2');
-      expect(paginationItems.items).to.be.length(4);
+      expect(paginationItems.prev).toBeUndefined();
+      expect(paginationItems.next).toEqual('/some-url?page=2');
+      expect(paginationItems.items).toHaveLength(4);
 
-      expect(paginationItems.items[0]).to.be.an('object');
-      expect(paginationItems.items[0].hasOwnProperty('number')).to.be.true;
-      expect(paginationItems.items[0].number).to.equal(1);
-      expect(paginationItems.items[1].number).to.equal(2);
-      expect(paginationItems.items[3].number).to.equal(4);
+      expect(paginationItems.items[0]).toEqual(expect.any(Object));
+      expect(paginationItems.items[0].hasOwnProperty('number')).toEqual(true);
+      expect(paginationItems.items[0].number).toEqual(1);
+      expect(paginationItems.items[1].number).toEqual(2);
+      expect(paginationItems.items[3].number).toEqual(4);
 
-      expect(paginationItems.items[0].hasOwnProperty('href')).to.be.true;
-      expect(paginationItems.items[0].href).to.equal('/some-url?page=1');
-      expect(paginationItems.items[1].href).to.equal('/some-url?page=2');
-      expect(paginationItems.items[3].href).to.equal('/some-url?page=4');
+      expect(paginationItems.items[0].hasOwnProperty('href')).toEqual(true);
+      expect(paginationItems.items[0].href).toEqual('/some-url?page=1');
+      expect(paginationItems.items[1].href).toEqual('/some-url?page=2');
+      expect(paginationItems.items[3].href).toEqual('/some-url?page=4');
 
-      expect(paginationItems.items[0].hasOwnProperty('current')).to.be.true;
-      expect(paginationItems.items[0].current).to.be.true;
-      expect(paginationItems.items[1].current).to.be.false;
-      expect(paginationItems.items[3].current).to.be.false;
+      expect(paginationItems.items[0].hasOwnProperty('current')).toEqual(true);
+      expect(paginationItems.items[0].current).toEqual(true);
+      expect(paginationItems.items[1].current).toEqual(false);
+      expect(paginationItems.items[3].current).toEqual(false);
 
       // test for an ellipsis
-      expect(paginationItems.items[2].hasOwnProperty('ellipsis')).to.be.true;
-      expect(paginationItems.items[2].ellipsis).to.be.true;
+      expect(paginationItems.items[2].hasOwnProperty('ellipsis')).toEqual(true);
+      expect(paginationItems.items[2].ellipsis).toEqual(true);
     });
 
     it('should build the correct pagination items - query params and page 4', function() {
@@ -479,13 +479,13 @@ const { capitalise, toSentenceCase } = require('../components/filters');
 
       paginationItems = modUtils.paginationBuilder(totalResults, currentPage, url);
 
-      expect(paginationItems.prev).to.equal('/some-url?search=this&page=3');
-      expect(paginationItems.next).to.be.undefined;
-      expect(paginationItems.items).to.be.length(4);
+      expect(paginationItems.prev).toEqual('/some-url?search=this&page=3');
+      expect(paginationItems.next).toBeUndefined();
+      expect(paginationItems.items).toHaveLength(4);
 
       // ellipsis should be on index 1
-      expect(paginationItems.items[1].hasOwnProperty('ellipsis')).to.be.true;
-      expect(paginationItems.items[1].ellipsis).to.be.true;
+      expect(paginationItems.items[1].hasOwnProperty('ellipsis')).toEqual(true);
+      expect(paginationItems.items[1].ellipsis).toEqual(true);
     });
 
     it('should build the correct pagination items - query params and page 2', function() {
@@ -496,69 +496,69 @@ const { capitalise, toSentenceCase } = require('../components/filters');
 
       paginationItems = modUtils.paginationBuilder(totalResults, currentPage, url);
 
-      expect(paginationItems.prev).to.equal('/some-url?search=this&page=1');
-      expect(paginationItems.next).to.equal('/some-url?search=this&page=3');
-      expect(paginationItems.items).to.be.length(4);
+      expect(paginationItems.prev).toEqual('/some-url?search=this&page=1');
+      expect(paginationItems.next).toEqual('/some-url?search=this&page=3');
+      expect(paginationItems.items).toHaveLength(4);
 
       // this one does not generate ellipsis so all items elements have a number
-      expect(paginationItems.items[0].hasOwnProperty('number')).to.be.true;
-      expect(paginationItems.items[1].hasOwnProperty('number')).to.be.true;
-      expect(paginationItems.items[2].hasOwnProperty('number')).to.be.true;
-      expect(paginationItems.items[3].hasOwnProperty('number')).to.be.true;
+      expect(paginationItems.items[0].hasOwnProperty('number')).toEqual(true);
+      expect(paginationItems.items[1].hasOwnProperty('number')).toEqual(true);
+      expect(paginationItems.items[2].hasOwnProperty('number')).toEqual(true);
+      expect(paginationItems.items[3].hasOwnProperty('number')).toEqual(true);
 
-      expect(paginationItems.items[0].number).to.equal(1);
-      expect(paginationItems.items[1].number).to.equal(2);
-      expect(paginationItems.items[2].number).to.equal(3);
-      expect(paginationItems.items[3].number).to.equal(4);
+      expect(paginationItems.items[0].number).toEqual(1);
+      expect(paginationItems.items[1].number).toEqual(2);
+      expect(paginationItems.items[2].number).toEqual(3);
+      expect(paginationItems.items[3].number).toEqual(4);
     });
 
     it('should return a correct hash for a given string', function() {
       var string = 'some-string'
         , hashedString = 'a3635c09bda7293ae1f144a240f155cf151451f2420d11ac385d13cce4eb5fa2';
 
-      expect(hashedString).to.equal(modUtils.hash(string));
+      expect(hashedString).toEqual(modUtils.hash(string));
     });
 
     it('should resolve the date format based on input: DD/MM/YYYY (double digit day & month)', function() {
       var mockDate = '31/12/2023'
         , expectedFormat = 'DD/MM/YYYY';
 
-      expect(modUtils.resolveDateFormat(mockDate)).to.equal(expectedFormat);
+      expect(modUtils.resolveDateFormat(mockDate)).toEqual(expectedFormat);
     });
 
     it('should resolve the date format based on input: DD/MM/YYYY (single digit day & month)', function() {
       var mockDate = '2/2/2023'
         , expectedFormat = 'DD/MM/YYYY';
 
-      expect(modUtils.resolveDateFormat(mockDate)).to.equal(expectedFormat);
+      expect(modUtils.resolveDateFormat(mockDate)).toEqual(expectedFormat);
     });
 
     it('should resolve the date format based on input: YYYY/MM/DD (double digit day & month)', function() {
       var mockDate = '2023/12/31'
         , expectedFormat = 'YYYY/MM/DD';
 
-      expect(modUtils.resolveDateFormat(mockDate)).to.equal(expectedFormat);
+      expect(modUtils.resolveDateFormat(mockDate)).toEqual(expectedFormat);
     });
 
     it('should resolve the date format based on input: YYYY/MM/DD (single digit day & month)', function() {
       var mockDate = '2023/2/2'
         , expectedFormat = 'YYYY/MM/DD';
 
-      expect(modUtils.resolveDateFormat(mockDate)).to.equal(expectedFormat);
+      expect(modUtils.resolveDateFormat(mockDate)).toEqual(expectedFormat);
     });
 
     it('should resolve the date format based on input: YYYY-MM-DD (double digit day & month)', function() {
       var mockDate = '2023-12-31'
         , expectedFormat = 'YYYY-MM-DD';
 
-      expect(modUtils.resolveDateFormat(mockDate)).to.equal(expectedFormat);
+      expect(modUtils.resolveDateFormat(mockDate)).toEqual(expectedFormat);
     });
 
     it('should resolve the date format based on input: YYYY-MM-DD (single digit day & month)', function() {
       var mockDate = '2023-2-2'
         , expectedFormat = 'YYYY-MM-DD';
 
-      expect(modUtils.resolveDateFormat(mockDate)).to.equal(expectedFormat);
+      expect(modUtils.resolveDateFormat(mockDate)).toEqual(expectedFormat);
     });
 
     it('should build the correct optic reference redirect url: paper', function() {
@@ -577,7 +577,7 @@ const { capitalise, toSentenceCase } = require('../components/filters');
 
       output = modUtils.opticReferenceRedirectUrl(jurorNumber, namedRoutes, replyType);
 
-      expect(output).to.be.equal('some/paper/path/123456789/paper');
+      expect(output).toEqual('some/paper/path/123456789/paper');
     });
 
     it('should build the correct optic reference redirect url: digital', function() {
@@ -596,7 +596,7 @@ const { capitalise, toSentenceCase } = require('../components/filters');
 
       output = modUtils.opticReferenceRedirectUrl(jurorNumber, namedRoutes, replyType);
 
-      expect(output).to.be.equal('some/digital/path/123456789/digital');
+      expect(output).toEqual('some/digital/path/123456789/digital');
     });
 
     it('should resolve the correct reply status', function() {
@@ -604,13 +604,13 @@ const { capitalise, toSentenceCase } = require('../components/filters');
         , output;
 
       output = modUtils.resolveReplyStatus(responseStatus);
-      expect(output).to.be.equal('Completed');
+      expect(output).toEqual('Completed');
 
       output = modUtils.resolveReplyStatus('To Do');
-      expect(output).to.be.equal('To Do');
+      expect(output).toEqual('To Do');
 
       output = modUtils.resolveReplyStatus('Ineligible');
-      expect(output).to.be.equal('Ineligible');
+      expect(output).toEqual('Ineligible');
     });
 
     it('should resolve and build the correct processing outcome', function() {
@@ -618,16 +618,16 @@ const { capitalise, toSentenceCase } = require('../components/filters');
         , output;
 
       output = modUtils.resolveProcessingOutcome('Responded', 'Y', 'CHILD CARE');
-      expect(output).to.be.equal(resolvedHtml);
+      expect(output).toEqual(resolvedHtml);
 
       output = modUtils.resolveProcessingOutcome('Excused', 'N', 'CHILD CARE');
-      expect(output).to.be.equal('Excusal granted (child care)');
+      expect(output).toEqual('Excusal granted (child care)');
 
       output = modUtils.resolveProcessingOutcome('Responded', null, null);
-      expect(output).to.be.equal('Responded');
+      expect(output).toEqual('Responded');
 
       output = modUtils.resolveProcessingOutcome('Summoned', null, null);
-      expect(output).to.be.equal('-');
+      expect(output).toEqual('-');
     });
 
     it('should resolve the correct message for the processed banner', function() {
@@ -642,46 +642,46 @@ const { capitalise, toSentenceCase } = require('../components/filters');
       output = modUtils.resolveProcessedBannerMessage(jurorStatus.responded, {
         isExcusal: false,
       });
-      expect(output).to.equal('Responded');
+      expect(output).toEqual('Responded');
 
       output = modUtils.resolveProcessedBannerMessage(jurorStatus.responded, {
         isExcusal: true,
       });
-      expect(output).to.equal('Excusal refused');
+      expect(output).toEqual('Excusal refused');
 
       output = modUtils.resolveProcessedBannerMessage(jurorStatus.excused, {
         isExcusal: false,
       });
-      expect(output).to.equal('Excusal granted');
+      expect(output).toEqual('Excusal granted');
 
       output = modUtils.resolveProcessedBannerMessage(jurorStatus.excused, {
         isExcusal: true,
       });
-      expect(output).to.equal('Excusal granted');
+      expect(output).toEqual('Excusal granted');
 
       output = modUtils.resolveProcessedBannerMessage(jurorStatus.responded, {
         isDeferral: true,
       });
-      expect(output).to.equal('Deferral refused');
+      expect(output).toEqual('Deferral refused');
 
       output = modUtils.resolveProcessedBannerMessage(jurorStatus.deferred, {
         isDeferral: true,
       });
-      expect(output).to.equal('Deferral granted');
+      expect(output).toEqual('Deferral granted');
 
       output = modUtils.resolveProcessedBannerMessage(jurorStatus.deferred, {
         isDeferral: false,
       });
-      expect(output).to.equal('Deferral granted');
+      expect(output).toEqual('Deferral granted');
 
       output = modUtils.resolveProcessedBannerMessage(jurorStatus.excused, {
         isDeceased: true,
       });
-      expect(output).to.equal('Deceased');
+      expect(output).toEqual('Deceased');
 
       // this should never happen if a response is not closed
       output = modUtils.resolveProcessedBannerMessage(jurorStatus.summoned);
-      expect(output).to.equal('Summoned');
+      expect(output).toEqual('Summoned');
     });
 
     it('should transform the court name and location code before rendering', () => {
@@ -692,7 +692,7 @@ const { capitalise, toSentenceCase } = require('../components/filters');
         };
 
       output = modUtils.transformCourtName(court);
-      expect(output).to.equal('Test Location (100)');
+      expect(output).toEqual('Test Location (100)');
     });
 
     it('should trim the court name and return only the 3 digit location code', () => {
@@ -701,13 +701,13 @@ const { capitalise, toSentenceCase } = require('../components/filters');
         , invalidCourtNameOrLocation = 'Test Location';
 
       output = modUtils.getLocCodeFromCourtNameOrLocation(courtNameOrLocation);
-      expect(output).to.equal('100');
+      expect(output).toEqual('100');
 
       output = modUtils.getLocCodeFromCourtNameOrLocation(invalidCourtNameOrLocation);
-      expect(output).to.equal(null);
+      expect(output).toEqual(null);
 
       output = modUtils.getLocCodeFromCourtNameOrLocation();
-      expect(output).to.equal(null);
+      expect(output).toEqual(null);
     });
 
     it('should verify if a summons is late given its start date', () => {
@@ -715,77 +715,77 @@ const { capitalise, toSentenceCase } = require('../components/filters');
       let isBefore;
 
       isBefore = modUtils.isLateSummons('01-01-2023');
-      expect(isBefore).to.be.true;
+      expect(isBefore).toEqual(true);
 
       olderDate.setDate(olderDate.getDate() + 10);
       isBefore = modUtils.isLateSummons(olderDate);
-      expect(isBefore).to.be.false;
+      expect(isBefore).toEqual(false);
     });
 
     it('should return the correct letter identifier - initial summons', () => {
       const identifier = modUtils.getLetterIdentifier('initial-summons');
 
-      expect(identifier).to.equal('Initial summons');
+      expect(identifier).toEqual('Initial summons');
     });
 
     it('should return the correct letter identifier - summons reminders', () => {
       const identifier = modUtils.getLetterIdentifier('summons-reminders');
 
-      expect(identifier).to.equal('Summons reminders');
+      expect(identifier).toEqual('Summons reminders');
     });
 
     it('should return the correct letter identifier - further information', () => {
       const identifier = modUtils.getLetterIdentifier('further-information');
 
-      expect(identifier).to.equal('Requests for further information');
+      expect(identifier).toEqual('Requests for further information');
     });
 
     it('should return the correct letter identifier - confirmation', () => {
       const identifier = modUtils.getLetterIdentifier('confirmation');
 
-      expect(identifier).to.equal('Confirmation letters');
+      expect(identifier).toEqual('Confirmation letters');
     });
 
     it('should return the correct letter identifier - deferral granted', () => {
       const identifier = modUtils.getLetterIdentifier('deferral-granted');
 
-      expect(identifier).to.equal('Deferral granted letters');
+      expect(identifier).toEqual('Deferral granted letters');
     });
 
     it('should return the correct letter identifier - deferral refused', () => {
       const identifier = modUtils.getLetterIdentifier('deferral-refused');
 
-      expect(identifier).to.equal('Deferral refused letters');
+      expect(identifier).toEqual('Deferral refused letters');
     });
 
     it('should return the correct letter identifier - deferral refused', () => {
       const identifier = modUtils.getLetterIdentifier('deferral-refused');
 
-      expect(identifier).to.equal('Deferral refused letters');
+      expect(identifier).toEqual('Deferral refused letters');
     });
 
     it('should return the correct letter identifier - excusal granted', () => {
       const identifier = modUtils.getLetterIdentifier('excusal-granted');
 
-      expect(identifier).to.equal('Excusal granted letters');
+      expect(identifier).toEqual('Excusal granted letters');
     });
 
     it('should return the correct letter identifier - excusal refused', () => {
       const identifier = modUtils.getLetterIdentifier('excusal-refused');
 
-      expect(identifier).to.equal('Excusal refused letters');
+      expect(identifier).toEqual('Excusal refused letters');
     });
 
     it('should return the correct letter identifier - postponement', () => {
       const identifier = modUtils.getLetterIdentifier('postponement');
 
-      expect(identifier).to.equal('Postponement letters');
+      expect(identifier).toEqual('Postponement letters');
     });
 
     it('should return the correct letter identifier - withdrawal', () => {
       const identifier = modUtils.getLetterIdentifier('withdrawal');
 
-      expect(identifier).to.equal('Withdrawal letters');
+      expect(identifier).toEqual('Withdrawal letters');
     });
 
     it('should format a date for a letter in english', () => {
@@ -793,7 +793,7 @@ const { capitalise, toSentenceCase } = require('../components/filters');
       const isWelsh = false;
       const formattedDate = modUtils.formatLetterDate(date, 'dddd D MMMM YYYY', isWelsh);
 
-      expect(formattedDate).to.equal('Monday 1 January 2024');
+      expect(formattedDate).toEqual('Monday 1 January 2024');
     });
 
     it('should format a date for a letter in welsh', () => {
@@ -801,7 +801,7 @@ const { capitalise, toSentenceCase } = require('../components/filters');
       const isWelsh = true;
       const formattedDate = modUtils.formatLetterDate(date, 'dddd D MMMM YYYY', isWelsh);
 
-      expect(formattedDate).to.equal('Dydd Llun 1 Ionawr 2024');
+      expect(formattedDate).toEqual('Dydd Llun 1 Ionawr 2024');
     });
 
     it('should format all keys in a deeply nested object to given case', () => {
@@ -816,7 +816,7 @@ const { capitalise, toSentenceCase } = require('../components/filters');
 
       formattedObject = modUtils.replaceAllObjKeys(_.cloneDeep(deeplyNestedObj), toSentenceCase);
 
-      expect(formattedObject).to.deep.equal(
+      expect(formattedObject).toEqual(
         {
           Id: 1,
           'A b c': { 'D e f': { Ghi: 'ghi', 'Jk l': 'jkl' } },
@@ -828,7 +828,7 @@ const { capitalise, toSentenceCase } = require('../components/filters');
 
       formattedObject = modUtils.replaceAllObjKeys(_.cloneDeep(deeplyNestedObj), capitalise);
 
-      expect(formattedObject).to.deep.equal(
+      expect(formattedObject).toEqual(
         {
           ID: 1,
           'A B C': { 'D E F': { GHI: 'ghi', JKL: 'jkl' } },
@@ -840,7 +840,7 @@ const { capitalise, toSentenceCase } = require('../components/filters');
 
       formattedObject = modUtils.replaceAllObjKeys(_.cloneDeep(deeplyNestedObj), _.camelCase);
 
-      expect(formattedObject).to.deep.equal(
+      expect(formattedObject).toEqual(
         {
           id: 1,
           mno: [ { onm: 'onm' }, { nOm: 'nom' } ],
@@ -852,7 +852,7 @@ const { capitalise, toSentenceCase } = require('../components/filters');
 
       formattedObject = modUtils.replaceAllObjKeys(_.cloneDeep(deeplyNestedObj), _.snakeCase);
 
-      expect(formattedObject).to.deep.equal(
+      expect(formattedObject).toEqual(
         {
           id: 1,
           mno: [ { onm: 'onm' }, { 'n_om': 'nom' } ],
@@ -867,28 +867,28 @@ const { capitalise, toSentenceCase } = require('../components/filters');
       const date = new Date([2024, 1, 1]);
       const previousWorkingDay = modUtils.setPreviousWorkingDay(date);
 
-      expect(previousWorkingDay.toISOString()).to.equal(new Date([2023, 12, 29]).toISOString());
+      expect(previousWorkingDay.toISOString()).toEqual(new Date([2023, 12, 29]).toISOString());
     });
 
     it('Should set the correct previous working day given a day of the week - Sunday', () => {
       const date = new Date([2024, 1, 7]);
       const previousWorkingDay = modUtils.setPreviousWorkingDay(date);
 
-      expect(previousWorkingDay.toISOString()).to.equal(new Date([2024, 1, 5]).toISOString());
+      expect(previousWorkingDay.toISOString()).toEqual(new Date([2024, 1, 5]).toISOString());
     });
 
     it('Should set the correct previous working day given a day of the week - Saturday', () => {
       const date = new Date([2024, 1, 6]);
       const previousWorkingDay = modUtils.setPreviousWorkingDay(date);
 
-      expect(previousWorkingDay.toISOString()).to.equal(new Date([2024, 1, 5]).toISOString());
+      expect(previousWorkingDay.toISOString()).toEqual(new Date([2024, 1, 5]).toISOString());
     });
 
     it('Should set the correct previous working day given a day of the week - Rest of the week', () => {
       const date = new Date([2024, 1, 5]);
       const previousWorkingDay = modUtils.setPreviousWorkingDay(date);
 
-      expect(previousWorkingDay.toISOString()).to.equal(new Date([2024, 1, 4]).toISOString());
+      expect(previousWorkingDay.toISOString()).toEqual(new Date([2024, 1, 4]).toISOString());
     });
 
   });

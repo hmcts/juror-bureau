@@ -29,17 +29,17 @@ const { deleteDeferralObject } = require('./deferral-mod');
         , testObj = deferralObject.put(rpStub, appStub, 'test-token', bodyObj)
         , realUri = urljoin('http://localhost:8080/api/v1', 'moj/deferral-response/juror');
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('PUT');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('PUT');
 
-      expect(testObj.body.hasOwnProperty('deferralDecision')).to.equal(true);
-      expect(testObj.body.deferralDecision).to.equal('REFUSE');
+      expect(testObj.body.hasOwnProperty('deferralDecision')).toEqual(true);
+      expect(testObj.body.deferralDecision).toEqual('REFUSE');
 
-      expect(testObj.body.hasOwnProperty('deferralReason')).to.equal(true);
-      expect(testObj.body.deferralReason).to.equal('C');
+      expect(testObj.body.hasOwnProperty('deferralReason')).toEqual(true);
+      expect(testObj.body.deferralReason).toEqual('C');
 
-      expect(testObj.body.hasOwnProperty('jurorNumber')).to.equal(true);
-      expect(testObj.body.jurorNumber).to.equal('111000006');
+      expect(testObj.body.hasOwnProperty('jurorNumber')).toEqual(true);
+      expect(testObj.body.jurorNumber).toEqual('111000006');
     });
 
     // eslint-disable-next-line max-len
@@ -53,19 +53,19 @@ const { deleteDeferralObject } = require('./deferral-mod');
         , testObj = deferralObject.post(rpStub, appStub, 'test-token', jurorNumber, poolNumber, deferralDate, deferralReason, replyMethod)
         , realUri = urljoin('http://localhost:8080/api/v1', 'moj/deferral-maintenance/juror/defer/', jurorNumber);
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('POST');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('POST');
 
-      expect(testObj.body.hasOwnProperty('deferralDate')).to.equal(true);
-      expect(testObj.body.deferralDate).to.equal('2023-01-01');
+      expect(testObj.body.hasOwnProperty('deferralDate')).toEqual(true);
+      expect(testObj.body.deferralDate).toEqual('2023-01-01');
 
-      expect(testObj.body.hasOwnProperty('excusalReasonCode')).to.equal(true);
-      expect(testObj.body.excusalReasonCode).to.equal('O');
+      expect(testObj.body.hasOwnProperty('excusalReasonCode')).toEqual(true);
+      expect(testObj.body.excusalReasonCode).toEqual('O');
 
-      expect(testObj.body.hasOwnProperty('replyMethod')).to.equal(true);
-      expect(testObj.body.replyMethod).to.equal('PAPER');
+      expect(testObj.body.hasOwnProperty('replyMethod')).toEqual(true);
+      expect(testObj.body.replyMethod).toEqual('PAPER');
 
-      expect(testObj.body.hasOwnProperty('poolNumber')).to.equal(false);
+      expect(testObj.body.hasOwnProperty('poolNumber')).toEqual(false);
     });
 
     it('Should call the correct endpoint for processing a reply as a ‘deferral’ - into pool', function() {
@@ -78,20 +78,20 @@ const { deleteDeferralObject } = require('./deferral-mod');
         , testObj = deferralObject.post(rpStub, appStub, 'test-token', jurorNumber, poolNumber, deferralDate, deferralReason, replyMethod)
         , realUri = urljoin('http://localhost:8080/api/v1', 'moj/deferral-maintenance/juror/defer/', jurorNumber);
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('POST');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('POST');
 
-      expect(testObj.body.hasOwnProperty('poolNumber')).to.equal(true);
-      expect(testObj.body.poolNumber).to.equal('415220401');
+      expect(testObj.body.hasOwnProperty('poolNumber')).toEqual(true);
+      expect(testObj.body.poolNumber).toEqual('415220401');
 
-      expect(testObj.body.hasOwnProperty('deferralDate')).to.equal(true);
-      expect(testObj.body.deferralDate).to.equal('2023-01-01');
+      expect(testObj.body.hasOwnProperty('deferralDate')).toEqual(true);
+      expect(testObj.body.deferralDate).toEqual('2023-01-01');
 
-      expect(testObj.body.hasOwnProperty('excusalReasonCode')).to.equal(true);
-      expect(testObj.body.excusalReasonCode).to.equal('O');
+      expect(testObj.body.hasOwnProperty('excusalReasonCode')).toEqual(true);
+      expect(testObj.body.excusalReasonCode).toEqual('O');
 
-      expect(testObj.body.hasOwnProperty('replyMethod')).to.equal(true);
-      expect(testObj.body.replyMethod).to.equal('PAPER');
+      expect(testObj.body.hasOwnProperty('replyMethod')).toEqual(true);
+      expect(testObj.body.replyMethod).toEqual('PAPER');
     });
 
   });
@@ -104,11 +104,11 @@ const { deleteDeferralObject } = require('./deferral-mod');
         testObj = deferralPoolsObject.post(rpStub, appStub, 'test-token', deferralDates, jurorNumber),
         realUri = urljoin('http://localhost:8080/api/v1', 'moj/deferral-maintenance/available-pools', jurorNumber);
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('POST');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('POST');
 
-      expect(testObj.body.hasOwnProperty('deferralDates')).to.equal(true);
-      expect(testObj.body.deferralDates).to.equal(deferralDates);
+      expect(testObj.body.hasOwnProperty('deferralDates')).toEqual(true);
+      expect(testObj.body.deferralDates).toEqual(deferralDates);
     });
   });
 
@@ -124,17 +124,17 @@ const { deleteDeferralObject } = require('./deferral-mod');
         realUri = urljoin('http://localhost:8080/api/v1', 'moj/deferral-maintenance/deferrals/change-deferral-date',
           jurorNumber);
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('POST');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('POST');
 
-      expect(testObj.body.hasOwnProperty('deferralDate')).to.equal(true);
-      expect(testObj.body.deferralDate).to.equal(deferralDate);
+      expect(testObj.body.hasOwnProperty('deferralDate')).toEqual(true);
+      expect(testObj.body.deferralDate).toEqual(deferralDate);
 
-      expect(testObj.body.hasOwnProperty('poolNumber')).to.equal(true);
-      expect(testObj.body.poolNumber).to.equal(poolNumber);
+      expect(testObj.body.hasOwnProperty('poolNumber')).toEqual(true);
+      expect(testObj.body.poolNumber).toEqual(poolNumber);
 
-      expect(testObj.body.hasOwnProperty('excusalReasonCode')).to.equal(true);
-      expect(testObj.body.excusalReasonCode).to.equal(excusalReasonCode);
+      expect(testObj.body.hasOwnProperty('excusalReasonCode')).toEqual(true);
+      expect(testObj.body.excusalReasonCode).toEqual(excusalReasonCode);
     });
   });
 
@@ -146,8 +146,8 @@ const { deleteDeferralObject } = require('./deferral-mod');
         realUri = urljoin('http://localhost:8080/api/v1', 'moj/deferral-maintenance/delete-deferral',
           jurorNumber);
 
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('DELETE');
+      expect(testObj.uri).toEqual(realUri);
+      expect(testObj.method).toEqual('DELETE');
     });
   });
 

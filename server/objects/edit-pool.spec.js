@@ -28,21 +28,21 @@
           'moj/manage-pool/edit-pool'
         );
 
-      expect(testUri.uri).to.equal(realUri);
-      expect(testUri.method).to.equal('PUT');
+      expect(testUri.uri).toEqual(realUri);
+      expect(testUri.method).toEqual('PUT');
 
-      expect(testUri.body.hasOwnProperty('totalRequired')).to.be.false;
+      expect(testUri.body.hasOwnProperty('totalRequired')).toEqual(false);
 
-      expect(testUri.body.hasOwnProperty('noRequested')).to.be.true;
-      expect(testUri.body.noRequested).to.equal(20);
+      expect(testUri.body.hasOwnProperty('noRequested')).toEqual(true);
+      expect(testUri.body.noRequested).toEqual(20);
 
-      expect(testUri.body.hasOwnProperty('poolNumber')).to.be.true;
-      expect(testUri.body.poolNumber).to.equal('415230101');
+      expect(testUri.body.hasOwnProperty('poolNumber')).toEqual(true);
+      expect(testUri.body.poolNumber).toEqual('415230101');
 
-      expect(testUri.body.hasOwnProperty('reasonForChange')).to.be.true;
-      expect(testUri.body.reasonForChange).to.equal('some reason here');
+      expect(testUri.body.hasOwnProperty('reasonForChange')).toEqual(true);
+      expect(testUri.body.reasonForChange).toEqual('some reason here');
 
-      expect(testUri.body.hasOwnProperty('_csrf')).to.be.false;
+      expect(testUri.body.hasOwnProperty('_csrf')).toEqual(false);
     });
 
     it('should send call the correct endpoint to edit a pool (court user)', function() {
@@ -57,21 +57,21 @@
           'moj/manage-pool/edit-pool'
         );
 
-      expect(testUri.uri).to.equal(realUri);
-      expect(testUri.method).to.equal('PUT');
+      expect(testUri.uri).toEqual(realUri);
+      expect(testUri.method).toEqual('PUT');
 
-      expect(testUri.body.hasOwnProperty('noRequested')).to.be.false;
+      expect(testUri.body.hasOwnProperty('noRequested')).toEqual(false);
 
-      expect(testUri.body.hasOwnProperty('totalRequired')).to.be.true;
-      expect(testUri.body.totalRequired).to.equal(20);
+      expect(testUri.body.hasOwnProperty('totalRequired')).toEqual(true);
+      expect(testUri.body.totalRequired).toEqual(20);
 
-      expect(testUri.body.hasOwnProperty('poolNumber')).to.be.true;
-      expect(testUri.body.poolNumber).to.equal('415230101');
+      expect(testUri.body.hasOwnProperty('poolNumber')).toEqual(true);
+      expect(testUri.body.poolNumber).toEqual('415230101');
 
-      expect(testUri.body.hasOwnProperty('reasonForChange')).to.be.true;
-      expect(testUri.body.reasonForChange).to.equal('some reason here');
+      expect(testUri.body.hasOwnProperty('reasonForChange')).toEqual(true);
+      expect(testUri.body.reasonForChange).toEqual('some reason here');
 
-      expect(testUri.body.hasOwnProperty('_csrf')).to.be.false;
+      expect(testUri.body.hasOwnProperty('_csrf')).toEqual(false);
     });
 
   });
