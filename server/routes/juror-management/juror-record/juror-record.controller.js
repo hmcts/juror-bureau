@@ -204,6 +204,7 @@ const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/ex
             currentTab: 'overview',
             jurorStatus,
             canRunPoliceCheck,
+            policeCheck: resolvePoliceCheckStatus(req, response.data.commonDetails.police_check),
             bannerMessage: bannerMessage,
             availableMessage: availableMessage,
             hasSummons: req.session.hasSummonsResponse,
@@ -988,6 +989,61 @@ const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/ex
     }
 
     return rows;
+  }
+
+  function resolvePoliceCheckStatus(req, status) {
+    const errorArray = [
+      'ERROR_RETRY_NAME_HAS_NUMERICS',
+      'ERROR_RETRY_CONNECTION_ERROR',
+      'ERROR_RETRY_OTHER_ERROR_CODE',
+      'ERROR_RETRY_NO_ERROR_REASON',
+      'ERROR_RETRY_UNEXPECTED_EXCEPTION',
+      'UNCHECKED_MAX_RETRIES_EXCEEDED',
+    ];
+    let canRetry = false;
+    let _status;
+
+    switch (status) {
+    case 'NOT_CHECKED':
+    case 'INSUFFICIENT_INFORMATION':
+      _status = 'Not Checked';
+      break;
+    case 'IN_PROGRESS':
+      _status = 'In Progress';
+      break;
+    case 'ELIGIBLE':
+      _status = 'Passed';
+      break;
+    case 'INELIGIBLE':
+      _status = '<span class="mod-red-text">Failed</span>';
+      break;
+    case 'UNCHECKED_MAX_RETRIES_EXCEEDED':
+      _status = 'Not Checked - <span class="mod-red-text">There was a problem</span>';
+
+      if (isCourtUser(req)) {
+        canRetry = true;
+      }
+
+      break;
+    case 'ERROR_RETRY_NAME_HAS_NUMERICS':
+    case 'ERROR_RETRY_CONNECTION_ERROR':
+    case 'ERROR_RETRY_OTHER_ERROR_CODE':
+    case 'ERROR_RETRY_NO_ERROR_REASON':
+    case 'ERROR_RETRY_UNEXPECTED_EXCEPTION':
+      _status = 'In Progress';
+
+      if (isCourtUser(req)) {
+        _status = 'Not Checked - <span class="mod-red-text">There was a problem</span>';
+        canRetry = true;
+      }
+
+      break;
+    default:
+      _status = 'Not Checked';
+      break;
+    }
+
+    return { status: _status, rawStatus: status || 'NOT_CHECKED', canRetry, errorArray };
   }
 
 })();
