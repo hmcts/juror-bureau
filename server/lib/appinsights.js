@@ -4,7 +4,7 @@ const secretsConfig = require('config');
 module.exports.AppInsights = class AppInsights {
 
   constructor() {
-    const appInsightsString = secretsConfig.get('secrets.juror.app-insights-connection-string')
+    const appInsightsString = secretsConfig.get('secrets.juror.app-insights-connection-string');
 
     if (appInsightsString) {
       console.log('Starting Appinsights');
@@ -14,7 +14,7 @@ module.exports.AppInsights = class AppInsights {
         .setSendLiveMetrics(true)
         .start();
 
-      appInsights.defaultClient.context.tags[appInsights.defaultClient.context.keys.cloudRole] ='juror-bureau';
+      appInsights.defaultClient.context.tags[appInsights.defaultClient.context.keys.cloudRole] = 'juror-bureau';
     }
   }
 
