@@ -1292,4 +1292,10 @@
     return date;
   }
 
+  module.exports.makeManualError = (source, message) => ({
+    [source]: [{
+      summary: message,
+      details: message,
+    }],
+  });
 })();
