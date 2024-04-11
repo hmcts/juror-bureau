@@ -20,7 +20,6 @@ const filters = require('../../../components/filters');
 
   function errorCB(app, req, res, poolNumber, errorString) {
     return function(err) {
-      console.log(err);
       app.logger.crit(errorString, {
         auth: req.session.authentication,
         jwt: req.session.authToken,
@@ -99,15 +98,13 @@ const filters = require('../../../components/filters');
       ];
 
       if (isCourtUser(req, res)) {
-        Promise.allSettled(poolPromises).then(
-          ([pool, members]) => courtView(app, req, res, pool.value, members.value, tmpError, selectedJurors || [], selectAll),
-          errorCB(app, res, res, poolNumber, 'Failed to fetch pool summary for court user:')
-        );
+        Promise.allSettled(poolPromises)
+          .then(([pool, members]) => courtView(app, req, res, pool.value, members.value, tmpError, selectedJurors || [], selectAll))
+          .catch(errorCB(app, req, res, poolNumber, 'Failed to fetch pool summary for court user:'));
       } else {
-        Promise.allSettled(poolPromises).then(
-          ([pool, members]) => bureauView(app, req, res, pool.value, members.value, tmpError, selectedJurors || [], selectAll),
-          errorCB(app, res, res, poolNumber, 'Failed to fetch pool summary for bureau user:')
-        );
+        Promise.allSettled(poolPromises)
+          .then(([pool, members]) => bureauView(app, req, res, pool.value, members.value, tmpError, selectedJurors || [], selectAll))
+          .catch(errorCB(app, req, res, poolNumber, 'Failed to fetch pool summary for bureau user:'));
       }
     };
   };
