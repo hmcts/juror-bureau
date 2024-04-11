@@ -8,6 +8,11 @@
 {% block page_title %}{{ serviceName }} - juror record - confirm identity{% endblock %}
 {% block page_identifier %}juror record - confirm identity{% endblock %}
 
+{% set idMatchesError = undefined %}
+{% if errors.items["idMatches"] %}
+  {% set idMatchesError = { text: errors.items["idMatches"][0].details } %}
+{% endif %}
+
 {% set idTypeError = undefined %}
 {% if errors.items["idType"] %}
   {% set idTypeError = { text: errors.items["idType"][0].details } %}
@@ -36,7 +41,8 @@
               text: "Yes - ID matches",
               checked: tmpBody.idMatches === "true"
             }
-          ]
+          ],
+          errorMessage: idMatchesError
         }) }}
 
         {{ govukSelect({
