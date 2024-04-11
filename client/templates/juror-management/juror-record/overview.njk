@@ -96,6 +96,27 @@
     {% endif %}
   {% endif %}
 
+  {% set confirmIdentityButtonHtml %}
+    {% if isCourtUser %}
+      <p class="govuk-body"> 
+        <a href="{{ url('juror-record.confirm-identity.get', { jurorNumber: juror.commonDetails.jurorNumber }) }}" class="govuk-link govuk-link--no-visited-state">
+          Confirm identity
+        </a>
+      </p>
+    {% endif %}
+  {% endset %}
+
+  {% set identityCheckStatus =
+    {
+      key: {
+        text: "Identity check"
+      },
+      value: {
+        html: ('<p class="govuk-body">Not confirmed</p>' + confirmIdentityButtonHtml) | safe
+      } if not juror.idCheckCode else { text: "Confirmed - " + idCheckDescription }
+    }
+  %}
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <div class="mod-juror-record__title">
@@ -192,7 +213,8 @@
       {{ govukSummaryList({
         classes: "govuk-!-width-two-thirds govuk-!-margin-bottom-9",
         rows: [
-          policeCheckStatus
+          policeCheckStatus,
+          identityCheckStatus
         ]
       }) }}
     </div>

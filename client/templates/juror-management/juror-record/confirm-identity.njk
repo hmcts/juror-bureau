@@ -1,0 +1,73 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - juror record - confirm identity{% endblock %}
+{% block page_identifier %}juror record - confirm identity{% endblock %}
+
+{% set idTypeError = undefined %}
+{% if errors.items["idType"] %}
+  {% set idTypeError = { text: errors.items["idType"][0].details } %}
+{% endif %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-l">Confirm identity</h1>
+
+      <form action="{{ url('juror-record.confirm-identity.post', { jurorNumber: jurorNumber }) }}" method="POST">
+        {{ govukCheckboxes({
+          name: "idMatches",
+          fieldset: {
+            legend: {
+              text: "Tick if ID shown matches name on juror record",
+              classes: "govuk-fieldset__legend--s"
+            }
+          },
+          items: [
+            {
+              value: "true",
+              text: "Yes - ID matches",
+              checked: tmpBody.idMatches === "true"
+            }
+          ]
+        }) }}
+
+        {{ govukSelect({
+          id: "idType",
+          name: "idType",
+          label: {
+            text: "Select ID type",
+            classes: "govuk-label--s"
+          },
+          items: idCheckCodes,
+          errorMessage: idTypeError
+        }) }}
+
+        {{ csrfProtection(csrftoken) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Confirm identity",
+            attributes: {
+              id: "confirmIdentityButton"
+            }
+          }) }}
+        
+          <a class="govuk-link" href="{{ url('juror-record.overview.get', { jurorNumber: jurorNumber }) }}" id="cancelAnchor">
+            Cancel
+          </a>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

@@ -5,18 +5,7 @@
 
   var _ = require('lodash')
     , urljoin = require('url-join')
-    , config = require('../config/environment')()
-    , utils = require('../lib/utils')
-    , options = {
-      uri: config.apiEndpoint,
-      headers: {
-        'User-Agent': 'Request-Promise',
-        'Content-Type': 'application/vnd.api+json',
-      },
-      json: true,
-      transform: utils.basicDataTransform,
-    };
-
+    , config = require('../config/environment')();
 
   module.exports.systemCodesDAO = {
     get: function(app, req, codeType) {
