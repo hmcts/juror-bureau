@@ -36,7 +36,8 @@
           id: "nonAttendanceDay",
           hint: "Use dd/mm/yyyy format. For example, 31/01/2023.",
           dateValue: tmpFields.nonAttendanceDay,
-          dateError: nonAttendanceDayError
+          dateError: nonAttendanceDayError, 
+          dateMax: "" | makeDate | dateFilter(null, "DD/MM/YYYY")
         }) }}
         <div class="govuk-button-group">
             {{ govukButton({
