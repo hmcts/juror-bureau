@@ -429,8 +429,10 @@ const filters = require('../../../components/filters');
     );
     
     delete req.session.bannerMessage;
-    // TODO: Make sure that this has no future implications 🤔
-    req.session.locCode = req.params.poolNumber.substring(0, 3);
+
+    // set the loc code for navigating to juror record
+    req.session.locCode = pool.poolDetails.locCode;
+
     res.render('pool-management/pool-overview/bureau-pool-overview', {
       backLinkUrl:{
         built: true,
@@ -657,7 +659,7 @@ const filters = require('../../../components/filters');
 
 
       req.session.poolDetails = pool;
-      req.session.locCode = req.params.poolNumber.substring(0, 3);
+      req.session.locCode = pool.poolDetails.locCode; // set the loc code for navigating to juror record
 
       const pageItems = modUtils.paginationBuilder(
         membersList.totalItems,
