@@ -54,6 +54,7 @@
     , getSingleTransform = function(body, hasModAccess) {
       var newObj = body;
 
+      newObj.currentOwner = body.current_owner;
       newObj.read = (newObj.processingStatus !== 'unread');
       newObj.dateReceived = moment(newObj.dateReceived).format('DD/MM/YYYY');
       newObj.hearingDate = newObj.hearingDate !== null ? moment(newObj.hearingDate).format('DD/MM/YYYY') : null;

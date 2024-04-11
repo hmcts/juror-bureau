@@ -9,6 +9,7 @@
   const moment = require('moment');
   const modUtils = require('../lib/mod-utils');
   const { LaunchDarkly } = require('./launchdarkly');
+  const { isBureauUser } = require('../components/auth/user-type');
 
   module.exports.hasFlagAccess = async function(username, owner, flag) {
     // context object for launchdarkly
@@ -1276,7 +1277,7 @@
 
   module.exports.setPreviousWorkingDay = (date) => {
     const dayOfWeek = date.getDay();
-  
+
     switch (dayOfWeek) {
     case 1:
       date.setDate(date.getDate() - 3);
@@ -1288,9 +1289,9 @@
       date.setDate(date.getDate() - 1);
       break;
     }
-  
+
     return date;
-  }
+  };
 
   module.exports.makeManualError = (source, message) => ({
     [source]: [{
@@ -1298,4 +1299,17 @@
       details: message,
     }],
   });
+
+  module.exports.getCurrentActiveCourt = (req, { poolNumber, currentOwner }) => {
+    if (currentOwner === '400' && isBureauUser(req)) {
+      return poolNumber.substring(0, 3);
+    }
+
+    if (currentOwner !== '400' && req.session.authentication.locCode === '400') {
+      return currentOwner;
+    }
+
+    return req.session.authentication.locCode;
+  };
+
 })();
