@@ -89,7 +89,7 @@
       </tbody>
     </table>
 
-    {% if hasModAccess and response.specialNeeds.length > 0 and not opticReference %}
+    {% if hasModAccess and response.specialNeeds.length > 0 and not opticReference and response.processingStatus !== 'Closed'%}
       {{ govukButton({
         text: "Check court can accommodate",
         classes: "govuk-button--secondary",
