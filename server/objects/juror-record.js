@@ -1,6 +1,7 @@
 (function() {
   'use strict';
 
+  const { DAO } = require('./dataAccessObject');
   var _ = require('lodash')
     , urljoin = require('url-join')
     , config = require('../config/environment')()
@@ -360,6 +361,12 @@
       },
     };
 
+  const jurorOverviewDAO = new DAO('moj/juror-record/overview', {
+    get: function(jurorNumber, loc) {
+      return { uri: urljoin(this.resource, jurorNumber, loc)};
+    },
+  });
+
   module.exports.record = record;
   module.exports.attendanceDetails = attendanceDetails;
   module.exports.changeDate = changeDate;
@@ -371,6 +378,7 @@
   module.exports.changeName = changeName;
   module.exports.failedToAttendObject = failedToAttendObject;
   module.exports.jurorDetailsObject = jurorDetailsObject;
+  module.exports.jurorOverviewDAO = jurorOverviewDAO;
 
   const rp = require('request-promise');
 

@@ -2,6 +2,7 @@
   'use strict';
 
   const _ = require('lodash');
+  const { jurorOverviewDAO } = require('../../../../objects/juror-record');
   const { getDraftExpensesDAO, submitDraftExpenses } = require('../../../../objects/expense-record');
 
   module.exports.getDraftExpenses = function(app) {
@@ -31,13 +32,13 @@
       delete req.session.errors;
       delete req.session.bannerMessage;
 
-      getDraftExpensesDAO.get(
+      Promise.all([getDraftExpensesDAO.get(
         app,
         req,
         jurorNumber,
         poolNumber,
-      )
-        .then(async function({ response: expenseData, headers }) {
+      ), jurorOverviewDAO.get(req, jurorNumber, req.session.authentication.locCode)])
+        .then(async function([{ response: expenseData, headers }, jurorOverview]) {
 
           req.session.draftExpensesEtag = headers.etag;
 
@@ -67,6 +68,7 @@
             bankDetailsUrl,
             nav: 'unpaid-attendance',
             status,
+            jurorStatus: jurorOverview.commonDetails.jurorStatus,
             expenseData: expenseData,
             jurorDetails: req.jurorDetails,
             jurorNumber,
