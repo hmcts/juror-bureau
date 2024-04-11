@@ -110,6 +110,16 @@
         }];
       };
     }
+
+    if (attributes.trialType === 'CIV') {
+      if (value.length > 16) {
+        tmpErrors = [{
+          summary: 'Respondent name must be 16 characters or less',
+          details: 'Respondent name must be 16 characters or less',
+        }];
+      };
+    }
+
     return tmpErrors.length === 0
       ? null
       : tmpErrors;
