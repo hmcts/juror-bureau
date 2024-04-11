@@ -115,18 +115,21 @@
         id: "addAttendanceDayButton"
       }
     }) }}
-    {{ govukButton({
-      text: "Add a non-attendance day",
-      href: url('juror-record.attendance.non-attendance-day.get', {
-          jurorNumber: juror.commonDetails.jurorNumber,
-          poolNumber: juror.commonDetails.poolNumber,
-          status: 'draft'
-        }),
-      classes: "govuk-button--secondary govuk-!-margin-left-3",
-      attributes: {
-        id: "addNonAttendanceDayButton"
-      }
-    }) }}
+
+    {% if juror.commonDetails.jurorStatus == 'Responded' or juror.commonDetails.jurorStatus == 'Panelled' or juror.commonDetails.jurorStatus == 'Juror' %}
+      {{ govukButton({
+        text: "Add a non-attendance day",
+        href: url('juror-record.attendance.non-attendance-day.get', {
+            jurorNumber: juror.commonDetails.jurorNumber,
+            poolNumber: juror.commonDetails.poolNumber,
+            status: 'draft'
+          }),
+        classes: "govuk-button--secondary govuk-!-margin-left-3",
+        attributes: {
+          id: "addNonAttendanceDayButton"
+        }
+      }) }}
+    {% endif %}
   </span>
 
   {% if attendance["juror_attendance_response_data"].length %}

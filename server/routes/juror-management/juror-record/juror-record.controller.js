@@ -340,7 +340,7 @@
           req.session.authToken,
           'overview',
           jurorNumber,
-          req.session.locCode,
+          req.session.authentication.locCode,
         );
 
         const defaultExpenses = await defaultExpensesDAO.get(app, req, jurorNumber);
