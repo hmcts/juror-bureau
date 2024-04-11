@@ -1,25 +1,13 @@
 ;(function(){
   'use strict';
 
-  var dashboardObj = require('../../objects/dashboard').object
-    , smartSurveyExportObj = require('../../objects/smart-survey-export').object
-    , smartSurveyResponseObj = require('../../objects/smart-survey-response').object
-    , config = require('../../config/environment')()
-    , secretsConfig = require('config')
-    , jwt = require('jsonwebtoken')
-    , moment = require('moment')
-    , validate = require('validate.js')
-    , surveyExportResponsesReceived = 0
-    , surveyExportResponsesRequired = 0
-    , surveyExportIdV1 = 0
-    , surveyExportIdV2 = 0
-    , surveyResponses = []
-    , requireV1Survey = false
-    , requireV2Survey = false
-    , responseSent = false
-    , dashboardYears = []
-
-    , surveyTotals = {
+  var dashboardObj = require('../../objects/dashboard').object,
+    secretsConfig = require('config'),
+    jwt = require('jsonwebtoken'),
+    moment = require('moment'),
+    validate = require('validate.js'),
+    dashboardYears = [],
+    surveyTotals = {
       surveyDataError: false,
       responsesTotal:  0,
       verySatisfiedTotal: 0,
@@ -38,9 +26,8 @@
       veryDissatisfiedFormatted: '',
       veryDissatisfiedPercent: 0,
       satifiedAndVerySatisfiedPercent: 0,
-      completedFeedbackPercent: 0
+      completedFeedbackPercent: 0,
     }
-
     , dashboardDates = {
       'startMonth': null,
       'startYear': null,
@@ -49,7 +36,7 @@
       'startDate': null,
       'endDate': null,
       'errorFlag': false,
-      'errorMessage': ''
+      'errorMessage': '',
     };
 
 
@@ -64,28 +51,30 @@
         , successCB = function(response) {
 
           req.session.historicTotals = {
-            historicTotals: getHistoricTotals(response)
-          }
+            historicTotals: getHistoricTotals(response),
+          };
 
           return res.render('./dashboard/index.njk', {
             dashboardData: req.session.historicTotals,
             dashboardYears: dashboardYears,
             surveyData: surveyTotals,
-            errors: null
+            errors: null,
           });
         }
 
-        , errorCB = function(response) {
+        , errorCB = function(errResponse) {
 
           req.session.historicTotals = null;
+
+          app.logger.info('Error retrieving dashboard data', errResponse);
 
           apiError = {
             items: {
               api: {
-                summary: 'Error retrieving dashboard data'
-              }
-            }
-          }
+                summary: 'Error retrieving dashboard data',
+              },
+            },
+          };
 
           req.session.errors = apiError;
 
@@ -93,7 +82,7 @@
             dashboardData: null,
             dashboardYears: dashboardYears,
             surveyData: surveyTotals,
-            errors: req.session.errors
+            errors: req.session.errors,
           });
         }
 
@@ -102,7 +91,7 @@
           'endDate': '',
         }
         , jwtToken
-        , apiUserObj
+        , apiUserObj;
 
       // Initialise list of years
       minYear = 2019;
@@ -126,16 +115,6 @@
       req.session.surveyExportIdOld = 0;
       req.session.surveyExportIdNew = 0;
 
-      /*
-      app.logger.info('Smart Survey config settings: ', {
-        smartSurveyAPIEndpoint: config.smartSurveyAPIEndpoint,
-        smartSurveyIdV1: config.smartSurveyIdV1,
-        smartSurveyIdV2: config.smartSurveyIdV2,
-        smartSurveyExportV1: config.smartSurveyExportV1,
-        smartSurveyExportV2: config.smartSurveyExportV2
-      });
-      */
-
       // Create user object for JWT
       apiUserObj = {
         login: 'AUTO',
@@ -146,18 +125,21 @@
           name: 'AUTO',
           rank: -1,
           active: 1,
-          courts: []
-        }
-      }
+          courts: [],
+        },
+      };
 
       // Create JWT
-      jwtToken = jwt.sign(apiUserObj, secretsConfig.get('secrets.juror.bureau-jwtKey'), { expiresIn: secretsConfig.get('secrets.juror.bureau-jwtTTL') });
+      jwtToken = jwt.sign(apiUserObj,
+        secretsConfig.get('secrets.juror.bureau-jwtKey'),
+        { expiresIn: secretsConfig.get('secrets.juror.bureau-jwtTTL') });
 
-      // Create a date range based in current date - a date range is not required for the API to return the historic values
+      // Create a date range based on current date
+      // a date range is not required for the API to return the historic values
       apiDates = {
         'startDate': moment().format('YYYY-MM-DD') + 'T00:00:00',
-        'endDate': moment().format('YYYY-MM-DD') + 'T00:00:00'
-      }
+        'endDate': moment().format('YYYY-MM-DD') + 'T00:00:00',
+      };
 
       dashboardObj
         .post(require('request-promise'), app, jwtToken, apiDates)
@@ -175,11 +157,7 @@
             , repliedTotal
             , jurorReponseCount = 0
             , onlineResponseCount = 0
-            , manualResponseCount
-            , minYear
-            , maxYear
-            , yearLoop
-            , yearList = []
+            , manualResponseCount;
 
           app.logger.info('Fetched and parsed dashboard totals: ', {
             auth: req.session.authentication,
@@ -190,9 +168,11 @@
           summonsesTotal = response.cumulativeTotals.summonedTotal;
           repliedTotal = response.cumulativeTotals.respondedTotal;
 
+          // eslint-disable-next-line max-len
           jurorReponseCount = response.thirdPtyResponseData.onlineResponseTotal - response.thirdPtyResponseData.thirdPtyOnlineResponseTotal;
           onlineResponseCount = response.mandatoryKpis.onlineResponsesTotal;
-          manualResponseCount = onlineResponseCount - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal;
+          manualResponseCount =
+            onlineResponseCount - response.autoProcessedResponseData.autoProcessedOnlineResponseTotal;
 
           dashboardData = {
             historicTotals: getHistoricTotals(response),
@@ -254,12 +234,25 @@
               over21DaysTotalFormatted: '0',
               over21DaysPercent: Math.round(response.mandatoryKpis.percentResponsesOver21days),
 
-              labels: ['Within 7 days\\n' + Math.round(response.mandatoryKpis.percentResponsesWithin7days) + '%\\n' + '(' + response.mandatoryKpis.allResponsesOverTime.within7days + ')'
-                , 'Within 14 days\\n' + Math.round(response.mandatoryKpis.percentResponsesWithin14days) + '%\\n' + '(' + response.mandatoryKpis.allResponsesOverTime.within14days + ')'
-                , 'Within 21 days\\n' + Math.round(response.mandatoryKpis.percentResponsesWithin21days) + '%\\n' + '(' + response.mandatoryKpis.allResponsesOverTime.within21days + ')'
-                , 'Over 21 days\\n' + Math.round(response.mandatoryKpis.percentResponsesOver21days) + '%\\n' + '(' + response.mandatoryKpis.allResponsesOverTime.over21days + ')']
-            }
-          }
+              labels: [
+                'Within 7 days: ' +
+                Math.round(response.mandatoryKpis.percentResponsesWithin7days) +
+                '% (' + response.mandatoryKpis.allResponsesOverTime.within7days + ')',
+
+                'Within 14 days: ' +
+                  Math.round(response.mandatoryKpis.percentResponsesWithin14days) +
+                  '% (' + response.mandatoryKpis.allResponsesOverTime.within14days + ')',
+
+                'Within 21 days: ' +
+                Math.round(response.mandatoryKpis.percentResponsesWithin21days) +
+                '% (' + response.mandatoryKpis.allResponsesOverTime.within21days + ')',
+
+                'Over 21 days: ' +
+                Math.round(response.mandatoryKpis.percentResponsesOver21days) +
+                '% (' + response.mandatoryKpis.allResponsesOverTime.over21days + ')',
+              ],
+            },
+          };
 
           // Process Smart Survey satisfaction totals
 
@@ -276,17 +269,21 @@
           surveyTotals.dissatisfiedFormatted =  surveyTotals.dissatisfiedTotal.toLocaleString();
           surveyTotals.veryDissatisfiedFormatted =  surveyTotals.veryDissatisfiedTotal.toLocaleString();
 
-          surveyTotals.verySatisfiedPercent =  getPercentageValue(surveyTotals.responsesTotal, surveyTotals.verySatisfiedTotal);
-          surveyTotals.satisfiedPercent =  getPercentageValue(surveyTotals.responsesTotal, surveyTotals.satisfiedTotal);
-          surveyTotals.neitherPercent =  getPercentageValue(surveyTotals.responsesTotal, surveyTotals.neitherTotal);
-          surveyTotals.dissatisfiedPercent =  getPercentageValue(surveyTotals.responsesTotal, surveyTotals.dissatisfiedTotal);
-          surveyTotals.veryDissatisfiedPercent =  getPercentageValue(surveyTotals.responsesTotal, surveyTotals.veryDissatisfiedTotal);
+          surveyTotals.verySatisfiedPercent =
+            getPercentageValue(surveyTotals.responsesTotal, surveyTotals.verySatisfiedTotal);
+          surveyTotals.satisfiedPercent =
+            getPercentageValue(surveyTotals.responsesTotal, surveyTotals.satisfiedTotal);
+          surveyTotals.neitherPercent =
+            getPercentageValue(surveyTotals.responsesTotal, surveyTotals.neitherTotal);
+          surveyTotals.dissatisfiedPercent =
+            getPercentageValue(surveyTotals.responsesTotal, surveyTotals.dissatisfiedTotal);
+          surveyTotals.veryDissatisfiedPercent =
+            getPercentageValue(surveyTotals.responsesTotal, surveyTotals.veryDissatisfiedTotal);
 
-          surveyTotals.satifiedAndVerySatisfiedPercent = (surveyTotals.verySatisfiedPercent + surveyTotals.satisfiedPercent);
-          surveyTotals.completedFeedbackPercent = getPercentageValue(dashboardData.responseMethod.onlineTotal, surveyTotals.responsesTotal);
-
-          // Get data direct from the Smart Survey API for the user satisfaction chart
-          //getSmartSurveyData(res, app, dashboardData);
+          surveyTotals.satifiedAndVerySatisfiedPercent =
+            (surveyTotals.verySatisfiedPercent + surveyTotals.satisfiedPercent);
+          surveyTotals.completedFeedbackPercent =
+            getPercentageValue(dashboardData.responseMethod.onlineTotal, surveyTotals.responsesTotal);
 
           return res.render('./dashboard/index.njk', {
             dashboardData: dashboardData,
@@ -309,7 +306,7 @@
             app.logger.crit('Failed to fetch dashboard information: ', {
               auth: req.session.authentication,
               jwt: req.session.authToken,
-              response: response.error
+              response: response.error,
             });
           }
 
@@ -322,10 +319,10 @@
               count: 1,
               items: {
                 api: {
-                  summary: 'Error retrieving dashboard data'
-                }
-              }
-            }
+                  summary: 'Error retrieving dashboard data',
+                },
+              },
+            },
           });
         }
 
@@ -345,7 +342,7 @@
         'startDate': null,
         'endDate': null,
         'errorFlag': false,
-        'errorMessage': ''
+        'errorMessage': '',
       };
 
       delete req.session.errors;
@@ -365,7 +362,7 @@
             message: '',
             count: typeof req.session.errors !== 'undefined' ? Object.keys(req.session.errors).length : 0,
             items: req.session.errors,
-          }
+          },
         });
 
       }
@@ -385,25 +382,10 @@
 
       apiDates = {
         'startDate': moment(dashboardDates.startDate).format('YYYY-MM-DD') + 'T00:00:00',
-        'endDate': moment(dashboardDates.endDate).format('YYYY-MM-DD') + 'T00:00:00'
-      }
+        'endDate': moment(dashboardDates.endDate).format('YYYY-MM-DD') + 'T00:00:00',
+      };
 
       req.session.dashboardDates = dashboardDates;
-
-      surveyExportResponsesRequired = 0;
-      requireV1Survey = false;
-      requireV2Survey = false;
-
-
-      //f (moment(dashboardDates.startDate, 'YYYY-MM-DD', false).isBefore(moment('22/04/2020', 'DD/MM/YYYY', false))) {
-      surveyExportResponsesRequired++;
-      requireV1Survey = true;
-      //}
-      //if (moment(dashboardDates.endDate, 'YYYY-MM-DD', false).isAfter(moment('22/04/2020', 'DD/MM/YYYY', false))) {
-      surveyExportResponsesRequired++;
-      requireV2Survey = true;
-      //}
-
 
       // Create user object for JWT
       apiUserObj = {
@@ -415,12 +397,14 @@
           name: 'AUTO',
           rank: -1,
           active: 1,
-          courts: []
-        }
-      }
+          courts: [],
+        },
+      };
 
       // Create JWT
-      jwtToken = jwt.sign(apiUserObj, secretsConfig.get('secrets.juror.bureau-jwtKey'), { expiresIn: secretsConfig.get('secrets.juror.bureau-jwtTTL') });
+      jwtToken = jwt.sign(apiUserObj,
+        secretsConfig.get('secrets.juror.bureau-jwtKey'),
+        { expiresIn: secretsConfig.get('secrets.juror.bureau-jwtTTL') });
 
       // Clear session data
       delete req.session.formFields;
@@ -429,7 +413,7 @@
       apiDates = {
         'startDate': dashboardDates.startDate + 'T00:00:00',
         'endDate': dashboardDates.endDate + 'T00:00:00',
-      }
+      };
 
       dashboardObj
         .post(require('request-promise'), app, jwtToken, apiDates)
@@ -439,342 +423,6 @@
 
     };
   };
-
-
-  function getSmartSurveyData(res, app, dashboardData) {
-    var success = false
-
-
-      , successExportIdV1 = function(response) {
-
-        var i = 0,
-          smartSurveyExportName;
-
-        surveyExportIdV1 = 0;
-
-        app.logger.info('Fetched v1 smart survey export details: ', {
-          exportCount: response.length
-        });
-
-        smartSurveyExportName = config.smartSurveyExportV1;
-        //smartSurveyExportName = 'Dashboard Export';
-
-        if (response.length > 0){
-          for (i = 0; i < response.length; i++) {
-            if (response[i].name === smartSurveyExportName){
-              surveyExportIdV1 = response[i].id;
-              break;
-            }
-          }
-
-          if (surveyExportIdV1 > 0){
-            app.logger.info('Found matching V1 Export: ', {
-              surveyExportIdV1: surveyExportIdV1
-            });
-            getSmartSurveyResponses(res, app, config.smartSurveyIdV1, surveyExportIdV1, config.smartSurveyExportV1, dashboardData, 1);
-          } else {
-            surveyTotals.surveyDataError = true;
-            app.logger.info('Error finding matching V1 Export: ', {
-              smartSurveyExportName: smartSurveyExportName
-            });
-          }
-
-        }
-
-        if (surveyTotals.surveyDataError === true && responseSent === false){
-          responseSent = true;
-
-          return res.render('./dashboard/index.njk', {
-            dashboardData: dashboardData,
-            dashboardDates: dashboardDates,
-            dashboardYears: dashboardYears,
-            surveyData: surveyTotals,
-          });
-        }
-
-        return true;
-
-      }
-
-      , successExportIdV2 = function(response) {
-
-        var i = 0,
-          smartSurveyExportName;
-
-        surveyExportIdV2 = 0;
-
-        app.logger.info('Fetched v2 smart survey export details: ', {
-          exportCount: response.length
-        });
-
-        smartSurveyExportName = config.smartSurveyExportV2;
-
-        if (response.length > 0){
-          for (i = 0; i < response.length; i++) {
-            if (response[i].name === smartSurveyExportName){
-              surveyExportIdV2 = response[i].id;
-              break;
-            }
-          }
-
-          if (surveyExportIdV2 > 0){
-            app.logger.info('Found matching V2 Export: ', {
-              surveyExportIdV2: surveyExportIdV2
-            });
-            getSmartSurveyResponses(res, app, config.smartSurveyIdV2, surveyExportIdV2, config.smartSurveyExportV2, dashboardData, 2);
-          } else {
-            surveyTotals.surveyDataError = true;
-            app.logger.info('Error finding matching V2 Export: ', {
-              smartSurveyExportName: smartSurveyExportName
-            });
-          }
-
-        }
-
-        if (surveyTotals.surveyDataError === true && responseSent === false){
-          responseSent = true;
-
-          return res.render('./dashboard/index.njk', {
-            dashboardData: dashboardData,
-            dashboardDates: dashboardDates,
-            dashboardYears: dashboardYears,
-            surveyData: surveyTotals,
-          });
-        }
-
-        return true;
-
-      }
-
-
-      , errorCB = function(response) {
-
-        if (typeof err !== 'undefined') {
-          app.logger.crit('Failed to fetch smart survey export details: ', {
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
-        } else if (typeof response !== 'undefined') {
-          app.logger.crit('Failed to fetch smart survey export details: ', {
-            response: response.error
-          });
-        }
-
-        surveyTotals.surveyDataError = true;
-
-        if (responseSent === false){
-
-          responseSent = true;
-
-          return res.render('./dashboard/index.njk', {
-            dashboardData: dashboardData,
-            dashboardDates: dashboardDates,
-            dashboardYears: dashboardYears,
-            surveyData: surveyTotals,
-          });
-        }
-      }
-
-      , smartSurveyParams;
-
-    surveyExportResponsesReceived = 0;
-    surveyExportIdV1 = 0;
-    surveyExportIdV2 = 0;
-    surveyResponses = [];
-    surveyTotals = {
-      surveyDataError: false,
-      responsesTotal:  0,
-      verySatisfiedTotal: 0,
-      satisfiedTotal: 0,
-      neitherTotal: 0,
-      dissatisfiedTotal: 0,
-      veryDissatisfiedTotal: 0
-
-    };
-
-    responseSent = false;
-
-    smartSurveyParams = '?api_token=' + secretsConfig.get('secrets.juror.bureau-smartSurveyToken') + '&api_token_secret=' + secretsConfig.get('secrets.juror.bureau-smartSurveyTokenSecret');
-
-    if (requireV1Survey === true){
-      smartSurveyExportObj
-        .get(require('request-promise'), app, config.smartSurveyIdV1, secretsConfig.get('secrets.juror.bureau-smartSurveyToken'), secretsConfig.get('secrets.juror.bureau-smartSurveyTokenSecret'), smartSurveyParams)
-        .then(successExportIdV1)
-        .catch(errorCB);
-    }
-
-    if (requireV2Survey === true){
-      smartSurveyExportObj
-        .get(require('request-promise'), app, config.smartSurveyIdV2, secretsConfig.get('secrets.juror.bureau-smartSurveyToken'), secretsConfig.get('secrets.juror.bureau-smartSurveyTokenSecret'), smartSurveyParams)
-        .then(successExportIdV2)
-        .catch(errorCB);
-    }
-  }
-
-  function getSmartSurveyResponses(res, app, surveyId, exportId, exportName, dashboardData, surveyVersion) {
-
-    var success = false
-      , arrData = []
-      , i = 0
-      , responseDate
-      , responseRating
-
-      , successCB = function(response) {
-        app.logger.info('Fetched smart survey response data: ', {
-          surveyId: surveyId,
-          exportName: exportName,
-          exportId: exportId
-        });
-
-        surveyExportResponsesReceived++;
-
-        if (response.length > 1){
-
-          arrData = parseCSV(response);
-
-          app.logger.info('Survey response data received: ', {
-            surveyId: surveyId,
-            lineCount: arrData.length,
-          });
-
-          // process responses
-          for (i = 1; i < arrData.length; i++) {
-
-            if (surveyVersion === 1) {
-              responseRating = arrData[i][8].trim().toLowerCase();
-              responseDate = moment(arrData[i][7], 'DD/MM/YYYY', false);
-            } else {
-              responseRating = arrData[i][12].trim().toLowerCase();
-              responseDate = moment(arrData[i][7], 'DD/MM/YYYY', false);
-            }
-
-
-            if (!(responseDate.isBefore(dashboardDates.startDate) || responseDate.isAfter(dashboardDates.endDate))){
-            //if (responseDate.isValid()){
-
-              switch (responseRating) {
-              case 'very satisfied':
-                surveyTotals.responsesTotal++;
-                surveyTotals.verySatisfiedTotal++;
-                break;
-              case 'satisfied':
-                surveyTotals.responsesTotal++;
-                surveyTotals.satisfiedTotal++;
-                break;
-              case 'neither satisfied or dissatisfied':
-                surveyTotals.responsesTotal++;
-                surveyTotals.neitherTotal++;
-                break;
-              case 'dissatisfied':
-                surveyTotals.responsesTotal++;
-                surveyTotals.dissatisfiedTotal++;
-                break;
-              case 'very dissatisfied':
-                surveyTotals.responsesTotal++;
-                surveyTotals.veryDissatisfiedTotal++;
-                break;
-              default:
-                // do nothing
-                break;
-              }
-            }
-          }
-
-          surveyTotals.verySatisfiedFormatted =  surveyTotals.verySatisfiedTotal.toLocaleString();
-          surveyTotals.satisfiedFormatted =  surveyTotals.satisfiedTotal.toLocaleString();
-          surveyTotals.neitherFormatted =  surveyTotals.neitherTotal.toLocaleString();
-          surveyTotals.dissatisfiedFormatted =  surveyTotals.dissatisfiedTotal.toLocaleString();
-          surveyTotals.veryDissatisfiedFormatted =  surveyTotals.veryDissatisfiedTotal.toLocaleString();
-
-          surveyTotals.verySatisfiedPercent =  getPercentageValue(surveyTotals.responsesTotal, surveyTotals.verySatisfiedTotal);
-          surveyTotals.satisfiedPercent =  getPercentageValue(surveyTotals.responsesTotal, surveyTotals.satisfiedTotal);
-          surveyTotals.neitherPercent =  getPercentageValue(surveyTotals.responsesTotal, surveyTotals.neitherTotal);
-          surveyTotals.dissatisfiedPercent =  getPercentageValue(surveyTotals.responsesTotal, surveyTotals.dissatisfiedTotal);
-          surveyTotals.veryDissatisfiedPercent =  getPercentageValue(surveyTotals.responsesTotal, surveyTotals.veryDissatisfiedTotal);
-
-          if (surveyExportResponsesReceived === surveyExportResponsesRequired && responseSent === false){
-
-            surveyTotals.satifiedAndVerySatisfiedPercent = (surveyTotals.verySatisfiedPercent + surveyTotals.satisfiedPercent);
-            surveyTotals.completedFeedbackPercent = getPercentageValue(dashboardData.responseMethod.onlineTotal, surveyTotals.responsesTotal);
-
-            responseSent = true;
-
-            return res.render('./dashboard/index.njk', {
-              dashboardData: dashboardData,
-              dashboardDates: dashboardDates,
-              dashboardYears: dashboardYears,
-              surveyData: surveyTotals,
-            });
-
-          }
-
-          return true;
-
-        }
-
-      }
-
-      , errorCB = function(response) {
-
-        surveyExportResponsesReceived++;
-
-        if (typeof err !== 'undefined') {
-          app.logger.crit('Failed to fetch smart survey reponse data: ', {
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
-        } else if (typeof response !== 'undefined') {
-          app.logger.crit('Failed to fetch smart survey resposne data: ', {
-            response: response.error
-          });
-        }
-
-        surveyTotals.surveyDataError = true;
-
-        if (surveyExportResponsesReceived === surveyExportResponsesRequired && responseSent === false){
-
-          responseSent = true;
-
-          return res.render('./dashboard/index.njk', {
-            dashboardData: dashboardData,
-            dashboardDates: dashboardDates,
-            dashboardYears: dashboardYears,
-            surveyData: dashboardData,
-          });
-        }
-
-      }
-
-      , smartSurveyParams;
-
-
-    smartSurveyParams = '?api_token=' + secretsConfig.get('secrets.juror.bureau-smartSurveyToken') + '&api_token_secret=' + secretsConfig.get('secrets.juror.bureau-smartSurveyTokenSecret');
-
-    if (surveyTotals.surveyDataError === false){
-
-      app.logger.info('Getting Smart Survey export: ', {
-        surveyId: surveyId,
-        exportName: exportName,
-        exportId: exportId
-      });
-
-      smartSurveyResponseObj
-        .get(require('request-promise'), app, surveyId, exportId, secretsConfig.get('secrets.juror.bureau-smartSurveyToken'), secretsConfig.get('secrets.juror.bureau-smartSurveyTokenSecret'), smartSurveyParams)
-        .then(successCB)
-        .catch(errorCB);
-
-    } else if (responseSent === false){
-
-      responseSent = true;
-
-      return res.render('./dashboard/index.njk', {
-        dashboardData: dashboardData,
-        dashboardDates: dashboardDates,
-        dashboardYears: dashboardYears,
-        surveyData: surveyTotals,
-      });
-
-    }
-
-  }
 
   function getHistoricTotals(response) {
     var historicTotals
@@ -786,7 +434,7 @@
       summonsesSentFormatted: historicSummonsesSent.toLocaleString(),
       onlineReplies: historicOnlineReplies,
       onlineRepliesFormatted: historicOnlineReplies.toLocaleString(),
-      digitalTakeUpPercent: getPercentageValue(historicSummonsesSent, historicOnlineReplies)
+      digitalTakeUpPercent: getPercentageValue(historicSummonsesSent, historicOnlineReplies),
     };
 
     return historicTotals;
@@ -814,7 +462,8 @@
     dashboardDates.endDate = dashboardDates.endYear + '-' + dashboardDates.endMonth + '-01';
 
 
-    if ((moment(dashboardDates.startDate, 'YYYY-MM-DD', true).isValid() === true) && (moment(dashboardDates.endDate, 'YYYY-MM-DD', true).isValid() === true)){
+    if ((moment(dashboardDates.startDate, 'YYYY-MM-DD', true).isValid() === true)
+      && (moment(dashboardDates.endDate, 'YYYY-MM-DD', true).isValid() === true)){
       dashboardDates.startDate = moment(dashboardDates.startDate).set('date', 1).format('YYYY-MM-DD');
       dashboardDates.startDateDisplay = moment(dashboardDates.startDate).format('MMMM YYYY');
       dashboardDates.endDate =  moment(dashboardDates.endDate).endOf('month').format('YYYY-MM-DD');
@@ -826,56 +475,5 @@
 
     return dashboardDates;
   }
-
-  function parseCSV(str) {
-    var arr = []
-      , row = 0
-      , col = 0
-      , c = 0
-      , cc
-      , nc
-      , quote = false;  // true means we're inside a quoted field
-
-    // iterate over each character, keep track of current row and column (of the returned array)
-    for (row = 0, col = 0, c = 0; c < str.length; c++) {
-      cc = str[c]
-      nc = str[c+1];        // current character, next character
-      arr[row] = arr[row] || [];             // create a new row if necessary
-      arr[row][col] = arr[row][col] || '';   // create a new column (start with empty string) if necessary
-
-      // If the current character is a quotation mark, and we're inside a
-      // quoted field, and the next character is also a quotation mark,
-      // add a quotation mark to the current column and skip the next character
-      if (cc === '"' && quote && nc == '"') { arr[row][col] += cc; ++c; continue; }
-
-      // If it's just one quotation mark, begin/end quoted field
-      if (cc === '"') {quote = !quote; continue;}
-
-      // If it's a comma and we're not in a quoted field, move on to the next column
-      if (cc === ',' && !quote){
-        ++col; continue;
-      }
-
-      // If it's a newline (CRLF) and we're not in a quoted field, skip the next character
-      // and move on to the next row and move to column 0 of that new row
-      if (cc === '\r' && nc === '\n' && !quote) {
-        ++row; col = 0; ++c; continue;
-      }
-
-      // If it's a newline (LF or CR) and we're not in a quoted field,
-      // move on to the next row and move to column 0 of that new row
-      if (cc === '\n' && !quote) {
-        ++row; col = 0; continue;
-      }
-      if (cc === '\r' && !quote) {
-        ++row; col = 0; continue;
-      }
-
-      // Otherwise, append the current character to the current column
-      arr[row][col] += cc;
-    }
-    return arr;
-  }
-
 
 })();
