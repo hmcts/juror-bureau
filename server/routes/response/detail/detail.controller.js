@@ -151,13 +151,10 @@
           req.session.awaitingInformation.required = false;
           req.session.awaitingInformation.cancelUrl = undefined;
 
-          /**
-           * Maybe we need a way to fetch the juror-details without passing the location-code in
-           * ... this way we currently do could be not safe and future proof 🤔
-           */
-          if (typeof req.session.hasModAccess !== 'undefined' && req.session.hasModAccess) {
-            req.session.locCode = data.poolNumber.substring(0, 3);
-          }
+          req.session.locCode = modUtils.getCurrentActiveCourt(req, {
+            poolNumber: data.poolNumber,
+            currentOwner: data.currentOwner,
+          });
 
           // check POOL status against RESPONSE status
           poolStatus = data.status;
