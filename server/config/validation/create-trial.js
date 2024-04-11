@@ -85,6 +85,15 @@
       };
     }
 
+    if (attributes.trialType === 'CRI') {
+      if (value.length > 16) {
+        tmpErrors = [{
+          summary: 'Defendant name must be 16 characters or less',
+          details: 'Defendant name must be 16 characters or less',
+        }];
+      };
+    }
+
     return tmpErrors.length === 0
       ? null
       : tmpErrors;
