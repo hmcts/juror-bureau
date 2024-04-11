@@ -5,32 +5,41 @@
   const validate = require('validate.js');
   const checkOutAllValidator = require('../../../config/validation/check-out-all-jurors');
   const { getJurorStatus, padTimeForApi } = require('../../../lib/mod-utils');
-  const { convertAmPmToLong, convert12to24, timeArrayToString
-    , timeStringToArray } = require('../../../components/filters');
+  const { convertAmPmToLong, convert12to24, timeArrayToString,
+    timeStringToArray } = require('../../../components/filters');
   const { jurorsAttending, jurorAttendanceDao } = require('../../../objects/juror-attendance');
+  const { Logger } = require('../../../components/logger');
 
   module.exports.postCheckIn = function(app) {
     return async function(req, res) {
       const { jurorNumber } = req.body;
+
+      const payload = {
+        'juror_number': jurorNumber,
+        'location_code': req.session.authentication.owner,
+        'attendance_date': req.session.attendanceListDate,
+        'check_in_time': padTimeForApi(convert12to24(req.body.time)),
+        'appearance_stage': 'CHECKED_IN',
+      };
 
       try {
         let attendee = await jurorsAttending.put(
           require('request-promise'),
           app,
           req.session.authToken,
-          {
-            'juror_number': jurorNumber,
-            'location_code': req.session.authentication.owner,
-            'attendance_date': req.session.attendanceListDate,
-            'check_in_time': padTimeForApi(convert12to24(req.body.time)),
-            'appearance_stage': 'CHECKED_IN',
-          }
+          payload,
         );
 
         attendee = _.mapKeys(attendee, (__, key) => _.camelCase(key));
         attendee.jurorStatus = getJurorStatus(attendee.jurorStatus);
 
         req.session.dailyAttendanceList.push(attendee);
+
+        Logger.instance.info('Successfully checked in juror', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: { payload, response: attendee },
+        });
 
         return res.render('juror-management/attendance/unconfirmed/table-row.njk', {
           row: attendee,
@@ -49,6 +58,13 @@
           kind: 'checkIn',
         };
 
+        Logger.instance.crit('Failed to check in juror', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: { payload },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
         return res.render('juror-management/attendance/unconfirmed/table-row.njk', {
           row: attendee,
           error: true,
@@ -62,7 +78,7 @@
       const { jurorNumber } = req.body;
 
       const attendee = req.session.dailyAttendanceList.find(
-        (a) => a.jurorNumber === jurorNumber
+        (a) => a.jurorNumber === jurorNumber,
       );
 
       if (!attendee) {
@@ -76,18 +92,20 @@
         return res.status(400).send('check out earlier than check in');
       }
 
+      const payload = {
+        'juror_number': jurorNumber,
+        'location_code': req.session.authentication.owner,
+        'attendance_date': req.session.attendanceListDate,
+        'check_out_time': padTimeForApi(convert12to24(req.body.time)),
+        'appearance_stage': 'CHECKED_OUT',
+      };
+
       try {
         await jurorsAttending.put(
           require('request-promise'),
           app,
           req.session.authToken,
-          {
-            'juror_number': jurorNumber,
-            'location_code': req.session.authentication.owner,
-            'attendance_date': req.session.attendanceListDate,
-            'check_out_time': padTimeForApi(convert12to24(req.body.time)),
-            'appearance_stage': 'CHECKED_OUT',
-          }
+          payload,
         );
 
         attendee.checkOutTime = req.body.time;
@@ -96,6 +114,12 @@
             a.checkOutTime = timeStringToArray(req.body.time);
             a.appStage = 'CHECKED_OUT';
           }
+        });
+
+        Logger.instance.info('Successfully checked out juror', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: { payload },
         });
 
         return res.render('juror-management/attendance/unconfirmed/table-row.njk', {
@@ -114,6 +138,13 @@
           checkOutTime: 'Fail',
           kind: 'checkOut',
         };
+
+        Logger.instance.crit('Failed to check out juror', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: { payload },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
 
         return res.render('juror-management/attendance/unconfirmed/table-row.njk', {
           row: _attendee,
@@ -218,7 +249,7 @@
       const time = req.session.checkOutPanelled.checkOutTime;
 
       const panelledJurors = req.session.dailyAttendanceList.filter(
-        (juror) => panelledJurorNo.includes(juror.jurorNumber)
+        (juror) => panelledJurorNo.includes(juror.jurorNumber),
       );
 
       return res.render('juror-management/attendance/check-out-panelled.njk', {
