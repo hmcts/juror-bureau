@@ -33,7 +33,7 @@
         }
       },
       {
-        html: editHtml + deleteHtml if not judge.active else editHtml
+        html: editHtml + deleteHtml if not judge.lastUsed else editHtml
       }
     ]), judgeRows) %}
   {% endfor %}
