@@ -10,6 +10,12 @@ module.exports.getConfirmIdentity = function(app) {
   return async function(req, res) {
     const { jurorNumber } = req.params;
 
+    const tmpErrors = _.clone(req.session.errors);
+    const tmpBody = _.clone(req.session.tmpBody);
+
+    delete req.session.errors;
+    delete req.session.tmpBody;
+
     let idCheckCodes;
 
     try {
@@ -17,6 +23,7 @@ module.exports.getConfirmIdentity = function(app) {
         acc.push({
           value: code.code,
           text: code.description,
+          selected: tmpBody && tmpBody.idType === code.code,
         });
 
         return acc;
@@ -31,12 +38,6 @@ module.exports.getConfirmIdentity = function(app) {
 
       return res.render('_errors/generic');
     }
-
-    const tmpErrors = _.clone(req.session.errors);
-    const tmpBody = _.clone(req.session.tmpBody);
-
-    delete req.session.errors;
-    delete req.session.tmpBody;
 
     res.render('juror-management/juror-record/confirm-identity', {
       idCheckCodes,
