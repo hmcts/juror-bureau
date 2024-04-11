@@ -3,9 +3,14 @@
 
   var utils = require('./utils')
     , fse = require('fs-extra')
+    , config = require('../config/environment')()
     , { Logger } = require('../components/logger');
 
   describe('Utility Component:', function() {
+
+    beforeAll(function() {
+      new Logger(config).initLogger();
+    });
 
     it('should force https by redirecting when not on https', function() {
       var reqStub = {

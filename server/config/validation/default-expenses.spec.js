@@ -44,7 +44,7 @@
       // eslint-disable-next-line
       expect(validatorResult.financialLoss[0].summary).toEqual('Loss of earnings or benefits per day can only include numbers and a decimal point');
       // eslint-disable-next-line
-      expect(validatorResult.financialLoss[0].details).toEqual('Loss of earnings or benefits per day can only include numbers and a decimal point');
+      expect(validatorResult.financialLoss[0].details[0]).toEqual('Loss of earnings or benefits per day can only include numbers and a decimal point');
 
     });
 

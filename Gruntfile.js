@@ -49,12 +49,6 @@
             src: ['dist/']
           }]
         },
-        test: {
-          files: [{
-            dot: true,
-            src: ['test/']
-          }]
-        }
       },
 
       // Templates
@@ -141,38 +135,6 @@
             {expand: true, cwd: 'config/', src: ['*.*'], dest: 'tmp/config'}
           ]
         },
-        test: {
-          files: [
-            {expand: true, src: ['client/**/*.html', 'client/**/*.njk'], dest: 'test'},
-            {expand: true, src: ['server/**/*.js'], dest: 'test'},
-            {expand: true, src: ['sessions/'], dest: 'test'},
-            {expand: true, src: ['package.json', 'Dockerfile', 'bureau-portal-run.sh', 'runDockerContainer.sh', 'stopDockerContainer.sh'], dest: 'test'},
-            {expand: true, cwd: 'client/js/', src: ['jquery.min.js', 'html5shiv.min.js', 'respond.min.js', 'svgxuse.min.js', 'ds-datepicker.js', 'show-hide-content.js'], dest: 'test/client/js'},
-            {expand: true, cwd: 'client/js/i18n/cy/', src: ['PDF.json'], dest: 'test/client/js/i18n/cy/' },
-            {expand: true, cwd: 'client/js/i18n/en/', src: ['PDF.json'], dest: 'test/client/js/i18n/en/' },
-
-            {expand: true, cwd: 'client/assets/fonts/', src: ['boldFont.ttf', 'lightFont.ttf', 'OpenSans-Regular.ttf', 'OpenSans-Bold.ttf'], dest: 'test/client/assets/fonts' },
-
-            {expand: true, cwd: 'node_modules/chart.js/dist', src: ['*.js'], dest: 'test/client/js/chart.js'},
-            {expand: true, cwd: 'node_modules/chart.js/dist', src: ['*.css'], dest: 'test/client/css'},
-
-            {expand: true, cwd: 'node_modules/govuk-frontend/govuk/', src: ['all.js', 'all.js.map'], dest: 'test/client/js/govuk'},
-            {expand: true, cwd: 'node_modules/@ministryofjustice/frontend/moj/', src: ['all.js'], dest: 'test/client/js/moj'},
-
-            {expand: true, cwd: 'node_modules/accessible-autocomplete/dist/', src: ['accessible-autocomplete.min.js'], dest: 'test/client/js'},
-            {expand: true, cwd: 'node_modules/accessible-autocomplete/dist/', src: ['accessible-autocomplete.min.js.map'], dest: 'test/client/js'},
-            {expand: true, cwd: 'node_modules/accessible-autocomplete/dist/', src: ['accessible-autocomplete.min.css'], dest: 'test/client/css'},
-
-            {
-              expand: true,
-              src: 'config/environment.template.json',
-              dest: 'test/config',
-              rename: function(dest) {
-                return dest + '/test.json';
-              },
-            },
-          ]
-        },
       },
 
 
@@ -233,13 +195,6 @@
             'client/css/report-print.css': 'client/scss/report-print.scss',
           }
         },
-        test: {
-          options: { sourceMaps: false },
-          files: {
-            'client/css/style.css': 'client/scss/main.scss',
-            'client/css/report-print.css': 'client/scss/report-print.scss',
-          }
-        },
       },
 
       autoprefixer: {
@@ -268,12 +223,6 @@
           ],
           options: {sourceMap: true}
         },
-        test: {
-          files: [
-            {expand: true, cwd: 'client/css', src: ['*.css', '!*.min.css'], dest: 'test/client/css', ext: '.css'},
-          ],
-          options: {sourceMap: false}
-        }
       },
 
 
@@ -307,12 +256,6 @@
           },
           option: {sourceMap: false}
         },
-        test: {
-          files: {
-            'test/client/js/bundle.js': ['client/js/bundle.js']
-          },
-          option: {sourceMap: false}
-        }
       },
 
 
@@ -348,14 +291,6 @@
             { expand: true, cwd: 'node_modules/@scottish-government/pattern-library/dist/images/icons/', src: ['**/**.*'], dest: 'tmp/client/assets/images/icons' }
           ]
         },
-        test: {
-          files: [
-            { expand: true, cwd: 'client/assets/images/', src: '**/*.{png,jpg,jpeg,gif,svg}', dest: 'test/client/assets/images' },
-            { expand: true, cwd: 'node_modules/govuk-frontend/govuk/assets/images/', src: ['**/**.*'], dest: 'test/client/assets/images' },
-            { expand: true, cwd: 'node_modules/@ministryofjustice/frontend/moj/assets/images/', src: ['icon-arrow*.*'], dest: 'test/client/assets/images' },
-            { expand: true, cwd: 'node_modules/@scottish-government/pattern-library/dist/images/icons/', src: ['**/**.*'], dest: 'test/client/assets/images/icons' }
-          ]
-        }
       },
 
       // Run server
@@ -374,13 +309,6 @@
             script: './dist/server/index.js',
             node_env: 'production',
             USE_AUTH: false,
-            background: false
-          }
-        },
-        test: {
-          options: {
-            script: './test/server/index.js',
-            node_env: 'test',
             background: false
           }
         },
@@ -436,10 +364,6 @@
             spawn: false
           }
         },
-        unitTest: {
-          files: ['client/**/*.js', 'server/**/*.js'],
-          tasks: ['mochaTest:unit']
-        }
       },
 
 
@@ -451,69 +375,11 @@
         options: { logConcurrentOutput: true }
       },
 
-
-      // Test settings
-      mochaTest: {
-        options: {
-          reporter: 'mochawesome',
-          require: 'mocha.conf.js',
-          timeout: 5000 // set default mocha spec timeout
-        },
-        unit: {
-          src: ['client/**/*.spec.js', 'server/**/*.spec.js'],
-          options: {
-            reporterOptions: {
-              reportDir: 'reports/tests/unit',
-              reportName: 'mocha-unit-report',
-              reportTitle: 'Mocha Unit Test Results'
-            }
-          }
-        },
-        integration: {
-          src: ['client/**/*.integration.js', 'server/**/*.integration.js'],
-          options: {
-            reporterOptions: {
-              reportDir: 'reports/tests/integration',
-              reportName: 'mocha-integration-report',
-              reportTitle: 'Mocha Integration Test Results'
-            }
-          }
-        }
-      },
-
-      mocha_istanbul: {
-        unit: {
-          options: {
-            excludes: ['**/*.{spec,mock,integration}.js', 'mocha.conf.js'],
-            reporter: 'spec',
-            require: ['mocha.conf.js'],
-            mask: '**/*.spec.js',
-            coverageFolder: 'reports/coverage/server/unit'
-          },
-          src: './server'
-        }
-      },
-
-      istanbul_check_coverage: {
-        default: {
-          options: {
-            coverageFolder: 'reports/coverage/**',
-            check: {
-              lines: 80,
-              statements: 80,
-              branches: 80,
-              functions: 80
-            }
-          }
-        }
-      },
-
       env: {
         test: { NODE_ENV: 'test' },
         dev: { NODE_ENV: 'development' },
         prod: { NODE_ENV: 'production' }
       },
-
 
       // Documentation
       jsdoc : {
@@ -526,7 +392,6 @@
           }
         }
       },
-
 
       // Security Scan
       nsp: {
@@ -551,8 +416,6 @@
     });
 
 
-
-
     // Package app
 
     grunt.registerTask('build-files', 'Copy application files to output folder using either; :dev or :dist', function(env) {
@@ -574,15 +437,7 @@
     });
 
     grunt.registerTask('build', 'Build the application using either; :dev, :dist or :test', function(env) {
-      if(env === 'test') {
-        return grunt.task.run([
-          'clean:test',
-          'build-files:test',
-          'build-styles:test',
-          'build-scripts:test',
-          'build-images:test'
-        ]);
-      } else if(env === 'dist') {
+      if(env === 'dist') {
         return grunt.task.run([
           'clean:dist',
           'build-files:dist',
@@ -622,59 +477,11 @@
         ]);
       }
 
-      if (env === 'test') {
-        return grunt.task.run([
-          'env:test',
-          'build:test',
-          'concurrent:test'
-        ]);
-      }
-
       return grunt.task.run([
         'env:dev',
         'build:dev',
         'concurrent:dev'
       ]);
-    });
-
-
-
-
-    // Testing
-    grunt.registerTask('test', 'Run test suite, will start server itself so either run as single task or with PORT environment variable set.', function(target, option) {
-
-      grunt.task.run(['serve:jenkins']);
-
-      if (target === 'coverage') {
-        if (option === 'run') {
-          return grunt.task.run([
-            'mocha_istanbul:unit'
-          ]);
-        } else if (option === 'check') {
-          return grunt.task.run([
-            'istanbul_check_coverage'
-          ]);
-        } else {
-          return grunt.task.run([
-            'test:coverage:run',
-            'test:coverage:check'
-          ]);
-        }
-      } else if (target === 'unit') {
-        grunt.task.run([
-          'mochaTest:unit',
-        ]);
-      } else if (target === 'integration') {
-        grunt.task.run([
-          'mochaTest:integration'
-        ]);
-      } else {
-        grunt.task.run([
-          'test:unit',
-          'test:integration'
-        ]);
-      }
-
     });
 
   };

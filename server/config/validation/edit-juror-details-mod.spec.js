@@ -18,13 +18,29 @@
         let mockRequest = {
           dateOfBirth: '01/01/2023',
           primaryPhone: '0123456789',
-          secondaryPhone: '9876543210',
+          secondaryPhone: '0987654321',
           emailAddress: 'test@test.com',
         };
   
         validatorResult = validate(mockRequest, overviewValidator());
   
         expect(validatorResult).toBeUndefined();
+      });
+
+      it('should validate the phone number - primary not valid', function() {
+        let mockRequest = {
+          dateOfBirth: '01/01/2023',
+          primaryPhone: '1234567890',
+          secondaryPhone: '0987654321',
+          emailAddress: 'test@test.com',
+        };
+
+        validatorResult = validate(mockRequest, overviewValidator());
+
+        expect(validatorResult).toEqual(expect.any(Object));
+        expect(validatorResult).toHaveProperty('primaryPhone');
+        expect(validatorResult.primaryPhone[0]).toHaveProperty('details');
+        expect(validatorResult.primaryPhone[0].details[0]).toEqual('Main phone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign');
       });
 
       it('should validate a valid request - optional fields are empty', function() {
