@@ -833,7 +833,10 @@
           req.session.replyDetails.isLateSummons = responseClone.isLateSummons;
 
           // we need to store the location code because we need it to be able to visit the juror record page
-          req.session.locCode = response[0].data.poolNumber.slice(0, 3);
+          req.session.locCode = modUtils.getCurrentActiveCourt(req, {
+            poolNumber: responseClone.poolNumber,
+            currentOwner: responseClone.current_owner,
+          });
 
           responseClone.statusRender = response[0].data.jurorStatus;
 
