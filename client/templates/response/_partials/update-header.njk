@@ -32,102 +32,44 @@
 
       {% endif %}
 
-      <div id="moj-actions-button-menu" class="moj-button-menu">
-        <div class="moj-button-menu__wrapper more-actions-menu {% if hasModAccess %}reply-view-align_right{% endif %}" name="moreActionsMenu" id="moreActionsMenu">
+      {% if response.replyMethod === "DIGITAL" or (method === "paper" and response.processingStatus | capitalise !== "CLOSED") %}
+        <div id="moj-actions-button-menu" class="moj-button-menu">
+          <div class="moj-button-menu__wrapper more-actions-menu {% if hasModAccess %}reply-view-align_right{% endif %}" name="moreActionsMenu" id="moreActionsMenu">
 
-          {% if hasModAccess === false %}
-            <a  href="{{ url('response.detail.download-pdf.get', { id: response.jurorNumber }) }}" target="_blank" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " value="download_pdf" data-module="govuk-button">
-              Download as a PDF
-            </a>
-          {% endif %}
-
-          {% if response.processingStatus | capitalise !== 'CLOSED' %}
-            {% if response.superUrgent == false or hasModAccess %}{# in the future any response will have this functionality... any user with ld access will have it #}
-              {#<a id="processAwaitingInformation" href="#" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " value="awaiting_information" data-module="govuk-button">#}
-              <a id="processAwaitingInformation"
-                href="{{ url('response.detail.awaiting.information.get', { id: response.jurorNumber }) }}{{ "/paper" if method === 'paper' else null }}"
-                role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary "
-                value="awaiting_information" data-module="govuk-button">
-                {{ "Mark as awaiting information" if hasModAccess else "Mark as 'Awaiting information'" }}
-              </a>
-
-              {% if hasModAccess and isBureauUser %}
-                <a id="requestInfoByPost" href="{{ url('request-info.by-post.get', { id: response.jurorNumber, type: 'paper' if method === 'paper' else 'digital'}) }}"
-                role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " value="request_information_by_post" data-module="govuk-button">
-                  Request juror info by post
-                </a>
-              {% endif %}
-
-              {% if isBureauUser %}
-                <a id="processSendTo" href="{{ url('response.assign.get', { id: response.jurorNumber }) }}" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " value="send_to" data-module="govuk-button">
-                  Send to a colleague...
-                </a>
-              {% endif %}
-
-            {% endif %}
-          {% endif %}
-
-          {% if hasModAccess and (method !== "paper") %}
-            <a  href="{{ url('response.detail.download-pdf.get', { id: response.jurorNumber }) }}" target="_blank" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " value="download_pdf" data-module="govuk-button">
-              Download as a PDF
-            </a>
-          {% endif %}
-
-        </div>
-      </div>
-
-      {% if hasModAccess === false %}
-        {% if response.processingStatus !== 'CLOSED' %}
-
-          <div id="moj-process-button-menu" class="moj-button-menu">
-            <div class="moj-button-menu__wrapper" name="processAction" id="processAction">
-              {% if response.superUrgent %}
-                <a id="processSendToCourt" href="#" role="button" draggable="false" class="govuk-button moj-button-menu__item  " value="send_to_court" data-module="govuk-button">
-                  PDF sent to court...
-                </a>
-              {% else %}
-                {#<a id="processResponded" href="#" role="button" draggable="false" class="govuk-button moj-button-menu__item  " value="responded" data-module="govuk-button" enabled="false">#}
-                <a id="processResponded" href="{{ url('response.detail.responded.get', { id: response.jurorNumber }) }}" role="button" draggable="false" class="govuk-button moj-button-menu__item  " value="responded" data-module="govuk-button" enabled="false">
-                  Responded
-                </a>
-                {#<a id="processDeferral" href="#" role="button" draggable="false" class="govuk-button moj-button-menu__item  " value="deferral" data-module="govuk-button">#}
-                <a id="processDeferral" href="{{ url('response.detail.deferral.get', { id: response.jurorNumber }) }}" role="button" draggable="false" class="govuk-button moj-button-menu__item  " value="deferral" data-module="govuk-button">
-                  Deferral
-                </a>
-                {#<a id="processExcusal" href="#" role="button" draggable="false" class="govuk-button moj-button-menu__item  " value="excusal" data-module="govuk-button">#}
-                <a id="processExcusal"href="{{ url('response.detail.excusal.get', { id: response.jurorNumber }) }}" role="button" draggable="false" class="govuk-button moj-button-menu__item  " value="excusal" data-module="govuk-button">
-                  Excusal
-                </a>
-                {#<a id="processDisqualified" href="#" role="button" draggable="false" class="govuk-button moj-button-menu__item  " value="disqualified" data-module="govuk-button">#}
-                <a id="processDisqualified" href="{{ url('response.detail.disqualify.get', { id: response.jurorNumber }) }}" role="button" draggable="false" class="govuk-button moj-button-menu__item  " value="disqualified" data-module="govuk-button">
-                  Disqualified
+            {% if response.processingStatus | capitalise !== 'CLOSED' %}
+              {% if response.superUrgent == false or hasModAccess %}{# in the future any response will have this functionality... any user with ld access will have it #}
+                {#<a id="processAwaitingInformation" href="#" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " value="awaiting_information" data-module="govuk-button">#}
+                <a id="processAwaitingInformation"
+                  href="{{ url('response.detail.awaiting.information.get', { id: response.jurorNumber }) }}{{ "/paper" if method === 'paper' else null }}"
+                  role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary "
+                  value="awaiting_information" data-module="govuk-button">
+                  {{ "Mark as awaiting information" if hasModAccess else "Mark as 'Awaiting information'" }}
                 </a>
 
-                {#
-                {% if (assignedSelf === true) or (authentication.staff.rank > 0) %}
-                  <a id="processSendTo" href="#" role="button" draggable="false" class="govuk-button moj-button-menu__item  " value="send_to" data-module="govuk-button">
-                    Send to…
+                {% if isBureauUser %}
+                  <a id="requestInfoByPost" href="{{ url('request-info.by-post.get', { id: response.jurorNumber, type: 'paper' if method === 'paper' else 'digital'}) }}"
+                  role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " value="request_information_by_post" data-module="govuk-button">
+                    Request juror info by post
+                  </a>
+
+                  <a id="processSendTo" href="{{ url('response.assign.get', { id: response.jurorNumber }) }}" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " value="send_to" data-module="govuk-button">
+                  {#<a id="processSendTo" href="#" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " value="send_to" data-module="govuk-button">#}
+                    Send to a colleague...
                   </a>
                 {% endif %}
-                #}
-                {#
-                <a id="processAwaitingInformation" href="#" role="button" draggable="false" class="govuk-button moj-button-menu__item  " value="awaiting_information" data-module="govuk-button">
-                  Awaiting information
-                </a>
-                #}
-              {% endif %}
-            </div>
-          </div>
 
-        {% else %}
-          <!-- show a disabled button menu -->
-          <div class="govuk-!-display-inline">
-            <div class="reply-view-header-menus-disabled">
-              <button class="govuk-button moj-button-menu__toggle-button process-action-disdabled" id="processAction" type="button" aria-haspopup="true" aria-expanded="false" disabled>Process reply</button>
-            </div>
+              {% endif %}
+            {% endif %}
+
+            {% if hasModAccess and (method !== "paper") %}
+              <a  href="{{ url('response.detail.download-pdf.get', { id: response.jurorNumber }) }}" target="_blank" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " value="download_pdf" data-module="govuk-button">
+                Download as a PDF
+              </a>
+            {% endif %}
+
           </div>
-        {% endif %}
-      {% endif %} {# check for no mod access #}
+        </div>
+      {% endif %}
 
     </div>
 

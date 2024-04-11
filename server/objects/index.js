@@ -9,6 +9,7 @@
   const jurorsOnTrial = require('./jurors-on-trial');
   const administration = require('./administration');
   const confirmIdentity = require('./confirm-identity');
+  const status = require('./status');
 
   module.exports = {
     ...requestPool,
@@ -16,6 +17,7 @@
     ...jurorsOnTrial,
     ...administration,
     ...confirmIdentity,
+    ...status,
   };
 
 })();
