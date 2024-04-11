@@ -474,6 +474,8 @@
 
         delete tmpBody._csrf;
 
+        tmpBody.addressPostcode = tmpBody.addressPostcode.toUpperCase();
+
         req.session.newJuror.jurorAddress = tmpBody;
 
         const postcode = modUtils.splitPostCode(tmpBody.addressPostcode);
