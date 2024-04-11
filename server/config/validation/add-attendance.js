@@ -55,6 +55,11 @@
           summary: 'Please enter a valid date for the attendance day',
           details: 'Please enter a valid date for the attendance day',
         }];
+      } else if (moment(dateInitial.dateAsDate).isAfter(new Date())) {
+        tmpErrors = [{
+          summary: 'Attendance day cannot be in the future',
+          details: 'Attendance day cannot be in the future',
+        }];
       }
     }
 

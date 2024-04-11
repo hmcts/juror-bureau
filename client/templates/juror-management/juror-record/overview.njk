@@ -47,54 +47,75 @@
 
   {% include "../_partials/heading.njk" %}
 
-  {% set policeCheckStatus =
-    {
-      key: {
-        text: "Police check"
-      },
-      value: {
-        text: juror.commonDetails.policeCheck | capitalize,
-        classes: "mod-red-text" if juror.commonDetails.policeCheck === "Failed"
-      }
+  {% set policeCheckStatus = {
+    key: {
+      text: "Police check"
+    },
+    value: {
+      html: policeCheck.status | safe
     }
-  %}
- 
+  }
+ %}
+
   {% if isCourtUser %}
-    {% if juror.commonDetails.policeCheck === "Not Checked" and canRunPoliceCheck %}
+    {% if ["NOT_CHECKED", "INSUFFICIENT_INFORMATION"] | arrayIncludes(policeCheck.rawStatus) and canRunPoliceCheck %}
       {% set policeCheckStatus =
         {
           key: {
             text: "Police check"
           },
           value: {
-            html: "
-            <p class='govuk-body'>" + juror.commonDetails.policeCheck | capitalize + "
-              <br>
-              <a href='" + url('juror-record.police-check.get', { jurorNumber: juror.commonDetails.jurorNumber }) + "' class='govuk-link govuk-link--no-visited-state'>
-                Run a police check
-              </a>
-            </p>"
+            html: '
+              <p class="govuk-body">' + policeCheck.status + '</p>
+              <p class="govuk-body">
+                <a href="' + url("juror-record.police-check.get", { jurorNumber: juror.commonDetails.jurorNumber }) + '" class="govuk-link govuk-link--no-visited-state">
+                  Run a police check
+                </a>
+              </p>
+            '
           }
         }
-      %} 
-    {% elif juror.commonDetails.policeCheck === "Not Checked - There was a problem"%}
+      %}
+    {% elif policeCheck.errorArray | arrayIncludes(policeCheck.rawStatus) and policeCheck.canRetry %}
       {% set policeCheckStatus =
-      {
-        key: {
-          text: "Police check"
-        },
-        value: {
-          html: " 
-          <p class='govuk-body'>Not checked - <span class='mod-red-text'>there was a problem.</span> </p> 
-          <p class='govuk-body'> Check name and 
-            <a href='" + url('juror-record.police-check.get', { jurorNumber: juror.commonDetails.jurorNumber }) + "' class='govuk-link govuk-link--no-visited-state'>try again</a>. 
-            if problem persists, raise an incident following your usual process.
-          </p>"
+        {
+          key: {
+            text: "Police check"
+          },
+          value: {
+            html: ' 
+              <p class="govuk-body">' + policeCheck.status + '</p> 
+              <p class="govuk-body">
+                Check name and <a href="' + url("juror-record.police-check.get", { jurorNumber: juror.commonDetails.jurorNumber }) + '" class="govuk-link govuk-link--no-visited-state">try again</a>. 
+                if problem persists, raise an incident following your usual process.
+              </p>
+            '
+          }
         }
-      }
-    %}
+      %}
     {% endif %}
   {% endif %}
+
+  {% set confirmIdentityButtonHtml %}
+    {% if isCourtUser %}
+      <p class="govuk-body"> 
+        <a href="{{ url('juror-record.confirm-identity.get', { jurorNumber: juror.commonDetails.jurorNumber }) }}" class="govuk-link govuk-link--no-visited-state">
+          Confirm identity
+        </a>
+      </p>
+    {% endif %}
+  {% endset %}
+
+  {% set identityCheckStatus =
+    {
+      key: {
+        text: "Identity check"
+      },
+      value: {
+        html: ('<p class="govuk-body">Not confirmed</p>' + confirmIdentityButtonHtml) | safe
+      } if not juror.idCheckCode else { text: "Confirmed - " + idCheckDescription }
+    }
+  %}
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
@@ -192,7 +213,8 @@
       {{ govukSummaryList({
         classes: "govuk-!-width-two-thirds govuk-!-margin-bottom-9",
         rows: [
-          policeCheckStatus
+          policeCheckStatus,
+          identityCheckStatus
         ]
       }) }}
     </div>
@@ -231,7 +253,6 @@
       </div>
     </div>
   {% endif %}
-
 
   {% if juror.specialNeed or juror.opticReference or juror.welsh %}
     <div class="govuk-grid-row">
@@ -285,11 +306,11 @@
 
       {% if jurorStatus === "Postponed" %}
         {% set poolUrlHtml %}
-          <a href="#">In deferral maintenance</a>
+        <a href="#">In deferral maintenance</a>
         {% endset %}
       {% else %}
         {% set poolUrlHtml %}
-          <a href="{{ url('pool-overview.get', { poolNumber: juror.commonDetails.poolNumber }) }}">{{ juror.commonDetails.poolNumber }}</a>
+        <a href="{{ url('pool-overview.get', { poolNumber: juror.commonDetails.poolNumber }) }}">{{ juror.commonDetails.poolNumber }}</a>
         {% endset %}
       {% endif %}
 

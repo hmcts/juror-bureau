@@ -117,6 +117,8 @@
       'juror-record.contact-log.post',
       auth.verify,
       controller.postAddLogs(app));
+
+    require('./confirm-identity')(app);
   };
 
 })();
