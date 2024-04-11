@@ -206,7 +206,7 @@
             currentTab: 'overview',
             jurorStatus,
             canRunPoliceCheck,
-            policeCheck: resolvePoliceCheckStatus(req, response.data.commonDetails.police_check),
+            policeCheck: resolvePoliceCheckStatus(req, overview.data.commonDetails.police_check),
             bannerMessage: bannerMessage,
             availableMessage: availableMessage,
             hasSummons: req.session.hasSummonsResponse,
