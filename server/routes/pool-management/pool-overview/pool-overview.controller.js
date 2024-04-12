@@ -490,13 +490,11 @@ const filters = require('../../../components/filters');
       data.poolDetails.poolNumber,
     )
       .then(function(poolHistoryList) {
-
         app.logger.info('Fetched Pool Request history: ', {
           auth: req.session.authentication,
           jwt: req.session.authToken,
           data: poolHistoryList,
         });
-        
         res.render(`pool-management/pool-overview/${isCourtUser(req, res) ? 'court' : 'bureau'}-pool-overview`, {
           backLinkUrl: {
             built: true,
@@ -511,7 +509,6 @@ const filters = require('../../../components/filters');
           currentTab: 'history',
           navData: _.clone(req.session.poolManagementNav),
         });
-
       })
       .catch(errorCB(app, req, res, data.poolDetails.poolNumber, 'Failed to fetch pool history:'));
   }
