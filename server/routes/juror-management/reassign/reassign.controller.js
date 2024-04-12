@@ -395,7 +395,7 @@
       .put(require('request-promise'), app, req.session.authToken, payload)
       .then((data) => {
 
-        console.log(data);
+        modUtils.replaceAllObjKeys(data, _.camelCase);
 
         req.session.locCode = req.session.receivingCourtLocCode;
         delete req.session.receivingCourtLocCode;
