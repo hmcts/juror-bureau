@@ -394,19 +394,21 @@
     requestObj.reassignJuror
       .put(require('request-promise'), app, req.session.authToken, payload)
       .then((data) => {
+
         console.log(data);
+
         req.session.locCode = req.session.receivingCourtLocCode;
         delete req.session.receivingCourtLocCode;
         delete req.session.processLateSummons;
 
         let poolUrl = app.namedRoutes.build('pool-overview.get', {
-          poolNumber: payload.receivingPoolNumber || data,
+          poolNumber: data.newPoolNumber,
         });
 
         req.session.bannerMessage = req.session.poolJurorsReassign ?
         // eslint-disable-next-line
-          `${payload.jurorNumbers.length} jurors reassigned to pool <a class="govuk-link" href="${poolUrl}">${payload.receivingPoolNumber || data}</a>` :
-          `Reassigned to pool <a class="govuk-link" href="${poolUrl}">${payload.receivingPoolNumber || data}</a>`;
+          `${data.numberReassigned} jurors reassigned to pool <a class="govuk-link" href="${poolUrl}">${data.newPoolNumber}</a>` :
+          `Reassigned to pool <a class="govuk-link" href="${poolUrl}">${data.newPoolNumber}</a>`;
 
         if (req.session.poolJurorsReassign) {
           delete req.session.poolJurorsReassign;
