@@ -13,6 +13,7 @@
     return async function(req, res) {
       const { document } = req.params;
       const { jurorNumber } = req.query;
+      const { showCauseDate } = req.query;
 
       const validatorResult = validate(req.body, showCauseValidator());
 
@@ -40,7 +41,7 @@
             jurorNumber,
           }),
           // eslint-disable-next-line max-len
-          queryParams: `?hearingDate=${req.body.hearingDate}&hearingTime=${time}`,
+          queryParams: `?showCauseDate=${showCauseDate}&hearingDate=${req.body.hearingDate}&hearingTime=${time}`,
         });
       }
 

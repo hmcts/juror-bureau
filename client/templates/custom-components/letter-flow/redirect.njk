@@ -17,7 +17,7 @@
   {% endif %}
 
   <script>
-    open("{{ printRoute }}".replace('&amp;', '&'), '_blank');
+    open("{{ printRoute }}".replace(/&amp;/g, '&'), '_blank');
     window.location.replace("{{ completeRoute }}"); //jurorrecord
   </script>
 {% endblock %}
