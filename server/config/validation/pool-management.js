@@ -21,16 +21,9 @@
           presence: {
             allowEmpty: false,
             message: {
-              summary: 'Choose an active pool to add selected jurors to',
-              details: 'Choose an active pool to add selected jurors to',
+              summary: 'Choose a pool to reassign to',
+              details: 'Choose a pool to reassign to',
             },
-          },
-          format: {
-            pattern: '[0-9]*',
-            message: {
-              details: 'The "Create a new pool" option is unavailable. Please select an active pool',
-              summary: 'The "Create a new pool" option is unavailable. Please select an active pool',
-            }
           },
         },
       };

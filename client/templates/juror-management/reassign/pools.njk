@@ -62,23 +62,21 @@
             <p class="govuk-body">This court has no active pools</p>
           {% else %}
             {% include "pool-management/deferral-maintenance/_partials/pools-table.njk" %}
-
-            {% if isCourtUser %}
-              <div class="govuk-grid-row govuk-!-margin-bottom-5">
-                <div class="govuk-grid-column-full">
-                  <div class="govuk-label--m">Or</div>
-                  <div class="govuk-radios" data-module="govuk-radios">
-                    <div class="govuk-radios__item">
-                      <input class="govuk-radios__input" id="new-pool" name="poolNumber" type="radio" value="new-pool">
-                      <label class="govuk-label govuk-radios__label" for="new-pool">
-                        Create a new pool and reassign to this
-                      </label>
-                    </div>
+          {% endif %}
+          {% if isCourtUser %}
+            <div class="govuk-grid-row govuk-!-margin-bottom-5">
+              <div class="govuk-grid-column-full">
+                <div class="govuk-label--m">Or</div>
+                <div class="govuk-radios" data-module="govuk-radios">
+                  <div class="govuk-radios__item">
+                    <input class="govuk-radios__input" id="new-pool" name="poolNumber" type="radio" value="new-pool">
+                    <label class="govuk-label govuk-radios__label" for="new-pool">
+                      Create a new pool and reassign to this
+                    </label>
                   </div>
                 </div>
               </div>
-            {% endif %}
-
+            </div>
           {% endif %}
         </div>
 
