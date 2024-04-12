@@ -81,14 +81,14 @@
               } else {
                 row.push('');
               }
-              row.push('£' + expense.lossOfEarnings.toFixed(2));
-              row.push('£' + expense.childCare.toFixed(2));
-              row.push('£' + expense.misc.toFixed(2));
+              row.push('£' + (expense?.lossOfEarnings?.toFixed(2) || "0.00"));
+              row.push('£' + (expense?.childCare?.toFixed(2) || "0.00"));
+              row.push('£' + (expense?.misc?.toFixed(2) || "0.00"));
               body.push(row);
 
-              totals[2] += expense.lossOfEarnings;
-              totals[3] += expense.childCare;
-              totals[4] += expense.misc;
+              totals[2] += expense?.lossOfEarnings;
+              totals[3] += expense?.childCare;
+              totals[4] += expense?.misc;
             });
             const formattedTotals = totals.map(formatAsCurrency);
 
