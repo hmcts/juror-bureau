@@ -69,11 +69,11 @@
           {% include "./_partials/filters.njk" %}
         </div>
 
-        {% if poolMembers.length === 0 and poolDetails.isActive === true %}
+        {% if poolMembers.length === 0 %}
           <div id="pool-overview-table-wrapper" class="govuk-grid-column-full">
             <span class="govuk-body">There are no results to display.</span>
           </div>
-        {% elif poolDetails.isActive === true %}
+        {% else %}
           <div id="pool-overview-table-wrapper" class="govuk-grid-column-full">
 
             {% if errors.items["selectedJurors"] %}
