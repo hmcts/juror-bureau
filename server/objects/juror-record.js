@@ -400,4 +400,13 @@
       return rp(payload);
     },
   };
+
+  // new DAO
+
+  module.exports.expensesSummaryDAO = new DAO('moj/expenses/summary/totals', {
+    get: function(jurorNumber, poolNumber) {
+      return { uri: urljoin(this.resource, jurorNumber.toString(), poolNumber.toString()) };
+    },
+  });
+
 })();
