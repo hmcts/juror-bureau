@@ -931,7 +931,6 @@
       }
 
       return updateStatus.put(
-        require('request-promise'),
         app,
         req.session.authToken,
         req.body.response,
