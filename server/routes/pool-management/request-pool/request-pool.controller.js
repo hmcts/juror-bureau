@@ -8,8 +8,8 @@
     , requestPoolObj = require('../../../objects/request-pool')
     , isCourtUser = require('../../../components/auth/user-type').isCourtUser
     , dateFilter = require('../../../components/filters').dateFilter
-    , checkDayType = require('../check-day-type')
-    , courtsList;
+    , checkDayType = require('../check-day-type');
+  const { fetchCourtsDAO } = require('../../../objects');
 
   // this middleware checks if the user has already started a pool request
   // caching the pool details on the session object helps with that
@@ -25,7 +25,7 @@
   }
 
   module.exports.getSelectCourt = function(app) {
-    return function(req, res) {
+    return async function(req, res) {
       var tmpErrors
         , transformedCourtNames
 
@@ -63,23 +63,22 @@
           res.redirect(app.namedRoutes.build('request-pool.select-court.get'));
         };
 
-      // this check is simply to force people to use the correct journey (going through pool-management)
-      // if courts are needed somewhere else we can move this courtsList request to just after "login"
-      // to enable courts to be fetched from when the user logs in
-      if (typeof req.session.courtsList === 'undefined') {
-        return res.redirect(app.namedRoutes.build('pool-management.get'));
+      if (!req.session.courtsList) {
+        try {
+          req.session.courtsList = await fetchCourtsDAO.get(req);
+        } catch (err) {
+          console.log(err);
+        }
       }
 
-      courtsList = _.clone(req.session.courtsList);
-
-      transformedCourtNames = modUtils.transformCourtNames(courtsList);
+      transformedCourtNames = modUtils.transformCourtNames(req.session.courtsList);
 
       // redirect the user straight to pool-details form when they are a court user
       // a court user is defined with a court number different than 400 (400 being bureau user)
       if (isCourtUser(req, res) && typeof req.session.poolDetails === 'undefined') {
         req.body.courtNameOrLocation = req.session.authentication.staff.courts[0];
 
-        return modUtils.matchUserCourt(courtsList, req.body)
+        return modUtils.matchUserCourt(req.session.courtsList, req.body)
           .then(successCB)
           .catch(errorCB);
       }
@@ -147,7 +146,7 @@
       delete req.session.errors;
       delete req.session.formFields;
 
-      return modUtils.matchUserCourt(courtsList, req.body)
+      return modUtils.matchUserCourt(req.session.courtsList, req.body)
         .then(successCB)
         .catch(errorCB);
     }
