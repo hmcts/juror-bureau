@@ -452,8 +452,17 @@
             data: req.session.poolDetails.poolNumber,
           });
 
+          const poolDetails = req.session.poolDetails;
+
+          if (poolDetails.numberOfJurorsRequired >= poolDetails.numberOfCourtDeferrals) {
+            poolDetails.actualRequired = poolDetails.numberOfJurorsRequired - poolDetails.numberOfCourtDeferrals;
+          } else {
+            poolDetails.actualRequired = 0;
+            poolDetails.numberOfCourtDeferrals = poolDetails.numberOfJurorsRequired;
+          }
+
           return res.render('pool-management/_common/check-request-details', {
-            poolDetails: req.session.poolDetails,
+            poolDetails: poolDetails,
             submitUrl: app.namedRoutes.build('request-pool.check-details.post'),
             cancelUrl: app.namedRoutes.build('pool-management.get'),
             changeUrl: app.namedRoutes.build('request-pool.pool-details.get'),
