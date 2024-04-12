@@ -1,6 +1,8 @@
 ; (function() {
   'use strict';
 
+  const rp = require('request-promise');
+
   var _ = require('lodash')
     , urljoin = require('url-join')
     , config = require('../config/environment')()
@@ -22,7 +24,7 @@
      */
     getDisqualificationReasons = {
       resource: 'moj/disqualify/reasons',
-      get: function(rp, app, jwtToken) {
+      get: function(__, app, jwtToken) {
         let reqOptions = _.clone(options);
 
         reqOptions.headers.Authorization = jwtToken;
@@ -50,7 +52,7 @@
      */
     disqualifyJuror = {
       resource: 'moj/disqualify/juror',
-      patch: function(rp, app, jwtToken, jurorNumber, disqualifyCode, replyMethod) {
+      patch: function(__, app, jwtToken, jurorNumber, disqualifyCode, replyMethod) {
         let reqOptions = _.clone(options),
           tmpBody = {};
 

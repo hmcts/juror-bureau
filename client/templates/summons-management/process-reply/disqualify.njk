@@ -9,12 +9,14 @@
 {% block page_identifier %}process - what to do{% endblock %}
 
 {% block beforeContent %}
-  <a href="{{ backLinkUrl }}" class="govuk-back-link">Back</a>
+  {% if backLinkUrl %}
+    <a href="{{ backLinkUrl }}" class="govuk-back-link">Back</a>
+  {% endif %}
 {% endblock %}
 
 {% block content %}
 
-  {% include "../../includes/errors.njk" %}
+  {% include "includes/errors.njk" %}
 
   {% if errors.items["disqualifyReason"] %}
     {% set disqualifyError = {"text": errors.items['disqualifyReason'][0].details} %}
