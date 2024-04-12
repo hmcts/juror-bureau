@@ -20,7 +20,6 @@ const filters = require('../../../components/filters');
 
   function errorCB(app, req, res, poolNumber, errorString) {
     return function(err) {
-      console.log(err);
       app.logger.crit(errorString, {
         auth: req.session.authentication,
         jwt: req.session.authToken,
@@ -99,15 +98,13 @@ const filters = require('../../../components/filters');
       ];
 
       if (isCourtUser(req, res)) {
-        Promise.allSettled(poolPromises).then(
-          ([pool, members]) => courtView(app, req, res, pool.value, members.value, tmpError, selectedJurors || [], selectAll),
-          errorCB(app, res, res, poolNumber, 'Failed to fetch pool summary for court user:')
-        );
+        Promise.all(poolPromises)
+          .then(([pool, members]) => courtView(app, req, res, pool, members, tmpError, selectedJurors || [], selectAll))
+          .catch(errorCB(app, req, res, poolNumber, 'Failed to fetch pool summary for court user:'));
       } else {
-        Promise.allSettled(poolPromises).then(
-          ([pool, members]) => bureauView(app, req, res, pool.value, members.value, tmpError, selectedJurors || [], selectAll),
-          errorCB(app, res, res, poolNumber, 'Failed to fetch pool summary for bureau user:')
-        );
+        Promise.all(poolPromises)
+          .then(([pool, members]) => bureauView(app, req, res, pool, members, tmpError, selectedJurors || [], selectAll))
+          .catch(errorCB(app, req, res, poolNumber, 'Failed to fetch pool summary for bureau user:'));
       }
     };
   };
@@ -815,21 +812,21 @@ const filters = require('../../../components/filters');
       sort: 'none',
     },
     {
-      id: 'jurorNumber',
+      id: 'juror_Number',
       value: 'Juror number',
-      sort: sortBy === 'jurorNumber' ? order : 'none',
+      sort: sortBy === 'juror_Number' ? order : 'none',
       sortable: true,
     },
     {
-      id: 'firstName',
+      id: 'first_Name',
       value: 'First name',
-      sort: sortBy === 'firstName' ? order : 'none',
+      sort: sortBy === 'first_Name' ? order : 'none',
       sortable: true,
     },
     {
-      id: 'lastName',
+      id: 'last_Name',
       value: 'Last name',
-      sort: sortBy === 'lastName' ? order : 'none',
+      sort: sortBy === 'last_Name' ? order : 'none',
       sortable: true,
     }];
     if (isCourt) {
@@ -841,15 +838,15 @@ const filters = require('../../../components/filters');
           sortable: true,
         },
         {
-          id: 'checkedIn',
+          id: 'checked_In',
           value: 'Checked in',
-          sort: sortBy === 'checkedIn' ? order : 'none',
+          sort: sortBy === 'checked_In' ? order : 'none',
           sortable: true,
         },
         {
-          id: 'nextDate',
+          id: 'next_Date',
           value: 'Next due at court',
-          sort: sortBy === 'nextDate' ? order : 'none',
+          sort: sortBy === 'next_Date' ? order : 'none',
           sortable: true,
         }
       ])
