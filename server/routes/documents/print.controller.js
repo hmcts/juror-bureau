@@ -102,7 +102,6 @@
         res.contentType('application/pdf');
         return res.send(letter);
       } catch (err) {
-        console.log(err)
         app.logger.crit('Unable to generate and print selected jurors', {
           userId: req.session.authentication.login,
           jwt: req.session.authToken,
