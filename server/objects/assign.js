@@ -16,7 +16,7 @@
     }
 
     , responseObject = {
-      resource: 'bureau/staff/assign',
+      resource: 'moj/staff/assign',
       post: function(rp, app, jwtToken, jurorNumber, assignTo, version) {
         var reqOptions = _.clone(options)
 
