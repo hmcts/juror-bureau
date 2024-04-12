@@ -496,8 +496,8 @@ const filters = require('../../../components/filters');
           jwt: req.session.authToken,
           data: poolHistoryList,
         });
-
-        res.render('pool-management/pool-overview/bureau-pool-overview', {
+        
+        res.render(`pool-management/pool-overview/${isCourtUser(req, res) ? 'court' : 'bureau'}-pool-overview`, {
           backLinkUrl: {
             built: true,
             url: app.namedRoutes.build('pool-management.get') + (data.poolDetails.isActive ? '?status=created' : ''),
