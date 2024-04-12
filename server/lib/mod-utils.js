@@ -45,6 +45,9 @@
         }
       });
       if (!match) {
+
+        console.log('Did not match court code:', courtCode);
+
         reject(false);
       }
     });

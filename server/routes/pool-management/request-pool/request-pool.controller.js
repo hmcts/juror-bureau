@@ -46,13 +46,18 @@
 
           res.redirect(app.namedRoutes.build('request-pool.pool-details.get'));
         }
-        , errorCB = function() {
+        , errorCB = function(err) {
           req.session.errors = {
             courtNameOrLocation: [{
               summary: 'Please check the court name or location',
               details: 'It was not possible to load your court automatically. Please manually select a court'
             }]
           };
+
+          app.logger.crit('Failed to select a court: ', {
+            auth: req.session.authentication,
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
 
           // because the court was invalid lets then set it as invalid but not remove
           // this will allow to bypass the current session values until the user relogs
