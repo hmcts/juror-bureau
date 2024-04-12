@@ -105,18 +105,18 @@
   </div>
 
   <span>
-    {{ govukButton({
-      text: "Add attendance day",
-      href: url('juror-record.attendance.add-attendance-date.get', {
-        jurorNumber: juror.commonDetails.jurorNumber
-      }),
-      classes: "govuk-button--secondary",
-      attributes: {
-        id: "addAttendanceDayButton"
-      }
-    }) }}
-
     {% if juror.commonDetails.jurorStatus == 'Responded' or juror.commonDetails.jurorStatus == 'Panelled' or juror.commonDetails.jurorStatus == 'Juror' %}
+      {{ govukButton({
+        text: "Add attendance day",
+        href: url('juror-record.attendance.add-attendance-date.get', {
+          jurorNumber: juror.commonDetails.jurorNumber
+        }),
+        classes: "govuk-button--secondary",
+        attributes: {
+          id: "addAttendanceDayButton"
+        }
+      }) }}
+
       {{ govukButton({
         text: "Add a non-attendance day",
         href: url('juror-record.attendance.non-attendance-day.get', {
