@@ -27,6 +27,15 @@
       if (document === 'show-cause'){
         payload['show_cause_date'] = dateFilter(req.query.hearingDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
         payload['show_cause_time'] = req.query.hearingTime;
+
+        if (req.query.showCauseDate) {
+          payload['details_per_letter'] = [{
+            'juror_number': jurorNumbers[0],
+            'letter_date': dateFilter(req.query.showCauseDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
+          }];
+        } else {
+          payload['details_per_letter'] = FTAPayloadBuilder(jurorNumbers, req.session.documentsJurorsList.data);
+        }
       } else if (document === 'failed-to-attend'){
 
         payload['details_per_letter'] = FTAPayloadBuilder(jurorNumbers, req.session.documentsJurorsList.data);
