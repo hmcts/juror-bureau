@@ -12,8 +12,7 @@
   module.exports.postShowCause = function(app) {
     return async function(req, res) {
       const { document } = req.params;
-      const { jurorNumber } = req.query;
-      const { showCauseDate } = req.query;
+      const { jurorNumber, showCauseDate } = req.query;
 
       const validatorResult = validate(req.body, showCauseValidator());
 
