@@ -67,7 +67,14 @@
         try {
           req.session.courtsList = await fetchCourtsDAO.get(req);
         } catch (err) {
-          console.log(err);
+          app.logger.crit('Failed to fetch courts list: ', {
+            auth: req.session.authentication,
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
+
+          req.session.errors = modUtils.makeManualError('Courts list', 'Failed to fetch courts list');
+
+          return res.redirect(app.namedRoutes.build('request-pool.select-court.get'));
         }
       }
 
