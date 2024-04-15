@@ -81,11 +81,11 @@ module.exports = function(app) {
     auth.isSJO,
     failedToAttendController.postUndoFailedToAttend(app));
 
-  app.get('/juror-management/juror/:jurorNumber/update/responded/:type(paper|digital)',
+  app.get('/juror-management/juror/:jurorNumber/update/responded',
     'juror.update.responded.get',
     auth.verify,
     respondedController.getResponded(app));
-  app.post('/juror-management/juror/:jurorNumber/update/responded/:type(paper|digital)',
+  app.post('/juror-management/juror/:jurorNumber/update/responded',
     'juror.update.responded.post',
     auth.verify,
     respondedController.postResponded(app));

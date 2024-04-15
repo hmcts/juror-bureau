@@ -111,7 +111,6 @@
       if (req.body.jurorRecordUpdate === 'responded') {
         return res.redirect(app.namedRoutes.build('juror.update.responded.get', {
           jurorNumber: req.params.jurorNumber,
-          type: req.session.replyMethod,
         }));
       }
 

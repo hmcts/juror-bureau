@@ -61,6 +61,27 @@
     },
   };
 
+  // TODO: the new DAO constructor is not setting the token for this url for some reason :D
+  // ... so using the old method for now
+  module.exports.markResponded = {
+    resource: 'moj/juror-record/mark-responded',
+    patch: function(app, jwtToken, jurorNumber) {
+      var reqOptions = _.clone(options);
+
+      reqOptions.headers.Authorization = jwtToken;
+      reqOptions.uri = urljoin(reqOptions.uri, this.resource, jurorNumber);
+      reqOptions.method = 'PATCH';
+
+      app.logger.info('Sending request to API: ', {
+        uri: reqOptions.uri,
+        headers: reqOptions.headers,
+        method: reqOptions.method,
+      });
+
+      return rp(reqOptions);
+    },
+  };
+
   module.exports.summonsUpdate = {
     resource: {
       BASE: 'moj/juror-paper-response/juror/{}/details',

@@ -5,19 +5,18 @@ const validate = require('validate.js');
 const respondedValidator = require('../../../config/validation/responded');
 const { makeManualError } = require('../../../lib/mod-utils');
 const { updateStatusDAO } = require('../../../objects');
-const { updateStatus } = require('../../../objects/summons-management');
+const { updateStatus, markResponded } = require('../../../objects/summons-management');
 const { Logger } = require('../../../components/logger');
 
 module.exports.getResponded = function(app) {
   return function(req, res) {
-    const { jurorNumber, type } = req.params;
+    const { jurorNumber } = req.params;
     const tmpErrors = _.clone(req.session.errors);
 
     delete req.session.errors;
 
     const postUrl = app.namedRoutes.build('juror.update.responded.post', {
       jurorNumber,
-      type,
     });
     const cancelUrl = app.namedRoutes.build('juror.update.get', { jurorNumber });
 
@@ -36,11 +35,10 @@ module.exports.getResponded = function(app) {
 
 module.exports.postResponded = function(app) {
   return async function(req, res) {
-    const { jurorNumber, type } = req.params;
+    const { jurorNumber } = req.params;
 
     const backUrl = app.namedRoutes.build('juror.update.responded.get', {
       jurorNumber,
-      type,
     });
     const validationErrors = validate(req.body, respondedValidator());
 
@@ -62,11 +60,17 @@ module.exports.postResponded = function(app) {
     };
 
     try {
-      if (type && type.toLowerCase() === 'digital') {
+      switch (req.session.replyMethod) {
+      case 'DIGITAL':
         await updateStatusDAO.post(req, jurorNumber, payload);
-      } else {
+        break;
+      case 'PAPER':
         await updateStatus.put(app, req.session.authToken, jurorNumber, 'CLOSED');
-      }
+        break;
+      default:
+        await markResponded.patch(app, req.session.authToken, jurorNumber);
+        break;
+      };
 
       Logger.instance.info('Successfully marked a record as responded', {
         auth: req.session.authentication,
@@ -78,8 +82,6 @@ module.exports.postResponded = function(app) {
         data: { ...payload },
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
-
-      console.log(err);
 
       if (err.statusCode === 409) {
         req.session.errors = makeManualError('jurorNumber', 'Juror record has been updated by another user');
