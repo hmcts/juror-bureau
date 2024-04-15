@@ -38,7 +38,7 @@
             colour: "grey",
             classes: "mod-large-tag__juror-record govuk-!-margin-right-2",
             label: "Total in draft",
-            value: "£" + expenseDetails.totalDraft | toFixed(2),
+            value: "£" + dailyExpenses.totalDraft | toFixed(2),
             action: {
               href: viewDraftExpensesLink,
               text: "View"
@@ -49,7 +49,7 @@
             colour: "blue",
             classes: "mod-large-tag__juror-record govuk-!-margin-right-2",
             label: "Total for approval",
-            value: "£" + expenseDetails.totalForApproval | toFixed(2),
+            value: "£" + dailyExpenses.totalForApproval | toFixed(2),
             action: {
               href: viewForApprovalExpensesLink,
               text: "View"
@@ -59,7 +59,7 @@
             id: "totalApprovedTag",
             classes: "mod-large-tag__juror-record",
             label: "Total approved",
-            value: "£" + + expenseDetails.totalApproved | toFixed(2),
+            value: "£" + + dailyExpenses.totalApproved | toFixed(2),
             action: {
               href: viewApprovedExpensesLink,
               text: "View"
@@ -67,10 +67,13 @@
           })}}
         </div>
       </div>
-      {% if expenseDetails.totalDraft > 0 or expenseDetails.totalForApproval > 0 or expenseDetails.totalApproved > 0 %}
+
+      {% if dailyExpenses.totalDraft > 0 or dailyExpenses.totalForApproval > 0 or dailyExpenses.totalApproved > 0 %}
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-full">
-            <a id="editSubmittedExpensesAnchor" href="{{ editSubmittedExpensesLink }}" class="govuk-link govuk-link--no-visited-state govuk-body">Edit submitted expenses</a>
+            <a id="editSubmittedExpensesAnchor" href="{{ viewForApprovalExpensesLink }}" class="govuk-link govuk-link--no-visited-state govuk-body">
+              Edit submitted expenses
+            </a>
           </div>
         </div>
       {% endif %}
@@ -120,14 +123,6 @@
                 },
                 value: {
                   text: defaultExpenses.smart_card if defaultExpenses.smart_card else "-"
-                }
-              },
-              {
-                key: {
-                  text: "Total smartcard spend"
-                },
-                value: {
-                  text: ("£" + defaultExpenses.total_smart_card_spend | toFixed(2)) if defaultExpenses.total_smart_card_spend else "-"
                 }
               }
             ]
