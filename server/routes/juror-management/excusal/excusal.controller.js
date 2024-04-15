@@ -54,11 +54,13 @@
   module.exports.post = function(app) {
     return function(req, res) {
       const successCB = function() {
-          const codeMessage = c => req.session.excusalReasons.original.filter(r => r.excusalCode === c)[0].description
-            , reason = {
-              REFUSE: 'Excusal refused (' + codeMessage(req.body.excusalCode).toLowerCase() + ')',
-              GRANT: 'Excusal granted (' + codeMessage(req.body.excusalCode).toLowerCase() + ')',
-            };
+
+          const codeMessage = req.session.excusalReasons.filter(r => r.code === req.body.excusalCode)[0].description;
+
+          const reason = {
+            REFUSE: 'Excusal refused (' + codeMessage.toLowerCase() + ')',
+            GRANT: 'Excusal granted (' + codeMessage.toLowerCase() + ')',
+          };
 
           req.session.bannerMessage = reason[req.body.excusalDecision];
 
