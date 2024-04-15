@@ -90,6 +90,7 @@
           'failed-to-attend': 'juror.update.failed-to-attend.get',
           'undo-failed-to-attend': 'juror.update.failed-to-attend.undo.get',
           excusal: 'juror.excusal.get',
+          disqualify: 'juror.update.disqualify.get',
           responded: 'juror.update.responded.get',
         };
 
@@ -106,6 +107,12 @@
         return postDeceased(req, res, app);
       } else if (req.body.jurorRecordUpdate === 'undeliverable') {
         return postUndeliverable(req, res, app);
+      }
+
+      if (req.body.jurorRecordUpdate === 'disqualify') {
+        return res.redirect(app.namedRoutes.build('juror.update.disqualify.get', {
+          jurorNumber: req.params.jurorNumber,
+        }));
       }
 
       if (req.body.jurorRecordUpdate === 'responded') {
