@@ -11,3 +11,11 @@ module.exports.updateStatusDAO = new DAO('moj/juror-response/update-status', {
     return { uri, body };
   },
 });
+
+module.exports.markAsRespondedDAO = new DAO('moj/juror-record/mark-responded', {
+  patch: function(jurorNumber) {
+    const uri = urljoin(this.resource, jurorNumber);
+
+    return { uri, body: {} };
+  },
+});

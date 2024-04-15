@@ -1,24 +1,22 @@
-{% extends "../../layouts/default-no-nav.njk" %}
+{% extends "layouts/default-no-nav.njk" %}
 
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 
-{% block page_title %}
-  {{ serviceName }} - process - responded{% endblock %}
-
+{% block page_title %}{{ serviceName }} - process - responded{% endblock %}
 {% block page_identifier %}process - responded{% endblock %}
 
 {% set currentApp = "Summons replies" %}
 
 {% block beforeContent %}
-  {% if hasModAccess %}
+  {% if backUrl %}
     <a href="{{ backUrl }}" class="govuk-back-link">Back</a>
   {% endif %}
 {% endblock %}
 
 {% block content %}
 
-  {% include "../../includes/errors.njk" %}
+  {% include "includes/errors.njk" %}
 
   {% if errors.items["responded"] %}
     {% set respondedError = {"text": errors.items['responded'][0].details} %}
@@ -31,12 +29,7 @@
       <form action="{{ postUrl }}" method="post" id="respondedForm">
 
         <h1 class="govuk-heading-xl">
-          {% if hasModAccess %}
-            Mark as responded
-          {% else %}
-            <span class="govuk-caption-xl">{{ replyDetails.jurorName }}</span>
-            Responded
-          {% endif %}
+          Mark as responded
         </h1>
 
         {{ govukCheckboxes({
