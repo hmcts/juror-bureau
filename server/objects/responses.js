@@ -37,11 +37,6 @@
     }
 
     , getCountTransform = function(body) {
-      // Verify we have a data field
-      if (body.hasOwnProperty('data') === false) {
-        return 0;
-      }
-
       return {
         todoCount: body.todo_count,
         workCount: body.work_count
