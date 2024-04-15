@@ -59,37 +59,45 @@
 
   {% if isCourtUser %}
     {% if ["NOT_CHECKED", "INSUFFICIENT_INFORMATION"] | arrayIncludes(policeCheck.rawStatus) and canRunPoliceCheck %}
+
+      {% if juror.commonDetails.jurorStatus === "Responded" %}
+        {% set manualCheckUrl %}
+          <p class="govuk-body">
+            <a href="{{ url("juror-record.police-check.get", { jurorNumber: juror.commonDetails.jurorNumber }) }}" class="govuk-link govuk-link--no-visited-state">
+              Run a police check
+            </a>
+          </p>
+        {% endset %}
+      {% endif %}
+
       {% set policeCheckStatus =
         {
           key: {
             text: "Police check"
           },
           value: {
-            html: '
-              <p class="govuk-body">' + policeCheck.status + '</p>
-              <p class="govuk-body">
-                <a href="' + url("juror-record.police-check.get", { jurorNumber: juror.commonDetails.jurorNumber }) + '" class="govuk-link govuk-link--no-visited-state">
-                  Run a police check
-                </a>
-              </p>
-            '
+            html: ('<p class="govuk-body">' + policeCheck.status + '</p>' + (manualCheckUrl if manualCheckUrl)) | safe
           }
         }
       %}
     {% elif policeCheck.errorArray | arrayIncludes(policeCheck.rawStatus) and policeCheck.canRetry %}
+
+      {% if juror.commonDetails.jurorStatus === "Responded" %}
+        {% set manualCheckUrl %}
+          <p class="govuk-body">
+            Check name and <a href="' + url("juror-record.police-check.get", { jurorNumber: juror.commonDetails.jurorNumber }) + '" class="govuk-link govuk-link--no-visited-state">try again</a>. 
+            if problem persists, raise an incident following your usual process.
+          </p>
+        {% endset %}
+      {% endif %}
+
       {% set policeCheckStatus =
         {
           key: {
             text: "Police check"
           },
           value: {
-            html: ' 
-              <p class="govuk-body">' + policeCheck.status + '</p> 
-              <p class="govuk-body">
-                Check name and <a href="' + url("juror-record.police-check.get", { jurorNumber: juror.commonDetails.jurorNumber }) + '" class="govuk-link govuk-link--no-visited-state">try again</a>. 
-                if problem persists, raise an incident following your usual process.
-              </p>
-            '
+            html: ('<p class="govuk-body">' + policeCheck.status + '</p>' (manualCheckUrl if manualCheckUrl)) | safe
           }
         }
       %}

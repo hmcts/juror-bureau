@@ -27,6 +27,15 @@
       if (document === 'show-cause'){
         payload['show_cause_date'] = dateFilter(req.query.hearingDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
         payload['show_cause_time'] = req.query.hearingTime;
+
+        if (req.query.showCauseDate) {
+          payload['details_per_letter'] = [{
+            'juror_number': jurorNumbers[0],
+            'letter_date': dateFilter(req.query.showCauseDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
+          }];
+        } else {
+          payload['details_per_letter'] = FTAPayloadBuilder(jurorNumbers, req.session.documentsJurorsList.data);
+        }
       } else if (document === 'failed-to-attend'){
 
         payload['details_per_letter'] = FTAPayloadBuilder(jurorNumbers, req.session.documentsJurorsList.data);
@@ -72,14 +81,14 @@
               } else {
                 row.push('');
               }
-              row.push('£' + expense.lossOfEarnings.toFixed(2));
-              row.push('£' + expense.childCare.toFixed(2));
-              row.push('£' + expense.misc.toFixed(2));
+              row.push('£' + (expense?.lossOfEarnings?.toFixed(2) || "0.00"));
+              row.push('£' + (expense?.childCare?.toFixed(2) || "0.00"));
+              row.push('£' + (expense?.misc?.toFixed(2) || "0.00"));
               body.push(row);
 
-              totals[2] += expense.lossOfEarnings;
-              totals[3] += expense.childCare;
-              totals[4] += expense.misc;
+              totals[2] += expense?.lossOfEarnings;
+              totals[3] += expense?.childCare;
+              totals[4] += expense?.misc;
             });
             const formattedTotals = totals.map(formatAsCurrency);
 
