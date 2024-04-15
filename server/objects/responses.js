@@ -43,8 +43,8 @@
       }
 
       return {
-        todoCount: body.todo_count,
-        workCount: body.work_count
+        todoCount: body.data.length,
+        workCount: body.todoCount + body.repliesPendingCount
       }
 
     }
@@ -179,7 +179,7 @@
 
         reqOptions.headers.Authorization = req.session.authToken;
         reqOptions.method = 'GET';
-        reqOptions.uri = urljoin(reqOptions.uri, 'bureau/responses/counts');
+        reqOptions.uri = urljoin(reqOptions.uri, 'bureau/responses/todo');
         reqOptions.transform = getCountTransform;
 
         this.logger.info('Sending request to API: ', {
