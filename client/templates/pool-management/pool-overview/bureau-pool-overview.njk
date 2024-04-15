@@ -74,7 +74,7 @@
       <span class="after-header__pool-record-label">Pool record</span>
       <div class="after-header__pool-record-number">
         <h1 class="govuk-heading-l govuk-!-margin-0">{{ poolDetails.poolNumber }}</h1>
-        {% if isNil === false %}
+        {% if isNil === false and currentOwner === "400" %}
           {{ govukTag({
             text: "Active" if poolDetails.isActive else "Requested",
             classes: "" if poolDetails.isActive else "govuk-tag--blue" 
@@ -84,62 +84,64 @@
     </div>
 
     <span>
-      {% if authentication.owner === "400" and poolDetails.isActive === false and isNil === false %}
-        {{ govukButton({
-          text: "Summon jurors",
-          href: url('summon-citizens.get', {
-            poolNumber: poolDetails.poolNumber
-          }),
-          isStartButton: false,
-          attributes: {
-            id: "summonCitizensButton"
-          }
-        }) }}
-      {% elif authentication.owner === "400" and poolDetails.isActive === true and isNil === false %}
-        {{ govukButton({
-          text: "Summon jurors",
-          href: url('pool.additional-summons.get', {
-            poolNumber: poolDetails.poolNumber
-          }),
-          isStartButton: false,
-          attributes: {
-            id: "summonCitizensButton"
-          }
-        }) }}
-      {% endif %}
-      {% if isNil === false and poolDetails.isActive %}
-        {{ govukButton({
-          text: "Edit pool",
-          href: url('pool-management.edit-pool.get', {
-            poolNumber: poolDetails.poolNumber
-          }),
-          classes: "govuk-button--secondary govuk-!-margin-bottom-0",
-          attributes: {
-            id: "editPoolButton"
-          }
-        }) }}
-      {% endif %}
-      {% if authentication.owner === "400" and isNil %}
-        {{ govukButton({
-          text: "Convert to an active pool",
-          href: url('nil-pool.convert.form.get', {
-            poolNumber: poolDetails.poolNumber
-          }),
-          classes: "govuk-button--secondary govuk-!-margin-bottom-0",
-          attributes: {
-            id: "convertToActivePoolButton"
-          }
-        }) }}
-      {% endif %}
-      {% if (authentication.owner === "400" and poolDetails.isActive) or poolDetails.isActive === false %}
-        {{ govukButton({
-          text: "Delete pool" if (poolDetails.isActive or bureauSummoning.required === 0) else "Delete pool request",
-          href: url('pool-management.delete-pool.get'),
-          classes: "govuk-button--secondary govuk-!-margin-bottom-0",
-          attributes: {
-            id: "deletePoolButton"
-          }
-        }) }}
+      {% if currentOwner === "400" %}
+        {% if authentication.owner === "400" and poolDetails.isActive === false and isNil === false %}
+          {{ govukButton({
+            text: "Summon jurors",
+            href: url('summon-citizens.get', {
+              poolNumber: poolDetails.poolNumber
+            }),
+            isStartButton: false,
+            attributes: {
+              id: "summonCitizensButton"
+            }
+          }) }}
+        {% elif authentication.owner === "400" and poolDetails.isActive === true and isNil === false %}
+          {{ govukButton({
+            text: "Summon jurors",
+            href: url('pool.additional-summons.get', {
+              poolNumber: poolDetails.poolNumber
+            }),
+            isStartButton: false,
+            attributes: {
+              id: "summonCitizensButton"
+            }
+          }) }}
+        {% endif %}
+        {% if isNil === false and poolDetails.isActive %}
+          {{ govukButton({
+            text: "Edit pool",
+            href: url('pool-management.edit-pool.get', {
+              poolNumber: poolDetails.poolNumber
+            }),
+            classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+            attributes: {
+              id: "editPoolButton"
+            }
+          }) }}
+        {% endif %}
+        {% if authentication.owner === "400" and isNil %}
+          {{ govukButton({
+            text: "Convert to an active pool",
+            href: url('nil-pool.convert.form.get', {
+              poolNumber: poolDetails.poolNumber
+            }),
+            classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+            attributes: {
+              id: "convertToActivePoolButton"
+            }
+          }) }}
+        {% endif %}
+        {% if (authentication.owner === "400" and poolDetails.isActive) or poolDetails.isActive === false %}
+          {{ govukButton({
+            text: "Delete pool" if (poolDetails.isActive or bureauSummoning.required === 0) else "Delete pool request",
+            href: url('pool-management.delete-pool.get'),
+            classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+            attributes: {
+              id: "deletePoolButton"
+            }
+          }) }}
+        {% endif %}
       {% endif %}
     </span>
   </div>
@@ -165,10 +167,19 @@
     </div>
   </div>
 
-  {% if isNil %}
-    {% include "./nil-pool-summary.njk" %}
+  {% if currentOwner === "400" %}
+    {% if isNil %}
+      {% include "./nil-pool-summary.njk" %}
+    {% else %}
+      {% include "./pool-summary.njk" %}
+    {% endif %}
   {% else %}
-    {% include "./pool-summary.njk" %}
+    <div class="govuk-grid-row govuk-!-margin-top-6">
+      <div class="govuk-grid-column-full">
+        <p class="govuk-body">This pool has been transferred to the court.</p>
+        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+      </div>
+    </div>
   {% endif %}
 
 {% endblock %}
