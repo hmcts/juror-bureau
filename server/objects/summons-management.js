@@ -14,10 +14,11 @@
       json: true,
       transform: utils.basicDataTransform,
     };
+  const rp = require('request-promise');
 
   module.exports.requestInfoObject = {
     resource: 'moj/letter/request-information',
-    post: function(rp, app, jwtToken, jurorNumber, data, replyMethod) {
+    post: function(__, app, jwtToken, jurorNumber, data, replyMethod) {
       var reqOptions = _.clone(options)
         , tmpBody = {
           informationRequired: data,
@@ -43,7 +44,7 @@
 
   module.exports.updateStatus = {
     resource: 'moj/juror-paper-response/update-status',
-    put: function(rp, app, jwtToken, jurorNumber, key) {
+    put: function(app, jwtToken, jurorNumber, key) {
       var reqOptions = _.clone(options);
 
       reqOptions.headers.Authorization = jwtToken;
@@ -70,7 +71,7 @@
       ADJUSTMENTS: 'special-needs',
       SIGNATURE: 'signature',
     },
-    patch: function(rp, app, jwtToken, id, part, payload) {
+    patch: function(__, app, jwtToken, id, part, payload) {
       const reqOptions = _.cloneDeep(options); // clone deep for the etag trickery
       const tmpBody = _.clone(payload);
 

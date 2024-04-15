@@ -551,7 +551,8 @@
         'pay_cash': body.paymentMethod === 'CASH',
         time: {
           'pay_attendance': body.payAttendance,
-          'travel_time': body['totalTravelTime-hour'] + ':' + body['totalTravelTime-minute'],
+          'travel_time': body['totalTravelTime-hour'].padStart(2, '0')
+            + ':' + body['totalTravelTime-minute'].padStart(2, '0'),
         },
         travel: {
           'traveled_by_car': false,

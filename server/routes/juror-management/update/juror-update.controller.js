@@ -91,6 +91,7 @@
           'undo-failed-to-attend': 'juror.update.failed-to-attend.undo.get',
           excusal: 'juror.excusal.get',
           disqualify: 'juror.update.disqualify.get',
+          responded: 'juror.update.responded.get',
         };
 
       validatorResult = validate(req.body, jurorUpdateValidator.updateOptions());
@@ -110,6 +111,12 @@
 
       if (req.body.jurorRecordUpdate === 'disqualify') {
         return res.redirect(app.namedRoutes.build('juror.update.disqualify.get', {
+          jurorNumber: req.params.jurorNumber,
+        }));
+      }
+
+      if (req.body.jurorRecordUpdate === 'responded') {
+        return res.redirect(app.namedRoutes.build('juror.update.responded.get', {
           jurorNumber: req.params.jurorNumber,
         }));
       }
