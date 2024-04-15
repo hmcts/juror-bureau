@@ -4,8 +4,8 @@ const _ = require('lodash');
 const validate = require('validate.js');
 const respondedValidator = require('../../../config/validation/responded');
 const { makeManualError } = require('../../../lib/mod-utils');
-const { updateStatusDAO } = require('../../../objects');
-const { updateStatus, markResponded } = require('../../../objects/summons-management');
+const { updateStatusDAO, markAsRespondedDAO } = require('../../../objects');
+const { updateStatus } = require('../../../objects/summons-management');
 const { Logger } = require('../../../components/logger');
 
 module.exports.getResponded = function(app) {
@@ -68,7 +68,7 @@ module.exports.postResponded = function(app) {
         await updateStatus.put(app, req.session.authToken, jurorNumber, 'CLOSED');
         break;
       default:
-        await markResponded.patch(app, req.session.authToken, jurorNumber);
+        await markAsRespondedDAO.patch(req, jurorNumber);
         break;
       };
 
@@ -92,6 +92,8 @@ module.exports.postResponded = function(app) {
 
       return res.redirect(backUrl);
     }
+
+    req.session.bannerMessage = 'Juror record has been updated';
 
     return res.redirect(app.namedRoutes.build('juror-record.summons.get', { jurorNumber }));
   };
