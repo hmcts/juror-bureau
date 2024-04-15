@@ -1,10 +1,9 @@
-/* eslint-disable strict */
-
 const controller = require('./juror-update.controller');
 const transferController = require('./juror-update.transfer.controller');
 const completeServiceController = require('./../../shared/complete-service/complete-service.controller');
 const failedToAttendController = require('./juror-update.failed-to-attend.controller');
 const auth = require('../../../components/auth/');
+const disqualifyController = require('./juror-update.disqualify.controller');
 const respondedController = require('./juror-update.responded.controller');
 
 module.exports = function(app) {
@@ -80,6 +79,15 @@ module.exports = function(app) {
     auth.verify,
     auth.isSJO,
     failedToAttendController.postUndoFailedToAttend(app));
+  
+  app.get('/juror-management/juror/:jurorNumber/update/disqualify',
+    'juror.update.disqualify.get',
+    auth.verify,
+    disqualifyController.getDisqualifyJurorRecord(app));
+  app.post('/juror-management/juror/:jurorNumber/update/disqualify',
+    'juror.update.disqualify.post',
+    auth.verify,
+    disqualifyController.postDisqualifyJurorRecord(app));
 
   app.get('/juror-management/juror/:jurorNumber/update/responded',
     'juror.update.responded.get',

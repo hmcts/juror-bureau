@@ -181,6 +181,7 @@
           case 'Undeliverable':
           case 'Responded':
           case 'Completed':
+          case 'Disqualified':
             canSummon = false;
             break;
           };
