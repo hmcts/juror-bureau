@@ -507,6 +507,7 @@ const filters = require('../../../components/filters');
           poolSummary: data.poolSummary,
           additionalStatistics: data.additionalStatistics,
           isNil: data.poolDetails.is_nil_pool,
+          currentOwner: data.poolDetails.current_owner,
           currentTab: 'history',
           navData: _.clone(req.session.poolManagementNav),
         });
@@ -688,6 +689,7 @@ const filters = require('../../../components/filters');
         poolDetails: pool.poolDetails,
         isNil: pool.poolDetails.is_nil_pool,
         isActive: pool.isActive,
+        currentOwner: pool.poolDetails.current_owner,
         currentTab: 'jurors',
         postUrls: { assignUrl, transferUrl, completeServiceUrl, changeServiceDateUrl, postponeUrl },
         navData: _.clone(req.session.poolManagementNav),
