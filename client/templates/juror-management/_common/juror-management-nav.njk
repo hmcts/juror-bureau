@@ -39,7 +39,8 @@
       attributes: {
         id: "unpaidAttencanceAnchor"
       }
-    },
+    }
+  ]).concat([
     {
       text: "Approve expenses",
       href: url("juror-management.approve-expenses.get"),
@@ -48,7 +49,7 @@
         id: "expensesAnchor"
       }
     }
-  ])
+  ] if isCourtManager else [])
 %}
 
 {{ mojPrimaryNavigation({
