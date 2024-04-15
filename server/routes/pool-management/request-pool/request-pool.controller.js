@@ -8,8 +8,8 @@
     , requestPoolObj = require('../../../objects/request-pool')
     , isCourtUser = require('../../../components/auth/user-type').isCourtUser
     , dateFilter = require('../../../components/filters').dateFilter
-    , checkDayType = require('../check-day-type')
-    , courtsList;
+    , checkDayType = require('../check-day-type');
+  const { fetchCourtsDAO } = require('../../../objects');
 
   // this middleware checks if the user has already started a pool request
   // caching the pool details on the session object helps with that
@@ -25,7 +25,7 @@
   }
 
   module.exports.getSelectCourt = function(app) {
-    return function(req, res) {
+    return async function(req, res) {
       var tmpErrors
         , transformedCourtNames
 
@@ -46,13 +46,18 @@
 
           res.redirect(app.namedRoutes.build('request-pool.pool-details.get'));
         }
-        , errorCB = function() {
+        , errorCB = function(err) {
           req.session.errors = {
             courtNameOrLocation: [{
               summary: 'Please check the court name or location',
               details: 'It was not possible to load your court automatically. Please manually select a court'
             }]
           };
+
+          app.logger.crit('Failed to select a court: ', {
+            auth: req.session.authentication,
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
 
           // because the court was invalid lets then set it as invalid but not remove
           // this will allow to bypass the current session values until the user relogs
@@ -63,23 +68,29 @@
           res.redirect(app.namedRoutes.build('request-pool.select-court.get'));
         };
 
-      // this check is simply to force people to use the correct journey (going through pool-management)
-      // if courts are needed somewhere else we can move this courtsList request to just after "login"
-      // to enable courts to be fetched from when the user logs in
-      if (typeof req.session.courtsList === 'undefined') {
-        return res.redirect(app.namedRoutes.build('pool-management.get'));
+      if (!req.session.courtsList) {
+        try {
+          req.session.courtsList = await fetchCourtsDAO.get(req);
+        } catch (err) {
+          app.logger.crit('Failed to fetch courts list: ', {
+            auth: req.session.authentication,
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
+
+          req.session.errors = modUtils.makeManualError('Courts list', 'Failed to fetch courts list');
+
+          return res.redirect(app.namedRoutes.build('request-pool.select-court.get'));
+        }
       }
 
-      courtsList = _.clone(req.session.courtsList);
-
-      transformedCourtNames = modUtils.transformCourtNames(courtsList);
+      transformedCourtNames = modUtils.transformCourtNames(req.session.courtsList);
 
       // redirect the user straight to pool-details form when they are a court user
       // a court user is defined with a court number different than 400 (400 being bureau user)
       if (isCourtUser(req, res) && typeof req.session.poolDetails === 'undefined') {
         req.body.courtNameOrLocation = req.session.authentication.staff.courts[0];
 
-        return modUtils.matchUserCourt(courtsList, req.body)
+        return modUtils.matchUserCourt(req.session.courtsList, req.body)
           .then(successCB)
           .catch(errorCB);
       }
@@ -147,7 +158,7 @@
       delete req.session.errors;
       delete req.session.formFields;
 
-      return modUtils.matchUserCourt(courtsList, req.body)
+      return modUtils.matchUserCourt(req.session.courtsList, req.body)
         .then(successCB)
         .catch(errorCB);
     }
@@ -441,8 +452,17 @@
             data: req.session.poolDetails.poolNumber,
           });
 
+          const poolDetails = req.session.poolDetails;
+
+          if (poolDetails.numberOfJurorsRequired >= poolDetails.numberOfCourtDeferrals) {
+            poolDetails.actualRequired = poolDetails.numberOfJurorsRequired - poolDetails.numberOfCourtDeferrals;
+          } else {
+            poolDetails.actualRequired = 0;
+            poolDetails.numberOfCourtDeferrals = poolDetails.numberOfJurorsRequired;
+          }
+
           return res.render('pool-management/_common/check-request-details', {
-            poolDetails: req.session.poolDetails,
+            poolDetails: poolDetails,
             submitUrl: app.namedRoutes.build('request-pool.check-details.post'),
             cancelUrl: app.namedRoutes.build('pool-management.get'),
             changeUrl: app.namedRoutes.build('request-pool.pool-details.get'),

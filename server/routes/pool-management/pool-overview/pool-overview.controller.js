@@ -453,6 +453,7 @@ const filters = require('../../../components/filters');
       additionalStatistics: pool.additionalStatistics,
       isNil: pool.poolDetails.is_nil_pool,
       isActive: pool.isActive,
+      currentOwner: pool.poolDetails.current_owner,
       currentTab: 'jurors',
       postUrls: { assignUrl, transferUrl, completeServiceUrl, postponeUrl },
       navData: _.clone(req.session.poolManagementNav),

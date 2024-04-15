@@ -45,6 +45,9 @@
         }
       });
       if (!match) {
+
+        console.log('Did not match court code:', courtCode);
+
         reject(false);
       }
     });
@@ -150,7 +153,7 @@
           if (tab === 'court') {
             return pool.poolCapacity;
           }
-          return (pool.numberRequested) ? pool.numberRequested : pool.jurorsRequested;
+          return (pool.numberRequested !== undefined) ? pool.numberRequested : pool.jurorsRequested;
         }
         , getNumberConfirmed = function() {
           return (tab === 'bureau') ? pool.confirmedJurors : pool.jurorsInPool;
