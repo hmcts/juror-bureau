@@ -80,8 +80,8 @@
   }
 
   function attendance(data) {
-    var totalTravelTimeHour = $('#totalTravelTime-hour').val();
-    var totalTravelTimeMinute = $('#totalTravelTime-minute').val();
+    var totalTravelTimeHour = $('#totalTravelTime-hour').val().padStart(2, '0');
+    var totalTravelTimeMinute = $('#totalTravelTime-minute').val().padStart(2, '0');
     var attendanceType = $('input[name="payAttendance"]:checked').val();
 
     data.time = {
