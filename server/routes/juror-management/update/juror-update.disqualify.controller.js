@@ -7,9 +7,9 @@ const { getDisqualificationReasons, disqualifyJuror } = require('../../../object
 
 module.exports.getDisqualifyJurorRecord = function(app) {
   return async function(req, res) {
-    const { jurorNumber, type } = req.params;
+    const { jurorNumber } = req.params;
 
-    const postUrl = app.namedRoutes.build('juror.update.disqualify.post', { jurorNumber, type });
+    const postUrl = app.namedRoutes.build('juror.update.disqualify.post', { jurorNumber });
     const cancelUrl = app.namedRoutes.build('juror.update.get', { jurorNumber });
 
     let disqualifyReasons;
@@ -42,15 +42,17 @@ module.exports.getDisqualifyJurorRecord = function(app) {
 
 module.exports.postDisqualifyJurorRecord = function(app) {
   return async function(req, res) {
-    const { jurorNumber, type } = req.params;
+    const { jurorNumber } = req.params;
 
     const validationResult = validate(req.body, disqualifyValidator());
 
     if (validationResult) {
       req.session.errors = validationResult;
 
-      return res.redirect(app.namedRoutes.build('juror.update.disqualify.get', { jurorNumber, type }));
+      return res.redirect(app.namedRoutes.build('juror.update.disqualify.get', { jurorNumber }));
     }
+
+    const type = req.session.replyMethod || 'NONE';
 
     try {
       await disqualifyJuror.patch(

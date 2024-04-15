@@ -11,7 +11,7 @@
       uri: config.apiEndpoint,
       headers: {
         'User-Agent': 'Request-Promise',
-        'Content-Type': 'application/vnd.api+json'
+        'Content-Type': 'application/vnd.api+json',
       },
       json: true,
       transform: utils.basicDataTransform,
@@ -39,7 +39,7 @@
         });
 
         return rp(reqOptions);
-      }
+      },
     },
 
     /**
@@ -75,8 +75,8 @@
         });
 
         return rp(reqOptions);
-      }
-    }
+      },
+    };
 
   module.exports.getDisqualificationReasons = getDisqualificationReasons;
   module.exports.disqualifyJuror = disqualifyJuror;

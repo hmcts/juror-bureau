@@ -111,7 +111,6 @@
       if (req.body.jurorRecordUpdate === 'disqualify') {
         return res.redirect(app.namedRoutes.build('juror.update.disqualify.get', {
           jurorNumber: req.params.jurorNumber,
-          type: req.session.replyMethod,
         }));
       }
 

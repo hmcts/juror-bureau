@@ -80,11 +80,11 @@ module.exports = function(app) {
     auth.isSJO,
     failedToAttendController.postUndoFailedToAttend(app));
 
-  app.get('/juror-management/juror/:jurorNumber/update/disqualify/:type(paper|digital)',
+  app.get('/juror-management/juror/:jurorNumber/update/disqualify',
     'juror.update.disqualify.get',
     auth.verify,
     disqualifyController.getDisqualifyJurorRecord(app));
-  app.post('/juror-management/juror/:jurorNumber/update/disqualify/:type(paper|digital)',
+  app.post('/juror-management/juror/:jurorNumber/update/disqualify',
     'juror.update.disqualify.post',
     auth.verify,
     disqualifyController.postDisqualifyJurorRecord(app));
