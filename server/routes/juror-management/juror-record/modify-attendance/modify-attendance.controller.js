@@ -36,7 +36,7 @@
         return res.render('_errors/generic');
       }
 
-      return res.render('juror-management/juror-record/change-attendance', {
+      return res.render('juror-management/juror-record/modify-attendance', {
         jurorName,
         attendanceDate,
         deleteUrl: app.namedRoutes.build('juror-record.attendance.delete-juror-attendance.get', {
