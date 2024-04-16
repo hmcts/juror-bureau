@@ -379,6 +379,7 @@
 
                 opticReference,
                 processedBannerMessage: data.processedBannerMessage ? data.processedBannerMessage : null,
+                method: 'paper',
               });
             });
         }

@@ -410,12 +410,15 @@
           delete req.session.formFields;
           delete req.session.errors;
 
+          const replyMethod = req.query.reply_method || 'digital';
+
           //return res.render('includes/send-to', {
           return res.render('response/process/send-to.njk', {
             staffMembers: response[0],
             responses: [response[1]],
             responseNames: [utils.getResponseNameDetails(response[1])],
             source: 'response',
+            replyMethod,
             errors: {
               message: '',
               count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
