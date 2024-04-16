@@ -240,10 +240,8 @@
 
       const promiseArr = [];
 
-      let locationCode = req.session.locCode;
-
       if (req.query.loc_code) {
-        locationCode = req.query.loc_code;
+        req.session.locCode = req.query.loc_code;
       }
 
       promiseArr.push(jurorRecordObject.record.get(
@@ -252,7 +250,7 @@
         req.session.authToken,
         'overview',
         req.params['jurorNumber'],
-        locationCode,
+        req.session.locCode,
       ));
 
       promiseArr.push(jurorRecordObject.record.get(
@@ -261,7 +259,7 @@
         req.session.authToken,
         'detail',
         req.params['jurorNumber'],
-        locationCode,
+        req.session.locCode,
       ));
 
       Promise.all(promiseArr)
