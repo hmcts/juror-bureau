@@ -65,7 +65,8 @@
     return async function(req, res) {
 
       const { document } = req.params;
-      const formValidator = document === 'show-cause' ? showCauseValidator.showCaseForm() : validator.documentForm();
+      const formValidator = document === 'show-cause'
+        ? showCauseValidator.showCaseForm() : validator.documentForm(req.body);
       const validatorResult = validate(req.body, formValidator);
 
       delete req.session.errors;
@@ -145,8 +146,16 @@
       parameters.push('documentSearchBy=' + params.documentSearchBy);
     }
 
-    if (params.jurorDetails) {
-      parameters.push('jurorDetails=' + params.jurorDetails);
+    if (params.jurorNumber) {
+      parameters.push('jurorNumber=' + params.jurorNumber);
+    }
+
+    if (params.jurorName) {
+      parameters.push('jurorName=' + params.jurorName);
+    }
+
+    if (params.postcode) {
+      parameters.push('postcode=' + params.postcode);
     }
 
     if (params.poolDetails) {
@@ -159,10 +168,6 @@
 
     if (params.hearingDate) {
       parameters.push('hearingDate=' + params.hearingDate);
-    }
-
-    if (params.jurorNumber) {
-      parameters.push('jurorNumber=' + params.jurorNumber);
     }
 
     if (params.hearingTimeHour && params.hearingTimeMinute && params.hearingTimePeriod) {
@@ -180,8 +185,14 @@
     if (req.body.documentSearchBy === 'pool') {
       payload['pool_number'] = req.body.poolDetails;
     }
-    if (req.body.documentSearchBy === 'juror') {
-      payload['juror_number'] = req.body.jurorDetails;
+    if (req.body.documentSearchBy === 'juror_number') {
+      payload['juror_number'] = req.body.jurorNumber;
+    }
+    if (req.body.documentSearchBy === 'juror_name') {
+      payload['juror_name'] = req.body.jurorName;
+    }
+    if (req.body.documentSearchBy === 'postcode') {
+      payload['juror_postcode'] = req.body.postcode;
     }
     if (req.body.documentSearchBy === 'allLetters') {
       payload['show_all_queued'] = true;

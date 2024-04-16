@@ -3,7 +3,7 @@
 
   const validate = require('validate.js');
 
-  module.exports.documentForm = function() {
+  module.exports.documentForm = function(body) {
     return {
       documentSearchBy: {
         presence: {
@@ -14,17 +14,71 @@
           },
         },
       },
-      jurorDetails:{
-        jurorDetails: {},
+
+      jurorNumber: () => {
+        if (!body.documentSearchBy || body.documentSearchBy !== 'juror_number') return null;
+
+        return {
+          presence: {
+            allowEmpty: false,
+            message: {
+              details: 'Enter juror number',
+              summary: 'Enter juror number',
+            },
+          },
+          length: {
+            is: 9,
+            message: {
+              details: 'Juror number must be 9 characters long',
+              summary: 'Juror number must be 9 characters long',
+            },
+          },
+          format: {
+            pattern: /^[0-9]{9}$/,
+            message: {
+              details: 'Enter a valid juror number',
+              summary: 'Enter a valid juror number',
+            },
+          },
+        };
       },
-      poolDetails:{
+
+      jurorName: () => {
+        if (!body.documentSearchBy || body.documentSearchBy !== 'juror_name') return null;
+
+        return {
+          presence: {
+            allowEmpty: false,
+            message: {
+              details: 'Enter juror name',
+              summary: 'Enter juror name',
+            },
+          },
+        };
+      },
+
+      postcode: () => {
+        if (!body.documentSearchBy || body.documentSearchBy !== 'postcode') return null;
+
+        return {
+          presence: {
+            allowEmpty: false,
+            message: {
+              details: 'Enter juror postcode',
+              summary: 'Enter juror postcode',
+            },
+          },
+        };
+      },
+
+      poolDetails: {
         poolDetails: {},
       },
     };
   };
 
   validate.validators.jurorDetails = function(value, options, key, attributes) {
-    if ((typeof attributes.jurorDetails === 'undefined' || attributes.jurorDetails.length === 0) 
+    if ((typeof attributes.jurorDetails === 'undefined' || attributes.jurorDetails.length === 0)
         && (typeof attributes.documentSearchBy !== 'undefined' && attributes.documentSearchBy === 'juror')){
       return [{
         summary: 'Enter juror name, number or postcode',

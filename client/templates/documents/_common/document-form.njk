@@ -31,9 +31,19 @@
       {% set documentSearchBy = { text: errors.items['documentSearchBy'][0].details} %}
     {% endif %}
 
-    {% set jurorDetailsError = undefined %}
-    {% if errors.items["jurorDetails"] %}
-      {% set jurorDetailsError = { text: errors.items['jurorDetails'][0].details} %}
+    {% set jurorNumberError = undefined %}
+    {% if errors.items["jurorNumber"] %}
+      {% set jurorNumberError = { text: errors.items['jurorNumber'][0].details} %}
+    {% endif %}
+
+    {% set jurorNameError = undefined %}
+    {% if errors.items["jurorName"] %}
+      {% set jurorNameError = { text: errors.items['jurorName'][0].details} %}
+    {% endif %}
+
+    {% set jurorPostcodeError = undefined %}
+    {% if errors.items["postcode"] %}
+      {% set jurorPostcodeError = { text: errors.items['postcode'][0].details} %}
     {% endif %}
 
     {% set poolDetailsError = undefined %}
@@ -41,20 +51,50 @@
       {% set poolDetailsError = { text: errors.items['poolDetails'][0].details} %}
     {% endif %}
 
-    {% set jurorHtml %}
+    {% set jurorNumberHtml %}
       {{ govukInput({
         label: {
-          text: "Enter juror name, number or postcode",
+          text: "Enter juror number",
           classes: "govuk-label"
         },
         classes: "govuk-!-width-one-third",
-        id: "jurorDetails",
-        name: "jurorDetails",
+        id: "jurorNumber",
+        name: "jurorNumber",
         type: "text",
         value: "",
-        errorMessage: jurorDetailsError
+        errorMessage: jurorNumberError
       }) }}
-    {% endset %} 
+    {% endset %}
+
+    {% set jurorNameHtml %}
+      {{ govukInput({
+        label: {
+          text: "Enter juror name",
+          classes: "govuk-label"
+        },
+        classes: "govuk-!-width-one-third",
+        id: "jurorName",
+        name: "jurorName",
+        type: "text",
+        value: "",
+        errorMessage: jurorNameError
+      }) }}
+    {% endset %}
+
+    {% set jurorPostcodeHtml %}
+      {{ govukInput({
+        label: {
+          text: "Enter juror postcode",
+          classes: "govuk-label"
+        },
+        classes: "govuk-!-width-one-third",
+        id: "postcode",
+        name: "postcode",
+        type: "text",
+        value: "",
+        errorMessage: jurorPostcodeError
+      }) }}
+    {% endset %}
 
     {% set poolHtml %}
       {{ govukInput({
@@ -86,11 +126,27 @@
           },
           items: [
             {
-              value: "juror",
-              text: "Juror",
-              checked: formFields.documentSearchBy  === "juror",
+              value: "juror_number",
+              text: "Juror number",
+              checked: formFields.documentSearchBy  === "juror_number",
               conditional: {
-                html: jurorHtml
+                html: jurorNumberHtml
+              }
+            },
+            {
+              value: "juror_name",
+              text: "Juror name",
+              checked: formFields.documentSearchBy  === "juror_name",
+              conditional: {
+                html: jurorNameHtml
+              }
+            },
+            {
+              value: "postcode",
+              text: "Juror postcode",
+              checked: formFields.documentSearchBy  === "postcode",
+              conditional: {
+                html: jurorPostcodeHtml
               }
             },
             {
@@ -129,11 +185,27 @@
           },
           items: [
             {
-              value: "juror",
-              text: "Juror",
-              checked: formFields.documentSearchBy  === "juror",
+              value: "juror_number",
+              text: "Juror number",
+              checked: formFields.documentSearchBy  === "juror_number",
               conditional: {
-                html: jurorHtml
+                html: jurorNumberHtml
+              }
+            },
+            {
+              value: "juror_name",
+              text: "Juror name",
+              checked: formFields.documentSearchBy  === "juror_name",
+              conditional: {
+                html: jurorNameHtml
+              }
+            },
+            {
+              value: "postcode",
+              text: "Juror postcode",
+              checked: formFields.documentSearchBy  === "postcode",
+              conditional: {
+                html: jurorPostcodeHtml
               }
             },
             {
