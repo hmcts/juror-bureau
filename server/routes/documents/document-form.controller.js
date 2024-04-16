@@ -10,7 +10,6 @@
   const { reissueLetterDAO } = require('../../objects/documents');
   const { dateFilter } = require('../../components/filters');
   const { isCourtUser } = require('../../components/auth/user-type');
-  const { splitPostCode } = require('../../lib/mod-utils');
 
   module.exports.getDocumentForm = function(app) {
     return function(req, res) {
