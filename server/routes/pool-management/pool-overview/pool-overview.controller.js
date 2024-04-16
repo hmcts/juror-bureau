@@ -453,6 +453,7 @@ const filters = require('../../../components/filters');
       additionalStatistics: pool.additionalStatistics,
       isNil: pool.poolDetails.is_nil_pool,
       isActive: pool.isActive,
+      currentOwner: pool.poolDetails.current_owner,
       currentTab: 'jurors',
       postUrls: { assignUrl, transferUrl, completeServiceUrl, postponeUrl },
       navData: _.clone(req.session.poolManagementNav),
@@ -490,14 +491,12 @@ const filters = require('../../../components/filters');
       data.poolDetails.poolNumber,
     )
       .then(function(poolHistoryList) {
-
         app.logger.info('Fetched Pool Request history: ', {
           auth: req.session.authentication,
           jwt: req.session.authToken,
           data: poolHistoryList,
         });
-
-        res.render('pool-management/pool-overview/bureau-pool-overview', {
+        res.render(`pool-management/pool-overview/${isCourtUser(req, res) ? 'court' : 'bureau'}-pool-overview`, {
           backLinkUrl: {
             built: true,
             url: app.namedRoutes.build('pool-management.get') + (data.poolDetails.isActive ? '?status=created' : ''),
@@ -508,10 +507,10 @@ const filters = require('../../../components/filters');
           poolSummary: data.poolSummary,
           additionalStatistics: data.additionalStatistics,
           isNil: data.poolDetails.is_nil_pool,
+          currentOwner: data.poolDetails.current_owner,
           currentTab: 'history',
           navData: _.clone(req.session.poolManagementNav),
         });
-
       })
       .catch(errorCB(app, req, res, data.poolDetails.poolNumber, 'Failed to fetch pool history:'));
   }
@@ -690,6 +689,7 @@ const filters = require('../../../components/filters');
         poolDetails: pool.poolDetails,
         isNil: pool.poolDetails.is_nil_pool,
         isActive: pool.isActive,
+        currentOwner: pool.poolDetails.current_owner,
         currentTab: 'jurors',
         postUrls: { assignUrl, transferUrl, completeServiceUrl, changeServiceDateUrl, postponeUrl },
         navData: _.clone(req.session.poolManagementNav),

@@ -8,7 +8,7 @@
   const validate = require('validate.js');
   const modUtils = require('../../../lib/mod-utils');
   const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/expenses');
-  const { systemCodesDAO } = require('../../../objects');
+  const { systemCodesDAO, expensesSummaryDAO } = require('../../../objects');
 
   // TODO: this will probably be removed when we move to a single juror / summons record
   module.exports.checkResponse = function(app) {
@@ -181,6 +181,7 @@
           case 'Undeliverable':
           case 'Responded':
           case 'Completed':
+          case 'Disqualified':
             canSummon = false;
             break;
           };
@@ -343,9 +344,11 @@
           req.session.authentication.locCode,
         );
 
-        const defaultExpenses = await defaultExpensesDAO.get(app, req, jurorNumber);
+        const poolNumber = jurorOverview.data.commonDetails.poolNumber;
 
+        const defaultExpenses = await defaultExpensesDAO.get(app, req, jurorNumber);
         const { response: bankDetails } = await jurorBankDetailsDAO.get(app, req, jurorNumber);
+        const expensesSummary = await expensesSummaryDAO.get(req, jurorNumber, poolNumber);
 
         cacheJurorCommonDetails(req, jurorOverview.data.commonDetails);
 
@@ -354,11 +357,10 @@
           jwt: req.session.authToken,
         });
 
-        // TODO - replace with data from API call
         const dailyExpenses = {
-          totalDraft: 110,
-          totalForApproval: 0,
-          totalApproved: 0,
+          totalDraft: expensesSummary.total_draft,
+          totalForApproval: expensesSummary.total_for_approval,
+          totalApproved: expensesSummary.total_approved,
         };
 
         return res.render('juror-management/juror-record/expenses', {
@@ -372,23 +374,24 @@
           bankDetails,
           viewAllExpensesLink: app.namedRoutes.build('juror-management.unpaid-attendance.get'),
           viewDraftExpensesLink: app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
-            jurorNumber: jurorNumber, poolNumber: jurorOverview.data.commonDetails.poolNumber, status: 'draft',
+            jurorNumber, poolNumber, status: 'draft',
           }),
           viewForApprovalExpensesLink: app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
-            jurorNumber: jurorNumber, poolNumber: jurorOverview.data.commonDetails.poolNumber, status: 'for-approval',
+            jurorNumber, poolNumber, status: 'for-approval',
           }),
           viewApprovedExpensesLink: app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
-            jurorNumber: jurorNumber, poolNumber: jurorOverview.data.commonDetails.poolNumber, status: 'approved',
+            jurorNumber, poolNumber, status: 'approved',
           }),
-          editSubmittedExpensesLink: '#',
           editDefaultExpensesLink: app.namedRoutes.build('juror-record.default-expenses.get', {
-            jurorNumber: jurorNumber, poolNumber: jurorOverview.data.commonDetails.poolNumber,
+            jurorNumber, poolNumber,
           }),
           editBankDetailsLink: app.namedRoutes.build('juror-record.bank-details.get', {
-            jurorNumber: jurorNumber, poolNumber: jurorOverview.data.commonDetails.poolNumber,
+            jurorNumber, poolNumber,
           }),
         });
       } catch (err) {
+        console.log(err);
+
         if (err.statusCode === 404) {
           return res.render('juror-management/_errors/not-found');
         }
@@ -443,6 +446,18 @@
           jurorOverview.data.commonDetails.poolNumber,
         );
 
+
+        const dates = attendance.juror_attendance_response_data.map(attendances => {
+          const [year, month, day] = attendances.attendance_date;
+
+          return new Date(year, month - 1, day);
+        });
+
+        const latestDate = new Date(Math.max(...dates));
+
+        const formattedDate = ('0' + latestDate.getDate()).slice(-2) +
+        '/' + ('0' + (latestDate.getMonth() + 1)).slice(-2) + '/' + latestDate.getFullYear();
+
         jurorOverview.data.commonDetails.onCall = attendance['on_call'];
         cacheJurorCommonDetails(req, jurorOverview.data.commonDetails);
         req.session.jurorAttendanceName = jurorOverview.data.commonDetails.firstName + ' '
@@ -457,6 +472,7 @@
             jurorOverview.data.commonDetails.excusalRejected, jurorOverview.data.commonDetails.excusalDescription),
           hasSummons: req.session.hasSummonsResponse,
           attendance,
+          formattedDate,
           failedToAttend,
         });
       } catch (err) {

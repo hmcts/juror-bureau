@@ -10,6 +10,7 @@
   const administration = require('./administration');
   const confirmIdentity = require('./confirm-identity');
   const status = require('./status');
+  const jurorRecord = require('./juror-record');
 
   module.exports = {
     ...requestPool,
@@ -18,6 +19,7 @@
     ...administration,
     ...confirmIdentity,
     ...status,
+    ...jurorRecord,
   };
 
 })();

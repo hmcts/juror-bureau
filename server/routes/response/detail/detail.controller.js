@@ -1709,7 +1709,6 @@
 
       if (req.params['type'] === 'paper') {
         return paperUpdateStatus.put(
-          require('request-promise'),
           app,
           req.session.authToken,
           req.params.id,
@@ -1836,7 +1835,6 @@
       // if a response is paper we process is through the paper response endpoint
       if (req.session.hasModAccess && req.params['type'] === 'paper') {
         return paperUpdateStatus.put(
-          require('request-promise'),
           app,
           req.session.authToken,
           req.params.id,

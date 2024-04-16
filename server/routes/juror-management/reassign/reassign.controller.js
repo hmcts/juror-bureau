@@ -276,12 +276,17 @@
         sourcePoolNumber: req.session.poolJurorsReassign ?
           req.session.poolJurorsReassign.poolNumber : req.session.jurorCommonDetails.poolNumber
         , sendingCourtLocCode: req.session.locCode
-        , receivingPoolNumber: req.body.poolNumber
-        , receivingCourtLocCode: req.body.poolNumber.substring(0, 3)
-        , targetServiceStartDate: dateFilter(req.body.startDate, 'ddd DD MMM YYYY', 'YYYY-MM-DD')
+        , receivingCourtLocCode: req.session.authentication.locCode
+        , targetServiceStartDate: dateFilter(new Date(), null, 'YYYY-MM-DD')
         , jurorNumbers: req.session.poolJurorsReassign ?
           req.session.poolJurorsReassign.selectedJurors : [req.params['jurorNumber']],
       };
+
+      if (req.body.poolNumber !== 'new-pool'){
+        validationPayload.receivingPoolNumber = req.body.poolNumber;
+        validationPayload.targetServiceStartDate = dateFilter(req.body.startDate, 'ddd DD MMM YYYY', 'YYYY-MM-DD');
+        validationPayload.receivingCourtLocCode = req.body.poolNumber.substring(0, 3);
+      }
 
       let cancelUrl = req.session.poolJurorsReassign
         ? app.namedRoutes.build('pool-overview.get', {poolNumber: req.params['poolNumber']})
@@ -315,10 +320,16 @@
           const reassignPayload = {
             jurorNumbers: validationPayload.jurorNumbers,
             receivingCourtLocCode: validationPayload.receivingCourtLocCode,
-            receivingPoolNumber: validationPayload.receivingPoolNumber,
             sourceCourtLocCode: validationPayload.sendingCourtLocCode,
             sourcePoolNumber: validationPayload.sourcePoolNumber,
           };
+
+          if (req.body.poolNumber !== 'new-pool'){
+            reassignPayload.receivingPoolNumber = validationPayload.receivingPoolNumber;
+          } else {
+            reassignPayload.targetServiceStartDate = dateFilter(new Date(), null, 'YYYY-MM-DD');
+            reassignPayload.sendingCourtLocationCode = validationPayload.sendingCourtLocCode;
+          }
 
           sendReassignRequest(app, req, res, reassignPayload);
         })
@@ -348,12 +359,18 @@
       delete req.session.availableForMove;
 
       const reassignPayload = {
-        jurorNumbers: jurorNumbers,
+        jurorNumbers: validationPayload.jurorNumbers,
         receivingCourtLocCode: validationPayload.receivingCourtLocCode,
-        receivingPoolNumber: validationPayload.receivingPoolNumber,
         sourceCourtLocCode: validationPayload.sendingCourtLocCode,
         sourcePoolNumber: validationPayload.sourcePoolNumber,
       };
+
+      if (req.body.poolNumber !== 'new-pool'){
+        reassignPayload.receivingPoolNumber = validationPayload.receivingPoolNumber;
+      } else {
+        reassignPayload.targetServiceStartDate = dateFilter(new Date(), null, 'YYYY-MM-DD');
+        reassignPayload.sendingCourtLocationCode = validationPayload.sendingCourtLocCode;
+      }
 
       // TODO: handle better
       // if continuing after validation would leave with no jurors to reassign, redirect without reassigning
@@ -372,19 +389,21 @@
   function sendReassignRequest(app, req, res, payload) {
     requestObj.reassignJuror
       .put(require('request-promise'), app, req.session.authToken, payload)
-      .then(() => {
+      .then((data) => {
+        modUtils.replaceAllObjKeys(data, _.camelCase);
+
         req.session.locCode = req.session.receivingCourtLocCode;
         delete req.session.receivingCourtLocCode;
         delete req.session.processLateSummons;
 
         let poolUrl = app.namedRoutes.build('pool-overview.get', {
-          poolNumber: payload.receivingPoolNumber,
+          poolNumber: data.newPoolNumber,
         });
 
         req.session.bannerMessage = req.session.poolJurorsReassign ?
         // eslint-disable-next-line
-          `${payload.jurorNumbers.length} jurors reassigned to pool <a class="govuk-link" href="${poolUrl}">${payload.receivingPoolNumber}</a>` :
-          `Reassigned to pool <a class="govuk-link" href="${poolUrl}">${payload.receivingPoolNumber}</a>`;
+          `${data.numberReassigned} jurors reassigned to pool <a class="govuk-link" href="${poolUrl}">${data.newPoolNumber}</a>` :
+          `Reassigned to pool <a class="govuk-link" href="${poolUrl}">${data.newPoolNumber}</a>`;
 
         if (req.session.poolJurorsReassign) {
           delete req.session.poolJurorsReassign;

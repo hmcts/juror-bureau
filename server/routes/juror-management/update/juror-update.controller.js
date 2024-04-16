@@ -90,6 +90,8 @@
           'failed-to-attend': 'juror.update.failed-to-attend.get',
           'undo-failed-to-attend': 'juror.update.failed-to-attend.undo.get',
           excusal: 'juror.excusal.get',
+          disqualify: 'juror.update.disqualify.get',
+          responded: 'juror.update.responded.get',
         };
 
       validatorResult = validate(req.body, jurorUpdateValidator.updateOptions());
@@ -105,6 +107,18 @@
         return postDeceased(req, res, app);
       } else if (req.body.jurorRecordUpdate === 'undeliverable') {
         return postUndeliverable(req, res, app);
+      }
+
+      if (req.body.jurorRecordUpdate === 'disqualify') {
+        return res.redirect(app.namedRoutes.build('juror.update.disqualify.get', {
+          jurorNumber: req.params.jurorNumber,
+        }));
+      }
+
+      if (req.body.jurorRecordUpdate === 'responded') {
+        return res.redirect(app.namedRoutes.build('juror.update.responded.get', {
+          jurorNumber: req.params.jurorNumber,
+        }));
       }
 
       // Just a small fallback error message to avoid displaying stack traces when the option is not available yet

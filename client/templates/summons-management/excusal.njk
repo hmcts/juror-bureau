@@ -41,7 +41,6 @@
   {% endif %}
 
   {# Setup reason dropdown values / selected item #}
-  {% if not sortedReasons%}
     {% set reasonList = [{value: "", text: "Select a reason...", selected: true}] %}
     {% for reason in excusalReasons %}
 
@@ -53,7 +52,6 @@
       
       {% set reasonList = (reasonList.push({value: reason.code, text: reason.code + " - " + reason.description, selected: codeSelected }), reasonList) %}
     {% endfor %}
-  {% endif %}
 
   <h1 class="govuk-heading-l">Grant or refuse an excusal</h1>
   
@@ -66,7 +64,7 @@
         text: "Reason for excusal request",
         classes: "govuk-label--s govuk-!-margin-bottom-3"
       },
-      items: sortedReasons or reasonList,
+      items: reasonList,
       errorMessage: excusalCodeError
     }) }}
 

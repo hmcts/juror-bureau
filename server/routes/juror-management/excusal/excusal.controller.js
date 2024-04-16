@@ -3,6 +3,7 @@
 
   const _ = require('lodash')
     , excusalObj = require('../../../objects/excusal-mod').excusalObject
+    , systemCodesDAO = require('../../../objects/administration.js').systemCodesDAO
     , validate = require('validate.js');
   const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
 
@@ -22,10 +23,8 @@
         });
 
       try {
-        const excusalCodesObj = require('../../../objects/excusal.js').object;
+        req.session.excusalReasons = await systemCodesDAO.get(app, req, 'EXCUSAL_AND_DEFERRAL');
 
-        req.session.excusalReasons = await excusalCodesObj
-          .getNew(require('request-promise'), app, req.session.authToken);
       } catch (err) {
         app.logger.crit('Failed to fetch excusal codes: ', {
           auth: req.session.authentication,
@@ -42,7 +41,7 @@
         backLinkUrl,
         processUrl,
         cancelUrl,
-        sortedReasons: req.session.excusalReasons.formatted,
+        excusalReasons: req.session.excusalReasons,
         errors: {
           message: '',
           count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -55,11 +54,13 @@
   module.exports.post = function(app) {
     return function(req, res) {
       const successCB = function() {
-          const codeMessage = c => req.session.excusalReasons.original.filter(r => r.excusalCode === c)[0].description
-            , reason = {
-              REFUSE: 'Excusal refused (' + codeMessage(req.body.excusalCode).toLowerCase() + ')',
-              GRANT: 'Excusal granted (' + codeMessage(req.body.excusalCode).toLowerCase() + ')',
-            };
+
+          const codeMessage = req.session.excusalReasons.filter(r => r.code === req.body.excusalCode)[0].description;
+
+          const reason = {
+            REFUSE: 'Excusal refused (' + codeMessage.toLowerCase() + ')',
+            GRANT: 'Excusal granted (' + codeMessage.toLowerCase() + ')',
+          };
 
           req.session.bannerMessage = reason[req.body.excusalDecision];
 
