@@ -142,8 +142,6 @@
       return certificateOfAttendance(data);
     case 'failed-to-attend':
       return failedToAttend(data);
-    case 'certificate-attendance':
-      return certificateOfAttendance(data);
     }
   }
 
@@ -303,10 +301,10 @@
       });
 
       juror.title = isWelsh ? 'PRAWF O WASANAETHU AR REITHGOR': 'CERTIFICATE OF ATTENDANCE AS A JUROR';
-      
+
       return juror;
     });
-    
+
     return documents;
   }
 
@@ -348,26 +346,6 @@
     });
 
     return letterPayload;
-  }
-
-
-  function certificateOfAttendance(data) {
-    const documents = data.map((juror) => {
-      const isWelsh = juror.welsh;
-
-      juror.content = letterTemplates('certificate-attendance', {
-        welsh: isWelsh,
-        firstName: juror.juror_first_name,
-        lastName: juror.juror_last_name,
-        signature: juror.signature,
-      });
-
-      juror.title = isWelsh ? 'PRAWF O WASANAETHU AR REITHGOR': 'CERTIFICATE OF ATTENDANCE AS A JUROR';
-
-      return juror;
-    });
-
-    return documents;
   }
 
 })();

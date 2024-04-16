@@ -304,8 +304,6 @@
       return 'Print certificate of attendance';
     case 'failed-to-attend':
       return 'Print failed to attend letter';
-    case 'certificate-attendance':
-      return 'Print certificate of attendance';
     }
   };
 
