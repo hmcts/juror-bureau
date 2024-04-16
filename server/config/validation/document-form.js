@@ -2,6 +2,7 @@
   'use strict';
 
   const validate = require('validate.js');
+  const { constants } = require('../../lib/mod-utils');
 
   module.exports.documentForm = function(body) {
     return {
@@ -66,6 +67,13 @@
             message: {
               details: 'Enter juror postcode',
               summary: 'Enter juror postcode',
+            },
+          },
+          format: {
+            pattern: constants.POSTCODE_REGEX,
+            message: {
+              details: 'Enter a valid postcode',
+              summary: 'Enter a valid postcode',
             },
           },
         };

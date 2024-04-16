@@ -1,15 +1,16 @@
 (function() {
   'use strict';
 
-  const _ = require('lodash')
-    , urljoin = require('url-join')
-    , validate = require('validate.js')
-    , validator = require('../../config/validation/document-form')
-    , showCauseValidator = require('../../config/validation/show-cause')
-    , modUtils = require('../../lib/mod-utils')
-    , { reissueLetterDAO } = require('../../objects/documents')
-    , { dateFilter } = require('../../components/filters')
-    , { isCourtUser } = require('../../components/auth/user-type');
+  const _ = require('lodash');
+  const urljoin = require('url-join');
+  const validate = require('validate.js');
+  const validator = require('../../config/validation/document-form');
+  const showCauseValidator = require('../../config/validation/show-cause');
+  const modUtils = require('../../lib/mod-utils');
+  const { reissueLetterDAO } = require('../../objects/documents');
+  const { dateFilter } = require('../../components/filters');
+  const { isCourtUser } = require('../../components/auth/user-type');
+  const { splitPostCode } = require('../../lib/mod-utils');
 
   module.exports.getDocumentForm = function(app) {
     return function(req, res) {
