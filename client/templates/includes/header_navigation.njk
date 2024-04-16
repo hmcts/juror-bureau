@@ -14,12 +14,12 @@
               <a class="moj-primary-navigation__link" href="/search" {% if currentUrl == '/search' %}aria-current="page"{% endif %}>Search</a>
             </li>
 
-            {% if authentication.staff.rank > 0 %}
+            {% if isBureauManager %}
               <li id="new-replies" class="moj-primary-navigation__item" >
                 <a class="moj-primary-navigation__link" href="/new-replies" {% if currentUrl == '/new-replies' %}aria-current="page"{% endif %}>Assign Replies</a>
               </li>
               <li id="staff" class="moj-primary-navigation__item">
-                <a class="moj-primary-navigation__link" href="/staff" {% if currentUrl.indexOf('staff') !== -1 %}aria-current="page"{% endif %}>Manage team</a>
+                <a class="moj-primary-navigation__link" href="{{ url('administration.court-bureau.users.get', { location: 'bureau' }) }}" {% if currentUrl.indexOf('staff') !== -1 %}aria-current="page"{% endif %}>Manage team</a>
               </li>
             {% endif %}
 

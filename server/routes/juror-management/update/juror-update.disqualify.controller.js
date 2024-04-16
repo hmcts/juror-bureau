@@ -4,6 +4,8 @@ const _ = require('lodash');
 const validate = require('validate.js');
 const disqualifyValidator = require('../../../config/validation/disqualify-mod');
 const { getDisqualificationReasons, disqualifyJuror } = require('../../../objects/disqualify-mod');
+const { Logger } = require('../../../components/logger');
+const { makeManualError } = require('../../../lib/mod-utils');
 
 module.exports.getDisqualifyJurorRecord = function(app) {
   return async function(req, res) {
@@ -19,8 +21,12 @@ module.exports.getDisqualifyJurorRecord = function(app) {
 
       disqualifyReasons = response.disqualifyReasons;
     } catch (err) {
-      console.log(err);
-      return;
+      Logger.instance.crit('Failed to fetch the disqualification reasons', {
+        auth: req.session.authentication,
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+
+      return res.render('_errors/generic');
     }
 
     const tmpErrors = _.clone(req.session.errors);
@@ -63,9 +69,22 @@ module.exports.postDisqualifyJurorRecord = function(app) {
         req.body.disqualifyReason,
         type
       );
+
+      Logger.instance.info('Successfully disqualified the juror', {
+        auth: req.session.authentication,
+        data: { jurorNumber, reason: req.body.disqualifyReason, replyMethod: type },
+      });
+
     } catch (err) {
-      console.log(err);
-      return;
+      Logger.instance.crit('Failed to disqualify the juror', {
+        auth: req.session.authentication,
+        data: { jurorNumber, reason: req.body.disqualifyReason, replyMethod: type },
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+
+      req.session.errors = makeManualError('disqualify', 'Something went wrong when trying to disqualify the juror');
+
+      return res.redirect(app.namedRoutes.build('juror.update.disqualify.get', { jurorNumber }));
     }
 
     return res.redirect(app.namedRoutes.build('juror-record.overview.get', { jurorNumber }));
