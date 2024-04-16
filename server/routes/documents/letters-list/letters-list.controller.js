@@ -22,12 +22,16 @@
         });
         const tmpErrors = _.clone(req.session.errors);
 
-        const { documentSearchBy, jurorDetails, poolDetails, page } = req.query;
+        const { documentSearchBy, jurorNumber, jurorName, postcode, poolDetails, page } = req.query;
         let searchBy, paginationObject;
 
         delete req.session.errors;
-        if (documentSearchBy === 'juror'){
-          searchBy = jurorDetails;
+        if (documentSearchBy === 'juror_number') {
+          searchBy = jurorNumber;
+        } else if (documentSearchBy === 'juror_name') {
+          searchBy = jurorName;
+        } else if (documentSearchBy === 'postcode') {
+          searchBy = postcode;
         } else {
           searchBy = poolDetails;
         }
