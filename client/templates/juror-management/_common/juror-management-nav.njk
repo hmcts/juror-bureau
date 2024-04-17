@@ -4,8 +4,27 @@
   <span id="approveAnchor">Approve jurors{% if jurorApprovalCount > 0 %} <span id="jurorApprovalCount" class="moj-notification-badge jd-badge-blue">{{ jurorApprovalCount }}</span>{% endif %}</span>
 {% endset %}
 
-{% set navBarElements =
-  ([
+{% set sjoRoutes = [
+    "approveAnchor",
+    "unpaidAttencanceAnchor"
+  ]
+%}
+{% set managerRoutes = [
+    "jurorsAnchor",
+    "attendanceAnchor",
+    "unpaidAttencanceAnchor",
+    "approveExpensesAnchor"
+  ]
+%}
+{% set regularRoutes = [
+    "jurorsAnchor",
+    "attendanceAnchor",
+    "unpaidAttencanceAnchor"
+  ]
+%}
+
+{% set allNavBarElements = 
+  [
     {
       html: approveAnchorHTML,
       href: url("juror-management.manage-jurors.approve.get"),
@@ -13,8 +32,7 @@
       attributes: {
         id: "approveAnchor"
       }
-    }
-  ] if isSJO else [
+    },
     {
       text: "Manage jurors",
       href: url("juror-management.manage-jurors.pools.get"),
@@ -28,10 +46,9 @@
       href: url("juror-management.attendance.get"),
       active: nav === "attendance",
       attributes: {
-        id: "attencanceAnchor"
+        id: "attendanceAnchor"
       }
-    }
-  ]).concat([
+    },
     {
       text: "Unpaid attendance",
       href: url("juror-management.unpaid-attendance.get"),
@@ -39,18 +56,36 @@
       attributes: {
         id: "unpaidAttencanceAnchor"
       }
-    }
-  ]).concat([
+    },
     {
       text: "Approve expenses",
       href: url("juror-management.approve-expenses.get"),
       active: nav === "approve-expenses",
       attributes: {
-        id: "expensesAnchor"
+        id: "approveExpensesAnchor"
       }
     }
-  ] if isCourtManager else [])
+  ]
 %}
+
+{% set navBarElements = [] %}
+{% for item in allNavBarElements %}
+  {% if isSJO %}
+    {% if sjoRoutes.includes(item.attributes.id) and not navBarElements.includes(item) %}
+      {% set navBarElements = (navBarElements.push(item), navBarElements) %}
+    {% endif %}
+  {% endif %}
+  {% if isManager %}
+    {% if managerRoutes.includes(item.attributes.id) and not navBarElements.includes(item) %}
+      {% set navBarElements = (navBarElements.push(item), navBarElements) %}
+    {% endif %}
+  {% endif %}
+  {% if not isManager and not isSJO and not navBarElements.includes(item) %}
+    {% if regularRoutes.includes(item.attributes.id) %}
+      {% set navBarElements = (navBarElements.push(item), navBarElements) %}
+    {% endif %}
+  {% endif %}
+{% endfor  %}
 
 {{ mojPrimaryNavigation({
   label: "Juror management navigation",
