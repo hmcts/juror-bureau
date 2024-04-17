@@ -6,13 +6,14 @@
     , modUtils = require('../../lib/mod-utils')
     , poolRequests = require('../../objects/pool-list').poolRequests
     , poolTypeSelectValidator = require('../../config/validation/pool-create-select')
-    , { fetchCourtsDAO } = require('../../objects/index');
+    , { fetchCourtsDAO } = require('../../objects/index')
+    , { isCourtUser } = require('../../components/auth/user-type');
 
   module.exports.index = function(app) {
     return function(req, res) {
       var promiseArr = []
         , status = req.query['status'] || 'requested'
-        , tab = req.query['tab'] || 'court'
+        , tab = req.query['tab']
         , page = req.query['page'] || 1
         , { sortBy, sortOrder } = req.query
         , deletedRecord
@@ -56,6 +57,10 @@
             atCourt: urlBuilder(app, req.query, { tab: 'court', clearSort: true }),
             clearFilter: urlBuilder(app, req.query, { clearFilter: true }),
           };
+
+          if (!tab && isCourtUser(req)) {
+            tab = 'court';
+          }
 
           return res.render('pool-management/index', {
             poolList: listToRender,
