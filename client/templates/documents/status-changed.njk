@@ -1,0 +1,72 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block content %}
+
+  {% set tableRows = [] %}
+  {% for juror in jurorsList %}
+    {% set tableRows = (tableRows.push([
+      {
+        text: juror.juror_number
+      },
+      {
+        text: juror.first_name
+      },
+      {
+        text: juror.last_name
+      },
+      {
+        text: juror.juror_status.statusDesc
+      }
+    ]), tableRows) %}
+  {% endfor %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <h1 class="govuk-heading-l">You cannot resend this letter to all jurors you selected</h1>
+      <p class="govuk-body">This is because the following have had a change of juror status since the first letter was sent.</p>
+
+      {{ govukTable({
+        firstCellIsHeader: true,
+        head: [
+          {
+            text: "Juror number"
+          },
+          {
+            text: "First name"
+          },
+          {
+            text: "Last name"
+          },
+          {
+            text: "Status"
+          }
+        ],
+        rows: tableRows
+      }) }}
+
+      <p class="govuk-body">You can still send it to the other remaining jurors you selected.</p>
+
+      <form method="POST" action="{{ url('documents.letters-list.post', { document: document }) }}?origin=statusChanged">
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Send to remaining jurors",
+            attributes: {
+              id: "sendToRemainingJurorsButton"
+            }
+          }) }}
+
+          <a class="govuk-link" href="{{ url('documents.letters-list.get', { document: document }) }}" id="cancelAnchor">Cancel</a>
+        </div>
+
+        {{ csrfProtection(csrftoken) }}
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}
