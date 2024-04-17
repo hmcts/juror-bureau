@@ -69,6 +69,8 @@
         <div class="govuk-body"><span id="checkedJurors">{{ totalCheckedJurors }}</span> of selected <span id="totalJurors">{{ totalItems }}</span></div>
         {{ modSortableTable({
               id: "completedJurorsTable",
+              caption: "Jurors",
+              captionClass: "govuk-visually-hidden",
               head: completedJurorsList.head,
               rows: completedJurorsList.rows,
               url: urlPrefix,
