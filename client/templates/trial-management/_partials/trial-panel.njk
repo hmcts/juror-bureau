@@ -55,7 +55,9 @@
                 </label>
               </div>
             </td>
-            <td id="{{member.juror_number}}" class="govuk-table__cell jd-middle-align"><a href={{url('juror-record.overview.get', { jurorNumber: member.juror_number }) }}>{{ member.juror_number }}</a></td>
+            <td id="{{member.juror_number}}" class="govuk-table__cell jd-middle-align">
+              <a href="{{ url('juror-record.overview.get', { jurorNumber: member.juror_number }) }}?loc_code={{ locationCode }}">{{ member.juror_number }}</a>
+            </td>
             <td id="{{member.juror_number}}-urgent" class="govuk-table__cell jd-middle-align">{{ member.first_name  | capitalize }}</td>
             <td id="{{member.juror_number}}-standard" class="govuk-table__cell jd-middle-align">{{ member.last_name  | capitalize }}</td>
             <td id="{{member.juror_number}}-total" class="govuk-table__cell jd-middle-align">{{ member.juror_status | capitalize }}</td>

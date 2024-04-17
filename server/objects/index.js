@@ -11,6 +11,7 @@
   const confirmIdentity = require('./confirm-identity');
   const status = require('./status');
   const jurorRecord = require('./juror-record');
+  const jurorAttendance = require('./juror-attendance');
 
   module.exports = {
     ...requestPool,
@@ -20,6 +21,7 @@
     ...confirmIdentity,
     ...status,
     ...jurorRecord,
+    ...jurorAttendance,
   };
 
 })();

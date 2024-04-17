@@ -56,9 +56,7 @@
               {% endif %}
             </td>
             <td class="govuk-table__cell govuk-table__cell--numeric">
-              {# the commented code is correct but work is not on the scope of this ticket... we can uncomment and continue the work when the api implements change attendance date #}
-              {# <a class="govuk-link govuk-link--no-visited-state" href="{{ url('juror-record.attendance.change-attendance-date.get', { jurorNumber:  juror.commonDetails.jurorNumber }) }}?date={{ day['attendance_date'] | dateFilter("null", "YYYY-MM-DD") }}"> #}
-              <a class="govuk-link govuk-link--no-visited-state" href="#">
+              <a class="govuk-link govuk-link--no-visited-state" href="{{ url('juror-record.attendance.modify-juror-attendance.get', { jurorNumber:  juror.commonDetails.jurorNumber, poolNumber: juror.commonDetails.poolNumber }) }}?date={{ day['attendance_date'] | dateFilter("null", "YYYY-MM-DD") }}">
                 Change
                 <span class="govuk-visually-hidden"> the juror attendance times</span>
               </a>

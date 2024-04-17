@@ -240,6 +240,10 @@
 
       const promiseArr = [];
 
+      if (req.query.loc_code) {
+        req.session.locCode = req.query.loc_code;
+      }
+
       promiseArr.push(jurorRecordObject.record.get(
         require('request-promise'),
         app,

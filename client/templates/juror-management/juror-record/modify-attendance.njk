@@ -1,16 +1,18 @@
 {% extends "layouts/default.njk" %}
 
 {% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/table/macro.njk" import govukTable %}
-{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 {% from "custom-components/time-input-12-hour/macro.njk" import timeInput12Hour %}
-{% from "custom-components/date-picker/macro.njk" import datePicker %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 
 {% from "includes/csrf.njk" import csrfProtection %}
 
+{% set attendanceTypeError = undefined %}
+{% if errors.items["attendanceType"] %}
+  {% set attendanceTypeError = { text: errors.items['attendanceType'][0].details} %}
+{% endif %}
+
 {% set attendanceHtml %}
-{{ timeInput12Hour({
+  {{ timeInput12Hour({
     id: "checkInTime",
     name: "checkInTime",
     fieldset: {
@@ -41,7 +43,7 @@
     errors: errors.items
   }) }}
 
-{{ timeInput12Hour({
+  {{ timeInput12Hour({
     id: "checkOutTime",
     name: "checkOutTime",
     fieldset: {
@@ -78,18 +80,16 @@
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-
-      <form method="post" id="changeAttendanceDate">
-
+      <form action="{{ processUrl }}" method="post" id="changeAttendanceDate">
         <h1 class="govuk-heading-l">
           <span class="govuk-caption-l">Attendance</span>
           {{ jurorName }}
         </h1>
 
-        <p class="govuk-body-l ">{{ attendanceDate | dateFilter(null, "dddd D MMMM YYYY") }}</p>
+        <p class="govuk-body-l ">{{ attendanceDate | dateFilter("YYYY-MM-DD", "dddd D MMMM YYYY") }}</p>
 
         {{ govukRadios({
-          name: "attencanceType",
+          name: "attendanceType",
           fieldset: {
             legend: {
               text: "Select attendance type",
@@ -98,22 +98,23 @@
           },
           items: [
             {
-              value: "attendance",
+              value: "ATTENDANCE",
               text: "Attendance",
               conditional: {
                 html: attendanceHtml
               }
             },
             {
-              value: "nonAttendance",
+              value: "NON_ATTENDANCE",
               text: "Non-attendance"
             },
             {
-              value: "absence",
+              value: "ABSENCE",
               text: "Absence"
             }
           ],
-          errorMessage: processActionTypeError
+          value: tmpBody.attendanceType,
+          errorMessage: attendanceTypeError
         }) }}
 
         <div class="govuk-button-group">
@@ -124,16 +125,14 @@
             }
           }) }}
 
-          <a class="govuk-link" id="cancelAnchor" href="#">Cancel</a>
+          <a class="govuk-link" id="cancelAnchor" href="{{ cancelUrl }}">Cancel</a>
         </div>
 
         <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-        <a class="mod-red-text govuk-body" href="#">Delete attendance</a>
+        <a class="mod-red-text govuk-body" href="{{ deleteUrl }}">Delete attendance</a>
       
         {{ csrfProtection(csrftoken) }}
-
       </form>
-
     </div>
   </div>
 {% endblock %}

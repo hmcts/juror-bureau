@@ -52,8 +52,8 @@
                     Request juror info by post
                   </a>
 
-                  <a id="processSendTo" href="{{ url('response.assign.get', { id: response.jurorNumber }) }}" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " value="send_to" data-module="govuk-button">
-                  {#<a id="processSendTo" href="#" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " value="send_to" data-module="govuk-button">#}
+                  {% set sendToUrl = url('response.assign.get', { id: response.jurorNumber }) + "?reply_method=" + method %}
+                  <a id="processSendTo" href="{{ sendToUrl }}" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " value="send_to" data-module="govuk-button">
                     Send to a colleague...
                   </a>
                 {% endif %}

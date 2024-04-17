@@ -122,8 +122,9 @@
         ],
       },
       {
-        text: (typeof jurorData.documentType !== 'undefined' && jurorData.documentType === 'certificate-attendance') ? '' : `${content.welsh ?
-          'Annwyl' : 'Dear'} ${content.juror_first_name} ${content.juror_last_name},`,
+        text: (typeof jurorData.documentType !== 'undefined' && jurorData.documentType === 'certificate-attendance')
+          ? '' : `${content.welsh
+            ? 'Annwyl' : 'Dear'} ${content.juror_first_name} ${content.juror_last_name},`,
         marginTop: 15,
       },
       {

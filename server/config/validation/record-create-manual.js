@@ -5,6 +5,8 @@
     , moment = require('moment')
     , dateFilter = require('../../components/filters/index').dateFilter;
 
+  const { constants } = require('../../lib/mod-utils');
+
   module.exports.poolSelect = function() {
     return {
       poolNumber: {
@@ -93,8 +95,7 @@
           },
         },
         format: {
-          // eslint-disable-next-line max-len
-          pattern: '^$|(([gG][iI][rR] {0,}0[aA]{2})|((([a-pr-uwyzA-PR-UWYZ][a-hk-yA-HK-Y]?[0-9][0-9]?)|(([a-pr-uwyzA-PR-UWYZ][0-9][a-hjkstuwA-HJKSTUW])|([a-pr-uwyzA-PR-UWYZ][a-hk-yA-HK-Y][0-9][abehmnprv-yABEHMNPRV-Y]))) {1,}[0-9][abd-hjlnp-uw-zABD-HJLNP-UW-Z]{2}))$',
+          pattern: constants.POSTCODE_REGEX,
           message: {
             summary: 'Enter the juror\'s postcode in the correct format, like SW1 5JJ',
             details: 'Enter the juror\'s postcode in the correct format, like SW1 5JJ',
