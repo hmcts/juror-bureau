@@ -37,10 +37,16 @@
       {{ govukTable({
         head: [
           {
-            text: "Main courts"
+            text: "Main courts",
+            attributes: {
+              "aria-label": "Main courts"
+            }
           },
           {
-            text: "Secondary courts"
+            text: "Secondary courts",
+            attributes: {
+              "aria-label": "Secondary courts"
+            }
           }
         ],
         rows: courtsTableData
