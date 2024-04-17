@@ -10,6 +10,7 @@
   const { reissueLetterDAO } = require('../../../objects/documents');
   const { tableGenerator } = require('../helper/table-generator');
   const { dateFilter } = require('../../../components/filters');
+  const { Logger } = require('../../../components/logger');
 
   module.exports.getListLetters = function(app) {
     return function(req, res) {
@@ -70,6 +71,8 @@
         const selectedJurors = (req.session.documentsJurorsList.checkedJurors
           && req.session.documentsJurorsList.checkedJurors.length) || 0;
 
+        delete req.session.statusChangedList;
+
         return res.render('documents/_common/letters-list.njk', {
           pageIdentifier: modUtils.getLetterIdentifier(document),
           backLinkUrl,
@@ -106,6 +109,11 @@
   module.exports.postListLetters = function(app) {
     return async function(req, res) {
       const { document } = req.params;
+      const { origin } = req.query;
+
+      if (origin === 'statusChanged') {
+        removeStatusChangedJurors(req);
+      }
 
       const validatorResult = validate(req.body, validator(req.session.documentsJurorsList.checkedJurors));
 
@@ -132,8 +140,23 @@
         'letters_list': checkedJurors,
       };
 
+      delete req.session.statusChangedList;
+
       try {
-        await reissueLetterDAO.postList(app, req, payload);
+        const { juror_list: jurorList } = await reissueLetterDAO.postList(app, req, payload);
+
+        if (jurorList && jurorList.length) {
+          req.session.statusChangedList = jurorList;
+
+          Logger.instance.info('Found jurors with status changes', {
+            auth: req.session.authentication,
+            data: { ...payload, ...jurorList },
+          });
+
+          return res.redirect(app.namedRoutes.build('documents.letter-list.status-changed.get', {
+            document,
+          }));
+        }
 
         const documentCount = req.session.documentsJurorsList.checkedJurors.length;
 
@@ -198,6 +221,41 @@
       }
     };
   };
+
+  module.exports.getStatusChanged = function() {
+    return function(req, res) {
+      const { document } = req.params;
+      const jurorsList = req.session.statusChangedList;
+
+      Logger.instance.info('Status changed for jurors', {
+        auth: req.session.authentication,
+        data: { ...jurorsList },
+      });
+
+      return res.render('documents/status-changed.njk', {
+        document,
+        jurorsList,
+      });
+    };
+  };
+
+  function removeStatusChangedJurors(req) {
+    const statusChangedList = req.session.statusChangedList.reduce((acc, juror) => {
+      acc.push(juror.juror_number);
+      return acc;
+    }, []);
+
+    req.session.documentsJurorsList.checkedJurors = req.session.documentsJurorsList.checkedJurors.filter((juror) => (
+      !statusChangedList.includes(juror.juror_number)
+    ));
+
+    delete req.session.statusChangedList;
+
+    Logger.instance.info('Sending letters to jurors without status changes', {
+      auth: req.session.authentication,
+      data: { ...req.session.documentsJurorsList.checkedJurors, statusChangedList },
+    });
+  }
 
   // Because we need to move to redis, the checking of jurors could break due to race conditions
   // with this in mind it will be better if we keep the checked jurors on a separated array stored in redis
@@ -309,7 +367,7 @@
     case 'failed-to-attend':
       return 'Print failed to attend letter';
     }
-  };
+  }
 
   function calculateTotalJurors(data, documentSearchBy) {
     if (documentSearchBy === 'allLetters') {
