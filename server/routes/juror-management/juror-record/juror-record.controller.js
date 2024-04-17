@@ -345,7 +345,7 @@
           req.session.authToken,
           'overview',
           jurorNumber,
-          req.session.authentication.locCode,
+          req.session.locCode,
         );
 
         cacheJurorCommonDetails(req, jurorOverview.data.commonDetails);
