@@ -12,7 +12,7 @@
     return function(req, res) {
       var promiseArr = []
         , status = req.query['status'] || 'requested'
-        , tab = req.query['tab'] || 'bureau'
+        , tab = req.query['tab'] || 'court'
         , page = req.query['page'] || 1
         , { sortBy, sortOrder } = req.query
         , deletedRecord
