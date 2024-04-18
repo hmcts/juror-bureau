@@ -49,6 +49,24 @@
   }) }}
 {% endset %}
 
+{# juror name infos #}
+{% set postcodeError = undefined %}
+{% if errors.items["postcode"] %}
+  {% set postcodeError = { "text": errors.items["postcode"][0].details } %}
+{% endif %}
+
+{% set byPostcodeHtml %}
+  {{ govukInput({
+    label: {
+      text: "Enter juror postcode"
+    },
+    classes: "govuk-input--width-10",
+    id: "postcode",
+    name: "postcode",
+    errorMessage: postcodeError
+  }) }}
+{% endset %}
+
 {# pool number infos #}
 {% set poolNumberError = undefined %}
 {% if errors.items["poolNumber"] %}
@@ -85,13 +103,20 @@
   }) }}
 {% endset %}
 
+{# court name infos #}
+{% set deferredToError = undefined %}
+{% if errors.items["deferredTo"] %}
+  {% set deferredToError = { "text": errors.items["deferredTo"][0].details } %}
+{% endif %}
+
 {% set byDeferredToDateHtml %}
   {{ datePicker({
-    id: "deferredTo",
+    id: "dateDeferredTo",
     label: {
       text: "Enter a deferral date"
     },
-    hint: "Use dd/mm/yyyy format. For example, 31/01/2023."
+    hint: "Use dd/mm/yyyy format. For example, 31/01/2023.",
+    dateError: deferredToError.text
   }) }}
   {# dateValue: "25/12/2023",
   dateMin: "25/12/2022",
@@ -142,6 +167,12 @@
               checked: jurorNameError !== undefined
             },
             {
+              value: "postcode",
+              text: "Juror postcode",
+              conditional: { html: byPostcodeHtml },
+              checked: postcodeError !== undefined
+            },
+            {
               value: "pool",
               text: "Pool",
               conditional: { html: byPoolHtml },
@@ -156,7 +187,8 @@
             {
               value: "dateDeferredTo",
               text: "Date deferred to",
-              conditional: { html: byDeferredToDateHtml }
+              conditional: { html: byDeferredToDateHtml },
+              checked: deferredToError !== undefined
             }
           ],
           errorMessage: searchByError

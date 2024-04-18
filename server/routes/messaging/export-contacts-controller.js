@@ -11,6 +11,7 @@
   const { fetchAllCourts } = require('../../objects/request-pool');
   const { transformCourtNames } = require('../../lib/mod-utils');
   const { jurorSearchDAO, downloadCSVDAO } = require('../../objects/messaging');
+  const { dateFilter } = require('../../components/filters');
 
   module.exports.getExportContacts = function(app) {
     return async function(req, res) {
@@ -55,6 +56,8 @@
 
       const validatorResult = validate(req.body, exportContactDetailsValidator(req.body));
 
+      console.log(req.body);
+
       if (validatorResult) {
         req.session.errors = validatorResult;
 
@@ -71,12 +74,13 @@
   module.exports.getJurorsList = function(app) {
     return async function(req, res) {
       const {
-        search_by: searchBy,
-        juror_number: jurorNumber,
-        juror_name: jurorName,
-        pool_number: poolNumber,
-        court_name: courtName,
-        date_deferred_to: dateDeferredTo,
+        searchBy,
+        jurorNumber,
+        jurorName,
+        poolNumber,
+        courtName,
+        dateDeferredTo,
+        postcode,
       } = req.query;
       const isEmpty = v => !v || v === '';
       const tmpErrors = _.clone(req.session.errors);
@@ -85,7 +89,7 @@
       delete req.session.errors;
 
       // eslint-disable-next-line max-len
-      if (isEmpty(searchBy) || (isEmpty(jurorNumber) && isEmpty(jurorName) && isEmpty(poolNumber) && isEmpty(courtName) && isEmpty(dateDeferredTo))) {
+      if (isEmpty(searchBy) || (isEmpty(jurorNumber) && isEmpty(jurorName) && isEmpty(poolNumber) && isEmpty(courtName) && isEmpty(dateDeferredTo) && isEmpty(postcode))) {
         return res.redirect(app.namedRoutes.build('messaging.export-contacts.get'));
       }
 
@@ -123,7 +127,11 @@
           pagination = modUtils.paginationBuilder(jurorsList.total_items, currentPage, req.url);
         }
       } catch (err) {
-        console.log(err);
+        app.logger.crit('Something went wrong searching for jurors to export contact details for', {
+          auth: req.session.authentication,
+          data: payload,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
 
         return renderView(0, []);
       }
@@ -135,7 +143,7 @@
   module.exports.postJurorsList = function(app) {
     return function(req, res) {
       const { selectedJurors } = req.body;
-      const { search_by: searchBy } = req.query;
+      const { searchBy } = req.query;
 
       const queryParams = buildQueryParams(searchBy, req.query);
 
@@ -255,7 +263,13 @@
             });
 
           } catch (err) {
-            // TODO: handle error
+            app.logger.crit('Failed to check the juror to export contact details for', {
+              auth: req.session.authentication,
+              data: { jurorNumber, poolNumber, action },
+              error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+            });
+
+            return res.status(500).send();
           }
 
         } else {
@@ -288,20 +302,23 @@
       pageNumber: currentPage,
     };
 
-    if (query.search_by === 'jurorNumber') {
-      payload['juror_number'] = query.juror_number;
+    if (query.searchBy === 'jurorNumber') {
+      payload['juror_number'] = query.jurorNumber;
     }
-    if (query.search_by === 'jurorName') {
-      payload['juror_name'] = query.juror_name;
+    if (query.searchBy === 'jurorName') {
+      payload['juror_name'] = query.jurorName;
     }
-    if (query.search_by === 'pool') {
-      payload['pool_number'] = query.pool_number;
+    if (query.searchBy === 'pool') {
+      payload['pool_number'] = query.poolNumber;
     }
-    if (query.search_by === 'court') {
-      payload['court_name'] = query.court_name;
+    if (query.searchBy === 'court') {
+      payload['court_name'] = query.courtName;
     }
-    if (query.search_by === 'deferredTo') {
-      payload['date_deferred_to'] = query.deferred_to;
+    if (query.searchBy === 'date') {
+      payload['date_deferred_to'] = dateFilter(query.dateDeferredTo, 'DD/MM/YYYY', 'YYYY-MM-DD');
+    }
+    if (query.searchBy === 'postcode') {
+      payload['postcode'] = query.postcode;
     }
 
     return payload;
@@ -312,19 +329,22 @@
 
     switch (searchBy) {
     case 'jurorNumber':
-      queryParams = `?search_by=juror&juror_number=${query.juror_number || query.jurorNumber}`;
+      queryParams = `?searchBy=jurorNumber&jurorNumber=${query.jurorNumber}`;
       break;
     case 'jurorName':
-      queryParams = `?search_by=juror&juror_name=${query.juror_name || query.jurorName}`;
+      queryParams = `?searchBy=jurorName&jurorName=${query.jurorName}`;
       break;
     case 'pool':
-      queryParams = `?search_by=pool&pool_number=${query.pool_number || query.poolNumber}`;
+      queryParams = `?searchBy=pool&poolNumber=${query.poolNumber}`;
       break;
     case 'court':
-      queryParams = `?search_by=court&court_name=${query.court_name || query.courtName}`;
+      queryParams = `?searchBy=court&courtName=${query.courtName}`;
       break;
-    case 'deferredTo':
-      queryParams = `?search_by=date&date_deferred_to=${query.deferred_to || query.deferredTo}`;
+    case 'dateDeferredTo':
+      queryParams = `?searchBy=date&dateDeferredTo=${query.dateDeferredTo}`;
+      break;
+    case 'postcode':
+      queryParams = `?searchBy=postcode&postcode=${query.postcode}`;
       break;
     }
 
