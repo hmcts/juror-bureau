@@ -93,6 +93,8 @@
    {% if totalAttendance > 0 %}
             {{ modSortableTable({
               id: "unpaidAttendanceTable",
+              caption: "Unpaid attendance",
+              captionClass: "govuk-visually-hidden",
               head: unpaidAttendanceList.head,
               rows: unpaidAttendanceList.rows,
               url: urlPrefix
