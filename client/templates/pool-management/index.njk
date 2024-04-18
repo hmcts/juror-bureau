@@ -118,6 +118,8 @@
   {% else %}
     {{ modSortableTable({
       id: "poolRequestsTable",
+      caption: "Pool requests",
+      captionClass: "govuk-visually-hidden",
       head: poolList.head,
       rows: poolList.rows,
       url: urlPrefix
