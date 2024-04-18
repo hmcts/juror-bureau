@@ -170,4 +170,7 @@
     },
   };
 
+  // new DAO
+  module.exports.modifyJurorAttendance = new DAO('moj/juror-management/attendance/modify-attendance');
+
 })();

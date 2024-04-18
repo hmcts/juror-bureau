@@ -7,6 +7,7 @@
     postListLetters,
     checkJuror,
     deletePendingLetter,
+    getStatusChanged,
   } = require('./letters-list/letters-list.controller');
 
   const { printDocuments } = require('./print.controller');
@@ -64,6 +65,11 @@
       auth.verify,
       isCourtUser,
       printDocuments(app));
+
+    app.get('/documents/:document/letters-list/status-changed',
+      'documents.letter-list.status-changed.get',
+      auth.verify,
+      getStatusChanged(app));
 
     require('./show-cause')(app);
     require('./failed-to-attend')(app);

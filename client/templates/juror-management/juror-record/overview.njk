@@ -97,7 +97,7 @@
             text: "Police check"
           },
           value: {
-            html: ('<p class="govuk-body">' + policeCheck.status + '</p>' (manualCheckUrl if manualCheckUrl)) | safe
+            html: ('<p class="govuk-body">' + policeCheck.status + '</p>' + (manualCheckUrl if manualCheckUrl)) | safe
           }
         }
       %}
