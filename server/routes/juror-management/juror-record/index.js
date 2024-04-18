@@ -7,7 +7,7 @@
     , attendanceDateController = require('../attendance/change-attendance-date/change-attendance-date.controller')
     , nonAttendanceDateController = require('../expenses/non-attendance-day/non-attendance-day.controller')
     , addAttendanceDateController = require('../attendance/add-attendance-date/add-attendance-date.controller')
-    , changeJurorAttendanceController = require('../juror-record/change-attendance/change-attendance.controller')
+    , modifyAttendanceController = require('./modify-attendance/modify-attendance.controller')
     , expensesController = require('../expenses/expenses.controller');
 
   module.exports = function(app) {
@@ -68,15 +68,20 @@
       auth.verify,
       addAttendanceDateController.postAddAttendanceDate(app)
     );
-    app.get('/juror-management/record/:jurorNumber/change-juror-attendance',
-      'juror-record.attendance.change-attendance-date-times.get',
+    app.get('/juror-management/record/:jurorNumber/:poolNumber/modify-juror-attendance',
+      'juror-record.attendance.modify-juror-attendance.get',
       auth.verify,
-      changeJurorAttendanceController.getChangeAttendance(app)
+      modifyAttendanceController.getModifyAttendance(app)
     );
-    app.post('/juror-management/record/:jurorNumber/change-juror-attendance',
-      'juror-record.attendance.change-attendance-date-times.post',
+    app.get('/juror-management/record/:jurorNumber/:poolNumber/delete-juror-attendance',
+      'juror-record.attendance.delete-juror-attendance.get',
       auth.verify,
-      changeJurorAttendanceController.postChangeAttendance(app)
+      modifyAttendanceController.getDeleteAttendance(app)
+    );
+    app.post('/juror-management/record/:jurorNumber/:poolNumber/modify-juror-attendance',
+      'juror-record.attendance.modify-juror-attendance.post',
+      auth.verify,
+      modifyAttendanceController.postModifyAttendance(app)
     );
     app.get('/juror-management/record/:jurorNumber/:poolNumber/non-attendance-day',
       'juror-record.attendance.non-attendance-day.get',

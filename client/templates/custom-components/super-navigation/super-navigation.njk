@@ -28,9 +28,11 @@
             <li>
               <a href="#" class="govuk-link govuk-!-font-weight-bold">Expense management</a>
             </li>
+            {% if isCourtUser %}
             <li>
               <a href="{{ url('trial-management.trials.get') }}" class="govuk-link govuk-!-font-weight-bold">Trial management</a>
             </li>
+            {% endif %}
             <li>
               <a href="{{ url('reports.get') }}" class="govuk-link govuk-!-font-weight-bold">Reporting</a>
             </li>

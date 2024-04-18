@@ -50,6 +50,16 @@
     jn = jurorNumber.val();
 
     if (checkForDuplicateRow(jn)) {
+
+      if (checkForExistingFailedRow(jn)){
+        jurorNumber.focus();
+        addError([{
+          message: 'An attempt to check in this juror has already been made',
+          field: 'checkInJurorNumber',
+        }]);
+        return;
+      }
+
       jurorNumber.focus();
       addError([{
         message: 'This juror is already checked-in',
@@ -599,5 +609,12 @@
     return false;
   }
 
+  function checkForExistingFailedRow(jn) {
+    var duplicate = $('#' + jn + '-row[data-failed=true]');
+
+    if (duplicate.length) return true;
+
+    return false;
+  }
 })();
 

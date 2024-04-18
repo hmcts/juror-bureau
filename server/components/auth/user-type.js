@@ -49,7 +49,7 @@
 
   // TODO: update this in the future to be used as middleware if needed
   function isTeamLeader(req) {
-    return req.session.authentication.staff.rank > 0;
+    return req.session.authentication.staff.rank > 0 || isManager(req);
   };
 
   function isSJOUser(req, res, next) {

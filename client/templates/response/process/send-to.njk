@@ -15,6 +15,8 @@
 
   {% include "../../includes/errors.njk" %}
 
+  {{ response.jurorNumber }}
+
   {% if errors.items["sendToOfficer"] %}
     {% set sendToError = {"text": errors.items['sendToOfficer'][0].details} %}
   {% else %}
@@ -29,7 +31,11 @@
     {% set postUrl = "/staff/assign-multi" %}
   {% endif %}
   {% if source == "response" %}
-    {% set cancelUrl = "../../response/" + responses[0].jurorNumber %}
+    {% if replyMethod === "digital" %}
+      {% set cancelUrl = url("response.detail.get", { id: responses[0].jurorNumber }) %}
+    {% elif replyMethod === "paper" %}
+      {% set cancelUrl = url("response.paper.details.get", { id: responses[0].jurorNumber, type: "paper" }) %}
+    {% endif %}
     {% set postUrl = "/staff/assign" %}
   {% endif %}
 

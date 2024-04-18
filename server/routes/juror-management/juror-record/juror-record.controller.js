@@ -240,6 +240,10 @@
 
       const promiseArr = [];
 
+      if (req.query.loc_code) {
+        req.session.locCode = req.query.loc_code;
+      }
+
       promiseArr.push(jurorRecordObject.record.get(
         require('request-promise'),
         app,
@@ -341,61 +345,107 @@
           req.session.authToken,
           'overview',
           jurorNumber,
-          req.session.authentication.locCode,
+          req.session.locCode,
         );
-
-        const poolNumber = jurorOverview.data.commonDetails.poolNumber;
-
-        const defaultExpenses = await defaultExpensesDAO.get(app, req, jurorNumber);
-        const { response: bankDetails } = await jurorBankDetailsDAO.get(app, req, jurorNumber);
-        const expensesSummary = await expensesSummaryDAO.get(req, jurorNumber, poolNumber);
 
         cacheJurorCommonDetails(req, jurorOverview.data.commonDetails);
 
-        app.logger.info('Fetched the juror record expenses info: ', {
-          auth: req.session.authentication,
-          jwt: req.session.authToken,
+        const poolNumber = jurorOverview.data.commonDetails.poolNumber;
+        const defaultExpenses = await defaultExpensesDAO.get(app, req, jurorNumber);
+        const { response: bankDetails } = await jurorBankDetailsDAO.get(app, req, jurorNumber);
+        const viewAllExpensesLink = app.namedRoutes.build('juror-management.unpaid-attendance.get');
+        const viewDraftExpensesLink = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
+          jurorNumber, poolNumber, status: 'draft',
+        });
+        const viewForApprovalExpensesLink = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
+          jurorNumber, poolNumber, status: 'for-approval',
+        });
+        const viewApprovedExpensesLink = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
+          jurorNumber, poolNumber, status: 'approved',
+        });
+        const editDefaultExpensesLink = app.namedRoutes.build('juror-record.default-expenses.get', {
+          jurorNumber, poolNumber,
+        });
+        const editBankDetailsLink = app.namedRoutes.build('juror-record.bank-details.get', {
+          jurorNumber, poolNumber,
         });
 
-        const dailyExpenses = {
-          totalDraft: expensesSummary.total_draft,
-          totalForApproval: expensesSummary.total_for_approval,
-          totalApproved: expensesSummary.total_approved,
-        };
+        try {
+          const expensesSummary = await expensesSummaryDAO.get(req, jurorNumber, poolNumber);
 
-        return res.render('juror-management/juror-record/expenses', {
-          backLinkUrl: 'homepage.get',
-          juror: jurorOverview.data,
-          jurorStatus: resolveJurorStatus(jurorOverview.data.commonDetails),
-          currentTab: 'expenses',
-          hasSummons: req.session.hasSummonsResponse,
-          dailyExpenses,
-          defaultExpenses,
-          bankDetails,
-          viewAllExpensesLink: app.namedRoutes.build('juror-management.unpaid-attendance.get'),
-          viewDraftExpensesLink: app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
-            jurorNumber, poolNumber, status: 'draft',
-          }),
-          viewForApprovalExpensesLink: app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
-            jurorNumber, poolNumber, status: 'for-approval',
-          }),
-          viewApprovedExpensesLink: app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
-            jurorNumber, poolNumber, status: 'approved',
-          }),
-          editDefaultExpensesLink: app.namedRoutes.build('juror-record.default-expenses.get', {
-            jurorNumber, poolNumber,
-          }),
-          editBankDetailsLink: app.namedRoutes.build('juror-record.bank-details.get', {
-            jurorNumber, poolNumber,
-          }),
-        });
+          app.logger.info('Fetched the juror record expenses info: ', {
+            auth: req.session.authentication,
+            jwt: req.session.authToken,
+          });
+
+          const dailyExpenses = {
+            totalDraft: expensesSummary.total_draft,
+            totalForApproval: expensesSummary.total_for_approval,
+            totalApproved: expensesSummary.total_approved,
+          };
+
+          return res.render('juror-management/juror-record/expenses', {
+            backLinkUrl: 'homepage.get',
+            juror: jurorOverview.data,
+            jurorStatus: resolveJurorStatus(jurorOverview.data.commonDetails),
+            currentTab: 'expenses',
+            hasSummons: req.session.hasSummonsResponse,
+            dailyExpenses,
+            defaultExpenses,
+            bankDetails,
+            viewAllExpensesLink,
+            viewDraftExpensesLink,
+            viewForApprovalExpensesLink,
+            viewApprovedExpensesLink,
+            editDefaultExpensesLink,
+            editBankDetailsLink,
+          });
+
+        } catch (err){
+          if (err.statusCode === 404) {
+            if (err.error.message.includes('No appearances found for juror')) {
+              const dailyExpenses = {
+                totalDraft: 0,
+                totalForApproval: 0,
+                totalApproved: 0,
+              };
+
+              return res.render('juror-management/juror-record/expenses', {
+                backLinkUrl: 'homepage.get',
+                juror: jurorOverview.data,
+                jurorStatus: resolveJurorStatus(jurorOverview.data.commonDetails),
+                currentTab: 'expenses',
+                hasSummons: req.session.hasSummonsResponse,
+                dailyExpenses,
+                defaultExpenses,
+                bankDetails,
+                viewAllExpensesLink,
+                viewDraftExpensesLink,
+                viewForApprovalExpensesLink,
+                viewApprovedExpensesLink,
+                editDefaultExpensesLink,
+                editBankDetailsLink,
+              });
+            }
+            return res.render('juror-management/_errors/not-found');
+          }
+          app.logger.crit('Failed to fetch the juror expenses data:', {
+            auth: req.session.authentication,
+            jwt: req.session.authToken,
+            data: {
+              jurorNumber,
+              locationCode: req.session.locCode,
+            },
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
+          return res.render('_errors/generic');
+        }
+
       } catch (err) {
-        console.log(err);
-
         if (err.statusCode === 404) {
           return res.render('juror-management/_errors/not-found');
         }
-        app.logger.crit('Failed to fetch the juror expenses data:', {
+        app.logger.crit('Failed to fetch the juror bank details or default expenses data:', {
           auth: req.session.authentication,
           jwt: req.session.authToken,
           data: {
