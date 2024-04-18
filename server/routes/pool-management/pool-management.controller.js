@@ -60,6 +60,8 @@
 
           if (!tab && isCourtUser(req)) {
             tab = 'court';
+          } else {
+            tab = 'bureau';
           }
 
           return res.render('pool-management/index', {
