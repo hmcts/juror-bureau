@@ -121,7 +121,7 @@
                   {% include "custom-components/super-navigation/super-navigation.njk" %}
                 {% endif %}
                 <li class="moj-header__navigation-item moj-header__navigation-item--without-children">
-                  <a class="moj-header__navigation-link" href="#">{{ authentication.staff.name }}</a>
+                  {{ authentication.staff.name }}
                 </li>
                 <li class="moj-header__navigation-item moj-header__navigation-item--without-children">
                   <a class="moj-header__navigation-link" href="{{ url('login.get') }}">Sign out</a>
