@@ -58,10 +58,6 @@
             clearFilter: urlBuilder(app, req.query, { clearFilter: true }),
           };
 
-          if (!tab && isCourtUser(req)) {
-            tab = 'court';
-          }
-
           return res.render('pool-management/index', {
             poolList: listToRender,
             poolStatus: status,
@@ -110,6 +106,8 @@
 
       if (!tab && isCourtUser(req)) {
         tab = 'court';
+      } else if (!tab && !isCourtUser(req)) {
+        tab = 'bureau';
       }
 
       promiseArr.push(poolRequests.get(require('request-promise'), app, req.session.authToken, {
