@@ -188,7 +188,7 @@ module.exports.transformPoolList = function (pools, status, tab, sortBy, sortOrd
           'data-sort-value': pool.attendanceDate,
         },
         classes: 'govuk-!-text-align-right',
-      }
+      },
     );
 
     if (status === 'created') {
@@ -206,10 +206,10 @@ module.exports.transformPoolList = function (pools, status, tab, sortBy, sortOrd
   return table;
 };
 
-module.exports.transformCoETrialsList = function(trials) {
+module.exports.transformCoETrialsList = function (trials) {
   const list = [];
 
-  trials.forEach(function(trial) {
+  trials.forEach(function (trial) {
     list.push(
       [
         {
@@ -259,10 +259,10 @@ module.exports.transformCoETrialsList = function(trials) {
   return list;
 };
 
-module.exports.transformSearchPoolList = function(pools) {
-  var list = [];
+module.exports.transformSearchPoolList = function (pools) {
+  let list = [];
 
-  pools.forEach(function(pool) {
+  pools.forEach(function (pool) {
     list.push([{
       html: '<a href="/pool-management/pool-overview/' +
         pool.poolNumber + '" class="govuk-link">' + pool.poolNumber + '</a>',
@@ -387,7 +387,7 @@ module.exports.transformUnpaidAttendanceList = (unpaidAttendance, sortBy, sortOr
         attributes: {
           'data-sort-value': unpaid.total_unapproved,
         },
-      }
+      },
     );
 
     table.rows.push(item);
@@ -537,7 +537,7 @@ module.exports.transformMessagingTrialsList = (trials, sortBy, sortOrder) => {
     },
   );
 
-  trials.forEach(function(trial) {
+  trials.forEach(function (trial) {
     const item = [];
 
     item.push(
@@ -610,8 +610,8 @@ module.exports.transformMessagingTrialsList = (trials, sortBy, sortOrder) => {
 
 // used to pad the pool request time with an extra 0 in case the user sets
 // 1 - 9... for example 8:5 would be padded to 08:05
-module.exports.padTime = function(time) {
-  var tmpTime = _.clone(time);
+module.exports.padTime = function (time) {
+  let tmpTime = _.clone(time);
 
   if (time.attendanceTimeHour.length === 1) {
     tmpTime.attendanceTimeHour = '0' + time.attendanceTimeHour;
@@ -628,10 +628,10 @@ module.exports.padTime = function(time) {
 };
 
 // this function is related to change-pool-number screen
-module.exports.transformPoolNumbers = function(pools) {
-  var transformedPoolNumbers = [];
+module.exports.transformPoolNumbers = function (pools) {
+  let transformedPoolNumbers = [];
 
-  pools.forEach(function(el) {
+  pools.forEach(function (el) {
     transformedPoolNumbers.push(
       {
         key: {
