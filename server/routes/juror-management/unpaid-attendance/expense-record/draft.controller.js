@@ -38,7 +38,8 @@
         req,
         jurorNumber,
         poolNumber,
-      ), jurorOverviewDAO.get(req, jurorNumber, req.session.authentication.locCode)])
+      // ), jurorOverviewDAO.get(req, jurorNumber, req.session.authentication.locCode)])
+      ), jurorOverviewDAO.get(req, jurorNumber, req.session.locCode)])
         .then(async function([{ response: expenseData, headers }, jurorOverview]) {
 
           req.session.draftExpensesEtag = headers.etag;
