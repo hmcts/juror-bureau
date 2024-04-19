@@ -268,6 +268,12 @@
         <div class="mod-juror-record__title">
           <h2 id="additionalRequirementsLabel" class="govuk-heading-m">Additional requirements</h2>
         </div>
+
+        {% set specialNeedDescription = juror.specialNeedDescription %}
+        {% if juror.specialNeed !== ' '%}
+          {% set specialNeedDescription = juror.specialNeed + " - " + specialNeedDescription %}
+        {% endif %}
+
         {{ govukSummaryList({
           classes: "govuk-!-width-two-thirds govuk-!-margin-bottom-9",
           rows: [
@@ -276,7 +282,7 @@
                 text: "Reasonable adjustments"
               },
               value: {
-                html: "<p class='govuk-body govuk-!-font-weight-bold'>" + juror.specialNeed + " - " + juror.specialNeedDescription + "</p> <p class='govuk-body'>" + juror.specialNeedMessage + "</p>"
+                html: "<p class='govuk-body govuk-!-font-weight-bold'>" + specialNeedDescription + "</p> <p class='govuk-body'>" + juror.specialNeedMessage + "</p>"
               }
             } if juror.specialNeed and juror.specialNeedMessage,
             {
@@ -284,7 +290,7 @@
                 text: "Reasonable adjustments"
               },
               value: {
-                html: "<p class='govuk-body govuk-!-font-weight-bold'>" + juror.specialNeed + " - " + juror.specialNeedDescription + "</p>"
+                html: "<p class='govuk-body govuk-!-font-weight-bold'>" + specialNeedDescription + "</p>"
               }
             } if juror.specialNeed and not juror.specialNeedMessage,
             {
