@@ -105,6 +105,9 @@
       let tmpErrors = _.clone(req.session.empanelJuryError);
       let tmpBody = _.clone(req.session.formFields);
 
+      let BVRErrors = _.clone(req.session.errors);
+
+      delete req.session.errors;
       delete req.session.empanelJuryError;
       delete req.session.formFields;
 
@@ -126,6 +129,11 @@
         tmpBody: tmpBody,
         jurors: availableJurors,
         requiredNumberOfJurors: requiredNumberOfJurors,
+        errors: {
+          title: 'Please check the form',
+          count: typeof BVRErrors !== 'undefined' ? Object.keys(BVRErrors).length : 0,
+          items: BVRErrors,
+        },
       });
     };
   };
@@ -163,7 +171,7 @@
         });
       };
 
-      if (juryCount !== requiredNumberOfJurors) {
+      if (juryCount < requiredNumberOfJurors) {
 
         req.session.empanelJuryError = true;
         req.session.formFields = tmpBody;
@@ -174,22 +182,27 @@
         }));
       }
 
-      delete req.session.trial;
-      delete req.session.trialManagement;
-
       empanelJurorsDAO.post(app, req, {
         jurors,
         trial_number: req.params.trialNumber,
         court_location_code: req.params.locationCode,
         number_requested: requiredNumberOfJurors,
       }).then(() => {
+
+        delete req.session.trial;
+        delete req.session.trialManagement;
+
         return res.redirect(app.namedRoutes.build('trial-management.trials.detail.get', {
           trialNumber: req.params.trialNumber,
           locationCode: req.params.locationCode,
         }));
       }, (err) => {
         if (err.statusCode === 422) {
-          req.session.errors = makeManualError('empanel error', err.error.message);
+          if (err.error.code === 'JUROR_MUST_BE_CHECKED_IN') {
+            req.session.errors = makeManualError('empanel error', '1 or more jurors have not been checked in today');
+          } else {
+            req.session.errors = makeManualError('empanel error', err.error.message);
+          }
 
           return res.redirect(app.namedRoutes.build('trial-management.empanel.select.get', {
             trialNumber: req.params.trialNumber,
