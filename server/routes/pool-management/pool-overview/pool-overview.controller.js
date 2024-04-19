@@ -69,13 +69,13 @@ const filters = require('../../../components/filters');
       delete req.session.selectedAll;
       delete req.session.processLateSummons;
 
-      const poolPromises = [
-        poolSummaryObj.get(
-          rp,
-          app,
-          req.session.authToken,
-          poolNumber,
-        ),
+      poolSummaryObj.get(
+        rp,
+        app,
+        req.session.authToken,
+        poolNumber,
+      )
+      .then((pool) => {
         poolMembersObj.post(
           rp,
           app,
@@ -94,18 +94,22 @@ const filters = require('../../../components/filters');
             'sort_field': req.query.sortBy || 'juror_number',
             'sort_method': req.query.sortOrder || 'ascending',
           },
-        ),
-      ];
-
-      if (isCourtUser(req, res)) {
-        Promise.all(poolPromises)
-          .then(([pool, members]) => courtView(app, req, res, pool, members, tmpError, selectedJurors || [], selectAll))
-          .catch(errorCB(app, req, res, poolNumber, 'Failed to fetch pool summary for court user:'));
-      } else {
-        Promise.all(poolPromises)
-          .then(([pool, members]) => bureauView(app, req, res, pool, members, tmpError, selectedJurors || [], selectAll))
-          .catch(errorCB(app, req, res, poolNumber, 'Failed to fetch pool summary for bureau user:'));
-      }
+        )
+        .then((members) => isCourtUser(req, res) 
+          ? courtView(app, req, res, pool, members, tmpError, selectedJurors || [], selectAll) 
+          : bureauView(app, req, res, pool, members, tmpError, selectedJurors || [], selectAll))
+        .catch((err) => {
+          if (err.statusCode === 422 && err.error.code === 'MAX_ITEMS_EXCEEDED') {
+            const members = { data: [], totalItems: 501 }
+            if (isCourtUser(req, res)) {
+              return courtView(app, req, res, pool, members, tmpError, selectedJurors || [], selectAll) ;
+            }
+            return bureauView(app, req, res, pool, members, tmpError, selectedJurors || [], selectAll);
+          }
+          return errorCB(app, req, res, poolNumber, `Failed to fetch pool summary for ${isCourtUser(req, res) ? 'court' : 'bureau'} user:`)(err)
+        })
+      })
+      .catch(errorCB(app, req, res, poolNumber, `Failed to fetch pool summary for ${isCourtUser(req, res) ? 'court' : 'bureau'} user:`))
     };
   };
 
