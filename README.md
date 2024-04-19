@@ -60,3 +60,4 @@ docker compose up -d # this will run a redis database locally
 The command above assumes the developer has docker installed, so if you do not have docker check the redis website below.
 
 [Install redis on MacOS](https://redis.io/docs/install/install-redis/install-redis-on-mac-os/)
+
