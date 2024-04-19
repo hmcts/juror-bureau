@@ -148,6 +148,8 @@
         {% endif %}
         {% if courtsTableData | length %}
           {{ govukTable({
+            caption: "Courts",
+            captionClasses: "govuk-visually-hidden",
             head: [
               {
                 text: "Main courts"

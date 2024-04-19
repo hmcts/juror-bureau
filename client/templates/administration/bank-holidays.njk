@@ -33,6 +33,8 @@
         {% endfor %}
 
         {{ govukTable({
+          caption: "Bank holidays for " + year,
+          captionClasses: "govuk-visually-hidden",
           head: [
             {
               text: "Date",
