@@ -4,9 +4,13 @@
 
 {% block content %}
 
-<h1 class="govuk-heading-l">Do you want this trial to be protected?</h1>
-
-<p class="govuk-body govuk-!-margin-bottom-7">All juror names will be anonymous so that their identity can be protected.</p>
+{% if unprotected %}
+  <h1 class="govuk-heading-l">Do you want to remove the protected status of this trial?</h1>
+  <p class="govuk-body govuk-!-margin-bottom-7">All juror names will no longer be anonymous and their identities will not be protected.</p>
+{% else %}
+  <h1 class="govuk-heading-l">Do you want this trial to be protected?</h1>
+  <p class="govuk-body govuk-!-margin-bottom-7">All juror names will be anonymous so that their identity can be protected.</p>
+{% endif %}
 
 <form method="post" action="{{ processUrl }}" id="confirmProtectedTrial">
 

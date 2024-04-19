@@ -1,91 +1,224 @@
+/* eslint-disable camelcase */
 (function() {
   'use strict';
 
-  const  _ = require('lodash')
-    , createTrialValidator = require('../../../config/validation/create-trial')
-    , validate = require('validate.js')
-    // stubbed will get judges/courtrooms from backend
-    , { judges, allCourtrooms } = require('../../../stores/trials')
-    , trialPayloadBuilder = require('../common-functions').trialPayloadBuilder;
+  const  _ = require('lodash');
+  const validate = require('validate.js');
+  const createTrialValidator = require('../../../config/validation/create-trial');
+  const { courtroomsObject, judgesObject, trialDetailsObject, editTrialDAO } = require('../../../objects/create-trial');
+  const { dateFilter } = require('../../../components/filters');
+  const { trialPayloadBuilder } = require('../create-trial/create-trial.controller');
+
+  const countErrors = (tmpErrors) => typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0;
 
   module.exports.getEditTrial = function(app) {
-    return function(req, res) {
-      let tmpErrors
-        , tmpFields;
+    return async function(req, res) {
+      const { trialNumber, locationCode } = req.params;
+      let tmpErrors;
+      let tmpFields;
 
-      // STUBBED - trial details will be pulled from backend
-      const trial = req.session.trials.find(t => t.trialNumber === req.params.trialNumber);
+      Promise.all([
+        courtroomsObject.get(
+          require('request-promise'),
+          app,
+          req.session.authToken
+        ),
+        judgesObject.get(
+          require('request-promise'),
+          app,
+          req.session.authToken
+        ),
+        trialDetailsObject.get(
+          require('request-promise'),
+          app,
+          req.session.authToken,
+          trialNumber,
+          locationCode
+        ),
+      ])
+        .then(([courtrooms, judges, trial]) => {
 
-      req.session.courtrooms = allCourtrooms;
+          app.logger.info('Fetched trial details, courtrooms and judges list', {
+            auth: req.session.authentication,
+            jwt: req.session.authToken,
+            data: {
+              courtrooms,
+              judges,
+              trial,
+            },
+          });
 
-      tmpErrors = _.clone(req.session.errors);
-      tmpFields = _.clone(req.session.formFields);
-      delete req.session.errors;
-      delete req.session.formFields;
+          const courtroomsToDisplay = [];
 
-      if (typeof tmpFields === 'undefined') {
-        req.session.originalTrialNumber = trial.trialNumber;
-        tmpFields = _.clone(trial);
-        tmpFields.defendants = trial.trialType === 'criminal' ? trial.parties : '';
-        tmpFields.respondents = trial.trialType === 'civil' ? trial.parties : '';
-      }
+          req.session.judges = judges.judges;
+          req.session.courtrooms = courtrooms.map((court) => {
 
-      return res.render('trial-management/create-trial.njk', {
-        nav: 'trials',
-        editTrial: true,
-        courts: allCourtrooms,
-        judges,
-        processUrl: app.namedRoutes.build('trial-management.edit-trial.post', {trialNumber: req.params.trialNumber}),
-        cancelUrl: app.namedRoutes.build('trial-management.trials.detail.get', {trialNumber: req.params.trialNumber}),
-        trialDetails: tmpFields,
-        errors: {
-          items: tmpErrors,
-        },
-      });
+            court.display_name = court.court_location;
+            court.court_location = court.court_location.replace(/ /g, '_');
+
+            courtroomsToDisplay.push(
+              {
+                displayName: court.display_name,
+                courtLocationName: court.court_location,
+                courtrooms: court.court_rooms.map(room => room.description),
+              }
+            );
+
+            return court;
+          });
+
+          const judgesToDisplay = judges.judges.map(j => j.description);
+
+          const originalTrial = {
+            trialNumber,
+            trialType: trial.trial_type === 'Criminal' ? 'CRI' : 'CIV',
+            defendants: trial.trial_type === 'Criminal' ? trial.defendants : '',
+            respondents: trial.trial_type === 'Civil' ? trial.defendants : '',
+            startDate: dateFilter(trial.startDate, null, 'DD/MM/YYYY'),
+            judge: trial.judge.description,
+            courtroom: trial.courtroom.description,
+            protected: trial.protected ? 'true' : 'false',
+          };
+
+          req.session.orignalTrial = {
+            protected: trial.protected,
+          };
+
+          tmpErrors = _.clone(req.session.errors);
+          tmpFields = typeof req.session.editTrial !== 'undefined'
+            ? _.clone(req.session.editTrial.tmpFields)
+            : (typeof req.session.formFields !== 'undefined'
+              ? _.clone(req.session.formFields)
+              : originalTrial);
+          delete req.session.errors;
+          delete req.session.formFields;
+          delete req.session.editTrial;
+
+          return res.render('trial-management/create-trial.njk', {
+            nav: 'trials',
+            editTrial: true,
+            trialNumber,
+            originalTrial,
+            courts: courtroomsToDisplay,
+            judges: judgesToDisplay,
+            processUrl: app.namedRoutes.build('trial-management.edit-trial.post', { trialNumber, locationCode }),
+            cancelUrl: app.namedRoutes.build('trial-management.trials.detail.get', { trialNumber, locationCode }),
+            trialDetails: tmpFields,
+            errors: {
+              count: countErrors(tmpErrors),
+              items: tmpErrors,
+            },
+          });
+
+        })
+        .catch((err) => {
+          app.logger.crit('Failed to fetch trial details, judges or courtrooms list: ', {
+            auth: req.session.authentication,
+            jwt: req.session.authToken,
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
+          return res.render('_errors/generic');
+        });
+
     };
   };
 
   module.exports.postEditTrial = function(app) {
     return function(req, res) {
-
+      const { trialNumber, locationCode } = req.params;
+      const judges = _.clone(req.session.judges);
       const courtrooms = _.clone(req.session.courtrooms);
-      const originalTrialNumber = _.clone(req.session.originalTrialNumber);
 
+      delete req.session.judges;
       delete req.session.courtrooms;
-      delete req.session.originalTrialNumber;
 
       if (courtrooms.length > 1){
-        const courtroom = req.body[req.body.court + 'Courtroom'];
+        const courtroom = req.body[req.body.court];
 
         req.body.courtroom = courtroom;
       }
 
-      let validatorResult = validate(req.body, createTrialValidator.trialDetails(courtrooms));
+      let validatorResult = validate(req.body, createTrialValidator.trialDetails(courtrooms, judges));
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
 
-        return res.redirect(
-          app.namedRoutes.build('trial-management.edit-trial.get', {trialNumber: req.params.trialNumber})
-        );
+        return res.redirect(app.namedRoutes.build('trial-management.edit-trial.get', { trialNumber, locationCode }));
       }
 
-      const payload = trialPayloadBuilder(req.body);
+      const payload = trialPayloadBuilder(req.body, judges, courtrooms);
 
-      // Remove current data from session and add new - due to ability to change trial number
-      // Will be handled in backend in future
-      req.session.trials = req.session.trials.filter(function(trial) {
-        return trial.trialNumber !== originalTrialNumber;
-      });
+      if ((!req.session.orignalTrial.protected && req.body.protected === 'true')
+        || (req.session.orignalTrial.protected && !req.body.protected)) {
+        req.session.editTrial = {
+          payload: _.clone(payload),
+          tmpFields: req.body,
+        };
+        return res.redirect(app.namedRoutes.build('trial-management.edit-trial-confirm-protected.get', {
+          trialNumber,
+          locationCode,
+        }));
+      }
 
-      req.session.trials.push(payload);
-
-      return res.redirect(
-        app.namedRoutes.build('trial-management.trials.detail.get', {trialNumber: payload.trialNumber})
-      );
+      editTrial(app, req, res, payload);
     };
   };
 
+  module.exports.getEditProtectedTrial = function(app) {
+    return function(req, res) {
+      const { trialNumber, locationCode } = req.params;
+
+      return res.render('trial-management/confirm-protected-trial.njk', {
+        processUrl: app.namedRoutes.build('trial-management.edit-trial-confirm-protected.post', {
+          trialNumber,
+          locationCode,
+        }),
+        cancelUrl: app.namedRoutes.build('trial-management.edit-trial.get', {
+          trialNumber,
+          locationCode,
+        }),
+        unprotected: req.session.editTrial.tmpFields.protected !== 'true',
+      });
+    };
+  };
+
+  module.exports.postEditProtectedTrial = function(app) {
+    return function(req, res) {
+      editTrial(app, req, res, req.session.editTrial.payload);
+    };
+  };
+
+  async function editTrial(app, req, res, payload){
+    try {
+      const resp = await editTrialDAO.patch(req, payload);
+
+      app.logger.info('Edited an existing trial', {
+        auth: req.session.authentication,
+        jwt: req.session.authToken,
+        data: payload,
+        response: resp,
+      });
+
+      if (typeof req.session.editTrial !== 'undefined') {
+        delete req.session.editTrial;
+      };
+
+      return res.redirect(
+        app.namedRoutes.build('trial-management.trials.detail.get', {
+          trialNumber: resp.trial_number,
+          locationCode: payload.court_location,
+        })
+      );
+    } catch (err) {
+      app.logger.crit('Failed to edit an existing trial: ', {
+        auth: req.session.authentication,
+        jwt: req.session.authToken,
+        data: payload,
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+      return res.render('_errors/generic');
+    }
+  }
 
 })();
