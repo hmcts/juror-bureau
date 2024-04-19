@@ -6,6 +6,7 @@
   const validator = require('../../../config/validation/empanel-jury');
   const { empanelJurorsDAO, requestPanelDAO } = require('../../../objects/panel');
   const { trialDetailsObject } = require('../../../objects/create-trial');
+  const { makeManualError } = require('../../../lib/mod-utils');
 
   module.exports.getEmpanelAmount = function(app) {
     return function(req, res) {
@@ -187,6 +188,15 @@
           locationCode: req.params.locationCode,
         }));
       }, (err) => {
+        if (err.statusCode === 422) {
+          req.session.errors = makeManualError('empanel error', err.error.message);
+
+          return res.redirect(app.namedRoutes.build('trial-management.empanel.select.get', {
+            trialNumber: req.params.trialNumber,
+            locationCode: req.params.locationCode,
+          }));
+        }
+
         app.logger.crit('Failed to empanel jurors', {
           auth: req.session.authentication,
           token: req.session.authToken,
