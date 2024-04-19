@@ -197,6 +197,13 @@
           locationCode: req.params.locationCode,
         }));
       }, (err) => {
+
+        app.logger.crit('Failed to empanel jurors', {
+          auth: req.session.authentication,
+          token: req.session.authToken,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+
         if (err.statusCode === 422) {
           if (err.error.code === 'JUROR_MUST_BE_CHECKED_IN') {
             req.session.errors = makeManualError('empanel error', '1 or more jurors have not been checked in today');
@@ -209,12 +216,6 @@
             locationCode: req.params.locationCode,
           }));
         }
-
-        app.logger.crit('Failed to empanel jurors', {
-          auth: req.session.authentication,
-          token: req.session.authToken,
-          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
-        });
 
         return res.render('_errors/generic.njk');
       });
