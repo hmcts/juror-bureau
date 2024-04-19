@@ -271,6 +271,11 @@
     const handleAttendance = req.session.handleAttendance;
     const checkInTime = req.session.checkInTime;
     const checkOutTime = req.session.checkOutTime;
+    const tmpErrors = _.clone(req.session.errors);
+    const tmpBody = _.clone(req.session.formFields);
+
+    delete req.session.errors;
+    delete req.session.formFields;
 
     let backUrl;
 
@@ -311,18 +316,47 @@
         built: true,
         url: backUrl,
       },
+      errors: {
+        title: 'Please check the form',
+        count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+        items: tmpErrors,
+      },
+      tmpBody,
     });
   };
 
   module.exports.postReturnConfirm = (app) => (req, res) => {
     // TODO: call the backend here
-    const checkInTime = req.session.checkInTime ? padTimeForApi(convert12to24(req.session.checkInTime)) : '';
+    let checkInTime = req.session.checkInTime ? padTimeForApi(convert12to24(req.session.checkInTime)) : '';
     const checkOutTime = req.session.checkOutTime ? padTimeForApi(convert12to24(req.session.checkOutTime)) : '';
     const selectedJurors = req.session.selectedJurors;
     const trialNumber = req.params.trialNumber;
     const locCode = req.params.locationCode;
     const panelType = req.session.panel ? 'panel' : 'jury';
     const completeService = req.session.handleAttendance === 'complete' ? 'true' : 'false';
+
+    if (req.session.handleAttendance === 'return') {
+      let validatorResult = validate({
+        checkInTime: {
+          hour: req.body.checkInTimeHour,
+          minute: req.body.checkInTimeMinute,
+          period: req.body.checkInTimePeriod,
+        },
+      }, returnsValidator.returnCheckInTime());
+
+      if (typeof validatorResult !== 'undefined') {
+        req.session.errors = validatorResult.checkInTime[0];
+        req.session.formFields = req.body;
+        return res.redirect(app.namedRoutes.build('trial-management.trials.return.confirm.get', {
+          trialNumber: trialNumber,
+          locationCode: locCode,
+        }));
+      }
+
+      checkInTime = padTimeForApi(
+        convert12to24(`${req.body.checkInTimeHour}:${req.body.checkInTimeMinute}${req.body.checkInTimePeriod}`)
+      );
+    }
 
     delete req.session.panel;
     delete req.session.checkInTime;

@@ -1,7 +1,8 @@
 ;(function(){
   'use strict';
 
-  const { timeMessageMapping } = require('../../config/validation/check-in-out-time')
+  const _ = require('lodash')
+    , { timeMessageMapping } = require('../../config/validation/check-in-out-time')
     , checkInTimeValidator = require('../../config/validation/check-in-out-time').checkInTime
     , checkOutTimeValidator = require('../../config/validation/check-in-out-time').checkOutTime
     , { convertAmPmToLong } = require('../../components/filters')
@@ -35,6 +36,15 @@
       },
       checkOutTime: {
         returnCheckOutTime: {
+        },
+      },
+    };
+  };
+
+  module.exports.returnCheckInTime = function() {
+    return {
+      checkInTime: {
+        returnCheckInTime: {
         },
       },
     };
@@ -79,7 +89,16 @@
     }, checkInTimeValidator());
 
     if (typeof validatorResult !== 'undefined') {
-      return validatorResult;
+      const removedDeleteMessage = _.mapValues(validatorResult, function(field) {
+        return [
+          {
+            summary: field[0].summary.split(' or delete this juror\'s attendance')[0],
+            details: field[0].details.split(' or delete this juror\'s attendance')[0],
+          },
+        ];
+      });
+
+      return removedDeleteMessage;
     }
 
   };
@@ -89,12 +108,7 @@
     if ((typeof value.hour === 'undefined' || value.hour === '') && (typeof value.minute === 'undefined' || value.minute === '')){
       return {
         checkOutTime: [
-          {
-            summary: timeMessageMapping['checkOut'].missingWholeTime.summary
-              .split(' or delete this juror\'s attendance')[0],
-            details: timeMessageMapping['checkOut'].missingWholeTime.details
-              .split(' or delete this juror\'s attendance')[0],
-          },
+          timeMessageMapping['checkOut'].missingWholeTime,
         ],
       };
     }
@@ -122,10 +136,7 @@
 
       if (checkOutTimeNo <= checkInTimeNo){
         return {
-          checkOutTime: [{
-            summary: 'Check out time cannot be earlier than check in time',
-            details: 'Check out time cannot be earlier than check in time',
-          }],
+          checkOutTime: [timeMessageMapping['checkOut'].beforeCheckIn],
         };
       }
     }
