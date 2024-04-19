@@ -2,6 +2,7 @@
 
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "custom-components/time-input-12-hour/macro.njk" import timeInput12Hour %}
 
 {% set currentApp = "Trial management" %}
 
@@ -33,10 +34,48 @@
         {% elif handleAttendance == 'confirm' %}
           <p class="govuk-body govuk-!-padding-bottom-5">You're returning {{selectedJurors.length}} juror{{jurorPlural}} and confirming their attendance for today.</p>
         {% elif handleAttendance == 'return' %}
-          <p class="govuk-body govuk-!-padding-bottom-5">You're returning {{selectedJurors.length}} juror{{jurorPlural}}.</p>
-          <p class="govuk-body govuk-!-padding-bottom-5">You have not confirmed their attendance yet. You'll need to do this separately.</p>
+          <p class="govuk-body">You're returning {{selectedJurors.length}} juror{{jurorPlural}}.</p>
+          <p class="govuk-body govuk-!-padding-bottom-3">All jurors need to have been checked in.</p>
         {% elif handleAttendance == 'complete' %}
           <p class="govuk-body govuk-!-padding-bottom-5">You're returning {{selectedJurors.length}} juror{{jurorPlural}} and confirming their attendance for today.</p>
+        {% endif %}
+
+        {% if handleAttendance == 'return' %}
+          {{ timeInput12Hour({
+            id: "checkInTime",
+            name: "checkInTime",
+            hint: {
+              text: "If a juror has already been checked in, this time will not be applied."
+            },
+            fieldset: {
+              legend: {
+                text: "Enter check in time",
+                classes: "govuk-fieldset__legend--m"
+              }
+            },
+            items: {
+              hour: {
+                value: tmpBody.checkInTimeHour,
+                attributes: {
+                  minLength: "1",
+                  maxLength: "2"
+                }
+              },
+              minute: {
+                value: tmpBody.checkInTimeMinute,
+                attributes: {
+                  minLength: "1",
+                  maxLength: "2"
+                }
+              },
+              period: {
+                value: tmpBody.checkInTimePeriod
+              }
+            },
+            errors: errors.items
+          }) }}
+
+          <p class="govuk-body">You have not confirmed their attendance yet. You’ll need to do this separately.</p>
         {% endif %}
 
         {% if checkInTime %}
