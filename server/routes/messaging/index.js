@@ -140,6 +140,12 @@
       exportController.postJurorsList(app),
     );
 
+    app.post('/messaging/export-contact-details/jurors/filter',
+      'messaging.export-contacts.jurors.filter.post',
+      auth.verify,
+      exportController.postJurorsFilter(app),
+    );
+
     app.get('/messaging/export-contact-details/details-to-export',
       'messaging.export-contacts.details-to-export.get',
       auth.verify,

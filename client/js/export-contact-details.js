@@ -3,7 +3,7 @@
 
   var messagingFilter = $('#messaging-jurors-filter')
     , jurorsTableWrapper = $('#messaging-jurors-table-wrapper')
-    , jurorsShowFilterBtn = $('#messaging-jurors-filter-button')
+    , jurorsShowFilterBtn = $('#filterJurorsButton')
     , url = new URL(window.location)
     , csrfToken = $('#csrfToken');
 

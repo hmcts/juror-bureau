@@ -109,6 +109,8 @@
       dateDeferredTo: () => {
         if (!body.searchBy || body.searchBy !== 'dateDeferredTo') return null;
 
+        // TODO: check for a valid date
+
         return {
           presence: {
             allowEmpty: false,
