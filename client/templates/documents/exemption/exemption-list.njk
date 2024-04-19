@@ -73,6 +73,8 @@
         <div class="govuk-caption-m"> <span id="checkedJurors">0</span> of selected <span id="totalJurors">{{ jurors | length }}</span> </div>
 
         <table class="govuk-table" data-module="moj-sortable-table" data-multi-select-checkbox="#select-all" id="exemptionJurors" name="exemptionJurors">
+          <caption class="govuk-table__caption govuk-visually-hidden">Excemptions list</caption>
+          
           <thead class="govuk-table__head">
             <tr class="govuk-table__row">
               <th scope="col" class="govuk-table__header jd-assign-replies-table-head jd-middle-align">
@@ -83,10 +85,10 @@
                   </label>
                 </div>
               </th>
-              <th scope="col" class="govuk-table__header jd-assign-replies-table-head jd-middle-align" aria-sort="ascending">Juror number</th>
-              <th scope="col" class="govuk-table__header jd-assign-replies-table-head jd-middle-align" aria-sort="none">First name</th>
-              <th scope="col" class="govuk-table__header jd-assign-replies-table-head jd-middle-align" aria-sort="none">Last name</th>
-              <th scope="col" class="govuk-table__header jd-assign-replies-table-head jd-middle-align" aria-sort="none">Date empanelled</th>
+              <th scope="col" class="govuk-table__header jd-assign-replies-table-head jd-middle-align" aria-sort="ascending" aria-label="Juror number">Juror number</th>
+              <th scope="col" class="govuk-table__header jd-assign-replies-table-head jd-middle-align" aria-sort="none" aria-label="First name">First name</th>
+              <th scope="col" class="govuk-table__header jd-assign-replies-table-head jd-middle-align" aria-sort="none" aria-label="Last name">Last name</th>
+              <th scope="col" class="govuk-table__header jd-assign-replies-table-head jd-middle-align" aria-sort="none" aria-label="Date empanelled">Date empanelled</th>
             </tr>
           </thead>
           <tbody class="govuk-table__body">    

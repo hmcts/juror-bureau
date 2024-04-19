@@ -44,6 +44,7 @@
   <div class="show-details-container" id="view-juror-details">
 
     <table class="govuk-table table-summary juror-details" summary="Details about Juror">
+      <caption class="govuk-table__caption govuk-visually-hidden">Juror details</caption>
 
       <tbody class="govuk-table__body">
         <tr class="govuk-table__row {% if nameDetails.changed %}infox{% endif %}" id="name">
@@ -178,6 +179,8 @@
         </div>
 
       <table class="govuk-table table-summary juror-details" summary="Details about Juror Third Party">
+        <caption class="govuk-table__caption govuk-visually-hidden">Juror third party details</caption>
+
         <tbody class="govuk-table__body">
           {% if method !== "paper" %}
             <tr class="info" id="thirdPartyNameRow">

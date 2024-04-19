@@ -12,31 +12,35 @@
   {% else %}
 
     {% set headingsHtml %}
-      <th scope="col" class="govuk-table__header" aria-sort="ascending">Date</th>
-      <th scope="col" class="govuk-table__header" aria-sort="none">Audit report</th>
-      <th scope="col" class="govuk-table__header" aria-sort="none">Attendance</th>
-      <th scope="col" class="govuk-table__header" aria-sort="none">Financial loss</th>
-      <th scope="col" class="govuk-table__header" aria-sort="none">Travel</th>
-      <th scope="col" class="govuk-table__header" aria-sort="none">Food and drink</th>
-      <th scope="col" class="govuk-table__header" aria-sort="none">Smartcard</th>
+      <th scope="col" class="govuk-table__header" aria-sort="ascending" aria-label="Date">Date</th>
+      <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Audit report">Audit report</th>
+      <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Attendance">Attendance</th>
+      <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Financial loss">Financial loss</th>
+      <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Travel">Travel</th>
+      <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Food and drink">Food and drink</th>
+      <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Smartcard">Smartcard</th>
       {% if status === "for-approval" or status === "for-reapproval" %}
-        <th scope="col" class="govuk-table__header" aria-sort="none">Total due</th>
+        <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Total due">Total due</th>
       {% endif %}
       {% if status === "for-reapproval" or status === "approved" %}
-        <th scope="col" class="govuk-table__header" aria-sort="none">Total paid</th>
+        <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Total paid">Total paid</th>
       {% endif %}
       {% if status === "for-reapproval" %}
-        <th scope="col" class="govuk-table__header" aria-sort="none">Balance to pay</th>
+        <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Balance to pay">Balance to pay</th>
       {% endif %}
-      <th scope="col" class="govuk-table__header" aria-sort="none">
-        {% if status === "for-approval" %}
+      {% if status === "for-approval" %}
+        <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Submitted for approval">
           Submitted for approval
-        {% elif status === "for-reapproval" %}
+        </th>
+      {% elif status === "for-reapproval" %}
+        <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Date submitted">
           Date submitted
-        {% elif status === "approved" %}
+        </th>
+      {% elif status === "approved" %}
+        <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Date approved">
           Date approved
-        {% endif %}
-      </th>
+        </th>
+      {% endif %}
     {% endset %}
 
     {% set rowsHtml %}

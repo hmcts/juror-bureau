@@ -35,15 +35,16 @@
       
       <table class="govuk-table {% if listedJurors.length === 0 %}js-hidden{% endif %}"
       data-module="moj-sortable-table" id="attendanceTable">
+        <caption class="govuk-table__caption govuk-visually-hidden">Confirmed jurors list</caption>
 
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header" aria-sort="ascending">Juror number</th>
-            <th scope="col" class="govuk-table__header" aria-sort="none">First name</th>
-            <th scope="col" class="govuk-table__header" aria-sort="none">Last name</th>
-            <th scope="col" class="govuk-table__header" aria-sort="none">Status</th>
-            <th scope="col" class="govuk-table__header" aria-sort="none">Checked in</th>
-            <th scope="col" class="govuk-table__header" aria-sort="none">Checked out</th>
+            <th scope="col" class="govuk-table__header" aria-sort="ascending" aria-label="Juror number">Juror number</th>
+            <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="First name">First name</th>
+            <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Last name">Last name</th>
+            <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Status">Status</th>
+            <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Checked in">Checked in</th>
+            <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Checked out">Checked out</th>
           </tr>
         </thead>
 
@@ -96,13 +97,14 @@
 
       <table class="govuk-table {% if listedJurors.length === 0 %}js-hidden{% endif %}"
       data-module="moj-sortable-table" id="attendanceTable">
+        <caption class="govuk-table__caption govuk-visually-hidden">Absent jurors list</caption>
 
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header" aria-sort="ascending">Juror number</th>
-            <th scope="col" class="govuk-table__header" aria-sort="none">First name</th>
-            <th scope="col" class="govuk-table__header" aria-sort="none">Last name</th>
-            <th scope="col" class="govuk-table__header" aria-sort="none">Status</th>
+            <th scope="col" class="govuk-table__header" aria-sort="ascending" aria-label="Juror number">Juror number</th>
+            <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="First name">First name</th>
+            <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Last name">Last name</th>
+            <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Status">Status</th>
           </tr>
         </thead>
 

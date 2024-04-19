@@ -19,6 +19,7 @@
 
       const selectedDate = date ? new Date(date) : new Date();
       const selectedDateString = dateFilter(selectedDate, null, 'YYYY-MM-DD');
+      const group = 'IN_WAITING';
 
       const confirmedTab = tab || 'attended';
 
@@ -29,6 +30,7 @@
           req.session.authToken,
           req.session.authentication.owner,
           selectedDateString,
+          group
         );
 
         attendees = attendees.map((attendee) => {

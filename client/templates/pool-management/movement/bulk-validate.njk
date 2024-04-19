@@ -56,6 +56,8 @@
                 <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-7">
                     {{ govukTable({
                     firstCellIsHeader: true,
+                    caption: "Jurors no longer in the original pool",
+                    captionClasses: "govuk-visually-hidden",
                     head: [
                         {
                         text: "Juror number"
@@ -82,6 +84,8 @@
                 <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-7">
                     {{ govukTable({
                     firstCellIsHeader: true,
+                    caption: "Jurors ineligible due to age",
+                    captionClasses: "govuk-visually-hidden",
                     head: [
                         {
                         text: "Juror number"
@@ -108,6 +112,8 @@
                 <div class="govuk-grid-column-full govuk-!-margin-bottom-7">
                     {{ govukTable({
                     firstCellIsHeader: true,
+                    caption: "Jurors with invalid status",
+                    captionClasses: "govuk-visually-hidden",
                     head: [
                         {
                         text: "Juror number"

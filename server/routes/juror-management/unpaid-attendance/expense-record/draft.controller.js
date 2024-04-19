@@ -4,6 +4,7 @@
   const _ = require('lodash');
   const { jurorOverviewDAO } = require('../../../../objects/juror-record');
   const { getDraftExpensesDAO, submitDraftExpenses } = require('../../../../objects/expense-record');
+  const { makeManualError } = require('../../../../lib/mod-utils');
 
   module.exports.getDraftExpenses = function(app) {
     return function(req, res) {
@@ -183,6 +184,22 @@
           return res.redirect(redirectUrl);
         })
         .catch((err) => {
+          if (err.statusCode === 422) {
+            req.session.errors = makeManualError('Submit for approval', err.error.message);
+
+            app.logger.crit('Failed to submit draft expenses for approval: ', {
+              auth: req.session.authentication,
+              data: {
+                jurorNumber,
+                poolNumber,
+                dates: req.body['checked-expenses'],
+              },
+              error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+            });
+
+            return res.redirect(redirectUrl);
+          }
+
           app.logger.crit('Failed to fetch draft expense data: ', {
             auth: req.session.authentication,
             jwt: req.session.authToken,
