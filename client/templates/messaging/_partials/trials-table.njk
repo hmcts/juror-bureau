@@ -6,6 +6,8 @@
   <div class="govuk-grid-column-full govuk-body">
     {{ modSortableTable({
       id: "trialsTable",
+      caption: "Trials",
+      captionClass: "govuk-visually-hidden",
       head: trials.head,
       rows: trials.rows,
       url: urlPrefix

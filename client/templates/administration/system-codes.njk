@@ -39,15 +39,26 @@
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl">{{ title }}</h1>
       {{ govukTable({
+        caption: "System codes",
+        captionClasses: "govuk-visually-hidden",
         head: [
           {
-            text: "Code"
+            text: "Code".
+            attributes: {
+              "aria-label": "Code"
+            }
           },
           {
-            text: "Description"
+            text: "Description",
+            attributes: {
+              "aria-label": "Description"
+            }
           },
           {
-            text: "Active"
+            text: "Active",
+            attributes: {
+              "aria-label": "Active"
+            }
           } if showActiveColumn
         ],
         rows: codeRows

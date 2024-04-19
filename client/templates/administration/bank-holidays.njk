@@ -33,14 +33,22 @@
         {% endfor %}
 
         {{ govukTable({
+          caption: "Bank holidays for " + year,
+          captionClasses: "govuk-visually-hidden",
           head: [
             {
               text: "Date",
-              classes: "govuk-!-width-one-third"
+              classes: "govuk-!-width-one-third",
+              attributes: {
+                "aria-label": "Date"
+              }
             },
             {
               text: "Bank holiday",
-              classes: "govuk-!-width-two-thirds"
+              classes: "govuk-!-width-two-thirds",
+              attributes: {
+                "aria-label": "Bank holiday"
+              }
             }
           ],
           rows: holidayRows

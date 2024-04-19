@@ -155,6 +155,7 @@
           {% if errors.items["staff"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
 
             <table class="govuk-table" data-module="moj-sortable-table" data-multi-select-checkbox="#select-all">
+              <caption class="govuk-table__caption govuk-visually-hidden">Officers list</caption>
 
               <h2 class="govuk-heading-m">Select the officers you want to assign these replies to</h2>
 
@@ -179,10 +180,10 @@
               <thead class="govuk-table__head">
                 <tr class="govuk-table__row">
                   <th class="govuk-table__header jd-assign-replies-table-head" scope="col" id="select-all"></th>
-                  <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="ascending">Staff name</th>
-                  <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none">Urgent</th>
-                  <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none">Standard</th>
-                  <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none">Total</th>
+                  <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="ascending" aria-label="Staff name">Staff name</th>
+                  <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none" aria-label="Urgent">Urgent</th>
+                  <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none" aria-label="Standard">Standard</th>
+                  <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none" aria-label="Total">Total</th>
                 </tr>
               </thead>
               <tbody class="govuk-table__body">
@@ -231,6 +232,7 @@
         {% else %}
 
           <table class="govuk-table" data-module="moj-multi-select" data-multi-select-checkbox="#select-all">
+            <caption class="govuk-table__caption govuk-visually-hidden">Officers list</caption>
 
             <h2 class="govuk-heading-m">Select the officers you want to assign these replies to</h2>
 
@@ -244,10 +246,10 @@
               <tr class="govuk-table__row">
                 <th class="govuk-table__header jd-assign-replies-table-head" scope="col" id="select-all"></th>
                 <th scope="col" class="govuk-table__header jd-assign-replies-table-head">Staff name</th>
-                <th scope="col" class="govuk-table__header  jd-assign-replies-table-head" aria-sort="none">Send to court</th>
-                <th scope="col" class="govuk-table__header  jd-assign-replies-table-head" aria-sort="none">Urgent</th>
-                <th scope="col" class="govuk-table__header  jd-assign-replies-table-head" aria-sort="none">Standard</th>
-                <th scope="col" class="govuk-table__header  jd-assign-replies-table-head" aria-sort="none">Total</th>
+                <th scope="col" class="govuk-table__header  jd-assign-replies-table-head" aria-sort="none" aria-label="Send to court">Send to court</th>
+                <th scope="col" class="govuk-table__header  jd-assign-replies-table-head" aria-sort="none" aria-label="Urgent">Urgent</th>
+                <th scope="col" class="govuk-table__header  jd-assign-replies-table-head" aria-sort="none" aria-label="Standard">Standard</th>
+                <th scope="col" class="govuk-table__header  jd-assign-replies-table-head" aria-sort="none" aria-label="Total">Total</th>
               </tr>
               {# totals row #}
               <tr class="govuk-table__row">

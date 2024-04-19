@@ -219,6 +219,8 @@
           attributes: {
             "data-module": "moj-sortable-table"
           },
+          caption: "Jurors in pool",
+          captionClasses: "govuk-visually-hidden",
           head: [
             {
               html: checkAllInput,
@@ -227,25 +229,29 @@
             {
               text: "Juror number",
               attributes: {
-                "aria-sort": "none"
+                "aria-sort": "none",
+                "aria-label": "Juror number"
               }
             },
             {
               text: "First name",
               attributes: {
-                "aria-sort": "none"
+                "aria-sort": "none",
+                "aria-label": "First name"
               }
             },
             {
               text: "Last name",
               attributes: {
-                "aria-sort": "none"
+                "aria-sort": "none",
+                "aria-label": "Last name"
               }
             },
             {
               text: "Status",
               attributes: {
-                "aria-sort": "none"
+                "aria-sort": "none",
+                "aria-label": "Status"
               }
             }
           ],

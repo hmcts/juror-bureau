@@ -77,6 +77,8 @@
 
     {% else %}
       <table class="govuk-table govuk-body">
+        <caption class="govuk-table__caption govuk-visually-hidden">Phone logs list</caption>
+        
         <tbody>
           {% for log in response.phoneLogs %}
           <tr class="govuk-table__row" data-row="summary" data-user="{{ log.username }}">

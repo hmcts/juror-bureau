@@ -5,6 +5,9 @@
 
   module.exports = function() {
     return {
+      bankDetails: {
+        bankDetails: {},
+      },
       accountNumber: {
         accountNumber: {},
       },
@@ -17,10 +20,25 @@
     };
   };
 
+  validate.validators.bankDetails = function(value, options, key, attributes) {
+    let tmpErrors = [];
+
+    if (attributes.accountNumber === '' && attributes.sortCode === '' && attributes.accountHolderName === '') {
+      tmpErrors = {
+        summary: 'Bank details cannot be blank, enter the jurors bank details before saving',
+        details: 'Bank details cannot be blank, enter the jurors bank details before saving',
+      };
+    }
+
+    return tmpErrors.length === 0
+      ? null
+      : tmpErrors;
+  };
+
   validate.validators.accountNumber = function(value, options, key, attributes) {
     let tmpErrors = [];
 
-    if (value === '########') {
+    if ((value === '' && attributes.sortCode === '' && attributes.accountHolderName === '') || value === '########') {
       return null;
     }
 
@@ -54,7 +72,7 @@
 
     const sortCode = value.replace(/-/g, '') || '';
 
-    if (sortCode === '######') {
+    if ((sortCode === '' && attributes.accountNumber === '' && attributes.accountHolderName === '') || sortCode === '######') {
       return null;
     }
 
@@ -85,6 +103,10 @@
 
   validate.validators.accountHolderName = function(value, options, key, attributes) {
     let tmpErrors = [];
+
+    if (value === '' && attributes.accountNumber === '' && attributes.sortCode === '') {
+      return null;
+    }
 
     if (value === '') {
       tmpErrors = {
