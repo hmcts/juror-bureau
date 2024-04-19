@@ -104,10 +104,12 @@
       delete req.session.coronerCourt;
       delete req.session.poolCreateFormFields;
 
-      if (!tab && isCourtUser(req)) {
-        tab = 'court';
-      } else if (!tab && !isCourtUser(req)) {
-        tab = 'bureau';
+      if (status !== 'requested') {
+        if (!tab && isCourtUser(req)) {
+          tab = 'court';
+        } else if (!tab && !isCourtUser(req)) {
+          tab = 'bureau';
+        }
       }
 
       promiseArr.push(poolRequests.get(require('request-promise'), app, req.session.authToken, {
