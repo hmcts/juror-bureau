@@ -35,12 +35,20 @@
     <h1 class="govuk-heading-xl">Remove these courts for this user</h2>
     <form action="{{ processUrl }}" method="POST" id="removeCourtForm">
       {{ govukTable({
+        caption: "Courts",
+        captionClasses: "govuk-visually-hidden",
         head: [
           {
-            text: "Main courts"
+            text: "Main courts",
+            attributes: {
+              "aria-label": "Main courts"
+            }
           },
           {
-            text: "Secondary courts"
+            text: "Secondary courts",
+            attributes: {
+              "aria-label": "Secondary courts"
+            }
           }
         ],
         rows: courtsTableData

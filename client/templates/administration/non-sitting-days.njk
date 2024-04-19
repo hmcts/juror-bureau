@@ -60,12 +60,20 @@
         {% endfor %}
 
         {{ govukTable({
+          caption: "Non-sitting days",
+          captionClasses: "govuk-visually-hidden",
           head: [
             {
-              text: "Date"
+              text: "Date",
+              attributes: {
+                "aria-label": "Date"
+              }
             },
             {
-              text: "Description"
+              text: "Description",
+              attributes: {
+                "aria-label": "Description"
+              }
             },
             {
               text: ""
@@ -98,10 +106,16 @@
             classes:'two-column',
             head: [
               {
-                text: "Date"
+                text: "Date",
+                attributes: {
+                  "aria-label": "Date"
+                }
               },
               {
-                text: "Bank holiday"
+                text: "Bank holiday",
+                attributes: {
+                  "aria-label": "Bank holiday"
+                }
               }
             ],
             rows: holidayDateRows

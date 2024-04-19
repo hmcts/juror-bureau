@@ -541,7 +541,7 @@
 
     $('#'+ jn +'-recordCheckOut').click(recordCheckoutTimeHandler);
 
-    updateJurorsCount(attendeesTable.children()[1]);
+    updateJurorsCount(attendeesTable.children()[2]);
   }
 
   function replaceMultipleRows(html){
@@ -586,7 +586,7 @@
     }
 
     attendeesTable.removeClass('js-hidden');
-    attendeesTable.children()[1].append(tr[0]);
+    attendeesTable.children()[2].append(tr[0]);
   };
 
   function buildTimeString() {

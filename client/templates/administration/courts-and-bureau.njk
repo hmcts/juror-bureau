@@ -51,6 +51,8 @@
       <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">Courts and Bureau</h1>
 
       {{ govukTable({
+        caption: "Courts",
+        captionClasses: "govuk-visually-hidden",
         head: [
           {
             classes: 'govuk-!-width-one-third'
@@ -108,18 +110,22 @@
             attributes: {
               'data-module': 'moj-sortable-table'
             },
+            caption: "Courts",
+            captionClasses: "govuk-visually-hidden",
             head: [
               {
                 text: "Court name",
                 attributes: {
-                  "aria-sort": "ascending"
+                  "aria-sort": "ascending",
+                  "aria-name": "Court name"
                 },
                 classes: 'govuk-!-width-one-third'
               },
               {
                 text: "Court type",
                 attributes: {
-                  "aria-sort": "none"
+                  "aria-sort": "none",
+                  "aria-name": "Court type"
                 },
                 classes: 'govuk-!-width-one-third'
               },
