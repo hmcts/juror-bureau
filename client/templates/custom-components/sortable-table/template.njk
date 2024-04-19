@@ -34,7 +34,7 @@
   {% else %}
     {% set headLink %}
       <a class="govuk-link govuk-link--no-visited-state govuk-link--no-underline"
-        href="{{ url }}" id="{{ head.id }}" role="button" data-module="govuk-button">
+        href="{{ url }}" id="{{ head.id }}" aria-label="{{ head.value }}" role="button" data-module="govuk-button">
         {{ head.value }}
       </a>
     {% endset %}
