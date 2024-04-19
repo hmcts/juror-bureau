@@ -22,14 +22,15 @@
       {% if responses.counts.completed > 0 %}
 
         <table class="govuk-table" data-module="moj-sortable-table">
+          <caption class="govuk-table__caption govuk-visually-hidden">Completed replies</caption>
 
           <thead class="govuk-table__head">
             <tr class="govuk-table__row">
-              <th scope="col" class="govuk-table__header" aria-sort="none">Juror number</th>
-              <th scope="col" class="govuk-table__header" aria-sort="none">Juror name</th>
-              <th scope="col" class="govuk-table__header" aria-sort="none">Court</th>
-              <th scope="col" class="govuk-table__header" aria-sort="none">Date received</th>
-              <th scope="col" class="govuk-table__header" aria-sort="ascending">Date and time completed</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Juror number">Juror number</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Juror name">Juror name</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Court">Court</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Date received">Date received</th>
+              <th scope="col" class="govuk-table__header" aria-sort="ascending" aria-label="Date and time completed">Date and time completed</th>
             </tr>
           </thead>
 

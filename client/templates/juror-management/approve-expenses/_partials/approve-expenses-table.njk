@@ -24,6 +24,8 @@
     <div class="govuk-body govuk-!-margin-bottom-0"> <span id="checkedJurors"></span> of <span id="totalJurors"></span> selected</div>
 
     <table class="govuk-table" data-module="moj-sortable-table" data-multi-select-checkbox="#select-all" id="jurors" name="jurors">
+      <caption class="govuk-table__caption govuk-visually-hidden">Juror expenses list</caption>
+      
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">
           <th scope="col" class="govuk-table__header" >
@@ -34,12 +36,12 @@
               </label>
             </div>
           </th>
-          <th scope="col" class="govuk-table__header jd-middle-align" aria-sort="ascending">Juror number</th>
-          <th scope="col" class="govuk-table__header jd-middle-align" aria-sort="none">Pool number</th>
-          <th scope="col" class="govuk-table__header jd-middle-align" aria-sort="none">First name</th>
-          <th scope="col" class="govuk-table__header jd-middle-align" aria-sort="none">Last name</th>
-          <th scope="col" class="govuk-table__header jd-middle-align" aria-sort="none">Amount due</th>
-          <th scope="col" class="govuk-table__header jd-middle-align" aria-sort="none">Status</th>
+          <th scope="col" class="govuk-table__header jd-middle-align" aria-sort="ascending" aria-label="Juror number">Juror number</th>
+          <th scope="col" class="govuk-table__header jd-middle-align" aria-sort="none" aria-label="Pool number">Pool number</th>
+          <th scope="col" class="govuk-table__header jd-middle-align" aria-sort="none" aria-label="First name">First name</th>
+          <th scope="col" class="govuk-table__header jd-middle-align" aria-sort="none" aria-label="Last name">Last name</th>
+          <th scope="col" class="govuk-table__header jd-middle-align" aria-sort="none" aria-label="Amount due">Amount due</th>
+          <th scope="col" class="govuk-table__header jd-middle-align" aria-sort="none" aria-label="Status">Status</th>
           <th scope="col" class="govuk-table__header jd-middle-align"></th>
         </tr>
       </thead>

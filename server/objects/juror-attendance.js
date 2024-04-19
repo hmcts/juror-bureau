@@ -19,14 +19,15 @@
 
   module.exports.jurorsAttending = {
     resource: 'moj/juror-management/appearance',
-    get: function(__, app, jwtToken, locationCode, attendanceDate) {
+    get: function(__, app, jwtToken, locationCode, attendanceDate, group) {
       const reqOptions = _.clone(options);
 
       reqOptions.headers.Authorization = jwtToken;
       reqOptions.uri = urljoin(reqOptions.uri,
         this.resource,
         `?locationCode=${locationCode}`,
-        `&attendanceDate=${attendanceDate}`);
+        `&attendanceDate=${attendanceDate}`,
+        `&group=${group}`);
       reqOptions.method = 'GET';
 
       app.logger.info('Sending request to API: ', {

@@ -148,12 +148,20 @@
         {% endif %}
         {% if courtsTableData | length %}
           {{ govukTable({
+            caption: "Courts",
+            captionClasses: "govuk-visually-hidden",
             head: [
               {
-                text: "Main courts"
+                text: "Main courts",
+                attributes: {
+                  "aria-label": "Main courts"
+                }
               },
               {
-                text: "Satellite courts"
+                text: "Satellite courts",
+                attributes: {
+                  "aria-label": "Satellite courts"
+                }
               },
               {}
             ],

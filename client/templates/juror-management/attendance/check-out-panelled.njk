@@ -38,15 +38,17 @@
         <div class="govuk-grid-column-one-half">
             {{ govukTable({
             firstCellIsHeader: true,
+            caption: "Panelled jurors",
+            captionClasses: "govuk-visually-hidden",
             head: [
                 {
-                text: "Juror number"
+                    text: "Juror number"
                 },
                 {
-                text: "First name"
+                    text: "First name"
                 },
                 {
-                text: "Last name"
+                    text: "Last name"
                 }
             ],
             rows: panelled

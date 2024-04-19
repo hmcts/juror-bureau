@@ -24,15 +24,16 @@
       {% if responses.counts.pending > 0 %}
 
         <table class="govuk-table" data-module="moj-sortable-table">
-
+          <caption class="govuk-table__caption govuk-visually-hidden">Your work list</caption>
+          
           <thead class="govuk-table__head">
             <tr class="govuk-table__row">
-              <th scope="col" class="govuk-table__header" aria-sort="none">Juror number</th>
-              <th scope="col" class="govuk-table__header" aria-sort="none">Juror name</th>
-              <th scope="col" class="govuk-table__header" aria-sort="none">Court</th>
-              <th scope="col" class="govuk-table__header" aria-sort="none">Reply status</th>
-              <th scope="col" class="govuk-table__header" aria-sort="ascending">Date received</th>
-              <th scope="col" class="govuk-table__header" aria-sort="descending">Alerts</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Juror number">Juror number</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Juror name">Juror name</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Court">Court</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Reply status">Reply status</th>
+              <th scope="col" class="govuk-table__header" aria-sort="ascending" aria-label="Date received">Date received</th>
+              <th scope="col" class="govuk-table__header" aria-sort="descending" aria-label="Alerts">Alerts</th>
             </tr>
           </thead>
 

@@ -83,6 +83,7 @@
         text: data.name,
         attributes: {
           'aria-sort': index === 0 ? 'ascending' : 'none',
+          'aria-label': data.name,
         }}));
 
       const tableRows = tableData.data.map(data => tableData.headings.map(header => {
