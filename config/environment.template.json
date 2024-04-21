@@ -9,7 +9,10 @@
       "bureau-smartSurveyTokenSecret": "",
       "launchDarklyKey": "very-secure-key",
       "app-insights-connection-string": "very-secure-key",
-      "bureau-redisConnection": "redis://localhost:6379"
+      "bureau-redisConnection": "redis://localhost:6379",
+      "azure-app-id": "",
+      "azure-tenant-id": "",
+      "azure-app-secret": ""
     }
   }
 }

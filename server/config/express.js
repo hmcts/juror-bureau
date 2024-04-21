@@ -111,7 +111,8 @@
       res.locals.csrftoken = req.csrfToken();
       res.locals.activeUrl = req.originalUrl;
       res.locals.trackingCode = config.trackingCode;
-      res.locals.serviceName = 'Manage replies to jury summons';
+      res.locals.serviceName = 'HMCTS Juror';
+      res.locals.env = process.env.NODE_ENV === 'production' ? 'production' : 'development';
 
       if (config.responseEditEnabled === true){
         res.locals.responseEditEnabled = true;
@@ -124,14 +125,7 @@
       }
 
       res.locals.currentUrl = req.url;
-
-      if (typeof req.session.hasModAccess !== 'undefined') {
-        res.locals.hasModAccess = req.session.hasModAccess;
-      }
-
-      if (typeof res.locals.hasModAccess === 'boolean' && res.locals.hasModAccess) {
-        res.locals.serviceName = 'HMCTS Juror';
-      }
+      res.locals.hasModAccess = true;
 
       // Setting headers stops pages being indexed even if indexed pages link to them.
       res.setHeader('X-Robots-Tag', 'noindex');
