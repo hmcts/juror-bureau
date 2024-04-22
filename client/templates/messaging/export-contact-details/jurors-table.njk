@@ -60,15 +60,15 @@
         classes: "mod-middle-align"
       },
       {
-        text: juror['nextDueAtCourt'] | dateFilter('yyyy-MM-DD', 'DD/MM/YYYY') if juror['nextDueAtCourt'] else "-",
+        text: juror['nextDueAtCourt'] | dateFilter('yyyy-MM-DD', 'D MMM YYYY') if juror['nextDueAtCourt'] else "-",
         classes: "mod-middle-align"
       },
       {
-        text: juror['dateDeferredTo'] | dateFilter('yyyy-MM-DD', 'DD/MM/YYYY') if juror['dateDeferredTo'] else "-",
+        text: juror['dateDeferredTo'] | dateFilter('yyyy-MM-DD', 'D MMM YYYY') if juror['dateDeferredTo'] else "-",
         classes: "mod-middle-align"
       },
       {
-        text: juror['completionDate'] | dateFilter('yyyy-MM-DD', 'DD/MM/YYYY') if juror['completionDate'] else "-",
+        text: juror['completionDate'] | dateFilter('yyyy-MM-DD', 'D MMM YYYY') if juror['completionDate'] else "-",
         classes: "mod-middle-align"
       },
       {
@@ -90,6 +90,7 @@
   {{ modSortableTable({
     id: "messageJurorsTable",
     classes: "mod-horizontal-scroll-table",
+    caption: "Jurors list",
     head: [
       {
         id: 'checkboxes',
