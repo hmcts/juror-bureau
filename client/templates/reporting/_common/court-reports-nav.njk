@@ -1,0 +1,26 @@
+{% from "moj/components/primary-navigation/macro.njk" import mojPrimaryNavigation %}
+
+{{ mojPrimaryNavigation({
+  label: "Reports navigation",
+  attributes: {
+    id: "reportsNav"
+  },
+  items: [
+    {
+      text: "Reports",
+      href: url("reports.get"),
+      active: nav === "reports",
+      attributes: {
+        id: "reportsAnchor"
+      }
+    },
+    {
+      text: "Statistics",
+      href: url("statistics.get"),
+      active: nav === "statistics",
+      attributes: {
+        id: "statisticsAnchor"
+      }
+    }
+  ]
+}) }}

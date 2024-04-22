@@ -1,0 +1,38 @@
+{% extends "layouts/default.njk" %}
+
+{% set currentApp = "Reports" %}
+{% set nav = "statistics" %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-xl">Statistics</h1>
+
+      <h2 class="govuk-heading-m">General</h2>
+      <ul class="govuk-list">
+        <li><a class="govuk-link" href="#">Attendance data</a> (previously Attendance graph)</li>
+        <li><a class="govuk-link" href="#">Pool analysis report</a></li>
+        <li><a class="govuk-link" href="#">Trial statistics</a> (previously Jury summary report)</li>
+        <li><a class="govuk-link" href="#">Panel result report</a> (previously Voir dire report)</li>
+        <li><a class="govuk-link" href="#">Pool status report</a> (previously Pool status graph)</li>
+        <li><a class="govuk-link" href="#">Incomplete service report</a></li>
+        
+      </ul>
+
+      <h2 class="govuk-heading-m">Jury expenditure</h2>
+      <ul class="govuk-list">
+        <li><a class="govuk-link" href="#">Jury expenditure report (low-level)</a></li>
+        <li><a class="govuk-link" href="#">Jury expenditure report (mid-level)</a></li>
+        <li><a class="govuk-link" href="#">Jury expenditure report (high-level)</a></li>
+      </ul>
+
+      <h2 class="govuk-heading-m">Wastage and utilisation</h2>
+      <ul class="govuk-list">
+        <li><a class="govuk-link" href="#">Daily wastage and utilisation report</a></li>
+        <li><a class="govuk-link" href="#">Prepare monthly wastage and utilisation report</a></li>
+        <li><a class="govuk-link" href="#">View monthly wastage and utilisation reports</a></li>
+      </ul>
+      
+    </div>
+  </div>
+{% endblock %}
