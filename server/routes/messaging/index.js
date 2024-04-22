@@ -3,7 +3,7 @@
 
   const auth = require('../../components/auth');
   const sendController = require('./send-messages.controller');
-  const exportController = require('./export-contacts-controller');
+  const exportController = require('./export-contact-details.controller');
   const { isCourtUser } = require('../../components/auth/user-type');
 
   module.exports = function(app) {
@@ -162,6 +162,26 @@
       'messaging.export-contacts.jurors.check.post',
       auth.verify,
       exportController.postCheckJuror(app),
+    );
+
+    app.get('/messaging/:message(export-contact-details)/trials',
+      'messaging.export-contacts.trials.get',
+      auth.verify,
+      isCourtUser,
+      sendController.getSelectTrial(app),
+    );
+    app.post('/messaging/:message(export-contact-details)/trials',
+      'messaging.export-contacts.trials.post',
+      auth.verify,
+      isCourtUser,
+      sendController.postSelectTrial(app),
+    );
+
+    app.post('/messaging/:message(export-contact-details)/trials/filter',
+      'messaging.export-contacts.trials.filter.post',
+      auth.verify,
+      isCourtUser,
+      sendController.postFilterTrial(app),
     );
   };
 })();

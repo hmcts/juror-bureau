@@ -59,7 +59,15 @@
       if (validatorResult) {
         req.session.errors = validatorResult;
 
-        return res.redirect(app.namedRoutes.build('messaging.export-contacts.get'));
+        return res.redirect(app.namedRoutes.build('messaging.export-contacts.get', {
+          message: 'export-contact-details',
+        }));
+      }
+
+      if (searchBy === 'trial') {
+        return res.redirect(app.namedRoutes.build('messaging.export-contacts.trials.get', {
+          message: 'export-contact-details',
+        }));
       }
 
       const postUrl = app.namedRoutes.build('messaging.export-contacts.jurors.get');
@@ -78,6 +86,7 @@
         poolNumber,
         courtName,
         dateDeferredTo,
+        nextDueAtCourtDate,
         postcode,
         sortBy,
         sortOrder,
@@ -89,7 +98,7 @@
       delete req.session.errors;
 
       // eslint-disable-next-line max-len
-      if (isEmpty(searchBy) || (isEmpty(jurorNumber) && isEmpty(jurorName) && isEmpty(poolNumber) && isEmpty(courtName) && isEmpty(dateDeferredTo) && isEmpty(postcode))) {
+      if (isEmpty(searchBy) || (isEmpty(jurorNumber) && isEmpty(jurorName) && isEmpty(poolNumber) && isEmpty(courtName) && isEmpty(dateDeferredTo) && isEmpty(postcode) && isEmpty(nextDueAtCourtDate))) {
         return res.redirect(app.namedRoutes.build('messaging.export-contacts.get'));
       }
 
@@ -364,7 +373,12 @@
       payload['court_name'] = query.courtName;
     }
     if (query.searchBy === 'date') {
-      payload['date_deferred_to'] = dateFilter(query.dateDeferredTo, 'DD/MM/YYYY', 'YYYY-MM-DD');
+      if (query.dateDeferredTo) {
+        payload['date_deferred_to'] = dateFilter(query.dateDeferredTo, 'DD/MM/YYYY', 'YYYY-MM-DD');
+      }
+      if (query.nextDueAtCourtDate) {
+        payload['next_due_at_court_date'] = dateFilter(query.nextDueAtCourtDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
+      }
     }
     if (query.searchBy === 'postcode') {
       payload['juror_search'] = {};
@@ -405,6 +419,9 @@
       break;
     case 'dateDeferredTo':
       queryParams = `?searchBy=date&dateDeferredTo=${query.dateDeferredTo}`;
+      break;
+    case 'nextDueAtCourtDate':
+      queryParams = `?searchBy=date&nextDueAtCourtDate=${query.nextDueAtCourtDate}`;
       break;
     case 'postcode':
       queryParams = `?searchBy=postcode&postcode=${query.postcode}`;

@@ -121,6 +121,22 @@
           },
         };
       },
+
+      nextDueAtCourtDate: () => {
+        if (!body.searchBy || body.searchBy !== 'nextDueAtCourtDate') return null;
+
+        // TODO: check for a valid date
+
+        return {
+          presence: {
+            allowEmpty: false,
+            message: {
+              details: 'Enter date next due at court',
+              summary: 'Enter date next due at court',
+            },
+          },
+        };
+      },
     };
   };
 

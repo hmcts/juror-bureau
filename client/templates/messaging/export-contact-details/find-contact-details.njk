@@ -103,7 +103,7 @@
   }) }}
 {% endset %}
 
-{# court name infos #}
+{# date deferred to infos #}
 {% set deferredToError = undefined %}
 {% if errors.items["deferredTo"] %}
   {% set deferredToError = { "text": errors.items["deferredTo"][0].details } %}
@@ -117,6 +117,27 @@
     },
     hint: "Use dd/mm/yyyy format. For example, 31/01/2023.",
     dateError: deferredToError.text
+  }) }}
+  {# dateValue: "25/12/2023",
+  dateMin: "25/12/2022",
+  dateMax: "25/12/2024",
+  dateError: "An error message." #}
+{% endset %}
+
+{# next due at court date infos #}
+{% set nextDueAtCourtDateError = undefined %}
+{% if errors.items["nextDueAtCourtDate"] %}
+  {% set nextDueAtCourtDateError = { "text": errors.items["nextDueAtCourtDate"][0].details } %}
+{% endif %}
+
+{% set nextDueAtCourtDateHtml %}
+  {{ datePicker({
+    id: "nextDueAtCourtDate",
+    label: {
+      text: "Enter date next due at court"
+    },
+    hint: "Use dd/mm/yyyy format. For example, 31/01/2023.",
+    dateError: nextDueAtCourtDateError.text
   }) }}
   {# dateValue: "25/12/2023",
   dateMin: "25/12/2022",
@@ -179,11 +200,21 @@
               checked: poolNumberError !== undefined
             },
             {
+              value: "trial",
+              text: "Trial"
+            } if isCourtUser,
+            {
               value: "court",
               text: "Deferrals in a specific court",
               conditional: { html: byCourtHtml },
               checked: courtNameError !== undefined
-            },
+            } if isBureauUser,
+            {
+              value: "nextDueAtCourtDate",
+              text: "Next due at court date",
+              conditional: { html: nextDueAtCourtDateHtml },
+              checked: nextDueAtCourtDateError !== undefined
+            } if isCourtUser,
             {
               value: "dateDeferredTo",
               text: "Date deferred to",

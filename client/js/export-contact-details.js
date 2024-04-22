@@ -120,36 +120,51 @@
     if (include) queryString += `&include=${include}`;
 
     switch (searchBy) {
-    case 'court':
+    case 'court': {
       const court = url.searchParams.get('courtName');
 
       if (court) queryString += `&courtName=${court}`;
       break;
-    case 'pool':
+    }
+    case 'pool': {
       const pool = url.searchParams.get('poolNumber');
 
       if (pool) queryString += `&poolNumber=${pool}`;
       break;
-    case 'date':
-      const dateDeferredTo = url.searchParams.get('dateDeferredTo');
+    }
+    case 'date': {
+      let dateDeferredTo;
+      let nextDueAtCourtDate;
+
+      if (url.searchParams.get('dateDeferredTo')) {
+        dateDeferredTo = url.searchParams.get('dateDeferredTo');
+      }
+      if (url.searchParams.get('nextDueAtCourtDate')) {
+        nextDueAtCourtDate = url.searchParams.get('nextDueAtCourtDate');
+      }
 
       if (dateDeferredTo) queryString += `&dateDeferredTo=${dateDeferredTo}`;
+      if (nextDueAtCourtDate) queryString += `&nextDueAtCourtDate=${nextDueAtCourtDate}`;
       break;
-    case 'jurorNumber':
+    }
+    case 'jurorNumber': {
       const jurorNumber = url.searchParams.get('jurorNumber');
 
       if (jurorNumber) queryString += `&jurorNumber=${jurorNumber}`;
       break;
-    case 'jurorName':
+    }
+    case 'jurorName': {
       const jurorName = url.searchParams.get('jurorName');
 
       if (jurorName) queryString += `&jurorName=${jurorName}`;
       break;
-    case 'postcode':
+    }
+    case 'postcode': {
       const postcode = url.searchParams.get('postcode');
 
       if (postcode) queryString += `&postcode=${postcode}`;
       break;
+    }
     }
 
     return queryString;

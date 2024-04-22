@@ -11,7 +11,9 @@
 {% block page_identifier %}messaging{% endblock %}
 
 {% block beforeContent %}
-  {% include "includes/back-link.njk" %}
+  {% if backLinkUrl %}
+    {% include "includes/back-link.njk" %}
+  {% endif %}
 {% endblock %}
 
 {% block content %}

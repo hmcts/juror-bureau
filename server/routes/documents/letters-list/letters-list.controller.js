@@ -101,6 +101,8 @@
           jwt: req.session.authToken,
         });
 
+        console.log(error);
+
         return res.render('_errors/generic');
       }
     };
