@@ -136,13 +136,13 @@
         form.addEventListener('submit', function(event) {
           const checked = [];
 
-          detailsToExport.forEach((el) => {
-            if (el.checked) {
-              checked.push(el.value);
+          detailsToExport.forEach((detailCheckbox) => {
+            if (detailCheckbox.checked) {
+              checked.push(detailCheckbox.value);
             }
           });
 
-          if (makeDefault[0].checked) {
+          if (makeDefault.length && makeDefault[0].checked) {
             localStorage.setItem('detailsToExport', JSON.stringify(checked));
           }
         });
@@ -153,10 +153,10 @@
         if (defaultDetailsToExport) {
           const detailsToExportArray = JSON.parse(defaultDetailsToExport);
 
-          detailsToExportArray.forEach((value) => {
-            detailsToExport.forEach((el) => {
-              if (el.value === value) {
-                el.checked = true;
+          detailsToExportArray.forEach((detail) => {
+            detailsToExport.forEach((detailCheckbox) => {
+              if (detailCheckbox.value === detail) {
+                detailCheckbox.checked = true;
               }
             });
           });

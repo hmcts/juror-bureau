@@ -372,35 +372,38 @@
       filters: [],
     };
 
-    if (query.searchBy === 'jurorNumber') {
+    switch (query.searchBy) {
+    case 'jurorNumber':
       payload['juror_search'] = {};
       payload['juror_search'].jurorNumber = query.jurorNumber;
-    }
-    if (query.searchBy === 'jurorName') {
+      break;
+    case 'jurorName':
       payload['juror_search'] = {};
       payload['juror_search'].jurorName = query.jurorName;
-    }
-    if (query.searchBy === 'pool') {
+      break;
+    case 'pool':
       payload['pool_number'] = query.poolNumber;
-    }
-    if (query.searchBy === 'court') {
+      break;
+    case 'court':
       payload['court_name'] = query.courtName;
-    }
-    if (query.searchBy === 'date') {
+      break;
+    case 'date':
       if (query.dateDeferredTo) {
         payload['date_deferred_to'] = dateFilter(query.dateDeferredTo, 'DD/MM/YYYY', 'YYYY-MM-DD');
       }
       if (query.nextDueAtCourtDate) {
         payload['next_due_at_court_date'] = dateFilter(query.nextDueAtCourtDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
       }
-    }
-    if (query.searchBy === 'postcode') {
+      break;
+    case 'postcode':
       payload['juror_search'] = {};
-      payload['juror_search']['postcode'] = query.postcode;
-    }
-    if (query.searchBy === 'trial') {
+      payload['juror_search'].postcode = query.postcode;
+      break;
+    case 'trial':
       payload['trial_number'] = query.trialNumber;
+      break;
     }
+
     if (query.sortOrder) {
       payload['sort_method'] = query.sortOrder === 'ascending' ? 'ASC' : 'DESC';
     }
