@@ -6,6 +6,7 @@
   const validator = require('../../../config/validation/empanel-jury');
   const { empanelJurorsDAO, requestPanelDAO } = require('../../../objects/panel');
   const { trialDetailsObject } = require('../../../objects/create-trial');
+  const { makeManualError } = require('../../../lib/mod-utils');
 
   module.exports.getEmpanelAmount = function(app) {
     return function(req, res) {
@@ -104,6 +105,9 @@
       let tmpErrors = _.clone(req.session.empanelJuryError);
       let tmpBody = _.clone(req.session.formFields);
 
+      let BVRErrors = _.clone(req.session.errors);
+
+      delete req.session.errors;
       delete req.session.empanelJuryError;
       delete req.session.formFields;
 
@@ -125,6 +129,11 @@
         tmpBody: tmpBody,
         jurors: availableJurors,
         requiredNumberOfJurors: requiredNumberOfJurors,
+        errors: {
+          title: 'Please check the form',
+          count: typeof BVRErrors !== 'undefined' ? Object.keys(BVRErrors).length : 0,
+          items: BVRErrors,
+        },
       });
     };
   };
@@ -162,7 +171,7 @@
         });
       };
 
-      if (juryCount !== requiredNumberOfJurors) {
+      if (juryCount < requiredNumberOfJurors) {
 
         req.session.empanelJuryError = true;
         req.session.formFields = tmpBody;
@@ -173,25 +182,40 @@
         }));
       }
 
-      delete req.session.trial;
-      delete req.session.trialManagement;
-
       empanelJurorsDAO.post(app, req, {
         jurors,
         trial_number: req.params.trialNumber,
         court_location_code: req.params.locationCode,
         number_requested: requiredNumberOfJurors,
       }).then(() => {
+
+        delete req.session.trial;
+        delete req.session.trialManagement;
+
         return res.redirect(app.namedRoutes.build('trial-management.trials.detail.get', {
           trialNumber: req.params.trialNumber,
           locationCode: req.params.locationCode,
         }));
       }, (err) => {
+
         app.logger.crit('Failed to empanel jurors', {
           auth: req.session.authentication,
           token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
+
+        if (err.statusCode === 422) {
+          if (err.error.code === 'JUROR_MUST_BE_CHECKED_IN') {
+            req.session.errors = makeManualError('empanel error', '1 or more jurors have not been checked in today');
+          } else {
+            req.session.errors = makeManualError('empanel error', err.error.message);
+          }
+
+          return res.redirect(app.namedRoutes.build('trial-management.empanel.select.get', {
+            trialNumber: req.params.trialNumber,
+            locationCode: req.params.locationCode,
+          }));
+        }
 
         return res.render('_errors/generic.njk');
       });
