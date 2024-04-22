@@ -99,6 +99,7 @@
         app.logger.crit('Failed to retrive letters: ', {
           auth: req.session.authentication,
           jwt: req.session.authToken,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
         return res.render('_errors/generic');
