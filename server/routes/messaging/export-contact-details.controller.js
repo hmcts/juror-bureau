@@ -88,6 +88,7 @@
         dateDeferredTo,
         nextDueAtCourtDate,
         postcode,
+        trialNumber,
         sortBy,
         sortOrder,
       } = req.query;
@@ -98,7 +99,16 @@
       delete req.session.errors;
 
       // eslint-disable-next-line max-len
-      if (isEmpty(searchBy) || (isEmpty(jurorNumber) && isEmpty(jurorName) && isEmpty(poolNumber) && isEmpty(courtName) && isEmpty(dateDeferredTo) && isEmpty(postcode) && isEmpty(nextDueAtCourtDate))) {
+      if (isEmpty(searchBy) || (
+        isEmpty(jurorNumber)
+        && isEmpty(jurorName)
+        && isEmpty(poolNumber)
+        && isEmpty(courtName)
+        && isEmpty(dateDeferredTo)
+        && isEmpty(postcode)
+        && isEmpty(nextDueAtCourtDate)
+        && isEmpty(trialNumber)
+      )) {
         return res.redirect(app.namedRoutes.build('messaging.export-contacts.get'));
       }
 
@@ -384,6 +394,9 @@
       payload['juror_search'] = {};
       payload['juror_search']['postcode'] = query.postcode;
     }
+    if (query.searchBy === 'trial') {
+      payload['trial_number'] = query.trialNumber;
+    }
     if (query.sortOrder) {
       payload['sort_method'] = query.sortOrder === 'ascending' ? 'ASC' : 'DESC';
     }
@@ -425,6 +438,9 @@
       break;
     case 'postcode':
       queryParams = `?searchBy=postcode&postcode=${query.postcode}`;
+      break;
+    case 'trial':
+      queryParams = `?searchBy=trial&trialNumber=${query.trialNumber}`;
       break;
     }
 

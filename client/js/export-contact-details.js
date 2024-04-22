@@ -165,6 +165,12 @@
       if (postcode) queryString += `&postcode=${postcode}`;
       break;
     }
+    case 'trial': {
+      const trial = url.searchParams.get('trialNumber');
+
+      if (trial) queryString += `&trialNumber=${trial}`;
+      break;
+    }
     }
 
     return queryString;

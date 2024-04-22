@@ -388,6 +388,11 @@
         ]));
       };
 
+      if (message === 'export-contact-details') {
+        return res.redirect(app.namedRoutes.build('messaging.export-contacts.jurors.get')
+          + '?searchBy=trial&trialNumber=' + req.body.selectedTrial);
+      }
+
       const searchOptions = {
         'jurorSearch': null,
         'poolNumber': null,
@@ -402,10 +407,7 @@
         req.session.messaging.placeholderValues['<trial_no>'] = req.body.selectedTrial;
       }
 
-      return res.redirect(buildUrl(app, message, [
-        'messaging.send.select-jurors.get',
-        'messaging.export-contacts.jurors.get',
-      ]));
+      return res.redirect(app.namedRoutes.build('messaging.send.select-jurors.get', { message }));
     };
   };
 
