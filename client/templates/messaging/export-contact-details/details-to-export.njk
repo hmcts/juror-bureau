@@ -88,6 +88,21 @@
           ]
         }) }}
 
+        {% if isCourtUser %}
+          <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+          {{ govukCheckboxes({
+          name: "makeDefault",
+          items: [
+            {
+              value: "MAKE_DEFAULT",
+              text: "Make this selection my default next time",
+              checked: formFields.makeDefault === "MAKE_DEFAULT"
+            }
+          ]
+        }) }}
+        {% endif %}
+
         <div class="govuk-button-group">
           {{ govukButton({
             text: "Export contact details",
@@ -105,5 +120,50 @@
 
     </div>
   </div>
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  {% if isCourtUser %}
+    <script>
+      $('DOMLoaded', function () {
+        const form = document.getElementById('detailsToExportForm');
+        const detailsToExport = document.getElementsByName('detailsToExport');
+        const makeDefault = document.getElementsByName('makeDefault');
+
+        form.addEventListener('submit', function(event) {
+          const checked = [];
+
+          detailsToExport.forEach((el) => {
+            if (el.checked) {
+              checked.push(el.value);
+            }
+          });
+
+          if (makeDefault[0].checked) {
+            localStorage.setItem('detailsToExport', JSON.stringify(checked));
+          }
+        });
+
+        // load default selection
+        const defaultDetailsToExport = localStorage.getItem('detailsToExport');
+
+        if (defaultDetailsToExport) {
+          const detailsToExportArray = JSON.parse(defaultDetailsToExport);
+
+          detailsToExportArray.forEach((value) => {
+            detailsToExport.forEach((el) => {
+              if (el.value === value) {
+                el.checked = true;
+              }
+            });
+          });
+        }
+
+      });
+    </script>
+  {% endif %}
 
 {% endblock %}

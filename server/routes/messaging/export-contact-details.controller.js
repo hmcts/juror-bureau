@@ -229,10 +229,13 @@
   module.exports.getSelectDetailsToExport = function() {
     return function(req, res) {
       const tmpErrors = _.clone(req.session.errors);
+      const formFields = _.clone(req.session.formFields);
 
       delete req.session.errors;
+      delete req.session.formFields;
 
       return res.render('messaging/export-contact-details/details-to-export.njk', {
+        formFields,
         errors: {
           title: 'Please check the form',
           count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -248,6 +251,7 @@
 
       if (validatorResult) {
         req.session.errors = validatorResult;
+        req.session.formFields = _.clone(req.body);
 
         return res.redirect(app.namedRoutes.build('messaging.export-contacts.details-to-export.get'));
       }
