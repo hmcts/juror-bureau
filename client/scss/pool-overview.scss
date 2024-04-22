@@ -6,7 +6,7 @@
 
   &__pool-record {
     &-label {
-      font-size: 24px;
+      font-size: 1.5rem;
       color: govuk-colour("dark-grey");
     }
 
@@ -24,7 +24,7 @@
     background-color: govuk-colour("blue");
     left: 0;
     color: govuk-colour("white");
-    font-size: 19px;
+    font-size: 1.1875rem;
     padding: 14px 0 16px;
 
     &__grid {
@@ -65,7 +65,7 @@
   text-align: center;
     
   .label {
-    font-size: 19px;
+    @include govuk-font($size: 19);
   }
 
   &__bureau-summoning {
