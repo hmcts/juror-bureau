@@ -12,6 +12,7 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
     , moment = require('moment')
     , modUtils = require('../../../lib/mod-utils')
     , { dateFilter } = require('../../../components/filters');
+  const rp = require('request-promise');
 
   module.exports.getPostponeDate = function(app) {
     return function(req, res) {
@@ -70,6 +71,51 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
     };
   };
 
+  module.exports.getPostponeDateDeferralMaintenance = function(app) {
+    return function(req, res) {
+      var tmpErrors = _.clone(req.session.errors);
+
+      delete req.session.formFields;
+      delete req.session.errors;
+
+      const originalDate = req.session.selectedDeferralJurors.reduce((prev, current) => {
+        if (moment(current.deferredTo, 'YYYY-MM-DD').isAfter(prev)) {
+          return moment(current.deferredTo, 'YYYY-MM-DD');
+        }
+
+        return prev;
+      }, new Date());
+      const backUrl = app.namedRoutes.build('pool-management.deferral-maintenance.filter.get', {
+        locationCode: req.params.locationCode,
+      });
+      const processUrl = app.namedRoutes.build('pool-management.deferral-maintenance.postpone.date.post', {
+        locationCode: req.params.locationCode,
+      });
+      let cancelUrl = app.namedRoutes.build('pool-management.deferral-maintenance.filter.get', {
+        locationCode: req.params.locationCode,
+      });
+
+      originalDate.date(originalDate.date() + 1);
+      req.session.originalDate = originalDate;
+
+      return res.render('juror-management/postpone/select-date.njk', {
+        originalDate: originalDate,
+        postponeToDate: req.session.postponeToDate,
+        backLinkUrl : {
+          built: true,
+          url: backUrl,
+        },
+        processUrl: processUrl,
+        cancelUrl: cancelUrl,
+        errors: {
+          message: '',
+          count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+          items: tmpErrors,
+        },
+      });
+    };
+  };
+
   module.exports.postPostponeDate = function(app) {
     return function(req, res) {
       var validatorResult
@@ -102,6 +148,27 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
       }
       req.session.postponeToDate = req.body.postponeTo;
       return res.redirect(continueUrl);
+    };
+  };
+
+  module.exports.postPostponeDateDeferralMaintenance = function(app) {
+    return function(req, res) {
+      const validatorResult = validate(req.body, postponeValidator.postponeDate(req.session.originalDate));
+
+      if (typeof validatorResult !== 'undefined') {
+        req.session.errors = validatorResult;
+        req.session.formFields = req.body;
+
+        return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.postpone.date.get', {
+          locationCode: req.params.locationCode,
+        }));
+      }
+
+      req.session.postponeToDate = req.body.postponeTo;
+
+      return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.postpone.pool.get', {
+        locationCode: req.params.locationCode,
+      }));
     };
   };
 
@@ -206,7 +273,7 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
       }
 
       availablePoolsObj.post(
-        require('request-promise'),
+        rp,
         app,
         req.session.authToken,
         jurorNumber,
@@ -214,6 +281,79 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
       )
         .then(successCB)
         .catch(errorCB);
+    };
+  };
+
+  module.exports.getAvailablePoolsDeferralMaintenance = function(app) {
+    return function(req, res) {
+      const tmpErrors = _.clone(req.session.errors);
+      const { jurorNumber } = req.session.selectedDeferralJurors[0];
+
+      availablePoolsObj.post(
+        rp, app, req.session.authToken, jurorNumber,
+        [req.session.postponeToDate.split('/').reverse().join('-')]
+      ).then(poolOptions => {
+        app.logger.info('Fetch pool options:  ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: poolOptions,
+        });
+
+        delete req.session.originalDate;
+        delete req.session.errors;
+        delete req.session.formFields;
+
+        const backLinkUrl = {
+          built: true,
+          url: app.namedRoutes.build('pool-management.deferral-maintenance.postpone.date.get', {
+            locationCode: req.params.locationCode,
+          }),
+        };
+        const processUrl = app.namedRoutes.build('pool-management.deferral-maintenance.postpone.pool.post', {
+          locationCode: req.params.locationCode,
+        });
+        const cancelUrl = app.namedRoutes.build('pool-management.deferral-maintenance.filter.get', {
+          locationCode: req.params.locationCode,
+        });
+        const originalDate = req.session.originalDate;
+
+        // eslint-disable-next-line one-var
+        const filteredPools = {
+          ...poolOptions.deferralPoolsSummary[0],
+          deferralOptions: poolOptions.deferralPoolsSummary[0].deferralOptions.filter(pool => {
+            return moment(pool.serviceStartDate).isAfter(originalDate);
+          }),
+        };
+
+        if (!filteredPools.deferralOptions.length) {
+          return res.render('juror-management/postpone/no-pools.njk', {
+            processUrl,
+            cancelUrl,
+            selectedDeferralDate: req.session.postponeToDate.split('/').reverse().join('-'),
+          });
+        }
+
+        return res.render('juror-management/postpone/pools.njk', {
+          jurorNumber: req.params['jurorNumber'],
+          backLinkUrl,
+          processUrl,
+          cancelUrl,
+          deferralPoolsSummary: filteredPools,
+          errors: {
+            title: 'Please check the form',
+            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+            items: tmpErrors,
+          },
+        });
+      }).catch(err => {
+        app.logger.crit('Failed to fetch pool options: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic');
+      });
     };
   };
 
@@ -273,7 +413,7 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
       req.body.deferralDateAndPool : req.session.jurorCommonDetails.deferralDateAndPool = req.body.deferralDateAndPool;
 
       validateMovementObj.validateMovement.put(
-        require('request-promise'),
+        rp,
         app,
         req.session.authToken,
         validationPayload
@@ -282,7 +422,7 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
           let payload = buildPayload(req.body, req, jurorNumbers);
 
           typeof req.session.poolJurorsPostpone !== 'undefined' ? req.session.poolJurorsPostpone.payload =
-      payload : req.session.jurorCommonDetails.payload = payload;
+            payload : req.session.jurorCommonDetails.payload = payload;
 
           if (data.unavailableForMove !== null) {
             //eslint-disable-next-line
@@ -309,6 +449,97 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
 
     };
   };
+
+  module.exports.postPostponePoolDeferralMaintenance = function(app) {
+    return function(req, res) {
+      let validatorResult;
+      const errorUrl = app.namedRoutes.build('pool-management.deferral-maintenance.postpone.pool.get', {
+        locationCode: req.params.locationCode,
+      });
+      const jurorNumbers = req.session.selectedDeferralJurors.map(juror => juror.jurorNumber);
+
+      if (typeof req.body.sendToDeferralMaintence === 'undefined') {
+        validatorResult = validate(req.body, postponeValidator.postponePool());
+        if (typeof validatorResult !== 'undefined') {
+          req.session.errors = validatorResult;
+          req.session.formFields = req.body;
+
+          return res.redirect(errorUrl);
+        }
+      }
+
+      const poolNumbers = req.session.selectedDeferralJurors.reduce((prev, curr) => {
+        if (prev.find(item => curr.poolNumber === item.poolNumber)) {
+          return prev;
+        }
+
+        return [...prev, curr.poolNumber];
+      }, []);
+
+      Promise.all(
+        poolNumbers.map(poolNumber => {
+          return validateMovementObj.validateMovement.put(
+            rp,
+            app,
+            req.session.authToken,
+            {
+              sourcePoolNumber: poolNumber,
+              sendingCourtLocCode: req.params.locationCode,
+              receivingPoolNumber: req.body.deferralDateAndPool.split('_')[1],
+              receivingCourtLocCode: req.params.locationCode,
+              targetServiceStartDate: dateFilter(req.session.postponeToDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
+              jurorNumbers: req.session.selectedDeferralJurors.reduce((prev, curr) => {
+                if (curr.poolNumber === poolNumber) {
+                  return [...prev, curr.jurorNumber];
+                }
+
+                return prev;
+              }, []),
+              deferralMaintenance: true,
+            }
+          );
+        })
+      ).then((data) => {
+        const payload = buildPayload(req.body, req, jurorNumbers);
+
+        req.session.postponeDeferralMaintenancePayload = payload;
+
+        const combinedData = {
+          availableforMove: data.reduce((prev, curr) => [...prev, ...curr.availableForMove], []),
+          unavailableForMove: data.reduce((prev, curr) => {
+            if (curr.unavailableForMove) {
+              return [...prev, ...curr.unavailableForMove];
+            }
+
+            return prev;
+          }, []),
+        };
+
+        if (combinedData.unavailableForMove.length !== 0) {
+          payload['juror_numbers'] = combinedData.availableforMove;
+          req.session.movementData = combinedData;
+
+          return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.postpone.movement.get', {
+            locationCode: req.params.locationCode,
+          }));
+        }
+
+        sendPostponeFromDeferralMaintenance(app, req, res, payload);
+      }).catch(err => {
+        app.logger.crit('Failed to check transfer validity: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          jurorNumber: req.session.poolJurorsReassign ?
+            req.session.poolJurorsReassign.selectedJurors : req.params['jurorNumber'],
+          error:
+            typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic');
+      });
+    };
+  };
+
   module.exports.getMovementCheck = function(app){
     return function(req, res){
       return res.render('pool-management/movement/bulk-validate', {
@@ -326,9 +557,34 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
     };
   };
 
+  module.exports.getPostponeMovementDeferralMaintenance = function(app) {
+    return function(req, res) {
+      return res.render('pool-management/movement/bulk-validate', {
+        cancelUrl: app.namedRoutes.build('pool-management.deferral-maintenance.filter.get', {
+          locationCode: req.params.locationCode,
+        }),
+        eligibleJurorLength: req.session.postponeDeferralMaintenancePayload.juror_numbers.length,
+        continueUrl: app.namedRoutes.build('pool-management.deferral-maintenance.postpone.movement.post', {
+          locationCode: req.params.locationCode,
+        }),
+        problems: modUtils.buildMovementProblems(req.session.movementData),
+      });
+    };
+  };
+
   module.exports.postMovementCheck = function(app){
     return function(req, res) {
       sendPostponeRequest(app, req, res, req.session.poolJurorsPostpone.payload);
+    };
+  };
+
+  module.exports.postPostponeMovementDeferralMaintenance = function(app){
+    return function(req, res) {
+      const payload = req.session.postponeDeferralMaintenancePayload;
+
+      delete req.session.postponeDeferralMaintenancePayload;
+
+      return sendPostponeFromDeferralMaintenance(app, req, res, payload);
     };
   };
 
@@ -422,7 +678,6 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
           jurorNumber: req.params.jurorNumber,
         }));
       }
-
       , errorCB = function(err) {
         let jurorNumber;
 
@@ -442,12 +697,56 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
       };
 
     postponeObj.post(
-      require('request-promise'),
+      rp,
       app,
       req.session.authToken,
       payload)
       .then(successCB)
       .catch(errorCB);
+  }
+
+  function sendPostponeFromDeferralMaintenance(app, req, res, payload) {
+    postponeObj.post(
+      rp,
+      app,
+      req.session.authToken,
+      payload)
+      .then(resp => {
+        let receivingPoolNumberDate = req.body.deferralDateAndPool;
+        let selectedJurors = payload.juror_numbers;
+        let jurorString = selectedJurors.length > 1 ? selectedJurors.length + ' jurors' : '1 juror';
+
+        if (!payload.poolNumber) {
+          req.session.bannerMessage = jurorString
+          + ' postponed to deferral maintenance for '
+          + moment(receivingPoolNumberDate).format('dddd DD MMMM YYYY');
+        }  else {
+          let poolNumber = receivingPoolNumberDate.split('_')[1];
+          let poolUrl = app.namedRoutes.build('pool-overview.get', {
+            poolNumber: poolNumber,
+          });
+
+          req.session.bannerMessage = jurorString
+          + ' postponed to Pool <a class="govuk-link" href='+ poolUrl +'>' + poolNumber + '</a>';
+        }
+
+        delete req.session.processLateSummons;
+
+        return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.get', {
+          courtLocation: req.params.courtLocation,
+        }));
+
+      })
+      .catch(err => {
+        app.logger.crit('Failed to transfer juror: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          payload,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic');
+      });
   }
 
   function buildPayload(body, req, jurorNumbers) {

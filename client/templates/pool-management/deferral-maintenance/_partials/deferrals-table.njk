@@ -6,6 +6,12 @@
 
 {% else %}
 
+  {% if errors.items["selectedJurors"] %}
+    <div class="error-allocation">
+      <p class="govuk-error-message">{{ errors.items['selectedJurors'][0].details }}</p>
+    </div>
+  {% endif %}
+
   <div class="govuk-caption-m">
     <span id="deferral-selected-count">{{ data.count.selected }}</span> of <span id="deferral-total-count">{{ data.count.total }}</span> selected
   </div>
@@ -20,6 +26,7 @@
           <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
             <input type="checkbox" class="govuk-checkboxes__input select-check staff-select-check"
                 id="deferral-all" {% if data.count.selected === data.count.total %}checked{% endif %}
+                name="check-all-jurors"
                 aria-label="select-all-deferrals" data-is-filtered="{{ isFiltered }}"/>
             <label class="govuk-label govuk-checkboxes__label" for="deferral-{{ juror.jurorNumber }}">
               <span class="govuk-visually-hidden">Select juror number {{ juror.jurorNumber }}</span>
@@ -44,6 +51,8 @@
             <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
               <input type="checkbox" class="govuk-checkboxes__input select-check staff-select-check"
                 id="deferral-{{ juror.jurorNumber }}" {% if juror.isChecked%}checked{% endif %}
+                name="selectedJurors"
+                value="{{ juror.jurorNumber }}"
                 aria-label="deferral-select-{{ juror.jurorNumber }}"/>
               <label class="govuk-label govuk-checkboxes__label" for="deferral-{{ juror.jurorNumber }}">
                 <span class="govuk-visually-hidden">Select juror number {{ juror.jurorNumber }}</span>
