@@ -1,4 +1,5 @@
 /* eslint-disable strict */
+const { isBureauUser } = require('../../../components/auth/user-type');
 const { dateFilter, capitalizeFully } = require('../../../components/filters');
 
 // type IReportKey = {[key:string]: {
@@ -52,6 +53,40 @@ module.exports.reportKeys = {
     pageHeadings: {
       left: ['poolNumber', 'poolType', 'serviceStartDate', 'totalNonResponded'],
       right: ['reportDate', 'reportTime', 'courtName'],
+    },
+  },
+  'postponed-pool': {
+    title: 'Postponed list (by pool)',
+    apiKey: 'PostponedListByPoolReport',
+    search: 'poolNumber',
+    headings: [
+      'poolNumber',
+      'reportDate',
+      'poolType',
+      'reportTime',
+      'serviceStartDate',
+      'courtName',
+      'totalPostponed',
+    ],
+    pageHeadings: {
+      left: ['poolNumber', 'poolType', 'serviceStartDate', 'totalPostponed'],
+      right: ['reportDate', 'reportTime', 'courtName'],
+    },
+  },
+  'postponed-date': {
+    title: 'Postponed list (by date)',
+    apiKey: 'PostponedListByDateReport',
+    search: 'dateRange',
+    headings: [
+      'dateFrom',
+      'reportDate',
+      'dateTo',
+      'reportTime',
+      'totalPostponed',
+    ],
+    pageHeadings: {
+      left: ['dateFrom', 'dateTo', 'totalPostponed'],
+      right: ['reportDate', 'reportTime'],
     },
   },
 };
