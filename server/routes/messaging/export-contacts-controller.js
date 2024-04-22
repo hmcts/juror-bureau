@@ -118,7 +118,7 @@
           filterUrl,
           clearFiltersUrl,
           submitUrl,
-          showOnly: req.query.showOwnly ? req.query.showOnly.split(',') : [],
+          showOnly: req.query.showOnly ? req.query.showOnly.split(',') : [],
           include: req.query.include ? req.query.include.split(','): [],
           backLinkUrl: {
             built: true,
@@ -175,6 +175,9 @@
           req.query.showFilter = 'true';
         }
       }
+
+      // on applying filters clear jurors checked
+      req.session.messaging.checkedJurors = [];
 
       const queryParams = buildQueryParams(req.query.searchBy, req.query);
 
@@ -271,17 +274,18 @@
 
   module.exports.postCheckJuror = function(app) {
     return async function(req, res) {
-      const { jurorNumber, poolNumber, action } = req.query;
+      const { jurorNumber, poolNumber, action, checkAll } = req.query;
 
       if (!req.session.messaging.checkedJurors) req.session.messaging.checkedJurors = [];
 
-      if (jurorNumber === 'check-all-jurors') {
+      if (checkAll === 'true') {
+        const searchPayload = buildSearchPayload(req.query, 1);
+
         if (action === 'check') {
 
           try {
             const opts = {
-              // ...searchOptions,
-              // 'filters': [...filters.showOnly || [], ...filters.include || []],
+              ...searchPayload,
               pageNumber: 1,
               pageLimit: 500,
             };
@@ -397,6 +401,7 @@
       break;
     case 'court':
       queryParams = `?searchBy=court&courtName=${query.courtName}`;
+      query.showOnly = 'SHOW_ONLY_DEFERRED';
       break;
     case 'dateDeferredTo':
       queryParams = `?searchBy=date&dateDeferredTo=${query.dateDeferredTo}`;

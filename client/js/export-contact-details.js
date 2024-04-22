@@ -55,7 +55,11 @@
     checkAllJurors[0].addEventListener('change', function() {
       var isCheckingAll = this.checked;
 
-      checkRequest(this.id, null, isCheckingAll).then(function(noSelected) {
+      let queryParams = getRelevantQueryParams();
+
+      queryParams += '&checkAll=true';
+
+      checkRequest(this.id, null, isCheckingAll, queryParams).then(function(noSelected) {
         jurorRows.each(function(_, element) {
           element.checked = isCheckingAll;
         });
@@ -89,17 +93,66 @@
     }
   }
 
-  function checkRequest(jurorNumber, poolNumber, isChecking) {
+  function checkRequest(jurorNumber, poolNumber, isChecking, queryParams = '') {
     var action = isChecking ? 'check' : 'uncheck';
 
+    const isSearchByJurorNumber = url.searchParams.get('searchBy') === 'jurorNumber';
+
     return $.ajax({
-      url: '/messaging/export-contact-details/jurors/check?jurorNumber='
-        + jurorNumber + '&poolNumber=' + poolNumber + '&action=' + action,
+      url: '/messaging/export-contact-details/jurors/check?action='
+        + action + (queryParams ? queryParams : '&poolNumber=' + poolNumber)
+        + (!isSearchByJurorNumber ? '&jurorNumber=' + jurorNumber : ''),
       method: 'POST',
       data: {
         _csrf: csrfToken.val(),
       },
     });
+  }
+
+  function getRelevantQueryParams() {
+    const showOnly = url.searchParams.get('showOnly');
+    const include = url.searchParams.get('include');
+    const searchBy = url.searchParams.get('searchBy');
+
+    let queryString = '&searchBy=' + searchBy;
+
+    if (showOnly) queryString += `&showOnly=${showOnly}`;
+    if (include) queryString += `&include=${include}`;
+
+    switch (searchBy) {
+    case 'court':
+      const court = url.searchParams.get('courtName');
+
+      if (court) queryString += `&courtName=${court}`;
+      break;
+    case 'pool':
+      const pool = url.searchParams.get('poolNumber');
+
+      if (pool) queryString += `&poolNumber=${pool}`;
+      break;
+    case 'date':
+      const dateDeferredTo = url.searchParams.get('dateDeferredTo');
+
+      if (dateDeferredTo) queryString += `&dateDeferredTo=${dateDeferredTo}`;
+      break;
+    case 'jurorNumber':
+      const jurorNumber = url.searchParams.get('jurorNumber');
+
+      if (jurorNumber) queryString += `&jurorNumber=${jurorNumber}`;
+      break;
+    case 'jurorName':
+      const jurorName = url.searchParams.get('jurorName');
+
+      if (jurorName) queryString += `&jurorName=${jurorName}`;
+      break;
+    case 'postcode':
+      const postcode = url.searchParams.get('postcode');
+
+      if (postcode) queryString += `&postcode=${postcode}`;
+      break;
+    }
+
+    return queryString;
   }
 
 })();

@@ -58,8 +58,14 @@
 
   module.exports.jurorSearchDAO = {
     post: function(app, req, locCode, body, simpleResponse) {
+      let _locCode = locCode;
+
+      if (body.court_name) {
+        _locCode = body.court_name.match(/\d+/g)[0];
+      }
+
       const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/messages/search', locCode),
+        uri: urljoin(config.apiEndpoint, 'moj/messages/search', _locCode),
         method: 'POST',
         headers: {
           Authorization: req.session.authToken,
