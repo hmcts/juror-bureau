@@ -102,8 +102,6 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        console.log(error);
-
         return res.render('_errors/generic');
       }
     };

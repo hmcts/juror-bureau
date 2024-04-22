@@ -1,6 +1,7 @@
 ;(function(){
   'use strict';
 
+  require('./date-picker');
   const { constants } = require('../../lib/mod-utils');
 
   module.exports.exportContactDetailsValidator = function(body) {
@@ -107,34 +108,42 @@
       },
 
       dateDeferredTo: () => {
-        if (!body.searchBy || body.searchBy !== 'dateDeferredTo') return null;
+        if (body.searchBy !== 'dateDeferredTo') return null;
 
-        // TODO: check for a valid date
+        if (body.searchBy === 'dateDeferredTo' && !body.dateDeferredTo) {
+          return {
+            presence: {
+              allowEmpty: false,
+              message: {
+                details: 'Enter a deferral date',
+                summary: 'Enter a deferral date',
+              },
+            },
+          };
+        }
 
         return {
-          presence: {
-            allowEmpty: false,
-            message: {
-              details: 'Enter a deferral date',
-              summary: 'Enter a deferred date',
-            },
-          },
+          genericDatePicker: {},
         };
       },
 
       nextDueAtCourtDate: () => {
-        if (!body.searchBy || body.searchBy !== 'nextDueAtCourtDate') return null;
+        if (body.searchBy !== 'nextDueAtCourtDate') return null;
 
-        // TODO: check for a valid date
+        if (body.searchBy === 'nextDueAtCourtDate' && !body.nextDueAtCourtDate) {
+          return {
+            presence: {
+              allowEmpty: false,
+              message: {
+                details: 'Enter date next due at court',
+                summary: 'Enter date next due at court',
+              },
+            },
+          };
+        }
 
         return {
-          presence: {
-            allowEmpty: false,
-            message: {
-              details: 'Enter date next due at court',
-              summary: 'Enter date next due at court',
-            },
-          },
+          genericDatePicker: {},
         };
       },
     };

@@ -105,8 +105,8 @@
 
 {# date deferred to infos #}
 {% set deferredToError = undefined %}
-{% if errors.items["deferredTo"] %}
-  {% set deferredToError = { "text": errors.items["deferredTo"][0].details } %}
+{% if errors.items["dateDeferredTo"] %}
+  {% set deferredToError = { "text": errors.items["dateDeferredTo"][0].details } %}
 {% endif %}
 
 {% set byDeferredToDateHtml %}
