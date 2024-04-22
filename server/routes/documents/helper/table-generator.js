@@ -38,7 +38,7 @@
           scope="col"
           class="govuk-table__header ${numberTypeClass}"
           aria-sort="${sortDirection}"
-          aria-label="${$curr}"
+          aria-label="${curr}"
         >
           ${curr}
         </th>
