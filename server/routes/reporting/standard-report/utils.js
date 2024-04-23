@@ -21,10 +21,6 @@ module.exports.reportKeys = {
       'serviceStartDate',
       'courtName',
     ],
-    pageHeadings: {
-      left: ['poolNumber', 'poolType', 'serviceStartDate'],
-      right: ['reportDate', 'reportTime', 'courtName'],
-    },
   },
   'undelivered': {
     title: 'Undelivered list',
@@ -39,10 +35,6 @@ module.exports.reportKeys = {
       'courtName',
       'totalUndelivered',
     ],
-    pageHeadings: {
-      left: ['poolNumber', 'poolType', 'serviceStartDate', 'totalUndelivered'],
-      right: ['reportDate', 'reportTime', 'courtName'],
-    },
   },
   'non-responded': {
     title: 'Non-repsonded list',
@@ -64,7 +56,7 @@ module.exports.reportKeys = {
   },
 };
 
-module.exports.tableDataMappers = {
+const tableDataMappers = {
   String: (data) => capitalizeFully(data),
   LocalDate: (data) => dateFilter(data, 'YYYY-mm-dd', 'ddd D MMM YYYY'),
   List: (data) => Object.values(data).reduce(
@@ -74,7 +66,7 @@ module.exports.tableDataMappers = {
   ),
 };
 
-module.exports.headingDataMappers ={
+const headingDataMappers ={
   String: (data) => capitalizeFully(data),
   LocalDate: (data) => dateFilter(data, 'YYYY-mm-dd', 'dddd D MMMM YYYY'),
   timeFromISO: (data) => {
@@ -90,3 +82,17 @@ module.exports.headingDataMappers ={
   },
   Long: (data) => data,
 };
+
+const constructPageHeading = (headingType, data) => {
+  if (headingType === 'reportDate') {
+    return { title: 'Report created', data: headingDataMappers.LocalDate(data.reportCreated.value) };
+  } else if (headingType === 'reportTime') {
+    return { title: 'Time created', data: headingDataMappers.timeFromISO(data.reportCreated.value) };
+  }
+  const headingData = data[headingType];
+
+  return { title: headingData.displayName, data: headingDataMappers[headingData.dataType](headingData.value)};
+};
+
+module.exports.tableDataMappers = tableDataMappers;
+module.exports.constructPageHeading = constructPageHeading;

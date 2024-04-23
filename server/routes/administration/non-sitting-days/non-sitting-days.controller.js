@@ -25,9 +25,11 @@
       try {
         const holidayDates = await bankHolidaysDAO.get(app, req);
         const nonSittingDates = await nonSittingDayDAO.get(app, req, req.session.authentication.owner);
-        const fetchAllAvailableCourts = await fetchAllCourts.get(require('request-promise'), app, req.session.authToken);
+        const fetchAllAvailableCourts = await fetchAllCourts.get(
+          require('request-promise'), app, req.session.authToken);
 
-        const loggedInName = fetchAllAvailableCourts.courts.find(({locationCode}) => locationCode === req.session.authentication.locCode);
+        const loggedInName = fetchAllAvailableCourts.courts.find(
+          ({locationCode}) => locationCode === req.session.authentication.locCode);
 
 
         const holidayDateYears = Object.keys(holidayDates.response);
@@ -41,7 +43,7 @@
           bannerMessage,
         });
       } catch (err) {
-        app.logger.crit('Failed to fetch list of holidays and non eitting days', {
+        app.logger.crit('Failed to fetch list of holidays and non sitting days', {
           auth: req.session.authentication,
           token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),

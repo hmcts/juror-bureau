@@ -2,12 +2,12 @@
   'use strict';
 
   const auth = require('../../../components/auth');
-  const { isCourtManager, isSystemAdministrator } = require('../../../components/auth/user-type');
+  const { isCourtManager, isCourtUser,  isSystemAdministrator } = require('../../../components/auth/user-type');
   const controller = require('./court-details.controller');
   const errors = require('../../../components/errors');
   const hasCourtDetailsAccess = function(req, res, next) {
     if (
-      isSystemAdministrator(req, res) || isCourtManager(req, res)
+      isSystemAdministrator(req, res) || isCourtManager(req, res) || isCourtUser(req, res)
     ) {
       if (typeof next !== 'undefined') {
         return next();

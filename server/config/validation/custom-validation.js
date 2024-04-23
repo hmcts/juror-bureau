@@ -1,9 +1,12 @@
+
+
 ;(function(){
   'use strict';
 
-  var moment = require('moment')
-    , validate = require('validate.js')
-    , filters = require('../../components/filters');
+  const moment = require('moment');
+  const validate = require('validate.js');
+  const filters = require('../../components/filters');
+  const { isTeamLeader } = require('../../components/auth/user-type');
 
   // Overrides to existing rules
   // ===================================
@@ -15,7 +18,7 @@
       var format = options.dateOnly ? 'YYYY-MM-DD' : 'YYYY-MM-DD hh:mm:ss';
 
       return moment.utc(value).format(format);
-    }
+    },
   });
 
 
@@ -34,7 +37,7 @@
       }
       , filterFunc = function(filterCourt) {
         return filterCourt === tmpCourt;
-      }
+      };
 
 
     for (iCourt; iCourt < options.fields.length; iCourt += 1) {
@@ -332,7 +335,7 @@
     var message = {
         summary: 'Please check the person\'s date of birth',
         fields: [],
-        details: []
+        details: [],
       }
       , formattedDob;
 
@@ -392,10 +395,10 @@
     var message = {
         summary: 'Check the end date',
         fields: [],
-        details: []
+        details: [],
       }
       , startDate
-      , endDate
+      , endDate;
 
     startDate = attributes.startYear + '-' + attributes.startMonth + '-01';
     endDate = attributes.endYear + '-' + attributes.endMonth + '-01';
@@ -420,7 +423,7 @@
         summary: '',
         summaryLink: key,
         fields: key,
-        details: []
+        details: [],
       }
       , valueRegex = /^[0-9]{1,2}$/
       , errMessage = '';
@@ -443,7 +446,7 @@
         summary: '',
         summaryLink: key,
         fields: key,
-        details: []
+        details: [],
       }
       , valueRegex = /^[0-9]{4}$/
       , errMessage = '';
@@ -467,9 +470,9 @@
     var message = {
         summary: 'Check the start date',
         fields: [],
-        details: []
+        details: [],
       }
-      , dateError = false
+      , dateError = false;
 
     if (moment(attributes.startDate, 'YYYY-MM-DD', true).isValid() === false){
       dateError = true;
@@ -489,10 +492,10 @@
     var message = {
         summary: 'Check the end date',
         fields: [],
-        details: []
+        details: [],
       }
       , startDate
-      , endDate
+      , endDate;
 
     startDate = attributes.startDate;
     endDate = attributes.endDate;
@@ -701,7 +704,7 @@
       , searchParams = false
       , strMessage = '';
 
-    if (req.session.authentication.staff.rank > 0){
+    if (isTeamLeader(req)){
       // Team leads
       strMessage = 'Enter a juror number, a juror\'s last name, a juror\'s pool number or advanced criteria to search';
       searchParams = attributes.juror_number.trim()

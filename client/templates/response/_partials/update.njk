@@ -22,7 +22,7 @@
         <option value="excusal" data-title="Excusal">Excusal</option>
         <option value="disqualified" data-title="Disqualified">Disqualified</option>
 
-        {% if (assignedSelf === true) or (authentication.staff.rank > 0) %}
+        {% if (assignedSelf === true) or isTeamLeader %}
           <option value="send_to" data-title="Send to…">Send to…</option>
         {% endif %}
         <option value="awaiting_information" data-title="Awaiting information">Awaiting information</option>
