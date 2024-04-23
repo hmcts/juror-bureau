@@ -72,7 +72,7 @@
     "grunt": "latest",
     "grunt-autoprefixer": "^3.0.4",
     "grunt-browserify": "^6.0.0",
-    "grunt-concurrent": "^2.3.0",
+    "grunt-concurrent": "^3.0.0",
     "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-cssmin": "^2.2.1",
     "grunt-contrib-imagemin": "^2.0.1",
