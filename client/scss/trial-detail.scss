@@ -3,7 +3,7 @@
         margin-bottom: 30px;
 
         &-label {
-        font-size: 24px;
+        @include govuk-font($size: 24);
         color: govuk-colour("dark-grey");
         }
 

@@ -23,8 +23,6 @@
   font-weight: bold
 }
 
-
-
 // blue info banner
 .jd-banner-info {
   border-color: lighten(#1D70B8, 50%);
@@ -54,7 +52,6 @@
   font-family: $govuk-font-family;
 }
 
-
 // Assign replies page
 .jd-assign-replies-total {
   display: inline-block;
@@ -64,42 +61,47 @@
   margin-right: 10px;
   min-width: 150px;
 }
+
 .jd-assign-replies-send {
   display: inline-block;
   color: #d4351c;
   margin-right: 30px;
   min-width: 150px;
 }
+
 .jd-assign-replies-urgent {
   display: inline-block;
   color: #912b88;
   margin-right: 30px;
   min-width: 150px;
 }
+
 .jd-assign-replies-standard {
   display: inline-block;
   color: black;
   min-width: 150px;
 }
+
 .jd-assign-replies-input-label {
   width: 175px;
   min-width: 120px;
-
   margin-right: 20px;
   background-color: #f3f2f1;
-  
   vertical-align: middle;
   padding-top: 9px;
   padding-left: 10px;
   padding-bottom: 9px;
   padding-right: 20px;
 }
+
 .jd-assign-replies-border-send {
   border-left: 7px solid #d4351c;
 }
+
 .jd-assign-replies-border-urgent {
   border-left: 7px solid #912b88;
 }
+
 .jd-assign-replies-border-standard {
   border-left: 7px solid black;
 }
@@ -112,7 +114,7 @@
 .jd-response-details-banner-blue {
   background-color:#1D70B8;
   color: white;
-  font-size: 16px;
+  @include govuk-font($size: 16);
 }
 
 .jd-response-details-banner-row {
@@ -154,12 +156,15 @@
 .jd-details-eligibility-head-width {
   width: 250px;
 }
+
 .jd-details-deferral-excusal-head-width {
   width: 250px;
 }
+
 .jd-details-cjs-employment-head-width {
   width: 250px;
 }
+
 .jd-details-cjs-adjustments-head-width {
   width: 250px;
 }
@@ -214,7 +219,6 @@
   display: none;
 }
 
-
 .input-icon-group {
   input {
     width: 25%;
@@ -246,7 +250,6 @@
 
 .icon {
   display: inline-block;
-
   background-position: 0 0;
   background-repeat: no-repeat;
 }
@@ -254,7 +257,6 @@
 .icon-calendar {
   width: 27px;
   height: 27px;
-
   background-image: url('/assets/images/icon-calendar.png');
 }
 
@@ -395,7 +397,7 @@ textarea.modal-textarea {
 .detail-section .section-heading--teal {
   background-color: rgba(40, 161, 151, 0.25); }
 .detail-section .section-heading--small, .detail-section .section-heading--small h3 {
-  font-size: 19px; }
+  font-size: 1.1875rem; }
 .detail-section .section-heading--spaced {
   margin-top: 15px; }
 
