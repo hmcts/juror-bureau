@@ -43,6 +43,8 @@
     {% include "administration/_common/bureau-administration-nav.njk" %}
   {% elif currentApp === "System administration" %}
     {% include "administration/_common/system-administration-nav.njk" %}
+  {% elif currentApp === "Reports" %}
+    {% include "reporting/_common/court-reports-nav.njk" %}
   {% endif %}
 {% endblock %}
 
