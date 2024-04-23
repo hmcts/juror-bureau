@@ -1325,7 +1325,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"async@npm:1.x, async@npm:^1.2.1, async@npm:^1.5.2":
+"async@npm:1.x, async@npm:^1.2.1":
   version: 1.5.2
   resolution: "async@npm:1.5.2"
   checksum: fe5d6214d8f15bd51eee5ae8ec5079b228b86d2d595f47b16369dec2e11b3ff75a567bb5f70d12d79006665fbbb7ee0a7ec0e388524eefd454ecbe651c124ebd
@@ -1341,7 +1341,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"async@npm:^3.2.4, async@npm:~3.2.0":
+"async@npm:^3.2.3, async@npm:^3.2.4, async@npm:~3.2.0":
   version: 3.2.5
   resolution: "async@npm:3.2.5"
   checksum: 5ec77f1312301dee02d62140a6b1f7ee0edd2a0f983b6fd2b0849b969f245225b990b47b8243e7b9ad16451a53e7f68e753700385b706198ced888beedba3af4
@@ -5685,15 +5685,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"grunt-contrib-clean@npm:^1.0.0":
-  version: 1.1.0
-  resolution: "grunt-contrib-clean@npm:1.1.0"
+"grunt-contrib-clean@npm:^2.0.0":
+  version: 2.0.1
+  resolution: "grunt-contrib-clean@npm:2.0.1"
   dependencies:
-    async: ^1.5.2
-    rimraf: ^2.5.1
+    async: ^3.2.3
+    rimraf: ^2.6.2
   peerDependencies:
     grunt: ">=0.4.5"
-  checksum: 9a142744bedb02f2534fa1903e5b51a5e0559348458b602978a7fe4901ebefa68a040c8479b9f639fb270bc8170179cebf129b561d1293e4b502f64f698d504c
+  checksum: 765e3ca9c3dd00167245f6a926232e8cd3c285d0dbcb59478baebe95b735a1013cb6b2bd1f56e38a3228861ddd8bb9aee49328d4a3ba4b1117a4c5d01b61edf5
   languageName: node
   linkType: hard
 
@@ -7918,7 +7918,7 @@ __metadata:
     grunt-autoprefixer: ^3.0.4
     grunt-browserify: ^6.0.0
     grunt-concurrent: ^2.3.0
-    grunt-contrib-clean: ^1.0.0
+    grunt-contrib-clean: ^2.0.0
     grunt-contrib-cssmin: ^2.2.1
     grunt-contrib-imagemin: ^2.0.1
     grunt-contrib-uglify: ^3.2.1
@@ -11107,7 +11107,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rimraf@npm:^2.2.6, rimraf@npm:^2.5.1, rimraf@npm:^2.5.4":
+"rimraf@npm:^2.2.6, rimraf@npm:^2.5.4, rimraf@npm:^2.6.2":
   version: 2.7.1
   resolution: "rimraf@npm:2.7.1"
   dependencies:
