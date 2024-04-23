@@ -11,12 +11,12 @@
     require('./non-attendance-day')(app);
     require('./edit-bank-details')(app);
 
-    app.get('/juror-management/expenses/:jurorNumber/:locCode/default-expenses',
+    app.get('/juror-management/expense-record/:jurorNumber/:locCode/default-expenses',
       'juror-management.default-expenses.get',
       auth.verify,
       controller.getDefaultExpenses(app));
 
-    app.post('/juror-management/expenses/:jurorNumber/:locCode/default-expenses',
+    app.post('/juror-management/expense-record/:jurorNumber/:locCode/default-expenses',
       'juror-management.default-expenses.post',
       auth.verify,
       controller.postDefaultExpenses(app));

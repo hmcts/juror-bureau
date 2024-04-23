@@ -403,9 +403,9 @@
 
   // new DAO
 
-  module.exports.expensesSummaryDAO = new DAO('moj/expenses/summary/totals', {
-    get: function(jurorNumber, poolNumber) {
-      return { uri: urljoin(this.resource, jurorNumber.toString(), poolNumber.toString()) };
+  module.exports.expensesSummaryDAO = new DAO('moj/expenses/{locCode}/{jurorNumber}/summary/totals', {
+    get: function(jurorNumber, locCode) {
+      return { uri: urljoin(this.resource.replace('{locCode}', locCode).replace('{jurorNumber}', jurorNumber)) };
     },
   });
 

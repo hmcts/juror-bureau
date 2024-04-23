@@ -109,7 +109,7 @@
 
       return rp(payload);
     },
-    post: function(app, req, body) {
+    post: function(app, req, locCode, jurorNumber, body) {
       const payload = {
         uri: urljoin(config.apiEndpoint, `moj/expenses/${locCode}/${jurorNumber}/default-expenses`),
         method: 'POST',
