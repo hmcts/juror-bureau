@@ -427,12 +427,12 @@
         ];
       } else {
         req.session.errors = modUtils.makeManualError('selectedJurors', 'Select at least one juror');
-        res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.filter.get', {
+        return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.filter.get', {
           locationCode: req.params.locationCode,
         }));
       }
 
-      res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.postpone.date.get', {
+      return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.postpone.date.get', {
         locationCode: req.params.locationCode,
       }));
     };
