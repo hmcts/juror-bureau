@@ -90,7 +90,7 @@ $navbar-height: 50px;
     }
 
     &-toggle-button {
-      font-size: 16px;
+      @include govuk-font($size: 16);
       font-weight: 700;
       position: relative;
       height: govuk-spacing(8);
@@ -174,7 +174,7 @@ $navbar-height: 50px;
     }
 
     &-toggle-search {
-      font-size: 16px;
+      @include govuk-font($size: 16);
       font-weight: 700;
       position: relative;
       height: govuk-spacing(8);
