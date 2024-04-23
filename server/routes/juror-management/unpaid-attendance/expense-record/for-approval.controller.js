@@ -83,7 +83,7 @@
 
   module.exports.postForApprovalExpenses = function(app) {
     return function(req, res) {
-      const { status, jurorNumber, poolNumber } = req.params;
+      const { status, jurorNumber, locCode } = req.params;
 
       const validationErrors = validateIFHasCheckedDates(status, req.body['checked-expenses']);
 
@@ -97,7 +97,7 @@
 
         return res.redirect(app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
           jurorNumber,
-          poolNumber,
+          locCode,
           status,
         }));
       }
@@ -111,26 +111,26 @@
       case 'for-approval':
         return res.redirect(app.namedRoutes.build('juror-management.edit-expense.get', {
           jurorNumber,
-          poolNumber,
+          locCode,
           status,
         }));
       case 'for-reapproval':
         return res.redirect(app.namedRoutes.build('juror-management.edit-expense.get', {
           jurorNumber,
-          poolNumber,
+          locCode,
           status,
         }));
       case 'approved':
         return res.redirect(app.namedRoutes.build('juror-management.edit-expense.get', {
           jurorNumber,
-          poolNumber,
+          locCode,
           status,
         }));
       }
 
       return res.redirect(app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
         jurorNumber,
-        poolNumber,
+        locCode,
         status,
       }));
     };

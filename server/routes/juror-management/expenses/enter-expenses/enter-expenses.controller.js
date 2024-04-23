@@ -7,7 +7,7 @@
   const { jurorDetailsObject } = require('../../../../objects/juror-record');
   const {
     getEnteredExpensesDAO,
-    postDraftExpenseDAO,
+    postEditedExpensesDAO,
     postRecalculateSummaryTotalsDAO,
   } = require('../../../../objects/expense-record');
   const { getCourtLocationRates } = require('../../../../objects/court-location');
@@ -263,7 +263,7 @@
       }
 
       try {
-        const [response] = await postDraftExpenseDAO.put(app, req, locCode, jurorNumber, 'DRAFT', [data]);
+        const [response] = await postEditedExpensesDAO.put(app, req, locCode, jurorNumber, 'DRAFT', [data]);
 
         if (response.financial_loss_warning) {
           req.session.financialLossWarning = response.financial_loss_warning;
@@ -410,7 +410,7 @@
       }
 
       try {
-        await postDraftExpenseDAO.put(app, req, locCode, jurorNumber, 'DRAFT', [data]);
+        await postEditedExpensesDAO.put(app, req, locCode, jurorNumber, 'DRAFT', [data]);
 
         return res.redirect(redirectUrl);
       } catch (err) {

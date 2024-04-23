@@ -79,7 +79,7 @@
     },
   };
 
-  module.exports.postDraftExpenseDAO = {
+  module.exports.postEditedExpensesDAO = {
     put: function(app, req, locCode, jurorNumber, expenseType, body) {
       const payload = {
         uri: urljoin(endpoint.replace('{locCode}', locCode), jurorNumber, expenseType, 'edit'),
@@ -197,9 +197,9 @@
   };
 
   module.exports.getApprovalExpenseListDAO = {
-    post: function(app, req, jurorNumber, poolNumber, body) {
+    post: function(app, req, locCode, jurorNumber, body) {
       const payload = {
-        uri: urljoin(endpoint, jurorNumber, poolNumber),
+        uri: urljoin(endpoint.replace('{locCode}', locCode), jurorNumber, 'view'),
         method: 'POST',
         headers: {
           'User-Agent': 'Request-Promise',
@@ -217,9 +217,9 @@
   };
 
   module.exports.editApprovalExpenseListDAO = {
-    post: function(app, req, jurorNumber, type, body) {
+    post: function(app, req, locCode, jurorNumber, type, body) {
       const payload = {
-        uri: urljoin(endpoint, jurorNumber, 'edit', type),
+        uri: urljoin(endpoint.replace('{locCode}', locCode), jurorNumber, 'edit', type),
         method: 'POST',
         headers: {
           'User-Agent': 'Request-Promise',

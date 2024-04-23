@@ -1,9 +1,7 @@
-const { postDraftExpenseDAO } = require('./expense-record');
-
 (function() {
   'use strict';
 
-  var excusalObject = require('./expense-record').postDraftExpenseDAO
+  var { postEditedExpensesDAO } = require('./expense-record')
     , urljoin = require('url-join')
     , rpStub = function(options) {
       return options;
@@ -48,7 +46,7 @@ const { postDraftExpenseDAO } = require('./expense-record');
           'pool_number': '415230101',
         }
         , jurorNumber = '641500022'
-        , testObj = postDraftExpenseDAO.post(appStub, reqStub, jurorNumber, body, false)
+        , testObj = postEditedExpensesDAO.put(appStub, reqStub, jurorNumber, body, false)
         , realUri = urljoin(
           'http://localhost:8080/api/v1',
           'moj/expenses',
@@ -85,7 +83,7 @@ const { postDraftExpenseDAO } = require('./expense-record');
           'pool_number': '415230101',
         }
         , jurorNumber = '641500022'
-        , testObj = postDraftExpenseDAO.post(appStub, reqStub, jurorNumber, body, true)
+        , testObj = postEditedExpensesDAO.post(appStub, reqStub, jurorNumber, body, true)
         , realUri = urljoin(
           'http://localhost:8080/api/v1',
           'moj/expenses',

@@ -35,7 +35,7 @@
     <div>
       {% set applyDefaultLossUrl = url("juror-management.edit-expense.apply-default-loss.get", {
           jurorNumber: jurorNumber,
-          poolNumber: poolNumber,
+          locCode: locCode,
           status: status
         }) + "?action=apply-default-loss" %}
       <a href="{{ applyDefaultLossUrl }}" class="govuk-body govuk-link govuk-link--no-visited-state">Apply default loss of earning</a>
@@ -89,7 +89,7 @@
       classes: "govuk-button--secondary",
       href: url("juror-management.non-attendance-day.get", {
           jurorNumber: jurorNumber,
-          poolNumber: poolNumber
+          locCode: locCode
         }) + "?status=" + status
     }) }}
 
@@ -147,7 +147,7 @@
 
   {% set postAction = url("juror-management.edit-expense.post", {
       jurorNumber: jurorNumber,
-      poolNumber: poolNumber,
+      locCode: locCode,
       status: status
     }) %}
 
@@ -162,7 +162,7 @@
 
       <a class="govuk-link" href="{{ url("juror-management.unpaid-attendance.expense-record.get", {
           jurorNumber: jurorNumber,
-          poolNumber: poolNumber,
+          locCode: locCode,
           status: status
         }) }}">
         Cancel without submitting changes
