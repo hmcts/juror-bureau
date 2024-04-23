@@ -83,7 +83,6 @@
       background-color: $color-table-urgent;
     }
 
-
     &.closed {
 
       &:nth-child(even) {
@@ -93,9 +92,7 @@
       &:nth-child(odd) {
         background-color: $color-table-closed-row-even;
       }
-
     }
-
 
     // All tables have the same .active and :hover states
     &.urgent.active,
@@ -116,9 +113,7 @@
       background-color: transparent;
       cursor: default;
     }
-
   }
-
 
   thead {
 
@@ -131,11 +126,8 @@
         background-color: transparent;
         cursor: default;
       }
-
     }
-
   }
-
 }
 
 .table-summary {
