@@ -61,7 +61,7 @@
     {% endfor %}
   {% else %}
     {% if (responses.length == 1) and (('AWAITING_' in  responses[0].processingStatus) or responses[0].urgent or responses[0].superUrgent) %}
-    {% elif authentication.staff.rank > 0 %}
+    {% elif isTeamLeader %}
       {% set sendToList = (sendToList.push({value: "backlog", text: "Return to unassigned replies", selected: false }), sendToList) %}
       {#<option value="backlog" data-title="The backlog">Return to unassigned replies</option>#}
     {% endif %}

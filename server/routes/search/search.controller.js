@@ -7,6 +7,7 @@
   const { searchResponsesDAO } = require('../../objects/search.js');
   const validator = require('../../config/validation/search.js');
   const { dateFilter } = require('../../components/filters');
+  const { isTeamLeader } = require('../../components/auth/user-type.js');
 
   module.exports.index = function(app) {
     return async function(req, res) {
@@ -22,7 +23,7 @@
       try {
         let staffList;
 
-        if (req.session.authentication.staff !== null && req.session.authentication.staff.rank > 0) {
+        if (isTeamLeader(req, res)) {
           staffList = await staffRosterObj.get(require('request-promise'), app, req.session.authToken);
         }
 

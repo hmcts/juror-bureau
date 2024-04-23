@@ -220,7 +220,7 @@
 
           </div> {# end row 3 #}
 
-          {% if authentication.staff.rank > 0 %}
+          {% if isTeamLeader %}
             {# filters #}
             <div class="govuk-grid-row">
               <div class="govuk-grid-column-one-half">
@@ -300,7 +300,7 @@
           </p>
         {% endif %}
 
-        {% if authentication.staff.rank > 0 %}
+        {% if isTeamLeader %}
           <div class="response-assignment {% if not responses.juror_response or responses.juror_response.length === 0 %} u-hide{% endif %}">
             {# Select all #}
             <button id="selectAllLink" class="govuk-button govuk-button--secondary" data-module="govuk-button" />
