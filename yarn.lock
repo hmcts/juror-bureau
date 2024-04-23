@@ -2850,6 +2850,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"confusing-browser-globals@npm:^1.0.10":
+  version: 1.0.11
+  resolution: "confusing-browser-globals@npm:1.0.11"
+  checksum: 3afc635abd37e566477f610e7978b15753f0e84025c25d49236f1f14d480117185516bdd40d2a2167e6bed8048641a9854964b9c067e3dcdfa6b5d0ad3c3a5ef
+  languageName: node
+  linkType: hard
+
 "connect-redis@npm:^7.1.0":
   version: 7.1.1
   resolution: "connect-redis@npm:7.1.1"
@@ -3989,6 +3996,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"es-object-atoms@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "es-object-atoms@npm:1.0.0"
+  dependencies:
+    es-errors: ^1.3.0
+  checksum: 26f0ff78ab93b63394e8403c353842b2272836968de4eafe97656adfb8a7c84b9099bf0fe96ed58f4a4cddc860f6e34c77f91649a58a5daa4a9c40b902744e3c
+  languageName: node
+  linkType: hard
+
 "es-set-tostringtag@npm:^2.0.1":
   version: 2.0.2
   resolution: "es-set-tostringtag@npm:2.0.2"
@@ -4087,29 +4103,35 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-airbnb-base@npm:^12.1.0":
-  version: 12.1.0
-  resolution: "eslint-config-airbnb-base@npm:12.1.0"
+"eslint-config-airbnb-base@npm:^15.0.0":
+  version: 15.0.0
+  resolution: "eslint-config-airbnb-base@npm:15.0.0"
   dependencies:
-    eslint-restricted-globals: ^0.1.1
+    confusing-browser-globals: ^1.0.10
+    object.assign: ^4.1.2
+    object.entries: ^1.1.5
+    semver: ^6.3.0
   peerDependencies:
-    eslint: ^4.9.0
-    eslint-plugin-import: ^2.7.0
-  checksum: 82b638870ba2b0fab333a81921a1f3e4d533aef5223925f116df57ac079fea91a63b1c0b2fb38640ff61d9cb65e84a73d278d32ed142a0b5e861eceaa847b1fe
+    eslint: ^7.32.0 || ^8.2.0
+    eslint-plugin-import: ^2.25.2
+  checksum: 38626bad2ce2859fccac86b30cd2b86c9b7d8d71d458331860861dc05290a5b198bded2f4fb89efcb9046ec48f8ab4c4fb00365ba8916f27b172671da28b93ea
   languageName: node
   linkType: hard
 
-"eslint-config-airbnb@npm:^16.1.0":
-  version: 16.1.0
-  resolution: "eslint-config-airbnb@npm:16.1.0"
+"eslint-config-airbnb@npm:^19.0.0":
+  version: 19.0.4
+  resolution: "eslint-config-airbnb@npm:19.0.4"
   dependencies:
-    eslint-config-airbnb-base: ^12.1.0
+    eslint-config-airbnb-base: ^15.0.0
+    object.assign: ^4.1.2
+    object.entries: ^1.1.5
   peerDependencies:
-    eslint: ^4.9.0
-    eslint-plugin-import: ^2.7.0
-    eslint-plugin-jsx-a11y: ^6.0.2
-    eslint-plugin-react: ^7.4.0
-  checksum: b2f5c448a054811da3327f3c07343c57d2ddb876dd8f25ffccf84107bb2b62dd11be56f4235b3f45a1a138644b17c6d9f13013f434365df2976427b2b93b5535
+    eslint: ^7.32.0 || ^8.2.0
+    eslint-plugin-import: ^2.25.3
+    eslint-plugin-jsx-a11y: ^6.5.1
+    eslint-plugin-react: ^7.28.0
+    eslint-plugin-react-hooks: ^4.3.0
+  checksum: 253178689c3c80eef2567e3aaf0612e18973bc9cf51d9be36074b5dd58210e8b6942200a424bcccbb81ac884e41303479ab09f251a2a97addc2de61efdc9576c
   languageName: node
   linkType: hard
 
@@ -4226,13 +4248,6 @@ __metadata:
   peerDependencies:
     eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8
   checksum: 82f391c5a093235c3bc2f664c54e009c49460778ee7d1b86c1536df9ac4d2a80d1dedc9241ac797df4a9dced936e955d9c89042fb3ac8d017b5359d1320d3c0f
-  languageName: node
-  linkType: hard
-
-"eslint-restricted-globals@npm:^0.1.1":
-  version: 0.1.1
-  resolution: "eslint-restricted-globals@npm:0.1.1"
-  checksum: 45433bd3a811387a7178950eb8096b09d8a2463d6e9953892634f7c2c5d2ae0f3f921893ca21048295606da40e3ae087afa694f4c1e38dddb3c7e0fe8b8767ad
   languageName: node
   linkType: hard
 
@@ -7904,7 +7919,7 @@ __metadata:
     csurf: ^1.9.0
     errorhandler: ^1.4.3
     eslint: ^4.12.1
-    eslint-config-airbnb: ^16.1.0
+    eslint-config-airbnb: ^19.0.0
     eslint-plugin-import: ^2.2.0
     eslint-plugin-jsx-a11y: ^6.0.2
     eslint-plugin-protractor: ^1.34.2
@@ -9515,7 +9530,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"object.assign@npm:^4.1.4, object.assign@npm:^4.1.5":
+"object.assign@npm:^4.1.2, object.assign@npm:^4.1.4, object.assign@npm:^4.1.5":
   version: 4.1.5
   resolution: "object.assign@npm:4.1.5"
   dependencies:
@@ -9536,6 +9551,17 @@ __metadata:
     for-own: ^1.0.0
     isobject: ^3.0.0
   checksum: 25468e06132af866bffedf9889b8180a31b9915776dbb660106866c5dd70cd0c0ad54f17e34de8ab99e6f548d579678de2e558390f56bd4ee61899fa6057f946
+  languageName: node
+  linkType: hard
+
+"object.entries@npm:^1.1.5":
+  version: 1.1.8
+  resolution: "object.entries@npm:1.1.8"
+  dependencies:
+    call-bind: ^1.0.7
+    define-properties: ^1.2.1
+    es-object-atoms: ^1.0.0
+  checksum: 5314877cb637ef3437a30bba61d9bacdb3ce74bf73ac101518be0633c37840c8cc67407edb341f766e8093b3d7516d5c3358f25adfee4a2c697c0ec4c8491907
   languageName: node
   linkType: hard
 
@@ -11351,7 +11377,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^6.3.1":
+"semver@npm:^6.3.0, semver@npm:^6.3.1":
   version: 6.3.1
   resolution: "semver@npm:6.3.1"
   bin:
