@@ -2,6 +2,7 @@
   'use strict';
 
   var controller = require('./deferral-maintenance.controller')
+    , postponeController = require('../../juror-management/postpone/postpone.controller')
     , auth = require('../../../components/auth');
 
   module.exports = function(app) {
@@ -37,5 +38,35 @@
       'pool-management.deferral-maintenance.check.get',
       auth.verify,
       controller.getCheckDeferral(app));
-  }
+
+    // bulk postpone
+    app.post('/pool-management/deferral-maintenance/location/:locationCode/postpone',
+      'pool-management.deferral-maintenance.postpone.post',
+      auth.verify,
+      controller.postPostpone(app));
+    app.get('/pool-management/deferral-maintenance/location/:locationCode/postpone/date',
+      'pool-management.deferral-maintenance.postpone.date.get',
+      auth.verify,
+      postponeController.getPostponeDateDeferralMaintenance(app));
+    app.post('/pool-management/deferral-maintenance/location/:locationCode/postpone/date',
+      'pool-management.deferral-maintenance.postpone.date.post',
+      auth.verify,
+      postponeController.postPostponeDateDeferralMaintenance(app));
+    app.get('/pool-management/deferral-maintenance/location/:locationCode/postpone/pool',
+      'pool-management.deferral-maintenance.postpone.pool.get',
+      auth.verify,
+      postponeController.getAvailablePoolsDeferralMaintenance(app));
+    app.post('/pool-management/deferral-maintenance/location/:locationCode/postpone/pool',
+      'pool-management.deferral-maintenance.postpone.pool.post',
+      auth.verify,
+      postponeController.postPostponePoolDeferralMaintenance(app));
+    app.get('/pool-management/deferral-maintenance/location/:locationCode/postpone/movement',
+      'pool-management.deferral-maintenance.postpone.movement.get',
+      auth.verify,
+      postponeController.getPostponeMovementDeferralMaintenance(app));
+    app.post('/pool-management/deferral-maintenance/location/:locationCode/postpone/movement',
+      'pool-management.deferral-maintenance.postpone.movement.post',
+      auth.verify,
+      postponeController.postPostponeMovementDeferralMaintenance(app));
+  };
 })();
