@@ -36,6 +36,24 @@ module.exports.reportKeys = {
       'totalUndelivered',
     ],
   },
+  'non-responded': {
+    title: 'Non-repsonded list',
+    apiKey: 'NonRespondedReport',
+    search: 'poolNumber',
+    headings: [
+      'poolNumber',
+      'reportDate',
+      'poolType',
+      'reportTime',
+      'serviceStartDate',
+      'courtName',
+      'totalNonResponded',
+    ],
+    pageHeadings: {
+      left: ['poolNumber', 'poolType', 'serviceStartDate', 'totalNonResponded'],
+      right: ['reportDate', 'reportTime', 'courtName'],
+    },
+  },
 };
 
 const tableDataMappers = {

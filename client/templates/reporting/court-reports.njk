@@ -1,0 +1,49 @@
+{% extends "layouts/default.njk" %}
+
+{% set currentApp = "Reports" %}
+{% set nav ="reports" %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-xl">Reports</h1>
+
+      <h2 class="govuk-heading-m">Attendance and expenses</h2>
+      <ul class="govuk-list">
+        <li><a class="govuk-link" href="#">Absence report</a> (previously No show list)</li>
+        <li><a class="govuk-link" href="#">Jury cost bill</a></li>
+        <li><a class="govuk-link" href="#">Payment status report</a></li>
+        <li><a class="govuk-link" href="#">Persons attending (detailed)</a></li>
+        <li><a class="govuk-link" href="#">Persons attending (summary)</a></li>
+        <li><a class="govuk-link" href="#">Reprint audit reports</a></li>
+        <li><a class="govuk-link" href="#">Trial attendance</a></li>
+        <li><a class="govuk-link" href="#">Unconfirmed attendance</a></li>
+        <li><a class="govuk-link" href="#">Unpaid attendance (detailed)</a></li>
+        <li><a class="govuk-link" href="#">Unpaid attendance (summary)</a></li>
+        
+      </ul>
+
+      <h2 class="govuk-heading-m">Pools</h2>
+      <ul class="govuk-list">
+        <li><a class="govuk-link" href="#">Available list</a></li>
+        <li><a class="govuk-link" href="#">Current pool status report</a></li>
+        <li><a class="govuk-link" href="#">Completion of service report</a></li>
+        <li><a class="govuk-link" href="#">Deferred list</a></li>
+        <li><a class="govuk-link" href="#">Excused and disqualified list</a></li>
+        <li><a class="govuk-link" href="#">Next attendance date report</a> (previously Summary)</li>
+        <li><a class="govuk-link" href="{{ url('non-responded.filter.get') }}">Non-responded list</a></li>
+        <li><a class="govuk-link" href="#">On call list</a></li>
+        <li><a class="govuk-link" href="#">Pool selection list</a></li>
+        <li><a class="govuk-link" href="#">Postponed list</a></li>
+        <li><a class="govuk-link" href="#">Reasonable adjustments report</a></li>
+      </ul>
+
+      <h2 class="govuk-heading-m">Senior jury officer reports</h2>
+      <ul class="govuk-list">
+        <li><a class="govuk-link" href="#">Jury ammendment report</a></li>
+        <li><a class="govuk-link" href="#">Manually-created jurors report</a></li>
+      </ul>
+      
+    </div>
+  </div>
+{% endblock %}
