@@ -49,7 +49,7 @@
         },
         json: true,
         body: {
-          'attendance_dates': attendanceDates,
+          dates: attendanceDates,
         },
       };
 
