@@ -528,7 +528,7 @@
 
     if (nonAttendanceDay) {
       data = {
-        'pay_cash': body.paymentMethod,
+        'payment_method': body.paymentMethod,
         'time': {
           'pay_attendance': body.payAttendance,
         },
@@ -541,7 +541,7 @@
       };
     } else {
       data = {
-        'pay_cash': body.paymentMethod,
+        'payment_method': body.paymentMethod,
         time: {
           'pay_attendance': body.payAttendance,
           'travel_time': body['totalTravelTime-hour'].padStart(2, '0')

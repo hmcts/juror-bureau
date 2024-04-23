@@ -66,7 +66,7 @@
 
     var data = {
       'date_of_expense': urlSearchParams.get('date'),
-      'pay_cash': paymentMethod,
+      'payment_method': paymentMethod,
     };
 
     if (!nonAttendanceDay) {

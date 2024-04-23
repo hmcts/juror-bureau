@@ -23,7 +23,7 @@
 
     it('should send call the correct endpoint to submit an attendance day draft expense', function() {
       var body = {
-          'pay_cash': false,
+          'payment_method': 'BACS',
           'time': { 'pay_attendance': 'FULL_DAY', 'travel_time': '00:40' },
           'travel': {
             'traveled_by_car': true,
@@ -60,7 +60,7 @@
 
     it('should send call the correct endpoint to submit a non-attendance day draft expense', function() {
       var body = {
-          'pay_cash': false,
+          'payment_method': 'BACS',
           'time': { 'pay_attendance': 'FULL_DAY', 'travel_time': '00:40' },
           'travel': {
             'traveled_by_car': true,
