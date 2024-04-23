@@ -131,10 +131,10 @@
 
       let tableRows = [];
 
+      // GROUPED REPORT
       if (reportType.grouped)  {
         for (const [header, data] of Object.entries(tableData.data)) {
           const group = buildStandardTableRows(data, tableData.headings);
-
           let link;
 
           if (reportType.grouped.headings && reportType.grouped.headings.link) {
@@ -154,18 +154,17 @@
               colspan: tableData.headings.length,
               classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
             }];
+          const totalsRow = reportType.grouped.totals ? [{
+            text: `Total: ${group.length}`,
+            colspan: tableData.headings.length,
+            classes: 'govuk-body-s govuk-!-font-weight-bold mod-table-no-border',
+          }] : null;
 
-          const table = [
+          tableRows = tableRows.concat([
             headRow,
             ...group,
-            [{
-              text: `Total: ${group.length}`,
-              colspan: tableData.headings.length,
-              classes: 'govuk-body-s govuk-!-font-weight-bold mod-table-no-border',
-            }],
-          ];
-
-          tableRows = tableRows.concat(table);
+            totalsRow,
+          ]);
         }
       } else {
         tableRows = buildStandardTableRows(tableData.data, tableData.headings);

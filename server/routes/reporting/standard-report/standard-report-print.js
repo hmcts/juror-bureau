@@ -18,17 +18,45 @@ async function standardReportPrint(app, req, res, reportKey, data) {
     return { text: heading.name, style: 'label' };
   });
 
-  const tableRows = [
-    ...tableData.data.map(row => tableData.headings.map(header => {
-      let text = tableDataMappers[header.dataType](row[snakeToCamel(header.id)]);
+  let tableRows = [];
 
-      if (header.id === 'juror_postcode') {
-        text = text.toUpperCase();
+  if (reportData.grouped) {
+    for (const [heading, rowData] of Object.entries(tableData.data)) {
+      const group = rowData.map(row => tableData.headings.map(header => {
+        let text = tableDataMappers[header.dataType](row[snakeToCamel(header.id)]);
+
+        if (header.id === 'juror_postcode') {
+          text = text.toUpperCase();
+        }
+
+        return { text };
+      }));
+      const headRow = [
+        { text: (reportData.grouped.headings.prefix || '') + heading },
+      ];
+      const totalsRow = reportData.grouped.totals ? [
+        { text: `Total: ${group.length}`, style: 'label' },
+      ] : null;
+
+      for (let i=0; i<tableData.headings.length - 1; i++) {
+        headRow.push({});
+        totalsRow.push({});
       }
+      tableRows = tableRows.concat([headRow, ...group, totalsRow]);
+    }
+  } else {
+    tableRows = [
+      ...tableData.data.map(row => tableData.headings.map(header => {
+        let text = tableDataMappers[header.dataType](row[snakeToCamel(header.id)]);
 
-      return { text };
-    })),
-  ];
+        if (header.id === 'juror_postcode') {
+          text = text.toUpperCase();
+        }
+
+        return { text };
+      })),
+    ];
+  }
 
   try {
     const document = await generateDocument({
