@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  const auth = require('../../../../components/auth');
+  const auth = require('../../../components/auth');
   const postponedController = require('./postponed.controller');
 
   module.exports = function(app) {

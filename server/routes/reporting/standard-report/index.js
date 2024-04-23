@@ -42,6 +42,7 @@
     standardReportRoutes(app, 'undelivered');
     standardReportRoutes(app, 'non-responded');
     require('./postponed-report')(app);
+    require('../postponed-report')(app);
     standardReportRoutes(app, 'postponed-pool');
     standardReportRoutes(app, 'postponed-date');
   };

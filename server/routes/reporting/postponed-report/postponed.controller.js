@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const { validate } = require('validate.js');
-const validator = require('../../../../config/validation/report-search-by');
-const { dateFilter } = require('../../../../components/filters');
+const validator = require('../../../config/validation/report-search-by');
+const { dateFilter } = require('../../../components/filters');
 
 (function() {
   'use strict';
