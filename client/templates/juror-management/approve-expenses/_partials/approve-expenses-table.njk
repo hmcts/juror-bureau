@@ -77,7 +77,7 @@
               }
             })}}
           </td>
-          {% set viewExpensesUrl = url("juror-management.approve-expenses.view-expenses.get", { jurorNumber: juror.jurorNumber, poolNumber: juror.poolNumber, status: juror.expenseType | toKebabCase })%}
+          {% set viewExpensesUrl = url("juror-management.approve-expenses.view-expenses.get", { jurorNumber: juror.jurorNumber, locCode: locCode, status: juror.expenseType | toKebabCase })%}
           <td id="{{juror.jurorNumber}}-viewExpenses" class="govuk-table__cell jd-middle-align"><a href="{{ viewExpensesUrl }}">View expenses</a></td>
         </tr>
 

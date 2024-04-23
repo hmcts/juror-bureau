@@ -176,12 +176,9 @@
 
   module.exports.approveExpensesDAO = {
     get: function(app, req, locCode, paymentMethod, dates, etag = null) {
-      const uri = dates
-        // eslint-disable-next-line max-len
-        ? urljoin(config.apiEndpoint, 'moj/expenses/approval', locCode, paymentMethod, `?from=${dates.from}&to=${dates.to}`)
-        : urljoin(config.apiEndpoint, 'moj/expenses/approval', locCode, paymentMethod);
       const payload = {
-        uri,
+        uri: urljoin(config.apiEndpoint, `moj/expenses/${locCode}/${paymentMethod}/pending-approval`)
+          + (dates ? `?from=${dates.from}&to=${dates.to}` : ''),
         method: 'GET',
         headers: {
           'User-Agent': 'Request-Promise',
@@ -205,9 +202,9 @@
 
       return rp(payload);
     },
-    post: function(app, req, body) {
+    post: function(app, req, locCode, paymentMethod, body) {
       const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/expenses/approve'),
+        uri: urljoin(config.apiEndpoint, `moj/expenses/${locCode}/${paymentMethod}/approve`),
         method: 'POST',
         headers: {
           'User-Agent': 'Request-Promise',
