@@ -19,6 +19,10 @@
         locCode,
         status,
       });
+      const bankDetailsUrl = app.namedRoutes.build('juror-management.bank-details.get', {
+        jurorNumber,
+        locCode,
+      }) + `?status=${status}`;
 
       try {
         const promiseArr = [];
@@ -49,6 +53,7 @@
           backLinkUrl: app.namedRoutes.build('juror-management.unpaid-attendance.get'),
           submitUrl,
           setExpensesUrl,
+          bankDetailsUrl,
           nav: 'unpaid-attendance',
           status,
           data,
@@ -107,28 +112,7 @@
         ? req.body['checked-expenses']
         : [req.body['checked-expenses']];
 
-      switch (status) {
-      case 'for-approval':
-        return res.redirect(app.namedRoutes.build('juror-management.edit-expense.get', {
-          jurorNumber,
-          locCode,
-          status,
-        }));
-      case 'for-reapproval':
-        return res.redirect(app.namedRoutes.build('juror-management.edit-expense.get', {
-          jurorNumber,
-          locCode,
-          status,
-        }));
-      case 'approved':
-        return res.redirect(app.namedRoutes.build('juror-management.edit-expense.get', {
-          jurorNumber,
-          locCode,
-          status,
-        }));
-      }
-
-      return res.redirect(app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
+      return res.redirect(app.namedRoutes.build('juror-management.edit-expense.get', {
         jurorNumber,
         locCode,
         status,

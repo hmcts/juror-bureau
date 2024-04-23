@@ -409,10 +409,11 @@
 
         if (req.url.includes('bank-details/address')) {
           const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
+          const { locCode } = req.params;
 
           return res.redirect(app.namedRoutes.build(`${routePrefix}.bank-details.address-edit.get`, {
             jurorNumber: req.params['jurorNumber'],
-            poolNumber: req.params['poolNumber'],
+            locCode,
           }));
         }
 
@@ -539,10 +540,11 @@
 
     if (req.url.includes('bank-details')){
       const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
+      const { locCode } = req.params;
 
       successUrl = app.namedRoutes.build(`${routePrefix}.bank-details.get`, {
         jurorNumber: req.params['jurorNumber'],
-        poolNumber: req.params['poolNumber'],
+        locCode,
       });
     }
 
@@ -641,14 +643,15 @@
 
       if (req.url.includes('bank-details')) {
         const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
+        const { locCode } = req.params;
 
         postUrl = app.namedRoutes.build(`${routePrefix}.bank-details.address-edit.post`, {
           jurorNumber: req.params['jurorNumber'],
-          poolNumber: req.params['poolNumber'],
+          locCode,
         });
         cancelUrl = app.namedRoutes.build(`${routePrefix}.bank-details.get`, {
           jurorNumber: req.params['jurorNumber'],
-          poolNumber: req.params['poolNumber'],
+          locCode,
         });
       } else {
         postUrl = app.namedRoutes.build('juror-record.details-edit-address.post', {
@@ -695,10 +698,11 @@
 
       if (req.url.includes('bank-details')){
         const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
+        const { locCode } = req.params;
 
         formErrorUrl = app.namedRoutes.build(`${routePrefix}.bank-details.address-edit.get`, {
           jurorNumber: req.params['jurorNumber'],
-          poolNumber: req.params['poolNumber'],
+          locCode,
         });
       }
 

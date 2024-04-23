@@ -35,24 +35,6 @@
       postAddSmartcardSpend(app),
     );
 
-    app.get('/juror-management/unpaid-attendance/expense-record/:jurorNumber/:locCode/detail/:auditNumber',
-      'juror-management.unpaid-attendance.expense-record.detail.get',
-      auth.verify,
-      controller.getExpenseRecordDetail(app),
-    );
-
-    app.get('/juror-management/not-approved/:auditNumber',
-      'juror-management.not-approved.get',
-      auth.verify,
-      controller.getNotApproved(app),
-    );
-
-    app.post('/juror-management/unpaid-attendance/expense-record/approved/:auditNumber',
-      'juror-management.unpaid-attendance.expense-record.approved.post',
-      auth.verify,
-      controller.postExpensesApproval(app),
-    );
-
   };
 
 })();

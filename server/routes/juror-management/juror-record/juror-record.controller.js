@@ -658,15 +658,16 @@
 
           if (req.url.includes('bank-details')) {
             const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
+            const { status } = req.query;
 
             backLinkUrl = app.namedRoutes.build(`${routePrefix}.bank-details.get`, {
               jurorNumber: req.params['jurorNumber'],
-              poolNumber: req.params['poolNumber'],
-            });
+              locCode: req.params['locCode'],
+            }) + (status ? `?status=${status}` : '');
             actionUrl = app.namedRoutes.build(`${routePrefix}.bank-details.notes-edit.post`, {
               jurorNumber: req.params['jurorNumber'],
-              poolNumber: req.params['poolNumber'],
-            });
+              locCode: req.params['locCode'],
+            }) + (status ? `?status=${status}` : '');
           }
 
           return res.render('juror-management/juror-record/notes-edit', {
@@ -725,39 +726,42 @@
   // of course the promise will resolve if the code is 200 (error) or throw an exception if the code is 304 (success) 😅
   module.exports.postEditNotes = function(app) {
     return function(req, res) {
+      const { jurorNumber } = req.params;
 
       let successUrl = app.namedRoutes.build('juror-record.notes.get', {
-        jurorNumber: req.params['jurorNumber'],
+        jurorNumber,
       });
       let backLinkUrl = app.namedRoutes.build('juror-record.notes.get', {
-        jurorNumber: req.params['jurorNumber'],
+        jurorNumber,
       });
       let actionUrl = app.namedRoutes.build('juror-record.notes-edit.post', {
-        jurorNumber: req.params['jurorNumber'],
+        jurorNumber,
       });
       let formErrorUrl = app.namedRoutes.build('juror-record.notes-edit.get', {
-        jurorNumber: req.params['jurorNumber'],
+        jurorNumber,
       });
 
       if (req.url.includes('bank-details')) {
         const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
+        const { locCode } = req.params;
+        const { status } = req.query;
 
         successUrl = app.namedRoutes.build(`${routePrefix}.bank-details.get`, {
-          jurorNumber: req.params['jurorNumber'],
-          poolNumber: req.params['poolNumber'],
-        });
+          jurorNumber,
+          locCode,
+        }) + (status ? `?status=${status}` : '');
         backLinkUrl = app.namedRoutes.build(`${routePrefix}.bank-details.get`, {
-          jurorNumber: req.params['jurorNumber'],
-          poolNumber: req.params['poolNumber'],
-        });
+          jurorNumber,
+          locCode,
+        }) + (status ? `?status=${status}` : '');
         actionUrl = app.namedRoutes.build(`${routePrefix}.bank-details.notes-edit.post`, {
-          jurorNumber: req.params['jurorNumber'],
-          poolNumber: req.params['poolNumber'],
-        });
+          jurorNumber,
+          locCode,
+        }) + (status ? `?status=${status}` : '');
         formErrorUrl = app.namedRoutes.build(`${routePrefix}.bank-details.notes-edit.get`, {
-          jurorNumber: req.params['jurorNumber'],
-          poolNumber: req.params['poolNumber'],
-        });
+          jurorNumber,
+          locCode,
+        }) + (status ? `?status=${status}` : '');
       }
 
       const editSuccessCB = function() {
