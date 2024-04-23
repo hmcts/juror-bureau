@@ -10,8 +10,6 @@
   } = require('./standard-report.controller');
 
   const standardReportRoutes = (app, key) => {
-    require('./search-by')(app);
-
     app.get(`/reporting/${key}`,
       `${key}.filter.get`,
       auth.verify,
@@ -43,6 +41,7 @@
     standardReportRoutes(app, 'next-due');
     standardReportRoutes(app, 'undelivered');
     standardReportRoutes(app, 'non-responded');
+    require('./postponed-report')(app);
     standardReportRoutes(app, 'postponed-pool');
     standardReportRoutes(app, 'postponed-date');
   };

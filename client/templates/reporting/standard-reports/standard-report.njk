@@ -31,7 +31,7 @@
     
     {{ govukButton({
       text: "Print",
-      href: url(reportKey + ".report.print", { filter: filter }),
+      href: printUrl,
       classes: "govuk-button--secondary",
       attributes: {
         target: "_blank"
@@ -61,7 +61,7 @@
         {{ govukTable({
           attributes: {
             'data-module': 'moj-sortable-table'
-          },
+          } if not grouped,
           caption: "Report data",
           captionClasses: "govuk-visually-hidden",
           head: tableHeaders,

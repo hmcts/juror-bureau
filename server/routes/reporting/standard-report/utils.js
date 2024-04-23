@@ -88,6 +88,10 @@ module.exports.reportKeys = {
       left: ['dateFrom', 'dateTo', 'totalPostponed'],
       right: ['reportDate', 'reportTime'],
     },
+    grouped: {
+      headingPrefix: 'Pool ',
+      link: 'pool-overview',
+    },
   },
 };
 

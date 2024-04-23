@@ -56,17 +56,17 @@ const { dateFilter } = require('../../../../components/filters');
         }
       }
 
-
-
       switch (req.body.searchBy) {
       case 'poolNumber':
         return res.redirect(app.namedRoutes.build('postponed-pool.filter.get'));
       case 'next31Days':
-        break;
+        return res.redirect(app.namedRoutes.build('postponed-date.report.get', {filter: 'dateRange'})
+          + `?fromDate=${dateFilter(new Date(), null, 'YYYY-MM-DD')}`
+          + `&toDate=${dateFilter(new Date(new Date().setDate(new Date().getDate() + 31)), null, 'YYYY-MM-DD')}`); ;
       case 'customDateRange':
-        return res.redirect(app.namedRoutes.build('postponed-date.report.get', {filter: 'dates'})
-          + `?dateFrom=${dateFilter(req.body.dateFrom, 'DD/MM/YYYY', 'YYYY-MM-DD')}`
-          + `&dateTo=${dateFilter(req.body.dateTo, 'DD/MM/YYYY', 'YYYY-MM-DD')}`);
+        return res.redirect(app.namedRoutes.build('postponed-date.report.get', {filter: 'dateRange'})
+          + `?fromDate=${dateFilter(req.body.dateFrom, 'DD/MM/YYYY', 'YYYY-MM-DD')}`
+          + `&toDate=${dateFilter(req.body.dateTo, 'DD/MM/YYYY', 'YYYY-MM-DD')}`);
       }
 
       return res.redirect(app.namedRoutes.build('postponed.search.get'));
