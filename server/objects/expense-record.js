@@ -38,9 +38,9 @@
   };
 
   module.exports.submitDraftExpenses = {
-    post: function(app, req, jurorNumber, poolNumber, attendanceDates) {
+    post: function(app, req, locCode, jurorNumber, attendanceDates) {
       const payload = {
-        uri: urljoin(endpoint, 'submit-for-approval'),
+        uri: urljoin(endpoint.replace('{locCode}', locCode), jurorNumber, 'submit-for-approval'),
         method: 'POST',
         headers: {
           'User-Agent': 'Request-Promise',
@@ -49,8 +49,6 @@
         },
         json: true,
         body: {
-          'juror_number': jurorNumber,
-          'pool_number': poolNumber,
           'attendance_dates': attendanceDates,
         },
       };
