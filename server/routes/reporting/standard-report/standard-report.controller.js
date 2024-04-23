@@ -48,8 +48,8 @@
           resultsCount,
           poolList,
           filter,
-          filterUrl: app.namedRoutes.build(`${reportKey}.filter.post`),
-          reportUrl: app.namedRoutes.build(`${reportKey}.report.post`),
+          filterUrl: app.namedRoutes.build(`reports.${reportKey}.filter.post`),
+          reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
         });
       default:
         app.logger.info('Failed to load a search type for report type ' + reportKey);
@@ -61,14 +61,13 @@
   const standardFilterPost = (app, reportKey) => (req, res) => {
     const filter = req.body.poolNumber;
 
-    return res.redirect(app.namedRoutes.build(`${reportKey}.filter.get`) + '?filter=' + filter);
+    return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`) + '?filter=' + filter);
   };
 
   const standardReportGet = (app, reportKey, isPrint = false) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
     const config = {};
     const filter = req.session.reportFilter;
-    const pageHeadings = reportType.headings.map(heading => constructPageHeading(heading, headings));
 
     const buildStandardTableRows = function(tableData, tableHeadings) {
       const tableRows = tableData.map(data => tableHeadings.map(header => {
@@ -95,10 +94,11 @@
 
       return tableRows;
     };
+
     const buildPrintUrl = function() {
       let printUrl = req.params.filter
-        ? app.namedRoutes.build(`${reportKey}.report.print`, {filter: req.params.filter})
-        : app.namedRoutes.build(`${reportKey}.report.print`);
+        ? app.namedRoutes.build(`reports.${reportKey}.report.print`, {filter: req.params.filter})
+        : app.namedRoutes.build(`reports.${reportKey}.report.print`);
 
       if (req.query.fromDate) {
         printUrl = printUrl + '?fromDate=' + req.query.fromDate + '&toDate=' + req.query.toDate;
@@ -112,7 +112,7 @@
       config.poolNumber = req.params.filter;
     }
 
-    if (reportType.search && reportType.search === 'dateRange') {
+    if (req.query.fromDate) {
       config.fromDate = req.query.fromDate;
       config.toDate = req.query.toDate;
     }
@@ -170,18 +170,7 @@
         tableRows = buildStandardTableRows(tableData.data, tableData.headings);
       }
 
-      const pageHeadings = reportType.headings.map(heading => {
-        if (heading === 'reportDate') {
-          return { title: 'Report created', data: headingDataMappers.LocalDate(headings.reportCreated.value) };
-        } else if (heading === 'reportTime') {
-          return { title: 'Time created', data: headingDataMappers.timeFromISO(headings.reportCreated.value) };
-        }
-        const headingData = headings[heading];
-
-        return { title: headingData.displayName, data: headingDataMappers[headingData.dataType](headingData.value)};
-      });
-
-      + (req.query.fromDate ? ('?fromDate=' + req.query.fromDate + '&toDate=' + req.query.toDate) : '');
+      const pageHeadings = reportType.headings.map(heading => constructPageHeading(heading, headings));
 
       return res.render('reporting/standard-reports/standard-report', {
         title: reportType.title,
@@ -195,7 +184,7 @@
         backLinkUrl: {
           built: true,
           url: reportType.search === 'poolNumber'
-            ? app.namedRoutes.build(`${reportKey}.filter.get`) + (filter ? '?filter=' + filter : '')
+            ? app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : '')
             : reportType.searchUrl,
         },
       });
@@ -216,12 +205,12 @@
         }],
       };
 
-      return res.redirect(app.namedRoutes.build(`${reportKey}.filter.get`) + '?filter=' + req.body.filter);
+      return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`) + '?filter=' + req.body.filter);
     }
 
     req.session.reportFilter = req.body.filter;
 
-    return res.redirect(app.namedRoutes.build(`${reportKey}.report.get`, {
+    return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, {
       filter: req.body.reportPool,
     }));
   };

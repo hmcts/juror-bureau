@@ -16,7 +16,7 @@
       delete req.session.formFields;
 
       return res.render('reporting/standard-reports/search-by/postponed.njk', {
-        processUrl: app.namedRoutes.build('postponed.search.post'),
+        processUrl: app.namedRoutes.build('reports.postponed.search.post'),
         cancelUrl: app.namedRoutes.build('reports.get'),
         tmpBody,
         errors: {
@@ -35,7 +35,7 @@
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
-        return res.redirect(app.namedRoutes.build('postponed.search.get'));
+        return res.redirect(app.namedRoutes.build('reports.postponed.search.get'));
       }
 
       if (req.body.searchBy === 'customDateRange') {
@@ -43,7 +43,7 @@
         if (typeof validatorResult !== 'undefined') {
           req.session.errors = validatorResult;
           req.session.formFields = req.body;
-          return res.redirect(app.namedRoutes.build('postponed.search.get'));
+          return res.redirect(app.namedRoutes.build('reports.postponed.search.get'));
         }
         const fromDate = moment(req.body.dateFrom, 'DD/MM/YYYY');
         const toDate = moment(req.body.dateTo, 'DD/MM/YYYY');
@@ -56,24 +56,24 @@
             }],
           };
           req.session.formFields = req.body;
-          return res.redirect(app.namedRoutes.build('postponed.search.get'));
+          return res.redirect(app.namedRoutes.build('reports.postponed.search.get'));
         }
       }
 
       switch (req.body.searchBy) {
       case 'poolNumber':
-        return res.redirect(app.namedRoutes.build('postponed-pool.filter.get'));
+        return res.redirect(app.namedRoutes.build('reports.postponed-pool.filter.get'));
       case 'next31Days':
-        return res.redirect(app.namedRoutes.build('postponed-date.report.get', {filter: 'dateRange'})
+        return res.redirect(app.namedRoutes.build('reports.postponed-date.report.get', {filter: 'dateRange'})
           + `?fromDate=${dateFilter(new Date(), null, 'YYYY-MM-DD')}`
           + `&toDate=${dateFilter(new Date(new Date().setDate(new Date().getDate() + 31)), null, 'YYYY-MM-DD')}`); ;
       case 'customDateRange':
-        return res.redirect(app.namedRoutes.build('postponed-date.report.get', {filter: 'dateRange'})
+        return res.redirect(app.namedRoutes.build('reports.postponed-date.report.get', {filter: 'dateRange'})
           + `?fromDate=${dateFilter(req.body.dateFrom, 'DD/MM/YYYY', 'YYYY-MM-DD')}`
           + `&toDate=${dateFilter(req.body.dateTo, 'DD/MM/YYYY', 'YYYY-MM-DD')}`);
+      default:
+        return res.redirect(app.namedRoutes.build('reports.postponed.search.get'));
       }
-
-      return res.redirect(app.namedRoutes.build('postponed.search.get'));
     };
   };
 

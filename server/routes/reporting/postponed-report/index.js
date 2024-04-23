@@ -6,12 +6,12 @@
 
   module.exports = function(app) {
     app.get('/reporting/postponed/search',
-      'postponed.search.get',
+      'reports.postponed.search.get',
       auth.verify,
       postponedController.getPostponedSearch(app));
 
     app.post('/reporting/postponed/search',
-      'postponed.search.post',
+      'reports.postponed.search.post',
       auth.verify,
       postponedController.postPostponedSearch(app));
   };

@@ -1,5 +1,5 @@
 /* eslint-disable strict */
-const { isBureauUser, isCourtUser } = require('../../../components/auth/user-type');
+const { isCourtUser } = require('../../../components/auth/user-type');
 const { dateFilter, capitalizeFully } = require('../../../components/filters');
 
 // type IReportKey = {[key:string]: {
@@ -9,7 +9,9 @@ const { dateFilter, capitalizeFully } = require('../../../components/filters');
 //   headings: string[], // corresponds to the ids provided for the headings in the API
 //                       // (except report created dateTime)
 // }};
-module.exports.reportKeys = function(app, req) {
+module.exports.reportKeys = function(app, req = null) {
+  const courtUser = req ? isCourtUser(req) : false;
+
   return {
     'next-due': {
       title: 'Next attendance date report',
@@ -23,10 +25,6 @@ module.exports.reportKeys = function(app, req) {
         'serviceStartDate',
         'courtName',
       ],
-      pageHeadings: {
-        left: ['poolNumber', 'poolType', 'serviceStartDate'],
-        right: ['reportDate', 'reportTime', 'courtName'],
-      },
     },
     'undelivered': {
       title: 'Undelivered list',
@@ -41,10 +39,6 @@ module.exports.reportKeys = function(app, req) {
         'courtName',
         'totalUndelivered',
       ],
-      pageHeadings: {
-        left: ['poolNumber', 'poolType', 'serviceStartDate', 'totalUndelivered'],
-        right: ['reportDate', 'reportTime', 'courtName'],
-      },
     },
     'non-responded': {
       title: 'Non-repsonded list',
@@ -59,11 +53,7 @@ module.exports.reportKeys = function(app, req) {
         'courtName',
         'totalNonResponded',
       ],
-      pageHeadings: {
-        left: ['poolNumber', 'poolType', 'serviceStartDate', 'totalNonResponded'],
-        right: ['reportDate', 'reportTime', 'courtName'],
-      }
-    }
+    },
     'postponed-pool': {
       title: 'Postponed list (by pool)',
       apiKey: 'PostponedListByPoolReport',
@@ -77,27 +67,18 @@ module.exports.reportKeys = function(app, req) {
         'courtName',
         'totalPostponed',
       ],
-      pageHeadings: {
-        left: ['poolNumber', 'poolType', 'serviceStartDate', 'totalPostponed'],
-        right: ['reportDate', 'reportTime', 'courtName'],
-      },
-      searchRoute: app.namedRoutes.build('postponed.search.get'),
+      searchUrl: app.namedRoutes.build('reports.postponed.search.get'),
     },
     'postponed-date': {
       title: 'Postponed list (by date)',
       apiKey: 'PostponedListByDateReport',
-      search: 'dateRange',
       headings: [
         'dateFrom',
         'reportDate',
         'dateTo',
         'reportTime',
         'totalPostponed',
-      ].concat(isCourtUser(req) ? ['courtName'] : []),
-      pageHeadings: {
-        left: ['dateFrom', 'dateTo', 'totalPostponed'],
-        right: ['reportDate', 'reportTime'],
-      },
+      ].concat(courtUser ? ['courtName'] : []),
       grouped: {
         headings: {
           prefix: 'Pool ',
@@ -105,7 +86,7 @@ module.exports.reportKeys = function(app, req) {
         },
         totals: true,
       },
-      searchUrl: app.namedRoutes.build('postponed.search.get'),
+      searchUrl: app.namedRoutes.build('reports.postponed.search.get'),
     },
   };
 };
