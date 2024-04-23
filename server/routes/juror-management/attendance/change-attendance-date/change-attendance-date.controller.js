@@ -43,8 +43,8 @@
           require('request-promise'),
           app,
           req.session.authToken,
+          req.session.locCode,
           jurorNumber,
-          req.session.jurorCommonDetails.poolNumber,
         );
 
         return res.render('juror-management/attendance/change-attendance-date', {
