@@ -139,12 +139,8 @@
             {{ govukButton({
               text: "Edit trial",
               classes: "govuk-button--secondary",
-              href: '#',
-              disabled: true
+              href: url("trial-management.edit-trial.get", { trialNumber: trial.trial_number, locationCode: locationCode })
             }) }}
-              {# Due to the trial BE being implemented, the stub edit trial code no longer works
-              href: url('trial-management.edit-trial.get', {trialNumber: trial.trial_number, locationCode: locationCode})
-            }) }} #}
           {% endif %}
 
           {% if trial.is_active %}
