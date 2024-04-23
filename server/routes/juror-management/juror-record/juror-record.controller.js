@@ -492,8 +492,8 @@
           require('request-promise'),
           app,
           req.session.authToken,
+          req.session.locCode,
           jurorNumber,
-          jurorOverview.data.commonDetails.poolNumber,
         );
 
 
