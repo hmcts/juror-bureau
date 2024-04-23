@@ -2,7 +2,8 @@
   'use strict';
 
   const auth = require('../../components/auth');
-  const { getReports } = require('./reporting.controller');
+  const { isCourtUser } = require('../../components/auth/user-type');
+  const { getReports, getStatistics } = require('./reporting.controller');
 
   // TODO: these are in for POC and demoing purposes and as a reference for the future
   const {
@@ -20,6 +21,12 @@
       'reports.get',
       auth.verify,
       getReports(app));
+
+    app.get('/statistics',
+      'statistics.get',
+      auth.verify,
+      isCourtUser,
+      getStatistics(app));
 
     app.get('/reporting/some-report',
       'some-report.get',

@@ -128,17 +128,22 @@
 
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-one-half">
-
-        {{ govukInput({
-          label: {
-            text: "Case number"
-          },
-          classes: "govuk-!-width-one-half",
-          id: "trialNumber",
-          name: "trialNumber",
-          value: trialDetails.trialNumber,
-          errorMessage: trialNumberError     
-        }) }}
+        {% if editTrial %}
+          <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-2">Case number</h2>
+          <p class="govuk-body">{{ trialDetails.trialNumber }}</p>
+          <input type="hidden" name="trialNumber" value="{{ trialDetails.trialNumber }}">
+        {% else %}
+          {{ govukInput({
+            label: {
+              text: "Case number"
+            },
+            classes: "govuk-!-width-one-half",
+            id: "trialNumber",
+            name: "trialNumber",
+            value: trialDetails.trialNumber,
+            errorMessage: trialNumberError     
+          }) }}
+        {% endif %}
         {{ govukRadios({
           fieldset: {
             legend: {

@@ -12,6 +12,7 @@
   const status = require('./status');
   const jurorRecord = require('./juror-record');
   const jurorAttendance = require('./juror-attendance');
+  const createTrial = require('./create-trial');
 
   module.exports = {
     ...requestPool,
@@ -22,6 +23,7 @@
     ...status,
     ...jurorRecord,
     ...jurorAttendance,
+    ...createTrial,
   };
 
 })();

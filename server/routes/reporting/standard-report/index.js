@@ -40,6 +40,7 @@
   module.exports = function(app) {
     standardReportRoutes(app, 'next-due');
     standardReportRoutes(app, 'undelivered');
+    standardReportRoutes(app, 'non-responded');
   };
 
 })();
