@@ -377,6 +377,7 @@
 
       delete req.session.bannerMessage;
       delete req.session.errors;
+      delete req.session.postponeToDate;
 
       if (data) {
         renderData = _.clone(data);
@@ -411,6 +412,31 @@
       });
     };
   }
+
+  module.exports.postPostpone = function(app) {
+    return (req, res) => {
+      if (req.body['select-all-jurors']) {
+        req.session.selectedDeferralJurors = req.session.deferralMaintenance.deferrals;
+      } else if (Array.isArray(req.body.selectedJurors)) {
+        req.session.selectedDeferralJurors = req.body.selectedJurors.map(juror =>
+          req.session.deferralMaintenance.deferrals.find(item => item.jurorNumber === juror)
+        );
+      } else if (req.body.selectedJurors) {
+        req.session.selectedDeferralJurors = [
+          req.session.deferralMaintenance.deferrals.find(item => item.jurorNumber === req.body.selectedJurors),
+        ];
+      } else {
+        req.session.errors = modUtils.makeManualError('selectedJurors', 'Select at least one juror');
+        return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.filter.get', {
+          locationCode: req.params.locationCode,
+        }));
+      }
+
+      return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.postpone.date.get', {
+        locationCode: req.params.locationCode,
+      }));
+    };
+  };
 
   /**
    *
