@@ -1,5 +1,5 @@
 /* eslint-disable strict */
-const { isBureauUser } = require('../../../components/auth/user-type');
+const { isBureauUser, isCourtUser } = require('../../../components/auth/user-type');
 const { dateFilter, capitalizeFully } = require('../../../components/filters');
 
 // type IReportKey = {[key:string]: {
@@ -9,90 +9,105 @@ const { dateFilter, capitalizeFully } = require('../../../components/filters');
 //   headings: string[], // corresponds to the ids provided for the headings in the API
 //                       // (except report created dateTime)
 // }};
-module.exports.reportKeys = {
-  'next-due': {
-    title: 'Next attendance date report',
-    apiKey: 'NextAttendanceDayReport',
-    search: 'poolNumber',
-    headings: [
-      'poolNumber',
-      'reportDate',
-      'poolType',
-      'reportTime',
-      'serviceStartDate',
-      'courtName',
-    ],
-  },
-  'undelivered': {
-    title: 'Undelivered list',
-    apiKey: 'UndeliverableListReport',
-    search: 'poolNumber',
-    headings: [
-      'poolNumber',
-      'reportDate',
-      'poolType',
-      'reportTime',
-      'serviceStartDate',
-      'courtName',
-      'totalUndelivered',
-    ],
-  },
-  'non-responded': {
-    title: 'Non-repsonded list',
-    apiKey: 'NonRespondedReport',
-    search: 'poolNumber',
-    headings: [
-      'poolNumber',
-      'reportDate',
-      'poolType',
-      'reportTime',
-      'serviceStartDate',
-      'courtName',
-      'totalNonResponded',
-    ],
-    pageHeadings: {
-      left: ['poolNumber', 'poolType', 'serviceStartDate', 'totalNonResponded'],
-      right: ['reportDate', 'reportTime', 'courtName'],
+module.exports.reportKeys = function(app, req) {
+  return {
+    'next-due': {
+      title: 'Next attendance date report',
+      apiKey: 'NextAttendanceDayReport',
+      search: 'poolNumber',
+      headings: [
+        'poolNumber',
+        'reportDate',
+        'poolType',
+        'reportTime',
+        'serviceStartDate',
+        'courtName',
+      ],
+      pageHeadings: {
+        left: ['poolNumber', 'poolType', 'serviceStartDate'],
+        right: ['reportDate', 'reportTime', 'courtName'],
+      },
     },
-  },
-  'postponed-pool': {
-    title: 'Postponed list (by pool)',
-    apiKey: 'PostponedListByPoolReport',
-    search: 'poolNumber',
-    headings: [
-      'poolNumber',
-      'reportDate',
-      'poolType',
-      'reportTime',
-      'serviceStartDate',
-      'courtName',
-      'totalPostponed',
-    ],
-    pageHeadings: {
-      left: ['poolNumber', 'poolType', 'serviceStartDate', 'totalPostponed'],
-      right: ['reportDate', 'reportTime', 'courtName'],
+    'undelivered': {
+      title: 'Undelivered list',
+      apiKey: 'UndeliverableListReport',
+      search: 'poolNumber',
+      headings: [
+        'poolNumber',
+        'reportDate',
+        'poolType',
+        'reportTime',
+        'serviceStartDate',
+        'courtName',
+        'totalUndelivered',
+      ],
+      pageHeadings: {
+        left: ['poolNumber', 'poolType', 'serviceStartDate', 'totalUndelivered'],
+        right: ['reportDate', 'reportTime', 'courtName'],
+      },
     },
-  },
-  'postponed-date': {
-    title: 'Postponed list (by date)',
-    apiKey: 'PostponedListByDateReport',
-    search: 'dateRange',
-    headings: [
-      'dateFrom',
-      'reportDate',
-      'dateTo',
-      'reportTime',
-      'totalPostponed',
-    ],
-    pageHeadings: {
-      left: ['dateFrom', 'dateTo', 'totalPostponed'],
-      right: ['reportDate', 'reportTime'],
+    'non-responded': {
+      title: 'Non-repsonded list',
+      apiKey: 'NonRespondedReport',
+      search: 'poolNumber',
+      headings: [
+        'poolNumber',
+        'reportDate',
+        'poolType',
+        'reportTime',
+        'serviceStartDate',
+        'courtName',
+        'totalNonResponded',
+      ],
+      pageHeadings: {
+        left: ['poolNumber', 'poolType', 'serviceStartDate', 'totalNonResponded'],
+        right: ['reportDate', 'reportTime', 'courtName'],
+      }
+    }
+    'postponed-pool': {
+      title: 'Postponed list (by pool)',
+      apiKey: 'PostponedListByPoolReport',
+      search: 'poolNumber',
+      headings: [
+        'poolNumber',
+        'reportDate',
+        'poolType',
+        'reportTime',
+        'serviceStartDate',
+        'courtName',
+        'totalPostponed',
+      ],
+      pageHeadings: {
+        left: ['poolNumber', 'poolType', 'serviceStartDate', 'totalPostponed'],
+        right: ['reportDate', 'reportTime', 'courtName'],
+      },
+      searchRoute: app.namedRoutes.build('postponed.search.get'),
     },
-    grouped: {
-      headingPrefix: 'Pool ',
-      link: 'pool-overview',
+    'postponed-date': {
+      title: 'Postponed list (by date)',
+      apiKey: 'PostponedListByDateReport',
+      search: 'dateRange',
+      headings: [
+        'dateFrom',
+        'reportDate',
+        'dateTo',
+        'reportTime',
+        'totalPostponed',
+      ].concat(isCourtUser(req) ? ['courtName'] : []),
+      pageHeadings: {
+        left: ['dateFrom', 'dateTo', 'totalPostponed'],
+        right: ['reportDate', 'reportTime'],
+      },
+      grouped: {
+        headings: {
+          prefix: 'Pool ',
+          link: 'pool-overview',
+        },
+        totals: true,
+      },
+      searchUrl: app.namedRoutes.build('postponed.search.get'),
     },
-  },
+  };
 };
 
 const tableDataMappers = {

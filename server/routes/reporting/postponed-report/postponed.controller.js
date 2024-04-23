@@ -1,10 +1,11 @@
-const _ = require('lodash');
-const { validate } = require('validate.js');
-const validator = require('../../../config/validation/report-search-by');
-const { dateFilter } = require('../../../components/filters');
-
 (function() {
   'use strict';
+
+  const _ = require('lodash');
+  const { validate } = require('validate.js');
+  const validator = require('../../../config/validation/report-search-by');
+  const { dateFilter } = require('../../../components/filters');
+  const moment = require('moment');
 
   module.exports.getPostponedSearch = function(app) {
     return function(req, res) {
@@ -31,27 +32,30 @@ const { dateFilter } = require('../../../components/filters');
     return function(req, res) {
       let validatorResult = validate(req.body, validator.postponed.searchBy());
 
-      console.log(validatorResult);
-
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
-
         return res.redirect(app.namedRoutes.build('postponed.search.get'));
       }
 
-      console.log(req.body);
-
       if (req.body.searchBy === 'customDateRange') {
         validatorResult = validate(req.body, validator.postponed.dateRange());
-
-        console.log(validatorResult);
-
-
         if (typeof validatorResult !== 'undefined') {
           req.session.errors = validatorResult;
           req.session.formFields = req.body;
+          return res.redirect(app.namedRoutes.build('postponed.search.get'));
+        }
+        const fromDate = moment(req.body.dateFrom, 'DD/MM/YYYY');
+        const toDate = moment(req.body.dateTo, 'DD/MM/YYYY');
 
+        if (toDate.isBefore(fromDate)) {
+          req.session.errors = {
+            dateTo: [{
+              summary: '‘Date to’ cannot be before ‘date from’',
+              details: '‘Date to’ cannot be before ‘date from’',
+            }],
+          };
+          req.session.formFields = req.body;
           return res.redirect(app.namedRoutes.build('postponed.search.get'));
         }
       }

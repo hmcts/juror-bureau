@@ -4,7 +4,7 @@ const { reportKeys, tableDataMappers, constructPageHeading } = require('./utils'
 const { snakeToCamel } = require('../../../lib/mod-utils');
 
 async function standardReportPrint(app, req, res, reportKey, data) {
-  const reportData = reportKeys[reportKey];
+  const reportData = reportKeys(app, req)[reportKey];
 
   const { headings, tableData } = data;
 

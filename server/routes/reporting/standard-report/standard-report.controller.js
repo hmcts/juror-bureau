@@ -11,7 +11,7 @@
   const { standardReportPrint } = require('./standard-report-print');
 
   const standardFilterGet = (app, reportKey) => async(req, res) => {
-    const reportType = reportKeys[reportKey];
+    const reportType = reportKeys(app, req)[reportKey];
 
     if (reportType.search) {
       switch (reportType.search) {
@@ -65,7 +65,7 @@
   };
 
   const standardReportGet = (app, reportKey, isPrint = false) => async(req, res) => {
-    const reportType = reportKeys[reportKey];
+    const reportType = reportKeys(app, req)[reportKey];
     const config = {};
     const filter = req.session.reportFilter;
     const pageHeadings = reportType.headings.map(heading => constructPageHeading(heading, headings));
@@ -105,17 +105,6 @@
       }
       return printUrl;
     };
-    const buildBackLinkUrl = function() {
-      if (reportType.search === 'poolNumber') {
-        return app.namedRoutes.build(`${reportKey}.filter.get`) + (filter ? '?filter=' + filter : '');
-      }
-      const keyArray = _.clone(reportKey).split('-');
-
-      keyArray.pop();
-      const key = keyArray.join();
-
-      return app.namedRoutes.build(`${key}.search.get`);
-    };
 
     delete req.session.reportFilter;
 
@@ -148,20 +137,20 @@
 
           let link;
 
-          if (reportType.grouped.link) {
-            if (reportType.grouped.link === 'pool-overview') {
+          if (reportType.grouped.headings && reportType.grouped.headings.link) {
+            if (reportType.grouped.headings.link === 'pool-overview') {
               link = app.namedRoutes.build('pool-overview.get', {poolNumber: header});
             }
           }
 
           const headRow = link
             ? [{
-              html: `<a href=${link}>${(reportType.grouped.headingPrefix || '') + header}</a>`,
+              html: `<a href=${link}>${(reportType.grouped.headings.prefix || '') + header}</a>`,
               colspan: tableData.headings.length,
               classes: 'govuk-!-padding-top-7 govuk-link govuk-body-l govuk-!-font-weight-bold',
             }]
             : [{
-              text: (reportType.grouped.headingPrefix || '') + header,
+              text: (reportType.grouped.headings.prefix || '') + header,
               colspan: tableData.headings.length,
               classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
             }];
@@ -206,7 +195,9 @@
         printUrl: buildPrintUrl(),
         backLinkUrl: {
           built: true,
-          url: buildBackLinkUrl(),
+          url: reportType.search === 'poolNumber'
+            ? app.namedRoutes.build(`${reportKey}.filter.get`) + (filter ? '?filter=' + filter : '')
+            : reportType.searchUrl,
         },
       });
     } catch (e) {
@@ -217,7 +208,7 @@
   };
 
   const standardReportPost = (app, reportKey) => (req, res) => {
-    if (reportKeys[reportKey].search === 'poolNumber' && !req.body.reportPool) {
+    if (reportKeys(app, req)[reportKey].search === 'poolNumber' && !req.body.reportPool) {
       req.session.errors = {
         selection: [{
           fields: ['selection'],
