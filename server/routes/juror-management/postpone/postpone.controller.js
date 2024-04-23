@@ -495,7 +495,7 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
 
                 return prev;
               }, []),
-              deferralMaintenance: true,
+              'deferral_maintenance': true,
             }
           );
         })
