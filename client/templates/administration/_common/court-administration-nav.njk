@@ -1,19 +1,6 @@
 {% from "moj/components/primary-navigation/macro.njk" import mojPrimaryNavigation %}
 
-{{ mojPrimaryNavigation({
-  label: "Court administration navigation",
-  attributes: {
-    id: "courtadministrationNav"
-  },
-  items: [
-    {
-      text: "Users",
-      href: url('administration.court-bureau.users.get', { location: 'court' }),
-      active: nav === "users",
-      attributes: {
-        id: "usersAnchor"
-      }
-    },
+{% set navLinks = [
     {
       text: "Judges",
       href: url('administration.judges.get'),
@@ -63,4 +50,26 @@
       }
     }
   ]
+
+%}
+
+{% if isCourtManager %}
+  {% set navLinks = (navLinks.unshift(
+      {
+        text: "Users",
+        href: url('administration.court-bureau.users.get', { location: 'court' }),
+        active: nav === "users",
+        attributes: {
+          id: "usersAnchor"
+        }
+      }
+  ), navLinks) %}
+{% endif %}
+
+{{ mojPrimaryNavigation({
+  label: "Court administration navigation",
+  attributes: {
+    id: "courtadministrationNav"
+  },
+  items: navLinks
 }) }}
