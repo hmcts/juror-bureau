@@ -6,6 +6,9 @@ const { dateFilter, capitalizeFully } = require('../../../components/filters');
 //   title: string,
 //   apiKey: string,
 //   search?: 'poolNumber' | 'dateRange', // etc only poolNumber is currently implemented
+//   bespokeReport?: {
+//     insertColumns?: {[key: number]: [string, (data) => string]}, // column header, body
+//   }
 //   headings: string[], // corresponds to the ids provided for the headings in the API
 //                       // (except report created dateTime)
 // }};
@@ -88,6 +91,21 @@ module.exports.reportKeys = function(app, req = null) {
       },
       searchUrl: app.namedRoutes.build('reports.postponed.search.get'),
     },
+    'incomplete-service': {
+      title: 'Incomplete service',
+      apiKey: 'IncompleteServiceReport',
+      search: 'date',
+      searchTitle: 'Cut-off date',
+      searchHint: 'Report will show uncompleted jurors with next attendance dates before the cut-off date',
+      headings: [
+        'cutoffDate',
+        'reportDate',
+        'totalIncomplete',
+        'reportTime',
+        '',
+        'courtName',
+      ],
+    },  
   };
 };
 

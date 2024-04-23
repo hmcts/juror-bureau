@@ -73,13 +73,14 @@
       const tableRows = tableData.map(data => tableHeadings.map(header => {
         let output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
 
-        if (header.id === 'juror_number') {
           return ({
-            html: `<a href=${
-              app.namedRoutes.build('juror-record.overview.get', {jurorNumber: output})
-            }>${
-              output
-            }</a>`,
+            text: output,
+          });
+        });
+
+        if (reportType.bespokeReport && reportType.bespokeReport.insertColumns) {
+          Object.keys(reportType.bespokeReport.insertColumns).map((key) => {
+            row.splice(key, 0, reportType.bespokeReport.insertColumns[key][1](data, app));
           });
         }
 
