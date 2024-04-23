@@ -191,13 +191,9 @@
   top: 0
 }
 
-
-
 /*------------------------------------*\
     DS Date-Picker
 \*------------------------------------*/
-
-
 
 .ds_datepicker {
   position: relative
@@ -249,7 +245,6 @@
       line-height: 1.5
   }
 }
-
 
 .ds_datepicker__dialog__navbuttons button {
   background-color: transparent;
@@ -311,7 +306,7 @@
 
 @media (min-width: 768px) {
   .ds_datepicker__dialog__table th {
-      font-size:1rem;
+      font-size: 1rem;
       line-height: 1.5
   }
 }
@@ -336,7 +331,7 @@
 
 @media (min-width: 768px) {
   .ds_datepicker__dialog__table button {
-      font-size:1rem;
+      font-size: 1rem;
       line-height: 1.5
   }
 }
@@ -404,8 +399,8 @@
 
 @media (min-width: 768px) {
   .ds_datepicker__dialog__table-caption {
-      font-size:.875rem;
-      line-height: 1.7142857143
+    font-size:.875rem;
+    line-height: 1.7142857143
   }
 }
 

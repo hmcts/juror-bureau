@@ -61,21 +61,25 @@
     span {
         display: inline-block;
         padding: 0px 10px;
-        font-size: 12px;
+        font-size: .75rem;
     }
 
     .requested {
         background-color: #B1B4B6;
     }
+
     .confirmed {
         background-color: #1D70B8;
     }
+
     .unavailable {
         background-color: #B58840;
     }
+
     .surplus {
         background-color: #D53880;
     }
+
     .notResponded {
         background: linear-gradient(-45deg,  #B1B4B6 0%,#B1B4B6 50%,#F3F2F1 50%,#F3F2F1 100%);
     }

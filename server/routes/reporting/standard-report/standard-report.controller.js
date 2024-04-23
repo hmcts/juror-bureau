@@ -6,7 +6,7 @@
   const { validate } = require('validate.js');
   const { poolSearchObject } = require('../../../objects/pool-search');
   const rp = require('request-promise');
-  const { reportKeys, tableDataMappers, headingDataMappers } = require('./utils');
+  const { reportKeys, tableDataMappers, constructPageHeading } = require('./utils');
   const { standardReportPrint } = require('./standard-report-print');
 
   const standardFilterGet = (app, reportKey) => async(req, res) => {
@@ -99,7 +99,7 @@
           });
         }
 
-        if (header.id === 'postcode') {
+        if (header.id === 'juror_postcode') {
           output = output.toUpperCase();
         }
 
@@ -108,16 +108,7 @@
         });
       }));
 
-      const pageHeadings = reportType.headings.map(heading => {
-        if (heading === 'reportDate') {
-          return { title: 'Report created', data: headingDataMappers.LocalDate(headings.reportCreated.value) };
-        } else if (heading === 'reportTime') {
-          return { title: 'Time created', data: headingDataMappers.timeFromISO(headings.reportCreated.value) };
-        }
-        const headingData = headings[heading];
-
-        return { title: headingData.displayName, data: headingDataMappers[headingData.dataType](headingData.value)};
-      });
+      const pageHeadings = reportType.headings.map(heading => constructPageHeading(heading, headings));
 
       return res.render('reporting/standard-reports/standard-report', {
         title: reportType.title,
