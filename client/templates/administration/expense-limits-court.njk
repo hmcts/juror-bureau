@@ -30,48 +30,56 @@
       <form method="post" action="{{ processUrl }}" id="publicTransportDailyLimitForm">
 
         <p class="govuk-body">Daily limits for your court to use when paying juror expenses. Officers can ignore them for individual jurors, if needed.</p>
-      
-        {{ govukInput({
-          id: "publicTransportDailyLimit",
-          name: "publicTransportDailyLimit",  
-          label: {
-            text: "Public transport daily limit",
-            classes: "govuk-!-font-weight-bold"
-          },
-          value: tmpBody.publicTransportDailyLimit if tmpBody else expenseLimitsTransport.publicTransportSoftLimit,
-          errorMessage: publicTransportDailyLimitError,
-          classes: "govuk-input--width-5",
-          prefix: {
-            text: "£" 
-          },
-          spellcheck: false
-        }) }}
 
-         {{ govukInput({
-          id: "taxiDailyLimit",
-          name: "taxiDailyLimit",  
-          label: {
-            text: "Taxi daily limit",
-            classes: "govuk-!-font-weight-bold"
-          },
-          value: tmpBody.taxiDailyLimit if tmpBody else expenseLimitsTransport.taxiSoftLimit,
-          errorMessage: taxiDailyLimitError,
-          classes: "govuk-input--width-5",
-          prefix: {
-            text: "£" 
-          },
-          spellcheck: false
-        }) }}
-
-       <div class="govuk-button-group">
-          {{ govukButton({
-            text: "Save",
-            type: "submit"
+        {% if isCourtManager %}
+          {{ govukInput({
+            id: "publicTransportDailyLimit",
+            name: "publicTransportDailyLimit",  
+            label: {
+              text: "Public transport daily limit",
+              classes: "govuk-!-font-weight-bold"
+            },
+            value: tmpBody.publicTransportDailyLimit if tmpBody else expenseLimitsTransport.publicTransportSoftLimit,
+            errorMessage: publicTransportDailyLimitError,
+            classes: "govuk-input--width-5",
+            prefix: {
+              text: "£" 
+            },
+            spellcheck: false
           }) }}
-          <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
-        </div>
 
-        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+          {{ govukInput({
+            id: "taxiDailyLimit",
+            name: "taxiDailyLimit",  
+            label: {
+              text: "Taxi daily limit",
+              classes: "govuk-!-font-weight-bold"
+            },
+            value: tmpBody.taxiDailyLimit if tmpBody else expenseLimitsTransport.taxiSoftLimit,
+            errorMessage: taxiDailyLimitError,
+            classes: "govuk-input--width-5",
+            prefix: {
+              text: "£" 
+            },
+            spellcheck: false
+          }) }}
+
+        <div class="govuk-button-group">
+            {{ govukButton({
+              text: "Save",
+              type: "submit"
+            }) }}
+            <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+          </div>
+
+          <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+        {% elif isCourtUser and not isCourtManager %}
+          <p class="govuk-body govuk-!-font-weight-bold">Public transport daily limit</p>
+          <p class="govuk-body">{% if expenseLimitsTransport.publicTransportSoftLimit %} £{{ expenseLimitsTransport.publicTransportSoftLimit }} {% else %} - {% endif %}</p>
+
+          <p class="govuk-body govuk-!-font-weight-bold">Taxi daily limit</p>
+          <p class="govuk-body">{% if expenseLimitsTransport.taxiSoftLimit %} £{{ expenseLimitsTransport.taxiSoftLimit }} {% else %} - {% endif %}</p>
+        {% endif %}
       </form>
     
     </div>
