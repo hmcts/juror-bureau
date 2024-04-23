@@ -9,7 +9,7 @@
 
   module.exports.getExpensesList = function(app) {
     return async function(req, res) {
-      const { jurorNumber, poolNumber, status } = req.params;
+      const { jurorNumber, locCode, status } = req.params;
 
       try {
         const jurorDetails = await fetchJurorDetails(
@@ -24,7 +24,7 @@
         req.jurorDetails = jurorDetails;
 
         // we need to store the location code because we need it to be able to visit the juror record page
-        req.session.locCode = poolNumber.slice(0, 3);
+        req.session.locCode = locCode;
 
       } catch (err) {
         app.logger.crit('Failed to fetch juror details', {
@@ -62,7 +62,7 @@
           jwt: req.session.authToken,
           data: {
             jurorNumber,
-            poolNumber,
+            locCode,
             status,
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
@@ -75,7 +75,7 @@
 
   module.exports.postExpensesList = function(app) {
     return async function(req, res) {
-      const { jurorNumber, poolNumber, status } = req.params;
+      const { jurorNumber, locCode, status } = req.params;
 
       switch (status) {
       case 'draft':
@@ -96,7 +96,7 @@
           jwt: req.session.authToken,
           data: {
             jurorNumber,
-            poolNumber,
+            locCode,
             status,
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),

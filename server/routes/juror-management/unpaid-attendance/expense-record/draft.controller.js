@@ -8,25 +8,25 @@
 
   module.exports.getDraftExpenses = function(app) {
     return function(req, res) {
-      const { jurorNumber, poolNumber, status } = req.params;
+      const { jurorNumber, locCode, status } = req.params;
       const tmpErrors = _.clone(req.session.errors);
       const bannerMessage = _.clone(req.session.bannerMessage);
       const setExpensesUrl = app.namedRoutes.build('juror-management.default-expenses.get', {
         jurorNumber,
-        poolNumber,
+        locCode,
       });
       const submitUrl = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.post', {
         jurorNumber,
-        poolNumber,
+        locCode,
         status: 'draft',
       });
       const enterExpensesUrl = app.namedRoutes.build('juror-management.enter-expenses.get', {
         jurorNumber,
-        poolNumber,
+        locCode,
       });
       const bankDetailsUrl = app.namedRoutes.build('juror-management.bank-details.get', {
         jurorNumber,
-        poolNumber,
+        locCode,
       });
       const backLinkUrl = app.namedRoutes.build('juror-management.unpaid-attendance.get');
 
@@ -37,8 +37,8 @@
         app,
         req,
         jurorNumber,
-        poolNumber,
-      ), jurorOverviewDAO.get(req, jurorNumber, req.session.authentication.locCode)])
+        locCode,
+      ), jurorOverviewDAO.get(req, jurorNumber, locCode)])
         .then(async function([{ response: expenseData, headers }, jurorOverview]) {
 
           req.session.draftExpensesEtag = headers.etag;
@@ -73,7 +73,8 @@
             expenseData: expenseData,
             jurorDetails: req.jurorDetails,
             jurorNumber,
-            poolNumber,
+            poolNumber: jurorOverview.commonDetails.poolNumber,
+            locCode,
             totalExpenses,
             bannerMessage,
             counts: req.expensesCount,

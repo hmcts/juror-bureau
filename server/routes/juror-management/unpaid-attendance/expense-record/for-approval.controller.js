@@ -3,6 +3,7 @@
 
   const _ = require('lodash');
   const { getExpenseRecordsDAO } = require('../../../../objects/expense-record');
+  const { jurorOverviewDAO } = require('../../../../objects/juror-record');
 
   const STATUSES = {
     'for-approval': 'FOR_APPROVAL',
@@ -12,27 +13,30 @@
 
   module.exports.getForApprovalExpenses = function(app) {
     return async function(req, res) {
-      const { jurorNumber, poolNumber, status } = req.params;
+      const { jurorNumber, locCode, status } = req.params;
       const submitUrl = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.post', {
         jurorNumber,
-        poolNumber,
+        locCode,
         status,
       });
 
       try {
-        const data = await getExpenseRecordsDAO.post(
+        const promiseArr = [];
+
+        promiseArr.push(getExpenseRecordsDAO.get(
           app,
           req,
-          {
-            'juror_number': jurorNumber,
-            'pool_number': poolNumber,
-          },
+          locCode,
           STATUSES[status],
-        );
+          jurorNumber,
+        ));
+        promiseArr.push(jurorOverviewDAO.get(req, jurorNumber, locCode));
+
+        const [data, jurorDetails] = await Promise.all(promiseArr);
 
         const setExpensesUrl = app.namedRoutes.build('juror-management.default-expenses.get', {
           jurorNumber,
-          poolNumber,
+          locCode,
         });
 
         const tmpErrors = _.clone(req.session.errors);
@@ -49,7 +53,8 @@
           status,
           data,
           jurorNumber,
-          poolNumber,
+          locCode,
+          poolNumber: jurorDetails.commonDetails.poolNumber,
           counts: req.expensesCount,
           jurorDetails: req.jurorDetails,
           bannerMessage,
@@ -65,7 +70,7 @@
           token: req.session.authToken,
           data: {
             jurorNumber,
-            poolNumber,
+            locCode,
             status,
           },
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),

@@ -18,7 +18,7 @@
   };
 
   module.exports.fetchUnpaidExpenses = {
-    resource: 'moj/expenses/unpaid-summary/',
+    resource: 'moj/expenses/{locCode}/unpaid-summary/',
     get: function(app, jwtToken, locCode, opts) {
       var reqOptions = _.clone(options);
 
@@ -36,7 +36,10 @@
       }
       reqOptions.headers.Authorization = jwtToken;
       reqOptions.method = 'GET';
-      reqOptions.uri = urljoin(reqOptions.uri, this.resource + locCode + '?' + parameters.join('&'));
+      reqOptions.uri = urljoin(
+        reqOptions.uri,
+        this.resource.replace('{locCode}', locCode) + '?' + parameters.join('&')
+      );
 
       app.logger.debug('Sending request to API: ', {
         uri: reqOptions.uri,
@@ -90,9 +93,9 @@
   };
 
   module.exports.defaultExpensesDAO = {
-    get: function(app, req, jurorNumber) {
+    get: function(app, req, locCode, jurorNumber) {
       const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/expenses/default-summary', jurorNumber),
+        uri: urljoin(config.apiEndpoint, `moj/expenses/${locCode}/${jurorNumber}/default-expenses`),
         method: 'GET',
         headers: {
           'User-Agent': 'Request-Promise',
@@ -108,7 +111,7 @@
     },
     post: function(app, req, body) {
       const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/expenses/set-default-expenses'),
+        uri: urljoin(config.apiEndpoint, `moj/expenses/${locCode}/${jurorNumber}/default-expenses`),
         method: 'POST',
         headers: {
           'User-Agent': 'Request-Promise',

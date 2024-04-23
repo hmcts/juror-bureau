@@ -9,7 +9,7 @@
   module.exports = function(app) {
 
     // eslint-disable-next-line max-len
-    app.get('/juror-management/unpaid-attendance/expense-record/:jurorNumber/:poolNumber/:status(draft|for-approval|for-reapproval|approved)',
+    app.get('/juror-management/unpaid-attendance/expense-record/:jurorNumber/:locCode/:status(draft|for-approval|for-reapproval|approved)',
       'juror-management.unpaid-attendance.expense-record.get',
       auth.verify,
       getExpenseCountDAO.get(app),
@@ -17,25 +17,25 @@
     );
 
     // eslint-disable-next-line max-len
-    app.post('/juror-management/unpaid-attendance/expense-record/:jurorNumber/:poolNumber/:status(draft|for-approval|for-reapproval|approved)',
+    app.post('/juror-management/unpaid-attendance/expense-record/:jurorNumber/:locCode/:status(draft|for-approval|for-reapproval|approved)',
       'juror-management.unpaid-attendance.expense-record.post',
       auth.verify,
       controller.postExpensesList(app),
     );
 
-    app.get('/juror-management/unpaid-attendance/expense-record/:jurorNumber/:poolNumber/add-smartcard-spend',
+    app.get('/juror-management/unpaid-attendance/expense-record/:jurorNumber/:locCode/add-smartcard-spend',
       'juror-management.unpaid-attendance.expense-record.add-smartcard-spend.get',
       auth.verify,
       getAddSmartcardSpend(app),
     );
 
-    app.post('/juror-management/unpaid-attendance/expense-record/:jurorNumber/:poolNumber/add-smartcard-spend',
+    app.post('/juror-management/unpaid-attendance/expense-record/:jurorNumber/:locCode/add-smartcard-spend',
       'juror-management.unpaid-attendance.expense-record.add-smartcard-spend.post',
       auth.verify,
       postAddSmartcardSpend(app),
     );
 
-    app.get('/juror-management/unpaid-attendance/expense-record/:jurorNumber/:poolNumber/detail/:auditNumber',
+    app.get('/juror-management/unpaid-attendance/expense-record/:jurorNumber/:locCode/detail/:auditNumber',
       'juror-management.unpaid-attendance.expense-record.detail.get',
       auth.verify,
       controller.getExpenseRecordDetail(app),

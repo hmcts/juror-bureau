@@ -8,39 +8,39 @@
 
   module.exports = function(app) {
 
-    app.get('/juror-management/expenses/:jurorNumber/:poolNumber/bank-details',
+    app.get('/juror-management/expenses/:jurorNumber/:locCode/bank-details',
       'juror-management.bank-details.get',
       auth.verify,
       controller.getBankDetails(app));
 
-    app.post('/juror-management/expenses/:jurorNumber/:poolNumber/bank-details',
+    app.post('/juror-management/expenses/:jurorNumber/:locCode/bank-details',
       'juror-management.bank-details.post',
       auth.verify,
       controller.postBankDetails(app));
 
     // EDITING NOTES ROUTES
-    app.get('/juror-management/expenses/:jurorNumber/:poolNumber/bank-details/notes/edit',
+    app.get('/juror-management/expenses/:jurorNumber/:locCode/bank-details/notes/edit',
       'juror-management.bank-details.notes-edit.get',
       auth.verify,
       jurorRecordController.getEditNotes(app));
 
-    app.post('/juror-management/expenses/:jurorNumber/:poolNumber/bank-details/notes/edit',
+    app.post('/juror-management/expenses/:jurorNumber/:locCode/bank-details/notes/edit',
       'juror-management.bank-details.notes-edit.post',
       auth.verify,
       jurorRecordController.postEditNotes(app));
 
     // EDITING ADDRESS ROUTES
-    app.get('/juror-management/expenses/:jurorNumber/:poolNumber/bank-details/address',
+    app.get('/juror-management/expenses/:jurorNumber/:locCode/bank-details/address',
       'juror-management.bank-details.address.get',
       auth.verify,
       editJurorController.getEditDetails(app));
 
-    app.get('/juror-management/expenses/:jurorNumber/:poolNumber/bank-details/address/edit',
+    app.get('/juror-management/expenses/:jurorNumber/:locCode/bank-details/address/edit',
       'juror-management.bank-details.address-edit.get',
       auth.verify,
       editJurorController.getEditDetailsAddress(app));
 
-    app.post('/juror-management/expenses/:jurorNumber/:poolNumber/bank-details/address/edit',
+    app.post('/juror-management/expenses/:jurorNumber/:locCode/bank-details/address/edit',
       'juror-management.bank-details.address-edit.post',
       auth.verify,
       editJurorController.postEditDetailsAddress(app));

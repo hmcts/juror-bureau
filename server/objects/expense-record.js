@@ -6,12 +6,12 @@
   const config = require('../config/environment')();
   const rp = require('request-promise');
 
-  const endpoint = config.apiEndpoint + '/moj/expenses';
+  const endpoint = config.apiEndpoint + '/moj/expenses/{locCode}';
 
   module.exports.getDraftExpensesDAO = {
-    get: function(app, req, jurorNumber, poolNumber, etag = null) {
+    get: function(app, req, jurorNumber, locCode, etag = null) {
       const payload = {
-        uri: urljoin(endpoint, 'draft', jurorNumber, poolNumber),
+        uri: urljoin(endpoint.replace('{locCode}', locCode), jurorNumber, 'DRAFT/view'),
         method: 'GET',
         headers: {
           'User-Agent': 'Request-Promise',
@@ -62,9 +62,9 @@
   };
 
   module.exports.getEnteredExpensesDAO = {
-    post: function(app, req, body) {
+    post: function(app, req, locCode, jurorNumber, body) {
       const payload = {
-        uri: urljoin(endpoint, 'entered'),
+        uri: urljoin(endpoint.replace('{locCode}', locCode), jurorNumber, 'entered'),
         method: 'POST',
         headers: {
           'User-Agent': 'Request-Promise',
@@ -82,13 +82,10 @@
   };
 
   module.exports.postDraftExpenseDAO = {
-    post: function(app, req, jurorNumber, body, nonAttendance) {
-      const resource = nonAttendance
-        ? `${jurorNumber}/draft/non_attended_day`
-        : `${jurorNumber}/draft/attended_day`;
+    put: function(app, req, locCode, jurorNumber, expenseType, body) {
       const payload = {
-        uri: urljoin(endpoint, resource),
-        method: 'POST',
+        uri: urljoin(endpoint.replace('{locCode}', locCode), jurorNumber, expenseType, 'edit'),
+        method: 'PUT',
         headers: {
           'User-Agent': 'Request-Promise',
           'Content-Type': 'application/vnd.api+json',
@@ -105,17 +102,16 @@
   };
 
   module.exports.getExpenseRecordsDAO = {
-    post: function(app, req, body, expenseType) {
+    get: function(app, req, locCode, expenseType, jurorNumber) {
       const payload = {
-        uri: urljoin(endpoint, 'view', expenseType, 'simplified'),
-        method: 'POST',
+        uri: urljoin(endpoint.replace('{locCode}', locCode), jurorNumber, expenseType, 'view/simplified'),
+        method: 'GET',
         headers: {
           'User-Agent': 'Request-Promise',
           'Content-Type': 'application/vnd.api+json',
           Authorization: req.session.authToken,
         },
         json: true,
-        body,
       };
 
       app.logger.info('Sending API request to: ', payload);
@@ -125,9 +121,9 @@
   };
 
   module.exports.postRecalculateSummaryTotalsDAO = {
-    post: function(app, req, body) {
+    post: function(app, req, locCode, jurorNumber, body) {
       const payload = {
-        uri: urljoin(endpoint, 'calculate/totals'),
+        uri: urljoin(endpoint.replace('{locCode}', locCode), jurorNumber, 'calculate/totals'),
         method: 'POST',
         headers: {
           'User-Agent': 'Request-Promise',
@@ -166,10 +162,10 @@
   module.exports.getExpenseCountDAO = {
     get: function(app) {
       return function(req, res, next) {
-        const { jurorNumber, poolNumber } = req.params;
+        const { jurorNumber, locCode } = req.params;
 
         const payload = {
-          uri: urljoin(endpoint, 'counts', jurorNumber, poolNumber),
+          uri: urljoin(endpoint.replace('{locCode}', locCode), jurorNumber, 'counts'),
           headers: {
             'User-Agent': 'Request-Promise',
             'Content-Type': 'application/vnd.api+json',
@@ -184,6 +180,19 @@
           .then((response) => {
             req.expensesCount = response;
             next();
+          })
+          .catch((err) => {
+            app.logger.crit('Failed to fetch expense counts', {
+              auth: req.session.authentication,
+              jwt: req.session.authToken,
+              data: {
+                jurorNumber,
+                locCode,
+              },
+              error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+            });
+
+            return res.render('_errors/generic');
           });
       };
     },

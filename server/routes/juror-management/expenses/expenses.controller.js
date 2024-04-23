@@ -11,23 +11,23 @@
     return async function(req, res) {
       const tmpErrors = _.cloneDeep(req.session.errors);
       const tmpBody = _.cloneDeep(req.session.tmpBody);
-      const { jurorNumber, poolNumber } = req.params;
+      const { jurorNumber, locCode } = req.params;
       const processUrl = req.url.includes('record')
         ? app.namedRoutes.build('juror-record.default-expenses.post',
-          { jurorNumber, poolNumber})
+          { jurorNumber, locCode})
         : app.namedRoutes.build('juror-management.default-expenses.post',
-          { jurorNumber, poolNumber});
+          { jurorNumber, locCode});
       const cancelUrl = req.url.includes('record')
         ? app.namedRoutes.build('juror-record.expenses.get',
           { jurorNumber })
         : app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get',
-          { jurorNumber, poolNumber, status: 'draft'});
+          { jurorNumber, locCode, status: 'draft'});
 
       delete req.session.errors;
       delete req.session.tmpBody;
 
       try {
-        const data = await defaultExpensesDAO.get(app, req, jurorNumber);
+        const data = await defaultExpensesDAO.get(app, req, locCode, jurorNumber);
         const defaultExpenses = modUtils.replaceAllObjKeys(_.cloneDeep(data), _.camelCase);
 
         defaultExpenses['travelTime-hour'] = defaultExpenses.travelTime ? defaultExpenses.travelTime.split(':')[0] : '';
