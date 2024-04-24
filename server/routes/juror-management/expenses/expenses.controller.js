@@ -11,31 +11,44 @@
     return async function(req, res) {
       const tmpErrors = _.cloneDeep(req.session.errors);
       const tmpBody = _.cloneDeep(req.session.tmpBody);
-      const { jurorNumber, poolNumber } = req.params;
-      const processUrl = req.url.includes('record')
-        ? app.namedRoutes.build('juror-record.default-expenses.post',
-          { jurorNumber, poolNumber})
-        : app.namedRoutes.build('juror-management.default-expenses.post',
-          { jurorNumber, poolNumber});
-      const cancelUrl = req.url.includes('record')
-        ? app.namedRoutes.build('juror-record.expenses.get',
-          { jurorNumber })
-        : app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get',
-          { jurorNumber, poolNumber, status: 'draft'});
+      const { jurorNumber } = req.params;
+
+      let processUrl = app.namedRoutes.build('juror-record.default-expenses.post', { jurorNumber });
+      let cancelUrl = app.namedRoutes.build('juror-record.expenses.get', { jurorNumber });
+
+      if (req.url.includes('expense-record')) {
+        const { locCode } = req.params;
+
+        processUrl = app.namedRoutes.build('juror-management.default-expenses.post', {
+          jurorNumber,
+          locCode,
+        });
+        cancelUrl = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
+          jurorNumber,
+          locCode,
+          status: 'draft',
+        });
+      }
 
       delete req.session.errors;
       delete req.session.tmpBody;
 
       try {
-        const data = await defaultExpensesDAO.get(app, req, jurorNumber);
+        const data = await defaultExpensesDAO.get(app, req, req.session.authentication.locCode, jurorNumber);
         const defaultExpenses = modUtils.replaceAllObjKeys(_.cloneDeep(data), _.camelCase);
 
-        defaultExpenses['travelTime-hour'] = defaultExpenses.travelTime ? defaultExpenses.travelTime.split(':')[0] : '';
-        defaultExpenses['travelTime-minute'] = defaultExpenses.travelTime ? defaultExpenses.travelTime.split(':')[1] : '';
-        defaultExpenses.financialLoss = defaultExpenses.financialLoss ? defaultExpenses.financialLoss.toString() : '';
-        defaultExpenses.amountSpent = defaultExpenses.amountSpent ? defaultExpenses.amountSpent.toString() : '';
-        defaultExpenses.mileage = defaultExpenses.mileage ? defaultExpenses.mileage.toString() : '';
-        defaultExpenses.claimingSubsistenceAllowance = defaultExpenses.claimingSubsistenceAllowance ? 'true' : 'false';
+        defaultExpenses['travelTime-hour'] = defaultExpenses.travelTime
+          ? defaultExpenses.travelTime.split(':')[0] : '';
+        defaultExpenses['travelTime-minute'] = defaultExpenses.travelTime
+          ? defaultExpenses.travelTime.split(':')[1] : '';
+        defaultExpenses.financialLoss = defaultExpenses.financialLoss
+          ? defaultExpenses.financialLoss.toString() : '';
+        defaultExpenses.amountSpent = defaultExpenses.amountSpent
+          ? defaultExpenses.amountSpent.toString() : '';
+        defaultExpenses.mileage = defaultExpenses.mileage
+          ? defaultExpenses.mileage.toString() : '';
+        defaultExpenses.claimingSubsistenceAllowance = defaultExpenses.claimingSubsistenceAllowance
+          ? 'true' : 'false';
 
         return res.render('expenses/default-expenses.njk', {
           jurorNumber: jurorNumber,
@@ -63,17 +76,23 @@
 
   module.exports.postDefaultExpenses = (app) => {
     return async function(req, res) {
-      const { jurorNumber, poolNumber } = req.params;
-      const validationErrorUrl = req.url.includes('record')
-        ? app.namedRoutes.build('juror-record.default-expenses.get',
-          { jurorNumber, poolNumber })
-        : app.namedRoutes.build('juror-management.default-expenses.get',
-          { jurorNumber, poolNumber });
-      const redirectUrl = req.url.includes('record')
-        ? app.namedRoutes.build('juror-record.expenses.get',
-          { jurorNumber })
-        : app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get',
-          { jurorNumber, poolNumber, status: 'draft'});
+      const { jurorNumber } = req.params;
+      let validationErrorUrl = app.namedRoutes.build('juror-record.default-expenses.get', { jurorNumber });
+      let redirectUrl = app.namedRoutes.build('juror-record.expenses.get', { jurorNumber });
+
+      if (req.url.includes('expense-record')) {
+        const { locCode } = req.params;
+
+        validationErrorUrl = app.namedRoutes.build('juror-management.default-expenses.get', {
+          jurorNumber,
+          locCode,
+        });
+        redirectUrl = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
+          jurorNumber,
+          locCode,
+          status: 'draft',
+        });
+      }
 
       req.body.travelTime = {
         hour: req.body['travelTime-hour'],
@@ -99,7 +118,7 @@
         delete req.body['travelTime-minute'];
         delete req.body._csrf;
 
-        await defaultExpensesDAO.post(app, req, req.body);
+        await defaultExpensesDAO.post(app, req, req.session.authentication.locCode, jurorNumber, req.body);
 
         return res.redirect(redirectUrl);
       } catch (err) {

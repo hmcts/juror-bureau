@@ -7,14 +7,14 @@
   const { jurorDetailsObject } = require('../../../../objects/juror-record');
   const {
     getEnteredExpensesDAO,
-    postDraftExpenseDAO,
+    postEditedExpensesDAO,
     postRecalculateSummaryTotalsDAO,
   } = require('../../../../objects/expense-record');
   const { getCourtLocationRates } = require('../../../../objects/court-location');
 
   module.exports.getEnterExpenses = (app) => {
     return async function(req, res) {
-      const { jurorNumber, poolNumber } = req.params;
+      const { jurorNumber, locCode } = req.params;
       const { date } = req.query;
       const page = parseInt(req.query.page);
 
@@ -32,28 +32,26 @@
         , postUrls = {
           saveAndNextUrl: app.namedRoutes.build('juror-management.enter-expenses.post', {
             jurorNumber,
-            poolNumber,
+            locCode,
           }) + `?date=${date}&page=${page}&action=next`,
           saveAndBackUrl: app.namedRoutes.build('juror-management.enter-expenses.post', {
             jurorNumber,
-            poolNumber,
+            locCode,
           }) + `?date=${date}&page=${page}&action=back`,
           applyToAllUrl: app.namedRoutes.build('juror-management.enter-expenses.apply-to-all.post', {
             jurorNumber,
-            poolNumber,
+            locCode,
           }) + `?date=${date}&page=${page}`,
         }
         , cancelUrl = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
           jurorNumber,
-          poolNumber,
+          locCode,
           status: 'draft',
         });
       let tmpBody, responses;
 
       try {
-        const _expensesData = getEnteredExpensesDAO.post(app, req, {
-          'juror_number': jurorNumber,
-          'pool_number': poolNumber,
+        const _expensesData = getEnteredExpensesDAO.post(app, req, locCode, jurorNumber, {
           'expense_dates': [date],
         });
 
@@ -73,7 +71,7 @@
           jwt: req.session.authToken,
           data: {
             jurorNumber,
-            poolNumber,
+            locCode,
             attendanceDate: date,
           },
         });
@@ -84,7 +82,7 @@
           jwt: req.session.authToken,
           data: {
             jurorNumber,
-            poolNumber,
+            locCode,
           },
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
@@ -133,7 +131,7 @@
           minute: timeSpentAtCourtMinute,
         },
         jurorNumber,
-        poolNumber,
+        locCode,
         status: 'draft',
         tmpBody,
         errors: {
@@ -147,7 +145,7 @@
 
   module.exports.postEnterExpenses = (app) => {
     return async function(req, res) {
-      const { jurorNumber, poolNumber } = req.params;
+      const { jurorNumber, locCode } = req.params;
       const { date, action, ['travel-over-limit']: travelOverLimit } = req.query;
       const page = parseInt(req.query['page']);
       const nonAttendanceDay = _.clone(req.session.nonAttendanceDay);
@@ -179,14 +177,13 @@
 
         return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.get', {
           jurorNumber,
-          poolNumber,
+          locCode,
         }) + `?date=${date}&page=${page}`);
       }
 
       const data = buildDataPayload(req.body, nonAttendanceDay);
 
       data['date_of_expense'] = date;
-      data['pool_number'] = poolNumber;
 
       if (!travelOverLimit) {
         const { showTravelOverLimit, error } = await isTravelOverLimit(app, req);
@@ -201,7 +198,7 @@
             jwt: req.session.authToken,
             data: {
               jurorNumber,
-              poolNumber,
+              locCode,
             },
             error: typeof error.error !== 'undefined' ? error.error : error.toString(),
           });
@@ -212,17 +209,17 @@
         if (showTravelOverLimit) {
           const cancelUrl = app.namedRoutes.build('juror-management.enter-expenses.get', {
             jurorNumber,
-            poolNumber,
+            locCode,
           }) + `?date=${date}&page=${page}`;
           let continueUrl = app.namedRoutes.build('juror-management.enter-expenses.post', {
             jurorNumber,
-            poolNumber,
+            locCode,
           }) + `?date=${date}&page=${page}&action=back&travel-over-limit=true`;
 
           if (action === 'next' && nextDate) {
             continueUrl = app.namedRoutes.build('juror-management.enter-expenses.post', {
               jurorNumber,
-              poolNumber,
+              locCode,
             }) + `?date=${date}&page=${page}&action=next&travel-over-limit=true`;
           }
 
@@ -234,7 +231,7 @@
 
           return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.travel-over-limit.get', {
             jurorNumber,
-            poolNumber,
+            locCode,
           }));
         }
       }
@@ -244,30 +241,29 @@
 
       try {
         const payload = {
-          'juror_number': jurorNumber,
-          'pool_number': poolNumber,
           'expense_list': [{ ...data }],
         };
 
-        delete payload.expense_list[0].pool_number;
+        delete payload.expense_list[0];
 
-        await postRecalculateSummaryTotalsDAO.post(app, req, payload);
+        await postRecalculateSummaryTotalsDAO.post(app, req, locCode, jurorNumber, payload);
       } catch (err) {
-        if (err.error.code === 'EXPENSES_CANNOT_BE_LESS_THAN_ZERO') {
+        if (err.error && err.error.code === 'EXPENSES_CANNOT_BE_LESS_THAN_ZERO') {
           req.session.tmpBody = {
             ...req.body,
             date,
             page,
           };
+
           return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.total-less-zero.get', {
             jurorNumber,
-            poolNumber,
+            locCode,
           }));
         }
       }
 
       try {
-        const response = await postDraftExpenseDAO.post(app, req, jurorNumber, data, nonAttendanceDay);
+        const [response] = await postEditedExpensesDAO.put(app, req, locCode, jurorNumber, 'DRAFT', [data]);
 
         if (response.financial_loss_warning) {
           req.session.financialLossWarning = response.financial_loss_warning;
@@ -277,20 +273,20 @@
 
           return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.loss-over-limit.get', {
             jurorNumber,
-            poolNumber,
+            locCode,
           }));
         }
 
         if (action === 'next' && nextDate) {
           return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.get', {
             jurorNumber,
-            poolNumber,
+            locCode,
           }) + `?date=${nextDate}&page=${nextPage}`);
         }
 
         return res.redirect(app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
           jurorNumber,
-          poolNumber,
+          locCode,
           status: 'draft',
         }));
       } catch (err) {
@@ -311,13 +307,13 @@
 
   module.exports.getLossOverLimit = (app) => {
     return function(req, res) {
-      const { jurorNumber, poolNumber } = req.params;
+      const { jurorNumber, locCode } = req.params;
 
       return res.render('expenses/loss-over-limit.njk', {
         jurorLossData: req.session.financialLossWarning,
         processUrl: app.namedRoutes.build('juror-management.enter-expenses.loss-over-limit.post', {
           jurorNumber,
-          poolNumber,
+          locCode,
         }),
       });
     };
@@ -325,7 +321,7 @@
 
   module.exports.postLossOverLimit = (app) => {
     return function(req, res) {
-      const { jurorNumber, poolNumber } = req.params;
+      const { jurorNumber, locCode } = req.params;
       const date = req.session.nextExpenseDate;
       const page = req.session.nextExpensePage;
 
@@ -344,13 +340,13 @@
       if (date && page) {
         return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.get', {
           jurorNumber,
-          poolNumber,
+          locCode,
         }) + `?date=${date}&page=${page}`);
       }
 
       return res.redirect(app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
         jurorNumber,
-        poolNumber,
+        locCode,
         status: 'draft',
       }));
     };
@@ -371,12 +367,12 @@
 
   module.exports.postApplyExpensesToAll = (app) => {
     return async function(req, res) {
-      const { jurorNumber, poolNumber } = req.params;
+      const { jurorNumber, locCode } = req.params;
       const page = parseInt(req.query['page']) || 1;
       const date = req.query.date;
       const redirectUrl = app.namedRoutes.build('juror-management.enter-expenses.get', {
         jurorNumber,
-        poolNumber,
+        locCode,
       }) + `?date=${date}&page=${page}`;
 
       if (!req.body.applyToAllDays) {
@@ -395,7 +391,6 @@
       const data = buildDataPayload(req.body, req.session.nonAttendanceDay);
 
       data['date_of_expense'] = date;
-      data['pool_number'] = poolNumber;
       data['apply_to_days'] = [];
 
       if (req.body.applyToAllDays.includes('lossOfEarnings')) {
@@ -415,7 +410,7 @@
       }
 
       try {
-        await postDraftExpenseDAO.post(app, req, jurorNumber, data, req.session.nonAttendanceDay);
+        await postEditedExpensesDAO.put(app, req, locCode, jurorNumber, 'DRAFT', [data]);
 
         return res.redirect(redirectUrl);
       } catch (err) {
@@ -436,17 +431,17 @@
 
   module.exports.getTotalLessThanZero = (app) => {
     return function(req, res) {
-      const { jurorNumber, poolNumber } = req.params;
+      const { jurorNumber, locCode } = req.params;
       const { date, page } = req.session.tmpBody;
 
       return res.render('expenses/total-less-than-zero.njk', {
         defaultExpensesUrl: app.namedRoutes.build('juror-management.default-expenses.get', {
           jurorNumber,
-          poolNumber,
+          locCode,
         }),
         cancelUrl: app.namedRoutes.build('juror-management.enter-expenses.get', {
           jurorNumber,
-          poolNumber,
+          locCode,
         }) + `?date=${date}&page=${page}`,
       });
     };
@@ -454,28 +449,26 @@
 
   module.exports.getRecalculateTotals = (app) => {
     return async function(req, res) {
-      const { jurorNumber, poolNumber } = req.params;
+      const { jurorNumber, locCode } = req.params;
       const { status } = req.query;
 
       delete req.body._csrf;
 
       const data = {
-        'juror_number': jurorNumber,
-        'pool_number': poolNumber,
         'expense_list': [
           req.body,
         ],
       };
 
       try {
-        const response = await postRecalculateSummaryTotalsDAO.post(app, req, data);
+        const response = await postRecalculateSummaryTotalsDAO.post(app, req, locCode, jurorNumber, data);
 
         app.logger.info('Recalculated summary totals for: ', {
           auth: req.session.authentication,
           jwt: req.session.authToken,
           data: {
             jurorNumber,
-            poolNumber,
+            locCode,
           },
         });
 
@@ -493,7 +486,7 @@
         });
 
         return res.render('expenses/_partials/recalculate-error-banner.njk', {
-          isLessThanPaid: err.error.code === 'EXPENSE_VALUES_REDUCED_LESS_THAN_PAID',
+          isLessThanPaid: err.error && err.error.code === 'EXPENSE_VALUES_REDUCED_LESS_THAN_PAID',
         });
       }
     };
@@ -516,13 +509,13 @@
       if (page !== 1) {
         pagination.prevLink = app.namedRoutes.build('juror-management.enter-expenses.get', {
           jurorNumber: req.params.jurorNumber,
-          poolNumber: req.params.poolNumber,
+          locCode: req.params.locCode,
         }) + `?date=${prevDate}&page=${page - 1}`;
       }
       if (page !== req.session.expensesData.total) {
         pagination.nextLink = app.namedRoutes.build('juror-management.enter-expenses.get', {
           jurorNumber: req.params.jurorNumber,
-          poolNumber: req.params.poolNumber,
+          locCode: req.params.locCode,
         }) + `?date=${nextDate}&page=${page + 1}`;
       }
     }
@@ -535,7 +528,7 @@
 
     if (nonAttendanceDay) {
       data = {
-        'pay_cash': body.paymentMethod === 'CASH',
+        'payment_method': body.paymentMethod,
         'time': {
           'pay_attendance': body.payAttendance,
         },
@@ -548,7 +541,7 @@
       };
     } else {
       data = {
-        'pay_cash': body.paymentMethod === 'CASH',
+        'payment_method': body.paymentMethod,
         time: {
           'pay_attendance': body.payAttendance,
           'travel_time': body['totalTravelTime-hour'].padStart(2, '0')

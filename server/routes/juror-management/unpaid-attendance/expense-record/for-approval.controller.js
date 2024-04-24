@@ -3,6 +3,7 @@
 
   const _ = require('lodash');
   const { getExpenseRecordsDAO } = require('../../../../objects/expense-record');
+  const { jurorOverviewDAO } = require('../../../../objects/juror-record');
 
   const STATUSES = {
     'for-approval': 'FOR_APPROVAL',
@@ -12,27 +13,34 @@
 
   module.exports.getForApprovalExpenses = function(app) {
     return async function(req, res) {
-      const { jurorNumber, poolNumber, status } = req.params;
+      const { jurorNumber, locCode, status } = req.params;
       const submitUrl = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.post', {
         jurorNumber,
-        poolNumber,
+        locCode,
         status,
       });
+      const bankDetailsUrl = app.namedRoutes.build('juror-management.bank-details.get', {
+        jurorNumber,
+        locCode,
+      }) + `?status=${status}`;
 
       try {
-        const data = await getExpenseRecordsDAO.post(
+        const promiseArr = [];
+
+        promiseArr.push(getExpenseRecordsDAO.get(
           app,
           req,
-          {
-            'juror_number': jurorNumber,
-            'pool_number': poolNumber,
-          },
+          locCode,
           STATUSES[status],
-        );
+          jurorNumber,
+        ));
+        promiseArr.push(jurorOverviewDAO.get(req, jurorNumber, locCode));
+
+        const [data, jurorDetails] = await Promise.all(promiseArr);
 
         const setExpensesUrl = app.namedRoutes.build('juror-management.default-expenses.get', {
           jurorNumber,
-          poolNumber,
+          locCode,
         });
 
         const tmpErrors = _.clone(req.session.errors);
@@ -45,11 +53,13 @@
           backLinkUrl: app.namedRoutes.build('juror-management.unpaid-attendance.get'),
           submitUrl,
           setExpensesUrl,
+          bankDetailsUrl,
           nav: 'unpaid-attendance',
           status,
           data,
           jurorNumber,
-          poolNumber,
+          locCode,
+          poolNumber: jurorDetails.commonDetails.poolNumber,
           counts: req.expensesCount,
           jurorDetails: req.jurorDetails,
           bannerMessage,
@@ -65,7 +75,7 @@
           token: req.session.authToken,
           data: {
             jurorNumber,
-            poolNumber,
+            locCode,
             status,
           },
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
@@ -78,7 +88,7 @@
 
   module.exports.postForApprovalExpenses = function(app) {
     return function(req, res) {
-      const { status, jurorNumber, poolNumber } = req.params;
+      const { status, jurorNumber, locCode } = req.params;
 
       const validationErrors = validateIFHasCheckedDates(status, req.body['checked-expenses']);
 
@@ -92,7 +102,7 @@
 
         return res.redirect(app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
           jurorNumber,
-          poolNumber,
+          locCode,
           status,
         }));
       }
@@ -102,30 +112,9 @@
         ? req.body['checked-expenses']
         : [req.body['checked-expenses']];
 
-      switch (status) {
-      case 'for-approval':
-        return res.redirect(app.namedRoutes.build('juror-management.edit-expense.get', {
-          jurorNumber,
-          poolNumber,
-          status,
-        }));
-      case 'for-reapproval':
-        return res.redirect(app.namedRoutes.build('juror-management.edit-expense.get', {
-          jurorNumber,
-          poolNumber,
-          status,
-        }));
-      case 'approved':
-        return res.redirect(app.namedRoutes.build('juror-management.edit-expense.get', {
-          jurorNumber,
-          poolNumber,
-          status,
-        }));
-      }
-
-      return res.redirect(app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
+      return res.redirect(app.namedRoutes.build('juror-management.edit-expense.get', {
         jurorNumber,
-        poolNumber,
+        locCode,
         status,
       }));
     };

@@ -32,7 +32,7 @@
     {% set signatureError = {"text": errors.items['signature'][0].details} %}
   {% endif %}
 
-  {% set courtroomSelectItems = [] %}
+  {% set courtroomSelectItems = [{value: "", text: "Select a room..."}] %}
   {% for room in courtrooms %}
     {% set courtroomSelectItems = (courtroomSelectItems.push({
           value: room.id, 

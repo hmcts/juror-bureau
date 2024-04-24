@@ -1,9 +1,7 @@
-const { postDraftExpenseDAO } = require('./expense-record');
-
 (function() {
   'use strict';
 
-  var excusalObject = require('./expense-record').postDraftExpenseDAO
+  var { postEditedExpensesDAO } = require('./expense-record')
     , urljoin = require('url-join')
     , rpStub = function(options) {
       return options;
@@ -25,7 +23,7 @@ const { postDraftExpenseDAO } = require('./expense-record');
 
     it('should send call the correct endpoint to submit an attendance day draft expense', function() {
       var body = {
-          'pay_cash': false,
+          'payment_method': 'BACS',
           'time': { 'pay_attendance': 'FULL_DAY', 'travel_time': '00:40' },
           'travel': {
             'traveled_by_car': true,
@@ -48,7 +46,7 @@ const { postDraftExpenseDAO } = require('./expense-record');
           'pool_number': '415230101',
         }
         , jurorNumber = '641500022'
-        , testObj = postDraftExpenseDAO.post(appStub, reqStub, jurorNumber, body, false)
+        , testObj = postEditedExpensesDAO.put(appStub, reqStub, jurorNumber, body, false)
         , realUri = urljoin(
           'http://localhost:8080/api/v1',
           'moj/expenses',
@@ -62,7 +60,7 @@ const { postDraftExpenseDAO } = require('./expense-record');
 
     it('should send call the correct endpoint to submit a non-attendance day draft expense', function() {
       var body = {
-          'pay_cash': false,
+          'payment_method': 'BACS',
           'time': { 'pay_attendance': 'FULL_DAY', 'travel_time': '00:40' },
           'travel': {
             'traveled_by_car': true,
@@ -85,7 +83,7 @@ const { postDraftExpenseDAO } = require('./expense-record');
           'pool_number': '415230101',
         }
         , jurorNumber = '641500022'
-        , testObj = postDraftExpenseDAO.post(appStub, reqStub, jurorNumber, body, true)
+        , testObj = postEditedExpensesDAO.post(appStub, reqStub, jurorNumber, body, true)
         , realUri = urljoin(
           'http://localhost:8080/api/v1',
           'moj/expenses',

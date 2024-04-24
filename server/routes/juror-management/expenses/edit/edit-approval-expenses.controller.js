@@ -6,7 +6,7 @@
     getApprovalExpenseListDAO,
     getEnteredExpensesDAO,
     postRecalculateSummaryTotalsDAO,
-    editApprovalExpenseListDAO,
+    postEditedExpensesDAO,
   } = require('../../../../objects/expense-record');
   const { defaultExpensesDAO } = require('../../../../objects/expenses');
   const { jurorDetailsObject } = require('../../../../objects/juror-record');
@@ -14,6 +14,7 @@
   const enterExpensesValidator = require('../../../../config/validation/enter-expenses');
   const { expenseRatesAndLimitsDAO } = require('../../../../objects/administration');
   const { getCourtLocationRates } = require('../../../../objects/court-location');
+  const { jurorOverviewDAO } = require('../../../../objects/juror-record');
 
   const STATUSES = {
     'for-approval': 'FOR_APPROVAL',
@@ -23,7 +24,7 @@
 
   module.exports.getEditApprovalExpenses = function(app) {
     return async function(req, res) {
-      const { jurorNumber, poolNumber, status } = req.params;
+      const { jurorNumber, locCode, status } = req.params;
       const expenseDates = _.clone(req.session.editApprovalDates);
       const tmpErrors = _.clone(req.session.errors);
 
@@ -37,8 +38,6 @@
         }
 
         const payload = {
-          'juror_number': jurorNumber,
-          'pool_number': poolNumber,
           'expense_list': [],
         };
 
@@ -52,8 +51,8 @@
           }
         }
 
-        requests.push(postRecalculateSummaryTotalsDAO.post(app, req, payload));
-        requests.push(defaultExpensesDAO.get(app, req, jurorNumber));
+        requests.push(postRecalculateSummaryTotalsDAO.post(app, req, locCode, jurorNumber, payload));
+        requests.push(defaultExpensesDAO.get(app, req, locCode, jurorNumber));
         requests.push(jurorDetailsObject.post(
           require('request-promise'),
           app,
@@ -62,15 +61,16 @@
           null,
           ['NAME_DETAILS'],
         ));
+        requests.push(jurorOverviewDAO.get(req, jurorNumber, locCode));
 
-        const [expensesData, defaultExpense, jurorDetails] = await Promise.all(requests);
+        const [expensesData, defaultExpense, jurorDetails, jurorOverview] = await Promise.all(requests);
         let originalExpenses, editedTotals;
 
         editedTotals = expensesData.total;
 
         // get the original values for showing comparison and make them {expenseDate: values}
         if (Object.keys(req.session.editedExpenses).length) {
-          originalExpenses = await getApprovalExpenseListDAO.post(app, req, jurorNumber, poolNumber, expenseDates);
+          originalExpenses = await getApprovalExpenseListDAO.post(app, req, locCode, jurorNumber, expenseDates);
 
           originalExpenses = originalExpenses.expense_details.reduce((prev, originalExpense) => {
             if (req.session.editedExpenses[originalExpense.attendance_date]) {
@@ -85,7 +85,8 @@
 
         return res.render('expenses/edit/edit-approval-expenses-list.njk', {
           jurorNumber,
-          poolNumber,
+          locCode,
+          poolNumber: jurorOverview.commonDetails.poolNumber,
           status,
           expenseDates,
           defaultExpense,
@@ -107,7 +108,7 @@
           jwt: req.session.authToken,
           data: {
             jurorNumber,
-            poolNumber,
+            locCode,
             status,
             expenseDates,
           },
@@ -124,7 +125,7 @@
           };
           return res.redirect(app.namedRoutes.build('juror-management.edit-expense.get', {
             jurorNumber,
-            poolNumber,
+            locCode,
             status,
           }));
         }
@@ -136,7 +137,7 @@
 
   module.exports.postEditApprovalExpenses = function(app) {
     return async function(req, res) {
-      const { jurorNumber, poolNumber, status } = req.params;
+      const { jurorNumber, locCode, status } = req.params;
       const editedExpenses = _.clone(req.session.editedExpenses);
 
       if (!Object.keys(editedExpenses).length) {
@@ -149,7 +150,7 @@
 
         return res.redirect(app.namedRoutes.build('juror-management.edit-expense.get', {
           jurorNumber,
-          poolNumber,
+          locCode,
           status,
         }));
       }
@@ -159,12 +160,11 @@
       for (let expense of Object.values(editedExpenses)) {
         const _formData = expense.formData;
 
-        _formData['pool_number'] = poolNumber;
         expensesToPost.push(_formData);
       }
 
       try {
-        await editApprovalExpenseListDAO.post(app, req, jurorNumber, STATUSES[status], expensesToPost);
+        await postEditedExpensesDAO.put(app, req, locCode, jurorNumber, STATUSES[status], expensesToPost);
 
         delete req.session.editedExpenses;
 
@@ -177,7 +177,7 @@
 
         return res.redirect(app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
           jurorNumber,
-          poolNumber,
+          locCode,
           status,
         }));
       } catch (err) {
@@ -186,7 +186,7 @@
           jwt: req.session.authToken,
           data: {
             jurorNumber,
-            poolNumber,
+            locCode,
             status,
             expensesToPost,
           },
@@ -200,12 +200,12 @@
 
   module.exports.getEditApprovalExpensesEdit = function(app) {
     return async function(req, res) {
-      const { status, jurorNumber, poolNumber } = req.params;
+      const { status, jurorNumber, locCode } = req.params;
       const { date, page } = req.query;
       const dates = req.session.editApprovalDates;
       const cancelUrl = app.namedRoutes.build('juror-management.edit-expense.get', {
         jurorNumber,
-        poolNumber,
+        locCode,
         status,
       });
 
@@ -214,12 +214,12 @@
         totalPages: req.session.editApprovalDates.length,
         prevLink: app.namedRoutes.build('juror-management.edit-expense.edit.get', {
           jurorNumber,
-          poolNumber,
+          locCode,
           status,
         }) + `?date=${dates[page - 2]}&page=${page - 1}`,
         nextLink: app.namedRoutes.build('juror-management.edit-expense.edit.get', {
           jurorNumber,
-          poolNumber,
+          locCode,
           status,
         }) + `?date=${dates[page]}&page=${+page + 1}`,
       };
@@ -227,17 +227,17 @@
       const postUrls = {
         saveAndNextUrl: app.namedRoutes.build('juror-management.edit-expense.edit.post', {
           jurorNumber,
-          poolNumber,
+          locCode,
           status,
         }) + `?date=${date}&page=${page}&action=next`,
         saveAndBackUrl: app.namedRoutes.build('juror-management.edit-expense.edit.post', {
           jurorNumber,
-          poolNumber,
+          locCode,
           status,
         }) + `?date=${date}&page=${page}&action=back`,
         applyToAllUrl: app.namedRoutes.build('juror-management.edit-expense.apply-to-all.post', {
           jurorNumber,
-          poolNumber,
+          locCode,
           status,
         }) + `?date=${date}&page=${page}`,
       };
@@ -252,12 +252,10 @@
         const requests = [];
 
         payload = {
-          'juror_number': jurorNumber,
-          'pool_number': poolNumber,
           'expense_dates': [date],
         };
 
-        requests.push(getEnteredExpensesDAO.post(app, req, payload));
+        requests.push(getEnteredExpensesDAO.post(app, req, locCode, jurorNumber, payload));
         requests.push(jurorDetailsObject.post(
           require('request-promise'),
           app,
@@ -287,7 +285,7 @@
         req.session.editForApprovalInNonAttendance = expensesData.none_attendance_day;
 
         // get the original values for a day and cache to compare if there are changes
-        const originalTotals = await postRecalculateSummaryTotalsDAO.post(app, req, {
+        const originalTotals = await postRecalculateSummaryTotalsDAO.post(app, req, locCode, jurorNumber, {
           'expense_list': [
             {
               'date_of_expense': date,
@@ -308,7 +306,7 @@
 
         return res.render(template, {
           jurorNumber,
-          poolNumber,
+          locCode,
           status,
           jurorDetails: jurorDetails[0],
           expensesData,
@@ -329,7 +327,7 @@
           jwt: req.session.authToken,
           data: {
             jurorNumber,
-            poolNumber,
+            locCode,
             status,
             payload,
           },
@@ -343,7 +341,7 @@
 
   module.exports.postEditApprovalExpensesEdit = function(app) {
     return async function(req, res) {
-      const { status, jurorNumber, poolNumber } = req.params;
+      const { status, jurorNumber, locCode } = req.params;
       const { date, page, action, ['travel-over-limit']: travelOverLimit } = req.query;
 
       const nextDate = req.session.editApprovalDates[+page];
@@ -370,7 +368,7 @@
 
         return res.redirect(app.namedRoutes.build('juror-management.edit-expense.edit.get', {
           jurorNumber,
-          poolNumber,
+          locCode,
           status,
         }) + `?date=${date}&page=${page}`);
       }
@@ -378,7 +376,6 @@
       const data = buildDataPayload(req.body, nonAttendanceDay);
 
       data['date_of_expense'] = date;
-      data['none_attendance_day'] = nonAttendanceDay;
 
       if (!travelOverLimit) {
         const { showTravelOverLimit, error } = await isTravelOverLimit(app, req);
@@ -393,7 +390,7 @@
             jwt: req.session.authToken,
             data: {
               jurorNumber,
-              poolNumber,
+              locCode,
             },
             error: typeof error.error !== 'undefined' ? error.error : error.toString(),
           });
@@ -404,19 +401,19 @@
         if (showTravelOverLimit) {
           const cancelUrl = app.namedRoutes.build('juror-management.edit-expense.edit.get', {
             jurorNumber,
-            poolNumber,
+            locCode,
             status,
           }) + `?date=${date}&page=${page}`;
           let continueUrl = app.namedRoutes.build('juror-management.edit-expense.edit.post', {
             jurorNumber,
-            poolNumber,
+            locCode,
             status,
           }) + `?date=${date}&page=${page}&action=back&travel-over-limit=true`;
 
           if (action === 'next') {
             continueUrl = app.namedRoutes.build('juror-management.edit-expense.edit.post', {
               jurorNumber,
-              poolNumber,
+              locCode,
               status,
             }) + `?date=${date}&page=${page}&action=next&travel-over-limit=true`;
           }
@@ -429,7 +426,7 @@
 
           return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.travel-over-limit.get', {
             jurorNumber,
-            poolNumber,
+            locCode,
           }));
         }
       }
@@ -440,9 +437,7 @@
       let response;
 
       try {
-        response = await postRecalculateSummaryTotalsDAO.post(app, req, {
-          'juror_number': jurorNumber,
-          'pool_number': poolNumber,
+        response = await postRecalculateSummaryTotalsDAO.post(app, req, locCode, jurorNumber, {
           'expense_list': [data],
         });
 
@@ -468,7 +463,7 @@
 
           return res.redirect(app.namedRoutes.build('juror-management.edit-expense.edit.get', {
             jurorNumber,
-            poolNumber,
+            locCode,
             status,
           }) + `?date=${date}&page=${page}`);
         }
@@ -492,7 +487,7 @@
 
         return res.redirect(app.namedRoutes.build('juror-management.edit-expense.get', {
           jurorNumber,
-          poolNumber,
+          locCode,
           status,
         }));
       }
@@ -517,7 +512,7 @@
       if (action === 'next') {
         nextUrl = app.namedRoutes.build('juror-management.edit-expense.edit.get', {
           jurorNumber,
-          poolNumber,
+          locCode,
           status,
         }) + `?date=${nextDate}&page=${+page + 1}`;
       }
@@ -525,7 +520,7 @@
       if (action === 'back' || !nextDate) {
         nextUrl = app.namedRoutes.build('juror-management.edit-expense.get', {
           jurorNumber,
-          poolNumber,
+          locCode,
           status,
         });
       }
@@ -535,7 +530,7 @@
 
         return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.loss-over-limit.get', {
           jurorNumber,
-          poolNumber,
+          locCode,
         }));
       }
 
@@ -545,18 +540,18 @@
 
   module.exports.postEditApprovalExpensesEditApplyToAll = function(app) {
     return async function(req, res) {
-      const { jurorNumber, poolNumber, status } = req.params;
+      const { jurorNumber, locCode, status } = req.params;
       const page = parseInt(req.query['page']) || 1;
       const date = req.query.date;
-      const redirectUrl = app.namedRoutes.build('juror-management.edit-expense.edit.get', {
+      let redirectUrl = app.namedRoutes.build('juror-management.edit-expense.edit.get', {
         jurorNumber,
-        poolNumber,
+        locCode,
         status,
       }) + `?date=${date}&page=${page}`;
 
       if (req.query.action === 'apply-default-loss') {
         try {
-          const defaultExpenses = await defaultExpensesDAO.get(app, req, jurorNumber);
+          const defaultExpenses = await defaultExpensesDAO.get(app, req, locCode, jurorNumber);
 
           req.body = {
             applyToAllDays: ['lossOfEarnings'],
@@ -572,7 +567,7 @@
 
           return res.redirect(app.namedRoutes.build('juror-management.edit-expense.get', {
             jurorNumber,
-            poolNumber,
+            locCode,
             status,
           }));
         }
@@ -620,98 +615,109 @@
       }
 
       if (req.body.applyToAllDays.includes('paymentMethod')) {
-        applyToAllPayload['pay_cash'] = req.body.paymentMethod === 'CASH';
+        applyToAllPayload['payment_method'] = req.body.paymentMethod;
       }
 
       let expensesData;
 
       try {
-        expensesData = await getEnteredExpensesDAO.post(app, req, {
-          'juror_number': jurorNumber,
-          'pool_number': poolNumber,
+        expensesData = await getEnteredExpensesDAO.post(app, req, locCode, jurorNumber, {
           'expense_dates': req.session.editApprovalDates,
         });
 
-        const errors = {};
+        if (status !== 'for-approval') {
+          const errors = {};
 
-        for (const expense of expensesData) {
-          if (req.body.applyToAllDays.includes('lossOfEarnings') && applyToAllPayload.financial_loss) {
-            if (applyToAllPayload.financial_loss.loss_of_earnings
-              // eslint-disable-next-line max-len
-              && parseInt(applyToAllPayload.financial_loss.loss_of_earnings) < expense.financial_loss.loss_of_earnings) {
-              errors.lossOfEarnings = [{
-                summary: 'The new financial loss cannot be less than originally paid in the selected expenses',
-                details: 'The new financial loss cannot be less than originally paid in the selected expenses',
-              }];
-            }
-          }
-
-          if (req.body.applyToAllDays.includes('extraCareCosts') && applyToAllPayload.financial_loss) {
-            if (applyToAllPayload.financial_loss.extra_care_cost
-              && parseInt(applyToAllPayload.financial_loss.extra_care_cost) < expense.financial_loss.extra_care_cost) {
-              errors.extraCareCosts = [{
-                summary: 'The new extra care costs cannot be less than originally paid in the selected expenses',
-                details: 'The new extra care costs cannot be less than originally paid in the selected expenses',
-              }];
-            }
-          }
-
-          if (req.body.applyToAllDays.includes('otherCosts') && applyToAllPayload.financial_loss) {
-            if (applyToAllPayload.financial_loss.other_cost
-              && parseInt(applyToAllPayload.financial_loss.other_cost) < expense.financial_loss.other_cost) {
-              errors.otherCosts = [{
-                summary: 'The new other costs cannot be less than originally paid in the selected expenses',
-                details: 'The new other costs cannot be less than originally paid in the selected expenses',
-              }];
-            }
-          }
-
-          if (req.body.applyToAllDays.includes('travel') && applyToAllPayload.travel) {
-            if (applyToAllPayload.travel.miles_traveled
-              && parseInt(applyToAllPayload.travel.miles_traveled) < expense.travel.miles_traveled) {
-              errors.milesTravelled = [{
-                summary: 'The new miles traveled cannot be less than originally paid in the selected expenses',
-                details: 'The new miles traveled cannot be less than originally paid in the selected expenses',
-              }];
+          for (const expense of expensesData) {
+            if (req.body.applyToAllDays.includes('lossOfEarnings') && applyToAllPayload.financial_loss) {
+              if (applyToAllPayload.financial_loss.loss_of_earnings
+                // eslint-disable-next-line max-len
+                && parseInt(applyToAllPayload.financial_loss.loss_of_earnings) < expense.financial_loss.loss_of_earnings) {
+                errors.lossOfEarnings = [{
+                  summary: 'The new financial loss cannot be less than originally paid in the selected expenses',
+                  details: 'The new financial loss cannot be less than originally paid in the selected expenses',
+                }];
+              }
             }
 
-            if (applyToAllPayload.travel.parking
-              && parseInt(applyToAllPayload.travel.parking) < expense.travel.parking) {
-              errors.parking = [{
-                summary: 'The new parking costs cannot be less than originally paid in the selected expenses',
-                details: 'The new parking costs cannot be less than originally paid in the selected expenses',
-              }];
+            if (req.body.applyToAllDays.includes('extraCareCosts') && applyToAllPayload.financial_loss) {
+              if (applyToAllPayload.financial_loss.extra_care_cost
+                // eslint-disable-next-line max-len
+                && parseInt(applyToAllPayload.financial_loss.extra_care_cost) < expense.financial_loss.extra_care_cost) {
+                errors.extraCareCosts = [{
+                  summary: 'The new extra care costs cannot be less than originally paid in the selected expenses',
+                  details: 'The new extra care costs cannot be less than originally paid in the selected expenses',
+                }];
+              }
             }
 
-            if (applyToAllPayload.travel.public_transport
-              && parseInt(applyToAllPayload.travel.public_transport) < expense.travel.public_transport) {
-              errors.publicTransport = [{
-                summary: 'The new public transport costs cannot be less than originally paid in the selected expenses',
-                details: 'The new public transport costs cannot be less than originally paid in the selected expenses',
-              }];
+            if (req.body.applyToAllDays.includes('otherCosts') && applyToAllPayload.financial_loss) {
+              if (applyToAllPayload.financial_loss.other_cost
+                && parseInt(applyToAllPayload.financial_loss.other_cost) < expense.financial_loss.other_cost) {
+                errors.otherCosts = [{
+                  summary: 'The new other costs cannot be less than originally paid in the selected expenses',
+                  details: 'The new other costs cannot be less than originally paid in the selected expenses',
+                }];
+              }
             }
 
-            if (applyToAllPayload.travel.taxi
-              && parseInt(applyToAllPayload.travel.taxi) < expense.travel.taxi) {
-              errors.taxi = [{
-                summary: 'The new taxi costs cannot be less than originally paid in the selected expenses',
-                details: 'The new taxi costs cannot be less than originally paid in the selected expenses',
-              }];
+            if (req.body.applyToAllDays.includes('travel') && applyToAllPayload.travel) {
+              if (applyToAllPayload.travel.miles_traveled
+                && parseInt(applyToAllPayload.travel.miles_traveled) < expense.travel.miles_traveled) {
+                errors.milesTravelled = [{
+                  summary: 'The new miles traveled cannot be less than originally paid in the selected expenses',
+                  details: 'The new miles traveled cannot be less than originally paid in the selected expenses',
+                }];
+              }
+
+              if (applyToAllPayload.travel.parking
+                && parseInt(applyToAllPayload.travel.parking) < expense.travel.parking) {
+                errors.parking = [{
+                  summary: 'The new parking costs cannot be less than originally paid in the selected expenses',
+                  details: 'The new parking costs cannot be less than originally paid in the selected expenses',
+                }];
+              }
+
+              if (applyToAllPayload.travel.public_transport
+                && parseInt(applyToAllPayload.travel.public_transport) < expense.travel.public_transport) {
+                errors.publicTransport = [{
+                  // eslint-disable-next-line max-len
+                  summary: 'The new public transport costs cannot be less than originally paid in the selected expenses',
+                  // eslint-disable-next-line max-len
+                  details: 'The new public transport costs cannot be less than originally paid in the selected expenses',
+                }];
+              }
+
+              if (applyToAllPayload.travel.taxi
+                && parseInt(applyToAllPayload.travel.taxi) < expense.travel.taxi) {
+                errors.taxi = [{
+                  summary: 'The new taxi costs cannot be less than originally paid in the selected expenses',
+                  details: 'The new taxi costs cannot be less than originally paid in the selected expenses',
+                }];
+              }
+
+              if (applyToAllPayload.travel.jurors_taken_by_car
+                && parseInt(applyToAllPayload.travel.jurors_taken_by_car) < expense.travel.jurors_taken_by_car) {
+                errors.passengers = [{
+                  summary: 'The new passengers taken cannot be less than originally paid in the selected expenses',
+                  details: 'The new passengers taken cannot be less than originally paid in the selected expenses',
+                }];
+              }
             }
 
-            if (applyToAllPayload.travel.jurors_taken_by_car
-              && parseInt(applyToAllPayload.travel.jurors_taken_by_car) < expense.travel.jurors_taken_by_car) {
-              errors.passengers = [{
-                summary: 'The new passengers taken cannot be less than originally paid in the selected expenses',
-                details: 'The new passengers taken cannot be less than originally paid in the selected expenses',
-              }];
+            if (Object.entries(errors).length) {
+              req.session.errors = errors;
+
+              if (!date) {
+                redirectUrl = app.namedRoutes.build('juror-management.edit-expense.get', {
+                  jurorNumber,
+                  locCode,
+                  status,
+                });
+              }
+
+              return res.redirect(redirectUrl);
             }
-          }
-
-          if (Object.entries(errors).length) {
-            req.session.errors = errors;
-
-            return res.redirect(redirectUrl);
           }
         }
 
@@ -733,7 +739,7 @@
         if (req.query.action === 'apply-default-loss') {
           return res.redirect(app.namedRoutes.build('juror-management.edit-expense.get', {
             jurorNumber,
-            poolNumber,
+            locCode,
             status,
           }));
         }
@@ -757,7 +763,7 @@
 
     if (nonAttendanceDay) {
       data = {
-        'pay_cash': body.paymentMethod === 'CASH',
+        'payment_method': body.paymentMethod,
         'time': {
           'pay_attendance': body.payAttendance,
         },
@@ -770,10 +776,11 @@
       };
     } else {
       data = {
-        'pay_cash': body.paymentMethod === 'CASH',
+        'payment_method': body.paymentMethod,
         time: {
           'pay_attendance': body.payAttendance,
-          'travel_time': body['totalTravelTime-hour'].padStart(2, '0') + ':' + body['totalTravelTime-minute'].padStart(2, '0'),
+          'travel_time': body['totalTravelTime-hour'].padStart(2, '0') + ':'
+            + body['totalTravelTime-minute'].padStart(2, '0'),
         },
         travel: {
           'traveled_by_car': false,
