@@ -11,7 +11,7 @@
   const { reportKeys } = require('./utils');
 
   const standardReportRoutes = (app, key) => {
-    if (reportKeys(app)[key]) {
+    if (reportKeys(app)[key].search) {
       app.get(`/reporting/${key}`,
         `reports.${key}.filter.get`,
         auth.verify,
