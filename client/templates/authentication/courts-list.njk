@@ -1,0 +1,67 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - Authentication - Select court to manage{% endblock %}
+{% block page_identifier %}Authentication - Select court to manage{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-l">Which court do you want to manage?</h1>
+
+      <form action="{{ url('authentication.courts-list.post') }}" method="POST" id="courtToManageForm">
+
+        <table class="govuk-table" data-module="moj-sortable-table">
+          <caption class="govuk-table__caption govuk-table__caption--m">Select court</caption>
+
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header mod-no-width" scope="col"></th>
+              <th class="govuk-table__header" scope="col" aria-sort="ascending">Court name</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+
+            {% for court in courtsList %}
+
+              <tr class="govuk-table__row govuk-table__row--selected">
+                <td class="govuk-table__cell">
+                  <div class="govuk-radios__item govuk-radios--small">
+                    <input type="radio" class="govuk-radios__input" name="court" id="court-{{ court.loc_code }}" value="{{ court.loc_code }}">
+                    <label class="govuk-label govuk-radios__label" for="court-{{ court.loc_code }}">
+                      <span class="govuk-visually-hidden">Select court {{ court.name }} {{ court.loc_code }}</span>
+                    </label>
+                  </div>
+                </td>
+                <td class="govuk-table__cell jd-middle-align">{{ court.name }} ({{ court.loc_code }})</td>
+              </tr>
+
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <input type="hidden" name="email" id="email" value="{{ email }}">
+        {{ csrfProtection(csrftoken) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            attributes: {
+              id: "continueButton"
+            }
+          }) }}
+        
+          <a class="govuk-link" href="#" id="cancelAnchor">Cancel</a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+{% endblock %}

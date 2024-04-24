@@ -4,6 +4,17 @@ const controller = require('./authentication.controller');
 
 module.exports = function(app) {
 
+  app.get('/auth/courts-list',
+    'authentication.courts-list.get',
+    // TODO: add check to make sure the user is half authed
+    controller.getCourtsList(app),
+  );
+
+  app.post('/auth/courts-list',
+    'authentication.courts-list.post',
+    controller.postCourtsList(app),
+  );
+
   // dev email auth
   app.post('/auth/dev/email',
     'authentication.email.dev',
