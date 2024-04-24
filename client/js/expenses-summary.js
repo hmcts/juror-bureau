@@ -3,7 +3,7 @@
 
   var expensesSummary = $('#expenses-summary');
   var jurorNumber = $('input[id="jurorNumber"]').val();
-  var poolNumber = $('input[id="poolNumber"]').val();
+  var locCode = $('input[id="locCode"]').val();
   var timeAtCourt = $('#timeAtCourt > div > dd').text().trim();
   var nonAttendanceDay = timeAtCourt === 'Non-attendance day';
   var urlSearchParams = new URLSearchParams(window.location.search);
@@ -39,7 +39,7 @@
     var csrfToken = $('#csrfToken').val();
 
     $.ajax({
-      url: `/juror-management/expenses/${jurorNumber}/${poolNumber}/enter-expenses/recalculate-totals?status=${status}`,
+      url: `/juror-management/expenses/${jurorNumber}/${locCode}/enter-expenses/recalculate-totals?status=${status}`,
       method: 'POST',
       data: {
         ...payload(),
@@ -62,11 +62,11 @@
   }
 
   function payload() {
-    var payCash = $('input[name="paymentMethod"]:checked').val();
+    var paymentMethod = $('input[name="paymentMethod"]:checked').val();
 
     var data = {
       'date_of_expense': urlSearchParams.get('date'),
-      'pay_cash': payCash === 'CASH',
+      'payment_method': paymentMethod,
     };
 
     if (!nonAttendanceDay) {

@@ -8,25 +8,25 @@
 
   module.exports.getDraftExpenses = function(app) {
     return function(req, res) {
-      const { jurorNumber, poolNumber, status } = req.params;
+      const { jurorNumber, locCode, status } = req.params;
       const tmpErrors = _.clone(req.session.errors);
       const bannerMessage = _.clone(req.session.bannerMessage);
       const setExpensesUrl = app.namedRoutes.build('juror-management.default-expenses.get', {
         jurorNumber,
-        poolNumber,
+        locCode,
       });
       const submitUrl = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.post', {
         jurorNumber,
-        poolNumber,
+        locCode,
         status: 'draft',
       });
       const enterExpensesUrl = app.namedRoutes.build('juror-management.enter-expenses.get', {
         jurorNumber,
-        poolNumber,
+        locCode,
       });
       const bankDetailsUrl = app.namedRoutes.build('juror-management.bank-details.get', {
         jurorNumber,
-        poolNumber,
+        locCode,
       });
       const backLinkUrl = app.namedRoutes.build('juror-management.unpaid-attendance.get');
 
@@ -37,8 +37,8 @@
         app,
         req,
         jurorNumber,
-        poolNumber,
-      ), jurorOverviewDAO.get(req, jurorNumber, req.session.authentication.locCode)])
+        locCode,
+      ), jurorOverviewDAO.get(req, jurorNumber, locCode)])
         .then(async function([{ response: expenseData, headers }, jurorOverview]) {
 
           req.session.draftExpensesEtag = headers.etag;
@@ -73,7 +73,8 @@
             expenseData: expenseData,
             jurorDetails: req.jurorDetails,
             jurorNumber,
-            poolNumber,
+            poolNumber: jurorOverview.commonDetails.poolNumber,
+            locCode,
             totalExpenses,
             bannerMessage,
             counts: req.expensesCount,
@@ -90,8 +91,8 @@
             auth: req.session.authentication,
             jwt: req.session.authToken,
             data: {
-              jurorNumber: req.params.jurorNumber,
-              poolNumber: req.params.poolNumber,
+              jurorNumber,
+              locCode,
             },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
@@ -103,11 +104,11 @@
 
   module.exports.postDraftExpenses = function(app) {
     return async function(req, res) {
-      const { jurorNumber, poolNumber } = req.params;
+      const { jurorNumber, locCode } = req.params;
       const { action } = req.query;
       const redirectUrl = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
         jurorNumber,
-        poolNumber,
+        locCode,
         status: 'draft',
       });
 
@@ -130,7 +131,7 @@
         return res.redirect(app.namedRoutes.build(
           'juror-management.unpaid-attendance.expense-record.add-smartcard-spend.get', {
             jurorNumber,
-            poolNumber,
+            locCode,
           }
         ) + `?dates=${req.body['checked-expenses']}`);
       }
@@ -140,7 +141,7 @@
           app,
           req,
           jurorNumber,
-          poolNumber,
+          locCode,
           req.session.draftExpensesEtag
         );
 
@@ -161,7 +162,7 @@
             jwt: req.session.authToken,
             data: {
               jurorNumber,
-              poolNumber,
+              locCode,
               expenses: req.body['checked-expenses'],
             },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
@@ -174,12 +175,21 @@
       submitDraftExpenses.post(
         app,
         req,
+        locCode,
         jurorNumber,
-        poolNumber,
         req.body['checked-expenses']
       )
         .then(() => {
           req.session.bannerMessage = 'Expenses submitted for approval';
+
+          app.logger.info('Successfully submitted draft expenses for approval: ', {
+            auth: req.session.authentication,
+            data: {
+              jurorNumber,
+              locCode,
+              dates: req.body['checked-expenses'],
+            },
+          });
 
           return res.redirect(redirectUrl);
         })
@@ -191,7 +201,7 @@
               auth: req.session.authentication,
               data: {
                 jurorNumber,
-                poolNumber,
+                locCode,
                 dates: req.body['checked-expenses'],
               },
               error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
@@ -200,12 +210,11 @@
             return res.redirect(redirectUrl);
           }
 
-          app.logger.crit('Failed to fetch draft expense data: ', {
+          app.logger.crit('Failed to submit expenses for approval: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber,
-              poolNumber,
+              locCode,
               dates: req.body['checked-expenses'],
             },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),

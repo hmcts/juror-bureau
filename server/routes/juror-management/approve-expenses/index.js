@@ -42,7 +42,7 @@
       controller.postCannotApprove(app)
     );
 
-    app.get('/juror-management/approve-expenses/view-expenses/:jurorNumber/:poolNumber/:status',
+    app.get('/juror-management/approve-expenses/view-expenses/:jurorNumber/:locCode/:status',
       'juror-management.approve-expenses.view-expenses.get',
       auth.verify,
       isCourtManager,

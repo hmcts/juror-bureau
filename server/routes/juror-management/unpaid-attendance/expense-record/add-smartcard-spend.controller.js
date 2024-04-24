@@ -7,7 +7,7 @@
 
   module.exports.getAddSmartcardSpend = function(app) {
     return function(req, res) {
-      const { jurorNumber, poolNumber } = req.params;
+      const { jurorNumber, locCode } = req.params;
       const { dates } = req.query;
       const tmpErrors = req.session.errors;
       const tmpData = req.session.formFields;
@@ -18,13 +18,13 @@
       const postUrl = app.namedRoutes.build(
         'juror-management.unpaid-attendance.expense-record.add-smartcard-spend.post', {
           jurorNumber,
-          poolNumber,
+          locCode,
         }
       );
       const cancelUrl = app.namedRoutes.build(
         'juror-management.unpaid-attendance.expense-record.get', {
           jurorNumber,
-          poolNumber,
+          locCode,
           status: 'draft',
         }
       );
@@ -45,7 +45,7 @@
 
   module.exports.postAddSmartcardSpend = function(app) {
     return async function(req, res) {
-      const { jurorNumber, poolNumber } = req.params;
+      const { jurorNumber, locCode } = req.params;
       const { attendanceDates, smartcardAmount } = req.body;
 
       const validatorResult = validate(req.body, smartcardSpendValidator());
@@ -57,20 +57,18 @@
         return res.redirect(app.namedRoutes.build(
           'juror-management.unpaid-attendance.expense-record.add-smartcard-spend.get', {
             jurorNumber,
-            poolNumber,
+            locCode,
           },
         ) + `?dates=${attendanceDates}`);
       }
 
       const body = {
-        'juror_number': jurorNumber,
-        'pool_number': poolNumber,
-        'attendance_dates': attendanceDates.split(','),
+        dates: attendanceDates.split(','),
         'smart_card_amount': smartcardAmount,
       };
 
       try {
-        await addSmartcardSpend.patch(app, req, body);
+        await addSmartcardSpend.patch(app, req, locCode, jurorNumber, body);
 
         app.logger.info('Successfully updated the smartcard amount for all selected days', {
           auth: req.session.authentication,
@@ -81,7 +79,7 @@
         return res.redirect(app.namedRoutes.build(
           'juror-management.unpaid-attendance.expense-record.get', {
             jurorNumber,
-            poolNumber,
+            locCode,
             status: 'draft',
           }
         ));
@@ -103,7 +101,7 @@
         return res.redirect(app.namedRoutes.build(
           'juror-management.unpaid-attendance.expense-record.add-smartcard-spend.get', {
             jurorNumber,
-            poolNumber,
+            locCode,
           },
         ) + `?dates=${attendanceDates}`);
       }

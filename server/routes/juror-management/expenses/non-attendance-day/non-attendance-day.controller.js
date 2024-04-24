@@ -13,10 +13,11 @@
       const tmpFields = _.clone(req.session.formFields);
       const { jurorNumber, poolNumber } = req.params;
       const { status } = req.query;
+      const locCode = req.session.authentication.locCode;
 
       let cancelUrl = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
         jurorNumber,
-        poolNumber,
+        locCode,
         status: status || 'draft',
       });
       let postUrl = app.namedRoutes.build('juror-management.non-attendance-day.post', {
@@ -54,13 +55,14 @@
     return async function(req, res) {
       const { jurorNumber, poolNumber } = req.params;
       const { status } = req.query;
+      const locCode = req.session.authentication.locCode;
 
       const validatorResult = validate(req.body, nonAttendanceDayValidator());
       let errorUrl = app.namedRoutes.build('juror-management.non-attendance-day.get', {
         jurorNumber, poolNumber,
       });
       let successUrl = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
-        jurorNumber, poolNumber, status: 'draft',
+        jurorNumber, locCode, status: 'draft',
       });
 
       if (req.url.includes('record')) {
@@ -80,7 +82,7 @@
       try {
         const payload = {
           'juror_number': jurorNumber,
-          'location_code': req.session.authentication.owner,
+          'location_code': locCode,
           'pool_number': poolNumber,
           'non_attendance_date': dateFilter(
             req.body.nonAttendanceDay.split('/').map(d => d.padStart(2, '0')).join('/'), 'DD/MM/YYYY', 'YYYY-MM-DD',
@@ -96,7 +98,7 @@
 
           return res.redirect(app.namedRoutes.build('juror-management.edit-expense.get', {
             jurorNumber,
-            poolNumber,
+            locCode,
             status,
           }));
         }

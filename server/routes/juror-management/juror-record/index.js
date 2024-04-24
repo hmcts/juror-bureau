@@ -34,11 +34,11 @@
       auth.verify,
       controller.checkResponse(app),
       controller.getExpensesTab(app));
-    app.get('/juror-management/record/:jurorNumber/:poolNumber/default-expenses',
+    app.get('/juror-management/record/:jurorNumber/default-expenses',
       'juror-record.default-expenses.get',
       auth.verify,
       expensesController.getDefaultExpenses(app));
-    app.post('/juror-management/record/:jurorNumber/:poolNumber/default-expenses',
+    app.post('/juror-management/record/:jurorNumber/default-expenses',
       'juror-record.default-expenses.post',
       auth.verify,
       expensesController.postDefaultExpenses(app));
