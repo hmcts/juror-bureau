@@ -100,7 +100,7 @@
         apiKey: 'IncompleteServiceReport',
         bespokeReport: {
           dao: (request) => incompleteService.get(request, {
-            location: request.session.authentication.locCode,
+            location: request.session.locCode,
             date: request.params.filter,
           }),
           insertColumns: {
