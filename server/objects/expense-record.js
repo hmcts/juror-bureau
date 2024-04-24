@@ -139,9 +139,9 @@
   };
 
   module.exports.addSmartcardSpend = {
-    patch: function(app, req, body) {
+    patch: function(app, req, locCode, jurorNumber, body) {
       const payload = {
-        uri: urljoin(endpoint, 'smartcard'),
+        uri: urljoin(endpoint.replace('{locCode}', locCode), jurorNumber, 'smartcard'),
         method: 'PATCH',        headers: {
           'User-Agent': 'Request-Promise',
           'Content-Type': 'application/vnd.api+json',
