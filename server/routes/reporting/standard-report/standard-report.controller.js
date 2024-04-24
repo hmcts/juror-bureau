@@ -70,28 +70,35 @@
     const filter = req.session.reportFilter;
 
     const buildStandardTableRows = function(tableData, tableHeadings) {
-      const tableRows = tableData.map(data => tableHeadings.map(header => {
-        let output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
+      const tableRows = tableData.map(data => {
+        let row = tableHeadings.map(header => {
+          let output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
+
+          if (header.id === 'juror_number') {
+            return ({
+              html: `<a href=${
+                app.namedRoutes.build('juror-record.overview.get', {jurorNumber: output})
+              }>${
+                output
+              }</a>`,
+            });
+          }
+
+          if (header.id === 'juror_postcode') {
+            output = output.toUpperCase();
+          }
+
+          if (reportType.bespokeReport && reportType.bespokeReport.insertColumns) {
+            Object.keys(reportType.bespokeReport.insertColumns).map((key) => {
+              row.splice(key, 0, reportType.bespokeReport.insertColumns[key][1](data, app));
+            });
+          }
 
           return ({
-            text: output,
+            text: output ? output : '-',
           });
         });
-
-        if (reportType.bespokeReport && reportType.bespokeReport.insertColumns) {
-          Object.keys(reportType.bespokeReport.insertColumns).map((key) => {
-            row.splice(key, 0, reportType.bespokeReport.insertColumns[key][1](data, app));
-          });
-        }
-
-        if (header.id === 'juror_postcode') {
-          output = output.toUpperCase();
-        }
-
-        return ({
-          text: output ? output : '-',
-        });
-      }));
+      });
 
       return tableRows;
     };
@@ -123,12 +130,18 @@
 
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
 
-      const tableHeaders = tableData.headings.map((data, index) => ({
+      let tableHeaders = tableData.headings.map((data, index) => ({
         text: data.name,
         attributes: {
           'aria-sort': index === 0 ? 'ascending' : 'none',
           'aria-label': data.name,
         }}));
+
+      if (reportType.bespokeReport && reportType.bespokeReport.insertColumns) {
+        Object.keys(reportType.bespokeReport.insertColumns).map((key) => {
+          tableHeaders.splice(key, 0, {text: reportType.bespokeReport.insertColumns[key][0]});
+        });
+      }
 
       let tableRows = [];
 
