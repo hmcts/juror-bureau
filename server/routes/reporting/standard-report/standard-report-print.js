@@ -1,7 +1,8 @@
 /* eslint-disable strict */
 const { generateDocument } = require('../../../lib/reports/single-generator');
-const { reportKeys, tableDataMappers, constructPageHeading } = require('./utils');
+const { tableDataMappers, constructPageHeading } = require('./utils');
 const { snakeToCamel } = require('../../../lib/mod-utils');
+const { reportKeys } = require('./definitions');
 
 async function standardReportPrint(app, req, res, reportKey, data) {
   const reportData = reportKeys(app, req)[reportKey];
@@ -18,9 +19,9 @@ async function standardReportPrint(app, req, res, reportKey, data) {
     return { text: heading.name, style: 'label' };
   });
 
-  const buildStandardTableRows = function(tableData, tableHeadings) {
+  const buildStandardTableRows = function(rows, tableHeadings) {
     return [
-      ...tableData.map(row => tableHeadings.map(header => {
+      ...rows.map(row => tableHeadings.map(header => {
         let text = tableDataMappers[header.dataType](row[snakeToCamel(header.id)]);
 
         if (header.id === 'juror_postcode') {

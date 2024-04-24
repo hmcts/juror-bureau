@@ -1,3 +1,5 @@
+const { DAO } = require('./dataAccessObject');
+
 (() => {
   'use strict';
 
@@ -7,7 +9,7 @@
   const { mapCamelToSnake, mapSnakeToCamel } = require('../lib/mod-utils');
 
   module.exports.standardReportDAO = {
-    post: function(app, req, endpoint, requestConfig) {
+    post: function(req, app, requestConfig) {
       const payload = {
         uri: urljoin(config.apiEndpoint, 'moj/reports/standard'),
         method: 'POST',
@@ -19,7 +21,6 @@
         json: true,
         body: mapCamelToSnake({
           ...requestConfig,
-          reportType: endpoint,
         }),
         transform: mapSnakeToCamel,
       };
@@ -29,5 +30,13 @@
       return rp(payload);
     },
   };
+
+  module.exports.incompleteService = new DAO('/moj/reports/incomplete-service', {
+    get: function(options) {
+      const uri = `${this.resource}?location=${options.location}&cut-off-date=${options.date}`;
+
+      return { uri, transform: mapSnakeToCamel };
+    },
+  });
 
 })();

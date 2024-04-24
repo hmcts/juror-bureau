@@ -7,7 +7,8 @@
   const { validate } = require('validate.js');
   const { poolSearchObject } = require('../../../objects/pool-search');
   const rp = require('request-promise');
-  const { reportKeys, tableDataMappers, constructPageHeading } = require('./utils');
+  const { tableDataMappers, constructPageHeading } = require('./utils');
+  const { reportKeys } = require('./definitions');
   const { standardReportPrint } = require('./standard-report-print');
 
   const standardFilterGet = (app, reportKey) => async(req, res) => {
@@ -66,11 +67,11 @@
 
   const standardReportGet = (app, reportKey, isPrint = false) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
-    const config = {};
+    const config = { reportType: reportType.apiKey };
     const filter = req.session.reportFilter;
 
     const buildStandardTableRows = function(tableData, tableHeadings) {
-      const tableRows = tableData.map(data => {
+      return tableData.map(data => {
         let row = tableHeadings.map(header => {
           let output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
 
@@ -88,19 +89,19 @@
             output = output.toUpperCase();
           }
 
-          if (reportType.bespokeReport && reportType.bespokeReport.insertColumns) {
-            Object.keys(reportType.bespokeReport.insertColumns).map((key) => {
-              row.splice(key, 0, reportType.bespokeReport.insertColumns[key][1](data, app));
-            });
-          }
-
           return ({
             text: output ? output : '-',
           });
         });
-      });
 
-      return tableRows;
+        if (reportType.bespokeReport && reportType.bespokeReport.insertColumns) {
+          Object.keys(reportType.bespokeReport.insertColumns).map((key) => {
+            row.splice(key, 0, reportType.bespokeReport.insertColumns[key][1](data));
+          });
+        }
+
+        return row;
+      });
     };
 
     const buildPrintUrl = function() {
@@ -126,7 +127,9 @@
     }
 
     try {
-      const { headings, tableData } = await standardReportDAO.post(app, req, reportType.apiKey, config);
+      const { headings, tableData } = await (reportType.bespokeReport.dao
+        ? reportType.bespokeReport.dao(req)
+        : standardReportDAO.post(req, app, config));
 
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
 
@@ -210,23 +213,26 @@
   };
 
   const standardReportPost = (app, reportKey) => (req, res) => {
-    if (reportKeys(app, req)[reportKey].search === 'poolNumber' && !req.body.reportPool) {
-      req.session.errors = {
-        selection: [{
-          fields: ['selection'],
-          summary: 'Select a pool',
-          details: ['Select a pool'],
-        }],
-      };
+    if (reportKeys(app, req)[reportKey].search === 'poolNumber') {
+      if (!req.body.reportPool) {
+        req.session.errors = {
+          selection: [{
+            fields: ['selection'],
+            summary: 'Select a pool',
+            details: ['Select a pool'],
+          }],
+        };
 
-      return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`) + '?filter=' + req.body.filter);
+        return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`)
+          + (req.body.filter ? '?filter=' + req.body.filter : ''));
+      }
+
+      req.session.reportFilter = req.body.filter;
+
+      return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, {
+        filter: req.body.reportPool,
+      }));
     }
-
-    req.session.reportFilter = req.body.filter;
-
-    return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, {
-      filter: req.body.reportPool,
-    }));
   };
 
   module.exports = {
