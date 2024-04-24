@@ -1,7 +1,8 @@
 (function() {
   'use strict';
 
-  var _ = require('lodash')
+  const _ = require('lodash')
+    , { DAO } = require('./dataAccessObject')
     , urljoin = require('url-join')
     , config = require('../config/environment')()
     , utils = require('../lib/utils')
@@ -137,5 +138,6 @@
   module.exports.courtroomsObject = courtroomsObject;
   module.exports.judgesObject = judgesObject;
   module.exports.createTrialObject = createTrialObject;
+  module.exports.editTrialDAO = new DAO('moj/trial/edit');
 
 })();
