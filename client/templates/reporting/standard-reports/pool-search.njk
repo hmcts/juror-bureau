@@ -1,4 +1,4 @@
-{% extends "../../layouts/default.njk" %}
+{% extends "../../layouts/default-no-nav.njk" %}
 
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
@@ -64,7 +64,7 @@
                 }
               }) }}
 
-              <a class="govuk-link" href="{{ url(reportKey + '.filter.get') }}">Clear search</a>
+              <a class="govuk-link" href="{{ url('reports.' + reportKey + '.filter.get') }}">Clear search</a>
 
             </div>
           {% endcall %}

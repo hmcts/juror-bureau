@@ -1,0 +1,114 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}Reports{% endblock %}
+
+{% block page_identifier %}Reports - Postponed list{% endblock %}
+
+{% set currentApp = "Reports" %}
+
+{% block content %}
+  {% include "includes/errors.njk" %}
+
+  {% set searchByError = undefined %}
+  {% if errors.items["searchBy"] %}
+    {% set searchByError = { html: errors.items["searchBy"][0].details } %}
+  {% endif %}
+
+  {% set dateFromError = undefined %}  
+  {% if errors.items["dateFrom"] %}
+    {% set dateFromError = errors.items["dateFrom"][0].details %}
+  {% endif %}
+
+  {% set dateTo = undefined %}
+  {% if errors.items["dateTo"] %}
+    {% set dateToError = errors.items["dateTo"][0].details %}
+  {% endif %}
+
+  {% set dateRangeHTMl %}
+    {{ datePicker({
+      id: "dateFrom",
+      label: {
+        text: "Date from"
+      },
+      hint: "Use dd/mm/yyyy format.",
+      dateValue: tmpBody.dateFrom,
+      dateError: dateFromError
+    }) }}
+
+    {{ datePicker({
+      id: "dateTo",
+      label: {
+        text: "Date to"
+      },
+      hint: "Use dd/mm/yyyy format.",
+      dateMin: tmpBody.dateFrom,
+      dateValue: tmpBody.dateTo,
+      dateError: dateToError
+    }) }}
+  {% endset %}
+
+  <form action="{{ processUrl }}" method="post" id="searchbyForm">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h1 class="govuk-heading-xl">Postponed list</h1>
+        {{ govukRadios({
+          name: "searchBy",
+          fieldset: {
+            legend: {
+              text: "Search by",
+              isPageHeading: true,
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          items: [
+            {
+              value: "poolNumber",
+              text: "Pool number"
+            },
+            {
+              value: "next31Days",
+              text: "Next 31 days"
+            },
+            {
+              value: "customDateRange",
+              text: "Custom date range",
+              conditional: {
+                html: dateRangeHTMl
+              }
+            }
+          ],
+          value: tmpBody.searchBy,
+          errorMessage: searchByError
+        }) }}
+        {{ csrfProtection(csrftoken) }}
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            type: "submit"
+          }) }}
+          <a href="{{ cancelUrl }}" class="govuk-link" id="cancelAnchor">Cancel</a>
+        </div>
+      </div>
+    </div>
+  </form>
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      const datePickers = []
+        .slice
+        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
+      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
+    });
+  </script>
+{% endblock %}
