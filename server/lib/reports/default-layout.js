@@ -38,6 +38,11 @@
           fontSize: 26,
           bold: true,
         },
+        groupHeading: {
+          fontSize: 10,
+          bold: true,
+          marginTop: 10,
+        },
         footer: {
           fontSize: 10,
         },
