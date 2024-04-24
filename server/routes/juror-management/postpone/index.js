@@ -54,6 +54,8 @@
       'juror.update-bulk-postpone.movement-check.get',
       auth.verify,
       controller.getMovementCheck(app));
+
+    // Routing for deferral maintenance bulk postpone is at routes/pool-management/deferral-maintenance
   };
 
 })();
