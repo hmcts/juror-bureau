@@ -4,7 +4,7 @@ const { reportKeys, tableDataMappers, constructPageHeading } = require('./utils'
 const { snakeToCamel } = require('../../../lib/mod-utils');
 
 async function standardReportPrint(app, req, res, reportKey, data) {
-  const reportData = reportKeys[reportKey];
+  const reportData = reportKeys(app, req)[reportKey];
 
   const { headings, tableData } = data;
 
@@ -18,25 +18,54 @@ async function standardReportPrint(app, req, res, reportKey, data) {
     return { text: heading.name, style: 'label' };
   });
 
-  const tableRows = [
-    ...tableData.data.map(row => tableData.headings.map(header => {
-      let text = tableDataMappers[header.dataType](row[snakeToCamel(header.id)]);
+  const buildStandardTableRows = function(tableData, tableHeadings) {
+    return [
+      ...tableData.map(row => tableHeadings.map(header => {
+        let text = tableDataMappers[header.dataType](row[snakeToCamel(header.id)]);
 
-      if (header.id === 'juror_postcode') {
-        text = text.toUpperCase();
+        if (header.id === 'juror_postcode') {
+          text = text.toUpperCase();
+        }
+
+        return { text };
+      })),
+    ];
+  };
+
+  let tableRows = [];
+
+  if (reportData.grouped) {
+    for (const [heading, rowData] of Object.entries(tableData.data)) {
+
+      const group = buildStandardTableRows(rowData, tableData.headings);
+      const headRow = [
+        { text: (reportData.grouped.headings.prefix || '') + heading, style: 'groupHeading' },
+      ];
+      let totalsRow;
+
+      if (reportData.grouped.totals) {
+        totalsRow = [{ text: `Total: ${group.length}`, style: 'label' }];
       }
 
-      return { text };
-    })),
-  ];
+      for (let i=0; i<tableData.headings.length - 1; i++) {
+        headRow.push({});
+        if (totalsRow) {
+          totalsRow.push({});
+        }
+      }
+      tableRows = tableRows.concat(totalsRow ? [headRow, ...group, totalsRow] : [headRow, ...group]);
+    }
+  } else {
+    tableRows = buildStandardTableRows(tableData.data, tableData.headings);
+  }
 
   try {
     const document = await generateDocument({
       title: reportData.title,
       footerText: reportData.title,
       metadata: {
-        left: [...buildReportHeadings(reportData.headings.filter((v, index) => index % 2 === 1))],
-        right: [...buildReportHeadings(reportData.headings.filter((v, index) => index % 2 === 0))],
+        left: [...buildReportHeadings(reportData.headings.filter((v, index) => index % 2 === 0))],
+        right: [...buildReportHeadings(reportData.headings.filter((v, index) => index % 2 === 1))],
       },
       tables: [
         {
