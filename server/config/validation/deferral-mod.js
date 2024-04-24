@@ -6,7 +6,7 @@
   require('./custom-validation');
   require('./date-picker');
 
-  module.exports.deferralReasonAndDecision = function() {
+  module.exports.deferralReasonAndDecision = function(minDate, maxDate) {
     return {
       deferralReason: {
         presence: {
@@ -31,7 +31,10 @@
       },
       deferralDate: {
         updateJurorDeferralEnterDate: {},
-        genericDatePicker: {},
+        deferralDatePicker: {
+          minDate: minDate,
+          maxDate: maxDate,
+        },
       },
     };
   };
@@ -58,8 +61,8 @@
 
     if (attributes.deferralDateSelection === 'otherDate' && attributes.deferralDate === '') {
       return {
-        summary: 'Enter a date to defer to',
-        details: 'Enter a date to defer to',
+        summary: 'Enter a date to defer to1',
+        details: 'Enter a date to defer to1',
       };
     }
 

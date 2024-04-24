@@ -168,12 +168,17 @@
           processURL = app.namedRoutes.build('juror.update.deferral.post', { jurorNumber: req.params.jurorNumber });
           req.session.deferralReasons = data;
 
+          let minDate = Date.now();
+
+          req.session.minDate = minDate;
+
           return res.render('response/process/deferral.njk', {
             deferralDetails: tmpFields,
             deferralReasons: data,
             jurorNumber: req.params.jurorNumber,
             processURL : processURL,
             cancelUrl : cancelUrl,
+            hearingDate: dateFilter(minDate, null, 'DD/MM/YYYY'),
             errors: {
               message: '',
               count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -282,7 +287,8 @@
       delete req.session.formFields;
 
       validatorResult = validate(req.body,
-        require('../../../config/validation/deferral-mod.js').deferralReasonAndDecision(req.body));
+        require('../../../config/validation/deferral-mod.js').deferralReasonAndDecision(req.session.minDate, req.session.maxDate));
+
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
