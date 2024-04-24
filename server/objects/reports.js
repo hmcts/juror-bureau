@@ -30,13 +30,4 @@ const { DAO } = require('./dataAccessObject');
       return rp(payload);
     },
   };
-
-  module.exports.incompleteService = new DAO('/moj/reports/incomplete-service', {
-    get: function(options) {
-      const uri = `${this.resource}?location=${options.location}&cut-off-date=${options.date}`;
-
-      return { uri, transform: mapSnakeToCamel };
-    },
-  });
-
 })();

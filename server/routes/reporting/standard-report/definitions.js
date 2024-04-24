@@ -2,7 +2,6 @@
 (() => {
   'use strict';
 
-  const { incompleteService } = require('../../../objects/reports');
   const { isCourtUser } = require('../../../components/auth/user-type');
 
   // type IReportKey = {[key:string]: {
@@ -10,7 +9,7 @@
   //   apiKey: string,
   //   search?: 'poolNumber' | 'dateRange', // etc only poolNumber is currently implemented
   //   bespokeReport?: {
-  //     dao?: DAO,                         // custom data access object
+  //     dao?: (req) => Promise<any>,                                 // custom data access function
   //     insertColumns?: {[key: number]: [string, (data) => string]}, // column header, body
   //   }
   //   headings: string[], // corresponds to the ids provided for the headings in the API
@@ -98,11 +97,8 @@
       'incomplete-service': {
         title: 'Incomplete service',
         apiKey: 'IncompleteServiceReport',
+        search: 'date',
         bespokeReport: {
-          dao: (request) => incompleteService.get(request, {
-            location: request.session.locCode,
-            date: request.params.filter,
-          }),
           insertColumns: {
             5: ['', (data) => {
               return { html: `<a href=${
@@ -111,9 +107,6 @@
             }],
           },
         },
-        search: 'date',
-        searchTitle: 'Cut-off date',
-        searchHint: 'Report will show uncompleted jurors with next attendance dates before the cut-off date',
         headings: [
           'cutOffDate',
           'reportDate',

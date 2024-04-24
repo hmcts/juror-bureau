@@ -66,11 +66,6 @@ const { isCourtUser } = require('../../components/auth/user-type.js');
             req.session.user = tmpSession.user;
           });
 
-          // Hold onto a court location id for places that need one. Potentially a problem!
-          if (isCourtUser(req)) {
-            req.session.locCode = req.session.authentication.locCode;
-          }
-
           // We are changing the way launchdarkly works.... but need to keep the hasModAccess checks in
           // ... or else the app breaks :D
           req.session.hasModAccess = true;

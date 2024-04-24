@@ -67,7 +67,7 @@
 
   const standardReportGet = (app, reportKey, isPrint = false) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
-    const config = { reportType: reportType.apiKey };
+    const config = { reportType: reportType.apiKey, locCode: req.session.locCode };
     const filter = req.session.reportFilter;
 
     const buildStandardTableRows = function(tableData, tableHeadings) {
@@ -117,8 +117,12 @@
 
     delete req.session.reportFilter;
 
-    if (reportType.search && reportType.search === 'poolNumber') {
-      config.poolNumber = req.params.filter;
+    if (reportType.search) {
+      if (reportType.search === 'poolNumber') {
+        config.poolNumber = req.params.filter;
+      } else if (reportType.search === 'date') {
+        config.date = req.params.filter;
+      }
     }
 
     if (req.query.fromDate) {
