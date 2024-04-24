@@ -61,8 +61,8 @@
 
     if (attributes.deferralDateSelection === 'otherDate' && attributes.deferralDate === '') {
       return {
-        summary: 'Enter a date to defer to1',
-        details: 'Enter a date to defer to1',
+        summary: 'Enter a date to defer to',
+        details: 'Enter a date to defer to',
       };
     }
 

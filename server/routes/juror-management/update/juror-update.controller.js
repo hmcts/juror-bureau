@@ -168,7 +168,7 @@
           processURL = app.namedRoutes.build('juror.update.deferral.post', { jurorNumber: req.params.jurorNumber });
           req.session.deferralReasons = data;
 
-          let minDate = Date.now();
+          let minDate = req.session.jurorCommonDetails.startDate;
 
           req.session.minDate = minDate;
 
