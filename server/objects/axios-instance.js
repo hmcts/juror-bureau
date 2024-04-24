@@ -58,16 +58,16 @@ module.exports.axiosClient = function(method, url, jwtToken, variables) {
   if (variables && variables.body) {
     return client[method](url, variables.body, {
       headers: {
-        ...variables.headers,
         Authorization: jwtToken,
+        ...variables.headers,
       },
     });
   }
 
   return client[method](url, {
     headers: {
-      ...(variables && variables.headers),
       Authorization: jwtToken,
+      ...(variables && variables.headers),
     },
   });
 };

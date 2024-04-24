@@ -4,6 +4,7 @@
   module.exports.responses = require('./responses').object;
 
   // new DAOs
+  const authentication = require('./authentication');
   const requestPool = require('./request-pool');
   const panel = require('./panel');
   const jurorsOnTrial = require('./jurors-on-trial');
@@ -15,6 +16,7 @@
   const createTrial = require('./create-trial');
 
   module.exports = {
+    ...authentication,
     ...requestPool,
     ...panel,
     ...jurorsOnTrial,

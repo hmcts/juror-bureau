@@ -1,48 +1,71 @@
 /* eslint-disable strict */
-
 const secretsConfig = require('config');
-const axios = require('axios');
+const jwt = require('jsonwebtoken');
+const { authCourtsDAO, jwtAuthDAO } = require('../../objects');
 
-module.exports.getAzureAuth = function(app) {
-  return function(req, res) {
-    const clientId = secretsConfig.get('secrets.juror.azure-app-id');
-    const tenantId = secretsConfig.get('secrets.juror.azure-tenant-id');
-    const azureAuthUrl = 'https://login.microsoftonline.com/' + tenantId + '/oauth2/v2.0/authorize';
+const { makeManualError } = require('../../lib/mod-utils');
 
-    // return res.redirect(azureAuthUrl + '?client_id=' + clientId + '&scope=openid' + '&response_type=code');
-    return res.redirect(azureAuthUrl + '?client_id=' + clientId + '&scope=openid+email+https://graph.microsoft.com/User.Read' + '&response_type=code');
-  };
-};
-
-module.exports.getAzureCallback = function(app) {
+module.exports.postDevEmailAuth = function(app) {
   return async function(req, res) {
-    const code = req.query.code;
-    const clientId = secretsConfig.get('secrets.juror.azure-app-id');
-    const clientSecret = secretsConfig.get('secrets.juror.azure-app-secret');
-    const tenantId = secretsConfig.get('secrets.juror.azure-tenant-id');
+    if (!req.body.email) {
+      req.session.errors = makeManualError('email', 'Email is required for dev email auth');
 
-    const azureTokenUrl = 'https://login.microsoftonline.com/' + tenantId + '/oauth2/v2.0/token';
+      return res.redirect(app.namedRoutes.build('login.get'));
+    }
 
-    const authResponse = await axios.post(azureTokenUrl, {
-      'client_id': clientId,
-      scope: 'openid',
-      code: code,
-      'redirect_uri': 'http://localhost:3000/auth/callback',
-      'grant_type': 'authorization_code',
-      'client_secret': clientSecret,
-    }, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    });
-    // https://graph.microsoft.com/v1.0/me?$select=displayName,mail,mailboxSettings/userPrincipalName%22
-    const response = await axios.get('https://graph.microsoft.com/v1.0/me', {
-      headers: {
-        Authorization: 'Bearer ' + authResponse.data.access_token,
-      },
-    });
+    const loginRedirect = app.namedRoutes.build('login.get');
 
-    return res.send(response.data);
-    // return res.redirect('/auth/azure');
+    const signingKey = secretsConfig.get('secrets.juror.bureau-jwtNoAuthKey');
+    const expiresIn = secretsConfig.get('secrets.juror.bureau-jwtTTL');
+
+    const authToken = jwt.sign({}, signingKey, { expiresIn });
+
+    // this is the auth token for transporting the email payload only
+    req.session.authToken = authToken;
+
+    const payload = { email: req.body.email };
+    let courtsList = [];
+
+    try {
+      const courtsResponse = await authCourtsDAO.post(req, payload);
+
+      // delete headers if they exist
+      delete courtsResponse._headers;
+
+      courtsList = Object.values(courtsResponse);
+
+      if (!courtsList.length) {
+        req.session.errors = makeManualError('email', 'No courts found for this email');
+
+        return res.redirect(loginRedirect);
+      }
+
+    } catch (err) {
+      req.session.errors = makeManualError('email', 'Something went wrong with dev email auth');
+
+      return res.redirect(loginRedirect);
+    }
+
+    try {
+      if (courtsList.length === 1) {
+        const locCode = courtsList[0].loc_code;
+
+        const jwtResponse = await jwtAuthDAO.post(req, locCode, payload);
+
+        // delete headers if they exist
+        delete jwtResponse._headers;
+
+        req.session.authKey = secretsConfig.get('secrets.juror.bureau-jwtKey');
+        req.session.authToken = jwtResponse.jwt;
+
+        return res.redirect(app.namedRoutes.build('homepage.get'));
+      }
+
+      console.log(courtsList);
+    } catch (err) {
+      req.session.errors = makeManualError('email', 'Something went wrong with dev email auth');
+
+      return res.redirect(loginRedirect);
+    }
   };
 };

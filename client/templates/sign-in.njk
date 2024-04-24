@@ -22,12 +22,12 @@
 
     {{ govukButton({
       text: "Sign in",
-      href: url("authentication.azure.get"),
+      href: "#",
       classes: "govuk-button--start"
     }) }}
 
     {% if env === "development" %}
-      <form action="{{ url('login.post') }}" method="POST" id="login">
+      <form action="{{ url('authentication.email.dev') }}" method="POST" id="emailAuth">
 
         {{ govukInput({
           label: {
@@ -41,8 +41,10 @@
 
         {{ govukButton({
           text: "Sign in with email",
-          href: "/login",
-          classes: "govuk-button--start"
+          classes: "govuk-button--start",
+          attributes: {
+            id: "signInEmailButton"
+          }
         }) }}
 
         {{ csrfProtection(csrftoken) }}

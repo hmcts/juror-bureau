@@ -6,10 +6,11 @@
 ;(function(){
   'use strict';
 
-  var validate = require('validate.js')
-    , secretsConfig = require('config')
-    , authComponent = require('../../components/auth')
-    , msgMappings = require('../../components/errors/message-mapping');
+  const _ = require('lodash');
+  const validate = require('validate.js');
+  const secretsConfig = require('config');
+  const authComponent = require('../../components/auth');
+  const msgMappings = require('../../components/errors/message-mapping');
 
   module.exports.index = function() {
     return function(req, res) {
@@ -26,12 +27,16 @@
         authComponent.createJWTToken(req, {}, secretsConfig.get('secrets.juror.bureau-jwtNoAuthKey'));
       }
 
+      const tmpErrors = _.clone(req.session.errors);
+
+      delete req.session.errors;
+
       // Render login page with any errors
       return res.render('sign-in.njk', {
         errors: {
           title: 'Please check the form',
-          count: typeof req.session.errors !== 'undefined' ? Object.keys(req.session.errors).length : 0,
-          items: req.session.errors,
+          count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+          items: tmpErrors,
         },
       });
     };
