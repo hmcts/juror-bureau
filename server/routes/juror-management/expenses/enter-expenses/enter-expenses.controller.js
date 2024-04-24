@@ -526,8 +526,6 @@
   function buildDataPayload(body, nonAttendanceDay) {
     let data = {};
 
-    console.log('\n\n', body, '\n\n');
-
     if (nonAttendanceDay) {
       data = {
         'payment_method': body.paymentMethod,
