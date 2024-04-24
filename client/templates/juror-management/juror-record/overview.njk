@@ -269,9 +269,9 @@
           <h2 id="additionalRequirementsLabel" class="govuk-heading-m">Additional requirements</h2>
         </div>
 
-        {% set specialNeedDescription = juror.specialNeedDescription %}
-        {% if juror.specialNeed !== ' '%}
-          {% set specialNeedDescription = juror.specialNeed + " - " + specialNeedDescription %}
+        {% set reasonableAdjustmentsDesc = juror.specialNeedDescription if juror.specialNeedDescription else "None" %}
+        {% if juror.specialNeed !== " " %}
+          {% set reasonableAdjustmentsDesc = juror.specialNeed + " - " + reasonableAdjustmentsDesc %}
         {% endif %}
 
         {{ govukSummaryList({
@@ -282,17 +282,10 @@
                 text: "Reasonable adjustments"
               },
               value: {
-                html: "<p class='govuk-body govuk-!-font-weight-bold'>" + specialNeedDescription + "</p> <p class='govuk-body'>" + juror.specialNeedMessage + "</p>"
+                html: ("<p class='govuk-body govuk-!-font-weight-bold'>" + reasonableAdjustmentsDesc + "</p>" 
+                  + ("<p class='govuk-body'>" + juror.specialNeedMessage + "</p>" if juror.specialNeedMessage)) | safe
               }
-            } if juror.specialNeed and juror.specialNeedMessage,
-            {
-              key: {
-                text: "Reasonable adjustments"
-              },
-              value: {
-                html: "<p class='govuk-body govuk-!-font-weight-bold'>" + specialNeedDescription + "</p>"
-              }
-            } if juror.specialNeed and not juror.specialNeedMessage,
+            } if juror.specialNeed,
             {
               key: {
                 text: "Optic reference"
