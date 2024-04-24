@@ -526,6 +526,8 @@
   function buildDataPayload(body, nonAttendanceDay) {
     let data = {};
 
+    console.log('\n\n', body, '\n\n');
+
     if (nonAttendanceDay) {
       data = {
         'payment_method': body.paymentMethod,
@@ -551,7 +553,8 @@
           'traveled_by_car': false,
           'traveled_by_motorcycle': false,
           'traveled_by_bicycle': false,
-          'jurors_taken_by_car': body.passengers,
+          'jurors_taken_by_car': body.carPassengers,
+          'jurors_taken_by_motorcycle': body.motoPassengers,
           'miles_traveled': body.milesTravelled,
           parking: body.parking,
           'public_transport': body.publicTransport,
@@ -598,7 +601,8 @@
         'totalTravelTime-minute': totalTravelTimeMinute,
         payAttendance: data.time.pay_attendance,
         travelType: data.travelType,
-        passengers: data.travel.jurors_taken_by_car,
+        carPassengers: data.travel.jurors_taken_by_car,
+        motoPassengers: data.travel.jurors_taken_by_motorcycle,
         milesTravelled: data.travel.miles_traveled,
         parking: data.travel.parking,
         publicTransport: data.travel.public_transport,
