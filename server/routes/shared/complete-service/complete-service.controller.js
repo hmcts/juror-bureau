@@ -1,14 +1,15 @@
 (() => {
   'use strict';
 
-  const _ = require('lodash'),
-    { validate } = require('validate.js')
-    , completeServiceValidator = require('../../../config/validation/complete-service')
-    , { completeService } = require('../../../objects/complete-service')
-    , { makeDate, dateFilter } = require('../../../components/filters');
+  const _ = require('lodash');
+  const { validate } = require('validate.js');
+  const completeServiceValidator = require('../../../config/validation/complete-service');
+  const { completeService } = require('../../../objects/complete-service');
+  const { makeDate, dateFilter } = require('../../../components/filters');
+  const { record } = require('../../../objects/juror-record');
 
 
-  module.exports.getCompleteServiceConfirm = (app) => (req, res) => {
+  module.exports.getCompleteServiceConfirm = (app) => async (req, res) => {
     const tmpErrors = _.cloneDeep(req.session.errors);
     const tmpFields = _.cloneDeep(req.session.formFields) || {};
     let cancelUrl
@@ -27,7 +28,19 @@
       });
     }  else if (typeof req.params.jurorNumber !== 'undefined') {
       req.session.selectedJurors = req.params.jurorNumber;
-      const startDate = req.session.jurorCommonDetails.startDate;
+
+      if (!req.session.jurorCommonDetails) {
+        req.session.jurorCommonDetails = (await record.get(
+          require('request-promise'),
+          app,
+          req.session.authToken,
+          'detail',
+          req.params['jurorNumber'],
+          req.session.locCode,
+        )).data.commonDetails;
+      }
+
+      const { startDate } = req.session.jurorCommonDetails;
 
       minCompletionDate = dateFilter(makeDate(startDate), null, 'DD/MM/YYYY');
       cancelUrl = app.namedRoutes.build('juror.update.get', {
