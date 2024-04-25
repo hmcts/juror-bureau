@@ -1,5 +1,5 @@
 /* eslint-disable strict */
-const { dateFilter, capitalizeFully } = require('../../../components/filters');
+const { dateFilter, capitalizeFully, toSentenceCase } = require('../../../components/filters');
 
 const tableDataMappers = {
   String: (data) => capitalizeFully(data),

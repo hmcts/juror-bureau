@@ -89,25 +89,25 @@
             output = output.toUpperCase();
           }
 
+          if (header.id === 'contact_details') {
+            const details = output.split(', ');
+            let html = '';
+  
+            details.forEach((element) => {
+              html = html
+                + `${
+                  element
+                }<br>`;
+            });
+            return ({
+              html: `${html}`,
+            });
+          }
+
           return ({
             text: output ? output : '-',
           });
         });
-
-        if (header.id === 'contact_details') {
-          const details = output.split(', ');
-          let html = '';
-
-          details.forEach((element) => {
-            html = html
-              + `${
-                element
-              }<br>`;
-          });
-          return ({
-            html: `${html}`,
-          });
-        }
 
         if (reportType.bespokeReport && reportType.bespokeReport.insertColumns) {
           Object.keys(reportType.bespokeReport.insertColumns).map((key) => {
