@@ -21,7 +21,7 @@
         sampleRow,
         backLinkUrl: {
           built: true,
-          url: app.namedRoutes.build('reports.get'),
+          url: app.namedRoutes.build('reports.reports.get'),
         },
       });
     };
