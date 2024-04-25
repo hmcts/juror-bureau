@@ -51,7 +51,7 @@
         {% if problemList.noActiveRecord|length%}
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
-                <h1 class="govuk-heading-m">No longer in the original pool</h1>
+                <h2 class="govuk-heading-m">No longer in the original pool</h2>
                 <p class="govuk-body">The following jurors are no longer in the original pool. Another user may have moved them before you were able to.</p>
                 <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-7">
                     {{ govukTable({
@@ -79,7 +79,7 @@
         {% if problemList.ageIneligible|length%}
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
-                <h1 class="govuk-heading-m">Ineligible due to age</h1>
+                <h2 class="govuk-heading-m">Ineligible due to age</h2>
                 <p class="govuk-body">The following jurors cannot be moved because they'll be 76 years old by the new date and no longer eligible for jury service.</p>
                 <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-7">
                     {{ govukTable({
@@ -107,7 +107,7 @@
         {% if problemList.invalidStatus|length%}
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
-                <h1 class="govuk-heading-m">Cannot be moved due to juror status</h1>
+                <h2 class="govuk-heading-m">Cannot be moved due to juror status</h2>
                 <p class="govuk-body">You can only move jurors with a responded or summoned status. The following jurors have a different status and cannot be moved.</p>
                 <div class="govuk-grid-column-full govuk-!-margin-bottom-7">
                     {{ govukTable({

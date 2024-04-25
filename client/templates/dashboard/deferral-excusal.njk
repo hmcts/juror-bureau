@@ -20,17 +20,15 @@
       <h1 class="govuk-heading-xl">
         <span class="govuk-caption-xl">Dashboard</span>
         Juror Deferrals &amp; Excusals
-        
-        <p class="govuk-body-l"><br/>This dashboard displays information about juror deferrals and excusals.</p>
-
       </h1>
 
-      <hr class="thickLine"/>
+      <p class="govuk-body-l"><br/>This dashboard displays information about juror deferrals and excusals.</p>
 
+      <hr class="thickLine"/>
     </div>
   </div>
 
-  <h1 class="govuk-heading-m">Configure Report</h1>
+  <h2 class="govuk-heading-m">Configure Report</h2>
 
   {# Date Range selection / submit #}
   <div class="govuk-grid-row">
@@ -230,10 +228,9 @@
           }) }}
 
         </div>
-
+        
       </div>
     </div>
-
 
   {% else %}
 
@@ -245,17 +242,13 @@
 
   {% endif %}
 
-
-
 {% endblock %} <!-- content -->
 
 {% block body_end %}
 
  {{super()}}
 
-
 <script>
-
   var calYearDropdown = document.getElementById("calYear");
   var finYearDropdown = document.getElementById("finYear");
   var startDate = document.getElementById("startDate");
@@ -282,8 +275,6 @@
     }
   });
 
-  
-
   selectAllButton.addEventListener("click", function(e) {
 
       e.preventDefault();
@@ -305,9 +296,6 @@
       }
       
   });
-  
-
-
 </script>
 
 {% endblock %} <!-- body_end -->
