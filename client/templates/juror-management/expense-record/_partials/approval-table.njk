@@ -76,7 +76,10 @@
 
       {% endfor %}
 
-      <tr class="govuk-table__row mod-highlight-table-row__grey">
+    {% endset %}
+
+    {% set tableFootHtml %}
+      <tr id="totals-row" class="govuk-table__row mod-highlight-table-row__grey">
         <td class="govuk-table__cell"></td>
         <td class="govuk-table__cell"><b>Totals</b></td>
         <td class="govuk-table__cell"></td>
@@ -96,13 +99,13 @@
         {% endif %}
         <td class="govuk-table__cell"></td>
       </tr>
-
     {% endset %}
 
     {{ consolidatedExpensesTable({
       sorted: true,
       headings: headingsHtml,
       rows: rowsHtml,
+      foot: tableFootHtml,
       totalExpenses: data.total.total_attendances,
       totalCheckedExpenses: 0,
       errors: errors
