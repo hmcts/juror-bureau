@@ -50,6 +50,7 @@
 
     require('../incomplete-service')(app);
     standardReportRoutes(app, 'incomplete-service');
+    standardReportRoutes(app, 'pool-status');
   };
 
 })();
