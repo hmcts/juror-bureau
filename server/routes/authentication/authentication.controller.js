@@ -7,7 +7,7 @@ const { makeManualError } = require('../../lib/mod-utils');
 
 module.exports.postDevEmailAuth = function(app) {
   return async function(req, res) {
-    if (!req.body.email) {
+    if (!req.body.email && !req.session.email) {
       req.session.errors = makeManualError('email', 'Email is required for dev email auth');
 
       return res.redirect(app.namedRoutes.build('login.get'));
@@ -23,7 +23,13 @@ module.exports.postDevEmailAuth = function(app) {
     // this is the auth token for transporting the email payload only
     req.session.authToken = authToken;
 
-    const payload = { email: req.body.email };
+    let email = req.body.email;
+
+    if (!email) {
+      email = req.session.email;
+    }
+
+    const payload = { email };
     let courtsList = [];
 
     try {
@@ -46,6 +52,9 @@ module.exports.postDevEmailAuth = function(app) {
       return res.redirect(loginRedirect);
     }
 
+    req.session.courtsList = courtsList;
+    req.session.email = email;
+
     try {
       if (courtsList.length === 1) {
         const locCode = courtsList[0].loc_code;
@@ -60,9 +69,6 @@ module.exports.postDevEmailAuth = function(app) {
 
         return res.redirect(app.namedRoutes.build('homepage.get'));
       }
-
-      req.session.courtsList = courtsList;
-      req.session.email = req.body.email;
 
       return res.redirect(app.namedRoutes.build('authentication.courts-list.get'));
     } catch (err) {
@@ -81,7 +87,7 @@ module.exports.getCourtsList = function() {
 
     res.render('authentication/courts-list.njk', {
       courtsList: req.session.courtsList,
-      email: req.session.email,
+      email: req.session.email, // we'll keep the email in the session object
       errors: {
         title: 'Please check the form',
         count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -123,5 +129,12 @@ function doLogin(req) {
 
     req.session.authKey = secretsConfig.get('secrets.juror.bureau-jwtKey');
     req.session.authToken = jwtResponse.jwt;
+    req.session.hasModAccess = true; // legacy purposes
+
+    // there will always be a court selected here
+    req.session.selectedCourt = req.session.courtsList.find(court => court.loc_code === locCode);
+
+    // delete the courts list if successful
+    delete req.session.courtsList;
   };
 };
