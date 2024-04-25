@@ -17,7 +17,7 @@
 
       return res.render('reporting/standard-reports/search-by/postponed.njk', {
         processUrl: app.namedRoutes.build('reports.postponed.search.post'),
-        cancelUrl: app.namedRoutes.build('reports.get'),
+        cancelUrl: app.namedRoutes.build('reports.reports.get'),
         tmpBody,
         errors: {
           title: 'Please check the form',
