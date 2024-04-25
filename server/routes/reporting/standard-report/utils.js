@@ -4,11 +4,24 @@ const { dateFilter, capitalizeFully } = require('../../../components/filters');
 const tableDataMappers = {
   String: (data) => capitalizeFully(data),
   LocalDate: (data) => dateFilter(data, 'YYYY-mm-dd', 'ddd D MMM YYYY'),
-  List: (data) => Object.values(data).reduce(
-    (acc, current) => {
-      return acc + ', ' + current;
-    },
-  ),
+  List: (data) => {
+    if (Object.keys(data)[0] === 'jurorAddressLine1'){
+      return Object.values(data).reduce(
+        (acc, current) => {
+          return acc + ', ' + current;
+        },
+      );
+    }
+    let listText = '';
+
+    Object.keys(data).forEach((element, index) => {
+      listText = listText
+        + `${toSentenceCase(element)}: ${data[element]}`
+        + `${index === Object.keys(data).length - 1 ? '' : ', '}`;
+    });
+    return listText;
+  },
+  Long: (data) => data.toString(),
 };
 
 const headingDataMappers ={
@@ -26,7 +39,7 @@ const headingDataMappers ={
     return time + 'am';
   },
   Integer: (data) => data,
-  Long: (data) => data,
+  Long: (data) => data.toString(),
 };
 
 const constructPageHeading = (headingType, data) => {

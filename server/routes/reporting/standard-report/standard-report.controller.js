@@ -94,6 +94,21 @@
           });
         });
 
+        if (header.id === 'contact_details') {
+          const details = output.split(', ');
+          let html = '';
+
+          details.forEach((element) => {
+            html = html
+              + `${
+                element
+              }<br>`;
+          });
+          return ({
+            html: `${html}`,
+          });
+        }
+
         if (reportType.bespokeReport && reportType.bespokeReport.insertColumns) {
           Object.keys(reportType.bespokeReport.insertColumns).map((key) => {
             row.splice(key, 0, reportType.bespokeReport.insertColumns[key][1](data));
@@ -191,13 +206,15 @@
         tableRows = buildStandardTableRows(tableData.data, tableData.headings);
       }
 
-      const pageHeadings = reportType.headings.map(heading => constructPageHeading(heading, headings));
+      const leftPageHeadings = reportType.headings.left.map(heading => constructPageHeading(heading, headings));
+      const rightPageHeadings = reportType.headings.right.map(heading => constructPageHeading(heading, headings));
 
       return res.render('reporting/standard-reports/standard-report', {
         title: reportType.title,
         tableRows,
         tableHeaders,
-        pageHeadings,
+        leftPageHeadings,
+        rightPageHeadings,
         reportKey,
         grouped: reportType.grouped,
         filter: req.params.filter,
