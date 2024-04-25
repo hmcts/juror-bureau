@@ -1,6 +1,11 @@
-{% set passengersError = undefined %}
-{% if errors.items["passengers"] %}
-  {% set passengersError = { text: errors.items["passengers"][0].details } %}
+{% set carPassengersError = undefined %}
+{% if errors.items["carPassengers"] %}
+  {% set carPassengersError = { text: errors.items["carPassengers"][0].details } %}
+{% endif %}
+
+{% set motoPassengersError = undefined %}
+{% if errors.items["motoPassengers"] %}
+  {% set motoPassengersError = { text: errors.items["motoPassengers"][0].details } %}
 {% endif %}
 
 {% set milesTravelledError = undefined %}
@@ -30,14 +35,30 @@
 
   {% set carConditionalHTML %}
     {{ govukInput({
-      id: "passengers",
-      name: "passengers",
+      id: "carPassengers",
+      name: "carPassengers",
       label: {
         text: "Number of other jurors taken as passengers"
       },
       classes: "govuk-input--width-2",
-      value: tmpBody.passengers,
-      errorMessage: passengersError,
+      value: tmpBody.carPassengers,
+      errorMessage: carPassengersError,
+      attributes: {
+        "data-summary-detectable": ""
+      }
+    }) }}
+  {% endset %}
+
+  {% set motoConditionalHTML %}
+    {{ govukInput({
+      id: "motoPassengers",
+      name: "motoPassengers",
+      label: {
+        text: "Number of other jurors taken as passengers"
+      },
+      classes: "govuk-input--width-2",
+      value: tmpBody.motoPassengers,
+      errorMessage: motoPassengersError,
       attributes: {
         "data-summary-detectable": ""
       }
@@ -68,6 +89,9 @@
       {
         value: "motorcycle",
         text: "Motorcycle",
+        conditional: {
+          html: motoConditionalHTML
+        },
         checked: expensesData.travel.traveled_by_motorcycle,
         attributes: {
           "data-summary-detectable": ""

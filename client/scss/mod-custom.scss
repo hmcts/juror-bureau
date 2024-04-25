@@ -76,12 +76,12 @@
 .mod-button-group {
   display: flex;
   align-items: center;
-  font-size: 16px;
+  @include govuk-font($size: 16);
   margin-top: govuk-spacing(3);
   gap: govuk-spacing(2);
 
   @include govuk-media-query($from: desktop) {
-    font-size: 19px;
+    @include govuk-font($size: 19);
     margin-top: govuk-spacing(0);
   }
 }
@@ -322,7 +322,7 @@ dt.govuk-summary-list-mod {
   }
 }
 .mod-center-table-data {
-    text-align: center;
+  text-align: center;
 }
 
 .mod-middle-align {
@@ -330,9 +330,9 @@ dt.govuk-summary-list-mod {
 }
 
 .mod-horizontal-scroll-table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
 }
 
 .mod-hidden {
@@ -429,19 +429,23 @@ dt.govuk-summary-list-mod {
 
 .fixTableHead { 
   overflow-y: auto; 
-  height: 75vh; 
+  height: 75vh;
+
   thead th { 
     position: sticky; 
     top: 0; 
     z-index: 1;
-  } 
+  }
+
   table { 
     border-collapse: collapse;         
     width: 100%; 
-  } 
+  }
+
   th { 
     background: govuk-colour("white"); 
-  } 
+  }
+
   .govuk-checkboxes__item {
     z-index: 0;
   }
@@ -465,4 +469,8 @@ dt.govuk-summary-list-mod {
       font-weight: bold;
     }
   }
+}
+
+.mod-table-no-border {
+  border-bottom: 0px;
 }

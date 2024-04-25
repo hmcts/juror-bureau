@@ -1,53 +1,71 @@
 /* eslint-disable strict */
 const { generateDocument } = require('../../../lib/reports/single-generator');
-const { reportKeys, headingDataMappers, tableDataMappers } = require('./utils');
+const { reportKeys, tableDataMappers, constructPageHeading } = require('./utils');
 const { snakeToCamel } = require('../../../lib/mod-utils');
 
 async function standardReportPrint(app, req, res, reportKey, data) {
-  const reportData = reportKeys[reportKey];
+  const reportData = reportKeys(app, req)[reportKey];
 
   const { headings, tableData } = data;
 
   const buildReportHeadings = (pageHeadings) => pageHeadings.map(heading => {
-    if (heading === 'reportDate') {
-      return { key: 'Report created', value: headingDataMappers.LocalDate(headings.reportCreated.value) };
-    } else if (heading === 'reportTime') {
-      return { key: 'Time created', value: headingDataMappers.timeFromISO(headings.reportCreated.value) };
-    }
+    const headingData = constructPageHeading(heading, headings);
 
-    if (headings[heading].dataType === 'LocalDate') {
-      return { key: headings[heading].displayName, value: headingDataMappers.LocalDate(headings[heading].value) };
-    }
-
-    const _key = headings[heading].displayName;
-    const _value = headings[heading].value;
-
-    return { key: _key, value: _value };
+    return { key: headingData.title, value: headingData.data };
   });
 
   const buildTableHeading = (tableHeadings) => tableHeadings.map(heading => {
     return { text: heading.name, style: 'label' };
   });
 
-  const tableRows = [
-    ...tableData.data.map(row => tableData.headings.map(header => {
-      let text = tableDataMappers[header.dataType](row[snakeToCamel(header.id)]);
+  const buildStandardTableRows = function(tableData, tableHeadings) {
+    return [
+      ...tableData.map(row => tableHeadings.map(header => {
+        let text = tableDataMappers[header.dataType](row[snakeToCamel(header.id)]);
 
-      if (header.id === 'postcode') {
-        text = text.toUpperCase();
+        if (header.id === 'juror_postcode') {
+          text = text.toUpperCase();
+        }
+
+        return { text };
+      })),
+    ];
+  };
+
+  let tableRows = [];
+
+  if (reportData.grouped) {
+    for (const [heading, rowData] of Object.entries(tableData.data)) {
+
+      const group = buildStandardTableRows(rowData, tableData.headings);
+      const headRow = [
+        { text: (reportData.grouped.headings.prefix || '') + heading, style: 'groupHeading' },
+      ];
+      let totalsRow;
+
+      if (reportData.grouped.totals) {
+        totalsRow = [{ text: `Total: ${group.length}`, style: 'label' }];
       }
 
-      return { text };
-    })),
-  ];
+      for (let i=0; i<tableData.headings.length - 1; i++) {
+        headRow.push({});
+        if (totalsRow) {
+          totalsRow.push({});
+        }
+      }
+      tableRows = tableRows.concat(totalsRow ? [headRow, ...group, totalsRow] : [headRow, ...group]);
+    }
+  } else {
+    tableRows = buildStandardTableRows(tableData.data, tableData.headings);
+  }
 
   try {
     const document = await generateDocument({
       title: reportData.title,
       footerText: reportData.title,
       metadata: {
-        left: [...buildReportHeadings(reportData.pageHeadings.left)],
-        right: [...buildReportHeadings(reportData.pageHeadings.right)],
+        left: [...buildReportHeadings(reportData.headings.filter((v, index) => index % 2 === 0))],
+        right: [...buildReportHeadings(reportData.headings.filter((v, index) => index % 2 === 1))],
       },
       tables: [
         {
@@ -61,7 +79,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
     res.contentType('application/pdf');
     return res.send(document);
   } catch (err) {
-    app.logger.crit('Something went wrong when generatig the report', {
+    app.logger.crit('Something went wrong when generating the report', {
       auth: req.session.authentication,
       jwt: req.session.authToken,
       error: (typeof err.error !== 'undefined') ? err.error : err.toString(),

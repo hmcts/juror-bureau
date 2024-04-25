@@ -222,4 +222,6 @@
       });
   }
 
+  module.exports.trialPayloadBuilder = trialPayloadBuilder;
+
 })();

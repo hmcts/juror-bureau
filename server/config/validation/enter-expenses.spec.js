@@ -16,7 +16,8 @@
       var mockRequest = {
         'totalTravelTime-hour': '',
         'totalTravelTime-minute': '',
-        passengers: '',
+        carPassengers: '',
+        motoPassengers: '',
         milesTravelled: '',
         parking: '',
         publicTrabsport: '',
@@ -37,7 +38,8 @@
       var mockRequest = {
         'totalTravelTime-hour': '1',
         'totalTravelTime-minute': '25',
-        passengers: '1',
+        carPassengers: '1',
+        motoPassengers: '1',
         milesTravelled: '3',
         parking: '1.20',
         publicTransport: '4.50',
@@ -58,7 +60,8 @@
       var mockRequest = {
         'totalTravelTime-hour': '0',
         'totalTravelTime-minute': '65',
-        passengers: '1',
+        carPassengers: '1',
+        motoPassengers: '1',
         milesTravelled: '3',
         parking: '1.20',
         publicTransport: '4.50',
@@ -81,7 +84,8 @@
       var mockRequest = {
         'totalTravelTime-hour': '%^1',
         'totalTravelTime-minute': '2lsd3',
-        passengers: '!1',
+        carPassengers: '!1',
+        motoPassengers: 'a1',
         milesTravelled: '3$',
         parking: '1.20^',
         publicTransport: '4&&.50',
@@ -104,8 +108,12 @@
       expect(validatorResult['totalTravelTime-minute'][0].details).to.equal('Total travel time can only include numbers');
 
       expect(validatorResult).to.be.an('object');
-      expect(validatorResult.passengers[0]).to.have.ownPropertyDescriptor('details');
-      expect(validatorResult.passengers[0].details).to.equal('Number of other jurors taken as passengers can only include numbers');
+      expect(validatorResult.carPassengers[0]).to.have.ownPropertyDescriptor('details');
+      expect(validatorResult.carPassengers[0].details).to.equal('Number of other jurors taken as passengers can only include numbers');
+
+      expect(validatorResult).to.be.an('object');
+      expect(validatorResult.motoPassengers[0]).to.have.ownPropertyDescriptor('details');
+      expect(validatorResult.motoPassengers[0].details).to.equal('Number of other jurors taken as passengers can only include numbers');
 
       expect(validatorResult).to.be.an('object');
       expect(validatorResult.milesTravelled[0]).to.have.ownPropertyDescriptor('details');
@@ -143,7 +151,8 @@
       var mockRequest = {
         'totalTravelTime-hour': '1',
         'totalTravelTime-minute': '25',
-        passengers: '1',
+        carPassengers: '1',
+        motoPassengers: '1',
         milesTravelled: '3',
         parking: '1.20',
         publicTransport: '4.50',
@@ -166,7 +175,8 @@
       var mockRequest = {
         'totalTravelTime-hour': '1',
         'totalTravelTime-minute': '25',
-        passengers: '1',
+        carPassengers: '1',
+        motoPassengers: '1',
         milesTravelled: '3.50',
         parking: '1.20',
         publicTransport: '4.50',

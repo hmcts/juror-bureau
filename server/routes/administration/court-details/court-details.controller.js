@@ -23,9 +23,6 @@
       ])
         .then(([{ response: courtDetails, headers }, courtrooms]) => {
 
-          console.log(courtDetails);
-          console.log(courtrooms);
-
           req.session.courtDetails = {
             etag: headers.etag,
           };

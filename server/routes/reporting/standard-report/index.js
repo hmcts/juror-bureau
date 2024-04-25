@@ -8,30 +8,33 @@
     standardReportGet,
     standardReportPost,
   } = require('./standard-report.controller');
+  const { reportKeys } = require('./utils');
 
   const standardReportRoutes = (app, key) => {
-    app.get(`/reporting/${key}`,
-      `${key}.filter.get`,
-      auth.verify,
-      standardFilterGet(app, key));
+    if (reportKeys(app)[key].search) {
+      app.get(`/reporting/${key}`,
+        `reports.${key}.filter.get`,
+        auth.verify,
+        standardFilterGet(app, key));
 
-    app.post(`/reporting/${key}`,
-      `${key}.filter.post`,
-      auth.verify,
-      standardFilterPost(app, key));
+      app.post(`/reporting/${key}`,
+        `reports.${key}.filter.post`,
+        auth.verify,
+        standardFilterPost(app, key));
+    }
 
     app.get(`/reporting/${key}/report/:filter`,
-      `${key}.report.get`,
+      `reports.${key}.report.get`,
       auth.verify,
       standardReportGet(app, key));
 
     app.post(`/reporting/${key}/report`,
-      `${key}.report.post`,
+      `reports.${key}.report.post`,
       auth.verify,
       standardReportPost(app, key));
 
     app.get(`/reporting/${key}/report/:filter/print`,
-      `${key}.report.print`,
+      `reports.${key}.report.print`,
       auth.verify,
       standardReportGet(app, key, true));
   };
@@ -40,6 +43,9 @@
   module.exports = function(app) {
     standardReportRoutes(app, 'next-due');
     standardReportRoutes(app, 'undelivered');
+    standardReportRoutes(app, 'non-responded');
+    standardReportRoutes(app, 'postponed-pool');
+    standardReportRoutes(app, 'postponed-date');
   };
 
 })();

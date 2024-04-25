@@ -66,22 +66,22 @@
 
     , attendanceDetails = {
       resource: 'moj/juror-record/attendance-detail',
-      get: function(rp, app, jwtToken, jurorNumber, poolNumber) {
+      get: function(rp, app, jwtToken, locCode, jurorNumber) {
         const reqOptions = _.clone(options);
 
         reqOptions.headers.Authorization = jwtToken;
         reqOptions.uri = urljoin(reqOptions.uri,
           this.resource,
-          jurorNumber,
-          poolNumber);
+          locCode,
+          jurorNumber);
 
         app.logger.info('Sending request to API: ', {
           uri: reqOptions.uri,
           headers: reqOptions.headers,
           method: reqOptions.method,
           data: {
+            locCode,
             jurorNumber,
-            poolNumber,
           },
         });
 
@@ -403,9 +403,9 @@
 
   // new DAO
 
-  module.exports.expensesSummaryDAO = new DAO('moj/expenses/summary/totals', {
-    get: function(jurorNumber, poolNumber) {
-      return { uri: urljoin(this.resource, jurorNumber.toString(), poolNumber.toString()) };
+  module.exports.expensesSummaryDAO = new DAO('moj/expenses/{locCode}/{jurorNumber}/summary/totals', {
+    get: function(jurorNumber, locCode) {
+      return { uri: urljoin(this.resource.replace('{locCode}', locCode).replace('{jurorNumber}', jurorNumber)) };
     },
   });
 

@@ -31,7 +31,19 @@
         },
         dailtExpenseTravelTimeMinutes: {},
       },
-      passengers: {
+      carPassengers: {
+        presence: {
+          allowEmpty: true,
+        },
+        format: {
+          pattern: '^[0-9]*$',
+          message: {
+            summary: 'Number of other jurors taken as passengers can only include numbers',
+            details: 'Number of other jurors taken as passengers can only include numbers',
+          },
+        },
+      },
+      motoPassengers: {
         presence: {
           allowEmpty: true,
         },

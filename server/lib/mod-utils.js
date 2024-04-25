@@ -308,7 +308,7 @@
     return list;
   };
 
-  module.exports.transformUnpaidAttendanceList = (unpaidAttendance, sortBy, sortOrder) => {
+  module.exports.transformUnpaidAttendanceList = (unpaidAttendance, sortBy, sortOrder, locCode) => {
     const order = sortOrder || 'ascending';
     const table = {
       head: [{
@@ -386,7 +386,7 @@
         },
         {
           html: '<a href="/juror-management/unpaid-attendance/expense-record/' +
-            unpaid.juror_number + '/' + unpaid.pool_number + '/draft" class="govuk-link">' + 'View expenses' + '</a>',
+            unpaid.juror_number + '/' + locCode + '/draft" class="govuk-link">' + 'View expenses' + '</a>',
           attributes: {
             'data-sort-value': unpaid.total_unapproved,
           },

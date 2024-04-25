@@ -16,9 +16,10 @@
       const sortOrder = req.query['sortOrder'] || 'ascending';
       const sortBy = req.query['sortBy'] || 'unpaidLastName';
       const tmpErrors = _.clone(req.session.errors);
+      const locCode = req.session.authentication.locCode;
 
       const successCB = function(data) {
-        var listToRender = modUtils.transformUnpaidAttendanceList(data.content, sortBy, sortOrder);
+        var listToRender = modUtils.transformUnpaidAttendanceList(data.content, sortBy, sortOrder, locCode);
         let pageItems, errors;
 
         delete req.session.errors;
@@ -71,10 +72,19 @@
       fetchUnpaidExpenses.get(
         app,
         req.session.authToken,
-        req.session.authentication.owner,
+        locCode,
         opts
       )
-        .then(successCB);
+        .then(successCB)
+        .catch((err) => {
+          app.logger.crit('Failed to fetch unpaid expenses', {
+            auth: req.session.authentication,
+            data: opts,
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
+
+          return res.render('_errors/generic');
+        });
     };
   };
 

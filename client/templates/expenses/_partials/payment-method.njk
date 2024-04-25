@@ -16,7 +16,7 @@
       {
         value: "BACS",
         text: "BACS or cheque",
-        checked: not expensesData.pay_cash,
+        checked: expensesData.payment_method === "BACS",
         attributes: {
           "data-summary-detectable": ""
         }
@@ -24,7 +24,7 @@
       {
         value: "CASH",
         text: "Cash",
-        checked: expensesData.pay_cash,
+        checked: expensesData.payment_method === "CASH",
         attributes: {
           "data-summary-detectable": ""
         }

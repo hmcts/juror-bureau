@@ -34,7 +34,7 @@
       html: draftTabHtml,
       href: url("juror-management.unpaid-attendance.expense-record.get", {
           jurorNumber: jurorNumber,
-          poolNumber: poolNumber,
+          locCode: locCode,
           status: "draft"
         }),
       active: status === "draft",
@@ -46,7 +46,7 @@
       html: approvalTabHtml,
       href: url("juror-management.unpaid-attendance.expense-record.get", {
           jurorNumber: jurorNumber,
-          poolNumber: poolNumber,
+          locCode: locCode,
           status: "for-approval"
         }),
       active: status === "for-approval",
@@ -58,7 +58,7 @@
       html: reapprovalTabHtml,
       href: url("juror-management.unpaid-attendance.expense-record.get", {
           jurorNumber: jurorNumber,
-          poolNumber: poolNumber,
+          locCode: locCode,
           status: "for-reapproval"
         }),
       active: status === "for-reapproval",
@@ -70,7 +70,7 @@
       text: "Approved",
       href: url("juror-management.unpaid-attendance.expense-record.get", {
           jurorNumber: jurorNumber,
-          poolNumber: poolNumber,
+          locCode: locCode,
           status: "approved"
         }),
       active: status === "approved",

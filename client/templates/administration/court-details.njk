@@ -1,4 +1,4 @@
-{% extends "layouts/default.njk" if isCourtManager else "layouts/default-no-nav.njk" %}
+{% extends "layouts/default.njk" if isCourtUser else "layouts/default-no-nav.njk" %}
 
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
@@ -10,7 +10,7 @@
 {% block page_title %}{{ serviceName }} - administration{% endblock %}
 {% block page_identifier %}administration - court details{% endblock %}
 
-{% set currentApp = "Court administration" if isCourtManager else "System administration" %} 
+{% set currentApp = "Court administration" if isCourtUser else "System administration" %} 
 {% set nav = "courtDetails" %}
 
 {% block content %}
@@ -32,7 +32,7 @@
     {% set signatureError = {"text": errors.items['signature'][0].details} %}
   {% endif %}
 
-  {% set courtroomSelectItems = [] %}
+  {% set courtroomSelectItems = [{value: "", text: "Select a room..."}] %}
   {% for room in courtrooms %}
     {% set courtroomSelectItems = (courtroomSelectItems.push({
           value: room.id, 

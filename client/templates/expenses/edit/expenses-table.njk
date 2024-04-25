@@ -35,7 +35,7 @@
         <td class="govuk-table__cell mod-middle-align">
           <a class="govuk-link govuk-link--no-visited-state" href="{{ url('juror-management.edit-expense.edit.get', {
             jurorNumber: jurorNumber,
-            poolNumber: poolNumber,
+            locCode: locCode,
             status: status
           }) }}?date={{ expense.attendance_date }}&page={{ loop.index }}">
             {{ expense.attendance_date | dateFilter("YYYY-MM-DD", "ddd DD MMM YYYY") }}

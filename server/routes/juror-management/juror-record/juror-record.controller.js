@@ -350,28 +350,30 @@
 
         cacheJurorCommonDetails(req, jurorOverview.data.commonDetails);
 
-        const poolNumber = jurorOverview.data.commonDetails.poolNumber;
-        const defaultExpenses = await defaultExpensesDAO.get(app, req, jurorNumber);
+        const locCode = req.session.authentication.locCode;
+        const defaultExpenses = await defaultExpensesDAO.get(app, req, locCode, jurorNumber);
         const { response: bankDetails } = await jurorBankDetailsDAO.get(app, req, jurorNumber);
         const viewAllExpensesLink = app.namedRoutes.build('juror-management.unpaid-attendance.get');
         const viewDraftExpensesLink = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
-          jurorNumber, poolNumber, status: 'draft',
+          jurorNumber, locCode, status: 'draft',
         });
+        // eslint-disable-next-line max-len
         const viewForApprovalExpensesLink = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
-          jurorNumber, poolNumber, status: 'for-approval',
+          jurorNumber, locCode, status: 'for-approval',
         });
+        // eslint-disable-next-line max-len
         const viewApprovedExpensesLink = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
-          jurorNumber, poolNumber, status: 'approved',
+          jurorNumber, locCode, status: 'approved',
         });
         const editDefaultExpensesLink = app.namedRoutes.build('juror-record.default-expenses.get', {
-          jurorNumber, poolNumber,
+          jurorNumber,
         });
         const editBankDetailsLink = app.namedRoutes.build('juror-record.bank-details.get', {
-          jurorNumber, poolNumber,
+          jurorNumber,
         });
 
         try {
-          const expensesSummary = await expensesSummaryDAO.get(req, jurorNumber, poolNumber);
+          const expensesSummary = await expensesSummaryDAO.get(req, jurorNumber, locCode);
 
           app.logger.info('Fetched the juror record expenses info: ', {
             auth: req.session.authentication,
@@ -445,6 +447,7 @@
         if (err.statusCode === 404) {
           return res.render('juror-management/_errors/not-found');
         }
+
         app.logger.crit('Failed to fetch the juror bank details or default expenses data:', {
           auth: req.session.authentication,
           jwt: req.session.authToken,
@@ -454,6 +457,9 @@
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
+
+        console.log(err);
+
         return res.render('_errors/generic');
       }
     };
@@ -492,8 +498,8 @@
           require('request-promise'),
           app,
           req.session.authToken,
+          req.session.locCode,
           jurorNumber,
-          jurorOverview.data.commonDetails.poolNumber,
         );
 
 
@@ -658,15 +664,16 @@
 
           if (req.url.includes('bank-details')) {
             const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
+            const { status } = req.query;
 
             backLinkUrl = app.namedRoutes.build(`${routePrefix}.bank-details.get`, {
               jurorNumber: req.params['jurorNumber'],
-              poolNumber: req.params['poolNumber'],
-            });
+              locCode: req.params['locCode'],
+            }) + (status ? `?status=${status}` : '');
             actionUrl = app.namedRoutes.build(`${routePrefix}.bank-details.notes-edit.post`, {
               jurorNumber: req.params['jurorNumber'],
-              poolNumber: req.params['poolNumber'],
-            });
+              locCode: req.params['locCode'],
+            }) + (status ? `?status=${status}` : '');
           }
 
           return res.render('juror-management/juror-record/notes-edit', {
@@ -725,39 +732,42 @@
   // of course the promise will resolve if the code is 200 (error) or throw an exception if the code is 304 (success) 😅
   module.exports.postEditNotes = function(app) {
     return function(req, res) {
+      const { jurorNumber } = req.params;
 
       let successUrl = app.namedRoutes.build('juror-record.notes.get', {
-        jurorNumber: req.params['jurorNumber'],
+        jurorNumber,
       });
       let backLinkUrl = app.namedRoutes.build('juror-record.notes.get', {
-        jurorNumber: req.params['jurorNumber'],
+        jurorNumber,
       });
       let actionUrl = app.namedRoutes.build('juror-record.notes-edit.post', {
-        jurorNumber: req.params['jurorNumber'],
+        jurorNumber,
       });
       let formErrorUrl = app.namedRoutes.build('juror-record.notes-edit.get', {
-        jurorNumber: req.params['jurorNumber'],
+        jurorNumber,
       });
 
       if (req.url.includes('bank-details')) {
         const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
+        const { locCode } = req.params;
+        const { status } = req.query;
 
         successUrl = app.namedRoutes.build(`${routePrefix}.bank-details.get`, {
-          jurorNumber: req.params['jurorNumber'],
-          poolNumber: req.params['poolNumber'],
-        });
+          jurorNumber,
+          locCode,
+        }) + (status ? `?status=${status}` : '');
         backLinkUrl = app.namedRoutes.build(`${routePrefix}.bank-details.get`, {
-          jurorNumber: req.params['jurorNumber'],
-          poolNumber: req.params['poolNumber'],
-        });
+          jurorNumber,
+          locCode,
+        }) + (status ? `?status=${status}` : '');
         actionUrl = app.namedRoutes.build(`${routePrefix}.bank-details.notes-edit.post`, {
-          jurorNumber: req.params['jurorNumber'],
-          poolNumber: req.params['poolNumber'],
-        });
+          jurorNumber,
+          locCode,
+        }) + (status ? `?status=${status}` : '');
         formErrorUrl = app.namedRoutes.build(`${routePrefix}.bank-details.notes-edit.get`, {
-          jurorNumber: req.params['jurorNumber'],
-          poolNumber: req.params['poolNumber'],
-        });
+          jurorNumber,
+          locCode,
+        }) + (status ? `?status=${status}` : '');
       }
 
       const editSuccessCB = function() {

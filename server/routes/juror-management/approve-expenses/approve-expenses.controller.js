@@ -32,6 +32,7 @@
       const processDateFilterUrl = app.namedRoutes.build('juror-management.approve-expenses.filter-dates.post');
       const tmpErrors = _.cloneDeep(req.session.errors);
       const tmpBody = _.cloneDeep(req.session.fromFields);
+      const locCode = req.session.authentication.locCode;
 
       if (typeof req.session.bannerMessage !== 'undefined') {
         bannerMessage = req.session.bannerMessage;
@@ -42,11 +43,10 @@
       delete req.session.fromFields;
 
       try {
-        // TODO: replace with API call once BE is ready
         let { response: data, headers } = await approveExpensesDAO.get(
           app,
           req,
-          req.session.authentication.owner,
+          locCode,
           currentTab,
           dateFilters
         );
@@ -84,6 +84,7 @@
           bannerMessage,
           clearFilter: app.namedRoutes.build('juror-management.approve-expenses.get'),
           nav: 'approve-expenses',
+          locCode,
           errors: {
             title: 'Please check the form',
             count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -96,6 +97,8 @@
           token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
+
+        console.log(err);
 
         return res.render('_errors/generic.njk');
       };
@@ -202,12 +205,11 @@
 
   module.exports.getViewExpenses = function(app) {
     return async function(req, res){
-      //TODO - Print audit report for expenses
-      const {jurorNumber, poolNumber, status} = req.params;
+      const { jurorNumber, locCode, status } = req.params;
 
       return res.redirect(app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
         jurorNumber,
-        poolNumber,
+        locCode,
         status,
       }));
     };
@@ -224,6 +226,7 @@
       urlBuilder(dateFilters, currentTab)
     );
     const checkedJurors = _.clone(req.session.approveExpenses.checkedJurors);
+    const locCode = req.session.authentication.locCode;
 
     delete req.session.approveExpenses.checkedJurors;
 
@@ -233,7 +236,7 @@
       await approveExpensesDAO.get(
         app,
         req,
-        req.session.authentication.owner,
+        locCode,
         currentTab,
         dateFilters,
         req.session.approveExpensesEtag
@@ -278,7 +281,7 @@
     replaceAllObjKeys(payload, _.snakeCase);
 
     try {
-      await approveExpensesDAO.post(app, req, payload);
+      await approveExpensesDAO.post(app, req, locCode, currentTab, payload);
 
       req.session.bannerMessage = `Expenses approved for ${checkedJurors.length > 1
         ? `${checkedJurors.length} jurors`

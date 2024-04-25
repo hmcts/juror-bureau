@@ -18,7 +18,7 @@
   };
 
   module.exports.fetchUnpaidExpenses = {
-    resource: 'moj/expenses/unpaid-summary/',
+    resource: 'moj/expenses/{locCode}/unpaid-summary/',
     get: function(app, jwtToken, locCode, opts) {
       var reqOptions = _.clone(options);
 
@@ -36,7 +36,10 @@
       }
       reqOptions.headers.Authorization = jwtToken;
       reqOptions.method = 'GET';
-      reqOptions.uri = urljoin(reqOptions.uri, this.resource + locCode + '?' + parameters.join('&'));
+      reqOptions.uri = urljoin(
+        reqOptions.uri,
+        this.resource.replace('{locCode}', locCode) + '?' + parameters.join('&')
+      );
 
       app.logger.debug('Sending request to API: ', {
         uri: reqOptions.uri,
@@ -46,26 +49,6 @@
       });
 
       return rp(reqOptions);
-    },
-  };
-
-  module.exports.expensesDAO = {
-    get: function(app, req, jurors) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/expenses'),
-        method: 'GET',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-        body: jurors,
-      };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
     },
   };
 
@@ -90,9 +73,9 @@
   };
 
   module.exports.defaultExpensesDAO = {
-    get: function(app, req, jurorNumber) {
+    get: function(app, req, locCode, jurorNumber) {
       const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/expenses/default-summary', jurorNumber),
+        uri: urljoin(config.apiEndpoint, `moj/expenses/${locCode}/${jurorNumber}/default-expenses`),
         method: 'GET',
         headers: {
           'User-Agent': 'Request-Promise',
@@ -106,9 +89,9 @@
 
       return rp(payload);
     },
-    post: function(app, req, body) {
+    post: function(app, req, locCode, jurorNumber, body) {
       const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/expenses/set-default-expenses'),
+        uri: urljoin(config.apiEndpoint, `moj/expenses/${locCode}/${jurorNumber}/default-expenses`),
         method: 'POST',
         headers: {
           'User-Agent': 'Request-Promise',
@@ -173,12 +156,9 @@
 
   module.exports.approveExpensesDAO = {
     get: function(app, req, locCode, paymentMethod, dates, etag = null) {
-      const uri = dates
-        // eslint-disable-next-line max-len
-        ? urljoin(config.apiEndpoint, 'moj/expenses/approval', locCode, paymentMethod, `?from=${dates.from}&to=${dates.to}`)
-        : urljoin(config.apiEndpoint, 'moj/expenses/approval', locCode, paymentMethod);
       const payload = {
-        uri,
+        uri: urljoin(config.apiEndpoint, `moj/expenses/${locCode}/${paymentMethod}/pending-approval`)
+          + (dates ? `?from=${dates.from}&to=${dates.to}` : ''),
         method: 'GET',
         headers: {
           'User-Agent': 'Request-Promise',
@@ -202,9 +182,9 @@
 
       return rp(payload);
     },
-    post: function(app, req, body) {
+    post: function(app, req, locCode, paymentMethod, body) {
       const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/expenses/approve'),
+        uri: urljoin(config.apiEndpoint, `moj/expenses/${locCode}/${paymentMethod}/approve`),
         method: 'POST',
         headers: {
           'User-Agent': 'Request-Promise',

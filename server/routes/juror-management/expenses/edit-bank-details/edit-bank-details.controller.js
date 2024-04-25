@@ -10,19 +10,29 @@
     return async function(req, res) {
       const tmpErrors = _.cloneDeep(req.session.errors);
       const tmpBody = _.cloneDeep(req.session.tmpBody);
-      const { jurorNumber, poolNumber } = req.params;
+      const { jurorNumber, locCode } = req.params;
+      const { status } = req.query;
+
       const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
-      const processUrl = app.namedRoutes.build(`${routePrefix}.bank-details.post`,
-        {jurorNumber, poolNumber});
-      const addNotesUrl = app.namedRoutes.build(`${routePrefix}.bank-details.notes-edit.get`,
-        {jurorNumber, poolNumber});
-      const changeAddressUrl = app.namedRoutes.build(`${routePrefix}.bank-details.address.get`,
-        {jurorNumber, poolNumber});
+      const processUrl = app.namedRoutes.build(`${routePrefix}.bank-details.post`, {
+        jurorNumber,
+        locCode,
+      }) + (status ? `?status=${status}` : '');
+      const addNotesUrl = app.namedRoutes.build(`${routePrefix}.bank-details.notes-edit.get`, {
+        jurorNumber,
+        locCode,
+      }) + (status ? `?status=${status}` : '');
+      const changeAddressUrl = app.namedRoutes.build(`${routePrefix}.bank-details.address.get`, {
+        jurorNumber,
+        locCode,
+      });
       const cancelUrl = req.url.includes('record')
-        ? app.namedRoutes.build('juror-record.expenses.get',
-          {jurorNumber})
-        : app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get',
-          {jurorNumber, poolNumber, status: 'draft'});
+        ? app.namedRoutes.build('juror-record.expenses.get', { jurorNumber })
+        : app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
+          jurorNumber,
+          locCode,
+          status: status ? status : 'draft',
+        });
 
       const { response: data, headers } = await jurorBankDetailsDAO.get(app, req, jurorNumber);
 
@@ -41,7 +51,7 @@
       juror.anonymisedAccountNumber = juror.bankAccountNumber ? '########' : '';
       juror.anonymisedSortCode = juror.sortCode ? '##-##-##' : '';
 
-      req.session.locCode = req.params.poolNumber.substring(0, 3);
+      req.session.locCode = req.session.authentication.locCode;
 
       delete req.session.errors;
       delete req.session.tmpBody;
@@ -63,17 +73,22 @@
 
   module.exports.postBankDetails = (app) => {
     return async function(req, res) {
-      const { jurorNumber, poolNumber } = req.params;
+      const { jurorNumber, locCode } = req.params;
+      const { status } = req.query;
+
       const validatorResult = validate(req.body, bankDetailsValidator());
       const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
       const errorUrl = app.namedRoutes.build(`${routePrefix}.bank-details.get`, {
-        jurorNumber, poolNumber,
-      });
+        jurorNumber,
+        locCode,
+      }) + status ? `?status=${status}` : '';
       const redirectUrl = req.url.includes('record')
-        ? app.namedRoutes.build('juror-record.expenses.get',
-          { jurorNumber })
-        : app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get',
-          { jurorNumber, poolNumber, status: 'draft' });
+        ? app.namedRoutes.build('juror-record.expenses.get', { jurorNumber })
+        : app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
+          jurorNumber,
+          locCode,
+          status: status ? status : 'draft',
+        });
 
       if (typeof validatorResult !== 'undefined') {
         req.session.tmpBody = req.body;
