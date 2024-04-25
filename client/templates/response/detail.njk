@@ -5,6 +5,7 @@
 {% from "../includes/reply-type-tag-macro.njk" import replyTypeTag %}
 {% from "govuk/components/tag/macro.njk" import govukTag %}
 {% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 
 {% block page_title %}
   {{ serviceName }} - response details
@@ -15,6 +16,15 @@
 {% set currentApp = "Summons replies" %}
 
 {% block beforeContent %}
+
+  {{ govukBackLink({
+    text: "Back",
+    href: url('inbox.todo.get'),
+    attributes: {
+      id: "backLinkAnchor"
+    }
+  }) }}
+
   {% if response.processingStatus === 'Closed' %}
     <div class="govuk-!-margin-top-3">
       {% set bannerMessageHtml %}
