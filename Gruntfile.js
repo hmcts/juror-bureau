@@ -81,6 +81,7 @@
               'messaging-juror-select.js',
               'expenses-summary.js',
               'certificate-of-exemption-list.js',
+              'export-contact-details.js',
             ], dest: 'dist/client/js'},
             {expand: true, cwd: 'client/js/i18n/cy/', src: ['PDF.json'], dest: 'dist/client/js/i18n/cy/' },
             {expand: true, cwd: 'client/js/i18n/en/', src: ['PDF.json'], dest: 'dist/client/js/i18n/en/' },
@@ -122,6 +123,7 @@
               'messaging-juror-select.js',
               'expenses-summary.js',
               'certificate-of-exemption-list.js',
+              'export-contact-details.js'
             ], dest: 'tmp/client/js'},
             {expand: true, cwd: 'client/js/i18n/cy/', src: ['PDF.json'], dest: 'tmp/client/js/i18n/cy/' },
             {expand: true, cwd: 'client/js/i18n/en/', src: ['PDF.json'], dest: 'tmp/client/js/i18n/en/' },
