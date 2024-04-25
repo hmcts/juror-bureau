@@ -48,9 +48,8 @@
 
       try {
         let templateData = await messageTemplateDAO.get(
-          require('request-promise'),
           app,
-          req.session.authToken,
+          req,
           messagingCodes[message],
           req.session.authentication.owner
         );
@@ -274,7 +273,7 @@
       };
 
       if (!req.session.messaging) {
-        return res.redirect(app.namedRoutes.build('messaging.send.get'));
+        return res.redirect(buildUrl(app, message, ['messaging.send.get', 'messaging.export-contacts.get']));
       }
 
       delete req.session.errors;
@@ -312,14 +311,21 @@
 
         return res.render('messaging/select-trial.njk', {
           messageTitle: messagingTitles[message],
-          filterUrl: app.namedRoutes.build('messaging.send.select-trial.filter.post', { message }),
-          clearSearchUrl: app.namedRoutes.build('messaging.send.select-trial.get', { message }),
+          filterUrl: buildUrl(app, message, [
+            'messaging.send.select-trial.filter.post',
+            'messaging.export-contacts.trials.filter.post',
+          ]),
+          clearSearchUrl: buildUrl(app, message, [
+            'messaging.send.select-trial.get',
+            'messaging.export-contacts.trials.get',
+          ]),
           submitUrl: app.namedRoutes.build('messaging.send.select-trial.post', { message }),
           backLinkUrl: {
             built: true,
-            url: req.session.messaging.trialNoRequired ?
-              app.namedRoutes.build('messaging.send.template.get', { message }) :
-              app.namedRoutes.build('messaging.send.find-jurors.get', { message }),
+            url: buildUrl(app, message, [
+              req.session.messaging.trialNoRequired ? 'messaging.send.template.get' : 'messaging.send.find-jurors.get',
+              'messaging.export-contacts.get',
+            ]),
           },
           tmpBody,
           trialNumber,
@@ -349,18 +355,18 @@
       const { message } = req.params;
       const validatorResult = validate(req.body, validator.trialSearch());
 
+      const url = buildUrl(app, message, [
+        'messaging.send.select-trial.get',
+        'messaging.export-contacts.trials.get',
+      ]);
+
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
-        return res.redirect(app.namedRoutes.build('messaging.send.select-trial.get', {
-          message,
-        }));
+        return res.redirect(url);
       }
 
-      return res.redirect(
-        app.namedRoutes.build('messaging.send.select-trial.get',
-          { message }) + '?trialNumber=' + req.body.searchTrialNumber
-      );
+      return res.redirect(url + '?trialNumber=' + req.body.searchTrialNumber);
     };
   };
 
@@ -376,10 +382,16 @@
           }],
         };
         req.session.formFields = req.body;
-        return res.redirect(app.namedRoutes.build('messaging.send.select-trial.get', {
-          message,
-        }));
+        return res.redirect(buildUrl(app, message, [
+          'messaging.send.select-trial.get',
+          'messaging.export-contacts.trials.get',
+        ]));
       };
+
+      if (message === 'export-contact-details') {
+        return res.redirect(app.namedRoutes.build('messaging.export-contacts.jurors.get')
+          + '?searchBy=trial&trialNumber=' + req.body.selectedTrial);
+      }
 
       const searchOptions = {
         'jurorSearch': null,
@@ -438,9 +450,8 @@
 
       try {
         let jurorsData = await jurorSearchDAO.post(
-          require('request-promise'),
           app,
-          req.session.authToken,
+          req,
           req.session.authentication.owner,
           opts
         );
@@ -574,9 +585,8 @@
 
       try {
         let messageData = await populatedMessageDAO.post(
-          require('request-promise'),
           app,
-          req.session.authToken,
+          req,
           messagingCodes[message],
           req.session.authentication.owner,
           req.session.messaging.placeholderValues || {}
@@ -644,9 +654,8 @@
         };
 
         await sendMessage.post(
-          require('request-promise'),
           app,
-          req.session.authToken,
+          req,
           messagingCodes[message],
           req.session.authentication.owner,
           payload,
@@ -717,9 +726,8 @@
             };
 
             let jurorsData = await jurorSearchDAO.post(
-              require('request-promise'),
               app,
-              req.session.authToken,
+              req,
               req.session.authentication.owner,
               opts,
               true
@@ -868,6 +876,13 @@
       }
       return 'email';
     }
+  }
+
+  function buildUrl(app, message, [url1, url2]) {
+    if (message === 'export-contact-details') {
+      return app.namedRoutes.build(url2, { message });
+    }
+    return app.namedRoutes.build(url1, { message });
   }
 
 })();
