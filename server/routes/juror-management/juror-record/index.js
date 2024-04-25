@@ -108,11 +108,22 @@
     app.get('/juror-management/record/:jurorNumber/notes/edit',
       'juror-record.notes-edit.get',
       auth.verify,
-      controller.getEditNotes(app));
+      controller.getEditNotes(app, false));
+
+    app.get('/juror-management/record/:jurorNumber/summons/notes/edit',
+      'juror-record.notes-summons-edit.get',
+      auth.verify,
+      controller.getEditNotes(app, true));
+           
     app.post('/juror-management/record/:jurorNumber/notes/edit',
       'juror-record.notes-edit.post',
       auth.verify,
-      controller.postEditNotes(app));
+      controller.postEditNotes(app, false));
+
+    app.post('/juror-management/record/:jurorNumber/summons/notes/edit',
+      'juror-record.notes-summons-edit.post',
+      auth.verify,
+      controller.postEditNotes(app, true));
 
     app.get('/juror-management/record/:jurorNumber/contact-log',
       'juror-record.contact-log.get',
