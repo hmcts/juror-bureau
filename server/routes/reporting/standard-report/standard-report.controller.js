@@ -7,7 +7,8 @@
   const { validate } = require('validate.js');
   const { poolSearchObject } = require('../../../objects/pool-search');
   const rp = require('request-promise');
-  const { reportKeys, tableDataMappers, constructPageHeading } = require('./utils');
+  const { tableDataMappers, constructPageHeading } = require('./utils');
+  const { reportKeys } = require('./definitions');
   const { standardReportPrint } = require('./standard-report-print');
 
   const standardFilterGet = (app, reportKey) => async(req, res) => {
@@ -66,33 +67,56 @@
 
   const standardReportGet = (app, reportKey, isPrint = false) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
-    const config = {};
+    const config = { reportType: reportType.apiKey, locCode: req.session.locCode };
     const filter = req.session.reportFilter;
 
     const buildStandardTableRows = function(tableData, tableHeadings) {
-      const tableRows = tableData.map(data => tableHeadings.map(header => {
-        let output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
+      return tableData.map(data => {
+        let row = tableHeadings.map(header => {
+          let output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
 
-        if (header.id === 'juror_number') {
+          if (header.id === 'juror_number') {
+            return ({
+              html: `<a href=${
+                app.namedRoutes.build('juror-record.overview.get', {jurorNumber: output})
+              }>${
+                output
+              }</a>`,
+            });
+          }
+
+          if (header.id === 'juror_postcode') {
+            output = output.toUpperCase();
+          }
+
+          if (header.id === 'contact_details') {
+            const details = output.split(', ');
+            let html = '';
+  
+            details.forEach((element) => {
+              html = html
+                + `${
+                  element
+                }<br>`;
+            });
+            return ({
+              html: `${html}`,
+            });
+          }
+
           return ({
-            html: `<a href=${
-              app.namedRoutes.build('juror-record.overview.get', {jurorNumber: output})
-            }>${
-              output
-            }</a>`,
+            text: output ? output : '-',
+          });
+        });
+
+        if (reportType.bespokeReport && reportType.bespokeReport.insertColumns) {
+          Object.keys(reportType.bespokeReport.insertColumns).map((key) => {
+            row.splice(key, 0, reportType.bespokeReport.insertColumns[key][1](data));
           });
         }
 
-        if (header.id === 'juror_postcode') {
-          output = output.toUpperCase();
-        }
-
-        return ({
-          text: output ? output : '-',
-        });
-      }));
-
-      return tableRows;
+        return row;
+      });
     };
 
     const buildPrintUrl = function() {
@@ -108,8 +132,12 @@
 
     delete req.session.reportFilter;
 
-    if (reportType.search && reportType.search === 'poolNumber') {
-      config.poolNumber = req.params.filter;
+    if (reportType.search) {
+      if (reportType.search === 'poolNumber') {
+        config.poolNumber = req.params.filter;
+      } else if (reportType.search === 'date') {
+        config.date = req.params.filter;
+      }
     }
 
     if (req.query.fromDate) {
@@ -118,16 +146,24 @@
     }
 
     try {
-      const { headings, tableData } = await standardReportDAO.post(app, req, reportType.apiKey, config);
+      const { headings, tableData } = await (reportType.bespokeReport?.dao
+        ? reportType.bespokeReport.dao(req)
+        : standardReportDAO.post(req, app, config));
 
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
 
-      const tableHeaders = tableData.headings.map((data, index) => ({
+      let tableHeaders = tableData.headings.map((data, index) => ({
         text: data.name,
         attributes: {
           'aria-sort': index === 0 ? 'ascending' : 'none',
           'aria-label': data.name,
         }}));
+
+      if (reportType.bespokeReport && reportType.bespokeReport.insertColumns) {
+        Object.keys(reportType.bespokeReport.insertColumns).map((key) => {
+          tableHeaders.splice(key, 0, {text: reportType.bespokeReport.insertColumns[key][0]});
+        });
+      }
 
       let tableRows = [];
 
@@ -183,9 +219,9 @@
         printUrl: buildPrintUrl(),
         backLinkUrl: {
           built: true,
-          url: reportType.search === 'poolNumber'
-            ? app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : '')
-            : reportType.searchUrl,
+          url: reportType.searchUrl
+            ? reportType.searchUrl
+            : app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : ''),
         },
       });
     } catch (e) {
@@ -196,23 +232,26 @@
   };
 
   const standardReportPost = (app, reportKey) => (req, res) => {
-    if (reportKeys(app, req)[reportKey].search === 'poolNumber' && !req.body.reportPool) {
-      req.session.errors = {
-        selection: [{
-          fields: ['selection'],
-          summary: 'Select a pool',
-          details: ['Select a pool'],
-        }],
-      };
+    if (reportKeys(app, req)[reportKey].search === 'poolNumber') {
+      if (!req.body.reportPool) {
+        req.session.errors = {
+          selection: [{
+            fields: ['selection'],
+            summary: 'Select a pool',
+            details: ['Select a pool'],
+          }],
+        };
 
-      return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`) + '?filter=' + req.body.filter);
+        return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`)
+          + (req.body.filter ? '?filter=' + req.body.filter : ''));
+      }
+
+      req.session.reportFilter = req.body.filter;
+
+      return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, {
+        filter: req.body.reportPool,
+      }));
     }
-
-    req.session.reportFilter = req.body.filter;
-
-    return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, {
-      filter: req.body.reportPool,
-    }));
   };
 
   module.exports = {

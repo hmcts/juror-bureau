@@ -12,8 +12,6 @@
     , totalCheckedJurors = $('#checkedJurors')
     , totalJurors = $('#totalJurors');
 
-  var jurorMethods = $('select[id^=selectMethod-]');
-
   // filtering logic
   // if the user is not filtering (ie: first page load), we should hide the filters
   if (url.searchParams.get('showFilter') === 'true') {
@@ -57,7 +55,11 @@
     checkAllJurors[0].addEventListener('change', function() {
       var isCheckingAll = this.checked;
 
-      checkRequest(this.id, isCheckingAll).then(function(noSelected) {
+      let queryParams = getRelevantQueryParams();
+
+      queryParams += '&checkAll=true';
+
+      checkRequest(this.id, null, isCheckingAll, queryParams).then(function(noSelected) {
         jurorRows.each(function(_, element) {
           element.checked = isCheckingAll;
         });
@@ -71,8 +73,9 @@
       element.addEventListener('change', async function() {
         var jurorNumber = this.id;
         var isCheckingJuror = this.checked;
+        var poolNumber = this.attributes['data-poolnumber'].value;
 
-        checkRequest(jurorNumber, isCheckingJuror).then(function(noSelected) {
+        checkRequest(jurorNumber, poolNumber, isCheckingJuror).then(function(noSelected) {
           totalCheckedJurors.text(noSelected || '0');
           updateCheckAllJurorsCheckbox(isCheckingJuror);
         });
@@ -90,11 +93,15 @@
     }
   }
 
-  function checkRequest(jurorNumber, isChecking) {
+  function checkRequest(jurorNumber, poolNumber, isChecking, queryParams = '') {
     var action = isChecking ? 'check' : 'uncheck';
 
+    const isSearchByJurorNumber = url.searchParams.get('searchBy') === 'jurorNumber';
+
     return $.ajax({
-      url: '/messaging/send/select-jurors/check?jurorNumber=' + jurorNumber + '&action=' + action,
+      url: '/messaging/export-contact-details/jurors/check?action='
+        + action + (queryParams ? queryParams : '&poolNumber=' + poolNumber)
+        + (!isSearchByJurorNumber ? '&jurorNumber=' + jurorNumber : ''),
       method: 'POST',
       data: {
         _csrf: csrfToken.val(),
@@ -102,26 +109,71 @@
     });
   }
 
-  //Changing notifcation method logic
-  if (jurorMethods && jurorMethods.length) {
-    jurorMethods.each(function(_, element) {
-      element.addEventListener('change', async function() {
-        var jurorNumber = this.id.split('-')[1];
-        var selectedOption = $('#' + this.id).find(':selected').val();
+  function getRelevantQueryParams() {
+    const showOnly = url.searchParams.get('showOnly');
+    const include = url.searchParams.get('include');
+    const searchBy = url.searchParams.get('searchBy');
 
-        await changeMethodRequest(jurorNumber, selectedOption);
-      });
-    });
-  }
+    let queryString = '&searchBy=' + searchBy;
 
-  function changeMethodRequest(jurorNumber, selectedOption) {
-    return $.ajax({
-      url: '/messaging/send/select-jurors/method?jurorNumber=' + jurorNumber + '&selection=' + selectedOption,
-      method: 'POST',
-      data: {
-        _csrf: csrfToken.val(),
-      },
-    });
+    if (showOnly) queryString += `&showOnly=${showOnly}`;
+    if (include) queryString += `&include=${include}`;
+
+    switch (searchBy) {
+    case 'court': {
+      const court = url.searchParams.get('courtName');
+
+      if (court) queryString += `&courtName=${court}`;
+      break;
+    }
+    case 'pool': {
+      const pool = url.searchParams.get('poolNumber');
+
+      if (pool) queryString += `&poolNumber=${pool}`;
+      break;
+    }
+    case 'date': {
+      let dateDeferredTo;
+      let nextDueAtCourtDate;
+
+      if (url.searchParams.get('dateDeferredTo')) {
+        dateDeferredTo = url.searchParams.get('dateDeferredTo');
+      }
+      if (url.searchParams.get('nextDueAtCourtDate')) {
+        nextDueAtCourtDate = url.searchParams.get('nextDueAtCourtDate');
+      }
+
+      if (dateDeferredTo) queryString += `&dateDeferredTo=${dateDeferredTo}`;
+      if (nextDueAtCourtDate) queryString += `&nextDueAtCourtDate=${nextDueAtCourtDate}`;
+      break;
+    }
+    case 'jurorNumber': {
+      const jurorNumber = url.searchParams.get('jurorNumber');
+
+      if (jurorNumber) queryString += `&jurorNumber=${jurorNumber}`;
+      break;
+    }
+    case 'jurorName': {
+      const jurorName = url.searchParams.get('jurorName');
+
+      if (jurorName) queryString += `&jurorName=${jurorName}`;
+      break;
+    }
+    case 'postcode': {
+      const postcode = url.searchParams.get('postcode');
+
+      if (postcode) queryString += `&postcode=${postcode}`;
+      break;
+    }
+    case 'trial': {
+      const trial = url.searchParams.get('trialNumber');
+
+      if (trial) queryString += `&trialNumber=${trial}`;
+      break;
+    }
+    }
+
+    return queryString;
   }
 
 })();
