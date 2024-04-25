@@ -5,6 +5,19 @@ const _ = require('lodash');
 const summonsValidator = require('../../../config/validation/summons-management');
 const validate = require('validate.js');
 
+module.exports.checkOwner = function(app) {
+  return function(req, res, next) {
+    if (req.session.jurorCommonDetails.owner !== req.session.authentication.locCode) {
+      app.logger.crit('Current user does not have sufficient permission to process this summons reply: ', {
+        auth: req.session.authentication,
+        jwt: req.session.authToken,
+      });
+      return res.status(403).render('_errors/403.njk');
+    }
+    next();
+  };
+};
+
 module.exports.getProcessReply = function(app) {
   return function(req, res) {
     var tmpErrors = _.clone(req.session.errors)
