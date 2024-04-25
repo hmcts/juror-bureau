@@ -206,15 +206,13 @@
         tableRows = buildStandardTableRows(tableData.data, tableData.headings);
       }
 
-      const leftPageHeadings = reportType.headings.left.map(heading => constructPageHeading(heading, headings));
-      const rightPageHeadings = reportType.headings.right.map(heading => constructPageHeading(heading, headings));
+      const pageHeadings = reportType.headings.map(heading => constructPageHeading(heading, headings));
 
       return res.render('reporting/standard-reports/standard-report', {
         title: reportType.title,
         tableRows,
         tableHeaders,
-        leftPageHeadings,
-        rightPageHeadings,
+        pageHeadings,
         reportKey,
         grouped: reportType.grouped,
         filter: req.params.filter,
