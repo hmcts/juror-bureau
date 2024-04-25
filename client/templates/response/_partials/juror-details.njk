@@ -92,24 +92,31 @@
 
         <tr class="govuk-table__row {% if jurorDetails.dateOfBirth.changed %}info{% endif %}"  id="dob">
           <th class="govuk-table__header" scope="row">Date of birth</th>
-          {% if response.dateOfBirth === null %}
-            <td class="govuk-table__cell" id="jurorDateOfBirth">
-              <span class="mod-reply-section__required">Required</span>
-            </td>
+          
+          {% if method === "paper" %}
+            {% if response.dateOfBirth === null %}
+              <td class="govuk-table__cell" id="jurorDateOfBirth">
+                <span class="mod-reply-section__required">Required</span>
+              </td>
+            {% else %}
+              <td class="govuk-table__cell" id="jurorDateOfBirth">
+                {{ jurorDetails.dateOfBirth.current | dateFilter("DD/MM/YYYY", "DD MMM YYYY") }} (Juror will be {{ jurorDetails.dateOfBirth.currentAge }} years old)
+              </td>
+              <td class="govuk-table__cell" id="oldJurorDateOfBirth">
+                {% if jurorDetails.dateOfBirth.changed %}<div class="jd-label-black">Previous</div>{% endif %}
+                {{ jurorDetails.dateOfBirth.old | dateFilter("DD/MM/YYYY", "DD MMM YYYY") if hasModAccess and jurorDetails.dateOfBirth.old else jurorDetails.dateOfBirth.old }}
+              </td>
+            {% endif %}
           {% else %}
             <td class="govuk-table__cell" id="jurorDateOfBirth">
-              {% if hasModAccess %}
-                {{ jurorDetails.dateOfBirth.current | dateFilter("DD/MM/YYYY", "DD MMM YYYY") }} (Juror will be {{ jurorDetails.dateOfBirth.currentAge }} years old)
-              {% else %}
-                {% if jurorDetails.dateOfBirth.changed %}<div class="jd-label-blue">New</div>{% endif %}
-                {{ jurorDetails.dateOfBirth.current }}{% if response.hearingDate !== null %} (Will be {{ jurorDetails.dateOfBirth.currentAge }}){% endif %}
-              {% endif %}
+              {{ jurorDetails.dateOfBirth.current | dateFilter("DD/MM/YYYY", "DD MMM YYYY") }} (Juror will be {{ jurorDetails.dateOfBirth.currentAge }} years old)
             </td>
             <td class="govuk-table__cell" id="oldJurorDateOfBirth">
               {% if jurorDetails.dateOfBirth.changed %}<div class="jd-label-black">Previous</div>{% endif %}
               {{ jurorDetails.dateOfBirth.old | dateFilter("DD/MM/YYYY", "DD MMM YYYY") if hasModAccess and jurorDetails.dateOfBirth.old else jurorDetails.dateOfBirth.old }}
             </td>
           {% endif %}
+
         </tr>
 
 
