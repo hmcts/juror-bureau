@@ -60,7 +60,7 @@
       newObj.dateReceived = moment(newObj.dateReceived).format('DD/MM/YYYY');
       newObj.hearingDate = newObj.hearingDate !== null
         ? dateFilter(new Date(newObj.hearingDate), null, 'DD/MM/YYYY') : null;
-      newObj.dateOfBirth = moment(newObj.dateOfBirth).format('DD/MM/YYYY');
+      newObj.dateOfBirth = newObj.dateOfBirth ? moment(newObj.dateOfBirth).format('DD/MM/YYYY') : null;
       newObj.newDateOfBirth = moment(newObj.newDateOfBirth).format('DD/MM/YYYY');
       newObj.statusRender = statusMapping[newObj.status];
       if (

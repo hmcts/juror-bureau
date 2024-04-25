@@ -2,124 +2,78 @@
 {% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 
-
 {% set jurorRows = [] %}
 {% for juror in jurors %}
 
   {# SETUP FOR CHECKED FIELDS - SELECTED METHOD RETAINED WITHIN PAGINATION/REFRESH #}
-  {% set emailSelected = '' %}
-  {% set textSelected = '' %}
   {% set _checked = '' %}
   {% for checkedJuror in checkedJurors %}
     {% if checkedJuror['jurorNumber'] === juror['jurorNumber'] %}
       {% set _checked = 'checked' %}
-      {% set emailSelected = ' selected' if checkedJuror['selectedMethod'] === "email" %}
-      {% set textSelected = ' selected' if checkedJuror['selectedMethod'] === "text" %}
     {% endif %}
   {% endfor %}
-
-  {# SETUP TABLE ROW FIELDS #}
-  {% set _checkbox = false %}
-  {% set _highlightedRow = " mod-highlight-table-row__grey"%}
-  {% set emailHidden = ''%}
-  {% set textHidden = ''%}
-  {% set noneHidden = ''%}
-  {% if juror['jurorNumber'] in checkableJurors %}
-    {% set _checkbox = true %}
-    {% set _highlightedRow = "" %}
-    {% set noneHidden = ' disabled hidden'%}
-    {% if sendType === "EMAIL_AND_SMS" %}
-      {% if not juror.email %}
-        {% set emailHidden = ' disabled hidden'%}
-      {% endif %}
-      {% if not juror.phone %}
-        {% set textHidden = ' disabled hidden'%}
-      {% endif %}
-    {% elif sendType === "EMAIL"%}
-      {% set textHidden = ' disabled hidden'%}
-    {% elif sendType === "SMS"%}
-      {% set emailHidden = ' disabled hidden'%}
-    {% endif %}
-  {% else %}
-    {% set emailHidden = ' disabled hidden'%}
-    {% set textHidden = ' disabled hidden'%}
-  {% endif %}
 
   {% set jurorRows = (jurorRows.push(
     [
       {
-        html: 
-          '<div class="govuk-checkboxes govuk-checkboxes--small govuk-!-padding-left-2" data-module="govuk-checkboxes">' +
-            '<div class="govuk-checkboxes__item">' + 
+        html: '<div class="govuk-checkboxes__item govuk-checkboxes--small">' + 
               '<input class="govuk-checkboxes__input" id="' + juror['jurorNumber'] + '" name="selectedJurors" type="checkbox"' +
-                  ' value="' + juror['jurorNumber'] + '" aria-label="check-juror"' + _checked + '/>' +
+              ' value="' + juror['jurorNumber'] + '" aria-label="check-juror"' + _checked + ' data-poolnumber="' + juror['poolNumber'] + '"/>' +
               '<label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="' + juror['jurorNumber'] + '"></label>' +
-            '</div>' +
-          '</div>' if _checkbox else '',
-        classes: "govuk-!-padding-right-2" + _highlightedRow
-      },
-      {
-        html:
-          '<div class="govuk-form-group govuk-!-margin-bottom-0">' +
-            '<select class="govuk-select mod-select--no-min-width" id="selectMethod-' + juror['jurorNumber'] + '" name="selectMethod">' + 
-              '<option value="email"' + emailHidden + emailSelected + '>Email</option>' +
-              '<option value="text"' + textHidden + textSelected + '>Text</option>' +
-              '<option value="none"' + noneHidden + '>None</option>' +
-            '</select>' +
-          '</div>',
-        classes: "mod-middle-align" + _highlightedRow
+              '</div>' | safe,
+        classes: "govuk-!-padding-right-2 govuk-!-padding-left-2"
       },
       {
         html: '<a class="govuk-link govuk-link--no-visited-state" href="' + url('juror-record.overview.get', {jurorNumber: juror['jurorNumber']}) + '">' + juror['jurorNumber'] + '</a>',
-        classes: "mod-middle-align" + _highlightedRow
+        classes: "mod-middle-align"
       },
       {
         text: juror['firstName'] | capitalizeFully,
-        classes: "mod-middle-align" + _highlightedRow
+        classes: "mod-middle-align"
       },
       {
         text: juror['lastName'] | capitalizeFully,
-        classes: "mod-middle-align" + _highlightedRow
+        classes: "mod-middle-align"
       },
       {
         text: juror['email'] | lower if juror['email'] else "-",
-        classes: "mod-middle-align" + _highlightedRow
+        classes: "mod-middle-align"
       },
       {
         text: juror['phone'] if juror['phone'] else "-",
-        classes: "mod-middle-align" + _highlightedRow
+        classes: "mod-middle-align"
       },
       {
         text: juror['poolNumber'],
-        classes: "mod-middle-align" + _highlightedRow
+        classes: "mod-middle-align"
       },
       {
         text: juror['status'] | toSentenceCase,
-        classes: "mod-middle-align" + _highlightedRow
+        classes: "mod-middle-align"
       },
       {
         text: juror['trialNumber'] if juror['trialNumber'] else "-",
-        classes: "mod-middle-align" + _highlightedRow
+        classes: "mod-middle-align"
       },
       {
         text: "Yes" if juror['onCall'] else "No",
-        classes: "mod-middle-align" + _highlightedRow
+        classes: "mod-middle-align"
       },
       {
-        text: juror['nextDueAtCourt'] | dateFilter('yyyy-MM-DD', 'DD/MM/YYYY') if juror['nextDueAtCourt'] else "-",
-        classes: "mod-middle-align" + _highlightedRow
+        text: juror['nextDueAtCourt'] | dateFilter('yyyy-MM-DD', 'D MMM YYYY') if juror['nextDueAtCourt'] else "-",
+        classes: "mod-middle-align"
       },
       {
-        text: juror['dateDeferredTo'] | dateFilter('yyyy-MM-DD', 'DD/MM/YYYY') if juror['dateDeferredTo'] else "-",
-        classes: "mod-middle-align" + _highlightedRow
+        text: juror['dateDeferredTo'] | dateFilter('yyyy-MM-DD', 'D MMM YYYY') if juror['dateDeferredTo'] else "-",
+        classes: "mod-middle-align"
       },
       {
-        text: juror['completionDate'] | dateFilter('yyyy-MM-DD', 'DD/MM/YYYY') if juror['completionDate'] else "-",
-        classes: "mod-middle-align" + _highlightedRow
+        text: juror['completionDate'] | dateFilter('yyyy-MM-DD', 'D MMM YYYY') if juror['completionDate'] else "-",
+        classes: "mod-middle-align"
       },
       {
         text: "Yes" if juror['welshLanguage'] else "No",
-        classes: "mod-middle-align" + _highlightedRow
+        classes: "mod-middle-align"
       }
     ]
   ), jurorRows) %}
@@ -135,26 +89,19 @@
 
   {{ modSortableTable({
     id: "messageJurorsTable",
-    caption: "Jurors",
-    captionClass: "govuk-visually-hidden",
     classes: "mod-horizontal-scroll-table",
+    caption: "Jurors list",
     head: [
       {
         id: 'checkboxes',
         sortable: false,
-        html: 
-          '<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">' + 
-            '<input type="checkbox" class="govuk-checkboxes__input" id="check-all-jurors" aria-label="check-all-jurors"' + _allChecked + '/>' +
-            '<label class="govuk-label govuk-checkboxes__label" for="jurors-all">' +
+        html: '<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">' + 
+              '<input type="checkbox" class="govuk-checkboxes__input" id="check-all-jurors" aria-label="check-all-jurors"' + _allChecked + '/>' +
+              '<label class="govuk-label govuk-checkboxes__label" for="jurors-all">' +
               '<span class="govuk-visually-hidden">Select all jurors</span>' +
-            '</label>' +
-          '</div>',
-          classes: "govuk-!-padding-left-2 mod-padding-block--0"
-      },
-      {
-        id: 'method',
-        value: 'Method',
-        sort: sortOrder if sortBy === 'method' else 'none'
+              '</label>' +
+              '</div>',
+        classes: "govuk-!-padding-left-2 mod-padding-block--0"
       },
       {
         id: 'jurorNumber',

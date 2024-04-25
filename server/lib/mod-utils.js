@@ -1266,6 +1266,7 @@
     'excused': 'Excused',
     'sentencing-invite': 'Sentencing invite',
     'sentencing-date': 'Sentencing date',
+    'export-contact-details': 'Export contact details',
   };
 
   module.exports.mapAdminToPoolRequestCourts = (adminCourts) => {
