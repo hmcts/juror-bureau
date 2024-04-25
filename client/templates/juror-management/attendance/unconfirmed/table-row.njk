@@ -1,3 +1,15 @@
+{% macro policeCheckStatus(status, url) %}
+  {% if status === "NOT_CHECKED" or status === "UNCHECKED_MAX_RETRIES_EXCEEDED" or status === "INSUFFICIENT_INFORMATION" %}
+    <a href="{{ url }}" class="govuk-link">Run police check</a>
+  {% elif status === "ELIGIBLE" %}
+    Passed
+  {% elif status === "IN_PROGRESS" %}
+    In progress
+  {% else %}
+    <span class="mod-red-text">Failed</span>
+  {% endif %}
+{% endmacro %}
+
 <tr class="govuk-table__row" id="{{ row.jurorNumber }}-row"
   {% if row.checkInTime === "Fail" or row.checkOutTime === "Fail" %}data-failed="true"{% endif %}
   data-kind="{{ row.kind }}">
@@ -34,6 +46,10 @@
     {% else %}
       <a href="#checkOutTimeHour" class="govuk-link" id="{{ row.jurorNumber }}-recordCheckOut">Record time</a>
     {% endif %}
+  </td>
+  <td class="govuk-table__cell" data-sort-value="{{ row.hasPoliceCheck }}" id="{{ row.jurorNumber }}-police-check">
+    {% set policeCheckUrl = url('juror-management.attendance.change-times.get', { jurorNumber: row.jurorNumber }) %}
+    {{ policeCheckStatus(row.policeCheck, policeCheckUrl) }}
   </td>
   <td class="govuk-table__cell" id="{{ row.jurorNumber }}-change">
     {% if row.checkInTime === "Fail" or row.checkOutTime === "Fail" %}

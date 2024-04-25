@@ -349,6 +349,16 @@
     };
   };
 
+  module.exports.postRunPoliceCheck = function(app) {
+    return async function(req, res) {
+      const { jurorNumber } = req.params;
+
+      // TODO run police check
+
+      return res.send();
+    };
+  };
+
 })();
 
 

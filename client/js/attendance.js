@@ -568,7 +568,7 @@
     var td;
     var i;
 
-    for (i = 0; i < 7; i++) {
+    for (i = 0; i < 8; i++) {
       td = $('<td class="govuk-table__cell"></td>');
 
       switch (i) {
