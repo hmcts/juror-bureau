@@ -38,6 +38,14 @@
         {{ params.rows | safe }}
 
       </tbody>
+
+      {% if params.foot %}
+        <tfoot class="govuk-table__body">
+          <tr>
+            {{ params.foot | safe }}
+          </tr>
+        </tfoot>
+      {% endif %}
     </table>
 
     {% if params.errors.items["checkedExpenses"] %}</div>{% endif %}
