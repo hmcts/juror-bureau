@@ -1,0 +1,42 @@
+{% set deferral = { value: "deferral", text: "Deferral - grant or refuse" } %}
+{% set excusal = { value: "excusal", text: "Excusal - grant or refuse" } %}
+{% set reassign = { value: "reassign", text: "Reassign to another pool" } %}
+{% set postpone = { value: "postpone", text: "Postpone service start date" } %}
+{% set withdraw = { value: "withdraw", text: "Withdraw juror from service" } %}
+{% set undeliverable = { value: "undeliverable", text: "Mark summons as undeliverable" } %}
+{% set disqualify = { value: "disqualify", text: "Disqualify juror" } %}
+{% set responded = { value: "responded", text: "Mark as responded" } %}
+{% set call = { value: "call", text: "Place juror ‘on call’" } %}
+{% set transfer = { value: "transfer", text: "Transfer to another court" } %}
+{% set complete = { value: "complete", text: "Complete service" } %}
+{% set failedToAttend = { value: "failed-to-attend", text: "Change juror status to ‘Failed to attend’" } %}
+{% set undoFailedToAttend = { value: "undo-failed-to-attend", text: "Undo ‘Failed to attend' juror status" } %}
+{% set deceased = { value: "deceased", text: "Mark as deceased", checked: radioChecked === "deceased", conditional: { html: deceasedHtml } } %}
+
+{% set updateOptions = [deferral, excusal, reassign, postpone, withdraw, undeliverable, deceased, disqualify, responded] %}
+
+{% if jurorStatus === "Responded" and isCourtUser %}
+  {% set updateOptions = [deferral, excusal, reassign, postpone, withdraw, undeliverable, deceased, disqualify, responded, call, transfer, failedToAttend] %}
+{% endif %}
+
+{% if jurorStatus === "Deferred" %}
+  {% set updateOptions = [deferral, excusal, disqualify, postpone, deceased] %}
+{% endif %}
+
+{% if isCourtUser %}
+  {% set updateOptions = [deferral, excusal, reassign, postpone, withdraw, undeliverable, deceased, disqualify, responded, call, complete] %}
+{% endif %}
+
+{% if isSJO %}
+  {% set updateOptions = [deferral, excusal, reassign, postpone, withdraw, undeliverable, deceased, disqualify, responded, call, complete, failedToAttend] %}
+{% endif %}
+
+{% if jurorStatus === "FailedToAttend" and isSJO %}
+  {% set updateOptions = [deferral, excusal, reassign, postpone, withdraw, undeliverable, deceased, disqualify, responded, call, complete, undoFailedToAttend] %}
+{% endif %}
+
+{{ govukRadios({
+  name: "jurorRecordUpdate",
+  errorMessage: jurorRecordUpdate,
+  items: updateOptions
+}) }}
