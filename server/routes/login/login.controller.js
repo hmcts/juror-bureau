@@ -3,8 +3,6 @@
  * GET    /    ->    index
  */
 
-const { isCourtUser } = require('../../components/auth/user-type.js');
-
 ;(function(){
   'use strict';
 

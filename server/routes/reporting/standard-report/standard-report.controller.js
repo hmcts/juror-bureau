@@ -131,7 +131,7 @@
     }
 
     try {
-      const { headings, tableData } = await (reportType.bespokeReport.dao
+      const { headings, tableData } = await (reportType.bespokeReport?.dao
         ? reportType.bespokeReport.dao(req)
         : standardReportDAO.post(req, app, config));
 
@@ -204,9 +204,9 @@
         printUrl: buildPrintUrl(),
         backLinkUrl: {
           built: true,
-          url: reportType.search === 'poolNumber'
-            ? app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : '')
-            : reportType.searchUrl,
+          url: reportType.searchUrl
+            ? reportType.searchUrl
+            : app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : ''),
         },
       });
     } catch (e) {
