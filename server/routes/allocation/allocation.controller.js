@@ -12,8 +12,7 @@
       var totals = {
           allReplies: 0,
           nonUrgent: 0,
-          urgent: 0,
-          superUrgent: 0
+          urgent: 0
         }
         , officerList
 
@@ -26,10 +25,8 @@
 
           totals.nonUrgent = response.bureauBacklogCount.nonUrgent;
           totals.urgent = response.bureauBacklogCount.urgent;
-          totals.superUrgent = response.bureauBacklogCount.superUrgent;
           totals.allReplies = response.bureauBacklogCount.allReplies;
           totals.modAllReplies = totals.nonUrgent + totals.urgent;
-          //totals.allReplies = totals.nonUrgent + totals.urgent + totals.superUrgent;
 
           officerList = getStaffList(response.bureauOfficerAllocatedReplies);
 
@@ -74,7 +71,6 @@
           allReplies: 0,
           nonUrgent: 0,
           urgent: 0,
-          superUrgent: 0,
         }
         , rejectUpdate = true
 
@@ -128,13 +124,11 @@
 
           newTotals.nonUrgent = apiResponse.bureauBacklogCount.nonUrgent;
           newTotals.urgent = apiResponse.bureauBacklogCount.urgent;
-          newTotals.superUrgent = apiResponse.bureauBacklogCount.superUrgent;
           newTotals.allReplies = apiResponse.bureauBacklogCount.allReplies;
 
           // JDB-4986 - only show warning message if backlog counts are lower than expected
           if ((newTotals.nonUrgent >= getCountInt(req.body.backlogNonUrgent)) &&
-          (newTotals.urgent >= getCountInt(req.body.backlogUrgent)) &&
-          (newTotals.superUrgent >= getCountInt(req.body.backlogSuperUrgent))){
+          (newTotals.urgent >= getCountInt(req.body.backlogUrgent))){
 
             rejectUpdate = false;
             return;
@@ -203,8 +197,7 @@
     var staffData
       , staffList = []
       , totalNonUrgent = 0
-      , totalUrgent = 0
-      , totalSuperUrgent = 0;
+      , totalUrgent = 0;
 
     staffList = [];
 
@@ -215,7 +208,6 @@
           name: obj.name,
           countNonUrgent: obj.nonUrgent,
           countUrgent: obj.urgent,
-          countSuperUrgent: obj.superUrgent,
           countTotal: obj.allReplies
         }
       );
@@ -225,15 +217,13 @@
 
       totalNonUrgent += obj.nonUrgent;
       totalUrgent += obj.urgent;
-      totalSuperUrgent += obj.superUrgent;
 
     });
 
     staffData = {
       totalNonUrgent: totalNonUrgent,
       totalUrgent: totalUrgent,
-      totalSuperUrgent: totalSuperUrgent,
-      totalAll: totalNonUrgent + totalUrgent + totalSuperUrgent,
+      totalAll: totalNonUrgent + totalUrgent,
       officerList: staffList
     }
 
@@ -245,7 +235,6 @@
     var allocationData
       , nonUrgentCount = getCountInt(responseData.allocateNonUrgent)
       , urgentCount = getCountInt(responseData.allocateUrgent)
-      , superUrgentCount = getCountInt(responseData.allocateSuperUrgent)
       , selectedStaff = responseData.selectedstaff
       , index = 0
       , officerList=[];
@@ -255,8 +244,7 @@
         officerList.push(
           {'userId': selectedStaff[index],
             'nonUrgentCount': nonUrgentCount,
-            'urgentCount': urgentCount,
-            'superUrgentCount': superUrgentCount
+            'urgentCount': urgentCount
           }
         );
       }
@@ -271,8 +259,7 @@
           {
             'userId': selectedStaff,
             'nonUrgentCount': nonUrgentCount,
-            'urgentCount': urgentCount,
-            'superUrgentCount': superUrgentCount
+            'urgentCount': urgentCount
           }
         ]
       }
