@@ -541,6 +541,8 @@
 
     $('#'+ jn +'-recordCheckOut').click(recordCheckoutTimeHandler);
 
+    attachClickListener(jn);
+
     updateJurorsCount(attendeesTable.children()[2]);
   }
 
@@ -604,17 +606,38 @@
   function checkForDuplicateRow(jn) {
     var duplicate = $('#' + jn + '-row');
 
-    if (duplicate.length) return true;
-
-    return false;
+    return duplicate.length > 0;
   }
 
   function checkForExistingFailedRow(jn) {
     var duplicate = $('#' + jn + '-row[data-failed=true]');
 
-    if (duplicate.length) return true;
-
-    return false;
+    return duplicate.length > 0;
   }
+
+  function attachClickListener(jn) {
+    $(`#run-police-check-${jn}`).click(function(e) {
+      e.preventDefault();
+
+      $.ajax({
+        url: `/juror-management/attendance/${jn}/run-police-check`,
+        method: 'POST',
+        data: {
+          _csrf: csrfToken.val(),
+        },
+      }).then(function() {
+        $(`#${jn}-police-check`).text('In progress');
+      }).catch(function() {
+        $(`#${jn}-police-check`).html('<span class="mod-red-text">Failed</span>');
+      });
+    });
+  }
+
+  $('[id*="run-police-check-"]').each(function(i, el) {
+    var jn = $(el).data('juror-number');
+
+    attachClickListener(jn);
+  });
+
 })();
 
