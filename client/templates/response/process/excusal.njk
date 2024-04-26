@@ -71,14 +71,13 @@
           errorMessage: excusalCodeError
         }) }}
 
-
         {{ govukRadios({
           idPrefix: "excusalDecision",
           name: "excusalDecision",
           fieldset: {
             legend: {
               text: "Select your decision",
-              isPageHeading: true,
+              isPageHeading: false,
               classes: "govuk-body govuk-!-font-weight-bold"
             }
           },
@@ -115,5 +114,3 @@
   </div>
 
 {% endblock %}
-
-
