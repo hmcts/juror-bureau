@@ -63,7 +63,7 @@
           {% endif %}
 
           <div class="trial-managment juror-option">
-            <h3 class="govuk-heading-m govuk-!-margin-bottom-2">{{ juror.first_name }} {{ juror.last_name }}</h3>
+            <h2 class="govuk-heading-m govuk-!-margin-bottom-2">{{ juror.first_name }} {{ juror.last_name }}</h2>
             <p class="govuk-body"><a href="{{ url('juror-record.overview.get', { jurorNumber: juror.juror_number }) }}" class="govuk-link">{{ juror.juror_number }}</a></p>
             {{ govukRadios({
               classes: "govuk-radios--small",

@@ -1,7 +1,7 @@
 {% if hasModAccess %}
   <div class="current-app{{ '__with-name' if currentApp }}{{ '__turquoise' if currentApp === 'System administration' }}">
     <div class="current-app__container">
-      <h3 class="govuk-heading-s current-app__container-title">{{currentApp}}</h3>
+      <span class="govuk-heading-s current-app__container-title">{{currentApp}}</span>
     </div>
   </div>
 {% else %}
