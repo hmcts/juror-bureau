@@ -49,10 +49,17 @@
               req.params['jurorNumber'],
             );
           } catch (err) {
-            // TODO: handle error
-          }
+            app.logger.crit('Failed to fetch juror attendance details: ', {
+              auth: req.session.authentication,
+              data: {
+                jurorNumber: req.params['jurorNumber'],
+                locCode: req.session.locCode,
+              },
+              error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+            });
 
-          console.log('attendanceData', attendanceData);
+            return res.render('_errors/generic');
+          }
 
           return res.render('juror-management/update-juror-record.njk', {
             jurorNumber: req.params.jurorNumber,
