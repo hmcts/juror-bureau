@@ -14,11 +14,6 @@
 
 {% set updateOptions = [] %}
 
-{# maybe this can be removed because it would be the default option #}
-{# {% if (jurorStatus | arrayIncludes(["Juror", "Panel", "FailedToAttend", "Completed", "Transferred"])) and owner !== "400" %}
-  {% set updateOptions = [] %}
-{% endif %} #}
-
 {# bureau owned options #}
 {% if jurorStatus === "Summoned" and owner === "400" %}
   {% set updateOptions = [responded, deferral, excusal, disqualify, postpone, deceased, undeliverable, reassign] %}
@@ -96,11 +91,6 @@
 {% if jurorStatus === "FailedToAttend" and owner !== "400" and isSJO %}
   {% set updateOptions = [undoFailedToAttend] %}
 {% endif %}
-
-{# uncomplete is not implemented through the juror record #}
-{# {% if jurorStatus === "Completed" and owner !== "400" and isSJO %}
-  {% set updateOptions = [uncomplete] %}
-{% endif %} #}
 
 {% if updateOptions.length > 0 %}
   {{ govukRadios({
