@@ -58,17 +58,6 @@
 
         {% include "./_partials/juror-update-options.njk" %}
 
-        <div class="govuk-button-group">
-          {{ govukButton({
-            text: "Continue",
-            type: "submit",
-            attributes: {
-              id: "continueButton"
-            }
-          }) }}
-          <a href="{{ cancelUrl }}" class="govuk-link" id="cancelAnchor">Cancel</a>
-        </div>
-
         <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
       </form>
     </div>

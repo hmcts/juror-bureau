@@ -16,7 +16,7 @@
 
   module.exports.index = function(app) {
     return function(req, res) {
-      var successCB = function(response) {
+      var successCB = async function(response) {
           var processUrl
             , cancelUrl
             , tmpErrors
@@ -38,8 +38,28 @@
           processUrl = app.namedRoutes.build('juror.update.post', { jurorNumber: req.params['jurorNumber'] });
           cancelUrl = app.namedRoutes.build('juror-record.overview.get', { jurorNumber: req.params['jurorNumber'] });
 
+          let attendanceData;
+
+          try {
+            attendanceData = await jurorRecordObject.attendanceDetails.get(
+              require('request-promise'),
+              app,
+              req.session.authToken,
+              req.session.locCode,
+              req.params['jurorNumber'],
+            );
+          } catch (err) {
+            // TODO: handle error
+          }
+
+          console.log('attendanceData', attendanceData);
+
           return res.render('juror-management/update-juror-record.njk', {
             jurorNumber: req.params.jurorNumber,
+            owner: req.session.jurorCommonDetails.owner,
+            excusalCode: req.session.jurorCommonDetails.excusalCode,
+            attendances: attendanceData.attendances,
+            onCall: attendanceData.on_call,
             processUrl,
             cancelUrl,
             radioChecked: radioChecked,

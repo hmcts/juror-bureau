@@ -458,8 +458,6 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        console.log(err);
-
         return res.render('_errors/generic');
       }
     };

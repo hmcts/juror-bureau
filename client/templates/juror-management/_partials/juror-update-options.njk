@@ -2,7 +2,6 @@
 {% set excusal = { value: "excusal", text: "Excusal - grant or refuse" } %}
 {% set reassign = { value: "reassign", text: "Reassign to another pool" } %}
 {% set postpone = { value: "postpone", text: "Postpone service start date" } %}
-{% set withdraw = { value: "withdraw", text: "Withdraw juror from service" } %}
 {% set undeliverable = { value: "undeliverable", text: "Mark summons as undeliverable" } %}
 {% set disqualify = { value: "disqualify", text: "Disqualify juror" } %}
 {% set responded = { value: "responded", text: "Mark as responded" } %}
@@ -13,30 +12,115 @@
 {% set undoFailedToAttend = { value: "undo-failed-to-attend", text: "Undo ‘Failed to attend' juror status" } %}
 {% set deceased = { value: "deceased", text: "Mark as deceased", checked: radioChecked === "deceased", conditional: { html: deceasedHtml } } %}
 
-{% set updateOptions = [deferral, excusal, reassign, postpone, withdraw, undeliverable, deceased, disqualify, responded] %}
+{% set updateOptions = [] %}
 
-{% if jurorStatus === "Responded" and isCourtUser %}
-  {% set updateOptions = [deferral, excusal, reassign, postpone, withdraw, undeliverable, deceased, disqualify, responded, call, transfer, failedToAttend] %}
+{# maybe this can be removed because it would be the default option #}
+{# {% if (jurorStatus | arrayIncludes(["Juror", "Panel", "FailedToAttend", "Completed", "Transferred"])) and owner !== "400" %}
+  {% set updateOptions = [] %}
+{% endif %} #}
+
+{# bureau owned options #}
+{% if jurorStatus === "Summoned" and owner === "400" %}
+  {% set updateOptions = [responded, deferral, excusal, disqualify, postpone, deceased, undeliverable, reassign] %}
 {% endif %}
 
-{% if jurorStatus === "Deferred" %}
+{% if jurorStatus === "Responded" and owner === "400" %}
+  {% set updateOptions = [deferral, excusal, disqualify, postpone, reassign] %}
+{% endif %}
+
+{% if jurorStatus === "Excused" and owner === "400" %}
+  {% set updateOptions = [responded, deferral, excusal, disqualify, postpone, deceased] %}
+{% endif %}
+
+{% if jurorStatus === "Disqualified" and owner === "400" %}
+  {% set updateOptions = [responded, deferral, excusal, postpone, deceased] %}
+{% endif %}
+
+{% if jurorStatus === "Excused" and excusalCode === "D" and owner === "400" %}
+  {% set updateOptions = [responded, deferral, excusal, postpone, disqualify] %}
+{% endif %}
+
+{% if jurorStatus === "Deferred" and owner === "400" %}
+  {% set updateOptions = [deferral, excusal, postpone, disqualify, deceased] %}
+{% endif %}
+
+
+
+{# court owned options #}
+{% if jurorStatus === "Summoned" and owner !== "400" %}
+  {% set updateOptions = [responded, deferral, excusal, disqualify, postpone, deceased, undeliverable] %}
+{% endif %}
+
+{# responded and no attendances #}
+{% if jurorStatus === "Responded" and attendances === 0 and owner !== "400" %}
+  {% set updateOptions = [deferral, excusal, disqualify, postpone, deceased, complete, failedToAttend] %}
+{% endif %}
+
+{# responded and attendances #}
+{% if jurorStatus === "Responded" and attendances > 0 and owner !== "400" %}
+  {% set updateOptions = [disqualify, deceased, complete] %}
+{% endif %}
+
+{% if jurorStatus === "Excused" and owner !== "400" %}
+  {% set updateOptions = [responded, deferral, excusal, disqualify, postpone, deceased] %}
+{% endif %}
+
+{% if jurorStatus === "Disqualified" and owner !== "400" %}
+  {% set updateOptions = [responded, deferral, excusal, postpone, deceased, complete] %}
+{% endif %}
+
+{# deceased and no attendances #}
+{% if jurorStatus === "Excused" and excusalCode === "D" and attendances === 0 and owner !== "400" %}
+  {% set updateOptions = [responded, deferral, excusal, disqualify, postpone, complete] %}
+{% endif %}
+
+{# deceased and attendances #}
+{% if jurorStatus === "Excused" and excusalCode === "D" and attendances > 0 and owner !== "400" %}
+  {% set updateOptions = [responded, disqualify, complete] %}
+{% endif %}
+
+{% if jurorStatus === "Deferred" and owner !== "400" %}
   {% set updateOptions = [deferral, excusal, disqualify, postpone, deceased] %}
 {% endif %}
 
-{% if isCourtUser %}
-  {% set updateOptions = [deferral, excusal, reassign, postpone, withdraw, undeliverable, deceased, disqualify, responded, call, complete] %}
+{# responded and juror is on call and no attendances #}
+{% if jurorStatus === "Responded" and attendances === 0 and onCall and owner !== "400" %}
+  {% set updateOptions = [deferral, excusal, disqualify, postpone, deceased, complete, failedToAttend] %}
 {% endif %}
 
-{% if isSJO %}
-  {% set updateOptions = [deferral, excusal, reassign, postpone, withdraw, undeliverable, deceased, disqualify, responded, call, complete, failedToAttend] %}
+{# responded an juror is on call and has attendances #}
+{% if jurorStatus === "Responded" and attendances > 0 and onCall and owner !== "400" %}
+  {% set updateOptions = [disqualify, deceased, complete] %}
 {% endif %}
 
-{% if jurorStatus === "FailedToAttend" and isSJO %}
-  {% set updateOptions = [deferral, excusal, reassign, postpone, withdraw, undeliverable, deceased, disqualify, responded, call, complete, undoFailedToAttend] %}
+{% if jurorStatus === "FailedToAttend" and owner !== "400" and isSJO %}
+  {% set updateOptions = [undoFailedToAttend] %}
 {% endif %}
 
-{{ govukRadios({
-  name: "jurorRecordUpdate",
-  errorMessage: jurorRecordUpdate,
-  items: updateOptions
-}) }}
+{# uncomplete is not implemented through the juror record #}
+{# {% if jurorStatus === "Completed" and owner !== "400" and isSJO %}
+  {% set updateOptions = [uncomplete] %}
+{% endif %} #}
+
+{% if updateOptions.length > 0 %}
+  {{ govukRadios({
+    name: "jurorRecordUpdate",
+    errorMessage: jurorRecordUpdate,
+    items: updateOptions
+  }) }}
+
+  <div class="govuk-button-group">
+    {{ govukButton({
+      text: "Continue",
+      type: "submit",
+      attributes: {
+        id: "continueButton"
+      }
+    }) }}
+    <a href="{{ cancelUrl }}" class="govuk-link" id="cancelAnchor">Cancel</a>
+  </div>
+
+{% else %}
+  <p class="govuk-body">There are no options available for this juror.</p>
+  <a href="{{ cancelUrl }}" class="govuk-link" id="goBackAnchor">Go back</a>
+{% endif %}
