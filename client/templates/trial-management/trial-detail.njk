@@ -80,7 +80,7 @@
   },
   {
     text: "Panel list (summary)",
-    href: "#",
+    href: url("reports.panel-summary.report.get", {'filter': trial.trial_number}),
     classes: "govuk-button--secondary"
   },
   {
@@ -130,10 +130,9 @@
     </div>
     <div class="govuk-grid-column-one-half">
       <div class="govuk-button-group mod-flex mod-justify-end">
-        {% if trial.is_active %}
-          
-          <div class="moj-button-menu">
-            <div class="moj-button-menu__wrapper">
+        <div class="moj-button-menu">
+          <div class="moj-button-menu__wrapper">
+            {% if trial.is_active %}
               {% if addPanelStatus %}
                 {{ govukButton({
                   text: "Add panel members",
@@ -154,20 +153,6 @@
                   classes: "govuk-button--secondary",
                   href: url('trial-management.trials.end-trial.get', {trialNumber: trial.trial_number, locationCode: locationCode})
                 }) }}
-
-                {{ mojButtonMenu({
-                  items: [
-                    {
-                      text: "Jury list",
-                      href: "#",
-                      classes: "govuk-button--secondary"
-                    }
-                  ].concat(standardPrintMenuItems) if not trail.is_jury_empanelled else standardPrintMenuItems,
-                  attributes: {
-                    id: 'printButtonMenu'
-                  }
-                }) }}
-                
               {% else %}
                 {% if addPanelStatus === false %}
                   {{ govukButton({
@@ -188,9 +173,21 @@
                 }) }}
               {% endif %}
               
-            </div>
-          </div> 
-        {% endif %} 
+            {% endif %}
+            {{ mojButtonMenu({
+              items: [
+                {
+                  text: "Jury list",
+                  href: "#",
+                  classes: "govuk-button--secondary"
+                }
+              ].concat(standardPrintMenuItems) if trial.is_jury_empanelled else standardPrintMenuItems,
+              attributes: {
+                id: 'printButtonMenu'
+              }
+            }) }}
+          </div>
+        </div>  
       </div>
     </div>
   </div>

@@ -130,6 +130,18 @@
       return printUrl;
     };
 
+    const buildBackLinkUrl = function() {
+      if (reportType.searchUrl) {
+        return reportType.searchUrl;
+      }
+      if (reportType.search === 'trial') {
+        return app.namedRoutes.build('trial-management.trials.detail.get', {
+          trialNumber: req.params.filter, locationCode: req.session.authentication.locCode
+        });
+      }
+      return app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : '');
+    };
+
     delete req.session.reportFilter;
 
     if (reportType.search) {
@@ -137,6 +149,9 @@
         config.poolNumber = req.params.filter;
       } else if (reportType.search === 'date') {
         config.date = req.params.filter;
+      } else if (reportType.search === 'trial') {
+        config.trialNumber = req.params.filter;
+        config.locCode = req.session.authentication.locCode;
       }
     }
 
@@ -219,9 +234,7 @@
         printUrl: buildPrintUrl(),
         backLinkUrl: {
           built: true,
-          url: reportType.searchUrl
-            ? reportType.searchUrl
-            : app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : ''),
+          url: buildBackLinkUrl(),
         },
       });
     } catch (e) {
