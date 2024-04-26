@@ -3,30 +3,46 @@
 
 const _ = require('lodash');
 const summonsValidator = require('../../../config/validation/summons-management');
-const jurorRecordObject = require('../../../objects/juror-record');
+const digitalResponseObj = require('../../../objects/response-detail').object;
+const paperResponseObj = require('../../../objects/paper-reply').paperReplyObject;
 const validate = require('validate.js');
 
 module.exports.checkOwner = function(app) {
   return async function(req, res, next) {
+    const responseObj = req.params['type'] === 'paper' ? paperResponseObj : digitalResponseObj;
+
     try {
-      await jurorRecordObject.record.get(
+      const response = await responseObj.get(
         require('request-promise'),
         app,
         req.session.authToken,
-        'overview',
-        req.params.id,
-        req.session.locCode,
+        req.params['id'],
+        req.session.hasModAccess,
       );
+
+      const currentOwner = req.params['type'] === 'paper' ?
+        response.data.current_owner : response.current_owner;
+
+      if (currentOwner !== req.session.authentication.locCode) {
+        app.logger.crit('Current user does not have sufficient permission to process this summons reply: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+        });
+
+        return res.status(403).render('_errors/403.njk');
+      }
+
       next();
 
     } catch (err) {
 
-      if (err.error.status === 403) {
+      if (typeof err.error !== 'undefined' && err.error.status === 403) {
         app.logger.crit('Current user does not have sufficient permission to process this summons reply: ', {
           auth: req.session.authentication,
           jwt: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
+
         return res.status(403).render('_errors/403.njk');
       }
       app.logger.crit('Failed to fetch juror details', {
