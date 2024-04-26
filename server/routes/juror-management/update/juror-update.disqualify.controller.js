@@ -6,6 +6,7 @@ const disqualifyValidator = require('../../../config/validation/disqualify-mod')
 const { getDisqualificationReasons, disqualifyJuror } = require('../../../objects/disqualify-mod');
 const { Logger } = require('../../../components/logger');
 const { makeManualError } = require('../../../lib/mod-utils');
+const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
 
 module.exports.getDisqualifyJurorRecord = function(app) {
   return async function(req, res) {
@@ -87,6 +88,49 @@ module.exports.postDisqualifyJurorRecord = function(app) {
       return res.redirect(app.namedRoutes.build('juror.update.disqualify.get', { jurorNumber }));
     }
 
+    req.session.bannerMessage = 'Disqualified';
+
+    if (res.locals.isCourtUser) {
+      return res.redirect(app.namedRoutes.build('juror.update.disqualify.letter.get', {
+        jurorNumber: req.params.jurorNumber,
+      }));
+    }
+
     return res.redirect(app.namedRoutes.build('juror-record.overview.get', { jurorNumber }));
+  };
+};
+
+module.exports.getDisqualifyLetter = function(app) {
+  return function(req, res) {
+    return flowLetterGet(req, res, {
+      serviceTitle: 'send letter',
+      pageIdentifier: 'process - disqualify',
+      currentApp: '',
+      letterMessage: 'a disqualification',
+      letterType: 'withdrawal',
+      postUrl: app.namedRoutes.build('juror.update.disqualify.letter.post', {
+        jurorNumber: req.params.jurorNumber,
+      }),
+      cancelUrl: app.namedRoutes.build('juror-record.overview.get', {
+        jurorNumber: req.params.jurorNumber,
+      }),
+    });
+  };
+};
+
+module.exports.postDisqualifyLetter = function(app) {
+  return function(req, res) {
+    console.log('HELLO');
+    return flowLetterPost(req, res, {
+      errorRoute: app.namedRoutes.build('juror.update.disqualify.letter.get', {
+        jurorNumber: req.params.jurorNumber,
+      }),
+      pageIdentifier: 'process - disqualify',
+      serviceTitle: 'send letter',
+      currentApp: '',
+      completeRoute: app.namedRoutes.build('juror-record.overview.get', {
+        jurorNumber: req.params.jurorNumber,
+      }),
+    });
   };
 };

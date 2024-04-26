@@ -79,7 +79,7 @@ module.exports = function(app) {
     auth.verify,
     auth.isSJO,
     failedToAttendController.postUndoFailedToAttend(app));
-  
+
   app.get('/juror-management/juror/:jurorNumber/update/disqualify',
     'juror.update.disqualify.get',
     auth.verify,
@@ -88,6 +88,14 @@ module.exports = function(app) {
     'juror.update.disqualify.post',
     auth.verify,
     disqualifyController.postDisqualifyJurorRecord(app));
+  app.get('/juror-management/juror/:jurorNumber/update/disqualify/letter'
+    , 'juror.update.disqualify.letter.get'
+    , auth.verify
+    , disqualifyController.getDisqualifyLetter(app));
+  app.post('/juror-management/juror/:jurorNumber/update/disqualify/letter'
+    , 'juror.update.disqualify.letter.post'
+    , auth.verify
+    , disqualifyController.postDisqualifyLetter(app));
 
   app.get('/juror-management/juror/:jurorNumber/update/responded',
     'juror.update.responded.get',
