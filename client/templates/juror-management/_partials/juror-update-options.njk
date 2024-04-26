@@ -90,6 +90,11 @@
   {% set updateOptions = [undoFailedToAttend] %}
 {% endif %}
 
+{# user type agnostic options #}
+{% if jurorStatus === "Undeliverable" %}
+  {% set updateOptions = [responded, deferral, excusal, postpone, disqualify] %}
+{% endif %}
+
 {% if updateOptions.length > 0 %}
   {{ govukRadios({
     name: "jurorRecordUpdate",
