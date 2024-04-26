@@ -17,7 +17,6 @@ module.exports.checkOwner = function(app) {
         app,
         req.session.authToken,
         req.params['id'],
-        req.session.hasModAccess,
       );
 
       const currentOwner = req.params['type'] === 'paper' ?
