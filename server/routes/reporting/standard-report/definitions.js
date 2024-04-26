@@ -131,6 +131,20 @@
         ],
         printLandscape: true,
       },
+      'panel-summary': {
+        title: 'Panel list (summary)',
+        apiKey: 'PanelSummaryReport',
+        search: 'trial',
+        headings: [
+          'trialNumber',
+          'reportDate',
+          'names',
+          'reportTime',
+          'courtRoom',
+          'courtName',
+          'judge',
+        ],
+      },
     };
   };
 })();
