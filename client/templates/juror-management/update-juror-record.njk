@@ -1,16 +1,20 @@
-{% extends "../layouts/default-no-nav.njk" %}
+{% extends "layouts/default-no-nav.njk" %}
 
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 
-{% block page_title %}
-  {{ serviceName }} - update juror{% endblock %}
-
-{% block page_identifier %}Update juror record{% endblock %}
+{% block page_title %}{{ serviceName }} - Update juror record - Select option{% endblock %}
+{% block page_identifier %}Update juror record - Select option{% endblock %}
 
 {% block content %}
+
+  {% if errors.items["jurorDeceased"] %}
+    {% set deceasedCommentError = {"text": errors.items['jurorDeceased'][0].details} %}
+  {% else %}
+    {% set deceasedCommentError = undefined %}
+  {% endif %}
 
   {% set deceasedHtml %}
     {{ govukTextarea ({
@@ -38,67 +42,6 @@
     {% endif %}
   {% endset %}
 
-  {% set updateOptions =
-    [
-      {
-        value: "deferral",
-        text: "Deferral - grant or refuse"
-      },
-      {
-        value: "excusal",
-        text: "Excusal - grant or refuse"
-      },
-      {
-        value: "reassign",
-        text: "Reassign to another pool"
-      },
-      {
-        value: "postpone",
-        text: "Postpone service start date"
-      },
-      {
-        value: "undeliverable",
-        text: "Mark summons as undeliverable"
-      },
-      {
-        value: "deceased",
-        text: "Mark as deceased",
-        checked: radioChecked === "deceased",
-        conditional: {
-          html: deceasedHtml
-        }
-      },
-      {
-        value: "disqualify",
-        text: "Disqualify juror"
-      },
-      {
-        value: "responded",
-        text: "Mark as responded"
-      },
-      {
-        value: "call",
-        text: "Place juror ‘on call’"
-      },
-      {
-        value: "transfer",
-        text: "Transfer to another court"
-      } if jurorStatus === "Responded" and isCourtUser,
-      {
-        value: "complete",
-        text: "Complete service"
-      } if isCourtUser,
-      {
-        value: "failed-to-attend", 
-        text: "Change juror status to ‘Failed to attend’"
-      } if jurorStatus === "Responded" and isCourtUser,
-      {
-        value: "undo-failed-to-attend", 
-        text: "Undo ‘Failed to attend' juror status"
-      } if jurorStatus === "FailedToAttend" and isSJO
-    ]
-  %}
-
   {% include "includes/errors.njk" %}
 
   <div class="govuk-grid-row">
@@ -113,28 +56,7 @@
           {% set jurorRecordUpdate = undefined %}
         {% endif %}
 
-        {% if errors.items["jurorDeceased"] %}
-          {% set deceasedCommentError = {"text": errors.items['jurorDeceased'][0].details} %}
-        {% else %}
-          {% set deceasedCommentError = undefined %}
-        {% endif %}
-        
-        {{ govukRadios({
-          name: "jurorRecordUpdate",
-          errorMessage: jurorRecordUpdate,
-          items: updateOptions
-        }) }}
-
-        <div class="govuk-button-group">
-          {{ govukButton({
-            text: "Continue",
-            type: "submit",
-            attributes: {
-              id: "continueButton"
-            }
-          }) }}
-          <a href="{{ cancelUrl }}" class="govuk-link" id="cancelAnchor">Cancel</a>
-        </div>
+        {% include "./_partials/juror-update-options.njk" %}
 
         <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
       </form>

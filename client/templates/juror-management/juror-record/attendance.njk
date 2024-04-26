@@ -105,7 +105,7 @@
   </div>
 
   <span>
-    {% if juror.commonDetails.jurorStatus == 'Responded' or juror.commonDetails.jurorStatus == 'Panelled' or juror.commonDetails.jurorStatus == 'Juror' %}
+    {% if juror.commonDetails.jurorStatus == 'Responded' or juror.commonDetails.jurorStatus == 'Panelled' or juror.commonDetails.jurorStatus == 'Juror' or juror.commonDetails.jurorStatus == 'Completed' %}
       {{ govukButton({
         text: "Add attendance day",
         href: url('juror-record.attendance.add-attendance-date.get', {
