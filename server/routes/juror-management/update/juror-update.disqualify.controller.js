@@ -120,7 +120,6 @@ module.exports.getDisqualifyLetter = function(app) {
 
 module.exports.postDisqualifyLetter = function(app) {
   return function(req, res) {
-    console.log('HELLO');
     return flowLetterPost(req, res, {
       errorRoute: app.namedRoutes.build('juror.update.disqualify.letter.get', {
         jurorNumber: req.params.jurorNumber,
