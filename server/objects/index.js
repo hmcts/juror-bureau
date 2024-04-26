@@ -13,6 +13,7 @@
   const jurorRecord = require('./juror-record');
   const jurorAttendance = require('./juror-attendance');
   const createTrial = require('./create-trial');
+  const policeCheck = require('./police-check');
 
   module.exports = {
     ...requestPool,
@@ -24,6 +25,7 @@
     ...jurorRecord,
     ...jurorAttendance,
     ...createTrial,
+    ...policeCheck,
   };
 
 })();
