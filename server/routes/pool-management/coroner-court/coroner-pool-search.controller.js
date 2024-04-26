@@ -12,8 +12,6 @@ module.exports.getSearchPools = function(app) {
     let courts;
     let urlPrefix;
 
-    debugger;
-
     try {
       const _courts = await fetchAllCourtsDAO.get(req);
 
@@ -112,8 +110,6 @@ function buildPayload({ poolNumber, requestedBy, dateRequested, court, page, sor
 
 function buildQueryParams(data) {
   const params = [];
-
-  debugger;
 
   if (data.poolNumber) {
     params.push(`poolNumber=${data.poolNumber}`);
