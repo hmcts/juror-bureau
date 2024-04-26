@@ -9,7 +9,7 @@
 
           <div class="govuk-body">
             {% if method === "paper" %}
-              <a id="notesEditButton" class="govuk-link" href="#">Add or change</a>
+              <a id="notesEditButton" class="govuk-link" href="{{ url('juror-record.notes-summons-edit.get', { jurorNumber: response.jurorNumber }) }}">Add or change</a>
             {% else %}
               <a id="notesEditButton" class="govuk-link" href="{{ url('response.detail.notes.edit.get', { id: response.jurorNumber }) }}">Add or change</a>
             {% endif %}

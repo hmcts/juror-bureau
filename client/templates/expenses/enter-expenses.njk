@@ -67,7 +67,7 @@
           <a href="{{ pagination.nextLink }}">{{ rightArrowSVG({ colour: "blue" }) }}</a>
         {% endif %}
       </span>
-      <h1 class="govuk-heading-m">{{ expensesData.date_of_expense | dateFilter("YYYY-MM-DD", "dddd DD MMMM YYYY") }}</h1>
+      <h2 class="govuk-heading-m">{{ expensesData.date_of_expense | dateFilter("YYYY-MM-DD", "dddd DD MMMM YYYY") }}</h2>
       
       {% if status === "draft" %}
         {{ govukTag({

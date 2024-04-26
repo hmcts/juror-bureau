@@ -116,6 +116,21 @@
           'courtName',
         ],
       },
+      'pool-status': {
+        title: 'Current pool status report',
+        apiKey: 'CurrentPoolStatusReport',
+        search: 'poolNumber',
+        headings: [
+          'poolNumber',
+          'reportDate',
+          'poolType',
+          'reportTime',
+          'serviceStartDate',
+          'courtName',
+          'totalPoolMembers',
+        ],
+        printLandscape: true,
+      },
     };
   };
 })();

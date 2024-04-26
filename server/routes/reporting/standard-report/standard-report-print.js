@@ -26,10 +26,24 @@ async function standardReportPrint(app, req, res, reportKey, data) {
   const buildStandardTableRows = function(rows, tableHeadings) {
     return [
       ...rows.map(row => tableHeadings.map(header => {
-        let text = tableDataMappers[header.dataType](row[snakeToCamel(header.id)]);
+        let text = tableDataMappers[header.dataType](row[snakeToCamel(header.id)]) || '-';
 
         if (header.id === 'juror_postcode') {
           text = text.toUpperCase();
+        }
+        if (header.id === 'contact_details') {
+          const details = text.split(', ');
+          let contactText = '';
+
+          details.forEach((element) => {
+            contactText = contactText
+              + `${
+                element
+              }\n`;
+          });
+          return ({
+            text: contactText,
+          });
         }
 
         return { text };
@@ -79,6 +93,8 @@ async function standardReportPrint(app, req, res, reportKey, data) {
           footer: [],
         },
       ],
+    }, {
+      pageOrientation: reportData.printLandscape ? 'landscape' : 'portrait',
     });
 
     res.contentType('application/pdf');
