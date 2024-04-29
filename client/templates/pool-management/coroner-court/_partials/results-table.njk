@@ -1,0 +1,51 @@
+{% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
+
+{% set headings = [
+  {
+    id: "poolNumber",
+    value: "Pool number",
+    sort: sortOrder if sortBy === "poolNumber" else "none"
+  },
+  {
+    id: "court",
+    value: "Court name",
+    sort: sortOrder if sortBy === "court" else "none"
+  },
+  {
+    id: "dateRequested",
+    value: "Date requested",
+    sort: sortOrder if sortBy === "dateRequested" else "none"
+  },
+  {
+    id: "requestedBy",
+    value: "Requested by",
+    sort: sortOrder if sortBy === "requestedBy" else "none"
+  }
+] %}
+
+{% set rows = [] %}
+{% for pool in results.data %}
+  {% set row = (rows.push([
+    {
+      html: ('<a href="' + url('pool-overview.get', { poolNumber: pool.pool_number }) + '" class="govuk-link">' + pool.pool_number + "</a>") | safe
+    },
+    {
+      text: pool.court_name | capitalizeFully
+    },
+    {
+      text: pool.requested_date | dateFilter("YYYY-MM-DD", "ddd D MMM yyyy")
+    },
+    {
+      text: pool.requested_by
+    }
+  ]), rows) %}
+{% endfor %}
+
+{{ modSortableTable({
+  id: "coronerPoolsTable",
+  caption: "Coroner court pools",
+  captionClass: "govuk-visually-hidden",
+  head: headings,
+  rows: rows,
+  url: urlPrefix
+}) }}
