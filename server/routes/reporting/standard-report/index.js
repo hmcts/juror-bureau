@@ -52,6 +52,7 @@
     standardReportRoutes(app, 'incomplete-service');
     standardReportRoutes(app, 'pool-status');
     standardReportRoutes(app, 'panel-summary');
+    standardReportRoutes(app, 'bulk-print-audit');
   };
 
 })();

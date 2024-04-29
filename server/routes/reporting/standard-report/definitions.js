@@ -145,6 +145,17 @@
           'judge',
         ],
       },
+      'bulk-print-audit': {
+        title: 'Bulk-print audit report',
+        apiKey: 'BulkPrintAuditReport',
+        search: 'dateRange',
+        headings: [
+          'dateFrome',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+        ],
+      },
     };
   };
 })();
