@@ -43,10 +43,12 @@ module.exports = function(app) {
   app.get('/pool-management/coroner-pool/search',
     'coroner-pool.search.get',
     auth.verify,
+    userType.isBureauUser,
     getSearchPools(app));
   app.post('/pool-management/coroner-pool/search',
     'coroner-pool.search.post',
     auth.verify,
+    userType.isBureauUser,
     postSearchPools(app));
 
   app.get('/pool-management/pool/:poolNumber/coroner/catchment-area',

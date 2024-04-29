@@ -1,9 +1,11 @@
 /* eslint-disable strict */
 
+const _ = require('lodash');
 const { constants, transformCourtNames } = require('../../../lib/mod-utils');
 const { searchCoronerPoolsDAO, fetchAllCourtsDAO } = require('../../../objects');
-const { dateFilter } = require('../../../components/filters');
 const { Logger } = require('../../../components/logger');
+const validate = require('validate.js');
+const coronerPoolSearchValidation = require('../../../config/validation/coroner-pool-search');
 
 module.exports.getSearchPools = function(app) {
   return async function(req, res) {
@@ -14,6 +16,15 @@ module.exports.getSearchPools = function(app) {
 
     try {
       const _courts = await fetchAllCourtsDAO.get(req);
+
+      app.logger.info('Fetched courts list', {
+        auth: req.session.authentication,
+        data: {
+          courts: {
+            count: _courts.courts.length,
+          },
+        },
+      });
 
       courts = transformCourtNames(_courts.courts);
     } catch (err) {
@@ -32,14 +43,27 @@ module.exports.getSearchPools = function(app) {
 
         // delete the headers
         delete results._headers;
+
+        app.logger.info('Successeful search of coroner pools', {
+          auth: req.session.authentication,
+          data: { results },
+        });
       } catch (err) {
         Logger.instance.crit('Failed to search coroner pools', {
           auth: req.session.authentication,
           data: { payload },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
+
+        results = { data: [] };
       }
     }
+
+    const tmpErrors = _.clone(req.session.errors);
+    const tmpFields = _.clone(req.session.formFields);
+
+    delete req.session.errors;
+    delete req.session.formFields;
 
     return res.render('pool-management/coroner-court/coroner-pool-search', {
       backLinkUrl: 'pool-search.get',
@@ -52,16 +76,31 @@ module.exports.getSearchPools = function(app) {
       urlPrefix,
       sortBy: sortBy || 'poolNumber',
       sortOrder,
+      tmpFields,
+      errors: {
+        title: 'There is a problem',
+        count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+        items: tmpErrors,
+      },
     });
   };
 };
 
 module.exports.postSearchPools = function(app) {
   return function(req, res) {
+    const coronerSearchUrl = app.namedRoutes.build('coroner-pool.search.get');
+    const validationResults = validate(req.body, coronerPoolSearchValidation(req.body));
+
+    if (validationResults) {
+      req.session.errors = _.clone(validationResults);
+      req.session.formFields = _.clone(req.body);
+
+      return res.redirect(coronerSearchUrl);
+    }
 
     const query = buildQueryParams(req.body);
 
-    return res.redirect(app.namedRoutes.build('coroner-pool.search.get') + `?${query.join('&')}`);
+    return res.redirect(coronerSearchUrl + `?${query.join('&')}`);
   };
 };
 
@@ -95,12 +134,17 @@ function buildPayload({ poolNumber, requestedBy, dateRequested, court, page, sor
     payload['requested_by'] = requestedBy;
   }
   if (dateRequested) {
-    payload['requested_date'] = dateFilter(dateRequested, 'DD/MM/YYYY', 'YYYY-MM-DD');
+    const dateParts = dateRequested.split('/');
+
+    dateParts[0] = _.padStart(dateParts[0], 2, '0');
+    dateParts[1] = _.padStart(dateParts[1], 2, '0');
+
+    payload['requested_date'] = dateParts.reverse().join('-');
   }
   if (court) {
     const locCode = court.match(/\d+/g);
 
-    if (locCode.length) {
+    if (locCode && locCode.length) {
       payload['location_code'] = locCode[0];
     }
   }

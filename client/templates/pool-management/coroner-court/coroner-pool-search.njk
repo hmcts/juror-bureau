@@ -16,7 +16,19 @@
   {% include "includes/back-link.njk" %}
 {% endblock %}
 
+{% set poolNumberError = undefined %}
+{% if errors.items["poolNumber"] %}
+  {% set poolNumberError = errors.items["poolNumber"][0].details %}
+{% endif %}
+
+{% set dateRequestedError = undefined %}
+{% if errors.items["dateRequested"] %}
+  {% set dateRequestedError = errors.items["dateRequested"][0].details %}
+{% endif %}
+
 {% block content %}
+
+  {% include "includes/errors.njk" %}
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
@@ -36,7 +48,7 @@
           classes: "govuk-input--width-10",
           id: "poolNumber",
           name: "poolNumber",
-          value: poolNumber,
+          value: poolNumber or tmpFields.poolNumber,
           errorMessage: poolNumberError
         }) }}
 
@@ -58,8 +70,8 @@
             text: "Date requested"
           },
           hint: "Use dd/mm/yyyy format. For example, 31/01/2023.",
-          dateValue: dateRequested,
-          dateError: dateError
+          dateValue: dateRequested or tmpFields.dateRequested,
+          dateError: dateRequestedError
         }) }}
 
         {{ govukInput({
