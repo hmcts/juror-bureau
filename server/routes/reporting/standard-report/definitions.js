@@ -156,6 +156,20 @@
           'reportTime',
         ],
       },
+      'panel-detail': {
+        title: 'Panel list (Detail)',
+        apiKey: 'PanelDetailReport',
+        search: 'trial',
+        headings: [
+          'trialNumber',
+          'reportDate',
+          'names',
+          'reportTime',
+          'courtRoom',
+          'courtName',
+          'judge',
+        ],
+      },
     };
   };
 })();
