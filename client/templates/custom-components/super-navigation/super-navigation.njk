@@ -88,7 +88,7 @@
       {{ modSearch({
         action: url('juror-record.search.post'),
         method: "post",
-        classes: "govuk-!-width-one-half",
+        classes: "govuk-!-width-one-half govuk-!-margin-bottom-4",
         input: {
           id: "super-nav-search",
           name: "super-nav-search"
@@ -105,6 +105,11 @@
         },
         csrf: csrftoken
       }) }}
+
+      <p class="govuk-body">
+        <a class="govuk-link" href="{{ url('juror-record.search.get') }}">Advanced search</a>
+      </p>
+
     </div>
   </div>           
 </li>
