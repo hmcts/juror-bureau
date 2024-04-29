@@ -126,11 +126,6 @@
           res.locals.isSystemAdministrator = isSystemAdministrator(req, res);
           res.locals.isTeamLeader = isTeamLeader(req, res);
 
-          // Hold onto a court location id for places that need one. Potentially a problem!
-          if (res.locals.isCourtUser) {
-            req.session.locCode = req.session.authentication.locCode;
-          }
-
           return next();
         });
 
