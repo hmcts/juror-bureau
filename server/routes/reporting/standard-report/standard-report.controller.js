@@ -67,7 +67,7 @@
 
   const standardReportGet = (app, reportKey, isPrint = false) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
-    const config = { reportType: reportType.apiKey, locCode: req.session.locCode };
+    const config = { reportType: reportType.apiKey, locCode: req.session.authentication.locCode };
     const filter = req.session.reportFilter;
 
     const buildStandardTableRows = function(tableData, tableHeadings) {
