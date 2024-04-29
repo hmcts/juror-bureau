@@ -128,7 +128,7 @@
 
           // Hold onto a court location id for places that need one. Potentially a problem!
           if (res.locals.isCourtUser) {
-            req.session.locCode = req.session.authentication.locCode;
+            req.session.reports.locCode = req.session.authentication.locCode;
           }
 
           return next();
