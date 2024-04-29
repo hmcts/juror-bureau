@@ -1,0 +1,179 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "custom-components/autocomplete/macro.njk" import modAutocomplete %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - Coroner court - Search coroner pools{% endblock %}
+{% block page_identifier %}Cororner court - Search coroner pools{% endblock %}
+
+{% set currentApp = "Pool management" %}
+
+{% block beforeContent %}
+  {% include "includes/back-link.njk" %}
+{% endblock %}
+
+{% set poolNumberError = undefined %}
+{% if errors.items["poolNumber"] %}
+  {% set poolNumberError = errors.items["poolNumber"][0].details %}
+{% endif %}
+
+{% set dateRequestedError = undefined %}
+{% if errors.items["dateRequested"] %}
+  {% set dateRequestedError = errors.items["dateRequested"][0].details %}
+{% endif %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-xl">Search for a coroner’s court pool</h1>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      
+      <form action="#" method="POST" id="searchCoronerPoolsForm">
+
+        {{ govukInput({
+          label: {
+            text: "Pool number"
+          },
+          classes: "govuk-input--width-10",
+          id: "poolNumber",
+          name: "poolNumber",
+          value: poolNumber or tmpFields.poolNumber,
+          errorMessage: poolNumberError
+        }) }}
+
+        {% if courts %}
+          {{ modAutocomplete({
+            label: {
+              text: "Court name or location code"
+            },
+            class: "govuk-input--width-20",
+            name: "courtNameOrLocation",
+            id: "courtNameOrLocation",
+            data: courts
+          }) }}
+        {% endif %}
+
+        {{ datePicker({
+          id: "dateRequested",
+          label: {
+            text: "Date requested"
+          },
+          hint: "Use dd/mm/yyyy format. For example, 31/01/2023.",
+          dateValue: dateRequested or tmpFields.dateRequested,
+          dateError: dateRequestedError
+        }) }}
+
+        {{ govukInput({
+          label: {
+            text: "Requested by"
+          },
+          classes: "govuk-input--width-20",
+          id: "requestedBy",
+          name: "requestedBy",
+          value: requestedBy
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Search",
+            attributes: {
+              id: "searchButton"
+            }
+          }) }}
+        
+          <a class="govuk-link" href="{{ url('coroner-pool.search.get') }}">Clear search</a>
+        </div>
+
+        {{ csrfProtection(csrftoken) }}
+
+      </form>
+
+    </div>
+  </div>
+
+  {% if results %}
+
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+    {% if results.data.length === 0 %}
+
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          
+          <h2 class="govuk-heading-m">There are no matching results.</h2>
+
+          <p class="govuk-body">Improve your search by:</p>
+          <ul class="govuk-list govuk-list--bullet">
+            <li>double-checking your spelling</li>
+          </ul>
+
+        </div>
+      </div>
+
+    {% else %}
+
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          
+          <h2 class="govuk-heading-m">{{ results.total_items }} results</h2>
+
+          {% include "./_partials/results-table.njk" %}
+
+          {{ govukPagination({
+            previous: {
+              href: pagination.prev
+            },
+            next: {
+              href: pagination.next
+            },
+            items: pagination.items
+          }) }}
+
+        </div>
+      </div>
+
+    {% endif %}
+
+  {% endif %}
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+
+  <script type="text/javascript">
+    const datePickers = []
+      .slice
+      .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
+
+    datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
+
+    $(document).ready(function() {
+      const courtInput = document.getElementById('courtNameOrLocation');
+
+      courtInput.value = "{{ court }}";
+
+      setTimeout(() => {
+        const selectedCourt = $('#courtNameOrLocation__listbox');
+        if (selectedCourt.length > 0 && selectedCourt[0].children.length > 0) {
+          selectedCourt[0].children[0].click();
+          document.activeElement.blur();
+        }
+      }, 100);
+    });
+  </script>
+
+{% endblock %}
