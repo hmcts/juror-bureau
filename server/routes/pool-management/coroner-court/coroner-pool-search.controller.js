@@ -1,7 +1,7 @@
 /* eslint-disable strict */
 
 const _ = require('lodash');
-const { constants, transformCourtNames } = require('../../../lib/mod-utils');
+const { constants, transformCourtNames, paginationBuilder } = require('../../../lib/mod-utils');
 const { searchCoronerPoolsDAO, fetchAllCourtsDAO } = require('../../../objects');
 const { Logger } = require('../../../components/logger');
 const validate = require('validate.js');
@@ -13,6 +13,7 @@ module.exports.getSearchPools = function(app) {
     let results;
     let courts;
     let urlPrefix;
+    let pagination;
 
     try {
       const _courts = await fetchAllCourtsDAO.get(req);
@@ -40,6 +41,8 @@ module.exports.getSearchPools = function(app) {
       try {
         results = await searchCoronerPoolsDAO.post(req, payload);
         urlPrefix = '?' + buildQueryParams(req.query).join('&');
+
+        pagination = paginationBuilder(results.total_items, req.query.page || 1, req.url);
 
         // delete the headers
         delete results._headers;
@@ -76,6 +79,7 @@ module.exports.getSearchPools = function(app) {
       urlPrefix,
       sortBy: sortBy || 'poolNumber',
       sortOrder,
+      pagination,
       tmpFields,
       errors: {
         title: 'There is a problem',
@@ -104,7 +108,7 @@ module.exports.postSearchPools = function(app) {
   };
 };
 
-function buildPayload({ poolNumber, requestedBy, dateRequested, court, page, sortBy, direction }) {
+function buildPayload({ poolNumber, requestedBy, dateRequested, court, page, sortBy, sortOrder }) {
   const sortByMapper = () => {
     switch (sortBy) {
     case 'poolNumber':
@@ -121,7 +125,7 @@ function buildPayload({ poolNumber, requestedBy, dateRequested, court, page, sor
   };
 
   const payload = {
-    'sort_method': direction === 'ascending' ? 'ASC' : 'DESC',
+    'sort_method': sortOrder === 'ascending' ? 'ASC' : 'DESC',
     'page_limit': constants.PAGE_SIZE,
     'page_number': page || 1,
     'sort_field': sortByMapper(),
