@@ -41,10 +41,14 @@
 
   <div class="report-headings">
     {% for heading in pageHeadings %}
-      <div class="heading-element">
-        <div class="title">{{heading.title}}</div>
-        <div class="value">{{heading.data}}</div>
-      </div>
+      {% if heading.title and heading.data %}
+        <div class="heading-element">
+          <div class="title">{{heading.title}}</div>
+          <div class="value">{{heading.data}}</div>
+        </div>
+      {% else %}
+        &nbsp;
+      {% endif %}
     {% endfor %}
   </div>
 

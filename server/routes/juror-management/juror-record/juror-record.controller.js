@@ -458,8 +458,6 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        console.log(err);
-
         return res.render('_errors/generic');
       }
     };
@@ -643,11 +641,10 @@
     };
   };
 
-  module.exports.getEditNotes = function(app) {
+  module.exports.getEditNotes = function(app, isSummons) {
     return function(req, res) {
       var successCB = function(response) {
           req.session.etag = response.headers.etag;
-
           const jurorNotes = typeof req.session.jurorNotes !== 'undefined'
               ? { notes: req.session.jurorNotes } : response.data
             , tmpErrors = _.clone(req.session.errors);
@@ -655,12 +652,24 @@
           delete req.session.errors;
           delete req.session.jurorNotes;
 
-          let backLinkUrl = app.namedRoutes.build('juror-record.notes.get', {
-            jurorNumber: req.params['jurorNumber'],
-          });
-          let actionUrl = app.namedRoutes.build('juror-record.notes-edit.post', {
-            jurorNumber: req.params['jurorNumber'],
-          });
+          let backLinkUrl, actionUrl;
+
+          if (isSummons){
+            backLinkUrl = app.namedRoutes.build('response.paper.details.get', {
+              id: req.params['jurorNumber'],
+              type: 'paper',
+            }) + '#logContent';
+            actionUrl = app.namedRoutes.build('juror-record.notes-summons-edit.post', {
+              jurorNumber: req.params['jurorNumber'],
+            });
+          } else {
+            backLinkUrl = app.namedRoutes.build('juror-record.notes.get', {
+              jurorNumber: req.params['jurorNumber'],
+            });
+            actionUrl = app.namedRoutes.build('juror-record.notes-edit.post', {
+              jurorNumber: req.params['jurorNumber'],
+            });
+          }
 
           if (req.url.includes('bank-details')) {
             const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
@@ -730,22 +739,40 @@
   // 200 code: error response because the resource has changed therefore reject the updates
   // 304 code: the resource has not changed so we move and patch the juror's notes
   // of course the promise will resolve if the code is 200 (error) or throw an exception if the code is 304 (success) 😅
-  module.exports.postEditNotes = function(app) {
+  module.exports.postEditNotes = function(app, isSummons) {
     return function(req, res) {
       const { jurorNumber } = req.params;
+      let successUrl, backLinkUrl, actionUrl, formErrorUrl;
 
-      let successUrl = app.namedRoutes.build('juror-record.notes.get', {
-        jurorNumber,
-      });
-      let backLinkUrl = app.namedRoutes.build('juror-record.notes.get', {
-        jurorNumber,
-      });
-      let actionUrl = app.namedRoutes.build('juror-record.notes-edit.post', {
-        jurorNumber,
-      });
-      let formErrorUrl = app.namedRoutes.build('juror-record.notes-edit.get', {
-        jurorNumber,
-      });
+      if (isSummons){
+        successUrl = app.namedRoutes.build('response.paper.details.get', {
+          id: req.params['jurorNumber'],
+          type: 'paper',
+        }) + '#logContent';
+        backLinkUrl = app.namedRoutes.build('response.paper.details.get', {
+          id: req.params['jurorNumber'],
+          type: 'paper',
+        }) + '#logContent';
+        actionUrl = app.namedRoutes.build('juror-record.notes-summons-edit.post', {
+          jurorNumber,
+        });
+        formErrorUrl = app.namedRoutes.build('juror-record.notes-summons-edit.get', {
+          jurorNumber,
+        });
+      } else {
+        successUrl = app.namedRoutes.build('juror-record.notes.get', {
+          jurorNumber,
+        });
+        backLinkUrl = app.namedRoutes.build('juror-record.notes.get', {
+          jurorNumber,
+        });
+        actionUrl = app.namedRoutes.build('juror-record.notes-edit.post', {
+          jurorNumber,
+        });
+        formErrorUrl = app.namedRoutes.build('juror-record.notes-edit.get', {
+          jurorNumber,
+        });
+      }
 
       if (req.url.includes('bank-details')) {
         const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';

@@ -75,7 +75,7 @@
               let row = [];
 
               row.push(formatLetterDate(expense.attendanceDate, 'dddd, DD MMMM, YYYY', juror.welsh));
-              if (expense.nonAttendance === 'false'){
+              if (expense.nonAttendance === false){
                 row.push(juror.welsh ? '(Heb Fynychu)' : '(Non Attendance)');
 
               } else {

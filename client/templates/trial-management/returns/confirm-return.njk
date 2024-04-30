@@ -17,16 +17,18 @@
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      {% if isPanel %}
-        <h1 class="govuk-heading-l">Return panel members</h1>
-      {% elif handleAttendance == 'confirm' %}
-        <h1 class="govuk-heading-l">Return jurors and confirm attendance</h1>
-      {% elif handleAttendance == 'return' %}
-        <h1 class="govuk-heading-l">Return jurors without confirming attendance</h1>
-      {% elif handleAttendance == 'complete' %}
-        <h1 class="govuk-heading-l">Return jurors and complete their service</h1>
-      {% endif %}
-
+      <h1 class="govuk-heading-l">
+        {% if isPanel %}
+          Return panel members
+        {% elif handleAttendance == 'confirm' %}
+          Return jurors and confirm attendance
+        {% elif handleAttendance == 'return' %}
+          Return jurors without confirming attendance
+        {% elif handleAttendance == 'complete' %}
+          Return jurors and complete their service
+        {% endif %}
+      </h1>
+      
       <form method="post">
 
         {% if isPanel %}

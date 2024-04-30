@@ -5,7 +5,7 @@
   const systemCodes = {
     'disqualified': {
       key: 'DISQUALIFIED',
-      title: 'Disqulified codes',
+      title: 'Disqualified codes',
     },
     'juror-status': {
       key: 'JUROR_STATUS',

@@ -37,7 +37,7 @@
     fieldset: {
       legend: {
         text: "User type",
-        isPageHeading: true,
+        isPageHeading: false,
         classes: "govuk-fieldset__legend--m"
       }
     },
@@ -77,7 +77,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <form action="{{ searchUrl }}" method="post" id="numberOfJurorsForm">
-        <h1 class="govuk-heading-m">Search for a user</h1>
+        <h2 class="govuk-heading-m">Search for a user</h2>
         {{ govukInput({
           label: {
             text: "User name"

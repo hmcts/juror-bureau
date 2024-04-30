@@ -94,7 +94,8 @@
     var isCarChecked = $('#travelType')[0].checked;
     var isMotorcycleChecked = $('#travelType-2')[0].checked;
     var isBicycleChecked = $('#travelType-3')[0].checked;
-    var passengers = $('#passengers').val();
+    var carPassengers = $('#carPassengers').val();
+    var motoPassengers = $('#motoPassengers').val();
     var milesTravelled = $('#milesTravelled').val();
     var parking = $('#parking').val();
     var publicTransport = $('#publicTransport').val();
@@ -104,7 +105,8 @@
       'traveled_by_car': isCarChecked,
       'traveled_by_motorcycle': isMotorcycleChecked,
       'traveled_by_bicycle': isBicycleChecked,
-      'jurors_taken_by_car': parseFloatOrZero(passengers),
+      'jurors_taken_by_car': parseFloatOrZero(carPassengers),
+      'jurors_taken_by_motorcycle': parseFloatOrZero(motoPassengers),
       'miles_traveled': parseFloatOrZero(milesTravelled),
       parking: parseFloatOrZero(parking),
       'public_transport': parseFloatOrZero(publicTransport),

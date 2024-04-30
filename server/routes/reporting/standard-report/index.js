@@ -8,7 +8,7 @@
     standardReportGet,
     standardReportPost,
   } = require('./standard-report.controller');
-  const { reportKeys } = require('./utils');
+  const { reportKeys } = require('./definitions');
 
   const standardReportRoutes = (app, key) => {
     if (reportKeys(app)[key].search) {
@@ -44,8 +44,14 @@
     standardReportRoutes(app, 'next-due');
     standardReportRoutes(app, 'undelivered');
     standardReportRoutes(app, 'non-responded');
+
     standardReportRoutes(app, 'postponed-pool');
     standardReportRoutes(app, 'postponed-date');
+
+    require('../incomplete-service')(app);
+    standardReportRoutes(app, 'incomplete-service');
+    standardReportRoutes(app, 'pool-status');
+    standardReportRoutes(app, 'panel-summary');
   };
 
 })();
