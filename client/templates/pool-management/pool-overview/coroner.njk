@@ -11,11 +11,8 @@
 
 {% set currentApp = "Pool management" %}
 
-{% block page_identifier %}Pool Overview for pool {{ poolDetails.poolNumber }}{% endblock %}
-
-{% block page_title %}
-  {{ serviceName }} - Pool overview for pool {{ poolDetails.poolNumber }}
-{% endblock %}
+{% block page_title %}{{ serviceName }} - Pool overview for pool {{ poolDetails.poolNumber }}{% endblock %}
+{% block page_identifier %}Pool overview for pool {{ poolDetails.poolNumber }}{% endblock %}
 
 {% block beforeContent %}
   {% include "includes/back-link.njk" %}

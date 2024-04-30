@@ -4,11 +4,8 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
-{% block page_title %}
-  {{ serviceName }} - juror record - approve or reject name change
-{% endblock %}
-
-{% block page_identifier %}juror record - details - approve or reject name change{% endblock %}
+{% block page_title %}{{ serviceName }} - Juror record - Approve or reject name change{% endblock %}
+{% block page_identifier %}Juror record - Details - Approve or reject name change{% endblock %}
 
 {# define errors if any #}
 {% set decisionError = undefined %}

@@ -8,8 +8,8 @@
 {% from "moj/components/banner/macro.njk" import mojBanner %}
 
 
-{% block page_title %}{{ serviceName }} - administration{% endblock %}
-{% block page_identifier %}administration - user record{% endblock %}
+{% block page_title %}{{ serviceName }} - Administration - User record{% endblock %}
+{% block page_identifier %}Administration - User record{% endblock %}
 
 {% set currentApp = "Court administration" if isCourtManager else ("Bureau administration" if isBureauManager else "System administration") %} 
 {% set nav = "users" %}

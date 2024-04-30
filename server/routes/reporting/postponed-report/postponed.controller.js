@@ -30,7 +30,7 @@
 
   module.exports.postPostponedSearch = function(app) {
     return function(req, res) {
-      let validatorResult = validate(req.body, validator.postponed.searchBy());
+      let validatorResult = validate(req.body, validator.searchBy('postponed'));
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
@@ -39,7 +39,7 @@
       }
 
       if (req.body.searchBy === 'customDateRange') {
-        validatorResult = validate(req.body, validator.postponed.dateRange());
+        validatorResult = validate(req.body, validator.dateRange('postponed'));
         if (typeof validatorResult !== 'undefined') {
           req.session.errors = validatorResult;
           req.session.formFields = req.body;
