@@ -25,30 +25,29 @@
     },
   };
 
-  module.exports.postponed = {
-    searchBy: () => {
-      return {
-        searchBy: {
-          reportSearchBy: {
-            messageKey: 'postponed',
-          },
+  module.exports.searchBy = function(reportKey) {
+    return {
+      searchBy: {
+        reportSearchBy: {
+          messageKey: reportKey,
         },
-      };
-    },
-    dateRange: () => {
-      return {
-        dateFrom: {
-          reportsDateRange: {
-            messageKey: 'postponed',
-          },
+      },
+    };
+  };
+
+  module.exports.dateRange = function(reportKey) {
+    return {
+      dateFrom: {
+        reportsDateRange: {
+          messageKey: reportKey,
         },
-        dateTo: {
-          reportsDateRange: {
-            messageKey: 'postponed',
-          },
+      },
+      dateTo: {
+        reportsDateRange: {
+          messageKey: reportKey,
         },
-      };
-    },
+      },
+    };
   };
 
   validate.validators.reportSearchBy = function(value, options, key, attributes) {
