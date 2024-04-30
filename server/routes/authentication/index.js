@@ -1,6 +1,7 @@
 /* eslint-disable strict */
 
 const controller = require('./authentication.controller');
+const { isSystemAdministrator } = require('../../components/auth/user-type');
 
 module.exports = function(app) {
 
@@ -12,6 +13,13 @@ module.exports = function(app) {
   app.post('/auth/courts-list',
     'authentication.courts-list.post',
     controller.postCourtsList(app),
+  );
+
+  // this would be used to auth as an admin from the admin page
+  app.get('/auth/court/:locCode',
+    'authentication.select-court.get',
+    isSystemAdministrator,
+    controller.getSelectCourt(app),
   );
 
   // dev email auth

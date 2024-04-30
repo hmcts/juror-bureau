@@ -40,17 +40,6 @@ module.exports.getCourtsList = function(app) {
       // keep it only during this request lifetime
       req.session.courtsList = courtsList;
       req.session.noKeyAuthToken = authToken;
-
-      if (courtsList.length === 1) {
-        await doLogin(req)(app, courtsList[0].loc_code, body);
-
-        if (req.session.authentication.userType === 'ADMINISTRATOR') {
-          return res.redirect(app.namedRoutes.build('administration.get'));
-        }
-
-        return res.redirect(app.namedRoutes.build('homepage.get'));
-      }
-
     } catch (err) {
       app.logger.crit('Failed to get courts list', {
         data: { body },
@@ -58,6 +47,27 @@ module.exports.getCourtsList = function(app) {
       });
 
       return res.render('_errors/generic.njk');
+    }
+
+    if (courtsList.length === 1) {
+      const locCode = courtsList[0].loc_code;
+
+      try {
+        await doLogin(req)(app, locCode, body);
+      } catch (err) {
+        app.logger.crit('Failed to login straight through', {
+          data: { body, courtsList, locCode },
+          error: err,
+        });
+
+        return res.render('_errors/generic.njk');
+      }
+
+      if (req.session.authentication.userType === 'ADMINISTRATOR') {
+        return res.redirect(app.namedRoutes.build('administration.get'));
+      }
+
+      return res.redirect(app.namedRoutes.build('homepage.get'));
     }
 
     const tmpErrors = _.clone(req.session.errors);
@@ -104,6 +114,31 @@ module.exports.postCourtsList = function(app) {
       // return res.redirect(app.namedRoutes.build('authentication.courts-list.get'));
       return res.render('_errors/generic.njk');
     }
+  };
+};
+
+module.exports.getSelectCourt = function(app) {
+  return async function(req, res) {
+    const { locCode } = req.params;
+    const body = { email: req.session.authentication.email };
+
+    const signingKey = secretsConfig.get('secrets.juror.bureau-jwtNoAuthKey');
+    const expiresIn = secretsConfig.get('secrets.juror.bureau-jwtTTL');
+
+    req.session.noKeyAuthToken = jwt.sign({}, signingKey, { expiresIn });
+
+    try {
+      await doLogin(req)(app, locCode, body);
+    } catch (err) {
+      app.logger.crit('Failed to authenticate a system administrator as a court user', {
+        data: { body, locCode },
+        error: err,
+      });
+
+      return res.redirect(app.namedRoutes.build('administration.get'));
+    }
+
+    return res.redirect(app.namedRoutes.build('homepage.get'));
   };
 };
 
