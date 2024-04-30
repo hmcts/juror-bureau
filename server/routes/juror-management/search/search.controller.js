@@ -163,7 +163,7 @@ function buildQueryParams(data) {
     queryParams.push(`poolNumber=${poolNumber}`);
   }
   if (globalSearch) {
-    queryParams.push(`jurorNumber=${superNavSearch}`);
+    queryParams.push(`jurorNumber=${globalSearch}`);
   }
 
   return queryParams;
