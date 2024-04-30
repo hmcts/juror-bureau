@@ -35,55 +35,68 @@
           items: [
             {
               value: "JUROR_NUMBER",
-              text: "Juror number"
+              text: "Juror number",
+              checked: true
             },
             {
               value: "TITLE",
-              text: "Title"
+              text: "Title",
+              checked: true
             },
             {
               value: "FIRST_NAME",
-              text: "First name"
+              text: "First name",
+              checked: true
             },
             {
               value: "LAST_NAME",
-              text: "Last name"
+              text: "Last name",
+              checked: true
             },
             {
               value: "EMAIL",
-              text: "Email"
+              text: "Email",
+              checked: true
             },
             {
               value: "MAIN_PHONE",
-              text: "Main phone"
+              text: "Main phone",
+              checked: true
             },
             {
               value: "OTHER_PHONE",
-              text: "Other phone"
+              text: "Other phone",
+              checked: true
             },
             {
               value: "WORK_PHONE",
-              text: "Work phone"
+              text: "Work phone",
+              checked: true
             },
             {
               value: "ADDRESS",
-              text: "Address"
+              text: "Address",
+              checked: true
             },
             {
               value: "POSTCODE",
-              text: "Postcode"
+              text: "Postcode",
+              checked: true
             },
             {
               value: "STATUS",
-              text: "Status"
+              text: "Status",
+              checked: true
             },
             {
               value: "POOL_NUMBER",
-              text: "Pool number"
+              text: "Pool number",
+              checked: true
             },
             {
               value: "DATE_DEFERRED_TO",
-              text: "Date deferred to"
+              text: "Date deferred to",
+              checked: true
             }
           ]
         }) }}
@@ -153,12 +166,8 @@
         if (defaultDetailsToExport) {
           const detailsToExportArray = JSON.parse(defaultDetailsToExport);
 
-          detailsToExportArray.forEach((detail) => {
-            detailsToExport.forEach((detailCheckbox) => {
-              if (detailCheckbox.value === detail) {
-                detailCheckbox.checked = true;
-              }
-            });
+          detailsToExport.forEach((detailCheckbox) => {
+            detailCheckbox.checked = detailsToExportArray.includes(detailCheckbox.value);
           });
         }
 
