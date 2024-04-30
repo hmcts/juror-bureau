@@ -158,7 +158,7 @@
       },
       'panel-detail': {
         title: 'Panel list (Detail)',
-        apiKey: 'PanelListDetailReport',
+        apiKey: 'PanelListDetailedReport',
         search: 'trial',
         headings: [
           'trialNumber',

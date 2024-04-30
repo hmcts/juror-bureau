@@ -155,7 +155,7 @@
           }
 
           if (header.id === 'juror_postcode' || header.id === 'document_code') {
-            output = output.toUpperCase();
+            output = output ? output.toUpperCase() : '-';
           }
 
           if (header.id === 'contact_details') {

@@ -5,7 +5,7 @@ const tableDataMappers = {
   String: (data) => isNaN(data) ? capitalizeFully(data) : data.toString(),
   LocalDate: (data) => data ? dateFilter(data, 'YYYY-mm-dd', 'ddd D MMM YYYY') : '-',
   List: (data) => {
-    if (data) {
+    if (data){
       if (Object.keys(data)[0] === 'jurorAddressLine1'){
         return Object.values(data).reduce(
           (acc, current) => {
@@ -17,8 +17,8 @@ const tableDataMappers = {
 
       Object.keys(data).forEach((element, index) => {
         listText = listText
-        + `${toSentenceCase(element)}: ${data[element]}`
-        + `${index === Object.keys(data).length - 1 ? '' : ', '}`;
+          + `${toSentenceCase(element)}: ${data[element]}`
+          + `${index === Object.keys(data).length - 1 ? '' : ', '}`;
       });
       return listText;
     }
