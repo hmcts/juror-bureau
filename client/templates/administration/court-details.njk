@@ -7,8 +7,8 @@
 {% from "custom-components/time-input-12-hour/macro.njk" import timeInput12Hour %}
 {% from "includes/csrf.njk" import csrfProtection %}
 
-{% block page_title %}{{ serviceName }} - administration{% endblock %}
-{% block page_identifier %}administration - court details{% endblock %}
+{% block page_title %}{{ serviceName }} - Administration - Court details{% endblock %}
+{% block page_identifier %}Administration - Court details{% endblock %}
 
 {% set currentApp = "Court administration" if isCourtUser else "System administration" %} 
 {% set nav = "courtDetails" %}

@@ -8,11 +8,8 @@
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "custom-components/autocomplete/macro.njk" import "modAutocomplete" %}
 
-{% block page_title %}
-  {{ serviceName }} - Search
-{% endblock %}
-
-{% block page_identifier %}search{% endblock %}
+{% block page_title %}{{ serviceName }} - Search{% endblock %}
+{% block page_identifier %}Search{% endblock %}
 
 {% set currentApp = "Summons replies" %}
 
@@ -67,7 +64,7 @@
               value="true"
               {% if searchParams.is_urgent %}checked{% endif %}
             >
-            <label class="govuk-label govuk-checkboxes__label" for="urgentsOnly">
+            <label class="govuk-label govuk-checkboxes__label" for="isUrgent">
               Urgent
             </label>
           </div>

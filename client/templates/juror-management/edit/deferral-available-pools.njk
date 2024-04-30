@@ -7,9 +7,7 @@
 
 {% from "custom-components/deferral-available-pools-week/macro.njk" import deferralAvailablePoolsWeek %}
 
-{% block page_title %}
-  {{ serviceName }} - update juror{% endblock %}
-
+{% block page_title %}{{ serviceName }} - Update juror deferral decision{% endblock %}
 {% block page_identifier %}Update deferral decision{% endblock %}
 
 {% if hasActivePools %}

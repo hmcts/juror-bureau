@@ -10,7 +10,8 @@
 {% from "custom-components/time-input/macro.njk" import timeInput %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 
-{% block page_identifier %}Default Expenses{% endblock %}
+{% block page_title %}{{ serviceName }} - Default expenses{% endblock %}
+{% block page_identifier %}Default expenses{% endblock %}
 
 {% block content %}
 {% include "includes/errors.njk" %}
