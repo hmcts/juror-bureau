@@ -4,8 +4,8 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "includes/csrf.njk" import csrfProtection %}
 
-{% block page_title %}{{ serviceName }} - administration{% endblock %}
-{% block page_identifier %}administration - {{'edit' if editingUser else 'create'}} user - confirm details{% endblock %}
+{% block page_title %}{{ serviceName }} - Administration - {{'Edit' if editingUser else 'Create'}} user - Confirm details{% endblock %}
+{% block page_identifier %}Administration - {{'Edit' if editingUser else 'Create'}} user - Confirm details{% endblock %}
 
 {% set currentApp = "System administration" %} 
 

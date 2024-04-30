@@ -5,8 +5,8 @@
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 {% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
 
-{% block page_title %}{{ serviceName }} - administration{% endblock %}
-{% block page_identifier %}administration - users{% endblock %}
+{% block page_title %}{{ serviceName }} - Administration - Users{% endblock %}
+{% block page_identifier %}Administration - Users{% endblock %}
 
 {% set currentApp = "Court administration" if isCourtManager else ("Bureau administration" if isBureauManager else "System administration") %} 
 {% set nav = "users" %}

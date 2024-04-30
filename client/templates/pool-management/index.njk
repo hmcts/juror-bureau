@@ -19,11 +19,8 @@
   {% endif %}
 {% endset %}
 
+{% block page_title %}{{ serviceName }} - {{ localPageTitle }}{% endblock %}
 {% block page_identifier %}{{ localPageTitle }}{% endblock %}
-
-{% block page_title %}
-  {{ serviceName }} - {{ localPageTitle }}
-{% endblock %}
 
 {% block content %}
 
