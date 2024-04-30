@@ -93,7 +93,7 @@
 
       let staffToSearch = null;
 
-      if (req.session.staffList) {
+      if (req.session.staffList && req.body['officer_assigned']) {
 
         staffToSearch = req.session.staffList
           .find((staff) => staff.name.toLowerCase() === req.body['officer_assigned'].toLowerCase());
