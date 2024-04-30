@@ -26,7 +26,7 @@
     bulkPrintAudit: {
       dateFrom: [{
         summary: 'Enter a date to search bulk-printing from',
-        details: 'Enter a date to search bulk-printing jurors from',
+        details: 'Enter a date to search bulk-printing from',
       }],
       dateTo: [{
         summary: 'Enter a date to search bulk-printing up until',
@@ -58,22 +58,6 @@
         },
       },
     };
-  };
-  module.exports.bulkPrintAudit = {
-    dateRange: () => {
-      return {
-        dateFrom: {
-          reportsDateRange: {
-            messageKey: 'bulkPrintAudit',
-          },
-        },
-        dateTo: {
-          reportsDateRange: {
-            messageKey: 'bulkPrintAudit',
-          },
-        },
-      };
-    },
   };
 
   validate.validators.reportSearchBy = function(value, options, key, attributes) {

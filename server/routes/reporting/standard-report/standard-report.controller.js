@@ -355,7 +355,7 @@
       return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, { filter: 'courts' }));
     }
     if (reportType.search === 'dateRange') {
-      const validatorResult = validate(req.body, searchValidator[_.camelCase(reportKey)].dateRange());
+      const validatorResult = validate(req.body, searchValidator.dateRange(_.camelCase(reportKey)));
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
