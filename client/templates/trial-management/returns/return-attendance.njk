@@ -4,8 +4,8 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 
-{% block page_identifier %}Return jurros{% endblock %}
 {% block page_title %}{{ serviceName }} - Return jurors{% endblock %}
+{% block page_identifier %}Return jurors{% endblock %}
 
 {% block content %}
 {% set jurorPlural = "" if 1 == selectedJurors.length else "s" %}

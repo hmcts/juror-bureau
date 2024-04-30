@@ -8,11 +8,8 @@
 
 {% set currentApp = "Senior Jury Officer tasks" %}
 
+{% block page_title %}Senior jury officer tasks - Uncomplete service{% endblock %}
 {% block page_identifier %}Uncomplete service{% endblock %}
-
-{% block page_title %}
-  Senior Jury Officer tasks - Uncomplete service
-{% endblock %}
 
 {% set searchByJurorError = undefined %}
 {% if errors.items["searchByJuror"] %}
