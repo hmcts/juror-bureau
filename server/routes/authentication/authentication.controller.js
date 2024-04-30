@@ -10,7 +10,8 @@ module.exports.getAzureAuth = function(app) {
     const azureAuthUrl = 'https://login.microsoftonline.com/' + tenantId + '/oauth2/v2.0/authorize';
 
     // return res.redirect(azureAuthUrl + '?client_id=' + clientId + '&scope=openid' + '&response_type=code');
-    return res.redirect(azureAuthUrl + '?client_id=' + clientId + '&scope=openid+email+https://graph.microsoft.com/User.Read' + '&response_type=code');
+    // return res.redirect(azureAuthUrl + '?client_id=' + clientId + '&scope=openid+email+https://graph.microsoft.com/User.Read' + '&response_type=code');
+    return res.redirect(azureAuthUrl + '?client_id=' + clientId + '&scope=User.Read' + '&response_type=code&redirect_uri=http://localhost:3000/auth/internal/callback');
   };
 };
 
@@ -27,7 +28,7 @@ module.exports.getAzureCallback = function(app) {
       'client_id': clientId,
       scope: 'openid',
       code: code,
-      'redirect_uri': 'http://localhost:3000/auth/callback',
+      'redirect_uri': 'http://localhost:3000/auth/internal/callback',
       'grant_type': 'authorization_code',
       'client_secret': clientSecret,
     }, {

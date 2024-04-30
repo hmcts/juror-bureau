@@ -8,7 +8,7 @@ module.exports = function(app) {
     'authentication.azure.get',
     controller.getAzureAuth(app));
 
-  app.get('/auth/callback',
+  app.get('/auth/internal/callback',
     'authentication.azure.callback',
     controller.getAzureCallback(app));
 
