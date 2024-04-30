@@ -61,9 +61,9 @@
 {% block content %}
 
   {# set alert badge - as displayed on To do list #}
-  {% if response.processingStatus !== 'Closed' and response.isLateSummons %}
+  {% if response.processingStatus !== "Closed" %}
     {% if response.superUrgent %}
-      {% set urgencyBadge = "Urgent" if method === "paper" else "Send to court" %}
+      {% set urgencyBadge = "Urgent" %}
     {% elif response.urgent %}
       {% set urgencyBadge = "Urgent" %}
     {% elif response.slaOverdue %}
