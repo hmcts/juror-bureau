@@ -6,10 +6,12 @@
 
   const addressOrder = ['lineOne', 'lineTwo', 'lineThree', 'town', 'county', 'postcode'];
 
+  const toMoney = (value) => `£${value.toFixed(2)}`;
+
   const auditTypeMap = {
     FOR_APPROVAL: 'Attendance audit report',
     FOR_APPROVAL_EDIT: 'Edit audit report',
-    APPROVED_EDIT: 'Edit audit report',
+    APPROVED_EDIT: 'Edit audit report (repayment)',
     REAPPROVED_EDIT: 'Edit audit report (repayment)',
     APPROVED_CASH: 'Payment audit report',
     APPROVED_BACS: 'Payment audit report',
@@ -80,7 +82,15 @@
   })
 
   const metaData = (auditData) => {
-    const { financialAuditNumber, jurorDetails, originalJurorDetails, submittedAt, submittedBy } = auditData;
+    const { 
+      approvedAt,
+      approvedBy,
+      financialAuditNumber,
+      jurorDetails,
+      originalJurorDetails,
+      submittedAt,
+      submittedBy,
+    } = auditData;
 
     const right = financialAuditNumber ? [
       {key: 'Audit number', value: financialAuditNumber},
@@ -88,6 +98,10 @@
      ] : [
       {key: 'Audit number', value: 'Draft'},
      ]
+
+    if (approvedAt) {
+      right.push({key: 'Date approved', value: `${dateFilter(approvedAt, '', 'ddd DD MMM YYYY')} by ${approvedBy.name}`})
+    }
 
     const method = auditData.expenses.expenseDetails.reduce((prev, curr) => {
       if (prev.includes(curr.paymentMethod)) {
@@ -150,26 +164,26 @@
             fillColor: '#F3F2F1'
           },
           makeEntry(`${attendanceType(expense.attendanceType)}`,`${attendanceType(expense.original.attendanceType)}`),
-          makeEntry(`£${expense.lossOfEarnings}`,`£${expense.original.lossOfEarnings}`),
-          makeEntry(`£${expense.extraCare}`,`£${expense.original.extraCare}`),
-          makeEntry(`£${expense.other}`,`£${expense.original.other}`),
-          makeEntry(`£${expense.publicTransport}`,`£${expense.original.publicTransport}`),
-          makeEntry(`£${expense.taxi}`,`£${expense.original.taxi}`),
-          makeEntry(`£${expense.motorcycle}`,`£${expense.original.motorcycle}`),
-          makeEntry(`£${expense.car}`,`£${expense.original.car}`),
-          makeEntry(`£${expense.bicycle}`,`£${expense.original.bicycle}`),
-          makeEntry(`£${expense.parking}`,`£${expense.original.parking}`),
-          makeEntry(`£${expense.foodAndDrink}`,`£${expense.original.foodAndDrink}`),
-          makeEntry(`£${expense.smartCard}`,`£${expense.original.smartCard}`),
+          makeEntry(toMoney(expense.lossOfEarnings),toMoney(expense.original.lossOfEarnings)),
+          makeEntry(toMoney(expense.extraCare),toMoney(expense.original.extraCare)),
+          makeEntry(toMoney(expense.other),toMoney(expense.original.other)),
+          makeEntry(toMoney(expense.publicTransport),toMoney(expense.original.publicTransport)),
+          makeEntry(toMoney(expense.taxi),toMoney(expense.original.taxi)),
+          makeEntry(toMoney(expense.motorcycle),toMoney(expense.original.motorcycle)),
+          makeEntry(toMoney(expense.car),toMoney(expense.original.car)),
+          makeEntry(toMoney(expense.bicycle),toMoney(expense.original.bicycle)),
+          makeEntry(toMoney(expense.parking),toMoney(expense.original.parking)),
+          makeEntry(toMoney(expense.foodAndDrink),toMoney(expense.original.foodAndDrink)),
+          makeEntry(toMoney(expense.smartCard),toMoney(expense.original.smartCard)),
           makeEntry(`${expense.paymentMethod}`,`${expense.original.paymentMethod}`),
           {
             stack: [ 
               {
-                text: `£${expense.original.total}`, 
+                text: toMoney(expense.original.total), 
                 alignment: 'center',
               },
               {
-                text: `£${expense.total}`,
+                text: toMoney(expense.total),
                 alignment: 'center',
                 bold: expense.original.total !== expense.total,
               }
@@ -182,38 +196,38 @@
       return [
         { text: `${dateFilter(expense.attendanceDate, 'yyyy-MM-dd', 'ddd DD MMM YYYY')}` },
         { text: `${attendanceType(expense.attendanceType)}` },
-        { text: `£${expense.lossOfEarnings}` },
-        { text: `£${expense.extraCare}` },
-        { text: `£${expense.other}` },
-        { text: `£${expense.publicTransport}` },
-        { text: `£${expense.taxi}` },
-        { text: `£${expense.motorcycle}` },
-        { text: `£${expense.car}` },
-        { text: `£${expense.bicycle}` },
-        { text: `£${expense.parking}` },
-        { text: `£${expense.foodAndDrink}` },
-        { text: `£${expense.smartCard}` },
+        { text: toMoney(expense.lossOfEarnings) },
+        { text: toMoney(expense.extraCare) },
+        { text: toMoney(expense.other) },
+        { text: toMoney(expense.publicTransport) },
+        { text: toMoney(expense.taxi) },
+        { text: toMoney(expense.motorcycle) },
+        { text: toMoney(expense.car) },
+        { text: toMoney(expense.bicycle) },
+        { text: toMoney(expense.parking) },
+        { text: toMoney(expense.foodAndDrink) },
+        { text: toMoney(expense.smartCard) },
         { text: `${expense.paymentMethod}` },
-        { text: `£${expense.total}`, alignment: 'center', fillColor: '#F3F2F1' },
+        { text: toMoney(expense.total), alignment: 'center', fillColor: '#F3F2F1' },
       ]
     });
     
     const totalBody = [[
       { text: `Totals`, bold: true },
       { text: auditData.expenses.expenseDetails.length, bold: true },
-      { text: `£${auditData.expenses.total.lossOfEarnings}`, bold: true },
-      { text: `£${auditData.expenses.total.extraCare}`, bold: true },
-      { text: `£${auditData.expenses.total.other}`, bold: true },
-      { text: `£${auditData.expenses.total.publicTransport}`, bold: true },
-      { text: `£${auditData.expenses.total.taxi}`, bold: true },
-      { text: `£${auditData.expenses.total.motorcycle}`, bold: true },
-      { text: `£${auditData.expenses.total.car}`, bold: true },
-      { text: `£${auditData.expenses.total.bicycle}`, bold: true },
-      { text: `£${auditData.expenses.total.parking}`, bold: true },
-      { text: `£${auditData.expenses.total.foodAndDrink}`, bold: true },
-      { text: `£${auditData.expenses.total.smartCard}`, bold: true },
+      { text: toMoney(auditData.expenses.total.lossOfEarnings), bold: true },
+      { text: toMoney(auditData.expenses.total.extraCare), bold: true },
+      { text: toMoney(auditData.expenses.total.other), bold: true },
+      { text: toMoney(auditData.expenses.total.publicTransport), bold: true },
+      { text: toMoney(auditData.expenses.total.taxi), bold: true },
+      { text: toMoney(auditData.expenses.total.motorcycle), bold: true },
+      { text: toMoney(auditData.expenses.total.car), bold: true },
+      { text: toMoney(auditData.expenses.total.bicycle), bold: true },
+      { text: toMoney(auditData.expenses.total.parking), bold: true },
+      { text: toMoney(auditData.expenses.total.foodAndDrink), bold: true },
+      { text: toMoney(auditData.expenses.total.smartCard), bold: true },
       { text: '' },
-      { text: `£${auditData.expenses.total.total}`, alignment: 'center', bold: true, fillColor: '#000000', color: '#FFFFFF' },
+      { text: toMoney(auditData.expenses.total.total), alignment: 'center', bold: true, fillColor: '#000000', color: '#FFFFFF' },
     ]]
 
     const coreContent = [
@@ -293,7 +307,7 @@
                 text: 'Total due',
               },
               {
-                text: `£${auditData.expenses.total.totalDue}`,
+                text: toMoney(auditData.expenses.total.totalDue),
                 alignment: 'right',
               }
             ],
@@ -303,7 +317,7 @@
                 text: 'Total paid to date',
               },
               {
-                text: `£${auditData.expenses.total.totalPaid}`,
+                text: toMoney(auditData.expenses.total.totalPaid),
                 alignment: 'right',
               }
             ],
@@ -313,7 +327,7 @@
                 text: 'Balance to pay',
               },
               {
-                text: `£${auditData.expenses.total.totalOutstanding}`,
+                text: toMoney(auditData.expenses.total.totalOutstanding),
                 alignment: 'right',
               }
             ],
