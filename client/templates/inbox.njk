@@ -5,11 +5,8 @@
 {% from "moj/components/badge/macro.njk" import mojBadge %}
 {% from "./includes/reply-type-tag-macro.njk" import replyTypeTag %}
 
-{% block page_title %}
-  {{ serviceName }} - Your work - To do
-{% endblock %}
-
-{% block page_identifier %}your work - to do{% endblock %}
+{% block page_title %}{{ serviceName }} - Your work - To do{% endblock %}
+{% block page_identifier %}Your work - To do{% endblock %}
 
 {% set currentApp = "Summons replies" %}
 

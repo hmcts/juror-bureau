@@ -1,8 +1,6 @@
 {% extends "../layouts/default.njk" %}
 
-{% block page_title %}
-  404 Page not Found
-{% endblock %}
+{% block page_title %}404 Page not Found{% endblock %}
 
 {% set homeLink = "/administration" if isSystemAdministrator else "/" %}
 
