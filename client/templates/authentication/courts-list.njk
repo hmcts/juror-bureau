@@ -53,11 +53,18 @@
           {{ govukButton({
             text: "Continue",
             attributes: {
-              id: "continueButton"
+              id: "continueButton",
+              "aria-label": "Continue selecting court"
             }
           }) }}
         
-          <a class="govuk-link" href="#" id="cancelAnchor">Cancel</a>
+          {% if authentication %}
+            {% set cancelAriaLabel = "Cancel and return to login" %}
+          {% else %}
+            {% set cancelAriaLabel = "Cancel and return to the juror app" %}
+          {% endif %}
+
+          <a class="govuk-link" href="{{ cancelUrl }}" id="cancelAnchor" aria-label="{{ cancelAriaLabel }}">Cancel</a>
         </div>
 
       </form>

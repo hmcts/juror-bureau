@@ -76,9 +76,14 @@
                   {% include "custom-components/super-navigation/super-navigation.njk" %}
                 {% endif %}
                 <li class="moj-header__navigation-item moj-header__navigation-item--without-children">
-                  <span class="moj-header__navigation-toggle-wrapper mod-flex mod-gap-x-2">
-                    <b>{{ selectedCourt.name | capitalizeFully }} ({{ selectedCourt.loc_code }})</b>
-                    <a href="#" class="moj-header__navigation-link">
+                  <span class="moj-header__navigation-toggle-wrapper mod-flex mod-gap-x-2 mod-baseline">
+                    <span class="moj-header__navigation--selected-court">{{ selectedCourt.name | capitalizeFully }}</span>
+                    <span>({{ selectedCourt.loc_code }})</span>
+                    <a
+                      href="{{ url('authentication.courts-list.get') }}"
+                      class="moj-header__navigation-link govuk-body-s"
+                      aria-label="Change current selected court"
+                    >
                       Change <span class="govuk-visually-hidden">current selected court</span>
                     </a>
                   </span>

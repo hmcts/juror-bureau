@@ -2,92 +2,73 @@
 const _ = require('lodash');
 const secretsConfig = require('config');
 const jwt = require('jsonwebtoken');
-const { authCourtsDAO, jwtAuthDAO } = require('../../objects');
+const { axiosClient } = require('../../objects/axios-instance');
 const { makeManualError } = require('../../lib/mod-utils');
 
+// this is dev only...
 module.exports.postDevEmailAuth = function(app) {
   return async function(req, res) {
-    if (!req.body.email && !req.session.email) {
+    if (!req.body.email) {
       req.session.errors = makeManualError('email', 'Email is required for dev email auth');
 
       return res.redirect(app.namedRoutes.build('login.get'));
     }
 
-    const loginRedirect = app.namedRoutes.build('login.get');
+    req.session.email = req.body.email;
 
+    return res.redirect(app.namedRoutes.build('authentication.courts-list.get'));
+  };
+};
+
+module.exports.getCourtsList = function(app) {
+  return async function(req, res) {
     const signingKey = secretsConfig.get('secrets.juror.bureau-jwtNoAuthKey');
     const expiresIn = secretsConfig.get('secrets.juror.bureau-jwtTTL');
 
     const authToken = jwt.sign({}, signingKey, { expiresIn });
-
-    // this is the auth token for transporting the email payload only
-    req.session.authToken = authToken;
-
-    let email = req.body.email;
-
-    if (!email) {
-      email = req.session.email;
-    }
-
-    const payload = { email };
-    let courtsList = [];
+    const body = { email: req.session.email || req.session.authentication.email };
+    let courtsList;
 
     try {
-      const courtsResponse = await authCourtsDAO.post(req, payload);
+      const courtsResponse = await axiosClient('post', '/auth/moj/courts', authToken, { body });
 
       // delete headers if they exist
       delete courtsResponse._headers;
 
       courtsList = Object.values(courtsResponse);
 
-      if (!courtsList.length) {
-        req.session.errors = makeManualError('email', 'No courts found for this email');
+      // keep it only during this request lifetime
+      req.session.courtsList = courtsList;
+      req.session.noKeyAuthToken = authToken;
 
-        return res.redirect(loginRedirect);
-      }
-
-    } catch (err) {
-      req.session.errors = makeManualError('email', 'Something went wrong with dev email auth');
-
-      return res.redirect(loginRedirect);
-    }
-
-    req.session.courtsList = courtsList;
-    req.session.email = email;
-
-    try {
       if (courtsList.length === 1) {
-        const locCode = courtsList[0].loc_code;
+        await doLogin(req)(app, courtsList[0].loc_code, body);
 
-        await doLogin(req)(app, locCode, payload);
-
-        const { userType } = jwt.decode(req.session.authToken);
-
-        if (userType === 'ADMINISTRATOR') {
+        if (req.session.authentication.userType === 'ADMINISTRATOR') {
           return res.redirect(app.namedRoutes.build('administration.get'));
         }
 
         return res.redirect(app.namedRoutes.build('homepage.get'));
       }
 
-      return res.redirect(app.namedRoutes.build('authentication.courts-list.get'));
     } catch (err) {
-      req.session.errors = makeManualError('email', 'Something went wrong with dev email auth');
+      app.logger.crit('Failed to get courts list', {
+        data: { body },
+        error: err,
+      });
 
-      return res.redirect(loginRedirect);
+      return res.render('_errors/generic.njk');
     }
-  };
-};
 
-module.exports.getCourtsList = function() {
-  return function(req, res) {
     const tmpErrors = _.clone(req.session.errors);
 
     delete req.session.errors;
 
     res.render('authentication/courts-list.njk', {
-      courtsList: req.session.courtsList,
-      email: req.session.email, // we'll keep the email in the session object
+      courtsList,
+      email: req.session.email,
+      selectedCourt: req.session.selectedCourt, // this only gets set if the user is authenticated
+      cancelUrl: resolveCancelUrl(app, req),
       errors: {
         title: 'Please check the form',
         count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -100,7 +81,7 @@ module.exports.getCourtsList = function() {
 module.exports.postCourtsList = function(app) {
   return async function(req, res) {
     const locCode = req.body.court;
-    const payload = { email: req.body.email };
+    const body = { email: req.session.email || req.session.authentication.email };
 
     if (!locCode) {
       req.session.errors = makeManualError('select-court', 'Select the court you want to manage');
@@ -109,20 +90,26 @@ module.exports.postCourtsList = function(app) {
     }
 
     try {
-      await doLogin(req)(app, locCode, payload);
+      await doLogin(req)(app, locCode, body);
 
       return res.redirect(app.namedRoutes.build('homepage.get'));
     } catch (err) {
       req.session.errors = makeManualError('select-court', 'Something went wrong when selecting a court');
 
-      return res.redirect(app.namedRoutes.build('authentication.courts-list.get'));
+      app.logger.crit('Failed to login when selecting a court', {
+        data: { body, locCode },
+        error: err,
+      });
+
+      // return res.redirect(app.namedRoutes.build('authentication.courts-list.get'));
+      return res.render('_errors/generic.njk');
     }
   };
 };
 
 function doLogin(req) {
-  return async function(app, locCode, payload) {
-    const jwtResponse = await jwtAuthDAO.post(req, locCode, payload);
+  return async function(app, locCode, body) {
+    const jwtResponse = await axiosClient('post', `/auth/moj/jwt/${locCode}`, req.session.noKeyAuthToken, { body });
 
     // delete headers if they exist
     delete jwtResponse._headers;
@@ -133,8 +120,20 @@ function doLogin(req) {
 
     // there will always be a court selected here
     req.session.selectedCourt = req.session.courtsList.find(court => court.loc_code === locCode);
+    req.session.authentication = jwt.decode(req.session.authToken);
 
-    // delete the courts list if successful
+    // delete unwanted cached on successful login
     delete req.session.courtsList;
+    delete req.session.email;
+    delete req.session.noKeyAuthToken;
+
+    app.logger.info('User logged in', {
+      auth: req.session.authentication,
+      data: { body, locCode },
+    });
   };
 };
+
+function resolveCancelUrl(app, req) {
+  return req.session.authentication ? app.namedRoutes.build('homepage.get') : app.namedRoutes.build('login.get');
+}
