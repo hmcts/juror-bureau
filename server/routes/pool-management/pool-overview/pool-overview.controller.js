@@ -68,6 +68,7 @@ const filters = require('../../../components/filters');
       delete req.session.selectedJurors;
       delete req.session.selectedAll;
       delete req.session.processLateSummons;
+      delete req.session.editPool;
 
       poolSummaryObj.get(
         rp,
