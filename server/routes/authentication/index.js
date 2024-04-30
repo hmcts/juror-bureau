@@ -6,7 +6,6 @@ module.exports = function(app) {
 
   app.get('/auth/courts-list',
     'authentication.courts-list.get',
-    // TODO: add check to make sure the user is half authed
     controller.getCourtsList(app),
   );
 
