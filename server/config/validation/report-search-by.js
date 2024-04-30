@@ -63,6 +63,16 @@
         details: 'Enter a date to search utilisation up until',
       }],
     },
+    absences: {
+      dateFrom: [{
+        summary: 'Enter a date to search absences from',
+        details: 'Enter a date to search absences jurors from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search absences up until',
+        details: 'Enter a date to search absences up until',
+      }],
+    },
   };
 
   module.exports.searchBy = function(reportKey) {
@@ -98,6 +108,23 @@
         },
       },
     };
+  };
+
+  module.exports.absences = {
+    dateRange: () => {
+      return {
+        dateFrom: {
+          reportsDateRange: {
+            messageKey: 'absences',
+          },
+        },
+        dateTo: {
+          reportsDateRange: {
+            messageKey: 'absences',
+          },
+        },
+      };
+    },
   };
 
   validate.validators.reportSearchBy = function(value, options, key, attributes) {

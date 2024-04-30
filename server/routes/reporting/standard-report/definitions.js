@@ -779,6 +779,27 @@
           printInsertTables: true,
         },
       },
+      'absences': {
+        title: 'Absences report',
+        //VERIFY API KEY ONCE BE READY
+        apiKey: 'AbsencesReport',
+        search: 'dateRange',
+        grouped: {
+          headings: {
+            prefix: 'Pool ',
+            link: 'pool-overview',
+          },
+          totals: true,
+        },
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+          'totalAbsences',
+          'courtName',
+        ],
+      },
     };
   };
 })();
