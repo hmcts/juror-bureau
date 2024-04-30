@@ -1,104 +1,27 @@
 /* eslint-disable strict */
-const { isCourtUser } = require('../../../components/auth/user-type');
-const { dateFilter, capitalizeFully } = require('../../../components/filters');
-
-// type IReportKey = {[key:string]: {
-//   title: string,
-//   apiKey: string,
-//   search?: 'poolNumber' | 'dateRange', // etc only poolNumber is currently implemented
-//   headings: string[], // corresponds to the ids provided for the headings in the API
-//                       // (except report created dateTime)
-// }};
-module.exports.reportKeys = function(app, req = null) {
-  const courtUser = req ? isCourtUser(req) : false;
-
-  return {
-    'next-due': {
-      title: 'Next attendance date report',
-      apiKey: 'NextAttendanceDayReport',
-      search: 'poolNumber',
-      headings: [
-        'poolNumber',
-        'reportDate',
-        'poolType',
-        'reportTime',
-        'serviceStartDate',
-        'courtName',
-      ],
-    },
-    'undelivered': {
-      title: 'Undelivered list',
-      apiKey: 'UndeliverableListReport',
-      search: 'poolNumber',
-      headings: [
-        'poolNumber',
-        'reportDate',
-        'poolType',
-        'reportTime',
-        'serviceStartDate',
-        'courtName',
-        'totalUndelivered',
-      ],
-    },
-    'non-responded': {
-      title: 'Non-repsonded list',
-      apiKey: 'NonRespondedReport',
-      search: 'poolNumber',
-      headings: [
-        'poolNumber',
-        'reportDate',
-        'poolType',
-        'reportTime',
-        'serviceStartDate',
-        'courtName',
-        'totalNonResponded',
-      ],
-    },
-    'postponed-pool': {
-      title: 'Postponed list (by pool)',
-      apiKey: 'PostponedListByPoolReport',
-      search: 'poolNumber',
-      headings: [
-        'poolNumber',
-        'reportDate',
-        'poolType',
-        'reportTime',
-        'serviceStartDate',
-        'courtName',
-        'totalPostponed',
-      ],
-      searchUrl: app.namedRoutes.build('reports.postponed.search.get'),
-    },
-    'postponed-date': {
-      title: 'Postponed list (by date)',
-      apiKey: 'PostponedListByDateReport',
-      headings: [
-        'dateFrom',
-        'reportDate',
-        'dateTo',
-        'reportTime',
-        'totalPostponed',
-      ].concat(courtUser ? ['courtName'] : []),
-      grouped: {
-        headings: {
-          prefix: 'Pool ',
-          link: 'pool-overview',
-        },
-        totals: true,
-      },
-      searchUrl: app.namedRoutes.build('reports.postponed.search.get'),
-    },
-  };
-};
+const { dateFilter, capitalizeFully, toSentenceCase } = require('../../../components/filters');
 
 const tableDataMappers = {
   String: (data) => capitalizeFully(data),
   LocalDate: (data) => dateFilter(data, 'YYYY-mm-dd', 'ddd D MMM YYYY'),
-  List: (data) => Object.values(data).reduce(
-    (acc, current) => {
-      return acc + ', ' + current;
-    },
-  ),
+  List: (data) => {
+    if (Object.keys(data)[0] === 'jurorAddressLine1'){
+      return Object.values(data).reduce(
+        (acc, current) => {
+          return acc + ', ' + current;
+        },
+      );
+    }
+    let listText = '';
+
+    Object.keys(data).forEach((element, index) => {
+      listText = listText
+        + `${toSentenceCase(element)}: ${data[element]}`
+        + `${index === Object.keys(data).length - 1 ? '' : ', '}`;
+    });
+    return listText;
+  },
+  Long: (data) => data.toString(),
 };
 
 const headingDataMappers ={
@@ -115,7 +38,8 @@ const headingDataMappers ={
 
     return time + 'am';
   },
-  Long: (data) => data,
+  Integer: (data) => data,
+  Long: (data) => data.toString(),
 };
 
 const constructPageHeading = (headingType, data) => {
@@ -126,7 +50,11 @@ const constructPageHeading = (headingType, data) => {
   }
   const headingData = data[headingType];
 
-  return { title: headingData.displayName, data: headingDataMappers[headingData.dataType](headingData.value)};
+  if (headingData) {
+    return { title: headingData.displayName, data: headingDataMappers[headingData.dataType](headingData.value)};
+  }
+
+  return {};
 };
 
 module.exports.tableDataMappers = tableDataMappers;

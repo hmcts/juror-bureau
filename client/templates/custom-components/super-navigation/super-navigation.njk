@@ -12,7 +12,7 @@
     <div class="govuk-main-wrapper govuk-width-container">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-quarter">
-          <h3 class="govuk-body-l">Applications</h3>
+          <span class="govuk-body-l">Applications</span>
         </div>
         <div class="govuk-grid-column-three-quarters">
           <ul class="govuk-list govuk-list--spaced">
@@ -34,7 +34,7 @@
             </li>
             {% endif %}
             <li>
-              <a href="{{ url('reports.get') }}" class="govuk-link govuk-!-font-weight-bold">Reporting</a>
+              <a href="{{ url('reports.reports.get') }}" class="govuk-link govuk-!-font-weight-bold">Reporting</a>
             </li>
             {% if isSJO %}
               <li>

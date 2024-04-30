@@ -848,8 +848,10 @@
   * @returns {object} The pagination object for the pagination component
   */
   module.exports.paginationBuilder = function(totalResults, currentPage, url) {
+    const constants = modUtils.constants;
+
     var pageItems = []
-      , totalPages = Math.ceil(totalResults / this.constants.PAGE_SIZE)
+      , totalPages = Math.ceil(totalResults / constants.PAGE_SIZE)
       , routePart = url.split('?')[0]
       , params = new URLSearchParams(url.split('?')[1] || '')
       , previousLink
@@ -1266,6 +1268,7 @@
     'excused': 'Excused',
     'sentencing-invite': 'Sentencing invite',
     'sentencing-date': 'Sentencing date',
+    'export-contact-details': 'Export contact details',
   };
 
   module.exports.mapAdminToPoolRequestCourts = (adminCourts) => {

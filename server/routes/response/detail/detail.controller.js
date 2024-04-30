@@ -2173,9 +2173,9 @@
   function getAdditionalChangedDetails(data) {
     var dobChanged = (data.dateOfBirth !== data.newDateOfBirth && typeof data.dateOfBirth !== 'undefined' && data.dateOfBirth !== null && data.dateOfBirth.length !== 0)
       , emailChanged = (data.email !== data.newEmail && typeof data.email !== 'undefined' && data.email !== null && data.email.trim().length !== 0)
-      , ageCalcDob = (dobChanged) ? data.newDateOfBirth : data.dateOfBirth
+      , ageCalcDob = data.newDateOfBirth
       , calculatedAge = data.hearingDate !== null ? moment(data.hearingDate, 'DD/MM/YYYY').diff(moment(ageCalcDob, 'DD/MM/YYYY'), 'years') : moment().diff(moment(ageCalcDob, 'DD/MM/YYYY'), 'years')
-      , currentDob = (dobChanged) ? data.newDateOfBirth : data.dateOfBirth
+      , currentDob = data.newDateOfBirth
       , dateOfBirthParts
       , phoneChanged
       , altPhoneChanged;
@@ -2509,7 +2509,7 @@
     }
 
     if (responseData.bail ||
-      responseData.residency ||
+      !responseData.residency ||
       responseData.convictions ||
       responseData.mentalHealthAct) {
       isIneligible = true;
