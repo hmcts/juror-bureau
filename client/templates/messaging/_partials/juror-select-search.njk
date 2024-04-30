@@ -7,7 +7,13 @@
 
   <div class="mod-flex mod-items-end mod-gap-x-4 ">
     <h2 class="govuk-heading-m">Search by juror number</h2>
-    <a class="govuk-body govuk-link govuk-link--no-visited-state" id="searchAgainAnchor" href="{{ changeSearchUrl }}">Change</a>
+    <a class="govuk-body govuk-link govuk-link--no-visited-state" 
+       id="searchAgainAnchor" 
+       href="{{ changeSearchUrl }}"
+       aria-label="Change search criteria"
+    >
+      Change
+    </a>
   </div>
   <form action="{{ searchUrl }}" method="POST" class="mod-flex mod-items-end mod-gap-x-2">
     {{ govukInput({
@@ -40,7 +46,13 @@
 
   <div class="mod-flex mod-items-end mod-gap-x-4 ">
     <h2 class="govuk-heading-m">Search by juror name</h2>
-    <a class="govuk-body govuk-link govuk-link--no-visited-state" id="searchAgainAnchor" href="{{ changeSearchUrl }}">Change</a>
+    <a class="govuk-body govuk-link govuk-link--no-visited-state" 
+       id="searchAgainAnchor" 
+       href="{{ changeSearchUrl }}"
+       aria-label="Change search criteria"
+    >
+      Change
+    </a>
   </div>
   <form action="{{ searchUrl }}" method="POST" class="mod-flex mod-items-end mod-gap-x-2">
     {{ govukInput({
@@ -73,7 +85,13 @@
 
   <div class="mod-flex mod-items-end mod-gap-x-4 ">
     <h2 class="govuk-heading-m">Search by pool number</h2>
-    <a class="govuk-body govuk-link govuk-link--no-visited-state" id="searchAgainAnchor" href="{{ changeSearchUrl }}">Change</a>
+    <a class="govuk-body govuk-link govuk-link--no-visited-state" 
+       id="searchAgainAnchor" 
+       href="{{ changeSearchUrl }}"
+       aria-label="Change search criteria"
+    >
+      Change
+    </a>
   </div>
   <form action="{{ searchUrl }}" method="POST" class="mod-flex mod-items-end mod-gap-x-2">
     {{ govukInput({
@@ -101,7 +119,13 @@
 
   <div class="mod-flex mod-items-end mod-gap-x-4 ">
     <h2 class="govuk-heading-m">Jurors from trial {{ searchOptions['trialNumber'] }}</h2>
-    <a class="govuk-body govuk-link govuk-link--no-visited-state" id="searchAgainAnchor" href="{{ changeSearchUrl }}">Change</a>
+    <a class="govuk-body govuk-link govuk-link--no-visited-state" 
+       id="searchAgainAnchor" 
+       href="{{ changeSearchUrl }}"
+       aria-label="Change search criteria"
+    >
+      Change
+    </a>
   </div>
 
 {% elif searchBy === "nextDueAtCourt"  %}
@@ -113,7 +137,13 @@
 
   <div class="mod-flex mod-items-end mod-gap-x-4 ">
     <h2 class="govuk-heading-m">Search by next due at court</h2>
-    <a class="govuk-body govuk-link govuk-link--no-visited-state" id="searchAgainAnchor" href="{{ changeSearchUrl }}">Change</a>
+    <a class="govuk-body govuk-link govuk-link--no-visited-state" 
+       id="searchAgainAnchor" 
+       href="{{ changeSearchUrl }}"
+       aria-label="Change search criteria"
+    >
+      Change
+    </a>
   </div>
   <form action="{{ searchUrl }}" method="POST" class="mod-flex mod-items-end mod-gap-x-2">
     <div class="govuk-form-group ds_datepicker {% if nextDueAtCourtDateError %}govuk-form-group--error{% endif %}">
@@ -158,7 +188,13 @@
 
   <div class="mod-flex mod-items-end mod-gap-x-4 ">
     <h2 class="govuk-heading-m">Search by date deferred to</h2>
-    <a class="govuk-body govuk-link govuk-link--no-visited-state" id="searchAgainAnchor" href="{{ changeSearchUrl }}">Change</a>
+    <a class="govuk-body govuk-link govuk-link--no-visited-state" 
+       id="searchAgainAnchor" 
+       href="{{ changeSearchUrl }}"
+       aria-label="Change search criteria"
+    >
+      Change
+    </a>
   </div>
   <form action="{{ searchUrl }}" method="POST" class="mod-flex mod-items-end mod-gap-x-2">
     <div class="govuk-form-group ds_datepicker {% if deferralDateError %}govuk-form-group--error{% endif %}">

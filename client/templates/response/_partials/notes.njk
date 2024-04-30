@@ -7,7 +7,13 @@
         <h2 class="govuk-heading-m">Internal notes</h2>
 
         <div class="govuk-body">
-          <a id="notesEditButton" class="govuk-link" href="{{ url('response.notes.edit.get', { id: response.jurorNumber, type: method }) }}">Add or change</a>
+          <a id="notesEditButton"
+             class="govuk-link"
+             aria-label="Add or change notes"
+             href="{{ url('response.notes.edit.get', { id: response.jurorNumber, type: method }) }}"
+          >
+            Add or change
+          </a>
         </div>
       </div>
 
