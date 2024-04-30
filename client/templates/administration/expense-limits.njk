@@ -4,8 +4,8 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 
-{% block page_title %}{{ serviceName }} - administration{% endblock %}
-{% block page_identifier %}administration - expense rates and limits{% endblock %}
+{% block page_title %}{{ serviceName }} - Administration - Expense rates and limits{% endblock %}
+{% block page_identifier %}Administration - Expense rates and limits{% endblock %}
 
 {% set currentApp = "Court administration" if isCourtUser else ("Bureau administration" if isBureauUser else "System administration") %} 
 {% set nav = "expenseRatesAndLimits" %}

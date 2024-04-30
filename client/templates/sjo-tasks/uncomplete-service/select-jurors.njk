@@ -5,11 +5,8 @@
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 {% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
 
+{% block page_title %}Uncomplete service - Select jurors{% endblock %}
 {% block page_identifier %}Uncomplete service{% endblock %}
-
-{% block page_title %}
-  Uncomplete service - select jurors
-{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({

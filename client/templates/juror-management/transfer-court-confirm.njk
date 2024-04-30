@@ -2,8 +2,7 @@
 
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
-{% block page_title %}{{ serviceName }} - {{"transfer jurors" if bulkUpdate else "update juror"}}{% endblock %}
-  
+{% block page_title %}{{ serviceName }} - {{"Transfer jurors" if bulkUpdate else "Update juror"}}{% endblock %}
 {% block page_identifier %}Transfer to another court{% endblock %}
 
 {% block content %}

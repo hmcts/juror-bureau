@@ -4,8 +4,8 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "includes/csrf.njk" import csrfProtection %}
 
-{% block page_title %}{{ serviceName }} - administration{% endblock %}
-{% block page_identifier %}administration - {{'edit' if editingUser else 'create'}} user - user type{% endblock %}
+{% block page_title %}{{ serviceName }} - Administration - {{'Edit' if editingUser else 'Create'}} user - User type{% endblock %}
+{% block page_identifier %}Administration - {{'Edit' if editingUser else 'Create'}} user - User type{% endblock %}
 
 {% set currentApp = "System administration" %} 
 

@@ -4,13 +4,8 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 
-{% block page_title %}
-    {{ serviceName }} - generate a panel
-{% endblock %}
-
-{% block page_identifier %}
-    Generate a panel
-{% endblock %}
+{% block page_title %}{{ serviceName }} - Generate a panel{% endblock %}
+{% block page_identifier %}Generate a panel{% endblock %}
 
 {% if errors.items["jurorType"] %}
   {% set jurorTypeError = {"text": errors.items['jurorType'][0].details} %}

@@ -6,8 +6,8 @@
 {% from "moj/components/banner/macro.njk" import mojBanner %}
 {% from "custom-components/date-picker/macro.njk" import datePicker %}
 
-{% block page_title %}{{ serviceName }} - administration{% endblock %}
-{% block page_identifier %}administration - system codes{% endblock %}
+{% block page_title %}{{ serviceName }} - Administration - System codes{% endblock %}
+{% block page_identifier %}Administration - System codes{% endblock %}
 
 {% set currentApp = "Court administration" if isCourtUser else ("Bureau administration" if isBureauUser else "System administration") %} 
 {% set nav = "systemCodes" %}
