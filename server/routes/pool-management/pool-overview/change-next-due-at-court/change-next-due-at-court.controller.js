@@ -16,25 +16,25 @@
     return async function(req, res) {
       if (req.body['check-all-jurors']) {
         req.body.selectedJurors = await poolMemebersObject.get(rp, app, req.session.authToken, req.params.poolNumber);
-      } else {
-        let validatorResult;
+      }
 
-        validatorResult = validate(req.body, jurorSelectValidator());
-        if (typeof validatorResult !== 'undefined') {
-          req.session.errors = validatorResult;
-          req.session.noJurorSelect = true;
-          return res.redirect(app.namedRoutes.build('pool-overview.get', {
-            poolNumber: req.body.poolNumber}));
-        }
+      let validatorResult;
+
+      req.session.selectedJurors = Array.isArray(req.body.selectedJurors)
+        ? req.body.selectedJurors
+        : [req.body.selectedJurors];
+
+      validatorResult = validate(req.body, jurorSelectValidator(req.session.membersList));
+      if (typeof validatorResult !== 'undefined') {
+        req.session.errors = validatorResult;
+        req.session.noJurorSelect = true;
+        return res.redirect(app.namedRoutes.build('pool-overview.get', {
+          poolNumber: req.body.poolNumber}));
       }
 
       delete req.session.membersList;
       delete req.session.filteredMembers;
       delete req.session.filters;
-
-      req.session.selectedJurors = Array.isArray(req.body.selectedJurors)
-        ? req.body.selectedJurors
-        : [req.body.selectedJurors];
 
       return res.redirect(app.namedRoutes.build('pool-overview.change-next-due-at-court.continue.get', {
         poolNumber: req.params.poolNumber,
