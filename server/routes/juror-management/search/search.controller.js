@@ -78,7 +78,7 @@ module.exports.postSearch = function(app) {
   return function(req, res) {
     const redirectUrl = app.namedRoutes.build('juror-record.search.get');
 
-    if (req.body.globalSearch && !isJurorNumber(req.body.globalSearch)) {
+    if (req.body.globalSearch && /\d+/.test(req.body.globalSearch)) {
       req.session.errors = makeManualError('jurorNumber', 'Enter a valid juror number');
       req.session.formFields = { jurorNumber: req.body.globalSearch };
 
