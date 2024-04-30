@@ -58,6 +58,19 @@
       </div>
     </div>
 
+    <span>
+      {{ govukButton({
+        text: "Edit pool",
+        href: url('pool-management.edit-pool.get', {
+          poolNumber: poolDetails.poolNumber
+        }),
+        classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+        attributes: {
+          id: "editPoolButton"
+        }
+      }) }}
+    </span>
+
   </div>
 
   <div class="court-details-wrapper">
