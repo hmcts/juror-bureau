@@ -3,8 +3,8 @@
 {% from "govuk/components/error-message/macro.njk" import govukErrorMessage -%}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
-{% block page_title %}{{ serviceName }} - administration{% endblock %}
-{% block page_identifier %}administration - Add a non-sitting day{% endblock %}
+{% block page_title %}{{ serviceName }} - Administration - Add a non sitting day{% endblock %}
+{% block page_identifier %}Administration - Add a non sitting day{% endblock %}
 
 {% set currentApp = "Court administration" if isCourtUser else ("Bureau administration" if isBureauUser else "System administration") %} 
 

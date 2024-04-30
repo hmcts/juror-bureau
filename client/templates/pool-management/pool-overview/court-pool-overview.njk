@@ -9,11 +9,8 @@
 
 {% from "./pool-record-doughnut.njk" import poolRecordDoughnut %}
 
+{% block page_title %}{{ serviceName }} - Pool overview for pool {{ poolDetails.poolNumber }}{% endblock %}
 {% block page_identifier %}Pool Overview for pool {{ poolDetails.poolNumber }}{% endblock %}
-
-{% block page_title %}
-  {{ serviceName }} - Pool overview for pool {{ poolDetails.poolNumber }}
-{% endblock %}
 
 {% set currentApp = "Pool management" %}
 

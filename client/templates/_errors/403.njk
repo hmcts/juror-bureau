@@ -1,8 +1,6 @@
 {% extends "../layouts/default.njk" %}
 
-{% block page_title %}
-  403 Forbidden
-{% endblock %}
+{% block page_title %}403 Forbidden{% endblock %}
 
 {% set homeLink = "/administration" if isSystemAdministrator else "/" %}
 
