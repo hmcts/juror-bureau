@@ -3,7 +3,7 @@ const { dateFilter, capitalizeFully, toSentenceCase } = require('../../../compon
 
 const tableDataMappers = {
   String: (data) => capitalizeFully(data),
-  LocalDate: (data) => dateFilter(data, 'YYYY-mm-dd', 'ddd D MMM YYYY'),
+  LocalDate: (data) => data ? dateFilter(data, 'YYYY-mm-dd', 'ddd D MMM YYYY') : '-',
   List: (data) => {
     if (Object.keys(data)[0] === 'jurorAddressLine1'){
       return Object.values(data).reduce(
