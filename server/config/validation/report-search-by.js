@@ -110,23 +110,6 @@
     };
   };
 
-  module.exports.absences = {
-    dateRange: () => {
-      return {
-        dateFrom: {
-          reportsDateRange: {
-            messageKey: 'absences',
-          },
-        },
-        dateTo: {
-          reportsDateRange: {
-            messageKey: 'absences',
-          },
-        },
-      };
-    },
-  };
-
   validate.validators.reportSearchBy = function(value, options, key, attributes) {
     if (typeof value === 'undefined' || value === '') {
       return messageMatrix[options.messageKey].searchBy;
