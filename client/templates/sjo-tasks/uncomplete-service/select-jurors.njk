@@ -39,7 +39,7 @@
           <caption class="govuk-table__caption govuk-visually-hidden">Uncomplete service search</caption>
           <tr>
             <td><h2 class="govuk-heading-m">Showing results for “{{ searchTerm }} ”</h2></td>
-            <td><div class="govuk-body"><a class="govuk-link" href="{{ changeUrl }}">change</a></div></td>
+            <td><div class="govuk-body"><a class="govuk-link" href="{{ changeUrl }}" aria-label="Change search term">change</a></div></td>
           </tr>
         </table>
 
@@ -56,7 +56,9 @@
           <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
           <h2>There are more than 500 results</h2>
-          <p class="govuk-body"><a class="govuk-link" href="{{ changeUrl }}">Refine your search</a> by adding more information.</p>
+          <p class="govuk-body">
+            <a class="govuk-link" href="{{ changeUrl }}">Refine your search</a> by adding more information.
+          </p>
         {% else %}
 
         <div class="govuk-grid-column-full juror-actions govuk-!-padding-0 govuk-!-margin-bottom-5">

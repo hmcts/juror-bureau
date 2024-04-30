@@ -130,7 +130,11 @@
     <div class="mod-juror-record__title govuk-body">
       <h2 class="govuk-heading-m">Address</h2>
       <div class="flex mod-flex mod-gap-x-4">
-        <a id="addressChangeAnchor" href="{{ url('juror-record.details-edit-address.get', { jurorNumber: jurorNumber }) }}" class="govuk-link">
+        <a id="addressChangeAnchor" 
+           href="{{ url('juror-record.details-edit-address.get', { jurorNumber: jurorNumber }) }}" 
+           class="govuk-link"
+           aria-label="Change juror address"
+        >
           Change
         </a>
       </div>

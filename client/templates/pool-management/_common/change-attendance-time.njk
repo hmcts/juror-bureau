@@ -94,10 +94,15 @@
         }) }}
 
         <div class="govuk-button-group">
-          {{ govukButton({
-            text: "Change",
-            type: "submit" 
-          }) }}
+          {{ 
+            govukButton({
+              text: "Change",
+              type: "submit",
+              attributes: {
+                "aria-label": "Change the attendance time for this pool"
+              } 
+            })
+          }}
 
           <a class="govuk-link" href="{{ _cancelUrl }}">Cancel</a>
         </div>
