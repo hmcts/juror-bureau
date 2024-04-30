@@ -3,12 +3,12 @@
 const _ = require('lodash');
 const urljoin = require('url-join');
 const { searchJurorRecordDAO } = require('../../../objects');
-const { constants, paginationBuilder, isJurorNumber, makeManualError } = require('../../../lib/mod-utils');
+const { constants, paginationBuilder, makeManualError } = require('../../../lib/mod-utils');
 const { capitalizeFully } = require('../../../components/filters');
 
 module.exports.getSearch = function(app) {
   return async function(req, res) {
-    const { jurorNumber, jurorName, postcode, poolNumber, sortBy, sortOrder, globalSearch } = req.query;
+    const { jurorNumber, jurorName, postcode, poolNumber, sortBy, sortOrder } = req.query;
 
     let jurorRecords;
     let totalResults;
@@ -78,8 +78,9 @@ module.exports.postSearch = function(app) {
   return function(req, res) {
     const redirectUrl = app.namedRoutes.build('juror-record.search.get');
 
-    if (req.body.globalSearch && /\d+/.test(req.body.globalSearch)) {
-      req.session.errors = makeManualError('jurorNumber', 'Enter a valid juror number');
+    if (req.body.globalSearch && !/^\d{1,9}$/.test(req.body.globalSearch)) {
+      req.session.errors =
+        makeManualError('jurorNumber', 'Enter a valid juror number');
       req.session.formFields = { jurorNumber: req.body.globalSearch };
 
       return res.redirect(redirectUrl);
