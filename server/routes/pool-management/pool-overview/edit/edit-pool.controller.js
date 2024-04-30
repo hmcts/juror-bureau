@@ -72,9 +72,9 @@
             title: 'Pool not found',
             message: 'The pool you are trying to edit does not exist',
           });
-        }
+        };
 
-      tmpErrors = _.clone(req.session.errors)
+      tmpErrors = _.clone(req.session.errors);
       delete req.session.errors;
       delete req.session.formFields;
 
@@ -86,8 +86,8 @@
       )
         .then(successCB)
         .catch(errorCB);
-    }
-  }
+    };
+  };
 
   module.exports.post = function(app) {
     return function(req, res) {
@@ -109,7 +109,7 @@
 
           return res.redirect(app.namedRoutes.build('pool-overview.get', {
             poolNumber: req.params['poolNumber'],
-          }))
+          }));
         }
         , errorCB = function(err) {
 
@@ -128,7 +128,7 @@
           req.session.postError = 'Something went wrong. Please check your form and try again';
 
           return res.redirect(app.namedRoutes.build('pool-management.edit-pool.get', {
-            poolNumber: req.params['poolNumber']
+            poolNumber: req.params['poolNumber'],
           }));
         }
         , bodyKey;
@@ -151,7 +151,7 @@
         req.session.formFields = req.body;
 
         return res.redirect(app.namedRoutes.build('pool-management.edit-pool.get', {
-          poolNumber: req.params['poolNumber']
+          poolNumber: req.params['poolNumber'],
         }));
       }
 
@@ -164,7 +164,7 @@
       )
         .then(successCB)
         .catch(errorCB);
-    }
-  }
+    };
+  };
 
 })();

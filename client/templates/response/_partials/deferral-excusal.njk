@@ -9,7 +9,13 @@
 
           {% if method === "paper" and isAddChangeVisible %}
             <div class="govuk-body">
-              <a id="deferralExcusalEdit" class="govuk-link" href="{{ url('summons.update-reply-type.get', { id: response.jurorNumber, type: method }) }}">Add or change</a>
+              <a id="deferralExcusalEdit" 
+                 class="govuk-link"
+                 aria-label="Add or change deferral or excusal" 
+                 href="{{ url('summons.update-reply-type.get', { id: response.jurorNumber, type: method }) }}"
+              >
+                Add or change
+              </a>
             </div>
           {% endif %}
         </div>
@@ -18,7 +24,14 @@
           <h2 class="govuk-heading-m">Deferral or excusal
             {% if canEdit and responseEditEnabled %}
             <div class="edit-actions govuk-body jd-right-align">
-              <a id="deferralExcusalCancel" href="#" class="edit-action edit-trigger" data-target="deferral-excusal">Change</a>
+              <a id="deferralExcusalCancel" 
+                 href="#" 
+                 class="edit-action edit-trigger" 
+                 data-target="deferral-excusal"
+                 aria-label="Change deferral or excusal"
+              >
+                Change
+              </a>
             </div>
             {% endif %}
           </h2>

@@ -3,11 +3,8 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/tag/macro.njk" import govukTag %}
 
-{% block page_title %}
-  {{ serviceName }} - juror record - details
-{% endblock %}
-
-{% block page_identifier %}juror record - details{% endblock %}
+{% block page_title %}{{ serviceName }} - Juror record - Details{% endblock %}
+{% block page_identifier %}Juror record - Details{% endblock %}
 
 {% set currentApp = "Juror management" %}
 
@@ -44,7 +41,13 @@
   <div class="mod-juror-record__title govuk-body">
     <h2 id="jurorDetailsLabel" class="govuk-heading-m">Juror details</h2>
     {% if authentication.owner === juror.commonDetails.owner %}
-      <a id="changeJurorDetailsAnchor" href="{{ editDetailsLink }}" class="govuk-link">Add or change</a>
+      <a id="changeJurorDetailsAnchor" 
+         href="{{ editDetailsLink }}" 
+         class="govuk-link" 
+         aria-label="Add or change juror details"
+      >
+        Add or change
+      </a>
     {% endif %}
   </div>
 

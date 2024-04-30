@@ -1,9 +1,15 @@
 (function() {
   'use strict';
 
-  var auth = require('../../components/auth')
-    , controller = require('./summons-management.controller')
-    , processController = require('./process-reply/process-reply.controller');
+  const auth = require('../../components/auth');
+  const controller = require('./summons-management.controller');
+  const processController = require('./process-reply/process-reply.controller');
+  const {
+    getEditNotes,
+    postEditNotes,
+    getAddLogs,
+    postAddLogs,
+  } = require('../juror-management/juror-record/juror-record.controller');
 
   module.exports = function(app) {
 
@@ -99,6 +105,25 @@
       auth.verify,
       processController.checkOwner(app),
       controller.postCheckCanAccommodate(app));
+
+    // notes and logs
+    app.get('/summons-replies/response/:id/:type(paper|digital)/notes/edit',
+      'response.notes.edit.get',
+      auth.verify,
+      getEditNotes(app, true));
+    app.post('/summons-replies/response/:id/:type(paper|digital)/notes/edit',
+      'response.notes.edit.post',
+      auth.verify,
+      postEditNotes(app, true));
+
+    app.get('/summons-replies/response/:id/:type(paper|digital)/contact-logs/add',
+      'response.contact-logs.add.get',
+      auth.verify,
+      getAddLogs(app, true));
+    app.post('/summons-replies/response/:id/:type(paper|digital)/contact-logs/add',
+      'response.contact-logs.add.post',
+      auth.verify,
+      postAddLogs(app, true));
   };
 
 })();

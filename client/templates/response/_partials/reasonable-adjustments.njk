@@ -10,7 +10,13 @@
           <h2 class="govuk-heading-m">Reasonable adjustments</h2>
           {% if method === "paper" and isAddChangeVisible %}
             <div class="govuk-body">
-              <a id="reasonableAdjustmentsEdit" class="govuk-link" href="{{ url('summons.update-adjustments.get', { id: response.jurorNumber, type: method }) }}">Add or change</a>
+              <a id="reasonableAdjustmentsEdit" 
+                 class="govuk-link"
+                 aria-label="Add or change reasonable adjustments" 
+                 href="{{ url('summons.update-adjustments.get', { id: response.jurorNumber, type: method }) }}"
+              >
+                Add or change
+              </a>
             </div>
           {% endif %}
         </div>
@@ -19,7 +25,14 @@
           <h2 class="govuk-heading-m">Reasonable adjustments
             {% if canEdit and responseEditEnabled %}
             <div class="edit-actions govuk-body jd-right-align">
-              <a id="reasonableAdjustmentsEdit" href="#" class="edit-action edit-trigger" data-target="reasonable-adjustments">Change</a>
+              <a id="reasonableAdjustmentsEdit" 
+                 href="#" 
+                 class="edit-action edit-trigger" 
+                 data-target="reasonable-adjustments"
+                 aria-label="Change reasonable adjustments"
+              >
+                Change
+              </a>
             </div>
             {% endif %}
           </h2>

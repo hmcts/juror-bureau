@@ -3,10 +3,7 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
-{% block page_title %}
-  {{ serviceName }} - {{ subServiceName }}
-{% endblock %}
-
+{% block page_title %}{{ serviceName }} - {{ subServiceName }}{% endblock %}
 {% block page_identifier %}{{ pageIdentifier }}{% endblock %}
 
 {% block content %}
@@ -40,7 +37,10 @@
               actions: {
                 items: [{
                     href: changeUrls.jurorDob,
-                    text: "Change"
+                    text: "Change",
+                    attributes: {
+                      "aria-label": "Change juror date of birth"
+                    }
               }]}
             },
             {
@@ -53,7 +53,10 @@
               actions: {
                 items: [{
                     href: changeUrls.jurorName,
-                    text: "Change"
+                    text: "Change",
+                    attributes: {
+                      "aria-label": "Change juror name"
+                    }
               }]}
             },
             {
@@ -66,7 +69,10 @@
               actions: {
                 items: [{
                     href: changeUrls.jurorAddress,
-                    text: "Change"
+                    text: "Change",
+                    attributes: {
+                      "aria-label": "Change juror address"
+                    }
               }]}
             },
             {
@@ -79,7 +85,10 @@
               actions: {
                 items: [{
                     href: changeUrls.jurorContact,
-                    text: "Change"
+                    text: "Change",
+                    attributes: {
+                      "aria-label": "Change juror main phone number"
+                    }
               }]}
             },
             {
@@ -92,7 +101,10 @@
               actions: {
                 items: [{
                     href: changeUrls.jurorContact,
-                    text: "Change"
+                    text: "Change",
+                    attributes: {
+                      "aria-label": "Change juror alternative phone number"
+                    }
               }]}
             },
             {
@@ -105,7 +117,10 @@
               actions: {
                 items: [{
                     href: changeUrls.jurorContact,
-                    text: "Change"
+                    text: "Change",
+                    attributes: {
+                      "aria-label": "Change juror email address"
+                    }
               }]}
             },
             {
@@ -118,7 +133,10 @@
               actions: {
                 items: [{
                     href: changeUrls.notes,
-                    text: "Change"
+                    text: "Change",
+                    attributes: {
+                      "aria-label": "Change juror notes"
+                    }
               }]}
             }
           ]
@@ -146,7 +164,10 @@
               actions: {
                 items: [{
                     href: changeUrls.poolNumber,
-                    text: "Change"
+                    text: "Change",
+                    attributes: {
+                      "aria-label": "Change pool number"
+                    }
               }]}
             }
           ]

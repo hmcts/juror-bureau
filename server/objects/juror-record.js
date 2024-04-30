@@ -409,4 +409,6 @@
     },
   });
 
+  module.exports.searchJurorRecordDAO = new DAO('moj/juror-record/search');
+
 })();

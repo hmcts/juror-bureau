@@ -42,6 +42,7 @@ client.interceptors.response.use(
       statusCode: err.response.status,
       error: {
         message: err.response.data.message,
+        code: err.response.data.code,
         trace: err.response.data.trace,
       },
     };

@@ -6,11 +6,12 @@
 {% from "moj/components/banner/macro.njk" import mojBanner %}
 
 {% set currentApp = "Pool management" %}
-{% block page_identifier %}Deferral Maintenance{% endblock %}
+
 {% block page_title %}
   {{ serviceName }} - Deferral maintenance
-  {% if data.hasData %} - court {{ data.court.locationCode }}{% endif %}
+  {% if data.hasData %} - Court {{ data.court.locationCode }}{% endif %}
 {% endblock %}
+{% block page_identifier %}Deferral maintenance{% endblock %}
 
 {% block content %}
 

@@ -53,7 +53,7 @@
 
       {% if document not in ['show-cause', 'failed-to-attend'] %}
         <p class="govuk-body govuk-!-font-weight-bold">Showing results for '{{ "all letters" if documentSearchBy === "allLetters" else searchBy }}' 
-          <a id="addressChangeAnchor" href="{{ changeUrl }}" class="govuk-link">Change</a>
+          <a id="addressChangeAnchor" href="{{ changeUrl }}" class="govuk-link" aria-label="Change address">Change</a>
         </p>
       {% endif %}
 

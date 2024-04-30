@@ -37,7 +37,7 @@
       <h1 class="govuk-heading-l">{{ pageIdentifier }}</h1>
 
       <p class="govuk-body govuk-!-font-weight-bold">Showing jurors in trial '{{ caseNumber }}' 
-        <a id="addressChangeAnchor" href="{{ changeUrl }}" class="govuk-link">Change</a>
+        <a id="addressChangeAnchor" href="{{ changeUrl }}" class="govuk-link" aria-label="Change address">Change</a>
       </p>
 
       {% if jurors | length > 0 %}
