@@ -135,7 +135,7 @@
             }
           }) }}
 
-          {% if jurorStatus == 'Responded' or jurorStatus == 'Panelled' or jurorStatus == 'Juror' %}
+          {% if jurorStatus == 'Responded' or jurorStatus == 'Panelled' or jurorStatus == 'Juror' or jurorStatus == 'Completed'%}
             {{ govukButton({
               text: "Add a non-attendance day",
               href: url('juror-management.non-attendance-day.get', {
