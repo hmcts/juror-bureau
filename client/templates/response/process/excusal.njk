@@ -5,10 +5,8 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 
-{% block page_title %}
-  {{ serviceName }} - process - excusal{% endblock %}
-
-{% block page_identifier %}process - excusal{% endblock %}
+{% block page_title %}{{ serviceName }} - Process - Excusal{% endblock %}
+{% block page_identifier %}Process - Excusal{% endblock %}
 
 {% block content %}
 
@@ -71,14 +69,13 @@
           errorMessage: excusalCodeError
         }) }}
 
-
         {{ govukRadios({
           idPrefix: "excusalDecision",
           name: "excusalDecision",
           fieldset: {
             legend: {
               text: "Select your decision",
-              isPageHeading: true,
+              isPageHeading: false,
               classes: "govuk-body govuk-!-font-weight-bold"
             }
           },
@@ -115,5 +112,3 @@
   </div>
 
 {% endblock %}
-
-

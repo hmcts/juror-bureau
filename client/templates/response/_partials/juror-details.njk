@@ -22,7 +22,13 @@
           </h2>
           {% if isAddChangeVisible %}
             <div class="govuk-body">
-              <a id="jurorDetailsEdit" class="govuk-link" href="{{ url( updateUrl, { id: response.jurorNumber, type: replyType }) }}">Add or change</a>
+              <a id="jurorDetailsEdit" 
+                 class="govuk-link"
+                 aria-label="Add or change juror details" 
+                 href="{{ url( updateUrl, { id: response.jurorNumber, type: replyType }) }}"
+              >
+                Add or change
+              </a>
             </div>
           {% endif %}
         </div>
@@ -31,7 +37,14 @@
           <h2 class="govuk-heading-m">Juror details
             {% if canEdit and responseEditEnabled %}
             <div class="edit-actions govuk-body jd-right-align">
-              <a id="jurorDetailsEdit" class="govuk-link edit-action edit-trigger" data-target="juror-details" href="#">Change</a>
+              <a id="jurorDetailsEdit" 
+                 class="govuk-link edit-action edit-trigger" 
+                 data-target="juror-details" 
+                 href="#"
+                 aria-label="Change juror details"
+              >
+                Change
+              </a>
             </div>
             {% endif %}
           </h2>
@@ -92,24 +105,31 @@
 
         <tr class="govuk-table__row {% if jurorDetails.dateOfBirth.changed %}info{% endif %}"  id="dob">
           <th class="govuk-table__header" scope="row">Date of birth</th>
-          {% if response.dateOfBirth === null %}
-            <td class="govuk-table__cell" id="jurorDateOfBirth">
-              <span class="mod-reply-section__required">Required</span>
-            </td>
+          
+          {% if method === "paper" %}
+            {% if response.dateOfBirth === null %}
+              <td class="govuk-table__cell" id="jurorDateOfBirth">
+                <span class="mod-reply-section__required">Required</span>
+              </td>
+            {% else %}
+              <td class="govuk-table__cell" id="jurorDateOfBirth">
+                {{ jurorDetails.dateOfBirth.current | dateFilter("DD/MM/YYYY", "DD MMM YYYY") }} (Juror will be {{ jurorDetails.dateOfBirth.currentAge }} years old)
+              </td>
+              <td class="govuk-table__cell" id="oldJurorDateOfBirth">
+                {% if jurorDetails.dateOfBirth.changed %}<div class="jd-label-black">Previous</div>{% endif %}
+                {{ jurorDetails.dateOfBirth.old | dateFilter("DD/MM/YYYY", "DD MMM YYYY") if hasModAccess and jurorDetails.dateOfBirth.old else jurorDetails.dateOfBirth.old }}
+              </td>
+            {% endif %}
           {% else %}
             <td class="govuk-table__cell" id="jurorDateOfBirth">
-              {% if hasModAccess %}
-                {{ jurorDetails.dateOfBirth.current | dateFilter("DD/MM/YYYY", "DD MMM YYYY") }} (Juror will be {{ jurorDetails.dateOfBirth.currentAge }} years old)
-              {% else %}
-                {% if jurorDetails.dateOfBirth.changed %}<div class="jd-label-blue">New</div>{% endif %}
-                {{ jurorDetails.dateOfBirth.current }}{% if response.hearingDate !== null %} (Will be {{ jurorDetails.dateOfBirth.currentAge }}){% endif %}
-              {% endif %}
+              {{ jurorDetails.dateOfBirth.current | dateFilter("DD/MM/YYYY", "DD MMM YYYY") }} (Juror will be {{ jurorDetails.dateOfBirth.currentAge }} years old)
             </td>
             <td class="govuk-table__cell" id="oldJurorDateOfBirth">
               {% if jurorDetails.dateOfBirth.changed %}<div class="jd-label-black">Previous</div>{% endif %}
               {{ jurorDetails.dateOfBirth.old | dateFilter("DD/MM/YYYY", "DD MMM YYYY") if hasModAccess and jurorDetails.dateOfBirth.old else jurorDetails.dateOfBirth.old }}
             </td>
           {% endif %}
+
         </tr>
 
 
@@ -172,7 +192,15 @@
           <h2 class="govuk-heading-m">Third party details
             {% if canEdit and responseEditEnabled %}
             <div class="edit-actions govuk-body jd-right-align">
-              <a href="#" id="jurorDetailsEditTP" class="govuk-link edit-action edit-trigger" data-target="juror-details" data-ref="#thirdPartySection">Change</a>
+              <a href="#" 
+                 id="jurorDetailsEditTP" 
+                 class="govuk-link edit-action edit-trigger" 
+                 data-target="juror-details" 
+                 data-ref="#thirdPartySection"
+                 aria-label="Change third party details"
+              >
+                Change
+              </a>
             </div>
             {% endif %}
           </h2>

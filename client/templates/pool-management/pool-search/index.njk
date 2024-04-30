@@ -10,11 +10,8 @@
 {% from "custom-components/autocomplete/macro.njk" import modAutocomplete %}
 {% from "custom-components/date-picker/macro.njk" import datePicker %}
 
-{% block page_title %}
-  {{ serviceName }} - Pool management - search
-{% endblock %}
-
-{% block page_identifier %}pool management - search{% endblock %}
+{% block page_title %}{{ serviceName }} - Pool management - Search{% endblock %}
+{% block page_identifier %}Pool management - Search{% endblock %}
 
 {% set currentApp = "Pool management" %}
 
@@ -87,7 +84,12 @@
           }
         ]
       }) }}
-      <p class="govuk-body">For coroner's courts, you'll need to use a <a href="#" class="govuk-link">different search</a>.</p>
+
+      {% if isBureauUser %}
+        <p class="govuk-body">
+          For coroner's courts, you'll need to use a <a href="{{ url('coroner-pool.search.get') }}" class="govuk-link">different search</a>.
+        </p>
+      {% endif %}
     </div>
 
   </div>

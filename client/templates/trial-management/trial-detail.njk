@@ -4,9 +4,10 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/tag/macro.njk" import govukTag %}
+{%- from "moj/components/button-menu/macro.njk" import mojButtonMenu -%}
 
-{% block page_title %}{{ serviceName }} - trial-management - trials{% endblock %}
-{% block page_identifier %}trial-management - trials{% endblock %}
+{% block page_title %}{{ serviceName }} - Trial management - Trials{% endblock %}
+{% block page_identifier %}Trial management - Trials{% endblock %}
 
 {% set currentApp = "Trials" %}
 {% set trialDetails = [
@@ -71,6 +72,35 @@
   }
 %}
 
+{% set standardPrintMenuItems = [
+  {
+    text: "Ballot cards",
+    href: "#",
+    classes: "govuk-button--secondary"
+  },
+  {
+    text: "Panel list (summary)",
+    href: url("reports.panel-summary.report.get", {'filter': trial.trial_number}),
+    classes: "govuk-button--secondary"
+  },
+  {
+    text: "Panel list (detailed)",
+    href: "#",
+    classes: "govuk-button--secondary"
+  },
+  {
+    text: "Panel member status report",
+    href: "#",
+    classes: "govuk-button--secondary"
+  },
+  {
+    text: "Panel selection report",
+    href: "#",
+    classes: "govuk-button--secondary"
+  }
+]%}
+
+
 {% if not trial.is_active %}
   {% set trialDetails = (trialDetails.splice(3, 0, endDateRow), trialDetails)%}
 {% endif %}
@@ -100,57 +130,64 @@
     </div>
     <div class="govuk-grid-column-one-half">
       <div class="govuk-button-group mod-flex mod-justify-end">
-        {% if trial.is_active %}
-          {% if addPanelStatus %}
-            {{ govukButton({
-              text: "Add panel members",
-              classes: "govuk-button--secondary",
-              href: url('trial-management.add-panel-members.get', {trialNumber: trial.trial_number, locationCode: locationCode})
-            }) }}
-          {% endif %}
+        <div class="moj-button-menu">
+          <div class="moj-button-menu__wrapper">
+            {% if trial.is_active %}
+              {% if addPanelStatus %}
+                {{ govukButton({
+                  text: "Add panel members",
+                  classes: "govuk-button--secondary",
+                  href: url('trial-management.add-panel-members.get', {trialNumber: trial.trial_number, locationCode: locationCode})
+                }) }}
+              {% endif %}
 
-          {% if trial.panelledJurors | length > 0 %}
-            {{ govukButton({
-              text: "Print panel list",
-              classes: "govuk-button--secondary",
-              href: '#'
-            }) }}
+              {% if trial.panelledJurors | length > 0 %}
+                {{ govukButton({
+                  text: "Empanel jury",
+                  classes: "govuk-button--secondary",
+                  href: url('trial-management.empanel.get', {trialNumber: trial.trial_number, locationCode: locationCode})
+                }) if not trial.is_jury_empanelled }}
 
-            {{ govukButton({
-              text: "Print ballot cards",
-              classes: "govuk-button--secondary",
-              href: '#'
-            }) }}
-
-            {{ govukButton({
-              text: "Empanel jury",
-              classes: "govuk-button--secondary",
-              href: url('trial-management.empanel.get', {trialNumber: trial.trial_number, locationCode: locationCode})
-            }) if not trial.is_jury_empanelled }}
-          
-          {% else %}
-            {% if addPanelStatus === false %}
-              {{ govukButton({
-                text: "Generate panel",
-                classes: "govuk-button--secondary",
-                href: url('trial-management.generate-panel.get', {trialNumber: trial.trial_number, locationCode: locationCode})
-              }) }}
+                {{ govukButton({
+                  text: "End trial",
+                  classes: "govuk-button--secondary",
+                  href: url('trial-management.trials.end-trial.get', {trialNumber: trial.trial_number, locationCode: locationCode})
+                }) }}
+              {% else %}
+                {% if addPanelStatus === false %}
+                  {{ govukButton({
+                    text: "Generate panel",
+                    classes: "govuk-button--secondary",
+                    href: url('trial-management.generate-panel.get', {trialNumber: trial.trial_number, locationCode: locationCode})
+                  }) }}
+                {% endif %}
+                {{ govukButton({
+                  text: "Edit trial",
+                  classes: "govuk-button--secondary",
+                  href: url("trial-management.edit-trial.get", { trialNumber: trial.trial_number, locationCode: locationCode })
+                }) }}
+                {{ govukButton({
+                  text: "End trial",
+                  classes: "govuk-button--secondary",
+                  href: url('trial-management.trials.end-trial.get', {trialNumber: trial.trial_number, locationCode: locationCode})
+                }) }}
+              {% endif %}
+              
             {% endif %}
-            {{ govukButton({
-              text: "Edit trial",
-              classes: "govuk-button--secondary",
-              href: url("trial-management.edit-trial.get", { trialNumber: trial.trial_number, locationCode: locationCode })
+            {{ mojButtonMenu({
+              items: [
+                {
+                  text: "Jury list",
+                  href: "#",
+                  classes: "govuk-button--secondary"
+                }
+              ].concat(standardPrintMenuItems) if trial.is_jury_empanelled else standardPrintMenuItems,
+              attributes: {
+                id: 'printButtonMenu'
+              }
             }) }}
-          {% endif %}
-
-          {% if trial.is_active %}
-            {{ govukButton({
-              text: "End trial",
-              classes: "govuk-button--secondary",
-              href: url('trial-management.trials.end-trial.get', {trialNumber: trial.trial_number, locationCode: locationCode})
-            }) }}
-          {% endif %}
-        {% endif %}  
+          </div>
+        </div>  
       </div>
     </div>
   </div>
@@ -171,4 +208,17 @@
     </div>
   </div>
 
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}  
+  <script>
+    // button menu in reply details page header
+    new MOJFrontend.ButtonMenu({
+      container: $('#printButtonMenu'),
+      mq: '(min-width: 200em)',
+      buttonText: 'Print',
+      buttonClasses: 'govuk-!-margin-bottom-1 govuk-button--secondary moj-button-menu__toggle-button--secondary',
+    });
+  </script>
 {% endblock %}

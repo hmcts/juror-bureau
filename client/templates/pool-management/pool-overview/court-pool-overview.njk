@@ -9,11 +9,8 @@
 
 {% from "./pool-record-doughnut.njk" import poolRecordDoughnut %}
 
+{% block page_title %}{{ serviceName }} - Pool overview for pool {{ poolDetails.poolNumber }}{% endblock %}
 {% block page_identifier %}Pool Overview for pool {{ poolDetails.poolNumber }}{% endblock %}
-
-{% block page_title %}
-  {{ serviceName }} - Pool overview for pool {{ poolDetails.poolNumber }}
-{% endblock %}
 
 {% set currentApp = "Pool management" %}
 
@@ -60,6 +57,19 @@
         {% endif %}
       </div>
     </div>
+
+    <span>
+      {{ govukButton({
+        text: "Edit pool",
+        href: url('pool-management.edit-pool.get', {
+          poolNumber: poolDetails.poolNumber
+        }),
+        classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+        attributes: {
+          id: "editPoolButton"
+        }
+      }) }}
+    </span>
 
   </div>
 

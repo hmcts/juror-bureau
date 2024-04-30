@@ -7,9 +7,7 @@
 {% from "./chartmacro-stacked.njk" import dashboardChartStacked %}
 {% from "./datemacro-monthyear.njk" import dashboardDateMonthYear %}
 
-{% block page_title %}
-  Dashboard - Juror Digital
-{% endblock %}
+{% block page_title %}Dashboard - Juror digital{% endblock %}
 
 {% block page_identifier %}Dashboard{% endblock %}
 
@@ -22,10 +20,9 @@
       <h1 class="govuk-heading-xl">
         <span class="govuk-caption-xl">Dashboard</span>
         Reply to a jury summons
-        
-        <p class="govuk-body-l"><br/>This dashboard shows information about how the Reply to a jury summons service is currently performing.</p>
-
       </h1>
+
+      <p class="govuk-body-l"><br/>This dashboard shows information about how the Reply to a jury summons service is currently performing.</p>
 
       <hr class="thickLine"/>
 
@@ -161,7 +158,6 @@
     </div>
   </div>
 
-   
   {% if dashboardData.summonsesSent %}
 
   <div class="govuk-grid-row">

@@ -5,8 +5,8 @@
 {% from "custom-components/macros/arrows.njk" import leftArrowSVG %}
 {% from "./_partials/attendance-sub-nav.njk" import attendanceSubNav %}
 
-{% block page_title %}{{ serviceName }} - juror-management - attendance{% endblock %}
-{% block page_identifier %}juror-management - attendance{% endblock %}
+{% block page_title %}{{ serviceName }} - Juror management - Attendance{% endblock %}
+{% block page_identifier %}Juror management - Attendance{% endblock %}
 
 {% set currentApp = "Jurors" %}
 
@@ -22,9 +22,9 @@
   {% endif %}
 
   <div class="govuk-error-summary js-hidden" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
-    <h2 class="govuk-error-summary__title" id="error-summary-title">
+    <p class="govuk-error-summary__title" id="error-summary-title">
       There is a problem
-    </h2>
+    </p>
     <div class="govuk-error-summary__body">
       <ul id="errors-list" class="govuk-list govuk-error-summary__list">
       </ul>

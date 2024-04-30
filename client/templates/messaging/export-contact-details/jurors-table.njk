@@ -1,0 +1,187 @@
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+
+{% set jurorRows = [] %}
+{% for juror in jurors %}
+
+  {# SETUP FOR CHECKED FIELDS - SELECTED METHOD RETAINED WITHIN PAGINATION/REFRESH #}
+  {% set _checked = '' %}
+  {% for checkedJuror in checkedJurors %}
+    {% if checkedJuror['jurorNumber'] === juror['jurorNumber'] %}
+      {% set _checked = 'checked' %}
+    {% endif %}
+  {% endfor %}
+
+  {% set jurorRows = (jurorRows.push(
+    [
+      {
+        html: '<div class="govuk-checkboxes__item govuk-checkboxes--small">' + 
+              '<input class="govuk-checkboxes__input" id="' + juror['jurorNumber'] + '" name="selectedJurors" type="checkbox"' +
+              ' value="' + juror['jurorNumber'] + '" aria-label="check-juror"' + _checked + ' data-poolnumber="' + juror['poolNumber'] + '"/>' +
+              '<label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="' + juror['jurorNumber'] + '"></label>' +
+              '</div>' | safe,
+        classes: "govuk-!-padding-right-2 govuk-!-padding-left-2"
+      },
+      {
+        html: '<a class="govuk-link govuk-link--no-visited-state" href="' + url('juror-record.overview.get', {jurorNumber: juror['jurorNumber']}) + '">' + juror['jurorNumber'] + '</a>',
+        classes: "mod-middle-align"
+      },
+      {
+        text: juror['firstName'] | capitalizeFully,
+        classes: "mod-middle-align"
+      },
+      {
+        text: juror['lastName'] | capitalizeFully,
+        classes: "mod-middle-align"
+      },
+      {
+        text: juror['email'] | lower if juror['email'] else "-",
+        classes: "mod-middle-align"
+      },
+      {
+        text: juror['phone'] if juror['phone'] else "-",
+        classes: "mod-middle-align"
+      },
+      {
+        text: juror['poolNumber'],
+        classes: "mod-middle-align"
+      },
+      {
+        text: juror['status'] | toSentenceCase,
+        classes: "mod-middle-align"
+      },
+      {
+        text: juror['trialNumber'] if juror['trialNumber'] else "-",
+        classes: "mod-middle-align"
+      },
+      {
+        text: "Yes" if juror['onCall'] else "No",
+        classes: "mod-middle-align"
+      },
+      {
+        text: juror['nextDueAtCourt'] | dateFilter('yyyy-MM-DD', 'D MMM YYYY') if juror['nextDueAtCourt'] else "-",
+        classes: "mod-middle-align"
+      },
+      {
+        text: juror['dateDeferredTo'] | dateFilter('yyyy-MM-DD', 'D MMM YYYY') if juror['dateDeferredTo'] else "-",
+        classes: "mod-middle-align"
+      },
+      {
+        text: juror['completionDate'] | dateFilter('yyyy-MM-DD', 'D MMM YYYY') if juror['completionDate'] else "-",
+        classes: "mod-middle-align"
+      },
+      {
+        text: "Yes" if juror['welshLanguage'] else "No",
+        classes: "mod-middle-align"
+      }
+    ]
+  ), jurorRows) %}
+
+{% endfor %}
+
+<div id="messaging-jurors-table-wrapper" class="govuk-grid-column-full govuk-body">
+
+
+  <div class="govuk-caption-m govuk-!-margin-bottom-3"> <span id="checkedJurors">{{ checkedJurors | length }}</span> of <span id="totalJurors">{{ totalJurors }}</span> selected</div>
+
+  {% set _allChecked = ' checked' if checkedJurors | length === totalJurors else '' %}
+
+  {{ modSortableTable({
+    id: "messageJurorsTable",
+    classes: "mod-horizontal-scroll-table",
+    caption: "Jurors list",
+    head: [
+      {
+        id: 'checkboxes',
+        sortable: false,
+        html: '<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">' + 
+              '<input type="checkbox" class="govuk-checkboxes__input" id="check-all-jurors" aria-label="check-all-jurors"' + _allChecked + '/>' +
+              '<label class="govuk-label govuk-checkboxes__label" for="jurors-all">' +
+              '<span class="govuk-visually-hidden">Select all jurors</span>' +
+              '</label>' +
+              '</div>',
+        classes: "govuk-!-padding-left-2 mod-padding-block--0"
+      },
+      {
+        id: 'jurorNumber',
+        value: 'Juror number',
+        sort: sortOrder if sortBy === 'jurorNumber' else 'none'
+      },
+      {
+        id: 'firstName',
+        value: 'First name',
+        sort: sortOrder if sortBy === 'firstName' else 'none'
+      }
+      ,
+      {
+        id: 'lastName',
+        value: 'Last name',
+        sort: sortOrder if sortBy === 'lastName' else 'none'
+      },
+      {
+        id: 'email',
+        value: 'Email',
+        sort: sortOrder if sortBy === 'email' else 'none'
+      },
+      {
+        id: 'phone',
+        value: 'Phone',
+        sort: sortOrder if sortBy === 'phone' else 'none'
+      },
+      {
+        id: 'poolNumber',
+        value: 'Pool number',
+        sort: sortOrder if sortBy === 'poolNumber' else 'none'
+      },
+      {
+        id: 'status',
+        value: 'Status',
+        sort: sortOrder if sortBy === 'status' else 'none'
+      },
+      {
+        id: 'trialNumber',
+        value: 'Trial number',
+        sort: sortOrder if sortBy === 'trialNumber' else 'none'
+      },
+      {
+        id: 'onCall',
+        value: 'On call',
+        sort: sortOrder if sortBy === 'onCall' else 'none'
+      },
+      {
+        id: 'nextDueAtCourtDate',
+        value: 'Next due at court date',
+        sort: sortOrder if sortBy === 'nextDueAtCourtDate' else 'none'
+      },
+      {
+        id: 'dateDeferredTo',
+        value: 'Date deferred to',
+        sort: sortOrder if sortBy === 'dateDeferredTo' else 'none'
+      },
+      {
+        id: 'completionDate',
+        value: 'Completion date',
+        sort: sortOrder if sortBy === 'completionDate' else 'none'
+      },
+      {
+        id: 'welshLanguage',
+        value: 'Welsh language',
+        sort: sortOrder if sortBy === 'welshLanguage' else 'none'
+      }
+    ],
+    rows: jurorRows,
+    url: urlPrefix
+  }) }}
+
+  {{ govukPagination({
+    previous: {
+      href: pagination.prev
+    },
+    next: {
+      href: pagination.next
+    },
+    items: pagination.items
+  }) }}
+
+</div>

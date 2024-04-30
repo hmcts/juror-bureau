@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  const { manualPoliceCheck } = require('../../../objects/police-check');
+  const { runPoliceCheckDAO } = require('../../../objects');
 
   module.exports.getRunPoliceCheck = function(app) {
     return function(req, res) {
@@ -23,12 +23,7 @@
 
   module.exports.postRunPoliceCheck = function(app) {
     return function(req, res) {
-      manualPoliceCheck.patch(
-        require('request-promise'),
-        app,
-        req.session.authToken,
-        req.params.jurorNumber,
-      )
+      runPoliceCheckDAO.patch(req, req.params.jurorNumber)
         .then(() => {
           app.logger.info('Police check succesfully running: ', {
             auth: req.session.authentication,

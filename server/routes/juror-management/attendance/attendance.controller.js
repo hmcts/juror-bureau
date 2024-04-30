@@ -8,6 +8,7 @@
   const { convertAmPmToLong, convert12to24, timeArrayToString,
     timeStringToArray } = require('../../../components/filters');
   const { jurorsAttending, jurorAttendanceDao } = require('../../../objects/juror-attendance');
+  const { runPoliceCheckDAO } = require('../../../objects');
   const { Logger } = require('../../../components/logger');
 
   module.exports.postCheckIn = function(app) {
@@ -345,6 +346,31 @@
         });
 
         return res.render('_errors/generic');
+      }
+    };
+  };
+
+  module.exports.postRunPoliceCheck = function(app) {
+    return async function(req, res) {
+      const { jurorNumber } = req.params;
+
+      try {
+        await runPoliceCheckDAO.patch(req, jurorNumber);
+
+        app.logger.info('Successfully initiated a police check', {
+          auth: req.session.authentication,
+          data: { jurorNumber },
+        });
+
+        return res.send();
+      } catch (err) {
+        app.logger.crit('Failed to run police check', {
+          auth: req.session.authentication,
+          data: { jurorNumber },
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+
+        return res.status(err.statusCode).send();
       }
     };
   };

@@ -5,8 +5,8 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "includes/csrf.njk" import csrfProtection %}
 
-{% block page_title %}{{ serviceName }} - administration{% endblock %}
-{% block page_identifier %}administration - {{'edit' if editingUser else 'create'}} user - user details{% endblock %}
+{% block page_title %}{{ serviceName }} - Administration - {{'Edit' if editingUser else 'Create'}} user - User details{% endblock %}
+{% block page_identifier %}Administration - {{'Edit' if editingUser else 'Create'}} user - User details{% endblock %}
 
 {% set currentApp = "System administration" %} 
 
@@ -92,7 +92,7 @@
             fieldset: {
               legend: {
                 text: "Extra permissions",
-                isPageHeading: true,
+                isPageHeading: false,
                 classes: "govuk-fieldset__legend--m"
               }
             },

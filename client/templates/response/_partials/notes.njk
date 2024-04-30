@@ -3,31 +3,21 @@
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-full">
 
-      {% if hasModAccess %}
-        <div class="mod-reply-section__title">
-          <h2 class="govuk-heading-m">Internal notes</h2>
+      <div class="mod-reply-section__title">
+        <h2 class="govuk-heading-m">Internal notes</h2>
 
-          <div class="govuk-body">
-            {% if method === "paper" %}
-              <a id="notesEditButton" class="govuk-link" href="#">Add or change</a>
-            {% else %}
-              <a id="notesEditButton" class="govuk-link" href="{{ url('response.detail.notes.edit.get', { id: response.jurorNumber }) }}">Add or change</a>
-            {% endif %}
-          </div>
+        <div class="govuk-body">
+          <a id="notesEditButton"
+             class="govuk-link"
+             aria-label="Add or change notes"
+             href="{{ url('response.notes.edit.get', { id: response.jurorNumber, type: method }) }}"
+          >
+            Add or change
+          </a>
         </div>
-      {% else %}
-        <div class="jd-panel-title">
-          <h2 class="govuk-heading-m">Notes
-            <div class="note-controls govuk-body jd-right-align">
-              <a id="notesEditButton" href="{{ url('response.detail.notes.edit.get', { id: response.jurorNumber }) }}" class="govuk-link jd-right-align" role="button">Add or Edit</a>
-            </div>
-          </h2>
-        </div>
-      {% endif %}
+      </div>
 
-      {% if hasModAccess %}
-        <span class="govuk-caption-m govuk-!-margin-top-3">These can only be seen by internal staff at HMCTS. The public cannot request to view them.</span>
-      {% endif %}
+      <span class="govuk-caption-m govuk-!-margin-top-3">These can only be seen by internal staff at HMCTS. The public cannot request to view them.</span>
 
     </div>
   </div>

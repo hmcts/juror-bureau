@@ -3,11 +3,8 @@
 {% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
-{% block page_title %}
-  {{ serviceName }} - response details - notes
-{% endblock %}
-
-{% block page_identifier %}response details - notes{% endblock %}
+{% block page_title %}{{ serviceName }} - Response details - Notes{% endblock %}
+{% block page_identifier %}Response details - Notes{% endblock %}
 
 {% block content %}
 
@@ -36,7 +33,7 @@
           rows: 10,
           label: {
             html: labelHTML,
-            isPageHeading: true
+            isPageHeading: false
           },
           errorMessage: notesError,
           value: notesText

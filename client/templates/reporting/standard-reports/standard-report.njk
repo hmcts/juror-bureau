@@ -10,10 +10,7 @@
 {% from "custom-components/autocomplete/macro.njk" import modAutocomplete %}
 {% from "custom-components/date-picker/macro.njk" import datePicker %}
 
-{% block page_title %}
-  Reports
-{% endblock %}
-
+{% block page_title %}Reports - {{ title }}{% endblock %}
 {% block page_identifier %}Reports - {{ title }}{% endblock %}
 
 {% set currentApp = "Reports" %}
@@ -41,10 +38,14 @@
 
   <div class="report-headings">
     {% for heading in pageHeadings %}
-      <div class="heading-element">
-        <div class="title">{{heading.title}}</div>
-        <div class="value">{{heading.data}}</div>
-      </div>
+      {% if heading.title and heading.data %}
+        <div class="heading-element">
+          <div class="title">{{heading.title}}</div>
+          <div class="value">{{heading.data}}</div>
+        </div>
+      {% else %}
+        &nbsp;
+      {% endif %}
     {% endfor %}
   </div>
 

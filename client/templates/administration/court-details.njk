@@ -7,8 +7,8 @@
 {% from "custom-components/time-input-12-hour/macro.njk" import timeInput12Hour %}
 {% from "includes/csrf.njk" import csrfProtection %}
 
-{% block page_title %}{{ serviceName }} - administration{% endblock %}
-{% block page_identifier %}administration - court details{% endblock %}
+{% block page_title %}{{ serviceName }} - Administration - Court details{% endblock %}
+{% block page_identifier %}Administration - Court details{% endblock %}
 
 {% set currentApp = "Court administration" if isCourtUser else "System administration" %} 
 {% set nav = "courtDetails" %}
@@ -88,7 +88,7 @@
           label: {
             text: "Main telephone",
             classes: "govuk-label--s govuk-!-margin-top-4 govuk-!-margin-bottom-2",
-            isPageHeading: true
+            isPageHeading: false
           },
           id: "mainPhoneNumber",
           classes: "govuk-!-width-one-quarter",
@@ -127,7 +127,7 @@
           label: {
             text: "Assembly room",
             classes: "govuk-label--s govuk-!-margin-top-4 govuk-!-margin-bottom-2",
-            isPageHeading: true
+            isPageHeading: false
           },
           id: "assemblyRoomId",
           name: "assemblyRoomId",
@@ -140,7 +140,7 @@
           label: {
             text: "Cost centre",
             classes: "govuk-label--s govuk-!-margin-top-4 govuk-!-margin-bottom-2",
-            isPageHeading: true
+            isPageHeading: false
           },
           id: "costCentre",
           classes: "govuk-!-width-one-half",
@@ -153,7 +153,7 @@
           label: {
             text: "Signature",
             classes: "govuk-label--s govuk-!-margin-top-4 govuk-!-margin-bottom-2",
-            isPageHeading: true
+            isPageHeading: false
           },
           id: "signature",
           classes: "govuk-!-width-one-half",

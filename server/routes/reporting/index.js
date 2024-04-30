@@ -21,12 +21,12 @@
     require('./standard-report/index')(app);
 
     app.get('/reports',
-      'reports.get',
+      'reports.reports.get',
       auth.verify,
       getReports(app));
 
     app.get('/statistics',
-      'statistics.get',
+      'reports.statistics.get',
       auth.verify,
       isCourtUser,
       getStatistics(app));

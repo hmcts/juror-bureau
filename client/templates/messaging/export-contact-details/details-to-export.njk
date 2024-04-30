@@ -1,0 +1,178 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - Messaging - Export contact details - Details to export{% endblock %}
+{% block page_identifier %}Messaging - Export contact details - Details to export{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {% set detailsToExportError = undefined %}
+  {% if errors.items["detailsToExport"] %}
+    {% set detailsToExportError = { "text": errors.items["detailsToExport"][0].details } %}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <span class="govuk-caption-xl">Export contact details</span>
+      <h1 class="govuk-heading-xl">Select details to export</h1>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+
+      <form method="post" id="detailsToExportForm">
+        {{ govukCheckboxes({
+          name: "detailsToExport",
+          classes: "govuk-checkboxes--small",
+          errorMessage: detailsToExportError,
+          items: [
+            {
+              value: "JUROR_NUMBER",
+              text: "Juror number",
+              checked: true
+            },
+            {
+              value: "TITLE",
+              text: "Title",
+              checked: true
+            },
+            {
+              value: "FIRST_NAME",
+              text: "First name",
+              checked: true
+            },
+            {
+              value: "LAST_NAME",
+              text: "Last name",
+              checked: true
+            },
+            {
+              value: "EMAIL",
+              text: "Email",
+              checked: true
+            },
+            {
+              value: "MAIN_PHONE",
+              text: "Main phone",
+              checked: true
+            },
+            {
+              value: "OTHER_PHONE",
+              text: "Other phone",
+              checked: true
+            },
+            {
+              value: "WORK_PHONE",
+              text: "Work phone",
+              checked: true
+            },
+            {
+              value: "ADDRESS",
+              text: "Address",
+              checked: true
+            },
+            {
+              value: "POSTCODE",
+              text: "Postcode",
+              checked: true
+            },
+            {
+              value: "STATUS",
+              text: "Status",
+              checked: true
+            },
+            {
+              value: "POOL_NUMBER",
+              text: "Pool number",
+              checked: true
+            },
+            {
+              value: "DATE_DEFERRED_TO",
+              text: "Date deferred to",
+              checked: true
+            }
+          ]
+        }) }}
+
+        {% if isCourtUser %}
+          <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+          {{ govukCheckboxes({
+          name: "makeDefault",
+          items: [
+            {
+              value: "MAKE_DEFAULT",
+              text: "Make this selection my default next time",
+              checked: formFields.makeDefault === "MAKE_DEFAULT"
+            }
+          ]
+        }) }}
+        {% endif %}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Export contact details",
+            attributes: {
+              id: "exportContactDetailsButton"
+            }
+          }) }}
+        
+          <a class="govuk-link" href="{{ url('messaging.export-contacts.get') }}">Cancel</a>
+        </div>
+
+        {{ csrfProtection(csrftoken) }}
+
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  {% if isCourtUser %}
+    <script>
+      $('DOMLoaded', function () {
+        const form = document.getElementById('detailsToExportForm');
+        const detailsToExport = document.getElementsByName('detailsToExport');
+        const makeDefault = document.getElementsByName('makeDefault');
+
+        form.addEventListener('submit', function(event) {
+          const checked = [];
+
+          detailsToExport.forEach((detailCheckbox) => {
+            if (detailCheckbox.checked) {
+              checked.push(detailCheckbox.value);
+            }
+          });
+
+          if (makeDefault.length && makeDefault[0].checked) {
+            localStorage.setItem('detailsToExport', JSON.stringify(checked));
+          }
+        });
+
+        // load default selection
+        const defaultDetailsToExport = localStorage.getItem('detailsToExport');
+
+        if (defaultDetailsToExport) {
+          const detailsToExportArray = JSON.parse(defaultDetailsToExport);
+
+          detailsToExport.forEach((detailCheckbox) => {
+            detailCheckbox.checked = detailsToExportArray.includes(detailCheckbox.value);
+          });
+        }
+
+      });
+    </script>
+  {% endif %}
+
+{% endblock %}

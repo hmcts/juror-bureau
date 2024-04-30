@@ -1,0 +1,252 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "custom-components/autocomplete/macro.njk" import modAutocomplete %}
+
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% set currentApp = "Messaging" %}
+
+{% block page_title %}{{ serviceName }} - Messaging - Export contact details{% endblock %}
+{% block page_identifier %}Messaging - Export contact details{% endblock %}
+
+{# juror number infos #}
+{% set jurorNumberError = undefined %}
+{% if errors.items["jurorNumber"] %}
+  {% set jurorNumberError = { "text": errors.items["jurorNumber"][0].details } %}
+{% endif %}
+
+{% set byJurorNumberHtml %}
+  {{ govukInput({
+    label: {
+      text: "Enter juror number"
+    },
+    classes: "govuk-input--width-10",
+    id: "jurorNumber",
+    name: "jurorNumber",
+    errorMessage: jurorNumberError
+  }) }}
+{% endset %}
+
+{# juror name infos #}
+{% set jurorNameError = undefined %}
+{% if errors.items["jurorName"] %}
+  {% set jurorNameError = { "text": errors.items["jurorName"][0].details } %}
+{% endif %}
+
+{% set byJurorNameHtml %}
+  {{ govukInput({
+    label: {
+      text: "Enter juror name"
+    },
+    id: "jurorName",
+    name: "jurorName",
+    errorMessage: jurorNameError
+  }) }}
+{% endset %}
+
+{# juror name infos #}
+{% set postcodeError = undefined %}
+{% if errors.items["postcode"] %}
+  {% set postcodeError = { "text": errors.items["postcode"][0].details } %}
+{% endif %}
+
+{% set byPostcodeHtml %}
+  {{ govukInput({
+    label: {
+      text: "Enter juror postcode"
+    },
+    classes: "govuk-input--width-10",
+    id: "postcode",
+    name: "postcode",
+    errorMessage: postcodeError
+  }) }}
+{% endset %}
+
+{# pool number infos #}
+{% set poolNumberError = undefined %}
+{% if errors.items["poolNumber"] %}
+  {% set poolNumberError = { "text": errors.items["poolNumber"][0].details } %}
+{% endif %}
+
+{% set byPoolHtml %}
+  {{ govukInput({
+    label: {
+      text: "Enter pool number"
+    },
+    classes: "govuk-input--width-10",
+    id: "poolNumber",
+    name: "poolNumber",
+    errorMessage: poolNumberError
+  }) }}
+{% endset %}
+
+{# court name infos #}
+{% set courtNameError = undefined %}
+{% if errors.items["courtName"] %}
+  {% set courtNameError = { "text": errors.items["courtName"][0].details } %}
+{% endif %}
+
+{% set byCourtHtml %}
+  {{ modAutocomplete({
+    label: {
+      text: "Enter court name"
+    },
+    name: "courtName",
+    id: "courtName",
+    data: courts,
+    errorMessage: courtNameError
+  }) }}
+{% endset %}
+
+{# date deferred to infos #}
+{% set deferredToError = undefined %}
+{% if errors.items["dateDeferredTo"] %}
+  {% set deferredToError = { "text": errors.items["dateDeferredTo"][0].details } %}
+{% endif %}
+
+{% set byDeferredToDateHtml %}
+  {{ datePicker({
+    id: "dateDeferredTo",
+    label: {
+      text: "Enter a deferral date"
+    },
+    hint: "Use dd/mm/yyyy format. For example, 31/01/2023.",
+    dateError: deferredToError.text
+  }) }}
+{% endset %}
+
+{# next due at court date infos #}
+{% set nextDueAtCourtDateError = undefined %}
+{% if errors.items["nextDueAtCourtDate"] %}
+  {% set nextDueAtCourtDateError = { "text": errors.items["nextDueAtCourtDate"][0].details } %}
+{% endif %}
+
+{% set nextDueAtCourtDateHtml %}
+  {{ datePicker({
+    id: "nextDueAtCourtDate",
+    label: {
+      text: "Enter date next due at court"
+    },
+    hint: "Use dd/mm/yyyy format. For example, 31/01/2023.",
+    dateError: nextDueAtCourtDateError.text
+  }) }}
+{% endset %}
+
+{# radios error #}
+{% set searchByError = undefined %}
+{% if errors.items["searchBy"] %}
+  {% set searchByError = { "text": errors.items["searchBy"][0].details } %}
+{% endif %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-xl">Export contact details</span>
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Find contact details</h1>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+
+      <form id="findContactDetailsForm" method="post">
+        {{ govukRadios({
+          name: "searchBy",
+          fieldset: {
+            legend: {
+              text: "Search by",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          items: [
+            {
+              value: "jurorNumber",
+              text: "Juror number",
+              conditional: { html: byJurorNumberHtml },
+              checked: jurorNumberError !== undefined
+            },
+            {
+              value: "jurorName",
+              text: "Juror name",
+              conditional: { html: byJurorNameHtml },
+              checked: jurorNameError !== undefined
+            },
+            {
+              value: "postcode",
+              text: "Juror postcode",
+              conditional: { html: byPostcodeHtml },
+              checked: postcodeError !== undefined
+            },
+            {
+              value: "pool",
+              text: "Pool",
+              conditional: { html: byPoolHtml },
+              checked: poolNumberError !== undefined
+            },
+            {
+              value: "trial",
+              text: "Trial"
+            } if isCourtUser,
+            {
+              value: "court",
+              text: "Deferrals in a specific court",
+              conditional: { html: byCourtHtml },
+              checked: courtNameError !== undefined
+            } if isBureauUser,
+            {
+              value: "nextDueAtCourtDate",
+              text: "Next due at court date",
+              conditional: { html: nextDueAtCourtDateHtml },
+              checked: nextDueAtCourtDateError !== undefined
+            } if isCourtUser,
+            {
+              value: "dateDeferredTo",
+              text: "Date deferred to",
+              conditional: { html: byDeferredToDateHtml },
+              checked: deferredToError !== undefined
+            }
+          ],
+          errorMessage: searchByError
+        }) }}
+
+        {{ csrfProtection(csrftoken) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            attributes: {
+              id: "continueButton"
+            }
+          }) }}
+        
+          {# I don't think this screen needs a cancel link because there is nothing to cancel and go back to #}
+          {# <a class="govuk-link" href="#">Cancel</a> #}
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      const datePickers = []
+        .slice
+        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
+      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
+    });
+  </script>
+{% endblock %}

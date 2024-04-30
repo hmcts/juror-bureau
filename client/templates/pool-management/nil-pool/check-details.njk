@@ -5,7 +5,8 @@
 
 {% set currentApp = "Pool management" %}
 
-{% block page_identifier %}Create Nil Pool{% endblock %}
+{% block page_title %}{{ serviceName }} - Create nil pool{% endblock %}
+{% block page_identifier %}Create nil pool{% endblock %}
 
 {% block content %}
 
@@ -31,7 +32,10 @@
                 items: [
                   {
                     href: "/pool-management/nil-pool",
-                    text: "Change"
+                    text: "Change",
+                    attributes: {
+                      "aria-label": "Change nil pool details"
+                    }
                   }
                 ]
               }

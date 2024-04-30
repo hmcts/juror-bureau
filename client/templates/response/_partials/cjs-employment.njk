@@ -9,7 +9,13 @@
 
           {% if method === "paper" and isAddChangeVisible %}
             <div class="govuk-body">
-              <a id="cjsEmploymentEdit" class="govuk-link" href="{{ url('summons.update-employment.get', { id: response.jurorNumber, type: method }) }}">Add or change</a>
+              <a id="cjsEmploymentEdit" 
+                 class="govuk-link"
+                 aria-label="Add or change CJS employment" 
+                 href="{{ url('summons.update-employment.get', { id: response.jurorNumber, type: method }) }}"
+              >
+                Add or change
+              </a>
             </div>
           {% endif %}
         </div>
@@ -18,7 +24,14 @@
           <h2 class="govuk-heading-m">CJS employment
             {% if canEdit and responseEditEnabled %}
             <div class="edit-actions govuk-body jd-right-align">
-              <a id="cjsEmploymentEdit" href="#" class="edit-action edit-trigger" data-target="cjs-employment">Change</a>
+              <a id="cjsEmploymentEdit" 
+                 href="#" 
+                 class="edit-action edit-trigger" 
+                 data-target="cjs-employment"
+                 aria-label="Change CJS employment"
+              >
+                Change
+              </a>
             </div>
             {% endif %}
           </h2>

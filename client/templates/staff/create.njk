@@ -4,12 +4,8 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 
-
-{% block page_title %}
- {{ serviceName }} - Manage team - Add a new team member
-{% endblock %}
-
-{% block page_identifier %}add a new team member{% endblock %}
+{% block page_title %}{{ serviceName }} - Manage team - Add a new team member{% endblock %}
+{% block page_identifier %}Add a new team member{% endblock %}
 
 {% set currentApp = "Summons replies" %}
 
@@ -84,7 +80,7 @@
             fieldset: {
               legend: {
                 text: "Team leader",
-                isPageHeading: true,
+                isPageHeading: false,
                 classes: "govuk-body"
               }
             },
@@ -111,7 +107,7 @@
             fieldset: {
               legend: {
                 text: "Active",
-                isPageHeading: true,
+                isPageHeading: false,
                 classes: "govuk-body"
               }
             },

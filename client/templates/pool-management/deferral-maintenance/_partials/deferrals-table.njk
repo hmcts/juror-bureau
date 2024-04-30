@@ -28,7 +28,7 @@
                 id="deferral-all" {% if data.count.selected === data.count.total %}checked{% endif %}
                 name="check-all-jurors"
                 aria-label="select-all-deferrals" data-is-filtered="{{ isFiltered }}"/>
-            <label class="govuk-label govuk-checkboxes__label" for="deferral-{{ juror.jurorNumber }}">
+            <label class="govuk-label govuk-checkboxes__label" for="deferral-all">
               <span class="govuk-visually-hidden">Select juror number {{ juror.jurorNumber }}</span>
             </label>
           </div>

@@ -3,10 +3,8 @@
 {% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
-{% block page_title %}
-  {{ serviceName }} - response details - call log{% endblock %}
-
-{% block page_identifier %}response details - call log{% endblock %}
+{% block page_title %}{{ serviceName }} - Response details - Call log{% endblock %}
+{% block page_identifier %}Response details - Call log{% endblock %}
 
 {% block content %}
 
@@ -34,7 +32,7 @@
           rows: 10,
           label: {
             html: labelHTML,
-            isPageHeading: true
+            isPageHeading: false
           },
           errorMessage: callLogError,
           value: callNotes

@@ -4,8 +4,8 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "includes/csrf.njk" import csrfProtection %}
 
-{% block page_title %}{{ serviceName }} - administration{% endblock %}
-{% block page_identifier %}administration - {{'edit' if editingUser else 'create'}} user - confirm details{% endblock %}
+{% block page_title %}{{ serviceName }} - Administration - {{'Edit' if editingUser else 'Create'}} user - Confirm details{% endblock %}
+{% block page_identifier %}Administration - {{'Edit' if editingUser else 'Create'}} user - Confirm details{% endblock %}
 
 {% set currentApp = "System administration" %} 
 
@@ -30,6 +30,9 @@
                     href: changeUserTypeUrl,
                     text: "Change",
                     visuallyHiddenText: "userType"
+                    attributes: {
+                      "aria-label": "Change user type"
+                    }
                   }
                 ]
               }
@@ -46,7 +49,10 @@
                   {
                     href: changeUserDetailsUrl,
                     text: "Change",
-                    visuallyHiddenText: "name"
+                    visuallyHiddenText: "name",
+                    attributes: {
+                      "aria-label": "Change user name"
+                    }
                   }
                 ]
               }
@@ -63,7 +69,10 @@
                   {
                     href: changeUserDetailsUrl,
                     text: "Change",
-                    visuallyHiddenText: "email"
+                    visuallyHiddenText: "email",
+                    attributes: {
+                      "aria-label": "Change user email"
+                    }
                   }
                 ]
               }
@@ -80,7 +89,10 @@
                   {
                     href: changeUserDetailsUrl,
                     text: "Change",
-                    visuallyHiddenText: "roles"
+                    visuallyHiddenText: "roles",
+                    attributes: {
+                      "aria-label": "Change user roles"
+                    }
                   }
                 ]
               }

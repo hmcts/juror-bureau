@@ -9,8 +9,8 @@
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 {% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
 
-{% block page_title %}{{ serviceName }} - juror-management - unpaid attendance{% endblock %}
-{% block page_identifier %}juror-management - unpaid attendance{% endblock %}
+{% block page_title %}{{ serviceName }} - Juror management - Unpaid attendance{% endblock %}
+{% block page_identifier %}Juror management - Unpaid attendance{% endblock %}
 
 {% set currentApp = "Jurors" %}
 {% set nav = "unpaid-attendance" %}
@@ -18,7 +18,7 @@
 {% set filterByDate %}
   <div class="filter-by-date">
     <div class="additional-stats__row">
-      <div><h1 class="govuk-heading-m">Show jurors who attended between these dates</h1></div>
+      <div><span class="govuk-heading-m">Show jurors who attended between these dates</span></div>
       {% set unpaidAttendanceFromDateError = undefined %}
       {% set unpaidAttendanceToDateError = undefined %}
       

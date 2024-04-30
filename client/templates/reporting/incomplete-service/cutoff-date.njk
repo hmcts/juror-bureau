@@ -1,0 +1,98 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}Reports - Postponed list{% endblock %}
+{% block page_identifier %}Reports - Postponed list{% endblock %}
+
+{% set currentApp = "Reports" %}
+
+{% block content %}
+  {% include "includes/errors.njk" %}
+
+  {% set cutoffError = undefined %}
+  {% if errors.items["cutoff"] %}
+    {% set cutoffError = { text: errors.items["cutoff"][0].details } %}
+  {% endif %}
+
+  {% set dateError = undefined %}
+  {% if errors.items["date"] %}
+    {% set dateError = errors.items["date"][0].details %}
+  {% elseif errors.items["dateToCheck"]%}
+    {% set dateError = errors.items["dateToCheck"][0].details %}
+  {% endif %}
+
+  {% set customDateHtml %}
+    {{ datePicker({
+      id: "cutoff",
+      label: {
+        text: "Enter cut-off date"
+      },
+      hint: "Use dd/mm/yyyy format. For example 31/01/2023",
+      dateValue: tmpBody.cutoff,
+      dateError: dateError
+    }) }}
+  {% endset %}
+
+  <form action="{{ processUrl }}" method="post" id="cutoffDateForm">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h1 class="govuk-heading-xl">Incomplete service report</h1>
+        {{ govukRadios({
+          name: "searchBy",
+          fieldset: {
+            legend: {
+              text: "Select a cut-off date",
+              isPageHeading: true,
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          hint: {
+            text: "Report will show uncompleted jurors with next attendance dates before the cut-off date."
+          },
+          items: [
+            {
+              value: "today",
+              text: "Today"
+            },
+            {
+              value: "customDate",
+              text: "Custom date",
+              conditional: {
+                html: customDateHtml
+              }
+            }
+          ],
+          value: tmpBody.searchBy,
+          errorMessage: cutoffError
+        }) }}
+        {{ csrfProtection(csrftoken) }}
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            type: "submit"
+          }) }}
+          <a href="{{ cancelUrl }}" class="govuk-link" id="cancelAnchor">Cancel</a>
+        </div>
+      </div>
+    </div>
+  </form>
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function () {
+      const datePickers = []
+        .slice
+        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
+      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
+    });
+  </script>
+{% endblock %}

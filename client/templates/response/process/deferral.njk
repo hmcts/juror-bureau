@@ -7,10 +7,8 @@
 {% from "./deferral-date-macro.njk" import deferralDate %}
 {% from "custom-components/date-picker/macro.njk" import datePicker %}
 
-{% block page_title %}
-  {{ serviceName }} - process - deferral{% endblock %}
-
-{% block page_identifier %}process - deferral{% endblock %}
+{% block page_title %}{{ serviceName }} - Process - Deferral{% endblock %}
+{% block page_identifier %}Process - Deferral{% endblock %}
 
 {% block content %}
 
@@ -129,7 +127,7 @@
             fieldset: {
               legend: {
                 text: "Select a date to defer to",
-                isPageHeading: true,
+                isPageHeading: false,
                 classes: "govuk-fieldset__legend--s"
               }
             },

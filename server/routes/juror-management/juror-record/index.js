@@ -100,11 +100,13 @@
       auth.verify,
       attendanceTimeController.postChangeTimes(app));
 
+    // notes and logs
     app.get('/juror-management/record/:jurorNumber/notes',
       'juror-record.notes.get',
       auth.verify,
       controller.checkResponse(app),
       controller.getNotesTab(app));
+
     app.get('/juror-management/record/:jurorNumber/notes/edit',
       'juror-record.notes-edit.get',
       auth.verify,

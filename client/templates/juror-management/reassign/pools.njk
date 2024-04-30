@@ -3,11 +3,8 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/button/macro.njk" import "govukButton" %}
 
-{% block page_title %}
-  {{ serviceName }} - juror record - reassign - pools available
-{% endblock %}
-
-{% block page_identifier %}juror record - reassign - pools available{% endblock %}
+{% block page_title %}{{ serviceName }} - Juror record - Reassign - Pools available{% endblock %}
+{% block page_identifier %}Juror record - Reassign - Pools available{% endblock %}
 
 {% block beforeContent %}
   {% if backLinkUrl %}
@@ -50,7 +47,10 @@
                     {
                       href: changeCourtUrl,
                       text: "Change court",
-                      visuallyHiddenText: "change court"
+                      visuallyHiddenText: "change court",
+                      attributes: {
+                        "aria-label": "Change court"
+                      }
                     }
                   ]
                 }

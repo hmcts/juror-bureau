@@ -7,8 +7,8 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "includes/csrf.njk" import csrfProtection %}
 
-{% block page_title %}{{ serviceName }} - administration{% endblock %}
-{% block page_identifier %}administration - edit user{% endblock %}
+{% block page_title %}{{ serviceName }} - Administration - Edit user{% endblock %}
+{% block page_identifier %}Administration - Edit user{% endblock %}
 
 {% set currentApp = "Court administration" if isCourtManager else ("Bureau administration" if isBureauManager else "System administration") %} 
 {% set nav = "users" %}
@@ -73,7 +73,10 @@
                   items: [
                     {
                       href: changeTypeUrl,
-                      text: "Change"
+                      text: "Change",
+                      attributes: {
+                        "aria-label": "Change user type"
+                      }
                     }
                   ]
                 }
@@ -145,7 +148,7 @@
             fieldset: {
               legend: {
                 text: "Extra permissions",
-                isPageHeading: true,
+                isPageHeading: false,
                 classes: "govuk-fieldset__legend--m"
               }
             },
@@ -163,7 +166,7 @@
           fieldset: {
             legend: {
               text: "Status",
-              isPageHeading: true,
+              isPageHeading: false,
               classes: "govuk-fieldset__legend--s"
             }
           },

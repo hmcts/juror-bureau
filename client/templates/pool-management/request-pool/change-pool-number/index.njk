@@ -7,7 +7,8 @@
 
 {% set currentApp = "Pool management" %}
 
-{% block page_identifier %}Request a Pool{% endblock %}
+{% block page_title %}{{ serviceName }} - Request a pool{% endblock %}
+{% block page_identifier %}Request a pool{% endblock %}
 
 {% block content %}
 
@@ -23,7 +24,7 @@
 
       <h1 class="govuk-heading-l">Change pool number</h1>
 
-      <h3 class="govuk-heading-s">Pools for {{ courtName | capitalize }} ({{ courtCode }})</h3>
+      <h2 class="govuk-heading-s">Pools for {{ courtName | capitalize }} ({{ courtCode }})</h2>
 
       {{ govukSummaryList({
         classes: "govuk-!-width-one-third",
@@ -52,7 +53,8 @@
               text: "Change",
               type: "submit",
               attributes: {
-                id: "changeButton"
+                id: "changeButton",
+                "aria-label": "Change pool number"
               }
             }) }}
 
