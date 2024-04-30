@@ -1,71 +1,63 @@
-{% extends "../layouts/default.njk" %}
+{% extends "layouts/default.njk" %}
 
-{%- from "moj/components/banner/macro.njk" import mojBanner -%}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "custom-components/mod-search/macro.njk" import modSearch %}
 
-{% from "../custom-components/mod-search/macro.njk" import modSearch %}
+{% set currentPage = "homepage" %}
 
-{% set currentPage = 'homepage' %}
-
-{% block page_title %}
-  Juror Homepage
-{% endblock %}
-
-{% block page_identifier %}Homepage{% endblock %}
+{% block page_title %}Juror Homepage{% endblock %}
+{% block page_identifier %}Juror Homepage{% endblock %}
 
 {% block content %}
 
-{% set bannerHtml %}
-  <h2 class="govuk-body">You have 1 <a>juror to approve</a></h2>
-{% endset %}
+  {% if notifications | length %}
+    <h2 class="govuk-heading-m">Notifications</h2>
 
-{% if notifications | length %}
-  <h2 class="govuk-heading-m">Notifications</h2>
+    {% for notification in notifications %}
+      {{ mojBanner({
+        type: "information",
+        html: notification
+      }) }}
+    {% endfor %}
+  {% endif %}
 
-  {% for notification in notifications %}
-    {{ mojBanner({
-      type: 'information',
-      html: notification
-    }) }}
-  {% endfor %}
-{% endif %}
-
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-one-half">
-    <h2 class="govuk-heading-m">Quick links</h2>
-    <ul class="govuk-list govuk-list--spaced">
-      {% if isSJO %}
-        <li><a href="{{url('juror-management.manage-jurors.approve.get')}}" class="govuk-link govuk-!-font-weight-bold">Approve jurors</a></li>
-      {% else %}
-        <li><a href="#" class="govuk-link govuk-!-font-weight-bold">eg. Create a pool</a></li>
-      {% endif %}
-      <li><a href="#" class="govuk-link govuk-!-font-weight-bold">Placeholder quick link</a></li>
-      <li><a href="#" class="govuk-link govuk-!-font-weight-bold">Placeholder quick link</a></li>
-      <li><a href="#" class="govuk-link govuk-!-font-weight-bold">Placeholder quick link</a></li>
-      <li><a href="#" class="govuk-link govuk-!-font-weight-bold">Placeholder quick link</a></li>
-      <li><a href="#" class="govuk-link govuk-!-font-weight-bold">Placeholder quick link</a></li>
-    </ul>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <h2 class="govuk-heading-m">Quick links</h2>
+      <ul class="govuk-list govuk-list--spaced">
+        {% if isSJO %}
+          <li><a href="{{url('juror-management.manage-jurors.approve.get')}}" class="govuk-link govuk-!-font-weight-bold">Approve jurors</a></li>
+        {% else %}
+          <li><a href="#" class="govuk-link govuk-!-font-weight-bold">eg. Create a pool</a></li>
+        {% endif %}
+        <li><a href="#" class="govuk-link govuk-!-font-weight-bold">Placeholder quick link</a></li>
+        <li><a href="#" class="govuk-link govuk-!-font-weight-bold">Placeholder quick link</a></li>
+        <li><a href="#" class="govuk-link govuk-!-font-weight-bold">Placeholder quick link</a></li>
+        <li><a href="#" class="govuk-link govuk-!-font-weight-bold">Placeholder quick link</a></li>
+        <li><a href="#" class="govuk-link govuk-!-font-weight-bold">Placeholder quick link</a></li>
+      </ul>
+    </div>
+    <div class="govuk-grid-column-one-half homepage-search-column">
+      {{ modSearch({
+        action: url("juror-record.search.post"),
+        method: "post",
+        input: {
+          id: "globalSearch",
+          name: "globalSearch"
+        },
+        button: {
+          text: "Search"
+        },
+        label: {
+          text: "Search for a juror record",
+          classes: "govuk-!-font-weight-bold govuk-!-font-size-24"
+        },
+        hint: {
+          text: "Search for a juror record by using their juror number or using a barcode scan"
+        },
+        csrf: csrftoken
+      }) }}
+    </div>
   </div>
-  <div class="govuk-grid-column-one-half homepage-search-column">
-    {{ modSearch({
-      action: url('juror-record.search.post'),
-      method: "post",
-      input: {
-        id: "search",
-        name: "search"
-      },
-      button: {
-        text: "Search"
-      },
-      label: {
-        text: "Search for a juror record",
-        classes: "govuk-!-font-weight-bold govuk-!-font-size-24"
-      },
-      hint: {
-        text: "Search for a juror record by using their juror number or using a barcode scan"
-      },
-      csrf: csrftoken
-    }) }}
-  </div>
-</div>
 
 {% endblock %}

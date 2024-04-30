@@ -1,13 +1,14 @@
 /* eslint-disable strict */
 
+const _ = require('lodash');
 const urljoin = require('url-join');
 const { searchJurorRecordDAO } = require('../../../objects');
-const { constants, paginationBuilder } = require('../../../lib/mod-utils');
+const { constants, paginationBuilder, isJurorNumber, makeManualError } = require('../../../lib/mod-utils');
 const { capitalizeFully } = require('../../../components/filters');
 
 module.exports.getSearch = function(app) {
   return async function(req, res) {
-    const { jurorNumber, jurorName, postcode, poolNumber, sortBy, sortOrder } = req.query;
+    const { jurorNumber, jurorName, postcode, poolNumber, sortBy, sortOrder, globalSearch } = req.query;
 
     let jurorRecords;
     let totalResults;
@@ -45,6 +46,12 @@ module.exports.getSearch = function(app) {
       }
     }
 
+    const tmpErrors = _.clone(req.session.errors);
+    const tmpFields = _.clone(req.session.formFields);
+
+    delete req.session.errors;
+    delete req.session.formFields;
+
     return res.render('juror-management/search/index', {
       totalResults,
       jurorRecords,
@@ -57,15 +64,30 @@ module.exports.getSearch = function(app) {
       sortBy,
       sortOrder,
       bvr,
+      tmpFields,
+      errors: {
+        message: '',
+        count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+        items: tmpErrors,
+      },
     });
   };
 };
 
 module.exports.postSearch = function(app) {
   return function(req, res) {
+    const redirectUrl = app.namedRoutes.build('juror-record.search.get');
+
+    if (req.body.globalSearch && !isJurorNumber(req.body.globalSearch)) {
+      req.session.errors = makeManualError('jurorNumber', 'Enter a valid juror number');
+      req.session.formFields = { jurorNumber: req.body.globalSearch };
+
+      return res.redirect(redirectUrl);
+    }
+
     const queryParams = buildQueryParams(req.body);
 
-    return res.redirect(app.namedRoutes.build('juror-record.search.get') + `?${queryParams.join('&')}`);
+    return res.redirect(redirectUrl + `?${queryParams.join('&')}`);
   };
 };
 
@@ -125,7 +147,7 @@ function buildSearchPayload({ jurorNumber, jurorName, postcode, poolNumber, page
 }
 
 function buildQueryParams(data) {
-  const { jurorNumber, jurorName, postcode, poolNumber, 'super-nav-search': superNavSearch } = data;
+  const { jurorNumber, jurorName, postcode, poolNumber, globalSearch } = data;
   const queryParams = [];
 
   if (jurorNumber) {
@@ -140,7 +162,7 @@ function buildQueryParams(data) {
   if (poolNumber) {
     queryParams.push(`poolNumber=${poolNumber}`);
   }
-  if (superNavSearch) {
+  if (globalSearch) {
     queryParams.push(`jurorNumber=${superNavSearch}`);
   }
 
@@ -149,6 +171,8 @@ function buildQueryParams(data) {
 
 function transformResults(jurorRecords, namedRoutes) {
   const list = [];
+
+  if (!jurorRecords.length) return list;
 
   jurorRecords.forEach(function(jurorRecord) {
     const url = urljoin(namedRoutes.build('juror-record.select.get'),
