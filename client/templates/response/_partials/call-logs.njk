@@ -5,97 +5,54 @@
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-full">
 
-      {% if hasModAccess %}
-        <div class="mod-reply-section__title">
-          <h2 class="govuk-heading-m">Contact log</h2>
+      <div class="mod-reply-section__title">
+        <h2 class="govuk-heading-m">Contact log</h2>
 
-          <div class="govuk-body">
-            {% if method === "paper" %}
-              <a id="notesEditButton" class="govuk-link" href="#">Log new contact</a>
-            {% else %}
-              <a id="notesEditButton" class="govuk-link" href="{{ url('response.detail.call-log.get', { id: response.jurorNumber }) }}">Log new contact</a>
-            {% endif %}
-          </div>
+        <div class="govuk-body">
+          <a id="notesEditButton" class="govuk-link" href="{{ url('response.contact-logs.add.get', { id: response.jurorNumber, type: method }) }}">Log new contact</a>
         </div>
-      {% else %}
-        <div class="jd-panel-title">
-          <h2 class="govuk-heading-m">Call log
-            <div class="note-controls jd-right-align">
+      </div>
 
-              {{ govukButton({
-                text: "Log a call",
-                href: url('response.detail.call-log.get', { id: response.jurorNumber })
-              }) }}
-
-            </div>
-          </h2>
-        </div>
-      {% endif %}
-
-      {% if hasModAccess %}
-        <span class="govuk-caption-m govuk-!-margin-top-3">Formal record of HMCTS contact with the juror. Members of the public can request to view it under FOI law.</span>
-      {% endif %}
+      <span class="govuk-caption-m govuk-!-margin-top-3">Formal record of HMCTS contact with the juror. Members of the public can request to view it under FOI law.</span>
 
     </div>
   </div>
 
   {% if response.phoneLogs.length > 0 %}
 
-    {% if hasModAccess %}
-      {% set logs = [] %}
+    {% set logs = [] %}
 
-      {% for log in response.phoneLogs %}
-        {% set contactHtml %}
-          {% if log.enquiryType %}
-            {{ govukTag({
-              text: log.enquiryType.description or log.enquiryType,
-              classes: "govuk-tag--grey govuk-body"
-            }) }}
-          {% endif %}
-          <p class="govuk-body">{{ log.notes }}</p>
-        {% endset %}
-        {% set logs = (logs.push({
-          label: {
-            text: "Contact report"
-          },
-          html: contactHtml,
-          datetime: {
-            timestamp: log.logDate,
-            type: "datetime"
-          },
-          byline: {
-            text: log.username
-          }
-        }), logs) %}
-      {% endfor %}
+    {% for log in response.phoneLogs %}
+      {% set contactHtml %}
+        {% if log.enquiryType %}
+          {{ govukTag({
+            text: log.enquiryType.description or log.enquiryType,
+            classes: "govuk-tag--grey govuk-body"
+          }) }}
+        {% endif %}
+        <p class="govuk-body">{{ log.notes }}</p>
+      {% endset %}
+      {% set logs = (logs.push({
+        label: {
+          text: "Contact report"
+        },
+        html: contactHtml,
+        datetime: {
+          timestamp: log.logDate,
+          type: "datetime"
+        },
+        byline: {
+          text: log.username
+        }
+      }), logs) %}
+    {% endfor %}
 
-      <div class="govuk-grid-column-two-thirds">
-        {{ mojTimeline({
-          items: logs
-        }) }}
-      </div>
+    <div class="govuk-grid-column-two-thirds">
+      {{ mojTimeline({
+        items: logs
+      }) }}
+    </div>
 
-    {% else %}
-      <table class="govuk-table govuk-body">
-        <caption class="govuk-table__caption govuk-visually-hidden">Phone logs list</caption>
-        
-        <tbody>
-          {% for log in response.phoneLogs %}
-          <tr class="govuk-table__row" data-row="summary" data-user="{{ log.username }}">
-            <td class="govuk-table__cell">
-              <div data-user="{{ log.username }}">{{ log.notes }}</div>
-
-              <div class="govuk-body-s jd-call-log-date-time">
-                <span>{{ log.dateRender | dateFilter("DD/MM/YYYY", "D MMM YYYY")}}</span>
-                <span>at {{ log.timeRender | dateFilter("hh:mm", "h:mma")}}</span>
-                <span> by {{ log.username }}</span>
-              </div>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    {% endif %}
   {% endif %}
 
 </section>
