@@ -147,8 +147,7 @@
       },
       'bulk-print-audit': {
         title: 'Bulk-print audit report',
-        //VERIFY API KEY ONCE BE READY
-        apiKey: 'BulkPrintAuditReport',
+        apiKey: 'AbaccusReport',
         search: 'dateRange',
         headings: [
           'dateFrome',

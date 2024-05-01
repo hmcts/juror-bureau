@@ -154,7 +154,7 @@
             });
           }
 
-          if (header.id === 'juror_postcode') {
+          if (header.id === 'juror_postcode' || header.id === 'document_code') {
             output = output.toUpperCase();
           }
 
@@ -175,6 +175,9 @@
 
           return ({
             text: output ? output : '-',
+            attributes: {
+              "data-sort-value": header.dataType === 'LocalDate' ? data[snakeToCamel(header.id)] : output
+          }
           });
         });
 
