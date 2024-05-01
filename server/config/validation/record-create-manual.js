@@ -170,4 +170,47 @@
     return null;
   };
 
+  module.exports.contactDetails = function({ mainPhone, alternativePhone, emailAddress }) {
+    return {
+      mainPhone: () => {
+        if (!mainPhone) return;
+
+        return {
+          format: {
+            pattern: constants.PHONE_REGEX,
+            message: {
+              summary: 'Enter a valid main phone number',
+              details: 'Enter a valid main phone number',
+            },
+          },
+        };
+      },
+      alternativePhone: () => {
+        if (!alternativePhone) return;
+
+        return {
+          format: {
+            pattern: constants.PHONE_REGEX,
+            message: {
+              summary: 'Enter a valid alternative phone number',
+              details: 'Enter a valid alternative phone number',
+            },
+          },
+        };
+      },
+      emailAddress: () => {
+        if (!emailAddress) return;
+
+        return {
+          email: {
+            message: {
+              summary: 'Enter a valid email address',
+              details: 'Enter a valid email address',
+            },
+          },
+        };
+      },
+    };
+  };
+
 })();
