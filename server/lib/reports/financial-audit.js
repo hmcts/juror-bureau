@@ -13,9 +13,9 @@
     FOR_APPROVAL_EDIT: 'Edit audit report',
     APPROVED_EDIT: 'Edit audit report (repayment)',
     REAPPROVED_EDIT: 'Edit audit report (repayment)',
-    APPROVED_CASH: 'Payment audit report',
+    APPROVED_CASH: 'Paid cash audit report',
     APPROVED_BACS: 'Payment audit report',
-    REAPPROVED_CASH: 'Repayment audit report',
+    REAPPROVED_CASH: 'Repaid cash audit report',
     REAPPROVED_BACS: 'Repayment audit report',
   }
 
@@ -286,6 +286,39 @@
         }
       },
     ];
+
+    if (auditData.auditType === 'REAPPROVED_CASH' || auditData.auditType === 'APPROVED_CASH') {
+      coreContent.push({
+        raw: true,
+        fontSize: 7,
+        marginTop: 50,
+        width: '33%',
+        table: {
+          widths: [120, 120],
+          body: [
+            [
+              { 
+                style: 'label',
+                text: 'Juror signature',
+              },
+              {
+                text: '',
+              }
+            ],
+            [
+              { 
+                style: 'label',
+                text: 'Date payment received',
+              },
+              {
+                text: `${dateFilter(auditData.approvedAt, '', 'dddd DD MMMM YYYY')}`,
+              }
+            ],
+          ]
+        }
+
+      })
+    }
 
     if (auditData.expenses.total.totalPaid !== 0 && auditData.expenses.total.totalOutstanding !== 0) {
       coreContent.push({
