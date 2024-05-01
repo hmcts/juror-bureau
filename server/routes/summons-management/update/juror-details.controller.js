@@ -375,30 +375,25 @@
           }));
         }
 
-        const jurorUpdateQueue = [];
-
-        jurorUpdateQueue.push(summonsUpdate.patch(
-          require('request-promise'),
-          app,
-          req.session.authToken,
-          req.params['id'],
-          'PERSONAL',
-          payload,
-        ));
-
-        // fix the name with a fix payload
         if (req.session.summonsUpdate.fixedName) {
-          jurorUpdateQueue.push(fixNameObj.patch(
+          await fixNameObj.patch(
             require('request-promise'),
             app,
             req.session.authToken,
             req.params['id'],
             'fix-name',
             req.session.summonsUpdate.fixedName,
-          ));
+          );
         }
 
-        await Promise.all(jurorUpdateQueue);
+        await summonsUpdate.patch(
+          require('request-promise'),
+          app,
+          req.session.authToken,
+          req.params['id'],
+          'PERSONAL',
+          payload,
+        );
 
         delete req.session.summonsUpdate;
 
@@ -478,30 +473,25 @@
           }));
         }
 
-        const jurorUpdateQueue = [];
-
-        jurorUpdateQueue.push(summonsUpdate.patch(
-          require('request-promise'),
-          app,
-          req.session.authToken,
-          req.params['id'],
-          'PERSONAL',
-          payload,
-        ));
-
-        // fix the name with a fix payload
         if (req.session.summonsUpdate.fixedName) {
-          jurorUpdateQueue.push(fixNameObj.patch(
+          await fixNameObj.patch(
             require('request-promise'),
             app,
             req.session.authToken,
             req.params['id'],
             'fix-name',
             req.session.summonsUpdate.fixedName,
-          ));
+          );
         }
 
-        await Promise.all(jurorUpdateQueue);
+        await summonsUpdate.patch(
+          require('request-promise'),
+          app,
+          req.session.authToken,
+          req.params['id'],
+          'PERSONAL',
+          payload,
+        );
 
         delete req.session.summonsUpdate;
         delete req.session.jurorPaperUpdatePayload;
