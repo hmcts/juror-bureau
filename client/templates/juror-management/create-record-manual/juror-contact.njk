@@ -21,17 +21,17 @@
 
 {% set mainPhoneError = undefined %}
 {% if errors.items["mainPhone"] %}
-  {% set mainPhoneError = errors.items["mainPhone"][0].details %}
+  {% set mainPhoneError = { text: errors.items["mainPhone"][0].details } %}
 {% endif %}
 
 {% set alternativePhoneError = undefined %}
 {% if errors.items["alternativePhone"] %}
-  {% set alternativePhoneError = errors.items["alternativePhone"][0].details %}
+  {% set alternativePhoneError = { text: errors.items["alternativePhone"][0].details } %}
 {% endif %}
 
 {% set emailAddressError = undefined %}
 {% if errors.items["emailAddress"] %}
-  {% set emailAddressError = errors.items["emailAddress"][0].details %}
+  {% set emailAddressError = { text: errors.items["emailAddress"][0].details } %}
 {% endif %}
 
 {% block content %}
@@ -94,7 +94,7 @@
             text: "Continue",
             attributes: {
               id: "continueButton",
-              "arial-label": "Continue with juror details"
+              "aria-label": "Continue with juror details"
             }
           }) }}
 
