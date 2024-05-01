@@ -4,6 +4,7 @@ const secretsConfig = require('config');
 const jwt = require('jsonwebtoken');
 const { axiosClient } = require('../../objects/axios-instance');
 const { makeManualError } = require('../../lib/mod-utils');
+const { courtsDAO } = require('../../objects/administration');
 
 // this is dev only...
 module.exports.postDevEmailAuth = function(app) {
@@ -43,7 +44,7 @@ module.exports.getCourtsList = function(app) {
     } catch (err) {
       app.logger.crit('Failed to get courts list', {
         data: { body },
-        error: err,
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
       return res.render('_errors/generic.njk');
@@ -57,7 +58,7 @@ module.exports.getCourtsList = function(app) {
       } catch (err) {
         app.logger.crit('Failed to login straight through', {
           data: { body, courtsList, locCode },
-          error: err,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
         return res.render('_errors/generic.njk');
@@ -108,7 +109,7 @@ module.exports.postCourtsList = function(app) {
 
       app.logger.crit('Failed to login when selecting a court', {
         data: { body, locCode },
-        error: err,
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
       // return res.redirect(app.namedRoutes.build('authentication.courts-list.get'));
@@ -132,7 +133,7 @@ module.exports.getSelectCourt = function(app) {
     } catch (err) {
       app.logger.crit('Failed to authenticate a system administrator as a court user', {
         data: { body, locCode },
-        error: err,
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
       return res.redirect(app.namedRoutes.build('administration.get'));
@@ -153,9 +154,16 @@ function doLogin(req) {
     req.session.authToken = jwtResponse.jwt;
     req.session.hasModAccess = true; // legacy purposes
 
+    // courts list will not be available for admin users selecting a court
+    if (!req.session.courtsList) {
+      req.session.courtsList = await courtsDAO.get(app, req);
+    }
+
     // there will always be a court selected here
     req.session.selectedCourt = req.session.courtsList.find(court => court.loc_code === locCode);
     req.session.authentication = jwt.decode(req.session.authToken);
+
+    console.log('\n\n\n' + JSON.stringify(req.session.selectedCourt) + '\n\n\n');
 
     // delete unwanted cached on successful login
     delete req.session.courtsList;

@@ -5,10 +5,12 @@
 
   function isBureauUser(req, res, next) {
     if (
-      !isSystemAdministrator(req, res) &&
       req.session.hasOwnProperty('authentication') === true &&
-      req.session.authentication.hasOwnProperty('owner') === true &&
-      req.session.authentication.owner === '400'
+      req.session.authentication.hasOwnProperty('userType') === true &&
+      (
+        req.session.authentication.userType === 'BUREAU' ||
+        req.session.authentication.activeUserType === 'BUREAU'
+      )
     ) {
       if (typeof next !== 'undefined') {
         return next();
@@ -27,10 +29,12 @@
 
   function isCourtUser(req, res, next) {
     if (
-      !isSystemAdministrator(req, res) &&
       req.session.hasOwnProperty('authentication') === true &&
-      req.session.authentication.hasOwnProperty('owner') === true &&
-      req.session.authentication.owner !== '400'
+      req.session.authentication.hasOwnProperty('userType') === true &&
+      (
+        req.session.authentication.userType === 'COURT' ||
+        req.session.authentication.activeUserType === 'COURT'
+      )
     ) {
       if (typeof next !== 'undefined') {
         return next();
@@ -52,6 +56,8 @@
     return req.session.authentication.staff.rank > 0 || isManager(req);
   };
 
+
+  // TODO: revise this
   function isSJOUser(req, res, next) {
     if (
       isCourtUser(req, res) &&
@@ -128,8 +134,8 @@
   function isSystemAdministrator(req, res, next) {
     if (
       req.session.hasOwnProperty('authentication') === true &&
-      req.session.authentication.hasOwnProperty('userType') === true &&
-      req.session.authentication.userType === 'ADMINISTRATOR'
+      req.session.authentication.hasOwnProperty('activeUserType') === true &&
+      req.session.authentication.activeUserType === 'ADMINISTRATOR'
     ) {
       if (typeof next !== 'undefined') {
         return next();
