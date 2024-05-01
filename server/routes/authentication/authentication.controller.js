@@ -155,15 +155,20 @@ function doLogin(req) {
     req.session.hasModAccess = true; // legacy purposes
 
     // courts list will not be available for admin users selecting a court
-    if (!req.session.courtsList) {
-      req.session.courtsList = await courtsDAO.get(app, req);
+    if (req.session.authentication && req.session.authentication.activeUserType === 'ADMINISTRATOR') {
+      const courtsResponse = await axiosClient('get', `/moj/administration/courts/${locCode}`, req.session.authToken);
+
+      console.log('\n\n\n' + JSON.stringify(courtsResponse) + '\n\n\n');
+
+      req.session.selectedCourt = {
+        'loc_code': courtsResponse.court_code,
+        'name': courtsResponse.english_court_name,
+      };
+    } else {
+      // there will always be a court selected here
+      req.session.selectedCourt = req.session.courtsList.find(court => court.loc_code === locCode);
     }
-
-    // there will always be a court selected here
-    req.session.selectedCourt = req.session.courtsList.find(court => court.loc_code === locCode);
     req.session.authentication = jwt.decode(req.session.authToken);
-
-    console.log('\n\n\n' + JSON.stringify(req.session.selectedCourt) + '\n\n\n');
 
     // delete unwanted cached on successful login
     delete req.session.courtsList;

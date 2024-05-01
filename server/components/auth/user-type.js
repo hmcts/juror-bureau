@@ -7,10 +7,7 @@
     if (
       req.session.hasOwnProperty('authentication') === true &&
       req.session.authentication.hasOwnProperty('userType') === true &&
-      (
-        req.session.authentication.userType === 'BUREAU' ||
-        req.session.authentication.activeUserType === 'BUREAU'
-      )
+      req.session.authentication.activeUserType === 'BUREAU'
     ) {
       if (typeof next !== 'undefined') {
         return next();
@@ -31,10 +28,7 @@
     if (
       req.session.hasOwnProperty('authentication') === true &&
       req.session.authentication.hasOwnProperty('userType') === true &&
-      (
-        req.session.authentication.userType === 'COURT' ||
-        req.session.authentication.activeUserType === 'COURT'
-      )
+      req.session.authentication.activeUserType === 'COURT'
     ) {
       if (typeof next !== 'undefined') {
         return next();
@@ -61,8 +55,10 @@
   function isSJOUser(req, res, next) {
     if (
       isCourtUser(req, res) &&
-      req.session.authentication.hasOwnProperty('userLevel') === true &&
-      req.session.authentication.userLevel === '9'
+      (
+        req.session.authentication.hasOwnProperty('roles') === true &&
+        req.session.authentication.roles.includes('SENIOR_JUROR_OFFICER')
+      )
     ) {
       if (typeof next !== 'undefined') {
         return next();
@@ -82,8 +78,7 @@
   function isManager(req, res, next) {
     if (
       req.session.authentication.hasOwnProperty('roles') === true &&
-      req.session.authentication.roles.includes('MANAGER') ||
-      req.session.authentication.roles.includes('TEAM_LEADER')
+      req.session.authentication.roles.includes('MANAGER')
     ) {
       if (typeof next !== 'undefined') {
         return next();

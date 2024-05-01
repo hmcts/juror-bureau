@@ -57,7 +57,7 @@ module.exports.verify = function(req, res, next) {
 
       // if we do not have a userLevel property then we should assume this
       // token is not for a logged in user.
-      if (!decoded.hasOwnProperty('userLevel')) {
+      if (!decoded.hasOwnProperty('email')) {
         return errors(req, res, 403, '/');
       }
 
