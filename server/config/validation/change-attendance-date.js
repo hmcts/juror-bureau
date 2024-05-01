@@ -102,7 +102,7 @@
         attributes.selectedJurors : [attributes.selectedJurors];
 
       selectedJurors.forEach(j => {
-        if (options.membersList.filter((member) => j === member.jurorNumber)[0].status === 'Summoned') {
+        if (options.membersList.filter((member) => j === member.jurorNumber)[0].status !== 'Responded') {
           incorrectStatus.push(j);
         }
       });
