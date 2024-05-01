@@ -30,66 +30,66 @@
   </div>
 
   <div class="show-details-container" id="view-reasonable-adjustments">
-    <table class="govuk-table table-summary adjustments" summary="Reasonable Adjustments">
-      <caption class="govuk-table__caption govuk-visually-hidden">Reasonable adjustments list</caption>
 
-      <tbody class="govuk-table__body">
-        <tr class="{% if adjustmentsHasFlag %}info{% endif %}">
-          <th class="govuk-table__header jd-details-cjs-adjustments-head-width">
-            {{ "Reason and adjustments needed" if hasModAccess else "Disability or impairment" }}
-          </th>
-          <td class="govuk-table__cell" id="disability">
-            {% if response.specialNeeds.length === 0 or response.specialNeeds === null %}
+
+
+
+    <dl class="govuk-summary-list adjustments">
+      <div class="govuk-summary-list__row {% if adjustmentsHasFlag %}info{% endif %}">
+        <dt class="govuk-summary-list__key jd-details-cjs-adjustments-head-width">
+          {{ "Reason and adjustments needed" if hasModAccess else "Disability or impairment" }}
+        </dt>
+        <dd class="govuk-summary-list__value" id="disability">
+          {% if response.specialNeeds.length === 0 or response.specialNeeds === null %}
+            N/A
+          {% else %}
+            <div class="jd-label-blue">Attention</div>
+            {% if method === "paper" %}
+              <div class="jd-label-black">{{ response.specialNeeds[0].assistanceType }}</div>
+              <div>{{ response.specialNeeds[0].assistanceTypeDetails }}</div>
+            {% else %}
+              <ul class="govuk-list govuk-list--bullet">
+                {% for i in range(0, response.specialNeeds.length) %}
+                  <li>
+                    <span class="{{ 'jd-label-black' if hasModAccess }}">
+                      {{ response.specialNeeds[i].code | capitalize }} - {{ response.specialNeeds[i].description }}
+                    </span>
+                    <br>
+                    {{ (response.specialNeedsArrangements | safe) if response.specialNeedsArrangements else (response.specialNeeds[i].detail | safe) }}
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %} {# if method is paper #}
+          {% endif %} {# is has adjustments #}
+        </dd>
+      </div>
+
+      {% if method !== "paper" and hasModAccess === false %}
+        <div class="govuk-summary-list__row {% if specialNeedsArrangements %}info{% endif %}">
+          <dt class="govuk-summary-list__key jd-details-cjs-adjustments-head-width">
+            Special arrangements or help the juror needs
+          </dt>
+          <dd class="govuk-summary-list__value" id="reasonableAdjustment">
+            {% if isDeceased or response.specialNeedsArrangements == null or response.specialNeedsArrangements.length == 0 %}
               N/A
             {% else %}
-
-              <div class="jd-label-blue">Attention</div>
-
-              {% if method === "paper" %}
-
-                <div class="jd-label-black">{{ response.specialNeeds[0].assistanceType }}</div>
-                <div>{{ response.specialNeeds[0].assistanceTypeDetails }}</div>
-
-              {% else %}
-                <ul class="govuk-list govuk-list--bullet">
-                    {% for i in range(0, response.specialNeeds.length) %}
-                      <li>
-                        <span class="{{ 'jd-label-black' if hasModAccess }}">
-                          {{ response.specialNeeds[i].code | capitalize }} - {{ response.specialNeeds[i].description }}
-                        </span>
-                        <br>
-                        {{ (response.specialNeedsArrangements | safe) if response.specialNeedsArrangements else (response.specialNeeds[i].detail | safe) }}
-                      </li>
-                    {% endfor %}
-                </ul>
-              {% endif %} {# if method is paper #}
-            {% endif %} {# is has adjustments #}
-          </td>
-        </tr>
-
-        {% if method !== "paper" and hasModAccess === false %}
-          <tr class="{% if specialNeedsArrangements %}info{% endif %}">
-            <th class="govuk-table__header jd-details-cjs-adjustments-head-width">Special arrangements or help the juror needs</th>
-            <td class="govuk-table__cell" id="reasonableAdjustment">
-              {% if isDeceased or response.specialNeedsArrangements == null or response.specialNeedsArrangements.length == 0 %}
-              N/A
-              {% else %}
               {{ response.specialNeedsArrangements | safe }}
-              {% endif %}
-            </td>
-          </tr>
-        {% endif %}
+            {% endif %}
+          </dd>
+        </div>
+      {% endif %}
 
-        {% if opticReference and hasModAccess %}
-          <tr class="info">
-            <th class="govuk-table__header jd-details-cjs-adjustments-head-width">Optic reference</th>
-            <td class="govuk-table__cell" id="reasonableAdjustment">
-              {{ opticReference }}
-            </td>
-          </tr>
-        {% endif %}
-      </tbody>
-    </table>
+      {% if opticReference and hasModAccess %}
+        <div class="govuk-summary-list__row info">
+          <dt class="govuk-summary-list__key jd-details-cjs-adjustments-head-width">
+            Optic reference
+          </dt>
+          <dd class="govuk-summary-list__value" id="reasonableAdjustment">
+            {{ opticReference }}
+          </dd>
+        </div>
+      {% endif %}
+    </dl>
 
     {% if hasModAccess and response.specialNeeds.length > 0 and not opticReference and response.processingStatus !== 'Closed'%}
       {{ govukButton({
@@ -100,7 +100,6 @@
         })
       }) }}
     {% endif %}
-
   </div>
 
   <div class="edit-section" id="edit-reasonable-adjustments">
