@@ -2,9 +2,21 @@
 
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 
 {% block page_title %}{{ serviceName }} - {{ subServiceName}}{% endblock %}
 {% block page_identifier %}{{ pageIdentifier }}{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: url("create-juror-record.juror-contact.get", { poolNumber: poolNumber }),
+    attributes: {
+      id: "backLinkAnchor",
+      "aria-label": "Go back to juror contact details"
+    }
+  }) }}
+{% endblock %}
 
 {% block content %}
 

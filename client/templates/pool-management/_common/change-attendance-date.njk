@@ -30,6 +30,7 @@
           label: {
             text: "Enter a new service start date"
           },
+          hint: "Use dd/mm/yyyy format. For example, 31/01/2024.",
           dateMin: "" | makeDate | dateFilter(null, "DD/MM/YYYY"),
           dateValue: attendanceDate | dateFilter(null, "DD/MM/YYYY"),
           dateError: dateError

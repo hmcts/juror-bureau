@@ -532,7 +532,7 @@
     };
   };
 
-  const processJurorEdit = function(app, req, res, disqualifyAge) {
+  const processJurorEdit = async function(app, req, res, disqualifyAge) {
     const requestBody = { ...req.session.formFields };
     let successUrl = app.namedRoutes.build('juror-record.details.get', {
       jurorNumber: req.params.jurorNumber,
@@ -572,14 +572,25 @@
     const promiseArr = [];
 
     if (req.session.editJurorDetails.fixedName) {
-      promiseArr.push(fixNameObj.patch(
-        require('request-promise'),
-        app,
-        req.session.authToken,
-        req.params['jurorNumber'],
-        'fix-name',
-        req.session.editJurorDetails.fixedName,
-      ));
+      try {
+        await fixNameObj.patch(
+          require('request-promise'),
+          app,
+          req.session.authToken,
+          req.params['jurorNumber'],
+          'fix-name',
+          req.session.editJurorDetails.fixedName,
+        );
+      } catch (err) {
+        app.logger.crit('Failed to fix current name: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: req.session.editJurorDetails.fixedName,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic');
+      }
     }
 
     promiseArr.push(editJurorDetailsObject.patch(
