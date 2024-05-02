@@ -105,8 +105,10 @@
     switch (reportKeys(app, req)[reportKey].search) {
       case 'poolNumber':
         filter = req.body.poolNumber;
+        break;
       case 'courts':
         filter = req.body.courtSearch
+        break;
     }
 
     return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`) + '?filter=' + filter);
