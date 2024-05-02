@@ -61,7 +61,6 @@
           reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
         });
       case 'courts':
-        
         delete req.session.errors;
         try {
           const courtsData = await fetchCourtsDAO.get(req);
@@ -112,6 +111,7 @@
           reportKey,
           title: reportType.title,
           reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
+          cancelUrl: app.namedRoutes.build('reports.reports.get'),
         });
       default:
         app.logger.info('Failed to load a search type for report type ' + reportKey);
