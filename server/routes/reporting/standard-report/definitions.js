@@ -150,7 +150,7 @@
         apiKey: 'AbaccusReport',
         search: 'dateRange',
         headings: [
-          'dateFrome',
+          'dateFrom',
           'reportDate',
           'dateTo',
           'reportTime',
