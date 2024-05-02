@@ -11,7 +11,9 @@
   const { reportKeys } = require('./definitions');
   const { standardReportPrint } = require('./standard-report-print');
   const { fetchCourtsDAO } = require('../../../objects');
-
+  const searchValidator = require('../../../config/validation/report-search-by');
+  const moment = require('moment')
+  const { dateFilter } = require('../../../components/filters');
 
   const standardFilterGet = (app, reportKey) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
@@ -20,6 +22,7 @@
 
     if (reportType.search) {
       const { filter } = req.query;
+      const tmpErrors = _.clone(req.session.errors);
 
       switch (reportType.search) {
       case 'poolNumber':
@@ -58,7 +61,6 @@
           reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
         });
       case 'courts':
-        const tmpErrors = _.clone(req.session.errors);
         delete req.session.errors;
         try {
           const courtsData = await fetchCourtsDAO.get(req);
@@ -93,6 +95,24 @@
           }); 
           return res.render('_errors/generic');
         }
+      case 'dateRange':
+        const tmpBody = _.clone(req.session.formFields);
+
+        delete req.session.errors;
+        delete req.session.formFields;
+
+        return res.render('reporting/standard-reports/date-search', {
+          errors: {
+            title: 'Please check your search',
+            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+            items: tmpErrors,
+          },
+          tmpBody,
+          reportKey,
+          title: reportType.title,
+          reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
+          cancelUrl: app.namedRoutes.build('reports.reports.get'),
+        });
       default:
         app.logger.info('Failed to load a search type for report type ' + reportKey);
         return res.render('_errors/generic');
@@ -134,7 +154,7 @@
             });
           }
 
-          if (header.id === 'juror_postcode') {
+          if (header.id === 'juror_postcode' || header.id === 'document_code') {
             output = output.toUpperCase();
           }
 
@@ -155,6 +175,9 @@
 
           return ({
             text: output ? output : '-',
+            attributes: {
+              "data-sort-value": header.dataType === 'LocalDate' ? data[snakeToCamel(header.id)] : output
+          }
           });
         });
 
@@ -334,6 +357,31 @@
       req.session.reportCourts = courtLocCodes;
       return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, { filter: 'courts' }));
     }
+    if (reportType.search === 'dateRange') {
+      const validatorResult = validate(req.body, searchValidator.dateRange(_.camelCase(reportKey)));
+      if (typeof validatorResult !== 'undefined') {
+        req.session.errors = validatorResult;
+        req.session.formFields = req.body;
+        return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`));
+      }
+      const fromDate = moment(req.body.dateFrom, 'DD/MM/YYYY');
+      const toDate = moment(req.body.dateTo, 'DD/MM/YYYY');
+
+      if (toDate.isBefore(fromDate)) {
+        req.session.errors = {
+          dateTo: [{
+            summary: '‘Date to’ cannot be before ‘date from’',
+            details: '‘Date to’ cannot be before ‘date from’',
+          }],
+        };
+        req.session.formFields = req.body;
+        return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`));
+      }
+
+      return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, {filter: 'dateRange'})
+        + `?fromDate=${dateFilter(req.body.dateFrom, 'DD/MM/YYYY', 'YYYY-MM-DD')}`
+        + `&toDate=${dateFilter(req.body.dateTo, 'DD/MM/YYYY', 'YYYY-MM-DD')}`);
+    } 
   };
 
   module.exports = {

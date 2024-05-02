@@ -28,7 +28,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
       ...rows.map(row => tableHeadings.map(header => {
         let text = tableDataMappers[header.dataType](row[snakeToCamel(header.id)]) || '-';
 
-        if (header.id === 'juror_postcode') {
+        if (header.id === 'juror_postcode' || header.id === 'document_code') {
           text = text.toUpperCase();
         }
         if (header.id === 'contact_details') {
