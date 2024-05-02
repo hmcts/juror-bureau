@@ -412,14 +412,14 @@
       }
 
       return prev;
-    })
+    }, []);
     const dateTo = days.reduce((prev, curr) => {
       if (moment(curr.attendanceDate).isAfter(moment(prev?.attendanceDate))) {
         return curr;
       }
 
       return prev;
-    })
+    }, []);
 
     return {
       title: header(auditData.jurorDetails, dateFrom, dateTo, auditData.auditType),
