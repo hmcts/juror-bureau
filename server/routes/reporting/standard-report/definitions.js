@@ -22,7 +22,7 @@
       'next-due': {
         title: 'Next attendance date report',
         apiKey: 'NextAttendanceDayReport',
-        search: 'courts',
+        search: 'poolNumber',
         headings: [
           'poolNumber',
           'reportDate',
