@@ -2,7 +2,7 @@
   'use strict';
 
   const _ = require('lodash');
-  const { snakeToCamel } = require('../../../lib/mod-utils');
+  const { snakeToCamel, transformCourtNames, makeManualError, matchUserCourt, matchUserCourts } = require('../../../lib/mod-utils');
   const { standardReportDAO } = require('../../../objects/reports');
   const { validate } = require('validate.js');
   const { poolSearchObject } = require('../../../objects/pool-search');
@@ -10,14 +10,19 @@
   const { tableDataMappers, constructPageHeading } = require('./utils');
   const { reportKeys } = require('./definitions');
   const { standardReportPrint } = require('./standard-report-print');
+  const { fetchCourtsDAO } = require('../../../objects');
+
 
   const standardFilterGet = (app, reportKey) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
 
+    delete req.session.reportCourts;
+
     if (reportType.search) {
+      const { filter } = req.query;
+
       switch (reportType.search) {
       case 'poolNumber':
-        const filter = req.query.filter;
         let poolList = [];
         let resultsCount = 0;
         let errors;
@@ -52,6 +57,42 @@
           filterUrl: app.namedRoutes.build(`reports.${reportKey}.filter.post`),
           reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
         });
+      case 'courts':
+        const tmpErrors = _.clone(req.session.errors);
+        delete req.session.errors;
+        try {
+          const courtsData = await fetchCourtsDAO.get(req);
+          let courts = transformCourtNames(courtsData.courts);
+          if (filter) {
+            courts = courts.filter((court) =>{
+              const courtName = court.toLowerCase();
+      
+              return courtName.includes(filter.toLowerCase());
+            });
+          }
+          req.session.courtsList = courtsData.courts;
+          return res.render('reporting/standard-reports/court-select', {
+            reportKey,
+            courts,
+            title: reportType.title,
+            filter,
+            filterUrl: app.namedRoutes.build(`reports.${reportKey}.filter.post`),
+            clearFilterUrl: app.namedRoutes.build(`reports.${reportKey}.filter.get`),
+            reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
+            cancelUrl: app.namedRoutes.build('reports.reports.get'),
+            errors: {
+              title: 'Please check your search',
+              count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+              items: tmpErrors,
+            },
+          });
+        } catch (err) {
+          app.logger.crit('Failed to fetch courts list: ', {
+            auth: req.session.authentication,
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          }); 
+          return res.render('_errors/generic');
+        }
       default:
         app.logger.info('Failed to load a search type for report type ' + reportKey);
         return res.render('_errors/generic');
@@ -60,7 +101,13 @@
   };
 
   const standardFilterPost = (app, reportKey) => (req, res) => {
-    const filter = req.body.poolNumber;
+    let filter;
+    switch (reportKeys(app, req)[reportKey].search) {
+      case 'poolNumber':
+        filter = req.body.poolNumber;
+      case 'courts':
+        filter = req.body.courtSearch
+    }
 
     return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`) + '?filter=' + filter);
   };
@@ -152,6 +199,9 @@
       } else if (reportType.search === 'trial') {
         config.trialNumber = req.params.filter;
         config.locCode = req.session.authentication.locCode;
+      } else if (reportType.search === 'courts') {
+        // VERIFY FIELD NAME ONCE AN API AVAILABLE
+        config.courts = _.clone(req.session.reportCourts)
       }
     }
 
@@ -244,8 +294,9 @@
     return res.render('_errors/generic');
   };
 
-  const standardReportPost = (app, reportKey) => (req, res) => {
-    if (reportKeys(app, req)[reportKey].search === 'poolNumber') {
+  const standardReportPost = (app, reportKey) => async (req, res) => {
+    const reportType = reportKeys(app, req)[reportKey];
+    if (reportType.search === 'poolNumber') {
       if (!req.body.reportPool) {
         req.session.errors = {
           selection: [{
@@ -264,6 +315,22 @@
       return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, {
         filter: req.body.reportPool,
       }));
+    }
+    if (reportType.search === 'courts') {
+      if (!req.body.selectedCourts) {
+        req.session.errors = makeManualError('selectedCourts', 'Select at least one court');
+
+        return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`)
+          + (req.body.filter ? '?filter=' + req.body.filter : ''));
+      }
+      req.session.reportFilter = req.body.filter;
+      const selectedCourts = Array.isArray(req.body.selectedCourts) ? req.body.selectedCourts : [req.body.selectedCourts]
+      const courtLocCodes = selectedCourts.map((court) => {
+        return court.match(/\d+/g)[0];
+      });
+      delete req.session.courtsList
+      req.session.reportCourts = courtLocCodes;
+      return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, { filter: 'courts' }));
     }
   };
 
