@@ -429,7 +429,7 @@ dt.govuk-summary-list-mod {
 
 .fixTableHead { 
   overflow-y: auto; 
-  height: 75vh;
+  max-height: 50rem;
 
   thead th { 
     position: sticky; 
