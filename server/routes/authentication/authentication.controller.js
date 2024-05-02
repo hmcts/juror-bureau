@@ -4,7 +4,6 @@ const secretsConfig = require('config');
 const jwt = require('jsonwebtoken');
 const { axiosClient } = require('../../objects/axios-instance');
 const { makeManualError } = require('../../lib/mod-utils');
-const { courtsDAO } = require('../../objects/administration');
 
 // this is dev only...
 module.exports.postDevEmailAuth = function(app) {
@@ -65,6 +64,10 @@ module.exports.getCourtsList = function(app) {
       }
 
       if (req.session.authentication.userType === 'ADMINISTRATOR') {
+        if (req.query.redirect_to && req.query.redirect_to === 'courts-and-bureau') {
+          return res.redirect(app.namedRoutes.build('administration.courts-and-bureau.get'));
+        }
+
         return res.redirect(app.namedRoutes.build('administration.get'));
       }
 
@@ -158,11 +161,9 @@ function doLogin(req) {
     if (req.session.authentication && req.session.authentication.activeUserType === 'ADMINISTRATOR') {
       const courtsResponse = await axiosClient('get', `/moj/administration/courts/${locCode}`, req.session.authToken);
 
-      console.log('\n\n\n' + JSON.stringify(courtsResponse) + '\n\n\n');
-
       req.session.selectedCourt = {
+        name: courtsResponse.english_court_name,
         'loc_code': courtsResponse.court_code,
-        'name': courtsResponse.english_court_name,
       };
     } else {
       // there will always be a court selected here

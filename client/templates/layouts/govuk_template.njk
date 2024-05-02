@@ -63,31 +63,33 @@
 
         <div class="moj-header__logo">
           <span class="moj-header__link govuk-!-font-weight-bold moj-header__link--service-name">
-            <a href="{{ url('homepage.get') }}">{{serviceName}}</a>
+            {% if isSystemAdministrator %}
+              {{ serviceName }}
+            {% else %}
+              <a href="{{ url('homepage.get') }}">{{ serviceName }}</a>
+            {% endif %}
           </span>
         </div>
         <div class="moj-header__content">
 
           <nav class="moj-header__navigation" aria-label="Account navigation">
 
-            {% if authentication.staff.name %}
+            {% if authentication.email %}
               <ul class="moj-header__navigation-list">
+
                 {% if not isSystemAdministrator %}
                   {% include "custom-components/super-navigation/super-navigation.njk" %}
                 {% endif %}
+
                 <li class="moj-header__navigation-item moj-header__navigation-item--without-children">
                   <span class="moj-header__navigation-toggle-wrapper mod-flex mod-gap-x-2 mod-baseline">
-                    <span class="moj-header__navigation--selected-court">
-                      {{ (selectedCourt.name or selectedCourt.court_name) | capitalizeFully }}
+                    <span class="moj-header__navigation--selected-court" aria-label="{{ selectedCourt.name | capitalizeFully }}">
+                      {{ selectedCourt.name | capitalizeFully }}
                     </span>
                     <span>({{ selectedCourt.loc_code }})</span>
-                    <a
-                      href="{{ url('authentication.courts-list.get') }}"
-                      class="moj-header__navigation-link govuk-body-s"
-                      aria-label="Change current selected court"
-                    >
-                      Change <span class="govuk-visually-hidden">current selected court</span>
-                    </a>
+
+                    {% include "custom-components/super-navigation/change-court.njk" %}
+
                   </span>
                 </li>
                 <li class="moj-header__navigation-item moj-header__navigation-item--without-children">
@@ -111,10 +113,8 @@
 
     {# If homepage - show blue hero section #}
     {% if currentPage === "homepage" %}
-    {% from "../custom-components/homepage-hero-blue/macro.njk" import heroBlue %}
-      {{ heroBlue({
-        content: {}
-      }) }}
+      {% from "custom-components/homepage-hero-blue/macro.njk" import heroBlue %}
+      {{ heroBlue() }}
     {% endif %}
 
     {# main content #}
