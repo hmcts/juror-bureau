@@ -50,28 +50,7 @@ module.exports.getCourtsList = function(app) {
     }
 
     if (courtsList.length === 1) {
-      const locCode = courtsList[0].loc_code;
-
-      try {
-        await doLogin(req)(app, locCode, body);
-      } catch (err) {
-        app.logger.crit('Failed to login straight through', {
-          data: { body, courtsList, locCode },
-          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-        });
-
-        return res.render('_errors/generic.njk');
-      }
-
-      if (req.session.authentication.userType === 'ADMINISTRATOR') {
-        if (req.query.redirect_to && req.query.redirect_to === 'courts-and-bureau') {
-          return res.redirect(app.namedRoutes.build('administration.courts-and-bureau.get'));
-        }
-
-        return res.redirect(app.namedRoutes.build('administration.get'));
-      }
-
-      return res.redirect(app.namedRoutes.build('homepage.get'));
+      return loginSingleCourt(req, res, { app, courtsList, body });
     }
 
     const tmpErrors = _.clone(req.session.errors);
@@ -115,7 +94,6 @@ module.exports.postCourtsList = function(app) {
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
-      // return res.redirect(app.namedRoutes.build('authentication.courts-list.get'));
       return res.render('_errors/generic.njk');
     }
   };
@@ -182,6 +160,31 @@ function doLogin(req) {
     });
   };
 };
+
+async function loginSingleCourt(req, res, { app, courtsList, body }) {
+  const locCode = courtsList[0].loc_code;
+
+  try {
+    await doLogin(req)(app, locCode, body);
+  } catch (err) {
+    app.logger.crit('Failed to login straight through', {
+      data: { body, courtsList, locCode },
+      error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+    });
+
+    return res.render('_errors/generic.njk');
+  }
+
+  if (req.session.authentication.userType === 'ADMINISTRATOR') {
+    if (req.query.redirect_to && req.query.redirect_to === 'courts-and-bureau') {
+      return res.redirect(app.namedRoutes.build('administration.courts-and-bureau.get'));
+    }
+
+    return res.redirect(app.namedRoutes.build('administration.get'));
+  }
+
+  return res.redirect(app.namedRoutes.build('homepage.get'));
+}
 
 function resolveCancelUrl(app, req) {
   return req.session.authentication ? app.namedRoutes.build('homepage.get') : app.namedRoutes.build('login.get');

@@ -1,6 +1,5 @@
 /* eslint-disable strict */
 const jwt = require('jsonwebtoken');
-const secretsConfig = require('config');
 const errors = require('../errors');
 const {
   isBureauUser,
@@ -12,26 +11,6 @@ const {
   isManager,
   isTeamLeader,
 } = require('./user-type');
-
-module.exports.createJWTToken = function(req, body, key) {
-  // if user is found create a token
-  const token = jwt.sign(body, key, { expiresIn: secretsConfig.get('secrets.juror.bureau-jwtTTL') });
-
-  // Store in session
-  req.session.authToken = token;
-  req.session.authKey = key;
-
-  return token;
-};
-
-module.exports.getToken = function(req) {
-  var decoded = jwt.decode(req.session.authToken);
-
-  if (decoded !== null && decoded.hasOwnProperty('data')) {
-    return decoded.data;
-  }
-  return decoded;
-};
 
 module.exports.logout = function(req, res) {
   delete req.session.authToken;
