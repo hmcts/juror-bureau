@@ -75,7 +75,10 @@ const filters = require('../../../components/filters');
         req.session.authToken,
         poolNumber,
       )
-      .then((pool) => {
+      .then((pool) => {        
+        let queryStatus = !req.query.status || req.query.status === 'All' ? undefined : req.query.status;
+
+        console.log("fredqs",queryStatus);
         poolMembersObj.post(
           rp,
           app,
@@ -89,7 +92,8 @@ const filters = require('../../../components/filters');
               .replace(/ /g, '_').split(',') || null,
             'checked_in': req.query.checkedIn || null,
             'next_due': req.query.nextDue?.split(',') || null,
-            'status': req.query.status?.split(',').map(status => status[0].toUpperCase() + status.slice(1)) || null,
+          // 'status': !status || status ==='All' ? null : status?.split(',').map(state => state[0].toUpperCase() + state.slice(1)) || null,
+           'status': queryStatus?.split(',').map(status => status[0].toUpperCase() + status.slice(1)) || null,           
             'page_number': req.query.page || 1,
             'sort_field': req.query.sortBy || 'juror_number',
             'sort_method': req.query.sortOrder || 'ascending',
@@ -329,7 +333,7 @@ const filters = require('../../../components/filters');
             jwt: req.session.authToken,
             data: response,
           });
-
+ƒ
           req.session.coronerCourt = response;
 
           if (response.coronerDetailsList.length > 0) {
@@ -368,6 +372,8 @@ const filters = require('../../../components/filters');
     };
   }
 
+  
+  
   async function bureauView(app, req, res, pool, membersList, _errors, selectedJurors, selectAll) {
     var assignUrl = app.namedRoutes.build('pool-overview.reassign.post',
         { poolNumber: req.params.poolNumber })
@@ -380,9 +386,21 @@ const filters = require('../../../components/filters');
       , availableSuccessMessage = false
       , successBanner
       , tmpError
-      , error = null;
+      , error = null
+      , courtJurorStatuses;
 
     req.session.poolDetails = pool;
+
+    const filters = req.query;
+
+    console.log("filters123", filters);
+
+    if (typeof filters !== 'undefined' && (typeof filters.status !== 'undefined' || filters.status !== 'All' )) {      
+        courtJurorStatuses = filters.status;      
+    } else
+    {
+      courtJurorStatuses = 'All';
+    }
 
     app.logger.info('Fetched court members: ', {
       auth: req.session.authentication,
@@ -468,6 +486,7 @@ const filters = require('../../../components/filters');
       },
       error,
       selectedJurors,
+      courtJurorStatuses,
       totalJurors,
       totalCheckedJurors,
       selectAll,
@@ -606,6 +625,8 @@ const filters = require('../../../components/filters');
 
     const specifiedStatuses = ['responded', 'panel', 'juror'];
     const filters = req.query;
+
+    console.log("filters", filters);
 
     if (typeof filters !== 'undefined' && typeof filters.status !== 'undefined') {
       if (specifiedStatuses.every(i => filters.status.includes(i)) && filters.status.split(',').length === 3) {

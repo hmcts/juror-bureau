@@ -6,12 +6,10 @@
 {% from "custom-components/mod-filter/macro.njk" import modFilter %}
 {%- from "moj/components/button-menu/macro.njk" import mojButtonMenu -%}
 
-{% if totalJurors === 0 and poolDetails.isActive === true %}
-  <div class="govuk-grid-column-full govuk-body">
-    This pool has no members.
-  </div>
-{% elif poolDetails.isActive === true %}
+
+{% if poolDetails.isActive === true %}
   <form method="post" id="jurorDetailsForm" >
+      <div class="mod-filter__actions govuk-button-group">
     {% if not selectAll %}
       {% for selectedJuror in selectedJurors %}
         <input type="hidden" name="selectedJurors" aria-label="check-juror" value="{{ selectedJuror }}" checked>
@@ -21,8 +19,8 @@
     <div class="govuk-grid-column-full juror-actions govuk-!-padding-0 govuk-!-margin-bottom-5">
       {{ govukRadios({
         classes: "govuk-radios--inline govuk-radios--small",
-        name: "jurorsInPool",
-        value: jurorStatuses,
+        name: "jurorsInBureauPool",
+        value: courtJurorStatuses,
         fieldset: {
           legend: {
             text: "Jurors in this pool",
@@ -32,19 +30,20 @@
         hint: {
           text: "Only displaying jurors managed by the Bureau"
         },
-
         items: [
           {
             value: "responded",
-            text: "Responded jurors only",
-            checked: true
+            text: "Responded jurors only"
           },
           {
-            value: "all",
-            text: "All jurors"
+            value: "All",
+            text: "All statuses"
           }
         ]
       }) }}
+
+      <input type="hidden" id="status" name="status">
+
       {{ govukButton({
         text: "Show filter",
         classes: "govuk-button--secondary govuk-!-margin-bottom-0",
@@ -91,7 +90,11 @@
         }) }}
       {% endif %}
     </div>
-
+{% if totalJurors === 0 and poolDetails.isActive === true %}
+  <div class="govuk-grid-column-full govuk-body">
+    This pool has no members.
+  </div>
+  {% else %}
      {% if totalJurors > 500 %}
         <span class="govuk-body">There are more than 500 results. Refine your search.</span>
     {% else %} 
@@ -123,7 +126,7 @@
           },
           items: pageItems.items
         }) }}
-
+ {% endif %}
       {% if errors.items["selectedJurors"] %}</div>{% endif %}
     {% endif %}
 

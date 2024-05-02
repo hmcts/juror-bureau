@@ -145,6 +145,7 @@
           },
       });
     }
+    const queryStatus = (tab === 'bureau') ?'responded' : 'responded,panel,juror';
 
     // prepare the table rows
     pools.forEach(function(pool) {
@@ -163,7 +164,7 @@
       item.push(
         {
           html: '<a href="/pool-management/pool-overview/' +
-              pool.poolNumber + '" class="govuk-link">' + pool.poolNumber + '</a>',
+              pool.poolNumber + '?status=' + queryStatus + '" class="govuk-link">' + pool.poolNumber + '</a>',
           attributes: {
             'data-sort-value': pool.poolNumber,
           },

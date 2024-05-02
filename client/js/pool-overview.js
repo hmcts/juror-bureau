@@ -6,7 +6,9 @@
     , poolOverviewShowFilterBtn = $('#pool-overview-show-filter')
     , selectedStatuses = $('input[name="status"]:checked')
     , respondedStatusRadio = $('#jurorsInPool')
+    , respondedBureauStatusRadio = $('#jurorsInBureauPool')
     , allStatusRadio = $('#jurorsInPool-2')
+    , allBureauStatusRadio= $('#jurorsInBureauPool-2')
     , url = new URL(window.location)
     , checkAllJurors = $('#check-all-jurors')
     , jurorRows = $('input[aria-label^=check-juror]')
@@ -82,6 +84,17 @@
     }
   });
 
+  respondedBureauStatusRadio.click(function(event) {
+    event.preventDefault();
+    $('#status').val('responded');
+    $('#jurorDetailsForm').trigger('submit');
+  });
+
+  allBureauStatusRadio.click(function(event) {
+    event.preventDefault();
+    $('#status').val('All');
+    $('#jurorDetailsForm').trigger('submit');
+  });
 
   poolOverviewShowFilterBtn.click(function(event) {
     event.preventDefault();
