@@ -5,11 +5,8 @@
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 {% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
 
+{% block page_title %}Uncomplete service - Select jurors{% endblock %}
 {% block page_identifier %}Uncomplete service{% endblock %}
-
-{% block page_title %}
-  Uncomplete service - select jurors
-{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -36,8 +33,8 @@
         <h1 class="govuk-heading-xl">Uncomplete service</h1>
         
         <h2 class="govuk-heading-m">
-          Showing results for “{{ searchTerm }} ”
-          <a class="govuk-link" href="{{ changeUrl }}">change</a>
+          Showing results for “{{ searchTerm }}”
+          <a class="govuk-link" href="{{ changeUrl }}" aria-label="Change search term">change</a>
         </h2>
 
         {% if jurors.length === 0 and not overLimit %}
@@ -53,7 +50,9 @@
           <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
           <h2>There are more than 500 results</h2>
-          <p class="govuk-body"><a class="govuk-link" href="{{ changeUrl }}">Refine your search</a> by adding more information.</p>
+          <p class="govuk-body">
+            <a class="govuk-link" href="{{ changeUrl }}">Refine your search</a> by adding more information.
+          </p>
         {% else %}
 
         <div class="govuk-grid-column-full juror-actions govuk-!-padding-0 govuk-!-margin-bottom-5">

@@ -14,7 +14,13 @@
         </h2>
         {% if isAddChangeVisible %}
           <div class="govuk-body">
-            <a id="signatureEdit" class="govuk-link" href="{{ url('summons.update-signature.get', { id: response.jurorNumber, type: method }) }}">Add or change</a>
+            <a id="signatureEdit" 
+               class="govuk-link"
+               aria-label="Add or change signature" 
+               href="{{ url('summons.update-signature.get', { id: response.jurorNumber, type: method }) }}"
+            >
+              Add or change
+            </a>
           </div>
         {% endif %}
       </div>

@@ -5,8 +5,8 @@
 {% from "moj/components/banner/macro.njk" import mojBanner %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
 
-{% block page_title %}{{ serviceName }}- juror-management - manage jurors{% endblock %}
-{% block page_identifier %}juror-management - manage jurors{% endblock %}
+{% block page_title %}{{ serviceName }} - Juror management - Manage jurors{% endblock %}
+{% block page_identifier %}Juror management - Manage jurors{% endblock %}
 
 {% set pendingApprovalHtml %}
   <span id="pendingApprovalTab">Pending approval{% if pendingApprovalCount > 0 %} <span id="pendingApprovalCount" class="moj-notification-badge jd-badge-blue">{{ pendingApprovalCount }}</span>{% endif %}</a></span>

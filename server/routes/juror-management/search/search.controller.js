@@ -1,145 +1,215 @@
-(function() {
-  'use strict';
+/* eslint-disable strict */
 
-  var urljoin = require('url-join')
-    , search = require('../../../objects/juror-record').search
-    , modUtils = require('../../../lib/mod-utils')
-    , capitalizeFully = require('../../../components/filters').capitalizeFully
+const _ = require('lodash');
+const urljoin = require('url-join');
+const { searchJurorRecordDAO } = require('../../../objects');
+const { constants, paginationBuilder, makeManualError } = require('../../../lib/mod-utils');
+const { capitalizeFully } = require('../../../components/filters');
 
-  module.exports.getSearch = function(app) {
-    return function(req, res) {
-      var query = req.query['q']
-        , jurorRecords = [];
+module.exports.getSearch = function(app) {
+  return async function(req, res) {
+    const { jurorNumber, jurorName, postcode, poolNumber, sortBy, sortOrder } = req.query;
 
-      if (typeof req.session.superSearchError === 'undefined'
-        && typeof query !== 'undefined'
-        && modUtils.isJurorNumber(query)
-      ) {
-        if (typeof req.session.jurorRecordSearchData !== 'undefined') {
-          jurorRecords = transformResults(req.session.jurorRecordSearchData, app.namedRoutes);
+    let jurorRecords;
+    let totalResults;
+    let pagination;
+    let urlPrefix;
+    let bvr;
+
+    if (jurorNumber || jurorName || postcode || poolNumber) {
+      const payload = buildSearchPayload(req.query);
+
+      try {
+        const response = await searchJurorRecordDAO.post(req, payload);
+
+        if (response.total_items === 1 && response.data.length === 1) {
+          const jurorRecord = response.data[0];
+          const jurorRecordUrl = urljoin(app.namedRoutes.build('juror-record.select.get'),
+            '?jurorNumber=' + jurorRecord.juror_number,
+            '&locCode=' + jurorRecord.loc_code);
+
+          return res.redirect(jurorRecordUrl);
         }
-      }
 
-      // attempt to delete the superSearchError incase it is set
-      delete req.session.superSearchError;
+        totalResults = response.total_items;
+        jurorRecords = transformResults(response.data, app.namedRoutes);
 
-      return res.render('juror-management/search/index', {
-        jurorRecords: jurorRecords,
-        query: query,
-      });
-    }
-  };
+        pagination = paginationBuilder(totalResults, req.query.page || 1, req.url);
 
-  module.exports.postSearch = function(app) {
-    return function(req, res) {
-      var jurorNumber = req.body['search'] || req.body['super-nav-search']
-        , redirectUrl = app.namedRoutes.build('juror-record.search.get')
-        , successCB = function(response) {
+        urlPrefix = '?' + buildQueryParams(req.query).join('&');
+      } catch (err) {
+        // if fails show no results
+        jurorRecords = [];
 
-          if (response.jurorRecordSearchData.length === 1) {
-            req.session.locCode = response.jurorRecordSearchData[0].locCode;
+        app.logger.crit('Failed to search for juror records: ', {
+          auth: req.session.authentication,
+          data: { payload },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
 
-            return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
-              jurorNumber: response.jurorRecordSearchData[0].jurorNumber,
-            }));
+        if (err.statusCode === 422) {
+          if (err.error.code === 'MAX_ITEMS_EXCEEDED') {
+            bvr = err.error.code;
           }
-
-          req.session.jurorRecordSearchData = response.jurorRecordSearchData;
-
-          app.logger.info('Found one or more juror records', {
-            auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: response,
-          });
-
-          return res.redirect(urljoin(redirectUrl, '?q=' + jurorNumber));
         }
-        , errorCB = function(err) {
-
-          app.logger.crit('Failed to search for a juror-record: ', {
-            auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: {
-              jurorNumber: jurorNumber,
-            },
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
-
-          return res.redirect(redirectUrl);
-        };
-
-      // if someone tries to search for an invalid value we don't need to do an api request
-      if (typeof jurorNumber === 'undefined' || !modUtils.isJurorNumber(jurorNumber)) {
-        req.session.superSearchError = true;
-
-        if (typeof jurorNumber !== 'undefined' && jurorNumber.length) {
-          redirectUrl = urljoin(redirectUrl, '?q=' + jurorNumber);
-        }
-
-        return res.redirect(redirectUrl);
       }
-
-      search.get(require('request-promise'), app, req.session.authToken, jurorNumber)
-        .then(successCB)
-        .catch(errorCB);
     }
-  };
 
-  module.exports.selectJuror = function(app) {
-    return function(req, res) {
-      var jurorNumber = req.query['jurorNumber']
-        , locCode = req.query['locCode'];
+    const tmpErrors = _.clone(req.session.errors);
+    const tmpFields = _.clone(req.session.formFields);
 
-      req.session.locCode = locCode;
+    delete req.session.errors;
+    delete req.session.formFields;
 
-      return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
-        jurorNumber: jurorNumber,
-      }));
-    }
-  };
-
-  // nr is the namedRoutes object
-  function transformResults(results, nr) {
-    var list = [];
-
-    results.forEach(function(result) {
-      var url = urljoin(nr.build('juror-record.select.get'),
-        '?jurorNumber=' + result.jurorNumber,
-        '&locCode=' + result.locCode);
-
-      list.push([{
-        html: '<a href="'+ url +'" class="govuk-link">' + result.jurorNumber + '</a>',
-        attributes: {
-          'data-sort-value': result.jurorNumber
-        }
+    return res.render('juror-management/search/index', {
+      totalResults,
+      jurorRecords,
+      jurorNumber,
+      jurorName,
+      postcode,
+      poolNumber,
+      pagination,
+      urlPrefix,
+      sortBy,
+      sortOrder,
+      bvr,
+      tmpFields,
+      errors: {
+        message: '',
+        count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+        items: tmpErrors,
       },
-      {
-        text: capitalizeFully([result.firstName, result.lastName].join(' ')),
-        attributes: {
-          'data-sort-value': [result.firstName, result.lastName].join(' ')
-        }
-      },
-      {
-        text: result.addressPostcode,
-        attributes: {
-          'data-sort-value': result.addressPostcode
-        }
-      },
-      {
-        text: result.poolNumber,
-        attributes: {
-          'data-sort-value': result.poolNumber
-        }
-      },
-      {
-        text: capitalizeFully(result.courtName),
-        attributes: {
-          'data-sort-value': result.courtName
-        }
-      }])
     });
+  };
+};
 
-    return list;
+module.exports.postSearch = function(app) {
+  return function(req, res) {
+    const redirectUrl = app.namedRoutes.build('juror-record.search.get');
+
+    if (req.body.globalSearch && !/^\d{1,9}$/.test(req.body.globalSearch)) {
+      req.session.errors =
+        makeManualError('jurorNumber', 'Enter a valid juror number');
+      req.session.formFields = { jurorNumber: req.body.globalSearch };
+
+      return res.redirect(redirectUrl);
+    }
+
+    const queryParams = buildQueryParams(req.body);
+
+    return res.redirect(redirectUrl + `?${queryParams.join('&')}`);
+  };
+};
+
+module.exports.selectJuror = function(app) {
+  return function(req, res) {
+    const { jurorNumber, locCode } = req.query;
+
+    req.session.locCode = locCode;
+
+    return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
+      jurorNumber,
+    }));
+  };
+};
+
+function buildSearchPayload({ jurorNumber, jurorName, postcode, poolNumber, page, sortBy, sortOrder }) {
+  const sortByMapper = () => {
+    switch (sortBy) {
+    case 'jurorNumber':
+      return 'JUROR_NUMBER';
+    case 'jurorName':
+      return 'JUROR_NAME';
+    case 'POSTCODE':
+      return 'postcode';
+    case 'poolNumber':
+      return 'POOL_NUMBER';
+    case 'court':
+      return 'COURT_NAME';
+    case 'status':
+      return 'STATUS';
+    default:
+      return 'JUROR_NUMBER';
+    }
+  };
+
+  const payload = {
+    'sort_method': sortOrder === 'ascending' ? 'ASC' : 'DESC',
+    'sort_field': sortByMapper(),
+    'page_limit': constants.PAGE_SIZE,
+    'page_number': page || 1,
+  };
+
+  if (jurorNumber) {
+    payload['juror_number'] = jurorNumber;
+  }
+  if (jurorName) {
+    payload['juror_name'] = jurorName;
+  }
+  if (postcode) {
+    payload['postcode'] = postcode;
+  }
+  if (poolNumber) {
+    payload['pool_number'] = poolNumber;
   }
 
-})();
+  return payload;
+}
+
+function buildQueryParams(data) {
+  const { jurorNumber, jurorName, postcode, poolNumber, globalSearch } = data;
+  const queryParams = [];
+
+  if (jurorNumber) {
+    queryParams.push(`jurorNumber=${jurorNumber}`);
+  }
+  if (jurorName) {
+    queryParams.push(`jurorName=${jurorName}`);
+  }
+  if (postcode) {
+    queryParams.push(`postcode=${postcode}`);
+  }
+  if (poolNumber) {
+    queryParams.push(`poolNumber=${poolNumber}`);
+  }
+  if (globalSearch) {
+    queryParams.push(`jurorNumber=${globalSearch}`);
+  }
+
+  return queryParams;
+}
+
+function transformResults(jurorRecords, namedRoutes) {
+  const list = [];
+
+  if (!jurorRecords.length) return list;
+
+  jurorRecords.forEach(function(jurorRecord) {
+    const url = urljoin(namedRoutes.build('juror-record.select.get'),
+      '?jurorNumber=' + jurorRecord.juror_number,
+      '&locCode=' + jurorRecord.loc_code);
+
+    list.push([
+      {
+        html: '<a href="'+ url +'" class="govuk-link">' + jurorRecord.juror_number + '</a>',
+      },
+      {
+        text: capitalizeFully(jurorRecord.juror_name),
+      },
+      {
+        text: jurorRecord.postcode,
+      },
+      {
+        text: jurorRecord.pool_number,
+      },
+      {
+        text: capitalizeFully(jurorRecord.court_name),
+      },
+      {
+        text: jurorRecord.status,
+      },
+    ]);
+  });
+
+  return list;
+}

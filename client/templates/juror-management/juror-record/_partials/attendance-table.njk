@@ -58,7 +58,7 @@
               {% endif %}
             </td>
             <td class="govuk-table__cell govuk-table__cell--numeric">
-              <a class="govuk-link govuk-link--no-visited-state" href="{{ url('juror-record.attendance.modify-juror-attendance.get', { jurorNumber:  juror.commonDetails.jurorNumber, poolNumber: juror.commonDetails.poolNumber }) }}?date={{ day['attendance_date'] | dateFilter("null", "YYYY-MM-DD") }}">
+              <a class="govuk-link govuk-link--no-visited-state" aria-label="Change juror attendance times" href="{{ url('juror-record.attendance.modify-juror-attendance.get', { jurorNumber:  juror.commonDetails.jurorNumber, poolNumber: juror.commonDetails.poolNumber }) }}?date={{ day['attendance_date'] | dateFilter("null", "YYYY-MM-DD") }}">
                 Change
                 <span class="govuk-visually-hidden"> the juror attendance times</span>
               </a>

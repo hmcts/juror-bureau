@@ -1,92 +1,105 @@
-{% extends "../../layouts/default.njk" %}
+{% extends "layouts/default.njk" %}
 
-{% from "../../custom-components/mod-search/macro.njk" import modSearch %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - Juror record - search for juror records{% endblock %}
+{% block page_identifier %}Juror record - search for juror records{% endblock %}
 
 {% block content %}
+
+  {% include "includes/errors.njk" %}
 
   <h1 class="govuk-heading-xl">Search for a juror record</h1>
 
   <div class="govuk-grid-row">
-    {{ modSearch({
-      classes: "govuk-grid-column-one-half",
-      action: url('juror-record.search.post'),
-      method: "post",
-      input: {
-        id: "search",
-        name: "search"
-      },
-      button: {
-        text: "Search"
-      },
-      label: {
-        text: "Search for a juror record",
-        classes: "govuk-!-font-weight-bold govuk-!-font-size-24"
-      },
-      hint: {
-        text: "Search for a juror record by using their juror number or using a barcode scan"
-      },
-      csrf: csrftoken,
-      value: query
-    }) }}
+    <div class="govuk-grid-column-one-third">
+
+      <form action="{{ url('juror-record.search.post') }}" method="post">
+        
+        {{ govukInput({
+          label: {
+            text: "Juror number or scan a barcode"
+          },
+          id: "jurorNumber",
+          name: "jurorNumber",
+          value: jurorNumber or tmpFields.jurorNumber
+        }) }}
+
+        {{ govukInput({
+          label: {
+            text: "Juror name"
+          },
+          id: "jurorName",
+          name: "jurorName",
+          value: jurorName
+        }) }}
+
+        {{ govukInput({
+          label: {
+            text: "Juror postcode"
+          },
+          id: "postcode",
+          name: "postcode",
+          value: postcode
+        }) }}
+
+        {{ govukInput({
+          label: {
+            text: "Pool number"
+          },
+          id: "poolNumber",
+          name: "poolNumber",
+          value: poolNumber
+        }) }}
+
+        {{ govukButton({
+          text: "Search",
+          attributes: {
+            id: "searchButton"
+          }
+        }) }}
+
+        {{ csrfProtection(csrftoken) }}
+
+      </form>
+
+    </div>
   </div>
 
-  <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+  {% if jurorRecords %}
 
-  {% if jurorRecords.length === 0 %}
-    <h2>There are no matching results</h2>
-    <p class="govuk-body">Improve your search by:</p>
-    <ul class="govuk-list govuk-list--bullet">
-      <li>double-checking your spelling</li>
-      <li>searching by the complete juror number only</li>
-    </ul>
-  {% else %}
-    <h2>{{ jurorRecords.length }} results for "{{ query }}"</h2>
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
-    {{ govukTable({
-      attributes: {
-        "data-module": "moj-sortable-table"
-      },
-      caption: "Juror records",
-      captionClasses: "govuk-visually-hidden",
-      head: [
-        {
-          text: "Juror number",
-          attributes: {
-            "aria-sort": "ascending",
-            "aria-name": "Juror number"
-          }
+    {% if bvr === "MAX_ITEMS_EXCEEDED" %}
+      <h2 class="govuk-heading-m govuk-!-margin-bottom-6">There are more than 500 results. Refine your search.</h2>
+    {% endif %}
+
+    {% if jurorRecords.length === 0 and not bvr %}
+      <h2>There are no matching results</h2>
+      <p class="govuk-body">Improve your search by:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>double-checking your spelling</li>
+      </ul>
+    {% elif jurorRecords.length > 0 %}
+      <h2>{{ totalResults }} results</h2>
+
+      {% include "./results-list.njk" %}
+
+      {{ govukPagination({
+        previous: {
+          href: pagination.prev
         },
-        {
-          text: "Juror name",
-          attributes: {
-            "aria-sort": "none",
-            "aria-name": "Juror name"
-          }
+        next: {
+          href: pagination.next
         },
-        {
-          text: "Juror's postcode",
-          attributes: {
-            "aria-sort": "none",
-            "aria-name": "Juror's postcode"
-          }
-        },
-        {
-          text: "Pool number",
-          attributes: {
-            "aria-sort": "none",
-            "aria-name": "Pool number"
-          }
-        },
-        {
-          text: "Court name",
-          attributes: {
-            "aria-sort": "none",
-            "aria-name": "Court name"
-          }
-        }
-      ],
-      rows: jurorRecords
-    }) }}
+        items: pagination.items
+      }) }}
+
+    {% endif %}
   {% endif %}
+
 {% endblock %}

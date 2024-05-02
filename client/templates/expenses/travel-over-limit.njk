@@ -4,8 +4,8 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "includes/csrf.njk" import csrfProtection %}
 
-{% block page_title %}{{ serviceName }} - juror-management - unpaid attendance - daily expenses - travel limits{% endblock %}
-{% block page_identifier %}juror-management - unpaid attendance - daily expenses - travel limits{% endblock %}
+{% block page_title %}{{ serviceName }} - Juror management - Unpaid attendance - Daily expenses - Travel limits{% endblock %}
+{% block page_identifier %}Juror management - Unpaid attendance - Daily expenses - Travel limits{% endblock %}
 
 {% set currentApp = "Jurors" %}
 
@@ -80,7 +80,7 @@
         }
       }) }}
 
-      <a class="govuk-link" id="cancelAnchor" href="{{ cancelUrl }}">Go back and change</a>
+      <a class="govuk-link" id="cancelAnchor" href="{{ cancelUrl }}" aria-label="Go back and change">Go back and change</a>
     </div>
 
     {{ csrfProtection(csrftoken) }}

@@ -8,7 +8,8 @@
 
 {% set currentApp = "Pool management" %}
 
-{% block page_identifier %}Convert a Nil Pool{% endblock %}
+{% block page_title %}{{ serviceName }} - Convert a nil pool{% endblock %}
+{% block page_identifier %}Convert a nil pool{% endblock %}
 
 {% block content %}
 
@@ -120,7 +121,10 @@
             href: url('nil-pool.convert.change-deferrals.get', {
               poolNumber: poolDetails.poolNumber
             }),
-            text: "Change"
+            text: "Change",
+            attributes: {
+              "aria-label": "Change number of court deferrals to include in this pool"
+            }
           }
         }) }}
 

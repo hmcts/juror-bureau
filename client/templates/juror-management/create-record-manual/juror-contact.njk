@@ -3,16 +3,13 @@
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
-{% from "govuk/components/button/macro.njk" import "govukButton" %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "includes/csrf.njk" import csrfProtection %}
 
-{% block page_title %}
-  {{ serviceName }} - {{ subServiceName }}
-{% endblock %}
-
+{% block page_title %}{{ serviceName }} - {{ subServiceName }}{% endblock %}
 {% block page_identifier %}{{ pageIdentifier }}{% endblock %}
 
 {% block beforeContent %}
-
   {{ govukBackLink({
     text: "Back",
     href: backLinkUrl,
@@ -20,10 +17,26 @@
       id: "backLinkAnchor"
     }
   }) }}
-
 {% endblock %}
 
+{% set mainPhoneError = undefined %}
+{% if errors.items["mainPhone"] %}
+  {% set mainPhoneError = { text: errors.items["mainPhone"][0].details } %}
+{% endif %}
+
+{% set alternativePhoneError = undefined %}
+{% if errors.items["alternativePhone"] %}
+  {% set alternativePhoneError = { text: errors.items["alternativePhone"][0].details } %}
+{% endif %}
+
+{% set emailAddressError = undefined %}
+{% if errors.items["emailAddress"] %}
+  {% set emailAddressError = { text: errors.items["emailAddress"][0].details } %}
+{% endif %}
+
 {% block content %}
+
+  {% include "includes/errors.njk" %}
 
   {% set heading %}
     <span class='govuk-caption-xl'> {{ subServiceName }} </span>
@@ -43,22 +56,24 @@
 
           {{ govukInput({
             label: {
-              text: 'Main phone - UK only (optional)'
+              text: "Main phone - UK only (optional)"
             },
             id: "mainPhone",
             name: "mainPhone",
             classes: "govuk-!-width-one-half",
-            value: formFields.mainPhone
+            value: tmpFields.mainPhone or formFields.mainPhone,
+            errorMessage: mainPhoneError
           }) }}
 
           {{ govukInput({
             label: {
-              text: 'Alternative phone (optional)'
+              text: "Alternative phone (optional)"
             },
             id: "alternativePhone",
             name: "alternativePhone",
             classes: "govuk-!-width-one-half",
-            value: formFields.alternativePhone
+            value: tmpFields.alternativePhone or formFields.alternativePhone,
+            errorMessage: alternativePhoneError
           }) }}
 
           {{ govukInput({
@@ -68,7 +83,8 @@
             id: "emailAddress",
             name: "emailAddress",
             classes: "govuk-!-width-three-quarters",
-            value: formFields.emailAddress
+            value: tmpFields.emailAddress or formFields.emailAddress,
+            errorMessage: emailAddressError
           }) }}
 
         {% endcall %}
@@ -77,14 +93,22 @@
           {{ govukButton({
             text: "Continue",
             attributes: {
-              id: "continueButton"
+              id: "continueButton",
+              "aria-label": "Continue with juror details"
             }
           }) }}
 
-          <a id="cancelAnchor" class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+          <a
+            id="cancelAnchor"
+            class="govuk-link"
+            href="{{ cancelUrl }}"
+            aria-label="Cancel and go back to juror management"
+          >
+            Cancel
+          </a>
         </div>
 
-        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+        {{ csrfProtection(csrftoken) }}
       </form>
 
     </div>

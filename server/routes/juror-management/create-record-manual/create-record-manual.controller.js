@@ -1,21 +1,21 @@
 (function(){
   'use strict';
 
-  var _ = require('lodash')
-    , validate = require('validate.js')
-    , moment = require('moment')
-    , validator = require('../../../config/validation/record-create-manual')
-    , jurorCreateObject = require('../../../objects/juror-create-manual').jurorCreateObject
-    , requestObj = require('../../../objects/pool-management').reassignJurors
-    , courtSelectValidator = require('../../../config/validation/request-pool').courtNameOrLocation
-    , poolSummary = require('../../../objects/pool-summary').poolSummaryObject
-    , fetchCourts = require('../../../objects/request-pool').fetchCourts
-    , modUtils = require('../../../lib/mod-utils')
-    , { generatePoolNumber } = require('../../../objects/request-pool')
-    , addressBuilder = require('../../../components/filters/index').buildRecordAddress
-    , dateFilter = require('../../../components/filters').dateFilter
-    , subServiceName = 'Create juror record'
-    , { courtLocationsFromPostcodeObj } = require('../../../objects/court-location');
+  const _ = require('lodash');
+  const validate = require('validate.js');
+  const moment = require('moment');
+  const validator = require('../../../config/validation/record-create-manual');
+  const jurorCreateObject = require('../../../objects/juror-create-manual').jurorCreateObject;
+  const requestObj = require('../../../objects/pool-management').reassignJurors;
+  const courtSelectValidator = require('../../../config/validation/request-pool').courtNameOrLocation;
+  const poolSummary = require('../../../objects/pool-summary').poolSummaryObject;
+  const fetchCourts = require('../../../objects/request-pool').fetchCourts;
+  const modUtils = require('../../../lib/mod-utils');
+  const { generatePoolNumber } = require('../../../objects/request-pool');
+  const addressBuilder = require('../../../components/filters/index').buildRecordAddress;
+  const dateFilter = require('../../../components/filters').dateFilter;
+  const subServiceName = 'Create juror record';
+  const { courtLocationsFromPostcodeObj } = require('../../../objects/court-location');
 
   module.exports.hasStarted = function(app) {
     return function(req, res, next) {
@@ -544,6 +544,12 @@
         formFields = _.cloneDeep(req.session.newJuror.jurorContact);
       };
 
+      const tmpErrors = _.clone(req.session.errors);
+      const tmpFields = _.clone(req.session.formFields);
+
+      delete req.session.errors;
+      delete req.session.formFields;
+
       return res.render('juror-management/create-record-manual/juror-contact.njk', {
         postUrl: app.namedRoutes.build('create-juror-record.juror-contact.post', {
           poolNumber: req.params.poolNumber,
@@ -554,16 +560,35 @@
         }),
         subServiceName: subServiceName,
         pageIdentifier: 'Enter their contact details',
-        formFields: formFields,
+        formFields,
+        tmpFields,
+        errors: {
+          title: 'Please check the form',
+          count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+          items: tmpErrors,
+        },
       });
     };
   };
 
   module.exports.postContact = function(app) {
     return function(req, res) {
+      const validatorResult = validate(req.body, validator.contactDetails(req.body));
+
+      if (validatorResult) {
+        req.session.errors = validatorResult;
+        req.session.formFields = req.body;
+
+        return res.redirect(app.namedRoutes.build('create-juror-record.juror-contact.get', {
+          poolNumber: req.params.poolNumber,
+        }));
+      }
+
       let tmpBody = req.body;
 
       delete tmpBody._csrf;
+      delete req.session.errors;
+      delete req.session.formFields;
 
       req.session.newJuror.jurorContact = tmpBody;
 
@@ -597,6 +622,7 @@
         subServiceName: subServiceName,
         pageIdentifier: 'Notes',
         formFields: formFields,
+        poolNumber: req.params.poolNumber,
       });
     };
   };

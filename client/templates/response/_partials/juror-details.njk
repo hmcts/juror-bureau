@@ -22,7 +22,13 @@
           </h2>
           {% if isAddChangeVisible %}
             <div class="govuk-body">
-              <a id="jurorDetailsEdit" class="govuk-link" href="{{ url( updateUrl, { id: response.jurorNumber, type: replyType }) }}">Add or change</a>
+              <a id="jurorDetailsEdit" 
+                 class="govuk-link"
+                 aria-label="Add or change juror details" 
+                 href="{{ url( updateUrl, { id: response.jurorNumber, type: replyType }) }}"
+              >
+                Add or change
+              </a>
             </div>
           {% endif %}
         </div>
@@ -31,7 +37,14 @@
           <h2 class="govuk-heading-m">Juror details
             {% if canEdit and responseEditEnabled %}
             <div class="edit-actions govuk-body jd-right-align">
-              <a id="jurorDetailsEdit" class="govuk-link edit-action edit-trigger" data-target="juror-details" href="#">Change</a>
+              <a id="jurorDetailsEdit" 
+                 class="govuk-link edit-action edit-trigger" 
+                 data-target="juror-details" 
+                 href="#"
+                 aria-label="Change juror details"
+              >
+                Change
+              </a>
             </div>
             {% endif %}
           </h2>
@@ -209,12 +222,11 @@
         <h2 class="govuk-heading-m">Third party details
           {% if canEdit and responseEditEnabled %}
             <div class="edit-actions govuk-body jd-right-align">
-              <a href="#" 
-                id="jurorDetailsEditTP" 
-                class="govuk-link edit-action edit-trigger" 
-                data-target="juror-details" 
-                data-ref="#thirdPartySection"
-                aria-label="Change third party details"
+                 id="jurorDetailsEditTP" 
+                 class="govuk-link edit-action edit-trigger" 
+                 data-target="juror-details" 
+                 data-ref="#thirdPartySection"
+                 aria-label="Change third party details"
               >
                 Change
               </a>
