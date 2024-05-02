@@ -50,32 +50,18 @@
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">Courts and Bureau</h1>
 
-      {{ govukTable({
-        caption: "Courts",
-        captionClasses: "govuk-visually-hidden",
-        head: [
-          {
-            classes: 'govuk-!-width-one-third'
-          }, 
-          {
-            classes: 'govuk-!-width-one-third'
-          }, 
-          {
-            classes: 'govuk-!-width-one-third'
-          }
-        ],
-        rows: [
-          [
-            {
-              text: "Jury Central Summoning Bureau"
-            },
-            {},
-            {
-              html: "<a class='govuk-link' href='#'>Bureau home</a>"
-            }
-          ]
-        ]
-      }) }}
+      <hr class="govuk-section-break govuk-section-break--visible govuk-section-break">
+
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row govuk-summary-list__row--no-actions">
+          <dt class="govuk-summary-list__key govuk-!-padding-top-2">
+            Jury Central Summoning Bureau
+          </dt>
+          <dd class="govuk-summary-list__value govuk-!-padding-top-2">
+            <a href="#" class="govuk-link">Bureau home</a>
+          </dd>
+        </div>
+      </dl>
 
       <form action="{{ filterUrl }}" method="POST" class="mod-flex mod-items-end mod-gap-x-4">
         {{ govukInput({
