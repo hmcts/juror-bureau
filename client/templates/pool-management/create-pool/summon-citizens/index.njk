@@ -9,6 +9,7 @@
 
 {% set currentApp = "Pool management" %}
 
+{% block page_title %}{{ serviceName }} - Summon citizens{% endblock %}
 {% block page_identifier %}Summon citizens{% endblock %}
 
 {% block content %}
@@ -51,7 +52,10 @@
           classes: "govuk-!-width-one-half",
           action: {
             href: changeDeferralsUrl,
-            text: "Change"
+            text: "Change",
+            attributes: {
+              "aria-label": "Change deferrals available to include in this pool"
+            }
           }
         }) }}
 
@@ -83,7 +87,10 @@
           classes: "govuk-!-width-one-half",
           action: {
             href: changeCatchmentAreaUrl,
-            text: "Change"
+            text: "Change",
+            attributes: {
+              "aria-label": "Change court catchment area"
+            }
           }
         }) }}
 

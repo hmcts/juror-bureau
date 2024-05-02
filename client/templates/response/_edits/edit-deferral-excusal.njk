@@ -23,7 +23,13 @@
           </div>
 
           <div class="govuk-radios__item">
-            <input class="govuk-radios__input" name="confirmedDate" id="changeDates" type="radio" value="Change" data-aria-controls="deferralReasonGroupConditional" {% if response.deferralReason %} checked{% endif %}>
+            <input class="govuk-radios__input" 
+                   name="confirmedDate" 
+                   id="changeDates" 
+                   type="radio" 
+                   value="Change"
+                   aria-label="Change date of jury service" 
+                   data-aria-controls="deferralReasonGroupConditional" {% if response.deferralReason %} checked{% endif %}>
             <label class="govuk-label govuk-radios__label" for="changeDates">
               I need to change the date of my jury service
             </label>

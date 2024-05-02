@@ -1,0 +1,42 @@
+{% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
+
+{% set headings = [
+  {
+    id: "jurorNumber",
+    value: "Juror number",
+    sort: sortOrder if sortBy === "jurorNumber" else "none"
+  },
+  {
+    id: "jurorName",
+    value: "Juror name",
+    sort: sortOrder if sortBy === "jurorName" else "none"
+  },
+  {
+    id: "postcode",
+    value: "Juror's postcode",
+    sort: sortOrder if sortBy === "postcode" else "none"
+  },
+  {
+    id: "poolNumber",
+    value: "Pool number",
+    sort: sortOrder if sortBy === "poolNumber" else "none"
+  },
+  {
+    id: "courtName",
+    value: "Court name",
+    sort: sortOrder if sortBy === "courtName" else "none"
+  },
+  {
+    id: "status",
+    value: "Juror status",
+    sort: sortOrder if sortBy === "status" else "none"
+  }
+] %}
+
+{{ modSortableTable({
+  id: "jurorRecordsTable",
+  caption: "Juror records",
+  head: headings,
+  rows: jurorRecords,
+  url: urlPrefix
+}) }}

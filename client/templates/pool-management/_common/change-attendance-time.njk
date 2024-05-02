@@ -6,7 +6,8 @@
 
 {% set currentApp = "Pool management" %}
 
-{% block page_identifier %}Request a Pool{% endblock %}
+{% block page_title %}{{ serviceName }} - Request a pool - Change attendance time{% endblock %}
+{% block page_identifier %}Request a pool - Change attendance time{% endblock %}
 
 {% block content %}
 
@@ -94,10 +95,15 @@
         }) }}
 
         <div class="govuk-button-group">
-          {{ govukButton({
-            text: "Change",
-            type: "submit" 
-          }) }}
+          {{ 
+            govukButton({
+              text: "Change",
+              type: "submit",
+              attributes: {
+                "aria-label": "Change the attendance time for this pool"
+              } 
+            })
+          }}
 
           <a class="govuk-link" href="{{ _cancelUrl }}">Cancel</a>
         </div>

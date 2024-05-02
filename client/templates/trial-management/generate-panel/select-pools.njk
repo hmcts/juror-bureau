@@ -4,13 +4,8 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 
-{% block page_title %}
-    {{ serviceName }} - generate a panel - select pools
-{% endblock %}
-
-{% block page_identifier %}
-    Generate a panel - select pools
-{% endblock %}
+{% block page_title %}{{ serviceName }} - Generate a panel - Select pools{% endblock %}
+{% block page_identifier %}Generate a panel - Select pools{% endblock %}
 
 {% block beforeContent %}
   {% if backLinkUrl %}

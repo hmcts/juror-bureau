@@ -4,7 +4,8 @@
     <nav class="moj-side-navigation sidebar-navigation--logs compact">
       <ul class="moj-side-navigation__list font-small">
         <li class="moj-side-navigation__item {% if response.notes.length > 1 %}info{% endif %}" data-target="notesTab" data-tabs="logTabs" data-title="Notes">
-          <a href="#notesTab">{{ "Internal notes" if hasModAccess else "Notes" }}
+          <a href="#notesTab">
+            Internal notes
             {% if (response.notes.length > 1) %}
               <span id="notesIndicator" class="jd-details-menu-indicator  jd-right-align">
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="5" r="5" fill="#1D70B8"/></svg>
@@ -14,20 +15,10 @@
         </li>
         <li class="moj-side-navigation__item {% if response.phoneLogs.length > 0 %}info{% endif %}" data-target="callLog" data-tabs="logTabs" data-title="Call log">
           <a href="#callLog">
-            {#<span class="value">{{ response.phoneLogs.length }}</span>#}
-            {{ "Contact log" if hasModAccess else "Call log" }}
+            Contact log
             <span id="callLogIndicator" class="moj-notification-badge jd-badge-blue jd-right-align">{{ response.phoneLogs.length }}</span>
           </a>
         </li>
-        {% if hasModAccess === false or hasModAccess === undefined %}
-          <li class="moj-side-navigation__item {% if response.changeLog.length > 0 %}info{% endif %}" data-target="changelogTab" data-tabs="logTabs" data-title="Change log">
-            <a href="#changelogTab">
-              {#<span class="value">{{ response.changeLog.length }}</span>#}
-              Change log
-              <span id="changeLogIndicator" class="moj-notification-badge jd-badge-blue jd-right-align">{{ response.changeLog.length }}</span>
-            </a>
-          </li>
-        {% endif %}
       </ul>
     </nav>
 

@@ -10,11 +10,8 @@
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 {% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
 
-{% block page_identifier %}Pool Overview for pool {{ poolDetails.poolNumber }}{% endblock %}
-
-{% block page_title %}
-  {{ serviceName }} - Pool overview for pool {{ poolDetails.poolNumber }}
-{% endblock %}
+{% block page_title %}{{ serviceName }} - Pool overview for pool {{ poolDetails.poolNumber }}{% endblock %}
+{% block page_identifier %}Pool overview for pool {{ poolDetails.poolNumber }}{% endblock %}
 
 {% set currentApp = "Pool management" %}
 

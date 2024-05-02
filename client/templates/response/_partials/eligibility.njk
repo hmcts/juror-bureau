@@ -16,7 +16,13 @@
 
           {% if method === "paper" and isAddChangeVisible %}
             <div class="govuk-body">
-              <a id="eligibilityEdit" class="govuk-link" href="{{ url('summons.update-eligibility.get', { id: response.jurorNumber, type: method }) }}">Add or change</a>
+              <a id="eligibilityEdit" 
+                 class="govuk-link"
+                 aria-label="Add or change eligibility" 
+                 href="{{ url('summons.update-eligibility.get', { id: response.jurorNumber, type: method }) }}"
+              >
+                Add or change
+              </a>
             </div>
           {% endif %}
         </div>
@@ -25,7 +31,14 @@
           <h2 class="govuk-heading-m">Eligibility
             {% if canEdit and responseEditEnabled %}
             <div class="edit-actions govuk-body jd-right-align">
-              <a id="eligibilityEdit" href="#" class="edit-action edit-trigger" data-target="eligibility">Change</a>
+              <a id="eligibilityEdit" 
+                 href="#" 
+                 class="edit-action edit-trigger" 
+                 data-target="eligibility"
+                aria-label="Change eligibility"
+              >
+                Change
+              </a>
             </div>
             {% endif %}
           </h2>

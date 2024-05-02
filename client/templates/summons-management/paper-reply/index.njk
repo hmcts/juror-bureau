@@ -9,11 +9,8 @@
 {% from "../../pool-management/_common/attendance-date-macro.njk" import attendanceDatepicker %}
 {% from "../../custom-components/date-picker/macro.njk" import datePicker %}
 
-{% block page_title %}
-  {{ serviceName }} - paper response - juror details
-{% endblock %}
-
-{% block page_identifier %}paper response - juror details{% endblock %}
+{% block page_title %}{{ serviceName }} - Paper response - Juror details{% endblock %}
+{% block page_identifier %}Paper response - Juror details{% endblock %}
 
 {% block content %}
 
@@ -95,11 +92,13 @@
       <h2 class="govuk-heading-m">Address</h2>
       <div class="flex mod-flex mod-gap-x-4">
         <a 
-          id="addressChangeAnchor" 
+          id="addressChangeAnchor"
+          class="govuk-link"
+          aria-label="Change address" 
           href="{{ 
             url(editAddressRoute if editAddressRoute else 'paper-reply.edit-address.get', 
               { id: details.jurorNumber, type: summonType }) }}" 
-          class="govuk-link">
+        >
           Change
         </a>
       </div>

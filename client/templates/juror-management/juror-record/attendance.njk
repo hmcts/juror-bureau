@@ -6,11 +6,8 @@
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "moj/components/banner/macro.njk" import mojBanner %}
 
-{% block page_title %}
-  {{ serviceName }} - juror record - attendance
-{% endblock %}
-
-{% block page_identifier %}juror record - attendance{% endblock %}
+{% block page_title %}{{ serviceName }} - Juror record - Attendance{% endblock %}
+{% block page_identifier %}Juror record - Attendance{% endblock %}
 
 {% set currentApp = "Juror management" %}
 
@@ -70,7 +67,10 @@
                 {
                   href: url('juror-record.attendance.change-attendance-date.get', { jurorNumber: juror.commonDetails.jurorNumber }),
                   text: "Change",
-                  visuallyHiddenText: "next due at court date"
+                  visuallyHiddenText: "next due at court date",
+                  attributes: {
+                    "aria-label": "Change next due at court date"
+                  }
                 }
               ]
             }

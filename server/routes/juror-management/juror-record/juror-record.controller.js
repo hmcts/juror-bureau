@@ -652,15 +652,20 @@
           delete req.session.errors;
           delete req.session.jurorNotes;
 
-          let backLinkUrl, actionUrl;
+          let backLinkUrl;
+          let actionUrl;
 
           if (isSummons){
-            backLinkUrl = app.namedRoutes.build('response.paper.details.get', {
-              id: req.params['jurorNumber'],
-              type: 'paper',
+            const { id, type } = req.params;
+            const responseRouteName = type === 'paper' ? 'response.paper.details.get' : 'response.detail.get';
+
+            backLinkUrl = app.namedRoutes.build(responseRouteName, {
+              id,
+              type,
             }) + '#logContent';
-            actionUrl = app.namedRoutes.build('juror-record.notes-summons-edit.post', {
-              jurorNumber: req.params['jurorNumber'],
+            actionUrl = app.namedRoutes.build('response.notes.edit.post', {
+              id,
+              type,
             });
           } else {
             backLinkUrl = app.namedRoutes.build('juror-record.notes.get', {
@@ -727,7 +732,7 @@
         app,
         req.session.authToken,
         'notes',
-        req.params['jurorNumber'],
+        req.params['jurorNumber'] || req.params.id,
       )
         .then(successCB)
         .catch(errorCB);
@@ -739,25 +744,33 @@
   // 200 code: error response because the resource has changed therefore reject the updates
   // 304 code: the resource has not changed so we move and patch the juror's notes
   // of course the promise will resolve if the code is 200 (error) or throw an exception if the code is 304 (success) 😅
-  module.exports.postEditNotes = function(app, isSummons) {
+  module.exports.postEditNotes = function(app, isSummons = false) {
     return function(req, res) {
       const { jurorNumber } = req.params;
-      let successUrl, backLinkUrl, actionUrl, formErrorUrl;
+      let successUrl;
+      let backLinkUrl;
+      let actionUrl;
+      let formErrorUrl;
 
       if (isSummons){
-        successUrl = app.namedRoutes.build('response.paper.details.get', {
-          id: req.params['jurorNumber'],
-          type: 'paper',
+        const { id, type } = req.params;
+        const responseRouteName = type === 'paper' ? 'response.paper.details.get' : 'response.detail.get';
+
+        successUrl = app.namedRoutes.build(responseRouteName, {
+          id,
+          type,
         }) + '#logContent';
-        backLinkUrl = app.namedRoutes.build('response.paper.details.get', {
-          id: req.params['jurorNumber'],
-          type: 'paper',
+        backLinkUrl = app.namedRoutes.build(responseRouteName, {
+          id,
+          type,
         }) + '#logContent';
-        actionUrl = app.namedRoutes.build('juror-record.notes-summons-edit.post', {
-          jurorNumber,
+        actionUrl = app.namedRoutes.build('response.notes.edit.post', {
+          id,
+          type,
         });
-        formErrorUrl = app.namedRoutes.build('juror-record.notes-summons-edit.get', {
-          jurorNumber,
+        formErrorUrl = app.namedRoutes.build('response.notes.edit.get', {
+          id,
+          type,
         });
       } else {
         successUrl = app.namedRoutes.build('juror-record.notes.get', {
@@ -841,7 +854,7 @@
               app,
               req.session.authToken,
               req.body,
-              req.params['jurorNumber'],
+              req.params['jurorNumber'] || req.params.id,
             )
               .then(editSuccessCB)
               .catch(errorCB);
@@ -882,7 +895,7 @@
         app,
         req.session.authToken,
         'notes',
-        req.params['jurorNumber'],
+        req.params['jurorNumber'] || req.params.id,
         req.session.authentication.owner, // TODO: Verify this?
         (typeof req.session.etag !== 'undefined') ? req.session.etag : '',
       )
@@ -893,67 +906,111 @@
 
   // logs dont need version checking because each post is a different entry on the database
   // and each entry will be added by the same user that got the contact call (i guess?)
-  module.exports.getAddLogs = function(app) {
-    return function(req, res) {
-      var tmpErrors
-        , successCB = function(response) {
-          var enquiryTypes;
+  module.exports.getAddLogs = function(app, isSummons = false) {
+    return async function(req, res) {
+      let backLinkUrl;
+      let actionUrl;
+      let errorUrl;
+      let jurorDetails;
 
-          app.logger.info('Fetched the enquiry types: ', {
+      if (isSummons) {
+        const { id, type } = req.params;
+        const responseRouteName = type === 'paper' ? 'response.paper.details.get' : 'response.detail.get';
+
+        try {
+          const jurorDetailsResponse = await jurorRecordObject.record.get(
+            require('request-promise'),
+            app,
+            req.session.authToken,
+            'detail',
+            id,
+            req.session.locCode,
+          );
+
+          jurorDetails = jurorDetailsResponse.data;
+        } catch (err) {
+          app.logger.crit('Failed to fetch juror record details: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
-              response: response,
-            },
-          });
-
-          // reduce the enquiry types array into an array that can be displayed via an html select
-          enquiryTypes = response.data.enquiryTypes.reduce(function(arr, enquiryType) {
-            return arr.concat({ value: enquiryType.enquiryCode, text: enquiryType.description });
-          }, []);
-
-          return res.render('juror-management/juror-record/contact-logs-add', {
-            backLinkUrl: {
-              url: app.namedRoutes.build('juror-record.notes.get', {
-                jurorNumber: req.params['jurorNumber'],
-              }),
-              built: true,
-            },
-            actionUrl: app.namedRoutes.build('juror-record.contact-log.post', {
-              jurorNumber: req.params['jurorNumber'],
-            }),
-            juror: req.session.jurorRecord,
-            enquiryTypes: enquiryTypes,
-            errors: {
-              title: 'Please check the form',
-              count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-              items: tmpErrors,
-            },
-          });
-        }
-        , errorCB = function(err) {
-          if (err.statusCode === 404) {
-            return res.render('juror-management/_errors/not-found');
-          }
-
-          app.logger.crit('Failed to fetch types of enquiry: ', {
-            auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: {
-              jurorNumber: req.params['jurorNumber'],
+              jurorNumber: id,
             },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
-          // redirect to the same logs tab for now
-          return res.redirect(app.namedRoutes.build('juror-record.notes.get', {
-            jurorNumber: req.params['jurorNumber'],
-          }) + '#contactLogTab');
-        };
+          return res.render('_errors/generic');
+        }
 
-      tmpErrors = _.clone(req.session.errors);
-      delete req.session.errors;
-      delete req.session.formFields;
+        backLinkUrl = {
+          url: app.namedRoutes.build(responseRouteName, { id, type }) + '#logContent',
+          built: true,
+        };
+        actionUrl = app.namedRoutes.build('response.contact-logs.add.post', { id, type }) + '#logContent';
+        errorUrl = app.namedRoutes.build('response.contact-logs.add.get', { id, type });
+      } else {
+        backLinkUrl = {
+          url: app.namedRoutes.build('juror-record.notes.get', {
+            jurorNumber: req.params['jurorNumber'],
+          }),
+          built: true,
+        };
+        actionUrl = app.namedRoutes.build('juror-record.contact-log.post', {
+          jurorNumber: req.params['jurorNumber'],
+        });
+        errorUrl = app.namedRoutes.build('juror-record.contact-log.get', {
+          jurorNumber: req.params['jurorNumber'],
+        });
+
+        jurorDetails = req.session.jurorRecord;
+      };
+
+      const successCB = async function(response) {
+        app.logger.info('Fetched the enquiry types: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            response: response,
+          },
+        });
+
+        const tmpErrors = _.clone(req.session.errors);
+
+        delete req.session.errors;
+        delete req.session.formFields;
+
+        // reduce the enquiry types array into an array that can be displayed via an html select
+        const enquiryTypes = response.data.enquiryTypes.reduce(function(arr, enquiryType) {
+          return arr.concat({ value: enquiryType.enquiryCode, text: enquiryType.description });
+        }, []);
+
+        return res.render('juror-management/juror-record/contact-logs-add', {
+          backLinkUrl,
+          actionUrl,
+          juror: jurorDetails,
+          enquiryTypes,
+          errors: {
+            title: 'Please check the form',
+            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+            items: tmpErrors,
+          },
+        });
+      };
+
+      const errorCB = function(err) {
+        if (err.statusCode === 404) {
+          return res.render('juror-management/_errors/not-found');
+        }
+
+        app.logger.crit('Failed to fetch types of enquiry: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            jurorNumber: req.params['jurorNumber'],
+          },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic');
+      };
 
       // on this case we can use the same request object but without the juror-number
       // ... we still need the juror-number though but because the api endpoint still needs the extra url part
@@ -969,40 +1026,52 @@
     };
   };
 
-  module.exports.postAddLogs = function(app) {
+  module.exports.postAddLogs = function(app, isSummons = false) {
     return function(req, res) {
-      var tmpBody = _.clone(req.body)
-        , successCB = function() {
+      const tmpBody = _.clone(req.body);
+      let successUrl;
+      let errorUrl;
 
-          app.logger.info('Posted a new contact log: ', {
-            auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: {
-              body: tmpBody,
-            },
-          });
+      if (isSummons) {
+        const { id, type } = req.params;
+        const responseRouteName = type === 'paper' ? 'response.paper.details.get' : 'response.detail.get';
 
-          return res.redirect(app.namedRoutes.build('juror-record.notes.get', {
+        successUrl = app.namedRoutes.build(responseRouteName, { id, type }) + '#logContent';
+        errorUrl = app.namedRoutes.build('response.contact-logs.add.get', { id, type });
+      } else {
+        successUrl = app.namedRoutes.build('juror-record.notes.get', {
+          jurorNumber: req.params['jurorNumber'],
+        }) + '#contactLogTab';
+        errorUrl = app.namedRoutes.build('juror-record.contact-log.get', {
+          jurorNumber: req.params['jurorNumber'],
+        });
+      }
+
+      const successCB = function() {
+        app.logger.info('Posted a new contact log: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            body: tmpBody,
+          },
+        });
+
+        return res.redirect(successUrl);
+      };
+
+      const errorCB = function(err) {
+        app.logger.crit('Failed to add a new contact log: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
             jurorNumber: req.params['jurorNumber'],
-          }) + '#contactLogTab');
-        }
-        , errorCB = function(err) {
+            data: req.body,
+          },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
 
-          app.logger.crit('Failed to add a new contact log: ', {
-            auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: {
-              jurorNumber: req.params['jurorNumber'],
-              data: req.body,
-            },
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
-
-          // redirect to the same logs tab for now
-          return res.redirect(app.namedRoutes.build('juror-record.notes.get', {
-            jurorNumber: req.params['jurorNumber'],
-          }) + '#contactLogTab');
-        };
+        return res.redirect(errorUrl);
+      };
 
       const validator = require('../../../config/validation/juror-record');
       const validatorResult = validate(req.body, validator.contactLog());
@@ -1011,9 +1080,7 @@
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
 
-        return res.redirect(app.namedRoutes.build('juror-record.contact-log.get', {
-          jurorNumber: req.params['jurorNumber'],
-        }));
+        return res.redirect(errorUrl);
       }
 
       tmpBody.startCall = dateFilter(new Date(), null, 'YYYY-MM-DD HH:mm:ss');

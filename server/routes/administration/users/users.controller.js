@@ -11,7 +11,7 @@
     transformCourtName,
     mapAdminToPoolRequestCourts,
   } = require('../../../lib/mod-utils');
-  const { capitalizeFully } = require('../../../components/filters');
+  const { capitalizeFully, dateFilter } = require('../../../components/filters');
   const {
     isBureauManager,
     isCourtManager,
@@ -402,15 +402,9 @@
           {
             html: `<a href="${app.namedRoutes.build('administration.users.details.get', {username: user.username})}" 
             class="govuk-link">${user.name}</a>`,
-            attributes: {
-              'data-sort-value': user.name,
-            },
           },
           {
             html: `<a href="#" class="govuk-link">${user.email}</a>`,
-            attributes: {
-              'data-sort-value': user.email,
-            },
           },
         );
 
@@ -418,15 +412,9 @@
           item.push(
             {
               text: capitalizeFully(user.userType),
-              attributes: {
-                'data-sort-value': user.userType,
-              },
             },
             {
               html: courts.length ? courts.join('') : '<p class="govuk-body govuk-!-margin-bottom-0">-</p>',
-              attributes: {
-                'data-sort-value': courts.length ? courts : '-',
-              },
             },
           );
         }
@@ -435,18 +423,12 @@
           item.push(
             {
               text: user.roles.includes('MANAGER') ? 'Yes' : 'No',
-              attributes: {
-                'data-sort-value': user.roles.includes('MANAGER') ? 'Yes' : 'No',
-              },
             },
           );
           if (isCourtManager(req, res)) {
             item.push(
               {
                 text: user.roles.includes('SENIOR_JUROR_OFFICER') ? 'Yes' : 'No',
-                attributes: {
-                  'data-sort-value': user.roles.includes('SENIOR_JUROR_OFFICER') ? 'Yes' : 'No',
-                },
               },
             );
           }
@@ -454,16 +436,10 @@
 
         item.push(
           {
-            text: user.lastSignIn || '-',
-            attributes: {
-              'data-sort-value': user.lastSignIn || '-',
-            },
+            text: user.lastSignIn ? dateFilter(user.lastSignIn, 'yyyy-MM-dd', 'D MMM YYYY') : '-',
           },
           {
             text: user.isActive ? 'Active' : 'Inactive',
-            attributes: {
-              'data-sort-value': user.isActive,
-            },
           },
         );
 
