@@ -67,6 +67,10 @@
             submitUrl,
             enterExpensesUrl,
             bankDetailsUrl,
+            previewUrl: app.namedRoutes.build('reports.draft-audit.post', {
+              jurorNumber: req.params.jurorNumber,
+              locCode: req.params.locCode,
+            }),
             nav: 'unpaid-attendance',
             status,
             jurorStatus: jurorOverview.commonDetails.jurorStatus,

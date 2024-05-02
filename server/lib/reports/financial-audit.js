@@ -6,7 +6,8 @@
 
   const addressOrder = ['lineOne', 'lineTwo', 'lineThree', 'town', 'county', 'postcode'];
 
-  const toMoney = (value) => `£${value.toFixed(2)}`;
+  const toMoney = (value) => `£${(value || 0).toFixed(2)}`;
+  const makeName = (name) => `${name.title ? `${name.title} ` : ""}${name.firstName} ${name.lastName}`
 
   const auditTypeMap = {
     FOR_APPROVAL: 'Attendance audit report',
@@ -47,17 +48,19 @@
             text: [
               { text: jurorDetails.jurorNumber, bold: true },
               { text: ' ' },
-              { text: `${jurorDetails.name.title} ${jurorDetails.name.firstName} ${jurorDetails.name.lastName}` },
+              { text: makeName(jurorDetails.name) },
             ],
             fontSize: 14,
             marginLeft: 0,
           },
           {
-            text: `${
-              dateFilter(dateFrom.attendanceDate, '', 'dddd DD MMMM YYYY')
-            } to ${
-              dateFilter(dateTo.attendanceDate, '', 'dddd DD MMMM YYYY')
-            }`,
+            text: dateFrom === dateTo
+              ? `${dateFilter(dateFrom.attendanceDate, '', 'dddd DD MMMM YYYY')}`
+              : `${
+                  dateFilter(dateFrom.attendanceDate, '', 'dddd DD MMMM YYYY')
+                } to ${
+                  dateFilter(dateTo.attendanceDate, '', 'dddd DD MMMM YYYY')
+                }`,
             alignment: 'right',
             bold: true,
             fontSize: 14,
@@ -75,7 +78,7 @@
       { text: draft ? ' - Draft - ' : ' - ' },
       { text: jurorDetails.jurorNumber, bold: true },
       { text: ' ' },
-      { text: `${jurorDetails.name.title} ${jurorDetails.name.firstName} ${jurorDetails.name.lastName}` },
+      { text: makeName(jurorDetails.name) },
     ],
     fontSize: 14,
     marginLeft: 0,
@@ -112,28 +115,53 @@
     }, []).join(', ');
 
     let centre = [];
-    let left = [];
+    let left = [
+      {key: 'Juror\'s address', value: addressOrder.map(key => jurorDetails.address[key] ? `${jurorDetails.address[key]}\n` : '')},
+    ];
+    if (jurorDetails.paymentDetails.sortCode) {
+      left.push({key: 'Sort code', value: jurorDetails.paymentDetails.sortCode?.match(/../g).join('-') || ""})
+    }
+    if (jurorDetails.paymentDetails.bankAccountNumber) {
+      left.push({key: 'Account number', value: jurorDetails.paymentDetails.bankAccountNumber})
+    }
+    if (jurorDetails.paymentDetails.bankAccountName) {
+      left.push({key: 'Account holder\'s name', value: jurorDetails.paymentDetails.bankAccountName})
+    }
+    if (method) {
+      left.push({key: 'Method of payment', value: method})
+    }
 
     if (originalJurorDetails) {
+      const ogMethod = auditData.expenses.expenseDetails.reduce((prev, curr) => {
+        if (prev.includes(curr.original.paymentMethod)) {
+          return prev;
+        }
+  
+        return [...prev, curr.original.paymentMethod];
+      }, []).join(', ');
+  
       centre = [
         {heading: 'Original details'},
         {key: 'Juror\'s address', value: addressOrder.map(key => originalJurorDetails.address[key] ? `${originalJurorDetails.address[key]}\n` : '')},
-        {key: 'Sort code', value: originalJurorDetails.paymentDetails.sortCode.match(/../g).join('-')},
-        {key: 'Account number', value: originalJurorDetails.paymentDetails.bankAccountNumber},
-        {key: 'Account holder\'s name', value: originalJurorDetails.paymentDetails.bankAccountName},
-        {key: 'Method of payment', value: method},
       ]
-      left = [{heading: 'New details'}]
+      if (originalJurorDetails.paymentDetails.sortCode) {
+        centre.push({key: 'Sort code', value: originalJurorDetails.paymentDetails.sortCode?.match(/../g)?.join('-') || ""})
+      }
+      if (originalJurorDetails.paymentDetails.bankAccountNumber) {
+        centre.push({key: 'Account number', value: originalJurorDetails.paymentDetails.bankAccountNumber})
+      }
+      if (originalJurorDetails.paymentDetails.bankAccountName) {
+        centre.push({key: 'Account holder\'s name', value: originalJurorDetails.paymentDetails.bankAccountName})
+      }
+      if (ogMethod) {
+        centre.push({key: 'Method of payment', value: ogMethod})
+      }
+      left.unshift({heading: 'New details'})
     }
 
     return {
       left: [
         ...left,
-        {key: 'Juror\'s address', value: addressOrder.map(key => jurorDetails.address[key] ? `${jurorDetails.address[key]}\n` : '')},
-        {key: 'Sort code', value: jurorDetails.paymentDetails.sortCode.match(/../g).join('-')},
-        {key: 'Account number', value: jurorDetails.paymentDetails.bankAccountNumber},
-        {key: 'Account holder\'s name', value: jurorDetails.paymentDetails.bankAccountName},
-        {key: 'Method of payment', value: method},
       ],
       centre: centre,
       right: right,
@@ -245,7 +273,7 @@
               text: 'Mileage',
             },
             {
-              text: `${+auditData.jurorDetails.mileage} mile${+auditData.jurorDetails.mileage !== 1 ? 's' : ''}`,
+              text: `${auditData.jurorDetails.mileage || 0} mile${+auditData.jurorDetails.mileage !== 1 ? 's' : ''}`,
             }
           ]]
         }
@@ -300,6 +328,9 @@
               { 
                 style: 'label',
                 text: 'Juror signature',
+                layout: {
+                  hLineColor: '#FFFFFF',
+                }
               },
               {
                 text: '',
@@ -320,7 +351,7 @@
       })
     }
 
-    if (auditData.expenses.total.totalPaid !== 0 && auditData.expenses.total.totalOutstanding !== 0) {
+    if (auditData.auditType === 'REAPPROVED_EDIT') {
       coreContent.push({
         raw: true,
         fontSize: 10,
