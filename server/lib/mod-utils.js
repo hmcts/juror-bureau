@@ -145,7 +145,7 @@
           },
       });
     }
-    const queryStatus = (tab === 'bureau') ?'responded' : 'responded,panel,juror';
+    const queryStatus = tab === 'bureau' ?'responded' : 'responded,panel,juror';
 
     // prepare the table rows
     pools.forEach(function(pool) {

@@ -93,8 +93,7 @@ const filters = require('../../../components/filters');
               .replace(/ /g, '_').split(',') || null,
             'checked_in': req.query.checkedIn || null,
             'next_due': req.query.nextDue?.split(',') || null,
-          // 'status': !status || status ==='All' ? null : status?.split(',').map(state => state[0].toUpperCase() + state.slice(1)) || null,
-           'status': queryStatus?.split(',').map(status => status[0].toUpperCase() + status.slice(1)) || null,           
+            'status': queryStatus?.split(',').map(status => status[0].toUpperCase() + status.slice(1)) || null,           
             'page_number': req.query.page || 1,
             'sort_field': req.query.sortBy || 'juror_number',
             'sort_method': req.query.sortOrder || 'ascending',
@@ -394,8 +393,6 @@ const filters = require('../../../components/filters');
 
     const filters = req.query;
 
-    console.log("filters123", filters);
-
     if (typeof filters !== 'undefined' && (typeof filters.status !== 'undefined' || filters.status !== 'All' )) {      
         courtJurorStatuses = filters.status;      
     } else
@@ -626,8 +623,6 @@ const filters = require('../../../components/filters');
 
     const specifiedStatuses = ['responded', 'panel', 'juror'];
     const filters = req.query;
-
-    console.log("filters", filters);
 
     if (typeof filters !== 'undefined' && typeof filters.status !== 'undefined') {
       if (specifiedStatuses.every(i => filters.status.includes(i)) && filters.status.split(',').length === 3) {
