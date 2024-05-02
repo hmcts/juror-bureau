@@ -135,7 +135,6 @@ function doLogin(req) {
     req.session.authToken = jwtResponse.jwt;
     req.session.hasModAccess = true; // legacy purposes
 
-    // courts list will not be available for admin users selecting a court
     if (req.session.authentication && req.session.authentication.activeUserType === 'ADMINISTRATOR') {
       const courtsResponse = await axiosClient('get', `/moj/administration/courts/${locCode}`, req.session.authToken);
 
@@ -144,9 +143,9 @@ function doLogin(req) {
         'loc_code': courtsResponse.court_code,
       };
     } else {
-      // there will always be a court selected here
       req.session.selectedCourt = req.session.courtsList.find(court => court.loc_code === locCode);
     }
+
     req.session.authentication = jwt.decode(req.session.authToken);
 
     // delete unwanted cached on successful login
@@ -167,7 +166,7 @@ async function loginSingleCourt(req, res, { app, courtsList, body }) {
   try {
     await doLogin(req)(app, locCode, body);
   } catch (err) {
-    app.logger.crit('Failed to login straight through', {
+    app.logger.crit('Failed to login straight through on a single court', {
       data: { body, courtsList, locCode },
       error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
     });
