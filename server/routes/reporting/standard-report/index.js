@@ -51,6 +51,7 @@
     standardReportRoutes(app, 'pool-status');
     standardReportRoutes(app, 'panel-summary');
     standardReportRoutes(app, 'bulk-print-audit');
+    standardReportRoutes(app, 'panel-detail');
   };
 
 })();
