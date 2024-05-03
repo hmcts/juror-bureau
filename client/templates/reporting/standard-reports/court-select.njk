@@ -25,7 +25,8 @@
       <form action="{{ filterUrl }}" method="POST" class="mod-flex mod-items-end mod-gap-x-2" id="filterCourtsForm">
         {{ govukInput({
           label: {
-            text: "Filter by court name or location code"
+            text: "Filter by court name or location code",
+            for: "courtSearch"
           },
           classes: "govuk-input govuk-input--width-20",
           id: "courtSearch",
