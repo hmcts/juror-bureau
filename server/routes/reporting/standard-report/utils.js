@@ -5,7 +5,7 @@ const tableDataMappers = {
   String: (data) => isNaN(data) ? capitalizeFully(data) : data.toString(),
   LocalDate: (data) => data ? dateFilter(data, 'YYYY-mm-dd', 'ddd D MMM YYYY') : '-',
   List: (data) => {
-    if (data){
+    if (data) {
       if (Object.keys(data)[0] === 'jurorAddressLine1'){
         return Object.values(data).reduce(
           (acc, current) => {
@@ -27,7 +27,7 @@ const tableDataMappers = {
   Long: (data) => data.toString(),
 };
 
-const headingDataMappers ={
+const headingDataMappers = {
   String: (data) => capitalizeFully(data),
   LocalDate: (data) => dateFilter(data, 'YYYY-mm-dd', 'dddd D MMMM YYYY'),
   timeFromISO: (data) => {
