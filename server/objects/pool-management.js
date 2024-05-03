@@ -66,7 +66,7 @@
 
     , reassignJurors = {
       availablePools: {
-        get: availablePools.bind({ resource: 'moj/manage-pool/available-pools/{}' }),
+        get: availablePools.bind({ resource: 'moj/manage-pool/available-pools/{}?is-reassign=true' }),
       },
       availableCourtOwnedPools: {
         get: availablePools.bind({ resource: 'moj/manage-pool/available-pools-court-owned/{}' }),
