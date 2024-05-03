@@ -1,9 +1,22 @@
 /* eslint-disable strict */
 
 const controller = require('./authentication.controller');
+const azureController = require('./azure.controller');
 const { isSystemAdministrator } = require('../../components/auth/user-type');
 
 module.exports = function(app) {
+
+  app.get('/auth/internal/azure',
+    'authentication.azure.get',
+    azureController.getAzureAuth(app));
+
+  app.get('/auth/internal/callback',
+    'authentication.azure.callback',
+    azureController.getAzureCallback(app));
+
+  app.get('/auth/internal/logout',
+    'authentication.logout.get',
+    azureController.getAzureLogout(app));
 
   app.get('/auth/courts-list',
     'authentication.courts-list.get',

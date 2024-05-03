@@ -93,7 +93,7 @@
                   </span>
                 </li>
                 <li class="moj-header__navigation-item moj-header__navigation-item--without-children">
-                  <a class="moj-header__navigation-link" href="{{ url('login.get') }}">Sign out</a>
+                  <a class="moj-header__navigation-link" href="{{ url('login.get') if env === 'development' else url('authentication.logout.get') }}">Sign out</a>
                 </li>
               </ul>
             {% endif %}
