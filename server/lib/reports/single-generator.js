@@ -58,10 +58,9 @@
   };
 
   const documentMetadata = (metadata) => {
-    const width = metadata.centre ? '33%' : '50%';
+    const width = (metadata.centre?.length > 0) ? '33%' : '50%';
 
     const _column = (content) => {
-      console.log(content);
       if (!content) {
         return undefined;
       } else if (content.length === 0) {
@@ -112,7 +111,7 @@
         _column(metadata.left),
         _column(metadata.centre),
         _column(metadata.right),
-      ],
+      ].filter(i => i),
     };
   };
 

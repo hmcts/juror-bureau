@@ -102,7 +102,6 @@ const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../object
     };
 
     delete req.session.draftExpense;
-    console.log(audit)
 
     const document = await generateDocument(render(audit), {pageOrientation: 'landscape'});
 
@@ -149,10 +148,6 @@ const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../object
         expenseDates,
       ));
 
-      console.log(expenseDates)
-      console.log(editedExpenses)
-      console.log(originalExpenses.expenseDetails)
-
       const expenseDetails = expenseDates.map(date => {
         const original = originalExpenses.expenseDetails.find(item => item.attendanceDate === date);
 
@@ -166,11 +161,8 @@ const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../object
         return original;
       });
 
-      console.log(expenseDetails);
-
       return makePreviewAudit(app, req, res, expenseDetails);
     } catch (err) {
-      console.log(err);
       app.logger.crit('Failed to render draft financial audit', {
         auth: req.session.authentication,
         token: req.session.authToken,
@@ -225,7 +217,6 @@ const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../object
 
       return makePreviewAudit(app, req, res, filteredExpenses);
     } catch (err) {
-      console.log(err);
       app.logger.crit('Failed to render draft financial audit', {
         auth: req.session.authentication,
         token: req.session.authToken,
