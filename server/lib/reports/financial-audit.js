@@ -351,7 +351,10 @@
       })
     }
 
-    if (auditData.auditType === 'REAPPROVED_EDIT') {
+    if (auditData.auditType === 'REAPPROVED_EDIT'
+      || auditData.auditType === 'REAPPROVED_CASH'
+      || auditData.auditType === 'REAPPROVED_BACS'
+    ) {
       coreContent.push({
         raw: true,
         fontSize: 10,
