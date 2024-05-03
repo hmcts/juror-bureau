@@ -17,8 +17,8 @@ const tableDataMappers = {
 
       Object.keys(data).forEach((element, index) => {
         listText = listText
-        + `${toSentenceCase(element)}: ${data[element]}`
-        + `${index === Object.keys(data).length - 1 ? '' : ', '}`;
+          + `${toSentenceCase(element)}: ${data[element]}`
+          + `${index === Object.keys(data).length - 1 ? '' : ', '}`;
       });
       return listText;
     }
@@ -27,7 +27,7 @@ const tableDataMappers = {
   Long: (data) => data.toString(),
 };
 
-const headingDataMappers ={
+const headingDataMappers = {
   String: (data) => capitalizeFully(data),
   LocalDate: (data) => dateFilter(data, 'YYYY-mm-dd', 'dddd D MMMM YYYY'),
   timeFromISO: (data) => {
