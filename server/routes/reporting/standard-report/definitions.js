@@ -145,6 +145,31 @@
           'judge',
         ],
       },
+      'bulk-print-audit': {
+        title: 'Bulk-print audit report',
+        apiKey: 'AbaccusReport',
+        search: 'dateRange',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+        ],
+      },
+      'panel-detail': {
+        title: 'Panel list (Detail)',
+        apiKey: 'PanelListDetailedReport',
+        search: 'trial',
+        headings: [
+          'trialNumber',
+          'reportDate',
+          'names',
+          'reportTime',
+          'courtRoom',
+          'courtName',
+          'judge',
+        ],
+      },
     };
   };
 })();

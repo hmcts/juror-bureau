@@ -9,7 +9,13 @@
 
           {% if method === "paper" and isAddChangeVisible %}
             <div class="govuk-body">
-              <a id="cjsEmploymentEdit" class="govuk-link" href="{{ url('summons.update-employment.get', { id: response.jurorNumber, type: method }) }}">Add or change</a>
+              <a id="cjsEmploymentEdit" 
+                 class="govuk-link"
+                 aria-label="Add or change CJS employment" 
+                 href="{{ url('summons.update-employment.get', { id: response.jurorNumber, type: method }) }}"
+              >
+                Add or change
+              </a>
             </div>
           {% endif %}
         </div>
@@ -18,7 +24,14 @@
           <h2 class="govuk-heading-m">CJS employment
             {% if canEdit and responseEditEnabled %}
             <div class="edit-actions govuk-body jd-right-align">
-              <a id="cjsEmploymentEdit" href="#" class="edit-action edit-trigger" data-target="cjs-employment">Change</a>
+              <a id="cjsEmploymentEdit" 
+                 href="#" 
+                 class="edit-action edit-trigger" 
+                 data-target="cjs-employment"
+                 aria-label="Change CJS employment"
+              >
+                Change
+              </a>
             </div>
             {% endif %}
           </h2>
@@ -29,48 +42,41 @@
   </div>
 
   <div class="show-details-container" id="view-cjs-employment">
-
-    <table class="govuk-table table-summary cjs-employment" summary="Are you a CJS Employee">
-      <caption class="govuk-table__caption govuk-visually-hidden">CJS employment details</caption>
-
-      <tbody class="govuk-table__body">
-        <tr class="{% if response.cjsEmployer.length > 0 %}info{% endif %}">
-          <th class="govuk-table__header jd-details-cjs-employment-head-width ">{{ "Worked in CJS in last 5 years?" if hasModAccess else "CJS employment" }}</th>
-          <td class="govuk-table__cell" id="cjsEmploymentDetails">
-            {% if isDeceased or response.cjsEmployments.length === 0 or response.cjsEmployments === null %}
-              N/A
-            {% else %}
-
-              <div class="jd-label-blue">Attention</div>
-
-              <ul class="govuk-list govuk-list--bullet">
-                {% for i in range(0, response.cjsEmployments.length) %}
-                  {% if method === "paper" %}
-                    <li>
-                      <div>{{ response.cjsEmployments[i].cjsEmployer }}</div>
-                      {{ response.cjsEmployments[i].cjsEmployerDetails }}
-                      {% if i !== 0 %}<br>{% endif %}
-                    </li>
-                  {% else %}
-                    <li>
-                      <div class="jd-label-black">{{- response.cjsEmployments[i].employer -}}</div>
-
-                      {% if response.cjsEmployments[i].employer !== 'National Crime Agency' and response.cjsEmployments[i].employer !== 'HMCTS' and response.cjsEmployments[i].employer !== 'Judiciary' %}
-                        {{- response.cjsEmployments[i].details -}}
-                      {% endif %}
-                      {% if i !== 0 %}<br><br/>{% endif %}
-                    </li>
-                  {% endif %}
-                {% endfor %}
-              </ul>
-
-            {% endif %}
-          </td>
-        </tr>
-      </tbody>
-
-    </table>
-
+    <dl class="govuk-summary-list cjs-employment">
+      <div class="govuk-summary-list__row {% if response.cjsEmployer.length > 0 %}info{% endif %}">
+        <dt class="govuk-summary-list__key jd-details-cjs-employment-head-width">
+          {{ "Worked in CJS in last 5 years?" if hasModAccess else "CJS employment" }}
+        </dt>
+        <dd class="govuk-summary-list__value" id="cjsEmploymentDetails">
+          {% if isDeceased or response.cjsEmployments.length === 0 or response.cjsEmployments === null %}
+            N/A
+          {% else %}
+            <div class="jd-label-blue">Attention</div>
+            <ul class="govuk-list govuk-list--bullet">
+              {% for i in range(0, response.cjsEmployments.length) %}
+                {% if method === "paper" %}
+                  <li>
+                    <div>{{ response.cjsEmployments[i].cjsEmployer }}</div>
+                    {{ response.cjsEmployments[i].cjsEmployerDetails }}
+                    {% if i !== 0 %}<br>{% endif %}
+                  </li>
+                {% else %}
+                  <li>
+                    <div class="jd-label-black">{{- response.cjsEmployments[i].employer -}}</div>
+                    {% if response.cjsEmployments[i].employer !== 'National Crime Agency' and response.cjsEmployments[i].employer !== 'HMCTS' and response.cjsEmployments[i].employer !== 'Judiciary' %}
+                      {{- response.cjsEmployments[i].details -}}
+                    {% endif %}
+                    {% if i !== 0 %}
+                      <br><br/>
+                    {% endif %}
+                  </li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </dd>
+      </div>
+    </dl>
   </div>
 
   <div class="edit-section" id="edit-cjs-employment">

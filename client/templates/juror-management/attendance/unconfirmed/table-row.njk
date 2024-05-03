@@ -55,7 +55,13 @@
     {% if row.checkInTime === "Fail" or row.checkOutTime === "Fail" %}
       -
     {% else %}
-      <a href="{{ url('juror-management.attendance.change-times.get', { jurorNumber: row.jurorNumber }) }}" class="govuk-link" id="{{ row.jurorNumber }}-changeLink">Change</a>
+      <a href="{{ url('juror-management.attendance.change-times.get', { jurorNumber: row.jurorNumber }) }}" 
+         class="govuk-link" 
+         id="{{ row.jurorNumber }}-changeLink"
+         aria-label="Change juror {{ row.jurorNumber }} attendance times"
+      >
+        Change
+      </a>
     {% endif %}
   </td>
 </tr>

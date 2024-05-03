@@ -92,11 +92,13 @@
       <h2 class="govuk-heading-m">Address</h2>
       <div class="flex mod-flex mod-gap-x-4">
         <a 
-          id="addressChangeAnchor" 
+          id="addressChangeAnchor"
+          class="govuk-link"
+          aria-label="Change address" 
           href="{{ 
             url(editAddressRoute if editAddressRoute else 'paper-reply.edit-address.get', 
               { id: details.jurorNumber, type: summonType }) }}" 
-          class="govuk-link">
+        >
           Change
         </a>
       </div>
@@ -117,6 +119,7 @@
               text: "Date of birth",
               classes: "govuk-body govuk-!-font-weight-bold"
           },
+          hint: "Use dd/mm/yyyy format. For example, 31/01/1980.",
           dateValue: details.dateOfBirth,
           dateMax: dateMax,
           dateError: dateOfBirthError.text

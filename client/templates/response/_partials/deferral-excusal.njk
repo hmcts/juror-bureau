@@ -9,7 +9,13 @@
 
           {% if method === "paper" and isAddChangeVisible %}
             <div class="govuk-body">
-              <a id="deferralExcusalEdit" class="govuk-link" href="{{ url('summons.update-reply-type.get', { id: response.jurorNumber, type: method }) }}">Add or change</a>
+              <a id="deferralExcusalEdit" 
+                 class="govuk-link"
+                 aria-label="Add or change deferral or excusal" 
+                 href="{{ url('summons.update-reply-type.get', { id: response.jurorNumber, type: method }) }}"
+              >
+                Add or change
+              </a>
             </div>
           {% endif %}
         </div>
@@ -18,7 +24,14 @@
           <h2 class="govuk-heading-m">Deferral or excusal
             {% if canEdit and responseEditEnabled %}
             <div class="edit-actions govuk-body jd-right-align">
-              <a id="deferralExcusalCancel" href="#" class="edit-action edit-trigger" data-target="deferral-excusal">Change</a>
+              <a id="deferralExcusalCancel" 
+                 href="#" 
+                 class="edit-action edit-trigger" 
+                 data-target="deferral-excusal"
+                 aria-label="Change deferral or excusal"
+              >
+                Change
+              </a>
             </div>
             {% endif %}
           </h2>
@@ -29,90 +42,94 @@
   </div>
 
   <div class="show-details-container" id="view-deferral-excusal">
+    <dl class="govuk-summary-list deferral-excusal">
+      {% if method === "paper" %}
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key jd-details-deferral-excusal-head-width">
+            Deferral or excusal
+          </dt>
+          <dd class="govuk-summary-list__value" id="deferralOrExcusal">
+            {% if response.deferral === true %}
+              <div class="jd-label-blue">Attention<div>
+              <div class="jd-label-black govuk-!-font-weight-regular">Deferral request<div>
+            {% elif response.excusal === true %}
+              <div class="jd-label-blue">Attention<div>
+              <div class="jd-label-black govuk-!-font-weight-regular">Excusal request</div>
+            {% else %}
+              None requested
+            {% endif %}
+          </dd>
+        </div>
+      {% else %}
+        {% if isDeceased %}
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key jd-details-deferral-excusal-head-width">
+              Deferral or excusal
+            </dt>
+            <dd class="govuk-summary-list__value" id="deferralOrExcusal">
+              N/A
+            </dd>
+          </div>
+        {% elif response.excusalReason %}
+          <div class="govuk-summary-list__row info">
+            <dt class="govuk-summary-list__key jd-details-deferral-excusal-head-width">
+              Deferral or excusal
+            </dt>
+            <dd class="govuk-summary-list__value" id="deferralOrExcusal">
+              <div class="jd-label-blue">Attention<div>
+              <div class="jd-label-black">Excusal request</div>
+              {{ response.excusalReason }}
+            </dd>
+          </div>
+        {% elif response.deferralReason %}
+          <div class="govuk-summary-list__row info">
+            <dt class="govuk-summary-list__key jd-details-deferral-excusal-head-width">
+              Deferral or excusal
+            </dt>
+            <dd class="govuk-summary-list__value govuk-body" id="deferralOrExcusal">
+              <div class="jd-label-blue">Attention<div>
+              <div class="jd-label-black">Deferral request<div>
+              <div class="govuk-body">{{ response.deferralReason }}<div>
+            </dd>
+          </div>
 
-    <table class="govuk-table table-summary deferral-excusal" summary="Type of reply">
-      <caption class="govuk-table__caption govuk-visually-hidden">Deferral or exclusal information</caption>
+          {% if response.deferralDate %}
+            <div class="govuk-summary-list__row info">
+              <dt class="govuk-summary-list__key jd-details-deferral-excusal-head-width">
+                Available dates
+              </dt>
+              <dd class="govuk-summary-list__value govuk-body" id="deferralDates">
+                {% for date in response.deferralDate.split(',') %}
+                  {% if loop.index == 1 %}
+                    {% set dateLabel = "First choice" %}
+                  {% elif loop.index == 2 %}
+                    {% set dateLabel = "Second choice" %}
+                  {% elif loop.index == 3 %}
+                    {% set dateLabel = "Third choice" %}
+                  {% else %}
+                    {% set dateLabel %}
+                      Date {{loop.index}}
+                    {% endset %}
+                  {% endif %}
 
-      <tbody class="govuk-table__body">
-
-        {% if method === "paper" %}
-          <tr class="govuk-table__row">
-            <th class="govuk-table__header jd-details-deferral-excusal-head-width">Deferral or excusal</th>
-            <td class="govuk-table__cell" id="deferralOrExcusal">
-              {% if response.deferral === true %}
-                <div class="jd-label-blue">Attention<div>
-                <div class="jd-label-black govuk-!-font-weight-regular">Deferral request<div>
-              {% elif response.excusal === true %}
-                <div class="jd-label-blue">Attention<div>
-                <div class="jd-label-black govuk-!-font-weight-regular">Excusal request</div>
-              {% else %}
-                None requested
-              {% endif %}
-            </td>
-          </tr>
+                  <strong class="bold-small title">{{ dateLabel }}</strong><br />
+                  <div id="date{{loop.index}}" class="date">{{ date }}</div>
+                {% endfor %}
+              </dd>
+            </div>
+          {% endif %}
         {% else %}
-
-          {% if isDeceased %}
-            <tr class="govuk-table__row">
-              <th class="govuk-table__header jd-details-deferral-excusal-head-width">Deferral or excusal</th>
-              <td class="govuk-table__cell" id="deferralOrExcusal">N/A</td>
-            </tr>
-
-          {% elif response.excusalReason %}
-            <tr class="govuk-table__row info">
-              <th class="govuk-table__header jd-details-deferral-excusal-head-width">Deferral or excusal</th>
-              <td class="govuk-table__cell" id="deferralOrExcusal">
-                <div class="jd-label-blue">Attention<div>
-                <div class="jd-label-black">Excusal request</div>
-                {{ response.excusalReason }}
-              </td>
-            </tr>
-
-          {% elif response.deferralReason %}
-            <tr class="govuk-table__row info">
-              <th class="govuk-table__header jd-details-deferral-excusal-head-width">Deferral or excusal</th>
-              <td class="govuk-table__cell govuk-body" id="deferralOrExcusal">
-                <div class="jd-label-blue">Attention<div>
-                <div class="jd-label-black">Deferral request<div>
-                <div class="govuk-body">{{ response.deferralReason }}<div>
-              </td>
-            </tr>
-
-            <tr class="info">
-            {% if response.deferralDate %}
-              <th class="govuk-table__header">Available dates</th>
-              <td id="deferralDates" class="govuk-table__cell">
-
-              {% for date in response.deferralDate.split(',') %}
-                {% if loop.index == 1 %}
-                  {% set dateLabel = "First choice" %}
-                {% elif loop.index == 2 %}
-                  {% set dateLabel = "Second choice" %}
-                {% elif loop.index == 3 %}
-                  {% set dateLabel = "Third choice" %}
-                {% else %}
-                  {% set dateLabel %}
-                    Date {{loop.index}}
-                  {% endset %}
-                {% endif %}
-
-                <strong class="bold-small title">{{ dateLabel }}</strong><br />
-                <div id="date{{loop.index}}" class="date">{{ date }}</div>
-              {% endfor %}
-
-              </td>
-            </tr>
-          {% endif %}
-          {% else %}
-          <tr>
-            <th class="govuk-table__header jd-details-deferral-excusal-head-width">Deferral or excusal</th>
-            <td class="govuk-table__cell" id="deferralOrExcusal">Date of jury service confirmed</td>
-          </tr>
-          {% endif %}
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key jd-details-deferral-excusal-head-width">
+              Deferral or excusal
+            </dt>
+            <dd class="govuk-summary-list__value govuk-body" id="deferralOrExcusal">
+              Date of jury service confirmed
+            </dd>
+          </div>
         {% endif %}
-
-      </tbody>
-    </table>
+      {% endif %}
+    </dl>
   </div>
 
   <div class="edit-section" id="edit-deferral-excusal">

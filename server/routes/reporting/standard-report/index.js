@@ -44,14 +44,14 @@
     standardReportRoutes(app, 'next-due');
     standardReportRoutes(app, 'undelivered');
     standardReportRoutes(app, 'non-responded');
-
     standardReportRoutes(app, 'postponed-pool');
     standardReportRoutes(app, 'postponed-date');
-
     require('../incomplete-service')(app);
     standardReportRoutes(app, 'incomplete-service');
     standardReportRoutes(app, 'pool-status');
     standardReportRoutes(app, 'panel-summary');
+    standardReportRoutes(app, 'bulk-print-audit');
+    standardReportRoutes(app, 'panel-detail');
   };
 
 })();

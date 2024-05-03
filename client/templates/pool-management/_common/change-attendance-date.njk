@@ -30,16 +30,22 @@
           label: {
             text: "Enter a new service start date"
           },
+          hint: "Use dd/mm/yyyy format. For example, 31/01/2024.",
           dateMin: "" | makeDate | dateFilter(null, "DD/MM/YYYY"),
           dateValue: attendanceDate | dateFilter(null, "DD/MM/YYYY"),
           dateError: dateError
         }) }}
 
         <div class="govuk-button-group">
-          {{ govukButton({
-            text: "Change",
-            type: "submit" 
-          }) }}
+          {{ 
+            govukButton({
+              text: "Change",
+              type: "submit",
+              attributes: {
+                "aria-label": "Change the service start date for this pool"
+              } 
+            })
+          }}
 
           <a class="govuk-link" href="{{ url(cancelUrl) }}">Cancel</a>
         </div>

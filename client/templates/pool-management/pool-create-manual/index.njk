@@ -55,7 +55,10 @@
             classes: "govuk-!-width-one-half",
             action: {
               href: changeCourtUrl,
-              text: "Change"
+              text: "Change",
+              attributes: {
+                "aria-label": "Change court"
+              }
             }
           }) }}
         {% endif %}
@@ -65,7 +68,7 @@
           label: {
             text: "Service start date"
           },
-          hint: "Use dd/mm/yyyy format. For example, 31/01/2023.",
+          hint: "Use dd/mm/yyyy format. For example, 31/01/2024.",
           dateMin: "" | makeDate | dateFilter(null, "DD/MM/YYYY"),
           dateValue: serviceStartDate,
           dateError: serviceStartDateError

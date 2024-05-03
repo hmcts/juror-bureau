@@ -23,6 +23,16 @@
         details: 'Enter a date to search postponed jurors up until',
       }],
     },
+    bulkPrintAudit: {
+      dateFrom: [{
+        summary: 'Enter a date to search bulk-printing from',
+        details: 'Enter a date to search bulk-printing from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search bulk-printing up until',
+        details: 'Enter a date to search bulk-printing up until',
+      }],
+    },
   };
 
   module.exports.searchBy = function(reportKey) {

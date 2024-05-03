@@ -60,17 +60,18 @@
   </div>
 
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-half govuk-!-margin-bottom-6">
+    <div class="govuk-grid-column-two-thirds">
       <form class="mod-filter-form" id="filterPoolsForm" method="post">
-        <label class="govuk-label" for="courtsList">Filter by court name or location code</label>
-        <div class="govuk-grid-column-two-thirds govuk-!-padding-0" id="courtsList" name="courtsList" data-courts="{{ courts }}"></div>
+        <!-- Label should point at the input created by accessibleAutocomplete in the javascript at the bottom -->
+        <label class="govuk-label" for="courtNameOrLocation">Filter by court name or location code</label>
+        <div class="govuk-grid-column-one-half govuk-!-padding-0 govuk-!-margin-bottom-2" id="courtsList" name="courtsList" data-courts="{{ courts }}"></div>
 
-        <div class="mod-button-group">
+        <div class="govuk-button-group govuk-!-margin-bottom-0">
           {{ govukButton({
             type: "submit",
-            text: "Filter",
-            classes: "moj-search__button"
+            text: "Filter"
           }) }}
+
           <a class="govuk-link" href="{{ pageUrls.clearFilter }}">Clear filter</a>
         </div>
 

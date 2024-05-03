@@ -2,29 +2,32 @@
 const { dateFilter, capitalizeFully, toSentenceCase } = require('../../../components/filters');
 
 const tableDataMappers = {
-  String: (data) => capitalizeFully(data),
+  String: (data) => isNaN(data) ? capitalizeFully(data) : data.toString(),
   LocalDate: (data) => data ? dateFilter(data, 'YYYY-mm-dd', 'ddd D MMM YYYY') : '-',
   List: (data) => {
-    if (Object.keys(data)[0] === 'jurorAddressLine1'){
-      return Object.values(data).reduce(
-        (acc, current) => {
-          return acc + ', ' + current;
-        },
-      );
-    }
-    let listText = '';
+    if (data) {
+      if (Object.keys(data)[0] === 'jurorAddressLine1'){
+        return Object.values(data).reduce(
+          (acc, current) => {
+            return acc + ', ' + current;
+          },
+        );
+      }
+      let listText = '';
 
-    Object.keys(data).forEach((element, index) => {
-      listText = listText
-        + `${toSentenceCase(element)}: ${data[element]}`
-        + `${index === Object.keys(data).length - 1 ? '' : ', '}`;
-    });
-    return listText;
+      Object.keys(data).forEach((element, index) => {
+        listText = listText
+          + `${toSentenceCase(element)}: ${data[element]}`
+          + `${index === Object.keys(data).length - 1 ? '' : ', '}`;
+      });
+      return listText;
+    }
+    return '-';
   },
   Long: (data) => data.toString(),
 };
 
-const headingDataMappers ={
+const headingDataMappers = {
   String: (data) => capitalizeFully(data),
   LocalDate: (data) => dateFilter(data, 'YYYY-mm-dd', 'dddd D MMMM YYYY'),
   timeFromISO: (data) => {
