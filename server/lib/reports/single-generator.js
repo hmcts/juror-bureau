@@ -205,9 +205,6 @@
         styles: layout().otherStyles,
       };
 
-      console.log('sending to renderer: ')
-      console.log(JSON.stringify(finalContent, null, 2));
-
       const document = printer.createPdfKitDocument(finalContent);
 
       document.on('data', function(data) {
