@@ -352,9 +352,67 @@
     }
 
     if (auditData.auditType === 'REAPPROVED_EDIT'
+      || auditData.auditType === 'APPROVED_EDIT'
       || auditData.auditType === 'REAPPROVED_CASH'
       || auditData.auditType === 'REAPPROVED_BACS'
     ) {
+      let body = [
+        [
+          { 
+            style: 'label',
+            text: 'Total due',
+          },
+          {
+            text: toMoney(auditData.expenses.total.totalDue),
+            alignment: 'right',
+          }
+        ],
+      ];
+      
+      if (auditData.auditType === 'REAPPROVED_EDIT' || auditData.auditType === 'APPROVED_EDIT') {
+        body.push([
+          { 
+            style: 'label',
+            text: 'Total paid to date',
+          },
+          {
+            text: toMoney(auditData.expenses.total.totalPaid),
+            alignment: 'right',
+          }
+        ]);
+        body.push([
+          { 
+            style: 'label',
+            text: 'Balance to pay',
+          },
+          {
+            text: toMoney(auditData.expenses.total.totalOutstanding),
+            alignment: 'right',
+          }
+        ]);
+      } else {
+        body.push([
+          { 
+            style: 'label',
+            text: 'Total paid to date',
+          },
+          {
+            text: toMoney(auditData.expenses.total.originalTotalPaid),
+            alignment: 'right',
+          }
+        ]);
+        body.push([
+          { 
+            style: 'label',
+            text: 'Balance to pay',
+          },
+          {
+            text: toMoney(auditData.expenses.total.changeFromOriginal),
+            alignment: 'right',
+          }
+        ]);
+      }
+
       coreContent.push({
         raw: true,
         fontSize: 10,
@@ -367,40 +425,8 @@
         width: '33%',
         table: {
           widths: [120, 120],
-          body: [
-            [
-              { 
-                style: 'label',
-                text: 'Total due',
-              },
-              {
-                text: toMoney(auditData.expenses.total.totalDue),
-                alignment: 'right',
-              }
-            ],
-            [
-              { 
-                style: 'label',
-                text: 'Total paid to date',
-              },
-              {
-                text: toMoney(auditData.expenses.total.totalPaid),
-                alignment: 'right',
-              }
-            ],
-            [
-              { 
-                style: 'label',
-                text: 'Balance to pay',
-              },
-              {
-                text: toMoney(auditData.expenses.total.totalOutstanding),
-                alignment: 'right',
-              }
-            ],
-          ]
+          body
         }
-
       })
     }
 

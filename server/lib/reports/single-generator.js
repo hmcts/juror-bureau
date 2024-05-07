@@ -58,7 +58,7 @@
   };
 
   const documentMetadata = (metadata) => {
-    const width = (metadata.centre?.length > 0) ? '33%' : '50%';
+    const width = metadata.centre ? '33%' : '50%';
 
     const _column = (content) => {
       if (!content) {
