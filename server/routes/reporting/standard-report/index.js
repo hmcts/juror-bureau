@@ -52,6 +52,7 @@
     standardReportRoutes(app, 'panel-summary');
     standardReportRoutes(app, 'bulk-print-audit');
     standardReportRoutes(app, 'panel-detail');
+    standardReportRoutes(app, 'jury-list');
   };
 
 })();
