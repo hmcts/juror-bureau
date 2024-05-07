@@ -16,7 +16,13 @@
 
           {% if method === "paper" and isAddChangeVisible %}
             <div class="govuk-body">
-              <a id="eligibilityEdit" class="govuk-link" href="{{ url('summons.update-eligibility.get', { id: response.jurorNumber, type: method }) }}">Add or change</a>
+              <a id="eligibilityEdit" 
+                 class="govuk-link"
+                 aria-label="Add or change eligibility" 
+                 href="{{ url('summons.update-eligibility.get', { id: response.jurorNumber, type: method }) }}"
+              >
+                Add or change
+              </a>
             </div>
           {% endif %}
         </div>
@@ -25,7 +31,14 @@
           <h2 class="govuk-heading-m">Eligibility
             {% if canEdit and responseEditEnabled %}
             <div class="edit-actions govuk-body jd-right-align">
-              <a id="eligibilityEdit" href="#" class="edit-action edit-trigger" data-target="eligibility">Change</a>
+              <a id="eligibilityEdit" 
+                 href="#" 
+                 class="edit-action edit-trigger" 
+                 data-target="eligibility"
+                aria-label="Change eligibility"
+              >
+                Change
+              </a>
             </div>
             {% endif %}
           </h2>
@@ -36,91 +49,93 @@
   </div>
 
   <div class="show-details-container" id="view-eligibility">
-
-    <table class="govuk-table table-summary juror-details" summary="Are you eligible">
-      <caption class="govuk-table__caption govuk-visually-hidden">Eligibility information</caption>
-
-      <tbody class="govuk-table__body">
-        <tr class="govuk-table__row {% if not eligibilityDetails.residency %}info{% endif %}">
-          <th class="govuk-table__header jd-details-eligibility-head-width">Residency</th>
-          <td class="govuk-table__cell" id="residency">
-            {% if isDeceased == true %}
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row {% if not eligibilityDetails.residency %}info{% endif %}">
+        <dt class="govuk-summary-list__key jd-details-eligibility-head-width">
+          Residency
+        </dt>
+        <dd class="govuk-summary-list__value" id="residency">
+          {% if isDeceased == true %}
             N/A
-            {% elif hasModAccess and eligibilityDetails.residency === null %}
-              <span class="mod-reply-section__required">Required</span>
-            {% elif eligibilityDetails.residency %}
+          {% elif hasModAccess and eligibilityDetails.residency === null %}
+            <span class="mod-reply-section__required">Required</span>
+          {% elif eligibilityDetails.residency %}
             Pass
-            {% else %}
+          {% else %}
             <div class="jd-label-blue">Attention</div>
             {{ response.residencyDetail }}
-            {% endif %}
-          </td>
-        </tr>
-        <tr class="govuk-table__row {% if eligibilityDetails.mentalHealthAct %}info{% endif %}">
-          <th class="govuk-table__header">Mental health {{ "act" if hasModAccess }}</th>
-          <td class="govuk-table__cell" id="mentalHealth">
-            {% if isDeceased == true %}
+          {% endif %}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row {% if eligibilityDetails.mentalHealthAct %}info{% endif %}">
+        <dt class="govuk-summary-list__key">
+          Mental health {{ "act" if hasModAccess }}
+        </dt>
+        <dd class="govuk-summary-list__value" id="mentalHealth">
+          {% if isDeceased == true %}
             N/A
-            {% elif hasModAccess and eligibilityDetails.mentalHealthAct === null %}
-              <span class="mod-reply-section__required">Required</span>
-            {% elif eligibilityDetails.mentalHealthAct %}
+          {% elif hasModAccess and eligibilityDetails.mentalHealthAct === null %}
+            <span class="mod-reply-section__required">Required</span>
+          {% elif eligibilityDetails.mentalHealthAct %}
             <div class="jd-label-blue">Attention</div>
             {{ response.mentalHealthActDetails|replace("[MENTAL HEALTH Q2]","<br/><br/>")|safe }}
-            {% else %}
+          {% else %}
             Pass
-            {% endif %}
-          </td>
-        </tr>
-
-        {% if hasModAccess and method === "paper" %}
-          <tr class="govuk-table__row {% if eligibilityDetails.mentalHealthCapacity %}info{% endif %}">
-            <th class="govuk-table__header">Mental capacity act</th>
-            <td class="govuk-table__cell" id="mentalHealthCapacity">
-              {% if isDeceased == true %}
-                N/A
-              {% elif hasModAccess and eligibilityDetails.mentalHealthCapacity === null %}
-                <span class="mod-reply-section__required">Required</span>
-              {% elif eligibilityDetails.mentalHealthCapacity %}
-                <div class="jd-label-blue">Attention</div>
-              {% else %}
-                Pass
-              {% endif %}
-            </td>
-          </tr>
-        {% endif %}
-
-        <tr class="{% if eligibilityDetails.bail %}info{% endif %}">
-          <th class="govuk-table__header">Bail</th>
-          <td class="govuk-table__cell"  id="bail">
-            {% if isDeceased %}
-            N/A
-            {% elif hasModAccess and eligibilityDetails.bail === null %}
+          {% endif %}
+        </dd>
+      </div>
+      {% if hasModAccess and method === "paper" %}
+        <div class="govuk-summary-list__row {% if eligibilityDetails.mentalHealthCapacity %}info{% endif %}">
+          <dt class="govuk-summary-list__key">
+            Mental capacity act
+          </dt>
+          <dd class="govuk-summary-list__value" id="mentalHealthCapacity">
+            {% if isDeceased == true %}
+              N/A
+            {% elif hasModAccess and eligibilityDetails.mentalHealthCapacity === null %}
               <span class="mod-reply-section__required">Required</span>
-            {% elif eligibilityDetails.bail %}
+            {% elif eligibilityDetails.mentalHealthCapacity %}
+              <div class="jd-label-blue">Attention</div>
+            {% else %}
+              Pass
+            {% endif %}
+          </dd>
+        </div>
+      {% endif %}
+      <div class="govuk-summary-list__row {% if eligibilityDetails.bail %}info{% endif %}">
+        <dt class="govuk-summary-list__key">
+          Bail
+        </dt>
+        <dd class="govuk-summary-list__value" id="bail">
+          {% if isDeceased %}
+            N/A
+          {% elif hasModAccess and eligibilityDetails.bail === null %}
+            <span class="mod-reply-section__required">Required</span>
+          {% elif eligibilityDetails.bail %}
             <div class="jd-label-blue">Attention</div>
             {{ response.bailDetails }}
-            {% else %}
+          {% else %}
             Pass
-            {% endif %}
-          </td>
-        </tr>
-        <tr class="{% if eligibilityDetails.convictions %}info{% endif %}">
-          <th class="govuk-table__header">Convictions</th>
-          <td class="govuk-table__cell"  id="convictions">
-            {% if isDeceased == true %}
+          {% endif %}
+        </dd>
+      </div>
+       <div class="govuk-summary-list__row {% if eligibilityDetails.convictions %}info{% endif %}">
+        <dt class="govuk-summary-list__key">
+          Convictions
+        </dt>
+        <dd class="govuk-summary-list__value" id="convictions">
+          {% if isDeceased == true %}
             N/A
-            {% elif hasModAccess and eligibilityDetails.convictions === null %}
-              <span class="mod-reply-section__required">Required</span>
-            {% elif eligibilityDetails.convictions %}
+          {% elif hasModAccess and eligibilityDetails.convictions === null %}
+            <span class="mod-reply-section__required">Required</span>
+          {% elif eligibilityDetails.convictions %}
             <div class="jd-label-blue">Attention</div>
             {{ response.convictionsDetails }}
-            {% else %}
+          {% else %}
             Pass
-            {% endif %}
-          </td>
-        </tr>
-      </tbody>
-    </table>
+          {% endif %}
+        </dd>
+    </dl>
   </div>
 
   <div class="edit-section" id="edit-eligibility">

@@ -792,8 +792,8 @@
   };
 
   module.exports.postSignature = function(app) {
-    return function(req, res) {
-      var successCB = function([paperSummonsData]) {
+    return async function(req, res) {
+      var successCB = function(paperSummonsData) {
 
           app.logger.info('Successfully added a new paper response: ', {
             auth: req.session.authentication,
@@ -867,29 +867,34 @@
         }
       }
 
-      const promiseArray = [];
+      if (req.session.paperResponseDetails.fixedName) {
+        try {
+          await fixNameObj.patch(
+            require('request-promise'),
+            app,
+            req.session.authToken,
+            req.params['id'],
+            'fix-name',
+            req.session.paperResponseDetails.fixedName,
+          );
+        } catch (err) {
+          app.logger.crit('Failed to fix current name: ', {
+            auth: req.session.authentication,
+            jwt: req.session.authToken,
+            data: req.session.editJurorDetails.fixedName,
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
 
-      // if adding anything else to this promise array, make sure to keep indexes in order
-      // the paper summons must always be the first element (index = 0) of this array
-      promiseArray.push(paperReplyObjectObj.post(
+          return res.render('_errors/generic');
+        }
+      }
+
+      paperReplyObjectObj.post(
         require('request-promise'),
         app,
         req.session.authToken,
         req.session.paperResponseDetails
-      ));
-
-      if (req.session.paperResponseDetails.fixedName) {
-        promiseArray.push(fixNameObj.patch(
-          require('request-promise'),
-          app,
-          req.session.authToken,
-          req.params['id'],
-          'fix-name',
-          req.session.paperResponseDetails.fixedName,
-        ));
-      }
-
-      return Promise.all(promiseArray)
+      )
         .then(successCB)
         .catch(errorCB);
     };

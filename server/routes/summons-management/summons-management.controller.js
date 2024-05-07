@@ -22,7 +22,7 @@
     , { systemCodesDAO } = require('../../objects/administration');
   const { flowLetterPost, flowLetterGet } = require('../../lib/flowLetter');
 
-  const dateHint = 'Use dd/mm/yyyy format. For example, 31/01/2023.';
+  const dateHint = 'Use dd/mm/yyyy format. For example, 31/01/2024.';
 
   module.exports.getDeferralDates = function(app) {
     return async function(req, res) {

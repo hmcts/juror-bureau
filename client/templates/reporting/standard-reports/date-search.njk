@@ -1,0 +1,84 @@
+{% extends "../../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}
+  Reports
+{% endblock %}
+
+{% block page_identifier %}Reports - {{ title }}{% endblock %}
+
+{% set currentApp = "Reports" %}
+
+{% block content %}
+  {% include "includes/errors.njk" %}
+
+  {% set dateFromError = undefined %}  
+  {% if errors.items["dateFrom"] %}
+    {% set dateFromError = errors.items["dateFrom"][0].details %}
+  {% endif %}
+
+  {% set dateTo = undefined %}
+  {% if errors.items["dateTo"] %}
+    {% set dateToError = errors.items["dateTo"][0].details %}
+  {% endif %}
+
+  <h1 class="govuk-heading-l">{{ title }}</h1>
+
+  <form action="{{ reportUrl }}" method="POST" id="dateSearchForm">
+    {{ datePicker({
+      id: "dateFrom",
+      label: {
+        text: "Date from"
+      },
+      hint: "Use dd/mm/yyyy format.",
+      dateValue: tmpBody.dateFrom,
+      dateError: dateFromError
+    }) }}
+
+    {{ datePicker({
+      id: "dateTo",
+      label: {
+        text: "Date to"
+      },
+      hint: "Use dd/mm/yyyy format.",
+      dateMin: tmpBody.dateFrom,
+      dateValue: tmpBody.dateTo,
+      dateError: dateToError
+    }) }}
+
+    {{ csrfProtection(csrftoken) }}
+
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Continue",
+        type: "submit",
+        classes: "govuk-button",
+        attributes: {
+          id: "continueButton"
+        }
+      }) }}
+      <a class="govuk-link govuk-link--no-visited-state" href="{{ cancelUrl }}">Cancel</a>
+    </div>
+
+  </form>
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      const datePickers = []
+        .slice
+        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
+      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
+    });
+  </script>
+{% endblock %}
