@@ -3,5 +3,5 @@ nodejs:
   ingressHost: ${SERVICE_FQDN}
   environment:
     API_ENDPOINT: https://juror-api.staging.platform.hmcts.net/api/v1
-    CALLBACK_URL: https://juror.${SERVICE_FQDN}/auth/internal/callback
+    CALLBACK_URL: https://${SERVICE_FQDN}/auth/internal/callback
     LOGOUT_REDIRECT: https://${SERVICE_FQDN}
