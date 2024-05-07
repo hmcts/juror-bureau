@@ -61,3 +61,8 @@ The command above assumes the developer has docker installed, so if you do not h
 
 [Install redis on MacOS](https://redis.io/docs/install/install-redis/install-redis-on-mac-os/)
 
+## Using the application
+
+#### Authentication
+
+This application implements azure AD authentication but can also be used without whilst in development mode. In development mode users will have an email input box (available only in development) to use for authentication. This is assumes the developer has users populated with test email addresses (check with the API & database to make sure all is setup correctly).

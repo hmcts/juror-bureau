@@ -1,5 +1,6 @@
 /* eslint-disable strict */
 const secretsConfig = require('config');
+const config = require('../../config/environment')();
 const axios = require('axios');
 
 module.exports.getAzureAuth = function(app) {
@@ -14,7 +15,7 @@ module.exports.getAzureAuth = function(app) {
 
 module.exports.getAzureCallback = function(app) {
   return async function(req, res) {
-    const graphUrl = secretsConfig.get('secrets.azure.graph-url');
+    const graphUrl = config.auth.graphUrl;
 
     const { code } = req.query;
     const { authUrl, queryParams } = buildAzureUrl('token', code);
@@ -24,17 +25,36 @@ module.exports.getAzureCallback = function(app) {
       payload[key] = value;
     });
 
-    const authResponse = await axios.post(authUrl, payload, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    });
+    let authResponse;
+    let response;
 
-    const response = await axios.get(graphUrl, {
-      headers: {
-        Authorization: 'Bearer ' + authResponse.data.access_token,
-      },
-    });
+    try {
+      authResponse = await axios.post(authUrl, payload, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      });
+    } catch (err) {
+      app.logger.error('Error getting token from Azure', {
+        error: err,
+      });
+
+      return res.redirect(app.namedRoutes.build('login.get'));
+    }
+
+    try {
+      response = await axios.get(graphUrl, {
+        headers: {
+          Authorization: 'Bearer ' + authResponse.data.access_token,
+        },
+      });
+    } catch (err) {
+      app.logger.error('Error getting user data from Azure', {
+        error: err,
+      });
+
+      return res.redirect(app.namedRoutes.build('login.get'));
+    }
 
     req.session.email = response.data.mail.toLowerCase();
 
@@ -44,9 +64,10 @@ module.exports.getAzureCallback = function(app) {
 
 module.exports.getAzureLogout = function(app) {
   return function(req, res) {
-    const tenantId = secretsConfig.get('secrets.azure.tenant-id');
-    const authUrl = secretsConfig.get('secrets.azure.auth-url').replace('{tenant_id}', tenantId);
-    const logoutRedirect = secretsConfig.get('secrets.azure.logout-redirect');
+    const tenantId = secretsConfig.get('secrets.juror.azure-tenant-id');
+
+    const authUrl = config.auth.authUrl(tenantId);
+    const logoutRedirect = config.auth.logoutRedirect;
 
     app.logger.debug('Redirecting to Azure for logout', {
       auth: req.session.authentication,
@@ -65,11 +86,12 @@ module.exports.getAzureLogout = function(app) {
 };
 
 function buildAzureUrl(/** @type {'authorize' | 'token'} */pathPart, code) {
-  const clientId = secretsConfig.get('secrets.azure.app-id');
-  const tenantId = secretsConfig.get('secrets.azure.tenant-id');
-  const authUrl = secretsConfig.get('secrets.azure.auth-url').replace('{tenant_id}', tenantId);
-  const claims = secretsConfig.get('secrets.azure.claims');
-  const cbUrl = secretsConfig.get('secrets.azure.callback-url');
+  const clientId = secretsConfig.get('secrets.juror.azure-app-id');
+  const tenantId = secretsConfig.get('secrets.juror.azure-tenant-id');
+
+  const authUrl = config.auth.authUrl(tenantId);
+  const cbUrl = config.auth.callbackUrl;
+  const claims = config.auth.claims;
 
   const queryParams = new URLSearchParams();
 
@@ -83,7 +105,7 @@ function buildAzureUrl(/** @type {'authorize' | 'token'} */pathPart, code) {
   }
 
   if (pathPart === 'token' && code) {
-    const clientSecret = secretsConfig.get('secrets.azure.client-secret');
+    const clientSecret = secretsConfig.get('secrets.juror.azure-client-secret');
 
     queryParams.append('client_secret', clientSecret);
     queryParams.append('code', code);
