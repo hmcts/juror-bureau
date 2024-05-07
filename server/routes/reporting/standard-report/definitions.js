@@ -170,6 +170,22 @@
           'judge',
         ],
       },
+      'jury-list': {
+        title: 'Jury list',
+        apiKey: 'JuryListReport',
+        search: 'trial',
+        headings: [
+          'trialNumber',
+          'reportDate',
+          'names',
+          'reportTime',
+          'trialStartDate',
+          'courtName',
+          'courtRoom',
+          '',
+          'judge',
+        ],
+      },
     };
   };
 })();
