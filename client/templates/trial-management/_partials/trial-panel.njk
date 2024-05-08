@@ -77,7 +77,7 @@
     <input type="hidden" name="_csrf" id="csrfToken" value="{{ csrftoken }}">
   </form>
 
-  <script>
+  <script nonce="{{ nonce }}">
 
     let allChecked = false;
     let chkbxs = document.getElementsByName('selectedJurors');

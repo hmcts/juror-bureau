@@ -7,7 +7,7 @@
 <script src="{{ assetPath }}js/govuk/all.js"></script>
 <script src="{{ assetPath }}js/moj/all.js"></script>
 
-<script>
+<script nonce="{{ nonce }}">
   $(document).ready(function () {
     window.GOVUKFrontend.initAll();
     window.MOJFrontend.initAll();
@@ -17,7 +17,7 @@
 <!-- scripts to run after GDS/MOJ inits only on reply details page -->
 
 {% if displayProcessButtonMenu %}
-  <script>
+  <script nonce="{{ nonce }}">
     // button menu in reply details page header
     new MOJFrontend.ButtonMenu({
       container: $('#moj-process-button-menu'),
@@ -29,7 +29,7 @@
 {% endif %}
 
 {% if displayActionsButtonMenu %}
-  <script>
+  <script nonce="{{ nonce }}">
     // button menu in reply details page header
     new MOJFrontend.ButtonMenu({
       container: $('#moj-actions-button-menu'),
@@ -41,7 +41,7 @@
 {% endif %}
 
 {% if displayPoolManagementActionsButtonMenu %}
-  <script>
+  <script nonce="{{ nonce }}">
     // button menu for the pool-management page
     new MOJFrontend.ButtonMenu({
       container: $("#moj-pool-management-button-menu"),

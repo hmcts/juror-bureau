@@ -27,26 +27,39 @@ const basicAuthPassword = process.env.PASSWORD;
 
 const { SessionConfig } = require('../lib/session-config.js');
 
+const generateNonce = () => {
+  return Math.random().toString(36).slice(2, 10);
+};
+
 module.exports = async function(app) {
   let env = process.env.NODE_ENV || 'development';
   let useAuth = process.env.USE_AUTH || config.useAuth;
-  let useHttps = process.env.USE_HTTPS || config.useHttps;
 
   // Ensure provided environment values are lowercase
   env = env.toLowerCase();
   useAuth = useAuth.toLowerCase();
-  useHttps = useHttps.toLowerCase();
+
+  app.use((req, res, next) => {
+    res.locals.nonce = generateNonce();
+    next();
+  });
 
   // Security hardening
-  app.use(helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: ['\'self\''],
-      styleSrc: ['\'self\'', '\'unsafe-inline\''],
-      scriptSrc: ['\'self\'', 'cdnjs.cloudflare.com', '\'unsafe-inline\''],
-      fontSrc: ['data:'],
-      connectSrc: ['\'self\'', 'ws://localhost:*'],
-    },
-  }));
+  app.use((req, res, next) => {
+    const nonce = `'nonce-${res.locals.nonce}'`;
+    const chartJsCsp = '\'sha256-kwpt3lQZ21rs4cld7/uEm9qI5yAbjYzx+9FGm/XmwNU=\'';
+
+    helmet.contentSecurityPolicy({
+      directives: {
+        defaultSrc: ['\'none\''],
+        styleSrc: ['\'self\'', nonce, chartJsCsp],
+        scriptSrc: ['\'self\'', 'cdnjs.cloudflare.com', nonce],
+        fontSrc: ['\'self\'', 'data:'],
+        imgSrc: ['\'self\'', 'data:'],
+        connectSrc: ['\'self\''],
+      },
+    })(req, res, next);
+  });
   app.use(helmet.dnsPrefetchControl());
   app.use(helmet.frameguard());
   app.use(helmet.hidePoweredBy());
@@ -73,8 +86,6 @@ module.exports = async function(app) {
 
   // CSRF Protection
   app.use(csrf());
-
-  //app.use('/node_modules/govuk-frontend', express.static(path.join(__dirname, '/node_modules/govuk-frontend')))
 
   // Setup templating engine
   app.set('view engine', 'njk');
