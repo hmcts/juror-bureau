@@ -1,0 +1,33 @@
+{% from "moj/components/timeline/macro.njk" import mojTimeline %}
+
+<section>
+  {% set historyTimeline = [] %}
+  {% set historyHtml = undefined %}
+
+  {% for historyItem in history %}
+    {% set bylineHtml %}
+      <div class='moj-timeline__byline' style='display: inline-flex; justify-content: space-between; flex-direction: row;'>
+        <div>{{historyItem.userId}}</div>
+        <div>Pool {{historyItem.poolNumber}}
+      </div>
+    {% endset %}
+    
+    {% set historyHtml %}
+      <div>test history item</div>
+    {% endset %}
+    {% set historyTimeline = (historyTimeline.push({
+      label: { text: historyItem.action },
+      html: historyHtml,
+      datetime: {
+        timestamp: historyItem.dateCreated,
+        format: "ddd D MMM yyyy [at] hh:mma"
+      },
+      byline: { html: bylineHtml }
+    }), historyTimeline) %}
+  {% endfor %}
+
+  {{ mojTimeline({
+    items: historyTimeline
+  }) }}
+
+</section>

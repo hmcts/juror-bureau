@@ -5,6 +5,7 @@
   const { dateFilter, capitalizeFully, makeDate } = require('../../../components/filters');
   const { isCourtUser } = require('../../../components/auth/user-type');
   const jurorRecordObject = require('../../../objects/juror-record');
+  const { jurorHistoryDAO, historyCodes } = require('../../../objects/juror-history');
   const validate = require('validate.js');
   const modUtils = require('../../../lib/mod-utils');
   const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/expenses');
@@ -1022,6 +1023,43 @@
         .then(successCB)
         .catch(errorCB);
     };
+  };
+
+  module.exports.getHistoryTab = (app) => async(req, res) => {
+    try {
+
+      const history = await jurorHistoryDAO.get(app, req.params.jurorNumber);
+      const jurorNumber = req.params.jurorNumber;
+      const {data: juror} = await jurorRecordObject.record.get(
+        require('request-promise'),
+        app,
+        req.session.authToken,
+        'overview',
+        jurorNumber,
+        req.session.locCode,
+      );
+      const historyTab = Object.keys(req.query)[0] || 'history';
+
+      return res.render('juror-management/juror-record/juror-history', {
+        jurorNumber,
+        juror,
+        historyUrl: app.namedRoutes.build('juror-record.history.get', { jurorNumber }),
+        historyTab,
+        history: history.map(item => ({
+          ...item,
+          action: historyCodes[item.historyCode],
+          dateStamp: `${dateFilter(item.dateCreated, '', 'ddd D MMM yyyy')} at ${dateFilter(item.dateCreated, '', 'hh:mma')}`,
+        })),
+        currentTab: 'history',
+        backLinkUrl: {
+          url: app.namedRoutes.build('juror-record.overview.get', { jurorNumber }),
+          built: true,
+        },
+      });
+    } catch (err) {
+      console.log(err);
+      return res.render('_errors/generic');
+    }
   };
 
   function clearInvalidSessionData(req) {
