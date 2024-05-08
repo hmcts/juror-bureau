@@ -47,4 +47,15 @@ const { genericDatePicker } = require('../../../config/validation/date-picker');
 
     return res.redirect(app.namedRoutes.build('reports.incomplete-service.report.get', {filter: targetDate}));
   };
+
+  module.exports.getCompleteService = (app) => async(req, res) => {
+    const { jurorNumber, lastAttendanceDate } = req.params;
+
+    if (lastAttendanceDate) {
+      req.session.completeServiceLastDate = lastAttendanceDate;
+    }
+
+    return res.redirect(app.namedRoutes.build('reports.incomplete-service.complete.get', { jurorNumber }));
+  };
+
 })();
