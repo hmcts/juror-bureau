@@ -100,9 +100,12 @@
         search: 'date',
         bespokeReport: {
           insertColumns: {
-            5: ['', (data) => {
+            6: ['', (data) => {
               return { html: `<a href=${
-                app.namedRoutes.build('juror.update.complete-service.get', {jurorNumber: data.jurorNumber})
+                app.namedRoutes.build('reports.incomplete-service.complete-redirect.get', {
+                  jurorNumber: data.jurorNumber,
+                  lastAttendanceDate: data.lastAttendanceDate ? data.lastAttendanceDate : null,
+                })
               }>Complete service</a>`};
             }],
           },
