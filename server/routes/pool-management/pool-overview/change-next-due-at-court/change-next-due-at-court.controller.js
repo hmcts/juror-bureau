@@ -8,14 +8,14 @@
     , attendanceDateValidator = require('../../../../config/validation/change-attendance-date').bulkAttendanceDate
     , { dateFilter } = require('../../../../components/filters')
     , { changeNextDueAtCourtDAO } = require('../../../../objects/juror-attendance')
-    , { poolMemebersObject } = require('../../../../objects/pool-members')
     , rp = require('request-promise');
+  const { poolMembersDAO } = require('../../../../objects');
 
 
   module.exports.postChangeNextDueAtCourt = function(app) {
     return async function(req, res) {
       if (req.body['check-all-jurors']) {
-        req.body.selectedJurors = await poolMemebersObject.get(rp, app, req.session.authToken, req.params.poolNumber);
+        req.body.selectedJurors = await poolMembersDAO.get(req, req.params.poolNumber);
       }
 
       let validatorResult;

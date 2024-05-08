@@ -92,7 +92,7 @@
 
   allBureauStatusRadio.click(function(event) {
     event.preventDefault();
-    $('#status').val('All');
+    $('#status').val('all');
     $('#jurorDetailsForm').trigger('submit');
   });
 
