@@ -191,6 +191,7 @@
     return async function(req, res) {
       const { userType } = req.params;
       const editingUser = req.url.includes('edit-user');
+      const tmpErrors = _.clone(req.session.errors);
       let user;
       let changeUserTypeUrl = app.namedRoutes.build('administration.users.create.type.get');
       let changeUserDetailsUrl =  app.namedRoutes.build('administration.users.create.details.get', {
@@ -200,6 +201,8 @@
         userType,
       });
       let cancelUrl =  app.namedRoutes.build('administration.users.get');
+
+      delete req.session.errors;
 
       if (editingUser) {
         user = _.clone(req.session.editUser.details);
@@ -236,6 +239,11 @@
         changeUserDetailsUrl,
         processUrl,
         cancelUrl,
+        errors: {
+          title: 'Please check the form',
+          count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+          items: tmpErrors,
+        },
       });
     };
   };
@@ -278,6 +286,22 @@
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
+
+        if (err.error.code === 'EMAIL_IN_USE') {
+
+          req.session.errors = {
+            email: [
+              {
+                summary: 'Email address already in use',
+                details: 'Email address already in use',
+              },
+            ],
+          };
+
+          return res.redirect(app.namedRoutes.build('administration.users.create.confirm.get', {
+            userType: req.params.userType,
+          }));
+        }
 
         return res.render('_errors/generic.njk');
       }
