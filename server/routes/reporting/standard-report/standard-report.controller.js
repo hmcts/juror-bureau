@@ -138,6 +138,10 @@
     const reportType = reportKeys(app, req)[reportKey];
     const config = { reportType: reportType.apiKey, locCode: req.session.authentication.locCode };
     const filter = req.session.reportFilter;
+    const bannerMessage = _.clone(req.session.bannerMessage);
+
+    delete req.session.bannerMessage;
+    req.session.reportSearch = req.params.filter;
 
     const buildStandardTableRows = function(tableData, tableHeadings) {
       return tableData.map(data => {
@@ -311,6 +315,7 @@
           built: true,
           url: buildBackLinkUrl(),
         },
+        bannerMessage,
       });
     } catch (e) {
       console.error(e);
