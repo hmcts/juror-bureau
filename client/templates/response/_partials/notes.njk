@@ -10,7 +10,7 @@
           <a id="notesEditButton"
              class="govuk-link"
              aria-label="Add or change notes"
-             href="{{ url('response.notes.edit.get', { id: response.jurorNumber, type: method }) }}"
+             href="{{ url('response.notes.edit.get', { id: response.jurorNumber, type: method or 'digital' }) }}"
           >
             Add or change
           </a>
