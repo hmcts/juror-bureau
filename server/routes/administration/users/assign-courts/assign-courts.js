@@ -20,7 +20,7 @@
 
       try {
         if (req.session.assignCourts && req.session.assignCourts.filteredCourts && filter) {
-          courts = _.clone(req.session.assignCourts.filteredCourts);
+          courts = _.clone(req.session.assignCourts.filteredCourts).filter((c) => c.courtType === 'MAIN');
         } else {
           const courtsData = await courtsDAO.get(app, req);
 
@@ -35,7 +35,6 @@
             courts: courtsData,
           };
 
-          courts = courtsData;
           courts = courtsData.filter((c) => c.courtType === 'MAIN');
         }
 
