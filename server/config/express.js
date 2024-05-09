@@ -28,7 +28,7 @@ const basicAuthPassword = process.env.PASSWORD;
 const { SessionConfig } = require('../lib/session-config.js');
 
 const generateNonce = () => {
-  return Math.random().toString(36).slice(2, 10);
+  return require('crypto').randomBytes(16).toString('base64');
 };
 
 module.exports = async function(app) {
@@ -39,7 +39,7 @@ module.exports = async function(app) {
   env = env.toLowerCase();
   useAuth = useAuth.toLowerCase();
 
-  app.use((req, res, next) => {
+  app.use((_, res, next) => {
     res.locals.nonce = generateNonce();
     next();
   });
