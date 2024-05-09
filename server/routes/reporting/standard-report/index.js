@@ -48,11 +48,13 @@
     standardReportRoutes(app, 'postponed-date');
     require('../incomplete-service')(app);
     standardReportRoutes(app, 'incomplete-service');
-    standardReportRoutes(app, 'pool-status');
+    standardReportRoutes(app, 'current-pool-status');
     standardReportRoutes(app, 'panel-summary');
     standardReportRoutes(app, 'bulk-print-audit');
     standardReportRoutes(app, 'panel-detail');
     standardReportRoutes(app, 'jury-list');
+    standardReportRoutes(app, 'pool-status');
+    // require('../pool-status')(app);
   };
 
 })();

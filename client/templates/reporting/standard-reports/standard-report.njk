@@ -58,27 +58,31 @@
     {% endfor %}
   </div>
 
-  {% if tableRows.length === 0 %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
-        <hr class="govuk-section-break govuk-section-break--visible">
-        <h2 class="govuk-heading-m govuk-!-margin-top-4">This report has no matching data</h2>
-      </div>
-    </div>
+  {% if bespokeReportBody %}
+    {% include "./bespoke-report-body/" + reportKey + ".njk" %}
   {% else %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
-        {{ govukTable({
-          attributes: {
-            'data-module': 'moj-sortable-table'
-          } if not grouped,
-          caption: "Report data",
-          captionClasses: "govuk-visually-hidden",
-          head: tableHeaders,
-          rows: tableRows
-        }) }}
+    {% if tableRows.length === 0 %}
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <hr class="govuk-section-break govuk-section-break--visible">
+          <h2 class="govuk-heading-m govuk-!-margin-top-4">This report has no matching data</h2>
+        </div>
       </div>
-    </div>
+    {% else %}
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          {{ govukTable({
+            attributes: {
+              'data-module': 'moj-sortable-table'
+            } if not grouped,
+            caption: "Report data",
+            captionClasses: "govuk-visually-hidden",
+            head: tableHeaders,
+            rows: tableRows
+          }) }}
+        </div>
+      </div>
+    {% endif %}
   {% endif %}
 
 {% endblock %}

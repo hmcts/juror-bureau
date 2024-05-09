@@ -1,5 +1,6 @@
 /* eslint-disable strict */
 const { dateFilter, capitalizeFully, toSentenceCase } = require('../../../components/filters');
+const { snakeToCamel } = require('../../../lib/mod-utils');
 
 const tableDataMappers = {
   String: (data) => isNaN(data) ? capitalizeFully(data) : data.toString(),
@@ -25,6 +26,7 @@ const tableDataMappers = {
     return '-';
   },
   Long: (data) => data.toString(),
+  Integer: (data) => data.toString(),
 };
 
 const headingDataMappers = {
@@ -60,5 +62,63 @@ const constructPageHeading = (headingType, data) => {
   return {};
 };
 
+const bespokeReportBodys = {
+  'pool-status': (tableData, tableHeadings) => {
+    const activeRowHeaders = ['responded_total', 'summons_total', 'panel_total', 'juror_total'];
+    let activeRows = [];
+    let totalActive = 0;
+    let inactiveRows = [];
+    let totalInactive = 0;
+
+    tableData.forEach(data => {
+      tableHeadings.forEach(header => {
+        const output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
+        const row = {
+          key: {
+            text: header.name,
+            classes: 'govuk-!-padding-left-2',
+          },
+          value: {
+            text: output ? output : 0,
+          },
+          classes: 'govuk-!-padding-left-2',
+        };
+
+        if (activeRowHeaders.includes(header.id)) {
+          activeRows.push(row);
+          totalActive += data[snakeToCamel(header.id)];
+        } else {
+          inactiveRows.push(row);
+          totalInactive += data[snakeToCamel(header.id)];
+        }
+      });
+    });
+
+    activeRows.push({
+      key: {
+        text: 'Total active',
+        classes: 'govuk-!-padding-left-2',
+      },
+      value: {
+        text: totalActive,
+      },
+      classes: 'mod-summary-list__blue',
+    });
+    inactiveRows.push({
+      key: {
+        text: 'Total inactive',
+        classes: 'govuk-!-padding-left-2',
+      },
+      value: {
+        text: totalInactive,
+      },
+      classes: 'mod-summary-list__blue',
+    });
+
+    return { activeRows, inactiveRows };
+  },
+};
+
 module.exports.tableDataMappers = tableDataMappers;
 module.exports.constructPageHeading = constructPageHeading;
+module.exports.bespokeReportBodys = bespokeReportBodys;

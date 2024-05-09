@@ -7,7 +7,7 @@
   const { validate } = require('validate.js');
   const { poolSearchObject } = require('../../../objects/pool-search');
   const rp = require('request-promise');
-  const { tableDataMappers, constructPageHeading } = require('./utils');
+  const { tableDataMappers, constructPageHeading, bespokeReportBodys } = require('./utils');
   const { reportKeys } = require('./definitions');
   const { standardReportPrint } = require('./standard-report-print');
   const { fetchCourtsDAO } = require('../../../objects');
@@ -136,6 +136,7 @@
 
   const standardReportGet = (app, reportKey, isPrint = false) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
+    const bespokeReportBody = reportType.bespokeReportBody || false;
     const config = { reportType: reportType.apiKey, locCode: req.session.authentication.locCode };
     const filter = req.session.reportFilter;
     const bannerMessage = _.clone(req.session.bannerMessage);
@@ -262,43 +263,49 @@
       let tableRows = [];
 
       // GROUPED REPORT
-      if (reportType.grouped)  {
-        for (const [header, data] of Object.entries(tableData.data)) {
-          const group = buildStandardTableRows(data, tableData.headings);
-          let link;
-
-          if (reportType.grouped.headings && reportType.grouped.headings.link) {
-            if (reportType.grouped.headings.link === 'pool-overview') {
-              link = app.namedRoutes.build('pool-overview.get', {poolNumber: header});
-            }
-          }
-
-          const headRow = link
-            ? [{
-              html: `<a href=${link}>${(reportType.grouped.headings.prefix || '') + header}</a>`,
-              colspan: tableData.headings.length,
-              classes: 'govuk-!-padding-top-7 govuk-link govuk-body-l govuk-!-font-weight-bold',
-            }]
-            : [{
-              text: (reportType.grouped.headings.prefix || '') + header,
-              colspan: tableData.headings.length,
-              classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
-            }];
-          const totalsRow = reportType.grouped.totals ? [{
-            text: `Total: ${group.length}`,
-            colspan: tableData.headings.length,
-            classes: 'govuk-body-s govuk-!-font-weight-bold mod-table-no-border',
-          }] : null;
-
-          tableRows = tableRows.concat([
-            headRow,
-            ...group,
-            totalsRow,
-          ]);
-        }
+      if (bespokeReportBody) {
+        tableRows = bespokeReportBodys[reportKey](tableData.data, tableData.headings)
       } else {
-        tableRows = buildStandardTableRows(tableData.data, tableData.headings);
+        if (reportType.grouped)  {
+          for (const [header, data] of Object.entries(tableData.data)) {
+            const group = buildStandardTableRows(data, tableData.headings);
+            let link;
+
+            if (reportType.grouped.headings && reportType.grouped.headings.link) {
+              if (reportType.grouped.headings.link === 'pool-overview') {
+                link = app.namedRoutes.build('pool-overview.get', {poolNumber: header});
+              }
+            }
+
+            const headRow = link
+              ? [{
+                html: `<a href=${link}>${(reportType.grouped.headings.prefix || '') + header}</a>`,
+                colspan: tableData.headings.length,
+                classes: 'govuk-!-padding-top-7 govuk-link govuk-body-l govuk-!-font-weight-bold',
+              }]
+              : [{
+                text: (reportType.grouped.headings.prefix || '') + header,
+                colspan: tableData.headings.length,
+                classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
+              }];
+            const totalsRow = reportType.grouped.totals ? [{
+              text: `Total: ${group.length}`,
+              colspan: tableData.headings.length,
+              classes: 'govuk-body-s govuk-!-font-weight-bold mod-table-no-border',
+            }] : null;
+
+            tableRows = tableRows.concat([
+              headRow,
+              ...group,
+              totalsRow,
+            ]);
+          }
+        } else {
+          tableRows = buildStandardTableRows(tableData.data, tableData.headings);
+        }
       }
+
+      console.log(tableRows);
 
       const pageHeadings = reportType.headings.map(heading => constructPageHeading(heading, headings));
 
@@ -309,6 +316,7 @@
         pageHeadings,
         reportKey,
         grouped: reportType.grouped,
+        bespokeReportBody,
         filter: req.params.filter,
         printUrl: buildPrintUrl(),
         backLinkUrl: {
