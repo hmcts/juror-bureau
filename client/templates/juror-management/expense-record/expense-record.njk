@@ -128,10 +128,10 @@
 
           {{ govukButton({
             text: "Preview audit report",
-            href: '#',
             classes: "govuk-button--secondary govuk-!-margin-left-3",
             attributes: {
-              id: "previewAuditReportButton"
+              id: "previewAuditReportButton",
+              formAction: previewUrl
             }
           }) }}
 
