@@ -119,6 +119,73 @@ const bespokeReportBodys = {
   },
 };
 
+const bespokeReportTablePrint = {
+  'pool-status': (data) => {
+    const activeRowHeaders = ['responded_total', 'summons_total', 'panel_total', 'juror_total'];
+    const { tableData } = data;
+    let activeRows = [];
+    let totalActive = 0;
+    let inactiveRows = [];
+    let totalInactive = 0;
+
+    tableData.headings.forEach(header => {
+      let text = tableDataMappers[header.dataType](tableData.data[0][snakeToCamel(header.id)]) || '-';
+      const row = [ { text: `${header.name}`, bold: true }, text ];
+
+      if (activeRowHeaders.includes(header.id)) {
+        activeRows.push(row);
+        totalActive += tableData.data[0][snakeToCamel(header.id)];
+      } else {
+        inactiveRows.push(row);
+        totalInactive += tableData.data[0][snakeToCamel(header.id)];
+      }
+    });
+
+    activeRows.push([
+      {text: 'Total active', bold: true, fillColor: '#0b0c0c', color: '#ffffff'},
+      {text: totalActive, fillColor: '#0b0c0c', color: '#ffffff'},
+    ]);
+    inactiveRows.push([
+      {text: 'Total inactive', bold: true, fillColor: '#0b0c0c', color: '#ffffff'},
+      {text: totalInactive, fillColor: '#0b0c0c', color: '#ffffff'},
+    ]);
+
+    return [
+      {
+        body: [[
+          {text: 'Active pool members ', style: 'sectionHeading', colSpan: 2},
+          {},
+        ]],
+        widths:['50%', '50%'],
+        layout: {hLineColor: '#0b0c0c'},
+        margin: [0, 10, 0, 0],
+      },
+      {
+        body: [...activeRows],
+        widths: ['25%', '25%'],
+        layout: {paddingLeft: () => 4},
+        margin: [0, 0, 0, 0],
+      },
+      {
+        body: [[
+          {text: 'Inactive pool members ', style: 'sectionHeading', colSpan: 2},
+          {},
+        ]],
+        widths:['50%', '50%'],
+        layout: {hLineColor: '#0b0c0c'},
+        margin: [0, 10, 0, 0],
+      },
+      {
+        body: [...inactiveRows],
+        widths: ['25%', '25%'],
+        layout: {paddingLeft: () => 4},
+        margin: [0, 0, 0, 0],
+      },
+    ];
+  },
+};
+
 module.exports.tableDataMappers = tableDataMappers;
 module.exports.constructPageHeading = constructPageHeading;
 module.exports.bespokeReportBodys = bespokeReportBodys;
+module.exports.bespokeReportTablePrint = bespokeReportTablePrint;
