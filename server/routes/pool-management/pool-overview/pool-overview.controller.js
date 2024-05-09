@@ -78,8 +78,6 @@ module.exports.getJurors = function(app) {
 
     let queryStatus = !req.query.status || req.query.status === 'all' ? null : req.query.status;
 
-    console.log(queryStatus);
-
     const payload = {
       'pool_number': poolNumber,
       'juror_number': req.query.jurorNumber || null,

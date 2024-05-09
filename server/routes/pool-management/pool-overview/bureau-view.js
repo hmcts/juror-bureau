@@ -15,16 +15,14 @@ module.exports = function(app, req, res, pool, membersList, _errors, selectedJur
   let successBanner;
   let tmpError;
   let error = null;
-  let courtJurorStatuses;
+  let isOnlyResponded = false;
 
   req.session.poolDetails = pool;
 
   const filters = req.query;
 
-  if (status && status !== 'all') {
-    courtJurorStatuses = filters.status;
-  } else {
-    courtJurorStatuses = 'all';
+  if (status && status === 'responded') {
+    isOnlyResponded = true;
   }
 
   app.logger.info('Fetched court members: ', {
@@ -115,7 +113,7 @@ module.exports = function(app, req, res, pool, membersList, _errors, selectedJur
     },
     error,
     selectedJurors,
-    courtJurorStatuses,
+    isOnlyResponded,
     totalJurors,
     totalCheckedJurors,
     selectAll,

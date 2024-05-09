@@ -86,14 +86,12 @@
 
   respondedBureauStatusRadio.click(function(event) {
     event.preventDefault();
-    $('#status').val('responded');
-    $('#jurorDetailsForm').trigger('submit');
+    window.location.href = window.location.pathname + '?status=responded';
   });
 
   allBureauStatusRadio.click(function(event) {
     event.preventDefault();
-    $('#status').val('all');
-    $('#jurorDetailsForm').trigger('submit');
+    window.location.href = window.location.pathname + '?status=all';
   });
 
   poolOverviewShowFilterBtn.click(function(event) {

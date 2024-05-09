@@ -19,7 +19,6 @@
       {{ govukRadios({
         classes: "govuk-radios--inline govuk-radios--small",
         name: "jurorsInBureauPool",
-        value: courtJurorStatuses,
         fieldset: {
           legend: {
             text: "Jurors in this pool",
@@ -32,11 +31,13 @@
         items: [
           {
             value: "responded",
-            text: "Responded jurors only"
+            text: "Responded jurors only",
+            checked: isOnlyResponded
           },
           {
             value: "all",
-            text: "All statuses"
+            text: "All statuses",
+            checked: not isOnlyResponded
           }
         ]
       }) }}
