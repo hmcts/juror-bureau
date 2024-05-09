@@ -52,7 +52,7 @@ module.exports = async function(app) {
     helmet.contentSecurityPolicy({
       directives: {
         defaultSrc: ['\'none\''],
-        styleSrc: ['\'self\'', nonce, chartJsCsp],
+        styleSrc: ['\'self\'', chartJsCsp],
         scriptSrc: ['\'self\'', 'cdnjs.cloudflare.com', nonce],
         fontSrc: ['\'self\'', 'data:'],
         imgSrc: ['\'self\'', 'data:'],
