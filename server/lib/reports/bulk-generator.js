@@ -134,7 +134,7 @@
       columnGap: 20,
       columns: [
         _column(metadata.left),
-        _column(),
+        _column(metadata.centre),
         _column(metadata.right),
       ],
     };
