@@ -12,7 +12,7 @@
             classes: "govuk-tag" if response.signed === true else "govuk-tag--grey"
           }) }}
         </h2>
-        {% if isAddChangeVisible %}
+        {% if method === "paper" and isAddChangeVisible %}
           <div class="govuk-body">
             <a id="signatureEdit" 
                class="govuk-link"
