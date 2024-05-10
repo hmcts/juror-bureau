@@ -39,7 +39,6 @@
                     type="radio" 
                     value="active"
                     {% if isActive === 'true' %}checked{% endif %}
-                    onclick="window.location.href = '{{url('trial-management.trials.get')}}';"
                 >
               <label 
                   class="govuk-label govuk-radios__label" 
@@ -56,7 +55,6 @@
                     type="radio" 
                     value="all"
                     {% if isActive === 'false' %}checked{% endif %}
-                    onclick="window.location.href = '{{url('trial-management.trials.get')}}?isActive=false';"
                 >
                 <label 
                     class="govuk-label govuk-radios__label" 
@@ -103,3 +101,19 @@
   </div>
 {% endblock %}
 
+{% block body_end %}
+  {{ super() }}
+
+  <script type="application/javascript" nonce="{{ nonce }}">
+    $(document).ready(() => {
+      $('#activeTrialsRadio').on('click', function() {
+        window.location.href = '{{url('trial-management.trials.get')}}';
+      });
+
+      $('#allTrialsRadio').on('click', function() {
+        window.location.href = '{{url('trial-management.trials.get')}}?isActive=false';
+      });
+    });
+  </script>
+
+{% endblock %}

@@ -102,6 +102,12 @@
   {{ super() }}
 
   <script type="application/javascript" nonce="{{ nonce }}">
+    document.getElementsByName('poolNumber').forEach(function (element) {
+      element.addEventListener('click', function() {
+        storeStartDate(this);
+      });
+    });
+
     function storeStartDate(selectedPool) {
       $('#startDate').val(document.getElementById(selectedPool.value + '-startDate').innerText);
     }

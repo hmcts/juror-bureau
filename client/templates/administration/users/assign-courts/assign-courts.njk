@@ -59,11 +59,16 @@
 {% block body_end %}
   {{ super() }}
 
-  <script nonce="{{ nonce }}">
+  <script type="application/javascript" nonce="{{ nonce }}">
     let allChecked = false;
     let chkbxs = document.getElementsByName('selectedCourts');
-    document.getElementById("totalCourts").innerHTML = chkbxs.length;
-    document.getElementById("checkedCourts").innerHTML = 0;
+    document.getElementById('totalCourts').innerHTML = chkbxs.length;
+    document.getElementById('checkedCourts').innerHTML = 0;
+
+    document.getElementById('selectAllCheckbox').addEventListener('change', selectAll);
+    document.getElementsByName('selectedCourts').forEach((checkbox) => {
+      checkbox.addEventListener('change', checkSet);
+    });
 
     function selectAll() {
       if (allChecked) {
@@ -87,12 +92,12 @@
     };
 
     function checkSet() {
-      document.getElementById("checkedCourts").innerHTML = $('input:checkbox:checked').length;
-      document.getElementById("assignToCourtButton").innerHTML = `Assign to courts (${$('input:checkbox:checked').length})`;
       if (chkbxs.length > document.getElementsByName('selectedCourts:checked').length) {
         document.getElementsByName('selectAllCheckbox')[0].checked = false;
         allChecked = false;
       }
+      document.getElementById("checkedCourts").innerHTML = $('input:checkbox:checked').length;
+      document.getElementById("assignToCourtButton").innerHTML = `Assign to courts (${$('input:checkbox:checked').length})`;
     }
   </script>
 
