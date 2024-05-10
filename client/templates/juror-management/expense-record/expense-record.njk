@@ -224,7 +224,7 @@
 {% block body_end %}
   {{ super() }}
 
-  <script>
+  <script nonce="{{ nonce }}">
     var checkAllExpenses = $('#check-all-expenses')
     , expenseRows = $('input[id^=expense]')
     , totalCheckedExpenses = $('#totalCheckedExpenses')

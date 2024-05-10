@@ -80,7 +80,6 @@
             type="radio" 
             value="active"
             {% if judgeType === 'active' %}checked{% endif %}
-            onclick="window.location.href = '{{url('administration.judges.get')}}?judgeType=active';"
           >
           <label class="govuk-label govuk-radios__label" for="activeJudgesRadio">Active judges</label>
         </div>
@@ -92,7 +91,6 @@
             type="radio" 
             value="all"
             {% if judgeType === 'all' %}checked{% endif %}
-            onclick="window.location.href = '{{url('administration.judges.get')}}?judgeType=all';"
           >
           <label class="govuk-label govuk-radios__label" for="allJudgesRadio">All judges</label>
         </div>
@@ -145,5 +143,22 @@
       {% endif %}
     </div>
   </div>
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script type="application/javascript" nonce="{{ nonce }}">
+    $(document).ready(() => {
+      $('#activeJudgesRadio').on('click', function() {
+        window.location.href = '{{url('administration.judges.get')}}?judgeType=active';
+      });
+
+      $('#allJudgesRadio').on('click', function() {
+        window.location.href = '{{url('administration.judges.get')}}?judgeType=all';
+      });
+    });
+  </script>
 
 {% endblock %}

@@ -185,7 +185,7 @@
   {{ super() }}
 
   <script src="{{ assetPath }}js/pool-overview.js"></script>
-  <script>
+  <script nonce="{{ nonce }}">
     const goHref = (href) => {
       document.getElementById('navigate').value = 'previous';
       document.getElementById('jurorDetailsForm').action = href;

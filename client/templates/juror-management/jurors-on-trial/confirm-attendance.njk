@@ -283,9 +283,9 @@
 
 {% block body_end %}
   {{ super() }}
-  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+  {% include "includes/datepicker.njk" %}
 
-  <script type="application/javascript">
+  <script type="application/javascript" nonce="{{ nonce }}">
     $(document).ready(function() {
       var $checkAll = $('#check-all');
       var $jurorCheckboxes = $('input[name="selectedJurors"]');
@@ -301,10 +301,5 @@
         $totalSelected.text($jurorCheckboxes.filter(':checked').length);
       });
     });
-
-    const datePickers = []
-      .slice
-      .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
-    datePickers.forEach(dp => new DSDatePicker(dp, { imagePath: '{{ assetPath }}assets/images/icons/' }).init());
   </script>
 {% endblock %}
