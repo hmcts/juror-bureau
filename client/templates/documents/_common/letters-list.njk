@@ -127,7 +127,7 @@
   <script src="{{ assetPath if assetPath else '/' }}js/document-letters.js"></script>
 
   {% if authentication.owner !== "400" %}
-    <script>
+    <script nonce="{{ nonce }}">
       $('loaded', function() {
         $('#print-documents').click(function(event) {
           var selectedJurorsCount = $('#selectedJurorsCount').text();

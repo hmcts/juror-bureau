@@ -48,7 +48,8 @@
             value: "",
             name: "officer_assigned",
             id: "officerAssigned",
-            data: "AUTO," + staffList
+            data: "AUTO," + staffList,
+            nonce: nonce
           }) }}
         </div>
 
@@ -412,7 +413,7 @@
   {{ super() }}
   
   <script src="{{ assetPath }}js/accessible-autocomplete.min.js"></script>
-  <script type="text/javascript">
+  <script type="text/javascript" nonce="{{ nonce }}">
 
     $(document).ready(function(){
       accessibleAutocomplete.enhanceSelectElement({

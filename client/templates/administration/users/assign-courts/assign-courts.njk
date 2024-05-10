@@ -59,7 +59,7 @@
 {% block body_end %}
   {{ super() }}
 
-  <script>
+  <script nonce="{{ nonce }}">
     let allChecked = false;
     let chkbxs = document.getElementsByName('selectedCourts');
     document.getElementById("totalCourts").innerHTML = chkbxs.length;

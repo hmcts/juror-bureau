@@ -12,7 +12,9 @@
     , jurorTransfer = require('../../../objects/juror-transfer').jurorTransfer
     , { dateFilter } = require('../../../components/filters')
     , { systemCodesDAO } = require('../../../objects/administration');
+  const { deferralReasonAndDecision } = require('../../../config/validation/deferral-mod');
   const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
+  const { makeManualError } = require('../../../lib/mod-utils');
 
   module.exports.index = function(app) {
     return function(req, res) {
@@ -247,8 +249,7 @@
 
   module.exports.postDeferral = function(app) {
     return function(req, res) {
-      var validatorResult
-        , tmpReasons
+      var tmpReasons
         , deferralReason
 
         , successCB = function(data) {
@@ -296,12 +297,12 @@
               error: typeof err.error !== 'undefined' ? err.error : err.toString(),
             });
           }
-          req.session.errors = {
-            deferralError: [{
-              details: err.error.message,
-              summary: err.error.message,
-            }],
-          };
+
+          if (err.error && err.error.code === 'CANNOT_REFUSE_FIRST_DEFERRAL') {
+            req.session.errors = makeManualError('deferral', 'Cannot refuse first deferral');
+          } else {
+            req.session.errors = makeManualError('deferral', 'Something went wrong when trying to defer the juror');
+          }
 
           return res.redirect(app.namedRoutes.build('juror.update.deferral.get', {
             jurorNumber: req.params.jurorNumber,
@@ -310,11 +311,8 @@
 
       tmpReasons = _.cloneDeep(req.session.deferralReasons);
 
-      delete req.session.deferralReasons;
-      delete req.session.formFields;
-
-      validatorResult = validate(req.body,
-        require('../../../config/validation/deferral-mod.js').deferralReasonAndDecision(req.session.minDate, req.session.maxDate));
+      const { minDate, maxDate } = req.session;
+      const validatorResult = validate(req.body, deferralReasonAndDecision(req.body, minDate, maxDate));
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
@@ -324,6 +322,9 @@
           jurorNumber: req.params.jurorNumber,
         }));
       }
+
+      delete req.session.errors;
+      delete req.session.formFields;
 
       deferralReason = tmpReasons
         .find(reason => reason.code === req.body.deferralReason).description.toLowerCase();

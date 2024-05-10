@@ -1,17 +1,14 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
-{%- from "govuk/components/checkboxes/macro.njk" import govukCheckboxes -%}
-{%- from "govuk/components/input/macro.njk" import govukInput -%}
-{%- from "govuk/components/table/macro.njk" import govukTable -%}
-{%- from "moj/components/filter/macro.njk" import mojFilter -%}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "moj/components/filter/macro.njk" import mojFilter %}
 {% from "custom-components/mod-filter/macro.njk" import modFilter %}
-{%- from "moj/components/button-menu/macro.njk" import mojButtonMenu -%}
+{% from "moj/components/button-menu/macro.njk" import mojButtonMenu %}
 
-{% if totalJurors === 0 and poolDetails.isActive === true %}
-  <div class="govuk-grid-column-full govuk-body">
-    This pool has no members.
-  </div>
-{% elif poolDetails.isActive === true %}
+{% if poolDetails.isActive === true %}
   <form method="post" id="jurorDetailsForm" >
+
     {% if not selectAll %}
       {% for selectedJuror in selectedJurors %}
         <input type="hidden" name="selectedJurors" aria-label="check-juror" value="{{ selectedJuror }}" checked>
@@ -21,8 +18,7 @@
     <div class="govuk-grid-column-full juror-actions govuk-!-padding-0 govuk-!-margin-bottom-5">
       {{ govukRadios({
         classes: "govuk-radios--inline govuk-radios--small",
-        name: "jurorsInPool",
-        value: jurorStatuses,
+        name: "jurorsInBureauPool",
         fieldset: {
           legend: {
             text: "Jurors in this pool",
@@ -32,26 +28,30 @@
         hint: {
           text: "Only displaying jurors managed by the Bureau"
         },
-
         items: [
           {
             value: "responded",
             text: "Responded jurors only",
-            checked: true
+            checked: isOnlyResponded
           },
           {
             value: "all",
-            text: "All jurors"
+            text: "All statuses",
+            checked: not isOnlyResponded
           }
         ]
       }) }}
+
+      <input type="hidden" id="status" name="status">
+
       {{ govukButton({
         text: "Show filter",
         classes: "govuk-button--secondary govuk-!-margin-bottom-0",
         attributes: {
-          id: "editPoolButton"
+          id: "pool-overview-show-filter"
         }
       }) }}
+
       {{ govukButton({
         text: "Reassign",
         classes: "govuk-button--secondary govuk-!-margin-bottom-0",
@@ -61,6 +61,7 @@
           formAction: postUrls.assignUrl
         }
       }) }}
+
       {{ govukButton({
         text: "Postpone",
         classes: "govuk-button--secondary govuk-!-margin-bottom-0",
@@ -70,7 +71,9 @@
           formAction: postUrls.postponeUrl
         }
       }) }}
+
       {% if isCourtUser %}
+
         {{ govukButton({
           text: "Transfer",
           classes: "govuk-button--secondary govuk-!-margin-bottom-0",
@@ -80,6 +83,7 @@
             formAction: postUrls.transferUrl
           }
         }) }}
+
         {{ govukButton({
           text: "Complete service",
           classes: "govuk-button--secondary govuk-!-margin-bottom-0",
@@ -89,43 +93,70 @@
             formAction: postUrls.completeServiceUrl
           }
         }) }}
+
       {% endif %}
     </div>
 
-     {% if totalJurors > 500 %}
-        <span class="govuk-body">There are more than 500 results. Refine your search.</span>
-    {% else %} 
-      {% if errors.items["selectedJurors"] %}<div class="error-allocation">
-        <p class="govuk-error-message">{{ errors.items['selectedJurors'][0].details }}</p>
+    <div class="govuk-grid-row">
+
+      <div class="govuk-grid-column-one-third">
+        {% include "./_partials/filters.njk" %}
+      </div>
+
+      {% if totalJurors > 500 %}
+
+        <div id="pool-overview-table-wrapper" class="govuk-grid-column-full">
+          <span class="govuk-body">There are more than 500 results. Refine your search.</span>
+        </div>
+
+      {% elif totalJurors === 0 %}
+
+        <div id="pool-overview-table-wrapper" class="govuk-grid-column-full">
+          <span class="govuk-body">There are no results to display.</span>
+        </div>
+
+      {% else %}
+
+        <div id="pool-overview-table-wrapper" class="govuk-grid-column-full">
+
+          {% if errors.items["selectedJurors"] %}<div class="error-allocation">
+            <p class="govuk-error-message">{{ errors.items['selectedJurors'][0].details }}</p>
+          {% endif %}
+        
+          {% if errors.items["selectedJurors"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
+
+          <div class="govuk-caption-m">
+            <span id="total-checked-jurors">{{ totalCheckedJurors }}</span> of <span id="total-jurors-count">{{ totalJurors }}</span> selected
+          </div>
+
+          {{ modSortableTable({
+            id: "jurorOverview",
+            caption: "Jurors in pool",
+            captionClass: "govuk-visually-hidden",
+            head: membersHeaders,
+            rows: poolMembers,
+            url: urlPrefix
+          }) }}
+
+          {% if errors.items["selectedJurors"] %}</div>{% endif %}
+
+          {{ govukPagination({
+            previous: {
+              href: pageItems.prev
+            },
+            next: {
+              href: pageItems.next
+            },
+            items: pageItems.items
+          }) }}
+
+          {% if errors.items["selectedJurors"] %}</div>{% endif %}
+
+        </div>
+
       {% endif %}
-      
-      {% if errors.items["selectedJurors"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
 
-        <div class="govuk-body"> <span id="total-checked-jurors">{{ totalCheckedJurors }}</span> of <span id="total-jurors-count">{{ totalJurors }}</span> selected</div>
-
-        {{ modSortableTable({
-          id: "jurorOverview",
-          caption: "Jurors in pool",
-          captionClass: "govuk-visually-hidden",
-          head: membersHeaders,
-          rows: poolMembers,
-          url: urlPrefix
-        }) }}
-
-        {% if errors.items["selectedJurors"] %}</div>{% endif %}
-
-        {{ govukPagination({
-          previous: {
-            href: pageItems.prev
-          },
-          next: {
-            href: pageItems.next
-          },
-          items: pageItems.items
-        }) }}
-
-      {% if errors.items["selectedJurors"] %}</div>{% endif %}
-    {% endif %}
+    </div>
 
     <input type="hidden" name="navigate" id="navigate" value="">
     <input type="hidden" name="poolNumber" id="poolNumber" value="{{ poolDetails.poolNumber }}">
