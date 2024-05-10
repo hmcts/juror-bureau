@@ -142,12 +142,12 @@ const bespokeReportTablePrint = {
     });
 
     activeRows.push([
-      {text: 'Total active', bold: true, fillColor: '#0b0c0c', color: '#ffffff'},
-      {text: totalActive, fillColor: '#0b0c0c', color: '#ffffff'},
+      { text: 'Total active', bold: true, fillColor: '#0b0c0c', color: '#ffffff' },
+      { text: totalActive, fillColor: '#0b0c0c', color: '#ffffff' },
     ]);
     inactiveRows.push([
-      {text: 'Total inactive', bold: true, fillColor: '#0b0c0c', color: '#ffffff'},
-      {text: totalInactive, fillColor: '#0b0c0c', color: '#ffffff'},
+      { text: 'Total inactive', bold: true, fillColor: '#0b0c0c', color: '#ffffff' },
+      { text: totalInactive, fillColor: '#0b0c0c', color: '#ffffff' },
     ]);
 
     return [
@@ -157,28 +157,28 @@ const bespokeReportTablePrint = {
           {},
         ]],
         widths:['50%', '50%'],
-        layout: {hLineColor: '#0b0c0c'},
+        layout: { hLineColor: '#0b0c0c' },
         margin: [0, 10, 0, 0],
       },
       {
         body: [...activeRows],
         widths: ['25%', '25%'],
-        layout: {paddingLeft: () => 4},
+        layout: { paddingLeft: () => 4 },
         margin: [0, 0, 0, 0],
       },
       {
         body: [[
-          {text: 'Inactive pool members ', style: 'sectionHeading', colSpan: 2},
+          { text: 'Inactive pool members ', style: 'sectionHeading', colSpan: 2 },
           {},
         ]],
         widths:['50%', '50%'],
-        layout: {hLineColor: '#0b0c0c'},
+        layout: { hLineColor: '#0b0c0c' },
         margin: [0, 10, 0, 0],
       },
       {
         body: [...inactiveRows],
         widths: ['25%', '25%'],
-        layout: {paddingLeft: () => 4},
+        layout: { paddingLeft: () => 4 },
         margin: [0, 0, 0, 0],
       },
     ];

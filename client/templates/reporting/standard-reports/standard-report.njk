@@ -34,15 +34,27 @@
 
   <div class="mod-flex mod-space-between">
     <h1 class="govuk-heading-l">{{title}}</h1>
-    
-    {{ govukButton({
-      text: "Print",
-      href: printUrl,
-      classes: "govuk-button--secondary",
-      attributes: {
-        target: "_blank"
-      }
-    }) }}
+
+    <div class="govuk-button-group">
+      {% if exportUrl %}
+        {{ govukButton({
+          text: "Export data",
+          href: exportUrl,
+          classes: "govuk-button--secondary",
+          attributes: {
+            target: "_blank"
+          }
+        }) }}
+      {% endif %}
+      {{ govukButton({
+        text: "Print",
+        href: printUrl,
+        classes: "govuk-button--secondary",
+        attributes: {
+          target: "_blank"
+        }
+      }) }}
+    </div>
   </div>
 
   <div class="report-headings">

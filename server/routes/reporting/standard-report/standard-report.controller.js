@@ -2,7 +2,7 @@
   'use strict';
 
   const _ = require('lodash');
-  const { snakeToCamel, transformCourtNames, makeManualError, matchUserCourt, matchUserCourts } = require('../../../lib/mod-utils');
+  const { snakeToCamel, transformCourtNames, makeManualError } = require('../../../lib/mod-utils');
   const { standardReportDAO } = require('../../../objects/reports');
   const { validate } = require('validate.js');
   const { poolSearchObject } = require('../../../objects/pool-search');
@@ -14,6 +14,7 @@
   const searchValidator = require('../../../config/validation/report-search-by');
   const moment = require('moment')
   const { dateFilter } = require('../../../components/filters');
+  const { reportExport } = require('./report-export');
 
   const standardFilterGet = (app, reportKey) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
@@ -134,7 +135,7 @@
     return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`) + '?filter=' + filter);
   };
 
-  const standardReportGet = (app, reportKey, isPrint = false) => async(req, res) => {
+  const standardReportGet = (app, reportKey, isPrint = false, isExport = false) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
     const bespokeReportBody = reportType.bespokeReportBody || false;
     const config = { reportType: reportType.apiKey, locCode: req.session.authentication.locCode };
@@ -246,6 +247,7 @@
         : standardReportDAO.post(req, app, config));
 
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
+      if (isExport) return reportExport(app, req, res, reportKey, { headings, tableData }) 
 
       let tableHeaders = tableData.headings.map((data, index) => ({
         text: data.name,
@@ -317,6 +319,7 @@
         reportKey,
         grouped: reportType.grouped,
         bespokeReportBody,
+        exportUrl: reportType.exportable ? app.namedRoutes.build(`reports.${reportKey}.report.export`, {filter: req.params.filter}) : '',
         filter: req.params.filter,
         printUrl: buildPrintUrl(),
         backLinkUrl: {

@@ -36,7 +36,14 @@
     app.get(`/reporting/${key}/report/:filter/print`,
       `reports.${key}.report.print`,
       auth.verify,
-      standardReportGet(app, key, true));
+      standardReportGet(app, key, true, false));
+
+    if (reportKeys(app)[key].exportable) {
+      app.get(`/reporting/${key}/report/:filter/export`,
+        `reports.${key}.report.export`,
+        auth.verify,
+        standardReportGet(app, key, false, true));
+    }
   };
 
   // Add standard report keys to this object, the function will populate them
