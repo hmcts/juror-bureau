@@ -131,7 +131,7 @@
 
   <script src="{{ assetPath }}js/certificate-of-exemption-list.js"></script>
 
-  <script>
+  <script nonce="{{ nonce }}">
     $('loaded', function() {
       $('#print-documents').click(function(event) {
         var selectedJurorsCount = $('#checkedJurors').text();

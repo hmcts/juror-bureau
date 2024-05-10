@@ -97,7 +97,7 @@
     <p class="govuk-body-m" id="guidanceText">{{ params.guidanceText }}</p>
   {% endif %}
 
-  <script>
+  <script nonce="{{ nonce }}">
     var labelArr =  ("{{params.labels}}").split(",");
     var legendArr =  ("{{params.labels}}").split(",");
     var valueArr =  ("{{params.values}}").split(",");

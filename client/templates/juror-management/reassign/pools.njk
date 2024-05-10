@@ -101,7 +101,7 @@
 {% block body_end %}
   {{ super() }}
 
-  <script type="application/javascript">
+  <script type="application/javascript" nonce="{{ nonce }}">
     function storeStartDate(selectedPool) {
       $('#startDate').val(document.getElementById(selectedPool.value + '-startDate').innerText);
     }

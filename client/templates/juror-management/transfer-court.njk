@@ -42,7 +42,8 @@
           id: "courtNameOrLocation",
           data: courts,
           class: "govuk-!-width-one-third",
-          errorMessage: courtNameError
+          errorMessage: courtNameError,
+          nonce: nonce
         }) }}
 
         <div class="datepicker-controls-group govuk-!-padding-bottom-0" id="datesGroup">
@@ -79,17 +80,5 @@
 
 {% block body_end %}
   {{ super() }}
-  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
-
-  <script type="text/javascript">
-    $(document).ready(function(){
-
-      const datePickers = []
-        .slice
-        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
-      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
-
-    });
-  </script>
-
+  {% include "includes/datepicker.njk" %}
 {% endblock %}
