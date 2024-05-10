@@ -154,63 +154,7 @@
 
   </div> {# row #}
 
-  {# details banner #}
-  {% if hasModAccess %}
-    {% include "summons-management/_common/details-banner-new.njk" %}
-  {% else %}
-    <div class="govuk-body jd-response-details-banner-blue detail-info">
-      <div class="govuk-grid-row jd-response-details-banner-row">
-        <div class="govuk-grid-column-one-half">
-          <div class="govuk-grid-column-one-third">
-            <div class="govuk-!-font-weight-bold">Reply status</div><strong class="govuk-tag govuk-tag--blue">{{ processingStatusDisp }}</strong>
-          </div>
-          <div class="govuk-grid-column-two-thirds">
-            <div class="govuk-!-font-weight-bold">Reply type</div>
-
-            {{replyTypeTag({
-              replyType: replyType
-            })}}
-
-          </div>
-        </div>
-      </div>
-
-      <hr class="govuk-section-break govuk-section-break--visible">
-
-      <div class="govuk-grid-row jd-response-details-banner-row">
-
-        <div class="govuk-grid-column-one-half">
-          <div class="govuk-grid-column-one-third">
-            <div id="jurorNumLabel" class="govuk-!-font-weight-bold">Juror number</div>
-            <span id="jurorNum">{{ response.jurorNumber }}</span>  {# class="juror-number" #}
-          </div>
-          <div class="govuk-grid-column-one-third">
-            <div id="recordStatusLabel "class="govuk-!-font-weight-bold">Record status</div>
-            <span id="recordStatus">{{ response.statusRender }}</span>
-          </div>
-          <div class="govuk-grid-column-one-third">
-            <div id="replyReceivedLabel" class="govuk-!-font-weight-bold">Reply received</div>
-            <span id="replyReceived" class="{% if response.slaOverdue %}jd-response-overdue-details-banner{% endif %}">{{ response.dateReceived | dateFilter("DD/MM/YYYY", "D MMM YYYY")}}</span>
-          </div>
-        </div>
-        <div class="govuk-grid-column-one-half">
-          <div class="govuk-grid-column-one-third">
-            <div id="poolNumberLabel" class="govuk-!-font-weight-bold">Pool number</div>
-            <span id="poolNumber">{{ response.poolNumber }}<span>
-          </div>
-          <div class="govuk-grid-column-one-third">
-            <div id="startDateLabel" class="govuk-!-font-weight-bold">Court start date</div>
-            <span id="startDate">{% if response.hearingDate == null %}{{ response.poolDate | dateFilter("DD/MM/YYYY", "D MMM YYYY")}}{% else %}{{response.hearingDate | dateFilter("DD/MM/YYYY", "D MMM YYYY")}}{% endif %}</span>
-          </div>
-          <div class="govuk-grid-column-one-third">
-            <div id="courtNameLabel" class="govuk-!-font-weight-bold">Court name</div>
-            <span id="courtName">{{ response.courtName }}</span>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  {% endif %}
+  {% include "summons-management/_common/details-banner-new.njk" %}
 
   <input name="poolStatus" id="poolStatus" class="u-hide" value="{{poolStatus}}"/>
   <input name="processingStatus" id="processingStatus" class="u-hide" value="{{processingStatus}}"/>
