@@ -144,6 +144,11 @@
     document.getElementById("totalJurors").innerHTML = chkbxs.length;
     document.getElementById("checkedJurors").innerHTML = 0;
 
+    document.getElementById('selectAllCheckbox').addEventListener('change', selectAll);
+    document.getElementsByName('selectedCourts').forEach((checkbox) => {
+      checkbox.addEventListener('change', checkSet);
+    });
+
     function selectAll() {
       if (allChecked) {
         allChecked = false;

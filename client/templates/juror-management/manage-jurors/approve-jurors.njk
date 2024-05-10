@@ -36,7 +36,6 @@
                     type="radio" 
                     value="active"
                     {% if status === 'pending' %}checked{% endif %}
-                    onclick="window.location.href = '{{url('juror-management.manage-jurors.approve.get')}}?status=pending';"
                 >
               <label 
                   class="govuk-label govuk-radios__label" 
@@ -53,7 +52,6 @@
                     type="radio" 
                     value="all"
                     {% if status === 'all' %}checked{% endif %}
-                    onclick="window.location.href = '{{url('juror-management.manage-jurors.approve.get')}}?status=all';"
                 >
                 <label 
                     class="govuk-label govuk-radios__label" 
@@ -72,4 +70,21 @@
       {% include "./pending-approval.njk" %}
     </div>
   </div>
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script type="application/javascript" nonce="{{ nonce }}">
+    $(document).ready(() => {
+      $('#filterApprovalPending').on('click', function() {
+        window.location.href = '{{url('juror-management.manage-jurors.approve.get')}}?status=pending';
+      });
+
+      $('#filterApprovalAll').on('click', function() {
+        window.location.href = '{{url('juror-management.manage-jurors.approve.get')}}?status=all';
+      });
+    });
+  </script>
+
 {% endblock %}
