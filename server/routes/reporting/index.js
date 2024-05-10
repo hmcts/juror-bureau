@@ -1,3 +1,5 @@
+const { financialAudit } = require('./audit.controller');
+
 (function() {
   'use strict';
 
@@ -48,6 +50,10 @@
       'expenses-bulk.generate.get',
       generateBulk(app));
 
+    app.get('/reports/financial-audit/:auditNumber',
+      'reports.financial-audit.get',
+      auth.verify,
+      financialAudit(app));
   };
 
 })();

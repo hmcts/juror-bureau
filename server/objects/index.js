@@ -15,6 +15,7 @@
   const createTrial = require('./create-trial');
   const policeCheck = require('./police-check');
   const coronerPools = require('./coroner-pools');
+  const poolMembers = require('./pool-members');
 
   module.exports = {
     ...requestPool,
@@ -28,6 +29,7 @@
     ...createTrial,
     ...policeCheck,
     ...coronerPools,
+    ...poolMembers,
   };
 
 })();

@@ -101,6 +101,11 @@
             count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
             items: tmpErrors,
           },
+          previewUrl: app.namedRoutes.build('juror-management.edit-expense.preview.post', {
+            jurorNumber: req.params.jurorNumber,
+            locCode: req.params.locCode,
+            status: req.params.status,
+          }),
         });
       } catch (err) {
         app.logger.crit('Failed to bundle and fetch expenses to edit', {

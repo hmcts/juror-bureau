@@ -67,6 +67,7 @@
 {% endmacro %}
 
 {% macro attendanceType(params) %}
+  {% set attendanceType = "" %}
   {% if params.attendance === "FULL_DAY" %}
     {% set attendanceType = "Full day" %}
   {% elif params.attendance === "HALF_DAY" %}

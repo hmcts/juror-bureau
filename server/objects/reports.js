@@ -30,4 +30,13 @@ const { DAO } = require('./dataAccessObject');
       return rp(payload);
     },
   };
+
+  module.exports.financialAuditDAO = new DAO('moj/reports/financial-audit', {
+    get: function(number) {
+      return {
+        uri: `${this.resource}?audit-number=${number}`,
+        transform: mapSnakeToCamel,
+      };
+    },
+  });
 })();

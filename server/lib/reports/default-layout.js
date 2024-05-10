@@ -43,11 +43,22 @@
           bold: true,
           marginTop: 10,
         },
+        sectionHeading: {
+          fontSize: 10,
+          bold: true,
+        },
         footer: {
           fontSize: 10,
         },
         label: {
           bold: true,
+        },
+        totalLabel: {
+          bold: true,
+          paddingBottom: 0,
+        },
+        totalBody: {
+          paddingBottom: 0,
         },
         body: {
           fontSize: 7,
