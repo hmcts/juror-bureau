@@ -30,7 +30,7 @@
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
             <th scope="col" class="govuk-table__header" >
-              <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox" onclick="selectAll()">
+              <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
                 <input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check" id="selectAllCheckbox" name="selectAllCheckbox"/>
                 <label class="govuk-label govuk-checkboxes__label" for="selectAllCheckbox">
                   <span class="govuk-visually-hidden">Select All</span>
@@ -50,7 +50,7 @@
           {% if not trial.is_jury_empanelled or member.juror_status === 'Juror' %}
           <tr class="govuk-table__row govuk-table__row--selected">
             <td class="govuk-table__cell">
-              <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox" onclick="checkSet()">
+              <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
                 <input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check" id="select-{{ member.juror_number }}" name="selectedJurors" value="{{ member.juror_number }}">
                 <label class="govuk-label govuk-checkboxes__label" for="select-{{ member.juror_number }}">
                   <span class="govuk-visually-hidden">Select {{ member.first_name }} {{ member.last_name }}</span>
@@ -83,6 +83,11 @@
     let chkbxs = document.getElementsByName('selectedJurors');
     document.getElementById("totalJurors").innerHTML = chkbxs.length;
     document.getElementById("checkedJurors").innerHTML = 0;
+
+    document.getElementById('selectAllCheckbox').addEventListener('change', selectAll);
+    document.getElementsByName('selectedCourts').forEach((checkbox) => {
+      checkbox.addEventListener('change', checkSet);
+    });
 
     function selectAll() {
 

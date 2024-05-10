@@ -34,8 +34,7 @@
           classes: "govuk-button--secondary",
           attributes: {
             id: "printButton",
-            name: "print-button",
-            onclick: "printDoc()"
+            name: "print-button"
           }
         }) }}
 
@@ -219,6 +218,8 @@
   {{ super() }}
 
   <script nonce="{{ nonce }}">
+    document.getElementById("printButton").addEventListener("click", printDoc);
+
     function printDoc() {
       window.print();
     }
