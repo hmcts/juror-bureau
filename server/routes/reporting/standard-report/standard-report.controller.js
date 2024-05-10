@@ -307,8 +307,6 @@
         }
       }
 
-      console.log(tableRows);
-
       const pageHeadings = reportType.headings.map(heading => constructPageHeading(heading, headings));
 
       return res.render('reporting/standard-reports/standard-report', {
