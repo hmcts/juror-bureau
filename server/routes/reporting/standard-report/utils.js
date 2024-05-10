@@ -94,13 +94,15 @@ const bespokeReportBodys = {
       });
     });
 
+    const totalJurors = totalActive + totalInactive;
+
     activeRows.push({
       key: {
         text: 'Total active',
         classes: 'govuk-!-padding-left-2',
       },
       value: {
-        text: totalActive,
+        text: `${totalActive} (${(totalActive/totalJurors) * 100}%)`,
       },
       classes: 'mod-summary-list__blue',
     });
@@ -110,7 +112,7 @@ const bespokeReportBodys = {
         classes: 'govuk-!-padding-left-2',
       },
       value: {
-        text: totalInactive,
+        text: `${totalInactive} (${(totalInactive/totalJurors) * 100}%)`,
       },
       classes: 'mod-summary-list__blue',
     });

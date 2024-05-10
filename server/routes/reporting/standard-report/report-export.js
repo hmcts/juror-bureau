@@ -15,7 +15,9 @@ async function reportExport(app, req, res, reportKey, data) {
 
 async function poolStatusReportExport(req, res, data) {
   const { tableData } = data;
-  let csvResult = [['Status', 'Total members']];
+  const poolNumber = req.params.filter;
+
+  let csvResult = [['Pool number', poolNumber], [], ['Status', 'Total members']];
   const csvData = tableData.headings.map(header => {
     const text = tableDataMappers[header.dataType](tableData.data[0][snakeToCamel(header.id)]) || '-';
 
@@ -23,7 +25,7 @@ async function poolStatusReportExport(req, res, data) {
   });
 
   csvResult = csvResult.concat(csvData);
-  const filename = `pool_status_${req.params.filter}_${dateFilter(new Date, null, 'DD-MM-YYYY')}.csv`;
+  const filename = `pool_status_${poolNumber}_${dateFilter(new Date, null, 'DD-MM-YYYY')}.csv`;
 
   res.set('content-disposition', 'attachment; filename=' + filename);
   res.type('csv');
