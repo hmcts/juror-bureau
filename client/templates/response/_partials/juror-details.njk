@@ -198,20 +198,20 @@
           Email 
         </dt>
         {% if jurorDetails.email.current === null %}
-          <td class="govuk-summary-list__value" id="jurorEmailAddress">-</td>
+          <dd class="govuk-summary-list__value" id="jurorEmailAddress">-</dd>
         {% else %}
-          <td class="govuk-summary-list__value" id="jurorEmailAddress">
+          <dd class="govuk-summary-list__value" id="jurorEmailAddress">
             {% if jurorDetails.email.changed %}
               <div class="jd-label-blue">New</div>
             {% endif %}
             {{ jurorDetails.email.current }}
-          </td>
-          <td class="govuk-summary-list__value" id="oldJurorEmailAddress">
+          </dd>
+          <dd class="govuk-summary-list__value" id="oldJurorEmailAddress">
             {% if jurorDetails.email.changed %}
               <div class="jd-label-black">Previous</div>
             {% endif %}
             {{ jurorDetails.email.old }}
-          </td>
+          </dd>
         {% endif %}
       </div>
     </dl>
