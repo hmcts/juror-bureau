@@ -1,0 +1,60 @@
+@startuml modify-attendance
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant jurorAttendancePage <</juror-management/juror-record/attendance>>
+participant modifyAttendancePage <</juror-management/juror-record/modify-juror-attendance>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant ModifyAttendanceController <<modify-attendance.controller.js>> #lightyellow
+participant modifyJurorAttendance <<modifyJurorAttendance.patch()>> #lightyellow
+
+''' TEMPLATES
+participant jurorAttendanceTemplate <</juror-management/juror-record/attendance.njk>>
+participant modifyAttendanceTemplate <</juror-management/juror-record/modify-juror-attendance.njk>>
+participant GenericErrorTemplate <</error.njk>>
+
+''' VALIDATORS
+participant attendanceTimeValidator <</validation/add-attendance.js>>
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> jurorAttendancePage: click change
+jurorAttendancePage -> ModifyAttendanceController : call page controller
+
+ModifyAttendanceController -> modifyAttendancePage : request and build template
+ModifyAttendanceController <- modifyAttendancePage : return HTML
+modifyAttendancePage <- ModifyAttendanceController : return HTML
+Actor <- modifyAttendancePage : render HTML
+
+Actor -> modifyAttendancePage: click save
+ModifyAttendanceController -> modifyJurorAttendance : build request object
+modifyJurorAttendance -> BackendController : send backend request
+modifyJurorAttendance <- BackendController : ok response
+ModifyAttendanceController <- modifyJurorAttendance : resolve request
+
+
+alt validation fails
+
+  ModifyAttendanceController <-- attendanceTimeValidator : data validation fails
+  ModifyAttendanceController --> modifyAttendanceTemplate : request and build template
+  ModifyAttendanceController <- modifyAttendanceTemplate : return HTML
+  modifyAttendancePage <- ModifyAttendanceController : return HTML
+  Actor <- modifyAttendancePage : render page
+end
+
+alt Could not update attendance date
+    modifyJurorAttendance <-- BackendController : error response
+    ModifyAttendanceController <-- modifyJurorAttendance : reject requestObject
+    ModifyAttendanceController -> ErrorTemplate : request and build template
+    ModifyAttendanceController <- ErrorTemplate : return HTML
+    GenericErrorPage <- ModifyAttendanceController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+

@@ -1,0 +1,37 @@
+@startuml users
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant usersListPage <</administration/users>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant administrationController <<administration.controller.js>> #lightyellow
+participant usersController <<users.controller.js>> #lightyellow
+participant usersObject <<usersDAO.get()>> #lightyellow
+
+''' TEMPLATES
+participant UsersListTemplate <<administration/users/users.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> usersListPage : click users tab
+usersListPage -> administrationController : call admin controller
+administrationController -> usersController : call users controller
+
+usersController -> UsersListTemplate : request and build template
+usersController <- UsersListTemplate : return HTML
+usersListPage <- usersController : return HTML
+Actor <- usersListPage : render HTML
+ 
+usersController -> usersObject : build request object
+usersObject -> BackendController : send backend request
+usersObject <- BackendController : ok response
+usersController <- usersObject : resolve request
+

@@ -1,0 +1,120 @@
+@startuml enter-expenses
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant ExpenseRecordPage <</juror-management/unpaid-attendance/expense-record/:jurorNumber/:poolNumber>>
+participant EnterExpensesPage <</juror-management/expenses/:jurorNumber/:poolNumber/enter-expenses>>
+participant LossOverLimitPage <</juror-management/expenses/:jurorNumber/:poolNumber/enter-expenses/loss-over-limit>>
+participant TravelOverLimitPage <</juror-management/expenses/:jurorNumber/:poolNumber/enter-expenses/travel-over-limit>>
+participant TotalLessThanZeroPage <</juror-management/expenses/:jurorNumber/:poolNumber/enter-expenses/total-less-zero>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant ExpenseRecordController <<expense-record.controller.js>> #lightyellow
+participant EnterExpensesController <<enter-expenses.controller.js>> #lightyellow
+participant ExpenseRecordObject <<getEnteredExpensesDAO.post()>> #lightyellow
+participant SetEnteredExpenseObject <<postDraftExpenseDAO.post()>> #lightyellow
+participant calculateSummaryTotalsObject <<postRecalculateSummaryTotalsDAO.post()>> #lightyellow
+''' TEMPLATES
+participant EnterAttendanceExpensesTemplate <<expenses/enter-expenses.njk>> #lavender
+participant EnterNonAttendanceExpensesTemplate <<expenses/enter-expenses-non-attendance.njk>> #lavender
+participant LossOverLimit <<expenses/loss-over-limit.njk>> #lavender
+participant TravelOverLimit <<expenses/travel-over-limit.njk>> #lavender
+participant TotalLessThanZero <<expenses/total-less-than-zero.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant expenseDetailsValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> ExpenseRecordPage : click expense date link
+ExpenseRecordPage -> EnterExpensesController : call expense details controller
+ 
+EnterExpensesController -> ExpenseRecordObject : build request object
+ExpenseRecordObject -> BackendController : send backend request
+ExpenseRecordObject <- BackendController : ok response
+EnterExpensesController <- ExpenseRecordObject : resolve request
+
+alt Failed to fetch draft expense for juror
+    ExpenseRecordObject <-- BackendController : error response
+    EnterExpensesController <-- ExpenseRecordObject : reject requestObject
+    EnterExpensesController -> ErrorTemplate : request and build template
+    EnterExpensesController <- ErrorTemplate : return HTML
+    GenericErrorPage <- EnterExpensesController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+EnterExpensesController -> EnterAttendanceExpensesTemplate : request and build template
+EnterExpensesController <- EnterAttendanceExpensesTemplate : return HTML
+EnterExpensesPage <- EnterExpensesController : return HTML
+
+alt render non attendance form for a juror who has been absent
+    EnterExpensesController -> EnterNonAttendanceExpensesTemplate : request and build template
+    EnterExpensesController <- EnterNonAttendanceExpensesTemplate : return HTML
+    EnterExpensesPage <- EnterExpensesController : return HTML
+end
+Actor <- EnterExpensesPage : render HTML
+
+Actor -> EnterExpensesPage : enters valid expense values
+
+EnterExpensesPage -> EnterExpensesController : call page controller
+
+EnterExpensesController -> expenseDetailsValidator : validate form
+
+alt Invalid values entered
+  EnterExpensesController <-- expenseDetailsValidator : data validation fails
+  EnterExpensesController -> EnterAttendanceExpensesTemplate : request and build error message template
+  EnterExpensesController <- EnterAttendanceExpensesTemplate : return HTML
+  EnterExpensesPage <- EnterExpensesController : return HTML
+  Actor <- EnterExpensesPage : render error message
+end
+
+EnterExpensesController <- expenseDetailsValidator : valid values entered
+
+EnterExpensesController -> SetEnteredExpenseObject : build request object
+SetEnteredExpenseObject -> BackendController : send backend request
+SetEnteredExpenseObject <- BackendController : ok response
+EnterExpensesController <- SetEnteredExpenseObject : resolve request
+
+alt Failed to update a draft expense/Failed to update expenses for all draft days
+    SetEnteredExpenseObject <-- BackendController : error response
+    EnterExpensesController <-- SetEnteredExpenseObject : reject requestObject
+    EnterExpensesController -> ErrorTemplate : request and build template
+    EnterExpensesController <- ErrorTemplate : return HTML
+    GenericErrorPage <- EnterExpensesController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Enter form with amount less than £0
+  EnterExpensesController -> calculateSummaryTotalsObject : send backend request
+  calculateSummaryTotalsObject -> EnterExpensesController : resolve request
+  EnterExpensesController -> TotalLessThanZero : return HTML
+  Actor <- TotalLessThanZeroPage : render total less than zero page
+end
+
+alt Enter form with travel amount over the limit
+  EnterExpensesController -> calculateSummaryTotalsObject : send backend request
+  calculateSummaryTotalsObject -> EnterExpensesController : resolve request
+  EnterExpensesController -> TotalLessThanZero : return HTML
+  Actor <- TravelOverLimitPage : render total less than zero page
+end
+
+alt Enter form with juror losses over limit
+  EnterExpensesController -> calculateSummaryTotalsObject : send backend request
+  calculateSummaryTotalsObject -> EnterExpensesController : resolve request
+  EnterExpensesController -> TravelOverLimit : return HTML
+  Actor <- LossOverLimitPage : render page showing losses over the limit
+end
+
+
+
+
+
+
+    

@@ -1,0 +1,75 @@
+@startuml confirm-identity
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant jurorOverviewPage <</juror-management/juror-record/overview>>
+participant confirmIdentityPage <</juror-management/juror-record/confirm-identity>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant ConfirmIdentifiyController <<confirm-identity.controller.js>> #lightyellow
+participant systemCodesDAO <<systemCodesDAO.get()>> #lightyellow
+participant confirmIdentityDAO <<confirmIdentityDAO.patch()>> #lightyellow
+
+''' TEMPLATES
+participant jurorRecordTemplate <</juror-management/juror-record/overview.njk>>
+participant confirmIdentityTemplate <</juror-management/juror-record/confirm-identity.njk>>
+participant GenericErrorTemplate <</error.njk>>
+
+''' VALIDATORS
+participant idTypeValidator <</validation/confirm-identity.js>>
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> jurorOverviewPage: click confirm identity
+jurorOverviewPage -> ConfirmIdentifiyController : call page controller
+
+ConfirmIdentifiyController -> systemCodesDAO : build request object
+systemCodesDAO -> BackendController : send backend request
+systemCodesDAO <- BackendController : ok response
+ConfirmIdentifiyController <- systemCodesDAO : resolve request
+
+ConfirmIdentifiyController -> confirmIdentityPage : request and build template
+ConfirmIdentifiyController <- confirmIdentityPage : return HTML
+confirmIdentityPage <- ConfirmIdentifiyController : return HTML
+Actor <- confirmIdentityPage : render HTML
+
+Actor -> confirmIdentityPage: click confirm
+ConfirmIdentifiyController -> confirmIdentityDAO : build request object
+confirmIdentityDAO -> BackendController : send backend request
+confirmIdentityDAO <- BackendController : ok response
+ConfirmIdentifiyController <- confirmIdentityDAO : resolve request
+
+
+alt validation fails
+
+  ConfirmIdentifiyController <-- idTypeValidator : data validation fails
+  ConfirmIdentifiyController --> confirmIdentityTemplate : request and build template
+  ConfirmIdentifiyController <- confirmIdentityTemplate : return HTML
+  confirmIdentityPage <- ConfirmIdentifiyController : return HTML
+  Actor <- confirmIdentityPage : render page
+end
+
+alt Failed to fetch system codes for id check
+    systemCodesDAO <-- BackendController : error response
+    ConfirmIdentifiyController <-- systemCodesDAO : reject requestObject
+    ConfirmIdentifiyController -> ErrorTemplate : request and build template
+    ConfirmIdentifiyController <- ErrorTemplate : return HTML
+    GenericErrorPage <- ConfirmIdentifiyController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Failed to confirm the juror\'s identity
+    confirmIdentityDAO <-- BackendController : error response
+    ConfirmIdentifiyController <-- confirmIdentityDAO : reject requestObject
+    ConfirmIdentifiyController -> ErrorTemplate : request and build template
+    ConfirmIdentifiyController <- ErrorTemplate : return HTML
+    GenericErrorPage <- ConfirmIdentifiyController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+

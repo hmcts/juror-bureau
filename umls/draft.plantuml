@@ -1,0 +1,56 @@
+@startuml draft-expenses
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant UnpaidAttendancePage <</juror-management/unpaid-attendance>>
+participant expenseRecordPage <</juror-management/unpaid-attendance/expense-record/:jurorNumber/:poolNumber/STATUS>>
+''' CONTROLLER AND REQUEST OBJECTS
+participant ForApprovalController <<draft.controller.js>> #lightyellow
+participant getExpenseRecordsDAO <<getExpenseRecordsDAO.post()>> #lightyellow
+
+''' TEMPLATES
+participant expenseRecordTemplate <<juror-management/expense-record/expense-record.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant validateIFHasCheckedDates
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> UnpaidAttendancePage : click view expense link
+UnpaidAttendancePage -> ForApprovalController : call for approval controller
+ForApprovalController -> getExpenseRecordsDAO : build request object
+getExpenseRecordsDAO -> BackendController : send backend request
+getExpenseRecordsDAO <- BackendController : ok response
+ForApprovalController <- getExpenseRecordsDAO : resolve request
+ForApprovalController -> expenseRecordTemplate : request and build template
+ForApprovalController <- expenseRecordTemplate : return HTML
+expenseRecordPage <- ForApprovalController : return HTML
+
+Actor <- expenseRecordPage : render HTML
+
+Actor -> expenseRecordPage : selects valid expenses to be submitted
+
+expenseRecordPage -> ForApprovalController : call page controller
+
+ForApprovalController -> validateIFHasCheckedDates : validate form
+
+alt Unable to view expenses
+    getExpenseRecordsDAO <-- BackendController : error response
+    ForApprovalController <-- getExpenseRecordsDAO : reject requestObject
+    ForApprovalController -> ErrorTemplate : request and build template
+    ForApprovalController <- ErrorTemplate : return HTML
+    GenericErrorPage <- ForApprovalController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+
+
+
+
+
+    

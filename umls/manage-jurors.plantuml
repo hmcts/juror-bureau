@@ -1,0 +1,106 @@
+@startuml manage-jurors
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant ApproveJurorsPage <</juror-management/manage-jurors/approve>>
+participant PendingApprovalPage <</juror-management/manage-jurors/approve>>
+participant ApproveRejectPage <</juror-management/manage-jurors/approve/:jurorNumber>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant manageJurorsController <<manage-jurors.controller.js>> #lightyellow
+participant jurorsForApproval <<jurorsForApproval.get()>> #lightyellow
+participant processPendingJuror <<processPendingJuror.post()>> #lightyellow
+
+''' TEMPLATES
+participant ApproveJurorsTemplate <</juror-management/manage-jurors/approve>>
+participant PendingApprovalTemplate <</juror-management/manage-jurors/approve>>
+participant ApproveRejectTemplate <</juror-management/manage-jurors/approve/:jurorNumber>>
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant processApprovalValidator
+
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> ApproveJurorsPage : select juror
+ApproveJurorsPage -> manageJurorsController : call controller
+
+manageJurorsController -> ApproveRejectTemplate : request and build template
+manageJurorsController <- ApproveRejectTemplate : return HTML
+ApproveRejectPage <- manageJurorsController : return HTML
+Actor <- ApproveRejectPage : render HTML
+
+Actor -> ApproveRejectPage : select approve or reject juror
+
+ApproveRejectPage -> manageJurorsController : call page controller
+
+manageJurorsController -> processApprovalValidator : validate form
+
+alt Invalid/no data entered
+  manageJurorsController <-- processApprovalValidator : data validation fails
+  manageJurorsController -> ApproveRejectTemplate : request and build error message template
+  manageJurorsController <- ApproveRejectTemplate : return HTML
+  ApproveRejectPage <- manageJurorsController : return HTML
+  Actor <- ApproveRejectPage : render error message
+end
+
+manageJurorsController <- processApprovalValidator : valid data entered
+
+manageJurorsController -> processPendingJuror : build request object
+processPendingJuror -> BackendController : send backend request
+processPendingJuror <- BackendController : ok response
+manageJurorsController <- processPendingJuror : resolve request
+
+alt Failed to fetch the jurors on this trial
+    jurorsForApproval <-- BackendController : error response
+    manageJurorsController <-- jurorsForApproval : reject requestObject
+    manageJurorsController -> ErrorTemplate : request and build template
+    manageJurorsController <- ErrorTemplate : return HTML
+    GenericErrorPage <- manageJurorsController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Unable to process pending juror
+    processPendingJuror <-- BackendController : error response
+    manageJurorsController <-- processPendingJuror : reject requestObject
+    manageJurorsController -> ErrorTemplate : request and build template
+    manageJurorsController <- ErrorTemplate : return HTML
+    GenericErrorPage <- manageJurorsController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Unable to fetch pending juror list
+    jurorsForApproval <-- BackendController : error response
+    manageJurorsController <-- jurorsForApproval : reject requestObject
+    manageJurorsController -> ErrorTemplate : request and build template
+    manageJurorsController <- ErrorTemplate : return HTML
+    GenericErrorPage <- manageJurorsController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+manageJurorsController -> ApproveJurorsTemplate : request and build template
+manageJurorsController <- ApproveJurorsTemplate : return HTML
+ApproveJurorsPage <- manageJurorsController : return HTML
+Actor <- ApproveJurorsPage : render HTML
+
+
+alt select to view jurors under pending approval
+    Actor -> ApproveJurorsPage : select pending approval tab
+    ApproveJurorsPage -> manageJurorsController : call controller
+    manageJurorsController -> PendingApprovalTemplate : request and build template
+    manageJurorsController <- PendingApprovalTemplate : return HTML
+    PendingApprovalPage <- manageJurorsController : return HTML
+    Actor <- PendingApprovalPage : render HTML
+end
+
+
+
+
+    
