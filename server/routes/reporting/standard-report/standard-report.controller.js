@@ -147,6 +147,9 @@
     const config = { reportType: reportType.apiKey, locCode: req.session.authentication.locCode };
     const filter = req.session.reportFilter;
     const bannerMessage = _.clone(req.session.bannerMessage);
+    const preReportRoute = _.clone(req.session.preReportRoute)
+
+    delete req.session.preReportRoute
 
     delete req.session.bannerMessage;
     req.session.reportSearch = req.params.filter;
@@ -225,6 +228,9 @@
     };
 
     const buildBackLinkUrl = function() {
+      if (preReportRoute) {
+        return preReportRoute;
+      }
       if (reportType.searchUrl) {
         return reportType.searchUrl;
       }

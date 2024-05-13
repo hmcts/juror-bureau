@@ -4,6 +4,7 @@
 {% from "govuk/components/tag/macro.njk" import govukTag %}
 {% from "custom-components/macros/arrows.njk" import leftArrowSVG %}
 {% from "./_partials/attendance-sub-nav.njk" import attendanceSubNav %}
+{% from "moj/components/button-menu/macro.njk" import mojButtonMenu %}
 
 {% block page_title %}{{ serviceName }} - Juror management - Attendance{% endblock %}
 {% block page_identifier %}Juror management - Attendance{% endblock %}
@@ -44,17 +45,34 @@
     </div>
     <div class="govuk-grid-column-one-half">
       <div class="govuk-button-group mod-flex mod-justify-end">
-        {{ govukButton({
-          text: "Print attendance list",
-          classes: "govuk-button--secondary"
-        }) }}
-        {% if attendanceStatus === "Unconfirmed" %}
-          {{ govukButton({
-            text: "Confirm attendance",
-            classes: "govuk-button--secondary",
-            href: url('juror-management.attendance.confirm-attendance.get')
-          }) }}
-        {% endif %}
+        <div class="moj-button-menu">
+          <div class="moj-button-menu__wrapper">
+            {% if attendanceStatus === "Unconfirmed" %}
+              {{ govukButton({
+                text: "Confirm attendance",
+                classes: "govuk-button--secondary",
+                href: url('juror-management.attendance.confirm-attendance.get')
+              }) }}
+            {% endif %}
+            {{ mojButtonMenu({
+              items: [
+                {
+                  text: "Persons attending (summary)",
+                  href: reportUrls.personsAttendingSummary,
+                  classes: "govuk-button--secondary"
+                },
+                {
+                  text: "Persons attending (detailed)",
+                  href: reportUrls.personsAttendingSummary,
+                  classes: "govuk-button--secondary"
+                }
+              ],
+              attributes: {
+                id: 'printButtonMenu'
+              }
+            }) }}
+          </div>
+        </div>
       </div>
     </div>
     <div class="govuk-grid-column-full">
@@ -75,4 +93,12 @@
   {{ super() }}
 
   <script src="{{ assetPath }}js/attendance.js"></script>
+  <script nonce="{{ nonce }}">
+    new MOJFrontend.ButtonMenu({
+      container: $('#printButtonMenu'),
+      mq: '(min-width: 200em)',
+      buttonText: 'Print',
+      buttonClasses: 'govuk-!-margin-bottom-1 govuk-button--secondary moj-button-menu__toggle-button--secondary',
+    });
+  </script>
 {% endblock %}

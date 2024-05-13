@@ -61,6 +61,9 @@
 
         const attendanceConfirmed = isAttendanceConfirmed(attendees);
 
+        req.session.preReportRoute = app.namedRoutes.build('juror-management.attendance.get')
+          + `?date=${date || dateFilter(new Date(), null, 'yyyy-MM-DD')}`;
+
         return res.render('juror-management/attendance.njk', {
           nav: 'attendance',
           status: status || 'in-waiting',
@@ -79,6 +82,12 @@
             message: '',
             count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
             items: tmpErrors,
+          },
+          reportUrls: {
+            personsAttendingSummary: app.namedRoutes.build('reports.persons-attending-summary.report.get', {
+              filter: date || dateFilter(new Date(), null, 'yyyy-MM-DD'),
+            }),
+            personsAttendingDetailed: '#',
           },
         });
       } catch (err) {
