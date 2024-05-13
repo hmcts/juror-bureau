@@ -3,6 +3,7 @@ const { generateDocument } = require('../../../lib/reports/single-generator');
 const { tableDataMappers, constructPageHeading, bespokeReportTablePrint } = require('./utils');
 const { snakeToCamel } = require('../../../lib/mod-utils');
 const { reportKeys } = require('./definitions');
+const { capitalizeFully } = require('../../../components/filters');
 
 async function standardReportPrint(app, req, res, reportKey, data) {
   const reportData = reportKeys(app, req)[reportKey];
@@ -31,7 +32,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
         if (header.id === 'juror_postcode' || header.id === 'document_code') {
           text = text.toUpperCase();
         }
-        if (header.id === 'contact_details') {
+        if (header.id === 'contact_details' || header.id === 'juror_reasonable_adjustment_with_message') {
           const details = text.split(', ');
           let contactText = '';
 
@@ -56,13 +57,12 @@ async function standardReportPrint(app, req, res, reportKey, data) {
   if (reportData.bespokeReportBody) {
     reportBody = bespokeReportTablePrint[reportKey](data);
   } else {
-    let tableRows = [];
-
     if (reportData.grouped) {
       for (const [heading, rowData] of Object.entries(tableData.data)) {
+
         const group = buildStandardTableRows(rowData, tableData.headings);
         const headRow = [
-          { text: (reportData.grouped.headings.prefix || '') + heading, style: 'groupHeading' },
+          { text: capitalizeFully((reportData.grouped.headings.prefix || '') + heading), style: 'groupHeading' },
         ];
         let totalsRow;
 

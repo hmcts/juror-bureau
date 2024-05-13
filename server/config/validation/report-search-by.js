@@ -33,6 +33,16 @@
         details: 'Enter a date to search bulk-printing up until',
       }],
     },
+    reasonableAdjustments: {
+      dateFrom: [{
+        summary: 'Enter a date to search reasonable adjustments from',
+        details: 'Enter a date to search reasonable adjustments from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search reasonable adjustments up until',
+        details: 'Enter a date to search reasonable adjustments up until',
+      }],
+    },
   };
 
   module.exports.searchBy = function(reportKey) {

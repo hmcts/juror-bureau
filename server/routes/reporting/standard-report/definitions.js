@@ -14,6 +14,8 @@
   //   }
   //   headings: string[], // corresponds to the ids provided for the headings in the API
   //                       // (except report created dateTime)
+  //   grouped?: TODO,
+  //   printLandscape?: boolean,
   // }};
   module.exports.reportKeys = (app, req = null) => {
     const courtUser = req ? isCourtUser(req) : false;
@@ -202,6 +204,24 @@
         ],
         bespokeReportBody: true,
         exportable: true,
+      },
+      'reasonable-adjustments': {
+        title: 'Reasonable adjustments report',
+        apiKey: 'ReasonableAdjustmentsReport',
+        search: 'dateRange',
+        headings: [
+          'totalReasonableAdjustments',
+          'reportDate',
+          '',
+          'reportTime',
+        ],
+        grouped: {
+          headings: {
+            prefix: '',
+          },
+          totals: true,
+        },
+        printLandscape: true,
       },
     };
   };
