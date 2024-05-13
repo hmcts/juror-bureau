@@ -34,15 +34,27 @@
 
   <div class="mod-flex mod-space-between">
     <h1 class="govuk-heading-l">{{title}}</h1>
-    
-    {{ govukButton({
-      text: "Print",
-      href: printUrl,
-      classes: "govuk-button--secondary",
-      attributes: {
-        target: "_blank"
-      }
-    }) }}
+
+    <div class="govuk-button-group">
+      {% if exportUrl %}
+        {{ govukButton({
+          text: "Export data",
+          href: exportUrl,
+          classes: "govuk-button--secondary",
+          attributes: {
+            target: "_blank"
+          }
+        }) }}
+      {% endif %}
+      {{ govukButton({
+        text: "Print",
+        href: printUrl,
+        classes: "govuk-button--secondary",
+        attributes: {
+          target: "_blank"
+        }
+      }) }}
+    </div>
   </div>
 
   <div class="report-headings">
@@ -58,27 +70,31 @@
     {% endfor %}
   </div>
 
-  {% if tableRows.length === 0 %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
-        <hr class="govuk-section-break govuk-section-break--visible">
-        <h2 class="govuk-heading-m govuk-!-margin-top-4">This report has no matching data</h2>
-      </div>
-    </div>
+  {% if bespokeReportBody %}
+    {% include "./bespoke-report-body/" + reportKey + ".njk" %}
   {% else %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
-        {{ govukTable({
-          attributes: {
-            'data-module': 'moj-sortable-table'
-          } if not grouped,
-          caption: "Report data",
-          captionClasses: "govuk-visually-hidden",
-          head: tableHeaders,
-          rows: tableRows
-        }) }}
+    {% if tableRows.length === 0 %}
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <hr class="govuk-section-break govuk-section-break--visible">
+          <h2 class="govuk-heading-m govuk-!-margin-top-4">This report has no matching data</h2>
+        </div>
       </div>
-    </div>
+    {% else %}
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          {{ govukTable({
+            attributes: {
+              'data-module': 'moj-sortable-table'
+            } if not grouped,
+            caption: "Report data",
+            captionClasses: "govuk-visually-hidden",
+            head: tableHeaders,
+            rows: tableRows
+          }) }}
+        </div>
+      </div>
+    {% endif %}
   {% endif %}
 
 {% endblock %}

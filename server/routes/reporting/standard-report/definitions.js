@@ -119,7 +119,7 @@
           'courtName',
         ],
       },
-      'pool-status': {
+      'current-pool-status': {
         title: 'Current pool status report',
         apiKey: 'CurrentPoolStatusReport',
         search: 'poolNumber',
@@ -188,6 +188,20 @@
           '',
           'judge',
         ],
+      },
+      'pool-status': {
+        title: 'Pool status report',
+        apiKey: 'PoolStatusReport',
+        search: 'poolNumber',
+        headings: [
+          'poolNumber',
+          'reportDate',
+          'totalPoolMembers',
+          'reportTime',
+          'totalRequestedByCourt',
+        ],
+        bespokeReportBody: true,
+        exportable: true,
       },
     };
   };
