@@ -227,6 +227,19 @@
         },
         printLandscape: true,
       },
+      'persons-attending-summary': {
+        title: 'Persons attending (summary)',
+        apiKey: 'PersonAttendingSummaryReport',
+        search: 'date',
+        headings: [
+          'attendanceDate',
+          'reportDate',
+          'totalDue',
+          'reportTime',
+          '',
+          'courtName',
+        ],
+      },
     };
   };
 })();

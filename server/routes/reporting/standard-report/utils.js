@@ -48,7 +48,7 @@ const headingDataMappers = {
 
     return time + ' am';
   },
-  Integer: (data) => data,
+  Integer: (data) => data.toString(),
   Long: (data) => data.toString(),
 };
 

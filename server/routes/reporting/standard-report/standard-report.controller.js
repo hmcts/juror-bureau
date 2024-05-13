@@ -257,6 +257,10 @@
       config.toDate = req.query.toDate;
     }
 
+    if (reportKey.includes('persons-attending')) {
+      config.includeSummoned = req.query.includeSummoned || false;
+    }
+
     try {
       const { headings, tableData } = await (reportType.bespokeReport?.dao
         ? reportType.bespokeReport.dao(req)
