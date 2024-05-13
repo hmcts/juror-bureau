@@ -2,18 +2,19 @@
   'use strict';
 
   const _ = require('lodash');
-  const { snakeToCamel, transformCourtNames, makeManualError, matchUserCourt, matchUserCourts } = require('../../../lib/mod-utils');
+  const { snakeToCamel, transformCourtNames, makeManualError } = require('../../../lib/mod-utils');
   const { standardReportDAO } = require('../../../objects/reports');
   const { validate } = require('validate.js');
   const { poolSearchObject } = require('../../../objects/pool-search');
   const rp = require('request-promise');
-  const { tableDataMappers, constructPageHeading } = require('./utils');
+  const { tableDataMappers, constructPageHeading, bespokeReportBodys } = require('./utils');
   const { reportKeys } = require('./definitions');
   const { standardReportPrint } = require('./standard-report-print');
   const { fetchCourtsDAO } = require('../../../objects');
   const searchValidator = require('../../../config/validation/report-search-by');
   const moment = require('moment')
   const { dateFilter } = require('../../../components/filters');
+  const { reportExport } = require('./report-export');
 
   const standardFilterGet = (app, reportKey) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
@@ -134,8 +135,9 @@
     return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`) + '?filter=' + filter);
   };
 
-  const standardReportGet = (app, reportKey, isPrint = false) => async(req, res) => {
+  const standardReportGet = (app, reportKey, isPrint = false, isExport = false) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
+    const bespokeReportBody = reportType.bespokeReportBody || false;
     const config = { reportType: reportType.apiKey, locCode: req.session.authentication.locCode };
     const filter = req.session.reportFilter;
     const bannerMessage = _.clone(req.session.bannerMessage);
@@ -245,6 +247,7 @@
         : standardReportDAO.post(req, app, config));
 
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
+      if (isExport) return reportExport(app, req, res, reportKey, { headings, tableData }) 
 
       let tableHeaders = tableData.headings.map((data, index) => ({
         text: data.name,
@@ -262,42 +265,46 @@
       let tableRows = [];
 
       // GROUPED REPORT
-      if (reportType.grouped)  {
-        for (const [header, data] of Object.entries(tableData.data)) {
-          const group = buildStandardTableRows(data, tableData.headings);
-          let link;
-
-          if (reportType.grouped.headings && reportType.grouped.headings.link) {
-            if (reportType.grouped.headings.link === 'pool-overview') {
-              link = app.namedRoutes.build('pool-overview.get', {poolNumber: header});
-            }
-          }
-
-          const headRow = link
-            ? [{
-              html: `<a href=${link}>${(reportType.grouped.headings.prefix || '') + header}</a>`,
-              colspan: tableData.headings.length,
-              classes: 'govuk-!-padding-top-7 govuk-link govuk-body-l govuk-!-font-weight-bold',
-            }]
-            : [{
-              text: (reportType.grouped.headings.prefix || '') + header,
-              colspan: tableData.headings.length,
-              classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
-            }];
-          const totalsRow = reportType.grouped.totals ? [{
-            text: `Total: ${group.length}`,
-            colspan: tableData.headings.length,
-            classes: 'govuk-body-s govuk-!-font-weight-bold mod-table-no-border',
-          }] : null;
-
-          tableRows = tableRows.concat([
-            headRow,
-            ...group,
-            totalsRow,
-          ]);
-        }
+      if (bespokeReportBody) {
+        tableRows = bespokeReportBodys[reportKey](tableData.data, tableData.headings)
       } else {
-        tableRows = buildStandardTableRows(tableData.data, tableData.headings);
+        if (reportType.grouped)  {
+          for (const [header, data] of Object.entries(tableData.data)) {
+            const group = buildStandardTableRows(data, tableData.headings);
+            let link;
+
+            if (reportType.grouped.headings && reportType.grouped.headings.link) {
+              if (reportType.grouped.headings.link === 'pool-overview') {
+                link = app.namedRoutes.build('pool-overview.get', {poolNumber: header});
+              }
+            }
+
+            const headRow = link
+              ? [{
+                html: `<a href=${link}>${(reportType.grouped.headings.prefix || '') + header}</a>`,
+                colspan: tableData.headings.length,
+                classes: 'govuk-!-padding-top-7 govuk-link govuk-body-l govuk-!-font-weight-bold',
+              }]
+              : [{
+                text: (reportType.grouped.headings.prefix || '') + header,
+                colspan: tableData.headings.length,
+                classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
+              }];
+            const totalsRow = reportType.grouped.totals ? [{
+              text: `Total: ${group.length}`,
+              colspan: tableData.headings.length,
+              classes: 'govuk-body-s govuk-!-font-weight-bold mod-table-no-border',
+            }] : null;
+
+            tableRows = tableRows.concat([
+              headRow,
+              ...group,
+              totalsRow,
+            ]);
+          }
+        } else {
+          tableRows = buildStandardTableRows(tableData.data, tableData.headings);
+        }
       }
 
       const pageHeadings = reportType.headings.map(heading => constructPageHeading(heading, headings));
@@ -309,6 +316,8 @@
         pageHeadings,
         reportKey,
         grouped: reportType.grouped,
+        bespokeReportBody,
+        exportUrl: reportType.exportable ? app.namedRoutes.build(`reports.${reportKey}.report.export`, {filter: req.params.filter}) : '',
         filter: req.params.filter,
         printUrl: buildPrintUrl(),
         backLinkUrl: {

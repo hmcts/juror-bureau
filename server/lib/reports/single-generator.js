@@ -117,14 +117,14 @@
 
   // TODO: this can be improved still
   const documentContent = (tables) => {
-    const _defaultTableOptions = (modifications) => ({
+    const _defaultTableOptions = (modifications, margin) => ({
       alignment: 'justify',
       style: 'body',
       layout: {
         ...layout().defaultLayout,
         ...modifications,
       },
-      margin: [0, 30, 0, 0],
+      margin: margin || [0, 30, 0, 0],
     });
     const _tables = [];
 
@@ -153,7 +153,7 @@
         }
 
         _tables.push({
-          ..._defaultTableOptions(table.layout),
+          ..._defaultTableOptions(table.layout, table.margin),
           ...(table.options || {}),
           table: {
             widths: table.widths || new Array(table.head.length).fill('*'),
