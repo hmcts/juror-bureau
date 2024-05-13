@@ -57,6 +57,8 @@ async function standardReportPrint(app, req, res, reportKey, data) {
   if (reportData.bespokeReportBody) {
     reportBody = bespokeReportTablePrint[reportKey](data);
   } else {
+    let tableRows = [];
+
     if (reportData.grouped) {
       for (const [heading, rowData] of Object.entries(tableData.data)) {
 
