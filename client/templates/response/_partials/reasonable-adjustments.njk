@@ -50,9 +50,9 @@
     <dl class="govuk-summary-list adjustments">
       <div class="govuk-summary-list__row {% if adjustmentsHasFlag %}info{% endif %}">
         <dt class="govuk-summary-list__key jd-details-cjs-adjustments-head-width">
-          {{ "Reason and adjustments needed" if hasModAccess else "Disability or impairment" }}
+          {{ "Reason and adjustments needed" }}
         </dt>
-        <dd class="govuk-summary-list__value" id="disability">
+        <dd class="govuk-summary-list__value" id="reasonableAdjustments">
           {% if response.specialNeeds.length === 0 or response.specialNeeds === null %}
             N/A
           {% else %}
