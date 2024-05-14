@@ -1,3 +1,4 @@
+const { dailyUtilisationDAO } = require('../../../objects/reports');
 
 (() => {
   'use strict';
@@ -205,7 +206,10 @@
           'reportTime',
           'totalRequestedByCourt',
         ],
-        bespokeReportBody: true,
+        bespokeReport: {
+          body: true,
+          file: './bespoke-report-body/pool-status.njk',
+        },
         exportable: true,
       },
       'reasonable-adjustments': {
@@ -274,6 +278,29 @@
           },
           printWidths: ['10%', '10%', '10%', '*', '*', 'auto'],
         },
+      },
+      'daily-utilisation': {
+        title: 'Daily wastage and utilisation report',
+        apiKey: 'DailyUtilisationReport',
+        search: 'dateRange',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+          '',
+          'courtName',
+        ],
+        bespokeReport: {
+          dao: async(req) => await dailyUtilisationDAO.get(
+            req,
+            req.session.authentication.locCode,
+            req.query.fromDate,
+            req.query.toDate
+          ),
+          body: true,
+        },
+        unsortable: true,
       },
     };
   };

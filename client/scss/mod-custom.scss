@@ -325,6 +325,10 @@ dt.govuk-summary-list-mod {
   &__grey {
     background: govuk-colour("light-grey");
   }
+  &__blue {
+    background: govuk-colour("blue");
+    color: govuk-colour("white");
+  }
 }
 .mod-center-table-data {
   text-align: center;

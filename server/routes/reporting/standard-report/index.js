@@ -66,6 +66,8 @@
     require('../persons-attending')(app);
     standardReportRoutes(app, 'persons-attending-summary');
     standardReportRoutes(app, 'persons-attending-detail');
+    require('../daily-utilisation')(app);
+    standardReportRoutes(app, 'daily-utilisation');
   };
 
 })();

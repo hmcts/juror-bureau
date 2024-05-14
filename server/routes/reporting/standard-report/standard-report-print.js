@@ -1,6 +1,7 @@
 /* eslint-disable strict */
 const { generateDocument } = require('../../../lib/reports/single-generator');
-const { tableDataMappers, constructPageHeading, bespokeReportTablePrint } = require('./utils');
+const { tableDataMappers, constructPageHeading } = require('./utils');
+const { bespokeReportTablePrint } = require('../bespoke-report/bespoke-report-print');
 const { snakeToCamel } = require('../../../lib/mod-utils');
 const { reportKeys } = require('./definitions');
 const { capitalizeFully } = require('../../../components/filters');
@@ -62,7 +63,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
 
   let reportBody;
 
-  if (reportData.bespokeReportBody) {
+  if (reportData.bespokeReport && reportData.bespokeReport.body) {
     reportBody = bespokeReportTablePrint[reportKey](data);
   } else {
     let tableRows = [];

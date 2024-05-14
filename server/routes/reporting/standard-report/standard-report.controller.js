@@ -7,7 +7,8 @@
   const { validate } = require('validate.js');
   const { poolSearchObject } = require('../../../objects/pool-search');
   const rp = require('request-promise');
-  const { tableDataMappers, constructPageHeading, bespokeReportBodys } = require('./utils');
+  const { tableDataMappers, constructPageHeading } = require('./utils');
+  const { bespokeReportBodys } = require('../bespoke-report/bespoke-report-body');
   const { reportKeys } = require('./definitions');
   const { standardReportPrint } = require('./standard-report-print');
   const { fetchCourtsDAO } = require('../../../objects');
@@ -143,7 +144,6 @@
 
   const standardReportGet = (app, reportKey, isPrint = false, isExport = false) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
-    const bespokeReportBody = reportType.bespokeReportBody || false;
     const config = { reportType: reportType.apiKey, locCode: req.session.authentication.locCode };
     const filter = req.session.reportFilter;
     const bannerMessage = _.clone(req.session.bannerMessage);
@@ -156,6 +156,7 @@
 
     const buildStandardTableRows = function(tableData, tableHeadings) {
       return tableData.map(data => {
+
         let row = tableHeadings.map(header => {
           let output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
 
@@ -199,14 +200,19 @@
             text: output ? output : '-',
             attributes: {
               "data-sort-value": header.dataType === 'LocalDate' ? data[snakeToCamel(header.id)] : output
-          }
+            }
           });
         });
 
-        if (reportType.bespokeReport && reportType.bespokeReport.insertColumns) {
-          Object.keys(reportType.bespokeReport.insertColumns).map((key) => {
-            row.splice(key, 0, reportType.bespokeReport.insertColumns[key][1](data));
-          });
+        if (reportType.bespokeReport) {
+          if (reportType.bespokeReport.insertColumns) {
+            Object.keys(reportType.bespokeReport.insertColumns).map((key) => {
+              row.splice(key, 0, reportType.bespokeReport.insertColumns[key][1](data));
+            });
+          }
+          if (reportType.bespokeReport.highlightRow) {
+
+          }
         }
 
         return row;
@@ -277,7 +283,8 @@
         attributes: {
           'aria-sort': index === 0 ? 'ascending' : 'none',
           'aria-label': data.name,
-        }}));
+        }
+      }));
 
       if (reportType.bespokeReport && reportType.bespokeReport.insertColumns) {
         Object.keys(reportType.bespokeReport.insertColumns).map((key) => {
@@ -287,9 +294,8 @@
 
       let tableRows = [];
 
-      // GROUPED REPORT
-      if (bespokeReportBody) {
-        tableRows = bespokeReportBodys[reportKey](tableData.data, tableData.headings)
+      if (reportType.bespokeReport && reportType.bespokeReport.body) {
+        tableRows = bespokeReportBodys[reportKey](tableData)
       } else {
         if (reportType.grouped) {
           for (const [header, data] of Object.entries(tableData.data)) {
@@ -343,8 +349,10 @@
         pageHeadings,
         reportKey,
         grouped: reportType.grouped,
-        bespokeReportBody,
+        bespokeReportFile: reportType.bespokeReport.file,
+        unsortable: reportType.unsortable,
         exportUrl: reportType.exportable ? app.namedRoutes.build(`reports.${reportKey}.report.export`, {filter: req.params.filter}) : '',
+        searchType:  reportType.search,
         filter: req.params.filter,
         printUrl: buildPrintUrl(),
         backLinkUrl: {
@@ -412,6 +420,7 @@
       }
       const fromDate = moment(req.body.dateFrom, 'DD/MM/YYYY');
       const toDate = moment(req.body.dateTo, 'DD/MM/YYYY');
+      let redirectRoute = `reports.${reportKey}.report.get`
 
       if (toDate.isBefore(fromDate)) {
         req.session.errors = {
@@ -424,7 +433,11 @@
         return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`));
       }
 
-      return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, {filter: 'dateRange'})
+      if (reportKey === 'daily-utilisation') { 
+        redirectRoute = `reports.daily-utilisation.check.get`
+      }
+
+      return res.redirect(app.namedRoutes.build(redirectRoute, {filter: 'dateRange'})
         + `?fromDate=${dateFilter(req.body.dateFrom, 'DD/MM/YYYY', 'YYYY-MM-DD')}`
         + `&toDate=${dateFilter(req.body.dateTo, 'DD/MM/YYYY', 'YYYY-MM-DD')}`);
     }
