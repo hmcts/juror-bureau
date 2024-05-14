@@ -52,10 +52,12 @@
                     Request juror info by post
                   </a>
 
-                  {% set sendToUrl = url('response.assign.get', { id: response.jurorNumber }) + "?reply_method=" + method %}
-                  <a id="processSendTo" href="{{ sendToUrl }}" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " value="send_to" data-module="govuk-button">
-                    Send to a colleague...
-                  </a>
+                  {% if response.assignedStaffMember.login === authentication.login or authentication.staff.rank === 1 %}
+                    {% set sendToUrl = url('response.assign.get', { id: response.jurorNumber }) + "?reply_method=" + method %}
+                    <a id="processSendTo" href="{{ sendToUrl }}" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " value="send_to" data-module="govuk-button">
+                      Send to a colleague...
+                    </a>
+                  {% endif %}
                 {% endif %}
 
               {% endif %}
