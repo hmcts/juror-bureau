@@ -212,7 +212,7 @@
 
 {% block body_end %}
   {{ super() }}  
-  <script>
+  <script nonce="{{ nonce }}">
     // button menu in reply details page header
     new MOJFrontend.ButtonMenu({
       container: $('#printButtonMenu'),

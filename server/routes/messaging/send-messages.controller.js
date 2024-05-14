@@ -655,7 +655,7 @@
 
         await sendMessage.post(
           app,
-          req,
+          req.session.authToken,
           messagingCodes[message],
           req.session.authentication.owner,
           payload,

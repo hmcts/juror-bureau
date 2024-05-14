@@ -47,17 +47,37 @@
   };
 
   const documentTitle = (title) => {
-    return {
-      text: title,
-      style: 'title',
-    };
+    if (typeof title === 'string') {
+      return {
+        text: title,
+        style: 'title',
+      };
+    }
+
+    return title;
   };
 
   const documentMetadata = (metadata) => {
-    const _column = (content) => {
-      const _body = [];
+    const width = metadata.centre ? '33%' : '50%';
 
-      content.forEach(row => _body.push([
+    const _column = (content) => {
+      if (!content) {
+        return undefined;
+      } else if (content.length === 0) {
+        return {
+          width,
+          text: '',
+        };
+      }
+      const _body = [];
+      const heading = [];
+
+      content.filter(item => item.heading).forEach(item => heading.push({
+        text: item.heading,
+        style: 'sectionHeading',
+      }));
+
+      content.filter(item => item.key).forEach(row => _body.push([
         {
           style: 'label',
           text: row.key,
@@ -68,13 +88,18 @@
       ]));
 
       return {
-        width: '50%',
-        layout: layout().defaultLayout,
-        alignment: 'left',
-        table: {
-          widths: [120, '*'],
-          body: _body,
-        },
+        stack: [
+          ...heading,
+          {
+            width,
+            layout: layout().defaultLayout,
+            alignment: 'left',
+            table: {
+              widths: [120, '*'],
+              body: _body,
+            },
+          },
+        ],
       };
     };
 
@@ -84,38 +109,58 @@
       columnGap: 20,
       columns: [
         _column(metadata.left),
+        _column(metadata.centre),
         _column(metadata.right),
-      ],
+      ].filter(i => i),
     };
   };
 
   // TODO: this can be improved still
   const documentContent = (tables) => {
-    const _defaultTableOptions = {
+    const _defaultTableOptions = (modifications, margin) => ({
       alignment: 'justify',
       style: 'body',
-      layout: layout().defaultLayout,
-      margin: [0, 30, 0, 0],
-    };
+      layout: {
+        ...layout().defaultLayout,
+        ...modifications,
+      },
+      margin: margin || [0, 30, 0, 0],
+    });
     const _tables = [];
 
     tables.forEach(table => {
-      const _body = [];
+      if (table.raw) {
+        delete table.raw;
+        _tables.push({
+          layout: {
+            ...layout().defaultLayout,
+            ...table.layoutMod,
+          },
+          ...table,
+        });
+      } else {
 
-      _body.push(table.head);
-      _body.push(...table.body);
+        const _body = [];
 
-      if (table.footer && table.footer.length) {
-        _body.push(table.footer);
+        if (table.head) {
+          _body.push(table.head);
+        }
+
+        _body.push(...table.body);
+
+        if (table.footer && table.footer.length) {
+          _body.push(table.footer);
+        }
+
+        _tables.push({
+          ..._defaultTableOptions(table.layout, table.margin),
+          ...(table.options || {}),
+          table: {
+            widths: table.widths || new Array(table.head.length).fill('*'),
+            body: _body,
+          },
+        });
       }
-
-      _tables.push({
-        ..._defaultTableOptions,
-        table: {
-          widths: new Array(table.head.length).fill('*'),
-          body: _body,
-        },
-      });
     });
 
     return _tables;
@@ -152,13 +197,15 @@
         ...documentContent(content.tables),
       ];
 
-      const document = printer.createPdfKitDocument({
+      const finalContent = {
         ..._defaultStyles,
         header: documentHeader,
         footer: documentFooter(content.footerText),
         content: [ ..._documentContent ],
         styles: layout().otherStyles,
-      });
+      };
+
+      const document = printer.createPdfKitDocument(finalContent);
 
       document.on('data', function(data) {
         chunks.push(data);

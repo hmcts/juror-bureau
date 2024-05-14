@@ -7,7 +7,7 @@
 </div>
 
 <script src="{{ assetPath if assetPath else '/' }}js/accessible-autocomplete.min.js"></script>
-<script type="text/javascript">
+<script type="text/javascript" nonce="{{ params.nonce }}">
   document.addEventListener('DOMContentLoaded', function() {
     var el = $('#ac-{{ params.id }}')
 

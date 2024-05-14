@@ -119,7 +119,7 @@
 {% block body_end %}
   {{super()}}
 
-  <script>
+  <script nonce="{{ nonce }}">
     (function() {
       'use strict';
 

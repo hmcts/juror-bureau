@@ -368,6 +368,13 @@ dt.govuk-summary-list-mod {
   }
 }
 
+.mod-summary-list {
+  &__blue {
+    background: govuk-colour("blue");
+    color: govuk-colour("white")
+  }
+}
+
 .mod-expense-record-header {
   display: flex;
   justify-content: space-between;

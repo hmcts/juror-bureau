@@ -75,7 +75,7 @@
               let row = [];
 
               row.push(formatLetterDate(expense.attendanceDate, 'dddd, DD MMMM, YYYY', juror.welsh));
-              if (expense.nonAttendance === false){
+              if (expense.nonAttendance === 'false'){
                 row.push(juror.welsh ? '(Heb Fynychu)' : '(Non Attendance)');
 
               } else {
@@ -86,9 +86,9 @@
               row.push('£' + (expense?.misc?.toFixed(2) || "0.00"));
               body.push(row);
 
-              totals[2] += expense?.lossOfEarnings;
-              totals[3] += expense?.childCare;
-              totals[4] += expense?.misc;
+              totals[2] += expense.lossOfEarnings || 0;
+              totals[3] += expense.childCare || 0;
+              totals[4] += expense.misc || 0;
             });
             const formattedTotals = totals.map(formatAsCurrency);
 

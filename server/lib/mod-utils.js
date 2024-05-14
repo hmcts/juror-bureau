@@ -1136,8 +1136,6 @@
     case 'certificate-attendance':
       return 'Certificates of attendance';
     case 'failed-to-attend':
-      return 'Failed to attend letters';
-    case 'certificate-attendance':
       return 'Certificates of attendance';
     default: return '';
     }
@@ -1157,7 +1155,6 @@
     'show-cause': 'SHOW_CAUSE',
     'certificate-attendance': 'CERTIFICATE_OF_ATTENDANCE',
     'failed-to-attend': 'FAILED_TO_ATTEND',
-    'certificate-attendance': 'CERTIFICATE_OF_ATTENDANCE',
   };
 
   module.exports.formatLetterDate = function(date, format, welsh) {

@@ -128,10 +128,10 @@
 
           {{ govukButton({
             text: "Preview audit report",
-            href: '#',
             classes: "govuk-button--secondary govuk-!-margin-left-3",
             attributes: {
-              id: "previewAuditReportButton"
+              id: "previewAuditReportButton",
+              formAction: previewUrl
             }
           }) }}
 
@@ -224,7 +224,7 @@
 {% block body_end %}
   {{ super() }}
 
-  <script>
+  <script nonce="{{ nonce }}">
     var checkAllExpenses = $('#check-all-expenses')
     , expenseRows = $('input[id^=expense]')
     , totalCheckedExpenses = $('#totalCheckedExpenses')
