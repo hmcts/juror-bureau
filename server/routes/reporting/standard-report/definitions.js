@@ -92,6 +92,7 @@
             prefix: 'Pool ',
             link: 'pool-overview',
           },
+          groupHeader: true,
           totals: true,
         },
         searchUrl: app.namedRoutes.build('reports.postponed.search.get'),
