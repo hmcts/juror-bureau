@@ -372,7 +372,12 @@
       return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, { filter: 'courts' }));
     }
     if (reportType.search === 'dateRange') {
-      const validatorResult = validate(req.body, searchValidator.dateRange(_.camelCase(reportKey)));
+      if (req.body.dateRange && req.body.dateRange === 'NEXT_31_DAYS') {
+        req.body.dateFrom = moment().format('DD/MM/YYYY');
+        req.body.dateTo = moment().add(31, 'days').format('DD/MM/YYYY');
+      }
+
+      const validatorResult = validate(req.body, searchValidator.dateRange(_.camelCase(reportKey), req.body));
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
