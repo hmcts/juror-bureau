@@ -2,6 +2,7 @@
 (function() {
     'use strict';
     var validate = require('validate.js')
+      , { makeDate } = require('../../components/filters')
       , validator = require('./end-trial')
       , validatorResult = null;
   
@@ -98,6 +99,23 @@
         expect(validatorResult.endTrialDate[0]).to.have.ownPropertyDescriptor('details');
         expect(validatorResult.endTrialDate[0].summary).to.equal('Enter a real date');
         expect(validatorResult.endTrialDate[0].details).to.equal('Enter a real date');
+  
+      });
+  
+      it('should try to validate an invalid request - Trial end date before start date', function() {
+        const mockRequest = {
+          endTrial: 'true',
+          endTrialDate: '30/05/2024',
+        };
+        const trialStartDate = makeDate(['2024', '05', '31'])
+  
+        validatorResult = validate(mockRequest, validator(trialStartDate));
+  
+        expect(validatorResult).to.be.an('object');
+        expect(validatorResult.endTrialDate[0]).to.have.ownPropertyDescriptor('summary');
+        expect(validatorResult.endTrialDate[0]).to.have.ownPropertyDescriptor('details');
+        expect(validatorResult.endTrialDate[0].summary).to.equal('Trial end date cannot be before start date');
+        expect(validatorResult.endTrialDate[0].details).to.equal('Trial end date cannot be before start date');
   
       });
     });
