@@ -40,10 +40,10 @@ const headingDataMappers = {
   timeFromISO: (data) => {
     const time = data.split('T')[1].split('.')[0];
 
-    if (time.split(':')[0] === 12) {
-      return time + ' pm';
-    } else if (time.split(':')[0] > 12) {
-      return `${time.split(':')[0] - 12}:${time.split(':').slice(1).join(':')} pm`;
+    if (parseInt(time.split(':')[0]) === 12) {
+      return time + 'pm';
+    } else if (parseInt(time.split(':')[0]) > 12) {
+      return `${parseInt(time.split(':')[0]) - 12}:${time.split(':').slice(1).join(':')}pm`;
     }
 
     return time + ' am';
