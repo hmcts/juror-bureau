@@ -5,6 +5,12 @@
     <div class="reply-view-header-menus">
 
       {% set canProcessReply = false %}
+
+      {% if response.replyMethod === "DIGITAL" %}
+        {% set assignedStaffMember = response.assignedStaffMember.login %}
+      {% elif method === "paper" %}
+        {% set assignedStaffMember = response.assignedStaffMember.username %}
+      {% endif %}
       
       {% if response.current_owner === authentication.owner %}
         {% set canProcessReply = true %}
@@ -52,7 +58,7 @@
                     Request juror info by post
                   </a>
 
-                  {% if response.assignedStaffMember.login === authentication.login or authentication.staff.rank === 1 %}
+                  {% if assignedStaffMember === authentication.login or isManager %}
                     {% set sendToUrl = url('response.assign.get', { id: response.jurorNumber }) + "?reply_method=" + method %}
                     <a id="processSendTo" href="{{ sendToUrl }}" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " value="send_to" data-module="govuk-button">
                       Send to a colleague...
