@@ -1,4 +1,5 @@
 const filters = require('../../../components/filters');
+const { getBallotPDF } = require('../../../lib/reports/ballot.js');
 
 (function(){
   'use strict';
@@ -16,7 +17,7 @@ const filters = require('../../../components/filters');
     , isCourtUser = require('../../../components/auth/user-type').isCourtUser
     , capitalizeFully = require('../../../components/filters').capitalizeFully
     , moment = require('moment')
-    , rp = require('request-promise');
+    , rp = require('request-promise');    
 
   function errorCB(app, req, res, poolNumber, errorString) {
     return function(err) {
@@ -636,7 +637,7 @@ const filters = require('../../../components/filters');
       delete req.session.filteredMembers;
       delete req.session.filters;
 
-      app.logger.info('Fetched court members: ', {
+      app.logger.info('Fetched court members1: ', {
         auth: req.session.authentication,
         jwt: req.session.authToken,
         data: membersList,
@@ -948,5 +949,11 @@ const filters = require('../../../components/filters');
 
     return {headers, list};
   }
+
+  module.exports.printPoolBallotCards = function(app) {
+    return function(req, res) {
+      return getBallotPDF(req,res);
+    };
+  };
 
 })();
