@@ -214,12 +214,15 @@
           'reportDate',
           '',
           'reportTime',
+          '',
+          'courtName',
         ],
         grouped: {
           headings: {
             prefix: '',
           },
-          totals: true,
+          groupHeader: !courtUser,
+          totals: !courtUser,
         },
         printLandscape: true,
       },

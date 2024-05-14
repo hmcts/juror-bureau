@@ -279,8 +279,10 @@
               }
             }
 
-            const headRow = link
-              ? [{
+            const headRow = (() => {
+              if (!reportType.grouped.groupHeader) return [];
+
+              return link ? [{
                 html: `<a href=${link}>${(reportType.grouped.headings.prefix || '') + header}</a>`,
                 colspan: tableData.headings.length,
                 classes: 'govuk-!-padding-top-7 govuk-link govuk-body-l govuk-!-font-weight-bold',
@@ -290,6 +292,8 @@
                 colspan: tableData.headings.length,
                 classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
               }];
+            })();
+              
             const totalsRow = reportType.grouped.totals ? [{
               text: `Total: ${group.length}`,
               colspan: tableData.headings.length,
