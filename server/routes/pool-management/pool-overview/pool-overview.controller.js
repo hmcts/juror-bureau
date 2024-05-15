@@ -618,10 +618,21 @@ function courtView(app, req, res, pool, membersList, _errors, selectedJurors, se
 module.exports.postBulkPostpone = function(app) {
   return async function(req, res) {
     if (req.body['check-all-jurors']) {
-      const poolMembers = await poolMembersDAO.get(req, req.params.poolNumber);
-      
-      delete poolMembers.Headers;
-      req.body.selectedJurors = Object.values(poolMembers)
+      try {
+        const poolMembers = await poolMembersDAO.get(req, req.params.poolNumber);
+
+        delete poolMembers.Headers;
+        req.body.selectedJurors = Object.values(poolMembers)
+      } catch (err) {
+        app.logger.crit('Failed to fetch pool members to postpone: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          poolNumber: req.params.poolNumber,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic.njk');
+      };
     } else {
       const validatorResult = validate(req.body, jurorSelectValidator());
 
