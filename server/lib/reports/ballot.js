@@ -24,7 +24,6 @@
     {id:'15151515', firstName:'FirstName', lastName:'FirstName', postcode:'post 3'},
     {id:'16161616', firstName:'FirstName', lastName:'FirstName', postcode:'post 4'},
   ];
-  const col = ['red', 'green', 'blue', 'yellow', 'purple'];
 
   const getTableCell = (data) => {
 
@@ -33,14 +32,15 @@
         border: [false, false, false, false],
         table: {
           body: [
-            [{ text: data.id, bold: true }],
+            [{ text: data.id, bold: true, margin: [30, 10, 0, 10] }],
             [{ text: [
               { text: data.firstName, bold: true },
               { text: ', ', bold: true },
               { text: data.lastName, bold: false },
-            ],
+              
+            ], margin: [30, 0],
             }],
-            [data.postcode],
+            [{text: data.postcode, margin: [30, 0]}],
           ],
         },
         layout: 'noBorders',
@@ -51,7 +51,7 @@
   const documentTableData = (data) => {
     const body=[];
     const heights = [];
-    const firsth = 293;
+    const firsth = 303;
     const secondh = 240;
     const third = 346;
 
@@ -66,8 +66,7 @@
 
       row.push(getTableCell(data[i]));
 
-      if (i<data.length){
-
+      if (i <data.length){
         if (i === 0){
           heights.push(firsth);
         } else {
@@ -100,7 +99,6 @@
           font: 'OpenSans',
           fontSize: 10,
         },
-       // pageMargins: [50, 50, 50, 50],
       },
     };
   };
@@ -121,14 +119,14 @@
       ];
 
       const pdfOptions = {
-         ...defaultStyles().defaultStyles,
+        ...defaultStyles().defaultStyles,
         content: [ ..._documentContent ],
         styles: layout().otherStyles,
         pageOrientation: 'landscape',
         pageMargins: 0,
       };
 
-      const document = printer.createPdfKitDocument(pdfOptions); 
+      const document = printer.createPdfKitDocument(pdfOptions);
 
       document.on('data', function(data) {
         chunks.push(data);
