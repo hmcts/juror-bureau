@@ -47,6 +47,10 @@
 
         errors = {...errors, ...submitErrors};
 
+        if (res.locals.isCourtUser) {
+          poolList = poolList.filter((pool) => pool.poolStage === 'At court');
+        }
+
         return res.render('reporting/standard-reports/pool-search', {
           errors: {
             title: 'Please check your search',
