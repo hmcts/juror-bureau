@@ -201,7 +201,21 @@ module.exports.getHistory = function(app) {
 module.exports.postReassign = function(app) {
   return async function(req, res) {
     if (req.body['check-all-jurors']) {
-      req.body.selectedJurors = await poolMembersDAO.get(req, req.params.poolNumber);
+      try {
+        const poolMembers = await poolMembersDAO.get(req, req.params.poolNumber);
+
+        delete poolMembers.Headers;
+        req.body.selectedJurors = Object.values(poolMembers);
+      } catch (err) {
+        app.logger.crit('Failed to fetch pool members to reassign: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          poolNumber: req.params.poolNumber,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic.njk');
+      };
     } else {
       const validatorResult = validate(req.body, jurorSelectValidator());
 
@@ -233,7 +247,21 @@ module.exports.postReassign = function(app) {
 module.exports.postTransfer = function(app) {
   return async function(req, res) {
     if (req.body['check-all-jurors']) {
-      req.body.selectedJurors = await poolMembersDAO.get(req, req.params.poolNumber);
+      try {
+        const poolMembers = await poolMembersDAO.get(req, req.params.poolNumber);
+
+        delete poolMembers.Headers;
+        req.body.selectedJurors = Object.values(poolMembers);
+      } catch (err) {
+        app.logger.crit('Failed to fetch pool members to tranfer: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          poolNumber: req.params.poolNumber,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic.njk');
+      };
     } else {
       const validatorResult = validate(req.body, jurorSelectValidator());
 
@@ -413,7 +441,21 @@ function renderHistoryItems(app, req, res, data){
 module.exports.postCompleteService = function(app) {
   return async function(req, res) {
     if (req.body['check-all-jurors']) {
-      req.body.selectedJurors = await poolMembersDAO.get(req, req.params.poolNumber);
+      try {
+        const poolMembers = await poolMembersDAO.get(req, req.params.poolNumber);
+
+        delete poolMembers.Headers;
+        req.body.selectedJurors = Object.values(poolMembers);
+      } catch (err) {
+        app.logger.crit('Failed to fetch pool members to complete service: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          poolNumber: req.params.poolNumber,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic.njk');
+      };
     } else {
 
       const validatorResult = validate(req.body, jurorSelectValidator());
@@ -622,7 +664,7 @@ module.exports.postBulkPostpone = function(app) {
         const poolMembers = await poolMembersDAO.get(req, req.params.poolNumber);
 
         delete poolMembers.Headers;
-        req.body.selectedJurors = Object.values(poolMembers)
+        req.body.selectedJurors = Object.values(poolMembers);
       } catch (err) {
         app.logger.crit('Failed to fetch pool members to postpone: ', {
           auth: req.session.authentication,

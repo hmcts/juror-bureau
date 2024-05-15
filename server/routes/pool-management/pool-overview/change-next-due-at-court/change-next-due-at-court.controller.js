@@ -15,7 +15,21 @@
   module.exports.postChangeNextDueAtCourt = function(app) {
     return async function(req, res) {
       if (req.body['check-all-jurors']) {
-        req.body.selectedJurors = await poolMembersDAO.get(req, req.params.poolNumber);
+        try {
+          const poolMembers = await poolMembersDAO.get(req, req.params.poolNumber);
+
+          delete poolMembers.Headers;
+          req.body.selectedJurors = Object.values(poolMembers);
+        } catch (err) {
+          app.logger.crit('Failed to fetch pool members to change next due at court date: ', {
+            auth: req.session.authentication,
+            jwt: req.session.authToken,
+            poolNumber: req.params.poolNumber,
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
+
+          return res.render('_errors/generic.njk');
+        };
       }
 
       let validatorResult;
