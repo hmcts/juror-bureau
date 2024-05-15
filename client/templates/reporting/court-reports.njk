@@ -20,7 +20,7 @@
         <li><a class="govuk-link" href="#">Unconfirmed attendance</a></li>
         <li><a class="govuk-link" href="#">Unpaid attendance (detailed)</a></li>
         <li><a class="govuk-link" href="#">Unpaid attendance (summary)</a></li>
-        
+
       </ul>
 
       <h2 class="govuk-heading-m">Pools</h2>
@@ -35,7 +35,7 @@
         <li><a class="govuk-link" href="#">On call list</a></li>
         <li><a class="govuk-link" href="#">Pool selection list</a></li>
         <li><a class="govuk-link" href="{{ url('reports.postponed.search.get') }}">Postponed list</a></li>
-        <li><a class="govuk-link" href="#">Reasonable adjustments report</a></li>
+        <li><a class="govuk-link" href="{{ url('reports.reasonable-adjustments.filter.get') }}">Reasonable adjustments report</a></li>
       </ul>
 
       <h2 class="govuk-heading-m">Senior jury officer reports</h2>
@@ -43,7 +43,7 @@
         <li><a class="govuk-link" href="#">Jury ammendment report</a></li>
         <li><a class="govuk-link" href="#">Manually-created jurors report</a></li>
       </ul>
-      
+
     </div>
   </div>
 {% endblock %}
