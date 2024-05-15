@@ -47,6 +47,7 @@
     }) }}
   {% endif %}
 
+  {# Late summons banner #}
   {% if response.isLateSummons %}
     <div class="govuk-!-margin-top-3">
       {{ mojBanner({
@@ -66,8 +67,10 @@
       {% set urgencyBadge = "Urgent" %}
     {% elif response.urgent %}
       {% set urgencyBadge = "Urgent" %}
+    {# Commented as overdue badge should no longer be displayed in Alert
     {% elif response.slaOverdue %}
       {% set urgencyBadge = "Overdue" %}
+    #}
     {% else %}
       {% set urgencyBadge = undefined %}
     {% endif %}
