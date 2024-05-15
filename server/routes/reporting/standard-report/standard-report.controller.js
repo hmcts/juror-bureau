@@ -204,15 +204,10 @@
           });
         });
 
-        if (reportType.bespokeReport) {
-          if (reportType.bespokeReport.insertColumns) {
-            Object.keys(reportType.bespokeReport.insertColumns).map((key) => {
-              row.splice(key, 0, reportType.bespokeReport.insertColumns[key][1](data));
-            });
-          }
-          if (reportType.bespokeReport.highlightRow) {
-
-          }
+        if (reportType.bespokeReport && reportType.bespokeReport.insertColumns) {
+          Object.keys(reportType.bespokeReport.insertColumns).map((key) => {
+            row.splice(key, 0, reportType.bespokeReport.insertColumns[key][1](data));
+          });
         }
 
         return row;
