@@ -23,7 +23,6 @@
         } catch (err) {
           app.logger.crit('Failed to fetch pool members to change next due at court date: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             poolNumber: req.params.poolNumber,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });

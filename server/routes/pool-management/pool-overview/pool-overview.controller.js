@@ -209,7 +209,6 @@ module.exports.postReassign = function(app) {
       } catch (err) {
         app.logger.crit('Failed to fetch pool members to reassign: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           poolNumber: req.params.poolNumber,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
@@ -255,7 +254,6 @@ module.exports.postTransfer = function(app) {
       } catch (err) {
         app.logger.crit('Failed to fetch pool members to tranfer: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           poolNumber: req.params.poolNumber,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
@@ -449,7 +447,6 @@ module.exports.postCompleteService = function(app) {
       } catch (err) {
         app.logger.crit('Failed to fetch pool members to complete service: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           poolNumber: req.params.poolNumber,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
@@ -668,7 +665,6 @@ module.exports.postBulkPostpone = function(app) {
       } catch (err) {
         app.logger.crit('Failed to fetch pool members to postpone: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           poolNumber: req.params.poolNumber,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
