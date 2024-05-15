@@ -209,7 +209,7 @@
       'reasonable-adjustments': {
         title: 'Reasonable adjustments report',
         apiKey: 'ReasonableAdjustmentsReport',
-        search: 'dateRange',
+        search: 'fixedDateRange',
         headings: [
           'totalReasonableAdjustments',
           'reportDate',

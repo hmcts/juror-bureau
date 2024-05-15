@@ -96,8 +96,9 @@
           });
           return res.render('_errors/generic');
         }
+      case 'fixedDateRange':
       case 'dateRange':
-        const tmpBody = _.clone(req.session.formFields);
+        const isFixedDateRange = reportType.search === 'fixedDateRange';
 
         delete req.session.errors;
         delete req.session.formFields;
@@ -108,7 +109,8 @@
             count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
             items: tmpErrors,
           },
-          tmpBody,
+          isFixedDateRange,
+          tmpBody: req.session.formFields,
           reportKey,
           title: reportType.title,
           reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
@@ -375,7 +377,7 @@
       req.session.reportCourts = courtLocCodes;
       return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, { filter: 'courts' }));
     }
-    if (reportType.search === 'dateRange') {
+    if (reportType.search === 'dateRange' || reportType.search === 'fixedDateRange') {
       if (req.body.dateRange && req.body.dateRange === 'NEXT_31_DAYS') {
         req.body.dateFrom = moment().format('DD/MM/YYYY');
         req.body.dateTo = moment().add(31, 'days').format('DD/MM/YYYY');

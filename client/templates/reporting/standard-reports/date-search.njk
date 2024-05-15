@@ -31,8 +31,7 @@
 
   <form action="{{ reportUrl }}" method="POST" id="dateSearchForm">
     
-    {# we can make this a list of reports if any other uses the same date range selector as reasonable adjustments #}
-    {% if reportKey === "reasonable-adjustments" %}
+    {% if isFixedDateRange %}
       {% include "./date-search/fixed-range.njk" %}
     {% else %}
       {% include "./date-search/from-to.njk" %}
