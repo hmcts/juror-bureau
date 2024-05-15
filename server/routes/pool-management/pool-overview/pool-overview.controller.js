@@ -618,7 +618,10 @@ function courtView(app, req, res, pool, membersList, _errors, selectedJurors, se
 module.exports.postBulkPostpone = function(app) {
   return async function(req, res) {
     if (req.body['check-all-jurors']) {
-      req.body.selectedJurors = await poolMembersDAO.get(req, req.params.poolNumber);
+      const poolMembers = await poolMembersDAO.get(req, req.params.poolNumber);
+      
+      delete poolMembers.Headers;
+      req.body.selectedJurors = Object.values(poolMembers)
     } else {
       const validatorResult = validate(req.body, jurorSelectValidator());
 
