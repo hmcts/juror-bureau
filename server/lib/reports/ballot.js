@@ -19,31 +19,58 @@
     {id:'1010101010', firstName:'FirstName', lastName:'FirstName', postcode:'post 2'},
     {id:'111111111', firstName:'FirstName', lastName:'FirstName', postcode:'post 3'},
     {id:'12121212', firstName:'FirstName', lastName:'FirstName', postcode:'post 4'},
+
     {id:'13131313', firstName:'FirstName', lastName:'FirstName', postcode:'post 1'},
     {id:'14141414', firstName:'FirstName', lastName:'FirstName', postcode:'post 2'},
     {id:'15151515', firstName:'FirstName', lastName:'FirstName', postcode:'post 3'},
     {id:'16161616', firstName:'FirstName', lastName:'FirstName', postcode:'post 4'},
+
+    {id:'555555555', firstName:'FirstName', lastName:'FirstName', postcode:'post 1'},
+    {id:'666666666', firstName:'FirstName', lastName:'FirstName', postcode:'post 2'},
+    {id:'777777777', firstName:'FirstName', lastName:'FirstName', postcode:'post 3'},
+    {id:'16161616', firstName:'FirstName', lastName:'FirstName', postcode:'post 4'},
+
+    {id:'888888888', firstName:'FirstName', lastName:'FirstName', postcode:'post 3'},
+    {id:'999999999', firstName:'FirstName', lastName:'FirstName', postcode:'post 4'},
+    {id:'999999999', firstName:'FirstName', lastName:'FirstName', postcode:'post 4'},
   ];
 
-  const getTableCell = (data) => {
+  const topMargin = 3;
 
+  const getEmptyTableCell = () => {
+   
     return [
       {
         border: [false, false, false, false],
         table: {
+          heights: [topMargin],
+          body: [''],
+        },        
+        layout: 'noBorders',
+      },
+    ];
+  };
+
+  const getTableCell = (data) => {
+    return [
+      {
+        border: [false, false, false, false],        
+        table: {          
+          heights: [topMargin, 0, 0, 0],
           body: [
-            [{ text: data.id, bold: true, margin: [30, 10, 0, 10] }],
+            [{ text: ''}],
+            [{ text: data.id, bold: true, margin: [30, 30, 0, 0] }],
             [{ text: [
-              { text: data.firstName, bold: true },
+              { text: '\n' + data.firstName, bold: true },
               { text: ', ', bold: true },
               { text: data.lastName, bold: false },
-              
-            ], margin: [30, 0],
+            ], margin: [30, 0, 0, 0],
             }],
-            [{text: data.postcode, margin: [30, 0]}],
+            [{text: '\n' + data.postcode, margin: [30, 0, 0, 0]}],
           ],
         },
         layout: 'noBorders',
+        
       },
     ];
   };
@@ -51,11 +78,11 @@
   const documentTableData = (data) => {
     const body=[];
     const heights = [];
-    const firsth = 303;
-    const secondh = 240;
+    const firsth = 300;
+    const secondh = 190;
     const third = 346;
 
-    for (let i = 0; i < data.length; i= i+2) {
+    for (let i = 0; i < data.length; i = i + 2) {
       const row = [];
 
       if (i === 0){
@@ -65,21 +92,24 @@
       }
 
       row.push(getTableCell(data[i]));
-
-      if (i <data.length){
+      
+      if (i+1 < data.length){
         if (i === 0){
           heights.push(firsth);
         } else {
           heights.push(third);
         }
-
+                
         row.push(getTableCell(data[i+1]));
+      } else{
+        row.push(getEmptyTableCell());
       }
 
       body.push(row);
     }
     return {
-      style: 'tableExample',
+      style: 'tableExample', 
+      pageMargins : [25, 25, 25, 35],     
       table: {
         widths: ['50%', '50%'],
         heights,
