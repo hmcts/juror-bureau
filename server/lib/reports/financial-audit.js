@@ -72,9 +72,10 @@
     marginBottom: 10,
   });
 
-  const footer = (jurorDetails, auditType, draft) => ({
+  const footer = (jurorDetails, auditType, draft, auditNumber) => ({
     text: [
       { text: auditTypeMap[auditType] },
+      { text: auditNumber ? ` - ${auditNumber}` : ''},
       { text: draft ? ' - Draft - ' : ' - ' },
       { text: jurorDetails.jurorNumber, bold: true },
       { text: ' ' },
@@ -454,7 +455,7 @@
       title: header(auditData.jurorDetails, dateFrom, dateTo, auditData.auditType),
       metadata: metaData(auditData),
       tables: content(auditData),
-      footerText: footer(auditData.jurorDetails, auditData.auditType, auditData.draft),
+      footerText: footer(auditData.jurorDetails, auditData.auditType, auditData.draft, auditData.financialAuditNumber),
     }
   }
 
