@@ -42,13 +42,7 @@ const headingDataMappers = {
   String: (data) => capitalizeFully(data),
   LocalDate: (data) => dateFilter(data, 'YYYY-mm-dd', 'dddd D MMMM YYYY'),
   timeFromISO: (data) => {
-    let time;
-
-    if (data.includes('T')){
-      time = data.split('T')[1].split('.')[0];
-    } else {
-      time = data.split('.')[0];
-    }
+    let time = data.split('T')[1].split('.')[0];
 
     if (parseInt(time.split(':')[0]) === 12) {
       return time + 'pm';
