@@ -219,15 +219,15 @@
       });
     };
 
-    const buildPrintUrl = function() {
-      let printUrl = req.params.filter
-        ? app.namedRoutes.build(`reports.${reportKey}.report.print`, {filter: req.params.filter})
-        : app.namedRoutes.build(`reports.${reportKey}.report.print`);
+    const buildPrintExportUrl = function(urlType = 'print') {
+      let url = req.params.filter
+        ? app.namedRoutes.build(`reports.${reportKey}.report.${urlType}`, {filter: req.params.filter})
+        : app.namedRoutes.build(`reports.${reportKey}.report.${urlType}`);
 
       if (req.query.fromDate) {
-        printUrl = printUrl + '?fromDate=' + req.query.fromDate + '&toDate=' + req.query.toDate;
+        url = url + '?fromDate=' + req.query.fromDate + '&toDate=' + req.query.toDate;
       }
-      return printUrl;
+      return url;
     };
 
     const buildBackLinkUrl = function() {
@@ -351,10 +351,11 @@
         grouped: reportType.grouped,
         bespokeReportFile: reportType.bespokeReport.file,
         unsortable: reportType.unsortable,
-        exportUrl: reportType.exportable ? app.namedRoutes.build(`reports.${reportKey}.report.export`, {filter: req.params.filter}) : '',
+        exportLabel: reportType.exportLabel,
+        exportUrl: reportType.exportLabel ? buildPrintExportUrl('export') : '',
         searchType:  reportType.search,
         filter: req.params.filter,
-        printUrl: buildPrintUrl(),
+        printUrl: buildPrintExportUrl('print'),
         backLinkUrl: {
           built: true,
           url: buildBackLinkUrl(),

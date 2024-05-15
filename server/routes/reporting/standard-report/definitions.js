@@ -14,11 +14,17 @@ const { dailyUtilisationDAO } = require('../../../objects/reports');
   //     insertColumns?: {[key: number]: [string, (data) => string]}, // column header, body
   //     printInsertColumns?: {[key: number]: [string, (data) => string]}, // column header, body (for report pdf printing)
   //     printWidths?: [string], // custom widths for pdf printing tables
+  //     body?: boolean, // fully bespoke report body
+  //     file?: string, // bespoke nunjucks file route to handle body
   //   }
   //   headings: string[], // corresponds to the ids provided for the headings in the API
   //                       // (except report created dateTime)
+  //   headings: string[], // corresponds to the ids provided for the headings in the API
+  //                       // (except report created dateTime)
+  //   unsortable: boolean, // prevents report table from being sorted
+  //   exportLabel: string, // label for export button if required
+  //   printLandscape: boolean, // force report printing to landscape
   //   grouped?: TODO,
-  //   printLandscape?: boolean,
   // }};
   module.exports.reportKeys = (app, req = null) => {
     const courtUser = req ? isCourtUser(req) : false;
@@ -210,7 +216,7 @@ const { dailyUtilisationDAO } = require('../../../objects/reports');
           body: true,
           file: './bespoke-report-body/pool-status.njk',
         },
-        exportable: true,
+        exportLabel: 'Export data',
       },
       'reasonable-adjustments': {
         title: 'Reasonable adjustments report',
@@ -301,6 +307,7 @@ const { dailyUtilisationDAO } = require('../../../objects/reports');
           body: true,
         },
         unsortable: true,
+        exportLabel: 'Export raw data',
       },
     };
   };

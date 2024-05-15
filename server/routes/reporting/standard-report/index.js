@@ -38,7 +38,7 @@
       auth.verify,
       standardReportGet(app, key, true, false));
 
-    if (reportKeys(app)[key].exportable) {
+    if (reportKeys(app)[key].exportLabel) {
       app.get(`/reporting/${key}/report/:filter/export`,
         `reports.${key}.report.export`,
         auth.verify,
