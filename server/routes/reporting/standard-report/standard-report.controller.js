@@ -162,6 +162,16 @@
             });
           }
 
+          if (header.id === 'pool_number' || header.id === 'pool_number_by_jp') {
+            return ({
+              html: `<a href=${
+                app.namedRoutes.build('pool-overview.get', {poolNumber: output})
+              }>${
+                output
+              }</a>`,
+            });
+          }
+
           if (header.id === 'juror_postcode' || header.id === 'document_code') {
             output = output ? output.toUpperCase() : '-';
           }
