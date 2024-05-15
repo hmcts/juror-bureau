@@ -242,19 +242,26 @@
 
   module.exports.postEndTrial = function(app) {
     return async function(req, res) {
-      const validateEndTrialDate = validate(req.body, endTrialDateValidator());
-
-      if (typeof validateEndTrialDate !== 'undefined') {
-        req.session.errors = validateEndTrialDate;
-        req.session.formFields = req.body;
-
-        return res.redirect(app.namedRoutes.build('trial-management.trials.end-trial.get', {
-          trialNumber: req.params.trialNumber,
-          locationCode: req.params.locationCode,
-        }));
-      }
-
       try {
+        const trialDetails = await trialDetailsObject.get(
+          require('request-promise'),
+          app,
+          req.session.authToken,
+          req.params.trialNumber,
+          req.params.locationCode,
+        );
+        const validateEndTrialDate = validate(req.body, endTrialDateValidator(makeDate(trialDetails.start_date)));
+
+        if (typeof validateEndTrialDate !== 'undefined') {
+          req.session.errors = validateEndTrialDate;
+          req.session.formFields = req.body;
+
+          return res.redirect(app.namedRoutes.build('trial-management.trials.end-trial.get', {
+            trialNumber: req.params.trialNumber,
+            locationCode: req.params.locationCode,
+          }));
+        }
+
         if (req.body.endTrial === 'true') {
 
           let payload = {
