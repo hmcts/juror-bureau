@@ -352,16 +352,6 @@ const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../obj
           '',
           'courtName',
         ],
-        tableData: {
-          transformer: (data) => {
-            return Object.keys(data)
-              .sort((a, b) => new Date(b.split(',')[0]) - new Date(a.split(',')[0]))
-              .reduce((acc, key) => {
-                acc[key] = data[key];
-                return acc;
-              }, {});
-          },
-        },
         grouped: {
           headings: {
             transformer: (data, isPrint) => {
