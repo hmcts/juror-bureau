@@ -13,7 +13,7 @@
   const { fetchCourtsDAO } = require('../../../objects');
   const searchValidator = require('../../../config/validation/report-search-by');
   const moment = require('moment')
-  const { dateFilter } = require('../../../components/filters');
+  const { dateFilter, capitalizeFully } = require('../../../components/filters');
   const { reportExport } = require('./report-export');
 
   const standardFilterGet = (app, reportKey) => async(req, res) => {
@@ -47,6 +47,10 @@
 
         errors = {...errors, ...submitErrors};
 
+        if (res.locals.isCourtUser) {
+          poolList = poolList.filter((pool) => pool.poolStage === 'At court');
+        }
+
         return res.render('reporting/standard-reports/pool-search', {
           errors: {
             title: 'Please check your search',
@@ -69,7 +73,7 @@
           if (filter) {
             courts = courts.filter((court) =>{
               const courtName = court.toLowerCase();
-      
+
               return courtName.includes(filter.toLowerCase());
             });
           }
@@ -93,11 +97,12 @@
           app.logger.crit('Failed to fetch courts list: ', {
             auth: req.session.authentication,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          }); 
+          });
           return res.render('_errors/generic');
         }
+      case 'fixedDateRange':
       case 'dateRange':
-        const tmpBody = _.clone(req.session.formFields);
+        const isFixedDateRange = reportType.search === 'fixedDateRange';
 
         delete req.session.errors;
         delete req.session.formFields;
@@ -108,7 +113,8 @@
             count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
             items: tmpErrors,
           },
-          tmpBody,
+          isFixedDateRange,
+          tmpBody: req.session.formFields,
           reportKey,
           title: reportType.title,
           reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
@@ -160,14 +166,24 @@
             });
           }
 
+          if (header.id === 'pool_number' || header.id === 'pool_number_by_jp') {
+            return ({
+              html: `<a href=${
+                app.namedRoutes.build('pool-overview.get', {poolNumber: output})
+              }>${
+                output
+              }</a>`,
+            });
+          }
+
           if (header.id === 'juror_postcode' || header.id === 'document_code') {
             output = output ? output.toUpperCase() : '-';
           }
 
-          if (header.id === 'contact_details') {
+          if (header.id === 'contact_details' || header.id === 'juror_reasonable_adjustment_with_message') {
             const details = output.split(', ');
             let html = '';
-  
+
             details.forEach((element) => {
               html = html
                 + `${
@@ -268,7 +284,7 @@
       if (bespokeReportBody) {
         tableRows = bespokeReportBodys[reportKey](tableData.data, tableData.headings)
       } else {
-        if (reportType.grouped)  {
+        if (reportType.grouped) {
           for (const [header, data] of Object.entries(tableData.data)) {
             const group = buildStandardTableRows(data, tableData.headings);
             let link;
@@ -279,17 +295,21 @@
               }
             }
 
-            const headRow = link
-              ? [{
+            const headRow = (() => {
+              if (!reportType.grouped.groupHeader) return [];
+
+              return link ? [{
                 html: `<a href=${link}>${(reportType.grouped.headings.prefix || '') + header}</a>`,
                 colspan: tableData.headings.length,
                 classes: 'govuk-!-padding-top-7 govuk-link govuk-body-l govuk-!-font-weight-bold',
               }]
               : [{
-                text: (reportType.grouped.headings.prefix || '') + header,
+                text: capitalizeFully((reportType.grouped.headings.prefix || '') + header),
                 colspan: tableData.headings.length,
                 classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
               }];
+            })();
+              
             const totalsRow = reportType.grouped.totals ? [{
               text: `Total: ${group.length}`,
               colspan: tableData.headings.length,
@@ -371,8 +391,13 @@
       req.session.reportCourts = courtLocCodes;
       return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, { filter: 'courts' }));
     }
-    if (reportType.search === 'dateRange') {
-      const validatorResult = validate(req.body, searchValidator.dateRange(_.camelCase(reportKey)));
+    if (reportType.search === 'dateRange' || reportType.search === 'fixedDateRange') {
+      if (req.body.dateRange && req.body.dateRange === 'NEXT_31_DAYS') {
+        req.body.dateFrom = moment().format('DD/MM/YYYY');
+        req.body.dateTo = moment().add(31, 'days').format('DD/MM/YYYY');
+      }
+
+      const validatorResult = validate(req.body, searchValidator.dateRange(_.camelCase(reportKey), req.body));
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
@@ -395,7 +420,7 @@
       return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, {filter: 'dateRange'})
         + `?fromDate=${dateFilter(req.body.dateFrom, 'DD/MM/YYYY', 'YYYY-MM-DD')}`
         + `&toDate=${dateFilter(req.body.dateTo, 'DD/MM/YYYY', 'YYYY-MM-DD')}`);
-    } 
+    }
   };
 
   module.exports = {

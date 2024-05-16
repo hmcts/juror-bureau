@@ -7,13 +7,18 @@ const tableDataMappers = {
   LocalDate: (data) => data ? dateFilter(data, 'YYYY-mm-dd', 'ddd D MMM YYYY') : '-',
   List: (data) => {
     if (data) {
-      if (Object.keys(data)[0] === 'jurorAddressLine1'){
+      if (Object.keys(data)[0] === 'jurorAddressLine1') {
         return Object.values(data).reduce(
           (acc, current) => {
             return acc + ', ' + current;
           },
         );
       }
+
+      if (Object.keys(data)[0] === 'reasonableAdjustmentCodeWithDescription') {
+        return [data.reasonableAdjustmentCodeWithDescription, data.jurorReasonableAdjustmentMessage].join(', ');
+      }
+
       let listText = '';
 
       Object.keys(data).forEach((element, index) => {
@@ -41,7 +46,7 @@ const headingDataMappers = {
       return `${parseInt(time.split(':')[0]) - 12}:${time.split(':').slice(1).join(':')}pm`;
     }
 
-    return time + 'am';
+    return time + ' am';
   },
   Integer: (data) => data,
   Long: (data) => data.toString(),

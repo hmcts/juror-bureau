@@ -62,6 +62,7 @@
     standardReportRoutes(app, 'jury-list');
     standardReportRoutes(app, 'pool-status');
     // require('../pool-status')(app);
+    standardReportRoutes(app, 'reasonable-adjustments');
   };
 
 })();

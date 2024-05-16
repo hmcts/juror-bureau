@@ -14,6 +14,8 @@
   //   }
   //   headings: string[], // corresponds to the ids provided for the headings in the API
   //                       // (except report created dateTime)
+  //   grouped?: TODO,
+  //   printLandscape?: boolean,
   // }};
   module.exports.reportKeys = (app, req = null) => {
     const courtUser = req ? isCourtUser(req) : false;
@@ -90,6 +92,7 @@
             prefix: 'Pool ',
             link: 'pool-overview',
           },
+          groupHeader: true,
           totals: true,
         },
         searchUrl: app.namedRoutes.build('reports.postponed.search.get'),
@@ -202,6 +205,27 @@
         ],
         bespokeReportBody: true,
         exportable: true,
+      },
+      'reasonable-adjustments': {
+        title: 'Reasonable adjustments report',
+        apiKey: 'ReasonableAdjustmentsReport',
+        search: 'fixedDateRange',
+        headings: [
+          'totalReasonableAdjustments',
+          'reportDate',
+          '',
+          'reportTime',
+          '',
+          'courtName',
+        ],
+        grouped: {
+          headings: {
+            prefix: '',
+          },
+          groupHeader: !courtUser,
+          totals: !courtUser,
+        },
+        printLandscape: true,
       },
     };
   };
