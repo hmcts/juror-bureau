@@ -11,6 +11,8 @@
   //   bespokeReport?: {
   //     dao?: (req) => Promise<any>,                                 // custom data access function
   //     insertColumns?: {[key: number]: [string, (data) => string]}, // column header, body
+  //     printInsertColumns?: {[key: number]: [string, (data) => string]}, // column header, body (for report pdf printing)
+  //     printWidths?: [string], // custom widths for pdf printing tables
   //   }
   //   headings: string[], // corresponds to the ids provided for the headings in the API
   //                       // (except report created dateTime)
