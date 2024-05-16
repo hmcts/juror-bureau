@@ -1,3 +1,8 @@
+@font-face {
+  font-family: 'Libre Barcode';
+  src: url(../assets/fonts/LibreBarcode39-Regular.ttf) format('truetype');
+}
+
 .mod-juror-record {
   &--header {
     &__tag-row {
@@ -480,4 +485,9 @@ dt.govuk-summary-list-mod {
 
 .mod-table-no-border {
   border-bottom: 0px;
+}
+
+.mod-barcode {
+  font-family: 'Libre Barcode';
+  font-size: 3em;
 }

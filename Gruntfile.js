@@ -87,7 +87,7 @@
             {expand: true, cwd: 'client/js/i18n/cy/', src: ['PDF.json'], dest: 'dist/client/js/i18n/cy/' },
             {expand: true, cwd: 'client/js/i18n/en/', src: ['PDF.json'], dest: 'dist/client/js/i18n/en/' },
 
-            {expand: true, cwd: 'client/assets/fonts/', src: ['boldFont.ttf', 'lightFont.ttf', 'OpenSans-Regular.ttf', 'OpenSans-Bold.ttf'], dest: 'dist/client/assets/fonts' },
+            {expand: true, cwd: 'client/assets/fonts/', src: ['boldFont.ttf', 'lightFont.ttf', 'OpenSans-Regular.ttf', 'OpenSans-Bold.ttf', 'LibreBarcode39-Regular.ttf'], dest: 'dist/client/assets/fonts' },
 
             {expand: true, cwd: 'node_modules/chart.js/dist', src: ['*.js'], dest: 'dist/client/js/chart.js'},
             {expand: true, cwd: 'node_modules/chart.js/dist', src: ['*.css'], dest: 'dist/client/css'},
@@ -130,7 +130,7 @@
             {expand: true, cwd: 'client/js/i18n/cy/', src: ['PDF.json'], dest: 'tmp/client/js/i18n/cy/' },
             {expand: true, cwd: 'client/js/i18n/en/', src: ['PDF.json'], dest: 'tmp/client/js/i18n/en/' },
 
-            {expand: true, cwd: 'client/assets/fonts/', src: ['boldFont.ttf', 'lightFont.ttf', 'OpenSans-Regular.ttf', 'OpenSans-Bold.ttf'], dest: 'tmp/client/assets/fonts' },
+            {expand: true, cwd: 'client/assets/fonts/', src: ['boldFont.ttf', 'lightFont.ttf', 'OpenSans-Regular.ttf', 'OpenSans-Bold.ttf', 'LibreBarcode39-Regular.ttf'], dest: 'tmp/client/assets/fonts' },
 
             {expand: true, cwd: 'node_modules/chart.js/dist', src: ['*.js'], dest: 'tmp/client/js/chart.js'},
             {expand: true, cwd: 'node_modules/chart.js/dist', src: ['*.css'], dest: 'tmp/client/css'},
@@ -155,7 +155,7 @@
             {expand: true, cwd: 'client/js/i18n/cy/', src: ['PDF.json'], dest: 'test/client/js/i18n/cy/' },
             {expand: true, cwd: 'client/js/i18n/en/', src: ['PDF.json'], dest: 'test/client/js/i18n/en/' },
 
-            {expand: true, cwd: 'client/assets/fonts/', src: ['boldFont.ttf', 'lightFont.ttf', 'OpenSans-Regular.ttf', 'OpenSans-Bold.ttf'], dest: 'test/client/assets/fonts' },
+            {expand: true, cwd: 'client/assets/fonts/', src: ['boldFont.ttf', 'lightFont.ttf', 'OpenSans-Regular.ttf', 'OpenSans-Bold.ttf', 'LibreBarcode39-Regular.ttf'], dest: 'test/client/assets/fonts' },
 
             {expand: true, cwd: 'node_modules/chart.js/dist', src: ['*.js'], dest: 'test/client/js/chart.js'},
             {expand: true, cwd: 'node_modules/chart.js/dist', src: ['*.css'], dest: 'test/client/css'},
