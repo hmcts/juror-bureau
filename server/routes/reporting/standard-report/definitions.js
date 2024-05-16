@@ -4,6 +4,7 @@ const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../obj
   'use strict';
 
   const { isCourtUser } = require('../../../components/auth/user-type');
+  const { dateFilter } = require('../../../components/filters');
 
   // type IReportKey = {[key:string]: {
   //   title: string,
@@ -298,7 +299,7 @@ const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../obj
           'courtName',
         ],
         bespokeReport: {
-          dao: async(req) => await dailyUtilisationDAO.get(
+          dao: async() => await dailyUtilisationDAO.get(
             req,
             req.session.authentication.locCode,
             req.query.fromDate,
@@ -312,7 +313,7 @@ const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../obj
       'daily-utilisation-jurors': {
         title: 'Daily wastage and utilisation report - jurors',
         bespokeReport: {
-          dao: async(req) => await dailyUtilisationJurorsDAO.get(
+          dao: async() => await dailyUtilisationJurorsDAO.get(
             req,
             req.session.authentication.locCode,
             req.params.filter
@@ -329,6 +330,36 @@ const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../obj
         ],
         unsortable: true,
         exportLabel: 'Export raw data',
+      },
+      'unconfirmed-attendance': {
+        title: 'Unconfirmed attendance report',
+        apiKey: 'UnconfirmedAttendanceReport',
+        search: 'dateRange',
+        headings: [
+          'totalUnconfirmedAttendance',
+          'reportDate',
+          '',
+          'reportTime',
+          '',
+          'courtName',
+        ],
+        grouped: {
+          headings: {
+            transformer: (data, isPrint) => {
+              const [attendanceDate, poolType] = data.split(',');
+              const formattedAttendanceDate = dateFilter(attendanceDate, 'YYYY-mm-dd', 'dddd D MMMM YYYY');
+
+              if (isPrint) {
+                return formattedAttendanceDate;
+              }
+
+              return `${formattedAttendanceDate} <span class="grouped-display-inline">${poolType}</span>`;
+            },
+            prefix: '',
+          },
+          groupHeader: true,
+          totals: true,
+        },
       },
     };
   };

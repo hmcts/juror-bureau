@@ -495,3 +495,9 @@ dt.govuk-summary-list-mod {
   font-family: 'Libre Barcode';
   font-size: 3em;
 }
+
+.grouped-display-inline {
+  @extend .govuk-caption-m;
+  display: inline;
+  text-transform: capitalize;
+}

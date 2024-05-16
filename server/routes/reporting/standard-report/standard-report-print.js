@@ -8,6 +8,7 @@ const { capitalizeFully } = require('../../../components/filters');
 
 async function standardReportPrint(app, req, res, reportKey, data) {
   const reportData = reportKeys(app, req)[reportKey];
+  const isPrint = true;
 
   const { headings, tableData } = data;
 
@@ -71,17 +72,27 @@ async function standardReportPrint(app, req, res, reportKey, data) {
     if (reportData.grouped) {
       for (const [heading, rowData] of Object.entries(tableData.data)) {
 
+        const _heading = () => {
+          if (reportData.grouped.headings && reportData.grouped.headings.transformer) {
+            return reportData.grouped.headings.transformer(heading, isPrint);
+          }
+          return heading;
+        };
+
         const group = buildStandardTableRows(rowData, tableData.headings);
-        const headRow = [
-          { text: capitalizeFully((reportData.grouped.headings.prefix || '') + heading), style: 'groupHeading', colSpan: group[0].length },
-        ];
+
+        const headRow = [{
+          text: capitalizeFully((reportData.grouped.headings.prefix || '') + _heading()),
+          style: 'groupHeading',
+          colSpan: group[0].length,
+        }];
         let totalsRow;
 
         if (reportData.grouped.totals) {
           totalsRow = [{ text: `Total: ${group.length}`, style: 'label', colSpan: group[0].length }];
         }
 
-        for (let i=0; i<group[0].length - 1; i++) {
+        for (let i = 0; i < group[0].length - 1; i++) {
           headRow.push({});
           if (totalsRow) {
             totalsRow.push({});
