@@ -10,7 +10,10 @@ const tableDataMappers = {
       if (Object.keys(data)[0] === 'jurorAddressLine1') {
         return Object.values(data).reduce(
           (acc, current) => {
-            return acc + ', ' + current;
+            if (current !== '') {
+              return acc + ', ' + current;
+            }
+            return acc;
           },
         );
       }
@@ -22,11 +25,13 @@ const tableDataMappers = {
       let listText = '';
 
       Object.keys(data).forEach((element, index) => {
-        listText = listText
-          + `${toSentenceCase(element)}: ${data[element]}`
-          + `${index === Object.keys(data).length - 1 ? '' : ', '}`;
+        if (data[element] !== '') {
+          listText = listText
+            + `${toSentenceCase(element)}: ${data[element]}`
+            + `${index === Object.keys(data).length - 1 ? '' : ', '}`;
+        }
       });
-      return listText;
+      return listText || '-';
     }
     return '-';
   },
@@ -48,7 +53,7 @@ const headingDataMappers = {
 
     return time + ' am';
   },
-  Integer: (data) => data,
+  Integer: (data) => data.toString(),
   Long: (data) => data.toString(),
 };
 
