@@ -20,12 +20,18 @@ const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../obj
   //   }
   //   headings: string[], // corresponds to the ids provided for the headings in the API
   //                       // (except report created dateTime)
-  //   headings: string[], // corresponds to the ids provided for the headings in the API
-  //                       // (except report created dateTime)
   //   unsortable: boolean, // prevents report table from being sorted
   //   exportLabel: string, // label for export button if required
-  //   printLandscape: boolean, // force report printing to landscape
-  //   grouped?: TODO,
+  //   grouped?: {
+  //     headings: {
+  //       prefix?: string,
+  //       link?: string,
+  //       transformer?: (data: string, isPrint: boolean) => string,
+  //     },
+  //     groupHeader?: boolean, // display the group header or not.. in some reports we dont have to
+  //     totals?: boolean, // same on this one.. some reports dont need the totals
+  //   },
+  //   printLandscape?: boolean,
   // }};
   module.exports.reportKeys = (app, req = null) => {
     const courtUser = req ? isCourtUser(req) : false;
@@ -355,7 +361,6 @@ const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../obj
 
               return `${formattedAttendanceDate} <span class="grouped-display-inline">${poolType}</span>`;
             },
-            prefix: '',
           },
           groupHeader: true,
           totals: true,
