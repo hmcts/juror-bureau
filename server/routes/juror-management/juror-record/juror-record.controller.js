@@ -240,7 +240,6 @@
 
       const promiseArr = [];
 
-console.log("req.query.loc_code", req.query.loc_code)
 
       if (req.query.loc_code) {
         req.session.locCode = req.query.loc_code;
