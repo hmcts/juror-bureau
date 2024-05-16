@@ -287,6 +287,10 @@
         ? reportType.bespokeReport.dao(req)
         : standardReportDAO.post(req, app, config));
 
+      if (reportType.tableData && reportType.tableData.transformer) {
+        tableData.data = reportType.tableData.transformer(tableData.data);
+      }
+
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
       if (isExport) return reportExport(app, req, res, reportKey, { headings, tableData }) 
 

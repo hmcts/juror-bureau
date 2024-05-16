@@ -22,11 +22,14 @@ const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../obj
   //                       // (except report created dateTime)
   //   unsortable: boolean, // prevents report table from being sorted
   //   exportLabel: string, // label for export button if required
+  //   tableData?: {
+  //     transformer?: (data: any) => any, // transform the data before rendering
+  //   },
   //   grouped?: {
   //     headings: {
   //       prefix?: string,
   //       link?: string,
-  //       transformer?: (data: string, isPrint: boolean) => string,
+  //       transformer?: (data: string, isPrint: boolean) => string, // transform the group header
   //     },
   //     groupHeader?: boolean, // display the group header or not.. in some reports we dont have to
   //     totals?: boolean, // same on this one.. some reports dont need the totals
@@ -349,6 +352,16 @@ const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../obj
           '',
           'courtName',
         ],
+        tableData: {
+          transformer: (data) => {
+            return Object.keys(data)
+              .sort((a, b) => new Date(b.split(',')[0]) - new Date(a.split(',')[0]))
+              .reduce((acc, key) => {
+                acc[key] = data[key];
+                return acc;
+              }, {});
+          },
+        },
         grouped: {
           headings: {
             transformer: (data, isPrint) => {
