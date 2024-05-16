@@ -5,6 +5,7 @@ const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../obj
 
   const { isCourtUser } = require('../../../components/auth/user-type');
   const { dateFilter } = require('../../../components/filters');
+  const { monthlyUtilisationDAO } = require('../../../objects/reports');
 
   // type IReportKey = {[key:string]: {
   //   title: string,
@@ -391,6 +392,29 @@ const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../obj
             { label: 'Returned jurors', value: data.filter(juror => juror.panelStatus === 'Returned').length },
           ];
         },
+      },
+      'monthly-utilisation': {
+        title: 'Monthly wastage and utilisation report',
+        apiKey: 'MonthlyUtilisationReport',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+          '',
+          'courtName',
+        ],
+        bespokeReport: {
+          dao: async(req) => await monthlyUtilisationDAO.get(
+            req,
+            req.session.authentication.locCode,
+            req.params.filter,
+            req.query.monthsPrior
+          ),
+          body: true,
+        },
+        unsortable: true,
+        exportLabel: 'Export raw data',
       },
     };
   };
