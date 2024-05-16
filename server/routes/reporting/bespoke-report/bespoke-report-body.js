@@ -1,5 +1,5 @@
 /* eslint-disable strict */
-const { dateFilter } = require('../../../components/filters');
+const { dateFilter, makeDate } = require('../../../components/filters');
 const { snakeToCamel } = require('../../../lib/mod-utils');
 
 const bespokeReportBodys = (app) => {
@@ -68,8 +68,8 @@ const bespokeReportBodys = (app) => {
           rows.push([
             {
               html: `<a class="govuk-link" href="${app.namedRoutes.build('reports.daily-utilisation-jurors.report.get', {
-                filter: dateFilter(day.date, null, 'yyyy-MM-DD'),
-              })}">${dateFilter(day.date, null, 'dddd D MMMM YYYY')}</a>`,
+                filter: dateFilter(makeDate(day.date), null, 'yyyy-MM-DD'),
+              })}">${dateFilter(makeDate(day.date), null, 'dddd D MMMM YYYY')}</a>`,
             },
             {
               text: day.jurorWorkingDays.toString(),

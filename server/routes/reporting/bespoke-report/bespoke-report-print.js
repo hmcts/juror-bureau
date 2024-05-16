@@ -1,5 +1,5 @@
 /* eslint-disable strict */
-const { dateFilter } = require('../../../components/filters');
+const { dateFilter, makeDate } = require('../../../components/filters');
 const { snakeToCamel } = require('../../../lib/mod-utils');
 
 const bespokeReportTablePrint = {
@@ -74,7 +74,7 @@ const bespokeReportTablePrint = {
       week.days.forEach((day) => {
         rows.push([
           {
-            text: dateFilter(day.date, null, 'dddd D MMMM YYYY'),
+            text: dateFilter(makeDate(day.date), null, 'dddd D MMMM YYYY'),
           },
           {
             text: day.jurorWorkingDays.toString(),
