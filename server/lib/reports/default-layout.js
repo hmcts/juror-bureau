@@ -69,7 +69,6 @@
         barcode: {
           font: 'LibreBarcode',
           fontSize: 30,
-          // marginLeft: 10,
         },
       },
     };

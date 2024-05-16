@@ -31,7 +31,6 @@ const tableDataMappers = {
             + `${index === Object.keys(data).length - 1 ? '' : ', '}`;
         }
       });
-      console.log(listText);
       return listText || '-';
     }
     return '-';
