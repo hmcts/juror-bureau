@@ -10,6 +10,8 @@ async function reportExport(app, req, res, reportKey, data) {
     return poolStatusReportExport(req, res, data);
   case 'daily-utilisation':
     return dailyUtilisationReportExport(req, res, data);
+  case 'daily-utilisation-jurors':
+    return dailyUtilisationJurorsReportExport(req, res, data);
   default:
     // implement standardised report export if needed
     return;
@@ -38,8 +40,6 @@ async function poolStatusReportExport(req, res, data) {
 async function dailyUtilisationReportExport(req, res, data) {
   const { tableData, headings } = data;
   const { fromDate, toDate } = req.query;
-
-  console.log(headings);
   const reportHeaders = [
     ['Date from', dateFilter(fromDate, 'yyyy-MM-DD', 'DD/MM/YYYY')],
     ['Date to', dateFilter(toDate, 'yyyy-MM-DD', 'DD/MM/YYYY')],
@@ -63,6 +63,36 @@ async function dailyUtilisationReportExport(req, res, data) {
   const csvResult = [...reportHeaders, [], tableHeaders, ...tableBody];
 
   const filename = `daily_utilisation_${_.lowerCase(headings.courtName.value)}_${fromDate}_${toDate}.csv`;
+
+  res.set('content-disposition', 'attachment; filename=' + filename);
+  res.type('csv');
+  return res.send(csvResult.join('\n'));
+}
+
+async function dailyUtilisationJurorsReportExport(req, res, data) {
+  const { tableData, headings } = data;
+  const reportDate = req.params.filter;
+  const tableHeaders = tableData.headings.map((heading) => heading.name);
+  const tableBody = [];
+
+  tableData.jurors.forEach((juror) => {
+    tableBody.push([
+      juror.juror,
+      juror.jurorWorkingDay.toString(),
+      juror.sittingDay.toString(),
+      juror.attendanceDay.toString(),
+      juror.nonAttendanceDay.toString(),
+    ]);
+  });
+
+  const csvResult = [
+    ['Report date', dateFilter(reportDate, 'yyyy-MM-DD', 'DD/MM/YYYY')],
+    [],
+    tableHeaders,
+    ...tableBody,
+  ];
+
+  const filename = `daily_utilisation_jurors_${_.lowerCase(headings.courtName.value)}_${reportDate}.csv`;
 
   res.set('content-disposition', 'attachment; filename=' + filename);
   res.type('csv');

@@ -48,4 +48,12 @@ const { DAO } = require('./dataAccessObject');
       };
     },
   });
+  module.exports.dailyUtilisationJurorsDAO = new DAO('moj/reports/daily-utilisation-jurors', {
+    get: function(locCode, date) {
+      return {
+        uri: `${this.resource}/${locCode}?reportDate=${date}`,
+        transform: mapSnakeToCamel,
+      };
+    },
+  });
 })();

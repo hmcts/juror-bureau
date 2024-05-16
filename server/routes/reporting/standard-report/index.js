@@ -68,6 +68,7 @@
     standardReportRoutes(app, 'persons-attending-detail');
     require('../daily-utilisation')(app);
     standardReportRoutes(app, 'daily-utilisation');
+    standardReportRoutes(app, 'daily-utilisation-jurors');
   };
 
 })();

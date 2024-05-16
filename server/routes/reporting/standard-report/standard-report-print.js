@@ -110,8 +110,6 @@ async function standardReportPrint(app, req, res, reportKey, data) {
           ? reportData.bespokeReport.printWidths : null,
       },
     ];
-
-    console.log(reportBody);
   }
 
   try {

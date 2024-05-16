@@ -147,7 +147,7 @@
     const config = { reportType: reportType.apiKey, locCode: req.session.authentication.locCode };
     const filter = req.session.reportFilter;
     const bannerMessage = _.clone(req.session.bannerMessage);
-    const preReportRoute = _.clone(req.session.preReportRoute)
+    let preReportRoute = _.clone(req.session.preReportRoute)
 
     delete req.session.preReportRoute
 
@@ -229,13 +229,16 @@
       if (preReportRoute) {
         return preReportRoute;
       }
-      if (reportType.searchUrl) {
-        return reportType.searchUrl;
+      if (reportType.backUrl) {
+        return reportType.backUrl;
       }
       if (reportType.search === 'trial') {
         return app.namedRoutes.build('trial-management.trials.detail.get', {
           trialNumber: req.params.filter, locationCode: req.session.authentication.locCode
         });
+      }
+      if (reportKey === 'daily-utilisation-jurors') {
+        return req.session.dailyUtilisation.route
       }
       return app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : '');
     };
@@ -245,7 +248,7 @@
     if (reportType.search) {
       if (reportType.search === 'poolNumber') {
         config.poolNumber = req.params.filter;
-      } else if (reportType.search === 'date') {
+      } else if (reportType.search === 'date' || moment(req.params.filter, 'yyyy-MM-DD', true).isValid()) {
         config.date = req.params.filter;
       } else if (reportType.search === 'trial') {
         config.trialNumber = req.params.filter;
@@ -263,6 +266,15 @@
 
     if (reportKey.includes('persons-attending')) {
       config.includeSummoned = req.query.includeSummoned || false;
+    }
+
+    // Backlink routing needs saved for jurors report
+    if (reportKey === 'daily-utilisation') {
+      req.session.dailyUtilisation = {
+        route: app.namedRoutes.build('reports.daily-utilisation.report.get', {
+          filter:'dateRange' 
+        }) + `?fromDate=${req.query.fromDate}&toDate=${req.query.toDate}`
+      }
     }
 
     try {
@@ -290,7 +302,7 @@
       let tableRows = [];
 
       if (reportType.bespokeReport && reportType.bespokeReport.body) {
-        tableRows = bespokeReportBodys[reportKey](tableData)
+        tableRows = bespokeReportBodys(app)[reportKey](tableData)
       } else {
         if (reportType.grouped) {
           for (const [header, data] of Object.entries(tableData.data)) {

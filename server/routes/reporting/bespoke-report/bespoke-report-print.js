@@ -150,6 +150,57 @@ const bespokeReportTablePrint = {
       },
     ];
   },
+  'daily-utilisation-jurors': (data) => {
+    const { tableData } = data;
+    let rows = [];
+
+    tableData.jurors.forEach((juror) => {
+      rows.push([
+        {
+          text: juror.juror,
+        },
+        {
+          text: juror.jurorWorkingDay.toString(),
+        },
+        {
+          text: juror.sittingDay.toString(),
+        },
+        {
+          text: juror.attendanceDay.toString(),
+        },
+        {
+          text: juror.nonAttendanceDay.toString(),
+        },
+      ]);
+    });
+    rows.push([
+      {
+        text: 'Daily total', bold: true, fillColor: '#0b0c0c', color: '#ffffff',
+      },
+      {
+        text: tableData.totalJurorWorkingDays.toString(), bold: true, fillColor: '#0b0c0c', color: '#ffffff',
+      },
+      {
+        text: tableData.totalSittingDays.toString(), bold: true, fillColor: '#0b0c0c', color: '#ffffff',
+      },
+      {
+        text: tableData.totalAttendanceDays.toString(), bold: true, fillColor: '#0b0c0c', color: '#ffffff',
+      },
+      {
+        text: tableData.totalNonAttendanceDays.toString(), bold: true, fillColor: '#0b0c0c', color: '#ffffff',
+      },
+    ]);
+
+    return  [
+      {
+        head: [...tableData.headings.map(heading => {
+          return { text: heading.name, style: 'label' };
+        })],
+        body: [...rows],
+        footer: [],
+      },
+    ];
+  },
 };
 
 module.exports.bespokeReportTablePrint = bespokeReportTablePrint;

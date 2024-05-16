@@ -1,4 +1,4 @@
-const { dailyUtilisationDAO } = require('../../../objects/reports');
+const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../objects/reports');
 
 (() => {
   'use strict';
@@ -84,7 +84,7 @@ const { dailyUtilisationDAO } = require('../../../objects/reports');
           'courtName',
           'totalPostponed',
         ],
-        searchUrl: app.namedRoutes.build('reports.postponed.search.get'),
+        backUrl: app.namedRoutes.build('reports.postponed.search.get'),
       },
       'postponed-date': {
         title: 'Postponed list (by date)',
@@ -104,7 +104,7 @@ const { dailyUtilisationDAO } = require('../../../objects/reports');
           groupHeader: true,
           totals: true,
         },
-        searchUrl: app.namedRoutes.build('reports.postponed.search.get'),
+        backUrl: app.namedRoutes.build('reports.postponed.search.get'),
       },
       'incomplete-service': {
         title: 'Incomplete service',
@@ -306,6 +306,27 @@ const { dailyUtilisationDAO } = require('../../../objects/reports');
           ),
           body: true,
         },
+        unsortable: true,
+        exportLabel: 'Export raw data',
+      },
+      'daily-utilisation-jurors': {
+        title: 'Daily wastage and utilisation report - jurors',
+        bespokeReport: {
+          dao: async(req) => await dailyUtilisationJurorsDAO.get(
+            req,
+            req.session.authentication.locCode,
+            req.params.filter
+          ),
+          body: true,
+        },
+        headings: [
+          'date',
+          'reportDate',
+          '',
+          'reportTime',
+          '',
+          'courtName',
+        ],
         unsortable: true,
         exportLabel: 'Export raw data',
       },
