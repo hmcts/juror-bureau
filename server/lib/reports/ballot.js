@@ -35,10 +35,10 @@
     {id:'999999999', firstName:'FirstName', lastName:'FirstName', postcode:'post 4'},
   ];
 
-  const topMargin = 3;
+  const topMargin = 15;
 
   const getEmptyTableCell = () => {
-   
+
     return [
       {
         border: [false, false, false, false],
@@ -55,11 +55,10 @@
     return [
       {
         border: [false, false, false, false],        
-        table: {          
-          heights: [topMargin, 0, 0, 0],
+        table: {
           body: [
-            [{ text: ''}],
-            [{ text: data.id, bold: true, margin: [30, 30, 0, 0] }],
+            [{ text: ' ', fontSize: topMargin}],
+            [{ text: data.id, bold: true, margin: [30, 0, 0, 0] }],
             [{ text: [
               { text: '\n' + data.firstName, bold: true },
               { text: ', ', bold: true },
@@ -70,7 +69,6 @@
           ],
         },
         layout: 'noBorders',
-        
       },
     ];
   };
@@ -79,8 +77,8 @@
     const body=[];
     const heights = [];
     const firsth = 300;
-    const secondh = 190;
-    const third = 346;
+    const secondh = 195;
+    const third = 360;
 
     for (let i = 0; i < data.length; i = i + 2) {
       const row = [];
@@ -92,14 +90,14 @@
       }
 
       row.push(getTableCell(data[i]));
-      
+
       if (i+1 < data.length){
         if (i === 0){
           heights.push(firsth);
         } else {
           heights.push(third);
         }
-                
+
         row.push(getTableCell(data[i+1]));
       } else{
         row.push(getEmptyTableCell());
@@ -108,8 +106,8 @@
       body.push(row);
     }
     return {
-      style: 'tableExample', 
-      pageMargins : [25, 25, 25, 35],     
+      style: 'tableExample',
+      pageMargins : [25, 25, 25, 35],
       table: {
         widths: ['50%', '50%'],
         heights,
@@ -134,10 +132,11 @@
   };
 
 
-/**
+  /**
    *
    * @returns {Promise<Buffer>} the generated pdf document as a buffer
    */
+
   async function createBallotPDF(jurorData){
     return new Promise((resolve, reject) => {
       const printer = new pdfMake(layout().fonts);
