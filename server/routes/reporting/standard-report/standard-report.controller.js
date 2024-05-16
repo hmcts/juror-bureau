@@ -183,15 +183,12 @@
             output = output ? output.toUpperCase() : '-';
           }
 
-          if (header.id === 'contact_details' || header.id === 'juror_reasonable_adjustment_with_message') {
-            const details = output.split(', ');
+          if (header.dataType === 'List') {
+            const items = output.split(', ');
             let html = '';
-
-            details.forEach((element) => {
-              html = html
-                + `${
-                  element
-                }<br>`;
+  
+            items.forEach((element, i, array) => {
+              html = html + `${element}${header.id === 'juror_postal_address' ? (!(i === array.length - 1) ? ',' : '') : ''}<br>`;
             });
             return ({
               html: `${html}`,
@@ -310,19 +307,19 @@
 
               return link ? [{
                 html: `<a href=${link}>${(reportType.grouped.headings.prefix || '') + header}</a>`,
-                colspan: tableData.headings.length,
+                colspan: group[0].length,
                 classes: 'govuk-!-padding-top-7 govuk-link govuk-body-l govuk-!-font-weight-bold',
               }]
               : [{
                 text: capitalizeFully((reportType.grouped.headings.prefix || '') + header),
-                colspan: tableData.headings.length,
+                colspan: group[0].length,
                 classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
               }];
             })();
               
             const totalsRow = reportType.grouped.totals ? [{
               text: `Total: ${group.length}`,
-              colspan: tableData.headings.length,
+              colspan: group[0].length,
               classes: 'govuk-body-s govuk-!-font-weight-bold mod-table-no-border',
             }] : null;
 

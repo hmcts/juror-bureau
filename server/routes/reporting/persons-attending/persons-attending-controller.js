@@ -19,7 +19,7 @@
 
       return res.render('reporting/persons-attending/attendance-date.njk', {
         title: reportType.title,
-        processUrl: app.namedRoutes.build('reports.persons-attending-summary.filter.post'),
+        processUrl: app.namedRoutes.build(`reports.${reportKey}.filter.post`),
         cancelUrl: app.namedRoutes.build('reports.reports.get'),
         tmpBody,
         errors: {

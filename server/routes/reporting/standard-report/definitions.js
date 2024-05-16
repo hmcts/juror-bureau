@@ -240,6 +240,39 @@
           'courtName',
         ],
       },
+      'persons-attending-detail': {
+        title: 'Persons attending (detailed)',
+        apiKey: 'PersonAttendingDetailReport',
+        search: 'date',
+        headings: [
+          'attendanceDate',
+          'reportDate',
+          'totalDue',
+          'reportTime',
+          '',
+          'courtName',
+        ],
+        grouped: {
+          headings: {
+            prefix: 'Pool ',
+            link: 'pool-overview',
+          },
+          totals: true,
+        },
+        bespokeReport: {
+          insertColumns: {
+            5: ['', (data) => {
+              return { text: `*${data.jurorNumber}*`, classes: 'mod-barcode' };
+            }],
+          },
+          printInsertColumns: {
+            5: ['', (data) => {
+              return { text: `*${data.jurorNumber}*`, style: 'barcode' };
+            }],
+          },
+          printWidths: ['10%', '10%', '10%', '*', '*', 'auto'],
+        },
+      },
     };
   };
 })();

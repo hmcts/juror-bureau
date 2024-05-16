@@ -65,6 +65,7 @@
     standardReportRoutes(app, 'reasonable-adjustments');
     require('../persons-attending')(app);
     standardReportRoutes(app, 'persons-attending-summary');
+    standardReportRoutes(app, 'persons-attending-detail');
   };
 
 })();

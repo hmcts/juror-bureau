@@ -87,7 +87,9 @@
             personsAttendingSummary: app.namedRoutes.build('reports.persons-attending-summary.report.get', {
               filter: date || dateFilter(new Date(), null, 'yyyy-MM-DD'),
             }),
-            personsAttendingDetailed: '#',
+            personsAttendingDetail: app.namedRoutes.build('reports.persons-attending-detail.report.get', {
+              filter: date || dateFilter(new Date(), null, 'yyyy-MM-DD'),
+            }),
           },
         });
       } catch (err) {
