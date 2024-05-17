@@ -222,6 +222,11 @@
       if (req.query.fromDate) {
         url = url + '?fromDate=' + req.query.fromDate + '&toDate=' + req.query.toDate;
       }
+
+      if (req.query.includeSummoned) {
+        url = url + '?includeSummoned=' + req.query.includeSummoned;
+      }
+
       return url;
     };
 
