@@ -345,7 +345,7 @@ const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../obj
         apiKey: 'UnconfirmedAttendanceReport',
         search: 'dateRange',
         headings: [
-          'totalUnconfirmedAttendance',
+          'totalUnconfirmedAttendances',
           'reportDate',
           '',
           'reportTime',
