@@ -1,3 +1,4 @@
+const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../objects/reports');
 
 (() => {
   'use strict';
@@ -13,11 +14,17 @@
   //     insertColumns?: {[key: number]: [string, (data) => string]}, // column header, body
   //     printInsertColumns?: {[key: number]: [string, (data) => string]}, // column header, body (for report pdf printing)
   //     printWidths?: [string], // custom widths for pdf printing tables
+  //     body?: boolean, // fully bespoke report body
+  //     file?: string, // bespoke nunjucks file route to handle body
   //   }
   //   headings: string[], // corresponds to the ids provided for the headings in the API
   //                       // (except report created dateTime)
+  //   headings: string[], // corresponds to the ids provided for the headings in the API
+  //                       // (except report created dateTime)
+  //   unsortable: boolean, // prevents report table from being sorted
+  //   exportLabel: string, // label for export button if required
+  //   printLandscape: boolean, // force report printing to landscape
   //   grouped?: TODO,
-  //   printLandscape?: boolean,
   // }};
   module.exports.reportKeys = (app, req = null) => {
     const courtUser = req ? isCourtUser(req) : false;
@@ -77,7 +84,7 @@
           'courtName',
           'totalPostponed',
         ],
-        searchUrl: app.namedRoutes.build('reports.postponed.search.get'),
+        backUrl: app.namedRoutes.build('reports.postponed.search.get'),
       },
       'postponed-date': {
         title: 'Postponed list (by date)',
@@ -97,7 +104,7 @@
           groupHeader: true,
           totals: true,
         },
-        searchUrl: app.namedRoutes.build('reports.postponed.search.get'),
+        backUrl: app.namedRoutes.build('reports.postponed.search.get'),
       },
       'incomplete-service': {
         title: 'Incomplete service',
@@ -205,8 +212,11 @@
           'reportTime',
           'totalRequestedByCourt',
         ],
-        bespokeReportBody: true,
-        exportable: true,
+        bespokeReport: {
+          body: true,
+          file: './bespoke-report-body/pool-status.njk',
+        },
+        exportLabel: 'Export data',
       },
       'reasonable-adjustments': {
         title: 'Reasonable adjustments report',
@@ -274,6 +284,51 @@
           },
           printWidths: ['10%', '10%', '10%', '*', '*', 'auto'],
         },
+      },
+      'daily-utilisation': {
+        title: 'Daily wastage and utilisation report',
+        apiKey: 'DailyUtilisationReport',
+        search: 'dateRange',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+          '',
+          'courtName',
+        ],
+        bespokeReport: {
+          dao: async(req) => await dailyUtilisationDAO.get(
+            req,
+            req.session.authentication.locCode,
+            req.query.fromDate,
+            req.query.toDate
+          ),
+          body: true,
+        },
+        unsortable: true,
+        exportLabel: 'Export raw data',
+      },
+      'daily-utilisation-jurors': {
+        title: 'Daily wastage and utilisation report - jurors',
+        bespokeReport: {
+          dao: async(req) => await dailyUtilisationJurorsDAO.get(
+            req,
+            req.session.authentication.locCode,
+            req.params.filter
+          ),
+          body: true,
+        },
+        headings: [
+          'date',
+          'reportDate',
+          '',
+          'reportTime',
+          '',
+          'courtName',
+        ],
+        unsortable: true,
+        exportLabel: 'Export raw data',
       },
     };
   };
