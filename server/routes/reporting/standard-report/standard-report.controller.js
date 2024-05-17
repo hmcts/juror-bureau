@@ -320,7 +320,7 @@
               }
             }
 
-            const _header = () => {
+            const groupHeaderTransformer = () => {
               if (reportType.grouped.headings && reportType.grouped.headings.transformer) {
                 return reportType.grouped.headings.transformer(header);
               }
@@ -331,12 +331,12 @@
               if (!reportType.grouped.groupHeader) return [];
 
               return link ? [{
-                html: `<a href=${link}>${(reportType.grouped.headings.prefix || '') + _header()}</a>`,
+                html: `<a href=${link}>${(reportType.grouped.headings.prefix || '') + groupHeaderTransformer()}</a>`,
                 colspan: group[0].length,
                 classes: 'govuk-!-padding-top-7 govuk-link govuk-body-l govuk-!-font-weight-bold',
               }]
               : [{
-                html: capitalizeFully((reportType.grouped.headings.prefix || '') + _header()),
+                html: capitalizeFully((reportType.grouped.headings.prefix || '') + groupHeaderTransformer()),
                 colspan: group[0].length,
                 classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
               }];

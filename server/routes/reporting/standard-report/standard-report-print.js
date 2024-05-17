@@ -72,7 +72,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
     if (reportData.grouped) {
       for (const [heading, rowData] of Object.entries(tableData.data)) {
 
-        const _heading = () => {
+        const groupHeaderTransformer = () => {
           if (reportData.grouped.headings && reportData.grouped.headings.transformer) {
             return reportData.grouped.headings.transformer(heading, isPrint);
           }
@@ -82,7 +82,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
         const group = buildStandardTableRows(rowData, tableData.headings);
 
         const headRow = [{
-          text: capitalizeFully((reportData.grouped.headings.prefix || '') + _heading()),
+          text: capitalizeFully((reportData.grouped.headings.prefix || '') + groupHeaderTransformer()),
           style: 'groupHeading',
           colSpan: group[0].length,
         }];
