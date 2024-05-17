@@ -39,6 +39,9 @@
             delete req.session.responseWasActioned;
           }
 
+          res.locals.todoCount = response.counts.todo;
+          res.locals.workCount = response.counts.todo + response.counts.pending;
+
           return res.render('inbox.njk', {
             responses: response,
             counts: {

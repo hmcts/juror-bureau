@@ -1,6 +1,5 @@
 ;(function(){
   'use strict';
-  const {dateFilter} = require("../components/filters")
 
   var _ = require('lodash')
     , moment = require('moment')
