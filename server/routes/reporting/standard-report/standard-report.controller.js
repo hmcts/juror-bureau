@@ -221,6 +221,11 @@
       if (req.query.fromDate) {
         printUrl = printUrl + '?fromDate=' + req.query.fromDate + '&toDate=' + req.query.toDate;
       }
+
+      if (req.query.includeSummoned) {
+        printUrl = printUrl + '?includeSummoned=' + req.query.includeSummoned;
+      }
+
       return printUrl;
     };
 
