@@ -30,26 +30,12 @@
   <h1 class="govuk-heading-l">{{ title }}</h1>
 
   <form action="{{ reportUrl }}" method="POST" id="dateSearchForm">
-    {{ datePicker({
-      id: "dateFrom",
-      label: {
-        text: "Date from"
-      },
-      hint: "Use dd/mm/yyyy format.",
-      dateValue: tmpBody.dateFrom,
-      dateError: dateFromError
-    }) }}
-
-    {{ datePicker({
-      id: "dateTo",
-      label: {
-        text: "Date to"
-      },
-      hint: "Use dd/mm/yyyy format.",
-      dateMin: tmpBody.dateFrom,
-      dateValue: tmpBody.dateTo,
-      dateError: dateToError
-    }) }}
+    
+    {% if isFixedDateRange %}
+      {% include "./date-search/fixed-range.njk" %}
+    {% else %}
+      {% include "./date-search/from-to.njk" %}
+    {% endif %}
 
     {{ csrfProtection(csrftoken) }}
 

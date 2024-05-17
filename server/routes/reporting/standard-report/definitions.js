@@ -11,9 +11,13 @@
   //   bespokeReport?: {
   //     dao?: (req) => Promise<any>,                                 // custom data access function
   //     insertColumns?: {[key: number]: [string, (data) => string]}, // column header, body
+  //     printInsertColumns?: {[key: number]: [string, (data) => string]}, // column header, body (for report pdf printing)
+  //     printWidths?: [string], // custom widths for pdf printing tables
   //   }
   //   headings: string[], // corresponds to the ids provided for the headings in the API
   //                       // (except report created dateTime)
+  //   grouped?: TODO,
+  //   printLandscape?: boolean,
   // }};
   module.exports.reportKeys = (app, req = null) => {
     const courtUser = req ? isCourtUser(req) : false;
@@ -90,6 +94,7 @@
             prefix: 'Pool ',
             link: 'pool-overview',
           },
+          groupHeader: true,
           totals: true,
         },
         searchUrl: app.namedRoutes.build('reports.postponed.search.get'),
@@ -202,6 +207,73 @@
         ],
         bespokeReportBody: true,
         exportable: true,
+      },
+      'reasonable-adjustments': {
+        title: 'Reasonable adjustments report',
+        apiKey: 'ReasonableAdjustmentsReport',
+        search: 'fixedDateRange',
+        headings: [
+          'totalReasonableAdjustments',
+          'reportDate',
+          '',
+          'reportTime',
+          '',
+          'courtName',
+        ],
+        grouped: {
+          headings: {
+            prefix: '',
+          },
+          groupHeader: !courtUser,
+          totals: !courtUser,
+        },
+        printLandscape: true,
+      },
+      'persons-attending-summary': {
+        title: 'Persons attending (summary)',
+        apiKey: 'PersonAttendingSummaryReport',
+        search: 'date',
+        headings: [
+          'attendanceDate',
+          'reportDate',
+          'totalDue',
+          'reportTime',
+          '',
+          'courtName',
+        ],
+      },
+      'persons-attending-detail': {
+        title: 'Persons attending (detailed)',
+        apiKey: 'PersonAttendingDetailReport',
+        search: 'date',
+        headings: [
+          'attendanceDate',
+          'reportDate',
+          'totalDue',
+          'reportTime',
+          '',
+          'courtName',
+        ],
+        grouped: {
+          headings: {
+            prefix: 'Pool ',
+            link: 'pool-overview',
+          },
+          totals: true,
+        },
+        bespokeReport: {
+          insertColumns: {
+            5: ['', (data) => {
+              return { text: `*${data.jurorNumber}*`, classes: 'mod-barcode' };
+            }],
+          },
+          printInsertColumns: {
+            5: ['', (data) => {
+              return { text: `*${data.jurorNumber}*`, style: 'barcode' };
+            }],
+          },
+          printWidths: ['10%', '10%', '10%', '*', '*', 'auto'],
+        },
       },
     };
   };
