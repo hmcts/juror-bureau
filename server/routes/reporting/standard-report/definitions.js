@@ -279,6 +279,7 @@ const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../obj
             prefix: 'Pool ',
             link: 'pool-overview',
           },
+          groupHeader: true,
           totals: true,
         },
         bespokeReport: {

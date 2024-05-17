@@ -336,7 +336,7 @@
                 classes: 'govuk-!-padding-top-7 govuk-link govuk-body-l govuk-!-font-weight-bold',
               }]
               : [{
-                text: capitalizeFully((reportType.grouped.headings.prefix || '') + _header()),
+                html: capitalizeFully((reportType.grouped.headings.prefix || '') + _header()),
                 colspan: group[0].length,
                 classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
               }];
