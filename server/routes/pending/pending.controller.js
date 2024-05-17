@@ -22,6 +22,9 @@
 
           req.session.sourceUrl = req.path;
 
+          res.locals.todoCount = response.counts.todo;
+          res.locals.workCount = response.counts.todo + response.counts.pending;
+
           return res.render('pending.njk', {
             responses: response,
           });
