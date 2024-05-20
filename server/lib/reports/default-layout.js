@@ -8,6 +8,9 @@
           normal: './client/assets/fonts/OpenSans-Regular.ttf',
           bold: './client/assets/fonts/OpenSans-Bold.ttf',
         },
+        LibreBarcode: {
+          normal: './client/assets/fonts/LibreBarcode39-Regular.ttf',
+        },
       },
       logo: './client/assets/images/hmcts-logo.png',
       defaultStyles: {
@@ -61,7 +64,11 @@
           paddingBottom: 0,
         },
         body: {
-          fontSize: 7,
+          fontSize: 10,
+        },
+        barcode: {
+          font: 'LibreBarcode',
+          fontSize: 30,
         },
       },
     };

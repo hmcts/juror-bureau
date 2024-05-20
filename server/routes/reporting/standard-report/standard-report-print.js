@@ -1,6 +1,7 @@
 /* eslint-disable strict */
 const { generateDocument } = require('../../../lib/reports/single-generator');
-const { tableDataMappers, constructPageHeading, bespokeReportTablePrint } = require('./utils');
+const { tableDataMappers, constructPageHeading } = require('./utils');
+const { bespokeReportTablePrint } = require('../bespoke-report/bespoke-report-print');
 const { snakeToCamel } = require('../../../lib/mod-utils');
 const { reportKeys } = require('./definitions');
 const { capitalizeFully } = require('../../../components/filters');
@@ -25,36 +26,44 @@ async function standardReportPrint(app, req, res, reportKey, data) {
   });
 
   const buildStandardTableRows = function(rows, tableHeadings) {
-    return [
-      ...rows.map(row => tableHeadings.map(header => {
-        let text = tableDataMappers[header.dataType](row[snakeToCamel(header.id)]) || '-';
+    return rows.map(rowData => {
+      let row = tableHeadings.map(header => {
+        let text = tableDataMappers[header.dataType](rowData[snakeToCamel(header.id)]);
 
         if (header.id === 'juror_postcode' || header.id === 'document_code') {
           text = text.toUpperCase();
         }
-        if (header.id === 'contact_details' || header.id === 'juror_reasonable_adjustment_with_message') {
-          const details = text.split(', ');
-          let contactText = '';
 
-          details.forEach((element) => {
-            contactText = contactText
-              + `${
-                element
-              }\n`;
+        if (header.dataType === 'List') {
+          const items = text.split(', ');
+          let listText = '';
+
+          items.forEach((element, i, array) => {
+            listText = listText
+              + `${element}${header.id === 'juror_postal_address' ? (!(i === array.length - 1) ? ',' : '') : ''}\n`;
           });
           return ({
-            text: contactText,
+            text: listText,
           });
         }
 
-        return { text };
-      })),
-    ];
+        return ({
+          text: text ? text : '-',
+        });
+      });
+
+      if (reportData.bespokeReport && reportData.bespokeReport.printInsertColumns) {
+        Object.keys(reportData.bespokeReport.printInsertColumns).map((key) => {
+          row.splice(key, 0, reportData.bespokeReport.printInsertColumns[key][1](rowData));
+        });
+      }
+      return row;
+    });
   };
 
   let reportBody;
 
-  if (reportData.bespokeReportBody) {
+  if (reportData.bespokeReport && reportData.bespokeReport.body) {
     reportBody = bespokeReportTablePrint[reportKey](data);
   } else {
     let tableRows = [];
@@ -64,15 +73,15 @@ async function standardReportPrint(app, req, res, reportKey, data) {
 
         const group = buildStandardTableRows(rowData, tableData.headings);
         const headRow = [
-          { text: capitalizeFully((reportData.grouped.headings.prefix || '') + heading), style: 'groupHeading' },
+          { text: capitalizeFully((reportData.grouped.headings.prefix || '') + heading), style: 'groupHeading', colSpan: group[0].length },
         ];
         let totalsRow;
 
         if (reportData.grouped.totals) {
-          totalsRow = [{ text: `Total: ${group.length}`, style: 'label' }];
+          totalsRow = [{ text: `Total: ${group.length}`, style: 'label', colSpan: group[0].length }];
         }
 
-        for (let i=0; i<tableData.headings.length - 1; i++) {
+        for (let i=0; i<group[0].length - 1; i++) {
           headRow.push({});
           if (totalsRow) {
             totalsRow.push({});
@@ -84,11 +93,21 @@ async function standardReportPrint(app, req, res, reportKey, data) {
       tableRows = buildStandardTableRows(tableData.data, tableData.headings);
     }
 
+    const tableHeaders = buildTableHeading(tableData.headings);
+
+    if (reportData.bespokeReport && reportData.bespokeReport.printInsertColumns) {
+      Object.keys(reportData.bespokeReport.printInsertColumns).map((key) => {
+        tableHeaders.splice(key, 0, {text: reportData.bespokeReport.printInsertColumns[key][0], style: 'label'});
+      });
+    }
+
     reportBody = [
       {
-        head: [...buildTableHeading(tableData.headings)],
+        head: [...tableHeaders],
         body: [...tableRows],
         footer: [],
+        widths: reportData.bespokeReport && reportData.bespokeReport.printWidths
+          ? reportData.bespokeReport.printWidths : null,
       },
     ];
   }
