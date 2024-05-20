@@ -367,6 +367,20 @@ const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../obj
           totals: true,
         },
       },
+      'panel-members-status': {
+        title: 'Panel members status report',
+        apiKey: 'PanelMembersStatusReport',
+        search: 'trial',
+        headings: [
+          'trialNumber',
+          'reportDate',
+          'names',
+          'reportTime',
+          'courtRoom',
+          'courtName',
+          'judge',
+        ],
+      },
     };
   };
 })();

@@ -70,6 +70,7 @@
     standardReportRoutes(app, 'daily-utilisation');
     standardReportRoutes(app, 'daily-utilisation-jurors');
     standardReportRoutes(app, 'unconfirmed-attendance');
+    standardReportRoutes(app, 'panel-members-status');
   };
 
 })();
