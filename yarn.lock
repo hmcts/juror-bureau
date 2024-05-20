@@ -5917,15 +5917,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"grunt-sonar-runner@npm:^2.4.7":
-  version: 2.4.8
-  resolution: "grunt-sonar-runner@npm:2.4.8"
-  peerDependencies:
-    grunt: ">=0.4.5"
-  checksum: 14af63f1873baa00e35ffcd5053807b3dea755533d7b63fa82eef5da40fa77ebc4a855ff8ba9d15d3c6f568a23b4114a8d84e8ec5ad665c7bda4fd2175bc92d1
-  languageName: node
-  linkType: hard
-
 "grunt-sync@npm:^0.8.2":
   version: 0.8.2
   resolution: "grunt-sync@npm:0.8.2"
@@ -7934,7 +7925,6 @@ __metadata:
     grunt-open: ^0.2.3
     grunt-sass: ^3.1.0
     grunt-shell: ^2.1.0
-    grunt-sonar-runner: ^2.4.7
     grunt-sync: ^0.8.2
     helmet: ^3.9.0
     ip: ^1.1.5
