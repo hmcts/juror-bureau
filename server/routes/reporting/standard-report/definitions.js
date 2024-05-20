@@ -22,9 +22,6 @@ const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../obj
   //                       // (except report created dateTime)
   //   unsortable: boolean, // prevents report table from being sorted
   //   exportLabel: string, // label for export button if required
-  //   tableData?: {
-  //     transformer?: (data: any) => any, // transform the data before rendering
-  //   },
   //   grouped?: {
   //     headings: {
   //       prefix?: string,
