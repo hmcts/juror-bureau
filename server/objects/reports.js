@@ -58,10 +58,19 @@ const { DAO } = require('./dataAccessObject');
     },
   });
 
-  module.exports.monthlyUtilisationDAO = new DAO('moj/reports/monthly-utilisation', {
-    get: function(locCode, month, monthsPrior = false) {
+  module.exports.generateMonthlyUtilisationDAO = new DAO('moj/reports/generate-monthly-utilisation', {
+    get: function(locCode, reportDate) {
       return {
-        uri: `${this.resource}/${locCode}?month=${month}&monthsPrior=${monthsPrior}`,
+        uri: `${this.resource}/${locCode}?reportDate=${reportDate}`,
+        transform: mapSnakeToCamel,
+      };
+    },
+  });
+
+  module.exports.viewMonthlyUtilisationDAO = new DAO('moj/reports/view-monthly-utilisation', {
+    get: function(locCode, reportDate, previousMonths = 'false') {
+      return {
+        uri: `${this.resource}/${locCode}?reportDate=${reportDate}&previousMonths=${previousMonths}`,
         transform: mapSnakeToCamel,
       };
     },

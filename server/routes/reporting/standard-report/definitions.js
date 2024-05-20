@@ -1,4 +1,3 @@
-const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../objects/reports');
 
 (() => {
   'use strict';
@@ -6,6 +5,7 @@ const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../obj
   const { isCourtUser } = require('../../../components/auth/user-type');
   const { dateFilter } = require('../../../components/filters');
   const { monthlyUtilisationDAO } = require('../../../objects/reports');
+  const { dailyUtilisationDAO, dailyUtilisationJurorsDAO, viewMonthlyUtilisationDAO, generateMonthlyUtilisationDAO } = require('../../../objects/reports');
 
   // type IReportKey = {[key:string]: {
   //   title: string,
@@ -393,9 +393,8 @@ const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../obj
           ];
         },
       },
-      'monthly-utilisation': {
+      'prepare-monthly-utilisation': {
         title: 'Monthly wastage and utilisation report',
-        apiKey: 'MonthlyUtilisationReport',
         headings: [
           'dateFrom',
           'reportDate',
@@ -405,11 +404,30 @@ const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../obj
           'courtName',
         ],
         bespokeReport: {
-          dao: async(req) => await monthlyUtilisationDAO.get(
+          dao: async(req) => await generateMonthlyUtilisationDAO.get(
             req,
             req.session.authentication.locCode,
             req.params.filter,
-            req.query.monthsPrior
+          ),
+          body: true,
+        },
+        unsortable: true,
+        exportLabel: 'Export raw data',
+      },
+      'view-monthly-utilisation': {
+        title: 'View monthly wastage and utilisation report',
+        headings: [
+          'courtName',
+          'reportDate',
+          '',
+          'reportTime',
+        ],
+        bespokeReport: {
+          dao: async(req) => await viewMonthlyUtilisationDAO.get(
+            req,
+            req.session.authentication.locCode,
+            req.params.filter,
+            req.query.previousMonths
           ),
           body: true,
         },

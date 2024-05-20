@@ -7,30 +7,30 @@
     postPrepareMonthlyUtilisation,
     getCofirmPrepareMonthlyUtilisation,
     getFilterMonthlyUtilisation,
-    postFilterMonthlyUtilisation
+    postFilterMonthlyUtilisation,
   } = require('./monthly-utilisation.controller');
   const auth = require('../../../components/auth');
 
   module.exports = function(app) {
     app.get('/reporting/monthly-utilisation/prepare',
-      'reports.monthly-utilisation.prepare.get',
+      'reports.prepare-monthly-utilisation.filter.get',
       auth.verify,
       getPrepareMonthlyUtilisation(app));
     app.post('/reporting/monthly-utilisation/prepare',
-      'reports.monthly-utilisation.prepare.post',
+      'reports.prepare-monthly-utilisation.filter.post',
       auth.verify,
       postPrepareMonthlyUtilisation(app));
-    app.get('/reporting/monthly-utilisation/prepare/confirm/:month',
-      'reports.monthly-utilisation.prepare.confirm.get',
+    app.get('/reporting/monthly-utilisation/prepare/confirm/:reportDate',
+      'reports.prepare-monthly-utilisation.confirm.get',
       auth.verify,
       getCofirmPrepareMonthlyUtilisation(app));
 
-      app.get('/reporting/monthly-utilisation',
-      'reports.monthly-utilisation.filter.get',
+    app.get('/reporting/monthly-utilisation',
+      'reports.view-monthly-utilisation.filter.get',
       auth.verify,
       getFilterMonthlyUtilisation(app));
     app.post('/reporting/monthly-utilisation',
-      'reports.monthly-utilisation.filter.post',
+      'reports.view-monthly-utilisation.filter.post',
       auth.verify,
       postFilterMonthlyUtilisation(app));
   };

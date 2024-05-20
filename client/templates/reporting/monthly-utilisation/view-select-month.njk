@@ -35,15 +35,10 @@
             classes: "govuk-label--m"
           },
           errorMessage: selectMonthError,
-          items: [
-            {
-              value: "01-2024",
-              text: "January 2024"
-            }
-          ]
+          items: months
         }) }}
         {{ govukCheckboxes({
-          name: "2MonthsBefore",
+          name: "previousMonths",
           classes: "govuk-checkboxes--small",
           items: [
             {

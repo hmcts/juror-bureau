@@ -197,6 +197,64 @@ const bespokeReportBodys = (app) => {
 
       return rows;
     },
+    'prepare-monthly-utilisation': (tableData) => {
+      let rows = [];
+
+      tableData.months.forEach((month) => {
+        rows.push([
+          {
+            text: month.month,
+          },
+          {
+            text: month.jurorWorkingDays.toString(),
+          },
+          {
+            text: month.sittingDays.toString(),
+          },
+          {
+            text: month.attendanceDays.toString(),
+          },
+          {
+            text: month.nonAttendanceDays.toString(),
+          },
+          {
+            text: `${(Math.round(month.utilisation * 100) / 100).toString()}%`,
+          },
+        ]);
+      });
+
+      rows.push([
+        {
+          text: tableData.months.length > 1 ? 'Overall total' : '',
+          classes: 'govuk-!-padding-left-2 govuk-!-font-weight-bold mod-highlight-table-data__blue',
+        },
+        {
+          text: tableData.totalJurorWorkingDays.toString(),
+          classes: 'govuk-!-font-weight-bold mod-highlight-table-data__blue',
+        },
+        {
+          text: tableData.totalSittingDays.toString(),
+          classes: 'govuk-!-font-weight-bold mod-highlight-table-data__blue',
+        },
+        {
+          text: tableData.totalAttendanceDays.toString(),
+          classes: 'govuk-!-font-weight-bold mod-highlight-table-data__blue',
+        },
+        {
+          text: tableData.totalNonAttendanceDays.toString(),
+          classes: 'govuk-!-font-weight-bold mod-highlight-table-data__blue',
+        },
+        {
+          text: `${(Math.round(tableData.totalUtilisation * 100) / 100).toString()}%`,
+          classes: 'govuk-!-font-weight-bold mod-highlight-table-data__blue',
+        },
+      ]);
+
+      return rows;
+    },
+    'view-monthly-utilisation': (tableData) => {
+      return bespokeReportBodys(app)['prepare-monthly-utilisation'](tableData);
+    },
   };
 };
 

@@ -17,23 +17,21 @@
     {% set selectMonthError = {text: errors.items["selectMonth"][0].details} %}
   {% endif %}
 
-  <form action="{{ processUrl }}" method="post" id="cutoffDateForm">
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-l">Confirm you want to prepare the utilisation report for {{ courtName }} for {{ month }} now</h1>
-        {{ govukInsetText({
-          html: "You may want to check your <a class='govuk-link govuk-link--no-visited-state' href='" + incompleteServiceReportUrl + "'>incomplete service report</a> report first, to update the status of any recently completed jurors."
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">Confirm you want to prepare the utilisation report for {{ courtName }} for {{ month }} now</h1>
+      {{ govukInsetText({
+        html: "You may want to check your <a class='govuk-link govuk-link--no-visited-state' href='" + incompleteServiceReportUrl + "'>incomplete service report</a> report first, to update the status of any recently completed jurors."
+      }) }}
+      <div class="govuk-button-group">
+        {{ govukButton({
+          text: "Yes - prepare",
+          href: continueUrl
         }) }}
-        <div class="govuk-button-group">
-          {{ govukButton({
-            text: "Yes - prepare",
-            href: continueUrl
-          }) }}
-          <a href="{{ cancelUrl }}" class="govuk-link" id="cancelAnchor">No - cancel</a>
-        </div>
+        <a href="{{ cancelUrl }}" class="govuk-link" id="cancelAnchor">No - cancel</a>
       </div>
     </div>
-  </form>
+  </div>
 
 {% endblock %}
 

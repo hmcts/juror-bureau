@@ -72,7 +72,8 @@
     standardReportRoutes(app, 'unconfirmed-attendance');
     standardReportRoutes(app, 'panel-members-status');
     require('../monthly-utilisation')(app);
-    standardReportRoutes(app, 'monthly-utilisation');
+    standardReportRoutes(app, 'prepare-monthly-utilisation');
+    standardReportRoutes(app, 'view-monthly-utilisation');
   };
 
 })();
