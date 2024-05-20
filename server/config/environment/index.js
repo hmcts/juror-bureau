@@ -46,6 +46,13 @@
 
         // If true, logs will be output in terminal as well as saved to file
         logConsole: 'debug',
+
+        // rate limiting - defaults to 1 mil requests per minute
+        rateLimit: {
+          time: process.env.RATE_LIMIT_TIME || (1 * 60 * 1000), // time window in milliseconds
+          max: process.env.RATE_LIMIT_MAX || 1000000, // max number of requests per time (in ms above)
+          message: 'Too many requests, please try again later. Thank you.',
+        },
       };
 
       // Export the config object based on the NODE_ENV
@@ -63,19 +70,6 @@
         // It isn't accessible
         winston.error(e);
       }
-
-
-      /*
-      // Try to access configuration file for secret values
-      try {
-        fs.accessSync(__dirname + '/secret.js', fs.F_OK);
-        merged = _.merge(merged, require('./secret.js'));
-      } catch (e) {
-        // It isn't accessible
-        winston.error(e);
-      }
-      */
-
 
       return merged;
 
