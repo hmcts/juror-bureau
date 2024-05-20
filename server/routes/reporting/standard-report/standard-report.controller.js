@@ -24,6 +24,7 @@
 
     if (reportType.search) {
       const { filter } = req.query;
+      const tmpBody = _.clone(req.session.formFields);
       const tmpErrors = _.clone(req.session.errors);
 
       switch (reportType.search) {
@@ -104,7 +105,6 @@
       case 'fixedDateRange':
       case 'dateRange':
         const isFixedDateRange = reportType.search === 'fixedDateRange';
-
         delete req.session.errors;
         delete req.session.formFields;
 
@@ -115,7 +115,7 @@
             items: tmpErrors,
           },
           isFixedDateRange,
-          tmpBody: req.session.formFields,
+          tmpBody,
           reportKey,
           title: reportType.title,
           reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
@@ -436,17 +436,18 @@
       let redirectRoute = `reports.${reportKey}.report.get`
 
       if (toDate.isBefore(fromDate)) {
-        req.session.errors = {
-          dateTo: [{
-            summary: '‘Date to’ cannot be before ‘date from’',
-            details: '‘Date to’ cannot be before ‘date from’',
-          }],
-        };
+        req.session.errors = makeManualError('dateTo', '‘Date to’ cannot be before ‘date from’');
         req.session.formFields = req.body;
         return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`));
       }
 
       if (reportKey === 'daily-utilisation') { 
+        console.log(toDate.diff(fromDate, 'days') + 1);
+        if((toDate.diff(fromDate, 'days') + 1) > 31) {
+          req.session.errors = makeManualError('dateTo', 'Date range cannot be larger than 31 days');
+          req.session.formFields = req.body;
+          return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`));
+        }
         redirectRoute = `reports.daily-utilisation.check.get`
       }
 
