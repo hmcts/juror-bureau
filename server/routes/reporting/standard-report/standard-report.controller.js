@@ -442,7 +442,6 @@
       }
 
       if (reportKey === 'daily-utilisation') { 
-        console.log(toDate.diff(fromDate, 'days') + 1);
         if((toDate.diff(fromDate, 'days') + 1) > 31) {
           req.session.errors = makeManualError('dateTo', 'Date range cannot be larger than 31 days');
           req.session.formFields = req.body;
