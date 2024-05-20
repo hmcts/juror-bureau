@@ -27,7 +27,7 @@
         let searchBy, paginationObject;
 
         delete req.session.errors;
-        delete req.session.documentsJurorsList.checkedJurors;
+
         if (documentSearchBy === 'juror_number') {
           searchBy = jurorNumber;
         } else if (documentSearchBy === 'juror_name') {
@@ -58,8 +58,7 @@
 
         const { tableHeader, tableRows } = tableGenerator.bind({
           response: slicedJurorList,
-          checkedJurors: [],
-          // checkedJurors: req.session.documentsJurorsList.checkedJurors || [],
+          checkedJurors: req.session.documentsJurorsList.checkedJurors || [],
         })(_isBureauUser);
 
         const postUrl = urljoin(app.namedRoutes.build('documents.letters-list.post', {
@@ -70,8 +69,8 @@
           document,
         }), urlBuilder(req.query));
 
-        // const selectedJurors = (req.session.documentsJurorsList.checkedJurors
-        //   && req.session.documentsJurorsList.checkedJurors.length) || 0;
+        const selectedJurors = (req.session.documentsJurorsList.checkedJurors
+          && req.session.documentsJurorsList.checkedJurors.length) || 0;
 
         delete req.session.statusChangedList;
 
@@ -86,7 +85,7 @@
           rows: tableRows,
           paginationObject,
           buttonLabel: buttonLabel(document, _isBureauUser),
-          selectedJurors: 0,
+          selectedJurors,
           totalJurors: req.session.documentsJurorsList.data.length,
           totalCheckableJurors: calculateTotalJurors(req.session.documentsJurorsList.data, documentSearchBy),
           document,
