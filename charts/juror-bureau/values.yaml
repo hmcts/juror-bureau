@@ -29,3 +29,5 @@ nodejs:
     SMARTSURVEY_EXPORT_V2: Dashboard Export
     CALLBACK_URL: https://juror.{{ .Values.global.environment }}.apps.hmcts.net/auth/internal/callback
     LOGOUT_REDIRECT: https://juror.{{ .Values.global.environment }}.apps.hmcts.net
+    RATE_LIMIT_TIME: 300000 # 5 minutes
+    RATE_LIMIT_MAX: 1000000 # 1 mil requests

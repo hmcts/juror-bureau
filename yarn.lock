@@ -4526,6 +4526,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"express-rate-limit@npm:^7.2.0":
+  version: 7.2.0
+  resolution: "express-rate-limit@npm:7.2.0"
+  peerDependencies:
+    express: 4 || 5 || ^5.0.0-beta.1
+  checksum: 6adc3e06d430e91cf8ef8da23107466ffd9193b5680b03bc12702894cab0adcbb980634602b839b3a1444620f2379707098af3a4dcc38c909e89214abaf6c1bf
+  languageName: node
+  linkType: hard
+
 "express-session@npm:^1.14.0":
   version: 1.18.0
   resolution: "express-session@npm:1.18.0"
@@ -5914,15 +5923,6 @@ __metadata:
   peerDependencies:
     grunt: ">=0.4.0"
   checksum: 57e2d347608e17f75d838a8d9356f66b324a288ba208f8ca60e1b3037ebe44937b846ff28e0b5c5bcaefdced1be9409d5dbf19df82a57f467e9e3aa42edc3134
-  languageName: node
-  linkType: hard
-
-"grunt-sonar-runner@npm:^2.4.7":
-  version: 2.4.8
-  resolution: "grunt-sonar-runner@npm:2.4.8"
-  peerDependencies:
-    grunt: ">=0.4.5"
-  checksum: 14af63f1873baa00e35ffcd5053807b3dea755533d7b63fa82eef5da40fa77ebc4a855ff8ba9d15d3c6f568a23b4114a8d84e8ec5ad665c7bda4fd2175bc92d1
   languageName: node
   linkType: hard
 
@@ -7911,6 +7911,7 @@ __metadata:
     eslint-plugin-react: ^7.5.1
     express: ^4.19.2
     express-nunjucks: ^3.1.1
+    express-rate-limit: ^7.2.0
     express-session: ^1.14.0
     fs-extra: ^11.0.0
     govuk-frontend: ^4.8.0
@@ -7934,7 +7935,6 @@ __metadata:
     grunt-open: ^0.2.3
     grunt-sass: ^3.1.0
     grunt-shell: ^2.1.0
-    grunt-sonar-runner: ^2.4.7
     grunt-sync: ^0.8.2
     helmet: ^3.9.0
     ip: ^1.1.5

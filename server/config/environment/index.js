@@ -51,6 +51,13 @@ const all = {
     callbackUrl: process.env.CALLBACK_URL || 'http://localhost:3000/auth/internal/callback',
     logoutRedirect: process.env.LOGOUT_REDIRECT || 'http://localhost:3000',
   },
+  
+  //rate limiting - defaults to 1 mil requests per minute
+  rateLimit: {
+    time: process.env.RATE_LIMIT_TIME || (1 * 60 * 1000), // time window in milliseconds
+    max: process.env.RATE_LIMIT_MAX || 1000000, // max number of requests per time (in ms above)
+    message: 'Too many requests, please try again later. Thank you.',
+  },
 };
 
 module.exports = function() {
