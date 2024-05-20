@@ -5656,7 +5656,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"grunt-cli@npm:~1.4.3":
+"grunt-cli@npm:^1.3.2, grunt-cli@npm:~1.4.3":
   version: 1.4.3
   resolution: "grunt-cli@npm:1.4.3"
   dependencies:
@@ -5917,12 +5917,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"grunt-sonar-runner@npm:^2.4.7":
-  version: 2.4.8
-  resolution: "grunt-sonar-runner@npm:2.4.8"
+"grunt-sonar-runner@npm:^3.0.0":
+  version: 3.0.2
+  resolution: "grunt-sonar-runner@npm:3.0.2"
+  dependencies:
+    grunt-cli: ^1.3.2
   peerDependencies:
     grunt: ">=0.4.5"
-  checksum: 14af63f1873baa00e35ffcd5053807b3dea755533d7b63fa82eef5da40fa77ebc4a855ff8ba9d15d3c6f568a23b4114a8d84e8ec5ad665c7bda4fd2175bc92d1
+  checksum: 97a1c2617bd0070a4bd4cc03955dabe8b5659af796ce8aa42a8c31363162aa6891a2cf27cbac275a02fe05b3b2a08c0efb0e0dc30a3f52434ef80cbe92ff016a
   languageName: node
   linkType: hard
 
@@ -7934,7 +7936,7 @@ __metadata:
     grunt-open: ^0.2.3
     grunt-sass: ^3.1.0
     grunt-shell: ^2.1.0
-    grunt-sonar-runner: ^2.4.7
+    grunt-sonar-runner: ^3.0.0
     grunt-sync: ^0.8.2
     helmet: ^3.9.0
     ip: ^1.1.5
