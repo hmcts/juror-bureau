@@ -45,10 +45,6 @@
     require('./messaging')(app);
     require('./administration')(app);
 
-    app.get('/helloworld', function(req, res) {
-      return res.send('hello world');
-    });
-
     app.route('/health')
       .get(function(req, res) {
         return errors(req, res, 200);
