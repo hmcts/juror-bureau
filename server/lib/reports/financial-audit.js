@@ -183,7 +183,7 @@
   })
 
   const content = (auditData) => {
-    const widths = [80, 80, 70, '*', '*', 60, '*', '*', '*', '*', '*', 60, '*', 30, 40];
+    const widths = [80, 70, 65, '*', '*', 60, '*', 65, '*', '*', '*', 60, '*', 40, 50];
     const tableBody = auditData.expenses.expenseDetails.map(expense => {
       if (expense.original) {
         return [
@@ -264,7 +264,7 @@
       {
         raw: true,
         alignment: 'justify',
-        fontSize: 7,
+        fontSize: 10,
         width: '33%',
         table: {
           widths: [120, 200],
@@ -319,7 +319,7 @@
     if (auditData.auditType === 'REAPPROVED_CASH' || auditData.auditType === 'APPROVED_CASH') {
       coreContent.push({
         raw: true,
-        fontSize: 7,
+        fontSize: 10,
         marginTop: 50,
         width: '33%',
         table: {

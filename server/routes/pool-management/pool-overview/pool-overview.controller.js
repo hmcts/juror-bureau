@@ -13,6 +13,7 @@ const capitalizeFully = require('../../../components/filters').capitalizeFully;
 const rp = require('request-promise');
 const paginateJurorsList = require('./paginate-jurors-list');
 const { poolMembersDAO } = require('../../../objects');
+const { getBallotPDF } = require('../../../lib/reports/ballot.js');
 
 function errorCB(app, req, res, poolNumber, errorString) {
   return function(err) {
@@ -734,6 +735,12 @@ module.exports.postCheckJuror = function(app) {
     });
 
     return res.send();
+  };
+};
+
+module.exports.printPoolBallotCards = function(app) {
+  return function(req, res) {
+    return getBallotPDF(req,res);
   };
 };
 

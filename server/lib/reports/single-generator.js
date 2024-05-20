@@ -118,7 +118,7 @@
   // TODO: this can be improved still
   const documentContent = (tables) => {
     const _defaultTableOptions = (modifications, margin) => ({
-      alignment: 'justify',
+      alignment: 'left',
       style: 'body',
       layout: {
         ...layout().defaultLayout,

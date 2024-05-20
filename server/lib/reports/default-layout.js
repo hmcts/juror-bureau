@@ -64,7 +64,7 @@
           paddingBottom: 0,
         },
         body: {
-          fontSize: 7,
+          fontSize: 10,
         },
         barcode: {
           font: 'LibreBarcode',
