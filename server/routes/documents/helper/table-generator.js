@@ -12,7 +12,15 @@
 
     const tableHeader = `
       <tr class="govuk-table__row">
-        <th class="govuk-table__header"></th>
+        <th class="govuk-table__header">
+          ${isBureauUser ? `<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
+            <input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check"
+            id="check-all-jurors" name="selectAllCheckbox"/>
+            <label class="govuk-label govuk-checkboxes__label" for="selectAllCheckbox">
+              <span class="govuk-visually-hidden">Select All</span>
+            </label>
+          </div>
+        </th>` : ''}
         ${_thead}
       </tr>
     `;

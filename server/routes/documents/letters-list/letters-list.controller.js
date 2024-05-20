@@ -27,6 +27,7 @@
         let searchBy, paginationObject;
 
         delete req.session.errors;
+        delete req.session.documentsJurorsList.checkedJurors;
         if (documentSearchBy === 'juror_number') {
           searchBy = jurorNumber;
         } else if (documentSearchBy === 'juror_name') {
@@ -57,7 +58,8 @@
 
         const { tableHeader, tableRows } = tableGenerator.bind({
           response: slicedJurorList,
-          checkedJurors: req.session.documentsJurorsList.checkedJurors || [],
+          checkedJurors: [],
+          // checkedJurors: req.session.documentsJurorsList.checkedJurors || [],
         })(_isBureauUser);
 
         const postUrl = urljoin(app.namedRoutes.build('documents.letters-list.post', {
@@ -68,8 +70,8 @@
           document,
         }), urlBuilder(req.query));
 
-        const selectedJurors = (req.session.documentsJurorsList.checkedJurors
-          && req.session.documentsJurorsList.checkedJurors.length) || 0;
+        // const selectedJurors = (req.session.documentsJurorsList.checkedJurors
+        //   && req.session.documentsJurorsList.checkedJurors.length) || 0;
 
         delete req.session.statusChangedList;
 
@@ -84,7 +86,7 @@
           rows: tableRows,
           paginationObject,
           buttonLabel: buttonLabel(document, _isBureauUser),
-          selectedJurors,
+          selectedJurors: 0,
           totalJurors: req.session.documentsJurorsList.data.length,
           totalCheckableJurors: calculateTotalJurors(req.session.documentsJurorsList.data, documentSearchBy),
           document,
@@ -264,14 +266,40 @@
   // the same approach could be used in other places where we have checkboxes for selecting items from big lists
   module.exports.checkJuror = function(app) {
     return function(req, res) {
-      const { isChecking } = req.body;
+      const { isChecking, isCheckAll } = req.body;
 
-      if (!req.session.documentsJurorsList.checkedJurors) {
-        req.session.documentsJurorsList.checkedJurors = [];
+      if (isCheckAll === 'true') {
+        if (areAllChecked(req)) {
+          req.session.documentsJurorsList.checkedJurors = [];
+        } else {
+          req.session.documentsJurorsList.checkedJurors = [];
+          req.session.documentsJurorsList.data.forEach(juror => {
+            if (!juror[4] && !juror[5]) {
+              req.session.documentsJurorsList.checkedJurors.push({
+                'juror_number': juror[0],
+                'form_code': juror[6],
+                'date_printed': req.body.date_printed,
+              });
+            }
+          });
+        }
+
+        app.logger.info('Checked / unchecked all juror documents: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: { ...req.body },
+        });
+
+        return res.send(200, req.session.documentsJurorsList.checkedJurors.length);
       }
 
       delete req.body._csrf;
       delete req.body.isChecking;
+      delete req.body.isCheckAll;
+
+      if (typeof req.session.documentsJurorsList.checkedJurors === 'undefined') {
+        req.session.documentsJurorsList.checkedJurors = [];
+      }
 
       const index = req.session.documentsJurorsList.checkedJurors
         .findIndex((juror) => (
@@ -292,7 +320,7 @@
         data: { ...req.body },
       });
 
-      return res.send();
+      return res.send(200, req.session.documentsJurorsList.checkedJurors.length);
     };
   };
 
@@ -380,6 +408,14 @@
 
       return doc[doc.length - 2] !== false || _neverPrinted;
     }).length;
+  }
+
+  function areAllChecked(req) {
+    if (!req.session.documentsJurorsList.checkedJurors) {
+      req.session.documentsJurorsList.checkedJurors = [];
+    }
+    return req.session.documentsJurorsList.data.filter((juror) => (!juror[4] && !juror[5])).length
+      === req.session.documentsJurorsList.checkedJurors.length;
   }
 
 })();

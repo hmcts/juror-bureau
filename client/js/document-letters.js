@@ -2,10 +2,24 @@
   'use strict';
 
   var selectedJurorsCount = $('#selectedJurorsCount');
+  var totalCheckableJurors = $('#totalCheckableJurors');
   var jurorRows = $('input[aria-label^=check-juror-]');
   var csrfToken = $('#csrfToken');
   var documentType = $('#documentType');
   var deleteLetterLinks = $('a[id^=delete-letter-]');
+  var checkAllJurors = $('#check-all-jurors');
+
+  checkAllJurors.click(function() {
+    const isCheckingAll = this.checked;
+
+    doAjaxCall(this.checked, null, null, 'null', 'POST', true).then(function(noChecked) {
+      jurorRows.each(function(_, element) {
+        element.checked = isCheckingAll;
+      });
+      selectedJurorsCount.text(isCheckingAll ? noChecked : '0');
+    });
+
+  });
 
   jurorRows.each(function(_, element) {
     element.addEventListener('change', function() {
@@ -19,17 +33,8 @@
         selectedJurorsCount.text(+selectedJurorsCount.text() - 1);
       }
 
-      $.ajax({
-        url: `/documents/${documentType.val()}/letters-list/check-juror`,
-        method: 'POST',
-        data: {
-          _csrf: csrfToken.val(),
-          isChecking: this.checked,
-          'juror_number': jurorNumber,
-          'form_code': documentVersion,
-          'date_printed': datePrinted,
-        },
-      });
+      doAjaxCall(this.checked, jurorNumber, documentVersion, datePrinted, 'POST');
+      updateCheckAllJurorsCheckbox();
     });
   });
 
@@ -42,16 +47,7 @@
 
       event.preventDefault();
 
-      $.ajax({
-        url: `/documents/${documentType.val()}/letters-list/delete-letter`,
-        method: 'DELETE',
-        data: {
-          _csrf: csrfToken.val(),
-          'juror_number': jurorNumber,
-          'form_code': documentVersion,
-          'date_printed': datePrinted,
-        },
-      })
+      doAjaxCall(_, jurorNumber, documentVersion, datePrinted, 'DELETE')
         .then(() => {
           var successBox = $('#delete-success');
 
@@ -66,5 +62,30 @@
         });
     });
   });
+
+  function doAjaxCall(isChecking, jurorNumber, documentVersion, datePrinted, reqMethod, isCheckAll = false) {
+    const routeUrl = reqMethod === 'POST' ? 'check-juror' : 'delete-letter';
+
+    return $.ajax({
+      url: `/documents/${documentType.val()}/letters-list/` + routeUrl,
+      method: reqMethod,
+      data: {
+        _csrf: csrfToken.val(),
+        isChecking,
+        'juror_number': jurorNumber,
+        'form_code': documentVersion,
+        'date_printed': datePrinted,
+        isCheckAll,
+      },
+    });
+  }
+
+  function updateCheckAllJurorsCheckbox() {
+    if (selectedJurorsCount.text() === totalCheckableJurors.text()) {
+      checkAllJurors[0].checked = true;
+    } else {
+      checkAllJurors[0].checked = false;
+    }
+  }
 
 })();
