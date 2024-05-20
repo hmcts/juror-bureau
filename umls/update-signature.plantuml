@@ -1,0 +1,76 @@
+@startuml update-signature
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant SummonsReplyPage <</summons-replies/response/{jurorNumber}>>
+participant UpdateSignaturePage <</summons-replies/response/{jurorNumber}/paper/update/signature>>
+participant GenericErrorPage <</error>>
+
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant SignatureController <<signature.controller.js>> #lightyellow
+participant paperReplyObjGet <<paperReplyObj.get()>> #lightyellow
+participant summonsUpdateObject <<summonsUpdate.patch()>> #lightyellow
+
+''' TEMPLATES
+participant SummonsReplyTemplate <</summons-replies/response/{jurorNumber}.njk>>
+participant UpdateSignatureTemplate <</summons-replies/response/{jurorNumber}/paper/update/signature.njk>>
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> SummonsReplyPage : click add or change
+SummonsReplyPage -> SignatureController : call controller
+ 
+SignatureController -> paperReplyObjGet : build request object
+paperReplyObjGet -> BackendController : send backend request
+paperReplyObjGet <- BackendController : ok response
+SignatureController <- paperReplyObjGet : resolve request
+
+SignatureController -> UpdateSignatureTemplate : request and build template
+SignatureController <- UpdateSignatureTemplate : return HTML
+UpdateSignaturePage <- SignatureController : return HTML
+Actor <- UpdateSignaturePage : render HTML
+
+Actor -> UpdateSignaturePage : enter changes and save
+
+UpdateSignaturePage -> SignatureController : POST details
+
+
+SignatureController -> summonsUpdateObject : build request object
+summonsUpdateObject -> BackendController : send backend request
+summonsUpdateObject <- BackendController : ok response
+SignatureController <- summonsUpdateObject : resolve request - no update to values
+
+alt Unable to fetch the summons details
+    paperReplyObjGet <-- BackendController : error response
+    SignatureController <-- paperReplyObjGet : reject requestObject
+    SignatureController -> ErrorTemplate : request and build template
+    SignatureController <- ErrorTemplate : return HTML
+    GenericErrorPage <- SignatureController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Unable to update the summons signature
+    summonsUpdateObject <-- BackendController : error response
+    SignatureController <-- summonsUpdateObject : reject requestObject
+    SignatureController -> ErrorTemplate : request and build template
+    SignatureController <- ErrorTemplate : return HTML
+    GenericErrorPage <- SignatureController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+SignatureController -> paperReplyObjGet : build request object
+paperReplyObjGet -> BackendController : send backend request
+paperReplyObjGet <- BackendController : ok response
+SignatureController <- paperReplyObjGet : resolve request
+SignatureController -> SummonsReplyTemplate : request and build template
+SignatureController <- SummonsReplyTemplate : return HTML
+SummonsReplyPage <- SignatureController : return HTML
+Actor <- SummonsReplyPage : render HTML

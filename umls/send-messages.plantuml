@@ -1,0 +1,143 @@
+@startuml send-messages
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant MessagesTemplatePage <</messaging/messages-template>>
+participant FindJurorsPage <</messaging/find-jurors>>
+participant SelectTrialPage <</messaging/select-trial>>
+participant SelectJurorsPage <</messaging/select-jurors>>
+participant MessageConfirmationPage <</messaging/message-confirmation>>
+participant MessagesListPage <</messaging/messages-list>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant sendMessagesController <<send-messages.controller.js>> #lightyellow
+participant trialsListObject <<trialsListObject.get()>> #lightyellow
+participant messageTemplateDAO <<messageTemplateDAO.get()>> #lightyellow
+participant sendMessage <<sendMessage.post()>> #lightyellow
+participant jurorSearchDAO <<jurorSearchDAO.post()>> #lightyellow
+participant populatedMessageDAO <<populatedMessageDAO.post()>> #lightyellow
+
+''' TEMPLATES
+participant MessagesTemplate <</messaging/messages-template.njk>>
+participant FindJurorsTemplate <</messaging/find-jurors.njk>>
+participant SelectTrialTemplate <</messaging/select-trial.njk>>
+participant SelectJurorsTemplate <</messaging/select-jurors.njk>>
+participant MessageConfirmationTemplate <</messaging/message-confirmation.njk>>
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant messagingValidator
+
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> MessagesTemplatePage : select message to send
+MessagesTemplatePage -> sendMessagesController : call controller
+
+sendMessagesController -> jurorSearchDAO : build request object
+jurorSearchDAO -> BackendController : send backend request
+jurorSearchDAO <- BackendController : ok response
+sendMessagesController <- jurorSearchDAO : resolve request
+
+alt Search by trial
+sendMessagesController -> trialsListObject : build request object
+trialsListObject -> BackendController : send backend request
+trialsListObject <- BackendController : ok response
+sendMessagesController <- trialsListObject : resolve request
+
+sendMessagesController -> SelectTrialTemplate : request and build template
+sendMessagesController <- SelectTrialTemplate : return HTML
+SelectTrialPage <- sendMessagesController : return HTML
+Actor <- SelectTrialPage : render HTML
+end
+
+sendMessagesController -> FindJurorsTemplate : request and build template
+sendMessagesController <- FindJurorsTemplate : return HTML
+SelectJurorsPage <- sendMessagesController : return HTML
+Actor <- SelectJurorsPage : render HTML
+
+Actor -> SelectJurorsPage : select jurors to send messages to
+
+sendMessagesController -> SelectJurorsTemplate : request and build template
+sendMessagesController <- SelectJurorsTemplate : return HTML
+SelectJurorsPage <- sendMessagesController : return HTML
+Actor <- MessagesTemplatePage : render HTML
+
+Actor -> MessagesTemplatePage : fill in placeholder values
+alt Invalid/no data entered
+  sendMessagesController <-- messagingValidator : data validation fails
+  sendMessagesController -> ApproveRejectTemplate : request and build error message template
+  sendMessagesController <- ApproveRejectTemplate : return HTML
+  MessagesTemplatePage <- messagingValidator : return HTML
+  Actor <- MessagesTemplatePage : render error message
+end
+
+sendMessagesController <- messagingValidator : valid data entered
+
+sendMessagesController -> messageTemplateDAO : build request object
+messageTemplateDAO -> BackendController : send backend request
+messageTemplateDAO <- BackendController : ok response
+sendMessagesController <- messageTemplateDAO : resolve request
+
+
+sendMessagesController -> MessageConfirmationTemplate : request and build template
+sendMessagesController <- MessageConfirmationTemplate : return HTML
+MessageConfirmationPage <- sendMessagesController : return HTML
+Actor <- MessageConfirmationPage : render HTML
+
+Actor -> MessagesTemplatePage : confirm for message to be sent
+sendMessagesController -> sendMessage : build request object
+sendMessage -> BackendController : send backend request
+sendMessage <- BackendController : ok response
+sendMessagesController <- sendMessage : resolve request
+
+alt Unable to fetch message
+    populatedMessageDAO <-- BackendController : error response
+    exportContactDetailsController <-- populatedMessageDAO : reject requestObject
+    exportContactDetailsController -> ErrorTemplate : request and build template
+    exportContactDetailsController <- ErrorTemplate : return HTML
+    GenericErrorPage <- exportContactDetailsController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Unable to fetch message template
+    messageTemplateDAO <-- BackendController : error response
+    exportContactDetailsController <-- messageTemplateDAO : reject requestObject
+    exportContactDetailsController -> ErrorTemplate : request and build template
+    exportContactDetailsController <- ErrorTemplate : return HTML
+    GenericErrorPage <- exportContactDetailsController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Failed to fetch trials
+    trialsListObject <-- BackendController : error response
+    exportContactDetailsController <-- trialsListObject : reject requestObject
+    exportContactDetailsController -> ErrorTemplate : request and build template
+    exportContactDetailsController <- ErrorTemplate : return HTML
+    GenericErrorPage <- exportContactDetailsController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Failed to fetch list of jurors
+    jurorSearchDAO <-- BackendController : error response
+    exportContactDetailsController <-- jurorSearchDAO : reject requestObject
+    exportContactDetailsController -> ErrorTemplate : request and build template
+    exportContactDetailsController <- ErrorTemplate : return HTML
+    GenericErrorPage <- exportContactDetailsController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Unable to send messages
+    sendMessage <-- BackendController : error response
+    exportContactDetailsController <-- sendMessage : reject requestObject
+    exportContactDetailsController -> ErrorTemplate : request and build template
+    exportContactDetailsController <- ErrorTemplate : return HTML
+    GenericErrorPage <- exportContactDetailsController : return HTML
+    Actor <- GenericErrorPage : render error page
+end

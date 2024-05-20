@@ -1,0 +1,65 @@
+@startuml letters-list
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+
+''' LOCAL ROUTING
+participant GenericLettersListPage <</juror-bureau/client/templates/documents/_common/letters-list>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant LettersListController <<letters-list.controller.js>> #lightyellow
+participant reissueLetterDAO <<reissueLetterDAO.post()>> #lightyellow
+participant reissueLetterDAODelete <<reissueLetterDAO.delete()>> #lightyellow
+
+''' TEMPLATES
+participant GenericLettersListTemplate <</juror-bureau/client/templates/documents/_common/letters-list.njk>>
+participant GenericErrorTemplate <</error>>
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> GenericLettersListPage : select document type from documents list
+GenericLettersListPage -> LettersListController : call controller
+
+alt delete letter
+LettersListController -> reissueLetterDAODelete : build request object
+reissueLetterDAODelete -> BackendController : send backend request
+reissueLetterDAODelete <- BackendController : ok response
+LettersListController <- reissueLetterDAODelete : resolve request
+end
+
+LettersListController -> reissueLetterDAO : build request object
+reissueLetterDAO -> BackendController : send backend request
+reissueLetterDAO <- BackendController : ok response
+LettersListController <- reissueLetterDAO : resolve request
+
+LettersListController -> GenericLettersListTemplate : request and build template
+LettersListController <- GenericLettersListTemplate : return HTML
+GenericLettersListPage <- LettersListController : return HTML
+Actor <- GenericLettersListPage : render HTML
+
+alt Failed to reprint letters for selected jurors
+    reissueLetterDAO <-- BackendController : error response
+    LettersListController <-- reissueLetterDAO : reject requestObject
+    LettersListController -> ErrorTemplate : request and build template
+    LettersListController <- ErrorTemplate : return HTML
+    GenericErrorPage <- LettersListController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Failed to delete the letter from the printing queue
+    reissueLetterDAODelete <-- BackendController : error response
+    LettersListController <-- reissueLetterDAODelete : reject requestObject
+    LettersListController -> ErrorTemplate : request and build template
+    LettersListController <- ErrorTemplate : return HTML
+    GenericErrorPage <- LettersListController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+
+
+    
