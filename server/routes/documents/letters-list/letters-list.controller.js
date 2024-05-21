@@ -407,6 +407,7 @@
 
   function areAllChecked(req) {
     if (typeof req.session.documentsJurorsList.checkedJurors === 'undefined') {
+      req.session.documentsJurorsList.checkedJurors = [];
       return false;
     }
 
@@ -415,10 +416,7 @@
   }
 
   function isCheckable(printValue, pendingValue) {
-    const isPrinted = typeof printValue !== 'undefined' && printValue !== null;
-    const isPending = typeof pendingValue !== 'undefined' && pendingValue;
-
-    return !isPrinted && !isPending;
+    return !!printValue && !!pendingValue;
   }
 
 })();
