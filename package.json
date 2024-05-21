@@ -24,7 +24,7 @@
     "@fengyuanchen/datepicker": "^0.6.4",
     "@hmcts/properties-volume": "1.1.0",
     "@ministryofjustice/frontend": "^1.8.1",
-    "accessible-autocomplete": "^2.0.4",
+    "accessible-autocomplete": "^3.0.0",
     "applicationinsights": "^2.9.4",
     "axios": "^1.6.8",
     "basic-auth": "^2.0.0",
@@ -37,10 +37,11 @@
     "errorhandler": "^1.4.3",
     "express": "^4.19.2",
     "express-nunjucks": "^3.1.1",
+    "express-rate-limit": "^7.2.0",
     "express-session": "^1.14.0",
     "fs-extra": "^11.0.0",
     "govuk-frontend": "^4.8.0",
-    "helmet": "^3.9.0",
+    "helmet": "^7.0.0",
     "ip": "^1.1.5",
     "jsonwebtoken": "^9.0.0",
     "launchdarkly-node-server-sdk": "^7.0.1",
@@ -89,7 +90,6 @@
     "grunt-open": "^0.2.3",
     "grunt-sass": "^3.1.0",
     "grunt-shell": "^2.1.0",
-    "grunt-sonar-runner": "^2.4.7",
     "grunt-sync": "^0.8.2",
     "istanbul": "^0.4.4",
     "jit-grunt": "^0.10.0",
@@ -105,5 +105,5 @@
   "resolutions": {
     "jackspeak": "2.1.1"
   },
-  "packageManager": "yarn@3.8.1"
+  "packageManager": "yarn@3.8.2"
 }

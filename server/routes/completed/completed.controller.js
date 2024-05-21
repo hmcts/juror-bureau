@@ -16,6 +16,10 @@
           req.session.sourceUrl = req.path;
 
           response.items = utils.sortCompletedResponseData(response.items, 'rawCompletedAt', true);
+
+          res.locals.todoCount = response.counts.todo;
+          res.locals.workCount = response.counts.todo + response.counts.pending;
+
           return res.render('completed.njk', {
             responses: response,
           });

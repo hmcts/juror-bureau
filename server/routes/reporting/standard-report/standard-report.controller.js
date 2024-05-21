@@ -7,7 +7,8 @@
   const { validate } = require('validate.js');
   const { poolSearchObject } = require('../../../objects/pool-search');
   const rp = require('request-promise');
-  const { tableDataMappers, constructPageHeading, bespokeReportBodys } = require('./utils');
+  const { tableDataMappers, constructPageHeading } = require('./utils');
+  const { bespokeReportBodys } = require('../bespoke-report/bespoke-report-body');
   const { reportKeys } = require('./definitions');
   const { standardReportPrint } = require('./standard-report-print');
   const { fetchCourtsDAO } = require('../../../objects');
@@ -23,6 +24,7 @@
 
     if (reportType.search) {
       const { filter } = req.query;
+      const tmpBody = _.clone(req.session.formFields);
       const tmpErrors = _.clone(req.session.errors);
 
       switch (reportType.search) {
@@ -46,6 +48,10 @@
         }
 
         errors = {...errors, ...submitErrors};
+
+        if (res.locals.isCourtUser) {
+          poolList = poolList.filter((pool) => pool.poolStage === 'At court');
+        }
 
         return res.render('reporting/standard-reports/pool-search', {
           errors: {
@@ -99,7 +105,6 @@
       case 'fixedDateRange':
       case 'dateRange':
         const isFixedDateRange = reportType.search === 'fixedDateRange';
-
         delete req.session.errors;
         delete req.session.formFields;
 
@@ -110,7 +115,7 @@
             items: tmpErrors,
           },
           isFixedDateRange,
-          tmpBody: req.session.formFields,
+          tmpBody,
           reportKey,
           title: reportType.title,
           reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
@@ -139,16 +144,19 @@
 
   const standardReportGet = (app, reportKey, isPrint = false, isExport = false) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
-    const bespokeReportBody = reportType.bespokeReportBody || false;
     const config = { reportType: reportType.apiKey, locCode: req.session.authentication.locCode };
     const filter = req.session.reportFilter;
     const bannerMessage = _.clone(req.session.bannerMessage);
+    let preReportRoute = _.clone(req.session.preReportRoute)
+
+    delete req.session.preReportRoute
 
     delete req.session.bannerMessage;
     req.session.reportSearch = req.params.filter;
 
     const buildStandardTableRows = function(tableData, tableHeadings) {
       return tableData.map(data => {
+
         let row = tableHeadings.map(header => {
           let output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
 
@@ -176,15 +184,12 @@
             output = output ? output.toUpperCase() : '-';
           }
 
-          if (header.id === 'contact_details' || header.id === 'juror_reasonable_adjustment_with_message') {
-            const details = output.split(', ');
+          if (header.dataType === 'List') {
+            const items = output.split(', ');
             let html = '';
-
-            details.forEach((element) => {
-              html = html
-                + `${
-                  element
-                }<br>`;
+  
+            items.forEach((element, i, array) => {
+              html = html + `${element}${header.id === 'juror_postal_address' ? (!(i === array.length - 1) ? ',' : '') : ''}<br>`;
             });
             return ({
               html: `${html}`,
@@ -195,7 +200,7 @@
             text: output ? output : '-',
             attributes: {
               "data-sort-value": header.dataType === 'LocalDate' ? data[snakeToCamel(header.id)] : output
-          }
+            }
           });
         });
 
@@ -209,25 +214,36 @@
       });
     };
 
-    const buildPrintUrl = function() {
-      let printUrl = req.params.filter
-        ? app.namedRoutes.build(`reports.${reportKey}.report.print`, {filter: req.params.filter})
-        : app.namedRoutes.build(`reports.${reportKey}.report.print`);
+    const buildPrintExportUrl = function(urlType = 'print') {
+      let url = req.params.filter
+        ? app.namedRoutes.build(`reports.${reportKey}.report.${urlType}`, {filter: req.params.filter})
+        : app.namedRoutes.build(`reports.${reportKey}.report.${urlType}`);
 
       if (req.query.fromDate) {
-        printUrl = printUrl + '?fromDate=' + req.query.fromDate + '&toDate=' + req.query.toDate;
+        url = url + '?fromDate=' + req.query.fromDate + '&toDate=' + req.query.toDate;
       }
-      return printUrl;
+
+      if (req.query.includeSummoned) {
+        url = url + '?includeSummoned=' + req.query.includeSummoned;
+      }
+
+      return url;
     };
 
     const buildBackLinkUrl = function() {
-      if (reportType.searchUrl) {
-        return reportType.searchUrl;
+      if (preReportRoute) {
+        return preReportRoute;
+      }
+      if (reportType.backUrl) {
+        return reportType.backUrl;
       }
       if (reportType.search === 'trial') {
         return app.namedRoutes.build('trial-management.trials.detail.get', {
           trialNumber: req.params.filter, locationCode: req.session.authentication.locCode
         });
+      }
+      if (reportKey === 'daily-utilisation-jurors') {
+        return req.session.dailyUtilisation.route
       }
       return app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : '');
     };
@@ -237,7 +253,7 @@
     if (reportType.search) {
       if (reportType.search === 'poolNumber') {
         config.poolNumber = req.params.filter;
-      } else if (reportType.search === 'date') {
+      } else if (reportType.search === 'date' || moment(req.params.filter, 'yyyy-MM-DD', true).isValid()) {
         config.date = req.params.filter;
       } else if (reportType.search === 'trial') {
         config.trialNumber = req.params.filter;
@@ -253,6 +269,19 @@
       config.toDate = req.query.toDate;
     }
 
+    if (reportKey.includes('persons-attending')) {
+      config.includeSummoned = req.query.includeSummoned || false;
+    }
+
+    // Backlink routing needs saved for jurors report
+    if (reportKey === 'daily-utilisation') {
+      req.session.dailyUtilisation = {
+        route: app.namedRoutes.build('reports.daily-utilisation.report.get', {
+          filter:'dateRange' 
+        }) + `?fromDate=${req.query.fromDate}&toDate=${req.query.toDate}`
+      }
+    }
+
     try {
       const { headings, tableData } = await (reportType.bespokeReport?.dao
         ? reportType.bespokeReport.dao(req)
@@ -266,7 +295,8 @@
         attributes: {
           'aria-sort': index === 0 ? 'ascending' : 'none',
           'aria-label': data.name,
-        }}));
+        }
+      }));
 
       if (reportType.bespokeReport && reportType.bespokeReport.insertColumns) {
         Object.keys(reportType.bespokeReport.insertColumns).map((key) => {
@@ -276,9 +306,8 @@
 
       let tableRows = [];
 
-      // GROUPED REPORT
-      if (bespokeReportBody) {
-        tableRows = bespokeReportBodys[reportKey](tableData.data, tableData.headings)
+      if (reportType.bespokeReport && reportType.bespokeReport.body) {
+        tableRows = bespokeReportBodys(app)[reportKey](tableData)
       } else {
         if (reportType.grouped) {
           for (const [header, data] of Object.entries(tableData.data)) {
@@ -296,19 +325,19 @@
 
               return link ? [{
                 html: `<a href=${link}>${(reportType.grouped.headings.prefix || '') + header}</a>`,
-                colspan: tableData.headings.length,
+                colspan: group[0].length,
                 classes: 'govuk-!-padding-top-7 govuk-link govuk-body-l govuk-!-font-weight-bold',
               }]
               : [{
                 text: capitalizeFully((reportType.grouped.headings.prefix || '') + header),
-                colspan: tableData.headings.length,
+                colspan: group[0].length,
                 classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
               }];
             })();
               
             const totalsRow = reportType.grouped.totals ? [{
               text: `Total: ${group.length}`,
-              colspan: tableData.headings.length,
+              colspan: group[0].length,
               classes: 'govuk-body-s govuk-!-font-weight-bold mod-table-no-border',
             }] : null;
 
@@ -332,10 +361,13 @@
         pageHeadings,
         reportKey,
         grouped: reportType.grouped,
-        bespokeReportBody,
-        exportUrl: reportType.exportable ? app.namedRoutes.build(`reports.${reportKey}.report.export`, {filter: req.params.filter}) : '',
+        bespokeReportFile: reportType.bespokeReport?.file,
+        unsortable: reportType.unsortable,
+        exportLabel: reportType.exportLabel,
+        exportUrl: reportType.exportLabel ? buildPrintExportUrl('export') : '',
+        searchType:  reportType.search,
         filter: req.params.filter,
-        printUrl: buildPrintUrl(),
+        printUrl: buildPrintExportUrl('print'),
         backLinkUrl: {
           built: true,
           url: buildBackLinkUrl(),
@@ -401,19 +433,24 @@
       }
       const fromDate = moment(req.body.dateFrom, 'DD/MM/YYYY');
       const toDate = moment(req.body.dateTo, 'DD/MM/YYYY');
+      let redirectRoute = `reports.${reportKey}.report.get`
 
       if (toDate.isBefore(fromDate)) {
-        req.session.errors = {
-          dateTo: [{
-            summary: '‘Date to’ cannot be before ‘date from’',
-            details: '‘Date to’ cannot be before ‘date from’',
-          }],
-        };
+        req.session.errors = makeManualError('dateTo', '‘Date to’ cannot be before ‘date from’');
         req.session.formFields = req.body;
         return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`));
       }
 
-      return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, {filter: 'dateRange'})
+      if (reportKey === 'daily-utilisation') { 
+        if((toDate.diff(fromDate, 'days') + 1) > 31) {
+          req.session.errors = makeManualError('dateTo', 'Date range cannot be larger than 31 days');
+          req.session.formFields = req.body;
+          return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`));
+        }
+        redirectRoute = `reports.daily-utilisation.check.get`
+      }
+
+      return res.redirect(app.namedRoutes.build(redirectRoute, {filter: 'dateRange'})
         + `?fromDate=${dateFilter(req.body.dateFrom, 'DD/MM/YYYY', 'YYYY-MM-DD')}`
         + `&toDate=${dateFilter(req.body.dateTo, 'DD/MM/YYYY', 'YYYY-MM-DD')}`);
     }
