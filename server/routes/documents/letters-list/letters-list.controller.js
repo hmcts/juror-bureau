@@ -273,7 +273,7 @@
         } else {
           req.session.documentsJurorsList.checkedJurors = [];
           req.session.documentsJurorsList.data.forEach(juror => {
-            if (!juror[4] && !juror[5]) {
+            if (isCheckable(juror[4], juror[5])) {
               req.session.documentsJurorsList.checkedJurors.push({
                 'juror_number': juror[0],
                 'form_code': juror[6],
@@ -285,11 +285,10 @@
 
         app.logger.info('Checked / unchecked all juror documents: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: { ...req.body },
         });
 
-        return res.send(200, req.session.documentsJurorsList.checkedJurors.length);
+        return res.status(200).send(req.session.documentsJurorsList.checkedJurors.length.toString());
       }
 
       delete req.body._csrf;
@@ -319,7 +318,7 @@
         data: { ...req.body },
       });
 
-      return res.send(200, req.session.documentsJurorsList.checkedJurors.length);
+      return res.status(200).send(req.session.documentsJurorsList.checkedJurors.length.toString());
     };
   };
 
@@ -410,11 +409,19 @@
   }
 
   function areAllChecked(req) {
-    if (!req.session.documentsJurorsList.checkedJurors) {
-      req.session.documentsJurorsList.checkedJurors = [];
+    if (typeof req.session.documentsJurorsList.checkedJurors === 'undefined') {
+      return false;
     }
-    return req.session.documentsJurorsList.data.filter((juror) => (!juror[4] && !juror[5])).length
+
+    return req.session.documentsJurorsList.data.filter((juror) => (isCheckable(juror[4], juror[5]))).length
       === req.session.documentsJurorsList.checkedJurors.length;
+  }
+
+  function isCheckable(printValue, pendingValue) {
+    const isPrinted = typeof printValue !== 'undefined' && printValue !== null;
+    const isPending = typeof pendingValue !== 'undefined' && pendingValue;
+
+    return !isPrinted && !isPending;
   }
 
 })();
