@@ -84,11 +84,14 @@ module.exports = function(app, req, res, pool, membersList, _errors, selectedJur
     membersHeaders: jurors.headers,
     poolMembers: jurors.list,
     pageItems: {
-      prev: pageItems.prev && `javascript:goHref('${pageItems.prev}')`,
-      next: pageItems.next && `javascript:goHref('${pageItems.next}')`,
+      prev: pageItems.prev,
+      next: pageItems.next,
       items: pageItems.items.map(item => ({
         ...item,
-        href: `javascript:goHref('${item.href}')`,
+        href: item.href,
+        attributes: {
+          id: `pool-overview-page-${item.number}`,
+        },
       })),
     },
     availableSuccessMessage: availableSuccessMessage,

@@ -142,10 +142,16 @@
 
           {{ govukPagination({
             previous: {
-              href: pageItems.prev
+              href: pageItems.prev,
+              attributes: {
+                id: "pool-overview-previous-page"
+              }
             },
             next: {
-              href: pageItems.next
+              href: pageItems.next,
+              attributes: {
+                id: "pool-overview-next-page"
+              }
             },
             items: pageItems.items
           }) }}
