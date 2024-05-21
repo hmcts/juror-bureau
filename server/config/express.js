@@ -130,6 +130,7 @@ module.exports = async function(app) {
     res.locals.activeUrl = req.originalUrl;
     res.locals.trackingCode = config.trackingCode;
     res.locals.serviceName = 'HMCTS Juror';
+    res.locals.env = env;
 
     if (config.responseEditEnabled === true){
       res.locals.responseEditEnabled = true;
