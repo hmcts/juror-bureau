@@ -31,7 +31,8 @@ const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../obj
   //     groupHeader?: boolean, // display the group header or not.. in some reports we dont have to
   //     totals?: boolean, // same on this one.. some reports dont need the totals
   //   },
-  //   printLandscape?: boolean,
+  //   printLandscape: boolean, // force report printing to landscape
+  //   largeTotals?: (data) => {label: string, value: string}[], // large totals for the report
   // }};
   module.exports.reportKeys = (app, req = null) => {
     const courtUser = req ? isCourtUser(req) : false;
@@ -380,6 +381,16 @@ const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../obj
           'courtName',
           'judge',
         ],
+        largeTotals: (data) => {
+          return [
+            { label: 'Panelled', value: data.length },
+            { label: 'Empanelled', value: data.filter(juror => juror.panelStatus === 'Juror').length },
+            // eslint-disable-next-line max-len
+            { label: 'Not used', value: data.filter(juror => (juror.panelStatus === 'Not Used' || juror.panelStatus === 'Returned')).length },
+            { label: 'Challenged', value: data.filter(juror => juror.panelStatus === 'Challenged').length },
+            { label: 'Returned jurors', value: data.filter(juror => juror.panelStatus === 'Returned').length },
+          ];
+        },
       },
     };
   };

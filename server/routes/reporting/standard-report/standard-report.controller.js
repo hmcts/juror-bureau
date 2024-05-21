@@ -287,8 +287,6 @@
         ? reportType.bespokeReport.dao(req)
         : standardReportDAO.post(req, app, config));
 
-      console.log(tableData);
-
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
       if (isExport) return reportExport(app, req, res, reportKey, { headings, tableData }) 
 
@@ -382,6 +380,7 @@
           url: buildBackLinkUrl(),
         },
         bannerMessage,
+        largeTotals: reportType.largeTotals ? reportType.largeTotals(tableData.data) : [],
       });
     } catch (e) {
       console.error(e);
