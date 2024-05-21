@@ -41,7 +41,7 @@
     "express-session": "^1.14.0",
     "fs-extra": "^11.0.0",
     "govuk-frontend": "^4.8.0",
-    "helmet": "^3.9.0",
+    "helmet": "^7.0.0",
     "ip": "^1.1.5",
     "jsonwebtoken": "^9.0.0",
     "launchdarkly-node-server-sdk": "^7.0.1",
