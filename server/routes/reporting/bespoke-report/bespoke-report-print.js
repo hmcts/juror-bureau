@@ -265,6 +265,104 @@ const bespokeReportTablePrint = {
   'view-monthly-utilisation': (data) => {
     return bespokeReportTablePrint['prepare-monthly-utilisation'](data);
   },
+  'jury-expenditure-high-level': (data) => {
+    const { tableData } = data;
+    let tables = [];
+    let overallTotal = 0;
+
+    for (const [key, value] of Object.entries(tableData.data)) {
+      const rows = value.map((data) => {
+        const claimsRow = tableData.headings.filter((header) => header.id.includes('_count')).map(header => {
+          const output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
+
+          return ({
+            text: output,
+          });
+        });
+
+        const amountsRow = tableData.headings.filter((header) => header.id.includes('_sum')).map(header => {
+          const output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
+
+          if (header.id === 'total_approved_sum') {
+            overallTotal += data[snakeToCamel(header.id)];
+          }
+
+          return ({
+            text: `£${output}`,
+          });
+        });
+
+        claimsRow.unshift({ text: 'Claims', bold: true });
+        claimsRow.push({
+          text: '',
+        });
+        amountsRow.unshift({ text: 'Amount', bold: true });
+
+        return [claimsRow, amountsRow];
+      });
+
+      tables.push(
+        {
+          body: [[
+            {text: key, style: 'sectionHeading'},
+          ]],
+          widths:['100%'],
+          layout: { hLineColor: '#0b0c0c' },
+          margin: [0, 10, 0, 0],
+        },
+        {
+          head: [
+            {
+              text: '',
+              style: 'label',
+            },
+            {
+              text: 'Loss of earnings',
+              style: 'label',
+            },
+            {
+              text: 'Food and drink',
+              style: 'label',
+            },
+            {
+              text: 'Smartcard',
+              style: 'label',
+            },
+            {
+              text: 'Travel',
+              style: 'label',
+            },
+            {
+              text: 'Total',
+              style: 'label',
+            },
+          ],
+          body: rows[0],
+          margin: [0, 0, 0, 0],
+        }
+      );
+    }
+    tables.push(
+      {
+        body: [[
+          {text: 'Total approved for this period', style: 'sectionHeading'},
+        ]],
+        widths:['100%'],
+        layout: { hLineColor: '#0b0c0c' },
+        margin: [0, 10, 0, 0],
+      },
+      {
+        body: [[
+          { text: 'Overall total', bold: true, fillColor: '#0b0c0c', color: '#ffffff' },
+          { text: `£${overallTotal}`, bold: true, alignment: 'right', fillColor: '#0b0c0c', color: '#ffffff' },
+        ]],
+        widths:['50%', '50%'],
+        margin: [0, 0, 0, 0],
+      }
+    );
+
+    return tables;
+  },
 };
 
 module.exports.bespokeReportTablePrint = bespokeReportTablePrint;

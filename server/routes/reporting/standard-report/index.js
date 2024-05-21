@@ -74,6 +74,7 @@
     require('../monthly-utilisation')(app);
     standardReportRoutes(app, 'prepare-monthly-utilisation');
     standardReportRoutes(app, 'view-monthly-utilisation');
+    standardReportRoutes(app, 'jury-expenditure-high-level');
   };
 
 })();

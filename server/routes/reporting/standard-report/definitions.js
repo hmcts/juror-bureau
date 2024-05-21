@@ -434,6 +434,22 @@
         unsortable: true,
         exportLabel: 'Export raw data',
       },
+      'jury-expenditure-high-level': {
+        title: 'Juror expenditure report (high-level)',
+        apiKey: 'JurorExpenditureReportHighLevelReport',
+        search: 'dateRange',
+        headings: [
+          'approvedFrom',
+          'reportDate',
+          'approvedTo',
+          'reportTime',
+          '',
+          'courtName',
+        ],
+        bespokeReport: {
+          body: true,
+        },
+      },
     };
   };
 })();

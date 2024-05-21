@@ -1,11 +1,11 @@
 /* eslint-disable strict */
 const { dateFilter, makeDate } = require('../../../components/filters');
 const { snakeToCamel } = require('../../../lib/mod-utils');
-const { tableDataMappers } = require('../standard-report/utils');
+const { tableDataMappers, buildTableHeaders } = require('../standard-report/utils');
 
 const bespokeReportBodys = (app) => {
   return {
-    'pool-status': (tableData) => {
+    'pool-status': (reportType, tableData) => {
       const activeRowHeaders = ['responded_total', 'summons_total', 'panel_total', 'juror_total'];
       let activeRows = [];
       let totalActive = 0;
@@ -61,7 +61,7 @@ const bespokeReportBodys = (app) => {
 
       return { activeRows, inactiveRows };
     },
-    'daily-utilisation': (tableData) => {
+    'daily-utilisation': (reportType, tableData) => {
       let rows = [];
 
       tableData.weeks.forEach((week) => {
@@ -143,9 +143,9 @@ const bespokeReportBodys = (app) => {
         },
       ]);
 
-      return rows;
+      return [{headers: buildTableHeaders(reportType, tableData), rows: rows}];
     },
-    'daily-utilisation-jurors': (tableData) => {
+    'daily-utilisation-jurors': (reportType, tableData) => {
       let rows = [];
 
       tableData.jurors.forEach((juror) => {
@@ -195,7 +195,98 @@ const bespokeReportBodys = (app) => {
         },
       ]);
 
-      return rows;
+      return [{headers: buildTableHeaders(reportType, tableData), rows: rows}];
+    },
+    'jury-expenditure-high-level': (reportType, tableData) => {
+      let tables = [];
+
+      const tableHeaders = [
+        {
+          text: '',
+        },
+        {
+          text: 'Loss of earnings',
+        },
+        {
+          text: 'Food and drink',
+        },
+        {
+          text: 'Smartcard',
+        },
+        {
+          text: 'Travel',
+        },
+        {
+          text: 'Total',
+        },
+      ];
+
+      let overallTotal = 0;
+
+      for (const [key, value] of Object.entries(tableData.data)) {
+        const rows = value.map((data) => {
+
+          let claimsRow = tableData.headings.filter((header) => header.id.includes('_count')).map(header => {
+            let output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
+
+            return ({
+              text: output,
+            });
+          });
+
+          let amountsRow = tableData.headings.filter((header) => header.id.includes('_sum')).map(header => {
+            let output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
+
+            if (header.id === 'total_approved_sum') {
+              overallTotal += data[snakeToCamel(header.id)];
+            }
+
+            return ({
+              text: `£${output}`,
+            });
+          });
+
+          claimsRow.unshift({
+            text: 'Claims',
+            classes: 'govuk-body govuk-!-font-weight-bold',
+          });
+          claimsRow.push({
+            text: '',
+          });
+          amountsRow.unshift({
+            text: 'Amount',
+            classes: 'govuk-body govuk-!-font-weight-bold',
+          });
+
+          return [claimsRow, amountsRow];
+        });
+
+        tables.push({
+          title: key,
+          headers: tableHeaders,
+          rows: rows[0],
+        });
+      }
+
+      if (tables.length) {
+        tables.push({
+          title: 'Total approved for this period',
+          headers: [],
+          rows: [[
+            {
+              text: 'Overall total',
+              classes: 'govuk-!-padding-left-2 govuk-!-font-weight-bold mod-highlight-table-data__blue',
+            },
+            {
+              text: `£${overallTotal}`,
+              classes: 'govuk-!-padding-right-2 govuk-!-font-weight-bold mod-highlight-table-data__blue',
+              format: 'numeric',
+            },
+          ]],
+        });
+      }
+
+      return tables;
     },
     'prepare-monthly-utilisation': (tableData) => {
       let rows = [];

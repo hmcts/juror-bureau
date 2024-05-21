@@ -7,7 +7,7 @@
   const { validate } = require('validate.js');
   const { poolSearchObject } = require('../../../objects/pool-search');
   const rp = require('request-promise');
-  const { tableDataMappers, constructPageHeading } = require('./utils');
+  const { tableDataMappers, constructPageHeading, buildTableHeaders } = require('./utils');
   const { bespokeReportBodys } = require('../bespoke-report/bespoke-report-body');
   const { reportKeys } = require('./definitions');
   const { standardReportPrint } = require('./standard-report-print');
@@ -294,25 +294,15 @@
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
       if (isExport) return reportExport(app, req, res, reportKey, { headings, tableData }) 
 
-      let tableHeaders = tableData.headings.map((data, index) => ({
-        text: data.name,
-        attributes: {
-          'aria-sort': index === 0 ? 'ascending' : 'none',
-          'aria-label': data.name,
-        }
-      }));
 
-      if (reportType.bespokeReport && reportType.bespokeReport.insertColumns) {
-        Object.keys(reportType.bespokeReport.insertColumns).map((key) => {
-          tableHeaders.splice(key, 0, {text: reportType.bespokeReport.insertColumns[key][0]});
-        });
-      }
-
-      let tableRows = [];
+      let tables = [];
 
       if (reportType.bespokeReport && reportType.bespokeReport.body) {
-        tableRows = bespokeReportBodys(app)[reportKey](tableData)
+        tables = bespokeReportBodys(app)[reportKey](reportType, tableData)
       } else {
+        let tableRows = [];
+        const tableHeaders = buildTableHeaders(reportType, tableData);
+
         if (reportType.grouped) {
           for (const [header, data] of Object.entries(tableData.data)) {
             const group = buildStandardTableRows(data, tableData.headings);
@@ -361,14 +351,15 @@
         } else {
           tableRows = buildStandardTableRows(tableData.data, tableData.headings);
         }
+        console.log(tableRows)
+        tables = tableRows.length ? [{headers: tableHeaders, rows: tableRows}] : []
       }
 
       const pageHeadings = reportType.headings.map(heading => constructPageHeading(heading, headings));
 
       return res.render('reporting/standard-reports/standard-report', {
         title: reportType.title,
-        tableRows,
-        tableHeaders,
+        tables,
         pageHeadings,
         reportKey,
         grouped: reportType.grouped,
