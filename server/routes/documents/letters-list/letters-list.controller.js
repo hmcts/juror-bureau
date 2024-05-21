@@ -100,7 +100,6 @@
       } catch (err) {
         app.logger.crit('Failed to retrive letters: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
@@ -177,7 +176,6 @@
 
         app.logger.crit('Failed to reprint letters for selected jurors', {
           userId: req.session.authentication.login,
-          jwt: req.session.authToken,
           data: payload,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
@@ -215,7 +213,6 @@
       } catch (err) {
         app.logger.crit('Failed to delete the letter from the printing queue', {
           userId: req.session.authentication.login,
-          jwt: req.session.authToken,
           data: payload,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
@@ -315,7 +312,6 @@
 
       app.logger.info('Checked / unchecked juror document: ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         data: { ...req.body },
       });
 
