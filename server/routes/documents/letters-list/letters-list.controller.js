@@ -59,6 +59,7 @@
         const { tableHeader, tableRows } = tableGenerator.bind({
           response: slicedJurorList,
           checkedJurors: req.session.documentsJurorsList.checkedJurors || [],
+          allChecked: areAllChecked(req),
         })(_isBureauUser);
 
         const postUrl = urljoin(app.namedRoutes.build('documents.letters-list.post', {
@@ -96,7 +97,7 @@
             items: tmpErrors,
           },
         });
-      } catch (error) {
+      } catch (err) {
         app.logger.crit('Failed to retrive letters: ', {
           auth: req.session.authentication,
           jwt: req.session.authToken,
