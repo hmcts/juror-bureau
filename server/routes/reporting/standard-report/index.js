@@ -51,6 +51,7 @@
     standardReportRoutes(app, 'next-due');
     standardReportRoutes(app, 'undelivered');
     standardReportRoutes(app, 'non-responded');
+    standardReportRoutes(app, 'on-call');
     standardReportRoutes(app, 'postponed-pool');
     standardReportRoutes(app, 'postponed-date');
     require('../incomplete-service')(app);
