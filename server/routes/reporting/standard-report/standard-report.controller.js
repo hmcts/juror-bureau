@@ -368,7 +368,7 @@
         pageHeadings,
         reportKey,
         grouped: reportType.grouped,
-        bespokeReportFile: reportType.bespokeReport.file,
+        bespokeReportFile: reportType.bespokeReport?.file,
         unsortable: reportType.unsortable,
         exportLabel: reportType.exportLabel,
         exportUrl: reportType.exportLabel ? buildPrintExportUrl('export') : '',
