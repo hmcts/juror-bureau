@@ -6707,13 +6707,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ip@npm:^1.1.5":
-  version: 1.1.9
-  resolution: "ip@npm:1.1.9"
-  checksum: b6d91fd45a856e3bd6d4f601ea0619d90f3517638f6918ebd079f959a8a6308568d8db5ef4fdf037e0d9cfdcf264f46833dfeea81ca31309cf0a7eb4b1307b84
-  languageName: node
-  linkType: hard
-
 "ip@npm:^2.0.0":
   version: 2.0.1
   resolution: "ip@npm:2.0.1"
@@ -7844,7 +7837,7 @@ __metadata:
     grunt-shell: ^2.1.0
     grunt-sync: ^0.8.2
     helmet: ^7.0.0
-    ip: ^1.1.5
+    ip: ^2.0.0
     istanbul: ^0.4.4
     jit-grunt: ^0.10.0
     jsonwebtoken: ^9.0.0
