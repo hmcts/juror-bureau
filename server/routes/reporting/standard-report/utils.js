@@ -1,5 +1,6 @@
 /* eslint-disable strict */
 const { dateFilter, capitalizeFully, toSentenceCase } = require('../../../components/filters');
+const moment = require('moment');
 
 const tableDataMappers = {
   String: (data) => isNaN(data) ? capitalizeFully(data) : data.toString(),
@@ -36,6 +37,7 @@ const tableDataMappers = {
   },
   Long: (data) => data.toString(),
   Integer: (data) => data.toString(),
+  LocalTime: (data) => data ? moment(data, 'HH:mm:ss').format('hh:mma') : '-',
 };
 
 const headingDataMappers = {
@@ -45,9 +47,9 @@ const headingDataMappers = {
     let time = data.split('T')[1].split('.')[0];
 
     if (parseInt(time.split(':')[0]) === 12) {
-      return time + 'pm';
+      return time + ' pm';
     } else if (parseInt(time.split(':')[0]) > 12) {
-      return `${parseInt(time.split(':')[0]) - 12}:${time.split(':').slice(1).join(':')}pm`;
+      return `${parseInt(time.split(':')[0]) - 12}:${time.split(':').slice(1).join(':')} pm`;
     }
 
     return time + ' am';
