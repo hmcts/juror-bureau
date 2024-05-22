@@ -84,7 +84,7 @@
         {% endif %}
 
         <div class="govuk-caption-m">
-          <span id="selectedJurorsCount">{{ selectedJurors }}</span> of {{ totalCheckableJurors }} selected
+          <span id="selectedJurorsCount">{{ selectedJurors }}</span> of <span id="totalCheckableJurors">{{ totalCheckableJurors }}</span> selected
         </div>
       {% else %}
         {{ csrfProtection(csrftoken) }}
