@@ -83,6 +83,16 @@
         details: 'Enter an attendance date',
       }],
     },
+    voirDire: {
+      dateFrom: [{
+        summary: 'Enter a date to start searching trials from',
+        details: 'Enter a date to start searching trials from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search trials up until',
+        details: 'Enter a date to search trials up until',
+      }],
+    },
   };
 
   module.exports.searchBy = function(reportKey) {

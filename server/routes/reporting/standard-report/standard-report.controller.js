@@ -19,8 +19,13 @@
 
   const standardFilterGet = (app, reportKey) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
+    let panelResultHeader = '';
 
     delete req.session.reportCourts;
+
+    if(reportType.apiKey === 'PanelResultReport') {
+      panelResultHeader = 'Search trials between these dates';
+    }
 
     if (reportType.search) {
       const { filter } = req.query;
@@ -117,6 +122,7 @@
           isFixedDateRange,
           tmpBody,
           reportKey,
+          panelResultHeader,
           title: reportType.title,
           searchLabels: reportType.searchLabelMappers,
           reportUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.post`)),

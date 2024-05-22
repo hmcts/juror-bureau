@@ -62,6 +62,7 @@
     standardReportRoutes(app, 'panel-detail');
     standardReportRoutes(app, 'jury-list');
     standardReportRoutes(app, 'pool-status');
+    standardReportRoutes(app, 'voir-dire');
     standardReportRoutes(app, 'pool-analysis');
     // require('../pool-status')(app);
     standardReportRoutes(app, 'reasonable-adjustments');
