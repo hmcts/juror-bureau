@@ -1,5 +1,3 @@
-/* eslint-disable strict */
-
 const express = require('express');
 const config = require('./config/environment')();
 const http = require('http');
@@ -27,8 +25,8 @@ console.info('\n\n');
 
 
 // Start server
-function startServer() {
-  app.juror = server.listen(config.port, config.ip, function() {
+function startServer () {
+  app.juror = server.listen(config.port, config.ip, function () {
     Logger.instance.info('Application started: http://localhost:%s', config.port);
   });
 }
