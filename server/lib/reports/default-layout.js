@@ -50,6 +50,10 @@
           fontSize: 10,
           bold: true,
         },
+        largeSectionHeading: {
+          fontSize: 12,
+          bold: true,
+        },
         footer: {
           fontSize: 10,
         },

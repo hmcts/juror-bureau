@@ -277,6 +277,7 @@ const bespokeReportTablePrint = {
 
           return ({
             text: output,
+            alignment: 'right',
           });
         });
 
@@ -288,7 +289,8 @@ const bespokeReportTablePrint = {
           }
 
           return ({
-            text: `£${output}`,
+            text: output,
+            alignment: 'right',
           });
         });
 
@@ -304,7 +306,7 @@ const bespokeReportTablePrint = {
       tables.push(
         {
           body: [[
-            {text: key, style: 'sectionHeading'},
+            {text: key, style: 'largeSectionHeading'},
           ]],
           widths:['100%'],
           layout: { hLineColor: '#0b0c0c' },
@@ -319,22 +321,27 @@ const bespokeReportTablePrint = {
             {
               text: 'Loss of earnings',
               style: 'label',
+              alignment: 'right',
             },
             {
               text: 'Food and drink',
               style: 'label',
+              alignment: 'right',
             },
             {
               text: 'Smartcard',
               style: 'label',
+              alignment: 'right',
             },
             {
               text: 'Travel',
               style: 'label',
+              alignment: 'right',
             },
             {
               text: 'Total',
               style: 'label',
+              alignment: 'right',
             },
           ],
           body: rows[0],
@@ -345,7 +352,7 @@ const bespokeReportTablePrint = {
     tables.push(
       {
         body: [[
-          {text: 'Total approved for this period', style: 'sectionHeading'},
+          {text: 'Total approved for this period', style: 'largeSectionHeading'},
         ]],
         widths:['100%'],
         layout: { hLineColor: '#0b0c0c' },

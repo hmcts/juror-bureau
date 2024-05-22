@@ -38,7 +38,7 @@ const tableDataMappers = {
   Long: (data) => data.toString(),
   Integer: (data) => data.toString(),
   LocalTime: (data) => data ? moment(data, 'HH:mm:ss').format('hh:mma') : '-',
-  BigDecimal: (data) => (Math.round(data * 100) / 100).toFixed(2).toString(),
+  BigDecimal: (data) => `£${(Math.round(data * 100) / 100).toFixed(2).toString()}`,
 };
 
 const headingDataMappers = {
@@ -77,7 +77,7 @@ const constructPageHeading = (headingType, data) => {
   return {};
 };
 
-const buildTableHeaders = (reportType, tableData) => {
+const buildTableHeaders = (reportType, tableHeadings) => {
   let tableHeaders;
 
   if (reportType.bespokeReport && reportType.bespokeReport.tableHeaders) {
@@ -87,15 +87,20 @@ const buildTableHeaders = (reportType, tableData) => {
         'aria-sort': index === 0 ? 'ascending' : 'none',
         'aria-label': data,
       },
+      classes: reportType.bespokeReport?.tableHeadClasses ? reportType.bespokeReport?.tableHeadClasses[index] : ''
     }));
   } else {
-    tableHeaders = tableData.headings.map((data, index) => ({
-      text: data.name,
-      attributes: {
-        'aria-sort': index === 0 ? 'ascending' : 'none',
-        'aria-label': data.name,
-      },
-    }));
+    tableHeaders = tableHeadings.map((data, index) => {
+      return ({
+        text: data.name,
+        attributes: {
+          'aria-sort': index === 0 ? 'ascending' : 'none',
+          'aria-label': data.name,
+        },
+        classes: reportType.bespokeReport?.tableHeadClasses ? reportType.bespokeReport?.tableHeadClasses[index] : '',
+        format: data.dataType === 'BigDecimal' ? 'numeric' : '',
+      });
+    });
   }
 
   if (reportType.bespokeReport && reportType.bespokeReport.insertColumns) {

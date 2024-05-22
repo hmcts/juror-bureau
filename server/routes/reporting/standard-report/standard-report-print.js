@@ -27,7 +27,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
   });
 
   const buildStandardTableRows = function(rows, tableHeadings) {
-    return rows.map(rowData => {
+    const tableRows = rows.map(rowData => {
       let row = tableHeadings.map(header => {
         let text = tableDataMappers[header.dataType](rowData[snakeToCamel(header.id)]);
 
@@ -54,23 +54,25 @@ async function standardReportPrint(app, req, res, reportKey, data) {
       });
 
       if (reportData.bespokeReport && reportData.bespokeReport.printInsertColumns) {
-        Object.keys(reportData.bespokeReport.printInsertColumns).map((key) => {
-          row.splice(key, 0, reportData.bespokeReport.printInsertColumns[key][1](rowData));
+        Object.keys(reportData.bespokeReport.insertColumns).map((key) => {
+          row.splice(key, 0, reportData.bespokeReport.insertColumns[key][1](rowData, true));
         });
       }
       return row;
     });
+
+    if (reportData.bespokeReport && reportData.bespokeReport.printInsertFinalRow) {
+      tableRows.push(reportData.bespokeReport.insertFinalRow(rows, true));
+    }
+
+    return tableRows;
   };
 
-  let reportBody;
-
-  if (reportData.bespokeReport && reportData.bespokeReport.body) {
-    reportBody = bespokeReportTablePrint[reportKey](data);
-  } else {
+  const buildStandardTable = function(reportData, data, headersData, sectionHeading = '') {
     let tableRows = [];
 
     if (reportData.grouped) {
-      for (const [heading, rowData] of Object.entries(tableData.data)) {
+      for (const [heading, rowData] of Object.entries(data)) {
 
         const groupHeaderTransformer = () => {
           if (reportData.grouped.headings && reportData.grouped.headings.transformer) {
@@ -101,26 +103,58 @@ async function standardReportPrint(app, req, res, reportKey, data) {
         tableRows = tableRows.concat(totalsRow ? [headRow, ...group, totalsRow] : [headRow, ...group]);
       }
     } else {
-      tableRows = buildStandardTableRows(tableData.data, tableData.headings);
+      tableRows = buildStandardTableRows(data, headersData);
     }
 
-    const tableHeaders = buildTableHeading(tableData.headings);
+    const tableHeaders = buildTableHeading(headersData);
 
     if (reportData.bespokeReport && reportData.bespokeReport.printInsertColumns) {
-      Object.keys(reportData.bespokeReport.printInsertColumns).map((key) => {
-        tableHeaders.splice(key, 0, {text: reportData.bespokeReport.printInsertColumns[key][0], style: 'label'});
+      Object.keys(reportData.bespokeReport.insertColumns).map((key) => {
+        tableHeaders.splice(key, 0, {text: reportData.bespokeReport.insertColumns[key][0], style: 'label'});
       });
     }
 
-    reportBody = [
-      {
-        head: [...tableHeaders],
-        body: [...tableRows],
-        footer: [],
-        widths: reportData.bespokeReport && reportData.bespokeReport.printWidths
-          ? reportData.bespokeReport.printWidths : null,
-      },
-    ];
+    const tables = [{
+      head: [...tableHeaders],
+      body: [...tableRows],
+      footer: [],
+      widths: reportData.bespokeReport && reportData.bespokeReport.printWidths
+        ? reportData.bespokeReport.printWidths : null,
+      margin: [0, 10, 0, 0],
+    }];
+
+    if (sectionHeading) {
+      tables.unshift({
+        body: [[
+          {text: sectionHeading, style: 'largeSectionHeading', colSpan: 2},
+          {},
+        ]],
+        widths:['50%', '50%'],
+        layout: { hLineColor: '#0b0c0c' },
+        margin: [0, 10, 0, 0],
+      });
+    }
+
+    return (tables);
+  };
+
+  let reportBody = [];
+
+  if (reportData.bespokeReport && reportData.bespokeReport.body) {
+    reportBody = bespokeReportTablePrint[reportKey](data);
+  } else if (reportData.multiTable) {
+    for (const [key, value] of Object.entries(tableData.data)) {
+      reportBody.push(
+        ...buildStandardTable(reportData, value, tableData.headings, reportData.multiTable.sectionHeadings ? key : '')
+      );
+    }
+  } else {
+    reportBody = buildStandardTable(reportData, tableData.data, tableData.headings)
+    ;
+  }
+
+  if (reportData.bespokeReport && reportData.bespokeReport.printInsertTables) {
+    reportBody.push(...reportData.bespokeReport.insertTables(tableData, true))
   }
 
   const buildLargeTotals = () => {

@@ -218,6 +218,7 @@ const bespokeReportBodys = (app) => {
         },
         {
           text: 'Total',
+          format: 'numeric',
         },
       ];
 
@@ -242,7 +243,8 @@ const bespokeReportBodys = (app) => {
             }
 
             return ({
-              text: `£${output}`,
+              text: output,
+              format: header.id === 'total_approved_sum' ? 'numeric' : '',
             });
           });
 

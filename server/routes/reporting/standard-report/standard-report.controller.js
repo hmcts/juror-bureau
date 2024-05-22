@@ -155,7 +155,7 @@
     req.session.reportSearch = req.params.filter;
 
     const buildStandardTableRows = function(tableData, tableHeadings) {
-      return tableData.map(data => {
+      const rows = tableData.map(data => {
 
         let row = tableHeadings.map(header => {
           let output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
@@ -174,6 +174,16 @@
             return ({
               html: `<a href=${
                 app.namedRoutes.build('pool-overview.get', {poolNumber: output})
+              }>${
+                output
+              }</a>`,
+            });
+          }
+
+          if (header.id === 'payment_audit') {
+            return ({
+              html: `<a href=${
+                app.namedRoutes.build('reports.financial-audit.get', {auditNumber: output})
               }>${
                 output
               }</a>`,
@@ -200,7 +210,8 @@
             text: output ? output : '-',
             attributes: {
               "data-sort-value": header.dataType === 'LocalDate' ? data[snakeToCamel(header.id)] : output
-            }
+            },
+            format: header.dataType === 'BigDecimal' ? 'numeric' : '',
           });
         });
 
@@ -212,7 +223,66 @@
 
         return row;
       });
+      if (reportType.bespokeReport && reportType.bespokeReport.insertFinalRow) {
+        rows.push(reportType.bespokeReport.insertFinalRow(tableData))
+      }
+      return rows;
     };
+
+    const buildStandardTable = function(reportType, tableData, tableHeadings, sectionHeading = '') {
+      let tableRows = [];
+      const tableHeaders = buildTableHeaders(reportType, tableHeadings);
+
+      if (reportType.grouped) {
+        for (const [header, data] of Object.entries(tableData)) {
+          const group = buildStandardTableRows(data, tableHeadings);
+          let link;
+
+          if (reportType.grouped.headings && reportType.grouped.headings.link) {
+            if (reportType.grouped.headings.link === 'pool-overview') {
+              link = app.namedRoutes.build('pool-overview.get', {poolNumber: header});
+            }
+          }
+
+          const groupHeaderTransformer = () => {
+            if (reportType.grouped.headings && reportType.grouped.headings.transformer) {
+              return reportType.grouped.headings.transformer(header);
+            }
+            return header;
+          }
+
+          const headRow = (() => {
+            if (!reportType.grouped.groupHeader) return [];
+
+            return link ? [{
+              html: `<a href=${link}>${(reportType.grouped.headings.prefix || '') + groupHeaderTransformer()}</a>`,
+              colspan: group[0].length,
+              classes: 'govuk-!-padding-top-7 govuk-link govuk-body-l govuk-!-font-weight-bold',
+            }]
+            : [{
+              html: capitalizeFully((reportType.grouped.headings.prefix || '') + groupHeaderTransformer()),
+              colspan: group[0].length,
+              classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
+            }];
+          })();
+            
+          const totalsRow = reportType.grouped.totals ? [{
+            text: `Total: ${group.length}`,
+            colspan: group[0].length,
+            classes: 'govuk-body-s govuk-!-font-weight-bold mod-table-no-border',
+          }] : null;
+
+          tableRows = tableRows.concat([
+            headRow,
+            ...group,
+            totalsRow,
+          ]);
+        }
+      } else {
+        tableRows = buildStandardTableRows(tableData, tableHeadings);
+      }
+      return tableRows.length ? [{title: sectionHeading, headers: tableHeaders, rows: tableRows}] : []
+    }
 
     const buildPrintExportUrl = function(urlType = 'print') {
       let url = req.params.filter
@@ -299,60 +369,16 @@
 
       if (reportType.bespokeReport && reportType.bespokeReport.body) {
         tables = bespokeReportBodys(app)[reportKey](reportType, tableData)
-      } else {
-        let tableRows = [];
-        const tableHeaders = buildTableHeaders(reportType, tableData);
-
-        if (reportType.grouped) {
-          for (const [header, data] of Object.entries(tableData.data)) {
-            const group = buildStandardTableRows(data, tableData.headings);
-            let link;
-
-            if (reportType.grouped.headings && reportType.grouped.headings.link) {
-              if (reportType.grouped.headings.link === 'pool-overview') {
-                link = app.namedRoutes.build('pool-overview.get', {poolNumber: header});
-              }
-            }
-
-            const groupHeaderTransformer = () => {
-              if (reportType.grouped.headings && reportType.grouped.headings.transformer) {
-                return reportType.grouped.headings.transformer(header);
-              }
-              return header;
-            }
-
-            const headRow = (() => {
-              if (!reportType.grouped.groupHeader) return [];
-
-              return link ? [{
-                html: `<a href=${link}>${(reportType.grouped.headings.prefix || '') + groupHeaderTransformer()}</a>`,
-                colspan: group[0].length,
-                classes: 'govuk-!-padding-top-7 govuk-link govuk-body-l govuk-!-font-weight-bold',
-              }]
-              : [{
-                html: capitalizeFully((reportType.grouped.headings.prefix || '') + groupHeaderTransformer()),
-                colspan: group[0].length,
-                classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
-              }];
-            })();
-              
-            const totalsRow = reportType.grouped.totals ? [{
-              text: `Total: ${group.length}`,
-              colspan: group[0].length,
-              classes: 'govuk-body-s govuk-!-font-weight-bold mod-table-no-border',
-            }] : null;
-
-            tableRows = tableRows.concat([
-              headRow,
-              ...group,
-              totalsRow,
-            ]);
-          }
-        } else {
-          tableRows = buildStandardTableRows(tableData.data, tableData.headings);
+      } else if (reportType.multiTable) {
+        for (const [key, value] of Object.entries(tableData.data)) {
+          tables.push(...buildStandardTable(reportType, value, tableData.headings, reportType.multiTable.sectionHeadings ? key : ''));
         }
-        console.log(tableRows)
-        tables = tableRows.length ? [{headers: tableHeaders, rows: tableRows}] : []
+      } else {
+        tables = buildStandardTable(reportType, tableData.data, tableData.headings);
+      }
+
+      if (reportType.bespokeReport && reportType.bespokeReport.insertTables) {
+        tables.push(...reportType.bespokeReport.insertTables(tableData))
       }
 
       const pageHeadings = reportType.headings.map(heading => constructPageHeading(heading, headings));
