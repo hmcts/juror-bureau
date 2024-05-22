@@ -330,6 +330,17 @@ const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../obj
         unsortable: true,
         exportLabel: 'Export raw data',
       },
+      'voir-dire': {
+        title: 'Panel result report (by trial)',
+        apiKey: 'PanelResultReportReport',
+        search: 'dateRange',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+        ],
+      },
     };
   };
 })();
