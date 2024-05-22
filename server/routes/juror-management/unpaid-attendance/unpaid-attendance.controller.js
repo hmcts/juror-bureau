@@ -14,12 +14,12 @@
       const minDate = req.query['filterStartDate'] || null;
       const maxDate = req.query['filterEndDate']|| null;
       const sortOrder = req.query['sortOrder'] || 'ascending';
-      const sortBy = req.query['sortBy'] || 'unpaidLastName';
+      const sortBy = req.query['sortBy'] || 'totalInDraft';
       const tmpErrors = _.clone(req.session.errors);
       const locCode = req.session.authentication.locCode;
 
       const successCB = function(data) {
-        var listToRender = modUtils.transformUnpaidAttendanceList(data.content, sortBy, sortOrder, locCode);
+        var listToRender = modUtils.transformUnpaidAttendanceList(data.data, sortBy, sortOrder, locCode);
         let pageItems, errors;
 
         delete req.session.errors;
@@ -32,7 +32,7 @@
           };
           req.session.unpaidAttendanceTotal = 0;
         } else {
-          req.session.unpaidAttendanceTotal = data.totalElements;
+          req.session.unpaidAttendanceTotal = data.total_items;
         }
 
         if (req.session.unpaidAttendanceTotal > modUtils.constants.PAGE_SIZE) {
@@ -59,27 +59,28 @@
         });
       };
 
-      const opts = {
-        pageNumber: currentPage - 1,
-        sortBy: 'lastName',
-        sortOrder: sortOrder === 'ascending' ? 'ASC' : 'DESC',
-        minDate,
-        maxDate,
+      const body = {
+        pageNumber: currentPage,
+        pageLimit: modUtils.constants.PAGE_SIZE,
+        sortField: _.snakeCase(sortBy).toUpperCase(),
+        sortMethod: sortOrder === 'ascending' ? 'ASC' : 'DESC',
+        from: minDate,
+        to: maxDate,
       };
 
       delete req.session.expensesList;
 
-      fetchUnpaidExpenses.get(
+      fetchUnpaidExpenses.post(
         app,
-        req.session.authToken,
+        req,
         locCode,
-        opts
+        body
       )
         .then(successCB)
         .catch((err) => {
           app.logger.crit('Failed to fetch unpaid expenses', {
             auth: req.session.authentication,
-            data: opts,
+            body: body,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
