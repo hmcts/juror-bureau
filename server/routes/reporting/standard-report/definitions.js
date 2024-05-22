@@ -469,7 +469,7 @@
         grouped: {
           groupHeader: true,
           headings: {
-            transform: (data) => dateFilter(data, 'yyyy-MM-DD', 'dddd D MMM YYYY'),
+            transformer: (data) => dateFilter(data, 'yyyy-MM-DD', 'dddd D MMM YYYY'),
           },
         },
         bespokeReport: {
