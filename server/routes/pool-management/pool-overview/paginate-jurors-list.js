@@ -13,7 +13,7 @@ module.exports = function(jurors, sortBy, order, isCourt, selectedJurors, select
     `    aria-label="check-all-jurors"\n` +
     (selectAll ? "    checked\n" : "") +
     `  >\n` +
-    `  <label class="govuk-label govuk-checkboxes__label">\n` +
+    `  <label class="govuk-label govuk-checkboxes__label" for="check-all-jurors">\n` +
     `    <span class="govuk-visually-hidden">Select All</span>\n` +
     `  </label>\n` +
     `</div>`,
