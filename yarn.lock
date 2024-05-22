@@ -6707,13 +6707,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ip@npm:^1.1.5":
-  version: 1.1.9
-  resolution: "ip@npm:1.1.9"
-  checksum: b6d91fd45a856e3bd6d4f601ea0619d90f3517638f6918ebd079f959a8a6308568d8db5ef4fdf037e0d9cfdcf264f46833dfeea81ca31309cf0a7eb4b1307b84
-  languageName: node
-  linkType: hard
-
 "ip@npm:^2.0.0":
   version: 2.0.1
   resolution: "ip@npm:2.0.1"
@@ -7844,7 +7837,6 @@ __metadata:
     grunt-shell: ^2.1.0
     grunt-sync: ^0.8.2
     helmet: ^7.0.0
-    ip: ^1.1.5
     istanbul: ^0.4.4
     jit-grunt: ^0.10.0
     jsonwebtoken: ^9.0.0
@@ -7857,7 +7849,6 @@ __metadata:
     named-routes: ^2.0.6
     nsp: ^3.1.0
     nunjucks: 3.2.4
-    open: 0.0.5
     pdfmake: ^0.2.0
     redis: ^4.6.12
     referrer-policy: ^1.0.0
@@ -9561,13 +9552,6 @@ __metadata:
   dependencies:
     mimic-fn: ^1.0.0
   checksum: bb44015ac7a525d0fb43b029a583d4ad359834632b4424ca209b438aacf6d669dda81b5edfbdb42c22636e607b276ba5589f46694a729e3bc27948ce26f4cc1a
-  languageName: node
-  linkType: hard
-
-"open@npm:0.0.5":
-  version: 0.0.5
-  resolution: "open@npm:0.0.5"
-  checksum: 2a1a5a0accea9a361a8ba8cf298f7d330f5197a98a0752105084c4a3442a3a174700f661d2f8d5b62eaefe52d192f89492774be32da4541b080eba1c8196951e
   languageName: node
   linkType: hard
 
