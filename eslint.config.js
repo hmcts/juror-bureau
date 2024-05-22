@@ -15,16 +15,13 @@ module.exports = [
     ],
   },
   {
-    env: {
-      node: true,
-      es6: true,
-    },
-    globals: {
-      module: true,
-      require: true,
-    },
-    parserOptions: {
+    languageOptions: {
       ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: {
+        module: true,
+        require: true,
+      },
     },
     rules: {
       'no-unused-vars': 'warn',
