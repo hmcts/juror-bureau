@@ -672,22 +672,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "@sinonjs/commons@npm:^2.0.0":
   version: 2.0.0
   resolution: "@sinonjs/commons@npm:2.0.0"
-=======
-"@sindresorhus/merge-streams@npm:^2.1.0":
-  version: 2.3.0
-  resolution: "@sindresorhus/merge-streams@npm:2.3.0"
-  checksum: e989d53dee68d7e49b4ac02ae49178d561c461144cea83f66fa91ff012d981ad0ad2340cbd13f2fdb57989197f5c987ca22a74eb56478626f04e79df84291159
-  languageName: node
-  linkType: hard
-
-"@sinonjs/commons@npm:^1, @sinonjs/commons@npm:^1.3.0, @sinonjs/commons@npm:^1.7.0":
-  version: 1.8.6
-  resolution: "@sinonjs/commons@npm:1.8.6"
->>>>>>> a10db747 (commit yarn.lock)
   dependencies:
     type-detect: 4.0.8
   checksum: 5023ba17edf2b85ed58262313b8e9b59e23c6860681a9af0200f239fe939e2b79736d04a260e8270ddd57196851dde3ba754d7230be5c5234e777ae2ca8af137
@@ -1171,7 +1158,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "ansi-align@npm:^2.0.0":
   version: 2.0.0
   resolution: "ansi-align@npm:2.0.0"
@@ -1188,8 +1174,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-=======
->>>>>>> a10db747 (commit yarn.lock)
 "ansi-escapes@npm:^3.0.0":
   version: 3.2.0
   resolution: "ansi-escapes@npm:3.2.0"
@@ -1302,7 +1286,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "array-slice@npm:^1.0.0":
   version: 1.1.0
   resolution: "array-slice@npm:1.1.0"
@@ -1344,12 +1327,6 @@ __metadata:
   version: 1.0.1
   resolution: "arrify@npm:1.0.1"
   checksum: 745075dd4a4624ff0225c331dacb99be501a515d39bcb7c84d24660314a6ec28e68131b137e6f7e16318170842ce97538cd298fc4cd6b2cc798e0b957f2747e7
-=======
-"array-from@npm:^2.1.1":
-  version: 2.1.1
-  resolution: "array-from@npm:2.1.1"
-  checksum: 4cd5fa27aa6133b99a57c2881d2a8a66ec59b8e17a0c900f7e8ac9a0a2fae450ed682b67435467bfa71ac9328d025a760c5c46a95586a352180c5a79fc13015d
->>>>>>> a10db747 (commit yarn.lock)
   languageName: node
   linkType: hard
 
@@ -1593,7 +1570,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "browser-pack@npm:^6.0.1":
   version: 6.1.0
   resolution: "browser-pack@npm:6.1.0"
@@ -1623,12 +1599,6 @@ __metadata:
   version: 1.3.1
   resolution: "browser-stdout@npm:1.3.1"
   checksum: b717b19b25952dd6af483e368f9bcd6b14b87740c3d226c2977a65e84666ffd67000bddea7d911f111a9b6ddc822b234de42d52ab6507bce4119a4cc003ef7b3
-=======
-"browser-stdout@npm:1.3.0":
-  version: 1.3.0
-  resolution: "browser-stdout@npm:1.3.0"
-  checksum: 026565e63b5f41d4815b7bba8a0f0e1824d6536b6c386ac82d666f2bb5071b843ffa0bf543a17819d37b93ca74c9dcadcc4cac3a2cbafbbe86b95228d9bee555
->>>>>>> a10db747 (commit yarn.lock)
   languageName: node
   linkType: hard
 
@@ -1729,7 +1699,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "camelcase@npm:^6.0.0":
   version: 6.3.0
   resolution: "camelcase@npm:6.3.0"
@@ -1748,12 +1717,6 @@ __metadata:
   version: 1.0.2
   resolution: "capture-stack-trace@npm:1.0.2"
   checksum: 13295e8176e8de74bcbe0e4fd938bed9eb4204b4cc200210ff46df91cb20b69e86f6ef42f408a59454f8b62e567ef0ee6ee5b5e7e16e686668bc77f2741542b4
-=======
-"caniuse-lite@npm:^1.0.30001587":
-  version: 1.0.30001621
-  resolution: "caniuse-lite@npm:1.0.30001621"
-  checksum: 0afb65bbf558faea769c16e831fbbd5600c684c0f6bb4ffbc0d38528671fb5cb5d88714804241a88c61872ce289f7c6333aef6cfdfb09277bda0dbdf0aab3459
->>>>>>> a10db747 (commit yarn.lock)
   languageName: node
   linkType: hard
 
@@ -1821,11 +1784,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "chalk@npm:^4.0.0, chalk@npm:^4.1.0, chalk@npm:~4.1.0":
-=======
-"chalk@npm:^4.0.0":
->>>>>>> a10db747 (commit yarn.lock)
   version: 4.1.2
   resolution: "chalk@npm:4.1.2"
   dependencies:
@@ -2141,25 +2100,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "commander@npm:^2.8.1":
-=======
-"commander@npm:2.11.0":
-  version: 2.11.0
-  resolution: "commander@npm:2.11.0"
-  checksum: 0d0c622d129a801699b9bbf6fa518108c7e221e51ae12457119aec52f1142ab759b6cd3348ee253604e934639e200c8f0e1cf8342a2ba4b28b3565a7322ead14
-  languageName: node
-  linkType: hard
-
-"commander@npm:^10.0.1":
-  version: 10.0.1
-  resolution: "commander@npm:10.0.1"
-  checksum: 436901d64a818295803c1996cd856621a74f30b9f9e28a588e726b2b1670665bccd7c1a77007ebf328729f0139838a88a19265858a0fa7a8728c4656796db948
-  languageName: node
-  linkType: hard
-
-"commander@npm:^2.20.0":
->>>>>>> a10db747 (commit yarn.lock)
   version: 2.20.3
   resolution: "commander@npm:2.20.3"
   checksum: ab8c07884e42c3a8dbc5dd9592c606176c7eb5c1ca5ff274bcf907039b2c41de3626f684ea75ccf4d361ba004bbaff1f577d5384c155f3871e456bdf27becf9e
@@ -2470,7 +2411,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "decamelize@npm:^4.0.0":
   version: 4.0.0
   resolution: "decamelize@npm:4.0.0"
@@ -2560,8 +2500,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-=======
->>>>>>> a10db747 (commit yarn.lock)
 "deep-eql@npm:^4.1.3":
   version: 4.1.3
   resolution: "deep-eql@npm:4.1.3"
@@ -2688,7 +2626,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "diff@npm:^5.2.0":
   version: 5.2.0
   resolution: "diff@npm:5.2.0"
@@ -2706,11 +2643,6 @@ __metadata:
 "diffie-hellman@npm:^5.0.0":
   version: 5.0.3
   resolution: "diffie-hellman@npm:5.0.3"
-=======
-"dom-converter@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "dom-converter@npm:0.2.0"
->>>>>>> a10db747 (commit yarn.lock)
   dependencies:
     utila: ~0.4
   checksum: ea52fe303f5392e48dea563abef0e6fb3a478b8dbe3c599e99bb5d53981c6c38fc4944e56bb92a8ead6bb989d10b7914722ae11febbd2fd0910e33b9fc4aaa77
@@ -2912,11 +2844,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "escalade@npm:^3.1.1":
-=======
-"escalade@npm:^3.1.2":
->>>>>>> a10db747 (commit yarn.lock)
   version: 3.1.2
   resolution: "escalade@npm:3.1.2"
   checksum: 1ec0977aa2772075493002bdbd549d595ff6e9393b1cb0d7d6fcaf78c750da0c158f180938365486f75cb69fba20294351caddfce1b46552a7b6c3cde52eaa02
@@ -3371,7 +3299,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "find-up@npm:5.0.0, find-up@npm:^5.0.0":
   version: 5.0.0
   resolution: "find-up@npm:5.0.0"
@@ -3392,8 +3319,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-=======
->>>>>>> a10db747 (commit yarn.lock)
 "find-up@npm:^2.0.0, find-up@npm:^2.1.0":
   version: 2.1.0
   resolution: "find-up@npm:2.1.0"
@@ -3403,7 +3328,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "find-versions@npm:^1.0.0":
   version: 1.2.1
   resolution: "find-versions@npm:1.2.1"
@@ -3478,25 +3402,6 @@ __metadata:
     rimraf: ~2.6.2
     write: ^0.2.1
   checksum: 95605618db585e09881579b28d7b7e53215654451103425d1eb3fde2427ede7d71abf791f624c8c24d9dc0f7a4a3a3fa4ce8d146c846a31aa3b089380a89b1f3
-=======
-"find-up@npm:^4.0.0":
-  version: 4.1.0
-  resolution: "find-up@npm:4.1.0"
-  dependencies:
-    locate-path: ^5.0.0
-    path-exists: ^4.0.0
-  checksum: 4c172680e8f8c1f78839486e14a43ef82e9decd0e74145f40707cc42e7420506d5ec92d9a11c22bd2c48fb0c384ea05dd30e10dd152fefeec6f2f75282a8b844
-  languageName: node
-  linkType: hard
-
-"find-up@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "find-up@npm:5.0.0"
-  dependencies:
-    locate-path: ^6.0.0
-    path-exists: ^4.0.0
-  checksum: 07955e357348f34660bde7920783204ff5a26ac2cafcaa28bace494027158a97b9f56faaf2d89a6106211a8174db650dd9f503f9c0d526b1202d5554a00b9095
->>>>>>> a10db747 (commit yarn.lock)
   languageName: node
   linkType: hard
 
@@ -3842,7 +3747,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "grunt-autoprefixer@npm:^3.0.4":
   version: 3.0.4
   resolution: "grunt-autoprefixer@npm:3.0.4"
@@ -4240,12 +4144,6 @@ __metadata:
   dependencies:
     duplexer: ^0.1.1
   checksum: 683095068fc28e5dfa7dd77114ba95583d5acfd99e8028a993602e620eb9d48bf7910c14a3117caa9d665e3e1271b4027396f714be30f2b619dc638c76e5a6e8
-=======
-"growl@npm:1.10.3":
-  version: 1.10.3
-  resolution: "growl@npm:1.10.3"
-  checksum: 2eb23819fad34801ac889e0031c247474917fa869f998f18391b64914a1c9c38a00547ba4f291a9b5e5f20f156bcd5e72785a833df0ffbdae737fe3f110cd5b5
->>>>>>> a10db747 (commit yarn.lock)
   languageName: node
   linkType: hard
 
@@ -4820,7 +4718,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "is-plain-obj@npm:^2.1.0":
   version: 2.1.0
   resolution: "is-plain-obj@npm:2.1.0"
@@ -4829,9 +4726,6 @@ __metadata:
   linkType: hard
 
 "is-plain-object@npm:^2.0.3, is-plain-object@npm:^2.0.4":
-=======
-"is-plain-object@npm:^2.0.4":
->>>>>>> a10db747 (commit yarn.lock)
   version: 2.0.4
   resolution: "is-plain-object@npm:2.0.4"
   dependencies:
@@ -4864,7 +4758,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "is-unc-path@npm:^1.0.0":
   version: 1.0.0
   resolution: "is-unc-path@npm:1.0.0"
@@ -4916,8 +4809,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-=======
->>>>>>> a10db747 (commit yarn.lock)
 "is-wsl@npm:^2.2.0":
   version: 2.2.0
   resolution: "is-wsl@npm:2.2.0"
@@ -5206,14 +5097,8 @@ __metadata:
     jsonwebtoken: ^9.0.0
     launchdarkly-node-server-sdk: ^7.0.1
     lodash: ^4.17.21
-<<<<<<< HEAD
     method-override: ^3.0.0
     mocha: ^10.0.0
-=======
-    method-override: ^2.3.6
-    mini-css-extract-plugin: ^2.9.0
-    mocha: ^4.0.1
->>>>>>> a10db747 (commit yarn.lock)
     mochawesome: ^3.0.0
     moment: ^2.19.3
     named-routes: ^2.0.6
@@ -5225,9 +5110,20 @@ __metadata:
     request: ^2.79.0
     request-promise: ^4.1.1
     sass: ^1.72.0
+<<<<<<< HEAD
     sinon: ^18.0.0
     sinon-chai: ^3.0.0
+<<<<<<< HEAD
     time-grunt: ^2.0.0
+=======
+=======
+    sass-loader: ^14.2.1
+    sinon: ^4.1.2
+    sinon-chai: ^2.8.0
+    style-loader: ^4.0.0
+>>>>>>> 1510dfcb (add more webpack configs)
+    time-grunt: ^1.4.0
+>>>>>>> f8d68b2 (add more webpack configs)
     url-join: ^4.0.1
     validate.js: ^0.13.1
     webpack: ^5.91.0
@@ -7252,6 +7148,42 @@ __metadata:
   languageName: node
   linkType: hard
 
+<<<<<<< HEAD
+=======
+"samsam@npm:1.3.0":
+  version: 1.3.0
+  resolution: "samsam@npm:1.3.0"
+  checksum: 084914f7707538b735a41e0edba86abd8f9dd2a47a79511b56b55e8032801db767d9eb31899246179295fbb9ab7ab4d12ebc3410ad4265d897cbf0056c3db63d
+  languageName: node
+  linkType: hard
+
+"sass-loader@npm:^14.2.1":
+  version: 14.2.1
+  resolution: "sass-loader@npm:14.2.1"
+  dependencies:
+    neo-async: ^2.6.2
+  peerDependencies:
+    "@rspack/core": 0.x || 1.x
+    node-sass: ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0 || ^9.0.0
+    sass: ^1.3.0
+    sass-embedded: "*"
+    webpack: ^5.0.0
+  peerDependenciesMeta:
+    "@rspack/core":
+      optional: true
+    node-sass:
+      optional: true
+    sass:
+      optional: true
+    sass-embedded:
+      optional: true
+    webpack:
+      optional: true
+  checksum: f0c4710587d4cae56cad56eb46fe32c4a71c61a508951660dfb5a4cf873a3f221ec97658f364700fb4e3271376f7280656d4db9344754f7aab77d22bca70e22d
+  languageName: node
+  linkType: hard
+
+>>>>>>> 1510dfcb (add more webpack configs)
 "sass@npm:^1.72.0":
   version: 1.77.2
   resolution: "sass@npm:1.77.2"
@@ -7830,6 +7762,7 @@ __metadata:
   linkType: hard
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 "strip-json-comments@npm:~2.0.1":
   version: 2.0.1
   resolution: "strip-json-comments@npm:2.0.1"
@@ -7879,6 +7812,17 @@ __metadata:
   version: 8.1.1
   resolution: "supports-color@npm:8.1.1"
 =======
+=======
+"style-loader@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "style-loader@npm:4.0.0"
+  peerDependencies:
+    webpack: ^5.27.0
+  checksum: 0b751b4cc8394a2fe1df6194bb2f6dd68e859e36f22030994bb7b5220f24f9efb5705e78b2442226e6fa4c90f74b397529c7eb0a1d7326fb016e1e140e90151c
+  languageName: node
+  linkType: hard
+
+>>>>>>> 1510dfcb (add more webpack configs)
 "supports-color@npm:4.4.0":
   version: 4.4.0
   resolution: "supports-color@npm:4.4.0"

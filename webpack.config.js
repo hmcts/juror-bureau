@@ -5,20 +5,18 @@ const scss = require(path.resolve(__dirname, 'webpack/scss'));
 const HtmlWebpack = require(path.resolve(__dirname, 'webpack/htmlWebpack'));
 
 const devMode = process.env.NODE_ENV !== 'production';
-const fileNameSuffix = devMode ? '-dev' : '.[contenthash]';
-const filename = `[name]${fileNameSuffix}.js`;
+const filename = 'js/bundle.js';
 
 module.exports = {
-  plugins: [...scss.plugins, ...HtmlWebpack.plugins],
+  // plugins: [...scss.plugins, ...HtmlWebpack.plugins],
+  plugins: [...HtmlWebpack.plugins],
   entry: path.resolve(sourcePath, 'main.js'),
   mode: devMode ? 'development' : 'production',
   module: {
     rules: [
-      ...scss.rules,
       {
-        test: /\.ts$/,
-        use: 'ts-loader',
-        exclude: /node_modules/,
+        test: /\.scss$/,
+        use: 'sass-loader',
       },
     ],
   },
