@@ -44,7 +44,7 @@
     "helmet": "^7.0.0",
     "jsonwebtoken": "^9.0.0",
     "launchdarkly-node-server-sdk": "^7.0.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "method-override": "^2.3.6",
     "moment": "^2.19.3",
     "named-routes": "^2.0.6",
