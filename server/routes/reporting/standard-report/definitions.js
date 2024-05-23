@@ -306,7 +306,7 @@ const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../obj
           'courtName',
         ],
         bespokeReport: {
-          dao: async() => await dailyUtilisationDAO.get(
+          dao: () => dailyUtilisationDAO.get(
             req,
             req.session.authentication.locCode,
             req.query.fromDate,
@@ -320,7 +320,7 @@ const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../obj
       'daily-utilisation-jurors': {
         title: 'Daily wastage and utilisation report - jurors',
         bespokeReport: {
-          dao: async() => await dailyUtilisationJurorsDAO.get(
+          dao: () => dailyUtilisationJurorsDAO.get(
             req,
             req.session.authentication.locCode,
             req.params.filter
