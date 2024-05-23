@@ -4,6 +4,7 @@
   const { makeManualError } = require('../../../lib/mod-utils');
   const { dateFilter, capitalizeFully } = require('../../../components/filters');
   const { courtDetailsDAO } = require('../../../objects');
+  const { monthlyUtilisationReportsDAO } = require('../../../objects/reports');
 
   module.exports.getPrepareMonthlyUtilisation = (app) => (req, res) => {
     const errors = req.session.errors || {};
@@ -57,24 +58,37 @@
     }
   };
 
-  module.exports.getFilterMonthlyUtilisation = (app) => (req, res) => {
+  module.exports.getFilterMonthlyUtilisation = (app) => async(req, res) => {
     const errors = req.session.errors || {};
     const tmpBody = req.session.formFields || {};
 
     delete req.session.errors;
     delete req.session.formFields;
 
-    return res.render('reporting/monthly-utilisation/view-select-month', {
-      months: generateSelectMonths(),
-      processUrl: app.namedRoutes.build('reports.view-monthly-utilisation.filter.post'),
-      cancelUrl: app.namedRoutes.build('reports.statistics.get'),
-      tmpBody,
-      errors: {
-        title: 'Please check your search',
-        count: typeof errors !== 'undefined' ? Object.keys(errors).length : 0,
-        items: errors,
-      },
-    });
+    try {
+      const utilisationMonths = (await monthlyUtilisationReportsDAO.get(req, req.session.authentication.locCode)).data;
+
+      const months = utilisationMonths.split(',').filter(n => n).map((month) => {
+        return {
+          value: dateFilter(month, 'MMMM yyyy', 'yyyy-MM-DD'),
+          text: month,
+        };
+      });
+
+      return res.render('reporting/monthly-utilisation/view-select-month', {
+        months,
+        processUrl: app.namedRoutes.build('reports.view-monthly-utilisation.filter.post'),
+        cancelUrl: app.namedRoutes.build('reports.statistics.get'),
+        tmpBody,
+        errors: {
+          title: 'Please check your search',
+          count: typeof errors !== 'undefined' ? Object.keys(errors).length : 0,
+          items: errors,
+        },
+      });
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   module.exports.postFilterMonthlyUtilisation = (app) => (req, res) => {

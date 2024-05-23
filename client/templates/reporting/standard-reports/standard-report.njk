@@ -105,14 +105,6 @@
           {% endif %}
         </div>
       </div>
-    {% elif reportKey === "view-monthly-utilisation" and tableRows.length <= 1 %}
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-          <hr class="govuk-section-break govuk-section-break--visible">
-          <h2 class="govuk-heading-m govuk-!-margin-top-4">This report has no matching data</h2>
-          <a class="govuk-body govuk-link govuk-link--no-visited-state" href="{{ url('reports.prepare-monthly-utilisation.filter.get') }}">Please prepare this report and try again.</a>
-        </div>
-      </div>
     {% else %}
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">

@@ -67,6 +67,15 @@ const { DAO } = require('./dataAccessObject');
     },
   });
 
+  module.exports.monthlyUtilisationReportsDAO = new DAO('moj/reports/monthly-utilisation-reports', {
+    get: function(locCode) {
+      return {
+        uri: `${this.resource}/${locCode}`,
+        transform: mapSnakeToCamel,
+      };
+    },
+  });
+
   module.exports.viewMonthlyUtilisationDAO = new DAO('moj/reports/view-monthly-utilisation', {
     get: function(locCode, reportDate, previousMonths = 'false') {
       return {
