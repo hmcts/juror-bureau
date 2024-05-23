@@ -405,6 +405,19 @@
           totals: true,
         },
       },
+      'manual-juror-report': {
+        title: 'Manually-created jurors report',
+        apiKey: 'ManualJurorReport',
+        search: 'dateRange',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+          'totalManuallyCreatedJurors',
+          'courtName',
+        ],
+      },
       'panel-members-status': {
         title: 'Panel members status report',
         apiKey: 'PanelMembersStatusReport',
