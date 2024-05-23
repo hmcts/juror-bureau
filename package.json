@@ -88,7 +88,7 @@
     "istanbul": "^0.4.4",
     "jit-grunt": "^0.10.0",
     "mocha": "^10.0.0",
-    "mochawesome": "^3.0.0",
+    "mochawesome": "^7.0.0",
     "nsp": "^3.1.0",
     "sass": "^1.72.0",
     "sinon": "^18.0.0",
