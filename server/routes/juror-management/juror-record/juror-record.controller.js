@@ -10,66 +10,6 @@
   const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/expenses');
   const { systemCodesDAO, expensesSummaryDAO } = require('../../../objects');
 
-  // TODO: this will probably be removed when we move to a single juror / summons record
-  module.exports.checkResponse = function(app) {
-    return async function(req, res, next) {
-      const digitalResponseObj = require('../../../objects/response-detail').object
-        , paperResponseObj = require('../../../objects/paper-reply').paperReplyObject;
-
-      delete req.session.hasSummonsResponse;
-
-      const digitalResponse = digitalResponseObj.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
-          req.params['jurorNumber'],
-          req.session.hasModAccess,
-        ),
-        paperResponse = paperResponseObj.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
-          req.params['jurorNumber'],
-        );
-
-      Promise.allSettled([digitalResponse, paperResponse])
-        .then(([digital, paper]) => {
-          if (digital.value && digital.value.dateReceived && digital.value.dateReceived !== 'Invalid date') {
-
-            app.logger.debug('This juror already responded via the public portal', {
-              auth: req.session.authentication,
-              jwt: req.session.authToken,
-              data: {
-                jurorNumber: req.params['jurorNumber'],
-                type: 'digital',
-              },
-            });
-
-            req.session.summonsReplyStatus = digital.value.processingStatus;
-            req.session.hasSummonsResponse = true;
-          }
-
-          if (paper.value && paper.value.data.dateReceived) {
-
-            app.logger.debug('This juror already responded via paper', {
-              auth: req.session.authentication,
-              jwt: req.session.authToken,
-              data: {
-                jurorNumber: req.params['jurorNumber'],
-                type: 'paper',
-              },
-            });
-
-            req.session.summonsReplyStatus = paper.value.data.processingStatus;
-            req.session.hasSummonsResponse = true;
-          }
-
-          next();
-        })
-        .catch(() => next());
-    };
-  };
-
   // when accessing a tab (any tab) if the juror record does not exist the api will return a 404
   // this 404 needs to be handled on a different way to all other error codes... it should show a juror-not-found page
   // bureau and courts have access to different jurors so what sends a 404 for one will send a 200 valid juror response
@@ -99,7 +39,7 @@
             juror: response.data,
             currentTab: 'details',
             jurorStatus: resolveJurorStatus(response.data.commonDetails),
-            hasSummons: req.session.hasSummonsResponse,
+            hasSummons: response.data.commonDetails.hasSummonsResponse,
             summonsReplyStatus: req.session.summonsReplyStatus,
             isCourtUser: isCourtUser(req),
           });
@@ -210,7 +150,7 @@
             policeCheck: resolvePoliceCheckStatus(req, overview.data.commonDetails.police_check),
             bannerMessage: bannerMessage,
             availableMessage: availableMessage,
-            hasSummons: req.session.hasSummonsResponse,
+            hasSummons: overview.data.commonDetails.hasSummonsResponse,
             poolDetails,
             idCheckDescription,
             // Next service date attributes are hardcoded and
@@ -296,7 +236,7 @@
             replyStatus: modUtils.resolveReplyStatus(response.data.replyStatus),
             processingOutcome: modUtils.resolveProcessingOutcome(response.data.commonDetails.jurorStatus,
               response.data.commonDetails.excusalRejected, response.data.commonDetails.excusalDescription),
-            hasSummons: req.session.hasSummonsResponse,
+            hasSummons: response.data.commonDetails.hasSummonsResponse,
           });
         }
         , errorCB = function(err) {
@@ -392,7 +332,7 @@
             juror: jurorOverview.data,
             jurorStatus: resolveJurorStatus(jurorOverview.data.commonDetails),
             currentTab: 'expenses',
-            hasSummons: req.session.hasSummonsResponse,
+            hasSummons: jurorOverview.data.commonDetails.hasSummonsResponse,
             dailyExpenses,
             defaultExpenses,
             bankDetails,
@@ -418,7 +358,7 @@
                 juror: jurorOverview.data,
                 jurorStatus: resolveJurorStatus(jurorOverview.data.commonDetails),
                 currentTab: 'expenses',
-                hasSummons: req.session.hasSummonsResponse,
+                hasSummons: jurorOverview.data.commonDetails.hasSummonsResponse,
                 dailyExpenses,
                 defaultExpenses,
                 bankDetails,
@@ -525,7 +465,7 @@
           jurorStatus: resolveJurorStatus(jurorOverview.data.commonDetails),
           processingOutcome: modUtils.resolveProcessingOutcome(jurorOverview.data.commonDetails.jurorStatus,
             jurorOverview.data.commonDetails.excusalRejected, jurorOverview.data.commonDetails.excusalDescription),
-          hasSummons: req.session.hasSummonsResponse,
+          hasSummons: jurorOverview.data.commonDetails.hasSummonsResponse,
           attendance,
           formattedDate,
           failedToAttend,
@@ -594,7 +534,7 @@
             currentTab: 'notes',
             contactLogs: contactLogs,
             jurorStatus: resolveJurorStatus(response[0].data.commonDetails),
-            hasSummons: req.session.hasSummonsResponse,
+            hasSummons: response[0].data.commonDetails.hasSummonsResponse,
           });
         }
         , errorCB = function(err) {
