@@ -8,7 +8,7 @@
   "main": "server/index.js",
   "scripts": {
     "start": "grunt serve",
-    "serve": "grunt serve",
+    "serve": "grunt serve:dist",
     "debug": "NODE_ENV=dist grunt build && node --inspect-brk ./tmp/server/index.js",
     "start:lb": "NODE_ENV=development node ./tmp/server/index.js",
     "test": "grunt test:intergration --force",
