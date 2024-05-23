@@ -45,8 +45,9 @@ module.exports = function(app) {
   // allow dev auth only in development
   function isDevelopment(_, res, next) {
     const isDev = process.env.NODE_ENV === 'development';
+    const skipSSO = !!process.env.SKIP_SSO || false;
 
-    if (isDev) return next();
+    if (isDev || skipSSO) return next();
 
     return res.status(401).send();
   }
