@@ -1,6 +1,7 @@
 /* eslint-disable strict */
 const { dateFilter, makeDate } = require('../../../components/filters');
 const { snakeToCamel } = require('../../../lib/mod-utils');
+const { tableDataMappers } = require('../standard-report/utils');
 
 const bespokeReportBodys = (app) => {
   return {
