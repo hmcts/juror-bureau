@@ -1,6 +1,9 @@
 ;(function(){
   'use strict';
 
+  // do not remove... this is needed for webpack to compile the scss
+  require('../scss/main.scss');
+
   // If clicked, will toggle a class on the element
   $('[data-toggle-active]').css({ cursor: 'pointer' });
   $(document).on('click', '[data-toggle-active]', function() {

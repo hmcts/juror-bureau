@@ -36,10 +36,8 @@ const copyClientCode = new CopyWebpackPlugin({
     { from: 'client/js/i18n/cy/PDF.json', to: '../client/js/i18n/cy' },
     { from: 'client/js/i18n/en/PDF.json', to: '../client/js/i18n/en' },
 
-    // eslint-disable-next-line max-len
-    // { from: 'client/assets/fonts/', src: ['boldFont.ttf', 'lightFont.ttf', 'OpenSans-Regular.ttf', 'OpenSans-Bold.ttf', 'LibreBarcode39-Regular.ttf'], dest: 'dist/client/assets/fonts' },
-    { from: 'node_modules/chart.js/dist/*.js', to: '../client/js/chart.js' },
-    { from: 'node_modules/chart.js/dist/Chart.min.css', to: '../client/css' },
+    { from: 'node_modules/chart.js/dist/Chart.bundle.js', to: '../client/js/chart.js' },
+    { from: 'node_modules/chart.js/dist/Chart.min.css', to: '../client/css/chart.css' },
     { from: 'node_modules/govuk-frontend/govuk/all.js', to: '../client/js/govuk' },
     { from: 'node_modules/@ministryofjustice/frontend/moj/all.js', to: '../client/js/moj' },
     {
@@ -52,6 +50,27 @@ const copyClientCode = new CopyWebpackPlugin({
     },
     { from: 'config/', to: '../config' },
     { from: 'package.json', to: '../' },
+
+    {
+      context: 'client/assets/fonts/',
+      from: '*.*',
+      to: '../client/assets/fonts',
+    },
+    {
+      context: 'client/assets/images/',
+      from: '*.{png,jpg,jpeg,gif,svg}',
+      to: '../client/assets/images',
+    },
+    {
+      context: 'node_modules/govuk-frontend/govuk/assets/images/',
+      from: '*.*',
+      to: '../client/assets/images',
+    },
+    {
+      context: 'node_modules/@ministryofjustice/frontend/moj/assets/images/',
+      from: 'icon-arrow*.*',
+      to: '../client/assets/images',
+    },
   ],
 });
 

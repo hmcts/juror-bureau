@@ -8,24 +8,23 @@ const devMode = process.env.NODE_ENV !== 'production';
 const filename = 'js/bundle.js';
 
 module.exports = {
-  // plugins: [...scss.plugins, ...HtmlWebpack.plugins],
-  plugins: [...HtmlWebpack.plugins],
+  plugins: [...scss.plugins, ...HtmlWebpack.plugins],
   entry: path.resolve(sourcePath, 'main.js'),
   mode: devMode ? 'development' : 'production',
   module: {
     rules: [
-      {
-        test: /\.scss$/,
-        use: 'sass-loader',
-      },
+      ...scss.rules,
     ],
   },
   resolve: {
-    extensions: ['.js'],
+    extensions: ['.ts', '.js'],
   },
   output: {
     path: path.resolve(__dirname, 'dist/client'),
     publicPath: '',
     filename,
+  },
+  optimization: {
+    minimize: false,
   },
 };

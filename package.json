@@ -19,8 +19,8 @@
     "lint": "eslint .",
     "cichecks": "echo TODO: cichecks",
     "nsp": "nsp check",
-    "build": "yarn webpack --config webpack.config.js && node ./dist/server/index.js",
-    "build:prod": "NODE_ENV=production yarn webpack --mode production --config webpack.config.js"
+    "build": "rm -rf ./dist && yarn webpack --config webpack.config.js && node ./dist/server/index.js",
+    "build:prod": "rm -rf ./dist && NODE_ENV=production yarn webpack --mode production --config webpack.config.js"
   },
   "dependencies": {
     "@fengyuanchen/datepicker": "^0.6.4",
@@ -66,6 +66,7 @@
     "chai-as-promised": "^7.1.1",
     "chai-things": "^0.2.0",
     "copy-webpack-plugin": "^12.0.2",
+    "css-loader": "^7.1.2",
     "eslint": "^9.3.0",
     "html-webpack-plugin": "^5.6.0",
     "istanbul": "^0.4.4",
@@ -74,6 +75,7 @@
     "mocha": "^4.0.1",
     "mochawesome": "^3.0.0",
     "nsp": "^3.1.0",
+    "postcss": "^8.4.38",
     "sass": "^1.72.0",
     "sinon": "^18.0.0",
     "sinon-chai": "^3.0.0",
