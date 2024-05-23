@@ -309,7 +309,7 @@
   };
 
   module.exports.transformUnpaidAttendanceList = (unpaidAttendance, sortBy, sortOrder, locCode) => {
-    const order = sortOrder || 'ascending';
+    const order = sortOrder || 'descending';
     const table = {
       head: [{
         id: 'jurorNumber',

@@ -13,7 +13,7 @@
       const currentPage = req.query['page'] || 1;
       const minDate = req.query['filterStartDate'] || null;
       const maxDate = req.query['filterEndDate']|| null;
-      const sortOrder = req.query['sortOrder'] || 'ascending';
+      const sortOrder = req.query['sortOrder'] || 'descending';
       const sortBy = req.query['sortBy'] || 'totalInDraft';
       const tmpErrors = _.clone(req.session.errors);
       const locCode = req.session.authentication.locCode;
