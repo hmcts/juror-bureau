@@ -7324,7 +7324,7 @@ __metadata:
     request-promise: ^4.1.1
     sass: ^1.72.0
     sinon: ^18.0.0
-    sinon-chai: ^2.8.0
+    sinon-chai: ^3.0.0
     time-grunt: ^1.4.0
     url-join: ^4.0.1
     validate.js: ^0.13.1
@@ -10882,13 +10882,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sinon-chai@npm:^2.8.0":
-  version: 2.14.0
-  resolution: "sinon-chai@npm:2.14.0"
+"sinon-chai@npm:^3.0.0":
+  version: 3.7.0
+  resolution: "sinon-chai@npm:3.7.0"
   peerDependencies:
-    chai: ">=1.9.2 <5"
-    sinon: ^1.4.0 || ^2.1.0 || ^3.0.0 || ^4.0.0
-  checksum: c94ff4fc3c225c3bb9c16b6258493eef18f6b089f087534daa136fc60c3221b4be4278df0f2e4c9b7675476ce87ddff48ec34d3107e743752c4ce1e6828f0847
+    chai: ^4.0.0
+    sinon: ">=4.0.0"
+  checksum: 49a353d8eb66cc6db35ac452f6965c72778aa090d1f036dd1e54ba88594b1c3f314b1a403eaff22a4e314f94dc92d9c7d03cbb88c21d89e814293bf5b299964d
   languageName: node
   linkType: hard
 
