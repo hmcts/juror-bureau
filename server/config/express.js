@@ -35,6 +35,7 @@ const generateNonce = () => {
 module.exports = async function(app) {
   let env = process.env.NODE_ENV || 'development';
   let useAuth = process.env.USE_AUTH || config.useAuth;
+  let skipSSO = !!process.env.SKIP_SSO || false;
 
   // Ensure provided environment values are lowercase
   env = env.toLowerCase();
@@ -131,6 +132,7 @@ module.exports = async function(app) {
     res.locals.trackingCode = config.trackingCode;
     res.locals.serviceName = 'HMCTS Juror';
     res.locals.env = env;
+    res.locals.skipSSO = skipSSO;
 
     if (config.responseEditEnabled === true){
       res.locals.responseEditEnabled = true;
