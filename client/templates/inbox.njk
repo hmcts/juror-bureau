@@ -59,7 +59,8 @@
             {% for response in responses.items %}
 
               {# setup the alert html #}
-              {% if response.alert.alertText %}
+              {# This should filter the OVERDUE alert for now to prevent the alert from being displayed #}
+              {% if response.alert.alertText and response.alert.alertText !== 'OVERDUE' %}
                 {% set alertHTML %}
                 {{ mojBadge({
                     text: response.alert.alertText,
