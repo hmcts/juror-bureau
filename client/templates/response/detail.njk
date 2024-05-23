@@ -67,10 +67,6 @@
       {% set urgencyBadge = "Urgent" %}
     {% elif response.urgent %}
       {% set urgencyBadge = "Urgent" %}
-    {# Commented as overdue badge should no longer be displayed in Alert
-    {% elif response.slaOverdue %}
-      {% set urgencyBadge = "Overdue" %}
-    #}
     {% else %}
       {% set urgencyBadge = undefined %}
     {% endif %}
