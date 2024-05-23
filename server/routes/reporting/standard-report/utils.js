@@ -91,6 +91,8 @@ const buildTableHeaders = (reportType, tableHeadings) => {
     }));
   } else {
     tableHeaders = tableHeadings.map((data, index) => {
+      if (!data.name || data.name === '') return;
+
       return ({
         text: data.name,
         attributes: {

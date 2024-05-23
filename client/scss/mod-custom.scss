@@ -236,6 +236,10 @@ dt.govuk-summary-list-mod {
   vertical-align: top;
 }
 
+.mod-overflow-auto {
+  overflow: auto;
+}
+
 /// small hack for radio tables
 .-margin-top-4 {
   margin-top: -1.25rem;

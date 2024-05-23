@@ -1,6 +1,7 @@
 (() => {
   'use strict';
 
+  const _ = require('lodash');
   const { isCourtUser } = require('../../../components/auth/user-type');
   const { dateFilter, capitalizeFully, toMoney } = require('../../../components/filters');
   const { dailyUtilisationDAO, dailyUtilisationJurorsDAO, viewMonthlyUtilisationDAO, generateMonthlyUtilisationDAO } = require('../../../objects/reports');
@@ -57,7 +58,9 @@
   //   printLandscape?: boolean, // force report printing to landscape
   //   largeTotals?: {
   //     values: (data) => {label: string, value: string}[], // large totals for the report
-  //     printWidths?: [string], // optional widths for the individual tags when printing, if left empty will stretch across page 
+  //     printWidths?: [string], // optional widths for the individual tags when printing, if left empty will stretch across page
+  //   },
+  //   fontSize?: number,
   // }};
   module.exports.reportKeys = (app, req = null) => {
     const courtUser = req ? isCourtUser(req) : false;
@@ -931,6 +934,31 @@
             },
           },
         },
+      },
+      'pool-analysis': {
+        title: 'Pool analysis report',
+        apiKey: 'PoolAnalysisReport',
+        search: 'dateRange',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+          '',
+          'courtName',
+        ],
+        cellTransformer: (data, key, output, isPrint) => {
+          const percentageKey = _.camelCase(`${key}_percentage`);
+
+          if (percentageKey in data) {
+            if (isPrint) return `${output} (${data[percentageKey]}%)`;
+            return `<span class="mod-flex mod-gap-x-1">${output} <span class="govuk-caption-m">(${data[percentageKey]}%)</span></span>`;
+          }
+
+          return output;
+        },
+        printLandscape: true,
+        fontSize: 8,
       },
     };
   };

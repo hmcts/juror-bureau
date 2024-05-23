@@ -160,6 +160,8 @@
     const buildStandardTableRows = function(tableData, tableHeadings) {
       const rows = tableData.map(data => {
         let row = tableHeadings.map(header => {
+          if (!header.name || header.name === '') return;
+
           let output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
 
           if (header.id === 'juror_number' || header.id === 'juror_number_from_trial') {
@@ -212,8 +214,12 @@
             });
           }
 
+          if (reportType.cellTransformer) {
+            output = reportType.cellTransformer(data, header.id, output);
+          }
+
           return ({
-            text: output ? output : '-',
+            html: output ? output : '-',
             attributes: {
               "data-sort-value": header.dataType === 'LocalDate' ? data[snakeToCamel(header.id)] : output
             },
@@ -378,7 +384,6 @@
 
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
       if (isExport) return reportExport(app, req, res, reportKey, { headings, tableData }) ;
-
 
       let tables = [];
 
