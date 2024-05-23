@@ -15,7 +15,7 @@
     {% set printRoute = printRoute + queryParams %}
   {% endif %}
 
-  <script>
+  <script nonce="{{ nonce }}">
     open("{{ printRoute }}".replace(/&amp;/g, '&'), '_blank');
     window.location.replace("{{ completeRoute }}"); //jurorrecord
   </script>

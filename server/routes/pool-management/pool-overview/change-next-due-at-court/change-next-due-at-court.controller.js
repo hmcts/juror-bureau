@@ -8,14 +8,27 @@
     , attendanceDateValidator = require('../../../../config/validation/change-attendance-date').bulkAttendanceDate
     , { dateFilter } = require('../../../../components/filters')
     , { changeNextDueAtCourtDAO } = require('../../../../objects/juror-attendance')
-    , { poolMemebersObject } = require('../../../../objects/pool-members')
     , rp = require('request-promise');
+  const { poolMembersDAO } = require('../../../../objects');
 
 
   module.exports.postChangeNextDueAtCourt = function(app) {
     return async function(req, res) {
       if (req.body['check-all-jurors']) {
-        req.body.selectedJurors = await poolMemebersObject.get(rp, app, req.session.authToken, req.params.poolNumber);
+        try {
+          const poolMembers = await poolMembersDAO.get(req, req.params.poolNumber);
+
+          delete poolMembers.Headers;
+          req.body.selectedJurors = Object.values(poolMembers);
+        } catch (err) {
+          app.logger.crit('Failed to fetch pool members to change next due at court date: ', {
+            auth: req.session.authentication,
+            poolNumber: req.params.poolNumber,
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
+
+          return res.render('_errors/generic.njk');
+        };
       }
 
       let validatorResult;

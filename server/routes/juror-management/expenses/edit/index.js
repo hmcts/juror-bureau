@@ -1,3 +1,5 @@
+const { postEditAudit, getEditAudit } = require('../../../reporting/audit.controller');
+
 (function() {
   'use strict';
 
@@ -11,6 +13,17 @@
       'juror-management.edit-expense.get',
       auth.verify,
       controller.getEditApprovalExpenses(app));
+
+    // eslint-disable-next-line max-len
+    app.post('/juror-management/edit-expense/:jurorNumber/:locCode/:status(draft|for-approval|for-reapproval|approved)/preview',
+      'juror-management.edit-expense.preview.post',
+      auth.verify,
+      postEditAudit(app));
+    // eslint-disable-next-line max-len
+    app.get('/juror-management/edit-expense/:jurorNumber/:locCode/:status(draft|for-approval|for-reapproval|approved)/preview',
+      'juror-management.edit-expense.preview.get',
+      auth.verify,
+      getEditAudit(app));
 
     // eslint-disable-next-line max-len
     app.post('/juror-management/edit-expense/:jurorNumber/:locCode/:status(draft|for-approval|for-reapproval|approved)',

@@ -71,6 +71,7 @@
               'respond.min.js',
               'svgxuse.min.js',
               'ds-datepicker.js',
+              'ds-datepicker-helper.js',
               'show-hide-content.js',
               'attendance.js',
               'deferral-maintenance.js',
@@ -86,7 +87,7 @@
             {expand: true, cwd: 'client/js/i18n/cy/', src: ['PDF.json'], dest: 'dist/client/js/i18n/cy/' },
             {expand: true, cwd: 'client/js/i18n/en/', src: ['PDF.json'], dest: 'dist/client/js/i18n/en/' },
 
-            {expand: true, cwd: 'client/assets/fonts/', src: ['boldFont.ttf', 'lightFont.ttf', 'OpenSans-Regular.ttf', 'OpenSans-Bold.ttf'], dest: 'dist/client/assets/fonts' },
+            {expand: true, cwd: 'client/assets/fonts/', src: ['boldFont.ttf', 'lightFont.ttf', 'OpenSans-Regular.ttf', 'OpenSans-Bold.ttf', 'LibreBarcode39-Regular.ttf'], dest: 'dist/client/assets/fonts' },
 
             {expand: true, cwd: 'node_modules/chart.js/dist', src: ['*.js'], dest: 'dist/client/js/chart.js'},
             {expand: true, cwd: 'node_modules/chart.js/dist', src: ['*.css'], dest: 'dist/client/css'},
@@ -113,6 +114,7 @@
               'respond.min.js',
               'svgxuse.min.js',
               'ds-datepicker.js',
+              'ds-datepicker-helper.js',
               'show-hide-content.js',
               'attendance.js',
               'deferral-maintenance.js',
@@ -128,7 +130,7 @@
             {expand: true, cwd: 'client/js/i18n/cy/', src: ['PDF.json'], dest: 'tmp/client/js/i18n/cy/' },
             {expand: true, cwd: 'client/js/i18n/en/', src: ['PDF.json'], dest: 'tmp/client/js/i18n/en/' },
 
-            {expand: true, cwd: 'client/assets/fonts/', src: ['boldFont.ttf', 'lightFont.ttf', 'OpenSans-Regular.ttf', 'OpenSans-Bold.ttf'], dest: 'tmp/client/assets/fonts' },
+            {expand: true, cwd: 'client/assets/fonts/', src: ['boldFont.ttf', 'lightFont.ttf', 'OpenSans-Regular.ttf', 'OpenSans-Bold.ttf', 'LibreBarcode39-Regular.ttf'], dest: 'tmp/client/assets/fonts' },
 
             {expand: true, cwd: 'node_modules/chart.js/dist', src: ['*.js'], dest: 'tmp/client/js/chart.js'},
             {expand: true, cwd: 'node_modules/chart.js/dist', src: ['*.css'], dest: 'tmp/client/css'},
@@ -153,7 +155,7 @@
             {expand: true, cwd: 'client/js/i18n/cy/', src: ['PDF.json'], dest: 'test/client/js/i18n/cy/' },
             {expand: true, cwd: 'client/js/i18n/en/', src: ['PDF.json'], dest: 'test/client/js/i18n/en/' },
 
-            {expand: true, cwd: 'client/assets/fonts/', src: ['boldFont.ttf', 'lightFont.ttf', 'OpenSans-Regular.ttf', 'OpenSans-Bold.ttf'], dest: 'test/client/assets/fonts' },
+            {expand: true, cwd: 'client/assets/fonts/', src: ['boldFont.ttf', 'lightFont.ttf', 'OpenSans-Regular.ttf', 'OpenSans-Bold.ttf', 'LibreBarcode39-Regular.ttf'], dest: 'test/client/assets/fonts' },
 
             {expand: true, cwd: 'node_modules/chart.js/dist', src: ['*.js'], dest: 'test/client/js/chart.js'},
             {expand: true, cwd: 'node_modules/chart.js/dist', src: ['*.css'], dest: 'test/client/css'},
@@ -332,7 +334,6 @@
             { expand: true, cwd: 'client/assets/images/', src: '**/*.{png,jpg,jpeg,gif,svg}', dest: 'dist/client/assets/images' },
             { expand: true, cwd: 'node_modules/govuk-frontend/govuk/assets/images/', src: ['**/**.*'], dest: 'dist/client/assets/images' },
             { expand: true, cwd: 'node_modules/@ministryofjustice/frontend/moj/assets/images/', src: ['icon-arrow*.*'], dest: 'dist/client/assets/images' },
-            { expand: true, cwd: 'node_modules/@scottish-government/pattern-library/dist/images/icons/', src: ['**/**.*'], dest: 'dist/client/assets/images/icons' }
           ]
         },
         dev: {
@@ -340,7 +341,6 @@
             { expand: true, cwd: 'client/assets/images/', src: '**/*.{png,jpg,jpeg,gif,svg}', dest: 'tmp/client/assets/images' },
             { expand: true, cwd: 'node_modules/govuk-frontend/govuk/assets/images/', src: ['**/**.*'], dest: 'tmp/client/assets/images' },
             { expand: true, cwd: 'node_modules/@ministryofjustice/frontend/moj/assets/images/', src: ['icon-arrow*.*'], dest: 'tmp/client/assets/images' },
-            { expand: true, cwd: 'node_modules/@scottish-government/pattern-library/dist/images/icons/', src: ['**/**.*'], dest: 'tmp/client/assets/images/icons' }
           ]
         },
         test: {
@@ -348,7 +348,6 @@
             { expand: true, cwd: 'client/assets/images/', src: '**/*.{png,jpg,jpeg,gif,svg}', dest: 'test/client/assets/images' },
             { expand: true, cwd: 'node_modules/govuk-frontend/govuk/assets/images/', src: ['**/**.*'], dest: 'test/client/assets/images' },
             { expand: true, cwd: 'node_modules/@ministryofjustice/frontend/moj/assets/images/', src: ['icon-arrow*.*'], dest: 'test/client/assets/images' },
-            { expand: true, cwd: 'node_modules/@scottish-government/pattern-library/dist/images/icons/', src: ['**/**.*'], dest: 'test/client/assets/images/icons' }
           ]
         }
       },

@@ -140,7 +140,7 @@
   {{ super() }}
 
   {% if isCourtUser %}
-    <script>
+    <script nonce="{{ nonce }}">
       $('DOMLoaded', function () {
         const form = document.getElementById('detailsToExportForm');
         const detailsToExport = document.getElementsByName('detailsToExport');

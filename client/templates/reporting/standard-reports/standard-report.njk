@@ -9,8 +9,9 @@
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "custom-components/autocomplete/macro.njk" import modAutocomplete %}
 {% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
 
-{% block page_title %}Reports - {{ title }}{% endblock %}
+{% block page_title %}{{ serviceName }} - Reports - {{ title }}{% endblock %}
 {% block page_identifier %}Reports - {{ title }}{% endblock %}
 
 {% set currentApp = "Reports" %}
@@ -23,17 +24,37 @@
 
 {% block content %}
 
+  {% if bannerMessage %}
+    {{ mojBanner({
+      type: "success",
+      text: bannerMessage,
+      iconFallbackText: "Success"
+    }) }}
+  {% endif %}
+
   <div class="mod-flex mod-space-between">
     <h1 class="govuk-heading-l">{{title}}</h1>
-    
-    {{ govukButton({
-      text: "Print",
-      href: printUrl,
-      classes: "govuk-button--secondary",
-      attributes: {
-        target: "_blank"
-      }
-    }) }}
+
+    <div class="govuk-button-group">
+      {% if exportUrl %}
+        {{ govukButton({
+          text: exportLabel,
+          href: exportUrl,
+          classes: "govuk-button--secondary",
+          attributes: {
+            target: "_blank"
+          }
+        }) }}
+      {% endif %}
+      {{ govukButton({
+        text: "Print",
+        href: printUrl,
+        classes: "govuk-button--secondary",
+        attributes: {
+          target: "_blank"
+        }
+      }) }}
+    </div>
   </div>
 
   <div class="report-headings">
@@ -49,27 +70,37 @@
     {% endfor %}
   </div>
 
-  {% if tableRows.length === 0 %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
-        <hr class="govuk-section-break govuk-section-break--visible">
-        <h2 class="govuk-heading-m govuk-!-margin-top-4">This report has no matching data</h2>
-      </div>
-    </div>
+  {% if bespokeReportFile %}
+    {% include bespokeReportFile %}
   {% else %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
-        {{ govukTable({
-          attributes: {
-            'data-module': 'moj-sortable-table'
-          } if not grouped,
-          caption: "Report data",
-          captionClasses: "govuk-visually-hidden",
-          head: tableHeaders,
-          rows: tableRows
-        }) }}
+    {% if tableRows.length === 0 %}
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          {% if searchType === "dateRange" %}
+            <h2 class="govuk-heading-m govuk-!-margin-top-4">No results found</h2>
+            <a class="govuk-body govuk-link govuk-link--no-visited-state" href="{{ backLinkUrl.url }}">Check your dates and try again.</a>
+          {% else %}
+            <hr class="govuk-section-break govuk-section-break--visible">
+            <h2 class="govuk-heading-m govuk-!-margin-top-4">This report has no matching data</h2>
+          {% endif %}
+        </div>
       </div>
-    </div>
+    {% else %}
+    {{sortable}}
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          {{ govukTable({
+            attributes: {
+              'data-module': 'moj-sortable-table'
+            } if not unsortable and not grouped,
+            caption: "Report data",
+            captionClasses: "govuk-visually-hidden",
+            head: tableHeaders,
+            rows: tableRows
+          }) }}
+        </div>
+      </div>
+    {% endif %}
   {% endif %}
 
 {% endblock %}

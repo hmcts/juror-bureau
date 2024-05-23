@@ -50,9 +50,9 @@
     <dl class="govuk-summary-list adjustments">
       <div class="govuk-summary-list__row {% if adjustmentsHasFlag %}info{% endif %}">
         <dt class="govuk-summary-list__key jd-details-cjs-adjustments-head-width">
-          {{ "Reason and adjustments needed" if hasModAccess else "Disability or impairment" }}
+          {{ "Reason and adjustments needed" }}
         </dt>
-        <dd class="govuk-summary-list__value" id="disability">
+        <dd class="govuk-summary-list__value" id="reasonableAdjustments">
           {% if response.specialNeeds.length === 0 or response.specialNeeds === null %}
             N/A
           {% else %}
@@ -68,7 +68,10 @@
                       {{ response.specialNeeds[i].code | capitalize }} - {{ response.specialNeeds[i].description }}
                     </span>
                     <br>
-                    {{ (response.specialNeedsArrangements | safe) if response.specialNeedsArrangements else (response.specialNeeds[i].detail | safe) }}
+                    {# show juror supplied details where available e.g. O-Other #}
+                    {% if response.specialNeeds[i].detail != response.specialNeeds[i].code %}
+                      {{ response.specialNeeds[i].detail | safe }}
+                    {% endif %}
                   </li>
                 {% endfor %}
               </ul>
@@ -77,7 +80,7 @@
         </dd>
       </div>
 
-      {% if method !== "paper" and hasModAccess === false %}
+      {% if method !== "paper" %}
         <div class="govuk-summary-list__row {% if specialNeedsArrangements %}info{% endif %}">
           <dt class="govuk-summary-list__key jd-details-cjs-adjustments-head-width">
             Special arrangements or help the juror needs

@@ -22,7 +22,8 @@
           <div class="govuk-radios--small" data-module="govuk-radios">
             <div class="govuk-radios__item -margin-top-4">
 
-              <input class="govuk-radios__input" id="pool-{{ pool.poolNumber }}" name="poolNumber" type="radio" {{ checkedOption }} value="{{ pool.poolNumber }}" onclick="storeStartDate(this);">              <label class="govuk-label govuk-radios__label" for="pool-{{ pool.poolNumber }}">
+              <input class="govuk-radios__input" id="pool-{{ pool.poolNumber }}" name="poolNumber" type="radio" {{ checkedOption }} value="{{ pool.poolNumber }}">
+                <label class="govuk-label govuk-radios__label" for="pool-{{ pool.poolNumber }}">
                 <span class="govuk-visually-hidden">Select pool {{ pool.poolNumber }}</span>
               </label>
             </div>

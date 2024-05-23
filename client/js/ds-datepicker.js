@@ -169,10 +169,15 @@ class DSDatePicker {
 
   buttonTemplate() {
     return `<button type="button" class="ds_button  ds_button--icon-only  js-calendar-button" aria-expanded="false">
-          <span class="visually-hidden">${this.chooseDate}</span>
-          <svg class="ds_icon" aria-hidden="true" role="img"><use href="${this.imagePath}icons.stack.svg#calendar_today"></use></svg>
+        <span class="visually-hidden">${this.chooseDate}</span>
+        <svg class="ds_icon" aria-hidden="true" role="img">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M0 0h24v24H0z" fill="none"/>
+            <path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/>
+          </svg>
+        </svg>
       </button>
-      `;
+    `;
   }
 
   dialogTemplate(titleId) {
@@ -180,12 +185,22 @@ class DSDatePicker {
         <div class="ds_datepicker__dialog__navbuttons">
             <button type="button" class="ds_button  ds_button--icon-only  js-datepicker-prev-year" aria-label="previous year" data-button="button-datepicker-prevyear">
                 <span class="visually-hidden">${this.hiddenLabels.previousYear}</span>
-                <svg focusable="false" class="ds_icon" aria-hidden="true" role="img"><use href="${this.imagePath}icons.stack.svg#double_chevron_left"></use></svg>
+                <svg focusable="false" class="ds_icon" aria-hidden="true" role="img">
+                  <svg viewBox="0 0 24 24" xml:space="preserve" id="double_chevron_left" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18.4 16.6 13.8 12l4.6-4.6L17 6l-6 6 6 6 1.4-1.4z"/>
+                    <path d="M12.4 16.6 7.8 12l4.6-4.6L11 6l-6 6 6 6 1.4-1.4z"/>
+                  </svg>
+                </svg>
             </button>
 
             <button type="button" class="ds_button  ds_button--icon-only  js-datepicker-prev-month" aria-label="previous month" data-button="button-datepicker-prevmonth">
                 <span class="visually-hidden">${this.hiddenLabels.previousMonth}</span>
-                <svg focusable="false" class="ds_icon" aria-hidden="true" role="img"><use href="${this.imagePath}icons.stack.svg#chevron_left"></use></svg>
+                <svg focusable="false" class="ds_icon" aria-hidden="true" role="img">
+                  <svg viewBox="0 0 24 24" id="chevron_left" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                  </svg>
+                </svg>
             </button>
         </div>
 
@@ -194,12 +209,21 @@ class DSDatePicker {
         <div class="ds_datepicker__dialog__navbuttons">
             <button type="button" class="ds_button  ds_button--icon-only  js-datepicker-next-month" aria-label="next month" data-button="button-datepicker-nextmonth">
                 <span class="visually-hidden">${this.hiddenLabels.nextMonth}</span>
-                <svg focusable="false" class="ds_icon" aria-hidden="true" role="img"><use href="${this.imagePath}icons.stack.svg#chevron_right"></use></svg>
+                <svg focusable="false" class="ds_icon" aria-hidden="true" role="img">
+                  <svg viewBox="0 0 24 24" id="chevron_right" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                  </svg>
+                </svg>
             </button>
 
             <button type="button" class="ds_button  ds_button--icon-only  js-datepicker-next-year" aria-label="next year" data-button="button-datepicker-nextyear">
                 <span class="visually-hidden">${this.hiddenLabels.nextYear}</span>
-                <svg focusable="false" class="ds_icon" aria-hidden="true" role="img"><use href="${this.imagePath}icons.stack.svg#double_chevron_right"></use></svg>
+                <svg focusable="false" class="ds_icon" aria-hidden="true" role="img">
+                  <svg viewBox="0 0 24 24" xml:space="preserve" id="double_chevron_right" xmlns="http://www.w3.org/2000/svg">
+                    <path d="m5.6 7.4 4.6 4.6-4.6 4.6L7 18l6-6-6-6-1.4 1.4z"/>
+                    <path d="m11.6 7.4 4.6 4.6-4.6 4.6L13 18l6-6-6-6-1.4 1.4z"/>
+                  </svg>                </svg>
             </button>
         </div>
       </div>

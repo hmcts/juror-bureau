@@ -88,7 +88,9 @@
         
         {% if errors.items["selectedJurors"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
 
-        <div class="govuk-body"> <span id="total-checked-jurors">{{ totalCheckedJurors }}</span> of <span id="total-jurors-count">{{ totalJurors }}</span> selected</div>
+        <div class="govuk-caption-m">
+          <span id="total-checked-jurors">{{ totalCheckedJurors }}</span> of <span id="total-jurors-count">{{ totalJurors }}</span> selected
+        </div>
 
         {{ modSortableTable({
           id: "jurorOverview",
@@ -103,10 +105,16 @@
 
         {{ govukPagination({
           previous: {
-            href: pageItems.prev
+            href: pageItems.prev,
+            attributes: {
+              id: "pool-overview-page-previous"
+            }
           },
           next: {
-            href: pageItems.next
+            href: pageItems.next,
+            attributes: {
+              id: "pool-overview-page-next"
+            }
           },
           items: pageItems.items
         }) }} 

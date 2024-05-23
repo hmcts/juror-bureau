@@ -18,8 +18,17 @@
 
       <form action="{{ _submitUrl }}" method="post" id="selectCourt">
 
-        <h1 class="govuk-heading-l">Complete service</h1>
+        <h1 class="govuk-heading-l">{{"Complete service for this juror" if juror else "Complete service"}}</h1>
         
+        {% if juror %}
+          <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0">Juror</p>
+          <p class="govuk-body">{{ juror.name }}</p>
+          <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0">Juror number</p>
+          <p class="govuk-body">{{ juror.jurorNumber }}</p>
+          <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0">Last attended on</p>
+          <p class="govuk-body">{{ juror.lastAttendanceDate }}</p>
+        {% endif %}
+
         {% set dateError = undefined %}
         {% if errors.items["jurorCompletionDate"] %}
           {% set dateError = errors.items["jurorCompletionDate"][0].details %}
@@ -60,17 +69,5 @@
 
 {% block body_end %}
   {{ super() }}
-  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
-
-  <script type="text/javascript">
-    $(document).ready(function(){
-
-      const datePickers = []
-        .slice
-        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
-      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
-
-    });
-  </script>
-
+  {% include "includes/datepicker.njk" %}
 {% endblock %}

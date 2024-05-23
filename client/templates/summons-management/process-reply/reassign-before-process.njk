@@ -58,14 +58,15 @@
 {% set radioButtons = (radioButtons.push({divider: 'or'}), radioButtons) %}
 {% set differentCourtHtml %}
   {{ modAutocomplete({
-            label: {
-              text: "Court name or location code",
-              class: "govuk-!-margin-top-4"
-            },
-            name: "courtNameOrLocation",
-            id: "courtNameOrLocation",
-            data: courts,
-            errorMessage: courtNameOrLocationError
+    label: {
+      text: "Court name or location code",
+      class: "govuk-!-margin-top-4"
+    },
+    name: "courtNameOrLocation",
+    id: "courtNameOrLocation",
+    data: courts,
+    errorMessage: courtNameOrLocationError,
+    nonce: nonce
   }) }}
 {% endset %}
 {% set radioButtons = (radioButtons.push(
@@ -118,7 +119,7 @@
   {{ super() }}
 
   <script src="{{ assetPath if assetPath else '/' }}js/accessible-autocomplete.min.js"></script>
-  <script type="application/javascript">
+  <script type="application/javascript" nonce="{{ nonce }}">
     $(document).ready(function() {
       document.getElementById("courtNameOrLocation").value = "{{ userInput.courtNameOrLocation }}";
       document.getElementById("courtNameOrLocation").focus();

@@ -61,7 +61,8 @@
             class: "govuk-input--width-20",
             name: "courtNameOrLocation",
             id: "courtNameOrLocation",
-            data: courts
+            data: courts,
+            nonce: nonce
           }) }}
         {% endif %}
 
@@ -152,15 +153,9 @@
 
 {% block body_end %}
   {{ super() }}
-  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
+  {% include "includes/datepicker.njk" %}
 
-  <script type="text/javascript">
-    const datePickers = []
-      .slice
-      .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
-
-    datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
-
+  <script type="text/javascript" nonce="{{ nonce }}">
     $(document).ready(function() {
       const courtInput = document.getElementById('courtNameOrLocation');
 

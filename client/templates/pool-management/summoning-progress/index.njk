@@ -62,7 +62,8 @@
         name: "courtNameOrLocation",
         id: "courtNameOrLocation",
         data: courts,
-        errorMessage: courtNameError
+        errorMessage: courtNameError,
+        nonce: nonce
       }) }}
     </div>
   </div>
@@ -163,26 +164,31 @@
   {{ super() }}
 
   <script src="{{ assetPath if assetPath else '/' }}js/accessible-autocomplete.min.js"></script>
-  <script type="application/javascript">
+  <script type="application/javascript" nonce="{{ nonce }}">
     $(document).ready(function() {
-      document.getElementById("courtNameOrLocation").value = "{{ query.locCode }}";
-      document.getElementById("courtNameOrLocation").focus();
-      document.getElementById('courtNameOrLocation').click();
-      document.getElementById("courtNameOrLocation").blur();
+      const courtNameInput = document.getElementById('courtNameOrLocation');
 
-      document.getElementById("printButton").addEventListener("click", function () {
+      if (courtNameInput) {
+        courtNameInput.value = '{{ query.locCode }}';
+
+        setTimeout(() => {
+          const selectedCourt = $('#courtNameOrLocation__listbox');
+          if (selectedCourt.length > 0 && selectedCourt[0].children.length > 0) {
+            selectedCourt[0].children[0].click();
+            courtNameInput.blur();
+          }
+        }, 100);
+      }
+
+      $('#printButton').click(function () {
         window.print();
       });
 
-      document.getElementById("refreshButton").addEventListener("click", function () {
+      $('#refreshButton').click(function () {
         window.location.reload();
       });
-    });
-  </script>
 
-  <script type="application/javascript" defer>
-    $(document).ready(function() {
-      let barChartChildren = document.getElementsByClassName("barChart-component");
+      const barChartChildren = document.getElementsByClassName("barChart-component");
       for (element of barChartChildren) {
         if (element.classList.contains("summoning-progress-barChart-bar")) {
           element.style.width = element.getAttribute("data-percentage") + "%";
@@ -191,6 +197,7 @@
           element.style.borderTop = "12px solid #1D70B8";
         }
       }
+
     });
   </script>
 {% endblock %}

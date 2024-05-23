@@ -1,5 +1,8 @@
 {% extends "layouts/default.njk" %}
 
+{% block page_title %}{{ serviceName }} - Statistics{% endblock %}
+{% block page_identifier %}Statistics{% endblock %}
+
 {% set currentApp = "Reports" %}
 {% set nav = "statistics" %}
 
@@ -28,7 +31,7 @@
 
       <h2 class="govuk-heading-m">Wastage and utilisation</h2>
       <ul class="govuk-list">
-        <li><a class="govuk-link" href="#">Daily wastage and utilisation report</a></li>
+        <li><a class="govuk-link" href="{{ url('reports.daily-utilisation.filter.get') }}">Daily wastage and utilisation report</a></li>
         <li><a class="govuk-link" href="#">Prepare monthly wastage and utilisation report</a></li>
         <li><a class="govuk-link" href="#">View monthly wastage and utilisation reports</a></li>
       </ul>

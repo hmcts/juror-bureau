@@ -6,6 +6,7 @@
 {% from "moj/components/banner/macro.njk" import mojBanner %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
+{%- from "moj/components/button-menu/macro.njk" import mojButtonMenu -%}
 
 {% from "./pool-record-doughnut.njk" import poolRecordDoughnut %}
 
@@ -13,6 +14,16 @@
 {% block page_identifier %}Pool Overview for pool {{ poolDetails.poolNumber }}{% endblock %}
 
 {% set currentApp = "Pool management" %}
+
+{% set standardPrintMenuItems = [
+  {
+    text: "Ballot cards",
+    href: url("pool-overview.ballot-cards.report.get",{
+      poolNumber:poolDetails.poolNumber
+    }),
+    classes: "govuk-button--secondary"
+  }
+]%}
 
 {% block beforeContent %}
   {% include "includes/back-link.njk" %}
@@ -67,6 +78,19 @@
         classes: "govuk-button--secondary govuk-!-margin-bottom-0",
         attributes: {
           id: "editPoolButton"
+        }
+      }) }}
+
+      {{ mojButtonMenu({
+        items: [
+          {
+            text: "Jury list",
+            href: url("reports.jury-list.report.get"),
+            classes: "govuk-button--secondary"
+          }
+        ].concat(standardPrintMenuItems) if trial.is_jury_empanelled else standardPrintMenuItems,
+        attributes: {
+          id: 'printButtonMenu'
         }
       }) }}
     </span>
@@ -145,11 +169,29 @@
   {{ super() }}
 
   <script src="{{ assetPath }}js/pool-overview.js"></script>
-  <script>
-    const goHref = (href) => {
-      document.getElementById('navigate').value = 'previous';
-      document.getElementById('poolDetailsForm').action = href;
-      document.getElementById('poolDetailsForm').submit();
+  <script nonce="{{ nonce }}">
+    $('ready', function() {
+      $('#pool-overview-previous-page').click(function(e) { goHref(this.href)(e) });
+      $('#pool-overview-next-page').click(function(e) { goHref(this.href)(e) });
+      $('a[id^="pool-overview-page-"').each(function() {
+        $(this).click(goHref(this.href));
+      });
+    });
+
+    function goHref(href) {
+      return (e) => {
+        e.preventDefault();
+        document.getElementById('navigate').value = 'previous';
+        document.getElementById('poolDetailsForm').action = href;
+        document.getElementById('poolDetailsForm').submit();
+      }
     }
+
+    new MOJFrontend.ButtonMenu({
+      container: $('#printButtonMenu'),
+      mq: '(min-width: 200em)',
+      buttonText: 'Print',
+      buttonClasses: 'govuk-!-margin-bottom-1 govuk-button--secondary moj-button-menu__toggle-button--secondary',
+    });
   </script>
 {% endblock %}

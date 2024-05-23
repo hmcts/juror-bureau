@@ -53,7 +53,7 @@
             {{ expense.attendance_date | dateFilter("YYYY-MM-DD", "ddd DD MMM YYYY") }}
           </td>
           <td class="govuk-table__cell">
-            <a href="#">
+            <a href="{{ url('reports.financial-audit.get', { auditNumber: expense.financial_audit_number }) }}" target="_blank">
               {{ expense.financial_audit_number }}
             </a>
           </td>

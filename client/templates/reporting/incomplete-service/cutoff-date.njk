@@ -5,7 +5,7 @@
 {% from "custom-components/date-picker/macro.njk" import datePicker %}
 {% from "includes/csrf.njk" import csrfProtection %}
 
-{% block page_title %}Reports - Postponed list{% endblock %}
+{% block page_title %}{{ serviceName }} - Reports - Postponed list{% endblock %}
 {% block page_identifier %}Reports - Postponed list{% endblock %}
 
 {% set currentApp = "Reports" %}
@@ -85,14 +85,5 @@
 
 {% block body_end %}
   {{ super() }}
-
-  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
-    <script type="text/javascript">
-    $(document).ready(function () {
-      const datePickers = []
-        .slice
-        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
-      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
-    });
-  </script>
+  {% include "includes/datepicker.njk" %}
 {% endblock %}

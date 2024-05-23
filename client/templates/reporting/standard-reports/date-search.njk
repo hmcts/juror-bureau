@@ -6,11 +6,8 @@
 {% from "custom-components/date-picker/macro.njk" import datePicker %}
 {% from "includes/csrf.njk" import csrfProtection %}
 
-{% block page_title %}
-  Reports
-{% endblock %}
-
-{% block page_identifier %}Reports - {{ title }}{% endblock %}
+{% block page_title %}{{ serviceName }} - Reports - {{ title }} - select dates{% endblock %}
+{% block page_identifier %}Reports - {{ title }} - select dates{% endblock %}
 
 {% set currentApp = "Reports" %}
 
@@ -30,26 +27,12 @@
   <h1 class="govuk-heading-l">{{ title }}</h1>
 
   <form action="{{ reportUrl }}" method="POST" id="dateSearchForm">
-    {{ datePicker({
-      id: "dateFrom",
-      label: {
-        text: "Date from"
-      },
-      hint: "Use dd/mm/yyyy format.",
-      dateValue: tmpBody.dateFrom,
-      dateError: dateFromError
-    }) }}
-
-    {{ datePicker({
-      id: "dateTo",
-      label: {
-        text: "Date to"
-      },
-      hint: "Use dd/mm/yyyy format.",
-      dateMin: tmpBody.dateFrom,
-      dateValue: tmpBody.dateTo,
-      dateError: dateToError
-    }) }}
+    
+    {% if isFixedDateRange %}
+      {% include "./date-search/fixed-range.njk" %}
+    {% else %}
+      {% include "./date-search/from-to.njk" %}
+    {% endif %}
 
     {{ csrfProtection(csrftoken) }}
 
@@ -71,14 +54,5 @@
 
 {% block body_end %}
   {{ super() }}
-
-  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
-  <script type="text/javascript">
-    $(document).ready(function () {
-      const datePickers = []
-        .slice
-        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
-      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
-    });
-  </script>
+  {% include "includes/datepicker.njk" %}
 {% endblock %}

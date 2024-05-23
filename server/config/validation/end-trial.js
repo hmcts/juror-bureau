@@ -6,10 +6,10 @@
     , formatRegex = /^([0-9][0-9])(\/)([0-9][0-9])(\/)\d{4}$/
     , charRegex = /[^0-9\/]+/;
 
-  module.exports = () => {
+  module.exports = (trialStartDate) => {
     return {
       endTrialDate: {
-        endTrialDatePicker: {},
+        endTrialDatePicker: {trialStartDate},
       },
       endTrial: {
         presence: {
@@ -51,6 +51,13 @@
         details: 'Enter a real date',
       }];
     };
+
+    if (moment(attributes.endTrialDate, 'DD/MM/YYYY').isBefore(options.trialStartDate)) {
+      return [{
+        summary: 'Trial end date cannot be before start date',
+        details: 'Trial end date cannot be before start date',
+      }];
+    }
 
     return null;
   };

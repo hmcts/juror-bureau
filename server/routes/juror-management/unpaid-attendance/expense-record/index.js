@@ -5,6 +5,7 @@
   const { getAddSmartcardSpend, postAddSmartcardSpend } = require('./add-smartcard-spend.controller');
   const auth = require('../../../../components/auth');
   const { getExpenseCountDAO } = require('../../../../objects/expense-record');
+  const { postDraftAudit, getDraftAudit } = require('../../../reporting/audit.controller');
 
   module.exports = function(app) {
 
@@ -33,6 +34,18 @@
       'juror-management.unpaid-attendance.expense-record.add-smartcard-spend.post',
       auth.verify,
       postAddSmartcardSpend(app),
+    );
+
+
+    app.post('/juror-management/unpaid-attendance/draft-audit/:jurorNumber/:locCode',
+      'reports.draft-audit.post',
+      auth.verify,
+      postDraftAudit(app),
+    );
+    app.get('/juror-management/unpaid-attendance/draft-audit/:jurorNumber/:locCode/draft',
+      'reports.draft-audit.get',
+      auth.verify,
+      getDraftAudit(app),
     );
 
   };

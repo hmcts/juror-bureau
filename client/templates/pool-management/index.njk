@@ -139,7 +139,7 @@
   {{ super() }}
 
   <script src="{{ assetPath if assetPath else '/' }}js/accessible-autocomplete.min.js"></script>
-  <script type="application/javascript">
+  <script type="application/javascript" nonce="{{ nonce }}">
     $(document).ready(function() {
       const el = $('#courtsList')
 

@@ -8,6 +8,9 @@
           normal: './client/assets/fonts/OpenSans-Regular.ttf',
           bold: './client/assets/fonts/OpenSans-Bold.ttf',
         },
+        LibreBarcode: {
+          normal: './client/assets/fonts/LibreBarcode39-Regular.ttf',
+        },
       },
       logo: './client/assets/images/hmcts-logo.png',
       defaultStyles: {
@@ -43,14 +46,29 @@
           bold: true,
           marginTop: 10,
         },
+        sectionHeading: {
+          fontSize: 10,
+          bold: true,
+        },
         footer: {
           fontSize: 10,
         },
         label: {
           bold: true,
         },
+        totalLabel: {
+          bold: true,
+          paddingBottom: 0,
+        },
+        totalBody: {
+          paddingBottom: 0,
+        },
         body: {
-          fontSize: 7,
+          fontSize: 10,
+        },
+        barcode: {
+          font: 'LibreBarcode',
+          fontSize: 30,
         },
       },
     };

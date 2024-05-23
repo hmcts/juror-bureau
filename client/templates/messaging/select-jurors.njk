@@ -44,16 +44,6 @@
 
 {% block body_end %}
   {{ super() }}
-
+  {% include "includes/datepicker.njk" %}
   <script src="{{ assetPath }}js/messaging-juror-select.js"></script>
-
-  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
-  <script type="text/javascript">
-    $(document).ready(function () {
-      const datePickers = []
-        .slice
-        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
-      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
-    });
-  </script>
 {% endblock %}

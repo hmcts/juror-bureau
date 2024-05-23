@@ -1,12 +1,10 @@
 ;(function(){
   'use strict';
 
-  const validate = require('validate.js');
-
   require('./custom-validation');
   require('./date-picker');
 
-  module.exports.deferralReasonAndDecision = function(minDate, maxDate) {
+  module.exports.deferralReasonAndDecision = function(body, minDate, maxDate) {
     return {
       deferralReason: {
         presence: {
@@ -26,47 +24,31 @@
           },
         },
       },
-      deferralDateSelection: {
-        updateJurorDeferralSelectDate: {},
-      },
-      deferralDate: {
-        updateJurorDeferralEnterDate: {},
-        deferralDatePicker: {
-          minDate: minDate,
-          maxDate: maxDate,
-        },
+      deferralDate: () => {
+        if (body.deferralDecision === 'REFUSE') {
+          return {};
+        }
+
+        if (body.deferralDecision === 'GRANT' && body.deferralDate === '') {
+          return {
+            presence: {
+              allowEmpty: false,
+              message: {
+                summary: 'Enter a date to defer to',
+                details: 'Enter a date to defer to',
+              },
+            },
+          };
+        }
+
+        return {
+          deferralDatePicker: {
+            minDate: minDate,
+            maxDate: maxDate,
+          },
+        };
       },
     };
-  };
-
-  validate.validators.updateJurorDeferralSelectDate = function(value, options, key, attributes) {
-    if (!attributes.deferralDecision || attributes.deferralDecision === 'REFUSE') {
-      return null;
-    }
-
-    if (!attributes.deferralDateSelection || attributes.deferralDateSelection === '') {
-      return {
-        summary: 'Select a date to defer to',
-        details: 'Select a date to defer to',
-      };
-    }
-
-    return null;
-  };
-
-  validate.validators.updateJurorDeferralEnterDate = function(value, options, key, attributes) {
-    if (attributes.deferralDecision === 'REFUSE') {
-      return null;
-    }
-
-    if (attributes.deferralDateSelection === 'otherDate' && attributes.deferralDate === '') {
-      return {
-        summary: 'Enter a date to defer to',
-        details: 'Enter a date to defer to',
-      };
-    }
-
-    return null;
   };
 
   module.exports.deferralDateAndReason = (minDate, maxDate) => {

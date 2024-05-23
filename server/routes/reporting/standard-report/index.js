@@ -36,7 +36,14 @@
     app.get(`/reporting/${key}/report/:filter/print`,
       `reports.${key}.report.print`,
       auth.verify,
-      standardReportGet(app, key, true));
+      standardReportGet(app, key, true, false));
+
+    if (reportKeys(app)[key].exportLabel) {
+      app.get(`/reporting/${key}/report/:filter/export`,
+        `reports.${key}.report.export`,
+        auth.verify,
+        standardReportGet(app, key, false, true));
+    }
   };
 
   // Add standard report keys to this object, the function will populate them
@@ -48,9 +55,21 @@
     standardReportRoutes(app, 'postponed-date');
     require('../incomplete-service')(app);
     standardReportRoutes(app, 'incomplete-service');
-    standardReportRoutes(app, 'pool-status');
+    standardReportRoutes(app, 'current-pool-status');
     standardReportRoutes(app, 'panel-summary');
     standardReportRoutes(app, 'bulk-print-audit');
+    standardReportRoutes(app, 'panel-detail');
+    standardReportRoutes(app, 'jury-list');
+    standardReportRoutes(app, 'pool-status');
+    // require('../pool-status')(app);
+    standardReportRoutes(app, 'reasonable-adjustments');
+    require('../persons-attending')(app);
+    standardReportRoutes(app, 'persons-attending-summary');
+    standardReportRoutes(app, 'persons-attending-detail');
+    require('../daily-utilisation')(app);
+    standardReportRoutes(app, 'daily-utilisation');
+    standardReportRoutes(app, 'daily-utilisation-jurors');
+    standardReportRoutes(app, 'unconfirmed-attendance');
   };
 
 })();

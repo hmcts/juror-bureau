@@ -84,7 +84,7 @@
         {% endif %}
 
         <div class="govuk-caption-m">
-          <span id="selectedJurorsCount">{{ selectedJurors }}</span> of {{ totalCheckableJurors }} selected
+          <span id="selectedJurorsCount">{{ selectedJurors }}</span> of <span id="totalCheckableJurors">{{ totalCheckableJurors }}</span> selected
         </div>
       {% else %}
         {{ csrfProtection(csrftoken) }}
@@ -127,7 +127,7 @@
   <script src="{{ assetPath if assetPath else '/' }}js/document-letters.js"></script>
 
   {% if authentication.owner !== "400" %}
-    <script>
+    <script nonce="{{ nonce }}">
       $('loaded', function() {
         $('#print-documents').click(function(event) {
           var selectedJurorsCount = $('#selectedJurorsCount').text();

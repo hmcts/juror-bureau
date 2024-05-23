@@ -85,7 +85,7 @@
   },
   {
     text: "Panel list (detailed)",
-    href: "#",
+    href: url("reports.panel-detail.report.get", {'filter': trial.trial_number}),
     classes: "govuk-button--secondary"
   },
   {
@@ -178,7 +178,7 @@
               items: [
                 {
                   text: "Jury list",
-                  href: "#",
+                  href: url("reports.jury-list.report.get", {'filter': trial.trial_number}),
                   classes: "govuk-button--secondary"
                 }
               ].concat(standardPrintMenuItems) if trial.is_jury_empanelled else standardPrintMenuItems,
@@ -212,7 +212,7 @@
 
 {% block body_end %}
   {{ super() }}  
-  <script>
+  <script nonce="{{ nonce }}">
     // button menu in reply details page header
     new MOJFrontend.ButtonMenu({
       container: $('#printButtonMenu'),

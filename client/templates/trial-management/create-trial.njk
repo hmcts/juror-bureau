@@ -93,7 +93,8 @@
       name: court.courtLocationName,
       id: court.courtLocationName,
       data: court.courtrooms,
-      errorMessage: courtroomError
+      errorMessage: courtroomError,
+      nonce: nonce
     }) }}
 
   {% endset %}
@@ -194,7 +195,8 @@
           name: "judge",
           id: "judge",
           data: judges,
-          errorMessage: judgeError
+          errorMessage: judgeError,
+          nonce: nonce
         }) }}
 
         {% if courts|length > 1 %}
@@ -220,7 +222,8 @@
             name: "courtroom",
             id: "courtroom",
             data: courts[0].courtrooms,
-            errorMessage: courtroomError
+            errorMessage: courtroomError,
+            nonce: nonce
           }) }}
         {% endif %}
 
@@ -261,18 +264,10 @@
 
 {% block body_end %}
   {{ super() }}
-  <script type="text/javascript" src="{{ assetPath }}js/ds-datepicker.js"></script>
-  <script type="text/javascript">
-    $(document).ready(function () {
-      const datePickers = []
-        .slice
-        .call(document.querySelectorAll('[data-module="ds-datepicker"]'));
-      datePickers.forEach(datePicker => new DSDatePicker(datePicker, {imagePath: '{{ assetPath }}assets/images/icons/'}).init());
-    });
-  </script>
+  {% include "includes/datepicker.njk" %}
 
   {# Script to add default values to autocomplete for courtroom and judge #}
-  <script>
+  <script nonce="{{ nonce }}">
     const isElementLoaded = async selector => {
       while ( document.querySelector(selector) === null) {
         await new Promise( resolve =>  requestAnimationFrame(resolve) )
