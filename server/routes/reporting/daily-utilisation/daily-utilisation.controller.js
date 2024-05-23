@@ -8,9 +8,10 @@
 
     return res.render('reporting/daily-utilisation/uncompleted-jurors', {
       incompleteServiceReportUrl: app.namedRoutes.build('reports.incomplete-service.filter.get'),
-      continueUrl: app.namedRoutes.build('reports.daily-utilisation.report.get', {filter})
+      continueUrl: app.namedRoutes.build('reports.daily-utilisation.report.get', { filter })
         + `?fromDate=${fromDate}&toDate=${toDate}`,
       cancelUrl: app.namedRoutes.build('reports.statistics.get'),
+      title: 'Daily wastage and utilisation report - Uncompleted jurors warning',
     });
   };
 })();

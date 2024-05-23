@@ -170,7 +170,7 @@
             });
           }
 
-          if (header.id === 'pool_number' || header.id === 'pool_number_by_jp') {
+          if (header.id === 'pool_number' || header.id === 'pool_number_by_jp' || header.id === 'appearance_pool_number') {
             return ({
               html: `<a href=${
                 app.namedRoutes.build('pool-overview.get', {poolNumber: output})
@@ -320,16 +320,23 @@
               }
             }
 
+            const groupHeaderTransformer = () => {
+              if (reportType.grouped.headings && reportType.grouped.headings.transformer) {
+                return reportType.grouped.headings.transformer(header);
+              }
+              return header;
+            }
+
             const headRow = (() => {
               if (!reportType.grouped.groupHeader) return [];
 
               return link ? [{
-                html: `<a href=${link}>${(reportType.grouped.headings.prefix || '') + header}</a>`,
+                html: `<a href=${link}>${(reportType.grouped.headings.prefix || '') + groupHeaderTransformer()}</a>`,
                 colspan: group[0].length,
                 classes: 'govuk-!-padding-top-7 govuk-link govuk-body-l govuk-!-font-weight-bold',
               }]
               : [{
-                text: capitalizeFully((reportType.grouped.headings.prefix || '') + header),
+                html: capitalizeFully((reportType.grouped.headings.prefix || '') + groupHeaderTransformer()),
                 colspan: group[0].length,
                 classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
               }];
