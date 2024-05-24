@@ -223,8 +223,14 @@
 
         return row;
       });
-      if (reportType.bespokeReport && reportType.bespokeReport.insertFinalRow) {
-        rows.push(reportType.bespokeReport.insertFinalRow(tableData))
+      if (reportType.bespokeReport && reportType.bespokeReport.insertRows) {
+        Object.keys(reportType.bespokeReport.insertRows).map((key) => {
+          if (key === 'last') {
+            rows.push(reportType.bespokeReport.insertRows[key](tableData))
+          } else {
+            rows.splice(key, 0, reportType.bespokeReport.insertRows[key](tableData));
+          }
+        });
       }
       return rows;
     };
@@ -372,15 +378,6 @@
         ? reportType.bespokeReport.dao(req)
         : standardReportDAO.post(req, app, config));
 
-      // tableData.data['BACS and cheque approvals'].push({
-      //   "createdOnDate": "2024-05-16",
-      //   "totalApprovedSum": 0.00
-      // });
-
-      tableData.data['BACS and cheque approvals']['2024-05-16'] = [];
-
-      console.log(tableData.data);
-
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
       if (isExport) return reportExport(app, req, res, reportKey, { headings, tableData }) ;
 
@@ -398,7 +395,13 @@
       }
 
       if (reportType.bespokeReport && reportType.bespokeReport.insertTables) {
-        tables.push(...reportType.bespokeReport.insertTables(tableData))
+        Object.keys(reportType.bespokeReport.insertTables).map((key) => {
+          if (key === 'last') {
+            tables.push(...reportType.bespokeReport.insertTables[key](tableData))
+          } else {
+            tables.splice(key, 0, ...reportType.bespokeReport.insertTables[key](tableData));
+          }
+        });
       }
 
       const pageHeadings = reportType.headings.map(heading => constructPageHeading(heading, headings));

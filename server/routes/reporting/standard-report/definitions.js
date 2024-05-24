@@ -3,7 +3,6 @@
 
   const { isCourtUser } = require('../../../components/auth/user-type');
   const { dateFilter, toMoney } = require('../../../components/filters');
-  const { monthlyUtilisationDAO } = require('../../../objects/reports');
   const { dailyUtilisationDAO, dailyUtilisationJurorsDAO, viewMonthlyUtilisationDAO, generateMonthlyUtilisationDAO } = require('../../../objects/reports');
 
   // type IReportKey = {[key:string]: {
@@ -536,225 +535,229 @@
             'mod-!-width-three-twentyfifths',
             'mod-!-width-three-twentyfifths'
           ],
-          insertFinalRow: (data, isPrint = false) => {
-            let total = 0;
-            if (!data.length) {
-              return [];
-            }
-
-            data.forEach((juror) => {
-              total += juror.totalApprovedSum;
-            });
-            return isPrint ? [
-              {
-                text: 'Daily sub total', colSpan: 8, bold: true, fillColor: '#F3F2F1',
-              },
-              {}, {}, {}, {}, {}, {}, {},
-              {
-                text: toMoney(total), bold: true, fillColor: '#F3F2F1',
-              },
-            ] : [
-              {
-                text: 'Daily sub total',
-                colspan: 8,
-                classes: 'govuk-!-padding-left-2 govuk-!-font-weight-bold mod-highlight-table-data__grey',
-              },
-              {
-                text: toMoney(total),
-                classes: 'govuk-!-padding-right-2 govuk-!-font-weight-bold mod-highlight-table-data__grey',
-                format: 'numeric',
-              },
-            ];
-          },
-          printInsertFinalRow: true,
-          insertTables: (tableData, isPrint = false) => {
-            let overallLossOfEarningsTotal = 0;
-            let overallFoodAndDrinkTotal = 0;
-            let overallSmartcardTotal = 0;
-            let overallTravelTotal = 0;
-            let overallTotal = 0;
-
-            let rows = [];
-
-            for (const [type, date] of Object.entries(tableData.data)) {
-              let lossOfEarningsTotal = 0;
-              let foodAndDrinkTotal = 0;
-              let smartcardTotal = 0;
-              let travelTotal = 0;
+          insertRows: {
+            last: (data, isPrint = false) => {
               let total = 0;
-
-              for (const [day, jurors] of Object.entries(date)) {
-                jurors.forEach((juror) => {
-                  lossOfEarningsTotal += juror.totalLossOfEarningsApprovedSum;
-                  foodAndDrinkTotal += juror.totalSubsistenceApprovedSum;
-                  smartcardTotal += juror.totalSmartcardApprovedSum;
-                  travelTotal += juror.totalTravelApprovedSum;
-                  total += juror.totalApprovedSum;
-                });
+              if (!data.length) {
+                return [];
               }
 
-              overallLossOfEarningsTotal += lossOfEarningsTotal;
-              overallFoodAndDrinkTotal += foodAndDrinkTotal;
-              overallSmartcardTotal += smartcardTotal;
-              overallTravelTotal += travelTotal;
-              overallTotal += total;
-
-              if (!isPrint) {
-                rows.push([
-                  {
-                    text: type,
-                    colspan: 4,
-                    classes: 'govuk-!-padding-left-2 govuk-!-font-weight-bold mod-highlight-table-data__grey',
-                  },
-                  {
-                    text: toMoney(lossOfEarningsTotal),
-                    classes: 'govuk-!-font-weight-bold mod-highlight-table-data__grey',
-                    format: 'numeric',
-                  },
-                  {
-                    text: toMoney(foodAndDrinkTotal),
-                    classes: 'govuk-!-font-weight-bold mod-highlight-table-data__grey',
-                    format: 'numeric',
-                  },
-                  {
-                    text: toMoney(smartcardTotal),
-                    classes: 'govuk-!-font-weight-bold mod-highlight-table-data__grey',
-                    format: 'numeric',
-                  },
-                  {
-                    text: toMoney(travelTotal),
-                    classes: 'govuk-!-font-weight-bold mod-highlight-table-data__grey',
-                    format: 'numeric',
-                  },
-                  {
-                    text: toMoney(total),
-                    classes: 'govuk-!-padding-right-2 govuk-!-font-weight-bold mod-highlight-table-data__grey',
-                    format: 'numeric',
-                  },
-                ]);
-              } else {
-                rows.push([
-                  {
-                    text: type,
-                    colspan: 4,
-                    bold: true, fillColor: '#F3F2F1',
-                  },
-                  {}, {}, {},
-                  {
-                    text: toMoney(lossOfEarningsTotal),
-                    bold: true, fillColor: '#F3F2F1',
-                    alignment: 'right',
-                  },
-                  {
-                    text: toMoney(foodAndDrinkTotal),
-                    bold: true, fillColor: '#F3F2F1',
-                    alignment: 'right',
-                  },
-                  {
-                    text: toMoney(smartcardTotal),
-                    bold: true, fillColor: '#F3F2F1',
-                    alignment: 'right',
-                  },
-                  {
-                    text: toMoney(travelTotal),
-                    bold: true, fillColor: '#F3F2F1',
-                    alignment: 'right',
-                  },
-                  {
-                    text: toMoney(total),
-                    bold: true, fillColor: '#F3F2F1',
-                    alignment: 'right',
-                  },
-                ]);
-              }
-            }
-
-            if (rows.length) {
-              if (!isPrint) {
-                rows.push([
-                  {
-                    text: 'Overall total',
-                    colspan: 4,
-                    classes: 'govuk-!-padding-left-2 govuk-!-width-one-half govuk-!-font-weight-bold mod-highlight-table-data__blue',
-                  },
-                  {
-                    text: toMoney(overallLossOfEarningsTotal),
-                    classes: 'mod-!-width-one-eighth govuk-!-font-weight-bold mod-highlight-table-data__blue',
-                    format: 'numeric',
-                  },
-                  {
-                    text: toMoney(overallFoodAndDrinkTotal),
-                    classes: 'mod-!-width-one-eighth govuk-!-font-weight-bold mod-highlight-table-data__blue',
-                    format: 'numeric',
-                  },
-                  {
-                    text: toMoney(overallSmartcardTotal),
-                    classes: 'mod-!-width-three-twentyfifths govuk-!-font-weight-bold mod-highlight-table-data__blue',
-                    format: 'numeric',
-                  },
-                  {
-                    text: toMoney(overallTravelTotal),
-                    classes: 'mod-!-width-three-twentyfifths govuk-!-font-weight-bold mod-highlight-table-data__blue',
-                    format: 'numeric',
-                  },
-                  {
-                    text: toMoney(overallTotal),
-                    classes: 'mod-!-width-three-twentyfifths govuk-!-padding-right-2 govuk-!-font-weight-bold mod-highlight-table-data__blue',
-                    format: 'numeric',
-                  },
-                ]);
-              } else {
-                rows.push([
-                  {
-                    text: 'Overall total',
-                    colspan: 4,
-                    classes: 'govuk-!-padding-left-2 govuk-!-width-one-half govuk-!-font-weight-bold mod-highlight-table-data__blue',
-                    bold: true, fillColor: '#0b0c0c', color: '#ffffff',
-                  }, {}, {}, {},
-                  {
-                    text: toMoney(overallLossOfEarningsTotal),
-                    bold: true, fillColor: '#0b0c0c', color: '#ffffff',
-                    alignment: 'right',
-                  },
-                  {
-                    text: toMoney(overallFoodAndDrinkTotal),
-                    bold: true, fillColor: '#0b0c0c', color: '#ffffff',
-                    alignment: 'right',
-                  },
-                  {
-                    text: toMoney(overallSmartcardTotal),
-                    bold: true, fillColor: '#0b0c0c', color: '#ffffff',
-                    alignment: 'right',
-                  },
-                  {
-                    text: toMoney(overallTravelTotal),
-                    bold: true, fillColor: '#0b0c0c', color: '#ffffff',
-                    alignment: 'right',
-                  },
-                  {
-                    text: toMoney(overallTotal),
-                    bold: true, fillColor: '#0b0c0c', color: '#ffffff',
-                    alignment: 'right',
-                  },
-                ]);
-              }
+              data.forEach((juror) => {
+                total += juror.totalApprovedSum;
+              });
               return isPrint ? [
                 {
-                  body: [[
-                    {text: 'Totals approved for this period', style: 'largeSectionHeading'},
-                  ]],
-                  widths:['100%'],
-                  layout: { hLineColor: '#0b0c0c' },
-                  margin: [0, 10, 0, 0],
+                  text: 'Daily sub total', colSpan: 8, bold: true, fillColor: '#F3F2F1',
+                },
+                {}, {}, {}, {}, {}, {}, {},
+                {
+                  text: toMoney(total), bold: true, fillColor: '#F3F2F1',
+                },
+              ] : [
+                {
+                  text: 'Daily sub total',
+                  colspan: 8,
+                  classes: 'govuk-!-padding-left-2 govuk-!-font-weight-bold mod-highlight-table-data__grey',
                 },
                 {
-                  body: rows,
-                  widths:['50%', '0%', '0%', '0%', '12.5%', '12.5%', '8.33333333333%', '8.33333333333%', '8.33333333333%'],
-                  margin: [0, 0, 0, 0],
+                  text: toMoney(total),
+                  classes: 'govuk-!-padding-right-2 govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                  format: 'numeric',
                 },
-              ] : [{title: 'Totals approved for this period', headers: [], rows: rows}];
-            }
-            return [];
+              ];
+            },
+          },
+          printInsertRows: true,
+          insertTables: {
+            last: (tableData, isPrint = false) => {
+              let overallLossOfEarningsTotal = 0;
+              let overallFoodAndDrinkTotal = 0;
+              let overallSmartcardTotal = 0;
+              let overallTravelTotal = 0;
+              let overallTotal = 0;
+
+              let rows = [];
+
+              for (const [type, date] of Object.entries(tableData.data)) {
+                let lossOfEarningsTotal = 0;
+                let foodAndDrinkTotal = 0;
+                let smartcardTotal = 0;
+                let travelTotal = 0;
+                let total = 0;
+
+                for (const [day, jurors] of Object.entries(date)) {
+                  jurors.forEach((juror) => {
+                    lossOfEarningsTotal += juror.totalLossOfEarningsApprovedSum;
+                    foodAndDrinkTotal += juror.totalSubsistenceApprovedSum;
+                    smartcardTotal += juror.totalSmartcardApprovedSum;
+                    travelTotal += juror.totalTravelApprovedSum;
+                    total += juror.totalApprovedSum;
+                  });
+                }
+
+                overallLossOfEarningsTotal += lossOfEarningsTotal;
+                overallFoodAndDrinkTotal += foodAndDrinkTotal;
+                overallSmartcardTotal += smartcardTotal;
+                overallTravelTotal += travelTotal;
+                overallTotal += total;
+
+                if (!isPrint) {
+                  rows.push([
+                    {
+                      text: type,
+                      colspan: 4,
+                      classes: 'govuk-!-padding-left-2 govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                    },
+                    {
+                      text: toMoney(lossOfEarningsTotal),
+                      classes: 'govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                      format: 'numeric',
+                    },
+                    {
+                      text: toMoney(foodAndDrinkTotal),
+                      classes: 'govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                      format: 'numeric',
+                    },
+                    {
+                      text: toMoney(smartcardTotal),
+                      classes: 'govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                      format: 'numeric',
+                    },
+                    {
+                      text: toMoney(travelTotal),
+                      classes: 'govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                      format: 'numeric',
+                    },
+                    {
+                      text: toMoney(total),
+                      classes: 'govuk-!-padding-right-2 govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                      format: 'numeric',
+                    },
+                  ]);
+                } else {
+                  rows.push([
+                    {
+                      text: type,
+                      colspan: 4,
+                      bold: true, fillColor: '#F3F2F1',
+                    },
+                    {}, {}, {},
+                    {
+                      text: toMoney(lossOfEarningsTotal),
+                      bold: true, fillColor: '#F3F2F1',
+                      alignment: 'right',
+                    },
+                    {
+                      text: toMoney(foodAndDrinkTotal),
+                      bold: true, fillColor: '#F3F2F1',
+                      alignment: 'right',
+                    },
+                    {
+                      text: toMoney(smartcardTotal),
+                      bold: true, fillColor: '#F3F2F1',
+                      alignment: 'right',
+                    },
+                    {
+                      text: toMoney(travelTotal),
+                      bold: true, fillColor: '#F3F2F1',
+                      alignment: 'right',
+                    },
+                    {
+                      text: toMoney(total),
+                      bold: true, fillColor: '#F3F2F1',
+                      alignment: 'right',
+                    },
+                  ]);
+                }
+              }
+
+              if (rows.length) {
+                if (!isPrint) {
+                  rows.push([
+                    {
+                      text: 'Overall total',
+                      colspan: 4,
+                      classes: 'govuk-!-padding-left-2 govuk-!-width-one-half govuk-!-font-weight-bold mod-highlight-table-data__blue',
+                    },
+                    {
+                      text: toMoney(overallLossOfEarningsTotal),
+                      classes: 'mod-!-width-one-eighth govuk-!-font-weight-bold mod-highlight-table-data__blue',
+                      format: 'numeric',
+                    },
+                    {
+                      text: toMoney(overallFoodAndDrinkTotal),
+                      classes: 'mod-!-width-one-eighth govuk-!-font-weight-bold mod-highlight-table-data__blue',
+                      format: 'numeric',
+                    },
+                    {
+                      text: toMoney(overallSmartcardTotal),
+                      classes: 'mod-!-width-three-twentyfifths govuk-!-font-weight-bold mod-highlight-table-data__blue',
+                      format: 'numeric',
+                    },
+                    {
+                      text: toMoney(overallTravelTotal),
+                      classes: 'mod-!-width-three-twentyfifths govuk-!-font-weight-bold mod-highlight-table-data__blue',
+                      format: 'numeric',
+                    },
+                    {
+                      text: toMoney(overallTotal),
+                      classes: 'mod-!-width-three-twentyfifths govuk-!-padding-right-2 govuk-!-font-weight-bold mod-highlight-table-data__blue',
+                      format: 'numeric',
+                    },
+                  ]);
+                } else {
+                  rows.push([
+                    {
+                      text: 'Overall total',
+                      colspan: 4,
+                      classes: 'govuk-!-padding-left-2 govuk-!-width-one-half govuk-!-font-weight-bold mod-highlight-table-data__blue',
+                      bold: true, fillColor: '#0b0c0c', color: '#ffffff',
+                    }, {}, {}, {},
+                    {
+                      text: toMoney(overallLossOfEarningsTotal),
+                      bold: true, fillColor: '#0b0c0c', color: '#ffffff',
+                      alignment: 'right',
+                    },
+                    {
+                      text: toMoney(overallFoodAndDrinkTotal),
+                      bold: true, fillColor: '#0b0c0c', color: '#ffffff',
+                      alignment: 'right',
+                    },
+                    {
+                      text: toMoney(overallSmartcardTotal),
+                      bold: true, fillColor: '#0b0c0c', color: '#ffffff',
+                      alignment: 'right',
+                    },
+                    {
+                      text: toMoney(overallTravelTotal),
+                      bold: true, fillColor: '#0b0c0c', color: '#ffffff',
+                      alignment: 'right',
+                    },
+                    {
+                      text: toMoney(overallTotal),
+                      bold: true, fillColor: '#0b0c0c', color: '#ffffff',
+                      alignment: 'right',
+                    },
+                  ]);
+                }
+                return isPrint ? [
+                  {
+                    body: [[
+                      {text: 'Totals approved for this period', style: 'largeSectionHeading'},
+                    ]],
+                    widths:['100%'],
+                    layout: { hLineColor: '#0b0c0c' },
+                    margin: [0, 10, 0, 0],
+                  },
+                  {
+                    body: rows,
+                    widths:['50%', '0%', '0%', '0%', '12.5%', '12.5%', '8.33333333333%', '8.33333333333%', '8.33333333333%'],
+                    margin: [0, 0, 0, 0],
+                  },
+                ] : [{title: 'Totals approved for this period', headers: [], rows: rows}];
+              }
+              return [];
+            },
           },
           printInsertTables: true,
         },
