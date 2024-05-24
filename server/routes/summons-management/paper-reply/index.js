@@ -8,7 +8,6 @@
     app.get('/summons-replies/response/:id/submit-paper/index',
       'paper-reply.index.get',
       auth.verify,
-      controller.checkForResponse(app),
       controller.getIndex(app));
     app.post('/summons-replies/response/:id/submit-paper/index',
       'paper-reply.index.post',
