@@ -42,12 +42,16 @@
           bold: true,
         },
         groupHeading: {
-          fontSize: 10,
+          fontSize: 12,
           bold: true,
           marginTop: 10,
         },
         sectionHeading: {
-          fontSize: 10,
+          fontSize: 12,
+          bold: true,
+        },
+        largeSectionHeading: {
+          fontSize: 14,
           bold: true,
         },
         footer: {

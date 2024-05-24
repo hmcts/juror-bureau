@@ -93,7 +93,7 @@
   {% if bespokeReportFile %}
     {% include bespokeReportFile %}
   {% else %}
-    {% if tableRows.length === 0 %}
+    {% if tables.length === 0 %}
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
           {% if searchType === "dateRange" %}
@@ -106,19 +106,26 @@
         </div>
       </div>
     {% else %}
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-          {{ govukTable({
-            attributes: {
-              'data-module': 'moj-sortable-table'
-            } if not unsortable and not grouped,
-            caption: "Report data",
-            captionClasses: "govuk-visually-hidden",
-            head: tableHeaders,
-            rows: tableRows
-          }) }}
+      {% for table in tables %}
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            {% if table.title %}
+              <div class="mod-juror-record__title">
+                <h2 class="govuk-heading-m govuk-!-margin-bottom-2">{{ table.title }}</h2>
+              </div>
+            {% endif %}
+            {{ govukTable({
+              attributes: {
+                'data-module': 'moj-sortable-table'
+              } if not unsortable and not grouped,
+              caption: "Report data",
+              captionClasses: "govuk-visually-hidden",
+              head: table.headers,
+              rows: table.rows
+            }) }}
+          </div>
         </div>
-      </div>
+      {% endfor %}
     {% endif %}
   {% endif %}
 

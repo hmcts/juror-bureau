@@ -1318,4 +1318,9 @@
     return req.session.authentication.locCode;
   };
 
+  // Checks if any array (including nested arrays) are empty
+  module.exports.checkIfArrayEmpty = (array) => {
+    return Array.isArray(array) && (array.length == 0 || array.every(modUtils.checkIfArrayEmpty));
+  }
+
 })();

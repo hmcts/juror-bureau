@@ -505,3 +505,13 @@ dt.govuk-summary-list-mod {
   display: inline;
   text-transform: capitalize;
 }
+
+.mod-\!-width {
+    &-one-eighth {
+      width: 12.5% !important;
+    }
+
+    &-three-twentyfifths {
+      width: 8.33333333333% !important;
+    }
+}

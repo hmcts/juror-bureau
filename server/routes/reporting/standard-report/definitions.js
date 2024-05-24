@@ -1,28 +1,40 @@
-
 (() => {
   'use strict';
 
   const { isCourtUser } = require('../../../components/auth/user-type');
-  const { dateFilter } = require('../../../components/filters');
-  const { monthlyUtilisationDAO } = require('../../../objects/reports');
+  const { dateFilter, toMoney } = require('../../../components/filters');
   const { dailyUtilisationDAO, dailyUtilisationJurorsDAO, viewMonthlyUtilisationDAO, generateMonthlyUtilisationDAO } = require('../../../objects/reports');
 
   // type IReportKey = {[key:string]: {
   //   title: string,
   //   apiKey: string,
   //   search?: 'poolNumber' | 'dateRange', // etc only poolNumber is currently implemented
+  //   searchLabelMappers: {
+  //     dateFrom: string, // custom label for date from input 
+  //     dateTo: string, // custom label for date to input 
+  //   },
   //   bespokeReport?: {
   //     dao?: (req) => Promise<any>,                                 // custom data access function
-  //     insertColumns?: {[key: number]: [string, (data) => string]}, // column header, body
-  //     printInsertColumns?: {[key: number]: [string, (data) => string]}, // column header, body (for report pdf printing)
+  //     insertColumns?: {[key: number]: [string, (data, isPrint) => string]}, // column header, body
+  //     printInsertColumns?: boolean, // should insertColumns be included in pdf print (logic added to insertColumns)
+  //     insertRows?: {[key: number]: (data, isPrint) => [object]}, // row to be added within each table, 
+  //                                                                // key specifies position ('last' will append to end of each table)
+  //     printInsertRows?: boolean, // should insertRows be included in pdf print (logic added to insertRows)
+  //     insertTables?: {[key: number]: (data, isPrint) => [object]}, // table to be added to report,
+  //                                                                  // key specifies position ('last' will append to end of the report)
+  //     printInsertRows?: boolean, // should insertRows be included in pdf print (logic added to insertRows)
   //     printWidths?: [string], // custom widths for pdf printing tables
   //     body?: boolean, // fully bespoke report body
   //     file?: string, // bespoke nunjucks file route to handle body
-  //   }
+  //     tableHeadClasses?: [string], // classes to be added to each table header in order i.e. size classes
+  //   },
   //   headings: string[], // corresponds to the ids provided for the headings in the API
   //                       // (except report created dateTime)
-  //   unsortable: boolean, // prevents report table from being sorted
-  //   exportLabel: string, // label for export button if required
+  //   unsortable?: boolean, // prevents report table from being sorted
+  //   exportLabel?: string, // label for export button if required
+  //   multiTable?: {  // include if there is multiple standard tables within one report
+  //     sectionHeadings?: boolean, // show section headings provided by DTO
+  //   },
   //   grouped?: {
   //     headings: {
   //       prefix?: string,
@@ -31,8 +43,9 @@
   //     },
   //     groupHeader?: boolean, // display the group header or not.. in some reports we dont have to
   //     totals?: boolean, // same on this one.. some reports dont need the totals
+  //     emptyDataGroup?: (colSpan, isPrint) => [object],  // returns table to display if a group has no data
   //   },
-  //   printLandscape: boolean, // force report printing to landscape
+  //   printLandscape?: boolean, // force report printing to landscape
   //   largeTotals?: (data) => {label: string, value: string}[], // large totals for the report
   // }};
   module.exports.reportKeys = (app, req = null) => {
@@ -121,8 +134,8 @@
         search: 'date',
         bespokeReport: {
           insertColumns: {
-            6: ['', (data) => {
-              return { html: `<a href=${
+            6: ['', (data, isPrint = false) => {
+              return isPrint ? {} : { html: `<a href=${
                 app.namedRoutes.build('reports.incomplete-service.complete-redirect.get', {
                   jurorNumber: data.jurorNumber,
                   lastAttendanceDate: data.lastAttendanceDate ? data.lastAttendanceDate : null,
@@ -283,15 +296,11 @@
         },
         bespokeReport: {
           insertColumns: {
-            5: ['', (data) => {
-              return { text: `*${data.jurorNumber}*`, classes: 'mod-barcode' };
+            5: ['', (data, isPrint = false) => {
+              return isPrint ? { text: `*${data.jurorNumber}*`, style: 'barcode' } : { text: `*${data.jurorNumber}*`, classes: 'mod-barcode' };
             }],
           },
-          printInsertColumns: {
-            5: ['', (data) => {
-              return { text: `*${data.jurorNumber}*`, style: 'barcode' };
-            }],
-          },
+          printInsertColumns: true,
           printWidths: ['10%', '10%', '10%', '*', '*', 'auto'],
         },
       },
@@ -435,6 +444,340 @@
         },
         unsortable: true,
         exportLabel: 'Export raw data',
+      },
+      'jury-expenditure-high-level': {
+        title: 'Juror expenditure report (high-level)',
+        apiKey: 'JurorExpenditureReportHighLevelReport',
+        search: 'dateRange',
+        searchLabelMappers: {
+          dateFrom: 'Date expenses approved from',
+          dateTo: 'Date expenses approved to',
+        },
+        headings: [
+          'approvedFrom',
+          'reportDate',
+          'approvedTo',
+          'reportTime',
+          '',
+          'courtName',
+        ],
+        bespokeReport: {
+          body: true,
+        },
+      },
+      'jury-expenditure-mid-level': {
+        title: 'Juror expenditure report (mid-level)',
+        apiKey: 'JurorExpenditureReportMidLevelReport',
+        search: 'dateRange',
+        searchLabelMappers: {
+          dateFrom: 'Date expenses approved from',
+          dateTo: 'Date expenses approved to',
+        },
+        headings: [
+          'approvedFrom',
+          'reportDate',
+          'approvedTo',
+          'reportTime',
+          'totalBacsAndCheque',
+          'courtName',
+          'totalCash',
+          '',
+          'overallTotal',
+        ],
+        bespokeReport: {
+          body: true,
+        },
+      },
+      'jury-expenditure-low-level': {
+        title: 'Juror expenditure report (low-level)',
+        apiKey: 'JurorExpenditureReportLowLevelReport',
+        search: 'dateRange',
+        searchLabelMappers: {
+          dateFrom: 'Date expenses approved from',
+          dateTo: 'Date expenses approved to',
+        },
+        headings: [
+          'approvedFrom',
+          'reportDate',
+          'approvedTo',
+          'reportTime',
+          'totalApprovals',
+          'courtName',
+          'totalBacsAndCheque',
+          '',
+          'totalCash',
+          '',
+          'overallTotal',
+        ],
+        multiTable: {
+          sectionHeadings: true,
+        },
+        grouped: {
+          groupHeader: true,
+          headings: {
+            transformer: (data) => dateFilter(data, 'yyyy-MM-DD', 'dddd D MMM YYYY'),
+          },
+          emptyDataGroup: (colspan, isPrint = false) => {
+            if (isPrint) {
+              const group = [[
+                {
+                  text: 'No payments authorised',
+                  color: '#505A5F',
+                  colSpan: colspan
+                },
+              ]];
+              for (let i = 0; i < colspan - 1; i++) {
+                group[0].push({});
+              }
+              return group;
+            }
+            return [[
+              {
+                text: 'No payments authorised',
+                classes: 'govuk-hint mod-table-no-border',
+                colspan: colspan
+              },
+            ]];
+          },
+        },
+        bespokeReport: {
+          tableHeadClasses: [
+            'mod-!-width-one-eighth',
+            'mod-!-width-one-eighth', 
+            'mod-!-width-one-eighth',
+            'mod-!-width-one-eighth',
+            'mod-!-width-one-eighth',
+            'mod-!-width-one-eighth',
+            'mod-!-width-three-twentyfifths',
+            'mod-!-width-three-twentyfifths',
+            'mod-!-width-three-twentyfifths'
+          ],
+          insertRows: {
+            last: (data, isPrint = false) => {
+              let total = 0;
+              if (!data.length) {
+                return [];
+              }
+
+              data.forEach((juror) => {
+                total += juror.totalApprovedSum;
+              });
+              return isPrint ? [
+                {
+                  text: 'Daily sub total', colSpan: 8, bold: true, fillColor: '#F3F2F1',
+                },
+                {}, {}, {}, {}, {}, {}, {},
+                {
+                  text: toMoney(total), bold: true, fillColor: '#F3F2F1',
+                },
+              ] : [
+                {
+                  text: 'Daily sub total',
+                  colspan: 8,
+                  classes: 'govuk-!-padding-left-2 govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                },
+                {
+                  text: toMoney(total),
+                  classes: 'govuk-!-padding-right-2 govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                  format: 'numeric',
+                },
+              ];
+            },
+          },
+          printInsertRows: true,
+          insertTables: {
+            last: (tableData, isPrint = false) => {
+              let overallLossOfEarningsTotal = 0;
+              let overallFoodAndDrinkTotal = 0;
+              let overallSmartcardTotal = 0;
+              let overallTravelTotal = 0;
+              let overallTotal = 0;
+
+              let rows = [];
+
+              for (const [type, date] of Object.entries(tableData.data)) {
+                let lossOfEarningsTotal = 0;
+                let foodAndDrinkTotal = 0;
+                let smartcardTotal = 0;
+                let travelTotal = 0;
+                let total = 0;
+
+                for (const [day, jurors] of Object.entries(date)) {
+                  jurors.forEach((juror) => {
+                    lossOfEarningsTotal += juror.totalLossOfEarningsApprovedSum;
+                    foodAndDrinkTotal += juror.totalSubsistenceApprovedSum;
+                    smartcardTotal += juror.totalSmartcardApprovedSum;
+                    travelTotal += juror.totalTravelApprovedSum;
+                    total += juror.totalApprovedSum;
+                  });
+                }
+
+                overallLossOfEarningsTotal += lossOfEarningsTotal;
+                overallFoodAndDrinkTotal += foodAndDrinkTotal;
+                overallSmartcardTotal += smartcardTotal;
+                overallTravelTotal += travelTotal;
+                overallTotal += total;
+
+                if (!isPrint) {
+                  rows.push([
+                    {
+                      text: type,
+                      colspan: 4,
+                      classes: 'govuk-!-padding-left-2 govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                    },
+                    {
+                      text: toMoney(lossOfEarningsTotal),
+                      classes: 'govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                      format: 'numeric',
+                    },
+                    {
+                      text: toMoney(foodAndDrinkTotal),
+                      classes: 'govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                      format: 'numeric',
+                    },
+                    {
+                      text: toMoney(smartcardTotal),
+                      classes: 'govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                      format: 'numeric',
+                    },
+                    {
+                      text: toMoney(travelTotal),
+                      classes: 'govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                      format: 'numeric',
+                    },
+                    {
+                      text: toMoney(total),
+                      classes: 'govuk-!-padding-right-2 govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                      format: 'numeric',
+                    },
+                  ]);
+                } else {
+                  rows.push([
+                    {
+                      text: type,
+                      colspan: 4,
+                      bold: true, fillColor: '#F3F2F1',
+                    },
+                    {}, {}, {},
+                    {
+                      text: toMoney(lossOfEarningsTotal),
+                      bold: true, fillColor: '#F3F2F1',
+                      alignment: 'right',
+                    },
+                    {
+                      text: toMoney(foodAndDrinkTotal),
+                      bold: true, fillColor: '#F3F2F1',
+                      alignment: 'right',
+                    },
+                    {
+                      text: toMoney(smartcardTotal),
+                      bold: true, fillColor: '#F3F2F1',
+                      alignment: 'right',
+                    },
+                    {
+                      text: toMoney(travelTotal),
+                      bold: true, fillColor: '#F3F2F1',
+                      alignment: 'right',
+                    },
+                    {
+                      text: toMoney(total),
+                      bold: true, fillColor: '#F3F2F1',
+                      alignment: 'right',
+                    },
+                  ]);
+                }
+              }
+
+              if (rows.length) {
+                if (!isPrint) {
+                  rows.push([
+                    {
+                      text: 'Overall total',
+                      colspan: 4,
+                      classes: 'govuk-!-padding-left-2 govuk-!-width-one-half govuk-!-font-weight-bold mod-highlight-table-data__blue',
+                    },
+                    {
+                      text: toMoney(overallLossOfEarningsTotal),
+                      classes: 'mod-!-width-one-eighth govuk-!-font-weight-bold mod-highlight-table-data__blue',
+                      format: 'numeric',
+                    },
+                    {
+                      text: toMoney(overallFoodAndDrinkTotal),
+                      classes: 'mod-!-width-one-eighth govuk-!-font-weight-bold mod-highlight-table-data__blue',
+                      format: 'numeric',
+                    },
+                    {
+                      text: toMoney(overallSmartcardTotal),
+                      classes: 'mod-!-width-three-twentyfifths govuk-!-font-weight-bold mod-highlight-table-data__blue',
+                      format: 'numeric',
+                    },
+                    {
+                      text: toMoney(overallTravelTotal),
+                      classes: 'mod-!-width-three-twentyfifths govuk-!-font-weight-bold mod-highlight-table-data__blue',
+                      format: 'numeric',
+                    },
+                    {
+                      text: toMoney(overallTotal),
+                      classes: 'mod-!-width-three-twentyfifths govuk-!-padding-right-2 govuk-!-font-weight-bold mod-highlight-table-data__blue',
+                      format: 'numeric',
+                    },
+                  ]);
+                } else {
+                  rows.push([
+                    {
+                      text: 'Overall total',
+                      colspan: 4,
+                      classes: 'govuk-!-padding-left-2 govuk-!-width-one-half govuk-!-font-weight-bold mod-highlight-table-data__blue',
+                      bold: true, fillColor: '#0b0c0c', color: '#ffffff',
+                    }, {}, {}, {},
+                    {
+                      text: toMoney(overallLossOfEarningsTotal),
+                      bold: true, fillColor: '#0b0c0c', color: '#ffffff',
+                      alignment: 'right',
+                    },
+                    {
+                      text: toMoney(overallFoodAndDrinkTotal),
+                      bold: true, fillColor: '#0b0c0c', color: '#ffffff',
+                      alignment: 'right',
+                    },
+                    {
+                      text: toMoney(overallSmartcardTotal),
+                      bold: true, fillColor: '#0b0c0c', color: '#ffffff',
+                      alignment: 'right',
+                    },
+                    {
+                      text: toMoney(overallTravelTotal),
+                      bold: true, fillColor: '#0b0c0c', color: '#ffffff',
+                      alignment: 'right',
+                    },
+                    {
+                      text: toMoney(overallTotal),
+                      bold: true, fillColor: '#0b0c0c', color: '#ffffff',
+                      alignment: 'right',
+                    },
+                  ]);
+                }
+                return isPrint ? [
+                  {
+                    body: [[
+                      {text: 'Totals approved for this period', style: 'largeSectionHeading'},
+                    ]],
+                    widths:['100%'],
+                    layout: { hLineColor: '#0b0c0c' },
+                    margin: [0, 10, 0, 0],
+                  },
+                  {
+                    body: rows,
+                    widths:['50%', '0%', '0%', '0%', '12.5%', '12.5%', '8.33333333333%', '8.33333333333%', '8.33333333333%'],
+                    margin: [0, 0, 0, 0],
+                  },
+                ] : [{title: 'Totals approved for this period', headers: [], rows: rows}];
+              }
+              return [];
+            },
+          },
+          printInsertTables: true,
+        },
       },
     };
   };
