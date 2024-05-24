@@ -227,6 +227,10 @@
         url = url + '?includeSummoned=' + req.query.includeSummoned;
       }
 
+      if (req.query.previousMonths) {
+        url = url + '?previousMonths=true'
+      }
+
       return url;
     };
 
