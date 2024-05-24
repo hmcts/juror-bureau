@@ -9,15 +9,20 @@ participant Actor
 participant ProcessReplyPage <</process>>
 participant DisqualifyPage <</disqualify>>
 participant InboxPage <</inbox>>
+participant SendLetterPage <<custom-components/letter-flow/send-letter>>
+participant RedirectPage <<custom-components/letter-flow/redirect>>
 
 ''' CONTROLLER AND REQUEST OBJECTS
 participant ProcessReplyDisqualifyController <<process-reply-disqualify.controller.js>>
+participant LetterFlow <<letter-flow.js>>
 participant GetDisqualifyReasonsObject <<getDisqualificationReasons.get()>>
 participant DisqualifyJurorObject <<disqualifyJuror.patch()>>
 
 ''' TEMPLATES
 participant DisqualifyTemplate <<process-reply/disqualify.njk>>
 participant GenericErrorTemplate <<_errors/generic.njk>>
+participant SendLetterTemplate <<custom-components/letter-flow/send-letter.njk>>
+participant RedirectTemplate <<custom-components/letter-flow/redirect.njk>>
 
 ''' FILTERS AND VALIDATORS
 participant DisqualifyValidator
@@ -69,9 +74,30 @@ ProcessReplyDisqualifyController -> DisqualifyJurorObject : build request object
 DisqualifyJurorObject -> BackendController : send backend request
 DisqualifyJurorObject <- BackendController : ok response
 ProcessReplyDisqualifyController <- DisqualifyJurorObject : resolve request
+ProcessReplyDisqualifyController -> LetterFlow : request and build template
+LetterFlow -> SendLetterTemplate : request and build template
+LetterFlow <- SendLetterTemplate : return HTML
+SendLetterPage <- LetterFlow : return HTML
+Actor <- SendLetterPage : render HTML
 
-InboxPage <- ProcessReplyDisqualifyController : redirect to inbox page
-Actor <- InboxPage : redirect to inbox page
+Actor -> SendLetterPage : select yes or no
+
+alt select yes
+SendLetterPage -> ProcessReplyDisqualifyController : call page controller
+ProcessReplyDisqualifyController -> LetterFlow : request and build template
+LetterFlow -> RedirectTemplate : request and build template
+RedirectTemplate -> RedirectPage : request and build template
+RedirectPage -> ProcessReplyDisqualifyController : call page controller
+ProcessReplyDisqualifyController -> InboxController : redirect to inbox
+InboxPage <- InboxController : redirect to inbox
+Actor <- InboxPage : render HTML
+end
+
+SendLetterPage -> ProcessReplyDisqualifyController : call page controller
+ProcessReplyDisqualifyController -> LetterFlow : redirect to inbox
+LetterFlow -> InboxController : call page controller
+InboxPage <- InboxController : redirect to inbox page
+Actor <- InboxPage : render HTML
 
 alt Failed to disqualify juror
     DisqualifyJurorObject <-- BackendController : error response
