@@ -9,18 +9,32 @@
   //   title: string,
   //   apiKey: string,
   //   search?: 'poolNumber' | 'dateRange', // etc only poolNumber is currently implemented
+  //   searchLabelMappers: {
+  //     dateFrom: string, // custom label for date from input 
+  //     dateTo: string, // custom label for date to input 
+  //   },
   //   bespokeReport?: {
   //     dao?: (req) => Promise<any>,                                 // custom data access function
-  //     insertColumns?: {[key: number]: [string, (data) => string]}, // column header, body
-  //     printInsertColumns?: {[key: number]: [string, (data) => string]}, // column header, body (for report pdf printing)
+  //     insertColumns?: {[key: number]: [string, (data, isPrint) => string]}, // column header, body
+  //     printInsertColumns?: boolean, // should insertColumns be included in pdf print (logic added to insertColumns)
+  //     insertRows?: {[key: number]: (data, isPrint) => [object]}, // row to be added within each table, 
+  //                                                                // key specifies position ('last' will append to end of each table)
+  //     printInsertRows?: boolean, // should insertRows be included in pdf print (logic added to insertRows)
+  //     insertTables?: {[key: number]: (data, isPrint) => [object]}, // table to be added to report,
+  //                                                                  // key specifies position ('last' will append to end of the report)
+  //     printInsertRows?: boolean, // should insertRows be included in pdf print (logic added to insertRows)
   //     printWidths?: [string], // custom widths for pdf printing tables
   //     body?: boolean, // fully bespoke report body
   //     file?: string, // bespoke nunjucks file route to handle body
-  //   }
+  //     tableHeadClasses?: [string], // classes to be added to each table header in order i.e. size classes
+  //   },
   //   headings: string[], // corresponds to the ids provided for the headings in the API
   //                       // (except report created dateTime)
-  //   unsortable: boolean, // prevents report table from being sorted
-  //   exportLabel: string, // label for export button if required
+  //   unsortable?: boolean, // prevents report table from being sorted
+  //   exportLabel?: string, // label for export button if required
+  //   multiTable?: {  // include if there is multiple standard tables within one report
+  //     sectionHeadings?: boolean, // show section headings provided by DTO
+  //   },
   //   grouped?: {
   //     headings: {
   //       prefix?: string,
@@ -29,8 +43,9 @@
   //     },
   //     groupHeader?: boolean, // display the group header or not.. in some reports we dont have to
   //     totals?: boolean, // same on this one.. some reports dont need the totals
+  //     emptyDataGroup?: (colSpan, isPrint) => [object],  // returns table to display if a group has no data
   //   },
-  //   printLandscape: boolean, // force report printing to landscape
+  //   printLandscape?: boolean, // force report printing to landscape
   //   largeTotals?: (data) => {label: string, value: string}[], // large totals for the report
   // }};
   module.exports.reportKeys = (app, req = null) => {
