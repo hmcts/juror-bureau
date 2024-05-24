@@ -53,8 +53,17 @@
         continueUrl: app.namedRoutes.build('reports.prepare-monthly-utilisation.report.get', { filter: reportDate }),
         cancelUrl: app.namedRoutes.build('reports.statistics.get'),
       });
-    } catch (e) {
-      console.log(e);
+    } catch (err) {
+      app.logger.crit('Failed to fetch court details', {
+        auth: req.session.authentication,
+        token: req.session.authToken,
+        data: {
+          locCode: req.session.authentication.locCode,
+        },
+        error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+      });
+
+      return res.render('_errors/generic.njk');
     }
   };
 
@@ -86,8 +95,18 @@
           items: errors,
         },
       });
-    } catch (e) {
+    } catch (err) {
       console.log(e);
+      app.logger.crit('Failed to fetch prepared monthly utilisation dates', {
+        auth: req.session.authentication,
+        token: req.session.authToken,
+        data: {
+          locCode: req.session.authentication.locCode,
+        },
+        error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+      });
+
+      return res.render('_errors/generic.njk');
     }
   };
 
