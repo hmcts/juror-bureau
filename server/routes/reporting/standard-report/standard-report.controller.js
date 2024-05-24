@@ -2,7 +2,7 @@
   'use strict';
 
   const _ = require('lodash');
-  const { snakeToCamel, transformCourtNames, makeManualError } = require('../../../lib/mod-utils');
+  const { snakeToCamel, transformCourtNames, makeManualError, checkIfArrayEmpty } = require('../../../lib/mod-utils');
   const { standardReportDAO } = require('../../../objects/reports');
   const { validate } = require('validate.js');
   const { poolSearchObject } = require('../../../objects/pool-search');
@@ -118,6 +118,7 @@
           tmpBody,
           reportKey,
           title: reportType.title,
+          searchLabels: reportType.searchLabelMappers,
           reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
           cancelUrl: app.namedRoutes.build('reports.reports.get'),
         });
@@ -156,7 +157,6 @@
 
     const buildStandardTableRows = function(tableData, tableHeadings) {
       const rows = tableData.map(data => {
-
         let row = tableHeadings.map(header => {
           let output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
 
@@ -234,8 +234,9 @@
       const tableHeaders = buildTableHeaders(reportType, tableHeadings);
 
       if (reportType.grouped) {
+        let longestLength = 0;
         for (const [header, data] of Object.entries(tableData)) {
-          const group = buildStandardTableRows(data, tableHeadings);
+          let group = buildStandardTableRows(data, tableHeadings);
           let link;
 
           if (reportType.grouped.headings && reportType.grouped.headings.link) {
@@ -243,6 +244,8 @@
               link = app.namedRoutes.build('pool-overview.get', {poolNumber: header});
             }
           }
+
+          longestLength = group[0].length > longestLength ? group[0].length : longestLength; 
 
           const groupHeaderTransformer = () => {
             if (reportType.grouped.headings && reportType.grouped.headings.transformer) {
@@ -256,21 +259,29 @@
 
             return link ? [{
               html: `<a href=${link}>${(reportType.grouped.headings.prefix || '') + groupHeaderTransformer()}</a>`,
-              colspan: group[0].length,
+              colspan: longestLength,
               classes: 'govuk-!-padding-top-7 govuk-link govuk-body-l govuk-!-font-weight-bold',
             }]
             : [{
               html: capitalizeFully((reportType.grouped.headings.prefix || '') + groupHeaderTransformer()),
-              colspan: group[0].length,
+              colspan: longestLength,
               classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
             }];
           })();
             
           const totalsRow = reportType.grouped.totals ? [{
             text: `Total: ${group.length}`,
-            colspan: group[0].length,
+            colspan: longestLength,
             classes: 'govuk-body-s govuk-!-font-weight-bold mod-table-no-border',
           }] : null;
+
+          if (checkIfArrayEmpty(group)) {
+            if (reportType.grouped.emptyDataGroup) {
+              group = reportType.grouped.emptyDataGroup(longestLength);
+            } else {
+              break;
+            }
+          }
 
           tableRows = tableRows.concat([
             headRow,
@@ -361,8 +372,17 @@
         ? reportType.bespokeReport.dao(req)
         : standardReportDAO.post(req, app, config));
 
+      // tableData.data['BACS and cheque approvals'].push({
+      //   "createdOnDate": "2024-05-16",
+      //   "totalApprovedSum": 0.00
+      // });
+
+      tableData.data['BACS and cheque approvals']['2024-05-16'] = [];
+
+      console.log(tableData.data);
+
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
-      if (isExport) return reportExport(app, req, res, reportKey, { headings, tableData }) 
+      if (isExport) return reportExport(app, req, res, reportKey, { headings, tableData }) ;
 
 
       let tables = [];

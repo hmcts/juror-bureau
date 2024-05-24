@@ -2,10 +2,9 @@
   'use strict';
 
   const { isCourtUser } = require('../../../components/auth/user-type');
-  const { dateFilter } = require('../../../components/filters');
+  const { dateFilter, toMoney } = require('../../../components/filters');
   const { monthlyUtilisationDAO } = require('../../../objects/reports');
   const { dailyUtilisationDAO, dailyUtilisationJurorsDAO, viewMonthlyUtilisationDAO, generateMonthlyUtilisationDAO } = require('../../../objects/reports');
-  const toMoney = (value) => `£${(value || 0).toFixed(2)}`;
 
   // type IReportKey = {[key:string]: {
   //   title: string,
@@ -122,7 +121,7 @@
         bespokeReport: {
           insertColumns: {
             6: ['', (data, isPrint = false) => {
-              return isPrint ? { text: 'HELLO' } : { html: `<a href=${
+              return isPrint ? {} : { html: `<a href=${
                 app.namedRoutes.build('reports.incomplete-service.complete-redirect.get', {
                   jurorNumber: data.jurorNumber,
                   lastAttendanceDate: data.lastAttendanceDate ? data.lastAttendanceDate : null,
@@ -434,6 +433,10 @@
         title: 'Juror expenditure report (high-level)',
         apiKey: 'JurorExpenditureReportHighLevelReport',
         search: 'dateRange',
+        searchLabelMappers: {
+          dateFrom: 'Date expenses approved from',
+          dateTo: 'Date expenses approved to',
+        },
         headings: [
           'approvedFrom',
           'reportDate',
@@ -446,10 +449,37 @@
           body: true,
         },
       },
+      'jury-expenditure-mid-level': {
+        title: 'Juror expenditure report (mid-level)',
+        apiKey: 'JurorExpenditureReportMidLevelReport',
+        search: 'dateRange',
+        searchLabelMappers: {
+          dateFrom: 'Date expenses approved from',
+          dateTo: 'Date expenses approved to',
+        },
+        headings: [
+          'approvedFrom',
+          'reportDate',
+          'approvedTo',
+          'reportTime',
+          'totalBacsAndCheque',
+          'courtName',
+          'totalCash',
+          '',
+          'overallTotal',
+        ],
+        bespokeReport: {
+          body: true,
+        },
+      },
       'jury-expenditure-low-level': {
         title: 'Juror expenditure report (low-level)',
         apiKey: 'JurorExpenditureReportLowLevelReport',
         search: 'dateRange',
+        searchLabelMappers: {
+          dateFrom: 'Date expenses approved from',
+          dateTo: 'Date expenses approved to',
+        },
         headings: [
           'approvedFrom',
           'reportDate',
@@ -471,11 +501,46 @@
           headings: {
             transformer: (data) => dateFilter(data, 'yyyy-MM-DD', 'dddd D MMM YYYY'),
           },
+          emptyDataGroup: (colspan, isPrint = false) => {
+            if (isPrint) {
+              const group = [[
+                {
+                  text: 'No payments authorised',
+                  color: '#505A5F',
+                  colSpan: colspan
+                },
+              ]];
+              for (let i = 0; i < colspan - 1; i++) {
+                group[0].push({});
+              }
+              return group;
+            }
+            return [[
+              {
+                text: 'No payments authorised',
+                classes: 'govuk-hint mod-table-no-border',
+                colspan: colspan
+              },
+            ]];
+          },
         },
         bespokeReport: {
-          tableHeadClasses: ['mod-!-width-one-eighth', 'mod-!-width-one-eighth', 'mod-!-width-one-eighth', 'mod-!-width-one-eighth', 'mod-!-width-one-eighth', 'mod-!-width-one-eighth', 'mod-!-width-three-twentyfifths', 'mod-!-width-three-twentyfifths', 'mod-!-width-three-twentyfifths'],
+          tableHeadClasses: [
+            'mod-!-width-one-eighth',
+            'mod-!-width-one-eighth', 
+            'mod-!-width-one-eighth',
+            'mod-!-width-one-eighth',
+            'mod-!-width-one-eighth',
+            'mod-!-width-one-eighth',
+            'mod-!-width-three-twentyfifths',
+            'mod-!-width-three-twentyfifths',
+            'mod-!-width-three-twentyfifths'
+          ],
           insertFinalRow: (data, isPrint = false) => {
             let total = 0;
+            if (!data.length) {
+              return [];
+            }
 
             data.forEach((juror) => {
               total += juror.totalApprovedSum;

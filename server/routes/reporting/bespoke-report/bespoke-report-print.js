@@ -370,6 +370,109 @@ const bespokeReportTablePrint = {
 
     return tables;
   },
+  'jury-expenditure-mid-level': (data) => {
+    const { tableData } = data;
+    let tables = [];
+    let overallTotal = 0;
+      let bacsTotal = 0;
+      let cashTotal = 0;
+
+    for (const [key, value] of Object.entries(tableData.data)) {
+      const rows = []
+      value.forEach((data) => {
+        let dateRow = [
+          {
+            text: dateFilter(data['createdOnDate'], 'yyyy-MM-DD', 'dddd D MMM YYYY'),
+            style: 'groupHeading',
+            colspan: 2,
+          },
+          {}
+        ]
+
+        let subTotalRow = data['totalApprovedSum'] && data['totalApprovedSum'] ? [
+          {
+            text: 'Daily sub total',
+            bold: true,
+            fillColor: '#F3F2F1'
+          },
+          {
+            text: tableDataMappers['BigDecimal'](data['totalApprovedSum']),
+            bold: true,
+            fillColor: '#F3F2F1',
+            alignment: 'right',
+          }
+        ] : [
+          {
+            text: 'No payments authorised',
+            color: '#505A5F',
+            colspan: 2
+          },
+          {}
+        ]
+
+        if (key === 'BACS and cheque approvals') {
+          bacsTotal += data['totalApprovedSum'];
+        } else {
+          cashTotal += data['totalApprovedSum'];
+        }
+        overallTotal += data['totalApprovedSum'];
+
+        rows.push(dateRow, subTotalRow);
+      });
+
+      tables.push(
+        {
+          body: [[
+            {text: key, style: 'largeSectionHeading'},
+          ]],
+          widths:['100%'],
+          layout: { hLineColor: '#0b0c0c' },
+          margin: [0, 10, 0, 0],
+        },
+        {
+          body: rows,
+          widths: ['*', '*'],
+          margin: [0, 0, 0, 0],
+        }
+      );
+    }
+    tables.push(
+      {
+        body: [[
+          {text: 'Total approved for this period', style: 'largeSectionHeading'},
+        ]],
+        widths:['100%'],
+        layout: { hLineColor: '#0b0c0c' },
+        margin: [0, 10, 0, 0],
+      },
+      {
+        body: [[
+          { text: 'Bacs and cheque', bold: true, fillColor: '#F3F2F1' },
+          { text: `£${bacsTotal}`, bold: true, alignment: 'right', fillColor: '#F3F2F1' },
+        ]],
+        widths:['50%', '50%'],
+        margin: [0, 0, 0, 0],
+      },
+      {
+        body: [[
+          { text: 'Cash', bold: true, fillColor: '#F3F2F1' },
+          { text: `£${cashTotal}`, bold: true, alignment: 'right', fillColor: '#F3F2F1' },
+        ]],
+        widths:['50%', '50%'],
+        margin: [0, 0, 0, 0],
+      },
+      {
+        body: [[
+          { text: 'Overall total', bold: true, fillColor: '#0b0c0c', color: '#ffffff' },
+          { text: `£${overallTotal}`, bold: true, alignment: 'right', fillColor: '#0b0c0c', color: '#ffffff' },
+        ]],
+        widths:['50%', '50%'],
+        margin: [0, 0, 0, 0],
+      }
+    );
+
+    return tables;
+  },
 };
 
 module.exports.bespokeReportTablePrint = bespokeReportTablePrint;

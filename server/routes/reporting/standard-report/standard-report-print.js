@@ -2,7 +2,7 @@
 const { generateDocument } = require('../../../lib/reports/single-generator');
 const { tableDataMappers, constructPageHeading } = require('./utils');
 const { bespokeReportTablePrint } = require('../bespoke-report/bespoke-report-print');
-const { snakeToCamel } = require('../../../lib/mod-utils');
+const { snakeToCamel, checkIfArrayEmpty } = require('../../../lib/mod-utils');
 const { reportKeys } = require('./definitions');
 const { capitalizeFully } = require('../../../components/filters');
 
@@ -72,6 +72,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
     let tableRows = [];
 
     if (reportData.grouped) {
+      let longestLength = 0;
       for (const [heading, rowData] of Object.entries(data)) {
 
         const groupHeaderTransformer = () => {
@@ -81,25 +82,36 @@ async function standardReportPrint(app, req, res, reportKey, data) {
           return heading;
         };
 
-        const group = buildStandardTableRows(rowData, tableData.headings);
+        let group = buildStandardTableRows(rowData, tableData.headings);
+
+        longestLength = group[0].length > longestLength ? group[0].length : longestLength; 
 
         const headRow = [{
           text: capitalizeFully((reportData.grouped.headings.prefix || '') + groupHeaderTransformer()),
           style: 'groupHeading',
-          colSpan: group[0].length,
+          colSpan: longestLength,
         }];
         let totalsRow;
 
         if (reportData.grouped.totals) {
-          totalsRow = [{ text: `Total: ${group.length}`, style: 'label', colSpan: group[0].length }];
+          totalsRow = [{ text: `Total: ${group.length}`, style: 'label', colSpan: longestLength }];
         }
 
-        for (let i = 0; i < group[0].length - 1; i++) {
+        for (let i = 0; i < longestLength - 1; i++) {
           headRow.push({});
           if (totalsRow) {
             totalsRow.push({});
           }
         }
+
+        if (checkIfArrayEmpty(group)) {
+          if (reportData.grouped.emptyDataGroup) {
+            group = reportData.grouped.emptyDataGroup(longestLength, true);
+          } else {
+            break;
+          }
+        }
+
         tableRows = tableRows.concat(totalsRow ? [headRow, ...group, totalsRow] : [headRow, ...group]);
       }
     } else {

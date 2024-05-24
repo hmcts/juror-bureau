@@ -1,5 +1,5 @@
 /* eslint-disable strict */
-const { dateFilter, makeDate } = require('../../../components/filters');
+const { dateFilter, makeDate, toMoney } = require('../../../components/filters');
 const { snakeToCamel } = require('../../../lib/mod-utils');
 const { tableDataMappers, buildTableHeaders } = require('../standard-report/utils');
 
@@ -280,7 +280,7 @@ const bespokeReportBodys = (app) => {
               classes: 'govuk-!-padding-left-2 govuk-!-font-weight-bold mod-highlight-table-data__blue',
             },
             {
-              text: `£${overallTotal}`,
+              text: toMoney(overallTotal),
               classes: 'govuk-!-padding-right-2 govuk-!-font-weight-bold mod-highlight-table-data__blue',
               format: 'numeric',
             },
@@ -348,6 +348,99 @@ const bespokeReportBodys = (app) => {
     'view-monthly-utilisation': (tableData) => {
       return bespokeReportBodys(app)['prepare-monthly-utilisation'](tableData);
     },
+    'jury-expenditure-mid-level': (reportType, tableData) => {
+      let tables = [];
+      let overallTotal = 0;
+      let bacsTotal = 0;
+      let cashTotal = 0;
+
+      for (const [key, value] of Object.entries(tableData.data)) {
+        const rows = [];
+        value.forEach((data) => {
+          let dateRow = [{
+            text: dateFilter(data['createdOnDate'], 'yyyy-MM-DD', 'dddd D MMM YYYY'),
+            colspan: 2,
+            classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
+          }]
+
+          let subTotalRow = data['totalApprovedSum'] && data['totalApprovedSum'] !== 0 ? [
+            {
+              text: 'Daily sub total',
+              classes: 'govuk-!-font-weight-bold mod-highlight-table-data__grey'
+            },
+            {
+            text: tableDataMappers['BigDecimal'](data['totalApprovedSum']),
+            format: 'numeric',
+            classes: 'govuk-!-font-weight-bold mod-highlight-table-data__grey'
+            }
+          ] : [
+            {
+              text: 'No payments authorised',
+              classes: 'govuk-hint mod-table-no-border',
+              colspan: 2
+            },
+          ]
+
+          if (key === 'BACS and cheque approvals') {
+            bacsTotal += data['totalApprovedSum'];
+          } else {
+            cashTotal += data['totalApprovedSum'];
+          }
+          overallTotal += data['totalApprovedSum'];
+
+          rows.push(dateRow, subTotalRow);
+        });
+
+        tables.push({
+          title: key,
+          headers: [],
+          rows: rows,
+        });
+      }
+      if (tables.length) {
+        tables.push({
+          title: 'Total approved for this period',
+          headers: [],
+          rows: [
+            [
+              {
+                text: 'Bacs and cheque',
+                classes: 'govuk-!-padding-left-2 govuk-!-font-weight-bold mod-highlight-table-data__grey',
+              },
+              {
+                text: toMoney(bacsTotal),
+                classes: 'govuk-!-padding-right-2 govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                format: 'numeric',
+              },
+            ],
+            [
+              {
+                text: 'Cash',
+                classes: 'govuk-!-padding-left-2 govuk-!-font-weight-bold mod-highlight-table-data__grey',
+              },
+              {
+                text: toMoney(cashTotal),
+                classes: 'govuk-!-padding-right-2 govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                format: 'numeric',
+              },
+            ],
+            [
+              {
+                text: 'Overall total',
+                classes: 'govuk-!-padding-left-2 govuk-!-font-weight-bold mod-highlight-table-data__blue',
+              },
+              {
+                text: toMoney(overallTotal),
+                classes: 'govuk-!-padding-right-2 govuk-!-font-weight-bold mod-highlight-table-data__blue',
+                format: 'numeric',
+              },
+            ],
+          ],
+        });
+      }
+
+      return tables;
+    }
   };
 };
 
