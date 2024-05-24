@@ -78,7 +78,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
     let tableRows = [];
 
     if (reportData.grouped) {
-      let longestLength = 0;
+      let longestGroup = 0;
       for (const [heading, rowData] of Object.entries(data)) {
 
         const groupHeaderTransformer = () => {
@@ -90,20 +90,20 @@ async function standardReportPrint(app, req, res, reportKey, data) {
 
         let group = buildStandardTableRows(rowData, tableData.headings);
 
-        longestLength = group[0].length > longestLength ? group[0].length : longestLength; 
+        longestGroup = group[0].length > longestGroup ? group[0].length : longestGroup; 
 
         const headRow = [{
           text: capitalizeFully((reportData.grouped.headings.prefix || '') + groupHeaderTransformer()),
           style: 'groupHeading',
-          colSpan: longestLength,
+          colSpan: longestGroup,
         }];
         let totalsRow;
 
         if (reportData.grouped.totals) {
-          totalsRow = [{ text: `Total: ${group.length}`, style: 'label', colSpan: longestLength }];
+          totalsRow = [{ text: `Total: ${group.length}`, style: 'label', colSpan: longestGroup }];
         }
 
-        for (let i = 0; i < longestLength - 1; i++) {
+        for (let i = 0; i < longestGroup - 1; i++) {
           headRow.push({});
           if (totalsRow) {
             totalsRow.push({});
@@ -112,7 +112,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
 
         if (checkIfArrayEmpty(group)) {
           if (reportData.grouped.emptyDataGroup) {
-            group = reportData.grouped.emptyDataGroup(longestLength, true);
+            group = reportData.grouped.emptyDataGroup(longestGroup, true);
           } else {
             break;
           }
@@ -167,8 +167,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
       );
     }
   } else {
-    reportBody = buildStandardTable(reportData, tableData.data, tableData.headings)
-    ;
+    reportBody = buildStandardTable(reportData, tableData.data, tableData.headings);
   }
 
   if (reportData.bespokeReport && reportData.bespokeReport.printInsertTables) {

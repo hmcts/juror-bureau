@@ -240,7 +240,7 @@
       const tableHeaders = buildTableHeaders(reportType, tableHeadings);
 
       if (reportType.grouped) {
-        let longestLength = 0;
+        let longestGroup = 0;
         for (const [header, data] of Object.entries(tableData)) {
           let group = buildStandardTableRows(data, tableHeadings);
           let link;
@@ -251,7 +251,7 @@
             }
           }
 
-          longestLength = group[0].length > longestLength ? group[0].length : longestLength; 
+          longestGroup = group[0].length > longestGroup ? group[0].length : longestGroup; 
 
           const groupHeaderTransformer = () => {
             if (reportType.grouped.headings && reportType.grouped.headings.transformer) {
@@ -265,25 +265,25 @@
 
             return link ? [{
               html: `<a href=${link}>${(reportType.grouped.headings.prefix || '') + groupHeaderTransformer()}</a>`,
-              colspan: longestLength,
+              colspan: longestGroup,
               classes: 'govuk-!-padding-top-7 govuk-link govuk-body-l govuk-!-font-weight-bold',
             }]
             : [{
               html: capitalizeFully((reportType.grouped.headings.prefix || '') + groupHeaderTransformer()),
-              colspan: longestLength,
+              colspan: longestGroup,
               classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
             }];
           })();
             
           const totalsRow = reportType.grouped.totals ? [{
             text: `Total: ${group.length}`,
-            colspan: longestLength,
+            colspan: longestGroup,
             classes: 'govuk-body-s govuk-!-font-weight-bold mod-table-no-border',
           }] : null;
 
           if (checkIfArrayEmpty(group)) {
             if (reportType.grouped.emptyDataGroup) {
-              group = reportType.grouped.emptyDataGroup(longestLength);
+              group = reportType.grouped.emptyDataGroup(longestGroup);
             } else {
               break;
             }
