@@ -482,6 +482,10 @@
     arrayIncludes: function(arr, value) {
       return arr.includes(value);
     },
+
+    toMoney: function(value) {
+      return `£${(value || 0).toFixed(2)}`;
+    } 
   };
 
 })();
