@@ -160,7 +160,7 @@
         let row = tableHeadings.map(header => {
           let output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
 
-          if (header.id === 'juror_number') {
+          if (header.id === 'juror_number' || header.id === 'juror_number_from_trial') {
             return ({
               html: `<a href=${
                 app.namedRoutes.build('juror-record.overview.get', {jurorNumber: output})
@@ -380,6 +380,7 @@
           url: buildBackLinkUrl(),
         },
         bannerMessage,
+        largeTotals: reportType.largeTotals ? reportType.largeTotals(tableData.data) : [],
       });
     } catch (e) {
       console.error(e);

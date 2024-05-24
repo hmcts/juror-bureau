@@ -70,6 +70,15 @@
           font: 'LibreBarcode',
           fontSize: 30,
         },
+        largeTotalsLabel: {
+          fontSize: 10,
+          marginTop: 5,
+          bold: true,
+        },
+        largeTotalsValue: {
+          fontSize: 16,
+          marginBottom: 5,
+        },
       },
     };
   };
