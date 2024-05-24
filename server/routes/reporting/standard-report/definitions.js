@@ -404,7 +404,7 @@
           'courtName',
         ],
         bespokeReport: {
-          dao: async(req) => await generateMonthlyUtilisationDAO.get(
+          dao: (req) => generateMonthlyUtilisationDAO.get(
             req,
             req.session.authentication.locCode,
             req.params.filter,
@@ -423,7 +423,7 @@
           'reportTime',
         ],
         bespokeReport: {
-          dao: async(req) => await viewMonthlyUtilisationDAO.get(
+          dao: (req) => viewMonthlyUtilisationDAO.get(
             req,
             req.session.authentication.locCode,
             req.params.filter,
