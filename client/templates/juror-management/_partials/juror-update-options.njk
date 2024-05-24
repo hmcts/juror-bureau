@@ -51,7 +51,7 @@
 
 {# responded and attendances #}
 {% if jurorStatus === "Responded" and attendances > 0 and owner !== "400" %}
-  {% set updateOptions = [disqualify, deceased, complete] %}
+  {% set updateOptions = [disqualify, deceased, complete, reassign] %}
 {% endif %}
 
 {% if jurorStatus === "Excused" and owner !== "400" %}
@@ -78,12 +78,12 @@
 
 {# responded and juror is on call and no attendances #}
 {% if jurorStatus === "Responded" and attendances === 0 and onCall and owner !== "400" %}
-  {% set updateOptions = [deferral, excusal, disqualify, postpone, deceased, complete, failedToAttend] %}
+  {% set updateOptions = [deferral, excusal, disqualify, postpone, deceased, complete, failedToAttend, reassign] %}
 {% endif %}
 
 {# responded an juror is on call and has attendances #}
 {% if jurorStatus === "Responded" and attendances > 0 and onCall and owner !== "400" %}
-  {% set updateOptions = [disqualify, deceased, complete] %}
+  {% set updateOptions = [disqualify, deceased, complete, reassign] %}
 {% endif %}
 
 {% if jurorStatus === "FailedToAttend" and owner !== "400" and isSJO %}
