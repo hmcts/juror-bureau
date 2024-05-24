@@ -10,8 +10,9 @@
 {% from "custom-components/autocomplete/macro.njk" import modAutocomplete %}
 {% from "custom-components/date-picker/macro.njk" import datePicker %}
 {% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "custom-components/mod-large-tag/macro.njk" import modLargeTag %}
 
-{% block page_title %}Reports - {{ title }}{% endblock %}
+{% block page_title %}{{ serviceName }} - Reports - {{ title }}{% endblock %}
 {% block page_identifier %}Reports - {{ title }}{% endblock %}
 
 {% set currentApp = "Reports" %}
@@ -70,10 +71,29 @@
     {% endfor %}
   </div>
 
+  {% if largeTotals.length > 0 %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        
+        <div class="mod-flex mod-gap-x-2">
+          {% for largeTotal in largeTotals %}
+            {{ modLargeTag({
+              id: largeTotal.label,
+              classes: "govuk-!-margin-bottom-1 mod-large-tag__blue mod-flex-grow",
+              label: largeTotal.label,
+              value: largeTotal.value
+            })}}
+          {% endfor %}
+        </div>
+
+      </div>
+    </div>
+  {% endif %}
+
   {% if bespokeReportFile %}
     {% include bespokeReportFile %}
   {% else %}
-    {% if tableRows.length === 0 %}
+    {% if tables.length === 0 %}
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
           {% if searchType === "dateRange" %}
@@ -86,20 +106,26 @@
         </div>
       </div>
     {% else %}
-    {{sortable}}
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-          {{ govukTable({
-            attributes: {
-              'data-module': 'moj-sortable-table'
-            } if not unsortable and not grouped,
-            caption: "Report data",
-            captionClasses: "govuk-visually-hidden",
-            head: tableHeaders,
-            rows: tableRows
-          }) }}
+      {% for table in tables %}
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            {% if table.title %}
+              <div class="mod-juror-record__title">
+                <h2 class="govuk-heading-m govuk-!-margin-bottom-2">{{ table.title }}</h2>
+              </div>
+            {% endif %}
+            {{ govukTable({
+              attributes: {
+                'data-module': 'moj-sortable-table'
+              } if not unsortable and not grouped,
+              caption: "Report data",
+              captionClasses: "govuk-visually-hidden",
+              head: table.headers,
+              rows: table.rows
+            }) }}
+          </div>
         </div>
-      </div>
+      {% endfor %}
     {% endif %}
   {% endif %}
 

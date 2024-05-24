@@ -215,14 +215,11 @@
     },
 
     capitalizeFully: function(string) {
-      var parts
-        , capitalizedParts;
-
       if (!string) return;
 
-      parts = string.split(' ');
+      const parts = string.split(' ');
 
-      capitalizedParts = parts.map(function(part) {
+      const capitalizedParts = parts.map(function(part) {
         return part.trim().charAt(0).toUpperCase() + part.trim().slice(1).toLowerCase();
       });
 
@@ -485,6 +482,10 @@
     arrayIncludes: function(arr, value) {
       return arr.includes(value);
     },
+
+    toMoney: function(value) {
+      return `£${(value || 0).toFixed(2)}`;
+    } 
   };
 
 })();

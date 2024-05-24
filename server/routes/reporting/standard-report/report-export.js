@@ -12,6 +12,10 @@ async function reportExport(app, req, res, reportKey, data) {
     return dailyUtilisationReportExport(req, res, data);
   case 'daily-utilisation-jurors':
     return dailyUtilisationJurorsReportExport(req, res, data);
+  case 'prepare-monthly-utilisation':
+    return monthlyUtilisationReportExport(req, res, data);
+  case 'view-monthly-utilisation':
+    return monthlyUtilisationReportExport(req, res, data);
   default:
     // implement standardised report export if needed
     return;
@@ -93,6 +97,37 @@ async function dailyUtilisationJurorsReportExport(req, res, data) {
   ];
 
   const filename = `daily_utilisation_jurors_${_.lowerCase(headings.courtName.value)}_${reportDate}.csv`;
+
+  res.set('content-disposition', 'attachment; filename=' + filename);
+  res.type('csv');
+  return res.send(csvResult.join('\n'));
+}
+
+async function monthlyUtilisationReportExport(req, res, data) {
+  const { tableData, headings } = data;
+  const reportDate = req.params.filter;
+  const tableHeaders = tableData.headings.map((heading) => heading.name);
+  const tableBody = [];
+
+  tableData.months.forEach((month) => {
+    tableBody.push([
+      month.month,
+      month.jurorWorkingDays.toString(),
+      month.sittingDays.toString(),
+      month.attendanceDays.toString(),
+      month.nonAttendanceDays.toString(),
+      `${(Math.round(month.utilisation * 100) / 100).toString()}%`,
+    ]);
+  });
+
+  const csvResult = [
+    ['Report month', dateFilter(reportDate, 'yyyy-MM-DD', 'MMMM YYYY')],
+    [],
+    tableHeaders,
+    ...tableBody,
+  ];
+
+  const filename = `monthly_utilisation_jurors_${_.lowerCase(headings.courtName.value)}_${dateFilter(reportDate, 'yyyy-MM-DD', 'MM-YYYY')}.csv`;
 
   res.set('content-disposition', 'attachment; filename=' + filename);
   res.type('csv');

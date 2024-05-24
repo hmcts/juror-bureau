@@ -2,12 +2,12 @@
   'use strict';
 
   const _ = require('lodash');
-  const { snakeToCamel, transformCourtNames, makeManualError } = require('../../../lib/mod-utils');
+  const { snakeToCamel, transformCourtNames, makeManualError, checkIfArrayEmpty } = require('../../../lib/mod-utils');
   const { standardReportDAO } = require('../../../objects/reports');
   const { validate } = require('validate.js');
   const { poolSearchObject } = require('../../../objects/pool-search');
   const rp = require('request-promise');
-  const { tableDataMappers, constructPageHeading } = require('./utils');
+  const { tableDataMappers, constructPageHeading, buildTableHeaders } = require('./utils');
   const { bespokeReportBodys } = require('../bespoke-report/bespoke-report-body');
   const { reportKeys } = require('./definitions');
   const { standardReportPrint } = require('./standard-report-print');
@@ -118,6 +118,7 @@
           tmpBody,
           reportKey,
           title: reportType.title,
+          searchLabels: reportType.searchLabelMappers,
           reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
           cancelUrl: app.namedRoutes.build('reports.reports.get'),
         });
@@ -155,12 +156,11 @@
     req.session.reportSearch = req.params.filter;
 
     const buildStandardTableRows = function(tableData, tableHeadings) {
-      return tableData.map(data => {
-
+      const rows = tableData.map(data => {
         let row = tableHeadings.map(header => {
           let output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
 
-          if (header.id === 'juror_number') {
+          if (header.id === 'juror_number' || header.id === 'juror_number_from_trial') {
             return ({
               html: `<a href=${
                 app.namedRoutes.build('juror-record.overview.get', {jurorNumber: output})
@@ -170,10 +170,20 @@
             });
           }
 
-          if (header.id === 'pool_number' || header.id === 'pool_number_by_jp') {
+          if (header.id === 'pool_number' || header.id === 'pool_number_by_jp' || header.id === 'appearance_pool_number') {
             return ({
               html: `<a href=${
                 app.namedRoutes.build('pool-overview.get', {poolNumber: output})
+              }>${
+                output
+              }</a>`,
+            });
+          }
+
+          if (header.id === 'payment_audit') {
+            return ({
+              html: `<a href=${
+                app.namedRoutes.build('reports.financial-audit.get', {auditNumber: output})
               }>${
                 output
               }</a>`,
@@ -200,7 +210,8 @@
             text: output ? output : '-',
             attributes: {
               "data-sort-value": header.dataType === 'LocalDate' ? data[snakeToCamel(header.id)] : output
-            }
+            },
+            format: header.dataType === 'BigDecimal' ? 'numeric' : '',
           });
         });
 
@@ -212,7 +223,83 @@
 
         return row;
       });
+      if (reportType.bespokeReport && reportType.bespokeReport.insertRows) {
+        Object.keys(reportType.bespokeReport.insertRows).map((key) => {
+          if (key === 'last') {
+            rows.push(reportType.bespokeReport.insertRows[key](tableData))
+          } else {
+            rows.splice(key, 0, reportType.bespokeReport.insertRows[key](tableData));
+          }
+        });
+      }
+      return rows;
     };
+
+    const buildStandardTable = function(reportType, tableData, tableHeadings, sectionHeading = '') {
+      let tableRows = [];
+      const tableHeaders = buildTableHeaders(reportType, tableHeadings);
+
+      if (reportType.grouped) {
+        let longestGroup = 0;
+        for (const [header, data] of Object.entries(tableData)) {
+          let group = buildStandardTableRows(data, tableHeadings);
+          let link;
+
+          if (reportType.grouped.headings && reportType.grouped.headings.link) {
+            if (reportType.grouped.headings.link === 'pool-overview') {
+              link = app.namedRoutes.build('pool-overview.get', {poolNumber: header});
+            }
+          }
+
+          longestGroup = group[0].length > longestGroup ? group[0].length : longestGroup; 
+
+          const groupHeaderTransformer = () => {
+            if (reportType.grouped.headings && reportType.grouped.headings.transformer) {
+              return reportType.grouped.headings.transformer(header);
+            }
+            return header;
+          }
+
+          const headRow = (() => {
+            if (!reportType.grouped.groupHeader) return [];
+
+            return link ? [{
+              html: `<a href=${link}>${(reportType.grouped.headings.prefix || '') + groupHeaderTransformer()}</a>`,
+              colspan: longestGroup,
+              classes: 'govuk-!-padding-top-7 govuk-link govuk-body-l govuk-!-font-weight-bold',
+            }]
+            : [{
+              html: capitalizeFully((reportType.grouped.headings.prefix || '') + groupHeaderTransformer()),
+              colspan: longestGroup,
+              classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
+            }];
+          })();
+            
+          const totalsRow = reportType.grouped.totals ? [{
+            text: `Total: ${group.length}`,
+            colspan: longestGroup,
+            classes: 'govuk-body-s govuk-!-font-weight-bold mod-table-no-border',
+          }] : null;
+
+          if (checkIfArrayEmpty(group)) {
+            if (reportType.grouped.emptyDataGroup) {
+              group = reportType.grouped.emptyDataGroup(longestGroup);
+            } else {
+              break;
+            }
+          }
+
+          tableRows = tableRows.concat([
+            headRow,
+            ...group,
+            totalsRow,
+          ]);
+        }
+      } else {
+        tableRows = buildStandardTableRows(tableData, tableHeadings);
+      }
+      return tableRows.length ? [{title: sectionHeading, headers: tableHeaders, rows: tableRows}] : []
+    }
 
     const buildPrintExportUrl = function(urlType = 'print') {
       let url = req.params.filter
@@ -225,6 +312,10 @@
 
       if (req.query.includeSummoned) {
         url = url + '?includeSummoned=' + req.query.includeSummoned;
+      }
+
+      if (req.query.previousMonths) {
+        url = url + '?previousMonths=true'
       }
 
       return url;
@@ -288,76 +379,36 @@
         : standardReportDAO.post(req, app, config));
 
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
-      if (isExport) return reportExport(app, req, res, reportKey, { headings, tableData }) 
+      if (isExport) return reportExport(app, req, res, reportKey, { headings, tableData }) ;
 
-      let tableHeaders = tableData.headings.map((data, index) => ({
-        text: data.name,
-        attributes: {
-          'aria-sort': index === 0 ? 'ascending' : 'none',
-          'aria-label': data.name,
-        }
-      }));
 
-      if (reportType.bespokeReport && reportType.bespokeReport.insertColumns) {
-        Object.keys(reportType.bespokeReport.insertColumns).map((key) => {
-          tableHeaders.splice(key, 0, {text: reportType.bespokeReport.insertColumns[key][0]});
-        });
-      }
-
-      let tableRows = [];
+      let tables = [];
 
       if (reportType.bespokeReport && reportType.bespokeReport.body) {
-        tableRows = bespokeReportBodys(app)[reportKey](tableData)
-      } else {
-        if (reportType.grouped) {
-          for (const [header, data] of Object.entries(tableData.data)) {
-            const group = buildStandardTableRows(data, tableData.headings);
-            let link;
-
-            if (reportType.grouped.headings && reportType.grouped.headings.link) {
-              if (reportType.grouped.headings.link === 'pool-overview') {
-                link = app.namedRoutes.build('pool-overview.get', {poolNumber: header});
-              }
-            }
-
-            const headRow = (() => {
-              if (!reportType.grouped.groupHeader) return [];
-
-              return link ? [{
-                html: `<a href=${link}>${(reportType.grouped.headings.prefix || '') + header}</a>`,
-                colspan: group[0].length,
-                classes: 'govuk-!-padding-top-7 govuk-link govuk-body-l govuk-!-font-weight-bold',
-              }]
-              : [{
-                text: capitalizeFully((reportType.grouped.headings.prefix || '') + header),
-                colspan: group[0].length,
-                classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
-              }];
-            })();
-              
-            const totalsRow = reportType.grouped.totals ? [{
-              text: `Total: ${group.length}`,
-              colspan: group[0].length,
-              classes: 'govuk-body-s govuk-!-font-weight-bold mod-table-no-border',
-            }] : null;
-
-            tableRows = tableRows.concat([
-              headRow,
-              ...group,
-              totalsRow,
-            ]);
-          }
-        } else {
-          tableRows = buildStandardTableRows(tableData.data, tableData.headings);
+        tables = bespokeReportBodys(app)[reportKey](reportType, tableData)
+      } else if (reportType.multiTable) {
+        for (const [key, value] of Object.entries(tableData.data)) {
+          tables.push(...buildStandardTable(reportType, value, tableData.headings, reportType.multiTable.sectionHeadings ? key : ''));
         }
+      } else {
+        tables = buildStandardTable(reportType, tableData.data, tableData.headings);
+      }
+
+      if (reportType.bespokeReport && reportType.bespokeReport.insertTables) {
+        Object.keys(reportType.bespokeReport.insertTables).map((key) => {
+          if (key === 'last') {
+            tables.push(...reportType.bespokeReport.insertTables[key](tableData))
+          } else {
+            tables.splice(key, 0, ...reportType.bespokeReport.insertTables[key](tableData));
+          }
+        });
       }
 
       const pageHeadings = reportType.headings.map(heading => constructPageHeading(heading, headings));
 
       return res.render('reporting/standard-reports/standard-report', {
         title: reportType.title,
-        tableRows,
-        tableHeaders,
+        tables,
         pageHeadings,
         reportKey,
         grouped: reportType.grouped,
@@ -373,6 +424,7 @@
           url: buildBackLinkUrl(),
         },
         bannerMessage,
+        largeTotals: reportType.largeTotals ? reportType.largeTotals(tableData.data) : [],
       });
     } catch (e) {
       console.error(e);

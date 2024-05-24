@@ -184,6 +184,10 @@
   display: flex;
 }
 
+.mod-flex-grow {
+  flex-grow: 1;
+}
+
 .mod-items-start {
   align-items: start;
 }
@@ -494,4 +498,20 @@ dt.govuk-summary-list-mod {
 .mod-barcode {
   font-family: 'Libre Barcode';
   font-size: 3em;
+}
+
+.grouped-display-inline {
+  @extend .govuk-caption-m;
+  display: inline;
+  text-transform: capitalize;
+}
+
+.mod-\!-width {
+    &-one-eighth {
+      width: 12.5% !important;
+    }
+
+    &-three-twentyfifths {
+      width: 8.33333333333% !important;
+    }
 }

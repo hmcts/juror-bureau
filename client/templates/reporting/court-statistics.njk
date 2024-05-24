@@ -1,5 +1,8 @@
 {% extends "layouts/default.njk" %}
 
+{% block page_title %}{{ serviceName }} - Statistics{% endblock %}
+{% block page_identifier %}Statistics{% endblock %}
+
 {% set currentApp = "Reports" %}
 {% set nav = "statistics" %}
 
@@ -21,16 +24,16 @@
 
       <h2 class="govuk-heading-m">Jury expenditure</h2>
       <ul class="govuk-list">
-        <li><a class="govuk-link" href="#">Jury expenditure report (low-level)</a></li>
-        <li><a class="govuk-link" href="#">Jury expenditure report (mid-level)</a></li>
-        <li><a class="govuk-link" href="#">Jury expenditure report (high-level)</a></li>
+        <li><a class="govuk-link" href="{{ url('reports.jury-expenditure-low-level.filter.get') }}">Jury expenditure report (low-level)</a></li>
+        <li><a class="govuk-link" href="{{ url('reports.jury-expenditure-mid-level.filter.get') }}">Jury expenditure report (mid-level)</a></li>
+        <li><a class="govuk-link" href="{{ url('reports.jury-expenditure-high-level.filter.get') }}">Jury expenditure report (high-level)</a></li>
       </ul>
 
       <h2 class="govuk-heading-m">Wastage and utilisation</h2>
       <ul class="govuk-list">
         <li><a class="govuk-link" href="{{ url('reports.daily-utilisation.filter.get') }}">Daily wastage and utilisation report</a></li>
-        <li><a class="govuk-link" href="#">Prepare monthly wastage and utilisation report</a></li>
-        <li><a class="govuk-link" href="#">View monthly wastage and utilisation reports</a></li>
+        <li><a class="govuk-link" href="{{ url('reports.prepare-monthly-utilisation.filter.get') }}">Prepare monthly wastage and utilisation report</a></li>
+        <li><a class="govuk-link" href="{{ url('reports.view-monthly-utilisation.filter.get') }}">View monthly wastage and utilisation reports</a></li>
       </ul>
       
     </div>

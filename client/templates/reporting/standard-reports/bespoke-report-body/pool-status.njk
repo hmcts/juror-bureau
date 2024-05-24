@@ -1,6 +1,6 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 
-{% if tableRows.activeRows.length === 0 and tableRows.inactiveRows.length === 0 %}
+{% if tables.activeRows.length === 0 and tables.inactiveRows.length === 0 %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <hr class="govuk-section-break govuk-section-break--visible">
@@ -14,7 +14,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
       {{ govukSummaryList({
-        rows: tableRows.activeRows,
+        rows: tables.activeRows,
         classes: "govuk-!-padding-left-2"
       }) }}
     </div>
@@ -26,7 +26,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
       {{ govukSummaryList({
-        rows: tableRows.inactiveRows
+        rows: tables.inactiveRows
       }) }}
     </div>
   </div>

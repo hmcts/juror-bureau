@@ -27,6 +27,7 @@
         let searchBy, paginationObject;
 
         delete req.session.errors;
+
         if (documentSearchBy === 'juror_number') {
           searchBy = jurorNumber;
         } else if (documentSearchBy === 'juror_name') {
@@ -58,6 +59,7 @@
         const { tableHeader, tableRows } = tableGenerator.bind({
           response: slicedJurorList,
           checkedJurors: req.session.documentsJurorsList.checkedJurors || [],
+          allChecked: areAllChecked(req),
         })(_isBureauUser);
 
         const postUrl = urljoin(app.namedRoutes.build('documents.letters-list.post', {
@@ -95,10 +97,9 @@
             items: tmpErrors,
           },
         });
-      } catch (error) {
+      } catch (err) {
         app.logger.crit('Failed to retrive letters: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
@@ -175,7 +176,6 @@
 
         app.logger.crit('Failed to reprint letters for selected jurors', {
           userId: req.session.authentication.login,
-          jwt: req.session.authToken,
           data: payload,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
@@ -213,7 +213,6 @@
       } catch (err) {
         app.logger.crit('Failed to delete the letter from the printing queue', {
           userId: req.session.authentication.login,
-          jwt: req.session.authToken,
           data: payload,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
@@ -264,14 +263,39 @@
   // the same approach could be used in other places where we have checkboxes for selecting items from big lists
   module.exports.checkJuror = function(app) {
     return function(req, res) {
-      const { isChecking } = req.body;
+      const { isChecking, isCheckAll } = req.body;
 
-      if (!req.session.documentsJurorsList.checkedJurors) {
-        req.session.documentsJurorsList.checkedJurors = [];
+      if (isCheckAll === 'true') {
+        if (areAllChecked(req)) {
+          req.session.documentsJurorsList.checkedJurors = [];
+        } else {
+          req.session.documentsJurorsList.checkedJurors = [];
+          req.session.documentsJurorsList.data.forEach(juror => {
+            if (isCheckable(juror[4], juror[5])) {
+              req.session.documentsJurorsList.checkedJurors.push({
+                'juror_number': juror[0],
+                'form_code': juror[6],
+                'date_printed': req.body.date_printed,
+              });
+            }
+          });
+        }
+
+        app.logger.info('Checked / unchecked all juror documents: ', {
+          auth: req.session.authentication,
+          data: { ...req.body },
+        });
+
+        return res.status(200).send(req.session.documentsJurorsList.checkedJurors.length.toString());
       }
 
       delete req.body._csrf;
       delete req.body.isChecking;
+      delete req.body.isCheckAll;
+
+      if (typeof req.session.documentsJurorsList.checkedJurors === 'undefined') {
+        req.session.documentsJurorsList.checkedJurors = [];
+      }
 
       const index = req.session.documentsJurorsList.checkedJurors
         .findIndex((juror) => (
@@ -288,11 +312,10 @@
 
       app.logger.info('Checked / unchecked juror document: ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         data: { ...req.body },
       });
 
-      return res.send();
+      return res.status(200).send(req.session.documentsJurorsList.checkedJurors.length.toString());
     };
   };
 
@@ -380,6 +403,20 @@
 
       return doc[doc.length - 2] !== false || _neverPrinted;
     }).length;
+  }
+
+  function areAllChecked(req) {
+    if (typeof req.session.documentsJurorsList.checkedJurors === 'undefined') {
+      req.session.documentsJurorsList.checkedJurors = [];
+      return false;
+    }
+
+    return req.session.documentsJurorsList.data.filter((juror) => (isCheckable(juror[4], juror[5]))).length
+      === req.session.documentsJurorsList.checkedJurors.length;
+  }
+
+  function isCheckable(printValue, pendingValue) {
+    return !!printValue && !!pendingValue;
   }
 
 })();

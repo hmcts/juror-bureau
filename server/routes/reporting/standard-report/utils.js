@@ -1,5 +1,6 @@
 /* eslint-disable strict */
 const { dateFilter, capitalizeFully, toSentenceCase } = require('../../../components/filters');
+const moment = require('moment');
 
 const tableDataMappers = {
   String: (data) => isNaN(data) ? capitalizeFully(data) : data.toString(),
@@ -36,6 +37,8 @@ const tableDataMappers = {
   },
   Long: (data) => data.toString(),
   Integer: (data) => data.toString(),
+  LocalTime: (data) => data ? moment(data, 'HH:mm:ss').format('hh:mma') : '-',
+  BigDecimal: (data) => `£${(Math.round(data * 100) / 100).toFixed(2).toString()}`,
 };
 
 const headingDataMappers = {
@@ -45,9 +48,9 @@ const headingDataMappers = {
     let time = data.split('T')[1].split('.')[0];
 
     if (parseInt(time.split(':')[0]) === 12) {
-      return time + 'pm';
+      return time + ' pm';
     } else if (parseInt(time.split(':')[0]) > 12) {
-      return `${parseInt(time.split(':')[0]) - 12}:${time.split(':').slice(1).join(':')}pm`;
+      return `${parseInt(time.split(':')[0]) - 12}:${time.split(':').slice(1).join(':')} pm`;
     }
 
     return time + ' am';
@@ -74,5 +77,40 @@ const constructPageHeading = (headingType, data) => {
   return {};
 };
 
+const buildTableHeaders = (reportType, tableHeadings) => {
+  let tableHeaders;
+
+  if (reportType.bespokeReport && reportType.bespokeReport.tableHeaders) {
+    tableHeaders = reportType.bespokeReport.tableHeaders.map((data, index) => ({
+      text: data,
+      attributes: {
+        'aria-sort': index === 0 ? 'ascending' : 'none',
+        'aria-label': data,
+      },
+      classes: reportType.bespokeReport?.tableHeadClasses ? reportType.bespokeReport?.tableHeadClasses[index] : ''
+    }));
+  } else {
+    tableHeaders = tableHeadings.map((data, index) => {
+      return ({
+        text: data.name,
+        attributes: {
+          'aria-sort': index === 0 ? 'ascending' : 'none',
+          'aria-label': data.name,
+        },
+        classes: reportType.bespokeReport?.tableHeadClasses ? reportType.bespokeReport?.tableHeadClasses[index] : '',
+        format: data.dataType === 'BigDecimal' ? 'numeric' : '',
+      });
+    });
+  }
+
+  if (reportType.bespokeReport && reportType.bespokeReport.insertColumns) {
+    Object.keys(reportType.bespokeReport.insertColumns).map((key) => {
+      tableHeaders.splice(key, 0, {text: reportType.bespokeReport.insertColumns[key][0]});
+    });
+  }
+  return tableHeaders;
+};
+
 module.exports.tableDataMappers = tableDataMappers;
 module.exports.constructPageHeading = constructPageHeading;
+module.exports.buildTableHeaders = buildTableHeaders;

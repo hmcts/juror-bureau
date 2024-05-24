@@ -75,7 +75,10 @@ module.exports = async function(app) {
   app.use(helmet.hidePoweredBy());
   app.use(helmet.hsts());
   app.use(helmet.ieNoOpen());
-  app.use(helmet.noCache());
+  app.use((_, res, next) => {
+    res.setHeader('Cache-Control', 'no-cache, max-age=0, must-revalidate, no-store');
+    next();
+  });
   app.use(helmet.noSniff());
   app.use(helmet.xssFilter());
   app.use(referrerPolicy());
