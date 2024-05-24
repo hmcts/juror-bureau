@@ -7325,7 +7325,7 @@ __metadata:
     sass: ^1.72.0
     sinon: ^18.0.0
     sinon-chai: ^3.0.0
-    time-grunt: ^1.4.0
+    time-grunt: ^2.0.0
     url-join: ^4.0.1
     validate.js: ^0.13.1
     winston: ^2.4.5
@@ -11724,9 +11724,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"time-grunt@npm:^1.4.0":
-  version: 1.4.0
-  resolution: "time-grunt@npm:1.4.0"
+"time-grunt@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "time-grunt@npm:2.0.0"
   dependencies:
     chalk: ^1.0.0
     date-time: ^1.1.0
@@ -11735,7 +11735,7 @@ __metadata:
     number-is-nan: ^1.0.0
     pretty-ms: ^2.1.0
     text-table: ^0.2.0
-  checksum: 652144bb405f50e6fdf36715cf6e1cb10db56cf08d48289d09893b46724a278f11ce55bdd041a87f82cee7825815fe31c9a97e6eafa46e4fff49069987d683b3
+  checksum: ffcd2a93459582b4370a9268b654bc205f691b9c64472d5dc80ac7a77ca69f8cb8dfb65ebce542df3b523619421899ea7d28551a5ace68ebe29f2a3a5fe88056
   languageName: node
   linkType: hard
 
