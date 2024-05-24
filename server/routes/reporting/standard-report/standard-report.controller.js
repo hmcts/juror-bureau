@@ -257,23 +257,14 @@
             if (reportType.grouped.headings && reportType.grouped.headings.transformer) {
               return reportType.grouped.headings.transformer(header);
             }
-            return header;
+            return capitalizeFully(header);
           }
 
-          const headRow = (() => {
-            if (!reportType.grouped.groupHeader) return [];
-
-            return link ? [{
-              html: `<a href=${link}>${(reportType.grouped.headings.prefix || '') + groupHeaderTransformer()}</a>`,
-              colspan: longestGroup,
-              classes: 'govuk-!-padding-top-7 govuk-link govuk-body-l govuk-!-font-weight-bold',
-            }]
-            : [{
-              html: capitalizeFully((reportType.grouped.headings.prefix || '') + groupHeaderTransformer()),
-              colspan: longestGroup,
-              classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
-            }];
-          })();
+          const headRow = reportType.grouped.groupHeader ? [{
+            html: groupHeaderTransformer(),
+            colspan: group[0].length,
+            classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
+          }] : []
             
           const totalsRow = reportType.grouped.totals ? [{
             text: `Total: ${group.length}`,

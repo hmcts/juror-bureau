@@ -85,7 +85,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
           if (reportData.grouped.headings && reportData.grouped.headings.transformer) {
             return reportData.grouped.headings.transformer(heading, isPrint);
           }
-          return heading;
+          return capitalizeFully(heading);
         };
 
         let group = buildStandardTableRows(rowData, tableData.headings);
@@ -93,7 +93,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
         longestGroup = group[0].length > longestGroup ? group[0].length : longestGroup; 
 
         const headRow = [{
-          text: capitalizeFully((reportData.grouped.headings.prefix || '') + groupHeaderTransformer()),
+          text: groupHeaderTransformer(),
           style: 'groupHeading',
           colSpan: longestGroup,
         }];
