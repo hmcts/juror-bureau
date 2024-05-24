@@ -10,8 +10,9 @@
 {% from "custom-components/autocomplete/macro.njk" import modAutocomplete %}
 {% from "custom-components/date-picker/macro.njk" import datePicker %}
 {% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "custom-components/mod-large-tag/macro.njk" import modLargeTag %}
 
-{% block page_title %}Reports - {{ title }}{% endblock %}
+{% block page_title %}{{ serviceName }} - Reports - {{ title }}{% endblock %}
 {% block page_identifier %}Reports - {{ title }}{% endblock %}
 
 {% set currentApp = "Reports" %}
@@ -38,7 +39,7 @@
     <div class="govuk-button-group">
       {% if exportUrl %}
         {{ govukButton({
-          text: "Export data",
+          text: exportLabel,
           href: exportUrl,
           classes: "govuk-button--secondary",
           attributes: {
@@ -70,14 +71,38 @@
     {% endfor %}
   </div>
 
-  {% if bespokeReportBody %}
-    {% include "./bespoke-report-body/" + reportKey + ".njk" %}
+  {% if largeTotals.length > 0 %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        
+        <div class="mod-flex mod-gap-x-2">
+          {% for largeTotal in largeTotals %}
+            {{ modLargeTag({
+              id: largeTotal.label,
+              classes: "govuk-!-margin-bottom-1 mod-large-tag__blue mod-flex-grow",
+              label: largeTotal.label,
+              value: largeTotal.value
+            })}}
+          {% endfor %}
+        </div>
+
+      </div>
+    </div>
+  {% endif %}
+
+  {% if bespokeReportFile %}
+    {% include bespokeReportFile %}
   {% else %}
     {% if tableRows.length === 0 %}
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
-          <hr class="govuk-section-break govuk-section-break--visible">
-          <h2 class="govuk-heading-m govuk-!-margin-top-4">This report has no matching data</h2>
+          {% if searchType === "dateRange" %}
+            <h2 class="govuk-heading-m govuk-!-margin-top-4">No results found</h2>
+            <a class="govuk-body govuk-link govuk-link--no-visited-state" href="{{ backLinkUrl.url }}">Check your dates and try again.</a>
+          {% else %}
+            <hr class="govuk-section-break govuk-section-break--visible">
+            <h2 class="govuk-heading-m govuk-!-margin-top-4">This report has no matching data</h2>
+          {% endif %}
         </div>
       </div>
     {% else %}
@@ -86,7 +111,7 @@
           {{ govukTable({
             attributes: {
               'data-module': 'moj-sortable-table'
-            } if not grouped,
+            } if not unsortable and not grouped,
             caption: "Report data",
             captionClasses: "govuk-visually-hidden",
             head: tableHeaders,

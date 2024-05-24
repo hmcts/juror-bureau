@@ -14,25 +14,21 @@
     app.get('/juror-management/record/:jurorNumber/overview',
       'juror-record.overview.get',
       auth.verify,
-      controller.checkResponse(app),
       controller.getOverviewTab(app));
 
     app.get('/juror-management/record/:jurorNumber/details',
       'juror-record.details.get',
       auth.verify,
-      controller.checkResponse(app),
       controller.getDetailsTab(app));
 
     app.get('/juror-management/record/:jurorNumber/summons',
       'juror-record.summons.get',
       auth.verify,
-      controller.checkResponse(app),
       controller.getSummonsTab(app));
 
     app.get('/juror-management/record/:jurorNumber/expenses',
       'juror-record.expenses.get',
       auth.verify,
-      controller.checkResponse(app),
       controller.getExpensesTab(app));
     app.get('/juror-management/record/:jurorNumber/default-expenses',
       'juror-record.default-expenses.get',
@@ -46,7 +42,6 @@
     app.get('/juror-management/record/:jurorNumber/attendance',
       'juror-record.attendance.get',
       auth.verify,
-      controller.checkResponse(app),
       controller.getAttendanceTab(app));
     app.get('/juror-management/record/:jurorNumber/change-attendance-date',
       'juror-record.attendance.change-attendance-date.get',
@@ -104,7 +99,6 @@
     app.get('/juror-management/record/:jurorNumber/notes',
       'juror-record.notes.get',
       auth.verify,
-      controller.checkResponse(app),
       controller.getNotesTab(app));
 
     app.get('/juror-management/record/:jurorNumber/notes/edit',

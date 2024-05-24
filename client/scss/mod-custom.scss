@@ -184,6 +184,10 @@
   display: flex;
 }
 
+.mod-flex-grow {
+  flex-grow: 1;
+}
+
 .mod-items-start {
   align-items: start;
 }
@@ -324,6 +328,10 @@ dt.govuk-summary-list-mod {
 .mod-highlight-table-data {
   &__grey {
     background: govuk-colour("light-grey");
+  }
+  &__blue {
+    background: govuk-colour("blue");
+    color: govuk-colour("white");
   }
 }
 .mod-center-table-data {
@@ -490,4 +498,10 @@ dt.govuk-summary-list-mod {
 .mod-barcode {
   font-family: 'Libre Barcode';
   font-size: 3em;
+}
+
+.grouped-display-inline {
+  @extend .govuk-caption-m;
+  display: inline;
+  text-transform: capitalize;
 }

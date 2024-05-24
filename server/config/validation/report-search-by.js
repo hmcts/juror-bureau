@@ -53,6 +53,16 @@
         details: 'Enter an attendance date',
       }],
     },
+    dailyUtilisation: {
+      dateFrom: [{
+        summary: 'Enter a date to search utilisation from',
+        details: 'Enter a date to search utilisation from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search utilisation up until',
+        details: 'Enter a date to search utilisation up until',
+      }],
+    },
   };
 
   module.exports.searchBy = function(reportKey) {

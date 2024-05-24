@@ -10,8 +10,8 @@
 {% from "custom-components/autocomplete/macro.njk" import modAutocomplete %}
 {% from "includes/csrf.njk" import csrfProtection %}
 
-{% block page_title %}Reports - {{ title }}{% endblock %}
-{% block page_identifier %}Reports - {{ title }}{% endblock %}
+{% block page_title %}{{ serviceName }} - Reports - {{ title }} - select court{% endblock %}
+{% block page_identifier %}Reports - {{ title }} - select court{% endblock %}
 
 {% set currentApp = "Reports" %}
 

@@ -39,4 +39,50 @@ const { DAO } = require('./dataAccessObject');
       };
     },
   });
+
+  module.exports.dailyUtilisationDAO = new DAO('moj/reports/daily-utilisation', {
+    get: function(locCode, fromDate, toDate) {
+      return {
+        uri: `${this.resource}/${locCode}?reportFromDate=${fromDate}&reportToDate=${toDate}`,
+        transform: mapSnakeToCamel,
+      };
+    },
+  });
+
+  module.exports.dailyUtilisationJurorsDAO = new DAO('moj/reports/daily-utilisation-jurors', {
+    get: function(locCode, date) {
+      return {
+        uri: `${this.resource}/${locCode}?reportDate=${date}`,
+        transform: mapSnakeToCamel,
+      };
+    },
+  });
+
+  module.exports.generateMonthlyUtilisationDAO = new DAO('moj/reports/generate-monthly-utilisation', {
+    get: function(locCode, reportDate) {
+      return {
+        uri: `${this.resource}/${locCode}?reportDate=${reportDate}`,
+        transform: mapSnakeToCamel,
+      };
+    },
+  });
+
+  module.exports.monthlyUtilisationReportsDAO = new DAO('moj/reports/monthly-utilisation-reports', {
+    get: function(locCode) {
+      return {
+        uri: `${this.resource}/${locCode}`,
+        transform: mapSnakeToCamel,
+      };
+    },
+  });
+
+  module.exports.viewMonthlyUtilisationDAO = new DAO('moj/reports/view-monthly-utilisation', {
+    get: function(locCode, reportDate, previousMonths = 'false') {
+      return {
+        uri: `${this.resource}/${locCode}?reportDate=${reportDate}&previousMonths=${previousMonths}`,
+        transform: mapSnakeToCamel,
+      };
+    },
+  });
+
 })();

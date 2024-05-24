@@ -1,12 +1,14 @@
 /* eslint-disable strict */
 const { generateDocument } = require('../../../lib/reports/single-generator');
-const { tableDataMappers, constructPageHeading, bespokeReportTablePrint } = require('./utils');
+const { tableDataMappers, constructPageHeading } = require('./utils');
+const { bespokeReportTablePrint } = require('../bespoke-report/bespoke-report-print');
 const { snakeToCamel } = require('../../../lib/mod-utils');
 const { reportKeys } = require('./definitions');
 const { capitalizeFully } = require('../../../components/filters');
 
 async function standardReportPrint(app, req, res, reportKey, data) {
   const reportData = reportKeys(app, req)[reportKey];
+  const isPrint = true;
 
   const { headings, tableData } = data;
 
@@ -62,7 +64,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
 
   let reportBody;
 
-  if (reportData.bespokeReportBody) {
+  if (reportData.bespokeReport && reportData.bespokeReport.body) {
     reportBody = bespokeReportTablePrint[reportKey](data);
   } else {
     let tableRows = [];
@@ -70,17 +72,27 @@ async function standardReportPrint(app, req, res, reportKey, data) {
     if (reportData.grouped) {
       for (const [heading, rowData] of Object.entries(tableData.data)) {
 
+        const groupHeaderTransformer = () => {
+          if (reportData.grouped.headings && reportData.grouped.headings.transformer) {
+            return reportData.grouped.headings.transformer(heading, isPrint);
+          }
+          return heading;
+        };
+
         const group = buildStandardTableRows(rowData, tableData.headings);
-        const headRow = [
-          { text: capitalizeFully((reportData.grouped.headings.prefix || '') + heading), style: 'groupHeading', colSpan: group[0].length },
-        ];
+
+        const headRow = [{
+          text: capitalizeFully((reportData.grouped.headings.prefix || '') + groupHeaderTransformer()),
+          style: 'groupHeading',
+          colSpan: group[0].length,
+        }];
         let totalsRow;
 
         if (reportData.grouped.totals) {
           totalsRow = [{ text: `Total: ${group.length}`, style: 'label', colSpan: group[0].length }];
         }
 
-        for (let i=0; i<group[0].length - 1; i++) {
+        for (let i = 0; i < group[0].length - 1; i++) {
           headRow.push({});
           if (totalsRow) {
             totalsRow.push({});
@@ -109,9 +121,40 @@ async function standardReportPrint(app, req, res, reportKey, data) {
           ? reportData.bespokeReport.printWidths : null,
       },
     ];
-
-    console.log(reportBody);
   }
+
+  const buildLargeTotals = () => {
+    if (!reportData.largeTotals) return {};
+
+    const body = reportData.largeTotals(tableData.data).reduce((acc, total) => {
+      acc.push(
+        {
+          border: [false, false, false, false],
+          fillColor: '#eeeeee',
+          marginLeft: 5,
+          stack: [
+            {
+              text: total.label,
+              style: 'largeTotalsLabel',
+            },
+            {
+              text: total.value,
+              style: 'largeTotalsValue',
+            },
+          ],
+        }
+      );
+      return acc;
+    }, []);
+
+    return {
+      margin: [0, 20, 0, -20],
+      table: {
+        widths: Array(body.length).fill('*'),
+        body: [body],
+      },
+    };
+  };
 
   try {
     const document = await generateDocument({
@@ -121,6 +164,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
         left: [...buildReportHeadings(reportData.headings.filter((v, index) => index % 2 === 0)).filter(item => item)],
         right: [...buildReportHeadings(reportData.headings.filter((v, index) => index % 2 === 1)).filter(item => item)],
       },
+      largeTotals: buildLargeTotals(),
       tables: reportBody,
     }, {
       pageOrientation: reportData.printLandscape ? 'landscape' : 'portrait',

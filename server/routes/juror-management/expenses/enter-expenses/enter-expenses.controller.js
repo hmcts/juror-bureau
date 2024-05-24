@@ -244,8 +244,6 @@
           'expense_list': [{ ...data }],
         };
 
-        delete payload.expense_list[0];
-
         await postRecalculateSummaryTotalsDAO.post(app, req, locCode, jurorNumber, payload);
       } catch (err) {
         if (err.error && err.error.code === 'EXPENSES_CANNOT_BE_LESS_THAN_ZERO') {

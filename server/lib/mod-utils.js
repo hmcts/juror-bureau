@@ -309,7 +309,7 @@
   };
 
   module.exports.transformUnpaidAttendanceList = (unpaidAttendance, sortBy, sortOrder, locCode) => {
-    const order = sortOrder || 'ascending';
+    const order = sortOrder || 'descending';
     const table = {
       head: [{
         id: 'jurorNumber',
@@ -324,7 +324,7 @@
         sortable: true,
       },
       {
-        id: 'FirstName',
+        id: 'firstName',
         value: 'First Name',
         sort: sortBy === 'firstName' ? order : 'none',
         sortable: true,
@@ -336,9 +336,9 @@
         sortable: true,
       },
       {
-        id: 'unpaidTotal',
+        id: 'totalInDraft',
         value: 'Total in draft',
-        sort: sortBy === 'unpaidTotal' ? order : 'none',
+        sort: sortBy === 'totalInDraft' ? order : 'none',
         sortable: true,
       },
       {

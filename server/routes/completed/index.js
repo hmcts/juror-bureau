@@ -2,12 +2,11 @@
   'use strict';
 
   var controller = require('./completed.controller')
-    , auth = require('../../components/auth')
-    , responseCountMiddleware = require('../../objects/responses').object;
+    , auth = require('../../components/auth');
 
 
   module.exports = function(app) {
-    app.get('/completed', 'inbox.completed.get', auth.verify, responseCountMiddleware.getCount.bind(app), controller.index(app));
+    app.get('/completed', 'inbox.completed.get', auth.verify, controller.index(app));
 
   };
 

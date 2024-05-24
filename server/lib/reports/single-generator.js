@@ -118,7 +118,7 @@
   // TODO: this can be improved still
   const documentContent = (tables) => {
     const _defaultTableOptions = (modifications, margin) => ({
-      alignment: 'justify',
+      alignment: 'left',
       style: 'body',
       layout: {
         ...layout().defaultLayout,
@@ -166,6 +166,11 @@
     return _tables;
   };
 
+  const largeTotals = (data) => {
+    if (!data) return [];
+    return [data];
+  };
+
   /**
    * @typedef {object} Content
    * @property {string} title document title to show on top of the document
@@ -194,6 +199,7 @@
       const _documentContent = [
         { ...documentTitle(content.title) },
         { ...documentMetadata(content.metadata) },
+        ...largeTotals(content.largeTotals),
         ...documentContent(content.tables),
       ];
 
