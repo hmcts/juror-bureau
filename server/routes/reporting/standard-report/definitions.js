@@ -800,7 +800,7 @@
             transformer: (data, isPrint) => {
               const [poolNumber, poolType] = data.split(',');
               if (isPrint) {
-                return `Pool ${poolNumber}`;
+                return `Pool ${poolNumber} - ${capitalizeFully(poolType)}`;
               }
               return `${makeLink(app)['poolNumber'](poolNumber)} <span class="grouped-display-inline">${capitalizeFully(poolType)}</span>`;
             },
