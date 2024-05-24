@@ -395,10 +395,12 @@
           return [
             { label: 'Panelled', value: data.length },
             { label: 'Empanelled', value: data.filter(juror => juror.panelStatus === 'Juror').length },
-            // eslint-disable-next-line max-len
-            { label: 'Not used', value: data.filter(juror => (juror.panelStatus === 'Not Used' || juror.panelStatus === 'Returned')).length },
+            {
+              label: 'Not used',
+              value: data.filter(juror => (juror.panelStatus === 'Not Used' || juror.panelStatus === 'Returned')).length,
+            },
             { label: 'Challenged', value: data.filter(juror => juror.panelStatus === 'Challenged').length },
-            { label: 'Returned jurors', value: data.filter(juror => juror.panelStatus === 'Returned').length },
+            { label: 'Returned jurors', value: data.filter(juror => juror.panelStatus === 'Returned Juror').length },
           ];
         },
       },
