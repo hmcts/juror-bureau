@@ -172,7 +172,13 @@ async function standardReportPrint(app, req, res, reportKey, data) {
   }
 
   if (reportData.bespokeReport && reportData.bespokeReport.printInsertTables) {
-    reportBody.push(...reportData.bespokeReport.insertTables(tableData, true))
+    Object.keys(reportData.bespokeReport.insertTables).map((key) => {
+      if (key === 'last') {
+        reportBody.push(...reportData.bespokeReport.insertTables[key](tableData, true))
+      } else {
+        reportBody.splice(key, 0, ...reportData.bespokeReport.insertTables[key](tableData, true));
+      }
+    });
   }
 
   const buildLargeTotals = () => {

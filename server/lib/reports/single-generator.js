@@ -143,8 +143,6 @@
         const _body = [];
 
         if (table.head) {
-          // console.log('ADDING TABLE HEADERS');
-          // console.log(table.head);
           _body.push(table.head);
         }
 
@@ -153,8 +151,6 @@
         if (table.footer && table.footer.length) {
           _body.push(table.footer);
         }
-
-        console.log(_body);
 
         _tables.push({
           ..._defaultTableOptions(table.layout, table.margin),
@@ -167,7 +163,6 @@
       }
     });
 
-    // console.log(_tables);
     return _tables;
   };
 
