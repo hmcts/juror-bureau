@@ -32,25 +32,6 @@
     };
   };
 
-  // This is just a fallback in case the button still renders...
-  // this will not prevent the user from navigating directly from outside their record
-  module.exports.checkForResponse = function(app) {
-    return function(req, res, next) {
-      if (typeof req.session.hasSummonsResponse !== 'undefined' && req.session.hasSummonsResponse) {
-        req.session.bannerMessage = {
-          text: 'This juror has already responded.',
-          isWarning: true,
-        };
-
-        return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
-          jurorNumber: req.params['id'],
-        }));
-      }
-
-      next();
-    };
-  };
-
   module.exports.getIndex = function(app) {
     return function(req, res) {
       var successCB = function(response = {}) {
