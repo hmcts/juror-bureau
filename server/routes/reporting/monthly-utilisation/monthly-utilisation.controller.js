@@ -56,7 +56,6 @@
     } catch (err) {
       app.logger.crit('Failed to fetch court details', {
         auth: req.session.authentication,
-        token: req.session.authToken,
         data: {
           locCode: req.session.authentication.locCode,
         },
@@ -96,10 +95,8 @@
         },
       });
     } catch (err) {
-      console.log(e);
       app.logger.crit('Failed to fetch prepared monthly utilisation dates', {
         auth: req.session.authentication,
-        token: req.session.authToken,
         data: {
           locCode: req.session.authentication.locCode,
         },
