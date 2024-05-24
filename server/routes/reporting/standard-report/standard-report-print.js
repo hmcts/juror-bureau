@@ -123,6 +123,39 @@ async function standardReportPrint(app, req, res, reportKey, data) {
     ];
   }
 
+  const buildLargeTotals = () => {
+    if (!reportData.largeTotals) return {};
+
+    const body = reportData.largeTotals(tableData.data).reduce((acc, total) => {
+      acc.push(
+        {
+          border: [false, false, false, false],
+          fillColor: '#eeeeee',
+          marginLeft: 5,
+          stack: [
+            {
+              text: total.label,
+              style: 'largeTotalsLabel',
+            },
+            {
+              text: total.value,
+              style: 'largeTotalsValue',
+            },
+          ],
+        }
+      );
+      return acc;
+    }, []);
+
+    return {
+      margin: [0, 20, 0, -20],
+      table: {
+        widths: Array(body.length).fill('*'),
+        body: [body],
+      },
+    };
+  };
+
   try {
     const document = await generateDocument({
       title: reportData.title,
@@ -131,6 +164,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
         left: [...buildReportHeadings(reportData.headings.filter((v, index) => index % 2 === 0)).filter(item => item)],
         right: [...buildReportHeadings(reportData.headings.filter((v, index) => index % 2 === 1)).filter(item => item)],
       },
+      largeTotals: buildLargeTotals(),
       tables: reportBody,
     }, {
       pageOrientation: reportData.printLandscape ? 'landscape' : 'portrait',
