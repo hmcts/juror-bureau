@@ -190,7 +190,7 @@
         req.session.authToken,
         'overview',
         req.params['jurorNumber'],
-        req.session.authentication.locCode,
+        req.session.locCode || req.session.authentication.locCode,
       ));
 
       promiseArr.push(jurorRecordObject.record.get(
@@ -199,7 +199,7 @@
         req.session.authToken,
         'detail',
         req.params['jurorNumber'],
-        req.session.authentication.locCode,
+        req.session.locCode || req.session.authentication.locCode,
       ));
 
       Promise.all(promiseArr)
