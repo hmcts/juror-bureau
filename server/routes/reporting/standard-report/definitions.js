@@ -1,10 +1,11 @@
-const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../objects/reports');
 
 (() => {
   'use strict';
 
   const { isCourtUser } = require('../../../components/auth/user-type');
   const { dateFilter } = require('../../../components/filters');
+  const { monthlyUtilisationDAO } = require('../../../objects/reports');
+  const { dailyUtilisationDAO, dailyUtilisationJurorsDAO, viewMonthlyUtilisationDAO, generateMonthlyUtilisationDAO } = require('../../../objects/reports');
 
   // type IReportKey = {[key:string]: {
   //   title: string,
@@ -391,6 +392,47 @@ const { dailyUtilisationDAO, dailyUtilisationJurorsDAO } = require('../../../obj
             { label: 'Returned jurors', value: data.filter(juror => juror.panelStatus === 'Returned').length },
           ];
         },
+      },
+      'prepare-monthly-utilisation': {
+        title: 'Monthly wastage and utilisation report',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+          '',
+          'courtName',
+        ],
+        bespokeReport: {
+          dao: (req) => generateMonthlyUtilisationDAO.get(
+            req,
+            req.session.authentication.locCode,
+            req.params.filter,
+          ),
+          body: true,
+        },
+        unsortable: true,
+        exportLabel: 'Export raw data',
+      },
+      'view-monthly-utilisation': {
+        title: 'View monthly wastage and utilisation report',
+        headings: [
+          'courtName',
+          'reportDate',
+          '',
+          'reportTime',
+        ],
+        bespokeReport: {
+          dao: (req) => viewMonthlyUtilisationDAO.get(
+            req,
+            req.session.authentication.locCode,
+            req.params.filter,
+            req.query.previousMonths
+          ),
+          body: true,
+        },
+        unsortable: true,
+        exportLabel: 'Export raw data',
       },
     };
   };

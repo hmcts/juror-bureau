@@ -71,6 +71,9 @@
     standardReportRoutes(app, 'daily-utilisation-jurors');
     standardReportRoutes(app, 'unconfirmed-attendance');
     standardReportRoutes(app, 'panel-members-status');
+    require('../monthly-utilisation')(app);
+    standardReportRoutes(app, 'prepare-monthly-utilisation');
+    standardReportRoutes(app, 'view-monthly-utilisation');
   };
 
 })();

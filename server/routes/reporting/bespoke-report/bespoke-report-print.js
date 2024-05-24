@@ -202,6 +202,69 @@ const bespokeReportTablePrint = {
       },
     ];
   },
+  'prepare-monthly-utilisation': (data) => {
+    const { tableData } = data;
+    let rows = [];
+
+    tableData.months.forEach((month) => {
+      rows.push([
+        {
+          text: month.month,
+        },
+        {
+          text: month.jurorWorkingDays.toString(),
+        },
+        {
+          text: month.sittingDays.toString(),
+        },
+        {
+          text: month.attendanceDays.toString(),
+        },
+        {
+          text: month.nonAttendanceDays.toString(),
+        },
+        {
+          text: `${(Math.round(month.utilisation * 100) / 100).toString()}%`,
+        },
+      ]);
+    });
+    rows.push([
+      {
+        text: tableData.months.length > 1 ? 'Overall total' : '', bold: true, fillColor: '#0b0c0c', color: '#ffffff',
+      },
+      {
+        text: tableData.totalJurorWorkingDays.toString(), bold: true, fillColor: '#0b0c0c', color: '#ffffff',
+      },
+      {
+        text: tableData.totalSittingDays.toString(), bold: true, fillColor: '#0b0c0c', color: '#ffffff',
+      },
+      {
+        text: tableData.totalAttendanceDays.toString(), bold: true, fillColor: '#0b0c0c', color: '#ffffff',
+      },
+      {
+        text: tableData.totalNonAttendanceDays.toString(), bold: true, fillColor: '#0b0c0c', color: '#ffffff',
+      },
+      {
+        text: `${(Math.round(tableData.totalUtilisation * 100) / 100).toString()}%`,
+        bold: true,
+        fillColor: '#0b0c0c',
+        color: '#ffffff',
+      },
+    ]);
+
+    return [
+      {
+        head: [...tableData.headings.map(heading => {
+          return { text: heading.name, style: 'label' };
+        })],
+        body: [...rows],
+        footer: [],
+      },
+    ];
+  },
+  'view-monthly-utilisation': (data) => {
+    return bespokeReportTablePrint['prepare-monthly-utilisation'](data);
+  },
 };
 
 module.exports.bespokeReportTablePrint = bespokeReportTablePrint;
