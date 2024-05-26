@@ -59,11 +59,19 @@ module.exports = async function(app) {
     const nonce = `'nonce-${res.locals.nonce}'`;
     const chartJsCsp = '\'sha256-kwpt3lQZ21rs4cld7/uEm9qI5yAbjYzx+9FGm/XmwNU=\'';
 
+    const scriptSrc = ['\'self\'', 'cdnjs.cloudflare.com', nonce];
+    const styleSrc = ['\'self\'', chartJsCsp];
+
+    if (env === 'development') {
+      scriptSrc.push('\'unsafe-inline\'', '\'unsafe-eval\'');
+      styleSrc.push('\'unsafe-inline\'');
+    }
+
     helmet.contentSecurityPolicy({
       directives: {
         defaultSrc: ['\'none\''],
-        styleSrc: ['\'self\'', chartJsCsp],
-        scriptSrc: ['\'self\'', 'cdnjs.cloudflare.com', nonce],
+        styleSrc,
+        scriptSrc,
         fontSrc: ['\'self\'', 'data:'],
         imgSrc: ['\'self\'', 'data:'],
         connectSrc: ['\'self\''],
@@ -130,6 +138,7 @@ module.exports = async function(app) {
     res.locals.activeUrl = req.originalUrl;
     res.locals.trackingCode = config.trackingCode;
     res.locals.serviceName = 'HMCTS Juror';
+    res.locals.env = env;
 
     if (config.responseEditEnabled === true){
       res.locals.responseEditEnabled = true;

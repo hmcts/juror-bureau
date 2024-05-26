@@ -7,6 +7,8 @@ const HtmlWebpack = require(path.resolve(__dirname, 'webpack/htmlWebpack'));
 const devMode = process.env.NODE_ENV !== 'production';
 const filename = 'js/bundle.js';
 
+const outDir = devMode ? 'dev/client' : 'dist/client';
+
 module.exports = {
   plugins: [...scss.plugins, ...HtmlWebpack.plugins],
   entry: path.resolve(sourcePath, 'main.js'),
@@ -17,10 +19,10 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: ['.ts', '.js'],
+    extensions: ['.js'],
   },
   output: {
-    path: path.resolve(__dirname, 'dist/client'),
+    path: path.resolve(__dirname, outDir),
     publicPath: '',
     filename,
   },

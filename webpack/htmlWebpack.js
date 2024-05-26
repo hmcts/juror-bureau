@@ -22,7 +22,6 @@ const clientJs = [
 
 const copyClientCode = new CopyWebpackPlugin({
   patterns: [
-    // { from: 'client/**/*.html', to: 'dist' },
     { from: 'client/**/*.njk', to: '../' },
     { from: 'server/**/*.js', to: '../' },
     {
@@ -51,6 +50,7 @@ const copyClientCode = new CopyWebpackPlugin({
     { from: 'config/', to: '../config' },
     { from: 'package.json', to: '../' },
 
+    // copy fonts and images
     {
       context: 'client/assets/fonts/',
       from: '*.*',
@@ -75,6 +75,5 @@ const copyClientCode = new CopyWebpackPlugin({
 });
 
 module.exports = {
-  paths: { template: '.' },
   plugins: [copyClientCode],
 };
