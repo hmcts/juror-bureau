@@ -817,6 +817,17 @@
           'courtName',
         ],
       },
+      'summoned-responded': {
+        title: 'Summoned and responded pool members report',
+        apiKey: 'SummonedRespondedReport',
+        search: 'poolNumber',
+        headings: [
+          'poolNumber',
+          'reportDate',
+          '',
+          'reportTime',
+        ],
+      },
     };
   };
 })();
