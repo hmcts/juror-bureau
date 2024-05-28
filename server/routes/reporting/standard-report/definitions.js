@@ -8,7 +8,6 @@
   const makeLink = (app) => {
     return {
       poolNumber: (poolNumber) => {
-        console.log(poolNumber)
         return `<a class='govuk-link' href='${app.namedRoutes.build('pool-overview.get', {poolNumber: poolNumber})}'>Pool ${poolNumber}</a>`
       }
     }

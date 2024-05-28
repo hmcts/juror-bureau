@@ -204,8 +204,6 @@ async function standardReportPrint(app, req, res, reportKey, data) {
       return acc;
     }, []);
 
-    console.log(reportData.largeTotals.printWidths || Array(body.length).fill('*'))
-
     return {
       margin: [0, 20, 0, 0],
       table: {
