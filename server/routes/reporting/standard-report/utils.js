@@ -38,6 +38,7 @@ const tableDataMappers = {
   Long: (data) => data.toString(),
   Integer: (data) => data.toString(),
   LocalTime: (data) => data ? moment(data, 'HH:mm:ss').format('hh:mma') : '-',
+  BigDecimal: (data) => `£${(Math.round(data * 100) / 100).toFixed(2).toString()}`,
 };
 
 const headingDataMappers = {
@@ -76,5 +77,40 @@ const constructPageHeading = (headingType, data) => {
   return {};
 };
 
+const buildTableHeaders = (reportType, tableHeadings) => {
+  let tableHeaders;
+
+  if (reportType.bespokeReport && reportType.bespokeReport.tableHeaders) {
+    tableHeaders = reportType.bespokeReport.tableHeaders.map((data, index) => ({
+      text: data,
+      attributes: {
+        'aria-sort': index === 0 ? 'ascending' : 'none',
+        'aria-label': data,
+      },
+      classes: reportType.bespokeReport?.tableHeadClasses ? reportType.bespokeReport?.tableHeadClasses[index] : ''
+    }));
+  } else {
+    tableHeaders = tableHeadings.map((data, index) => {
+      return ({
+        text: data.name,
+        attributes: {
+          'aria-sort': index === 0 ? 'ascending' : 'none',
+          'aria-label': data.name,
+        },
+        classes: reportType.bespokeReport?.tableHeadClasses ? reportType.bespokeReport?.tableHeadClasses[index] : '',
+        format: data.dataType === 'BigDecimal' ? 'numeric' : '',
+      });
+    });
+  }
+
+  if (reportType.bespokeReport && reportType.bespokeReport.insertColumns) {
+    Object.keys(reportType.bespokeReport.insertColumns).map((key) => {
+      tableHeaders.splice(key, 0, {text: reportType.bespokeReport.insertColumns[key][0]});
+    });
+  }
+  return tableHeaders;
+};
+
 module.exports.tableDataMappers = tableDataMappers;
 module.exports.constructPageHeading = constructPageHeading;
+module.exports.buildTableHeaders = buildTableHeaders;

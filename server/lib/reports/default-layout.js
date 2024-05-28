@@ -42,12 +42,16 @@
           bold: true,
         },
         groupHeading: {
-          fontSize: 10,
+          fontSize: 12,
           bold: true,
           marginTop: 10,
         },
         sectionHeading: {
-          fontSize: 10,
+          fontSize: 12,
+          bold: true,
+        },
+        largeSectionHeading: {
+          fontSize: 14,
           bold: true,
         },
         footer: {
@@ -69,6 +73,15 @@
         barcode: {
           font: 'LibreBarcode',
           fontSize: 30,
+        },
+        largeTotalsLabel: {
+          fontSize: 10,
+          marginTop: 5,
+          bold: true,
+        },
+        largeTotalsValue: {
+          fontSize: 16,
+          marginBottom: 5,
         },
       },
     };
