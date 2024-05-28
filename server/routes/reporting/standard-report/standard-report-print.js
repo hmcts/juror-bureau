@@ -205,7 +205,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
     }, []);
 
     return {
-      margin: [0, 20, 0, -20],
+      margin: [0, 20, 0, 0],
       table: {
         widths: Array(body.length).fill('*'),
         body: [body],

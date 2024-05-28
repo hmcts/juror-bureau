@@ -828,6 +828,31 @@
           'reportTime',
         ],
       },
+      'trial-statistics': {
+        title: 'Trial statistics',
+        apiKey: 'TrialStatisticsReport',
+        search: 'dateRange',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+        ],
+        largeTotals: (data) => {
+          const criminalTrials = data.filter(trial => trial.trialType === 'CRI');
+          const civilTrials = data.filter(trial => trial.trialType === 'CIV');
+          const calculateAverage = (trials) => {
+            const days = trials.map((t) => t.numberOfDays) 
+            const sum = days.reduce((a, b) => a + b, 0);
+            const avg = (sum / trials.length) || 0;
+            return `${avg} days`;
+          };
+          return [
+            { label: 'Criminal trials average length', value: calculateAverage(criminalTrials), classes: "govuk-!-margin-bottom-1 mod-large-tag__grey mod-!-width-one-eighth" },
+            { label: 'Civil trials average length', value: calculateAverage(civilTrials), classes: "govuk-!-margin-bottom-1 mod-large-tag__grey mod-!-width-one-eighth" },
+          ];
+        },
+      },
     };
   };
 })();
