@@ -14,7 +14,7 @@
     "serve": "yarn build:prod && NODE_ENV=production node ./dist/server/index.js",
     "debug": "yarn build:prod && NODE_ENV=production node --inspect-brk ./dist/server/index.js",
     "lint": "eslint .",
-    "test": "ecno TODO: test",
+    "test": "echo TODO: test",
     "test:coverage": "echo TODO: coverage",
     "test:a11y": "echo TODO: a11y",
     "test:smoke": "echo TODO: smoke",
