@@ -2,8 +2,17 @@
   'use strict';
 
   const { isCourtUser } = require('../../../components/auth/user-type');
-  const { dateFilter, toMoney } = require('../../../components/filters');
+  const { dateFilter, capitalizeFully, toMoney } = require('../../../components/filters');
   const { dailyUtilisationDAO, dailyUtilisationJurorsDAO, viewMonthlyUtilisationDAO, generateMonthlyUtilisationDAO } = require('../../../objects/reports');
+
+  const makeLink = (app) => {
+    return {
+      poolNumber: (poolNumber) => {
+        console.log(poolNumber)
+        return `<a class='govuk-link' href='${app.namedRoutes.build('pool-overview.get', {poolNumber: poolNumber})}'>Pool ${poolNumber}</a>`
+      }
+    }
+  }
 
   // type IReportKey = {[key:string]: {
   //   title: string,
@@ -37,8 +46,6 @@
   //   },
   //   grouped?: {
   //     headings: {
-  //       prefix?: string,
-  //       link?: string,
   //       transformer?: (data: string, isPrint: boolean) => string, // transform the group header
   //     },
   //     groupHeader?: boolean, // display the group header or not.. in some reports we dont have to
@@ -120,8 +127,12 @@
         ].concat(courtUser ? ['courtName'] : []),
         grouped: {
           headings: {
-            prefix: 'Pool ',
-            link: 'pool-overview',
+            transformer: (data, isPrint) => {
+              if (isPrint) {
+                return `Pool ${data}`;
+              }
+              return makeLink(app)['poolNumber'](data);
+            },
           },
           groupHeader: true,
           totals: true,
@@ -253,9 +264,6 @@
           'courtName',
         ],
         grouped: {
-          headings: {
-            prefix: '',
-          },
           groupHeader: !courtUser,
           totals: !courtUser,
         },
@@ -288,8 +296,12 @@
         ],
         grouped: {
           headings: {
-            prefix: 'Pool ',
-            link: 'pool-overview',
+            transformer: (data, isPrint) => {
+              if (isPrint) {
+                return `Pool ${data}`;
+              }
+              return makeLink(app)['poolNumber'](data);
+            },
           },
           groupHeader: true,
           totals: true,
@@ -371,7 +383,7 @@
                 return formattedAttendanceDate;
               }
 
-              return `${formattedAttendanceDate} <span class="grouped-display-inline">${poolType}</span>`;
+              return `${formattedAttendanceDate} <span class="grouped-display-inline">${capitalizeFully(poolType)}</span>`;
             },
           },
           groupHeader: true,
@@ -778,6 +790,32 @@
           },
           printInsertTables: true,
         },
+      },
+      'absences': {
+        title: 'Absences report',
+        apiKey: 'AbsencesReport',
+        search: 'dateRange',
+        grouped: {
+          headings: {
+            transformer: (data, isPrint) => {
+              const [poolNumber, poolType] = data.split(',');
+              if (isPrint) {
+                return `Pool ${poolNumber} - ${capitalizeFully(poolType)}`;
+              }
+              return `${makeLink(app)['poolNumber'](poolNumber)} <span class="grouped-display-inline">${capitalizeFully(poolType)}</span>`;
+            },
+          },
+          totals: true,
+          groupHeader: true,
+        },
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+          'totalAbsences',
+          'courtName',
+        ],
       },
     };
   };
