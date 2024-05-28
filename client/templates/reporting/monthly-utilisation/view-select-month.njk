@@ -1,0 +1,63 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+
+{% block page_title %}Reports - View monthly utilisation reports{% endblock %}
+{% block page_identifier %}Reports - View monthly utilisation reports{% endblock %}
+
+{% set currentApp = "Reports" %}
+
+{% block content %}
+  {% include "includes/errors.njk" %}
+
+  {% set selectMonthError = undefined %}
+  {% if errors.items["selectMonth"] %}
+    {% set selectMonthError = {text: errors.items["selectMonth"][0].details} %}
+  {% endif %}
+
+  <form action="{{ processUrl }}" method="post" id="cutoffDateForm">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">View monthly wastage and utilisation report</h1>
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-third">
+        {{ govukSelect({
+          id: "selectMonth",
+          name: "selectMonth",
+          label: {
+            text: "Select a reporting month",
+            classes: "govuk-label--m"
+          },
+          errorMessage: selectMonthError,
+          items: months
+        }) }}
+        {{ govukCheckboxes({
+          name: "previousMonths",
+          classes: "govuk-checkboxes--small",
+          items: [
+            {
+              value: true,
+              text: "Also display the 2 months before this"
+            }
+          ],
+          values: tmpBody.includeSummoned
+        }) }}
+        {{ csrfProtection(csrftoken) }}
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            type: "submit"
+          }) }}
+          <a href="{{ cancelUrl }}" class="govuk-link" id="cancelAnchor">Cancel</a>
+        </div>
+      </div>
+    </div>
+  </form>
+
+{% endblock %}
