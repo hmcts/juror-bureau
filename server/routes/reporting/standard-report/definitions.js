@@ -147,6 +147,55 @@
         },
         backUrl: app.namedRoutes.build('reports.postponed.search.get'),
       },
+      'amendment-juror': {
+        title: 'Juror amendment report (by juror)',
+        apiKey: 'JurorAmendmentByJurorReport',
+        search: 'jurorDetails',
+        headings: [
+          'jurorNumber',
+          'reportDate',
+          'jurorName',
+          'reportTime',
+        ],
+        backUrl: app.namedRoutes.build('reports.postponed.search.get'),
+      },
+      'amendment-pool': {
+        title: 'Juror amendment report (by pool)',
+        apiKey: 'JurorAmendmentByPoolReport',
+        search: 'poolNumber',
+        headings: [
+          'poolNumber',
+          'reportDate',
+          'poolType',
+          'reportTime',
+          'serviceStartDate',
+          'courtName',
+        ],
+        backUrl: app.namedRoutes.build('reports.postponed.search.get'),
+      },
+      'amendment-date': {
+        title: 'Juror amendment report (by date)',
+        apiKey: 'JurorAmendmentByDateReport',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+        ].concat(courtUser ? ['courtName'] : []),
+        grouped: {
+          headings: {
+            transformer: (data, isPrint) => {
+              if (isPrint) {
+                return `Pool ${data}`;
+              }
+              return makeLink(app)['poolNumber'](data);
+            },
+          },
+          groupHeader: true,
+          totals: true,
+        },
+        backUrl: app.namedRoutes.build('reports.postponed.search.get'),
+      },
       'incomplete-service': {
         title: 'Incomplete service',
         apiKey: 'IncompleteServiceReport',
