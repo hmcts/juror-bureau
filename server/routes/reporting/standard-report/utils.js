@@ -1,5 +1,5 @@
 /* eslint-disable strict */
-const { dateFilter, capitalizeFully, toSentenceCase } = require('../../../components/filters');
+const { dateFilter, capitalizeFully, toSentenceCase, capitalise } = require('../../../components/filters');
 const moment = require('moment');
 
 const tableDataMappers = {
@@ -8,14 +8,13 @@ const tableDataMappers = {
   List: (data) => {
     if (data) {
       if (Object.keys(data)[0] === 'jurorAddressLine1') {
-        return Object.values(data).reduce(
-          (acc, current) => {
-            if (current !== '') {
-              return acc + ', ' + current;
-            }
-            return acc;
-          },
-        );
+        let addressString = ''
+        for (const [key, value] of Object.entries(data)) {
+          if (value !== '') {
+            addressString += (key === 'jurorPostcode' ? (capitalise(value)) : (capitalizeFully(value)) + ', ');
+          }
+        }
+        return addressString;
       }
 
       if (Object.keys(data)[0] === 'reasonableAdjustmentCodeWithDescription') {
@@ -39,6 +38,7 @@ const tableDataMappers = {
   Integer: (data) => data.toString(),
   LocalTime: (data) => data ? moment(data, 'HH:mm:ss').format('hh:mma') : '-',
   BigDecimal: (data) => `£${(Math.round(data * 100) / 100).toFixed(2).toString()}`,
+  Boolean: (data) => data ? 'Yes' : 'No',
 };
 
 const headingDataMappers = {

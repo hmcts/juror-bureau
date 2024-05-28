@@ -78,6 +78,7 @@
     standardReportRoutes(app, 'jury-expenditure-mid-level');
     standardReportRoutes(app, 'jury-expenditure-low-level');
     standardReportRoutes(app, 'absences');
+    standardReportRoutes(app, 'summoned-responded');
   };
 
 })();
