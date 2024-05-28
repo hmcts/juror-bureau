@@ -853,8 +853,16 @@
               return `${avg} days`;
             };
             return [
-              { label: 'Criminal trials average length', value: calculateAverage(criminalTrials), classes: "govuk-!-margin-bottom-1 mod-large-tag__grey mod-!-width-one-eighth" },
-              { label: 'Civil trials average length', value: calculateAverage(civilTrials), classes: "govuk-!-margin-bottom-1 mod-large-tag__grey mod-!-width-one-eighth" },
+              { 
+                label: 'Criminal trials average length',
+                value: calculateAverage(criminalTrials),
+                classes: "govuk-!-margin-bottom-1 mod-large-tag__grey mod-!-width-one-eighth"
+              },
+              {
+                label: 'Civil trials average length',
+                value: calculateAverage(civilTrials),
+                classes: "govuk-!-margin-bottom-1 mod-large-tag__grey mod-!-width-one-eighth"
+              },
             ];
           },
           printWidths: ['20%', '20%'],
