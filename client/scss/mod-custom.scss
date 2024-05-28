@@ -448,8 +448,6 @@ dt.govuk-summary-list-mod {
 }
 
 .fixTableHead { 
-  overflow-y: auto; 
-  max-height: 50rem;
 
   thead th { 
     position: sticky; 
@@ -458,6 +456,9 @@ dt.govuk-summary-list-mod {
   }
 
   table { 
+    display: block;
+    overflow-y: scroll; 
+    max-height: 50rem;
     border-collapse: collapse;         
     width: 100%; 
   }
