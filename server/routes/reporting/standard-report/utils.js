@@ -92,6 +92,11 @@ const buildTableHeaders = (reportType, tableHeadings) => {
   } else {
     tableHeaders = tableHeadings.map((data, index) => {
       if (!data.name || data.name === '') return;
+      let classes = '';
+
+      if (data.name === 'Service Start Date') {
+        classes = classes + ' mod-min-width-150';
+      }
 
       return ({
         text: data.name,
@@ -99,7 +104,9 @@ const buildTableHeaders = (reportType, tableHeadings) => {
           'aria-sort': index === 0 ? 'ascending' : 'none',
           'aria-label': data.name,
         },
-        classes: reportType.bespokeReport?.tableHeadClasses ? reportType.bespokeReport?.tableHeadClasses[index] : '',
+        classes: reportType.bespokeReport?.tableHeadClasses
+          ? reportType.bespokeReport?.tableHeadClasses[index]
+          : classes,
         format: data.dataType === 'BigDecimal' ? 'numeric' : '',
       });
     });
