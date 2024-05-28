@@ -9,9 +9,9 @@
   "scripts": {
     "build": "NODE_ENV=development webpack --config webpack.config.js",
     "build:prod": "NODE_ENV=production webpack --config webpack.config.js",
-    "dev": "yarn build && node ./dev/server/index.js",
-    "dev:watch": "yarn build && nodemon",
-    "serve": "yarn build:prod && node ./dist/server/index.js",
+    "dev": "yarn build && NODE_ENV=development node ./dev/server/index.js",
+    "dev:watch": "yarn build && NODE_ENV=development nodemon",
+    "serve": "yarn build:prod && NODE_ENV=production node ./dist/server/index.js",
     "debug": "yarn build:prod && NODE_ENV=production node --inspect-brk ./dist/server/index.js",
     "lint": "eslint .",
     "test": "ecno TODO: test",
@@ -70,7 +70,6 @@
     "eslint": "^9.3.0",
     "html-webpack-plugin": "^5.6.0",
     "istanbul": "^0.4.4",
-    "jit-grunt": "^0.10.0",
     "mini-css-extract-plugin": "^2.9.0",
     "mocha": "^4.0.1",
     "mochawesome": "^3.0.0",
@@ -78,9 +77,13 @@
     "nsp": "^3.1.0",
     "postcss": "^8.4.38",
     "sass": "^1.72.0",
-    "sinon": "^18.0.0",
-    "sinon-chai": "^3.0.0",
-    "time-grunt": "^2.0.0"
+    "sass-loader": "^14.2.1",
+    "sinon": "^4.1.2",
+    "sinon-chai": "^2.8.0",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-node-externals": "^3.0.0"
   },
   "resolutions": {
     "jackspeak": "2.1.1"

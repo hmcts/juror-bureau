@@ -35,9 +35,15 @@ The version of yarn is set by the project's `.yarnrc.yml` file so do not worry a
 In a terminal window (could also be vscode's embedded terminal) point to the project directory and run:
 
 ```sh
-yarn -v # should log 3.8.1
+yarn -v # should run yarn >=3
 yarn install
-yarn start
+
+# for development
+yarn dev # runs a static version
+yarn dev:watch # runs with nodemon, any changes will trigger a restart
+
+# for production
+yarn serve
 ```
 
 After running all the above, you should see the application running. If you get any errors about the environemnt files missing, read below.
