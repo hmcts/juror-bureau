@@ -415,7 +415,7 @@
           url: buildBackLinkUrl(),
         },
         bannerMessage,
-        largeTotals: reportType.largeTotals ? reportType.largeTotals(tableData.data) : [],
+        largeTotals: reportType.largeTotals?.values ? reportType.largeTotals.values(tableData.data) : [],
       });
     } catch (e) {
       console.error(e);

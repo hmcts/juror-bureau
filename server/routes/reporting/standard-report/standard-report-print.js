@@ -183,7 +183,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
   const buildLargeTotals = () => {
     if (!reportData.largeTotals) return {};
 
-    const body = reportData.largeTotals(tableData.data).reduce((acc, total) => {
+    const body = reportData.largeTotals.values(tableData.data).reduce((acc, total) => {
       acc.push(
         {
           border: [false, false, false, false],
@@ -204,10 +204,12 @@ async function standardReportPrint(app, req, res, reportKey, data) {
       return acc;
     }, []);
 
+    console.log(reportData.largeTotals.printWidths || Array(body.length).fill('*'))
+
     return {
       margin: [0, 20, 0, 0],
       table: {
-        widths: Array(body.length).fill('*'),
+        widths: reportData.largeTotals.printWidths || Array(body.length).fill('*'),
         body: [body],
       },
     };
