@@ -49,6 +49,7 @@ const copyClientCode = new CopyWebpackPlugin({
     },
     { from: 'config/', to: '../config' },
     { from: 'package.json', to: '../' },
+    { from: 'Dockerfile', to: '../' },
 
     // copy fonts and images
     {
