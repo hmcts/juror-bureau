@@ -73,6 +73,16 @@
         details: 'Enter a date to search absences up until',
       }],
     },
+    availableList: {
+      searchBy: [{
+        summary: 'Select how you want to search for available jurors',
+        details: 'Select how you want to search for available jurors',
+      }],
+      date: [{
+        summary: 'Enter an attendance date',
+        details: 'Enter an attendance date',
+      }],
+    },
   };
 
   module.exports.searchBy = function(reportKey) {

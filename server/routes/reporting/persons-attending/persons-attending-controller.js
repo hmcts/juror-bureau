@@ -9,7 +9,7 @@
 
   module.exports.getFilterAttendanceDate = function(app) {
     return function(req, res) {
-      const reportKey = req.url.split('reporting/')[1];
+      const reportKey = req.url.split('reporting/')[1].split('?')[0];
       const reportType = reportKeys(app, req)[reportKey];
       const tmpErrors = _.clone(req.session.errors);
       const tmpBody = _.clone(req.session.formFields);

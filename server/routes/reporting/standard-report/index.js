@@ -80,6 +80,8 @@
     standardReportRoutes(app, 'absences');
     standardReportRoutes(app, 'summoned-responded');
     standardReportRoutes(app, 'trial-statistics');
+    standardReportRoutes(app, 'available-list-pool');
+    standardReportRoutes(app, 'available-list-date');
   };
 
 })();
