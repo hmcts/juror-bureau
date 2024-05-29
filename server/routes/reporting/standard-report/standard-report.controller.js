@@ -302,7 +302,13 @@
       } else {
         tableRows = buildStandardTableRows(tableData, tableHeadings);
       }
-      return tableRows.length ? [{title: capitalizeFully(sectionHeading), headers: tableHeaders, rows: tableRows}] : []
+
+      return tableRows.length ? [{
+        title: capitalizeFully(sectionHeading),
+        headers: tableHeaders,
+        rows: tableRows,
+        tableFoot,
+      }] : [];
     }
 
     const buildPrintExportUrl = function(urlType = 'print') {
