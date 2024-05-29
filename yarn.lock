@@ -2199,7 +2199,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:^4.0.0, chalk@npm:^4.1.0, chalk@npm:~4.1.0":
+"chalk@npm:^4.0.0, chalk@npm:^4.1.0, chalk@npm:^4.1.2, chalk@npm:~4.1.0":
   version: 4.1.2
   resolution: "chalk@npm:4.1.2"
   dependencies:
@@ -2680,13 +2680,6 @@ __metadata:
   version: 5.1.0
   resolution: "commander@npm:5.1.0"
   checksum: 0b7fec1712fbcc6230fcb161d8d73b4730fa91a21dc089515489402ad78810547683f058e2a9835929c212fead1d6a6ade70db28bbb03edbc2829a9ab7d69447
-  languageName: node
-  linkType: hard
-
-"commander@npm:~2.19.0":
-  version: 2.19.0
-  resolution: "commander@npm:2.19.0"
-  checksum: d52ffb0b31528784005356f879591b5a4875d3e88806c115fb30a8de0994d2fa9ca3f72a3cb880cdaf1bfb9df185f928cfcbbc656fa831f9c6109a209569ef6d
   languageName: node
   linkType: hard
 
@@ -4405,6 +4398,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"figures@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "figures@npm:3.2.0"
+  dependencies:
+    escape-string-regexp: ^1.0.5
+  checksum: 85a6ad29e9aca80b49b817e7c89ecc4716ff14e3779d9835af554db91bac41c0f289c418923519392a1e582b4d10482ad282021330cd045bb7b80c84152f2a2b
+  languageName: node
+  linkType: hard
+
 "file-entry-cache@npm:^2.0.0":
   version: 2.0.0
   resolution: "file-entry-cache@npm:2.0.0"
@@ -5402,15 +5404,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"grunt-contrib-uglify@npm:^3.2.1":
-  version: 3.4.0
-  resolution: "grunt-contrib-uglify@npm:3.4.0"
+"grunt-contrib-uglify@npm:^5.0.0":
+  version: 5.2.2
+  resolution: "grunt-contrib-uglify@npm:5.2.2"
   dependencies:
-    chalk: ^1.0.0
-    maxmin: ^2.1.0
-    uglify-js: ~3.4.0
+    chalk: ^4.1.2
+    maxmin: ^3.0.0
+    uglify-js: ^3.16.1
     uri-path: ^1.0.0
-  checksum: c3b2c87d251a7705aca75dc8d097d89baf1a9d793049b29e2d2640b0ef9e655a615882d497425d0e09289adaa40c2fe89a6c79687d29ebf1a661da8f8dd6cbc6
+  checksum: 20a580e69ba32df85aa21e63ecbbbb80475999438334f74ad1dae0ece3ecffe3a1c8905a89e246b5351e455721f352f679241b818f68be4f6d1195617dccd440
   languageName: node
   linkType: hard
 
@@ -5692,6 +5694,16 @@ __metadata:
   dependencies:
     duplexer: ^0.1.1
   checksum: 683095068fc28e5dfa7dd77114ba95583d5acfd99e8028a993602e620eb9d48bf7910c14a3117caa9d665e3e1271b4027396f714be30f2b619dc638c76e5a6e8
+  languageName: node
+  linkType: hard
+
+"gzip-size@npm:^5.1.1":
+  version: 5.1.1
+  resolution: "gzip-size@npm:5.1.1"
+  dependencies:
+    duplexer: ^0.1.1
+    pify: ^4.0.1
+  checksum: 6451ba2210877368f6d9ee9b4dc0d14501671472801323bf81fbd38bdeb8525f40a78be45a59d0182895d51e6b60c6314b7d02bd6ed40e7225a01e8d038aac1b
   languageName: node
   linkType: hard
 
@@ -7290,7 +7302,7 @@ __metadata:
     grunt-contrib-clean: ^1.0.0
     grunt-contrib-cssmin: ^2.2.1
     grunt-contrib-imagemin: ^2.0.1
-    grunt-contrib-uglify: ^3.2.1
+    grunt-contrib-uglify: ^5.0.0
     grunt-contrib-watch: ^1.0.0
     grunt-env: ^0.4.4
     grunt-eslint: ^20.1.0
@@ -7984,6 +7996,18 @@ __metadata:
     gzip-size: ^3.0.0
     pretty-bytes: ^3.0.0
   checksum: 97e2377454c4b436df8cfe46cff95e8e6166a69b5256a6513d4afc3468eeee3d26eaaac153d26c7e7cef1f775c28c7d58b4399929d5472801b666a99581d0fdb
+  languageName: node
+  linkType: hard
+
+"maxmin@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "maxmin@npm:3.0.0"
+  dependencies:
+    chalk: ^4.1.0
+    figures: ^3.2.0
+    gzip-size: ^5.1.1
+    pretty-bytes: ^5.3.0
+  checksum: 6efb19ccb42a43acf2faffad537477af9db482354820fc1ad45e85b51c30a0f430b7c70afab9da39b33f0f1c8677884cdb3aa6689fc222c5697dc79325f00153
   languageName: node
   linkType: hard
 
@@ -9544,6 +9568,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pify@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "pify@npm:4.0.1"
+  checksum: 9c4e34278cb09987685fa5ef81499c82546c033713518f6441778fbec623fc708777fe8ac633097c72d88470d5963094076c7305cafc7ad340aae27cfacd856b
+  languageName: node
+  linkType: hard
+
 "pinkie-promise@npm:^2.0.0":
   version: 2.0.1
   resolution: "pinkie-promise@npm:2.0.1"
@@ -9656,6 +9687,13 @@ __metadata:
   version: 4.0.2
   resolution: "pretty-bytes@npm:4.0.2"
   checksum: bdc7b33808a706498451c89c3ecc6784778c02de4ab6841de6cbdb6b27fa9ec6e5708a275d06876fe8df08f88a6c196de881d969ac21e5211f5a46b07cae4a80
+  languageName: node
+  linkType: hard
+
+"pretty-bytes@npm:^5.3.0":
+  version: 5.6.0
+  resolution: "pretty-bytes@npm:5.6.0"
+  checksum: 9c082500d1e93434b5b291bd651662936b8bd6204ec9fa17d563116a192d6d86b98f6d328526b4e8d783c07d5499e2614a807520249692da9ec81564b2f439cd
   languageName: node
   linkType: hard
 
@@ -11013,7 +11051,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map@npm:^0.6.1, source-map@npm:~0.6.1":
+"source-map@npm:^0.6.1":
   version: 0.6.1
   resolution: "source-map@npm:0.6.1"
   checksum: 59ce8640cf3f3124f64ac289012c2b8bd377c238e316fb323ea22fbfe83da07d81e000071d7242cad7a23cd91c7de98e4df8830ec3f133cb6133a5f6e9f67bc2
@@ -12015,24 +12053,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uglify-js@npm:^3.1.4":
+"uglify-js@npm:^3.1.4, uglify-js@npm:^3.16.1":
   version: 3.17.4
   resolution: "uglify-js@npm:3.17.4"
   bin:
     uglifyjs: bin/uglifyjs
   checksum: 7b3897df38b6fc7d7d9f4dcd658599d81aa2b1fb0d074829dd4e5290f7318dbca1f4af2f45acb833b95b1fe0ed4698662ab61b87e94328eb4c0a0d3435baf924
-  languageName: node
-  linkType: hard
-
-"uglify-js@npm:~3.4.0":
-  version: 3.4.10
-  resolution: "uglify-js@npm:3.4.10"
-  dependencies:
-    commander: ~2.19.0
-    source-map: ~0.6.1
-  bin:
-    uglifyjs: bin/uglifyjs
-  checksum: dfc61c85b0660216432e021aac6a5f3ea0331720003d4d929b95f297daceb73bc9615875ca150516b49bc57ab60d3cf32415fc006cccf20f275c806f6686da0d
   languageName: node
   linkType: hard
 
