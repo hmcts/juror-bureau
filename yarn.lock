@@ -2199,6 +2199,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"chalk@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "chalk@npm:3.0.0"
+  dependencies:
+    ansi-styles: ^4.1.0
+    supports-color: ^7.1.0
+  checksum: 8e3ddf3981c4da405ddbd7d9c8d91944ddf6e33d6837756979f7840a29272a69a5189ecae0ff84006750d6d1e92368d413335eab4db5476db6e6703a1d1e0505
+  languageName: node
+  linkType: hard
+
 "chalk@npm:^4.0.0, chalk@npm:^4.1.0, chalk@npm:~4.1.0":
   version: 4.1.2
   resolution: "chalk@npm:4.1.2"
@@ -5573,15 +5583,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"grunt-shell@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "grunt-shell@npm:2.1.0"
+"grunt-shell@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "grunt-shell@npm:4.0.0"
   dependencies:
-    chalk: ^1.0.0
+    chalk: ^3.0.0
     npm-run-path: ^2.0.0
+    strip-ansi: ^6.0.1
   peerDependencies:
-    grunt: ">=0.4.0"
-  checksum: 57e2d347608e17f75d838a8d9356f66b324a288ba208f8ca60e1b3037ebe44937b846ff28e0b5c5bcaefdced1be9409d5dbf19df82a57f467e9e3aa42edc3134
+    grunt: ">=1"
+  checksum: 6690de2f387825ac08be0f19ac4fef388d4500f22c120b1c7d8662be3a268350e6ae1b6ae000d1e273b4fdaae85462e6d7bc3e542dd949d6be81b6427d0d0b72
   languageName: node
   linkType: hard
 
@@ -7302,7 +7313,7 @@ __metadata:
     grunt-nsp: ^2.3.1
     grunt-open: ^0.2.3
     grunt-sass: ^3.1.0
-    grunt-shell: ^2.1.0
+    grunt-shell: ^4.0.0
     grunt-sync: ^0.8.2
     helmet: ^7.0.0
     istanbul: ^0.4.4
