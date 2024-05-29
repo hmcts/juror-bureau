@@ -2,12 +2,12 @@
   'use strict';
 
   const _ = require('lodash');
-  const { snakeToCamel, transformCourtNames, makeManualError } = require('../../../lib/mod-utils');
+  const { snakeToCamel, transformCourtNames, makeManualError, checkIfArrayEmpty } = require('../../../lib/mod-utils');
   const { standardReportDAO } = require('../../../objects/reports');
   const { validate } = require('validate.js');
   const { poolSearchObject } = require('../../../objects/pool-search');
   const rp = require('request-promise');
-  const { tableDataMappers, constructPageHeading } = require('./utils');
+  const { tableDataMappers, constructPageHeading, buildTableHeaders } = require('./utils');
   const { bespokeReportBodys } = require('../bespoke-report/bespoke-report-body');
   const { reportKeys } = require('./definitions');
   const { standardReportPrint } = require('./standard-report-print');
@@ -64,8 +64,8 @@
           resultsCount,
           poolList,
           filter,
-          filterUrl: app.namedRoutes.build(`reports.${reportKey}.filter.post`),
-          reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
+          filterUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.post`)),
+          reportUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.post`)),
         });
       case 'courts':
         delete req.session.errors;
@@ -85,9 +85,9 @@
             courts,
             title: reportType.title,
             filter,
-            filterUrl: app.namedRoutes.build(`reports.${reportKey}.filter.post`),
-            clearFilterUrl: app.namedRoutes.build(`reports.${reportKey}.filter.get`),
-            reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
+            filterUrl:  addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.post`)),
+            clearFilterUrl:  addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`)),
+            reportUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.post`)),
             cancelUrl: app.namedRoutes.build('reports.reports.get'),
             errors: {
               title: 'Please check your search',
@@ -118,7 +118,8 @@
           tmpBody,
           reportKey,
           title: reportType.title,
-          reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
+          searchLabels: reportType.searchLabelMappers,
+          reportUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.post`)),
           cancelUrl: app.namedRoutes.build('reports.reports.get'),
         });
       default:
@@ -129,6 +130,8 @@
   };
 
   const standardFilterPost = (app, reportKey) => (req, res) => {
+    const reportType = reportKeys(app, req)[reportKey];
+
     let filter;
     switch (reportKeys(app, req)[reportKey].search) {
       case 'poolNumber':
@@ -139,7 +142,7 @@
         break;
     }
 
-    return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`) + '?filter=' + filter);
+    return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`) + '?filter=' + filter));
   };
 
   const standardReportGet = (app, reportKey, isPrint = false, isExport = false) => async(req, res) => {
@@ -155,12 +158,11 @@
     req.session.reportSearch = req.params.filter;
 
     const buildStandardTableRows = function(tableData, tableHeadings) {
-      return tableData.map(data => {
-
+      const rows = tableData.map(data => {
         let row = tableHeadings.map(header => {
           let output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
 
-          if (header.id === 'juror_number') {
+          if (header.id === 'juror_number' || header.id === 'juror_number_from_trial') {
             return ({
               html: `<a href=${
                 app.namedRoutes.build('juror-record.overview.get', {jurorNumber: output})
@@ -180,8 +182,22 @@
             });
           }
 
+          if (header.id === 'payment_audit') {
+            return ({
+              html: `<a href=${
+                app.namedRoutes.build('reports.financial-audit.get', {auditNumber: output})
+              }>${
+                output
+              }</a>`,
+            });
+          }
+
           if (header.id === 'juror_postcode' || header.id === 'document_code') {
             output = output ? output.toUpperCase() : '-';
+          }
+
+          if (header.id === 'on_call') {
+            output = output === 'Yes' ? 'Yes' : '-';
           }
 
           if (header.dataType === 'List') {
@@ -200,7 +216,8 @@
             text: output ? output : '-',
             attributes: {
               "data-sort-value": header.dataType === 'LocalDate' ? data[snakeToCamel(header.id)] : output
-            }
+            },
+            format: header.dataType === 'BigDecimal' ? 'numeric' : '',
           });
         });
 
@@ -212,7 +229,74 @@
 
         return row;
       });
+      if (reportType.bespokeReport && reportType.bespokeReport.insertRows) {
+        Object.keys(reportType.bespokeReport.insertRows).map((key) => {
+          if (key === 'last') {
+            rows.push(reportType.bespokeReport.insertRows[key](tableData))
+          } else {
+            rows.splice(key, 0, reportType.bespokeReport.insertRows[key](tableData));
+          }
+        });
+      }
+      return rows;
     };
+
+    const buildStandardTable = function(reportType, tableData, tableHeadings, sectionHeading = '') {
+      let tableRows = [];
+      const tableHeaders = buildTableHeaders(reportType, tableHeadings);
+
+      if (reportType.grouped) {
+        let longestGroup = 0;
+        for (const [header, data] of Object.entries(tableData)) {
+          let group = buildStandardTableRows(data, tableHeadings);
+          let link;
+
+          if (reportType.grouped.headings && reportType.grouped.headings.link) {
+            if (reportType.grouped.headings.link === 'pool-overview') {
+              link = app.namedRoutes.build('pool-overview.get', {poolNumber: header});
+            }
+          }
+
+          longestGroup = group[0].length > longestGroup ? group[0].length : longestGroup; 
+
+          const groupHeaderTransformer = () => {
+            if (reportType.grouped.headings && reportType.grouped.headings.transformer) {
+              return reportType.grouped.headings.transformer(header);
+            }
+            return capitalizeFully(header);
+          }
+
+          const headRow = reportType.grouped.groupHeader ? [{
+            html: groupHeaderTransformer(),
+            colspan: group[0].length,
+            classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
+          }] : []
+            
+          const totalsRow = reportType.grouped.totals ? [{
+            text: `Total: ${group.length}`,
+            colspan: longestGroup,
+            classes: 'govuk-body-s govuk-!-font-weight-bold mod-table-no-border',
+          }] : null;
+
+          if (checkIfArrayEmpty(group)) {
+            if (reportType.grouped.emptyDataGroup) {
+              group = reportType.grouped.emptyDataGroup(longestGroup);
+            } else {
+              break;
+            }
+          }
+
+          tableRows = tableRows.concat([
+            headRow,
+            ...group,
+            totalsRow,
+          ]);
+        }
+      } else {
+        tableRows = buildStandardTableRows(tableData, tableHeadings);
+      }
+      return tableRows.length ? [{title: capitalizeFully(sectionHeading), headers: tableHeaders, rows: tableRows}] : []
+    }
 
     const buildPrintExportUrl = function(urlType = 'print') {
       let url = req.params.filter
@@ -223,11 +307,7 @@
         url = url + '?fromDate=' + req.query.fromDate + '&toDate=' + req.query.toDate;
       }
 
-      if (req.query.includeSummoned) {
-        url = url + '?includeSummoned=' + req.query.includeSummoned;
-      }
-
-      return url;
+      return addURLQueryParams(reportType,  url);
     };
 
     const buildBackLinkUrl = function() {
@@ -245,7 +325,7 @@
       if (reportKey === 'daily-utilisation-jurors') {
         return req.session.dailyUtilisation.route
       }
-      return app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : '');
+      return addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : ''));
     };
 
     delete req.session.reportFilter;
@@ -272,6 +352,15 @@
     if (reportKey.includes('persons-attending')) {
       config.includeSummoned = req.query.includeSummoned || false;
     }
+    if(req.query.includeJurorsOnCall) {
+      config.includeJurorsOnCall = req.query.includeJurorsOnCall;
+    }
+    if(req.query.respondedJurorsOnly) {
+      config.respondedJurorsOnly = req.query.respondedJurorsOnly;
+    }
+    if(req.query.includePanelMembers) {
+      config.includePanelMembers = req.query.includePanelMembers;
+    }
 
     // Backlink routing needs saved for jurors report
     if (reportKey === 'daily-utilisation') {
@@ -288,83 +377,36 @@
         : standardReportDAO.post(req, app, config));
 
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
-      if (isExport) return reportExport(app, req, res, reportKey, { headings, tableData }) 
+      if (isExport) return reportExport(app, req, res, reportKey, { headings, tableData }) ;
 
-      let tableHeaders = tableData.headings.map((data, index) => ({
-        text: data.name,
-        attributes: {
-          'aria-sort': index === 0 ? 'ascending' : 'none',
-          'aria-label': data.name,
-        }
-      }));
 
-      if (reportType.bespokeReport && reportType.bespokeReport.insertColumns) {
-        Object.keys(reportType.bespokeReport.insertColumns).map((key) => {
-          tableHeaders.splice(key, 0, {text: reportType.bespokeReport.insertColumns[key][0]});
-        });
-      }
-
-      let tableRows = [];
+      let tables = [];
 
       if (reportType.bespokeReport && reportType.bespokeReport.body) {
-        tableRows = bespokeReportBodys(app)[reportKey](tableData)
-      } else {
-        if (reportType.grouped) {
-          for (const [header, data] of Object.entries(tableData.data)) {
-            const group = buildStandardTableRows(data, tableData.headings);
-            let link;
-
-            if (reportType.grouped.headings && reportType.grouped.headings.link) {
-              if (reportType.grouped.headings.link === 'pool-overview') {
-                link = app.namedRoutes.build('pool-overview.get', {poolNumber: header});
-              }
-            }
-
-            const groupHeaderTransformer = () => {
-              if (reportType.grouped.headings && reportType.grouped.headings.transformer) {
-                return reportType.grouped.headings.transformer(header);
-              }
-              return header;
-            }
-
-            const headRow = (() => {
-              if (!reportType.grouped.groupHeader) return [];
-
-              return link ? [{
-                html: `<a href=${link}>${(reportType.grouped.headings.prefix || '') + groupHeaderTransformer()}</a>`,
-                colspan: group[0].length,
-                classes: 'govuk-!-padding-top-7 govuk-link govuk-body-l govuk-!-font-weight-bold',
-              }]
-              : [{
-                html: capitalizeFully((reportType.grouped.headings.prefix || '') + groupHeaderTransformer()),
-                colspan: group[0].length,
-                classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
-              }];
-            })();
-              
-            const totalsRow = reportType.grouped.totals ? [{
-              text: `Total: ${group.length}`,
-              colspan: group[0].length,
-              classes: 'govuk-body-s govuk-!-font-weight-bold mod-table-no-border',
-            }] : null;
-
-            tableRows = tableRows.concat([
-              headRow,
-              ...group,
-              totalsRow,
-            ]);
-          }
-        } else {
-          tableRows = buildStandardTableRows(tableData.data, tableData.headings);
+        tables = bespokeReportBodys(app)[reportKey](reportType, tableData)
+      } else if (reportType.multiTable) {
+        for (const [key, value] of Object.entries(tableData.data)) {
+          tables.push(...buildStandardTable(reportType, value, tableData.headings, reportType.multiTable.sectionHeadings ? key : ''));
         }
+      } else {
+        tables = buildStandardTable(reportType, tableData.data, tableData.headings);
+      }
+
+      if (reportType.bespokeReport && reportType.bespokeReport.insertTables) {
+        Object.keys(reportType.bespokeReport.insertTables).map((key) => {
+          if (key === 'last') {
+            tables.push(...reportType.bespokeReport.insertTables[key](tableData))
+          } else {
+            tables.splice(key, 0, ...reportType.bespokeReport.insertTables[key](tableData));
+          }
+        });
       }
 
       const pageHeadings = reportType.headings.map(heading => constructPageHeading(heading, headings));
 
       return res.render('reporting/standard-reports/standard-report', {
         title: reportType.title,
-        tableRows,
-        tableHeaders,
+        tables,
         pageHeadings,
         reportKey,
         grouped: reportType.grouped,
@@ -380,6 +422,7 @@
           url: buildBackLinkUrl(),
         },
         bannerMessage,
+        largeTotals: reportType.largeTotals?.values ? reportType.largeTotals.values(tableData.data) : [],
       });
     } catch (e) {
       console.error(e);
@@ -390,6 +433,7 @@
 
   const standardReportPost = (app, reportKey) => async (req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
+
     if (reportType.search === 'poolNumber') {
       if (!req.body.reportPool) {
         req.session.errors = {
@@ -400,22 +444,21 @@
           }],
         };
 
-        return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`)
-          + (req.body.filter ? '?filter=' + req.body.filter : ''));
+        return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`)+ (req.body.filter ? '?filter=' + req.body.filter : '')));
       }
 
       req.session.reportFilter = req.body.filter;
 
-      return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, {
+      return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.get`, {
         filter: req.body.reportPool,
-      }));
+      })));
     }
     if (reportType.search === 'courts') {
       if (!req.body.selectedCourts) {
         req.session.errors = makeManualError('selectedCourts', 'Select at least one court');
 
-        return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`)
-          + (req.body.filter ? '?filter=' + req.body.filter : ''));
+        return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`)
+          + (req.body.filter ? '?filter=' + req.body.filter : '')));
       }
       req.session.reportFilter = req.body.filter;
       const selectedCourts = Array.isArray(req.body.selectedCourts) ? req.body.selectedCourts : [req.body.selectedCourts]
@@ -424,7 +467,7 @@
       });
       delete req.session.courtsList
       req.session.reportCourts = courtLocCodes;
-      return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, { filter: 'courts' }));
+      return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.get`, { filter: 'courts' })));
     }
     if (reportType.search === 'dateRange' || reportType.search === 'fixedDateRange') {
       if (req.body.dateRange && req.body.dateRange === 'NEXT_31_DAYS') {
@@ -445,23 +488,28 @@
       if (toDate.isBefore(fromDate)) {
         req.session.errors = makeManualError('dateTo', '‘Date to’ cannot be before ‘date from’');
         req.session.formFields = req.body;
-        return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`));
+        return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`)));
       }
 
       if (reportKey === 'daily-utilisation') { 
         if((toDate.diff(fromDate, 'days') + 1) > 31) {
           req.session.errors = makeManualError('dateTo', 'Date range cannot be larger than 31 days');
           req.session.formFields = req.body;
-          return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`));
+          return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`)));
         }
         redirectRoute = `reports.daily-utilisation.check.get`
       }
 
-      return res.redirect(app.namedRoutes.build(redirectRoute, {filter: 'dateRange'})
+      return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(redirectRoute, {filter: 'dateRange'})
         + `?fromDate=${dateFilter(req.body.dateFrom, 'DD/MM/YYYY', 'YYYY-MM-DD')}`
-        + `&toDate=${dateFilter(req.body.dateTo, 'DD/MM/YYYY', 'YYYY-MM-DD')}`);
+        + `&toDate=${dateFilter(req.body.dateTo, 'DD/MM/YYYY', 'YYYY-MM-DD')}`
+        ));
     }
   };
+
+  function addURLQueryParams(reportType, url){
+    return url + `${reportType.queryParams ? `${url.includes('?') ? '&' : '?'}${new URLSearchParams(_.clone(reportType.queryParams)).toString()}` : ''}`
+  }
 
   module.exports = {
     standardFilterGet,

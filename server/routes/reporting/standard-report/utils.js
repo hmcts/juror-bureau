@@ -1,5 +1,5 @@
 /* eslint-disable strict */
-const { dateFilter, capitalizeFully, toSentenceCase } = require('../../../components/filters');
+const { dateFilter, capitalizeFully, toSentenceCase, capitalise } = require('../../../components/filters');
 const moment = require('moment');
 
 const tableDataMappers = {
@@ -8,18 +8,17 @@ const tableDataMappers = {
   List: (data) => {
     if (data) {
       if (Object.keys(data)[0] === 'jurorAddressLine1') {
-        return Object.values(data).reduce(
-          (acc, current) => {
-            if (current !== '') {
-              return acc + ', ' + current;
-            }
-            return acc;
-          },
-        );
+        let addressString = ''
+        for (const [key, value] of Object.entries(data)) {
+          if (value !== '') {
+            addressString += (key === 'jurorPostcode' ? (capitalise(value)) : (capitalizeFully(value)) + ', ');
+          }
+        }
+        return addressString;
       }
 
       if (Object.keys(data)[0] === 'reasonableAdjustmentCodeWithDescription') {
-        return [data.reasonableAdjustmentCodeWithDescription, data.jurorReasonableAdjustmentMessage].join(', ');
+        return [`<b>${capitalizeFully(data.reasonableAdjustmentCodeWithDescription)}</b>`, data.jurorReasonableAdjustmentMessage].join(', ');
       }
 
       let listText = '';
@@ -38,6 +37,8 @@ const tableDataMappers = {
   Long: (data) => data.toString(),
   Integer: (data) => data.toString(),
   LocalTime: (data) => data ? moment(data, 'HH:mm:ss').format('hh:mma') : '-',
+  BigDecimal: (data) => `£${(Math.round(data * 100) / 100).toFixed(2).toString()}`,
+  Boolean: (data) => data ? 'Yes' : 'No',
 };
 
 const headingDataMappers = {
@@ -76,5 +77,40 @@ const constructPageHeading = (headingType, data) => {
   return {};
 };
 
+const buildTableHeaders = (reportType, tableHeadings) => {
+  let tableHeaders;
+
+  if (reportType.bespokeReport && reportType.bespokeReport.tableHeaders) {
+    tableHeaders = reportType.bespokeReport.tableHeaders.map((data, index) => ({
+      text: data,
+      attributes: {
+        'aria-sort': index === 0 ? 'ascending' : 'none',
+        'aria-label': data,
+      },
+      classes: reportType.bespokeReport?.tableHeadClasses ? reportType.bespokeReport?.tableHeadClasses[index] : ''
+    }));
+  } else {
+    tableHeaders = tableHeadings.map((data, index) => {
+      return ({
+        text: data.name,
+        attributes: {
+          'aria-sort': index === 0 ? 'ascending' : 'none',
+          'aria-label': data.name,
+        },
+        classes: reportType.bespokeReport?.tableHeadClasses ? reportType.bespokeReport?.tableHeadClasses[index] : '',
+        format: data.dataType === 'BigDecimal' ? 'numeric' : '',
+      });
+    });
+  }
+
+  if (reportType.bespokeReport && reportType.bespokeReport.insertColumns) {
+    Object.keys(reportType.bespokeReport.insertColumns).map((key) => {
+      tableHeaders.splice(key, 0, {text: reportType.bespokeReport.insertColumns[key][0]});
+    });
+  }
+  return tableHeaders;
+};
+
 module.exports.tableDataMappers = tableDataMappers;
 module.exports.constructPageHeading = constructPageHeading;
+module.exports.buildTableHeaders = buildTableHeaders;

@@ -1,0 +1,41 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}Reports - Prepare monthly utilisation report{% endblock %}
+{% block page_identifier %}Reports - Prepare monthly utilisation report{% endblock %}
+
+{% set currentApp = "Reports" %}
+
+{% block content %}
+  {% include "includes/errors.njk" %}
+
+  {% set selectMonthError = undefined %}
+  {% if errors.items["selectMonth"] %}
+    {% set selectMonthError = {text: errors.items["selectMonth"][0].details} %}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">Confirm you want to prepare the utilisation report for {{ courtName }} for {{ month }} now</h1>
+      {{ govukInsetText({
+        html: "You may want to check your <a class='govuk-link govuk-link--no-visited-state' href='" + incompleteServiceReportUrl + "'>incomplete service report</a> report first, to update the status of any recently completed jurors."
+      }) }}
+      <div class="govuk-button-group">
+        {{ govukButton({
+          text: "Yes - prepare",
+          href: continueUrl
+        }) }}
+        <a href="{{ cancelUrl }}" class="govuk-link" id="cancelAnchor">No - cancel</a>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+  {% include "includes/datepicker.njk" %}
+{% endblock %}

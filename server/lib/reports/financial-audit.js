@@ -1,12 +1,11 @@
 (() => {
   'use strict';
   
-  const { dateFilter, attendanceType } = require("../../components/filters");
+  const { dateFilter, attendanceType, toMoney } = require("../../components/filters");
   const moment = require("moment");
 
   const addressOrder = ['lineOne', 'lineTwo', 'lineThree', 'town', 'county', 'postcode'];
 
-  const toMoney = (value) => `£${(value || 0).toFixed(2)}`;
   const makeName = (name) => `${name.title ? `${name.title} ` : ""}${name.firstName} ${name.lastName}`
 
   const auditTypeMap = {

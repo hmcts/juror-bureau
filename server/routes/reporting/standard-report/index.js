@@ -70,6 +70,18 @@
     standardReportRoutes(app, 'daily-utilisation');
     standardReportRoutes(app, 'daily-utilisation-jurors');
     standardReportRoutes(app, 'unconfirmed-attendance');
+    standardReportRoutes(app, 'panel-members-status');
+    require('../monthly-utilisation')(app);
+    standardReportRoutes(app, 'prepare-monthly-utilisation');
+    standardReportRoutes(app, 'view-monthly-utilisation');
+    standardReportRoutes(app, 'jury-expenditure-high-level');
+    standardReportRoutes(app, 'jury-expenditure-mid-level');
+    standardReportRoutes(app, 'jury-expenditure-low-level');
+    standardReportRoutes(app, 'absences');
+    standardReportRoutes(app, 'summoned-responded');
+    standardReportRoutes(app, 'trial-statistics');
+    standardReportRoutes(app, 'available-list-pool');
+    standardReportRoutes(app, 'available-list-date');
   };
 
 })();
