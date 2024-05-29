@@ -208,6 +208,10 @@
   justify-content: space-between;
 }
 
+.mod-baseline {
+  align-items: baseline;
+}
+
 .mod-gap-x {
   &-1 {
     gap: 0.25rem;

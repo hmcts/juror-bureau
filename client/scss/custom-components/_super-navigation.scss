@@ -267,5 +267,13 @@ $navbar-height: 50px;
         }
       }
     }
+
+    &--selected-court {
+      max-width: 150px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-weight: bold;
+    }
   }
 }

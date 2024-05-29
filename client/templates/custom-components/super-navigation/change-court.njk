@@ -1,0 +1,18 @@
+{% set changeUrl = undefined %}
+{% if authentication.activeUserType === "ADMINISTRATOR" %}
+  {% set changeUrl = url('administration.courts-and-bureau.get') %}
+{% elif authentication.activeUserType !== "ADMINISTRATOR" and authentication.userType === "ADMINISTRATOR" %}
+  {% set changeUrl = url('authentication.courts-list.get') + "?redirect_to=courts-and-bureau" %}
+{% elif authentication.activeUserType === "COURT" and authentication.userType === "COURT" and authentication.staff.courts.length > 1 %}
+  {% set changeUrl = url('authentication.courts-list.get') %}
+{% endif %}
+
+{% if changeUrl %}
+  <a
+    href="{{ changeUrl }}"
+    class="moj-header__navigation-link govuk-body-s"
+    aria-label="Change current selected court"
+  >
+    Change <span class="govuk-visually-hidden">current selected court</span>
+  </a>
+{% endif %}

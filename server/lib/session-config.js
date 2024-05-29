@@ -74,7 +74,7 @@ module.exports.SessionConfig = class SessionConfig {
       name: 'juror_bureau_session',
       cookie: {
         secure: isProduction,
-        sameSite: true,
+        sameSite: 'lax', // oauth redirect does not work with strict
         httpOnly: true,
       },
     };
