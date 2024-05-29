@@ -1,0 +1,149 @@
+@startuml deferral-maintenance
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant PoolRequestsPage <</pool-management/_common/pool-management-nav>>
+participant DeferralMaintenancePage <</pool-management/deferral-maintenance/index>>
+participant PostponeDatePage <</pool-management/_common/change-attendance-date>>
+participant AddToPoolPage <</pool-management/deferral-maintenance/pools>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant DeferralMaintenanceController <<summons-management.controller.js>>
+participant availablePoolsObj <<availablePools.get()>>
+participant deferralsObj <<deferrals.get()>>
+participant allocateJurorsObj <<allocateJurors.post()>>
+
+
+''' TEMPLATES
+participant PoolRequestsTemplate <</pool-management/_common/pool-management-nav.njk>>
+participant DeferralMaintenanceTemplate <</pool-management/deferral-maintenance/index.njk>>
+participant PostponeDateTemplate <</pool-management/_common/change-attendance-date.njk>>
+participant AddToPoolTemplate <</pool-management/deferral-maintenance/pools.njk>>
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant deferralMaintenanceValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+''' JOURNEY FLOW
+Actor -> PoolRequestsPage : navigate to deferral maintanence page
+
+PoolRequestsPage -> DeferralMaintenanceController : call page controller
+
+DeferralMaintenanceController -> deferralMaintenanceValidator : validate form
+
+alt Invalid/no data entered
+  DeferralMaintenanceController <-- deferralMaintenanceValidator : data validation fails
+  DeferralMaintenanceController -> DeferralMaintenanceTemplate : request and build error message template
+  DeferralMaintenanceController <- DeferralMaintenanceTemplate : return HTML
+  DeferralMaintenancePage <- DeferralMaintenanceController : return HTML
+  Actor <- DeferralMaintenancePage : render error message
+end
+
+DeferralMaintenanceController <- deferralMaintenanceValidator : valid data entered
+
+DeferralMaintenanceController -> deferralsObj : build request object
+deferralsObj -> BackendController : send backend request
+deferralsObj <- BackendController : ok response
+DeferralMaintenanceController <- deferralsObj : resolve request
+DeferralMaintenanceController -> DeferralMaintenanceTemplate : request and build template
+DeferralMaintenanceController <- DeferralMaintenanceTemplate : return HTML
+DeferralMaintenancePage <- DeferralMaintenanceController : return HTML
+Actor <- DeferralMaintenancePage : render HTML
+
+alt Add to a pool
+    Actor -> DeferralMaintenancePage : select jurors and add to a pool
+
+    DeferralMaintenancePage -> DeferralMaintenanceController : post deferral options
+    DeferralMaintenanceController -> availablePoolsObj : build request object
+    availablePoolsObj -> BackendController : send backend request
+    availablePoolsObj <- BackendController : ok response
+    DeferralMaintenanceController <- availablePoolsObj : resolve request
+    DeferralMaintenanceController -> AddToPoolTemplate : request and build template
+    DeferralMaintenanceController <- AddToPoolTemplate : return HTML
+    AddToPoolPage <- DeferralMaintenanceController : return HTML
+    Actor <- AddToPoolPage : render HTML
+    Actor -> AddToPoolPage: select pool and confirm
+
+    AddToPoolPage -> DeferralMaintenanceController : post deferral options
+    DeferralMaintenanceController -> allocateJurorsObj : build request object
+    allocateJurorsObj -> BackendController : send backend request
+    allocateJurorsObj <- BackendController : ok response
+    DeferralMaintenanceController <- allocateJurorsObj : resolve request
+    DeferralMaintenanceController -> DeferralMaintenanceTemplate : request and build template
+    DeferralMaintenanceController <- DeferralMaintenanceTemplate : return HTML
+    DeferralMaintenancePage <- DeferralMaintenanceController : return HTML
+    Actor <- DeferralMaintenancePage : render HTML
+
+end
+
+alt postpone
+    Actor -> DeferralMaintenancePage : select jurors and postpone
+
+    DeferralMaintenancePage -> DeferralMaintenanceController : post deferral options
+    DeferralMaintenanceController -> PostponeDateTemplate : request and build template
+    DeferralMaintenanceController <- PostponeDateTemplate : return HTML
+    AddToPoolPage <- DeferralMaintenanceController : return HTML
+    Actor <- PostponeDatePage : render HTML
+    Actor -> PostponeDatePage: enter service start date and continue
+
+    PostponeDatePage -> DeferralMaintenanceController : post deferral options
+    DeferralMaintenanceController -> availablePoolsObj : build request object
+    availablePoolsObj -> BackendController : send backend request
+    availablePoolsObj <- BackendController : ok response
+    DeferralMaintenanceController <- availablePoolsObj : resolve request
+    DeferralMaintenanceController -> AddToPoolTemplate : request and build template
+    DeferralMaintenanceController <- AddToPoolTemplate : return HTML
+    DeferralMaintenancePage <- DeferralMaintenanceController : return HTML
+    Actor <- AddToPoolPage : render HTML
+
+    Actor -> PostponeDatePage: select a pool and continue
+    AddToPoolPage -> DeferralMaintenanceController : post deferral options
+    DeferralMaintenanceController -> allocateJurorsObj : build request object
+    allocateJurorsObj -> BackendController : send backend request
+    allocateJurorsObj <- BackendController : ok response
+    DeferralMaintenanceController <- allocateJurorsObj : resolve request
+    DeferralMaintenanceController -> DeferralMaintenanceTemplate : request and build template
+    DeferralMaintenanceController <- DeferralMaintenanceTemplate : return HTML
+    DeferralMaintenancePage <- DeferralMaintenanceController : return HTML
+    Actor <- DeferralMaintenancePage : render HTML
+
+end
+
+alt Failed to fetch deferrals
+    deferralsObj <-- BackendController : error response
+    DeferralMaintenanceController <-- deferralsObj : reject requestObject
+    DeferralMaintenanceController -> ErrorTemplate : request and build template
+    DeferralMaintenanceController <- ErrorTemplate : return HTML
+    GenericErrorPage <- DeferralMaintenanceController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Failed to fetch available pools
+    availablePoolsObj <-- BackendController : error response
+    DeferralMaintenanceController <-- availablePoolsObj : reject requestObject
+    DeferralMaintenanceController -> ErrorTemplate : request and build template
+    DeferralMaintenanceController <- ErrorTemplate : return HTML
+    GenericErrorPage <- DeferralMaintenanceController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Failed to process the selected deferrals
+    allocateJurorsObj <-- BackendController : error response
+    DeferralMaintenanceController <-- allocateJurorsObj : reject requestObject
+    DeferralMaintenanceController -> ErrorTemplate : request and build template
+    DeferralMaintenanceController <- ErrorTemplate : return HTML
+    GenericErrorPage <- DeferralMaintenanceController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+
+
+@enduml

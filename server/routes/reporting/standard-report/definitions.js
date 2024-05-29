@@ -21,6 +21,9 @@
   //     dateFrom: string, // custom label for date from input 
   //     dateTo: string, // custom label for date to input 
   //   },
+  //   queryParams?: { // any mandatory query params neederd throughout report journey 
+  //     key: value,
+  //   },
   //   bespokeReport?: {
   //     dao?: (req) => Promise<any>,                                 // custom data access function
   //     insertColumns?: {[key: number]: [string, (data, isPrint) => string]}, // column header, body
@@ -274,6 +277,9 @@
         title: 'Persons attending (summary)',
         apiKey: 'PersonAttendingSummaryReport',
         search: 'date',
+        queryParams: {
+          includeSummoned: req?.query?.includeSummoned || false,
+        },
         headings: [
           'attendanceDate',
           'reportDate',
@@ -287,6 +293,9 @@
         title: 'Persons attending (detailed)',
         apiKey: 'PersonAttendingDetailReport',
         search: 'date',
+        queryParams: {
+          includeSummoned: req?.query?.includeSummoned || false,
+        },
         headings: [
           'attendanceDate',
           'reportDate',
@@ -442,6 +451,9 @@
       },
       'view-monthly-utilisation': {
         title: 'View monthly wastage and utilisation report',
+        queryParams: {
+          previousMonths: req?.query?.previousMonths || false,
+        },
         headings: [
           'courtName',
           'reportDate',
@@ -865,6 +877,59 @@
             ];
           },
           printWidths: ['20%', '20%'],
+        },
+      },
+      'available-list-pool': {
+        title: 'Available list (by pool)',
+        apiKey: 'AvailableListByPoolReport',
+        search: 'poolNumber',
+        queryParams: {
+          includeJurorsOnCall: req?.query?.includeJurorsOnCall || false,
+          respondedJurorsOnly: req?.query?.respondedJurorsOnly || false,
+          includePanelMembers: req?.query?.includePanelMembers || false,
+        },
+        headings: [
+          'poolNumber',
+          'reportDate',
+          'poolType',
+          'reportTime',
+          'serviceStartDate',
+          'courtName',
+          'totalAvailablePoolMembers'
+        ],
+      },
+      'available-list-date': {
+        title: 'Available list (by date)',
+        apiKey: courtUser ? 'AvailableListByDateReportCourt' : 'AvailableListByDateReportBureau',
+        search: 'date',
+        queryParams: {
+          includeJurorsOnCall: req?.query?.includeJurorsOnCall || false,
+          respondedJurorsOnly: req?.query?.respondedJurorsOnly || false,
+          includePanelMembers: req?.query?.includePanelMembers || false,
+        },
+        backUrl: app.namedRoutes.build('reports.available-list.filter.get'),
+        headings: [
+          'attendanceDate',
+          'reportDate',
+          'totalAvailablePoolMembers',
+          'reportTime',
+          '',
+          'courtName',
+        ],
+        multiTable: !courtUser ? {
+          sectionHeadings: true,
+        } : null,
+        grouped: {
+          groupHeader: true,
+          headings: {
+            transformer: (data, isPrint) => {
+              const [poolNumber, poolType] = data.split(',');
+              if (isPrint) {
+                return `Pool ${poolNumber} - ${capitalizeFully(poolType)}`;
+              }
+              return `${makeLink(app)['poolNumber'](poolNumber)} <span class="grouped-display-inline">${capitalizeFully(poolType)}</span>`;
+            },
+          },
         },
       },
     };

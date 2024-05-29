@@ -1,0 +1,60 @@
+@startuml add-smartcard-spend
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant AddSmartcardSpendPage <<//juror-management/unpaid-attendance/expense-record/:jurorNumber/:poolNumber/add-smartcard-spend>>
+participant ExpenseRecordPage <</juror-management/unpaid-attendance/expense-record/:jurorNumber/:poolNumber>>
+''' CONTROLLER AND REQUEST OBJECTS
+participant AddSmartcardSpendController <<add-smartcard-spend.controller.js>> #lightyellow
+participant AddSmartcardSpendObject <<addSmartcardSpend.patch()>> #lightyellow
+
+''' TEMPLATES
+participant AddSmartcardSpendTemplate <<juror-management/expense-record/add-smartcard-spend.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant smartcardSpendValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> ExpenseRecordPage : click add smartcard spend link
+ExpenseRecordPage -> AddSmartcardSpendController : call smartcard spend controller
+
+AddSmartcardSpendController -> AddSmartcardSpendTemplate : request and build template
+AddSmartcardSpendController <- AddSmartcardSpendTemplate : return HTML
+AddSmartcardSpendPage <- AddSmartcardSpendController : return HTML
+
+Actor <- AddSmartcardSpendPage : render HTML
+
+Actor -> AddSmartcardSpendPage : enters valid expense values
+
+AddSmartcardSpendPage -> AddSmartcardSpendController : call page controller
+
+AddSmartcardSpendController -> smartcardSpendValidator : validate form
+
+alt Invalid values entered
+  AddSmartcardSpendController <-- smartcardSpendValidator : data validation fails
+  AddSmartcardSpendController -> AddSmartcardSpendTemplate : request and build error message template
+  AddSmartcardSpendController <- AddSmartcardSpendTemplate : return HTML
+  AddSmartcardSpendPage <- AddSmartcardSpendController : return HTML
+  Actor <- AddSmartcardSpendPage : render error message
+end
+
+AddSmartcardSpendController <- smartcardSpendValidator : valid values entered
+
+ddSmartcardSpendController -> AddSmartcardSpendObject : build request object
+AddSmartcardSpendObject -> BackendController : send backend request
+AddSmartcardSpendObject <- BackendController : ok response
+AddSmartcardSpendController <- AddSmartcardSpendObject : resolve request
+
+
+
+
+
+
+
+    

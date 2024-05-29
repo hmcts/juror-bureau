@@ -1,0 +1,76 @@
+@startuml update-reply-type
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant SummonsReplyPage <</summons-replies/response/{jurorNumber}>>
+participant UpdateReplyTypePage <</summons-replies/response/{jurorNumber}/paper/update/reply-type>>
+participant GenericErrorPage <</error>>
+
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant UpdateReplyTypeController <<reply-type.controller.js>> #lightyellow
+participant paperReplyObjGet <<paperReplyObj.get()>> #lightyellow
+participant summonsUpdateObject <<summonsUpdate.patch()>> #lightyellow
+
+''' TEMPLATES
+participant SummonsReplyTemplate <</summons-replies/response/{jurorNumber}.njk>>
+participant UpdateReplyTypeTemplate <</summons-replies/response/{jurorNumber}/paper/update/reply-type.njk>>
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> SummonsReplyPage : click add or change
+SummonsReplyPage -> UpdateReplyTypeController : call controller
+ 
+UpdateReplyTypeController -> paperReplyObjGet : build request object
+paperReplyObjGet -> BackendController : send backend request
+paperReplyObjGet <- BackendController : ok response
+UpdateReplyTypeController <- paperReplyObjGet : resolve request
+
+UpdateReplyTypeController -> UpdateReplyTypeTemplate : request and build template
+UpdateReplyTypeController <- UpdateReplyTypeTemplate : return HTML
+UpdateReplyTypePage <- UpdateReplyTypeController : return HTML
+Actor <- UpdateReplyTypePage : render HTML
+
+Actor -> UpdateReplyTypePage : enter changes and save
+
+UpdateReplyTypePage -> UpdateReplyTypeController : POST details
+
+
+UpdateReplyTypeController -> summonsUpdateObject : build request object
+summonsUpdateObject -> BackendController : send backend request
+summonsUpdateObject <- BackendController : ok response
+UpdateReplyTypeController <- summonsUpdateObject : resolve request - no update to values
+
+alt Unable to fetch the summons details
+    paperReplyObjGet <-- BackendController : error response
+    UpdateReplyTypeController <-- paperReplyObjGet : reject requestObject
+    UpdateReplyTypeController -> ErrorTemplate : request and build template
+    UpdateReplyTypeController <- ErrorTemplate : return HTML
+    GenericErrorPage <- UpdateReplyTypeController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Unable to update the reply type
+    summonsUpdateObject <-- BackendController : error response
+    UpdateReplyTypeController <-- summonsUpdateObject : reject requestObject
+    UpdateReplyTypeController -> ErrorTemplate : request and build template
+    UpdateReplyTypeController <- ErrorTemplate : return HTML
+    GenericErrorPage <- UpdateReplyTypeController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+UpdateReplyTypeController -> paperReplyObjGet : build request object
+paperReplyObjGet -> BackendController : send backend request
+paperReplyObjGet <- BackendController : ok response
+UpdateReplyTypeController <- paperReplyObjGet : resolve request
+UpdateReplyTypeController -> SummonsReplyTemplate : request and build template
+UpdateReplyTypeController <- SummonsReplyTemplate : return HTML
+SummonsReplyPage <- UpdateReplyTypeController : return HTML
+Actor <- SummonsReplyPage : render HTML

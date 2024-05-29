@@ -1,0 +1,95 @@
+@startuml Users
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant UsersPage <</administration/users/users>>
+participant CourtsAndBureauPage <</administration/users/court-bureau-users>>
+participant UserRecordPage <</administration/users/user-record>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant UsersController <<users.controller.js>> #lightyellow
+participant UsersObject <<usersDAO.getUsers()>> #lightyellow
+participant UserRecordObject <<usersDAO.getUserRecord()>> #lightyellow
+
+''' TEMPLATES
+participant UsersTemplate <</administration/users/users.njk>>
+participant CourtsAndBureauTemplate <</administration/users/court-bureau-users.njk>>
+participant UserRecordTemplate <</administration/users/user-record.njk>>
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> UsersPage: click users tab
+UsersPage -> UsersController : call users controller
+
+UsersController -> UsersObject : build request object
+UsersObject -> BackendController : send backend request
+UsersObject <- BackendController : ok response
+UsersController <- UsersObject : resolve request
+
+UsersController -> UsersTemplate : request and build template
+UsersController <- UsersTemplate : return HTML
+UsersPage <- UsersController : return HTML
+Actor <- UsersPage : render HTML
+
+Actor -> CourtsAndBureauPage: click courts and bureau tab
+CourtsAndBureauPage -> UsersController : call users controller
+
+UsersController -> UsersObject : build request object
+UsersObject -> BackendController : send backend request
+UsersObject <- BackendController : ok response
+UsersController <- UsersObject : resolve request
+
+UsersController -> CourtsAndBureauTemplate : request and build template
+UsersController <- CourtsAndBureauTemplate : return HTML
+CourtsAndBureauPage <- UsersController : return HTML
+Actor <- CourtsAndBureauPage : render HTML
+
+alt Select a user record
+Actor -> UsersPage: click on a user
+UsersPage -> UsersController : call users controller
+
+UsersController -> UserRecordObject : build request object
+UserRecordObject -> BackendController : send backend request
+UserRecordObject <- BackendController : ok response
+UsersController <- UserRecordObject : resolve request
+
+UsersController -> UserRecordTemplate : request and build template
+UsersController <- UserRecordTemplate : return HTML
+UserRecordPage <- UsersController : return HTML
+Actor <- UserRecordPage : render HTML
+end
+
+
+alt Failed to fetch list of courts
+    UsersObject <-- BackendController : error response
+    UsersController <-- UsersObject : reject requestObject
+    UsersController -> ErrorTemplate : request and build template
+    UsersController <- ErrorTemplate : return HTML
+    GenericErrorPage <- UsersController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Failed to list of users
+    UsersObject <-- BackendController : error response
+    UsersController <-- UsersObject : reject requestObject
+    UsersController -> ErrorTemplate : request and build template
+    UsersController <- ErrorTemplate : return HTML
+    GenericErrorPage <- UsersController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Failed to fetch user record
+    UserRecordObject <-- BackendController : error response
+    UsersController <-- UserRecordObject : reject requestObject
+    UsersController -> ErrorTemplate : request and build template
+    UsersController <- ErrorTemplate : return HTML
+    GenericErrorPage <- UsersController : return HTML
+    Actor <- GenericErrorPage : render error page
+end

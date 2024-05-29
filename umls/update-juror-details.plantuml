@@ -1,0 +1,76 @@
+@startuml update-juror-details
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant SummonsReplyPage <</summons-replies/response/{jurorNumber}>>
+participant DetailsPage <</summons-replies/response/{jurorNumber}/paper/update/details>>
+participant GenericErrorPage <</error>>
+
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant JurorDetailsController <<juror-details.controller.js>> #lightyellow
+participant paperReplyObjGet <<paperReplyObj.get()>> #lightyellow
+participant summonsUpdateObject <<summonsUpdate.patch()>> #lightyellow
+
+''' TEMPLATES
+participant SummonsReplyTemplate <</summons-replies/response/{jurorNumber}.njk>>
+participant DetailsTemplate <</summons-replies/response/{jurorNumber}/paper/update/details.njk>>
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> SummonsReplyPage : click add or change
+SummonsReplyPage -> JurorDetailsController : call controller
+ 
+JurorDetailsController -> paperReplyObjGet : build request object
+paperReplyObjGet -> BackendController : send backend request
+paperReplyObjGet <- BackendController : ok response
+JurorDetailsController <- paperReplyObjGet : resolve request
+
+JurorDetailsController -> DetailsTemplate : request and build template
+JurorDetailsController <- DetailsTemplate : return HTML
+DetailsPage <- JurorDetailsController : return HTML
+Actor <- DetailsPage : render HTML
+
+Actor -> DetailsPage : enter changes and save
+
+DetailsPage -> JurorDetailsController : POST details
+
+
+JurorDetailsController -> summonsUpdateObject : build request object
+summonsUpdateObject -> BackendController : send backend request
+summonsUpdateObject <- BackendController : ok response
+JurorDetailsController <- summonsUpdateObject : resolve request - no update to values
+
+alt Unable to fetch the summons details
+    paperReplyObjGet <-- BackendController : error response
+    JurorDetailsController <-- paperReplyObjGet : reject requestObject
+    JurorDetailsController -> ErrorTemplate : request and build template
+    JurorDetailsController <- ErrorTemplate : return HTML
+    GenericErrorPage <- JurorDetailsController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Unable to update juror details
+    summonsUpdateObject <-- BackendController : error response
+    JurorDetailsController <-- summonsUpdateObject : reject requestObject
+    JurorDetailsController -> ErrorTemplate : request and build template
+    JurorDetailsController <- ErrorTemplate : return HTML
+    GenericErrorPage <- JurorDetailsController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+JurorDetailsController -> paperReplyObjGet : build request object
+paperReplyObjGet -> BackendController : send backend request
+paperReplyObjGet <- BackendController : ok response
+JurorDetailsController <- paperReplyObjGet : resolve request
+JurorDetailsController -> SummonsReplyTemplate : request and build template
+JurorDetailsController <- SummonsReplyTemplate : return HTML
+SummonsReplyPage <- JurorDetailsController : return HTML
+Actor <- SummonsReplyPage : render HTML

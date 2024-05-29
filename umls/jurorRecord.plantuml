@@ -1,0 +1,223 @@
+@startuml juror-record
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant JurorOverview <</juror-management/juror-record/overview>>
+participant JurorDetailsPage <</juror-management/juror-record/details>>
+participant SummonsPage <</juror-management/juror-record/summons>>
+participant ExpensesPage <</juror-management/juror-record/expenses>>
+participant AttendancePage <<juror-management/juror-record/attendance>>
+participant NotesPage <<juror-management//juror-record/notes>>
+participant AddEditNotesPage <</juror-management/juror-record/notes-edit>>
+participant LogsPage <</juror-management/create-record-manual/summary>>
+participant AddEditLogsPage <</juror-management/juror-record/contact-logs-add>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant JurorRecordController <<juror-record.controller.js>>
+participant jurorRecordObject <<jurorRecordObject.get()>>
+participant attendanceDetails <<attendanceDetails.get()>>
+participant notesObject <<notes.patch()>>
+participant logsObject <<fetchCourts.get()>>
+participant defaultExpensesDAO <<defaultExpensesDAO.get()>>
+participant jurorBankDetailsDAO <<jurorBankDetailsDAO.get()>>
+participant expensesSummaryDAO <<expensesSummaryDAO.get()>>
+
+
+''' TEMPLATES
+participant JurorOverviewTemplate <</juror-management/juror-record/overview>>
+participant JurorDetailsTemplate <</juror-management/juror-record/details>>
+participant SummonsTemplate <</juror-management/juror-record/summons>>
+participant ExpensesTemplate <</juror-management/juror-record/expenses>>
+participant AttendanceTemplate <<juror-management/juror-record/attendance>>
+participant NotesTemplate <<juror-management//juror-record/notes>>
+participant AddEditNotesTemplate <</juror-management/juror-record/notes-edit>>
+participant LogsTemplate <</juror-management/create-record-manual/summary>>
+participant AddEditLogsTemplate <</juror-management/juror-record/contact-logs-add>>
+participant GenericErrorTemplate <</error>>
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+
+''' JOURNEY FLOW
+Actor -> JurorOverview : select create juror record
+
+JurorOverview -> JurorRecordController : call page controller
+
+JurorRecordController -> jurorRecordObject : call requestObject
+jurorRecordObject -> BackendController : fetchData
+alt Failed to fetch juror record details
+  jurorRecordObject <-- BackendController : error response
+  JurorRecordController -> ErrorTemplate : request and build template
+  JurorRecordController <- ErrorTemplate : return HTML
+  GenericErrorPage <- JurorRecordController : return HTML
+  Actor <- GenericErrorPage : render error page
+end
+
+jurorRecordObject <- BackendController : returnData
+JurorRecordController <- jurorRecordObject : resolve requestObject call
+
+JurorRecordController -> JurorOverviewTemplate : request and build template
+JurorRecordController <- JurorOverviewTemplate : return HTML
+JurorOverview <- JurorRecordController : return HTML
+
+Actor -> JurorOverview : select the juror details tab
+
+JurorOverview -> JurorRecordController : call page controller
+
+JurorRecordController -> JurorDetailsTemplate : request and build template
+JurorRecordController <- JurorDetailsTemplate : return HTML
+JurorDetailsPage <- JurorRecordController : return HTML
+
+Actor -> JurorOverview : select the summons reply tab
+
+JurorOverview -> JurorRecordController : call page controller
+
+JurorRecordController -> SummonsTemplate : request and build template
+JurorRecordController <- SummonsTemplate : return HTML
+SummonsPage <- JurorRecordController : return HTML
+
+
+Actor -> JurorOverview : select the expenses tab
+
+JurorOverview -> JurorRecordController : call page controller
+JurorRecordController -> defaultExpensesDAO : call requestObject
+defaultExpensesDAO -> BackendController : fetchData
+defaultExpensesDAO <- BackendController : returnData
+JurorRecordController <- defaultExpensesDAO : resolve request
+
+JurorRecordController -> jurorBankDetailsDAO : call requestObject
+jurorBankDetailsDAO -> BackendController : fetchData
+jurorBankDetailsDAO <- BackendController : returnData
+JurorRecordController <- jurorBankDetailsDAO : resolve request
+
+JurorRecordController -> expensesSummaryDAO : call requestObject
+expensesSummaryDAO -> BackendController : fetchData
+expensesSummaryDAO <- BackendController : returnData
+JurorRecordController <- expensesSummaryDAO : resolve request
+
+JurorRecordController -> ExpensesTemplate : request and build template
+JurorRecordController <- ExpensesTemplate : return HTML
+ExpensesPage <- JurorRecordController : return HTML
+
+
+Actor -> JurorOverview : select the attendance tab
+
+JurorOverview -> JurorRecordController : call page controller
+JurorRecordController -> attendanceDetails : call requestObject
+attendanceDetails -> BackendController : fetchData
+attendanceDetails <- BackendController : returnData
+JurorRecordController <- attendanceDetails : resolve request
+
+JurorRecordController -> AttendanceTemplate : request and build template
+JurorRecordController <- AttendanceTemplate : return HTML
+AttendancePage <- JurorRecordController : return HTML
+
+Actor -> JurorOverview : select the notes tab
+
+JurorOverview -> JurorRecordController : call page controller
+JurorRecordController -> notesObject : call requestObject
+notesObject -> BackendController : fetchData
+notesObject <- BackendController : returnData
+JurorRecordController <- notesObject : resolve request
+
+JurorRecordController -> NotesTemplate : request and build template
+JurorRecordController <- NotesTemplate : return HTML
+NotesPage <- JurorRecordController : return HTML
+
+
+Actor -> NotesPage : select add or edit note
+
+NotesPage -> JurorRecordController : call page controller
+
+JurorRecordController -> AddEditNotesTemplate : request and build template
+JurorRecordController <- AddEditNotesTemplate : return HTML
+AddEditNotesPage <- JurorRecordController : return HTML
+
+
+Actor -> NotesPage : select logs
+
+NotesPage -> JurorRecordController : call page controller
+JurorRecordController -> logsObject : call requestObject
+logsObject -> BackendController : fetchData
+logsObject <- BackendController : returnData
+JurorRecordController <- logsObject : resolve request
+
+JurorRecordController -> LogsTemplate : request and build template
+JurorRecordController <- LogsTemplate : return HTML
+LogsPage <- JurorRecordController : return HTML
+
+
+Actor -> LogsPage : select add or edit logs
+
+LogsPage -> JurorRecordController : call page controller
+
+JurorRecordController -> AddEditLogsTemplate : request and build template
+JurorRecordController <- AddEditLogsTemplate : return HTML
+LogsAddEditNotesPage <- JurorRecordController : return HTML
+
+
+
+alt Failed to fetch the juror summons data
+    jurorRecordObject <-- BackendController : error response
+    JurorRecordController <-- jurorRecordObject : reject requestObject
+    JurorRecordController -> ErrorTemplate : request and build template
+    JurorRecordController <- ErrorTemplate : return HTML
+    GenericErrorPage <- JurorRecordController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Failed to fetch the juror expenses data
+    expensesSummaryDAO <-- BackendController : error response
+    JurorRecordController <-- expensesSummaryDAO : reject requestObject
+    JurorRecordController -> ErrorTemplate : request and build template
+    JurorRecordController <- ErrorTemplate : return HTML
+    GenericErrorPage <- JurorRecordController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Failed to fetch the juror bank details or default expenses data
+    jurorBankDetailsDAO <-- BackendController : error response
+    JurorRecordController <-- jurorBankDetailsDAO : reject requestObject
+    JurorRecordController -> ErrorTemplate : request and build template
+    JurorRecordController <- ErrorTemplate : return HTML
+    GenericErrorPage <- JurorRecordController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Failed to fetch the juror attendance data
+    attendanceDetails <-- BackendController : error response
+    JurorRecordController <-- attendanceDetails : reject requestObject
+    JurorRecordController -> ErrorTemplate : request and build template
+    JurorRecordController <- ErrorTemplate : return HTML
+    GenericErrorPage <- JurorRecordController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Failed to fetch the juror notes and logs
+    jurorRecordObject <-- BackendController : error response
+    JurorRecordController <-- jurorRecordObject : reject requestObject
+    JurorRecordController -> ErrorTemplate : request and build template
+    JurorRecordController <- ErrorTemplate : return HTML
+    GenericErrorPage <- JurorRecordController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Failed to add a new contact log
+    logsObject <-- BackendController : error response
+    JurorRecordController <-- logsObject : reject requestObject
+    JurorRecordController -> ErrorTemplate : request and build template
+    JurorRecordController <- ErrorTemplate : return HTML
+    GenericErrorPage <- JurorRecordController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+
+
+@enduml

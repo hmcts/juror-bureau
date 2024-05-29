@@ -1,0 +1,76 @@
+@startuml reasonable-adjustments
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant SummonsReplyPage <</summons-replies/response/{jurorNumber}>>
+participant ReasonableAdjustmentsPage <</summons-replies/response/{jurorNumber}/paper/update/adjustments>>
+participant GenericErrorPage <</error>>
+
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant AdjustmentsController <<reasonable-adjustments.controller.js>> #lightyellow
+participant paperReplyObjGet <<paperReplyObj.get()>> #lightyellow
+participant summonsUpdateObject <<summonsUpdate.patch()>> #lightyellow
+
+''' TEMPLATES
+participant SummonsReplyTemplate <</summons-replies/response/{jurorNumber}.njk>>
+participant ReasonableAdjustmentsTemplate <</summons-replies/response/{jurorNumber}/paper/update/adjustments.njk>>
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> SummonsReplyPage : click add or change
+SummonsReplyPage -> AdjustmentsController : call controller
+ 
+AdjustmentsController -> paperReplyObjGet : build request object
+paperReplyObjGet -> BackendController : send backend request
+paperReplyObjGet <- BackendController : ok response
+AdjustmentsController <- paperReplyObjGet : resolve request
+
+AdjustmentsController -> ReasonableAdjustmentsTemplate : request and build template
+AdjustmentsController <- ReasonableAdjustmentsTemplate : return HTML
+ReasonableAdjustmentsPage <- AdjustmentsController : return HTML
+Actor <- ReasonableAdjustmentsPage : render HTML
+
+Actor -> ReasonableAdjustmentsPage : enter changes and save
+
+ReasonableAdjustmentsPage -> AdjustmentsController : POST details
+
+
+AdjustmentsController -> summonsUpdateObject : build request object
+summonsUpdateObject -> BackendController : send backend request
+summonsUpdateObject <- BackendController : ok response
+AdjustmentsController <- summonsUpdateObject : resolve request - no update to values
+
+alt Unable to fetch the summons details
+    paperReplyObjGet <-- BackendController : error response
+    AdjustmentsController <-- paperReplyObjGet : reject requestObject
+    AdjustmentsController -> ErrorTemplate : request and build template
+    AdjustmentsController <- ErrorTemplate : return HTML
+    GenericErrorPage <- AdjustmentsController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Unable to update reasonable adjustments
+    summonsUpdateObject <-- BackendController : error response
+    AdjustmentsController <-- summonsUpdateObject : reject requestObject
+    AdjustmentsController -> ErrorTemplate : request and build template
+    AdjustmentsController <- ErrorTemplate : return HTML
+    GenericErrorPage <- AdjustmentsController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+AdjustmentsController -> paperReplyObjGet : build request object
+paperReplyObjGet -> BackendController : send backend request
+paperReplyObjGet <- BackendController : ok response
+AdjustmentsController <- paperReplyObjGet : resolve request
+AdjustmentsController -> SummonsReplyTemplate : request and build template
+AdjustmentsController <- SummonsReplyTemplate : return HTML
+SummonsReplyPage <- AdjustmentsController : return HTML
+Actor <- SummonsReplyPage : render HTML

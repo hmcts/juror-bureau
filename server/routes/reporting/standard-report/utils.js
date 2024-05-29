@@ -18,7 +18,7 @@ const tableDataMappers = {
       }
 
       if (Object.keys(data)[0] === 'reasonableAdjustmentCodeWithDescription') {
-        return [data.reasonableAdjustmentCodeWithDescription, data.jurorReasonableAdjustmentMessage].join(', ');
+        return [`<b>${capitalizeFully(data.reasonableAdjustmentCodeWithDescription)}</b>`, data.jurorReasonableAdjustmentMessage].join(', ');
       }
 
       let listText = '';

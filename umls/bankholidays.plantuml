@@ -1,0 +1,46 @@
+@startuml bank-holidays
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant BankHolidaysPage <</administration/bank-holidays>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant BankHolidaysController <<bank-holidays.controller.js>> #lightyellow
+participant BankHolidaysObject <<bankHolidaysDAO.get()>> #lightyellow
+
+''' TEMPLATES
+participant BankHolidaysTemplate <</administration/bank-holidays.njk>>
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> BankHolidaysPage: bank holidays tab
+BankHolidaysPage -> BankHolidaysController : call bank holidays controller
+
+BankHolidaysController -> BankHolidaysObject : build request object
+BankHolidaysObject -> BackendController : send backend request
+BankHolidaysObject <- BackendController : ok response
+BankHolidaysController <- BankHolidaysObject : resolve request
+
+BankHolidaysController -> BankHolidaysTemplate : request and build template
+BankHolidaysController <- BankHolidaysTemplate : return HTML
+BankHolidaysPage <- BankHolidaysController : return HTML
+Actor <- BankHolidaysPage : render HTML
+
+alt Failed to fetch bank holidays
+    BankHolidaysObject <-- BackendController : error response
+    BankHolidaysController <-- BankHolidaysObject : reject requestObject
+    BankHolidaysController -> ErrorTemplate : request and build template
+    BankHolidaysController <- ErrorTemplate : return HTML
+    GenericErrorPage <- BankHolidaysController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+
+

@@ -14,6 +14,8 @@
     router.extendExpress(app);
     router.registerAppHelpers(app);
 
+    require('./authentication')(app);
+
     // Insert routes below
     require('./actuator')(app);
     require('./allocation')(app);

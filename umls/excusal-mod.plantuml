@@ -9,16 +9,21 @@ participant Actor
 participant ProcessReplyPage <</process>>
 participant ExcusalPage <</excusal>>
 participant SummonsInboxPage <</inbox>>
+participant SendLetterPage <<custom-components/letter-flow/send-letter>>
+participant RedirectPage <<custom-components/letter-flow/redirect>>
 
 
 ''' CONTROLLER AND REQUEST OBJECTS
 participant SummonsManagementController <<summons-management.controller.js>>
+participant LetterFlow <<letter-flow.js>>
 participant ExcusalCodesObject <<excusal.get()>>
 participant ExcusalObject <<excusalObject.put()>>
 participant InboxController <<inbox.controller.js>>
 
 ''' TEMPLATES
 participant ExcusalTemplate <<summons-management/excusal.njk>>
+participant SendLetterTemplate <<custom-components/letter-flow/send-letter.njk>>
+participant RedirectTemplate <<custom-components/letter-flow/redirect.njk>>
 
 ''' FILTERS AND VALIDATORS
 participant ExcusalValidator
@@ -67,6 +72,28 @@ SummonsManagementController -> ExcusalObject : build request object
 ExcusalObject -> BackendController : send backend request
 ExcusalObject <- BackendController : ok response
 SummonsManagementController <- ExcusalObject : resolve request
+
+SummonsManagementController -> LetterFlow : request and build template
+LetterFlow <- SendLetterTemplate : return HTML
+SendLetterPage <- LetterFlow : return HTML
+Actor <- SendLetterPage : render HTML
+
+Actor -> SendLetterPage : select yes or no
+
+alt select yes
+SendLetterPage -> SummonsManagementController : call page controller
+SummonsManagementController -> LetterFlow : request and build template
+LetterFlow -> RedirectTemplate : request and build template
+RedirectTemplate -> RedirectPage : request and build template
+RedirectPage -> SummonsManagementController : call page controller
+SummonsManagementController -> InboxController : redirect to inbox
+SummonsInboxPage <- InboxController : redirect to inbox
+Actor <- SummonsInboxPage : redirect to inbox
+end
+
+SendLetterPage -> SummonsManagementController : call page controller
+SummonsManagementController -> LetterFlow : redirect to inbox
+
 
 SummonsManagementController -> InboxController : redirect to inbox
 SummonsInboxPage <- InboxController : redirect to inbox
