@@ -34,14 +34,23 @@ async function standardReportPrint(app, req, res, reportKey, data) {
         if (header.id === 'juror_postcode' || header.id === 'document_code') {
           text = text.toUpperCase();
         }
+        if (header.id === 'on_call') {
+          text = text === 'Yes' ? 'Yes' : '-';
+        }
 
         if (header.dataType === 'List') {
           const items = text.split(', ');
-          let listText = '';
+          let listText = [];
 
           items.forEach((element, i, array) => {
-            listText = listText
-              + `${element}${header.id === 'juror_postal_address' ? (!(i === array.length - 1) ? ',' : '') : ''}\n`;
+            if (element.includes('<b>')) {
+              listText.push({
+                  text:`${element.replace(/(<([^>]+)>)/ig, '')}${header.id === 'juror_postal_address' ? (!(i === array.length - 1) ? ',' : '') : ''}\n`,
+                  bold: true
+                });
+            } else {
+              listText.push(`${element}${header.id === 'juror_postal_address' ? (!(i === array.length - 1) ? ',' : '') : ''}\n`);
+            }
           });
           return ({
             text: listText,
@@ -144,7 +153,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
     if (sectionHeading) {
       tables.unshift({
         body: [[
-          {text: sectionHeading, style: 'largeSectionHeading', colSpan: 2},
+          {text: capitalizeFully(sectionHeading), style: 'largeSectionHeading', colSpan: 2},
           {},
         ]],
         widths:['50%', '50%'],

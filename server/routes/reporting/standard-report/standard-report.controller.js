@@ -64,8 +64,8 @@
           resultsCount,
           poolList,
           filter,
-          filterUrl: app.namedRoutes.build(`reports.${reportKey}.filter.post`),
-          reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
+          filterUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.post`)),
+          reportUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.post`)),
         });
       case 'courts':
         delete req.session.errors;
@@ -85,9 +85,9 @@
             courts,
             title: reportType.title,
             filter,
-            filterUrl: app.namedRoutes.build(`reports.${reportKey}.filter.post`),
-            clearFilterUrl: app.namedRoutes.build(`reports.${reportKey}.filter.get`),
-            reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
+            filterUrl:  addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.post`)),
+            clearFilterUrl:  addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`)),
+            reportUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.post`)),
             cancelUrl: app.namedRoutes.build('reports.reports.get'),
             errors: {
               title: 'Please check your search',
@@ -119,7 +119,7 @@
           reportKey,
           title: reportType.title,
           searchLabels: reportType.searchLabelMappers,
-          reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
+          reportUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.post`)),
           cancelUrl: app.namedRoutes.build('reports.reports.get'),
         });
       default:
@@ -130,6 +130,8 @@
   };
 
   const standardFilterPost = (app, reportKey) => (req, res) => {
+    const reportType = reportKeys(app, req)[reportKey];
+
     let filter;
     switch (reportKeys(app, req)[reportKey].search) {
       case 'poolNumber':
@@ -140,7 +142,7 @@
         break;
     }
 
-    return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`) + '?filter=' + filter);
+    return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`) + '?filter=' + filter));
   };
 
   const standardReportGet = (app, reportKey, isPrint = false, isExport = false) => async(req, res) => {
@@ -192,6 +194,10 @@
 
           if (header.id === 'juror_postcode' || header.id === 'document_code') {
             output = output ? output.toUpperCase() : '-';
+          }
+
+          if (header.id === 'on_call') {
+            output = output === 'Yes' ? 'Yes' : '-';
           }
 
           if (header.dataType === 'List') {
@@ -289,7 +295,7 @@
       } else {
         tableRows = buildStandardTableRows(tableData, tableHeadings);
       }
-      return tableRows.length ? [{title: sectionHeading, headers: tableHeaders, rows: tableRows}] : []
+      return tableRows.length ? [{title: capitalizeFully(sectionHeading), headers: tableHeaders, rows: tableRows}] : []
     }
 
     const buildPrintExportUrl = function(urlType = 'print') {
@@ -301,15 +307,7 @@
         url = url + '?fromDate=' + req.query.fromDate + '&toDate=' + req.query.toDate;
       }
 
-      if (req.query.includeSummoned) {
-        url = url + '?includeSummoned=' + req.query.includeSummoned;
-      }
-
-      if (req.query.previousMonths) {
-        url = url + '?previousMonths=true'
-      }
-
-      return url;
+      return addURLQueryParams(reportType,  url);
     };
 
     const buildBackLinkUrl = function() {
@@ -327,7 +325,7 @@
       if (reportKey === 'daily-utilisation-jurors') {
         return req.session.dailyUtilisation.route
       }
-      return app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : '');
+      return addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : ''));
     };
 
     delete req.session.reportFilter;
@@ -353,6 +351,15 @@
 
     if (reportKey.includes('persons-attending')) {
       config.includeSummoned = req.query.includeSummoned || false;
+    }
+    if(req.query.includeJurorsOnCall) {
+      config.includeJurorsOnCall = req.query.includeJurorsOnCall;
+    }
+    if(req.query.respondedJurorsOnly) {
+      config.respondedJurorsOnly = req.query.respondedJurorsOnly;
+    }
+    if(req.query.includePanelMembers) {
+      config.includePanelMembers = req.query.includePanelMembers;
     }
 
     // Backlink routing needs saved for jurors report
@@ -426,6 +433,7 @@
 
   const standardReportPost = (app, reportKey) => async (req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
+
     if (reportType.search === 'poolNumber') {
       if (!req.body.reportPool) {
         req.session.errors = {
@@ -436,22 +444,21 @@
           }],
         };
 
-        return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`)
-          + (req.body.filter ? '?filter=' + req.body.filter : ''));
+        return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`)+ (req.body.filter ? '?filter=' + req.body.filter : '')));
       }
 
       req.session.reportFilter = req.body.filter;
 
-      return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, {
+      return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.get`, {
         filter: req.body.reportPool,
-      }));
+      })));
     }
     if (reportType.search === 'courts') {
       if (!req.body.selectedCourts) {
         req.session.errors = makeManualError('selectedCourts', 'Select at least one court');
 
-        return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`)
-          + (req.body.filter ? '?filter=' + req.body.filter : ''));
+        return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`)
+          + (req.body.filter ? '?filter=' + req.body.filter : '')));
       }
       req.session.reportFilter = req.body.filter;
       const selectedCourts = Array.isArray(req.body.selectedCourts) ? req.body.selectedCourts : [req.body.selectedCourts]
@@ -460,7 +467,7 @@
       });
       delete req.session.courtsList
       req.session.reportCourts = courtLocCodes;
-      return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, { filter: 'courts' }));
+      return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.get`, { filter: 'courts' })));
     }
     if (reportType.search === 'dateRange' || reportType.search === 'fixedDateRange') {
       if (req.body.dateRange && req.body.dateRange === 'NEXT_31_DAYS') {
@@ -481,23 +488,28 @@
       if (toDate.isBefore(fromDate)) {
         req.session.errors = makeManualError('dateTo', '‘Date to’ cannot be before ‘date from’');
         req.session.formFields = req.body;
-        return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`));
+        return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`)));
       }
 
       if (reportKey === 'daily-utilisation') { 
         if((toDate.diff(fromDate, 'days') + 1) > 31) {
           req.session.errors = makeManualError('dateTo', 'Date range cannot be larger than 31 days');
           req.session.formFields = req.body;
-          return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`));
+          return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`)));
         }
         redirectRoute = `reports.daily-utilisation.check.get`
       }
 
-      return res.redirect(app.namedRoutes.build(redirectRoute, {filter: 'dateRange'})
+      return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(redirectRoute, {filter: 'dateRange'})
         + `?fromDate=${dateFilter(req.body.dateFrom, 'DD/MM/YYYY', 'YYYY-MM-DD')}`
-        + `&toDate=${dateFilter(req.body.dateTo, 'DD/MM/YYYY', 'YYYY-MM-DD')}`);
+        + `&toDate=${dateFilter(req.body.dateTo, 'DD/MM/YYYY', 'YYYY-MM-DD')}`
+        ));
     }
   };
+
+  function addURLQueryParams(reportType, url){
+    return url + `${reportType.queryParams ? `${url.includes('?') ? '&' : '?'}${new URLSearchParams(_.clone(reportType.queryParams)).toString()}` : ''}`
+  }
 
   module.exports = {
     standardFilterGet,
