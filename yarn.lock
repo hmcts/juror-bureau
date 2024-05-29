@@ -5426,13 +5426,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"grunt-env@npm:^0.4.4":
-  version: 0.4.4
-  resolution: "grunt-env@npm:0.4.4"
+"grunt-env@npm:^1.0.0":
+  version: 1.0.1
+  resolution: "grunt-env@npm:1.0.1"
   dependencies:
-    ini: ~1.3.0
-    lodash: ~2.4.1
-  checksum: ce1c7832f4a1db0c13aa4303aad1d3e5725c7538210a26107bc6b8eadab49dfea53a4d29d3025501653166fffaf26a173ba93eaad42a389270d2efb78e7206c9
+    ini: ^1.3.5
+    lodash: ^4.17.14
+  checksum: 4810fec36a8da186e9abd6b0481d49b90e87d2f5e69bff77ce4940eb54d9b4172c03abc8a48aa7dd86ab1bad996940804c0bfd00a607914cb5329c5800d53bc4
   languageName: node
   linkType: hard
 
@@ -6282,7 +6282,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ini@npm:^1.3.4, ini@npm:~1.3.0":
+"ini@npm:^1.3.4, ini@npm:^1.3.5, ini@npm:~1.3.0":
   version: 1.3.8
   resolution: "ini@npm:1.3.8"
   checksum: dfd98b0ca3a4fc1e323e38a6c8eb8936e31a97a918d3b377649ea15bdb15d481207a0dda1021efbd86b464cae29a0d33c1d7dcaf6c5672bee17fa849bc50a1b3
@@ -7292,7 +7292,7 @@ __metadata:
     grunt-contrib-imagemin: ^2.0.1
     grunt-contrib-uglify: ^3.2.1
     grunt-contrib-watch: ^1.0.0
-    grunt-env: ^0.4.4
+    grunt-env: ^1.0.0
     grunt-eslint: ^20.1.0
     grunt-express-server: ^0.5.3
     grunt-mocha-istanbul: ^5.0.1
@@ -7794,13 +7794,6 @@ __metadata:
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: eb835a2e51d381e561e508ce932ea50a8e5a68f4ebdd771ea240d3048244a8d13658acbd502cd4829768c56f2e16bdd4340b9ea141297d472517b83868e677f7
-  languageName: node
-  linkType: hard
-
-"lodash@npm:~2.4.1":
-  version: 2.4.2
-  resolution: "lodash@npm:2.4.2"
-  checksum: b18a5e5858091e2a0e6498e9f0efde559f64a2cc7adfa240c7da92930b7c734a9e52519101522e9fbd7acfcfb0ef682ce9b9cb668b5fea4809cb340435c1764d
   languageName: node
   linkType: hard
 
