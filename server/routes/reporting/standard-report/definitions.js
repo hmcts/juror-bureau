@@ -959,6 +959,54 @@
         },
         printLandscape: true,
         fontSize: 8,
+        totalsRow: (data, isPrint = false) => {
+          const calculatePercentage = (value, total) => Math.round((value / total) * 100);
+          const totals = {
+            jurorsSummonedTotal: 0,
+            respondedTotal: 0,
+            attendedTotal: 0,
+            panelTotal: 0,
+            jurorTotal: 0,
+            excusedTotal: 0,
+            disqualifiedTotal: 0,
+            deferredTotal: 0,
+            reassignedTotal: 0,
+            undeliverableTotal: 0,
+            transferredTotal: 0,
+            failedToAttendTotal: 0,
+          };
+          
+          data.forEach((row) => {
+            Object.keys(totals).forEach((key) => {
+              totals[key] += row[key];
+            });
+          });
+
+          const htmlTemplate = (total) => {
+            if (isPrint) return `${total} (${calculatePercentage(total, totals.jurorsSummonedTotal)}%)`;
+
+            return `<span class="mod-flex mod-gap-x-1">
+              ${total}<span class="govuk-caption-m">(${calculatePercentage(total, totals.jurorsSummonedTotal)}%)</span>
+            </span>`;
+          };
+
+          return [
+            { text: '', fillColor: '#F3F2F1' },
+            { text: '', fillColor: '#F3F2F1' },
+            { text: totals.jurorsSummonedTotal, bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.respondedTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.attendedTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.panelTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.jurorTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.excusedTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.disqualifiedTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.deferredTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.reassignedTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.undeliverableTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.transferredTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.failedToAttendTotal), bold: true, fillColor: '#F3F2F1' },
+          ]
+        }
       },
     };
   };

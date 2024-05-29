@@ -135,6 +135,10 @@ async function standardReportPrint(app, req, res, reportKey, data) {
       }
     } else {
       tableRows = buildStandardTableRows(data, headersData);
+
+      if (reportData.totalsRow) {
+        tableRows.push(reportData.totalsRow(data, true));
+      }
     }
 
     const tableHeaders = buildTableHeading(headersData);
