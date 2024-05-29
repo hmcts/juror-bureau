@@ -1,0 +1,91 @@
+@startuml confirm-attendance-jurors-trial
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant JurorsOnTrialPage <</juror-management/jurors-on-trial>>
+participant confirmAttendancePage <</juror-management/jurors-on-trial/confirm-attendance>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant JurorsOnTrialController <<jurors-on-trial.controller.js>> #lightyellow
+participant confirmAttendanceDAO <<confirmAttendanceDAO.patch()>> #lightyellow
+participant jurorsOnTrialDAO <<jurorsOnTrialDAO.get()>> #lightyellow
+
+''' TEMPLATES
+participant JurorsOnTrialTemplate <<juror-management/jurors-on-trial/list-of-trials.njk>> #lavender
+participant confirmAttendanceTemplate <<juror-management/jurors-on-trial/confirm-attendance.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant jurorsOnTrialValidator
+participant changeAttendanceTimesValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> JurorsOnTrialPage : click confirm attendance
+JurorsOnTrialPage -> JurorsOnTrialController : call controller
+
+JurorsOnTrialController -> confirmAttendanceTemplate : request and build template
+JurorsOnTrialController <- confirmAttendanceTemplate : return HTML
+confirmAttendancePage <- JurorsOnTrialController : return HTML
+Actor <- confirmAttendancePage : render HTML
+
+Actor -> confirmAttendancePage : confirm attendance list is correct
+
+confirmAttendancePage -> JurorsOnTrialController : call page controller
+
+JurorsOnTrialController -> checkOutAllValidator : validate form
+JurorsOnTrialController -> changeAttendanceTimesValidator : validate form
+
+alt Invalid times entered
+  JurorsOnTrialController <-- checkOutAllValidator : data validation fails
+  JurorsOnTrialController <-- changeAttendanceTimesValidator : data validation fails
+  JurorsOnTrialController -> checkOutTemplate : request and build error message template
+  JurorsOnTrialController <- checkOutTemplate : return HTML
+  checkOutPage <- JurorsOnTrialController : return HTML
+  Actor <- checkOutPage : render error message
+end
+
+JurorsOnTrialController <- jurorsOnTrialValidator : valid data entered
+JurorsOnTrialController <- changeAttendanceTimesValidator : valid data entered
+
+JurorsOnTrialController -> confirmAttendanceDAO : build request object
+confirmAttendanceDAO -> BackendController : send backend request
+confirmAttendanceDAO <- BackendController : ok response
+JurorsOnTrialController <- confirmAttendanceDAO : resolve request
+
+alt Failed to fetch the jurors on this trial
+    jurorsOnTrialDAO <-- BackendController : error response
+    JurorsOnTrialController <-- jurorsOnTrialDAO : reject requestObject
+    JurorsOnTrialController -> ErrorTemplate : request and build template
+    JurorsOnTrialController <- ErrorTemplate : return HTML
+    GenericErrorPage <- JurorsOnTrialController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Failed to confirm the jurors in a trial
+    confirmAttendanceDAO <-- BackendController : error response
+    JurorsOnTrialController <-- confirmAttendanceDAO : reject requestObject
+    JurorsOnTrialController -> ErrorTemplate : request and build template
+    JurorsOnTrialController <- ErrorTemplate : return HTML
+    GenericErrorPage <- JurorsOnTrialController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+JurorsOnTrialController -> JurorsInWaitingTemplate : request and build template
+JurorsOnTrialController <- JurorsInWaitingTemplate : return HTML
+JurorsOnTrialPage <- JurorsOnTrialController : return HTML
+Actor <- JurorsOnTrialPage : render HTML
+
+
+
+
+
+
+
+    

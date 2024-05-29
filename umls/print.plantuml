@@ -1,0 +1,54 @@
+@startuml print
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+
+''' LOCAL ROUTING
+participant JurorRecordPage <</juror-management/record>>
+participant GenericDocumentListPage <</juror-bureau/client/documents/_common/${template}>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant printController <<print.controller.js>> #lightyellow
+participant reissueLetterDAO <<reissueLetterDAO.post()>> #lightyellow
+
+''' TEMPLATES
+participant JurorRecordPage <</juror-management/record.njk>>
+participant GenericDocumentListTemplate <</juror-bureau/client/documents/_common/${template}.njk>>
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> GenericDocumentListPage : select document type from documents list
+GenericDocumentListPage -> printController : call controller
+
+alt print when processing a summons RectangleStereotypeFontStyle
+Actor -> GenericDocumentListPage : select document type from documents list
+GenericDocumentListPage -> printController : call controller
+end
+
+printController -> reissueLetterDAO : build request object
+reissueLetterDAO -> BackendController : send backend request
+reissueLetterDAO <- BackendController : ok response
+printController <- reissueLetterDAO : resolve request
+
+printController -> GenericDocumentListTemplate : request and build template
+printController <- GenericDocumentListTemplate : return HTML
+GenericDocumentListPage <- printController : return HTML
+Actor <- GenericDocumentListPage : render HTML
+
+alt Unable to generate and print selected jurors
+    reissueLetterDAO <-- BackendController : error response
+    printController <-- reissueLetterDAO : reject requestObject
+    printController -> ErrorTemplate : request and build template
+    printController <- ErrorTemplate : return HTML
+    GenericErrorPage <- printController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+
+    

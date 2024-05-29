@@ -1,0 +1,124 @@
+@startuml certificate-of-exemption
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+
+''' LOCAL ROUTING
+participant GenericDocumentListPage <</juror-bureau/client/documents/_common/${template}>>
+participant ExemptionListPage <</juror-bureau/client/templates/documents/exemption/exemption-list>>
+participant ExemptionDurationPage <</juror-bureau/client/templates/documents/exemption/exemption-duration>>
+participant ExemptionTrialDetailsPage <</juror-bureau/client/templates/documents/exemption/certificate-of-exemption>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant exemptionTrialsController <<exemption-trials.controller.js>> #lightyellow
+participant exemptionDurationController <<exemption-duration.controller.js>> #lightyellow
+participant exemptionListController <<exemption-list.controller.js>> #lightyellow
+participant TrialExemptionListDto <<TrialExemptionListDto.get()>> #lightyellow
+participant judgesObject <<judgesObject.get()>> #lightyellow
+participant certificateOfExemptionDAOGet <<certificateOfExemptionDAO.get()>> #lightyellow
+participant certificateOfExemptionDAOPost <<certificateOfExemptionDAO.post()>> #lightyellow
+
+''' TEMPLATES
+participant GenericDocumentListTemplate <</juror-bureau/client/documents/_common/${template}.njk>>
+participant ExemptionListTemplate <</juror-bureau/client/templates/documents/exemption/exemption-list.njk>>
+participant ExemptionDurationTemplate <</juror-bureau/client/templates/documents/exemption/exemption-duration.njk>>
+participant ExemptionTrialDetailsTemplate <</juror-bureau/client/templates/documents/exemption/certificate-of-exemption.njk>>
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> GenericDocumentListPage : select certificate of exemption from documents list
+GenericDocumentListPage -> exemptionTrialsController : call controller
+
+exemptionTrialsController -> TrialExemptionListDto : build request object
+TrialExemptionListDto -> BackendController : send backend request
+TrialExemptionListDto <- BackendController : ok response
+exemptionTrialsController <- TrialExemptionListDto : resolve request
+
+exemptionTrialsController -> ExemptionTrialDetailsTemplate : request and build template
+exemptionTrialsController <- ExemptionTrialDetailsTemplate : return HTML
+ExemptionTrialDetailsPage <- exemptionTrialsController : return HTML
+Actor <- ExemptionTrialDetailsPage : render HTML
+
+Actor -> ExemptionTrialDetailsPage : select trial from list
+ExemptionTrialDetailsPage -> exemptionDurationController : call controller
+
+exemptionDurationController -> judgesObject : build request object
+judgesObject -> BackendController : send backend request
+judgesObject <- BackendController : ok response
+exemptionDurationController <- judgesObject : resolve request
+
+exemptionDurationController -> ExemptionDurationTemplate : request and build template
+exemptionDurationController <- ExemptionDurationTemplate : return HTML
+ExemptionDurationPage <- exemptionDurationController : return HTML
+Actor <- ExemptionDurationPage : render HTML
+
+Actor -> ExemptionDurationPage : enter exemption details
+ExemptionDurationPage -> exemptionListController : call controller
+
+exemptionListController -> certificateOfExemptionDAOGet : build request object
+certificateOfExemptionDAOGet -> BackendController : send backend request
+certificateOfExemptionDAOGet <- BackendController : ok response
+exemptionDurationController <- certificateOfExemptionDAOGet : resolve request
+
+exemptionDurationController -> ExemptionListTemplate : request and build template
+exemptionDurationController <- ExemptionListTemplate : return HTML
+ExemptionListPage <- exemptionDurationController : return HTML
+Actor <- ExemptionListPage : render HTML
+
+Actor -> ExemptionListPage : select jurors and print
+ExemptionListPage -> exemptionListController : call controller
+
+exemptionListController -> certificateOfExemptionDAOPost : build request object
+certificateOfExemptionDAOPost -> BackendController : send backend request
+certificateOfExemptionDAOPost <- BackendController : ok response
+exemptionDurationController <- certificateOfExemptionDAOPost : resolve request
+
+exemptionDurationController -> ExemptionListTemplate : request and build template
+exemptionDurationController <- ExemptionListTemplate : return HTML
+ExemptionListPage <- exemptionDurationController : return HTML
+Actor <- ExemptionListPage : render HTML
+
+alt Failed to fetch exemption jurors list
+    certificateOfExemptionDAOGet <-- BackendController : error response
+    printController <-- certificateOfExemptionDAOGet : reject requestObject
+    printController -> ErrorTemplate : request and build template
+    printController <- ErrorTemplate : return HTML
+    GenericErrorPage <- printController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Failed to fetch judges list
+    judgesObject <-- BackendController : error response
+    printController <-- judgesObject : reject requestObject
+    printController -> ErrorTemplate : request and build template
+    printController <- ErrorTemplate : return HTML
+    GenericErrorPage <- printController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Could not fetch juror details
+    TrialExemptionListDto <-- BackendController : error response
+    printController <-- TrialExemptionListDto : reject requestObject
+    printController -> ErrorTemplate : request and build template
+    printController <- ErrorTemplate : return HTML
+    GenericErrorPage <- printController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Unable to generate and print selected jurors
+    certificateOfExemptionDAOPost <-- BackendController : error response
+    printController <-- certificateOfExemptionDAOPost : reject requestObject
+    printController -> ErrorTemplate : request and build template
+    printController <- ErrorTemplate : return HTML
+    GenericErrorPage <- printController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+
+    
