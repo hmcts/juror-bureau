@@ -61,6 +61,7 @@
   //     printWidths?: [string], // optional widths for the individual tags when printing, if left empty will stretch across page
   //   },
   //   fontSize?: number,
+  //   totalsRow?: (data, isPrint) => [object], // custom totals row for the report
   // }};
   module.exports.reportKeys = (app, req = null) => {
     const courtUser = req ? isCourtUser(req) : false;
