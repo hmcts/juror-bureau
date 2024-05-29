@@ -46,7 +46,11 @@ module.exports.getCourtsList = function(app) {
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
-      return res.render('_errors/generic.njk');
+      if (err.error && err.error.message) {
+        req.session.errors = makeManualError('email', err.error.message);
+      }
+
+      return res.redirect(app.namedRoutes.build('login.get'));
     }
 
     if (courtsList.length === 1) {
