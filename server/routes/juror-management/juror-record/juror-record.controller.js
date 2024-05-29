@@ -53,7 +53,7 @@
             jwt: req.session.authToken,
             data: {
               jurorNumber: req.params['jurorNumber'],
-              locationCode: req.session.locCode,
+              locationCode: req.session.locCode || req.session.authentication.locCode,
             },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
@@ -69,7 +69,7 @@
         req.session.authToken,
         'detail',
         req.params['jurorNumber'],
-        req.session.locCode,
+        req.session.locCode || req.session.authentication.locCode,
       )
         .then(successCB)
         .catch(errorCB);
@@ -167,7 +167,7 @@
             jwt: req.session.authToken,
             data: {
               jurorNumber: req.params['jurorNumber'],
-              locationCode: req.session.locCode,
+              locationCode: req.session.locCode || req.session.authentication.locCode,
             },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
@@ -190,7 +190,7 @@
         req.session.authToken,
         'overview',
         req.params['jurorNumber'],
-        req.session.locCode,
+        req.session.locCode || req.session.authentication.locCode,
       ));
 
       promiseArr.push(jurorRecordObject.record.get(
@@ -199,7 +199,7 @@
         req.session.authToken,
         'detail',
         req.params['jurorNumber'],
-        req.session.locCode,
+        req.session.locCode || req.session.authentication.locCode,
       ));
 
       Promise.all(promiseArr)
@@ -248,7 +248,7 @@
             jwt: req.session.authToken,
             data: {
               jurorNumber: req.params['jurorNumber'],
-              locationCode: req.session.locCode,
+              locationCode: req.session.locCode || req.session.authentication.locCode,
             },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
@@ -264,7 +264,7 @@
         req.session.authToken,
         'summons-reply',
         req.params['jurorNumber'],
-        req.session.locCode,
+        req.session.locCode || req.session.authentication.locCode,
       )
         .then(successCB)
         .catch(errorCB);
@@ -285,7 +285,7 @@
           req.session.authToken,
           'overview',
           jurorNumber,
-          req.session.locCode,
+          req.session.locCode || req.session.authentication.locCode,
         );
 
         cacheJurorCommonDetails(req, jurorOverview.data.commonDetails);
@@ -376,7 +376,7 @@
             jwt: req.session.authToken,
             data: {
               jurorNumber,
-              locationCode: req.session.locCode,
+              locationCode: req.session.locCode || req.session.authentication.locCode,
             },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
@@ -393,7 +393,7 @@
           jwt: req.session.authToken,
           data: {
             jurorNumber,
-            locationCode: req.session.locCode,
+            locationCode: req.session.locCode || req.session.authentication.locCode,
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
@@ -429,14 +429,14 @@
           req.session.authToken,
           'overview',
           jurorNumber,
-          req.session.locCode,
+          req.session.locCode || req.session.authentication.locCode,
         );
 
         const attendance = await jurorRecordObject.attendanceDetails.get(
           require('request-promise'),
           app,
           req.session.authToken,
-          req.session.locCode,
+          req.session.locCode || req.session.authentication.locCode,
           jurorNumber,
         );
 
@@ -479,7 +479,7 @@
           jwt: req.session.authToken,
           data: {
             jurorNumber,
-            locationCode: req.session.locCode,
+            locationCode: req.session.locCode || req.session.authentication.locCode,
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
@@ -864,7 +864,7 @@
             req.session.authToken,
             'detail',
             id,
-            req.session.locCode,
+            req.session.locCode || req.session.authentication.locCode,
           );
 
           jurorDetails = jurorDetailsResponse.data;

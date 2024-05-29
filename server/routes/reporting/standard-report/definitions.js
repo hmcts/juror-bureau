@@ -8,7 +8,6 @@
   const makeLink = (app) => {
     return {
       poolNumber: (poolNumber) => {
-        console.log(poolNumber)
         return `<a class='govuk-link' href='${app.namedRoutes.build('pool-overview.get', {poolNumber: poolNumber})}'>Pool ${poolNumber}</a>`
       }
     }
@@ -53,7 +52,9 @@
   //     emptyDataGroup?: (colSpan, isPrint) => [object],  // returns table to display if a group has no data
   //   },
   //   printLandscape?: boolean, // force report printing to landscape
-  //   largeTotals?: (data) => {label: string, value: string}[], // large totals for the report
+  //   largeTotals?: {
+  //     values: (data) => {label: string, value: string}[], // large totals for the report
+  //     printWidths?: [string], // optional widths for the individual tags when printing, if left empty will stretch across page 
   // }};
   module.exports.reportKeys = (app, req = null) => {
     const courtUser = req ? isCourtUser(req) : false;
@@ -403,17 +404,19 @@
           'courtName',
           'judge',
         ],
-        largeTotals: (data) => {
-          return [
-            { label: 'Panelled', value: data.length },
-            { label: 'Empanelled', value: data.filter(juror => juror.panelStatus === 'Juror').length },
-            {
-              label: 'Not used',
-              value: data.filter(juror => (juror.panelStatus === 'Not Used' || juror.panelStatus === 'Returned')).length,
-            },
-            { label: 'Challenged', value: data.filter(juror => juror.panelStatus === 'Challenged').length },
-            { label: 'Returned jurors', value: data.filter(juror => juror.panelStatus === 'Returned Juror').length },
-          ];
+        largeTotals: {
+          values: (data) => {
+            return [
+              { label: 'Panelled', value: data.length },
+              { label: 'Empanelled', value: data.filter(juror => juror.panelStatus === 'Juror').length },
+              {
+                label: 'Not used',
+                value: data.filter(juror => (juror.panelStatus === 'Not Used' || juror.panelStatus === 'Returned')).length,
+              },
+              { label: 'Challenged', value: data.filter(juror => juror.panelStatus === 'Challenged').length },
+              { label: 'Returned jurors', value: data.filter(juror => juror.panelStatus === 'Returned Juror').length },
+            ];
+          },
         },
       },
       'prepare-monthly-utilisation': {
@@ -816,6 +819,53 @@
           'totalAbsences',
           'courtName',
         ],
+      },
+      'summoned-responded': {
+        title: 'Summoned and responded pool members report',
+        apiKey: 'SummonedRespondedReport',
+        search: 'poolNumber',
+        headings: [
+          'poolNumber',
+          'reportDate',
+          '',
+          'reportTime',
+        ],
+      },
+      'trial-statistics': {
+        title: 'Trial statistics',
+        apiKey: 'TrialStatisticsReport',
+        search: 'dateRange',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+        ],
+        largeTotals: {
+          values:(data) => {
+            const criminalTrials = data.filter(trial => trial.trialType === 'CRI');
+            const civilTrials = data.filter(trial => trial.trialType === 'CIV');
+            const calculateAverage = (trials) => {
+              const days = trials.map((t) => t.numberOfDays) 
+              const sum = days.reduce((a, b) => a + b, 0);
+              const avg = (sum / trials.length) || 0;
+              return `${avg} days`;
+            };
+            return [
+              { 
+                label: 'Criminal trials average length',
+                value: calculateAverage(criminalTrials),
+                classes: "govuk-!-margin-bottom-1 mod-large-tag__grey mod-!-width-one-eighth",
+              },
+              {
+                label: 'Civil trials average length',
+                value: calculateAverage(civilTrials),
+                classes: "govuk-!-margin-bottom-1 mod-large-tag__grey mod-!-width-one-eighth",
+              },
+            ];
+          },
+          printWidths: ['20%', '20%'],
+        },
       },
     };
   };

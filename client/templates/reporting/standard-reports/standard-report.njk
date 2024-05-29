@@ -79,7 +79,7 @@
           {% for largeTotal in largeTotals %}
             {{ modLargeTag({
               id: largeTotal.label,
-              classes: "govuk-!-margin-bottom-1 mod-large-tag__blue mod-flex-grow",
+              classes: largeTotal.classes or "govuk-!-margin-bottom-1 mod-large-tag__blue mod-flex-grow",
               label: largeTotal.label,
               value: largeTotal.value
             })}}
