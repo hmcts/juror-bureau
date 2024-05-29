@@ -1,5 +1,8 @@
 {% extends "layouts/default.njk" %}
 
+{% block page_title %}{{ serviceName }} - Reports{% endblock %}
+{% block page_identifier %}Reports{% endblock %}
+
 {% set currentApp = "Reports" %}
 {% set nav ="reports" %}
 
@@ -10,23 +13,23 @@
 
       <h2 class="govuk-heading-m">Attendance and expenses</h2>
       <ul class="govuk-list">
-        <li><a class="govuk-link" href="#">Absence report</a> (previously No show list)</li>
+        <li><a class="govuk-link" href="{{ url('reports.absences.filter.get') }}">Absence report</a> (previously No show list)</li>
         <li><a class="govuk-link" href="#">Jury cost bill</a></li>
         <li><a class="govuk-link" href="#">Payment status report</a></li>
-        <li><a class="govuk-link" href="#">Persons attending (detailed)</a></li>
-        <li><a class="govuk-link" href="#">Persons attending (summary)</a></li>
+        <li><a class="govuk-link" href="{{ url('reports.persons-attending-detail.filter.get') }}">Persons attending (detailed)</a></li>
+        <li><a class="govuk-link" href="{{ url('reports.persons-attending-summary.filter.get') }}">Persons attending (summary)</a></li>
         <li><a class="govuk-link" href="#">Reprint audit reports</a></li>
         <li><a class="govuk-link" href="#">Trial attendance</a></li>
-        <li><a class="govuk-link" href="#">Unconfirmed attendance</a></li>
+        <li><a class="govuk-link" href="{{ url('reports.unconfirmed-attendance.filter.get') }}">Unconfirmed attendance</a></li>
         <li><a class="govuk-link" href="#">Unpaid attendance (detailed)</a></li>
         <li><a class="govuk-link" href="#">Unpaid attendance (summary)</a></li>
-        
+
       </ul>
 
       <h2 class="govuk-heading-m">Pools</h2>
       <ul class="govuk-list">
-        <li><a class="govuk-link" href="#">Available list</a></li>
-        <li><a class="govuk-link" href="{{ url('reports.pool-status.filter.get') }}">Current pool status report</a></li>
+        <li><a class="govuk-link" href="{{ url('reports.available-list.filter.get') }}">Available list</a></li>
+        <li><a class="govuk-link" href="{{ url('reports.current-pool-status.filter.get') }}">Current pool status report</a></li>
         <li><a class="govuk-link" href="#">Completion of service report</a></li>
         <li><a class="govuk-link" href="#">Deferred list</a></li>
         <li><a class="govuk-link" href="#">Excused and disqualified list</a></li>
@@ -35,7 +38,7 @@
         <li><a class="govuk-link" href="#">On call list</a></li>
         <li><a class="govuk-link" href="#">Pool selection list</a></li>
         <li><a class="govuk-link" href="{{ url('reports.postponed.search.get') }}">Postponed list</a></li>
-        <li><a class="govuk-link" href="#">Reasonable adjustments report</a></li>
+        <li><a class="govuk-link" href="{{ url('reports.reasonable-adjustments.filter.get') }}">Reasonable adjustments report</a></li>
       </ul>
 
       <h2 class="govuk-heading-m">Senior jury officer reports</h2>
@@ -43,7 +46,7 @@
         <li><a class="govuk-link" href="#">Jury ammendment report</a></li>
         <li><a class="govuk-link" href="#">Manually-created jurors report</a></li>
       </ul>
-      
+
     </div>
   </div>
 {% endblock %}

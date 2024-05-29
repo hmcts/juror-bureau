@@ -243,12 +243,11 @@
       systemCodesDAO.get(app, req, 'EXCUSAL_AND_DEFERRAL')
         .then(successCB)
         .catch(errorCB);
-
     };
   };
 
   module.exports.postDeferral = function(app) {
-    return function(req, res) {
+    return async function(req, res) {
       var tmpReasons
         , deferralReason
 
@@ -325,6 +324,20 @@
 
       delete req.session.errors;
       delete req.session.formFields;
+
+      if (!tmpReasons) {
+        try {
+          tmpReasons = await systemCodesDAO.get(app, req, 'EXCUSAL_AND_DEFERRAL');
+        } catch (err) {
+          app.logger.crit('Failed to fetch system codes: ', {
+            auth: req.session.authentication,
+            data: { codes: 'EXCUSAL_AND_DEFERRAL' },
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
+
+          return res.render('_errors/generic');
+        }
+      }
 
       deferralReason = tmpReasons
         .find(reason => reason.code === req.body.deferralReason).description.toLowerCase();

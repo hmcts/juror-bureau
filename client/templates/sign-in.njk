@@ -1,69 +1,56 @@
 {% extends "./layouts/default.njk" %}
 
-{% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "includes/csrf.njk" import csrfProtection %}
 
 {% block page_title %}{{ serviceName }} - Sign in{% endblock %}
 {% block page_identifier %}Sign in{% endblock %}
 
 {% block content %}
 
+  {% if errors.items["email"] %}
+    {% set emailError = {"text": errors.items['email'][0].details} %}
+  {% else %}
+    {% set emailError = undefined %}
+  {% endif %}
+
   {% include "includes/errors.njk" %}
 
-  {# username error #}
-  {% if errors.items["userID"] %}
-    {% set usernameError = {"text": errors.items['userID'][0].details} %}
-  {% else %}
-    {% set usernameError = undefined %}
-  {% endif %}
+  <div class="container-small">
+    <h1 class="heading-large">Sign in</h1>
 
-  {# password error #}
-  {% if errors.items["password"] %}
-    {% set passwordError = {"text": errors.items['password'][0].details} %}
-  {% else %}
-    {% set passwordError = undefined %}
-  {% endif %}
+    {{ govukButton({
+      text: "Sign in",
+      href: url("authentication.azure.get"),
+      classes: "govuk-button--start"
+    }) }}
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
+    {% if env === "development" or skipSSO === true %}
+      <form action="{{ url('authentication.email.dev') }}" method="POST" id="emailAuth">
 
-      <form action="{{ url('login.post') }}" method="post" id="login">
+        {{ govukInput({
+          label: {
+            text: "Email address"
+          },
+          classes: "govuk-input--width-20",
+          id: "email",
+          name: "email",
+          errorMessage: emailError
+        }) }}
 
-        <fieldset class="govuk-fieldset">
+        {{ govukButton({
+          text: "Sign in with email",
+          classes: "govuk-button--start",
+          attributes: {
+            id: "signInEmailButton"
+          }
+        }) }}
 
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-            <h1 class="govuk-fieldset__heading">Sign in</h1>
-          </legend>
-
-          {{ govukInput({
-            label: {
-              text: "Username"
-            },
-            classes: "govuk-input--width-20",
-            id: "userID",
-            name: "userID",
-            errorMessage: usernameError
-          }) }}
-
-          {{ govukInput({
-            label: {
-              text: "Password"
-            },
-            classes: "govuk-input--width-20",
-            id: "password",
-            name: "password",
-            type: "password",
-            errorMessage: passwordError
-          }) }}
-
-        </fieldset>
-
-        <button id="signInButton" class="govuk-button" data-module="govuk-button">Sign in</button>
-        <input type="hidden" name="_csrf" value="{{csrftoken}}">
-
+        {{ csrfProtection(csrftoken) }}
       </form>
+    {% endif %}
 
-    </div>
   </div>
 
 {% endblock %}

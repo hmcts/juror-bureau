@@ -1,0 +1,33 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% if tables.activeRows.length === 0 and tables.inactiveRows.length === 0 %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <hr class="govuk-section-break govuk-section-break--visible">
+      <h2 class="govuk-heading-m govuk-!-margin-top-4">This report has no matching data</h2>
+    </div>
+  </div>
+{% else %}
+  <div class="mod-juror-record__title govuk-body">
+    <h2 id="activePoolMembersLabel" class="govuk-heading-m">Active pool members</h2>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      {{ govukSummaryList({
+        rows: tables.activeRows,
+        classes: "govuk-!-padding-left-2"
+      }) }}
+    </div>
+  </div>
+
+  <div class="mod-juror-record__title govuk-body">
+    <h2 id="inactivePoolMembersLabel" class="govuk-heading-m">Inactive pool members</h2>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      {{ govukSummaryList({
+        rows: tables.inactiveRows
+      }) }}
+    </div>
+  </div>
+{% endif %}

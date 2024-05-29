@@ -50,6 +50,23 @@
 
       return rp(reqOptions);
     },
+    post: function(app, req, locCode, body) {
+      const payload = {
+        uri: urljoin(config.apiEndpoint, `moj/expenses/${locCode}/unpaid-summary`),
+        method: 'POST',
+        headers: {
+          'User-Agent': 'Request-Promise',
+          'Content-Type': 'application/vnd.api+json',
+          Authorization: req.session.authToken,
+        },
+        json: true,
+        body: modUtils.mapCamelToSnake(body),
+      };
+
+      app.logger.info('Sending request to API: ', payload);
+
+      return rp(payload);
+    },
   };
 
   module.exports.jurorDetailsDAO = {

@@ -1,12 +1,11 @@
 (() => {
   'use strict';
   
-  const { dateFilter, attendanceType } = require("../../components/filters");
+  const { dateFilter, attendanceType, toMoney } = require("../../components/filters");
   const moment = require("moment");
 
   const addressOrder = ['lineOne', 'lineTwo', 'lineThree', 'town', 'county', 'postcode'];
 
-  const toMoney = (value) => `£${(value || 0).toFixed(2)}`;
   const makeName = (name) => `${name.title ? `${name.title} ` : ""}${name.firstName} ${name.lastName}`
 
   const auditTypeMap = {
@@ -72,9 +71,10 @@
     marginBottom: 10,
   });
 
-  const footer = (jurorDetails, auditType, draft) => ({
+  const footer = (jurorDetails, auditType, draft, auditNumber) => ({
     text: [
       { text: auditTypeMap[auditType] },
+      { text: auditNumber ? ` - ${auditNumber}` : ''},
       { text: draft ? ' - Draft - ' : ' - ' },
       { text: jurorDetails.jurorNumber, bold: true },
       { text: ' ' },
@@ -182,7 +182,7 @@
   })
 
   const content = (auditData) => {
-    const widths = [80, 80, 70, '*', '*', 60, '*', '*', '*', '*', '*', 60, '*', 30, 40];
+    const widths = [80, 70, 65, '*', '*', 60, '*', 65, '*', '*', '*', 60, '*', 40, 50];
     const tableBody = auditData.expenses.expenseDetails.map(expense => {
       if (expense.original) {
         return [
@@ -263,7 +263,7 @@
       {
         raw: true,
         alignment: 'justify',
-        fontSize: 7,
+        fontSize: 10,
         width: '33%',
         table: {
           widths: [120, 200],
@@ -318,7 +318,7 @@
     if (auditData.auditType === 'REAPPROVED_CASH' || auditData.auditType === 'APPROVED_CASH') {
       coreContent.push({
         raw: true,
-        fontSize: 7,
+        fontSize: 10,
         marginTop: 50,
         width: '33%',
         table: {
@@ -454,7 +454,7 @@
       title: header(auditData.jurorDetails, dateFrom, dateTo, auditData.auditType),
       metadata: metaData(auditData),
       tables: content(auditData),
-      footerText: footer(auditData.jurorDetails, auditData.auditType, auditData.draft),
+      footerText: footer(auditData.jurorDetails, auditData.auditType, auditData.draft, auditData.financialAuditNumber),
     }
   }
 

@@ -106,5 +106,11 @@
       'pool-management.postpone.get',
       auth.verify,
       postponeController.getPostponeDate(app));
+
+    //reports
+    app.get('/pool-management/pool-overview/:poolNumber/ballot-cards',
+      'pool-overview.ballot-cards.report.get',
+      auth.verify,
+      controller.printPoolBallotCards(app));
   };
 })();

@@ -16,6 +16,7 @@ const config = require('./environment')();
 const utils = require('../lib/utils.js');
 const modUtils = require('../lib/mod-utils');
 const isCourtUser = require('../components/auth/user-type').isCourtUser;
+const rateLimit = require('express-rate-limit');
 
 // Grab environment variables to enable/disable certain services
 const pkg = require(__dirname + '/../../package.json');
@@ -34,10 +35,20 @@ const generateNonce = () => {
 module.exports = async function(app) {
   let env = process.env.NODE_ENV || 'development';
   let useAuth = process.env.USE_AUTH || config.useAuth;
+  let skipSSO = !!process.env.SKIP_SSO || false;
 
   // Ensure provided environment values are lowercase
   env = env.toLowerCase();
   useAuth = useAuth.toLowerCase();
+
+  // rate limiting
+  const limiter = rateLimit({
+    windowMs: config.rateLimit.time,
+    limit: config.rateLimit.max,
+    message: config.rateLimit.message,
+  });
+
+  app.use(limiter);
 
   app.use((_, res, next) => {
     res.locals.nonce = generateNonce();
@@ -65,7 +76,10 @@ module.exports = async function(app) {
   app.use(helmet.hidePoweredBy());
   app.use(helmet.hsts());
   app.use(helmet.ieNoOpen());
-  app.use(helmet.noCache());
+  app.use((_, res, next) => {
+    res.setHeader('Cache-Control', 'no-cache, max-age=0, must-revalidate, no-store');
+    next();
+  });
   app.use(helmet.noSniff());
   app.use(helmet.xssFilter());
   app.use(referrerPolicy());
@@ -116,7 +130,9 @@ module.exports = async function(app) {
     res.locals.csrftoken = req.csrfToken();
     res.locals.activeUrl = req.originalUrl;
     res.locals.trackingCode = config.trackingCode;
-    res.locals.serviceName = 'Manage replies to jury summons';
+    res.locals.serviceName = 'HMCTS Juror';
+    res.locals.env = env;
+    res.locals.skipSSO = skipSSO;
 
     if (config.responseEditEnabled === true){
       res.locals.responseEditEnabled = true;
@@ -132,10 +148,6 @@ module.exports = async function(app) {
 
     if (typeof req.session.hasModAccess !== 'undefined') {
       res.locals.hasModAccess = req.session.hasModAccess;
-    }
-
-    if (typeof res.locals.hasModAccess === 'boolean' && res.locals.hasModAccess) {
-      res.locals.serviceName = 'HMCTS Juror';
     }
 
     // Setting headers stops pages being indexed even if indexed pages link to them.

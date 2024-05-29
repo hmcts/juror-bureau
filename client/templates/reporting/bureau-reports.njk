@@ -1,5 +1,8 @@
 {% extends "layouts/default-no-nav.njk" %}
 
+{% block page_title %}{{ serviceName }} - Reports List{% endblock %}
+{% block page_identifier %}Reports List{% endblock %}
+
 {% set currentApp = "Reports" %}
 
 {% block content %}
@@ -9,8 +12,8 @@
 
       <h2 class="govuk-heading-m">Summoning reports</h2>
       <ul class="govuk-list">
-        <li><a class="govuk-link" href="#">Available list</a></li>
-        <li><a class="govuk-link" href="{{ url('reports.pool-status.filter.get') }}">Current pool status report</a></li>
+        <li><a class="govuk-link" href="{{ url('reports.available-list.filter.get') }}">Available list</a></li>
+        <li><a class="govuk-link" href="{{ url('reports.current-pool-status.filter.get') }}">Current pool status report</a></li>
         <li><a class="govuk-link" href="#">Deferred list</a></li>
         <li><a class="govuk-link" href="#">Electronic police check report</a></li>
         <li><a class="govuk-link" href="#">Excused and disqualified report</a></li>
@@ -19,8 +22,8 @@
         <li><a class="govuk-link" href="{{ url('reports.non-responded.filter.get') }}">Non-responded list</a></li>
         <li><a class="govuk-link" href="#">Pool selection list</a></li>
         <li><a class="govuk-link" href="{{ url('reports.postponed.search.get') }}">Postponed list</a></li>
-        <li><a class="govuk-link" href="#">Reasonable adjustments</a></li>
-        <li><a class="govuk-link" href="#">Summoned and responded pool member status report</a></li>
+        <li><a class="govuk-link" href="{{ url('reports.reasonable-adjustments.filter.get') }}">Reasonable adjustments</a></li>
+        <li><a class="govuk-link" href="{{ url('reports.summoned-responded.filter.get') }}">Summoned and responded pool member status report</a></li>
         <li><a class="govuk-link" href="{{ url('reports.undelivered.filter.get') }}">Undelivered list</a></li>
         <li><a class="govuk-link" href="#">Yield performance report</a></li>
       </ul>
@@ -32,9 +35,9 @@
         <li><a class="govuk-link" href="#">Pool analysis report</a></li>
         <li><a class="govuk-link" href="#">Pool ratio report</a></li>
         <li><a class="govuk-link" href="#">Pool statistics</a></li>
-        <li><a class="govuk-link" href="#">Pool status report</a></li>
+        <li><a class="govuk-link" href="{{ url('reports.pool-status.filter.get') }}">Pool status report</a></li>
       </ul>
-      
+
     </div>
   </div>
 {% endblock %}

@@ -33,6 +33,56 @@
         details: 'Enter a date to search bulk-printing up until',
       }],
     },
+    reasonableAdjustments: {
+      dateFrom: [{
+        summary: 'Enter a date to search reasonable adjustments from',
+        details: 'Enter a date to search reasonable adjustments from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search reasonable adjustments up until',
+        details: 'Enter a date to search reasonable adjustments up until',
+      }],
+    },
+    personsAttending: {
+      searchBy: [{
+        summary: 'Select an attendance date',
+        details: 'Select an attendance date',
+      }],
+      date: [{
+        summary: 'Enter an attendance date',
+        details: 'Enter an attendance date',
+      }],
+    },
+    dailyUtilisation: {
+      dateFrom: [{
+        summary: 'Enter a date to search utilisation from',
+        details: 'Enter a date to search utilisation from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search utilisation up until',
+        details: 'Enter a date to search utilisation up until',
+      }],
+    },
+    absences: {
+      dateFrom: [{
+        summary: 'Enter a date to search absences from',
+        details: 'Enter a date to search absences jurors from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search absences up until',
+        details: 'Enter a date to search absences up until',
+      }],
+    },
+    availableList: {
+      searchBy: [{
+        summary: 'Select how you want to search for available jurors',
+        details: 'Select how you want to search for available jurors',
+      }],
+      date: [{
+        summary: 'Enter an attendance date',
+        details: 'Enter an attendance date',
+      }],
+    },
   };
 
   module.exports.searchBy = function(reportKey) {
@@ -48,12 +98,22 @@
   module.exports.dateRange = function(reportKey) {
     return {
       dateFrom: {
-        reportsDateRange: {
+        reportsDate: {
           messageKey: reportKey,
         },
       },
       dateTo: {
-        reportsDateRange: {
+        reportsDate: {
+          messageKey: reportKey,
+        },
+      },
+    };
+  };
+
+  module.exports.date = function(reportKey) {
+    return {
+      date: {
+        reportsDate: {
           messageKey: reportKey,
         },
       },
@@ -66,7 +126,7 @@
     }
   };
 
-  validate.validators.reportsDateRange = function(value, options, key, attributes) {
+  validate.validators.reportsDate = function(value, options, key, attributes) {
     if (typeof value === 'undefined' || value.length === 0) {
       return messageMatrix[options.messageKey][key];
     }

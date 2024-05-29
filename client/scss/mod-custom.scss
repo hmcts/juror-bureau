@@ -1,3 +1,8 @@
+@font-face {
+  font-family: 'Libre Barcode';
+  src: url(../assets/fonts/LibreBarcode39-Regular.ttf) format('truetype');
+}
+
 .mod-juror-record {
   &--header {
     &__tag-row {
@@ -179,6 +184,10 @@
   display: flex;
 }
 
+.mod-flex-grow {
+  flex-grow: 1;
+}
+
 .mod-items-start {
   align-items: start;
 }
@@ -197,6 +206,10 @@
 
 .mod-space-between {
   justify-content: space-between;
+}
+
+.mod-baseline {
+  align-items: baseline;
 }
 
 .mod-gap-x {
@@ -320,6 +333,10 @@ dt.govuk-summary-list-mod {
   &__grey {
     background: govuk-colour("light-grey");
   }
+  &__blue {
+    background: govuk-colour("blue");
+    color: govuk-colour("white");
+  }
 }
 .mod-center-table-data {
   text-align: center;
@@ -365,6 +382,13 @@ dt.govuk-summary-list-mod {
 .mod-summary-list-align {
   &__right {
     text-align: right;
+  }
+}
+
+.mod-summary-list {
+  &__blue {
+    background: govuk-colour("blue");
+    color: govuk-colour("white")
   }
 }
 
@@ -428,8 +452,6 @@ dt.govuk-summary-list-mod {
 }
 
 .fixTableHead { 
-  overflow-y: auto; 
-  max-height: 50rem;
 
   thead th { 
     position: sticky; 
@@ -438,6 +460,9 @@ dt.govuk-summary-list-mod {
   }
 
   table { 
+    display: block;
+    overflow-y: scroll; 
+    max-height: 50rem;
     border-collapse: collapse;         
     width: 100%; 
   }
@@ -473,4 +498,25 @@ dt.govuk-summary-list-mod {
 
 .mod-table-no-border {
   border-bottom: 0px;
+}
+
+.mod-barcode {
+  font-family: 'Libre Barcode';
+  font-size: 3em;
+}
+
+.grouped-display-inline {
+  @extend .govuk-caption-m;
+  display: inline;
+  text-transform: capitalize;
+}
+
+.mod-\!-width {
+    &-one-eighth {
+      width: 12.5% !important;
+    }
+
+    &-three-twentyfifths {
+      width: 8.33333333333% !important;
+    }
 }

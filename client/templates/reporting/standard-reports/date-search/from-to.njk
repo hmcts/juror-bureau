@@ -1,0 +1,20 @@
+{{ datePicker({
+  id: "dateFrom",
+  label: {
+    text: dateFromLabel or searchLabels.dateFrom or "Date from"
+  },
+  hint: "Use dd/mm/yyyy format.",
+  dateValue: tmpBody.dateFrom,
+  dateError: dateFromError
+}) }}
+
+{{ datePicker({
+  id: "dateTo",
+  label: {
+    text: dateToLabel or searchLabels.dateTo or "Date to"
+  },
+  hint: "Use dd/mm/yyyy format.",
+  dateMin: tmpBody.dateFrom,
+  dateValue: tmpBody.dateTo,
+  dateError: dateToError
+}) }}
