@@ -1,4 +1,3 @@
-/* eslint-disable strict */
 const express = require('express');
 const nunjucks = require('express-nunjucks').default;
 const njk = require('nunjucks');
@@ -32,7 +31,7 @@ const generateNonce = () => {
   return require('crypto').randomBytes(16).toString('base64');
 };
 
-module.exports = async function(app) {
+module.exports = async (app) => {
   let env = process.env.NODE_ENV || 'development';
   let useAuth = process.env.USE_AUTH || config.useAuth;
   let skipSSO = !!process.env.SKIP_SSO || false;
@@ -119,7 +118,7 @@ module.exports = async function(app) {
 
   // add moj filters
   // mojFilters = Object.assign(mojFilters);
-  Object.keys(mojFilters).forEach(function(filterName) {
+  Object.keys(mojFilters).forEach((filterName) => {
     filters[filterName] = mojFilters[filterName];
   });
 
@@ -132,7 +131,7 @@ module.exports = async function(app) {
   });
 
   // Send data to all views
-  app.use(function(req, res, next) {
+  app.use((req, res, next) => {
     res.locals.assetPath = '/';
     res.locals.releaseVersion = 'v' + releaseVersion;
     res.locals.csrftoken = req.csrfToken();
@@ -142,11 +141,7 @@ module.exports = async function(app) {
     res.locals.env = env;
     res.locals.skipSSO = skipSSO;
 
-    if (config.responseEditEnabled === true){
-      res.locals.responseEditEnabled = true;
-    } else {
-      res.locals.responseEditEnabled = false;
-    }
+    res.locals.responseEditEnabled = config.responseEditEnabled === true;
 
     if (typeof req.session.authentication !== 'undefined' && typeof res.locals.authentication === 'undefined') {
       res.locals.authentication = req.session.authentication;
@@ -170,8 +165,8 @@ module.exports = async function(app) {
   // after we have that we check two conditions, isCourtUser and jurorDigitalPath
   // this works because in the new app we will navigate with modules and every module will have a
   // parent route that will never match none of the current juror-digital paths
-  app.use(function(req, res, next) {
-    var routePart = req.path.split('/').slice(1)[0];
+  app.use((req, res, next) => {
+    const routePart = req.path.split('/').slice(1)[0];
 
     if (isCourtUser(req) && modUtils.jurorDigitalPath[routePart]) {
       return res.redirect(app.namedRoutes.build('homepage.get'));
@@ -183,21 +178,21 @@ module.exports = async function(app) {
 
   // Authenticate against the environment-provided credentials, if running
   // the app in production
-  if (env === 'production' && useAuth === 'true'){
+  if (env === 'production' && useAuth === 'true') {
     app.use(utils.basicAuth(app.logger, basicAuthUsername, basicAuthPassword, require('basic-auth')));
   }
 
 
   // Disallow search index indexing throught Robots.txt,
   // also done above by sending header to all views
-  app.get('/robots.txt', function(req, res) {
+  app.get('/robots.txt', (_, res) => {
     res.type('text/plain');
     res.send('User-agent: *\nDisallow: /');
   });
 
 
   // error handler
-  app.use(function(err, req, res, next) {
+  app.use((err, _, res, next) => {
     if (err.code !== 'EBADCSRFTOKEN') {
       return next(err);
     }
@@ -216,5 +211,4 @@ module.exports = async function(app) {
   if ('development' === env || 'test' === env) {
     app.use(errorHandler());
   }
-
 };
