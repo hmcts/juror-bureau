@@ -83,6 +83,7 @@
     standardReportRoutes(app, 'trial-statistics');
     standardReportRoutes(app, 'available-list-pool');
     standardReportRoutes(app, 'available-list-date');
+    standardReportRoutes(app, 'electronic-police-check');
   };
 
 })();
