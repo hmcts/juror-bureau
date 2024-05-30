@@ -1199,16 +1199,44 @@
           'judge'
         ],     
         cellTransformer: (data, key, output, isPrint) => {
-          console.log(key);
-
-          console.log(data);
           if (key === 'total_paid_sum') {
             if (isPrint) return output;
             return `<b>${output}</b>`;
           }
 
           return output;
-        },  
+        },
+        totalsRow: (data, isPrint = false) => {
+          const totals = {
+            financialLossDueSum: 0,
+            travelDueSum: 0,
+            subsistenceDueSum: 0,
+            smartcardDueSum: 0,
+            totalDueSum: 0,
+            totalPaidSum: 0,
+          };
+          
+          data.forEach((row) => {
+            Object.keys(totals).forEach((key) => {
+              totals[key] += row[key];
+            });
+          });
+
+          const htmlTemplate = (total) => {
+            if (isPrint) return toMoney(total);
+            return `<b class="jd-right-align">${toMoney(total)}</b>`;
+          };
+
+          return [
+            { text: '', fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.financialLossDueSum), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.travelDueSum), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.subsistenceDueSum), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.smartcardDueSum), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.totalDueSum), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.totalPaidSum), bold: true, fillColor: '#F3F2F1' },
+          ]
+        }  
       },
     };
   };
