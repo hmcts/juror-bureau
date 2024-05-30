@@ -30,6 +30,11 @@ module.exports = function(app) {
     , auth.verify
     , controller.postDeferralLetter(app));
 
+  app.get('/juror-management/juror/:jurorNumber/update/deferral/confirm',
+    'juror.update.deferral.confirm.get',
+    auth.verify,
+    controller.getConfirmDeferral(app));
+
   // Transfer - transfer juror to another court
   // -Step 1 - select court and date
   app.get('/juror-management/juror/:jurorNumber/update/transfer/select-court'
