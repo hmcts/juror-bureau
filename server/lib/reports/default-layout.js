@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  module.exports = function(pageOrientation = 'portrait') {
+  module.exports = function(pageOrientation = 'portrait', fontSize = 10) {
     return {
       fonts: {
         OpenSans: {
@@ -68,7 +68,7 @@
           paddingBottom: 0,
         },
         body: {
-          fontSize: 10,
+          fontSize,
         },
         barcode: {
           font: 'LibreBarcode',

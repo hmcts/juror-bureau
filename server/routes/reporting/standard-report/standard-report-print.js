@@ -57,6 +57,10 @@ async function standardReportPrint(app, req, res, reportKey, data) {
           });
         }
 
+        if (reportData.cellTransformer) {
+          text = reportData.cellTransformer(rowData, header.id, text, isPrint);
+        }
+
         return ({
           text: text ? text : '-',
         });
@@ -131,6 +135,10 @@ async function standardReportPrint(app, req, res, reportKey, data) {
       }
     } else {
       tableRows = buildStandardTableRows(data, headersData);
+
+      if (reportData.totalsRow) {
+        tableRows.push(reportData.totalsRow(data, true));
+      }
     }
 
     const tableHeaders = buildTableHeading(headersData);
@@ -234,6 +242,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
       tables: reportBody,
     }, {
       pageOrientation: reportData.printLandscape ? 'landscape' : 'portrait',
+      fontSize: reportData.fontSize,
     });
 
     res.contentType('application/pdf');

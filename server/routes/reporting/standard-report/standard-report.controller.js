@@ -160,6 +160,8 @@
     const buildStandardTableRows = function(tableData, tableHeadings) {
       const rows = tableData.map(data => {
         let row = tableHeadings.map(header => {
+          if (!header.name || header.name === '') return;
+
           let output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
 
           if (header.id === 'juror_number' || header.id === 'juror_number_from_trial') {
@@ -212,8 +214,12 @@
             });
           }
 
+          if (reportType.cellTransformer) {
+            output = reportType.cellTransformer(data, header.id, output);
+          }
+
           return ({
-            text: output ? output : '-',
+            html: output ? output : '-',
             attributes: {
               "data-sort-value": header.dataType === 'LocalDate' ? data[snakeToCamel(header.id)] : output
             },
@@ -244,6 +250,7 @@
     const buildStandardTable = function(reportType, tableData, tableHeadings, sectionHeading = '') {
       let tableRows = [];
       const tableHeaders = buildTableHeaders(reportType, tableHeadings);
+      const tableFoot = reportType.totalsRow ? reportType.totalsRow(tableData) : null;
 
       if (reportType.grouped) {
         let longestGroup = 0;
@@ -295,7 +302,13 @@
       } else {
         tableRows = buildStandardTableRows(tableData, tableHeadings);
       }
-      return tableRows.length ? [{title: capitalizeFully(sectionHeading), headers: tableHeaders, rows: tableRows}] : []
+
+      return tableRows.length ? [{
+        title: capitalizeFully(sectionHeading),
+        headers: tableHeaders,
+        rows: tableRows,
+        tableFoot,
+      }] : [];
     }
 
     const buildPrintExportUrl = function(urlType = 'print') {
@@ -378,7 +391,6 @@
 
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
       if (isExport) return reportExport(app, req, res, reportKey, { headings, tableData }) ;
-
 
       let tables = [];
 
