@@ -5,9 +5,9 @@
     , modUtils = require('../../lib/mod-utils')
     , validate = require('validate.js')
     , { panelListDAO, panelMemberStatusDAO} = require('../../objects/panel')
-    , { trialsListObject, trialDetailsObject } = require('../../objects/create-trial')
+    , { trialDetailsObject, trialsListDAO } = require('../../objects/create-trial')
     , { endTrialObject } = require('../../objects/end-trial')
-    , { dateFilter, capitalizeFully, makeDate } = require('../../components/filters')
+    , { dateFilter, capitalizeFully, makeDate, capitalise } = require('../../components/filters')
     , endTrialDateValidator = require('../../config/validation/end-trial')
     , moment = require('moment');
 
@@ -16,24 +16,21 @@
     return function(req, res) {
       const currentPage = req.query['page'] || 1
         , isActive = req.query['isActive'] || 'true'
-        , sortBy = req.query['sortBy'] || 'trialStartDate'
+        , sortBy = req.query['sortBy'] || 'startDate'
         , sortOrder = req.query['sortOrder'] || 'ascending';
       let pagination;
+
       const opts = {
-        isActive: isActive,
+        active: isActive,
         pageNumber: currentPage,
-        sortBy: sortBy,
-        sortOrder: sortOrder === 'ascending' ? 'asc' : 'desc',
+        pageLimit: modUtils.constants.PAGE_SIZE,
+        sortField: capitalise(modUtils.camelToSnake(sortBy)),
+        sortMethod: sortOrder === 'ascending' ? 'ASC' : 'DESC',
       };
 
       delete req.session.continueToEndTrial;
 
-      trialsListObject.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
-        opts
-      )
+      trialsListDAO.post(req, modUtils.mapCamelToSnake(opts))
         .then((data) => {
 
           app.logger.info('Fetched trials list', {
@@ -45,7 +42,7 @@
             },
           });
 
-          const queryTotal = data.totalElements;
+          const queryTotal = data.totalItems;
 
           if (queryTotal > modUtils.constants.PAGE_SIZE) {
             pagination = modUtils.paginationBuilder(queryTotal, currentPage, req.url);
@@ -54,7 +51,7 @@
           return res.render('trial-management/trials.njk', {
             nav: 'trials',
             isActive,
-            trials: transformTrialsList(data.content, sortBy, sortOrder),
+            trials: transformTrialsList(data.data, sortBy, sortOrder),
             pagination,
           });
 
@@ -314,9 +311,9 @@
         sort: sortBy === 'trialNumber' ? order : 'none',
       },
       {
-        id: 'description',
+        id: 'names',
         value: 'Names',
-        sort: sortBy === 'description' ? order : 'none',
+        sort: sortBy === 'names' ? order : 'none',
       },
       {
         id: 'trialType',
@@ -324,9 +321,9 @@
         sort: sortBy === 'trialType' ? order : 'none',
       },
       {
-        id: 'courtLocation',
+        id: 'courtName',
         value: 'Court',
-        sort: sortBy === 'courtLocation' ? order : 'none',
+        sort: sortBy === 'courtName' ? order : 'none',
       },
       {
         id: 'courtroom',
@@ -339,9 +336,9 @@
         sort: sortBy === 'judge' ? order : 'none',
       },
       {
-        id: 'trialStartDate',
+        id: 'startDate',
         value: 'Start date',
-        sort: sortBy === 'trialStartDate' ? order : 'none',
+        sort: sortBy === 'startDate' ? order : 'none',
       },
     );
 
