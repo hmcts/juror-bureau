@@ -2,7 +2,7 @@
   'use strict';
 
   const _ = require('lodash');
-  const { snakeToCamel, transformCourtNames, makeManualError, checkIfArrayEmpty, transformRadioSelectTrialsList, replaceAllObjKeys } = require('../../../lib/mod-utils');
+  const { snakeToCamel, transformCourtNames, makeManualError, checkIfArrayEmpty, transformRadioSelectTrialsList, replaceAllObjKeys, camelToSnake, mapCamelToSnake } = require('../../../lib/mod-utils');
   const { standardReportDAO } = require('../../../objects/reports');
   const { validate } = require('validate.js');
   const { poolSearchObject } = require('../../../objects/pool-search');
@@ -11,10 +11,10 @@
   const { bespokeReportBodys } = require('../bespoke-report/bespoke-report-body');
   const { reportKeys } = require('./definitions');
   const { standardReportPrint } = require('./standard-report-print');
-  const { fetchCourtsDAO, trialsListObject } = require('../../../objects');
+  const { fetchCourtsDAO, trialsListObject, trialsListDAO } = require('../../../objects');
   const searchValidator = require('../../../config/validation/report-search-by');
   const moment = require('moment')
-  const { dateFilter, capitalizeFully, makeDate } = require('../../../components/filters');
+  const { dateFilter, capitalizeFully, makeDate, capitalise } = require('../../../components/filters');
   const { reportExport } = require('./report-export');
 
   const standardFilterGet = (app, reportKey) => async(req, res) => {
@@ -126,20 +126,16 @@
         const sortBy = req.query['sortBy'] || 'trialNumber';
         const sortOrder = req.query['sortOrder'] || 'ascending';
         const opts = {
-          isActive: true,
-          pageNumber: '1',
-          sortBy: sortBy,
-          sortOrder: sortOrder === 'descending' ? 'desc' : 'asc',
+          active: true,
+          pageNumber: 1,
+          pageLimit: 500,
+          sortField: capitalise(camelToSnake(sortBy)),
+          sortMethod: sortOrder === 'ascending' ? 'ASC' : 'DESC',
         };
         if (filter) {
           opts.trialNumber = filter
         }
-        let data = await trialsListObject.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
-          opts
-        );
+        let data = await trialsListDAO.post(req, mapCamelToSnake(opts));
 
         data = replaceAllObjKeys(data, _.camelCase);
 
@@ -157,7 +153,7 @@
           clearSearchUrl: app.namedRoutes.build(`reports.${reportKey}.filter.get`),
           reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
           cancelUrl: app.namedRoutes.build('reports.reports.get'),
-          trials: transformRadioSelectTrialsList(data.content, sortBy, sortOrder)
+          trials: transformRadioSelectTrialsList(data.data, sortBy, sortOrder)
         });
       default:
         app.logger.info('Failed to load a search type for report type ' + reportKey);
