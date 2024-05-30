@@ -14,7 +14,7 @@
   const { fetchCourtsDAO, trialsListObject, trialsListDAO } = require('../../../objects');
   const searchValidator = require('../../../config/validation/report-search-by');
   const moment = require('moment')
-  const { dateFilter, capitalizeFully, makeDate, capitalise } = require('../../../components/filters');
+  const { dateFilter, capitalizeFully, capitalise } = require('../../../components/filters');
   const { reportExport } = require('./report-export');
 
   const standardFilterGet = (app, reportKey) => async(req, res) => {
@@ -253,6 +253,10 @@
 
           if (header.id === 'on_call') {
             output = output === 'Yes' ? 'Yes' : '-';
+          }
+
+          if (header.id === 'excusal_disqual_code') {
+            output = `${capitalise(output.split('-')[0])} - ${output.split('-')[1]}`;
           }
 
           if (header.dataType === 'List') {

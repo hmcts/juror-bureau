@@ -1315,6 +1315,23 @@
         },
         backUrl: app.namedRoutes.build('reports.deferred-list.filter.get'),
       },
+      'excused-disqualified': {
+        title: 'Excused and disqualified list',
+        apiKey: 'ExcusedAndDisqualifiedListReport',
+        search: 'poolNumber',
+        headings: [
+          'poolNumber',
+          'reportDate',
+          'poolType',
+          'reportTime',
+          'serviceStartDate',
+          'courtName',
+          'totalExcusedAndDisqualified',
+        ],
+        grouped: {
+          groupHeader: true,
+        },
+      },
     };
   };
 })();
