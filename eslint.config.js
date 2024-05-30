@@ -10,8 +10,8 @@ module.exports = [
       // tmp while we refactor codes
       'Gruntfile.js',
       'mocha.conf.js',
-      'server/*',
-      '!server/app.js',
+      'server/**/*.js',
+      ...require('./eslint.unignore.js'),
     ],
   },
   {
