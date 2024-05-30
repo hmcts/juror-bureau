@@ -6,6 +6,7 @@
   const { standardReportDAO } = require('../../../objects/reports');
   const { validate } = require('validate.js');
   const { poolSearchObject } = require('../../../objects/pool-search');
+  const { searchJurorRecordDAO } = require('../../../objects');
   const rp = require('request-promise');
   const { tableDataMappers, constructPageHeading, buildTableHeaders } = require('./utils');
   const { bespokeReportBodys } = require('../bespoke-report/bespoke-report-body');
@@ -13,6 +14,7 @@
   const { standardReportPrint } = require('./standard-report-print');
   const { fetchCourtsDAO } = require('../../../objects');
   const searchValidator = require('../../../config/validation/report-search-by');
+  const jurorSearchValidator = require('../../../config/validation/juror-search');
   const moment = require('moment')
   const { dateFilter, capitalizeFully } = require('../../../components/filters');
   const { reportExport } = require('./report-export');
@@ -67,6 +69,44 @@
           filterUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.post`)),
           reportUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.post`)),
         });
+      case 'jurorDetails':
+        
+        let _data;
+        let amendmentList = [];
+        let results = 0;
+        let error;
+        const submitError = req.session.errors || {};
+
+        delete req.session.errors;
+
+        const payload = {
+          sort_method: 'DESC',
+          sort_field: 'JUROR_NUMBER',
+          page_limit: 1000,
+          page_number: 1,
+          juror_number: filter
+        }
+        if (filter) {
+          error = validate({jurorNumber: filter}, jurorSearchValidator.jurorNumberSearched());
+        }
+        if (typeof error === 'undefined') {
+          ({data : _data } = await searchJurorRecordDAO.post(req, payload))
+        }
+        return res.render('reporting/standard-reports/juror-search', {
+          errors: {
+            title: 'Please check your search',
+            count: typeof error !== 'undefined' ? Object.keys(error).length : 0,
+            items: error,
+          },
+          reportKey,
+          title: reportType.title,
+          resultsCount: 10,
+          amendmentList: _data || [],
+          filter,
+          filterUrl: app.namedRoutes.build(`reports.${reportKey}.filter.post`),
+          reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
+        });
+        
       case 'courts':
         delete req.session.errors;
         try {
@@ -139,6 +179,9 @@
         break;
       case 'courts':
         filter = req.body.courtSearch
+        break;
+      case 'jurorDetails':
+        filter = req.body.jurorDetails
         break;
     }
 
@@ -354,6 +397,9 @@
       } else if (reportType.search === 'courts') {
         // VERIFY FIELD NAME ONCE AN API AVAILABLE
         config.courts = _.clone(req.session.reportCourts)
+      } else if (reportType.search === 'jurorDetails') {
+        // VERIFY FIELD NAME ONCE AN API AVAILABLE 
+        config.jurorNumber = req.params.filter;
       }
     }
 
@@ -391,7 +437,8 @@
 
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
       if (isExport) return reportExport(app, req, res, reportKey, { headings, tableData }) ;
-
+      console.log(headings);
+      console.log(tableData);
       let tables = [];
 
       if (reportType.bespokeReport && reportType.bespokeReport.body) {
@@ -444,6 +491,7 @@
   };
 
   const standardReportPost = (app, reportKey) => async (req, res) => {
+    //handle search for juror details
     const reportType = reportKeys(app, req)[reportKey];
 
     if (reportType.search === 'poolNumber') {
@@ -463,6 +511,27 @@
 
       return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.get`, {
         filter: req.body.reportPool,
+      })));
+    }
+
+    if (reportType.search === 'jurorDetails') {
+      console.log(req.body.jurorDetails);
+      if (!req.body.jurorDetails) {
+        req.session.errors = {
+          selection: [{
+            fields: ['selection'],
+            summary: 'Select a juror',
+            details: ['Select a juror'],
+          }],
+        };
+
+        return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`)+ (req.body.filter ? '?filter=' + req.body.filter : '')));
+      }
+      
+      req.session.reportFilter = req.body.filter;
+
+      return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.get`, {
+        filter: req.body.jurorDetails,
       })));
     }
     if (reportType.search === 'courts') {

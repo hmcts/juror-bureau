@@ -30,7 +30,8 @@
   
     module.exports.postJurorAmendmentSearch = function(app) {
       return function(req, res) {
-        let validatorResult = validate(req.body, validator.searchBy('postponed'));
+        let validatorResult = validate(req.body, validator.searchBy('jurorDetails'));
+        console.log('BODY: ', req.body);
   
         if (typeof validatorResult !== 'undefined') {
           req.session.errors = validatorResult;
@@ -39,7 +40,7 @@
         }
   
         if (req.body.searchBy === 'customDateRange') {
-          validatorResult = validate(req.body, validator.dateRange('postponed'));
+          validatorResult = validate(req.body, validator.dateRange('jurorDetails'));
           if (typeof validatorResult !== 'undefined') {
             req.session.errors = validatorResult;
             req.session.formFields = req.body;
@@ -62,9 +63,9 @@
   
         switch (req.body.searchBy) {
         case 'poolNumber':
-          return res.redirect(app.namedRoutes.build('reports.amendment-pool.filter.get'));
+          return res.redirect(app.namedRoutes.build('reports.amendment-pool.filter.get') + `?filter=${req.body.poolNumber}`);
         case 'jurorDetails':
-            return res.redirect(app.namedRoutes.build('reports.amendment-juror.filter.get'));
+            return res.redirect(app.namedRoutes.build('reports.amendment-juror.filter.get') + `?filter=${req.body.jurorDetails}`);
         case 'customDateRange':
           return res.redirect(app.namedRoutes.build('reports.amendment-date.report.get', {filter: 'dateRange'})
             + `?fromDate=${dateFilter(req.body.dateFrom, 'DD/MM/YYYY', 'YYYY-MM-DD')}`

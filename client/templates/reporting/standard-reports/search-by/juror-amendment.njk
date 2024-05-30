@@ -1,6 +1,7 @@
 {% extends "layouts/default-no-nav.njk" %}
 
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "custom-components/date-picker/macro.njk" import datePicker %}
 {% from "includes/csrf.njk" import csrfProtection %}
@@ -16,6 +17,11 @@
   {% set searchByError = undefined %}
   {% if errors.items["searchBy"] %}
     {% set searchByError = { html: errors.items["searchBy"][0].details } %}
+  {% endif %}
+
+  {% set poolNumberError = undefined %}
+  {% if errors.items["poolNumber"] %}
+    {% set poolNumberError = { html: errors.items["poolNumber"][0].details } %}
   {% endif %}
 
   {% set dateFromError = undefined %}  
@@ -51,6 +57,34 @@
     }) }}
   {% endset %}
 
+  {% set poolHTML %}
+  {{ govukInput({
+                label: {
+                  text: 'Enter a pool number'
+                },
+                classes: 'govuk-!-width-one-third',
+                id: "poolNumber",
+                name: "poolNumber",
+                type: "text",
+                errorMessage: poolNumberError,
+                value: filter
+              }) }}
+  {% endset %}
+
+   {% set jurorHTML %}
+    {{ govukInput({
+                label: {
+                  text: 'Enter juror name, number or postcode'
+                },
+                classes: 'govuk-!-width-one-third',
+                id: "jurorDetails",
+                name: "jurorDetails",
+                type: "text",
+                errorMessage: jurorDetailsError,
+                value: filter
+              }) }}
+  {% endset %}
+
   <form action="{{ processUrl }}" method="post" id="searchbyForm">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
@@ -67,11 +101,17 @@
           items: [
             {
               value: "poolNumber",
-              text: "Pool number"
+              text: "Pool number",
+              conditional: {
+                html: poolHTML
+              }
             },
             {
               value: "jurorDetails",
-              text: "Juror"
+              text: "Juror",
+              conditional: {
+                html: jurorHTML
+              }
             },
             {
               value: "customDateRange",

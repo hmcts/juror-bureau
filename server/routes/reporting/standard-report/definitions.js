@@ -157,7 +157,7 @@
           'jurorName',
           'reportTime',
         ],
-        backUrl: app.namedRoutes.build('reports.postponed.search.get'),
+        backUrl: app.namedRoutes.build('reports.juror-amendment.search.get'),
       },
       'amendment-pool': {
         title: 'Juror amendment report (by pool)',
@@ -171,7 +171,7 @@
           'serviceStartDate',
           'courtName',
         ],
-        backUrl: app.namedRoutes.build('reports.postponed.search.get'),
+        backUrl: app.namedRoutes.build('reports.juror-amendment.search.get'),
       },
       'amendment-date': {
         title: 'Juror amendment report (by date)',
@@ -194,7 +194,7 @@
           groupHeader: true,
           totals: true,
         },
-        backUrl: app.namedRoutes.build('reports.postponed.search.get'),
+        backUrl: app.namedRoutes.build('reports.juror-amendment.search.get'),
       },
       'incomplete-service': {
         title: 'Incomplete service',

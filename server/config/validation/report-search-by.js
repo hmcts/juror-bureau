@@ -23,6 +23,20 @@
         details: 'Enter a date to search postponed jurors up until',
       }],
     },
+    jurorDetails: {
+      searchBy: [{
+        summary: 'Select how you want to search for amended jurors',
+        details: 'Select how you want to search for amended jurors',
+      }],
+      dateFrom: [{
+        summary: 'Enter a date to search amended jurors from',
+        details: 'Enter a date to search amended jurors from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search amended jurors up until',
+        details: 'Enter a date to search amended jurors up until',
+      }],
+    },
     bulkPrintAudit: {
       dateFrom: [{
         summary: 'Enter a date to search bulk-printing from',
