@@ -1023,6 +1023,20 @@
           ]
         }
       },
+      'on-call': {
+        title: 'On call list',
+        apiKey: 'OnCallReport',
+        search: 'poolNumber',
+        headings: [
+          'poolNumber',
+          'reportDate',
+          'poolType',
+          'reportTime',
+          'serviceStartDate',
+          'courtName',
+          'totalOnCall',
+        ],
+      },
     };
   };
 })();
