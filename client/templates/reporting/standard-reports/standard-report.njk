@@ -11,6 +11,7 @@
 {% from "custom-components/date-picker/macro.njk" import datePicker %}
 {% from "moj/components/banner/macro.njk" import mojBanner %}
 {% from "custom-components/mod-large-tag/macro.njk" import modLargeTag %}
+{% from "custom-components/govuk-table-with-foot/macro.njk" import govukTableWithFoot %}
 
 {% block page_title %}{{ serviceName }} - Reports - {{ title }}{% endblock %}
 {% block page_identifier %}Reports - {{ title }}{% endblock %}
@@ -107,21 +108,33 @@
       </div>
     {% else %}
       {% for table in tables %}
+
+        {% if table.tableFoot %}
+          {% set tableFootHtml %}
+            <tr id="totals-row" class="govuk-table__row mod-highlight-table-row__grey">
+              {% for column in table.tableFoot %}
+                <td class="govuk-table__cell">{{ column.text | safe }}</td>
+              {% endfor %}
+            </tr>
+          {% endset %}
+        {% endif %}
+
         <div class="govuk-grid-row">
-          <div class="govuk-grid-column-full">
+          <div class="govuk-grid-column-full mod-overflow-auto">
             {% if table.title %}
               <div class="mod-juror-record__title">
                 <h2 class="govuk-heading-m govuk-!-margin-bottom-2">{{ table.title }}</h2>
               </div>
             {% endif %}
-            {{ govukTable({
+            {{ govukTableWithFoot({
               attributes: {
                 'data-module': 'moj-sortable-table'
               } if not unsortable and not grouped,
               caption: "Report data",
               captionClasses: "govuk-visually-hidden",
               head: table.headers,
-              rows: table.rows
+              rows: table.rows,
+              foot: tableFootHtml
             }) }}
           </div>
         </div>

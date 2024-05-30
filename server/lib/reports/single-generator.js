@@ -208,7 +208,7 @@
         header: documentHeader,
         footer: documentFooter(content.footerText),
         content: [ ..._documentContent ],
-        styles: layout().otherStyles,
+        styles: layout(null, options.fontSize).otherStyles,
       };
 
       const document = printer.createPdfKitDocument(finalContent);

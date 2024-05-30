@@ -1,6 +1,7 @@
 (() => {
   'use strict';
 
+  const _ = require('lodash');
   const { isCourtUser } = require('../../../components/auth/user-type');
   const { dateFilter, capitalizeFully, toMoney } = require('../../../components/filters');
   const { dailyUtilisationDAO, dailyUtilisationJurorsDAO, viewMonthlyUtilisationDAO, generateMonthlyUtilisationDAO } = require('../../../objects/reports');
@@ -57,7 +58,10 @@
   //   printLandscape?: boolean, // force report printing to landscape
   //   largeTotals?: {
   //     values: (data) => {label: string, value: string}[], // large totals for the report
-  //     printWidths?: [string], // optional widths for the individual tags when printing, if left empty will stretch across page 
+  //     printWidths?: [string], // optional widths for the individual tags when printing, if left empty will stretch across page
+  //   },
+  //   fontSize?: number,
+  //   totalsRow?: (data, isPrint) => [object], // custom totals row for the report
   // }};
   module.exports.reportKeys = (app, req = null) => {
     const courtUser = req ? isCourtUser(req) : false;
@@ -931,6 +935,79 @@
             },
           },
         },
+      },
+      'pool-analysis': {
+        title: 'Pool analysis report',
+        apiKey: 'PoolAnalysisReport',
+        search: 'dateRange',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+          '',
+          'courtName',
+        ],
+        cellTransformer: (data, key, output, isPrint) => {
+          const percentageKey = _.camelCase(`${key}_percentage`);
+
+          if (percentageKey in data) {
+            if (isPrint) return `${output} (${data[percentageKey]}%)`;
+            return `<span class="mod-flex mod-gap-x-1">${output} <span class="govuk-caption-m">(${data[percentageKey]}%)</span></span>`;
+          }
+
+          return output;
+        },
+        printLandscape: true,
+        fontSize: 8,
+        totalsRow: (data, isPrint = false) => {
+          const calculatePercentage = (value, total) => Math.round((value / total) * 100);
+          const totals = {
+            jurorsSummonedTotal: 0,
+            respondedTotal: 0,
+            attendedTotal: 0,
+            panelTotal: 0,
+            jurorTotal: 0,
+            excusedTotal: 0,
+            disqualifiedTotal: 0,
+            deferredTotal: 0,
+            reassignedTotal: 0,
+            undeliverableTotal: 0,
+            transferredTotal: 0,
+            failedToAttendTotal: 0,
+          };
+          
+          data.forEach((row) => {
+            Object.keys(totals).forEach((key) => {
+              totals[key] += row[key];
+            });
+          });
+
+          const htmlTemplate = (total) => {
+            if (isPrint) return `${total} (${calculatePercentage(total, totals.jurorsSummonedTotal)}%)`;
+
+            return `<span class="mod-flex mod-gap-x-1">
+              ${total}<span class="govuk-caption-m">(${calculatePercentage(total, totals.jurorsSummonedTotal)}%)</span>
+            </span>`;
+          };
+
+          return [
+            { text: '', fillColor: '#F3F2F1' },
+            { text: '', fillColor: '#F3F2F1' },
+            { text: totals.jurorsSummonedTotal, bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.respondedTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.attendedTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.panelTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.jurorTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.excusedTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.disqualifiedTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.deferredTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.reassignedTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.undeliverableTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.transferredTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.failedToAttendTotal), bold: true, fillColor: '#F3F2F1' },
+          ]
+        }
       },
     };
   };
