@@ -266,7 +266,7 @@ const { capitalise, toSentenceCase } = require('../components/filters');
         },
       ];
 
-      const transforedTrialsTable = modUtils.transformMessagingTrialsList(trialsList);
+      const transforedTrialsTable = modUtils.transformRadioSelectTrialsList(trialsList);
 
       expect(transforedTrialsTable.head).to.be.length(7);
       expect(transforedTrialsTable.rows).to.be.length(1);
