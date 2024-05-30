@@ -819,7 +819,14 @@
             transformer: (data, isPrint) => {
               const [poolNumber, poolType] = data.split(',');
               if (isPrint) {
-                return `Pool ${poolNumber} - ${capitalizeFully(poolType)}`;
+                return [
+                  `Pool ${poolNumber} `,
+                  {
+                    text: capitalizeFully(poolType),
+                    color: '#505A5F',
+                    fontSize: 10,
+                    bold: false
+                  }];
               }
               return `${makeLink(app)['poolNumber'](poolNumber)} <span class="grouped-display-inline">${capitalizeFully(poolType)}</span>`;
             },
@@ -929,7 +936,14 @@
             transformer: (data, isPrint) => {
               const [poolNumber, poolType] = data.split(',');
               if (isPrint) {
-                return `Pool ${poolNumber} - ${capitalizeFully(poolType)}`;
+                return [
+                  `Pool ${poolNumber} `,
+                  {
+                    text: capitalizeFully(poolType),
+                    color: '#505A5F',
+                    fontSize: 10,
+                    bold: false
+                  }];
               }
               return `${makeLink(app)['poolNumber'](poolNumber)} <span class="grouped-display-inline">${capitalizeFully(poolType)}</span>`;
             },
