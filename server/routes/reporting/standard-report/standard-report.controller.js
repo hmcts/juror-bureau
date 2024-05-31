@@ -299,6 +299,17 @@
 
       if (reportType.grouped) {
         let longestGroup = 0;
+
+        if (reportType.grouped.sortGroups) {
+          let ordered = {};
+          if (reportData.grouped.sortGroups === 'descending') {
+            (Object.keys(data).sort()).reverse().forEach(key => ordered[key] = data[key])
+          } else {
+            Object.keys(data).sort().forEach(key => ordered[key] = data[key])
+          }
+          tableData = ordered;
+        }
+        
         for (const [header, data] of Object.entries(tableData)) {
           let group = buildStandardTableRows(data, tableHeadings);
           let link;
@@ -386,7 +397,11 @@
       if (reportKey === 'daily-utilisation-jurors') {
         return req.session.dailyUtilisation.route
       }
-      return addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : ''));
+      if (Object.keys(app.namedRoutes.routesByNameAndMethod).includes(`reports.${reportKey}.filter.get`)) {
+        return addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : ''));
+      } else {
+        return app.namedRoutes.build(`reports.reports.get`)
+      }
     };
 
     delete req.session.reportFilter;

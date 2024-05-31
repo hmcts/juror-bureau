@@ -1,0 +1,44 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - Juror record - Confirm multiple deferral{% endblock %}
+{% block page_identifier %}Juror record - Confirm multiple deferral{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-l">Confirm mutliple deferral</h1>
+
+      <form action="{{ postUrl }}" method="POST">
+        <p class="govuk-body">The juror has already been deferred are you sure you want to defer again?</p>
+
+        {{ csrfProtection(csrftoken) }}
+
+        <input type="hidden" name="jurorNumber" value="{{ jurorNumber }}">
+        <input type="hidden" name="deferralReason" value="{{ deferralReason }}">
+        <input type="hidden" name="deferralDecision" value="GRANT">
+        <input type="hidden" name="deferralDate" value="{{ deferralDate }}">
+        <input type="hidden" name="allow_multiple_deferral" value="true">
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Confirm deferral",
+            attributes: {
+              id: "confirmDeferralButton"
+            }
+          }) }}
+        
+          <a class="govuk-link" href="{{ url('juror.update.get', { jurorNumber: jurorNumber }) }}" id="cancelAnchor">
+            Cancel
+          </a>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

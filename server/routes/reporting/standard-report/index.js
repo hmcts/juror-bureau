@@ -84,6 +84,9 @@
     standardReportRoutes(app, 'trial-statistics');
     standardReportRoutes(app, 'trial-attendance');
     standardReportRoutes(app, 'jury-cost-bill');
+    standardReportRoutes(app, 'available-list-pool');
+    standardReportRoutes(app, 'available-list-date');
+    standardReportRoutes(app, 'payment-status-report');
   };
 
 })();
