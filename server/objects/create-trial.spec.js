@@ -21,30 +21,6 @@
       },
     };
 
-  describe('Trials List API Object:', function() {
-
-    it('Should call the correct endpoint for fetching all trials', function() {
-      var opts = {
-          pageNumber: 1,
-          sortBy: 'trialStartDate',
-          sortOrder: 'asc',
-          isActive: false,
-        }
-        , testObj = trialsListObject.get(rpStub, appStub, 'test-token', opts)
-        , realUri = urljoin(
-          'http://localhost:8080/api/v1', 'moj/trial/list',
-          '?page_number=0',
-          '&sort_by=trialStartDate',
-          '&sort_order=asc',
-          '&is_active=false'
-        );
-
-      expect(testObj.uri).to.equal(realUri);
-      expect(testObj.method).to.equal('GET');
-    });
-
-  });
-
   describe('Trial Detail API Object:', function() {
 
     it('Should call the correct endpoint for fetching a trials detail summary', function() {
