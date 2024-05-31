@@ -84,6 +84,7 @@
     standardReportRoutes(app, 'trial-statistics');
     standardReportRoutes(app, 'trial-attendance');
     standardReportRoutes(app, 'jury-cost-bill');
+    require('../ballot-cards')(app);
   };
 
 })();

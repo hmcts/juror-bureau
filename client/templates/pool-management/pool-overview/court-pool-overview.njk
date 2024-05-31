@@ -18,12 +18,16 @@
 {% set standardPrintMenuItems = [
   {
     text: "Ballot cards",
-    href: url("pool-overview.ballot-cards.report.get",{
-      poolNumber:poolDetails.poolNumber
+    href: url("reports.ballot-cards.report.print", {
+      ballotType: "pool",
+      filter: poolDetails.poolNumber
     }),
-    classes: "govuk-button--secondary"
+    classes: "govuk-button--secondary",
+    attributes: {
+      target: "_blank"
+    }
   }
-]%}
+] %}
 
 {% block beforeContent %}
   {% include "includes/back-link.njk" %}
@@ -47,7 +51,7 @@
     {% set selectedJurorsError = undefined %}
   {% endif %}
 
-{% if availableSuccessMessage %}
+  {% if availableSuccessMessage %}
     {{ mojBanner({
       type: "success",
       html: successBanner,
@@ -90,7 +94,7 @@
           }
         ].concat(standardPrintMenuItems) if trial.is_jury_empanelled else standardPrintMenuItems,
         attributes: {
-          id: 'printButtonMenu'
+          id: "printButtonMenu"
         }
       }) }}
     </span>
