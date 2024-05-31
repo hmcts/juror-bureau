@@ -54,6 +54,7 @@
   //     groupHeader?: boolean, // display the group header or not.. in some reports we dont have to
   //     totals?: boolean, // same on this one.. some reports dont need the totals
   //     emptyDataGroup?: (colSpan, isPrint) => [object],  // returns table to display if a group has no data
+  //     sortGroups?: 'ascending' or 'descending',  // orders each group by group header,
   //   },
   //   printLandscape?: boolean, // force report printing to landscape
   //   largeTotals?: {
@@ -1236,7 +1237,23 @@
             { text: htmlTemplate(totals.totalDueSum), bold: true, fillColor: '#F3F2F1' },
             { text: htmlTemplate(totals.totalPaidSum), bold: true, fillColor: '#F3F2F1' },
           ]
-        }  
+        }
+      },
+      'payment-status-report': {
+        title: 'Payment status report ',
+        apiKey: 'PaymentStatusReport',
+        headings: [
+          'reportDate',
+          '',
+          'reportTime',
+          '',
+          'courtName',
+        ],
+        grouped: {
+          groupHeader: true,
+          totals: true,
+          sortGroups: 'ascending',
+        },
       },
     };
   };

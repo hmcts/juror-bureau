@@ -92,6 +92,17 @@ async function standardReportPrint(app, req, res, reportKey, data) {
 
     if (reportData.grouped) {
       let longestGroup = 0;
+
+      if (reportData.grouped.sortGroups) {
+        let ordered = {};
+        if (reportData.grouped.sortGroups === 'descending') {
+          (Object.keys(data).sort()).reverse().forEach(key => ordered[key] = data[key])
+        } else {
+          Object.keys(data).sort().forEach(key => ordered[key] = data[key])
+        }
+        data = ordered;
+      }
+
       for (const [heading, rowData] of Object.entries(data)) {
 
         const groupHeaderTransformer = () => {
