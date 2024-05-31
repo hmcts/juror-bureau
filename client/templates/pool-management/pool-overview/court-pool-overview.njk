@@ -15,20 +15,6 @@
 
 {% set currentApp = "Pool management" %}
 
-{% set standardPrintMenuItems = [
-  {
-    text: "Ballot cards",
-    href: url("reports.ballot-cards.report.print", {
-      ballotType: "pool",
-      filter: poolDetails.poolNumber
-    }),
-    classes: "govuk-button--secondary",
-    attributes: {
-      target: "_blank"
-    }
-  }
-] %}
-
 {% block beforeContent %}
   {% include "includes/back-link.njk" %}
 
