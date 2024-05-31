@@ -962,10 +962,6 @@
           'reportTime',
           '',
           'courtName',
-          'jurorNumber',
-          'firstName',
-          'lastName',
-          'totalUnpaidAttendances',
         ],
         cellTransformer: (data, key, output, isPrint) => {
           const percentageKey = _.camelCase(`${key}_percentage`);
