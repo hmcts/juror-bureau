@@ -326,7 +326,7 @@
           tmpBody,
           trialNumber,
           pagination,
-          trials: modUtils.transformMessagingTrialsList(data.data, sortBy, sortOrder),
+          trials: modUtils.transformRadioSelectTrialsList(data.content, sortBy, sortOrder),
           errors: {
             title: 'Please check the form',
             count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,

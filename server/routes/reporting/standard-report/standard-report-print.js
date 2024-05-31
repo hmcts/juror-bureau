@@ -76,7 +76,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
 
     if (reportData.bespokeReport && reportData.bespokeReport.printInsertRows) {
       Object.keys(reportData.bespokeReport.insertRows).map((key) => {
-        if (key === 'final') {
+        if (key === 'last') {
           tableRows.push(reportData.bespokeReport.insertRows[key](rows, true))
         } else {
           tableRows.splice(key, 0, reportData.bespokeReport.insertRows[key](rows, true));
