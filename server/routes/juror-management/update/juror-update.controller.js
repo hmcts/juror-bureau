@@ -297,10 +297,16 @@
             });
           }
 
-          if (err.error && err.error.code === 'CANNOT_REFUSE_FIRST_DEFERRAL') {
-            req.session.errors = makeManualError('deferral', 'Cannot refuse first deferral');
-          } else {
-            req.session.errors = makeManualError('deferral', 'Something went wrong when trying to defer the juror');
+          switch (err.error?.code) {
+            case 'CANNOT_REFUSE_FIRST_DEFERRAL':
+              req.session.errors = makeManualError('deferral', 'Cannot refuse first deferral');
+              break;
+            case 'JUROR_HAS_BEEN_DEFERRED_BEFORE':
+              return res.redirect(app.namedRoutes.build('juror.update.deferral.confirm.get', {
+                jurorNumber: req.params.jurorNumber,
+              }) + `?deferralReason=${req.body.deferralReason}&deferralDate=${req.body.deferralDate}`);
+            default:
+              req.session.errors = makeManualError('deferral', 'Something went wrong when trying to defer the juror');
           }
 
           return res.redirect(app.namedRoutes.build('juror.update.deferral.get', {
@@ -346,6 +352,31 @@
         .then(successCB)
         .catch(errorCB);
     };
+  };
+
+  module.exports.getConfirmDeferral = (app) => {
+    return (req, res) => {
+      const { jurorNumber } = req.params;
+      const { deferralReason, deferralDate } = req.query;
+
+      app.logger.info('Showing confirm deferral page for juror', {
+        auth: req.session.authentication,
+        data: {
+          jurorNumber,
+          deferralReason,
+          deferralDate,
+        },
+      });
+
+      const postUrl = app.namedRoutes.build('juror.update.deferral.post', { jurorNumber });
+
+      return res.render('juror-management/juror-record/confirm-deferral.njk', {
+        jurorNumber,
+        deferralReason,
+        deferralDate,
+        postUrl,
+      });
+    }
   };
 
   module.exports.getDeferralLetter = function(app) {
