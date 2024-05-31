@@ -135,26 +135,34 @@
         if (filter) {
           opts.trialNumber = filter
         }
-        let data = await trialsListDAO.post(req, mapCamelToSnake(opts));
+        try{
+          let data = await trialsListDAO.post(req, mapCamelToSnake(opts));
 
-        data = replaceAllObjKeys(data, _.camelCase);
-
-        return res.render('reporting/standard-reports/trial-select', {
-          errors: {
-            title: 'Please check your search',
-            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-            items: tmpErrors,
-          },
-          tmpBody,
-          reportKey,
-          filter,
-          title: reportType.title,
-          filterUrl: app.namedRoutes.build(`reports.${reportKey}.filter.post`),
-          clearSearchUrl: app.namedRoutes.build(`reports.${reportKey}.filter.get`),
-          reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
-          cancelUrl: app.namedRoutes.build('reports.reports.get'),
-          trials: transformRadioSelectTrialsList(data.data, sortBy, sortOrder)
-        });
+          data = replaceAllObjKeys(data, _.camelCase);
+  
+          return res.render('reporting/standard-reports/trial-select', {
+            errors: {
+              title: 'Please check your search',
+              count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+              items: tmpErrors,
+            },
+            tmpBody,
+            reportKey,
+            filter,
+            title: reportType.title,
+            filterUrl: app.namedRoutes.build(`reports.${reportKey}.filter.post`),
+            clearSearchUrl: app.namedRoutes.build(`reports.${reportKey}.filter.get`),
+            reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
+            cancelUrl: app.namedRoutes.build('reports.reports.get'),
+            trials: transformRadioSelectTrialsList(data.data, sortBy, sortOrder)
+          });
+        } catch (err) {
+          app.logger.crit('Failed to fetch trials list: ', {
+            auth: req.session.authentication,
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
+          return res.render('_errors/generic');
+        }
       default:
         app.logger.info('Failed to load a search type for report type ' + reportKey);
         return res.render('_errors/generic');
@@ -302,10 +310,10 @@
 
         if (reportType.grouped.sortGroups) {
           let ordered = {};
-          if (reportData.grouped.sortGroups === 'descending') {
-            (Object.keys(data).sort()).reverse().forEach(key => ordered[key] = data[key])
+          if (reportType.grouped.sortGroups === 'descending') {
+            (Object.keys(tableData).sort()).reverse().forEach(key => ordered[key] = tableData[key])
           } else {
-            Object.keys(data).sort().forEach(key => ordered[key] = data[key])
+            Object.keys(tableData).sort().forEach(key => ordered[key] = tableData[key])
           }
           tableData = ordered;
         }
