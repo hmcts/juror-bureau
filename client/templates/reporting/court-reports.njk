@@ -15,7 +15,7 @@
       <ul class="govuk-list">
         <li><a class="govuk-link" href="{{ url('reports.absences.filter.get') }}">Absence report</a> (previously No show list)</li>
         <li><a class="govuk-link" href="{{ url('reports.jury-cost-bill.filter.get') }}">Jury cost bill</a></li>
-        <li><a class="govuk-link" href="#">Payment status report</a></li>
+        <li><a class="govuk-link" href="{{ url('reports.payment-status-report.report.get', {filter:'locCode'}) }}">Payment status report</a></li>
         <li><a class="govuk-link" href="{{ url('reports.persons-attending-detail.filter.get') }}">Persons attending (detailed)</a></li>
         <li><a class="govuk-link" href="{{ url('reports.persons-attending-summary.filter.get') }}">Persons attending (summary)</a></li>
         <li><a class="govuk-link" href="#">Reprint audit reports</a></li>
