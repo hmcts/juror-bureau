@@ -1261,21 +1261,15 @@
         search: 'dateRange',
         headings: [
           'dateFrom',
+          'reportDate',
           'dateTo',
           'reportTime',
-          'reportDate',
-          'courtName',
-          'jurorNumber',
-          'firstName',
-          'lastName',
           'totalUnpaidAttendances',
+          'courtName',
         ],
         grouped: {
           headings: {
-            transformer: (data, isPrint) => {
-              const [attendanceDate, poolType] = data.split(',');
-              const formattedAttendanceDate = ''; dateFilter(attendanceDate, 'YYYY-mm-dd', 'dddd D MMMM YYYY');
-            },
+            transformer: (data) => dateFilter(data, 'YYYY-mm-dd', 'dddd D MMMM YYYY'),
           },
           groupHeader: true,
           totals: true,
