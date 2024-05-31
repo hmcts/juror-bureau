@@ -92,6 +92,7 @@
         if (typeof error === 'undefined') {
           ({data : _data } = await searchJurorRecordDAO.post(req, payload))
         }
+        error = {...error, ...submitError};
         return res.render('reporting/standard-reports/juror-search', {
           errors: {
             title: 'Please check your search',
@@ -199,8 +200,8 @@
 
     delete req.session.bannerMessage;
     req.session.reportSearch = req.params.filter;
-
     const buildStandardTableRows = function(tableData, tableHeadings) {
+      tableData = Array.isArray(tableData) ? tableData : [tableData];
       const rows = tableData.map(data => {
         let row = tableHeadings.map(header => {
           if (!header.name || header.name === '') return;
@@ -437,8 +438,6 @@
 
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
       if (isExport) return reportExport(app, req, res, reportKey, { headings, tableData }) ;
-      console.log(headings);
-      console.log(tableData);
       let tables = [];
 
       if (reportType.bespokeReport && reportType.bespokeReport.body) {
@@ -515,8 +514,7 @@
     }
 
     if (reportType.search === 'jurorDetails') {
-      console.log(req.body.jurorDetails);
-      if (!req.body.jurorDetails) {
+      if (!req.body.jurorNumber || req.body.jurorNumber === '') {
         req.session.errors = {
           selection: [{
             fields: ['selection'],
@@ -531,7 +529,7 @@
       req.session.reportFilter = req.body.filter;
 
       return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.get`, {
-        filter: req.body.jurorDetails,
+        filter: req.body.jurorNumber,
       })));
     }
     if (reportType.search === 'courts') {

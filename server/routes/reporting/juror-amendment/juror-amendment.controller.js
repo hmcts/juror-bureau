@@ -31,12 +31,37 @@
     module.exports.postJurorAmendmentSearch = function(app) {
       return function(req, res) {
         let validatorResult = validate(req.body, validator.searchBy('jurorDetails'));
-        console.log('BODY: ', req.body);
   
         if (typeof validatorResult !== 'undefined') {
           req.session.errors = validatorResult;
           req.session.formFields = req.body;
           return res.redirect(app.namedRoutes.build('reports.juror-amendment.search.get'));
+        }
+
+        if(req.body.searchBy === 'jurorDetails') {
+            if(req.body.jurorDetails === ''){
+                req.session.errors = {
+                    dateTo: [{
+                      summary: 'Enter a juror name, number or postcode',
+                      details: 'Enter a juror name, number or postcode',
+                    }],
+                  };
+                  req.session.formFields = req.body;
+                  return res.redirect(app.namedRoutes.build('reports.juror-amendment.search.get'));
+            }
+        }
+
+        if(req.body.searchBy === 'poolNumber') {
+            if(req.body.poolNumber === ''){
+                req.session.errors = {
+                    dateTo: [{
+                      summary: 'Enter a pool number',
+                      details: 'Enter a pool number',
+                    }],
+                  };
+                  req.session.formFields = req.body;
+                  return res.redirect(app.namedRoutes.build('reports.juror-amendment.search.get'));
+            }
         }
   
         if (req.body.searchBy === 'customDateRange') {

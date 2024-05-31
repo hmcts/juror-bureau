@@ -49,7 +49,6 @@
               }) }}
 
             </div>
-            {# layout here is not quite right #}
             <div class="govuk-grid-column-half govuk-button-group">
 
               {{ govukButton({
@@ -94,13 +93,13 @@
                 '  <input' +
                 '    class="govuk-radios__input"' +
                 '    id="' + juror.juror_number + '"' +
-                '    name="reportPool"' +
+                '    name="jurorNumber"' +
                 '    type="radio"' +
                 '    value="' + juror.juror_number + '"' +
-                '    aria-controls="conditional-reportPool"' +
+                '    aria-controls="conditional-jurorNumber"' +
                 '    aria-expanded="false"' +
                 '  >' +
-                '  <label class="govuk-label govuk-radios__label" for="reportPool-' + juror.juror_number + '"/>' +
+                '  <label class="govuk-label govuk-radios__label" for="jurorNumber-' + juror.juror_number + '"/>' +
                 '</div>'
             },
             

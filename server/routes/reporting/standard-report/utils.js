@@ -3,7 +3,7 @@ const { dateFilter, capitalizeFully, toSentenceCase, capitalise } = require('../
 const moment = require('moment');
 
 const tableDataMappers = {
-  String: (data) => isNaN(data) ? capitalizeFully(data) : data.toString(),
+  String: (data) => isNaN(data) ? capitalizeFully(data) : (data?.toString() || '-' ),
   LocalDate: (data) => data ? dateFilter(data, 'YYYY-mm-dd', 'ddd D MMM YYYY') : '-',
   LocalDateTime: (data) => data ? moment(data).utcOffset(0).format('D MMM YYYY [at] HH:mm a') : '-',
   List: (data) => {
