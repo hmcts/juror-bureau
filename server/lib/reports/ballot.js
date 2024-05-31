@@ -18,21 +18,23 @@
     ];
   };
 
-  const getTableCell = (data) => {
+  const getTableCell = ({ id, firstName, lastName, postcode }) => {
     return [
       {
         border: [false, false, false, false],        
         table: {
           body: [
             [{ text: ' ', fontSize: topMargin }],
-            [{ text: data.id, bold: true, margin: [30, 0, 0, 0] }],
-            [{ text: [
-              { text: '\n' + data.firstName, bold: true },
-              { text: ', ', bold: true },
-              { text: data.lastName, bold: false },
-            ], margin: [30, 0, 0, 0],
-            }],
-            [{ text: '\n' + data.postcode, margin: [30, 0, 0, 0] }],
+            [{ text: id, bold: true, margin: [40, 0, 0, 0] }],
+            [
+              { text: (firstName && lastName ? [
+                { text: '\n' + firstName, bold: true },
+                { text: ', ', bold: true },
+                { text: lastName, bold: false },
+                ] : ''), margin: [40, -15, 0, 0],
+              },
+            ],
+            [{ text: '\n' + (postcode ?? ''), margin: [40, -15, 0, 0] }],
           ],
         },
         layout: 'noBorders',
@@ -89,7 +91,7 @@
       defaultStyles: {
         defaultStyle: {
           font: 'OpenSans',
-          fontSize: 12,
+          fontSize: 14,
         },
       },
     };

@@ -13,7 +13,6 @@ module.exports.printPoolBallotCards = (app) => {
       },
     });
 
-    let tableData;
     const config = {
       locCode: req.session.authentication.locCode,
     };
@@ -27,6 +26,8 @@ module.exports.printPoolBallotCards = (app) => {
       config.poolNumber = filter;
       config.reportType = 'BallotPanelPoolReport';
     }
+
+    let tableData;
 
     try {
       ({ tableData } = await standardReportDAO.post(req, app, config));
