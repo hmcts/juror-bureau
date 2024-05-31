@@ -494,7 +494,7 @@
     return table;
   };
 
-  module.exports.transformMessagingTrialsList = (trials, sortBy, sortOrder) => {
+  module.exports.transformRadioSelectTrialsList = (trials, sortBy, sortOrder) => {
     const table = {
         head: [],
         rows: [],
