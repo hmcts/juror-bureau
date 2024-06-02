@@ -490,7 +490,6 @@
   };
 
   const standardReportPost = (app, reportKey) => async (req, res) => {
-    //handle search for juror details
     const reportType = reportKeys(app, req)[reportKey];
 
     if (reportType.search === 'poolNumber') {

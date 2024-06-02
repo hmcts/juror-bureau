@@ -23,8 +23,6 @@ const { financialAudit } = require('./audit.controller');
 
     require('./juror-amendment')(app);
 
-    require('./juror-amendment')(app);
-
     require('./standard-report/index')(app);
 
     app.get('/reports',
