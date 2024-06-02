@@ -416,7 +416,7 @@
   }
 
   function isCheckable(printValue, pendingValue) {
-    return !!printValue && !!pendingValue;
+    return !printValue && !pendingValue;
   }
 
 })();

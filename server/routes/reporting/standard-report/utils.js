@@ -35,7 +35,7 @@ const tableDataMappers = {
     }
     return '-';
   },
-  Long: (data) => data.toString(),
+  Long: (data) => data ? data.toString() : '-',
   Integer: (data) => data.toString(),
   LocalTime: (data) => data ? moment(data, 'HH:mm:ss').format('hh:mma') : '-',
   BigDecimal: (data) => `£${(Math.round(data * 100) / 100).toFixed(2).toString()}`,

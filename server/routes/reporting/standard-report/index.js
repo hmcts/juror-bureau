@@ -54,6 +54,7 @@
     standardReportRoutes(app, 'next-due');
     standardReportRoutes(app, 'undelivered');
     standardReportRoutes(app, 'non-responded');
+    standardReportRoutes(app, 'on-call');
     standardReportRoutes(app, 'postponed-pool');
     standardReportRoutes(app, 'postponed-date');
     require('../incomplete-service')(app);
@@ -84,8 +85,11 @@
     standardReportRoutes(app, 'absences');
     standardReportRoutes(app, 'summoned-responded');
     standardReportRoutes(app, 'trial-statistics');
+    standardReportRoutes(app, 'trial-attendance');
+    standardReportRoutes(app, 'jury-cost-bill');
     standardReportRoutes(app, 'available-list-pool');
     standardReportRoutes(app, 'available-list-date');
+    standardReportRoutes(app, 'payment-status-report');
   };
 
 })();

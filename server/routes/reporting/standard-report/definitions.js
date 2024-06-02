@@ -54,6 +54,7 @@
   //     groupHeader?: boolean, // display the group header or not.. in some reports we dont have to
   //     totals?: boolean, // same on this one.. some reports dont need the totals
   //     emptyDataGroup?: (colSpan, isPrint) => [object],  // returns table to display if a group has no data
+  //     sortGroups?: 'ascending' or 'descending',  // orders each group by group header,
   //   },
   //   printLandscape?: boolean, // force report printing to landscape
   //   largeTotals?: {
@@ -859,7 +860,14 @@
             transformer: (data, isPrint) => {
               const [poolNumber, poolType] = data.split(',');
               if (isPrint) {
-                return `Pool ${poolNumber} - ${capitalizeFully(poolType)}`;
+                return [
+                  `Pool ${poolNumber} `,
+                  {
+                    text: capitalizeFully(poolType),
+                    color: '#505A5F',
+                    fontSize: 10,
+                    bold: false
+                  }];
               }
               return `${makeLink(app)['poolNumber'](poolNumber)} <span class="grouped-display-inline">${capitalizeFully(poolType)}</span>`;
             },
@@ -969,7 +977,14 @@
             transformer: (data, isPrint) => {
               const [poolNumber, poolType] = data.split(',');
               if (isPrint) {
-                return `Pool ${poolNumber} - ${capitalizeFully(poolType)}`;
+                return [
+                  `Pool ${poolNumber} `,
+                  {
+                    text: capitalizeFully(poolType),
+                    color: '#505A5F',
+                    fontSize: 10,
+                    bold: false
+                  }];
               }
               return `${makeLink(app)['poolNumber'](poolNumber)} <span class="grouped-display-inline">${capitalizeFully(poolType)}</span>`;
             },
@@ -1048,6 +1063,237 @@
             { text: htmlTemplate(totals.failedToAttendTotal), bold: true, fillColor: '#F3F2F1' },
           ]
         }
+      },
+      'on-call': {
+        title: 'On call list',
+        apiKey: 'OnCallReport',
+        search: 'poolNumber',
+        headings: [
+          'poolNumber',
+          'reportDate',
+          'poolType',
+          'reportTime',
+          'serviceStartDate',
+          'courtName',
+          'totalOnCall',
+        ],
+      },
+      'trial-attendance': {
+        title: 'Trial attendance report',
+        apiKey: 'TrialAttendanceReport',
+        search: 'trial',
+        headings: [
+          'trialNumber',
+          'reportDate',
+          'names',
+          'reportTime',
+          'trialType',
+          'courtName',
+          'trialStartDate',
+          '',
+          'courtroom',
+          '',
+          'judge'
+        ],
+        grouped: {
+          headings: {
+            transformer: (data, isPrint) => {
+              return dateFilter(data, 'yyyy-MM-DD', 'dddd D MMM YYYY');
+            },
+          },
+          groupHeader: true,
+        },
+        bespokeReport: {
+          tableHeadClasses: [
+            '', '', '', '', '', '', '', '',
+            'mod-!-width-one-fifteenth',
+            'mod-!-width-one-fifteenth'
+          ],
+          insertRows: {
+            last: (data, isPrint = false) => {
+              let totalDue = 0;
+              let totalPaid = 0;
+              if (!data.length) {
+                return [];
+              }
+
+              data.forEach((trial) => {
+                totalDue += trial.totalDue;
+                totalPaid += trial.totalPaid;
+              });
+              return isPrint ? [
+                {}, {}, {}, {}, {}, {}, {}, {},
+                {
+                  text: toMoney(totalDue), bold: true,
+                },
+                {
+                  text: toMoney(totalPaid), bold: true,
+                },
+              ] : [
+                {
+                  colspan: 8
+                },
+                {
+                  text: toMoney(totalDue),
+                  classes: 'govuk-!-font-weight-bold',
+                  format: 'numeric',
+                },
+                {
+                  text: toMoney(totalPaid),
+                  classes: 'govuk-!-font-weight-bold',
+                  format: 'numeric',
+                },
+              ];
+            },
+          },
+          printInsertRows: true,
+          insertTables: {
+            last: (tableData, isPrint = false) => {
+              let totalDue = 0;
+              let totalPaid = 0;
+
+              let rows = [];
+              
+              if (Object.entries(tableData.data).length) {
+                for (const [date, trials] of Object.entries(tableData.data)) {
+                  trials.forEach((trial) => {
+                    totalDue += trial.totalDue;
+                    totalPaid += trial.totalPaid;
+                  });
+                }
+                if (!isPrint) {
+                  rows.push([
+                    {
+                      colspan: 8,
+                      classes: 'mod-highlight-table-data__grey',
+                    },
+                    {
+                      text: toMoney(totalDue),
+                      classes: 'mod-!-width-one-fifteenth govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                      format: 'numeric',
+                    },
+                    {
+                      text: toMoney(totalPaid),
+                      classes: 'mod-!-width-one-fifteenth govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                      format: 'numeric',
+                    },
+                  ]);
+                } else {
+                  rows.push([
+                    {text:'', fillColor: '#F3F2F1'},
+                    {text:'', fillColor: '#F3F2F1'},
+                    {text:'', fillColor: '#F3F2F1'},
+                    {text:'', fillColor: '#F3F2F1'},
+                    {text:'', fillColor: '#F3F2F1'},
+                    {text:'', fillColor: '#F3F2F1'},
+                    {text:'', fillColor: '#F3F2F1'},
+                    {text:'', fillColor: '#F3F2F1'},
+                    {
+                      text: toMoney(totalDue),
+                      bold: true, fillColor: '#F3F2F1',
+                    },
+                    {
+                      text: toMoney(totalPaid),
+                      bold: true, fillColor: '#F3F2F1',
+                    },
+                  ]);
+                }
+                return isPrint ? [
+                  {
+                    body: [[
+                      {text: 'Total expenses', style: 'largeSectionHeading'},
+                    ]],
+                    widths:['100%'],
+                    layout: { hLineColor: '#0b0c0c' },
+                    margin: [0, 10, 0, 0],
+                  },
+                  {
+                    body: rows,
+                    widths:['*', '*', '*', '*', '*', '*', '*', '*', '6.667%', '6.667%'],
+                    margin: [0, 0, 0, 0],
+                  },
+                ] : [{title: 'Totals expenses', headers: [], rows: rows}];
+              }
+              return [];
+            }
+          },
+          printInsertTables: true,
+          printWidths: ['*', '*', '*', '*', '*', '*', '*', '*', '6.667%', '6.667%']
+        },
+        printLandscape: true,
+      },
+      'jury-cost-bill': {
+        title: 'Jury cost bill',
+        apiKey: 'JuryCostBill',
+        search: 'trial',
+        headings: [
+          'trialNumber',
+          'reportDate',
+          'names',
+          'reportTime',
+          'trialType',
+          'courtName',
+          'trialStartDate',
+          '',
+          'courtroom',
+          '',
+          'judge'
+        ],     
+        cellTransformer: (data, key, output, isPrint) => {
+          if (key === 'total_paid_sum') {
+            if (isPrint) return output;
+            return `<b>${output}</b>`;
+          }
+
+          return output;
+        },
+        totalsRow: (data, isPrint = false) => {
+          const totals = {
+            financialLossDueSum: 0,
+            travelDueSum: 0,
+            subsistenceDueSum: 0,
+            smartcardDueSum: 0,
+            totalDueSum: 0,
+            totalPaidSum: 0,
+          };
+          
+          data.forEach((row) => {
+            Object.keys(totals).forEach((key) => {
+              totals[key] += row[key];
+            });
+          });
+
+          const htmlTemplate = (total) => {
+            if (isPrint) return toMoney(total);
+            return `<b class="jd-right-align">${toMoney(total)}</b>`;
+          };
+
+          return [
+            { text: '', fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.financialLossDueSum), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.travelDueSum), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.subsistenceDueSum), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.smartcardDueSum), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.totalDueSum), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.totalPaidSum), bold: true, fillColor: '#F3F2F1' },
+          ]
+        }
+      },
+      'payment-status-report': {
+        title: 'Payment status report ',
+        apiKey: 'PaymentStatusReport',
+        headings: [
+          'reportDate',
+          '',
+          'reportTime',
+          '',
+          'courtName',
+        ],
+        grouped: {
+          groupHeader: true,
+          totals: true,
+          sortGroups: 'ascending',
+        },
       },
     };
   };

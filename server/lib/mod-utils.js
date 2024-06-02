@@ -494,7 +494,7 @@
     return table;
   };
 
-  module.exports.transformMessagingTrialsList = (trials, sortBy, sortOrder) => {
+  module.exports.transformRadioSelectTrialsList = (trials, sortBy, sortOrder) => {
     const table = {
         head: [],
         rows: [],
@@ -509,9 +509,9 @@
         classes: 'govuk-!-padding-left-6',
       },
       {
-        id: 'description',
+        id: 'names',
         value: 'Names',
-        sort: sortBy === 'description' ? order : 'none',
+        sort: sortBy === 'names' ? order : 'none',
       },
       {
         id: 'trialType',
@@ -519,9 +519,9 @@
         sort: sortBy === 'trialType' ? order : 'none',
       },
       {
-        id: 'courtLocation',
+        id: 'courtName',
         value: 'Court',
-        sort: sortBy === 'courtLocation' ? order : 'none',
+        sort: sortBy === 'courtName' ? order : 'none',
       },
       {
         id: 'courtroom',
@@ -534,9 +534,9 @@
         sort: sortBy === 'judge' ? order : 'none',
       },
       {
-        id: 'trialStartDate',
+        id: 'startDate',
         value: 'Start date',
-        sort: sortBy === 'trialStartDate' ? order : 'none',
+        sort: sortBy === 'startDate' ? order : 'none',
       },
     );
 

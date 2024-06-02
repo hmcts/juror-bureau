@@ -1,0 +1,75 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - Reports - {{ title }} - select trial{% endblock %}
+{% block page_identifier %}Reports - {{ title }} - select trial{% endblock %}
+
+{% set currentApp = "Reports" %}
+
+{% block content %}
+  {% include "includes/errors.njk" %}  
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-xl">{{ title }}</h1>
+      <form action="{{ filterUrl }}" method="POST" class="mod-flex mod-items-end mod-gap-x-2">
+        {{ govukInput({
+          label: {
+            text: "Filter by trial number"
+          },
+          classes: "govuk-input--width-20",
+          id: "filterTrialNumber",
+          name: "filterTrialNumber",
+          value: tmpBody.filterTrialNumber or filter
+        }) }}
+        {{ govukButton({
+          text: "Filter",
+          classes: "govuk-button--secondary",
+          attributes: {
+            id: "filter-trials-button"
+          }
+        }) }}
+        <a class="govuk-body govuk-link govuk-link--no-visited-state govuk-!-margin-bottom-7" id="clearSearchAnchor" href="{{ clearSearchUrl }}">Clear search</a>
+        <input type="hidden" id="csrfToken" name="_csrf" value="{{ csrftoken }}"/>
+      </form>
+      <h2 class="govuk-heading-m">Select a trial</h2>
+      <form action="{{ reportUrl }}" method="post" id="trialSelectForm" >
+        {% if trials.rows | length > 0 %}
+          <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+              <div class="fixTableHead">
+                {{ modSortableTable({
+                  id: "trialsTable",
+                  head: trials.head,
+                  rows: trials.rows,
+                  url: urlPrefix,
+                  classes: "govuk-!-padding-left-2"
+                }) }}
+              </div>
+            </div>
+          </div>
+          {{ csrfProtection(csrftoken) }}
+          <div class="govuk-button-group govuk-!-padding-top-5">
+            {{ govukButton({
+              text: "Continue",
+              type: "submit",
+              attributes: {
+                id: 'continueButton'
+              }
+            }) }}
+            <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+          </div>
+        {% else %}
+          <h2 class="govuk-heading-m govuk-!-margin-bottom-6">No matching results</h2>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+
+{% endblock %}

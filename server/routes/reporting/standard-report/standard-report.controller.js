@@ -2,7 +2,7 @@
   'use strict';
 
   const _ = require('lodash');
-  const { snakeToCamel, transformCourtNames, makeManualError, checkIfArrayEmpty } = require('../../../lib/mod-utils');
+  const { snakeToCamel, transformCourtNames, makeManualError, checkIfArrayEmpty, transformRadioSelectTrialsList, replaceAllObjKeys, camelToSnake, mapCamelToSnake } = require('../../../lib/mod-utils');
   const { standardReportDAO } = require('../../../objects/reports');
   const { validate } = require('validate.js');
   const { poolSearchObject } = require('../../../objects/pool-search');
@@ -12,11 +12,11 @@
   const { bespokeReportBodys } = require('../bespoke-report/bespoke-report-body');
   const { reportKeys } = require('./definitions');
   const { standardReportPrint } = require('./standard-report-print');
-  const { fetchCourtsDAO } = require('../../../objects');
+  const { fetchCourtsDAO, trialsListObject, trialsListDAO } = require('../../../objects');
   const searchValidator = require('../../../config/validation/report-search-by');
   const jurorSearchValidator = require('../../../config/validation/juror-search');
   const moment = require('moment')
-  const { dateFilter, capitalizeFully } = require('../../../components/filters');
+  const { dateFilter, capitalizeFully, makeDate, capitalise } = require('../../../components/filters');
   const { reportExport } = require('./report-export');
 
   const standardFilterGet = (app, reportKey) => async(req, res) => {
@@ -163,6 +163,47 @@
           reportUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.post`)),
           cancelUrl: app.namedRoutes.build('reports.reports.get'),
         });
+      case 'trial':
+        const sortBy = req.query['sortBy'] || 'trialNumber';
+        const sortOrder = req.query['sortOrder'] || 'ascending';
+        const opts = {
+          active: true,
+          pageNumber: 1,
+          pageLimit: 500,
+          sortField: capitalise(camelToSnake(sortBy)),
+          sortMethod: sortOrder === 'ascending' ? 'ASC' : 'DESC',
+        };
+        if (filter) {
+          opts.trialNumber = filter
+        }
+        try{
+          let data = await trialsListDAO.post(req, mapCamelToSnake(opts));
+
+          data = replaceAllObjKeys(data, _.camelCase);
+  
+          return res.render('reporting/standard-reports/trial-select', {
+            errors: {
+              title: 'Please check your search',
+              count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+              items: tmpErrors,
+            },
+            tmpBody,
+            reportKey,
+            filter,
+            title: reportType.title,
+            filterUrl: app.namedRoutes.build(`reports.${reportKey}.filter.post`),
+            clearSearchUrl: app.namedRoutes.build(`reports.${reportKey}.filter.get`),
+            reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
+            cancelUrl: app.namedRoutes.build('reports.reports.get'),
+            trials: transformRadioSelectTrialsList(data.data, sortBy, sortOrder)
+          });
+        } catch (err) {
+          app.logger.crit('Failed to fetch trials list: ', {
+            auth: req.session.authentication,
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
+          return res.render('_errors/generic');
+        }
       default:
         app.logger.info('Failed to load a search type for report type ' + reportKey);
         return res.render('_errors/generic');
@@ -183,6 +224,8 @@
         break;
       case 'jurorDetails':
         filter = req.body.jurorDetails
+      case 'trial':
+        filter = req.body.filterTrialNumber;
         break;
     }
 
@@ -233,6 +276,15 @@
               html: `<a href=${
                 app.namedRoutes.build('reports.financial-audit.get', {auditNumber: output})
               }>${
+                output
+              }</a>`,
+            });
+          }
+
+          if (header.id === 'attendance_audit') {
+            // ADD IN POOL ATTENDANCE AUDIT REPORT ROUTE ONCE AVAILABLE
+            return ({
+              html: `<a href='#'>${
                 output
               }</a>`,
             });
@@ -298,6 +350,17 @@
 
       if (reportType.grouped) {
         let longestGroup = 0;
+
+        if (reportType.grouped.sortGroups) {
+          let ordered = {};
+          if (reportType.grouped.sortGroups === 'descending') {
+            (Object.keys(tableData).sort()).reverse().forEach(key => ordered[key] = tableData[key])
+          } else {
+            Object.keys(tableData).sort().forEach(key => ordered[key] = tableData[key])
+          }
+          tableData = ordered;
+        }
+        
         for (const [header, data] of Object.entries(tableData)) {
           let group = buildStandardTableRows(data, tableHeadings);
           let link;
@@ -375,6 +438,9 @@
         return reportType.backUrl;
       }
       if (reportType.search === 'trial') {
+        if (reportKey === 'trial-attendance') {
+          return app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : '')
+        }
         return app.namedRoutes.build('trial-management.trials.detail.get', {
           trialNumber: req.params.filter, locationCode: req.session.authentication.locCode
         });
@@ -382,7 +448,11 @@
       if (reportKey === 'daily-utilisation-jurors') {
         return req.session.dailyUtilisation.route
       }
-      return addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : ''));
+      if (Object.keys(app.namedRoutes.routesByNameAndMethod).includes(`reports.${reportKey}.filter.get`)) {
+        return addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : ''));
+      } else {
+        return app.namedRoutes.build(`reports.reports.get`)
+      }
     };
 
     delete req.session.reportFilter;
@@ -582,6 +652,14 @@
         + `?fromDate=${dateFilter(req.body.dateFrom, 'DD/MM/YYYY', 'YYYY-MM-DD')}`
         + `&toDate=${dateFilter(req.body.dateTo, 'DD/MM/YYYY', 'YYYY-MM-DD')}`
         ));
+    }
+    if (reportType.search === 'trial') {
+      if (!req.body.selectedTrial) {
+        req.session.errors = makeManualError('selectedTrial', 'Select a trial')
+        req.session.formFields = req.body;
+        return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`));
+      }
+      return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, { filter: req.body.selectedTrial }))
     }
   };
 
