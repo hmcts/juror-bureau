@@ -407,7 +407,7 @@
       },
       'manual-juror-report': {
         title: 'Manually-created jurors report',
-        apiKey: 'ManualJurorReport',
+        apiKey: 'ManuallyCreatedJurorsReport',
         search: 'dateRange',
         headings: [
           'dateFrom',
