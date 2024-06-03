@@ -47,7 +47,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
           text = `${capitalise(text.split('-')[0])} - ${text.split('-')[1]}`;
         }
 
-        if (header.id === 'trial_type'){
+        if (header.id === 'trial_type') {
           text = text === 'Civ' ? 'Civil' : 'Criminal';
         }
 
