@@ -1,8 +1,6 @@
 (function() {
   'use strict';
 
-  
-
   const auth = require('../../../components/auth');
   const {
     standardFilterGet,
