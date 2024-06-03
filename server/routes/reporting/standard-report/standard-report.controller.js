@@ -211,10 +211,8 @@
       const rows = tableData.map(data => {
         let row = tableHeadings.map(header => {
           if (!header.name || header.name === '') return;
-          // console.log(header.id);
 
           let output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
-          console.log(output);
 
           if (header.id === 'juror_number' || header.id === 'juror_number_from_trial') {
             return ({
@@ -388,7 +386,6 @@
       } else {
         tableRows = buildStandardTableRows(tableData, tableHeadings);
       }
-      console.log(req.session.authentication.locCode);
 
       return tableRows.length ? [{
         title: capitalizeFully(sectionHeading),
