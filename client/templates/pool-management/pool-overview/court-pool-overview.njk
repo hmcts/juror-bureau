@@ -15,16 +15,6 @@
 
 {% set currentApp = "Pool management" %}
 
-{% set standardPrintMenuItems = [
-  {
-    text: "Ballot cards",
-    href: url("pool-overview.ballot-cards.report.get",{
-      poolNumber:poolDetails.poolNumber
-    }),
-    classes: "govuk-button--secondary"
-  }
-]%}
-
 {% block beforeContent %}
   {% include "includes/back-link.njk" %}
 
@@ -47,7 +37,7 @@
     {% set selectedJurorsError = undefined %}
   {% endif %}
 
-{% if availableSuccessMessage %}
+  {% if availableSuccessMessage %}
     {{ mojBanner({
       type: "success",
       html: successBanner,
@@ -81,18 +71,26 @@
         }
       }) }}
 
-      {{ mojButtonMenu({
-        items: [
-          {
-            text: "Jury list",
-            href: url("reports.jury-list.report.get"),
-            classes: "govuk-button--secondary"
+      {% if currentOwner !== "400" and isCourtUser %}
+        {{ mojButtonMenu({
+          items: [
+            {
+              text: "Ballot cards",
+              href: url("reports.ballot-cards.report.print", {
+                ballotType: "pool",
+                filter: poolDetails.poolNumber
+              }),
+              classes: "govuk-button--secondary",
+              attributes: {
+                target: "_blank"
+              }
+            }
+          ],
+          attributes: {
+            id: "printButtonMenu"
           }
-        ].concat(standardPrintMenuItems) if trial.is_jury_empanelled else standardPrintMenuItems,
-        attributes: {
-          id: 'printButtonMenu'
-        }
-      }) }}
+        }) }}
+      {% endif %}
     </span>
 
   </div>
