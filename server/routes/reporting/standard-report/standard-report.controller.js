@@ -19,12 +19,12 @@
 
   const standardFilterGet = (app, reportKey) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
-    let panelResultHeader = '';
+    let customSearchLabel;
 
     delete req.session.reportCourts;
 
     if(reportType.apiKey === 'PanelResultReport') {
-      panelResultHeader = 'Search trials between these dates';
+      customSearchLabel = 'Search trials between these dates';
     }
 
     if (reportType.search) {
@@ -122,7 +122,7 @@
           isFixedDateRange,
           tmpBody,
           reportKey,
-          panelResultHeader,
+          customSearchLabel,
           title: reportType.title,
           searchLabels: reportType.searchLabelMappers,
           reportUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.post`)),
@@ -226,16 +226,17 @@
 
           if (header.id === 'trial_number') {
             return ({
-              html: `<a href=${
-                app.namedRoutes.build('trial-management.trials.detail.get', {trialNumber: output, locationCode: req.session.authentication.locCode})
-              }>${
-                output
-              }</a>`,
+              html: `<a href=${app.namedRoutes.build('trial-management.trials.detail.get', {
+                trialNumber: output,
+                locationCode: req.session.authentication.locCode
+              })}>
+                ${output}
+              </a>`,
             });
           }
           
-          if (header.id === 'trial_type'){
-            return output === 'Civ' ? ({html: 'Civil'}) : ({html: 'Criminal'});
+          if (header.id === 'trial_type') {
+            return { html: output === 'Civ' ? 'Civil' : 'Criminal' };
           }
 
           if (header.id === 'pool_number' || header.id === 'pool_number_by_jp' || header.id === 'appearance_pool_number') {
