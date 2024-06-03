@@ -405,6 +405,20 @@
           totals: true,
         },
       },
+      'manual-juror-report': {
+        title: 'Manually-created jurors report',
+        apiKey: 'ManuallyCreatedJurorsReport',
+        search: 'dateRange',
+        printLandscape: true,
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+          'totalManuallyCreatedJurors',
+          'courtName',
+        ],
+      },
       'panel-members-status': {
         title: 'Panel members status report',
         apiKey: 'PanelMembersStatusReport',
@@ -1254,6 +1268,52 @@
           totals: true,
           sortGroups: 'ascending',
         },
+      },
+      'unpaid-attendance': {
+        title: 'Unpaid attendance report (summary)',
+        apiKey: 'UnpaidAttendanceSummaryReport',
+        search: 'dateRange',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+          'totalUnpaidAttendances',
+          'courtName',
+        ],
+        grouped: {
+          headings: {
+            transformer: (data) => dateFilter(data, 'YYYY-mm-dd', 'dddd D MMMM YYYY'),
+          },
+          groupHeader: true,
+          totals: true,
+        }
+      },
+      'deferred-list-date': {
+        title: 'Deferred list (by date)',
+        apiKey: 'DeferredListByDateReport',
+        headings: [
+          'totalDeferred',
+          'reportDate',
+          '',
+          'reportTime',
+        ],
+        backUrl: app.namedRoutes.build('reports.deferred-list.filter.get')
+      },
+      'deferred-list-court': {
+        title: 'Deferred list (by court name)',
+        apiKey: 'DeferredListByCourtReport',
+        headings: [
+          'totalDeferred',
+          'reportDate',
+          '',
+          'reportTime',
+        ],
+        grouped: {
+          groupHeader: true,
+          totals: true,
+        },
+        backUrl: app.namedRoutes.build('reports.deferred-list.filter.get'),
       },
     };
   };

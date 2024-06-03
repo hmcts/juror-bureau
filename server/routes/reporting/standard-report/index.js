@@ -62,6 +62,7 @@
     standardReportRoutes(app, 'panel-detail');
     standardReportRoutes(app, 'jury-list');
     standardReportRoutes(app, 'pool-status');
+    standardReportRoutes(app, 'manual-juror-report');
     standardReportRoutes(app, 'pool-analysis');
     // require('../pool-status')(app);
     standardReportRoutes(app, 'reasonable-adjustments');
@@ -87,6 +88,9 @@
     standardReportRoutes(app, 'available-list-pool');
     standardReportRoutes(app, 'available-list-date');
     standardReportRoutes(app, 'payment-status-report');
+    standardReportRoutes(app, 'unpaid-attendance');
+    standardReportRoutes(app, 'deferred-list-date');
+    standardReportRoutes(app, 'deferred-list-court');
     require('../ballot-cards')(app);
   };
 
