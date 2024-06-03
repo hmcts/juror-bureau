@@ -14,6 +14,7 @@
   
         delete req.session.errors;
         delete req.session.formFields;
+        console.log(tmpErrors);
   
         return res.render('reporting/standard-reports/search-by/juror-amendment.njk', {
           processUrl: app.namedRoutes.build('reports.juror-amendment.search.post'),
@@ -39,29 +40,29 @@
         }
 
         if(req.body.searchBy === 'jurorDetails') {
-            if(req.body.jurorDetails === ''){
-                req.session.errors = {
-                    dateTo: [{
-                      summary: 'Enter a juror name, number or postcode',
-                      details: 'Enter a juror name, number or postcode',
-                    }],
-                  };
-                  req.session.formFields = req.body;
-                  return res.redirect(app.namedRoutes.build('reports.juror-amendment.search.get'));
-            }
+          if(req.body.jurorDetails === ''){
+            req.session.errors = {
+              jurorDetails: [{
+                summary: 'Enter a juror name, number or postcode',
+                details: 'Enter a juror name, number or postcode',
+              }],
+            };
+            req.session.formFields = req.body;
+            return res.redirect(app.namedRoutes.build('reports.juror-amendment.search.get'));
+          }
         }
 
         if(req.body.searchBy === 'poolNumber') {
-            if(req.body.poolNumber === ''){
-                req.session.errors = {
-                    dateTo: [{
-                      summary: 'Enter a pool number',
-                      details: 'Enter a pool number',
-                    }],
-                  };
-                  req.session.formFields = req.body;
-                  return res.redirect(app.namedRoutes.build('reports.juror-amendment.search.get'));
-            }
+          if(req.body.poolNumber === ''){
+            req.session.errors = {
+              poolNumber: [{
+                summary: 'Enter a pool number',
+                details: 'Enter a pool number',
+              }],
+            };
+            req.session.formFields = req.body;
+            return res.redirect(app.namedRoutes.build('reports.juror-amendment.search.get'));
+          }
         }
   
         if (req.body.searchBy === 'customDateRange') {

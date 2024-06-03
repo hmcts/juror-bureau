@@ -24,6 +24,11 @@
     {% set poolNumberError = { html: errors.items["poolNumber"][0].details } %}
   {% endif %}
 
+  {% set jurorDetailsError = undefined %}
+  {% if errors.items["jurorDetails"] %}
+    {% set jurorDetailsError = { html: errors.items["jurorDetails"][0].details } %}
+  {% endif %}
+
   {% set dateFromError = undefined %}  
   {% if errors.items["dateFrom"] %}
     {% set dateFromError = errors.items["dateFrom"][0].details %}
