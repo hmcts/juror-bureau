@@ -92,6 +92,7 @@
     standardReportRoutes(app, 'unpaid-attendance');
     standardReportRoutes(app, 'deferred-list-date');
     standardReportRoutes(app, 'deferred-list-court');
+    require('../ballot-cards')(app);
   };
 
 })();

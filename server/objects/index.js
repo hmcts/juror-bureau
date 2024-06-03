@@ -16,6 +16,7 @@
   const policeCheck = require('./police-check');
   const coronerPools = require('./coroner-pools');
   const poolMembers = require('./pool-members');
+  const reports = require('./reports');
 
   module.exports = {
     ...requestPool,
@@ -30,6 +31,7 @@
     ...policeCheck,
     ...coronerPools,
     ...poolMembers,
+    ...reports,
   };
 
 })();
