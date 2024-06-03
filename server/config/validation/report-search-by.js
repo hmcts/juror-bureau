@@ -93,6 +93,12 @@
         details: 'Enter an attendance date',
       }],
     },
+    deferredList: {
+      searchBy: [{
+        summary: 'Select how you want to list deferrals',
+        details: 'Select how you want to list deferrals',
+      }],
+    },
   };
 
   module.exports.searchBy = function(reportKey) {
