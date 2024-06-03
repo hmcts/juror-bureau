@@ -409,6 +409,7 @@
         title: 'Manually-created jurors report',
         apiKey: 'ManuallyCreatedJurorsReport',
         search: 'dateRange',
+        printLandscape: true,
         headings: [
           'dateFrom',
           'reportDate',
