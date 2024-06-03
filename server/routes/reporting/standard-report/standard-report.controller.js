@@ -280,8 +280,10 @@
       const rows = tableData.map(data => {
         let row = tableHeadings.map(header => {
           if (!header.name || header.name === '') return;
+          // console.log(header.id);
 
           let output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
+          console.log(output);
 
           if (header.id === 'juror_number' || header.id === 'juror_number_from_trial') {
             return ({
@@ -308,7 +310,6 @@
             return { html: output === 'Civ' ? 'Civil' : 'Criminal' };
           }
 
-          if (header.id === 'pool_number' || header.id === 'pool_number_by_jp' || header.id === 'appearance_pool_number') {
           if (header.id === 'pool_number' || header.id === 'pool_number_by_jp' || header.id === 'appearance_pool_number' || header.id === 'pool_number_jp') {
             return ({
               html: `<a href=${
@@ -461,6 +462,7 @@
       } else {
         tableRows = buildStandardTableRows(tableData, tableHeadings);
       }
+      console.log(req.session.authentication.locCode);
 
       return tableRows.length ? [{
         title: capitalizeFully(sectionHeading),
