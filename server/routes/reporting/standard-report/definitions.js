@@ -1287,7 +1287,7 @@
         backUrl: app.namedRoutes.build('reports.deferred-list.filter.get')
       },
       'deferred-list-court': {
-        title: 'Deferred list (by court)',
+        title: 'Deferred list (by court name)',
         apiKey: 'DeferredListByCourtReport',
         headings: [
           'totalDeferred',
