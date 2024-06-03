@@ -58,6 +58,7 @@ module.exports = async (app) => {
   app.use((req, res, next) => {
     const nonce = `'nonce-${res.locals.nonce}'`;
     const chartJsCsp = '\'sha256-kwpt3lQZ21rs4cld7/uEm9qI5yAbjYzx+9FGm/XmwNU=\'';
+    const defaultDirectives = helmet.contentSecurityPolicy.getDefaultDirectives();
 
     const scriptSrc = ['\'self\'', 'cdnjs.cloudflare.com', nonce];
     const styleSrc = ['\'self\'', chartJsCsp];
@@ -65,16 +66,22 @@ module.exports = async (app) => {
     if (env === 'development') {
       scriptSrc.push('\'unsafe-inline\'', '\'unsafe-eval\'');
       styleSrc.push('\'unsafe-inline\'');
+      defaultDirectives['upgrade-insecure-requests'] = null;
     }
+
+    const customDirectives = {
+      ...defaultDirectives,
+      'default-src': ['\'none\''],
+      'style-src': styleSrc,
+      'script-src': scriptSrc,
+      'font-src': ['\'self\'', 'data:'],
+      'img-src': ['\'self\'', 'data:'],
+      'connect-src': ['\'self\''],
+    };
 
     helmet.contentSecurityPolicy({
       directives: {
-        defaultSrc: ['\'none\''],
-        styleSrc,
-        scriptSrc,
-        fontSrc: ['\'self\'', 'data:'],
-        imgSrc: ['\'self\'', 'data:'],
-        connectSrc: ['\'self\''],
+        ...customDirectives,
       },
     })(req, res, next);
   });
