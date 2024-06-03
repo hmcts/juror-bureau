@@ -120,6 +120,7 @@
           title: reportType.title,
           searchLabels: reportType.searchLabelMappers,
           reportUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.post`)),
+          exportOnly: reportType.exportOnly,
           cancelUrl: app.namedRoutes.build('reports.reports.get'),
         });
       case 'trial':
@@ -585,6 +586,10 @@
           return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`)));
         }
         redirectRoute = `reports.daily-utilisation.check.get`
+      }
+
+      if (reportType.exportOnly) {
+        redirectRoute = `reports.${reportKey}.report.export`;
       }
 
       return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(redirectRoute, {filter: 'dateRange'})

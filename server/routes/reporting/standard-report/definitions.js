@@ -1373,6 +1373,12 @@
           ]
         }
       },
+      'pool-statistics': {
+        title: 'Pool statistics',
+        apiKey: 'PoolStatisticsReport',
+        search: 'dateRange',
+        exportOnly: true,
+      },
     };
   };
 })();
