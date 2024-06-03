@@ -89,6 +89,8 @@
     standardReportRoutes(app, 'available-list-date');
     standardReportRoutes(app, 'payment-status-report');
     standardReportRoutes(app, 'unpaid-attendance');
+    standardReportRoutes(app, 'deferred-list-date');
+    standardReportRoutes(app, 'deferred-list-court');
   };
 
 })();

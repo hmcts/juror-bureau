@@ -1286,6 +1286,32 @@
           totals: true,
         }
       },
+      'deferred-list-date': {
+        title: 'Deferred list (by date)',
+        apiKey: 'DeferredListByDateReport',
+        headings: [
+          'totalDeferred',
+          'reportDate',
+          '',
+          'reportTime',
+        ],
+        backUrl: app.namedRoutes.build('reports.deferred-list.filter.get')
+      },
+      'deferred-list-court': {
+        title: 'Deferred list (by court name)',
+        apiKey: 'DeferredListByCourtReport',
+        headings: [
+          'totalDeferred',
+          'reportDate',
+          '',
+          'reportTime',
+        ],
+        grouped: {
+          groupHeader: true,
+          totals: true,
+        },
+        backUrl: app.namedRoutes.build('reports.deferred-list.filter.get'),
+      },
     };
   };
 })();
