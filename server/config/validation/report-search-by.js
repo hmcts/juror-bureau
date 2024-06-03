@@ -73,6 +73,16 @@
         details: 'Enter a date to search utilisation up until',
       }],
     },
+    manualJurorReport: {
+      dateFrom: [{
+        summary: 'Enter a date to search manually-created jurors from',
+        details: 'Enter a date to search manually-created jurors from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search manually-created jurors up until',
+        details: 'Enter a date to search manually-created jurors up until',
+      }],
+    },
     absences: {
       dateFrom: [{
         summary: 'Enter a date to search absences from',
