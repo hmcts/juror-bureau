@@ -262,28 +262,33 @@
 
     <div class="govuk-grid-column-full search-content govuk-body">
 
-      <h2
-        id="searchSummaryMsg"
-        class="govuk-heading-m {% if not responses.juror_response or responses.juror_response.length === 0 %} u-hide{% endif %}"
-      >
-        <span id="resultCount">{{ responses.juror_response.length }}</span> results for <span id="resultsStr">{{ resultsStr | safe }}</span>
-      </h2>
+      {% if responses.juror_response %}
+          {% if responses.juror_response.length === 0 %}
+             <div id="noResultsMsg">
+               <h2 class="govuk-heading-m">There are no matching results.</h2>
 
-      {# <h2
-        id="maxExceeded"
-        class="govuk-heading-m additional-info-text {% if not results %} u-hide{% elif meta.total <= meta.max %} u-hide{% endif %} search-loaded">
-        The specified search resulted in more than <span class="maxRecordsMsg">{{ meta.max }}</span> results. This list only shows the oldest <span class="maxRecordsMsg">{{ meta.max }}</span>.
-      </h2> #}
+               <p class="govuk_body">Improve your search by:</p>
+               <ul class="govuk-list govuk-list--bullet">
+                 <li>double-checking your spelling</li>
+                 <li>searching by juror number or juror’s last name or juror’s pool number</li>
+               </ul>
+             </div>
+          {% elif responses.limit_exceeded %}
+          <h2
+            id="maxExceeded"
+            class="govuk-heading-m additional-info-text search-loaded">
+            The specified search resulted in more than <span class="maxRecordsMsg">{{ responses.limit }}</span> results. This list only shows the oldest <span class="maxRecordsMsg">{{ responses.limit }}</span>.
+          </h2>
 
-      <div id="noResultsMsg" class="{% if not responses.juror_response or responses.juror_response.length > 0 %} u-hide{% endif %}">
-        <h2 class="govuk-heading-m">There are no matching results.</h2>
-
-        <p class="govuk_body">Improve your search by:</p>
-        <ul class="govuk-list govuk-list--bullet">
-          <li>double-checking your spelling</li>
-          <li>searching by juror number or juror’s last name or juror’s pool number</li>
-        </ul>
-      </div>
+          {% else %}
+          <h2
+            id="searchSummaryMsg"
+            class="govuk-heading-m"
+          >
+            <span id="resultCount">{{ responses.juror_response.length }}</span> results for <span id="resultsStr">{{ resultsStr | safe }}</span>
+          </h2>
+          {% endif %}
+      {% endif %}
 
       <form
         class="govuk-form-group {% if errors.items['selectedResponses']%}govuk-form-group--error{% endif %}"
