@@ -1266,6 +1266,26 @@
           sortGroups: 'ascending',
         },
       },
+      'unpaid-attendance': {
+        title: 'Unpaid attendance report (summary)',
+        apiKey: 'UnpaidAttendanceSummaryReport',
+        search: 'dateRange',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+          'totalUnpaidAttendances',
+          'courtName',
+        ],
+        grouped: {
+          headings: {
+            transformer: (data) => dateFilter(data, 'YYYY-mm-dd', 'dddd D MMMM YYYY'),
+          },
+          groupHeader: true,
+          totals: true,
+        }
+      },
     };
   };
 })();

@@ -23,6 +23,16 @@
         details: 'Enter a date to search postponed jurors up until',
       }],
     },
+    unpaidAttendance: {
+      dateFrom: [{
+        summary: 'Enter a date to search unpaid attendances from',
+        details: 'Enter a date to search unpaid attendances from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search unpaid attendances up until',
+        details: 'Enter a date to search unpaid attendances up until',
+      }],
+    },
     bulkPrintAudit: {
       dateFrom: [{
         summary: 'Enter a date to search bulk-printing from',
