@@ -38,6 +38,10 @@ async function standardReportPrint(app, req, res, reportKey, data) {
           text = text === 'Yes' ? 'Yes' : '-';
         }
 
+        if (header.id === 'trial_type'){
+          text = text === 'Civ' ? 'Civil' : 'Criminal';
+        }
+
         if (header.dataType === 'List') {
           const items = text.split(', ');
           let listText = [];
