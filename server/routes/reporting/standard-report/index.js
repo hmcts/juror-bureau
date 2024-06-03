@@ -90,6 +90,7 @@
     standardReportRoutes(app, 'available-list-pool');
     standardReportRoutes(app, 'available-list-date');
     standardReportRoutes(app, 'payment-status-report');
+    standardReportRoutes(app, 'unpaid-attendance');
   };
 
 })();
