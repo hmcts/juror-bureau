@@ -129,6 +129,16 @@
         details: 'Enter a date to search pool statistics up until',
       }],
     },
+    attendanceData: {
+      dateFrom: [{
+        summary: 'Enter a date to search attendances from',
+        details: 'Enter a date to search attendances from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search attendances up until',
+        details: 'Enter a date to search attendances up until',
+      }],
+    },
   };
 
   module.exports.searchBy = function(reportKey) {

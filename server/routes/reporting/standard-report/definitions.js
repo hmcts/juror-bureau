@@ -1379,6 +1379,16 @@
         search: 'dateRange',
         exportOnly: true,
       },
+      'attendance-data': {
+        title: 'Attendance data',
+        apiKey: 'AttendanceGraphReport',
+        search: 'dateRange',
+        searchLabelMappers: {
+          dateFrom: 'Attendances from',
+          dateTo: 'Attendances to',
+        },
+        exportOnly: true,
+      },
     };
   };
 })();

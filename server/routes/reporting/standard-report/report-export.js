@@ -18,6 +18,8 @@ async function reportExport(app, req, res, reportKey, data) {
     return monthlyUtilisationReportExport(req, res, data);
   case 'pool-statistics':
     return poolStatisitcsExport(req, res, data);
+  case 'attendance-data':
+    return attendanceDataExport(req, res, data);
   default:
     // implement standardised report export if needed
     return;
@@ -196,6 +198,28 @@ async function poolStatisitcsExport(req, res, data) {
   }
 
   const filename = `pool_statisitcs_${fromDate}_${toDate}.csv`;
+
+  res.set('content-disposition', 'attachment; filename=' + filename);
+  res.type('csv');
+  return res.send(csvResult.join('\n'));
+}
+
+async function attendanceDataExport(req, res, data) {
+  const { tableData } = data;
+  const { fromDate, toDate } = req.query;
+  
+  const reportHeaders = [
+    ['Date from', dateFilter(fromDate, 'yyyy-MM-DD', 'DD/MM/YYYY')],
+    ['Date to', dateFilter(toDate, 'yyyy-MM-DD', 'DD/MM/YYYY')],
+  ];
+
+  let csvResult = [reportHeaders, [], ['Date', 'Persons attending']];
+
+  tableData.data.forEach((date) => {
+    csvResult.push([date.attendanceDate, date.attendanceCount])
+  })
+
+  const filename = `attendance_data_${fromDate}_${toDate}.csv`;
 
   res.set('content-disposition', 'attachment; filename=' + filename);
   res.type('csv');
