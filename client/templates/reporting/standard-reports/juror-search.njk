@@ -9,6 +9,7 @@
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "custom-components/autocomplete/macro.njk" import modAutocomplete %}
 {% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "includes/csrf.njk" import csrfProtection %}
 
 {% block page_title %}{{ serviceName }} - Reports - {{ title }} - search juror{% endblock %}
 {% block page_identifier %}Reports - {{ title }} - search juror{% endblock %}
@@ -35,22 +36,20 @@
             }
           }) %}
             <div class="govuk-grid-column-half">
-
               {{ govukInput({
                 label: {
-                  text: 'Enter a  number'
+                  text: "Enter a juror number"
                 },
-                classes: 'govuk-!-width-one-third',
-                id: "jurorDetails",
-                name: "jurorDetails",
+                classes: "govuk-!-width-one-third",
+                id: "jurorNumber",
+                name: "jurorNumber",
                 type: "text",
                 errorMessage: jurorNumberError,
                 value: filter
               }) }}
-
             </div>
-            <div class="govuk-grid-column-half govuk-button-group">
 
+            <div class="govuk-grid-column-half govuk-button-group">
               {{ govukButton({
                 text: "Search",
                 type: "submit",
@@ -61,17 +60,16 @@
               }) }}
 
               <a class="govuk-link" href="{{ url('reports.' + reportKey + '.filter.get') }}">Clear search</a>
-
             </div>
           {% endcall %}
 
-
-          <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+          {{ csrfProtection(csrftoken) }}
           <input type="hidden" name="filter" value="{{ filter }}">
       </div>
     </div>
 
     {% if resultsCount === 0 and errors.count === 0 and filter !== undefined %}
+
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
           <hr class="govuk-section-break govuk-section-break--visible">
@@ -82,10 +80,11 @@
           </ul>
         </div>
       </div>
+
     {% elif resultsCount > 0 %}
 
       {% set jurorRows = [] %}
-      {% for juror in amendmentList %}
+      {% for juror in jurorList %}
         {% set jurorRows = (jurorRows.push(
           [
             {
@@ -93,7 +92,7 @@
                 '  <input' +
                 '    class="govuk-radios__input"' +
                 '    id="' + juror.juror_number + '"' +
-                '    name="jurorNumber"' +
+                '    name="jurorNumberToPrint"' +
                 '    type="radio"' +
                 '    value="' + juror.juror_number + '"' +
                 '    aria-controls="conditional-jurorNumber"' +
@@ -134,9 +133,9 @@
             <h2 class="govuk-heading-m govuk-!-margin-top-4">Select a juror</h2>
             {{ govukTable({
               attributes: {
-                'data-module': 'moj-sortable-table'
+                "data-module": "moj-sortable-table"
               },
-              caption: "Pools",
+              caption: "Jurors",
               captionClasses: "govuk-visually-hidden",
               head: [
                 {},

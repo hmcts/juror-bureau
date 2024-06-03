@@ -152,7 +152,7 @@
         title: 'Juror amendment report (by juror)',
         apiKey: 'JurorAmendmentByJurorReport',
         printLandscape: true,
-        search: 'jurorDetails',
+        search: 'jurorNumber',
         headings: [
           'jurorNumber',
           'reportDate',

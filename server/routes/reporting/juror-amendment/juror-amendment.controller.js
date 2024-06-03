@@ -31,7 +31,7 @@
   
     module.exports.postJurorAmendmentSearch = function(app) {
       return function(req, res) {
-        let validatorResult = validate(req.body, validator.searchBy('jurorDetails'));
+        let validatorResult = validate(req.body, validator.searchBy('jurorAmendment'));
   
         if (typeof validatorResult !== 'undefined') {
           req.session.errors = validatorResult;
@@ -39,12 +39,12 @@
           return res.redirect(app.namedRoutes.build('reports.juror-amendment.search.get'));
         }
 
-        if(req.body.searchBy === 'jurorDetails') {
+        if(req.body.searchBy === 'jurorNumber') {
           if(req.body.jurorDetails === ''){
             req.session.errors = {
-              jurorDetails: [{
-                summary: 'Enter a juror name, number or postcode',
-                details: 'Enter a juror name, number or postcode',
+              jurorNumber: [{
+                summary: 'Enter a juror number',
+                details: 'Enter a juror number',
               }],
             };
             req.session.formFields = req.body;
@@ -66,7 +66,7 @@
         }
   
         if (req.body.searchBy === 'customDateRange') {
-          validatorResult = validate(req.body, validator.dateRange('jurorDetails'));
+          validatorResult = validate(req.body, validator.dateRange('jurorAmendment'));
           if (typeof validatorResult !== 'undefined') {
             req.session.errors = validatorResult;
             req.session.formFields = req.body;
@@ -90,8 +90,8 @@
         switch (req.body.searchBy) {
         case 'poolNumber':
           return res.redirect(app.namedRoutes.build('reports.amendment-pool.filter.get') + `?filter=${req.body.poolNumber}`);
-        case 'jurorDetails':
-            return res.redirect(app.namedRoutes.build('reports.amendment-juror.filter.get') + `?filter=${req.body.jurorDetails}`);
+        case 'jurorNumber':
+            return res.redirect(app.namedRoutes.build('reports.amendment-juror.filter.get') + `?filter=${req.body.jurorNumber}`);
         case 'customDateRange':
           return res.redirect(app.namedRoutes.build('reports.amendment-date.report.get', {filter: 'dateRange'})
             + `?fromDate=${dateFilter(req.body.dateFrom, 'DD/MM/YYYY', 'YYYY-MM-DD')}`

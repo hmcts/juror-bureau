@@ -6,7 +6,7 @@
 {% from "custom-components/date-picker/macro.njk" import datePicker %}
 {% from "includes/csrf.njk" import csrfProtection %}
 
-{% block page_title %}Reports - Juror amendment report{% endblock %}
+{% block page_title %}{{ serviceName }} - Reports - Juror amendment report{% endblock %}
 {% block page_identifier %}Reports - Juror amendment report{% endblock %}
 
 {% set currentApp = "Reports" %}
@@ -24,9 +24,9 @@
     {% set poolNumberError = { html: errors.items["poolNumber"][0].details } %}
   {% endif %}
 
-  {% set jurorDetailsError = undefined %}
-  {% if errors.items["jurorDetails"] %}
-    {% set jurorDetailsError = { html: errors.items["jurorDetails"][0].details } %}
+  {% set jurorNumberError = undefined %}
+  {% if errors.items["jurorNumber"] %}
+    {% set jurorNumberError = { html: errors.items["jurorNumber"][0].details } %}
   {% endif %}
 
   {% set dateFromError = undefined %}  
@@ -34,7 +34,7 @@
     {% set dateFromError = errors.items["dateFrom"][0].details %}
   {% endif %}
 
-  {% set dateTo = undefined %}
+  {% set dateToError = undefined %}
   {% if errors.items["dateTo"] %}
     {% set dateToError = errors.items["dateTo"][0].details %}
   {% endif %}
@@ -63,31 +63,31 @@
   {% endset %}
 
   {% set poolHTML %}
-  {{ govukInput({
-                label: {
-                  text: 'Enter a pool number'
-                },
-                classes: 'govuk-!-width-one-third',
-                id: "poolNumber",
-                name: "poolNumber",
-                type: "text",
-                errorMessage: poolNumberError,
-                value: filter
-              }) }}
+    {{ govukInput({
+      label: {
+        text: "Enter a pool number"
+      },
+      classes: "govuk-!-width-one-third",
+      id: "poolNumber",
+      name: "poolNumber",
+      type: "text",
+      errorMessage: poolNumberError,
+      value: filter
+    }) }}
   {% endset %}
 
-   {% set jurorHTML %}
+  {% set jurorNumberHTML %}
     {{ govukInput({
-                label: {
-                  text: 'Enter juror name, number or postcode'
-                },
-                classes: 'govuk-!-width-one-third',
-                id: "jurorDetails",
-                name: "jurorDetails",
-                type: "text",
-                errorMessage: jurorDetailsError,
-                value: filter
-              }) }}
+      label: {
+        text: "Enter juror number"
+      },
+      classes: "govuk-!-width-one-third",
+      id: "jurorNumber",
+      name: "jurorNumber",
+      type: "text",
+      errorMessage: jurorNumberError,
+      value: filter
+    }) }}
   {% endset %}
 
   <form action="{{ processUrl }}" method="post" id="searchbyForm">
@@ -105,17 +105,17 @@
           },
           items: [
             {
+              value: "jurorNumber",
+              text: "Juror number",
+              conditional: {
+                html: jurorNumberHTML
+              }
+            },
+            {
               value: "poolNumber",
               text: "Pool number",
               conditional: {
                 html: poolHTML
-              }
-            },
-            {
-              value: "jurorDetails",
-              text: "Juror",
-              conditional: {
-                html: jurorHTML
               }
             },
             {
@@ -129,7 +129,9 @@
           value: tmpBody.searchBy,
           errorMessage: searchByError
         }) }}
+
         {{ csrfProtection(csrftoken) }}
+
         <div class="govuk-button-group">
           {{ govukButton({
             text: "Continue",
