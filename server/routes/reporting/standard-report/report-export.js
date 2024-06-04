@@ -150,10 +150,9 @@ async function poolStatisitcsExport(req, res, data) {
   let csvResult = [reportHeaders, []];
 
   // Manipulate data to be more easily used
-  let datesData = {
-  }
+  let datesData = {};
   for (const [date, pools] of Object.entries(tableData.data)) {
-    datesData[date] = {}
+    datesData[date] = {};
     for (const [pool, statuses] of Object.entries(pools)) {
       statuses.forEach((status) => {
         if (!datesData[date][pool]) {
@@ -165,19 +164,19 @@ async function poolStatisitcsExport(req, res, data) {
   }
 
   // Gather all status types
-  let allStatuses = []
+  let allStatuses = [];
   Object.values(datesData).forEach((pool) => {
     Object.values(pool).forEach((statuses) => {
       Object.keys(statuses).forEach((status) => {
         if (!allStatuses.includes(status)) {
           allStatuses.push(status);
         }
-      })
-    })
-  })
+      });
+    });
+  });
 
-  let tableHeaders = ['', '', ...allStatuses]
-  csvResult.push(tableHeaders.map((header) => capitalizeFully(toSentenceCase(header))))
+  let tableHeaders = ['', '', ...allStatuses];
+  csvResult.push(tableHeaders.map((header) => capitalizeFully(toSentenceCase(header))));
 
   // Create data rows
   for (const [date, pools] of Object.entries(datesData)) {
@@ -187,14 +186,14 @@ async function poolStatisitcsExport(req, res, data) {
       row.push(pool);
       allStatuses.forEach((status) => {
         if (Object.keys(statuses).includes(status)) {
-          row.push(statuses[status])
+          row.push(statuses[status]);
         } else {
-          row.push(0)
+          row.push(0);
         }
       });
-      rows.push(row)
+      rows.push(row);
     }
-    csvResult.push(...rows)
+    csvResult.push(...rows);
   }
 
   const filename = `pool_statisitcs_${fromDate}_${toDate}.csv`;
@@ -216,8 +215,8 @@ async function attendanceDataExport(req, res, data) {
   let csvResult = [reportHeaders, [], ['Date', 'Persons attending']];
 
   tableData.data.forEach((date) => {
-    csvResult.push([date.attendanceDate, date.attendanceCount])
-  })
+    csvResult.push([date.attendanceDate, date.attendanceCount]);
+  });
 
   const filename = `attendance_data_${fromDate}_${toDate}.csv`;
 
