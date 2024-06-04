@@ -1,9 +1,7 @@
 (function() {
   'use strict';
 
-  const { jurorDetailsObject } = require('../../../../objects/juror-record');
-  const modUtils = require('../../../../lib/mod-utils');
-  const { getDraftExpensesDAO } = require('../../../../objects/expense-record');
+  const { jurorRecordDetailsDAO } = require('../../../../objects');
   const { getDraftExpenses, postDraftExpenses } = require('./draft.controller');
   const { getForApprovalExpenses, postForApprovalExpenses } = require('./for-approval.controller');
 
@@ -12,16 +10,13 @@
       const { jurorNumber, locCode, status } = req.params;
 
       try {
-        const jurorDetails = await fetchJurorDetails(
-          app,
-          req,
-          res,
-          jurorNumber,
-          null,
-          ['NAME_DETAILS']
-        );
+        const jurorDetails = await jurorRecordDetailsDAO.post(req, [{
+          'juror_number': jurorNumber,
+          'juror_version': null,
+          'include': ['NAME_DETAILS', 'ACTIVE_POOL'],
+        }]);
 
-        req.jurorDetails = jurorDetails;
+        req.jurorDetails = jurorDetails['0'];
 
         // we need to store the location code because we need it to be able to visit the juror record page
         req.session.locCode = locCode;
@@ -29,15 +24,14 @@
       } catch (err) {
         app.logger.crit('Failed to fetch juror details', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber,
-            claims: ['NAME_DETAILS'],
+            claims: ['NAME_DETAILS', 'ACTIVE_POOL'],
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.redirect('_errors/generic');
+        return res.render('_errors/generic');
       }
 
       // always clear the list of edited expenses
@@ -55,7 +49,6 @@
       default:
         app.logger.crit('Invalid expense status entered', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber,
             locCode,
@@ -85,7 +78,6 @@
       default:
         app.logger.crit('Invalid expense status entered', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber,
             locCode,
@@ -98,57 +90,5 @@
       }
     };
   };
-
-  function fetchJurorDetails(app, req, res, jurorNumber, jurorVersion, details){
-    return new Promise(function(resolve, reject) {
-      jurorDetailsObject.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
-        jurorNumber,
-        jurorVersion,
-        details
-      )
-        .then((jurorDetailsResponse) => {
-          app.logger.info('Fetched juror details: ', {
-            auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: {
-              jurorDetailsResponse,
-            },
-          });
-          resolve(jurorDetailsResponse[0]);
-        })
-        .catch((err) => {
-          app.logger.crit('Failed to fetch juror details: ', {
-            auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: {
-              jurorNumber: req.params.jurorNumber,
-              auditNumber: req.params.auditNumber,
-            },
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
-
-          reject(res.render('_errors/generic'));
-        });
-    });
-  }
-
-  function paginateExpensesList(expenses, currentPage) {
-    return new Promise((resolve) => {
-      let start = 0;
-      let end = expenses.length;
-
-      if (currentPage > 1) {
-        start = (currentPage - 1) * modUtils.constants.PAGE_SIZE;
-      }
-      if (expenses.length > modUtils.constants.PAGE_SIZE) {
-        end = start + modUtils.constants.PAGE_SIZE;
-      }
-
-      resolve(expenses.slice(start, end));
-    });
-  }
 
 })();

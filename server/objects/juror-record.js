@@ -330,35 +330,6 @@
 
         return rp(reqOptions);
       },
-    }
-
-    , jurorDetailsObject = {
-      resource: 'moj/juror-record/details',
-      post: function(rp, app, jwtToken, jurorNumber, jurorVersion, includeDetails) {
-        const reqOptions = _.clone(options);
-
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri, this.resource);
-        reqOptions.method = 'POST';
-        reqOptions.body = [
-          {
-            'juror_number': jurorNumber,
-            'juror_version': jurorVersion,
-            'include': includeDetails,
-          },
-        ];
-
-
-
-        app.logger.info('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          data: reqOptions.body,
-        });
-
-        return rp(reqOptions);
-      },
     };
 
   const jurorOverviewDAO = new DAO('moj/juror-record/overview', {
@@ -377,7 +348,6 @@
   module.exports.opticReferenceObject = opticReferenceObject;
   module.exports.changeName = changeName;
   module.exports.failedToAttendObject = failedToAttendObject;
-  module.exports.jurorDetailsObject = jurorDetailsObject;
   module.exports.jurorOverviewDAO = jurorOverviewDAO;
 
   const rp = require('request-promise');
@@ -410,5 +380,6 @@
   });
 
   module.exports.searchJurorRecordDAO = new DAO('moj/juror-record/search');
+  module.exports.jurorRecordDetailsDAO = new DAO('moj/juror-record/details');
 
 })();

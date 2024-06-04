@@ -18,7 +18,7 @@ participant GenericErrorPage <</error>>
 participant ExpenseRecordController <<expense-record.controller.js>> #lightyellow
 participant ForApprovalController <<for-approval.controller.js>> #lightyellow
 participant DraftController <<draft.controller.js>> #lightyellow
-participant jurorDetailsObject <<jurorDetailsObject.post()>> #lightyellow
+participant jurorRecordDetailsObjectDAO <<jurorRecordDetailsObjectDAO.post()>> #lightyellow
 participant getExpenseRecordsDAO <<getExpenseRecordsDAO.post()>> #lightyellow
 ''' TEMPLATES
 participant ExpenseDetailsTemplate<<expense-record/expense-detail.njk>> #lavender
@@ -34,14 +34,14 @@ participant BackendController
 Actor -> UnpaidAttendancePage : click view expenses link
 UnpaidAttendancePage -> ExpenseRecordController : call expense details controller
  
-ExpenseRecordController -> jurorDetailsObject : build request object
-jurorDetailsObject -> BackendController : send backend request
-jurorDetailsObject <- BackendController : ok response
-ExpenseRecordController <- jurorDetailsObject : resolve request
+ExpenseRecordController -> jurorRecordDetailsObjectDAO : build request object
+jurorRecordDetailsObjectDAO -> BackendController : send backend request
+jurorRecordDetailsObjectDAO <- BackendController : ok response
+ExpenseRecordController <- jurorRecordDetailsObjectDAO : resolve request
 
 alt Failed to fetch juror details
-    jurorDetailsObject <-- BackendController : error response
-    ExpenseRecordController <-- jurorDetailsObject : reject requestObject
+    jurorRecordDetailsObjectDAO <-- BackendController : error response
+    ExpenseRecordController <-- jurorRecordDetailsObjectDAO : reject requestObject
     ExpenseRecordController -> ErrorTemplate : request and build template
     ExpenseRecordController <- ErrorTemplate : return HTML
     GenericErrorPage <- ExpenseRecordController : return HTML
