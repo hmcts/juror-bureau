@@ -18,7 +18,7 @@ const tableDataMappers = {
       }
 
       if (Object.keys(data)[0] === 'reasonableAdjustmentCodeWithDescription') {
-        return [data.reasonableAdjustmentCodeWithDescription, data.jurorReasonableAdjustmentMessage].join(', ');
+        return [`<b>${capitalizeFully(data.reasonableAdjustmentCodeWithDescription)}</b>`, data.jurorReasonableAdjustmentMessage].join(', ');
       }
 
       let listText = '';
@@ -34,7 +34,7 @@ const tableDataMappers = {
     }
     return '-';
   },
-  Long: (data) => data.toString(),
+  Long: (data) => data ? data.toString() : '-',
   Integer: (data) => data.toString(),
   LocalTime: (data) => data ? moment(data, 'HH:mm:ss').format('hh:mma') : '-',
   BigDecimal: (data) => `£${(Math.round(data * 100) / 100).toFixed(2).toString()}`,
@@ -91,13 +91,22 @@ const buildTableHeaders = (reportType, tableHeadings) => {
     }));
   } else {
     tableHeaders = tableHeadings.map((data, index) => {
+      if (!data.name || data.name === '') return;
+      let classes = '';
+
+      if (data.name === 'Service Start Date') {
+        classes = classes + ' mod-min-width-150';
+      }
+
       return ({
         text: data.name,
         attributes: {
           'aria-sort': index === 0 ? 'ascending' : 'none',
           'aria-label': data.name,
         },
-        classes: reportType.bespokeReport?.tableHeadClasses ? reportType.bespokeReport?.tableHeadClasses[index] : '',
+        classes: reportType.bespokeReport?.tableHeadClasses
+          ? reportType.bespokeReport?.tableHeadClasses[index]
+          : classes,
         format: data.dataType === 'BigDecimal' ? 'numeric' : '',
       });
     });

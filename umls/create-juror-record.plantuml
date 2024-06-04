@@ -1,0 +1,188 @@
+@startuml create-juror-record
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant ManageJurorsPage <</pool-management>>
+participant IndexPage <</juror-management/create-record-manual/index>>
+participant JurorNamePage <</juror-management/create-record-manual/juror-name>>
+participant JurorDOBPage <</juror-management/create-record-manual/juror-dob>>
+participant JurorAddressPage <</juror-management/create-record-manual/juror-address>>
+participant JurorContactPage <</juror-management/create-record-manual/juror-contact>>
+participant NotesPage <</juror-management/create-record-manual/notes>>
+participant SummaryPage <</juror-management/create-record-manual/summary>>
+participant IneligibleagePage <</juror-management/create-record-manual/ineligible-age>>
+participant OutsidePostcodePage <</juror-management/create-record-manual/outside-postcode>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant CreateRecordController <<create-record-manual.controller.js>>
+participant jurorCreateObject <<jurorCreateObject.post()>>
+participant reassignJurors.availableCourtOwnedPools <<reassignJurors.availableCourtOwnedPools.get()>>
+participant poolSummaryObject <<poolSummaryObject.get()>>
+participant fetchCourts <<fetchCourts.get()>>
+participant courtLocationsFromPostcodeObj <<courtLocationsFromPostcodeObj.get()>>
+
+''' TEMPLATES
+participant IndexTemplate <</juror-management/create-record-manual/index.njk>>
+participant JurorNameTemplate  <</juror-management/create-record-manual/juror-name.njk>>
+participant JurorDOBTemplate <</juror-management/create-record-manual/juror-dob.njk>>
+participant JurorAddressTemplate <</juror-management/create-record-manual/juror-address.njk>>
+participant JurorContactTemplate <</juror-management/create-record-manual/juror-contact.njk>>
+participant NotesTemplate <</juror-management/create-record-manual/notes.njk>>
+participant SummaryTemplate <</juror-management/create-record-manual/summary.njk>>
+participant IneligibleageTemplate <</juror-management/create-record-manual/ineligible-age.njk>>
+participant OutsidePostcodeTemplate <</juror-management/create-record-manual/outside-postcode.njk>>
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant createRecordValidator
+participant courtSelectValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+
+''' JOURNEY FLOW
+Actor -> ManageJurorsPage : select create juror record
+
+ManageJurorsPage -> CreateRecordController : call page controller
+
+CreateRecordController -> reassignJurors.availableCourtOwnedPools : call requestObject
+reassignJurors.availableCourtOwnedPools -> BackendController : fetchData
+alt Backend returns an error: Unable to fetch pool list
+  reassignJurors.availableCourtOwnedPools <-- BackendController : error response
+  CreateRecordController -> ErrorTemplate : request and build template
+  CreateRecordController <- ErrorTemplate : return HTML
+  GenericErrorPage <- CreateRecordController : return HTML
+  Actor <- GenericErrorPage : render error page
+end
+
+reassignJurors.availableCourtOwnedPools <- BackendController : returnData
+CreateRecordController <- reassignJurors.availableCourtOwnedPools : resolve requestObject call
+
+CreateRecordController -> IndexTemplate : request and build template
+CreateRecordController <- IndexTemplate : return HTML
+IndexPage <- CreateRecordController : return HTML
+
+Actor -> IndexPage : select a pool and click next
+
+IndexPage -> CreateRecordController : call page controller
+
+CreateRecordController -> JurorNameTemplate : request and build template
+CreateRecordController <- JurorNameTemplate : return HTML
+JurorNamePage <- CreateRecordController : return HTML
+
+Actor -> JurorNamePage : enter juror name and click next
+
+JurorNamePage -> CreateRecordController : call page controller
+
+CreateRecordController -> JurorDOBTemplate : request and build template
+CreateRecordController <- JurorDOBTemplate : return HTML
+JurorDOBPage <- CreateRecordController : return HTML
+
+Actor -> JurorDOBPage : enter juror name and click next
+
+JurorDOBPage -> CreateRecordController : call page controller
+
+CreateRecordController -> JurorDOBTemplate : request and build template
+CreateRecordController <- JurorDOBTemplate : return HTML
+JurorDOBPage <- CreateRecordController : return HTML
+
+CreateRecordController -> poolSummaryObject : call requestObject
+poolSummaryObject -> BackendController : fetchData
+
+alt validation shows juror is ineligible
+  poolSummaryObject<-- BackendController : response
+
+  CreateRecordController <-- createRecordValidator : data validation fails
+    CreateRecordController --> IneligibleageTemplate : request and build template
+    CreateRecordController <- IneligibleageTemplate : return HTML
+    IneligibleagePage <- CreateRecordController : return HTML
+    Actor <- IneligibleagePage : render page
+end
+
+CreateRecordController -> JurorDOBTemplate : request and build template
+CreateRecordController <- JurorDOBTemplate : return HTML
+JurorAddressPage <- CreateRecordController : return HTML
+
+Actor -> JurorAddressPage : enter address and click next
+
+JurorAddressPage -> CreateRecordController : call page controller
+
+alt validation shows postcode is outside of catchment area
+
+  CreateRecordController <-- createRecordValidator : data validation fails
+    CreateRecordController --> OutsidePostcodeTemplate : request and build template
+    CreateRecordController <- OutsidePostcodeTemplate : return HTML
+    OutsidePostcodePage <- CreateRecordController : return HTML
+    Actor <- OutsidePostcodePage : render page
+end
+
+CreateRecordController -> JurorContactTemplate : request and build template
+CreateRecordController <- JurorContactTemplate : return HTML
+JurorContactPage <- CreateRecordController : return HTML
+
+Actor -> JurorContactPage : Enter contact details and click next
+
+JurorContactPage -> CreateRecordController : call page controller
+
+CreateRecordController -> NotesTemplate : request and build template
+CreateRecordController <- NotesTemplate : return HTML
+NotesPage <- CreateRecordController : return HTML
+
+Actor -> NotesPage : Enter notes and click next
+
+NotesPage -> CreateRecordController : call page controller
+
+CreateRecordController -> SummaryTemplate : request and build template
+CreateRecordController <- SummaryTemplate : return HTML
+SummaryPage <- CreateRecordController : return HTML
+
+Actor -> SummaryPage : Enter notes and click next
+SummaryPage -> CreateRecordController : call page controller
+CreateRecordController -> jurorCreateObject : call requestObject
+
+
+jurorCreateObject -> BackendController : send backend request
+jurorCreateObject <- BackendController : ok response
+CreateUsersController <- jurorCreateObject : resolve request
+
+
+ManageJurorsPage <- CreateUsersController : return HTML
+Actor <- ManageJurorsPage : render HTML
+
+alt Unable to fetch pool start date
+    fetchCourts <-- BackendController : error response
+    CreateUsersController <-- fetchCourts : reject requestObject
+    CreateUsersController -> ErrorTemplate : request and build template
+    CreateUsersController <- ErrorTemplate : return HTML
+    GenericErrorPage <- CreateUsersController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Unable to manually create a juror
+    jurorCreateObject <-- BackendController : error response
+    CreateUsersController <-- jurorCreateObject : reject requestObject
+    CreateUsersController -> ErrorTemplate : request and build template
+    CreateUsersController <- ErrorTemplate : return HTML
+    GenericErrorPage <- CreateUsersController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Unable to check postcode
+    courtLocationsFromPostcodeObj <-- BackendController : error response
+    CreateUsersController <-- courtLocationsFromPostcodeObj : reject requestObject
+    CreateUsersController -> ErrorTemplate : request and build template
+    CreateUsersController <- ErrorTemplate : return HTML
+    GenericErrorPage <- CreateUsersController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+
+
+@enduml

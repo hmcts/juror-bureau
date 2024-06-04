@@ -5,7 +5,7 @@ const config = require('../config/environment')();
 
 const client = axios.create({
   baseURL: config.apiEndpoint,
-  timeout: 5000,
+  timeout: 30000,
   headers: {
     'Content-type': 'application/vnd.api+json',
     Accept: 'application/json',
@@ -39,11 +39,11 @@ client.interceptors.response.use(
   },
   (err) => {
     const error = {
-      statusCode: err.response.status,
+      statusCode: err.response?.status || 500,
       error: {
-        message: err.response.data.message,
-        code: err.response.data.code,
-        trace: err.response.data.trace,
+        message: err.response?.data.message,
+        code: err.response?.data.code || err.code,
+        trace: err.response?.data.trace,
       },
     };
 
@@ -59,16 +59,16 @@ module.exports.axiosClient = function(method, url, jwtToken, variables) {
   if (variables && variables.body) {
     return client[method](url, variables.body, {
       headers: {
-        ...variables.headers,
         Authorization: jwtToken,
+        ...variables.headers,
       },
     });
   }
 
   return client[method](url, {
     headers: {
-      ...(variables && variables.headers),
       Authorization: jwtToken,
+      ...(variables && variables.headers),
     },
   });
 };

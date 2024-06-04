@@ -15,6 +15,21 @@
 {% set currentApp = "System administration" %} 
 {% set nav = "courtsAndBureau" %}
 
+{% macro courtsTableLinks(court) %}
+  <a
+    class="govuk-link govuk-link--no-visited-state"
+    href="{{ url('authentication.select-court.get', {locCode: court.locationCode}) }}"
+  >
+    Court home
+  </a>
+  <a
+    class="govuk-link govuk-link--no-visited-state govuk-!-margin-left-4"
+    href="{{ url('administration.court-details.get', {locationCode: court.locationCode}) }}"
+  >
+    Edit court details
+  </a>
+{% endmacro %}
+
 {% block content %}
 
   {% set courtTableRows = [] %}
@@ -34,11 +49,7 @@
           }
         },
         {
-          html: "<a class='govuk-link govuk-link--no-visited-state' href='#'>Court home</a><br/> 
-            <a class='govuk-link govuk-link--no-visited-state' 
-            href='"+ url('administration.court-details.get', {locationCode: court.locationCode}) +"'>
-              Edit court details
-            </a>"
+          html: courtsTableLinks(court)
         }
       ]
     ), courtTableRows) %}
@@ -58,7 +69,7 @@
             Jury Central Summoning Bureau
           </dt>
           <dd class="govuk-summary-list__value govuk-!-padding-top-2">
-            <a href="#" class="govuk-link">Bureau home</a>
+            <a class="govuk-link" href="{{ url('authentication.select-court.get', { locCode: 400 }) }}">Bureau home</a>
           </dd>
         </div>
       </dl>

@@ -1,0 +1,76 @@
+@startuml update-cjs-employment
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant SummonsReplyPage <</summons-replies/response/{jurorNumber}>>
+participant CJSEmploymentPage <</summons-replies/response/{jurorNumber}/paper/update/employment>>
+participant GenericErrorPage <</error>>
+
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant CJSEmploymentController <<cjs-employment.controller.js>> #lightyellow
+participant paperReplyObjGet <<paperReplyObj.get()>> #lightyellow
+participant summonsUpdateObject <<summonsUpdate.patch()>> #lightyellow
+
+''' TEMPLATES
+participant SummonsReplyTemplate <</summons-replies/response/{jurorNumber}.njk>>
+participant CJSEmploymentTemplate <</summons-replies/response/{jurorNumber}/paper/update/employment.njk>>
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> SummonsReplyPage : click add or change
+SummonsReplyPage -> CJSEmploymentController : call controller
+ 
+CJSEmploymentController -> paperReplyObjGet : build request object
+paperReplyObjGet -> BackendController : send backend request
+paperReplyObjGet <- BackendController : ok response
+CJSEmploymentController <- paperReplyObjGet : resolve request
+
+CJSEmploymentController -> CJSEmploymentTemplate : request and build template
+CJSEmploymentController <- CJSEmploymentTemplate : return HTML
+CJSEmploymentPage <- CJSEmploymentController : return HTML
+Actor <- CJSEmploymentPage : render HTML
+
+Actor -> CJSEmploymentPage : enter changes and save
+
+CJSEmploymentPage -> CJSEmploymentController : POST details
+
+
+CJSEmploymentController -> summonsUpdateObject : build request object
+summonsUpdateObject -> BackendController : send backend request
+summonsUpdateObject <- BackendController : ok response
+CJSEmploymentController <- summonsUpdateObject : resolve request - no update to values
+
+alt Unable to fetch the summons details
+    paperReplyObjGet <-- BackendController : error response
+    CJSEmploymentController <-- paperReplyObjGet : reject requestObject
+    CJSEmploymentController -> ErrorTemplate : request and build template
+    CJSEmploymentController <- ErrorTemplate : return HTML
+    GenericErrorPage <- CJSEmploymentController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Unable to save the summons cjs employment
+    summonsUpdateObject <-- BackendController : error response
+    CJSEmploymentController <-- summonsUpdateObject : reject requestObject
+    CJSEmploymentController -> ErrorTemplate : request and build template
+    CJSEmploymentController <- ErrorTemplate : return HTML
+    GenericErrorPage <- CJSEmploymentController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+CJSEmploymentController -> paperReplyObjGet : build request object
+paperReplyObjGet -> BackendController : send backend request
+paperReplyObjGet <- BackendController : ok response
+CJSEmploymentController <- paperReplyObjGet : resolve request
+CJSEmploymentController -> SummonsReplyTemplate : request and build template
+CJSEmploymentController <- SummonsReplyTemplate : return HTML
+SummonsReplyPage <- CJSEmploymentController : return HTML
+Actor <- SummonsReplyPage : render HTML

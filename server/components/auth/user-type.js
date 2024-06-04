@@ -5,10 +5,9 @@
 
   function isBureauUser(req, res, next) {
     if (
-      !isSystemAdministrator(req, res) &&
       req.session.hasOwnProperty('authentication') === true &&
-      req.session.authentication.hasOwnProperty('owner') === true &&
-      req.session.authentication.owner === '400'
+      req.session.authentication.hasOwnProperty('userType') === true &&
+      req.session.authentication.activeUserType === 'BUREAU'
     ) {
       if (typeof next !== 'undefined') {
         return next();
@@ -27,10 +26,9 @@
 
   function isCourtUser(req, res, next) {
     if (
-      !isSystemAdministrator(req, res) &&
       req.session.hasOwnProperty('authentication') === true &&
-      req.session.authentication.hasOwnProperty('owner') === true &&
-      req.session.authentication.owner !== '400'
+      req.session.authentication.hasOwnProperty('userType') === true &&
+      req.session.authentication.activeUserType === 'COURT'
     ) {
       if (typeof next !== 'undefined') {
         return next();
@@ -52,11 +50,15 @@
     return req.session.authentication.staff.rank > 0 || isManager(req);
   };
 
+
+  // TODO: revise this
   function isSJOUser(req, res, next) {
     if (
       isCourtUser(req, res) &&
-      req.session.authentication.hasOwnProperty('userLevel') === true &&
-      req.session.authentication.userLevel === '9'
+      (
+        req.session.authentication.hasOwnProperty('roles') === true &&
+        req.session.authentication.roles.includes('SENIOR_JUROR_OFFICER')
+      )
     ) {
       if (typeof next !== 'undefined') {
         return next();
@@ -76,8 +78,7 @@
   function isManager(req, res, next) {
     if (
       req.session.authentication.hasOwnProperty('roles') === true &&
-      req.session.authentication.roles.includes('MANAGER') ||
-      req.session.authentication.roles.includes('TEAM_LEADER')
+      req.session.authentication.roles.includes('MANAGER')
     ) {
       if (typeof next !== 'undefined') {
         return next();
@@ -128,8 +129,8 @@
   function isSystemAdministrator(req, res, next) {
     if (
       req.session.hasOwnProperty('authentication') === true &&
-      req.session.authentication.hasOwnProperty('userType') === true &&
-      req.session.authentication.userType === 'ADMINISTRATOR'
+      req.session.authentication.hasOwnProperty('activeUserType') === true &&
+      req.session.authentication.activeUserType === 'ADMINISTRATOR'
     ) {
       if (typeof next !== 'undefined') {
         return next();

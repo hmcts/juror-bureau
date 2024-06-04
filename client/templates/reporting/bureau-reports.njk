@@ -12,9 +12,9 @@
 
       <h2 class="govuk-heading-m">Summoning reports</h2>
       <ul class="govuk-list">
-        <li><a class="govuk-link" href="#">Available list</a></li>
+        <li><a class="govuk-link" href="{{ url('reports.available-list.filter.get') }}">Available list</a></li>
         <li><a class="govuk-link" href="{{ url('reports.current-pool-status.filter.get') }}">Current pool status report</a></li>
-        <li><a class="govuk-link" href="#">Deferred list</a></li>
+        <li><a class="govuk-link" href="{{ url('reports.deferred-list.filter.get') }}">Deferred list</a></li>
         <li><a class="govuk-link" href="#">Electronic police check report</a></li>
         <li><a class="govuk-link" href="#">Excused and disqualified report</a></li>
         <li><a class="govuk-link" href="#">Juror amendment report</a></li>
@@ -32,7 +32,7 @@
       <ul class="govuk-list">
         <li><a class="govuk-link" href="{{ url('reports.bulk-print-audit.filter.get') }}">Bulk-print audit report</a> (previously Abaccus report)</li>
         <li><a class="govuk-link" href="#">Jury summoning monitor report</a></li>
-        <li><a class="govuk-link" href="#">Pool analysis report</a></li>
+        <li><a class="govuk-link" href="{{ url('reports.pool-analysis.filter.get') }}">Pool analysis report</a></li>
         <li><a class="govuk-link" href="#">Pool ratio report</a></li>
         <li><a class="govuk-link" href="#">Pool statistics</a></li>
         <li><a class="govuk-link" href="{{ url('reports.pool-status.filter.get') }}">Pool status report</a></li>

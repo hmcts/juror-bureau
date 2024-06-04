@@ -2,7 +2,7 @@
   'use strict';
 
   const _ = require('lodash');
-  const { snakeToCamel, transformCourtNames, makeManualError, checkIfArrayEmpty } = require('../../../lib/mod-utils');
+  const { snakeToCamel, transformCourtNames, makeManualError, checkIfArrayEmpty, transformRadioSelectTrialsList, replaceAllObjKeys, camelToSnake, mapCamelToSnake } = require('../../../lib/mod-utils');
   const { standardReportDAO } = require('../../../objects/reports');
   const { validate } = require('validate.js');
   const { poolSearchObject } = require('../../../objects/pool-search');
@@ -11,10 +11,10 @@
   const { bespokeReportBodys } = require('../bespoke-report/bespoke-report-body');
   const { reportKeys } = require('./definitions');
   const { standardReportPrint } = require('./standard-report-print');
-  const { fetchCourtsDAO } = require('../../../objects');
+  const { fetchCourtsDAO, trialsListObject, trialsListDAO } = require('../../../objects');
   const searchValidator = require('../../../config/validation/report-search-by');
   const moment = require('moment')
-  const { dateFilter, capitalizeFully } = require('../../../components/filters');
+  const { dateFilter, capitalizeFully, makeDate, capitalise } = require('../../../components/filters');
   const { reportExport } = require('./report-export');
 
   const standardFilterGet = (app, reportKey) => async(req, res) => {
@@ -64,8 +64,8 @@
           resultsCount,
           poolList,
           filter,
-          filterUrl: app.namedRoutes.build(`reports.${reportKey}.filter.post`),
-          reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
+          filterUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.post`)),
+          reportUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.post`)),
         });
       case 'courts':
         delete req.session.errors;
@@ -85,9 +85,9 @@
             courts,
             title: reportType.title,
             filter,
-            filterUrl: app.namedRoutes.build(`reports.${reportKey}.filter.post`),
-            clearFilterUrl: app.namedRoutes.build(`reports.${reportKey}.filter.get`),
-            reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
+            filterUrl:  addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.post`)),
+            clearFilterUrl:  addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`)),
+            reportUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.post`)),
             cancelUrl: app.namedRoutes.build('reports.reports.get'),
             errors: {
               title: 'Please check your search',
@@ -119,9 +119,50 @@
           reportKey,
           title: reportType.title,
           searchLabels: reportType.searchLabelMappers,
-          reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
+          reportUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.post`)),
           cancelUrl: app.namedRoutes.build('reports.reports.get'),
         });
+      case 'trial':
+        const sortBy = req.query['sortBy'] || 'trialNumber';
+        const sortOrder = req.query['sortOrder'] || 'ascending';
+        const opts = {
+          active: true,
+          pageNumber: 1,
+          pageLimit: 500,
+          sortField: capitalise(camelToSnake(sortBy)),
+          sortMethod: sortOrder === 'ascending' ? 'ASC' : 'DESC',
+        };
+        if (filter) {
+          opts.trialNumber = filter
+        }
+        try{
+          let data = await trialsListDAO.post(req, mapCamelToSnake(opts));
+
+          data = replaceAllObjKeys(data, _.camelCase);
+  
+          return res.render('reporting/standard-reports/trial-select', {
+            errors: {
+              title: 'Please check your search',
+              count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+              items: tmpErrors,
+            },
+            tmpBody,
+            reportKey,
+            filter,
+            title: reportType.title,
+            filterUrl: app.namedRoutes.build(`reports.${reportKey}.filter.post`),
+            clearSearchUrl: app.namedRoutes.build(`reports.${reportKey}.filter.get`),
+            reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
+            cancelUrl: app.namedRoutes.build('reports.reports.get'),
+            trials: transformRadioSelectTrialsList(data.data, sortBy, sortOrder)
+          });
+        } catch (err) {
+          app.logger.crit('Failed to fetch trials list: ', {
+            auth: req.session.authentication,
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
+          return res.render('_errors/generic');
+        }
       default:
         app.logger.info('Failed to load a search type for report type ' + reportKey);
         return res.render('_errors/generic');
@@ -130,6 +171,8 @@
   };
 
   const standardFilterPost = (app, reportKey) => (req, res) => {
+    const reportType = reportKeys(app, req)[reportKey];
+
     let filter;
     switch (reportKeys(app, req)[reportKey].search) {
       case 'poolNumber':
@@ -138,9 +181,12 @@
       case 'courts':
         filter = req.body.courtSearch
         break;
+      case 'trial':
+        filter = req.body.filterTrialNumber;
+        break;
     }
 
-    return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`) + '?filter=' + filter);
+    return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`) + '?filter=' + filter));
   };
 
   const standardReportGet = (app, reportKey, isPrint = false, isExport = false) => async(req, res) => {
@@ -158,6 +204,8 @@
     const buildStandardTableRows = function(tableData, tableHeadings) {
       const rows = tableData.map(data => {
         let row = tableHeadings.map(header => {
+          if (!header.name || header.name === '') return;
+
           let output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
 
           if (header.id === 'juror_number' || header.id === 'juror_number_from_trial') {
@@ -190,8 +238,21 @@
             });
           }
 
+          if (header.id === 'attendance_audit') {
+            // ADD IN POOL ATTENDANCE AUDIT REPORT ROUTE ONCE AVAILABLE
+            return ({
+              html: `<a href='#'>${
+                output
+              }</a>`,
+            });
+          }
+
           if (header.id === 'juror_postcode' || header.id === 'document_code') {
             output = output ? output.toUpperCase() : '-';
+          }
+
+          if (header.id === 'on_call') {
+            output = output === 'Yes' ? 'Yes' : '-';
           }
 
           if (header.dataType === 'List') {
@@ -206,8 +267,12 @@
             });
           }
 
+          if (reportType.cellTransformer) {
+            output = reportType.cellTransformer(data, header.id, output);
+          }
+
           return ({
-            text: output ? output : '-',
+            html: output ? output : '-',
             attributes: {
               "data-sort-value": header.dataType === 'LocalDate' ? data[snakeToCamel(header.id)] : output
             },
@@ -238,9 +303,21 @@
     const buildStandardTable = function(reportType, tableData, tableHeadings, sectionHeading = '') {
       let tableRows = [];
       const tableHeaders = buildTableHeaders(reportType, tableHeadings);
+      const tableFoot = reportType.totalsRow ? reportType.totalsRow(tableData) : null;
 
       if (reportType.grouped) {
         let longestGroup = 0;
+
+        if (reportType.grouped.sortGroups) {
+          let ordered = {};
+          if (reportType.grouped.sortGroups === 'descending') {
+            (Object.keys(tableData).sort()).reverse().forEach(key => ordered[key] = tableData[key])
+          } else {
+            Object.keys(tableData).sort().forEach(key => ordered[key] = tableData[key])
+          }
+          tableData = ordered;
+        }
+        
         for (const [header, data] of Object.entries(tableData)) {
           let group = buildStandardTableRows(data, tableHeadings);
           let link;
@@ -289,7 +366,13 @@
       } else {
         tableRows = buildStandardTableRows(tableData, tableHeadings);
       }
-      return tableRows.length ? [{title: sectionHeading, headers: tableHeaders, rows: tableRows}] : []
+
+      return tableRows.length ? [{
+        title: capitalizeFully(sectionHeading),
+        headers: tableHeaders,
+        rows: tableRows,
+        tableFoot,
+      }] : [];
     }
 
     const buildPrintExportUrl = function(urlType = 'print') {
@@ -301,15 +384,7 @@
         url = url + '?fromDate=' + req.query.fromDate + '&toDate=' + req.query.toDate;
       }
 
-      if (req.query.includeSummoned) {
-        url = url + '?includeSummoned=' + req.query.includeSummoned;
-      }
-
-      if (req.query.previousMonths) {
-        url = url + '?previousMonths=true'
-      }
-
-      return url;
+      return addURLQueryParams(reportType,  url);
     };
 
     const buildBackLinkUrl = function() {
@@ -320,6 +395,9 @@
         return reportType.backUrl;
       }
       if (reportType.search === 'trial') {
+        if (reportKey === 'trial-attendance') {
+          return app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : '')
+        }
         return app.namedRoutes.build('trial-management.trials.detail.get', {
           trialNumber: req.params.filter, locationCode: req.session.authentication.locCode
         });
@@ -327,7 +405,11 @@
       if (reportKey === 'daily-utilisation-jurors') {
         return req.session.dailyUtilisation.route
       }
-      return app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : '');
+      if (Object.keys(app.namedRoutes.routesByNameAndMethod).includes(`reports.${reportKey}.filter.get`)) {
+        return addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : ''));
+      } else {
+        return app.namedRoutes.build(`reports.reports.get`)
+      }
     };
 
     delete req.session.reportFilter;
@@ -354,6 +436,15 @@
     if (reportKey.includes('persons-attending')) {
       config.includeSummoned = req.query.includeSummoned || false;
     }
+    if(req.query.includeJurorsOnCall) {
+      config.includeJurorsOnCall = req.query.includeJurorsOnCall;
+    }
+    if(req.query.respondedJurorsOnly) {
+      config.respondedJurorsOnly = req.query.respondedJurorsOnly;
+    }
+    if(req.query.includePanelMembers) {
+      config.includePanelMembers = req.query.includePanelMembers;
+    }
 
     // Backlink routing needs saved for jurors report
     if (reportKey === 'daily-utilisation') {
@@ -371,7 +462,6 @@
 
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
       if (isExport) return reportExport(app, req, res, reportKey, { headings, tableData }) ;
-
 
       let tables = [];
 
@@ -415,7 +505,7 @@
           url: buildBackLinkUrl(),
         },
         bannerMessage,
-        largeTotals: reportType.largeTotals ? reportType.largeTotals(tableData.data) : [],
+        largeTotals: reportType.largeTotals?.values ? reportType.largeTotals.values(tableData.data) : [],
       });
     } catch (e) {
       console.error(e);
@@ -426,6 +516,7 @@
 
   const standardReportPost = (app, reportKey) => async (req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
+
     if (reportType.search === 'poolNumber') {
       if (!req.body.reportPool) {
         req.session.errors = {
@@ -436,22 +527,21 @@
           }],
         };
 
-        return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`)
-          + (req.body.filter ? '?filter=' + req.body.filter : ''));
+        return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`)+ (req.body.filter ? '?filter=' + req.body.filter : '')));
       }
 
       req.session.reportFilter = req.body.filter;
 
-      return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, {
+      return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.get`, {
         filter: req.body.reportPool,
-      }));
+      })));
     }
     if (reportType.search === 'courts') {
       if (!req.body.selectedCourts) {
         req.session.errors = makeManualError('selectedCourts', 'Select at least one court');
 
-        return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`)
-          + (req.body.filter ? '?filter=' + req.body.filter : ''));
+        return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`)
+          + (req.body.filter ? '?filter=' + req.body.filter : '')));
       }
       req.session.reportFilter = req.body.filter;
       const selectedCourts = Array.isArray(req.body.selectedCourts) ? req.body.selectedCourts : [req.body.selectedCourts]
@@ -460,7 +550,7 @@
       });
       delete req.session.courtsList
       req.session.reportCourts = courtLocCodes;
-      return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, { filter: 'courts' }));
+      return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.get`, { filter: 'courts' })));
     }
     if (reportType.search === 'dateRange' || reportType.search === 'fixedDateRange') {
       if (req.body.dateRange && req.body.dateRange === 'NEXT_31_DAYS') {
@@ -481,23 +571,36 @@
       if (toDate.isBefore(fromDate)) {
         req.session.errors = makeManualError('dateTo', '‘Date to’ cannot be before ‘date from’');
         req.session.formFields = req.body;
-        return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`));
+        return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`)));
       }
 
       if (reportKey === 'daily-utilisation') { 
         if((toDate.diff(fromDate, 'days') + 1) > 31) {
           req.session.errors = makeManualError('dateTo', 'Date range cannot be larger than 31 days');
           req.session.formFields = req.body;
-          return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`));
+          return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`)));
         }
         redirectRoute = `reports.daily-utilisation.check.get`
       }
 
-      return res.redirect(app.namedRoutes.build(redirectRoute, {filter: 'dateRange'})
+      return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(redirectRoute, {filter: 'dateRange'})
         + `?fromDate=${dateFilter(req.body.dateFrom, 'DD/MM/YYYY', 'YYYY-MM-DD')}`
-        + `&toDate=${dateFilter(req.body.dateTo, 'DD/MM/YYYY', 'YYYY-MM-DD')}`);
+        + `&toDate=${dateFilter(req.body.dateTo, 'DD/MM/YYYY', 'YYYY-MM-DD')}`
+        ));
+    }
+    if (reportType.search === 'trial') {
+      if (!req.body.selectedTrial) {
+        req.session.errors = makeManualError('selectedTrial', 'Select a trial')
+        req.session.formFields = req.body;
+        return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`));
+      }
+      return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, { filter: req.body.selectedTrial }))
     }
   };
+
+  function addURLQueryParams(reportType, url){
+    return url + `${reportType.queryParams ? `${url.includes('?') ? '&' : '?'}${new URLSearchParams(_.clone(reportType.queryParams)).toString()}` : ''}`
+  }
 
   module.exports = {
     standardFilterGet,

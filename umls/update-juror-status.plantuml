@@ -1,0 +1,112 @@
+@startuml update-juror-status
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant JurorRecordPage <</juror-management/record/:jurorNumber/overview>>
+participant UpdateStatusPage <</juror-management/update-juror-record>>
+participant DeferralRequestPage <</response/process/deferral>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant JurorUpdateController <<jjuror-update.controller.js>> #lightyellow
+participant deferralObject <<deferralObject.put()>> #lightyellow
+participant jurorRecordObject <<jurorRecordObject.get()>> #lightyellow
+participant jurorUndeliverableObject <<jurorUndeliverableObject.put()>> #lightyellow
+participant jurorTransfer <<jurorTransfer.get()>> #lightyellow
+
+''' TEMPLATES
+participant JurorRecordTemplate <</juror-management/record/:jurorNumber/overview.njk>>
+participant UpdateStatusTemplate <</juror-management/update-juror-record.njk>>
+participant DeferralRequestTemplate <</response/process/deferral.njk>>
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant jurorUpdateValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> JurorRecordPage : click update juror record
+JurorRecordPage -> JurorUpdateController : call juror update controller
+
+JurorUpdateController -> UpdateStatusTemplate : request and build template
+JurorUpdateController <- UpdateStatusTemplate : return HTML
+UpdateStatusPage <- JurorUpdateController : return HTML
+Actor <- UpdateStatusPage : render HTML
+
+Actor -> UpdateStatusPage : select a status and select continue
+
+UpdateStatusPage -> JurorUpdateController : call page controller
+
+JurorUpdateController -> jurorUpdateValidator : validate form
+
+alt no selection made
+  JurorUpdateController <-- jurorUpdateValidator : data validation fails
+  JurorUpdateController -> UpdateStatusTemplate : request and build error message template
+  JurorUpdateController <- UpdateStatusTemplate : return HTML
+  UpdateStatusPage <- JurorUpdateController : return HTML
+  Actor <- UpdateStatusPage : render error message
+end
+
+JurorUpdateController <- jurorUpdateValidator : valid selection made
+
+alt deferral option selected
+    JurorUpdateController -> deferralObject : build request object
+    deferralObject -> BackendController : send backend request
+    deferralObject <- BackendController : ok response
+    JurorUpdateController <- deferralObject : resolve request
+end
+
+alt Failed to fetch juror record details
+    jurorRecordObject <-- BackendController : error response
+    JurorUpdateController <-- jurorRecordObject : reject requestObject
+    JurorUpdateController -> ErrorTemplate : request and build template
+    JurorUpdateController <- ErrorTemplate : return HTML
+    GenericErrorPage <- JurorUpdateController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Failed to process juror undeliverable
+    jurorUndeliverableObject <-- BackendController : error response
+    JurorUpdateController <-- jurorUndeliverableObject : reject requestObject
+    JurorUpdateController -> ErrorTemplate : request and build template
+    JurorUpdateController <- ErrorTemplate : return HTML
+    GenericErrorPage <- JurorUpdateController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Failed to process deferral update
+    deferralObject <-- BackendController : error response
+    JurorUpdateController <-- deferralObject : reject requestObject
+    JurorUpdateController -> ErrorTemplate : request and build template
+    JurorUpdateController <- ErrorTemplate : return HTML
+    GenericErrorPage <- JurorUpdateController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Failed to transfer update
+    jurorTransfer <-- BackendController : error response
+    JurorUpdateController <-- jurorTransfer : reject requestObject
+    JurorUpdateController -> ErrorTemplate : request and build template
+    JurorUpdateController <- ErrorTemplate : return HTML
+    GenericErrorPage <- JurorUpdateController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+JurorUpdateController -> JurorRecordController : call juror record controller controller
+JurorRecordController -> JurorRecordTemplate : request and build template
+JurorRecordController <- JurorRecordTemplate : return HTML
+JurorRecordPage <- JurorRecordController : return HTML
+Actor <- JurorRecordPage : render HTML
+
+
+
+
+
+
+
+    

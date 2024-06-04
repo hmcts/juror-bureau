@@ -208,6 +208,10 @@
   justify-content: space-between;
 }
 
+.mod-baseline {
+  align-items: baseline;
+}
+
 .mod-gap-x {
   &-1 {
     gap: 0.25rem;
@@ -230,6 +234,14 @@ dt.govuk-summary-list-mod {
 
 .mod-align-top {
   vertical-align: top;
+}
+
+.mod-overflow-auto {
+  overflow: auto;
+}
+
+.mod-min-width-150 {
+  min-width: 150px;
 }
 
 /// small hack for radio tables
@@ -523,4 +535,9 @@ dt.govuk-summary-list-mod {
     &-three-twentyfifths {
       width: 8.33333333333% !important;
     }
+
+    &-one-fifteenth {
+      width: 6.667% !important;
+    }
+
 }

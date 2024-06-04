@@ -16,36 +16,6 @@
       transform: utils.basicDataTransform,
     }
 
-    , trialsListObject = {
-      resource: 'moj/trial/list',
-      get: function(rp, app, jwtToken, opts) {
-        var reqOptions = _.clone(options);
-
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(
-          reqOptions.uri,
-          this.resource,
-          '?page_number=' + (opts.pageNumber - 1).toString(),
-          '&sort_by=' + opts.sortBy,
-          '&sort_order=' + opts.sortOrder,
-          '&is_active=' + opts.isActive
-        );
-        if (opts.trialNumber) {
-          reqOptions.uri = urljoin(reqOptions.uri, '&trial_number=' + opts.trialNumber);
-        }
-        reqOptions.method = 'GET';
-
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          data: opts,
-        });
-
-        return rp(reqOptions);
-      },
-    }
-
     , trialDetailsObject = {
       resource: 'moj/trial/summary',
       get: function(rp, app, jwtToken, trialNumber, locationCode) {
@@ -133,11 +103,11 @@
       },
     };
 
-  module.exports.trialsListObject = trialsListObject;
   module.exports.trialDetailsObject = trialDetailsObject;
   module.exports.courtroomsObject = courtroomsObject;
   module.exports.judgesObject = judgesObject;
   module.exports.createTrialObject = createTrialObject;
   module.exports.editTrialDAO = new DAO('moj/trial/edit');
+  module.exports.trialsListDAO = new DAO('moj/trial/list');
 
 })();

@@ -1,6 +1,7 @@
 (() => {
   'use strict';
 
+  const _ = require('lodash');
   const { isCourtUser } = require('../../../components/auth/user-type');
   const { dateFilter, capitalizeFully, toMoney } = require('../../../components/filters');
   const { dailyUtilisationDAO, dailyUtilisationJurorsDAO, viewMonthlyUtilisationDAO, generateMonthlyUtilisationDAO } = require('../../../objects/reports');
@@ -8,7 +9,6 @@
   const makeLink = (app) => {
     return {
       poolNumber: (poolNumber) => {
-        console.log(poolNumber)
         return `<a class='govuk-link' href='${app.namedRoutes.build('pool-overview.get', {poolNumber: poolNumber})}'>Pool ${poolNumber}</a>`
       }
     }
@@ -21,6 +21,9 @@
   //   searchLabelMappers: {
   //     dateFrom: string, // custom label for date from input 
   //     dateTo: string, // custom label for date to input 
+  //   },
+  //   queryParams?: { // any mandatory query params neederd throughout report journey 
+  //     key: value,
   //   },
   //   bespokeReport?: {
   //     dao?: (req) => Promise<any>,                                 // custom data access function
@@ -51,9 +54,15 @@
   //     groupHeader?: boolean, // display the group header or not.. in some reports we dont have to
   //     totals?: boolean, // same on this one.. some reports dont need the totals
   //     emptyDataGroup?: (colSpan, isPrint) => [object],  // returns table to display if a group has no data
+  //     sortGroups?: 'ascending' or 'descending',  // orders each group by group header,
   //   },
   //   printLandscape?: boolean, // force report printing to landscape
-  //   largeTotals?: (data) => {label: string, value: string}[], // large totals for the report
+  //   largeTotals?: {
+  //     values: (data) => {label: string, value: string}[], // large totals for the report
+  //     printWidths?: [string], // optional widths for the individual tags when printing, if left empty will stretch across page
+  //   },
+  //   fontSize?: number,
+  //   totalsRow?: (data, isPrint) => [object], // custom totals row for the report
   // }};
   module.exports.reportKeys = (app, req = null) => {
     const courtUser = req ? isCourtUser(req) : false;
@@ -273,6 +282,9 @@
         title: 'Persons attending (summary)',
         apiKey: 'PersonAttendingSummaryReport',
         search: 'date',
+        queryParams: {
+          includeSummoned: req?.query?.includeSummoned || false,
+        },
         headings: [
           'attendanceDate',
           'reportDate',
@@ -286,6 +298,9 @@
         title: 'Persons attending (detailed)',
         apiKey: 'PersonAttendingDetailReport',
         search: 'date',
+        queryParams: {
+          includeSummoned: req?.query?.includeSummoned || false,
+        },
         headings: [
           'attendanceDate',
           'reportDate',
@@ -390,6 +405,20 @@
           totals: true,
         },
       },
+      'manual-juror-report': {
+        title: 'Manually-created jurors report',
+        apiKey: 'ManuallyCreatedJurorsReport',
+        search: 'dateRange',
+        printLandscape: true,
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+          'totalManuallyCreatedJurors',
+          'courtName',
+        ],
+      },
       'panel-members-status': {
         title: 'Panel members status report',
         apiKey: 'PanelMembersStatusReport',
@@ -403,17 +432,19 @@
           'courtName',
           'judge',
         ],
-        largeTotals: (data) => {
-          return [
-            { label: 'Panelled', value: data.length },
-            { label: 'Empanelled', value: data.filter(juror => juror.panelStatus === 'Juror').length },
-            {
-              label: 'Not used',
-              value: data.filter(juror => (juror.panelStatus === 'Not Used' || juror.panelStatus === 'Returned')).length,
-            },
-            { label: 'Challenged', value: data.filter(juror => juror.panelStatus === 'Challenged').length },
-            { label: 'Returned jurors', value: data.filter(juror => juror.panelStatus === 'Returned Juror').length },
-          ];
+        largeTotals: {
+          values: (data) => {
+            return [
+              { label: 'Panelled', value: data.length },
+              { label: 'Empanelled', value: data.filter(juror => juror.panelStatus === 'Juror').length },
+              {
+                label: 'Not used',
+                value: data.filter(juror => (juror.panelStatus === 'Not Used' || juror.panelStatus === 'Returned')).length,
+              },
+              { label: 'Challenged', value: data.filter(juror => juror.panelStatus === 'Challenged').length },
+              { label: 'Returned jurors', value: data.filter(juror => juror.panelStatus === 'Returned Juror').length },
+            ];
+          },
         },
       },
       'prepare-monthly-utilisation': {
@@ -439,6 +470,9 @@
       },
       'view-monthly-utilisation': {
         title: 'View monthly wastage and utilisation report',
+        queryParams: {
+          previousMonths: req?.query?.previousMonths || false,
+        },
         headings: [
           'courtName',
           'reportDate',
@@ -800,7 +834,14 @@
             transformer: (data, isPrint) => {
               const [poolNumber, poolType] = data.split(',');
               if (isPrint) {
-                return `Pool ${poolNumber} - ${capitalizeFully(poolType)}`;
+                return [
+                  `Pool ${poolNumber} `,
+                  {
+                    text: capitalizeFully(poolType),
+                    color: '#505A5F',
+                    fontSize: 10,
+                    bold: false
+                  }];
               }
               return `${makeLink(app)['poolNumber'](poolNumber)} <span class="grouped-display-inline">${capitalizeFully(poolType)}</span>`;
             },
@@ -827,6 +868,452 @@
           '',
           'reportTime',
         ],
+      },
+      'trial-statistics': {
+        title: 'Trial statistics',
+        apiKey: 'TrialStatisticsReport',
+        search: 'dateRange',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+        ],
+        largeTotals: {
+          values:(data) => {
+            const criminalTrials = data.filter(trial => trial.trialType === 'CRI');
+            const civilTrials = data.filter(trial => trial.trialType === 'CIV');
+            const calculateAverage = (trials) => {
+              const days = trials.map((t) => t.numberOfDays) 
+              const sum = days.reduce((a, b) => a + b, 0);
+              const avg = (sum / trials.length) || 0;
+              return `${avg} days`;
+            };
+            return [
+              { 
+                label: 'Criminal trials average length',
+                value: calculateAverage(criminalTrials),
+                classes: "govuk-!-margin-bottom-1 mod-large-tag__grey mod-!-width-one-eighth",
+              },
+              {
+                label: 'Civil trials average length',
+                value: calculateAverage(civilTrials),
+                classes: "govuk-!-margin-bottom-1 mod-large-tag__grey mod-!-width-one-eighth",
+              },
+            ];
+          },
+          printWidths: ['20%', '20%'],
+        },
+      },
+      'available-list-pool': {
+        title: 'Available list (by pool)',
+        apiKey: 'AvailableListByPoolReport',
+        search: 'poolNumber',
+        queryParams: {
+          includeJurorsOnCall: req?.query?.includeJurorsOnCall || false,
+          respondedJurorsOnly: req?.query?.respondedJurorsOnly || false,
+          includePanelMembers: req?.query?.includePanelMembers || false,
+        },
+        headings: [
+          'poolNumber',
+          'reportDate',
+          'poolType',
+          'reportTime',
+          'serviceStartDate',
+          'courtName',
+          'totalAvailablePoolMembers'
+        ],
+      },
+      'available-list-date': {
+        title: 'Available list (by date)',
+        apiKey: courtUser ? 'AvailableListByDateReportCourt' : 'AvailableListByDateReportBureau',
+        search: 'date',
+        queryParams: {
+          includeJurorsOnCall: req?.query?.includeJurorsOnCall || false,
+          respondedJurorsOnly: req?.query?.respondedJurorsOnly || false,
+          includePanelMembers: req?.query?.includePanelMembers || false,
+        },
+        backUrl: app.namedRoutes.build('reports.available-list.filter.get'),
+        headings: [
+          'attendanceDate',
+          'reportDate',
+          'totalAvailablePoolMembers',
+          'reportTime',
+          '',
+          'courtName',
+        ],
+        multiTable: !courtUser ? {
+          sectionHeadings: true,
+        } : null,
+        grouped: {
+          groupHeader: true,
+          headings: {
+            transformer: (data, isPrint) => {
+              const [poolNumber, poolType] = data.split(',');
+              if (isPrint) {
+                return [
+                  `Pool ${poolNumber} `,
+                  {
+                    text: capitalizeFully(poolType),
+                    color: '#505A5F',
+                    fontSize: 10,
+                    bold: false
+                  }];
+              }
+              return `${makeLink(app)['poolNumber'](poolNumber)} <span class="grouped-display-inline">${capitalizeFully(poolType)}</span>`;
+            },
+          },
+        },
+      },
+      'pool-analysis': {
+        title: 'Pool analysis report',
+        apiKey: 'PoolAnalysisReport',
+        search: 'dateRange',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+          '',
+          'courtName',
+        ],
+        cellTransformer: (data, key, output, isPrint) => {
+          const percentageKey = _.camelCase(`${key}_percentage`);
+
+          if (percentageKey in data) {
+            if (isPrint) return `${output} (${data[percentageKey]}%)`;
+            return `<span class="mod-flex mod-gap-x-1">${output} <span class="govuk-caption-m">(${data[percentageKey]}%)</span></span>`;
+          }
+
+          return output;
+        },
+        printLandscape: true,
+        fontSize: 8,
+        totalsRow: (data, isPrint = false) => {
+          const calculatePercentage = (value, total) => Math.round((value / total) * 100);
+          const totals = {
+            jurorsSummonedTotal: 0,
+            respondedTotal: 0,
+            attendedTotal: 0,
+            panelTotal: 0,
+            jurorTotal: 0,
+            excusedTotal: 0,
+            disqualifiedTotal: 0,
+            deferredTotal: 0,
+            reassignedTotal: 0,
+            undeliverableTotal: 0,
+            transferredTotal: 0,
+            failedToAttendTotal: 0,
+          };
+          
+          data.forEach((row) => {
+            Object.keys(totals).forEach((key) => {
+              totals[key] += row[key];
+            });
+          });
+
+          const htmlTemplate = (total) => {
+            if (isPrint) return `${total} (${calculatePercentage(total, totals.jurorsSummonedTotal)}%)`;
+
+            return `<span class="mod-flex mod-gap-x-1">
+              ${total}<span class="govuk-caption-m">(${calculatePercentage(total, totals.jurorsSummonedTotal)}%)</span>
+            </span>`;
+          };
+
+          return [
+            { text: '', fillColor: '#F3F2F1' },
+            { text: '', fillColor: '#F3F2F1' },
+            { text: totals.jurorsSummonedTotal, bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.respondedTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.attendedTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.panelTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.jurorTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.excusedTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.disqualifiedTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.deferredTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.reassignedTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.undeliverableTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.transferredTotal), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.failedToAttendTotal), bold: true, fillColor: '#F3F2F1' },
+          ]
+        }
+      },
+      'on-call': {
+        title: 'On call list',
+        apiKey: 'OnCallReport',
+        search: 'poolNumber',
+        headings: [
+          'poolNumber',
+          'reportDate',
+          'poolType',
+          'reportTime',
+          'serviceStartDate',
+          'courtName',
+          'totalOnCall',
+        ],
+      },
+      'trial-attendance': {
+        title: 'Trial attendance report',
+        apiKey: 'TrialAttendanceReport',
+        search: 'trial',
+        headings: [
+          'trialNumber',
+          'reportDate',
+          'names',
+          'reportTime',
+          'trialType',
+          'courtName',
+          'trialStartDate',
+          '',
+          'courtroom',
+          '',
+          'judge'
+        ],
+        grouped: {
+          headings: {
+            transformer: (data, isPrint) => {
+              return dateFilter(data, 'yyyy-MM-DD', 'dddd D MMM YYYY');
+            },
+          },
+          groupHeader: true,
+        },
+        bespokeReport: {
+          tableHeadClasses: [
+            '', '', '', '', '', '', '', '',
+            'mod-!-width-one-fifteenth',
+            'mod-!-width-one-fifteenth'
+          ],
+          insertRows: {
+            last: (data, isPrint = false) => {
+              let totalDue = 0;
+              let totalPaid = 0;
+              if (!data.length) {
+                return [];
+              }
+
+              data.forEach((trial) => {
+                totalDue += trial.totalDue;
+                totalPaid += trial.totalPaid;
+              });
+              return isPrint ? [
+                {}, {}, {}, {}, {}, {}, {}, {},
+                {
+                  text: toMoney(totalDue), bold: true,
+                },
+                {
+                  text: toMoney(totalPaid), bold: true,
+                },
+              ] : [
+                {
+                  colspan: 8
+                },
+                {
+                  text: toMoney(totalDue),
+                  classes: 'govuk-!-font-weight-bold',
+                  format: 'numeric',
+                },
+                {
+                  text: toMoney(totalPaid),
+                  classes: 'govuk-!-font-weight-bold',
+                  format: 'numeric',
+                },
+              ];
+            },
+          },
+          printInsertRows: true,
+          insertTables: {
+            last: (tableData, isPrint = false) => {
+              let totalDue = 0;
+              let totalPaid = 0;
+
+              let rows = [];
+              
+              if (Object.entries(tableData.data).length) {
+                for (const [date, trials] of Object.entries(tableData.data)) {
+                  trials.forEach((trial) => {
+                    totalDue += trial.totalDue;
+                    totalPaid += trial.totalPaid;
+                  });
+                }
+                if (!isPrint) {
+                  rows.push([
+                    {
+                      colspan: 8,
+                      classes: 'mod-highlight-table-data__grey',
+                    },
+                    {
+                      text: toMoney(totalDue),
+                      classes: 'mod-!-width-one-fifteenth govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                      format: 'numeric',
+                    },
+                    {
+                      text: toMoney(totalPaid),
+                      classes: 'mod-!-width-one-fifteenth govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                      format: 'numeric',
+                    },
+                  ]);
+                } else {
+                  rows.push([
+                    {text:'', fillColor: '#F3F2F1'},
+                    {text:'', fillColor: '#F3F2F1'},
+                    {text:'', fillColor: '#F3F2F1'},
+                    {text:'', fillColor: '#F3F2F1'},
+                    {text:'', fillColor: '#F3F2F1'},
+                    {text:'', fillColor: '#F3F2F1'},
+                    {text:'', fillColor: '#F3F2F1'},
+                    {text:'', fillColor: '#F3F2F1'},
+                    {
+                      text: toMoney(totalDue),
+                      bold: true, fillColor: '#F3F2F1',
+                    },
+                    {
+                      text: toMoney(totalPaid),
+                      bold: true, fillColor: '#F3F2F1',
+                    },
+                  ]);
+                }
+                return isPrint ? [
+                  {
+                    body: [[
+                      {text: 'Total expenses', style: 'largeSectionHeading'},
+                    ]],
+                    widths:['100%'],
+                    layout: { hLineColor: '#0b0c0c' },
+                    margin: [0, 10, 0, 0],
+                  },
+                  {
+                    body: rows,
+                    widths:['*', '*', '*', '*', '*', '*', '*', '*', '6.667%', '6.667%'],
+                    margin: [0, 0, 0, 0],
+                  },
+                ] : [{title: 'Totals expenses', headers: [], rows: rows}];
+              }
+              return [];
+            }
+          },
+          printInsertTables: true,
+          printWidths: ['*', '*', '*', '*', '*', '*', '*', '*', '6.667%', '6.667%']
+        },
+        printLandscape: true,
+      },
+      'jury-cost-bill': {
+        title: 'Jury cost bill',
+        apiKey: 'JuryCostBill',
+        search: 'trial',
+        headings: [
+          'trialNumber',
+          'reportDate',
+          'names',
+          'reportTime',
+          'trialType',
+          'courtName',
+          'trialStartDate',
+          '',
+          'courtroom',
+          '',
+          'judge'
+        ],     
+        cellTransformer: (data, key, output, isPrint) => {
+          if (key === 'total_paid_sum') {
+            if (isPrint) return output;
+            return `<b>${output}</b>`;
+          }
+
+          return output;
+        },
+        totalsRow: (data, isPrint = false) => {
+          const totals = {
+            financialLossDueSum: 0,
+            travelDueSum: 0,
+            subsistenceDueSum: 0,
+            smartcardDueSum: 0,
+            totalDueSum: 0,
+            totalPaidSum: 0,
+          };
+          
+          data.forEach((row) => {
+            Object.keys(totals).forEach((key) => {
+              totals[key] += row[key];
+            });
+          });
+
+          const htmlTemplate = (total) => {
+            if (isPrint) return toMoney(total);
+            return `<b class="jd-right-align">${toMoney(total)}</b>`;
+          };
+
+          return [
+            { text: '', fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.financialLossDueSum), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.travelDueSum), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.subsistenceDueSum), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.smartcardDueSum), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.totalDueSum), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.totalPaidSum), bold: true, fillColor: '#F3F2F1' },
+          ]
+        }
+      },
+      'payment-status-report': {
+        title: 'Payment status report ',
+        apiKey: 'PaymentStatusReport',
+        headings: [
+          'reportDate',
+          '',
+          'reportTime',
+          '',
+          'courtName',
+        ],
+        grouped: {
+          groupHeader: true,
+          totals: true,
+          sortGroups: 'ascending',
+        },
+      },
+      'unpaid-attendance': {
+        title: 'Unpaid attendance report (summary)',
+        apiKey: 'UnpaidAttendanceSummaryReport',
+        search: 'dateRange',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+          'totalUnpaidAttendances',
+          'courtName',
+        ],
+        grouped: {
+          headings: {
+            transformer: (data) => dateFilter(data, 'YYYY-mm-dd', 'dddd D MMMM YYYY'),
+          },
+          groupHeader: true,
+          totals: true,
+        }
+      },
+      'deferred-list-date': {
+        title: 'Deferred list (by date)',
+        apiKey: 'DeferredListByDateReport',
+        headings: [
+          'totalDeferred',
+          'reportDate',
+          '',
+          'reportTime',
+        ],
+        backUrl: app.namedRoutes.build('reports.deferred-list.filter.get')
+      },
+      'deferred-list-court': {
+        title: 'Deferred list (by court name)',
+        apiKey: 'DeferredListByCourtReport',
+        headings: [
+          'totalDeferred',
+          'reportDate',
+          '',
+          'reportTime',
+        ],
+        grouped: {
+          groupHeader: true,
+          totals: true,
+        },
+        backUrl: app.namedRoutes.build('reports.deferred-list.filter.get'),
       },
     };
   };

@@ -1,0 +1,86 @@
+@startuml confirm-attendance
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant JurorsInWaitingPage <</juror-management/attendance>>
+participant confirmAttendancePage <</juror-management/attendance/confirm-attendance>>
+participant checkOutPage <</juror-management/attendance/check-out-panellede>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant attendanceController <<attendance.controller.js>> #lightyellow
+participant jurorAttendanceDao <<jurorAttendanceDao.post()>> #lightyellow
+
+''' TEMPLATES
+participant JurorsInWaitingTemplate <<juror-management/attendance/unconfirmed/table-row.njk>> #lavender
+participant confirmAttendanceTemplate <<juror-management/attendance/confirm-attendance.njk>> #lavender
+participant checkOutTemplate <<juror-management/attendance/not-checked-out.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant checkOutAllValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> JurorsInWaitingPage : click confirm attendance
+JurorsInWaitingPage -> attendanceController : call attendance day controller
+
+alt some jurors not checked out
+    attendanceController -> checkOutTemplate : request and build template
+    attendanceController <- checkOutTemplate : return HTML
+    checkOutPage <- attendanceController : return HTML
+    Actor <- checkOutPage : render HTML
+end
+
+attendanceController -> confirmAttendanceTemplate : request and build template
+attendanceController <- confirmAttendanceTemplate : return HTML
+confirmAttendancePage <- attendanceController : return HTML
+Actor <- confirmAttendancePage : render HTML
+
+Actor -> confirmAttendancePage : confirm attendance list is correct
+
+confirmAttendancePage -> attendanceController : call page controller
+
+attendanceController -> checkOutAllValidator : validate form
+
+alt Invalid times entered
+  attendanceController <-- checkOutAllValidator : data validation fails
+  attendanceController -> checkOutTemplate : request and build error message template
+  attendanceController <- checkOutTemplate : return HTML
+  checkOutPage <- attendanceController : return HTML
+  Actor <- checkOutPage : render error message
+end
+
+attendanceController <- checkOutAllValidator : valid data entered
+
+attendanceController -> jurorAttendanceDao : build request object
+jurorAttendanceDao -> BackendController : send backend request
+jurorAttendanceDao <- BackendController : ok response
+attendanceController <- jurorAttendanceDao : resolve request
+
+alt Failed to check out juror
+    jurorAttendanceDao <-- BackendController : error response
+    attendanceController <-- jurorAttendanceDao : reject requestObject
+    attendanceController -> ErrorTemplate : request and build template
+    attendanceController <- ErrorTemplate : return HTML
+    GenericErrorPage <- attendanceController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+attendanceController -> JurorsInWaitingTemplate : request and build template
+attendanceController <- JurorsInWaitingTemplate : return HTML
+JurorsInWaitingPage <- attendanceController : return HTML
+Actor <- JurorsInWaitingPage : render HTML
+
+
+
+
+
+
+
+    

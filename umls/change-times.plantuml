@@ -1,0 +1,78 @@
+@startuml change-attendance-time
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant JurorRecordAttendancePage <</juror-management/record/:jurorNumber/attendance>>
+participant ChangeTimesPage <</attendance/change-times>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant ChangeTimesController <<change-times.controller.js>> #lightyellow
+participant ChangeTimesObject <<jurorRecordObject.changeDate.patch()>> #lightyellow
+
+''' TEMPLATES
+participant JurorRecordAttendanceTemplate <<juror-management/juror-record/attendance.njk>> #lavender
+participant ChangeTimesTemplate <<juror-management/attendance/change-times.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant ChangeTimesValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> JurorRecordAttendancePage : click change
+JurorRecordAttendancePage -> ChangeTimesController : call change times controller
+
+ChangeTimesController -> ChangeTimesTemplate : request and build template
+ChangeTimesController <- ChangeTimesTemplate : return HTML
+ChangeTimesPage <- ChangeTimesController : return HTML
+Actor <- ChangeTimesPage : render HTML
+
+Actor -> ChangeTimesPage : enters a valid attendance day and clicks continue
+
+ChangeTimesPage -> ChangeTimesController : call page controller
+
+ChangeTimesController -> ChangeTimesValidator : validate form
+
+alt Invalid data entered
+  ChangeTimesController <-- ChangeTimesValidator : data validation fails
+  ChangeTimesController -> ChangeTimesTemplate : request and build error message template
+  ChangeTimesController <- ChangeTimesTemplate : return HTML
+  ChangeTimesPage <- ChangeTimesController : return HTML
+  Actor <- ChangeTimesPage : render error message
+end
+
+ChangeTimesController <- ChangeTimesValidator : valid data entered
+
+ChangeTimesController -> ChangeTimesObject : build request object
+ChangeTimesObject -> BackendController : send backend request
+ChangeTimesObject <- BackendController : ok response
+ChangeTimesController <- ChangeTimesObject : resolve request
+
+alt Unable to update the juror attendance times
+    ChangeTimesObject <-- BackendController : error response
+    ChangeTimesController <-- ChangeTimesObject : reject requestObject
+    ChangeTimesController -> ErrorTemplate : request and build template
+    ChangeTimesController <- ErrorTemplate : return HTML
+    GenericErrorPage <- ChangeTimesController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+ChangeTimesController -> JurorRecordController : call juror record controller controller
+JurorRecordController -> JurorRecordAttendanceTemplate : request and build template
+JurorRecordController <- JurorRecordAttendanceTemplate : return HTML
+JurorRecordAttendancePage <- JurorRecordController : return HTML
+Actor <- JurorRecordAttendancePage : render HTML
+
+
+
+
+
+
+
+    

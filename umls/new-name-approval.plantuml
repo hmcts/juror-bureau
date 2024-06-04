@@ -1,0 +1,82 @@
+@startuml new-name
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant JurorRecordDetailsPage <</juror-management/record/:jurorNumber/details>>
+participant NewNamePage <</juror-management/new-name/index>>
+participant RejectNamePage <</juror-management/new-name/reject>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant NewNameController <<new-name.controller.js>> #lightyellow
+participant JurorRecordController <<juror-record.controller.js>> #lightyellow
+participant changeNameObject <<changeName.patch()>> #lightyellow
+
+''' TEMPLATES
+participant JurorRecordDetailsTemplate <</juror-management/record/:jurorNumber/details.njk>>
+participant NewNameTemplate <</juror-management/new-name/index.njk>>
+participant RejectNameTemplate <</juror-management/new-name/reject.njk>>
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant nameChangeValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> JurorRecordDetailsPage : click approve or reject link next to name
+JurorRecordDetailsPage -> NewNameController : call controller
+
+NewNameController -> NewNameTemplate : request and build template
+NewNameController <- NewNameTemplate : return HTML
+NewNamePage <- NewNameController : return HTML
+Actor <- NewNamePage : render HTML
+
+Actor -> NewNamePage : select approve or reject with a reason/evidence
+
+NewNamePage -> NewNameController : call page controller
+
+NewNameController -> nameChangeValidator : validate form
+
+alt no data entered/selected
+  NewNameController <-- nameChangeValidator : data validation fails
+  NewNameController -> NewNameTemplate : request and build error message template
+  NewNameController <- NewNameTemplate : return HTML
+  NewNamePage <- NewNameController : return HTML
+  Actor <- NewNamePage : render error message
+end
+
+NewNameController <- nameChangeValidator : valid data entered
+
+alt reject name change
+    NewNameController -> RejectNameTemplate : request and build template
+    NewNameController <- RejectNameTemplate : return HTML
+    RejectNamePage <- NewNameController : return HTML
+Actor <- RejectNamePage : render HTML
+
+Actor -> RejectNamePage : confirm rejection
+end
+
+NewNameController -> changeNameObject : build request object
+changeNameObject -> BackendController : send backend request
+changeNameObject <- BackendController : ok response
+NewNameController <- changeNameObject : resolve request
+
+
+NewNameController -> JurorRecordController : call juror record controller
+JurorRecordController -> JurorRecordDetailsTemplate : request and build template
+JurorRecordController <- JurorRecordDetailsTemplate : return HTML
+JurorRecordDetailsPage <- JurorRecordController : return HTML
+Actor <- JurorRecordDetailsPage : render HTML
+
+
+
+
+
+
+
+    

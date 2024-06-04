@@ -34,18 +34,31 @@ async function standardReportPrint(app, req, res, reportKey, data) {
         if (header.id === 'juror_postcode' || header.id === 'document_code') {
           text = text.toUpperCase();
         }
+        if (header.id === 'on_call') {
+          text = text === 'Yes' ? 'Yes' : '-';
+        }
 
         if (header.dataType === 'List') {
           const items = text.split(', ');
-          let listText = '';
+          let listText = [];
 
           items.forEach((element, i, array) => {
-            listText = listText
-              + `${element}${header.id === 'juror_postal_address' ? (!(i === array.length - 1) ? ',' : '') : ''}\n`;
+            if (element.includes('<b>')) {
+              listText.push({
+                  text:`${element.replace(/(<([^>]+)>)/ig, '')}${header.id === 'juror_postal_address' ? (!(i === array.length - 1) ? ',' : '') : ''}\n`,
+                  bold: true
+                });
+            } else {
+              listText.push(`${element}${header.id === 'juror_postal_address' ? (!(i === array.length - 1) ? ',' : '') : ''}\n`);
+            }
           });
           return ({
             text: listText,
           });
+        }
+
+        if (reportData.cellTransformer) {
+          text = reportData.cellTransformer(rowData, header.id, text, isPrint);
         }
 
         return ({
@@ -63,7 +76,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
 
     if (reportData.bespokeReport && reportData.bespokeReport.printInsertRows) {
       Object.keys(reportData.bespokeReport.insertRows).map((key) => {
-        if (key === 'final') {
+        if (key === 'last') {
           tableRows.push(reportData.bespokeReport.insertRows[key](rows, true))
         } else {
           tableRows.splice(key, 0, reportData.bespokeReport.insertRows[key](rows, true));
@@ -79,6 +92,17 @@ async function standardReportPrint(app, req, res, reportKey, data) {
 
     if (reportData.grouped) {
       let longestGroup = 0;
+
+      if (reportData.grouped.sortGroups) {
+        let ordered = {};
+        if (reportData.grouped.sortGroups === 'descending') {
+          (Object.keys(data).sort()).reverse().forEach(key => ordered[key] = data[key])
+        } else {
+          Object.keys(data).sort().forEach(key => ordered[key] = data[key])
+        }
+        data = ordered;
+      }
+
       for (const [heading, rowData] of Object.entries(data)) {
 
         const groupHeaderTransformer = () => {
@@ -122,6 +146,10 @@ async function standardReportPrint(app, req, res, reportKey, data) {
       }
     } else {
       tableRows = buildStandardTableRows(data, headersData);
+
+      if (reportData.totalsRow) {
+        tableRows.push(reportData.totalsRow(data, true));
+      }
     }
 
     const tableHeaders = buildTableHeading(headersData);
@@ -144,7 +172,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
     if (sectionHeading) {
       tables.unshift({
         body: [[
-          {text: sectionHeading, style: 'largeSectionHeading', colSpan: 2},
+          {text: capitalizeFully(sectionHeading), style: 'largeSectionHeading', colSpan: 2},
           {},
         ]],
         widths:['50%', '50%'],
@@ -183,7 +211,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
   const buildLargeTotals = () => {
     if (!reportData.largeTotals) return {};
 
-    const body = reportData.largeTotals(tableData.data).reduce((acc, total) => {
+    const body = reportData.largeTotals.values(tableData.data).reduce((acc, total) => {
       acc.push(
         {
           border: [false, false, false, false],
@@ -205,9 +233,9 @@ async function standardReportPrint(app, req, res, reportKey, data) {
     }, []);
 
     return {
-      margin: [0, 20, 0, -20],
+      margin: [0, 20, 0, 0],
       table: {
-        widths: Array(body.length).fill('*'),
+        widths: reportData.largeTotals.printWidths || Array(body.length).fill('*'),
         body: [body],
       },
     };
@@ -225,6 +253,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
       tables: reportBody,
     }, {
       pageOrientation: reportData.printLandscape ? 'landscape' : 'portrait',
+      fontSize: reportData.fontSize,
     });
 
     res.contentType('application/pdf');

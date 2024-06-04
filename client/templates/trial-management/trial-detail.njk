@@ -75,8 +75,11 @@
 {% set standardPrintMenuItems = [
   {
     text: "Ballot cards",
-    href: "#",
-    classes: "govuk-button--secondary"
+    href: url("reports.ballot-cards.report.print", { ballotType: "trial", filter: trial.trial_number }),
+    classes: "govuk-button--secondary",
+    attributes: {
+      target: "_blank"
+    }
   },
   {
     text: "Panel list (summary)",

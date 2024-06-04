@@ -1,0 +1,113 @@
+@startuml export-contact-details
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant FindContactDetailsPage <</messaging/export-contact-details/details-to-export>>
+participant JurorsListPage <</messaging/export-contact-details/find-contact-details>>
+participant DetailsToExportPage <</messaging/export-contact-details/jurors-list>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant exportContactDetailsController <<export-contact-details.controller.js>> #lightyellow
+participant fetchAllCourts <<fetchAllCourts.get()>> #lightyellow
+participant jurorSearchDAO <<jurorSearchDAO.post()>> #lightyellow
+participant downloadCSVDAO <<downloadCSVDAO.post()>> #lightyellow
+
+''' TEMPLATES
+participant FindContactDetailsTemplate <</messaging/export-contact-details/details-to-export.njk>>
+participant JurorsListTemplate <</messaging/export-contact-details/jurors-list.njk>>
+participant DetailsToExportTemplate <</messaging/export-contact-details/details-to-export.njk>>
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant exportContactDetailsValidator
+participant detailsToExportValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> FindContactDetailsPage : enter search criteria
+FindContactDetailsPage -> exportContactDetailsController : call controller
+
+exportContactDetailsController -> exportContactDetailsValidator : validate form
+
+alt Invalid/no data entered
+  exportContactDetailsController <-- exportContactDetailsValidator : data validation fails
+  exportContactDetailsController -> FindContactDetailsTemplate : request and build error message template
+  exportContactDetailsController <- FindContactDetailsTemplate : return HTML
+  FindContactDetailsPage <- exportContactDetailsValidator : return HTML
+  Actor <- FindContactDetailsPage : render error message
+end
+
+exportContactDetailsController <- exportContactDetailsController : valid data entered
+
+exportContactDetailsController -> jurorSearchDAO : build request object
+jurorSearchDAO -> BackendController : send backend request
+jurorSearchDAO <- BackendController : ok response
+exportContactDetailsController <- jurorSearchDAO : resolve request
+
+exportContactDetailsController -> JurorsListTemplate : request and build template
+exportContactDetailsController <- JurorsListTemplate : return HTML
+JurorsListPage <- exportContactDetailsController : return HTML
+Actor <- JurorsListPage : render HTML
+
+Actor -> JurorsListPage : select jurors to export contact details for
+
+JurorsListPage -> exportContactDetailsController : call page controller
+exportContactDetailsController -> DetailsToExportTemplate : request and build template
+exportContactDetailsController <- DetailsToExportTemplate : return HTML
+DetailsToExportPage <- exportContactDetailsController : return HTML
+Actor <- DetailsToExportPage : render HTML
+
+exportContactDetailsController -> detailsToExportValidator : validate form
+
+alt Invalid/no data entered
+  exportContactDetailsController <-- detailsToExportValidator : data validation fails
+  exportContactDetailsController -> ApproveRejectTemplate : request and build error message template
+  exportContactDetailsController <- ApproveRejectTemplate : return HTML
+  DetailsToExportPage <- detailsToExportValidator : return HTML
+  Actor <- DetailsToExportPage : render error message
+end
+
+exportContactDetailsController <- exportContactDetailsController : valid data entered
+
+exportContactDetailsController -> downloadCSVDAO : build request object
+downloadCSVDAO -> BackendController : send backend request
+downloadCSVDAO <- BackendController : ok response
+exportContactDetailsController <- downloadCSVDAO : resolve request
+
+alt Failed to generate and download csv file with contact details
+    downloadCSVDAO <-- BackendController : error response
+    exportContactDetailsController <-- downloadCSVDAO : reject requestObject
+    exportContactDetailsController -> ErrorTemplate : request and build template
+    exportContactDetailsController <- ErrorTemplate : return HTML
+    GenericErrorPage <- exportContactDetailsController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Something went wrong searching for jurors to export contact details for
+    jurorSearchDAO <-- BackendController : error response
+    exportContactDetailsController <-- jurorSearchDAO : reject requestObject
+    exportContactDetailsController -> ErrorTemplate : request and build template
+    exportContactDetailsController <- ErrorTemplate : return HTML
+    GenericErrorPage <- exportContactDetailsController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Failed to check the juror to export contact details for
+    jurorSearchDAO <-- BackendController : error response
+    exportContactDetailsController <-- jurorSearchDAO : reject requestObject
+    exportContactDetailsController -> ErrorTemplate : request and build template
+    exportContactDetailsController <- ErrorTemplate : return HTML
+    GenericErrorPage <- exportContactDetailsController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+
+
+
+    

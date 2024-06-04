@@ -1,0 +1,78 @@
+@startuml change-attendance-date
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant JurorRecordAttendancePage <</juror-management/record/:jurorNumber/attendance>>
+participant ChangeAttendanceDatePage <</attendance/change-attendance-date>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant ChangeAttendanceDateController <<change-attendance-date.controller.js>> #lightyellow
+participant ChangeDateObject <<jurorRecordObject.changeDate.patch()>> #lightyellow
+
+''' TEMPLATES
+participant JurorRecordAttendanceTemplate <<juror-management/juror-record/attendance.njk>> #lavender
+participant ChangeAttendanceDateTemplate <<juror-management/expense-record/expense-record.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant changeDateValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> JurorRecordAttendancePage : click change
+JurorRecordAttendancePage -> ChangeAttendanceDateController : call attendance day controller
+
+ChangeAttendanceDateController -> ChangeAttendanceDateTemplate : request and build template
+ChangeAttendanceDateController <- ChangeAttendanceDateTemplate : return HTML
+ChangeAttendanceDatePage <- ChangeAttendanceDateController : return HTML
+Actor <- ChangeAttendanceDatePage : render HTML
+
+Actor -> ChangeAttendanceDatePage : enters a valid attendance day and clicks continue
+
+ChangeAttendanceDatePage -> ChangeAttendanceDateController : call page controller
+
+ChangeAttendanceDateController -> changeDateValidator : validate form
+
+alt Invalid data entered
+  ChangeAttendanceDateController <-- changeDateValidator : data validation fails
+  ChangeAttendanceDateController -> ChangeAttendanceDateTemplate : request and build error message template
+  ChangeAttendanceDateController <- ChangeAttendanceDateTemplate : return HTML
+  ChangeAttendanceDatePage <- ChangeAttendanceDateController : return HTML
+  Actor <- ChangeAttendanceDatePage : render error message
+end
+
+ChangeAttendanceDateController <- changeDateValidator : valid data entered
+
+ChangeAttendanceDateController -> ChangeDateObject : build request object
+ChangeDateObject -> BackendController : send backend request
+ChangeDateObject <- BackendController : ok response
+ChangeAttendanceDateController <- ChangeDateObject : resolve request
+
+alt Could not update attendance date
+    ChangeDateObject <-- BackendController : error response
+    ChangeAttendanceDateController <-- ChangeDateObject : reject requestObject
+    ChangeAttendanceDateController -> ErrorTemplate : request and build template
+    ChangeAttendanceDateController <- ErrorTemplate : return HTML
+    GenericErrorPage <- ChangeAttendanceDateController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+ChangeAttendanceDateController -> JurorRecordController : call juror record controller controller
+JurorRecordController -> JurorRecordAttendanceTemplate : request and build template
+JurorRecordController <- JurorRecordAttendanceTemplate : return HTML
+JurorRecordAttendancePage <- JurorRecordController : return HTML
+Actor <- JurorRecordAttendancePage : render HTML
+
+
+
+
+
+
+
+    

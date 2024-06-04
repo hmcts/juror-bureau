@@ -5,7 +5,7 @@
   const validate = require('validate.js');
   const modUtils = require('../../lib/mod-utils');
   const validator = require('../../config/validation/messaging');
-  const { trialsListObject } = require('../../objects/create-trial');
+  const { trialsListDAO } = require('../../objects/create-trial');
   const { dateFilter, capitalise, convert12to24 } = require('../../components/filters');
   const { messageTemplateDAO, jurorSearchDAO, sendMessage, populatedMessageDAO } = require('../../objects/messaging');
   const { messagingCodes, messagingTitles } = require('../../lib/mod-utils');
@@ -265,10 +265,11 @@
         , trialNumber = req.query['trialNumber'];
       let pagination;
       const opts = {
-        isActive: false,
+        active: false,
         pageNumber: currentPage,
-        sortBy: sortBy,
-        sortOrder: sortOrder === 'ascending' ? 'asc' : 'desc',
+        pageLimit: modUtils.constants.PAGE_SIZE,
+        sortField: capitalise(modUtils.camelToSnake(sortBy)),
+        sortMethod: sortOrder === 'ascending' ? 'ASC' : 'DESC',
         trialNumber: trialNumber,
       };
 
@@ -286,12 +287,7 @@
       }
 
       try {
-        let data = await trialsListObject.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
-          opts
-        );
+        let data = await trialsListDAO.post(req, modUtils.mapCamelToSnake(opts));
 
         data = modUtils.replaceAllObjKeys(data, _.camelCase);
 
@@ -303,7 +299,7 @@
           },
         });
 
-        const queryTotal = data.totalElements;
+        const queryTotal = data.totalItems;
 
         if (queryTotal > modUtils.constants.PAGE_SIZE) {
           pagination = modUtils.paginationBuilder(queryTotal, currentPage, req.url);
@@ -330,7 +326,7 @@
           tmpBody,
           trialNumber,
           pagination,
-          trials: modUtils.transformMessagingTrialsList(data.content, sortBy, sortOrder),
+          trials: modUtils.transformRadioSelectTrialsList(data.content, sortBy, sortOrder),
           errors: {
             title: 'Please check the form',
             count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,

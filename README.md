@@ -35,9 +35,15 @@ The version of yarn is set by the project's `.yarnrc.yml` file so do not worry a
 In a terminal window (could also be vscode's embedded terminal) point to the project directory and run:
 
 ```sh
-yarn -v # should log 3.8.1
+yarn -v # should run yarn >=3
 yarn install
-yarn start
+
+# for development
+yarn dev # runs a static version
+yarn dev:watch # runs with nodemon, any changes will trigger a restart
+
+# for production
+yarn serve
 ```
 
 After running all the above, you should see the application running. If you get any errors about the environemnt files missing, read below.
@@ -62,3 +68,8 @@ The command above assumes the developer has docker installed, so if you do not h
 
 [Install redis on MacOS](https://redis.io/docs/install/install-redis/install-redis-on-mac-os/)
 
+## Using the application
+
+#### Authentication
+
+This application implements azure AD authentication but can also be used without whilst in development mode. In development mode users will have an email input box (available only in development) to use for authentication. This is assumes the developer has users populated with test email addresses (check with the API & database to make sure all is setup correctly).

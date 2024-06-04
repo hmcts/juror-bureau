@@ -51,6 +51,7 @@
     standardReportRoutes(app, 'next-due');
     standardReportRoutes(app, 'undelivered');
     standardReportRoutes(app, 'non-responded');
+    standardReportRoutes(app, 'on-call');
     standardReportRoutes(app, 'postponed-pool');
     standardReportRoutes(app, 'postponed-date');
     require('../incomplete-service')(app);
@@ -61,6 +62,8 @@
     standardReportRoutes(app, 'panel-detail');
     standardReportRoutes(app, 'jury-list');
     standardReportRoutes(app, 'pool-status');
+    standardReportRoutes(app, 'manual-juror-report');
+    standardReportRoutes(app, 'pool-analysis');
     // require('../pool-status')(app);
     standardReportRoutes(app, 'reasonable-adjustments');
     require('../persons-attending')(app);
@@ -79,6 +82,16 @@
     standardReportRoutes(app, 'jury-expenditure-low-level');
     standardReportRoutes(app, 'absences');
     standardReportRoutes(app, 'summoned-responded');
+    standardReportRoutes(app, 'trial-statistics');
+    standardReportRoutes(app, 'trial-attendance');
+    standardReportRoutes(app, 'jury-cost-bill');
+    standardReportRoutes(app, 'available-list-pool');
+    standardReportRoutes(app, 'available-list-date');
+    standardReportRoutes(app, 'payment-status-report');
+    standardReportRoutes(app, 'unpaid-attendance');
+    standardReportRoutes(app, 'deferred-list-date');
+    standardReportRoutes(app, 'deferred-list-court');
+    require('../ballot-cards')(app);
   };
 
 })();

@@ -1,0 +1,40 @@
+@startuml search
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant CurrentPage <</CurrentPagesearch>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant SearchController <<search.controller.js>>
+participant searchJurorRecordDAO <<searchJurorRecordDAO.post()>>
+
+''' TEMPLATES
+participant IndexTemplate <<juror-management/search/index.njk>>
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+
+''' JOURNEY FLOW
+Actor -> CurrentPage : request page
+
+CurrentPage -> SearchController : call page controller
+
+
+SearchController -> searchJurorRecordDAO : search jurors with criteria
+searchJurorRecordDAO -> BackendController : send backend request
+searchJurorRecordDAO <- BackendController : ok response
+SearchController <- searchJurorRecordDAO : resolve request
+
+
+SearchController -> IndexTemplate : request and build template
+SearchController <- IndexTemplate : return HTML
+
+Actor <- SearchController : render HTML
+
+@enduml

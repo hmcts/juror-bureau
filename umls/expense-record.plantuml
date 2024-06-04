@@ -1,0 +1,104 @@
+@startuml expense-record
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant UnpaidAttendancePage <</juror-management/unpaid-attendance>>
+participant DraftExpenseRecordPage <</juror-management/unpaid-attendance/expense-record/:jurorNumber/:poolNumber/draft>>
+participant ForApprovalExpenseRecordPage <</juror-management/unpaid-attendance/expense-record/:jurorNumber/:poolNumber/for-approval>>
+participant ForReapprovalExpenseRecordPage <</juror-management/unpaid-attendance/expense-record/:jurorNumber/:poolNumber/for-reapproval>>
+participant ApprovedExpenseRecordPage <</juror-management/unpaid-attendance/expense-record/:jurorNumber/:poolNumber/approved>>
+participant ApprovalDeniedExpenseRecordPage <</juror-management/unpaid-attendance/expense-record/:jurorNumber/:poolNumber>/approval-denied>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant ExpenseRecordController <<expense-record.controller.js>> #lightyellow
+participant ForApprovalController <<for-approval.controller.js>> #lightyellow
+participant DraftController <<draft.controller.js>> #lightyellow
+participant jurorDetailsObject <<jurorDetailsObject.post()>> #lightyellow
+participant getExpenseRecordsDAO <<getExpenseRecordsDAO.post()>> #lightyellow
+''' TEMPLATES
+participant ExpenseDetailsTemplate<<expense-record/expense-detail.njk>> #lavender
+participant ApprovalDeniedTemplate <<juror-management/_errors/approval-denied.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant expenseDetailsValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> UnpaidAttendancePage : click view expenses link
+UnpaidAttendancePage -> ExpenseRecordController : call expense details controller
+ 
+ExpenseRecordController -> jurorDetailsObject : build request object
+jurorDetailsObject -> BackendController : send backend request
+jurorDetailsObject <- BackendController : ok response
+ExpenseRecordController <- jurorDetailsObject : resolve request
+
+alt Failed to fetch juror details
+    jurorDetailsObject <-- BackendController : error response
+    ExpenseRecordController <-- jurorDetailsObject : reject requestObject
+    ExpenseRecordController -> ErrorTemplate : request and build template
+    ExpenseRecordController <- ErrorTemplate : return HTML
+    GenericErrorPage <- ExpenseRecordController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+ExpenseRecordController -> ExpenseDetailsTemplate : request and build template
+ExpenseRecordController <- ExpenseDetailsTemplate : return HTML
+DraftExpenseRecordPage <- ExpenseRecordController : return HTML
+
+alt render for approval expense page
+    ExpenseRecordController -> ExpenseDetailsTemplate : request and build template
+    ExpenseRecordController <- ExpenseDetailsTemplate : return HTML
+    ForApprovalExpenseRecordPage <- ExpenseRecordController : return HTML
+end
+
+alt render for reapproval expense page
+    ExpenseRecordController -> ExpenseDetailsTemplate : request and build template
+    ExpenseRecordController <- ExpenseDetailsTemplate : return HTML
+    ForReapprovalExpenseRecordPage <- ExpenseRecordController : return HTML
+end
+
+alt render approved expense page
+    ExpenseRecordController -> ExpenseDetailsTemplate : request and build template
+    ExpenseRecordController <- ExpenseDetailsTemplate : return HTML
+    ApprovedExpenseRecordPage <- ExpenseRecordController : return HTML
+end
+
+alt render approval denied expense page
+    ExpenseRecordController -> ApprovalDeniedTemplate : request and build template
+    ExpenseRecordController <- ApprovalDeniedTemplate : return HTML
+    ApprovalDeniedExpenseRecordPage <- ExpenseRecordController : return HTML
+end
+     
+
+alt Failed to fetch expense data
+    getExpenseRecordsDAO <-- BackendController : error response
+    ExpenseRecordController <-- getExpenseRecordsDAO : reject requestObject
+    ExpenseRecordController -> ErrorTemplate : request and build template
+    ExpenseRecordController <- ErrorTemplate : return HTML
+    GenericErrorPage <- ExpenseRecordController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+ForApprovalController <- expenseDetailsValidator : valid values entered
+
+alt Unable to approve expenses
+    ForApprovalController <-- expenseDetailsValidator : data validation fails
+    ForApprovalController --> ExpenseDetailsTemplate : request and build error message template
+    ForApprovalController <- ExpenseDetailsTemplate : return HTML
+    DraftExpenseRecordPage <- ForApprovalController : return HTML
+    Actor <- DraftExpenseRecordPage : render error message
+end
+
+
+
+
+
+
+    

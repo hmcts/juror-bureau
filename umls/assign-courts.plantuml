@@ -1,0 +1,119 @@
+@startuml Assign courts
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant UserRecordPage <</administration/users/user-record>>
+participant AssignCourtsPage <</administration/users/assign-courts/assign-court>>
+participant RemoveCourtsPage <</administration/users/assign-courts/remove-court>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant AssignCourtsController <<assign-courts.controller.js>> #lightyellow
+participant AssignCourtsObject <<usersDAO.assignCourts()>> #lightyellow
+participant RemoveCourtsObject <<usersDAO.removeCourts	d()>> #lightyellow
+participant CourtsObject <<courtsDAO()>> #lightyellow
+participant UserRecordObject <<usersDAO.getUserRecord()>> #lightyellow
+
+''' TEMPLATES
+participant UserRecordTemplate <</administration/users/user-record.njk>>
+participant AssignCourtsTemplate <</administration/users/assign-courts/assign-court.njk>>
+participant RemoveCourtsTemplate <</administration/users/assign-courts/remove-court.njk>>
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> UserRecordPage: click assign to court
+UserRecordPage -> AssignCourtsController : call assign courts controller
+
+AssignCourtsController -> CourtsObject : build request object
+CourtsObject -> BackendController : send backend request
+CourtsObject <- BackendController : ok response
+AssignCourtsController <- CourtsObject : resolve request
+
+AssignCourtsController -> AssignCourtsTemplate : request and build template
+AssignCourtsController <- AssignCourtsTemplate : return HTML
+AssignCourtsPage <- AssignCourtsController : return HTML
+Actor <- AssignCourtsPage : render HTML
+
+Actor -> AssignCourtsPage: select a court to assign a user to
+AssignCourtsPage -> AssignCourtsController : call assign courts controller
+
+AssignCourtsController -> AssignCourtsObject : build request object
+AssignCourtsObject -> BackendController : send backend request
+AssignCourtsObject <- BackendController : ok response
+AssignCourtsController <- AssignCourtsObject : resolve request
+
+AssignCourtsController -> UserRecordTemplate : request and build template
+AssignCourtsController <- UserRecordTemplate : return HTML
+UserRecordPage <- AssignCourtsController : return HTML
+Actor <- UserRecordPage : render HTML
+
+
+alt Remove a court
+    Actor -> UserRecordPage: click remove a court
+    UserRecordPage -> AssignCourtsController : call assign courts controller
+
+    AssignCourtsController -> UserRecordObject : build request object
+    UserRecordObject -> BackendController : send backend request
+    UserRecordObject <- BackendController : ok response
+    AssignCourtsController <- UserRecordObject : resolve request
+
+    AssignCourtsController -> RemoveCourtsTemplate : request and build template
+    AssignCourtsController <- RemoveCourtsTemplate : return HTML
+    RemoveCourtsPage <- AssignCourtsController : return HTML
+    Actor <- RemoveCourtsPage : render HTML
+
+    Actor -> RemoveCourtsPage: confirm removal
+    RemoveCourtsPage -> AssignCourtsController : call assign courts controller
+
+    AssignCourtsController -> RemoveCourtsObject : build request object
+    RemoveCourtsObject -> BackendController : send backend request
+    RemoveCourtsObject <- BackendController : ok response
+    AssignCourtsController <- RemoveCourtsObject : resolve request
+
+    AssignCourtsController -> UserRecordTemplate : request and build template
+    AssignCourtsController <- UserRecordTemplate : return HTML
+    UserRecordPage <- AssignCourtsController : return HTML
+    Actor <- UserRecordPage : render HTML
+end
+
+alt Failed to fetch list of courts
+    CourtsObject <-- BackendController : error response
+    AssignCourtsController <-- CourtsObject : reject requestObject
+    AssignCourtsController -> ErrorTemplate : request and build template
+    AssignCourtsController <- ErrorTemplate : return HTML
+    GenericErrorPage <- AssignCourtsController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Failed to assign courts to user
+    AssignCourtsObject <-- BackendController : error response
+    AssignCourtsController <-- AssignCourtsObject : reject requestObject
+    AssignCourtsController -> ErrorTemplate : request and build template
+    AssignCourtsController <- ErrorTemplate : return HTML
+    GenericErrorPage <- AssignCourtsController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Failed to fetch user record details
+    UserRecordObject <-- BackendController : error response
+    AssignCourtsController <-- UserRecordObject : reject requestObject
+    AssignCourtsController -> ErrorTemplate : request and build template
+    AssignCourtsController <- ErrorTemplate : return HTML
+    GenericErrorPage <- AssignCourtsController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
+
+alt Failed to remove courts from user
+    RemoveCourtsObject <-- BackendController : error response
+    AssignCourtsController <-- RemoveCourtsObject : reject requestObject
+    AssignCourtsController -> ErrorTemplate : request and build template
+    AssignCourtsController <- ErrorTemplate : return HTML
+    GenericErrorPage <- AssignCourtsController : return HTML
+    Actor <- GenericErrorPage : render error page
+end
