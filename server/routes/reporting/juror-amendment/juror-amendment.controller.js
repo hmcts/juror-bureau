@@ -14,7 +14,6 @@
   
         delete req.session.errors;
         delete req.session.formFields;
-        console.log(tmpErrors);
   
         return res.render('reporting/standard-reports/search-by/juror-amendment.njk', {
           processUrl: app.namedRoutes.build('reports.juror-amendment.search.post'),
