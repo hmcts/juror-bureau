@@ -1332,6 +1332,47 @@
           groupHeader: true,
         },
       },
+      'electronic-police-check': {
+        title: 'Electronic police check report',
+        apiKey: 'ElectronicPoliceCheckReport',
+        search: 'dateRange',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+        ],
+        totalsRow: (data, isPrint = false) => {
+          const totals = {
+            policeCheckResponded: 0,
+            policeCheckSubmitted: 0,
+            policeCheckComplete: 0,
+            policeCheckTimedOut: 0,
+            policeCheckDisqualified: 0,
+          };
+
+          data.forEach((row) => {
+            Object.keys(totals).forEach((key) => {
+              totals[key] += row[key];
+            });
+          });
+
+          const htmlTemplate = (total) => {
+            if (isPrint) return total;
+
+            return `<b>${total}</b>`;
+          };
+
+          return [
+            { text: '', fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.policeCheckResponded), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.policeCheckSubmitted), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.policeCheckComplete), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.policeCheckTimedOut), bold: true, fillColor: '#F3F2F1' },
+            { text: htmlTemplate(totals.policeCheckDisqualified), bold: true, fillColor: '#F3F2F1' },
+          ]
+        }
+      },
     };
   };
 })();

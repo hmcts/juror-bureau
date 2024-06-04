@@ -109,6 +109,16 @@
         details: 'Select how you want to list deferrals',
       }],
     },
+    electronicPoliceCheck: {
+      dateFrom: [{
+        summary: 'Enter a date to search police check from',
+        details: 'Enter a date to search police check jurors from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search police check up until',
+        details: 'Enter a date to search police check up until',
+      }],
+    }
   };
 
   module.exports.searchBy = function(reportKey) {

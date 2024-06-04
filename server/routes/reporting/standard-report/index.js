@@ -93,6 +93,7 @@
     standardReportRoutes(app, 'deferred-list-court');
     require('../ballot-cards')(app);
     standardReportRoutes(app, 'excused-disqualified');
+    standardReportRoutes(app, 'electronic-police-check');
   };
 
 })();
