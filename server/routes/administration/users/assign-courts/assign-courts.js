@@ -7,7 +7,6 @@
   const { usersDAO } = require('../../../../objects/users');
   const { courtsDAO } = require('../../../../objects/administration');
   const { replaceAllObjKeys } = require('../../../../lib/mod-utils');
-  const { capitalizeFully } = require('../../../../components/filters');
 
   module.exports.getAssignCourts = function(app) {
     return async function(req, res) {
@@ -18,15 +17,32 @@
 
       delete req.session.errors;
 
+      let assignedPrimaryCourts = [];
+
+      try {
+        const { courts } = await usersDAO.getUserRecord(app, req, username);
+
+        assignedPrimaryCourts = courts;
+      } catch (err) {
+        app.logger.crit('Failed to fetch list of courts: ', {
+          auth: req.session.authentication,
+          data: { username },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic.njk');
+      }
+
       try {
         if (req.session.assignCourts && req.session.assignCourts.filteredCourts && filter) {
-          courts = _.clone(req.session.assignCourts.filteredCourts).filter((c) => c.courtType === 'MAIN');
+          courts = _.clone(req.session.assignCourts.filteredCourts)
+            .filter((c) => c.courtType === 'MAIN')
+            .filter((c) => !assignedPrimaryCourts.find((pc) => pc.primary_court.loc_code === c.locCode));
         } else {
           const courtsData = await courtsDAO.get(app, req);
 
           app.logger.info('Fetched list of courts', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
           });
 
           replaceAllObjKeys(courtsData, _.camelCase);
@@ -35,7 +51,9 @@
             courts: courtsData,
           };
 
-          courts = courtsData.filter((c) => c.courtType === 'MAIN');
+          courts = courtsData
+            .filter((c) => c.courtType === 'MAIN')
+            .filter((c) => !assignedPrimaryCourts.find((pc) => pc.primary_court.loc_code === c.locCode));
         }
 
         return res.render('administration/users/assign-courts/assign-courts.njk', {
@@ -55,9 +73,7 @@
       } catch (err) {
         app.logger.crit('Failed to fetch list of courts: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
-          data: {
-          },
+          data: { username },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
@@ -121,7 +137,6 @@
 
         app.logger.info('Assigned courts to user', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             username: username,
             courts: payload,
@@ -134,7 +149,6 @@
       } catch (err) {
         app.logger.crit('Failed to assign courts to user: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             payload,
           },
@@ -155,7 +169,6 @@
 
         app.logger.info('Fetched user record', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             user: user,
           },
@@ -173,7 +186,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch user record details: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
@@ -193,7 +205,6 @@
         await usersDAO.removeCourts(app, req, username, payload);
         app.logger.info('Removed courts from user', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             username: username,
             courts: payload,
@@ -204,7 +215,6 @@
       } catch (err) {
         app.logger.crit('Failed to remove courts from user: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             payload,
           },
