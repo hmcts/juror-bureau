@@ -17,13 +17,13 @@
 
 {% macro courtsTableLinks(court) %}
   <a
-    class="govuk-link govuk-link--no-visited-state"
+    class="govuk-link govuk-link--no-visited-state link-block"
     href="{{ url('authentication.select-court.get', {locCode: court.locationCode}) }}"
   >
     Court home
   </a>
   <a
-    class="govuk-link govuk-link--no-visited-state govuk-!-margin-left-4"
+    class="govuk-link govuk-link--no-visited-state link-block"
     href="{{ url('administration.court-details.get', {locationCode: court.locationCode}) }}"
   >
     Edit court details
@@ -115,19 +115,17 @@
                 attributes: {
                   "aria-sort": "ascending",
                   "aria-name": "Court name"
-                },
-                classes: 'govuk-!-width-one-third'
+                }
               },
               {
                 text: "Court type",
                 attributes: {
                   "aria-sort": "none",
                   "aria-name": "Court type"
-                },
-                classes: 'govuk-!-width-one-third'
+                }
               },
               {
-                classes: 'govuk-!-width-one-third'
+
               }
             ],
             rows: courtTableRows
