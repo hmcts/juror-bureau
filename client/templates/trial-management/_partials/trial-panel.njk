@@ -46,8 +46,6 @@
         <tbody class="govuk-table__body">
       
         {% for member in panelMembers %}
-          {# This might need updating if we need to return Not Used or Challenged jurors manually #}
-          {% if not trial.is_jury_empanelled or member.juror_status === 'Juror' %}
           <tr class="govuk-table__row govuk-table__row--selected">
             <td class="govuk-table__cell">
               <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
@@ -64,8 +62,6 @@
             <td id="{{member.juror_number}}-standard" class="govuk-table__cell jd-middle-align">{{ member.last_name  | capitalize }}</td>
             <td id="{{member.juror_number}}-total" class="govuk-table__cell jd-middle-align">{{ member.juror_status | capitalize }}</td>
           </tr> 
-          {% endif %}
-
         {% endfor %}
 
       </tbody>
