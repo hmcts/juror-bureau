@@ -86,7 +86,7 @@
     absences: {
       dateFrom: [{
         summary: 'Enter a date to search absences from',
-        details: 'Enter a date to search absences jurors from',
+        details: 'Enter a date to search absences from',
       }],
       dateTo: [{
         summary: 'Enter a date to search absences up until',
@@ -107,6 +107,36 @@
       searchBy: [{
         summary: 'Select how you want to list deferrals',
         details: 'Select how you want to list deferrals',
+      }],
+    },
+    electronicPoliceCheck: {
+      dateFrom: [{
+        summary: 'Enter a date to search police check from',
+        details: 'Enter a date to search police check jurors from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search police check up until',
+        details: 'Enter a date to search police check up until',
+      }],
+    },
+    poolStatistics: {
+      dateFrom: [{
+        summary: 'Enter a date to search pool statistics from',
+        details: 'Enter a date to search pool statistics from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search pool statistics up until',
+        details: 'Enter a date to search pool statistics up until',
+      }],
+    },
+    attendanceData: {
+      dateFrom: [{
+        summary: 'Enter a date to search attendances from',
+        details: 'Enter a date to search attendances from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search attendances up until',
+        details: 'Enter a date to search attendances up until',
       }],
     },
   };
