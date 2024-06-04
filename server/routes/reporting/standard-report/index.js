@@ -99,6 +99,7 @@
     standardReportRoutes(app, 'pool-statistics');
     standardReportRoutes(app, 'attendance-data');
     require('../jury-attendance-audit')(app);
+    standardReportRoutes(app, 'pool-attendance-audit');
   };
 
 })();
