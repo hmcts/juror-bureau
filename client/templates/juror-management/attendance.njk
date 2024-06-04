@@ -71,6 +71,29 @@
                 id: 'printButtonMenu'
               }
             }) }}
+            {% if attendanceStatus === "Unconfirmed" %}
+              {% set poolAuditButtons = [] %}
+                {% set poolAuditButtons = (poolAuditButtons.push(
+                  {
+                    text: "P12345678",
+                    href: url('reports.pool-attendance-audit.report.get', {filter: "P12345678"}),
+                    classes: "govuk-button--secondary"
+                  }
+                ), poolAuditButtons) %}
+
+              {{ mojButtonMenu({
+                items: poolAuditButtons.concat([
+                  {
+                    text: "Panel selection report",
+                    href: reportUrls.panelSelectionReport,
+                    classes: "govuk-button--secondary"
+                  }
+                ]),
+                attributes: {
+                  id: 'printAttendanceAuditButtonMenu'
+                }
+              }) }}
+            {% endif %}
           </div>
         </div>
       </div>
@@ -98,6 +121,12 @@
       container: $('#printButtonMenu'),
       mq: '(min-width: 200em)',
       buttonText: 'Print',
+      buttonClasses: 'govuk-!-margin-bottom-1 govuk-button--secondary moj-button-menu__toggle-button--secondary',
+    });
+    new MOJFrontend.ButtonMenu({
+      container: $('#printAttendanceAuditButtonMenu'),
+      mq: '(min-width: 200em)',
+      buttonText: 'Print attendance audit',
       buttonClasses: 'govuk-!-margin-bottom-1 govuk-button--secondary moj-button-menu__toggle-button--secondary',
     });
   </script>

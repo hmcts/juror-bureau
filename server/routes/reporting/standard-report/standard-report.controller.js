@@ -268,7 +268,7 @@
             });
           }
 
-          if (header.id === 'pool_number' || header.id === 'pool_number_by_jp' || header.id === 'appearance_pool_number' || header.id === 'pool_number_jp') {
+          if (header.id.includes('pool_number')) {
             return ({
               html: `<a href=${
                 app.namedRoutes.build('pool-overview.get', {poolNumber: output})
@@ -276,6 +276,22 @@
                 output
               }</a>`,
             });
+          }
+
+          if (header.id.includes('trial_number')) {
+            console.log(output);
+            if (output) {
+              return ({
+                html: `<a href=${
+                  app.namedRoutes.build('trial-management.trials.detail.get', {
+                    trialNumber: output,
+                    locationCode: req.session.authentication.locCode
+                  })
+                }>${
+                  output
+                }</a>`,
+              });
+            }
           }
 
           if (header.id === 'payment_audit') {
@@ -485,6 +501,9 @@
       } else if (reportType.search === 'audit') {
         config[reportType.searchProperty] = req.params.filter;
       }
+    }
+    if (reportKey === 'pool-attendnace-audit') {
+      config.poolAuditNumber = req.params.filter;
     }
 
     if (req.query.fromDate) {

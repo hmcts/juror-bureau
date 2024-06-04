@@ -1443,7 +1443,20 @@
           'courtName',
           'total',
         ],
-      }
+      },
+      'pool-attendance-audit': {
+        title: 'Pool attendance audit report',
+        apiKey: 'PoolAttendanceAuditReport',
+        searchProperty: 'poolAuditNumber',
+        headings: [
+          'attendanceDate',
+          'reportDate',
+          'auditNumber',
+          'reportTime',
+          'total',
+          'courtName'
+        ],
+      },
     };
   };
 })();
