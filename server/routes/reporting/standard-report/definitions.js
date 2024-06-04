@@ -1343,7 +1343,6 @@
           'reportTime',
         ],
         totalsRow: (data, isPrint = false) => {
-          const calculatePercentage = (value, total) => Math.round((value / total) * 100);
           const totals = {
             policeCheckResponded: 0,
             policeCheckSubmitted: 0,
