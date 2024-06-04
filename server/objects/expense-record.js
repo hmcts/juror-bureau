@@ -159,7 +159,7 @@
 
   module.exports.getExpenseCountDAO = {
     get: function(app) {
-      return function(req, res, next) {
+      return async function(req, res, next) {
         const { jurorNumber, locCode } = req.params;
 
         const payload = {
@@ -174,24 +174,22 @@
 
         app.logger.info('Sending request to API: ', payload);
 
-        rp(payload)
-          .then((response) => {
-            req.expensesCount = response;
-            next();
-          })
-          .catch((err) => {
-            app.logger.crit('Failed to fetch expense counts', {
-              auth: req.session.authentication,
-              jwt: req.session.authToken,
-              data: {
-                jurorNumber,
-                locCode,
-              },
-              error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-            });
-
-            return res.render('_errors/generic');
+        try {
+          const response = await rp(payload);
+          req.expensesCount = response;
+          return next();
+        } catch (err) {
+          app.logger.crit('Failed to fetch expense counts', {
+            auth: req.session.authentication,
+            data: {
+              jurorNumber,
+              locCode,
+            },
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
+
+          return res.render('_errors/generic');
+        }
       };
     },
   };

@@ -83,6 +83,29 @@
 
         delete req.session.editExpenseTravelOverLimit;
 
+        if (typeof originalExpenses !== 'undefined') {
+          expensesData.expense_details.forEach(function(expense) {
+            const originalExpense = originalExpenses[expense.attendance_date];
+
+            if (typeof originalExpense !== 'undefined'
+              && originalExpense.attendance_type === expense.attendance_type
+              && originalExpense.loss_of_earnings === expense.loss_of_earnings
+              && originalExpense.extra_care === expense.extra_care
+              && originalExpense.other === expense.other
+              && originalExpense.taxi === expense.taxi
+              && originalExpense.motorcycle === expense.motorcycle
+              && originalExpense.car === expense.car
+              && originalExpense.bicycle === expense.bicycle
+              && originalExpense.parking === expense.parking
+              && originalExpense.food_and_drink === expense.food_and_drink
+              && originalExpense.payment_method === expense.payment_method
+            ) {
+              delete originalExpenses[expense.attendance_date];
+              delete req.session.editedExpenses[expense.attendance_date];
+            }
+          })
+        }
+
         return res.render('expenses/edit/edit-approval-expenses-list.njk', {
           jurorNumber,
           locCode,
