@@ -86,30 +86,29 @@
 
       {% if errors.items["selectedJurors"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
 
-            <span class="govuk-body govuk-!-font-weight-bold">
-              Showing {{totalAttendance}} jurors with unpaid attendance
-            </span>
+      <span class="govuk-body govuk-!-font-weight-bold">
+        Showing {{totalAttendance}} jurors with unpaid attendance
+      </span>
             
-   {% if totalAttendance > 0 %}
-            {{ modSortableTable({
-              id: "unpaidAttendanceTable",
-              caption: "Unpaid attendance",
-              captionClass: "govuk-visually-hidden",
-              head: unpaidAttendanceList.head,
-              rows: unpaidAttendanceList.rows,
-              url: urlPrefix
-            }) }}
+      {% if totalAttendance > 0 %}
+        {{ modSortableTable({
+          id: "unpaidAttendanceTable",
+          caption: "Unpaid attendance",
+          captionClass: "govuk-visually-hidden",
+          head: unpaidAttendanceList.head,
+          rows: unpaidAttendanceList.rows,
+          url: urlPrefix
+        }) }}
 
-            {{ govukPagination({
-              previous: {
-                href: pageItems.prev
-              },
-              next: {
-                href: pageItems.next
-              },
-              items: pageItems.items
-            }) }} 
-
+        {{ govukPagination({
+          previous: {
+            href: pageItems.prev
+          },
+          next: {
+            href: pageItems.next
+          },
+          items: pageItems.items
+        }) }} 
       {% endif %}
 
       <input type="hidden" name="_csrf" id="csrfToken" value="{{ csrftoken }}">
