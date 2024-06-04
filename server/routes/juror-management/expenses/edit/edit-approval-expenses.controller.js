@@ -101,6 +101,7 @@
               && originalExpense.payment_method === expense.payment_method
             ) {
               delete originalExpenses[expense.attendance_date];
+              delete req.session.editedExpenses[expense.attendance_date];
             }
           })
         }
