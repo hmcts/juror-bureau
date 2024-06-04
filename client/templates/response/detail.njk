@@ -14,9 +14,13 @@
 
 {% block beforeContent %}
 
+  {% if backLinkUrl === undefined %}
+   {% set backLinkUrl = url('inbox.todo.get') %}
+  {% endif %}
+
   {{ govukBackLink({
     text: "Back",
-    href: url('inbox.todo.get'),
+    href: backLinkUrl,
     attributes: {
       id: "backLinkAnchor"
     }
