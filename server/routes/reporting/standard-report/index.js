@@ -98,6 +98,7 @@
     standardReportRoutes(app, 'electronic-police-check');
     standardReportRoutes(app, 'pool-statistics');
     standardReportRoutes(app, 'attendance-data');
+    standardReportRoutes(app, 'jury-attendance-audit');
   };
 
 })();

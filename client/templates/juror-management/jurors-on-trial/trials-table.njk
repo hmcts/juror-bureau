@@ -39,7 +39,7 @@
       }) | safe
     },
     {
-      text: trial.attendance_audit or "-"
+      html: '<a href="' + url("reports.jury-attendance-audit.report.print", { filter: trial.attendance_audit }) + '" target="_blank">' + trial.attendance_audit + '</a>' or "-"
     }
   ]), rows) %}
 {% endfor %}
