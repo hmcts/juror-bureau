@@ -22,6 +22,7 @@ const { financialAudit } = require('./audit.controller');
     require('./available-list')(app);
     require('./juror-amendment')(app);
     require('./deferred-list')(app);
+    require('./pool-ratio')(app);
     require('./standard-report/index')(app);
 
     app.get('/reports',

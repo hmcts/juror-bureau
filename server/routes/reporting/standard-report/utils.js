@@ -40,6 +40,7 @@ const tableDataMappers = {
   LocalTime: (data) => data ? moment(data, 'HH:mm:ss').format('hh:mma') : '-',
   BigDecimal: (data) => `£${(Math.round(data * 100) / 100).toFixed(2).toString()}`,
   Boolean: (data) => data ? 'Yes' : 'No',
+  Double: (data) => data ? data.toFixed(2).toString() : '-',
 };
 
 const headingDataMappers = {
@@ -100,7 +101,7 @@ const buildTableHeaders = (reportType, tableHeadings) => {
       }
 
       return ({
-        text: data.name,
+        html: reportType.tableHeaderTransformer ? reportType.tableHeaderTransformer(data) : data.name,
         attributes: {
           'aria-sort': index === 0 ? 'ascending' : 'none',
           'aria-label': data.name,

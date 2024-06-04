@@ -64,6 +64,7 @@
   //   fontSize?: number,
   //   totalsRow?: (data, isPrint) => [object], // custom totals row for the report
   //   columnWidths?: [string | number], // custom widths for the main table columns
+  //   filterBackLinkUrl?: string,  // backlink url for the inital filter page
   // }};
   module.exports.reportKeys = (app, req = null) => {
     const courtUser = req ? isCourtUser(req) : false;
@@ -1445,7 +1446,48 @@
           'courtName',
           'total',
         ],
-      }
+      },
+      'pool-ratio': {
+        title: 'Pool ratio report',
+        apiKey: 'PoolRatioReport',
+        search: 'courts',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+        ],
+        queryParams: {
+          fromDate: req?.query?.fromDate || '',
+          toDate: req?.query?.toDate || '',
+        },
+        filterBackLinkUrl: app.namedRoutes.build('reports.pool-ratio.filter.dates.get'),
+        unsortable: true,
+        tableHeaderTransformer: (data, isPrint = false) => {
+          const template = (name, hintValue) => {
+            return !isPrint
+                ? `${name} <br> <span class='govuk-hint'>${hintValue}</span>`
+                : [name, '\n', {text: hintValue, color: '#505A5F', bold: false}]
+          } 
+
+          switch (data.id) {
+            case 'total_requested':
+              return template(data.name, '(1)');
+            case 'total_deferred':
+              return template(data.name, '(2)');
+            case 'total_summoned':
+              return template(data.name, '(3)');
+            case 'total_supplied':
+              return template(data.name, '(4)');
+            case 'ratio_1':
+              return template(data.name, '(3-2)/(1-2)');
+            case 'ratio_2':
+              return template(data.name, '(3-2)/(4-2)');
+            default:
+              return data.name;
+          }
+        }
+      },
     };
   };
 })();

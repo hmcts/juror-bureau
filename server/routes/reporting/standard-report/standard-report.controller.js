@@ -68,6 +68,10 @@
           filter,
           filterUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.post`)),
           reportUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.post`)),
+          backLinkUrl: {
+            built: true,
+            url: reportType.filterBackLinkUrl,
+          },
         });
       case 'jurorNumber':
         let jurorList = [];
@@ -135,6 +139,10 @@
             clearFilterUrl:  addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`)),
             reportUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.post`)),
             cancelUrl: app.namedRoutes.build('reports.reports.get'),
+            backLinkUrl: {
+              built: true,
+              url: reportType.filterBackLinkUrl,
+            },
             errors: {
               title: 'Please check your search',
               count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -168,6 +176,10 @@
           reportUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.post`)),
           exportOnly: reportType.exportOnly,
           cancelUrl: app.namedRoutes.build('reports.reports.get'),
+          backLinkUrl: {
+            built: true,
+            url: reportType.filterBackLinkUrl,
+          },
         });
       case 'trial':
         const sortBy = req.query['sortBy'] || 'trialNumber';
@@ -201,7 +213,11 @@
             clearSearchUrl: app.namedRoutes.build(`reports.${reportKey}.filter.get`),
             reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
             cancelUrl: app.namedRoutes.build('reports.reports.get'),
-            trials: transformRadioSelectTrialsList(data.data, sortBy, sortOrder)
+            trials: transformRadioSelectTrialsList(data.data, sortBy, sortOrder),
+            backLinkUrl: {
+              built: true,
+              url: reportType.filterBackLinkUrl,
+            },
           });
         } catch (err) {
           app.logger.crit('Failed to fetch trials list: ', {
@@ -681,7 +697,15 @@
   };
 
   function addURLQueryParams(reportType, url){
-    return url + `${reportType.queryParams ? `${url.includes('?') ? '&' : '?'}${new URLSearchParams(_.clone(reportType.queryParams)).toString()}` : ''}`
+    let queryParams = _.clone(reportType.queryParams);
+    if(url.includes('?')) {
+      const urlQueryParams = url.split('?')[1].split('&').map((param) => param.split('=')[0])
+      urlQueryParams.forEach((param) => {
+        delete queryParams[param]
+      })
+    }
+
+    return url + `${reportType.queryParams ? `${url.includes('?') ? '&' : '?'}${new URLSearchParams(queryParams).toString()}` : ''}`
   }
 
   module.exports = {
