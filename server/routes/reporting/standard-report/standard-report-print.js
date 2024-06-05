@@ -23,6 +23,9 @@ async function standardReportPrint(app, req, res, reportKey, data) {
   });
 
   const buildTableHeading = (tableHeadings) => tableHeadings.map(heading => {
+    if (reportData.tableHeaderTransformer) {
+      return { text: reportData.tableHeaderTransformer(heading, true), style: 'label' };
+    }
     return { text: heading.name, style: 'label' };
   });
 
