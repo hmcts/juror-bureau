@@ -169,7 +169,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
       body: [...tableRows],
       footer: [],
       widths: reportData.bespokeReport && reportData.bespokeReport.printWidths
-        ? reportData.bespokeReport.printWidths : null,
+        ? reportData.bespokeReport.printWidths : (reportData.columnWidths || null),
       margin: [0, 10, 0, 0],
     }];
 

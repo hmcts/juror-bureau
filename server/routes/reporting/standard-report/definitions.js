@@ -63,6 +63,7 @@
   //   },
   //   fontSize?: number,
   //   totalsRow?: (data, isPrint) => [object], // custom totals row for the report
+  //   columnWidths?: [string | number], // custom widths for the main table columns
   // }};
   module.exports.reportKeys = (app, req = null) => {
     const courtUser = req ? isCourtUser(req) : false;
@@ -908,6 +909,7 @@
           '',
           'reportTime',
         ],
+        columnWidths: [80, '*', '*', '*', 60, 60],
       },
       'trial-statistics': {
         title: 'Trial statistics',
