@@ -67,9 +67,8 @@
         let poolAttendanceAuditNumbers = []
         if (group === 'IN_WAITING' && !attendanceConfirmed) {
           try {
-            // GET POOL AUDIT NUMBERS
             poolAttendanceAuditNumbers = await poolAttendanceAuditDAO.get(req, dateFilter(selectedDate, null, 'yyyy-MM-DD'));
-            console.log(poolAttendanceAuditNumbers);
+            req.session.preReportRoute = app.namedRoutes.build('juror-management.attendance.get') + `?date=${dateFilter(selectedDate, null, 'yyyy-MM-DD')}`
           } catch (err) {
             app.logger.crit('Failed to pool attendance audit numbers: ', {
               auth: req.session.authentication,

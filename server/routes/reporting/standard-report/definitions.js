@@ -1432,7 +1432,6 @@
       'jury-attendance-audit': {
         title: 'Jury attendance audit report',
         apiKey: 'JuryAttendanceAuditReport',
-        search: 'audit',
         searchProperty: 'juryAuditNumber',
         headings: [
           'attendanceDate',

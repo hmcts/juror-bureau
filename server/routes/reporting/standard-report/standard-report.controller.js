@@ -501,11 +501,8 @@
       } else if (reportType.search === 'audit') {
         config[reportType.searchProperty] = req.params.filter;
       }
-    }
-    if (reportKey === 'pool-attendance-audit') {
-      console.log('GETTING REPORT');
-      console.log(req.params.filter);
-      config.poolAuditNumber = req.params.filter;
+    } else if (reportType.searchProperty) {
+      config[reportType.searchProperty] = req.params.filter;
     }
 
     if (req.query.fromDate) {
