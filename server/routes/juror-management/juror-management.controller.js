@@ -4,7 +4,7 @@
   const _ = require('lodash');
   const { getJurorStatus } = require('../../lib/mod-utils');
   const dateFilter = require('../../components/filters').dateFilter;
-  const { jurorsAttending } = require('../../objects/juror-attendance');
+  const { jurorsAttending, poolAttendanceAuditDAO } = require('../../objects/juror-attendance');
 
   module.exports.getAttendance = function(app) {
     return async function(req, res) {
@@ -64,6 +64,24 @@
         req.session.preReportRoute = app.namedRoutes.build('juror-management.attendance.get')
           + `?date=${date || dateFilter(new Date(), null, 'yyyy-MM-DD')}`;
 
+        let poolAttendanceAuditNumbers = []
+        if (group === 'IN_WAITING' && !attendanceConfirmed) {
+          try {
+            // GET POOL AUDIT NUMBERS
+            poolAttendanceAuditNumbers = await poolAttendanceAuditDAO.get(req, dateFilter(selectedDate, null, 'yyyy-MM-DD'));
+            console.log(poolAttendanceAuditNumbers);
+          } catch (err) {
+            app.logger.crit('Failed to pool attendance audit numbers: ', {
+              auth: req.session.authentication,
+              data: {
+                date: dateFilter(selectedDate, null, 'yyyy-MM-DD'),
+              },
+              error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+            });
+            return res.render('_errors/generic.njk');
+          }
+        }
+
         return res.render('juror-management/attendance.njk', {
           nav: 'attendance',
           status: status || 'in-waiting',
@@ -91,6 +109,7 @@
               filter: date || dateFilter(new Date(), null, 'yyyy-MM-DD'),
             }),
           },
+          poolAttendanceAuditNumbers,
         });
       } catch (err) {
         app.logger.crit('Failed to fetch jurors attendance list: ', {
