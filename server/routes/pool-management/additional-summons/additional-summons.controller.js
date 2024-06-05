@@ -9,7 +9,8 @@
     , poolSummaryObj = require('../../../objects/pool-summary').poolSummaryObject
     , postCodesObj = require('../../../objects/postcodes').postCodesObject
     , bureauDeferralsObj = require('../../../objects/bureau-deferrals').bureauDeferralsObject
-    , additionalSummonsObject = require('../../../objects/summon-citizens').summonCitizenObject;
+
+  const { summonCitizensDAO } = require('../../../objects');
 
   module.exports.index = function(app) {
     return function(req, res) {
@@ -171,20 +172,15 @@
           });
 
           if (err.error.reasonCode && err.error.reasonCode === 'invalid_yield') {
-            req.session.errors = {
-              citizensToSummon: [{
-                summary: 'Number of citizens to summon is too high',
-                details: 'Number of citizens to summon is too high',
-              }],
-            };
+            req.session.errors = modUtils
+              .makeManualError('citizensToSummon', 'Number of citizens to summon is too high');
+          } else if (err.error?.code === 'DATA_IS_OUT_OF_DATE') {
+            req.session.errors = modUtils
+              .makeManualError('citizensToSummon', err.error.message ?? 'Data is out of date');
           } else {
-            req.session.errors = {
-              citizensToSummon: [{
-                summary: 'Something went wrong while trying to summon jurors',
-                details: 'Something went wrong while trying to summon jurors',
-              }],
-            };
-          };
+            req.session.errors = modUtils.
+              makeManualError('citizensToSummon', 'Something went wrong while trying to summon jurors');
+          }
 
           return res.redirect(app.namedRoutes.build('pool.additional-summons.get', {
             poolNumber: req.params['poolNumber'],
@@ -208,13 +204,7 @@
       delete req.session.newCourtCatchmentArea;
       delete req.session.tmpSelectedBureauSupply;
 
-      additionalSummonsObject.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
-        req.body,
-        'additional-summons'
-      )
+      summonCitizensDAO.post(req, req.body, 'additional-summons')
         .then(successCB)
         .catch(errorCB);
     };
