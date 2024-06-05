@@ -71,6 +71,30 @@
                 id: 'printButtonMenu'
               }
             }) }}
+
+            {% if attendanceStatus === "Unconfirmed" %}
+              {% set auditNumbers = [] %}
+              {% for auditNumber in poolAttendaceAuditNumbers %}
+                {% set auditNumbers = (auditNumbers.push(
+                  {
+                    text: auditNumber,
+                    href: url('reports.pool-attendance-audit.report.get', {'filter': auditNumber}),
+                    classes: "govuk-button--secondary"
+                  }
+                ), auditNumbers) %}
+              {% endfor %}
+
+              {{ mojButtonMenu({
+                items: auditNumbers.concat([{
+                    text: "Panel selection report",
+                    href: reportUrls.panelSelectionReport,
+                    classes: "govuk-button--secondary"
+                  }]),
+                attributes: {
+                  id: 'printAttendanceButtonMenu'
+                }
+              }) }}
+            {% endif %}
           </div>
         </div>
       </div>
@@ -98,6 +122,12 @@
       container: $('#printButtonMenu'),
       mq: '(min-width: 200em)',
       buttonText: 'Print',
+      buttonClasses: 'govuk-!-margin-bottom-1 govuk-button--secondary moj-button-menu__toggle-button--secondary',
+    });
+    new MOJFrontend.ButtonMenu({
+      container: $('#printAttendanceButtonMenu'),
+      mq: '(min-width: 200em)',
+      buttonText: 'Print attendance audit',
       buttonClasses: 'govuk-!-margin-bottom-1 govuk-button--secondary moj-button-menu__toggle-button--secondary',
     });
   </script>
