@@ -111,6 +111,8 @@
       dateTo: [{
         summary: 'Enter a date to search trials up until',
         details: 'Enter a date to search trials up until',
+      }],
+    },
     deferredList: {
       searchBy: [{
         summary: 'Select how you want to list deferrals',
