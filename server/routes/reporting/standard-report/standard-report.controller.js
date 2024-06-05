@@ -430,6 +430,8 @@
       } else if (reportType.search === 'courts') {
         // VERIFY FIELD NAME ONCE AN API AVAILABLE
         config.courts = _.clone(req.session.reportCourts)
+      } else if (reportType.search === 'audit') {
+        config[reportType.searchProperty] = req.params.filter;
       }
     }
 

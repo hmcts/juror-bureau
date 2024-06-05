@@ -25,13 +25,11 @@ module.exports.getJurorsOnTrial = function() {
 
       Logger.instance.info('Fetched trials list', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         data: { locCode, attendanceDate, trialsList },
       });
     } catch (err) {
       Logger.instance.crit('Failed to fetch trials list', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         data: { locCode, attendanceDate },
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
@@ -71,13 +69,11 @@ module.exports.getConfirmAttendance = function(app) {
 
       Logger.instance.info('Fetched the jurors on this trial', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         data: { locCode, trialNumber, jurorsList },
       });
     } catch (err) {
       Logger.instance.crit('Failed to fetch the jurors on this trial', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         data: { locCode, trialNumber },
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
@@ -138,13 +134,11 @@ module.exports.postConfirmAttendance = function(app) {
 
       Logger.instance.info('Successfully confirmed attendance', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         data: { trialNumber, payload },
       });
     } catch (err) {
       Logger.instance.crit('Failed to confirm the jurors in a trial', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         data: { trialNumber, payload },
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
