@@ -10,6 +10,16 @@
   {% endif %}
 {% endmacro %}
 
+{% macro auditNumberCell(params) %}
+  {% if params.auditNumber %}
+    <a href="{{ url('reports.jury-attendance-audit.report.print', { filter: params.auditNumber }) }}" target="_blank">
+      {{ params.auditNumber }}
+    </a>
+  {% else %}
+    -
+  {% endif %}
+{% endmacro %}
+
 {% set rows = [] %}
 {% for trial in trialsList %}
   {% set rows = (rows.push([
@@ -39,7 +49,9 @@
       }) | safe
     },
     {
-      text: trial.attendance_audit or "-"
+      html: auditNumberCell({
+        auditNumber: trial.attendance_audit
+      })
     }
   ]), rows) %}
 {% endfor %}

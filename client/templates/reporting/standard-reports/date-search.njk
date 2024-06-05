@@ -42,7 +42,7 @@
 
     <div class="govuk-button-group">
       {{ govukButton({
-        text: "Continue",
+        text: "Continue" if not exportOnly else "Export data",
         type: "submit",
         classes: "govuk-button",
         attributes: {
