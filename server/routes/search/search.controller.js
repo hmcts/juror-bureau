@@ -12,10 +12,11 @@
   module.exports.index = function(app) {
     return async function(req, res) {
       const tmpErrors = _.clone(req.session.errors);
-      const tmpFields = _.clone(req.session.formFields);
+      const tmpFields = typeof req.session.summonsSearch !== 'undefined' ? _.clone(req.session.summonsSearch) : _.clone(req.session.formFields);
 
       delete req.session.errors;
       delete req.session.formFields;
+      delete req.session.summonsSearch;
 
       // if the user refresh by clicking the url bar and pressing enter we reset the results list
       delete req.session.searchResponse;
@@ -55,6 +56,9 @@
     return async function(req, res) {
       const promiseArr = [];
       let validatorResult;
+
+      req.session.summonsSearch = req.body;
+      delete req.session.summonsSearch._csrf;
 
       const sendValidationError = (errors) => {
         req.session.errors = errors;
