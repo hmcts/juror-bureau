@@ -17,6 +17,8 @@
   const coronerPools = require('./coroner-pools');
   const poolMembers = require('./pool-members');
   const reports = require('./reports');
+  const summonsForm = require('./summons-form');
+  const summonCitizens = require('./summon-citizens'); 
 
   module.exports = {
     ...requestPool,
@@ -32,6 +34,8 @@
     ...coronerPools,
     ...poolMembers,
     ...reports,
+    ...summonsForm,
+    ...summonCitizens,
   };
 
 })();

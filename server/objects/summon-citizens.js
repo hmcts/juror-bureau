@@ -1,59 +1,24 @@
-(function() {
-  'use strict';
+const { DAO } = require('./dataAccessObject');
+const { dateFilter } = require('../components/filters');
+const urljoin = require('url-join');
 
-  var _ = require('lodash')
-    , urljoin = require('url-join')
-    , config = require('../config/environment')()
-    , dateFilter = require('../components/filters').dateFilter
-    , utils = require('../lib/utils')
-    , options = {
-      uri: config.apiEndpoint,
-      headers: {
-        'User-Agent': 'Request-Promise',
-        'Content-Type': 'application/vnd.api+json'
-      },
-      json: true,
-      transform: utils.basicDataTransform,
+module.exports.summonCitizensDAO = new DAO('moj/pool-create', {
+  post: function(_body, endpoint) {
+    const uri = urljoin(this.resource, endpoint);
+    const body = { ..._body };
+
+    if (endpoint === 'create-pool') {
+      body.startDate = dateFilter(new Date(_body.courtDate), null, 'YYYY-MM-DD');
+      body.attendTime = [body.startDate, '09:00'].join(' ');
     }
 
-    , summonCitizenObject = {
-      resource: 'moj/pool-create',
-      post: function(rp, app, jwtToken, body, endpoint) {
-        var reqOptions = _.clone(options)
-          , tmpBody = _.clone(body);
+    delete body.courtDate;
+    delete body._csrf;
 
-        if (endpoint === 'create-pool') {
-          tmpBody.startDate = dateFilter(new Date(tmpBody.courtDate), null, 'YYYY-MM-DD');
-          tmpBody.attendTime = [tmpBody.startDate, '09:00'].join(' ');
-        }
-
-        delete tmpBody.courtDate;
-        delete tmpBody._csrf;
-
-        // if we only select one postcode it will not be an array
-        // make it an array then to pass backend validation
-        if (tmpBody.postcodes instanceof Array === false) {
-          tmpBody.postcodes = [tmpBody.postcodes];
-        }
-
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri, this.resource, endpoint);
-        reqOptions.method = 'POST';
-        reqOptions.body = tmpBody;
-
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          data: {
-            body: tmpBody,
-          }
-        });
-
-        return rp(reqOptions);
-      }
+    if (!(_body.postcodes instanceof Array)) {
+      body.postcodes = [_body.postcodes];
     }
 
-  module.exports.summonCitizenObject = summonCitizenObject;
-
-})();
+    return { uri, body };
+  },
+});
