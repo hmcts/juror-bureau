@@ -1,3 +1,5 @@
+const { mapSnakeToCamel } = require('../lib/mod-utils');
+
 (function() {
   'use strict';
 
@@ -173,5 +175,13 @@
 
   // new DAO
   module.exports.modifyJurorAttendance = new DAO('moj/juror-management/attendance/modify-attendance');
+  module.exports.poolAttendanceAuditDAO = new DAO('moj/audit/{date}/pool', {
+    get: function(date) {
+      return { 
+        uri: this.resource.replace('{date}', date),
+        transform: (data) => {delete data['_headers']; return Object.values(data);}
+      };
+    },
+  });
 
 })();

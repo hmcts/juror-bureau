@@ -73,13 +73,15 @@
             }) }}
             {% if attendanceStatus === "Unconfirmed" %}
               {% set poolAuditButtons = [] %}
+              {% for poolAudit in poolAttendanceAuditNumbers %}
                 {% set poolAuditButtons = (poolAuditButtons.push(
                   {
-                    text: "P12345678",
-                    href: url('reports.pool-attendance-audit.report.get', {filter: "P12345678"}),
+                    text: poolAudit,
+                    href: url('reports.pool-attendance-audit.report.get', {filter: poolAudit}),
                     classes: "govuk-button--secondary"
                   }
                 ), poolAuditButtons) %}
+              {% endfor %}
 
               {{ mojButtonMenu({
                 items: poolAuditButtons.concat([

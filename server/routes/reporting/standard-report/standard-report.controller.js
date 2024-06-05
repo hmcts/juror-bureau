@@ -450,7 +450,9 @@
         config[reportType.searchProperty] = req.params.filter;
       }
     }
-    if (reportKey === 'pool-attendnace-audit') {
+    if (reportKey === 'pool-attendance-audit') {
+      console.log('GETTING REPORT');
+      console.log(req.params.filter);
       config.poolAuditNumber = req.params.filter;
     }
 
