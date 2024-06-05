@@ -470,7 +470,11 @@ dt.govuk-summary-list-mod {
   }
 
   th { 
-    background: govuk-colour("white"); 
+    background: govuk-colour("white");
+  }
+
+  &__data-header {
+    width: 100%;
   }
 
   table {
