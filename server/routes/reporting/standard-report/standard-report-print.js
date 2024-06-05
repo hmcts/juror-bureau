@@ -258,7 +258,6 @@ async function standardReportPrint(app, req, res, reportKey, data) {
     }, {
       pageOrientation: reportData.printLandscape ? 'landscape' : 'portrait',
       fontSize: reportData.fontSize,
-      columnWidths: reportData.columnWidths,
     });
 
     res.contentType('application/pdf');
