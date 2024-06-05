@@ -125,6 +125,11 @@ async function standardReportPrint(app, req, res, reportKey, data) {
           style: 'groupHeading',
           colSpan: longestGroup,
         }];
+
+        if (reportData.columnWidths) {
+          headRow[0].widths = reportData.columnWidths;
+        }
+
         let totalsRow;
 
         if (reportData.grouped.totals) {
@@ -169,7 +174,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
       body: [...tableRows],
       footer: [],
       widths: reportData.bespokeReport && reportData.bespokeReport.printWidths
-        ? reportData.bespokeReport.printWidths : null,
+        ? reportData.bespokeReport.printWidths : (reportData.columnWidths || null),
       margin: [0, 10, 0, 0],
     }];
 
@@ -258,6 +263,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
     }, {
       pageOrientation: reportData.printLandscape ? 'landscape' : 'portrait',
       fontSize: reportData.fontSize,
+      columnWidths: reportData.columnWidths,
     });
 
     res.contentType('application/pdf');
