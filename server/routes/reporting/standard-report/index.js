@@ -23,22 +23,24 @@
         standardFilterPost(app, key));
     }
 
-    app.get(`/reporting/${key}/report/:filter`,
-      `reports.${key}.report.get`,
-      auth.verify,
-      standardReportGet(app, key));
-
     app.post(`/reporting/${key}/report`,
       `reports.${key}.report.post`,
       auth.verify,
       standardReportPost(app, key));
 
-    app.get(`/reporting/${key}/report/:filter/print`,
-      `reports.${key}.report.print`,
-      auth.verify,
-      standardReportGet(app, key, true, false));
+    if (!reportKeys(app)[key].exportOnly) {
+      app.get(`/reporting/${key}/report/:filter`,
+        `reports.${key}.report.get`,
+        auth.verify,
+        standardReportGet(app, key));
 
-    if (reportKeys(app)[key].exportLabel) {
+      app.get(`/reporting/${key}/report/:filter/print`,
+        `reports.${key}.report.print`,
+        auth.verify,
+        standardReportGet(app, key, true, false));
+    }
+
+    if (reportKeys(app)[key].exportLabel || reportKeys(app)[key].exportOnly) {
       app.get(`/reporting/${key}/report/:filter/export`,
         `reports.${key}.report.export`,
         auth.verify,
@@ -95,6 +97,11 @@
     standardReportRoutes(app, 'deferred-list-date');
     standardReportRoutes(app, 'deferred-list-court');
     require('../ballot-cards')(app);
+    standardReportRoutes(app, 'excused-disqualified');
+    standardReportRoutes(app, 'electronic-police-check');
+    standardReportRoutes(app, 'pool-statistics');
+    standardReportRoutes(app, 'attendance-data');
+    require('../jury-attendance-audit')(app);
   };
 
 })();

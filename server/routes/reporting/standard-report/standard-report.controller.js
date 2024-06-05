@@ -166,6 +166,7 @@
           title: reportType.title,
           searchLabels: reportType.searchLabelMappers,
           reportUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.post`)),
+          exportOnly: reportType.exportOnly,
           cancelUrl: app.namedRoutes.build('reports.reports.get'),
         });
       case 'trial':
@@ -267,7 +268,7 @@
             });
           }
 
-          if (header.id === 'pool_number' || header.id === 'pool_number_by_jp' || header.id === 'appearance_pool_number') {
+          if (header.id === 'pool_number' || header.id === 'pool_number_by_jp' || header.id === 'appearance_pool_number' || header.id === 'pool_number_jp') {
             return ({
               html: `<a href=${
                 app.namedRoutes.build('pool-overview.get', {poolNumber: output})
@@ -302,6 +303,10 @@
 
           if (header.id === 'on_call') {
             output = output === 'Yes' ? 'Yes' : '-';
+          }
+
+          if (header.id === 'excusal_disqual_code') {
+            output = `${capitalise(output.split('-')[0])} - ${output.split('-')[1]}`;
           }
 
           if (header.dataType === 'List') {
@@ -477,6 +482,8 @@
       } else if (reportType.search === 'jurorNumber') {
         // VERIFY FIELD NAME ONCE AN API AVAILABLE 
         config.jurorNumber = req.params.filter;
+      } else if (reportType.search === 'audit') {
+        config[reportType.searchProperty] = req.params.filter;
       }
     }
 
@@ -652,6 +659,10 @@
           return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`)));
         }
         redirectRoute = `reports.daily-utilisation.check.get`
+      }
+
+      if (reportType.exportOnly) {
+        redirectRoute = `reports.${reportKey}.report.export`;
       }
 
       return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(redirectRoute, {filter: 'dateRange'})
