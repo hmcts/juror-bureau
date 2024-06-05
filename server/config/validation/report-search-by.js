@@ -23,6 +23,20 @@
         details: 'Enter a date to search postponed jurors up until',
       }],
     },
+    jurorAmendment: {
+      searchBy: [{
+        summary: 'Select whether you want to find changes to juror details by juror number, pool or date',
+        details: 'Select whether you want to find changes to juror details by juror number, pool or date',
+      }],
+      dateFrom: [{
+        summary: 'Enter a date to search amended jurors from',
+        details: 'Enter a date to search amended jurors from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search amended jurors up until',
+        details: 'Enter a date to search amended jurors up until',
+      }],
+    },
     unpaidAttendance: {
       dateFrom: [{
         summary: 'Enter a date to search unpaid attendances from',
