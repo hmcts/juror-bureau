@@ -698,9 +698,12 @@
 
   function addURLQueryParams(reportType, url){
     let queryParams = _.clone(reportType.queryParams);
-    if(url.includes('?')) {
-      const urlQueryParams = url.split('?')[1].split('&').map((param) => param.split('=')[0])
-      urlQueryParams.forEach((param) => {
+
+    const _url = require('url');
+    const parsedUrl = _url.parse(url);
+    if (parsedUrl && parsedUrl.query) {
+      const params = parsedUrl.query.split('&').map((param) => param.split('=')[0])
+      params.forEach((param) => {
         delete queryParams[param]
       })
     }
