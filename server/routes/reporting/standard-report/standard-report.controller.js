@@ -2,6 +2,7 @@
   'use strict';
 
   const _ = require('lodash');
+  const { URL } = require('url');
   const { snakeToCamel, transformCourtNames, makeManualError, checkIfArrayEmpty, transformRadioSelectTrialsList, replaceAllObjKeys, camelToSnake, mapCamelToSnake } = require('../../../lib/mod-utils');
   const { standardReportDAO } = require('../../../objects/reports');
   const { validate } = require('validate.js');
@@ -150,6 +151,8 @@
             },
           });
         } catch (err) {
+          console.log(err);
+
           app.logger.crit('Failed to fetch courts list: ', {
             auth: req.session.authentication,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
@@ -699,11 +702,9 @@
   function addURLQueryParams(reportType, url){
     let queryParams = _.clone(reportType.queryParams);
 
-    const _url = require('url');
-    const parsedUrl = _url.parse(url);
-    if (parsedUrl && parsedUrl.query) {
-      const params = parsedUrl.query.split('&').map((param) => param.split('=')[0])
-      params.forEach((param) => {
+    if(url.includes('?')) {
+      const urlQueryParams = url.split('?')[1].split('&').map((param) => param.split('=')[0])
+      urlQueryParams.forEach((param) => {
         delete queryParams[param]
       })
     }
