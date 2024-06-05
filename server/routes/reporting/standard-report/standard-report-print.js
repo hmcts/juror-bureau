@@ -125,11 +125,6 @@ async function standardReportPrint(app, req, res, reportKey, data) {
           style: 'groupHeading',
           colSpan: longestGroup,
         }];
-
-        if (reportData.columnWidths) {
-          headRow[0].widths = reportData.columnWidths;
-        }
-
         let totalsRow;
 
         if (reportData.grouped.totals) {
