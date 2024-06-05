@@ -498,8 +498,6 @@
       } else if (reportType.search === 'jurorNumber') {
         // VERIFY FIELD NAME ONCE AN API AVAILABLE 
         config.jurorNumber = req.params.filter;
-      } else if (reportType.search === 'audit') {
-        config[reportType.searchProperty] = req.params.filter;
       }
     } else if (reportType.searchProperty) {
       config[reportType.searchProperty] = req.params.filter;
