@@ -2,7 +2,6 @@
   'use strict';
 
   const _ = require('lodash');
-  const { URL } = require('url');
   const { snakeToCamel, transformCourtNames, makeManualError, checkIfArrayEmpty, transformRadioSelectTrialsList, replaceAllObjKeys, camelToSnake, mapCamelToSnake } = require('../../../lib/mod-utils');
   const { standardReportDAO } = require('../../../objects/reports');
   const { validate } = require('validate.js');
@@ -22,8 +21,13 @@
 
   const standardFilterGet = (app, reportKey) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
+    let customSearchLabel;
 
     delete req.session.reportCourts;
+
+    if(reportType.apiKey === 'PanelResultReport') {
+      customSearchLabel = 'Search trials between these dates';
+    }
 
     if (reportType.search) {
       const { filter } = req.query;
@@ -174,6 +178,7 @@
           isFixedDateRange,
           tmpBody,
           reportKey,
+          customSearchLabel,
           title: reportType.title,
           searchLabels: reportType.searchLabelMappers,
           reportUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.post`)),
@@ -285,6 +290,10 @@
                 output
               }</a>`,
             });
+          }
+          
+          if (header.id === 'trial_type') {
+            return { html: output === 'Civ' ? 'Civil' : 'Criminal' };
           }
 
           if (header.id.includes('pool_number')) {
@@ -713,10 +722,15 @@
     let queryParams = _.clone(reportType.queryParams);
 
     if(url.includes('?')) {
-      const urlQueryParams = url.split('?')[1].split('&').map((param) => param.split('=')[0])
-      urlQueryParams.forEach((param) => {
-        delete queryParams[param]
-      })
+      url
+        .split('?')[1]
+        .split('&')
+        .map((param) => param.split('=')[0])
+        .forEach((param) => {
+          if (queryParams && queryParams[param]) {
+            delete queryParams[param];
+          }
+        });
     }
 
     return url + `${reportType.queryParams ? `${url.includes('?') ? '&' : '?'}${new URLSearchParams(queryParams).toString()}` : ''}`

@@ -418,6 +418,17 @@
         unsortable: true,
         exportLabel: 'Export raw data',
       },
+      'voir-dire': {
+        title: 'Panel result report (by trial)',
+        apiKey: 'PanelResultReport',
+        search: 'dateRange',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+        ],
+      },
       'unconfirmed-attendance': {
         title: 'Unconfirmed attendance report',
         apiKey: 'UnconfirmedAttendanceReport',
