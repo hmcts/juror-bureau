@@ -67,7 +67,6 @@
     standardReportRoutes(app, 'panel-detail');
     standardReportRoutes(app, 'jury-list');
     standardReportRoutes(app, 'pool-status');
-    standardReportRoutes(app, 'voir-dire');
     standardReportRoutes(app, 'manual-juror-report');
     standardReportRoutes(app, 'voir-dire');
     standardReportRoutes(app, 'pool-analysis');

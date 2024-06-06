@@ -2,7 +2,6 @@
   'use strict';
 
   const _ = require('lodash');
-  const { URL } = require('url');
   const { snakeToCamel, transformCourtNames, makeManualError, checkIfArrayEmpty, transformRadioSelectTrialsList, replaceAllObjKeys, camelToSnake, mapCamelToSnake } = require('../../../lib/mod-utils');
   const { standardReportDAO } = require('../../../objects/reports');
   const { validate } = require('validate.js');
@@ -460,7 +459,6 @@
       } else {
         tableRows = buildStandardTableRows(tableData, tableHeadings);
       }
-      console.log(req.session.authentication.locCode);
 
       return tableRows.length ? [{
         title: capitalizeFully(sectionHeading),
