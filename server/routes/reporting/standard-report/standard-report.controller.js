@@ -291,17 +291,6 @@
               }</a>`,
             });
           }
-
-          if (header.id === 'trial_number') {
-            return ({
-              html: `<a href=${app.namedRoutes.build('trial-management.trials.detail.get', {
-                trialNumber: output,
-                locationCode: req.session.authentication.locCode
-              })}>
-                ${output}
-              </a>`,
-            });
-          }
           
           if (header.id === 'trial_type') {
             return { html: output === 'Civ' ? 'Civil' : 'Criminal' };
