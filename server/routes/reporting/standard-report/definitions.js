@@ -1435,7 +1435,6 @@
       'jury-attendance-audit': {
         title: 'Jury attendance audit report',
         apiKey: 'JuryAttendanceAuditReport',
-        search: 'audit',
         searchProperty: 'juryAuditNumber',
         headings: [
           'attendanceDate',
@@ -1488,6 +1487,19 @@
           }
         }
       },
+      'pool-attendance-audit': {
+        title: 'Pool attendance audit report',
+        apiKey: 'PoolAttendanceAuditReport',
+        searchProperty: 'poolAuditNumber',
+        headings: [
+          'attendanceDate',
+          'reportDate',
+          'auditNumber',
+          'reportTime',
+          'total',
+          'courtName',
+        ],
+      }
     };
   };
 })();

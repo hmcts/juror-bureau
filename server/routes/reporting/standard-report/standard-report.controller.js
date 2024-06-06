@@ -287,10 +287,20 @@
             });
           }
 
-          if (header.id === 'pool_number' || header.id === 'pool_number_by_jp' || header.id === 'appearance_pool_number' || header.id === 'pool_number_jp') {
+          if (header.id.includes('pool_number')) {
             return ({
               html: `<a href=${
                 app.namedRoutes.build('pool-overview.get', {poolNumber: output})
+              }>${
+                output
+              }</a>`,
+            });
+          }
+
+          if (header.id.includes('trial_number') && output) {
+            return ({
+              html: `<a href=${
+                app.namedRoutes.build('trial-management.trials.detail.get', {trialNumber: output, locationCode: req.session.authentication.locCode})
               }>${
                 output
               }</a>`,
@@ -501,9 +511,9 @@
       } else if (reportType.search === 'jurorNumber') {
         // VERIFY FIELD NAME ONCE AN API AVAILABLE 
         config.jurorNumber = req.params.filter;
-      } else if (reportType.search === 'audit') {
-        config[reportType.searchProperty] = req.params.filter;
       }
+    } else if (reportType.searchProperty) {
+      config[reportType.searchProperty] = req.params.filter;
     }
 
     if (req.query.fromDate) {
