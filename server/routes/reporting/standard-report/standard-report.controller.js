@@ -2,17 +2,20 @@
   'use strict';
 
   const _ = require('lodash');
+  const { URL } = require('url');
   const { snakeToCamel, transformCourtNames, makeManualError, checkIfArrayEmpty, transformRadioSelectTrialsList, replaceAllObjKeys, camelToSnake, mapCamelToSnake } = require('../../../lib/mod-utils');
   const { standardReportDAO } = require('../../../objects/reports');
   const { validate } = require('validate.js');
   const { poolSearchObject } = require('../../../objects/pool-search');
+  const { searchJurorRecordDAO } = require('../../../objects');
   const rp = require('request-promise');
   const { tableDataMappers, constructPageHeading, buildTableHeaders } = require('./utils');
   const { bespokeReportBodys } = require('../bespoke-report/bespoke-report-body');
   const { reportKeys } = require('./definitions');
   const { standardReportPrint } = require('./standard-report-print');
-  const { fetchCourtsDAO, trialsListObject, trialsListDAO } = require('../../../objects');
+  const { fetchCourtsDAO, trialsListDAO } = require('../../../objects');
   const searchValidator = require('../../../config/validation/report-search-by');
+  const jurorSearchValidator = require('../../../config/validation/juror-search');
   const moment = require('moment')
   const { dateFilter, capitalizeFully, capitalise } = require('../../../components/filters');
   const { reportExport } = require('./report-export');
@@ -40,7 +43,7 @@
           errors = {...validate({poolNumber: filter}, {poolNumber: {poolNumberSearched: {}}})};
 
           if (Object.keys(errors).length === 0) {
-            const api = await poolSearchObject.post(rp, app, req.session.authToken, {poolNumber: filter});
+            const api = await poolSearchObject.post(rp, app, req.session.authToken, { poolNumber: filter });
 
             poolList = api.poolRequests;
             resultsCount = api.resultsCount;
@@ -66,7 +69,55 @@
           filter,
           filterUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.post`)),
           reportUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.post`)),
+          backLinkUrl: {
+            built: true,
+            url: reportType.filterBackLinkUrl,
+          },
         });
+      case 'jurorNumber':
+        let jurorList = [];
+        let _resultsCount = 0;
+        let _errors;
+        const submitError = req.session.errors || {};
+
+        delete req.session.errors;
+
+        const payload = {
+          page_limit: 500,
+          sort_method: 'DESC',
+          sort_field: 'JUROR_NUMBER',
+          page_number: 1,
+          juror_number: filter
+        }
+
+        if (filter) {
+          _errors = validate({ jurorNumber: filter }, jurorSearchValidator.jurorNumberSearched());
+        }
+
+        if (typeof _errors === 'undefined') {
+          const data = await searchJurorRecordDAO.post(req, payload);
+          
+          jurorList = data.data;
+          _resultsCount = data.total_items;
+        }
+
+        _errors = { ..._errors, ...submitError };
+
+        return res.render('reporting/standard-reports/juror-search', {
+          errors: {
+            title: 'Please check your search',
+            count: typeof _errors !== 'undefined' ? Object.keys(_errors).length : 0,
+            items: _errors,
+          },
+          reportKey,
+          title: reportType.title,
+          resultsCount: _resultsCount,
+          jurorList,
+          filter,
+          filterUrl: app.namedRoutes.build(`reports.${reportKey}.filter.post`),
+          reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
+        });
+        
       case 'courts':
         delete req.session.errors;
         try {
@@ -89,6 +140,10 @@
             clearFilterUrl:  addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`)),
             reportUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.post`)),
             cancelUrl: app.namedRoutes.build('reports.reports.get'),
+            backLinkUrl: {
+              built: true,
+              url: reportType.filterBackLinkUrl,
+            },
             errors: {
               title: 'Please check your search',
               count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -96,6 +151,8 @@
             },
           });
         } catch (err) {
+          console.log(err);
+
           app.logger.crit('Failed to fetch courts list: ', {
             auth: req.session.authentication,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
@@ -122,6 +179,10 @@
           reportUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.post`)),
           exportOnly: reportType.exportOnly,
           cancelUrl: app.namedRoutes.build('reports.reports.get'),
+          backLinkUrl: {
+            built: true,
+            url: reportType.filterBackLinkUrl,
+          },
         });
       case 'trial':
         const sortBy = req.query['sortBy'] || 'trialNumber';
@@ -155,7 +216,11 @@
             clearSearchUrl: app.namedRoutes.build(`reports.${reportKey}.filter.get`),
             reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
             cancelUrl: app.namedRoutes.build('reports.reports.get'),
-            trials: transformRadioSelectTrialsList(data.data, sortBy, sortOrder)
+            trials: transformRadioSelectTrialsList(data.data, sortBy, sortOrder),
+            backLinkUrl: {
+              built: true,
+              url: reportType.filterBackLinkUrl,
+            },
           });
         } catch (err) {
           app.logger.crit('Failed to fetch trials list: ', {
@@ -180,7 +245,10 @@
         filter = req.body.poolNumber;
         break;
       case 'courts':
-        filter = req.body.courtSearch
+        filter = req.body.courtSearch;
+        break;
+      case 'jurorNumber':
+        filter = req.body.jurorNumber;
         break;
       case 'trial':
         filter = req.body.filterTrialNumber;
@@ -201,8 +269,8 @@
 
     delete req.session.bannerMessage;
     req.session.reportSearch = req.params.filter;
-
     const buildStandardTableRows = function(tableData, tableHeadings) {
+      tableData = Array.isArray(tableData) ? tableData : [tableData];
       const rows = tableData.map(data => {
         let row = tableHeadings.map(header => {
           if (!header.name || header.name === '') return;
@@ -430,6 +498,9 @@
       } else if (reportType.search === 'courts') {
         // VERIFY FIELD NAME ONCE AN API AVAILABLE
         config.courts = _.clone(req.session.reportCourts)
+      } else if (reportType.search === 'jurorNumber') {
+        // VERIFY FIELD NAME ONCE AN API AVAILABLE 
+        config.jurorNumber = req.params.filter;
       } else if (reportType.search === 'audit') {
         config[reportType.searchProperty] = req.params.filter;
       }
@@ -469,7 +540,6 @@
 
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
       if (isExport) return reportExport(app, req, res, reportKey, { headings, tableData }) ;
-
       let tables = [];
 
       if (reportType.bespokeReport && reportType.bespokeReport.body) {
@@ -534,20 +604,40 @@
           }],
         };
 
-        return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`)+ (req.body.filter ? '?filter=' + req.body.filter : '')));
+        return res.redirect(addURLQueryParams(reportType, app.namedRoutes.build(`reports.${reportKey}.filter.get`)+ (req.body.filter ? '?filter=' + req.body.filter : '')));
       }
 
       req.session.reportFilter = req.body.filter;
 
-      return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.get`, {
+      return res.redirect(addURLQueryParams(reportType, app.namedRoutes.build(`reports.${reportKey}.report.get`, {
         filter: req.body.reportPool,
+      })));
+    }
+
+    if (reportType.search === 'jurorNumber') {
+      if (!req.body.jurorNumberToPrint || req.body.jurorNumberToPrint === '') {
+        req.session.errors = {
+          selection: [{
+            fields: ['selection'],
+            summary: 'Select a juror',
+            details: ['Select a juror'],
+          }],
+        };
+
+        return res.redirect(addURLQueryParams(reportType, app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (req.body.filter ? '?filter=' + req.body.filter : '')));
+      }
+      
+      req.session.reportFilter = req.body.filter;
+
+      return res.redirect(addURLQueryParams(reportType, app.namedRoutes.build(`reports.${reportKey}.report.get`, {
+        filter: req.body.jurorNumberToPrint,
       })));
     }
     if (reportType.search === 'courts') {
       if (!req.body.selectedCourts) {
         req.session.errors = makeManualError('selectedCourts', 'Select at least one court');
 
-        return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`)
+        return res.redirect(addURLQueryParams(reportType, app.namedRoutes.build(`reports.${reportKey}.filter.get`)
           + (req.body.filter ? '?filter=' + req.body.filter : '')));
       }
       req.session.reportFilter = req.body.filter;
@@ -557,7 +647,7 @@
       });
       delete req.session.courtsList
       req.session.reportCourts = courtLocCodes;
-      return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.get`, { filter: 'courts' })));
+      return res.redirect(addURLQueryParams(reportType, app.namedRoutes.build(`reports.${reportKey}.report.get`, { filter: 'courts' })));
     }
     if (reportType.search === 'dateRange' || reportType.search === 'fixedDateRange') {
       if (req.body.dateRange && req.body.dateRange === 'NEXT_31_DAYS') {
@@ -578,7 +668,7 @@
       if (toDate.isBefore(fromDate)) {
         req.session.errors = makeManualError('dateTo', '‘Date to’ cannot be before ‘date from’');
         req.session.formFields = req.body;
-        return res.redirect(addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`)));
+        return res.redirect(addURLQueryParams(reportType, app.namedRoutes.build(`reports.${reportKey}.filter.get`)));
       }
 
       if (reportKey === 'daily-utilisation') { 
@@ -610,7 +700,16 @@
   };
 
   function addURLQueryParams(reportType, url){
-    return url + `${reportType.queryParams ? `${url.includes('?') ? '&' : '?'}${new URLSearchParams(_.clone(reportType.queryParams)).toString()}` : ''}`
+    let queryParams = _.clone(reportType.queryParams);
+
+    if(url.includes('?')) {
+      const urlQueryParams = url.split('?')[1].split('&').map((param) => param.split('=')[0])
+      urlQueryParams.forEach((param) => {
+        delete queryParams[param]
+      })
+    }
+
+    return url + `${reportType.queryParams ? `${url.includes('?') ? '&' : '?'}${new URLSearchParams(queryParams).toString()}` : ''}`
   }
 
   module.exports = {

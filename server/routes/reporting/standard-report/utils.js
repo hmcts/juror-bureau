@@ -3,8 +3,9 @@ const { dateFilter, capitalizeFully, toSentenceCase, capitalise } = require('../
 const moment = require('moment');
 
 const tableDataMappers = {
-  String: (data) => isNaN(data) ? capitalizeFully(data) : data.toString(),
+  String: (data) => isNaN(data) ? capitalizeFully(data) : (data?.toString() || '-' ),
   LocalDate: (data) => data ? dateFilter(data, 'YYYY-mm-dd', 'ddd D MMM YYYY') : '-',
+  LocalDateTime: (data) => data ? moment(data).utcOffset(0).format('D MMM YYYY [at] HH:mm a') : '-',
   List: (data) => {
     if (data) {
       if (Object.keys(data)[0] === 'jurorAddressLine1') {
@@ -39,6 +40,7 @@ const tableDataMappers = {
   LocalTime: (data) => data ? moment(data, 'HH:mm:ss').format('hh:mma') : '-',
   BigDecimal: (data) => `£${(Math.round(data * 100) / 100).toFixed(2).toString()}`,
   Boolean: (data) => data ? 'Yes' : 'No',
+  Double: (data) => data ? data.toFixed(2).toString() : '-',
 };
 
 const headingDataMappers = {
@@ -99,7 +101,7 @@ const buildTableHeaders = (reportType, tableHeadings) => {
       }
 
       return ({
-        text: data.name,
+        html: reportType.tableHeaderTransformer ? reportType.tableHeaderTransformer(data) : data.name,
         attributes: {
           'aria-sort': index === 0 ? 'ascending' : 'none',
           'aria-label': data.name,

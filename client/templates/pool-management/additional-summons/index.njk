@@ -1,9 +1,10 @@
-{% extends "../../layouts/default.njk" %}
+{% extends "layouts/default.njk" %}
 
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "../../custom-components/summary-item/macro.njk" import summaryItem %}
+{% from "custom-components/summary-item/macro.njk" import summaryItem %}
+{% from "includes/csrf.njk" import csrfProtection %}
 
 {% set currentApp = "Pool management" %}
 
@@ -128,7 +129,9 @@
         <input type="hidden" name="bureauDeferrals" id="bureauDeferrals" value="10"/>
         <input type="hidden" name="citizensSummoned" id="citizensSummoned" value="{{ poolDetails.bureauSummoning.totalSummoned }}"/>
         <input type="hidden" name="catchmentArea" id="catchmentArea" value="{{ catchmentArea }}"/>
-        <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}"/>
+        <input type="hidden" name="previous_juror_count" id="previousJurorCount" value="{{ poolDetails.bureauSummoning.totalSummoned }}"/>
+        
+        {{ csrfProtection(csrftoken) }}
       
       </form>
 

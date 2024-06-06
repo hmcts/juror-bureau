@@ -50,6 +50,9 @@
 
   // Add standard report keys to this object, the function will populate them
   module.exports = function(app) {
+    standardReportRoutes(app, 'amendment-juror');
+    standardReportRoutes(app, 'amendment-date');
+    standardReportRoutes(app, 'amendment-pool');
     standardReportRoutes(app, 'next-due');
     standardReportRoutes(app, 'undelivered');
     standardReportRoutes(app, 'non-responded');
@@ -99,6 +102,7 @@
     standardReportRoutes(app, 'pool-statistics');
     standardReportRoutes(app, 'attendance-data');
     require('../jury-attendance-audit')(app);
+    standardReportRoutes(app, 'pool-ratio');
   };
 
 })();

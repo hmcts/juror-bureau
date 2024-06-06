@@ -20,7 +20,9 @@ const { financialAudit } = require('./audit.controller');
     // Inital Report Search Routes - need to be initialised before rest of routes
     require('./postponed-report')(app);
     require('./available-list')(app);
+    require('./juror-amendment')(app);
     require('./deferred-list')(app);
+    require('./pool-ratio')(app);
     require('./standard-report/index')(app);
 
     app.get('/reports',
