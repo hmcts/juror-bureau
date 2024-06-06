@@ -3,7 +3,7 @@ const { dateFilter, makeDate, toMoney } = require('../../../components/filters')
 const { snakeToCamel } = require('../../../lib/mod-utils');
 const { tableDataMappers, buildTableHeaders } = require('../standard-report/utils');
 
-const bespokeReportBodys = (app) => {
+const bespokeReportBodys = (app, req) => {
   return {
     'pool-status': (reportType, tableData) => {
       const activeRowHeaders = ['responded_total', 'summons_total', 'panel_total', 'juror_total'];
@@ -60,6 +60,63 @@ const bespokeReportBodys = (app) => {
       });
 
       return { activeRows, inactiveRows };
+    },
+    'unpaid-attendance-detailed': (reportType, tableData) => {
+      let poolTrial = [];
+      const headers = [
+        {
+          text: 'Juror Number',
+          classes: 'mod-!-width-one-sixth',
+        },
+        {
+          text: 'First Name',
+          classes: 'mod-!-width-one-sixth',
+        },
+        {
+          text: 'Last Name',
+          classes: 'mod-!-width-one-sixth',
+        },
+        {
+          text: 'Audit number',
+          classes: 'mod-!-width-one-sixth',
+        },
+        {
+          text: 'Attendance Type',
+          classes: 'mod-!-width-one-sixth',
+        },
+        {
+          text: 'Expense Status',
+          classes: 'mod-!-width-one-sixth',
+        }
+      ]
+
+      for (const [header, data] of Object.entries(tableData.data)) {
+        let tableDetails = [];
+        let counter = 0;
+        const poolTrialLink = header.includes('Pool')
+        ? app.namedRoutes.build('pool-overview.get', {
+          poolNumber: header.replace('Pool ',''),
+        })
+        : app.namedRoutes.build('trial-management.trials.detail.get', {
+          trialNumber: header.replace('Trial ',''),
+          locationCode: req.session.authentication.locCode,
+        })
+          for (const [key, value] of Object.entries(data)) {
+            counter += value.length;
+            tableDetails.push({
+              date: key,
+              values: value,
+            });
+        }
+        poolTrial.push({
+          header,
+          dates: tableDetails,
+          totalLength: counter,
+          poolTrialLink,
+        })
+      }
+
+      return [{headers: headers, rows: poolTrial}];
     },
     'daily-utilisation': (reportType, tableData) => {
       let rows = [];
@@ -445,3 +502,14 @@ const bespokeReportBodys = (app) => {
 };
 
 module.exports.bespokeReportBodys = bespokeReportBodys;
+
+const testTableData = {
+  headings: [
+    { id: 'JUROR_NUMBER', name: 'Juror number', dataType: 'Integer' },
+    { id: 'FIRST_NAME', name: 'First name', dataType: 'String' },
+    { id: 'LAST_NAME', name: 'Last name', dataType: 'String' },
+    { id: 'AUDIT_NUMBER', name: 'Audit number', dataType: 'String' },
+    { id: 'ATTENDANCE', name: 'Attendance', dataType: 'String' },
+    { id: 'EXPENSE_STATUS', name: 'Expense status', dataType: 'String' }
+  ]
+};

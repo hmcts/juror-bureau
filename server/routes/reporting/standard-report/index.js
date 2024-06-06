@@ -95,6 +95,7 @@
     standardReportRoutes(app, 'available-list-date');
     standardReportRoutes(app, 'payment-status-report');
     standardReportRoutes(app, 'unpaid-attendance');
+    standardReportRoutes(app, 'unpaid-attendance-detailed');
     standardReportRoutes(app, 'deferred-list-date');
     standardReportRoutes(app, 'deferred-list-court');
     require('../ballot-cards')(app);

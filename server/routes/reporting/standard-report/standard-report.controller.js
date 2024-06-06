@@ -574,7 +574,7 @@
       let tables = [];
 
       if (reportType.bespokeReport && reportType.bespokeReport.body) {
-        tables = bespokeReportBodys(app)[reportKey](reportType, tableData)
+        tables = bespokeReportBodys(app, req)[reportKey](reportType, tableData)
       } else if (reportType.multiTable) {
         for (const [key, value] of Object.entries(tableData.data)) {
           tables.push(...buildStandardTable(reportType, value, tableData.headings, reportType.multiTable.sectionHeadings ? key : ''));
@@ -739,14 +739,14 @@
 
     if(url.includes('?')) {
       url
-        .split('?')[1]
-        .split('&')
-        .map((param) => param.split('=')[0])
-        .forEach((param) => {
-          if (queryParams && queryParams[param]) {
-            delete queryParams[param];
-          }
-        });
+      .split('?')[1]
+      .split('&')
+      .map((param) => param.split('=')[0])
+      .forEach((param) => {
+        if (queryParams && queryParams[param]) {
+          delete queryParams[param];
+        }
+      });
     }
 
     return url + `${reportType.queryParams ? `${url.includes('?') ? '&' : '?'}${new URLSearchParams(queryParams).toString()}` : ''}`

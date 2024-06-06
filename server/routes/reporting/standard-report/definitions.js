@@ -1354,6 +1354,24 @@
           totals: true,
         }
       },
+      'unpaid-attendance-detailed': {
+        title: 'Unpaid attendance report (detailed)',
+        apiKey: 'UnpaidAttendanceReportDetailedReport',
+        search: 'dateRange',
+        printLandscape: true,
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+          'totalUnpaidAttendances',
+          'courtName',
+        ],
+        bespokeReport: {
+          body: true,
+          file: './bespoke-report-body/unpaid-attendance-detailed.njk',
+        },
+      },
       'deferred-list-date': {
         title: 'Deferred list (by date)',
         apiKey: 'DeferredListByDateReport',
