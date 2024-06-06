@@ -40,7 +40,6 @@
 
           app.logger.info('Fetched trial details, courtrooms and judges list', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               courtrooms,
               judges,
@@ -74,7 +73,7 @@
             trialType: trial.trial_type === 'Criminal' ? 'CRI' : 'CIV',
             defendants: trial.trial_type === 'Criminal' ? trial.defendants : '',
             respondents: trial.trial_type === 'Civil' ? trial.defendants : '',
-            startDate: dateFilter(trial.startDate, null, 'DD/MM/YYYY'),
+            startDate: dateFilter(trial.start_date, 'yyyy-MM-dd', 'DD/MM/YYYY'),
             judge: trial.judge.description,
             courtroom: trial.courtroom.description,
             protected: trial.protected ? 'true' : 'false',
@@ -114,7 +113,6 @@
         .catch((err) => {
           app.logger.crit('Failed to fetch trial details, judges or courtrooms list: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
           return res.render('_errors/generic');
@@ -195,7 +193,6 @@
 
       app.logger.info('Edited an existing trial', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         data: payload,
         response: resp,
       });
@@ -213,7 +210,6 @@
     } catch (err) {
       app.logger.crit('Failed to edit an existing trial: ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         data: payload,
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });

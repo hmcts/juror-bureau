@@ -1,0 +1,202 @@
+{% extends "../../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "custom-components/autocomplete/macro.njk" import modAutocomplete %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - Reports - {{ title }} - search juror{% endblock %}
+{% block page_identifier %}Reports - {{ title }} - search juror{% endblock %}
+
+{% set currentApp = "Reports" %}
+
+{% block content %}
+  {% include "includes/errors.njk" %}
+
+  <form method="post" id="jurorSearchForm">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+
+        {% set jurorNumberError = undefined %}
+        {% if errors.items["jurorNumber"] %}
+          {% set jurorNumberError = { html: errors.items["jurorNumber"][0].details } %}
+        {% endif %}
+
+          {% call govukFieldset({
+            legend: {
+              text: title,
+              classes: "govuk-fieldset__legend--l",
+              isPageHeading: true
+            }
+          }) %}
+            <div class="govuk-grid-column-half">
+              {{ govukInput({
+                label: {
+                  text: "Enter a juror number"
+                },
+                classes: "govuk-!-width-one-third",
+                id: "jurorNumber",
+                name: "jurorNumber",
+                type: "text",
+                errorMessage: jurorNumberError,
+                value: filter
+              }) }}
+            </div>
+
+            <div class="govuk-grid-column-half govuk-button-group">
+              {{ govukButton({
+                text: "Search",
+                type: "submit",
+                attributes: {
+                  id: "searchButton",
+                  formAction: filterUrl
+                }
+              }) }}
+
+              <a class="govuk-link" href="{{ url('reports.' + reportKey + '.filter.get') }}">Clear search</a>
+            </div>
+          {% endcall %}
+
+          {{ csrfProtection(csrftoken) }}
+          <input type="hidden" name="filter" value="{{ filter }}">
+      </div>
+    </div>
+
+    {% if resultsCount === 0 and errors.count === 0 and filter !== undefined %}
+
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <hr class="govuk-section-break govuk-section-break--visible">
+          <h2 class="govuk-heading-m govuk-!-margin-top-4">There are no matching results</h2>
+          <p class="govuk-body">Improve your search by:</p>
+          <ul class="govuk-list govuk-list--bullet">
+            <li>double-checking your spelling</li>
+          </ul>
+        </div>
+      </div>
+
+    {% elif resultsCount > 0 %}
+
+      {% set jurorRows = [] %}
+      {% for juror in jurorList %}
+        {% set jurorRows = (jurorRows.push(
+          [
+            {
+              html: '<div class="govuk-radios__item govuk-radios--small govuk-!-padding-left-0">' +
+                '  <input' +
+                '    class="govuk-radios__input"' +
+                '    id="' + juror.juror_number + '"' +
+                '    name="jurorNumberToPrint"' +
+                '    type="radio"' +
+                '    value="' + juror.juror_number + '"' +
+                '    aria-controls="conditional-jurorNumber"' +
+                '    aria-expanded="false"' +
+                '  >' +
+                '  <label class="govuk-label govuk-radios__label" for="jurorNumber-' + juror.juror_number + '"/>' +
+                '</div>'
+            },
+            
+            {
+              text: juror.juror_name,
+              classes: "mod-middle-align"
+            },
+            {
+              text: juror.juror_number,
+              classes: "mod-middle-align"
+            },
+            {
+              text: juror.postcode,
+              classes: "mod-middle-align"
+            },
+            {
+              text: juror.pool_number,
+              classes: "mod-middle-align"
+            },
+            {
+              text: juror.court_name,
+              classes: "mod-middle-align"
+            }
+          ]
+        ), jurorRows) %}
+      {% endfor %}
+
+
+      <div class="govuk-grid-row">
+        <hr>
+          <div class="govuk-grid-column-full">
+            <h2 class="govuk-heading-m govuk-!-margin-top-4">Select a juror</h2>
+            {{ govukTable({
+              attributes: {
+                "data-module": "moj-sortable-table"
+              },
+              caption: "Jurors",
+              captionClasses: "govuk-visually-hidden",
+              head: [
+                {},
+                {
+                  text: "Juror name",
+                  attributes: {
+                    "aria-sort": "none",
+                    "aria-label": "Juror name"
+                  }
+                },
+                {
+                  text: "Juror number",
+                  attributes: {
+                    "aria-sort": "ascending",
+                    "aria-label": "Juror number"
+                  }
+                },
+                
+                {
+                  text: "Postcode",
+                  attributes: {
+                    "aria-sort": "none",
+                    "aria-label": "Postcode"
+                  }
+                },
+                {
+                  text: "Pool number",
+                  attributes: {
+                    "aria-sort": "none",
+                    "aria-label": "Pool number"
+                  }
+                },
+                {
+                  text: "Court name",
+                  attributes: {
+                    "aria-sort": "none",
+                    "aria-label": "Court name"
+                  },
+                  format: "date"
+                }
+              ],
+              rows: jurorRows
+            }) }}
+          </div>
+          <div class="govuk-grid-column-half govuk-button-group">
+
+            {{ govukButton({
+              text: "Continue",
+              type: "submit",
+              attributes: {
+                id: "continueButton",
+                formAction: reportUrl
+              }
+            }) }}
+
+            <a class="govuk-link" href="{{ url('reports.reports.get') }}">Cancel</a>
+
+          </div>
+        </form>
+      </div>
+    {% endif %}
+  </form>
+
+{% endblock %}

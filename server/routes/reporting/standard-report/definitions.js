@@ -63,6 +63,8 @@
   //   },
   //   fontSize?: number,
   //   totalsRow?: (data, isPrint) => [object], // custom totals row for the report
+  //   columnWidths?: [string | number], // custom widths for the main table columns
+  //   filterBackLinkUrl?: string,  // backlink url for the inital filter page
   // }};
   module.exports.reportKeys = (app, req = null) => {
     const courtUser = req ? isCourtUser(req) : false;
@@ -147,6 +149,46 @@
           totals: true,
         },
         backUrl: app.namedRoutes.build('reports.postponed.search.get'),
+      },
+      'amendment-juror': {
+        title: 'Juror amendment report (by juror)',
+        apiKey: 'JurorAmendmentByJurorReport',
+        printLandscape: true,
+        search: 'jurorNumber',
+        headings: [
+          'jurorNumber',
+          'reportDate',
+          'jurorName',
+          'reportTime',
+        ],
+        backUrl: app.namedRoutes.build('reports.juror-amendment.search.get'),
+      },
+      'amendment-pool': {
+        title: 'Juror amendment report (by pool)',
+        apiKey: 'JurorAmendmentByPoolReport',
+        search: 'poolNumber',
+        printLandscape: true,
+        headings: [
+          'poolNumber',
+          'reportDate',
+          'poolType',
+          'reportTime',
+          'serviceStartDate',
+          'courtName',
+        ],
+        backUrl: app.namedRoutes.build('reports.juror-amendment.search.get'),
+      },
+      'amendment-date': {
+        title: 'Juror amendment report (by date)',
+        apiKey: 'JurorAmendmentByDateReport',
+        printLandscape: true,
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+        ].concat(courtUser ? ['courtName'] : []),
+        backUrl: app.namedRoutes.build('reports.juror-amendment.search.get'),
       },
       'incomplete-service': {
         title: 'Incomplete service',
@@ -879,6 +921,7 @@
           '',
           'reportTime',
         ],
+        columnWidths: [80, '*', '*', '*', 60, 60],
       },
       'trial-statistics': {
         title: 'Trial statistics',
@@ -1414,7 +1457,48 @@
           'courtName',
           'total',
         ],
-      }
+      },
+      'pool-ratio': {
+        title: 'Pool ratio report',
+        apiKey: 'PoolRatioReport',
+        search: 'courts',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+        ],
+        queryParams: {
+          fromDate: req?.query?.fromDate || '',
+          toDate: req?.query?.toDate || '',
+        },
+        filterBackLinkUrl: app.namedRoutes.build('reports.pool-ratio.filter.dates.get'),
+        unsortable: true,
+        tableHeaderTransformer: (data, isPrint = false) => {
+          const template = (name, hintValue) => {
+            return !isPrint
+                ? `${name} <br> <span class='govuk-hint'>${hintValue}</span>`
+                : [name, '\n', {text: hintValue, color: '#505A5F', bold: false}]
+          } 
+
+          switch (data.id) {
+            case 'total_requested':
+              return template(data.name, '(1)');
+            case 'total_deferred':
+              return template(data.name, '(2)');
+            case 'total_summoned':
+              return template(data.name, '(3)');
+            case 'total_supplied':
+              return template(data.name, '(4)');
+            case 'ratio_1':
+              return template(data.name, '(3-2)/(1-2)');
+            case 'ratio_2':
+              return template(data.name, '(3-2)/(4-2)');
+            default:
+              return data.name;
+          }
+        }
+      },
     };
   };
 })();

@@ -2,15 +2,15 @@
   'use strict';
 
   var _ = require('lodash')
-    , summonsFormObj = require('../../../../objects/summons-form').poolSummaryObject
     , modUtils = require('../../../../lib/mod-utils')
     , additionalSummonsValidator = require('../../../../config/validation/additional-summons')
     , courtNameOrLocationValidator = require('../../../../config/validation/request-pool').courtNameOrLocation
     , deferralsValidator = require('../../../../config/validation/request-pool').numberOfDeferrals
     , dateFilter = require('../../../../components/filters/').dateFilter
-    , summonCitizenObject = require('../../../../objects/summon-citizens').summonCitizenObject
     , fetchCourts = require('../../../../objects/request-pool').fetchCourts
     , validate = require('validate.js');
+
+  const { summonsFormDAO, summonCitizensDAO } = require('../../../../objects');
 
   module.exports.index = function(app) {
     return function(req, res) {
@@ -89,7 +89,7 @@
         req.session.poolDetails.currentCatchmentArea = catchmentAreaCode;
       }
 
-      summonsFormObj.post(require('request-promise'), app, req.session.authToken, req.session.poolDetails)
+      summonsFormDAO.post(req, req.session.poolDetails)
         .then(successCB)
         .catch(errorCB);
     };
@@ -122,20 +122,15 @@
           });
 
           if (err.error.reasonCode && err.error.reasonCode === 'invalid_yield') {
-            req.session.errors = {
-              citizensToSummon: [{
-                summary: 'Number of citizens to summon is too high',
-                details: 'Number of citizens to summon is too high',
-              }],
-            };
+            req.session.errors = modUtils
+              .makeManualError('citizensToSummon', 'Number of citizens to summon is too high');
+          } else if (err.error?.code === 'DATA_IS_OUT_OF_DATE') {
+            req.session.errors = modUtils
+              .makeManualError('citizensToSummon', err.error.message ?? 'Data is out of date');
           } else {
-            req.session.errors = {
-              citizensToSummon: [{
-                summary: 'Something went wrong while trying to summon jurors',
-                details: 'Something went wrong while trying to summon jurors',
-              }],
-            };
-          };
+            req.session.errors = modUtils.
+              makeManualError('citizensToSummon', 'Something went wrong while trying to summon jurors');
+          }
 
           return res.redirect(app.namedRoutes.build('summon-citizens.get', {
             poolNumber: req.params['poolNumber'],
@@ -152,7 +147,7 @@
         }));
       };
 
-      summonCitizenObject.post(require('request-promise'), app, req.session.authToken, req.body, 'create-pool')
+      summonCitizensDAO.post(req, req.body, 'create-pool')
         .then(successCB)
         .catch(errorCB);
     };
