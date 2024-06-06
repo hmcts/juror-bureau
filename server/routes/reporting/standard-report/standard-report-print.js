@@ -41,8 +41,6 @@ async function standardReportPrint(app, req, res, reportKey, data) {
           text = text === 'Yes' ? 'Yes' : '-';
         }
 
-        if (header.id === 'trial_type') {
-          text = text === 'Civ' ? 'Civil' : 'Criminal';
         if (header.id === 'excusal_disqual_code') {
           text = `${capitalise(text.split('-')[0])} - ${text.split('-')[1]}`;
         }

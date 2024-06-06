@@ -280,10 +280,8 @@
       const rows = tableData.map(data => {
         let row = tableHeadings.map(header => {
           if (!header.name || header.name === '') return;
-          // console.log(header.id);
 
           let output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
-          console.log(output);
 
           if (header.id === 'juror_number' || header.id === 'juror_number_from_trial') {
             return ({
@@ -727,10 +725,15 @@
     let queryParams = _.clone(reportType.queryParams);
 
     if(url.includes('?')) {
-      const urlQueryParams = url.split('?')[1].split('&').map((param) => param.split('=')[0])
-      urlQueryParams.forEach((param) => {
-        delete queryParams[param]
-      })
+      url
+        .split('?')[1]
+        .split('&')
+        .map((param) => param.split('=')[0])
+        .forEach((param) => {
+          if (queryParams && queryParams[param]) {
+            delete queryParams[param];
+          }
+        });
     }
 
     return url + `${reportType.queryParams ? `${url.includes('?') ? '&' : '?'}${new URLSearchParams(queryParams).toString()}` : ''}`
