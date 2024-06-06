@@ -37,6 +37,10 @@ module.exports.getCourtsList = function(app) {
 
       courtsList = Object.values(courtsResponse);
 
+      if (req.session?.authentication && courtsList.length > 1) {
+        courtsList = courtsList.filter(court => req.session.authentication.staff.courts.includes(court.loc_code));
+      }
+
       // keep it only during this request lifetime
       req.session.courtsList = courtsList;
       req.session.noKeyAuthToken = authToken;
