@@ -3,20 +3,23 @@
 <section>
   {% set historyTimeline = [] %}
   {% set historyHtml = undefined %}
+  {% set bylineHtml = undefined %}
 
   {% for historyItem in history %}
+
     {% set bylineHtml %}
-      <div class='moj-timeline__byline' style='display: inline-flex; justify-content: space-between; flex-direction: row;'>
-        <div>{{historyItem.userId}}</div>
-        <div>Pool {{historyItem.poolNumber}}
-      </div>
+      <div class='moj-timeline__byline'>{{historyItem.username}}</div>
+      <div class='moj-timeline__byline pool-number'>Pool {{historyItem.poolNumber}}</div>
     {% endset %}
     
     {% set historyHtml %}
-      <div>test history item</div>
+      <div class='entry'>{{historyItem.otherInfoDate | historyAttendanceDate}}</div>
+      <div class='entry'>{{historyItem.otherInfoRef | historyAuditLinkify | safe}}</div>
+      <div class='entry'>{{historyItem.otherInfo | historyAuditLinkify | safe}}</div>
     {% endset %}
+
     {% set historyTimeline = (historyTimeline.push({
-      label: { text: historyItem.action },
+      label: { text: historyItem.description },
       html: historyHtml,
       datetime: {
         timestamp: historyItem.dateCreated,
@@ -26,8 +29,11 @@
     }), historyTimeline) %}
   {% endfor %}
 
-  {{ mojTimeline({
-    items: historyTimeline
-  }) }}
+  <div>
+    {{ mojTimeline({
+      classes: "juror-history-timeline govuk-!-width-one-half",
+      items: historyTimeline
+    }) }}
+  </div>
 
 </section>

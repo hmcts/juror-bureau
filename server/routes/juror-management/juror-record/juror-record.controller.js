@@ -1028,7 +1028,7 @@
   module.exports.getHistoryTab = (app) => async(req, res) => {
     try {
 
-      const history = await jurorHistoryDAO.get(app, req.params.jurorNumber);
+      const history = await jurorHistoryDAO.get(req, req.query.jurorNumber || req.params.jurorNumber);
       const jurorNumber = req.params.jurorNumber;
       const {data: juror} = await jurorRecordObject.record.get(
         require('request-promise'),
@@ -1045,11 +1045,7 @@
         juror,
         historyUrl: app.namedRoutes.build('juror-record.history.get', { jurorNumber }),
         historyTab,
-        history: history.map(item => ({
-          ...item,
-          action: historyCodes[item.historyCode],
-          dateStamp: `${dateFilter(item.dateCreated, '', 'ddd D MMM yyyy')} at ${dateFilter(item.dateCreated, '', 'hh:mma')}`,
-        })),
+        history: history.data.sort((a,b) => b.dateCreated.localeCompare(a.dateCreated)),
         currentTab: 'history',
         backLinkUrl: {
           url: app.namedRoutes.build('juror-record.overview.get', { jurorNumber }),

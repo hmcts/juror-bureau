@@ -1,3 +1,4 @@
+const { mapSnakeToCamel } = require('../lib/mod-utils');
 
 (() => {
   'use strict';
@@ -5,28 +6,26 @@
   const urljoin = require('url-join');
   const { DAO } = require('./dataAccessObject');
 
-  const jurorHistoryDAO = new DAO('path/to/api', {
+  const jurorHistoryDAO = new DAO('moj/juror-record/', {
     get: function(jurorNumber) {
-      return { uri: urljoin(this.resource, jurorNumber) };
+      return { 
+        uri: urljoin(this.resource, jurorNumber, 'history'),
+        transform: mapSnakeToCamel,
+      };
     },
   });
 
-  const codeMap = {
-    FADD: 'Appearance Payments',
-  };
-
-  const jurorHistoryMock = {
-    get: (app, jurorNumber) => Promise.resolve([{
-      dateCreated: new Date().toISOString(),
-      historyCode: 'FADD',
-      userId: 'Mock user',
-      otherInformation: '',
-      poolNumber: '123456789',
-    }]),
-  };
+  const jurorPaymentsHistoryDAO = new DAO('moj/juror-record/', {
+    get: function(jurorNumber) {
+      return {
+        uri: urljoin(this.resource, jurorNumber, 'payments'),
+        transform: mapSnakeToCamel,
+      };
+    },
+  });
 
   module.exports = {
-    historyCodes: codeMap,
-    jurorHistoryDAO: jurorHistoryMock,
+    jurorHistoryDAO,
+    jurorPaymentsHistoryDAO,
   };
 })();
