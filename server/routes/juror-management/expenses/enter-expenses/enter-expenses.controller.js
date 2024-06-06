@@ -4,13 +4,13 @@
   const _ = require('lodash');
   const validate = require('validate.js');
   const enterExpensesValidator = require('../../../../config/validation/enter-expenses');
-  const { jurorDetailsObject } = require('../../../../objects/juror-record');
   const {
     getEnteredExpensesDAO,
     postEditedExpensesDAO,
     postRecalculateSummaryTotalsDAO,
   } = require('../../../../objects/expense-record');
   const { getCourtLocationRates } = require('../../../../objects/court-location');
+  const { jurorRecordDetailsDAO } = require('../../../../objects');
 
   module.exports.getEnterExpenses = (app) => {
     return async function(req, res) {
@@ -55,14 +55,11 @@
           'expense_dates': [date],
         });
 
-        const _jurorDetails = jurorDetailsObject.post(
-          require('request-promise'),
-          app,
-          req.session.authToken,
-          jurorNumber,
-          null,
-          ['NAME_DETAILS'],
-        );
+        const _jurorDetails = jurorRecordDetailsDAO.post(req, [{
+          'juror_number': jurorNumber,
+          'juror_version': null,
+          'include': ['NAME_DETAILS'],
+        }]);
 
         responses = await Promise.all([_expensesData, _jurorDetails]);
 
@@ -91,7 +88,7 @@
       }
 
       const expensesData = responses[0][0];
-      const jurorDetails = responses[1][0];
+      const jurorDetails = responses[1]['0'];
 
       // Mimicing paginating the list, returning same header data but expenses list will be filtered to 1
       const pagination = buildExpensesPagination(app, req, res, page);
