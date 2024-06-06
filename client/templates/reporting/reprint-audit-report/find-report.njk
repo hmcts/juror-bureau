@@ -36,7 +36,10 @@
         <div class="govuk-button-group">
           {{ govukButton({
             text: "Open in a new tab",
-            type: "submit"
+            
+            attributes: {
+              target: "_blank"
+            }
           }) }}
           <a href="{{ cancelUrl }}" class="govuk-link" id="cancelAnchor">Cancel</a>
         </div>

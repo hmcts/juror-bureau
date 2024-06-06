@@ -2,7 +2,7 @@
 (() => {
   'use strict';
 
-  const { getReprintAuditReport, postReprintAuditReport, getReportPrint } = require('./reprint-audit-report.controller');
+  const { getReprintAuditReport, postReprintAuditReport } = require('./reprint-audit-report.controller');
   const auth = require('../../../components/auth');
 
   module.exports = function(app) {
@@ -14,9 +14,5 @@
       'reports.reprint-audit-report.filter.post',
       auth.verify,
       postReprintAuditReport(app));
-    app.get('/reporting/reprint-audit-report/:reportKey/:auditNumber/print',
-      'reports.reprint-audit-report.print.get',
-      auth.verify,
-      getReportPrint(app));
   };
 })();

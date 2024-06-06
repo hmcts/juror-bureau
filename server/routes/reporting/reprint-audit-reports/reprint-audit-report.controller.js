@@ -1,5 +1,5 @@
 const { makeManualError } = require('../../../lib/mod-utils');
-const { standardReportDAO } = require('../../../objects');
+const { standardReportDAO, financialAuditDAO } = require('../../../objects');
 const { standardReportPrint } = require('../standard-report/standard-report-print');
 
 (function() {
@@ -33,7 +33,20 @@ const { standardReportPrint } = require('../standard-report/standard-report-prin
   };
 
   module.exports.postReprintAuditReport = function(app) {
-    return function(req, res) {
+    return async function(req, res) {
+      const errorCB = (err) => {
+        if (err.statusCode === 404 || err.statusCode === 400) {
+          req.session.errors = makeManualError('auditReportNumber', 'No audit report found - check number and try again');
+          req.session.formFields = req.body;
+          return res.redirect(app.namedRoutes.build('reports.reprint-audit-report.filter.get'));
+        }
+        app.logger.crit('Failed to render audit report', {
+          auth: req.session.authentication,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+  
+        return res.render('_errors/generic');
+      }
 
       if (!req.body.auditReportNumber) {
         req.session.errors = makeManualError('auditReportNumber', 'Enter an audit report number');
@@ -44,31 +57,33 @@ const { standardReportPrint } = require('../standard-report/standard-report-prin
       const auditNumber = capitalise(req.body.auditReportNumber)
 
       let reportKey;
-      let config = {};
       switch (auditNumber.substring(0,1)) {
+      case 'F':
+        req.session.reprintFinancialAudit = true;
+        try {
+          await financialAuditDAO.get(req, auditNumber);
+
+          req.session.formFields = req.body;
+          
+          return res.render('reporting/reprint-audit-report/print-redirect', {
+            completeRoute: app.namedRoutes.build('reports.reprint-audit-report.filter.get'),
+            printRoute: app.namedRoutes.build('reports.financial-audit.get', { 
+              auditNumber,
+            }),
+          });
+        } catch (err) {
+          return errorCB(err);
+        }
       case 'P':
         reportKey = 'pool-attendance-audit';
         break;
       case 'J':
         reportKey = 'jury-attendance-audit';
         break;
-      case 'F':
-        req.session.errors = makeManualError('auditReportNumber', 'Enter an F');
-        req.session.formFields = req.body;
-        return res.redirect(app.namedRoutes.build('reports.reprint-audit-report.filter.get'));
       default:
-        req.session.errors = makeManualError('auditReportNumber', 'No audit report found - check number and try again');
-        req.session.formFields = req.body;
-        return res.redirect(app.namedRoutes.build('reports.reprint-audit-report.filter.get'));
+        return errorCB({ statusCode: 404 })
       }
 
-      return res.redirect(app.namedRoutes.build('reports.reprint-audit-report.print.get', {reportKey: reportKey, auditNumber: auditNumber}))
-    };
-  };
-
-  module.exports.getReportPrint = function(app) {
-    return async function(req, res) {
-      const {reportKey, auditNumber} = req.params;
       const reportType = reportKeys(app, req)[reportKey];
 
       let config = {
@@ -82,31 +97,22 @@ const { standardReportPrint } = require('../standard-report/standard-report-prin
       }
 
       try {
-        const { headings, tableData } = await (reportType.bespokeReport?.dao
+        await (reportType.bespokeReport?.dao
           ? reportType.bespokeReport.dao(req)
           : standardReportDAO.post(req, app, config));
-      } catch (e){
-        console.error(e);
-        if (e.statusCode === 404) {
-          req.session.errors = makeManualError('auditReportNumber', 'No audit report found - check number and try again');
-          req.session.formFields = {
-            auditReportNumber: auditNumber
-          }
-          return res.redirect(app.namedRoutes.build('reports.reprint-audit-report.filter.get'));
-        }
-        app.logger.crit('Failed to render audit report', {
-          auth: req.session.authentication,
-          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+
+        req.session.formFields = req.body;
+
+        return res.render('reporting/reprint-audit-report/print-redirect', {
+          completeRoute: app.namedRoutes.build('reports.reprint-audit-report.filter.get'),
+          printRoute: app.namedRoutes.build(`reports.${reportKey}.report.print`, {
+            filter: auditNumber,
+          }),
         });
-  
-        return res.render('_errors/generic');
+      } catch (err) {
+        return errorCB(err);
       }
-       
-
-      return standardReportPrint(app, req, res, reportKey, { headings, tableData });
-    }
-  }
-
-
+    };
+  };
 
 })();
