@@ -1027,8 +1027,7 @@
 
   module.exports.getHistoryTab = (app) => async(req, res) => {
     try {
-
-      const history = await jurorHistoryDAO.get(req, req.query.jurorNumber || req.params.jurorNumber);
+      const history = await jurorHistoryDAO.get(req, req.params.jurorNumber);
       const jurorNumber = req.params.jurorNumber;
       const {data: juror} = await jurorRecordObject.record.get(
         require('request-promise'),
