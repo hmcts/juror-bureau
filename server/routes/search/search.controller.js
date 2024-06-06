@@ -193,7 +193,10 @@
 
         staff = response[0];
         responses = response[1];
-
+        staff.push({
+          login: "AUTO",
+          name: "AUTO"
+        });
         responses.juror_response.forEach(responsesListIterator(staff));
 
         req.session.searchResponse = {
