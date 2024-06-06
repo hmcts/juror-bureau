@@ -9,12 +9,11 @@
     postEditedExpensesDAO,
   } = require('../../../../objects/expense-record');
   const { defaultExpensesDAO } = require('../../../../objects/expenses');
-  const { jurorDetailsObject } = require('../../../../objects/juror-record');
   const validate = require('validate.js');
   const enterExpensesValidator = require('../../../../config/validation/enter-expenses');
   const { expenseRatesAndLimitsDAO } = require('../../../../objects/administration');
   const { getCourtLocationRates } = require('../../../../objects/court-location');
-  const { jurorOverviewDAO } = require('../../../../objects/juror-record');
+  const { jurorRecordDetailsDAO } = require('../../../../objects');
 
   const STATUSES = {
     'for-approval': 'FOR_APPROVAL',
@@ -53,17 +52,13 @@
 
         requests.push(postRecalculateSummaryTotalsDAO.post(app, req, locCode, jurorNumber, payload));
         requests.push(defaultExpensesDAO.get(app, req, locCode, jurorNumber));
-        requests.push(jurorDetailsObject.post(
-          require('request-promise'),
-          app,
-          req.session.authToken,
-          jurorNumber,
-          null,
-          ['NAME_DETAILS'],
-        ));
-        requests.push(jurorOverviewDAO.get(req, jurorNumber, locCode));
+        requests.push(jurorRecordDetailsDAO.post(req, [{
+          'juror_number': jurorNumber,
+          'juror_version': null,
+          'include': ['NAME_DETAILS', 'ACTIVE_POOL'],
+        }]));
 
-        const [expensesData, defaultExpense, jurorDetails, jurorOverview] = await Promise.all(requests);
+        const [expensesData, defaultExpense, jurorDetails] = await Promise.all(requests);
         let originalExpenses, editedTotals;
 
         editedTotals = expensesData.total;
@@ -109,11 +104,11 @@
         return res.render('expenses/edit/edit-approval-expenses-list.njk', {
           jurorNumber,
           locCode,
-          poolNumber: jurorOverview.commonDetails.poolNumber,
+          poolNumber: jurorDetails['0'].active_pool.pool_number,
           status,
           expenseDates,
           defaultExpense,
-          jurorDetails: jurorDetails[0],
+          jurorDetails: jurorDetails['0'],
           firstDay: expenseDates[0],
           lastDay: expenseDates[expenseDates.length - 1],
           expensesData,
@@ -284,14 +279,11 @@
         };
 
         requests.push(getEnteredExpensesDAO.post(app, req, locCode, jurorNumber, payload));
-        requests.push(jurorDetailsObject.post(
-          require('request-promise'),
-          app,
-          req.session.authToken,
-          jurorNumber,
-          null,
-          ['NAME_DETAILS'],
-        ));
+        requests.push(jurorRecordDetailsDAO.post(req, [{
+          'juror_number': jurorNumber,
+          'juror_version': null,
+          'include': ['NAME_DETAILS'],
+        }]));
 
         let [[expensesData], jurorDetails] = await Promise.all(requests);
 
@@ -336,7 +328,7 @@
           jurorNumber,
           locCode,
           status,
-          jurorDetails: jurorDetails[0],
+          jurorDetails: jurorDetails['0'],
           expensesData,
           tmpBody,
           pagination,
