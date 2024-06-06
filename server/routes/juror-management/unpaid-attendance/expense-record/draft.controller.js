@@ -68,7 +68,6 @@
             nav: 'unpaid-attendance',
             status,
             jurorStatus: req.jurorDetails.active_pool.status,
-            jurorStatus: 'Responded',
             expenseData: expenseData,
             jurorDetails: req.jurorDetails,
             jurorNumber,
@@ -85,8 +84,6 @@
           });
         })
         .catch(async(err) => {
-
-          console.log(err);
 
           app.logger.crit('Failed to fetch draft expense data: ', {
             auth: req.session.authentication,
