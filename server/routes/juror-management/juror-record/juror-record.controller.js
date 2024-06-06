@@ -5,7 +5,7 @@
   const { dateFilter, capitalizeFully, makeDate } = require('../../../components/filters');
   const { isCourtUser } = require('../../../components/auth/user-type');
   const jurorRecordObject = require('../../../objects/juror-record');
-  const { jurorHistoryDAO, historyCodes } = require('../../../objects/juror-history');
+  const { jurorHistoryDAO, jurorPaymentsHistoryDAO } = require('../../../objects/juror-history');
   const validate = require('validate.js');
   const modUtils = require('../../../lib/mod-utils');
   const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/expenses');
@@ -1027,7 +1027,13 @@
 
   module.exports.getHistoryTab = (app) => async(req, res) => {
     try {
-      const history = await jurorHistoryDAO.get(req, req.params.jurorNumber);
+      const historyTab = Object.keys(req.query)[0] || 'history';
+      const history = (historyTab === 'history' 
+        ? (await jurorHistoryDAO.get(req, req.params.jurorNumber)).data.sort((a,b) => b.dateCreated.localeCompare(a.dateCreated))
+        : (await jurorPaymentsHistoryDAO.get(req, req.params.jurorNumber)));
+
+      console.log(history);
+
       const jurorNumber = req.params.jurorNumber;
       const {data: juror} = await jurorRecordObject.record.get(
         require('request-promise'),
@@ -1037,14 +1043,13 @@
         jurorNumber,
         req.session.locCode,
       );
-      const historyTab = Object.keys(req.query)[0] || 'history';
 
       return res.render('juror-management/juror-record/juror-history', {
         jurorNumber,
         juror,
         historyUrl: app.namedRoutes.build('juror-record.history.get', { jurorNumber }),
         historyTab,
-        history: history.data.sort((a,b) => b.dateCreated.localeCompare(a.dateCreated)),
+        history,
         currentTab: 'history',
         backLinkUrl: {
           url: app.namedRoutes.build('juror-record.overview.get', { jurorNumber }),
