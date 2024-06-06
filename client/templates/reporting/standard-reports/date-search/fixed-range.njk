@@ -1,9 +1,6 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 
 {% set dateRangeHtml %}
-  {% set dateFromLabel = "Service start date from" %}
-  {% set dateToLabel = "Service start date to" %}
-
   {% include "./from-to.njk" %}
 {% endset %}
 
@@ -16,7 +13,8 @@
     }
   },
   items: [
-    { value: "NEXT_31_DAYS", text: "Next 31 days" },
+    { value: "NEXT_31_DAYS", text: "Next 31 days" } if "NEXT_31_DAYS" in fixedDateRangeValues,
+    { value: "LAST_31_DAYS", text: "Last 31 days" } if "LAST_31_DAYS" in fixedDateRangeValues,
     {
       value: "CUSTOM_RANGE",
       text: "Custom date range",
@@ -24,6 +22,6 @@
         html: dateRangeHtml
       },
       checked: errors.count > 0
-    }
+    } if "CUSTOM_RANGE" in fixedDateRangeValues
   ]
 }) }}

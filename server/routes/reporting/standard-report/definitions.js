@@ -22,6 +22,7 @@
   //     dateFrom: string, // custom label for date from input 
   //     dateTo: string, // custom label for date to input 
   //   },
+  //   fixedDateRangeValues?: [string]  // list of values to be used in fixed date range,
   //   queryParams?: { // any mandatory query params neederd throughout report journey 
   //     key: value,
   //   },
@@ -306,6 +307,11 @@
         title: 'Reasonable adjustments report',
         apiKey: 'ReasonableAdjustmentsReport',
         search: 'fixedDateRange',
+        searchLabelMappers: {
+          dateFrom: 'Service start date from',
+          dateTo: 'Service start date from',
+        },
+        fixedDateRangeValues: ['NEXT_31_DAYS', 'CUSTOM_RANGE'],
         headings: [
           'totalReasonableAdjustments',
           'reportDate',
@@ -1523,6 +1529,40 @@
           'serviceStartDate',
           'courtName',
         ],
+      },
+      'completion-of-service': {
+        title: 'Completion of service report',
+        apiKey: 'CompletionOfServiceReport',
+        search: 'fixedDateRange',
+        fixedDateRangeValues: ['LAST_31_DAYS', 'CUSTOM_RANGE'],
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+          'totalPoolMembersCompleted',
+          'courtName'
+        ],
+        grouped: {
+          headings: {
+            transformer: (data, isPrint) => {
+              const [poolNumber, poolType] = data.split(',');
+              if (isPrint) {
+                return [
+                  `Pool ${poolNumber} `,
+                  {
+                    text: capitalizeFully(poolType),
+                    color: '#505A5F',
+                    fontSize: 10,
+                    bold: false
+                  }];
+              }
+              return `${makeLink(app)['poolNumber'](poolNumber)} <span class="grouped-display-inline">${capitalizeFully(poolType)}</span>`;
+            },
+          },
+          totals: true,
+          groupHeader: true,
+        },
       },
     };
   };

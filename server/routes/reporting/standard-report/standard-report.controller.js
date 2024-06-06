@@ -176,6 +176,7 @@
             items: tmpErrors,
           },
           isFixedDateRange,
+          fixedDateRangeValues: reportType.fixedDateRangeValues || [],
           tmpBody,
           reportKey,
           customSearchLabel,
@@ -672,6 +673,10 @@
       if (req.body.dateRange && req.body.dateRange === 'NEXT_31_DAYS') {
         req.body.dateFrom = moment().format('DD/MM/YYYY');
         req.body.dateTo = moment().add(31, 'days').format('DD/MM/YYYY');
+      }
+      if (req.body.dateRange && req.body.dateRange === 'LAST_31_DAYS') {
+        req.body.dateFrom = moment().subtract(31, 'days').format('DD/MM/YYYY');
+        req.body.dateTo = moment().format('DD/MM/YYYY');
       }
 
       const validatorResult = validate(req.body, searchValidator.dateRange(_.camelCase(reportKey), req.body));
