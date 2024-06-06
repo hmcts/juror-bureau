@@ -104,6 +104,7 @@
     standardReportRoutes(app, 'attendance-data');
     require('../jury-attendance-audit')(app);
     standardReportRoutes(app, 'pool-ratio');
+    standardReportRoutes(app, 'pool-attendance-audit');
   };
 
 })();
