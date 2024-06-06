@@ -272,7 +272,6 @@
           req.session.documentsJurorsList.checkedJurors = [];
           req.session.documentsJurorsList.data.forEach(juror => {
             if (!isPending(juror[4], juror[5])) {
-              console.log(juror);
               req.session.documentsJurorsList.checkedJurors.push({
                 'juror_number': juror[0],
                 'form_code': juror[6],
