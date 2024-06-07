@@ -12,14 +12,17 @@
   module.exports.index = function(app) {
     return async function(req, res) {
       const tmpErrors = _.clone(req.session.errors);
-      const tmpFields = typeof req.session.summonsSearch !== 'undefined' ? _.clone(req.session.summonsSearch) : _.clone(req.session.formFields);
+      const tmpFields = typeof req.session.searchResponse !== 'undefined' ? _.clone(req.session.searchResponse.searchParams) : _.clone(req.session.formFields);
+      let responses;
+      let resultsStr;
 
       delete req.session.errors;
       delete req.session.formFields;
-      delete req.session.summonsSearch;
 
-      // if the user refresh by clicking the url bar and pressing enter we reset the results list
-      delete req.session.searchResponse;
+      if (typeof req.session.searchResponse !== 'undefined') {
+        responses = req.session.searchResponse.responses;
+        resultsStr = req.session.searchResponse.resultsStr;
+      }
 
       try {
         let staffList;
@@ -33,6 +36,8 @@
 
         return res.render('search/index', {
           staffList: staffList ? flattenStaffList(staffList) : [],
+          responses,
+          resultsStr,
           searchParams: tmpFields,
           errors: {
             message: '',
@@ -56,9 +61,6 @@
     return async function(req, res) {
       const promiseArr = [];
       let validatorResult;
-
-      req.session.summonsSearch = req.body;
-      delete req.session.summonsSearch._csrf;
 
       const sendValidationError = (errors) => {
         req.session.errors = errors;
@@ -198,11 +200,13 @@
           name: "AUTO"
         });
         responses.juror_response.forEach(responsesListIterator(staff));
+        resultsStr = buildSearchString(payload);
 
         req.session.searchResponse = {
           staff,
           responses,
           searchParams,
+          resultsStr,
         };
 
         app.logger.info('Fetched search results: ', {
@@ -216,8 +220,6 @@
 
         // we will not move away from this controller / page... so set again the staff list for the next submission
         req.session.staffList = _.clone(staff);
-
-        resultsStr = buildSearchString(payload);
 
       } catch (err) {
 

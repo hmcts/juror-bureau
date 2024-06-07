@@ -273,7 +273,7 @@
                           opticReference,
                           processedBannerMessage: data.processedBannerMessage ? data.processedBannerMessage : null,
                           catchmentWarning: req.session.catchmentWarning,
-                          backLinkUrl: typeof req.session.summonsSearch !== 'undefined' ? app.namedRoutes.build('search.get') : app.namedRoutes.build('inbox.todo.get'),
+                          backLinkUrl: typeof req.session.searchResponse !== 'undefined' ? app.namedRoutes.build('search.get') : app.namedRoutes.build('inbox.todo.get'),
                         });
                       }
                     )
@@ -322,7 +322,7 @@
                             opticReference,
                             processedBannerMessage: data.processedBannerMessage ? data.processedBannerMessage : null,
                             catchmentWarning: req.session.catchmentWarning,
-                            backLinkUrl: typeof req.session.summonsSearch !== 'undefined' ? app.namedRoutes.build('search.get') : app.namedRoutes.build('inbox.todo.get'),
+                            backLinkUrl: typeof req.session.searchResponse !== 'undefined' ? app.namedRoutes.build('search.get') : app.namedRoutes.build('inbox.todo.get'),
                           });
                         }
 
@@ -382,7 +382,7 @@
                 opticReference,
                 processedBannerMessage: data.processedBannerMessage ? data.processedBannerMessage : null,
                 method: 'digital',
-                backLinkUrl: typeof req.session.summonsSearch !== 'undefined' ? app.namedRoutes.build('search.get') : app.namedRoutes.build('inbox.todo.get'),
+                backLinkUrl: typeof req.session.searchResponse !== 'undefined' ? app.namedRoutes.build('search.get') : app.namedRoutes.build('inbox.todo.get'),
               });
             });
         }
