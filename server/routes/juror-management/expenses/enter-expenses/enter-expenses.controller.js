@@ -485,6 +485,7 @@
 
         return res.render('expenses/_partials/recalculate-error-banner.njk', {
           isLessThanPaid: err.error && err.error.code === 'EXPENSE_VALUES_REDUCED_LESS_THAN_PAID',
+          isLessThanZero: err.error && err.error.code === 'EXPENSES_CANNOT_BE_LESS_THAN_ZERO'
         });
       }
     };
