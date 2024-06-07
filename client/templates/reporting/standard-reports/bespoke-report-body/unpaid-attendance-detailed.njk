@@ -1,0 +1,66 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% set poolTrials = tables[0].rows %}
+
+{{ govukTable({
+  firstCellIsHeader: true,
+  head: tables[0].headers
+}) }}
+
+{% for poolTrial in poolTrials %}
+<h3 class="govuk-heading-m"><a href="{{ poolTrial.poolTrialLink }}">{{ poolTrial.header }}</a></h3>
+{% for item in poolTrial.dates%}
+<table class="govuk-table govuk-!-margin-bottom-0 govuk-!-margin-top-5">
+  <tbody class="govuk-table__body">
+    <tr class="govuk-table__row">
+        <td class="govuk-table__cell" colspan="6"><p class="govuk-body-l govuk-!-margin-0">{{ item.date | dateFilter("YYYY,MM,DD", "dddd D MMMM YYYY") }}</p></td>
+    </tr>
+    {% for row in item.values %}
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell mod-!-width-one-sixth"><a href="{{ url('juror-record.overview.get', { jurorNumber: row.jurorNumber }) }}" class="govuk-link">{{row.jurorNumber}} </a></td>
+      <td class="govuk-table__cell mod-!-width-one-sixth">{{ row.firstName }}</td>
+      <td class="govuk-table__cell mod-!-width-one-sixth">{{ row.lastName }}</td>
+      <td class="govuk-table__cell mod-!-width-one-sixth">
+        {% if row.auditNumber and row.auditNumber.charAt(0) === 'P' %}
+          <a href="{{ url('reports.pool-attendance-audit.report.print', { 'filter': row.auditNumber }) }}" target="_blank">
+            {{ row.auditNumber }}
+          </a>
+        {% elif row.auditNumber and row.auditNumber.charAt(0) === 'J' %}
+          <a href="{{ url('reports.jury-attendance-audit.report.print', { 'filter': row.auditNumber }) }}" target="_blank">
+            {{ row.auditNumber }}
+          </a>
+        {% else %}
+          - 
+        {% endif %} 
+      </td>
+      <td class="govuk-table__cell mod-!-width-one-sixth">{{ row.attendanceType | replace('_',' ') | capitalizeFully }}</td>
+      <td class="govuk-table__cell mod-!-width-one-sixth">{{ row.expenseStatus }}</td>
+    </tr>
+    {% endfor %}
+    <tr class="govuk-table__row">
+        <td class="govuk-table__cell govuk-!-font-weight-bold" colspan="6">Total: {{item.values.length}}</td>
+    </tr>
+  </tbody>
+</table>
+{% endfor %}
+<table class="govuk-table">
+  <tbody class="govuk-table__body">
+     <tr id="totals-row" class="govuk-table__row mod-highlight-table-row__grey">
+                <td class="govuk-table__cell govuk-!-font-weight-bold">Total unpaid attendances for {{poolTrial.header}}: {{poolTrial.totalLength}}</td>
+            </tr>
+    </tbody>
+</table>
+{% endfor %}
+
+
+
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      {{ govukSummaryList({
+        rows: tables.activeRows,
+        classes: "govuk-!-padding-left-2"
+      }) }}
+    </div>
+  </div>
+

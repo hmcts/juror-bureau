@@ -532,6 +532,10 @@ dt.govuk-summary-list-mod {
 }
 
 .mod-\!-width {
+    &-one-sixth {
+      width: calc(100% / 6) !important;
+    }
+
     &-one-eighth {
       width: 12.5% !important;
     }
