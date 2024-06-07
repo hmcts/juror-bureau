@@ -83,6 +83,9 @@
           fontSize: 16,
           marginBottom: 5,
         },
+        sectionSubHeading: {
+          fontSize: 12,
+        },
       },
     };
   };
