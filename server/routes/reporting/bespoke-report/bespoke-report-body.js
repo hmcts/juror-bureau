@@ -502,14 +502,3 @@ const bespokeReportBodys = (app, req) => {
 };
 
 module.exports.bespokeReportBodys = bespokeReportBodys;
-
-const testTableData = {
-  headings: [
-    { id: 'JUROR_NUMBER', name: 'Juror number', dataType: 'Integer' },
-    { id: 'FIRST_NAME', name: 'First name', dataType: 'String' },
-    { id: 'LAST_NAME', name: 'Last name', dataType: 'String' },
-    { id: 'AUDIT_NUMBER', name: 'Audit number', dataType: 'String' },
-    { id: 'ATTENDANCE', name: 'Attendance', dataType: 'String' },
-    { id: 'EXPENSE_STATUS', name: 'Expense status', dataType: 'String' }
-  ]
-};
