@@ -103,7 +103,7 @@ const bespokeReportTablePrint = {
                 {text: juror.jurorNumber},
                 {text: juror.firstName},
                 {text: juror.lastName},
-                {text: juror.auditNumber},
+                {text: juror.auditNumber ? juror.auditNumber : '-'},
                 {text: capitalizeFully(juror.attendanceType.replace('_',' '))},
                 {text: juror.expenseStatus},
               ]],

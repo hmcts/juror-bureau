@@ -1358,7 +1358,6 @@
         title: 'Unpaid attendance report (detailed)',
         apiKey: 'UnpaidAttendanceReportDetailedReport',
         search: 'dateRange',
-        printLandscape: true,
         headings: [
           'dateFrom',
           'reportDate',

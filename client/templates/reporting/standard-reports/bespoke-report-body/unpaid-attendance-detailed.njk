@@ -20,9 +20,19 @@
       <td class="govuk-table__cell mod-!-width-one-sixth"><a href="{{ url('juror-record.overview.get', { jurorNumber: row.jurorNumber }) }}" class="govuk-link">{{row.jurorNumber}} </a></td>
       <td class="govuk-table__cell mod-!-width-one-sixth">{{ row.firstName }}</td>
       <td class="govuk-table__cell mod-!-width-one-sixth">{{ row.lastName }}</td>
-      <td class="govuk-table__cell mod-!-width-one-sixth"><a href="{{ url('reports.financial-audit.get', { auditNumber: row.auditNumber }) }}" target="_blank">
-              {{ row.auditNumber }}
-            </a></td>
+      <td class="govuk-table__cell mod-!-width-one-sixth">
+        {% if row.auditNumber and row.auditNumber.charAt(0) === 'P' %}
+          <a href="{{ url('reports.pool-attendance-audit.report.get', { 'filter': row.auditNumber }) }}" target="_blank">
+            {{ row.auditNumber }}
+          </a>
+        {% elif row.auditNumber and row.auditNumber.charAt(0) === 'J' %}
+          <a href="{{ url('reports.jury-attendance-audit.report.get', { 'filter': row.auditNumber }) }}" target="_blank">
+            {{ row.auditNumber }}
+          </a>
+        {% else %}
+          - 
+        {% endif %} 
+      </td>
       <td class="govuk-table__cell mod-!-width-one-sixth">{{ row.attendanceType | replace('_',' ') | capitalizeFully }}</td>
       <td class="govuk-table__cell mod-!-width-one-sixth">{{ row.expenseStatus }}</td>
     </tr>
