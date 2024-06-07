@@ -22,11 +22,11 @@
       <td class="govuk-table__cell mod-!-width-one-sixth">{{ row.lastName }}</td>
       <td class="govuk-table__cell mod-!-width-one-sixth">
         {% if row.auditNumber and row.auditNumber.charAt(0) === 'P' %}
-          <a href="{{ url('reports.pool-attendance-audit.report.get', { 'filter': row.auditNumber }) }}" target="_blank">
+          <a href="{{ url('reports.pool-attendance-audit.report.print', { 'filter': row.auditNumber }) }}" target="_blank">
             {{ row.auditNumber }}
           </a>
         {% elif row.auditNumber and row.auditNumber.charAt(0) === 'J' %}
-          <a href="{{ url('reports.jury-attendance-audit.report.get', { 'filter': row.auditNumber }) }}" target="_blank">
+          <a href="{{ url('reports.jury-attendance-audit.report.print', { 'filter': row.auditNumber }) }}" target="_blank">
             {{ row.auditNumber }}
           </a>
         {% else %}
