@@ -134,7 +134,11 @@
               return courtName.includes(filter.toLowerCase());
             });
           }
+
           req.session.courtsList = courtsData.courts;
+          // we should keep a count of how many courts currently exist... also this should not affect anything
+          req.session.totalCourts = courtsData.courts.length;
+
           return res.render('reporting/standard-reports/court-select', {
             reportKey,
             courts,
@@ -566,6 +570,19 @@
           filter:'dateRange' 
         }) + `?fromDate=${req.query.fromDate}&toDate=${req.query.toDate}`
       }
+    }
+
+    if (reportKey.includes('jury-summoning-monitor')) {
+      if (reportKey.includes('court')) {
+        return res.redirect(app.namedRoutes.build('reports.jury-summoning-monitor.filter-by-date.get', {
+          type: 'court',
+        }));
+      }
+
+      return res.redirect(app.namedRoutes.build('reports.jury-summoning-monitor.report.get', {
+        type: 'pool',
+        filter: req.params.filter,
+      }));
     }
 
     try {

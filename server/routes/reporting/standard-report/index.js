@@ -86,7 +86,6 @@
     standardReportRoutes(app, 'jury-expenditure-high-level');
     standardReportRoutes(app, 'jury-expenditure-mid-level');
     standardReportRoutes(app, 'jury-expenditure-low-level');
-    standardReportRoutes(app, 'absences');
     standardReportRoutes(app, 'summoned-responded');
     standardReportRoutes(app, 'trial-statistics');
     standardReportRoutes(app, 'trial-attendance');
@@ -109,6 +108,10 @@
     standardReportRoutes(app, 'pool-selection');
     standardReportRoutes(app, 'completion-of-service');
     require('../reprint-audit-reports')(app);
+
+    standardReportRoutes(app, 'jury-summoning-monitor-pool');
+    standardReportRoutes(app, 'jury-summoning-monitor-court');
+    require('../jury-summoning-monitor')(app);
   };
 
 })();

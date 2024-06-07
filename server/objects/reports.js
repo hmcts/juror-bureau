@@ -85,4 +85,13 @@ const { DAO } = require('./dataAccessObject');
     },
   });
 
+  module.exports.jurySummoningMonitorDAO = new DAO('moj/reports/jury-summoning-monitor', {
+    post: function(body) {
+      return {
+        body,
+        transform: mapSnakeToCamel,
+      };
+    },
+  });
+
 })();
