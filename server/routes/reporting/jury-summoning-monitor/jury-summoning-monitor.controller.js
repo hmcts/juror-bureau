@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const moment = require('moment');
 const { validate } = require('validate.js');
-const { makeManualError } = require('../../../lib/mod-utils');
+const { makeManualError, mapSnakeToCamel } = require('../../../lib/mod-utils');
 const { jurySummoningMonitorDAO } = require('../../../objects/reports');
 const { dateRange } = require('../../../config/validation/report-search-by');
 const { constructPageHeading } = require('../standard-report/utils');
@@ -132,11 +132,14 @@ module.exports.getJurySummoningMonitorReport = (app) => async (req, res) => {
   const pageHeadings = reportType.headings.map(heading => constructPageHeading(heading, response.headings));
   const title = `Jury summoning monitor report (${type === 'court' ? 'by court' : 'by pool'})`;
 
+  delete response.headings;
+  delete response.Headers;
+
   return res.render('reporting/standard-reports/standard-report.njk', {
     title,
     pageHeadings,
     bespokeReportFile: '../jury-summoning-monitor/report.njk',
-    // stuff
+    data: mapSnakeToCamel(response),
   });
 };
 
