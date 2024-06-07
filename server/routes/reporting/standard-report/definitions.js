@@ -3,7 +3,7 @@
 
   const _ = require('lodash');
   const { isCourtUser } = require('../../../components/auth/user-type');
-  const { dateFilter, capitalizeFully, toMoney } = require('../../../components/filters');
+  const { dateFilter, capitalizeFully, toMoney, toSentenceCase } = require('../../../components/filters');
   const { dailyUtilisationDAO, dailyUtilisationJurorsDAO, viewMonthlyUtilisationDAO, generateMonthlyUtilisationDAO } = require('../../../objects/reports');
 
   const makeLink = (app) => {
@@ -1324,6 +1324,11 @@
           'courtName',
         ],
         grouped: {
+          headings: {
+            transformer: (data, isPrint) => {
+              return toSentenceCase(data);
+            },
+          },
           groupHeader: true,
           totals: true,
           sortGroups: 'ascending',
