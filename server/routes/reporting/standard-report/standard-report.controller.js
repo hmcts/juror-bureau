@@ -317,7 +317,7 @@
             });
           }
 
-          if (header.id === 'payment_audit') {
+          if (header.id === 'payment_audit' && output !== '-') {
             return ({
               html: `<a href=${
                 app.namedRoutes.build('reports.financial-audit.get', {auditNumber: output})
