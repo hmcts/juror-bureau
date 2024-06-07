@@ -375,10 +375,14 @@
             output = reportType.cellTransformer(data, header.id, output);
           }
 
+          const numericTypes = ['Integer', 'BigDecimal', 'Long', 'Double']
+
           return ({
             html: output ? output : '-',
             attributes: {
-              "data-sort-value": header.dataType === 'LocalDate' ? data[snakeToCamel(header.id)] : output
+              "data-sort-value": output && output !== '-' 
+                ? (header.dataType === 'LocalDate' ? data[snakeToCamel(header.id)] : output) 
+                : (numericTypes.includes(header.dataType) ? '0' : '-')
             },
             format: header.dataType === 'BigDecimal' ? 'numeric' : '',
           });
