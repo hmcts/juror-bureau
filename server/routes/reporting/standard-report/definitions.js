@@ -1513,18 +1513,15 @@
       },
       'pool-selection': {
         title: 'Pool selection list',
-        apiKey: 'PoolSelectionList',
+        apiKey: 'PoolSelectionListReport',
         search: 'poolNumber',
         headings: [
-          'dateFrom',
-          'reportDate',
-          'dateTo',
-          'reportTime',
           'poolNumber',
-          'courtName',
+          'reportDate',
           'poolType',
-          '',
-          'serviceStartDate'
+          'reportTime',
+          'serviceStartDate',
+          'courtName',
         ],
       },
     };
