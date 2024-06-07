@@ -739,14 +739,14 @@
 
     if(url.includes('?')) {
       url
-      .split('?')[1]
-      .split('&')
-      .map((param) => param.split('=')[0])
-      .forEach((param) => {
-        if (queryParams && queryParams[param]) {
-          delete queryParams[param];
-        }
-      });
+        .split('?')[1]
+        .split('&')
+        .map((param) => param.split('=')[0])
+        .forEach((param) => {
+            if (queryParams && queryParams[param]) {
+            delete queryParams[param];
+            }
+        });
     }
 
     return url + `${reportType.queryParams ? `${url.includes('?') ? '&' : '?'}${new URLSearchParams(queryParams).toString()}` : ''}`
