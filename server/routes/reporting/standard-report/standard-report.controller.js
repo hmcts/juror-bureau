@@ -330,11 +330,11 @@
           if (header.id === 'attendance_audit' && output !== '-') {
             let link;
             if (output && output.charAt(0) === 'P') {
-              link = app.namedRoutes.build('reports.pool-attendance-audit.report.get', {
+              link = app.namedRoutes.build('reports.pool-attendance-audit.report.print', {
                 filter: output,
               })
             } else if (output && output.charAt(0) === 'J') {
-              link = app.namedRoutes.build('reports.jury-attendance-audit.report.get', {
+              link = app.namedRoutes.build('reports.jury-attendance-audit.report.print', {
                 filter: output,
               })
             }
@@ -375,10 +375,14 @@
             output = reportType.cellTransformer(data, header.id, output);
           }
 
+          const numericTypes = ['Integer', 'BigDecimal', 'Long', 'Double']
+
           return ({
             html: output ? output : '-',
             attributes: {
-              "data-sort-value": header.dataType === 'LocalDate' ? data[snakeToCamel(header.id)] : output
+              "data-sort-value": output && output !== '-' 
+                ? (header.dataType === 'LocalDate' ? data[snakeToCamel(header.id)] : output) 
+                : (numericTypes.includes(header.dataType) ? '0' : '-')
             },
             format: header.dataType === 'BigDecimal' ? 'numeric' : '',
           });
@@ -574,7 +578,7 @@
       let tables = [];
 
       if (reportType.bespokeReport && reportType.bespokeReport.body) {
-        tables = bespokeReportBodys(app)[reportKey](reportType, tableData)
+        tables = bespokeReportBodys(app, req)[reportKey](reportType, tableData)
       } else if (reportType.multiTable) {
         for (const [key, value] of Object.entries(tableData.data)) {
           tables.push(...buildStandardTable(reportType, value, tableData.headings, reportType.multiTable.sectionHeadings ? key : ''));
