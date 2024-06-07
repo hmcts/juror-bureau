@@ -1510,7 +1510,20 @@
           'total',
           'courtName',
         ],
-      }
+      },
+      'pool-selection': {
+        title: 'Pool selection list',
+        apiKey: 'PoolSelectionListReport',
+        search: 'poolNumber',
+        headings: [
+          'poolNumber',
+          'reportDate',
+          'poolType',
+          'reportTime',
+          'serviceStartDate',
+          'courtName',
+        ],
+      },
     };
   };
 })();
