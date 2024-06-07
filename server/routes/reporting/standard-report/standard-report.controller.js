@@ -743,9 +743,9 @@
         .split('&')
         .map((param) => param.split('=')[0])
         .forEach((param) => {
-            if (queryParams && queryParams[param]) {
+          if (queryParams && queryParams[param]) {
             delete queryParams[param];
-            }
+          }
         });
     }
 
