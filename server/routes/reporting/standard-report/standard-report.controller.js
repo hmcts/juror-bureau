@@ -328,11 +328,22 @@
           }
 
           if (header.id === 'attendance_audit') {
-            // ADD IN POOL ATTENDANCE AUDIT REPORT ROUTE ONCE AVAILABLE
+            let link;
+            if (output.substring(0,1) === 'P') {
+              link = app.namedRoutes.build('reports.pool-attendance-audit.report.get', {
+                filter: output,
+              })
+            } else if (output.substring(0,1) === 'J') {
+              link = app.namedRoutes.build('reports.jury-attendance-audit.report.get', {
+                filter: output,
+              })
+            }
             return ({
-              html: `<a href='#'>${
-                output
-              }</a>`,
+              html: link 
+                ? `<a href='${link}' target="_blank">${
+                  output
+                }</a>`
+                : output,
             });
           }
 
