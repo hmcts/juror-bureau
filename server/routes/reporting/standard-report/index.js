@@ -106,6 +106,7 @@
     standardReportRoutes(app, 'pool-ratio');
     standardReportRoutes(app, 'pool-attendance-audit');
     standardReportRoutes(app, 'pool-selection');
+    standardReportRoutes(app, 'completion-of-service');
   };
 
 })();
