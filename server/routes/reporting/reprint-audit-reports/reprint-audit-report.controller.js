@@ -57,9 +57,8 @@ const { standardReportPrint } = require('../standard-report/standard-report-prin
       const auditNumber = capitalise(req.body.auditReportNumber)
 
       let reportKey;
-      switch (auditNumber.substring(0,1)) {
+      switch (auditNumber.charAt(0)) {
       case 'F':
-        req.session.reprintFinancialAudit = true;
         try {
           await financialAuditDAO.get(req, auditNumber);
 
