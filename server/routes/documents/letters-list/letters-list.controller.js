@@ -271,7 +271,7 @@
         } else {
           req.session.documentsJurorsList.checkedJurors = [];
           req.session.documentsJurorsList.data.forEach(juror => {
-            if (isCheckable(juror[4], juror[5])) {
+            if (!isPending(juror[4], juror[5])) {
               req.session.documentsJurorsList.checkedJurors.push({
                 'juror_number': juror[0],
                 'form_code': juror[6],
@@ -411,12 +411,12 @@
       return false;
     }
 
-    return req.session.documentsJurorsList.data.filter((juror) => (isCheckable(juror[4], juror[5]))).length
+    return req.session.documentsJurorsList.data.filter((juror) => (!isPending(juror[4], juror[5]))).length
       === req.session.documentsJurorsList.checkedJurors.length;
   }
 
-  function isCheckable(printValue, pendingValue) {
-    return !printValue && !pendingValue;
+  function isPending(datePrinted, isPrinted) {
+    return datePrinted !== null && !isPrinted;
   }
 
 })();

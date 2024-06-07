@@ -21,8 +21,13 @@
 
   const standardFilterGet = (app, reportKey) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
+    let customSearchLabel;
 
     delete req.session.reportCourts;
+
+    if(reportType.apiKey === 'PanelResultReport') {
+      customSearchLabel = 'Search trials between these dates';
+    }
 
     if (reportType.search) {
       const { filter } = req.query;
@@ -68,6 +73,10 @@
           filter,
           filterUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.post`)),
           reportUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.post`)),
+          backLinkUrl: {
+            built: true,
+            url: reportType.filterBackLinkUrl,
+          },
         });
       case 'jurorNumber':
         let jurorList = [];
@@ -135,6 +144,10 @@
             clearFilterUrl:  addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.filter.get`)),
             reportUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.post`)),
             cancelUrl: app.namedRoutes.build('reports.reports.get'),
+            backLinkUrl: {
+              built: true,
+              url: reportType.filterBackLinkUrl,
+            },
             errors: {
               title: 'Please check your search',
               count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -142,6 +155,8 @@
             },
           });
         } catch (err) {
+          console.log(err);
+
           app.logger.crit('Failed to fetch courts list: ', {
             auth: req.session.authentication,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
@@ -161,13 +176,19 @@
             items: tmpErrors,
           },
           isFixedDateRange,
+          fixedDateRangeValues: reportType.fixedDateRangeValues || [],
           tmpBody,
           reportKey,
+          customSearchLabel,
           title: reportType.title,
           searchLabels: reportType.searchLabelMappers,
           reportUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.post`)),
           exportOnly: reportType.exportOnly,
           cancelUrl: app.namedRoutes.build('reports.reports.get'),
+          backLinkUrl: {
+            built: true,
+            url: reportType.filterBackLinkUrl,
+          },
         });
       case 'trial':
         const sortBy = req.query['sortBy'] || 'trialNumber';
@@ -201,7 +222,11 @@
             clearSearchUrl: app.namedRoutes.build(`reports.${reportKey}.filter.get`),
             reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
             cancelUrl: app.namedRoutes.build('reports.reports.get'),
-            trials: transformRadioSelectTrialsList(data.data, sortBy, sortOrder)
+            trials: transformRadioSelectTrialsList(data.data, sortBy, sortOrder),
+            backLinkUrl: {
+              built: true,
+              url: reportType.filterBackLinkUrl,
+            },
           });
         } catch (err) {
           app.logger.crit('Failed to fetch trials list: ', {
@@ -267,8 +292,12 @@
               }</a>`,
             });
           }
+          
+          if (header.id === 'trial_type') {
+            return { html: output === 'Civ' ? 'Civil' : 'Criminal' };
+          }
 
-          if (header.id === 'pool_number' || header.id === 'pool_number_by_jp' || header.id === 'appearance_pool_number' || header.id === 'pool_number_jp') {
+          if (header.id.includes('pool_number')) {
             return ({
               html: `<a href=${
                 app.namedRoutes.build('pool-overview.get', {poolNumber: output})
@@ -278,7 +307,17 @@
             });
           }
 
-          if (header.id === 'payment_audit') {
+          if (header.id.includes('trial_number') && output) {
+            return ({
+              html: `<a href=${
+                app.namedRoutes.build('trial-management.trials.detail.get', {trialNumber: output, locationCode: req.session.authentication.locCode})
+              }>${
+                output
+              }</a>`,
+            });
+          }
+
+          if (header.id === 'payment_audit' && output !== '-') {
             return ({
               html: `<a href=${
                 app.namedRoutes.build('reports.financial-audit.get', {auditNumber: output})
@@ -288,12 +327,23 @@
             });
           }
 
-          if (header.id === 'attendance_audit') {
-            // ADD IN POOL ATTENDANCE AUDIT REPORT ROUTE ONCE AVAILABLE
+          if (header.id === 'attendance_audit' && output !== '-') {
+            let link;
+            if (output && output.charAt(0) === 'P') {
+              link = app.namedRoutes.build('reports.pool-attendance-audit.report.get', {
+                filter: output,
+              })
+            } else if (output && output.charAt(0) === 'J') {
+              link = app.namedRoutes.build('reports.jury-attendance-audit.report.get', {
+                filter: output,
+              })
+            }
             return ({
-              html: `<a href='#'>${
-                output
-              }</a>`,
+              html: link 
+                ? `<a href='${link}' target="_blank">${
+                  output
+                }</a>`
+                : output,
             });
           }
 
@@ -482,9 +532,9 @@
       } else if (reportType.search === 'jurorNumber') {
         // VERIFY FIELD NAME ONCE AN API AVAILABLE 
         config.jurorNumber = req.params.filter;
-      } else if (reportType.search === 'audit') {
-        config[reportType.searchProperty] = req.params.filter;
       }
+    } else if (reportType.searchProperty) {
+      config[reportType.searchProperty] = req.params.filter;
     }
 
     if (req.query.fromDate) {
@@ -635,6 +685,10 @@
         req.body.dateFrom = moment().format('DD/MM/YYYY');
         req.body.dateTo = moment().add(31, 'days').format('DD/MM/YYYY');
       }
+      if (req.body.dateRange && req.body.dateRange === 'LAST_31_DAYS') {
+        req.body.dateFrom = moment().subtract(31, 'days').format('DD/MM/YYYY');
+        req.body.dateTo = moment().format('DD/MM/YYYY');
+      }
 
       const validatorResult = validate(req.body, searchValidator.dateRange(_.camelCase(reportKey), req.body));
       if (typeof validatorResult !== 'undefined') {
@@ -681,7 +735,21 @@
   };
 
   function addURLQueryParams(reportType, url){
-    return url + `${reportType.queryParams ? `${url.includes('?') ? '&' : '?'}${new URLSearchParams(_.clone(reportType.queryParams)).toString()}` : ''}`
+    let queryParams = _.clone(reportType.queryParams);
+
+    if(url.includes('?')) {
+      url
+        .split('?')[1]
+        .split('&')
+        .map((param) => param.split('=')[0])
+        .forEach((param) => {
+          if (queryParams && queryParams[param]) {
+            delete queryParams[param];
+          }
+        });
+    }
+
+    return url + `${reportType.queryParams ? `${url.includes('?') ? '&' : '?'}${new URLSearchParams(queryParams).toString()}` : ''}`
   }
 
   module.exports = {

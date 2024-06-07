@@ -68,6 +68,7 @@
     standardReportRoutes(app, 'jury-list');
     standardReportRoutes(app, 'pool-status');
     standardReportRoutes(app, 'manual-juror-report');
+    standardReportRoutes(app, 'voir-dire');
     standardReportRoutes(app, 'pool-analysis');
     // require('../pool-status')(app);
     standardReportRoutes(app, 'reasonable-adjustments');
@@ -102,6 +103,10 @@
     standardReportRoutes(app, 'pool-statistics');
     standardReportRoutes(app, 'attendance-data');
     require('../jury-attendance-audit')(app);
+    standardReportRoutes(app, 'pool-ratio');
+    standardReportRoutes(app, 'pool-attendance-audit');
+    standardReportRoutes(app, 'pool-selection');
+    standardReportRoutes(app, 'completion-of-service');
   };
 
 })();

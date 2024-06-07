@@ -15,6 +15,12 @@
 
 {% set currentApp = "Reports" %}
 
+{% block beforeContent %}
+  {% if backLinkUrl.url %}
+    {% include "includes/back-link.njk" %}
+  {% endif %}
+{% endblock %}
+
 {% block content %}
   {% include "includes/errors.njk" %}  
 
@@ -69,7 +75,7 @@
 
             <thead class="govuk-table__head">
               <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header" >
+                <th scope="col" class="govuk-table__header mod-checkbox-header" >
                   <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
                     <input type="checkbox" class="govuk-checkboxes__input select-check court-select-check" id="selectAllCheckbox" name="selectAllCheckbox"/>
                     <label class="govuk-label govuk-checkboxes__label" for="selectAllCheckbox">
@@ -77,7 +83,7 @@
                     </label>
                   </div>
                 </th>
-                <th scope="col" class="govuk-table__header jd-middle-align" aria-sort="ascending" aria-label="Court name">Court name</th>
+                <th scope="col" class="govuk-table__header jd-middle-align fixTableHead__data-header" aria-sort="ascending" aria-label="Court name">Court name</th>
               </tr>
             </thead>
             <tbody class="govuk-table__body ">

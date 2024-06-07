@@ -23,6 +23,9 @@ async function standardReportPrint(app, req, res, reportKey, data) {
   });
 
   const buildTableHeading = (tableHeadings) => tableHeadings.map(heading => {
+    if (reportData.tableHeaderTransformer) {
+      return { text: reportData.tableHeaderTransformer(heading, true), style: 'label' };
+    }
     return { text: heading.name, style: 'label' };
   });
 
@@ -40,6 +43,10 @@ async function standardReportPrint(app, req, res, reportKey, data) {
 
         if (header.id === 'excusal_disqual_code') {
           text = `${capitalise(text.split('-')[0])} - ${text.split('-')[1]}`;
+        }
+
+        if (header.id === 'trial_type') {
+          text = text === 'Civ' ? 'Civil' : 'Criminal';
         }
 
         if (header.dataType === 'List') {
@@ -169,7 +176,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
       body: [...tableRows],
       footer: [],
       widths: reportData.bespokeReport && reportData.bespokeReport.printWidths
-        ? reportData.bespokeReport.printWidths : null,
+        ? reportData.bespokeReport.printWidths : (reportData.columnWidths || null),
       margin: [0, 10, 0, 0],
     }];
 

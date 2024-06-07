@@ -1136,7 +1136,7 @@
     case 'certificate-attendance':
       return 'Certificates of attendance';
     case 'failed-to-attend':
-      return 'Certificates of attendance';
+      return 'Failed to attend letters';
     default: return '';
     }
   };

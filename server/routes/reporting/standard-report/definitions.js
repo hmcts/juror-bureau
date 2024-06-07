@@ -3,7 +3,7 @@
 
   const _ = require('lodash');
   const { isCourtUser } = require('../../../components/auth/user-type');
-  const { dateFilter, capitalizeFully, toMoney } = require('../../../components/filters');
+  const { dateFilter, capitalizeFully, toMoney, toSentenceCase } = require('../../../components/filters');
   const { dailyUtilisationDAO, dailyUtilisationJurorsDAO, viewMonthlyUtilisationDAO, generateMonthlyUtilisationDAO } = require('../../../objects/reports');
 
   const makeLink = (app) => {
@@ -22,6 +22,7 @@
   //     dateFrom: string, // custom label for date from input 
   //     dateTo: string, // custom label for date to input 
   //   },
+  //   fixedDateRangeValues?: [string]  // list of values to be used in fixed date range,
   //   queryParams?: { // any mandatory query params neederd throughout report journey 
   //     key: value,
   //   },
@@ -63,6 +64,8 @@
   //   },
   //   fontSize?: number,
   //   totalsRow?: (data, isPrint) => [object], // custom totals row for the report
+  //   columnWidths?: [string | number], // custom widths for the main table columns
+  //   filterBackLinkUrl?: string,  // backlink url for the inital filter page
   // }};
   module.exports.reportKeys = (app, req = null) => {
     const courtUser = req ? isCourtUser(req) : false;
@@ -304,6 +307,11 @@
         title: 'Reasonable adjustments report',
         apiKey: 'ReasonableAdjustmentsReport',
         search: 'fixedDateRange',
+        searchLabelMappers: {
+          dateFrom: 'Service start date from',
+          dateTo: 'Service start date from',
+        },
+        fixedDateRangeValues: ['NEXT_31_DAYS', 'CUSTOM_RANGE'],
         headings: [
           'totalReasonableAdjustments',
           'reportDate',
@@ -415,6 +423,17 @@
         ],
         unsortable: true,
         exportLabel: 'Export raw data',
+      },
+      'voir-dire': {
+        title: 'Panel result report (by trial)',
+        apiKey: 'PanelResultReport',
+        search: 'dateRange',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+        ],
       },
       'unconfirmed-attendance': {
         title: 'Unconfirmed attendance report',
@@ -908,6 +927,7 @@
           '',
           'reportTime',
         ],
+        columnWidths: [80, '*', '*', '*', 60, 60],
       },
       'trial-statistics': {
         title: 'Trial statistics',
@@ -1304,6 +1324,11 @@
           'courtName',
         ],
         grouped: {
+          headings: {
+            transformer: (data, isPrint) => {
+              return toSentenceCase(data);
+            },
+          },
           groupHeader: true,
           totals: true,
           sortGroups: 'ascending',
@@ -1432,7 +1457,6 @@
       'jury-attendance-audit': {
         title: 'Jury attendance audit report',
         apiKey: 'JuryAttendanceAuditReport',
-        search: 'audit',
         searchProperty: 'juryAuditNumber',
         headings: [
           'attendanceDate',
@@ -1443,7 +1467,108 @@
           'courtName',
           'total',
         ],
-      }
+      },
+      'pool-ratio': {
+        title: 'Pool ratio report',
+        apiKey: 'PoolRatioReport',
+        search: 'courts',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+        ],
+        queryParams: {
+          fromDate: req?.query?.fromDate || '',
+          toDate: req?.query?.toDate || '',
+        },
+        filterBackLinkUrl: app.namedRoutes.build('reports.pool-ratio.filter.dates.get'),
+        unsortable: true,
+        tableHeaderTransformer: (data, isPrint = false) => {
+          const template = (name, hintValue) => {
+            return !isPrint
+                ? `${name} <br> <span class='govuk-hint'>${hintValue}</span>`
+                : [name, '\n', {text: hintValue, color: '#505A5F', bold: false}]
+          } 
+
+          switch (data.id) {
+            case 'total_requested':
+              return template(data.name, '(1)');
+            case 'total_deferred':
+              return template(data.name, '(2)');
+            case 'total_summoned':
+              return template(data.name, '(3)');
+            case 'total_supplied':
+              return template(data.name, '(4)');
+            case 'ratio_1':
+              return template(data.name, '(3-2)/(1-2)');
+            case 'ratio_2':
+              return template(data.name, '(3-2)/(4-2)');
+            default:
+              return data.name;
+          }
+        }
+      },
+      'pool-attendance-audit': {
+        title: 'Pool attendance audit report',
+        apiKey: 'PoolAttendanceAuditReport',
+        searchProperty: 'poolAuditNumber',
+        headings: [
+          'attendanceDate',
+          'reportDate',
+          'auditNumber',
+          'reportTime',
+          'total',
+          'courtName',
+        ],
+      },
+      'pool-selection': {
+        title: 'Pool selection list',
+        apiKey: 'PoolSelectionListReport',
+        search: 'poolNumber',
+        headings: [
+          'poolNumber',
+          'reportDate',
+          'poolType',
+          'reportTime',
+          'serviceStartDate',
+          'courtName',
+        ],
+      },
+      'completion-of-service': {
+        title: 'Completion of service report',
+        apiKey: 'CompletionOfServiceReport',
+        search: 'fixedDateRange',
+        fixedDateRangeValues: ['LAST_31_DAYS', 'CUSTOM_RANGE'],
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+          'totalPoolMembersCompleted',
+          'courtName'
+        ],
+        grouped: {
+          headings: {
+            transformer: (data, isPrint) => {
+              const [poolNumber, poolType] = data.split(',');
+              if (isPrint) {
+                return [
+                  `Pool ${poolNumber} `,
+                  {
+                    text: capitalizeFully(poolType),
+                    color: '#505A5F',
+                    fontSize: 10,
+                    bold: false
+                  }];
+              }
+              return `${makeLink(app)['poolNumber'](poolNumber)} <span class="grouped-display-inline">${capitalizeFully(poolType)}</span>`;
+            },
+          },
+          totals: true,
+          groupHeader: true,
+        },
+      },
     };
   };
 })();
