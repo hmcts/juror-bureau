@@ -109,6 +109,7 @@
     standardReportRoutes(app, 'pool-selection');
     standardReportRoutes(app, 'completion-of-service');
     require('../reprint-audit-reports')(app);
+    standardReportRoutes(app, 'yield-performance');
   };
 
 })();

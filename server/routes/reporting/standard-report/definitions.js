@@ -1586,6 +1586,25 @@
           groupHeader: true,
         },
       },
+      'yield-performance': {
+        title: 'Yield performance report',
+        apiKey: 'YieldPerformanceReport',
+        search: 'courts',
+        searchLabelMappers: {
+          dateRange: 'Enter attendance dates to search',
+        },
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+        ],
+        queryParams: {
+          fromDate: req?.query?.fromDate || '',
+          toDate: req?.query?.toDate || '',
+        },
+        filterBackLinkUrl: app.namedRoutes.build('reports.yield-performance.filter.dates.get'),
+      },
     };
   };
 })();
