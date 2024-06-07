@@ -329,11 +329,11 @@
 
           if (header.id === 'attendance_audit') {
             let link;
-            if (output.substring(0,1) === 'P') {
+            if (output.charAt(0) === 'P') {
               link = app.namedRoutes.build('reports.pool-attendance-audit.report.get', {
                 filter: output,
               })
-            } else if (output.substring(0,1) === 'J') {
+            } else if (output.charAt(0) === 'J') {
               link = app.namedRoutes.build('reports.jury-attendance-audit.report.get', {
                 filter: output,
               })
