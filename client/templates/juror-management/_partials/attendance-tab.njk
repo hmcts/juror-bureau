@@ -34,7 +34,7 @@
 
           <thead class="govuk-table__head">
             <tr class="govuk-table__row">
-              <th scope="col" class="govuk-table__header" aria-sort="ascending" aria-label="Attended">Attended</th>
+              <th scope="col" class="govuk-table__header" aria-sort="descending" aria-label="Attended">Attended</th>
               <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Attendance audit">Attendance audit</th>
               <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Payment audit">Payment audit</th>
               <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Date paid">Date paid</th>
@@ -55,13 +55,13 @@
                 <td class="govuk-table__cell">{{ item.attendanceAudit | historyAuditLinkify | safe }}</td>
                 <td class="govuk-table__cell">{{ (item.paymentAudit | historyAuditLinkify | safe) if item.paymentAudit else '-' }}</td>
                 <td class="govuk-table__cell">{{ (item.datePaid | dateFilter(null, 'd MMM YYYY')) if item.datePaid else '-' }}</td>
-                <td class="govuk-table__cell">{{ (item.timePaid | convert24to12) if item.timePaid else '-' }}</td>
-                <td class="govuk-table__cell">{{ (item.travel | toMoney) if item.travel else '-' }}</td>
-                <td class="govuk-table__cell">{{ (item.financialLoss | toMoney) if item.financialLoss else '-' }}</td>
-                <td class="govuk-table__cell">{{ (item.subsistence | toMoney) if item.subsistence else '-' }}</td>
-                <td class="govuk-table__cell">{{ (item.smartcard | toMoney) if item.smartcard else '-' }}</td>
-                <td class="govuk-table__cell">{{ (item.totalDue | toMoney) if item.totalDue else '-' }}</td>
-                <td class="govuk-table__cell">{{ (item.totalPaid | toMoney) if item.totalPaid else '-' }}</td>
+                <td class="govuk-table__cell">{{ (item.timePaid | convert24to12) if (item.timePaid or item.paymentAudit) else '-' }}</td>
+                <td class="govuk-table__cell">{{ (item.travel | toMoney) if (item.travel or item.paymentAudit) else '-' }}</td>
+                <td class="govuk-table__cell">{{ (item.financialLoss | toMoney) if (item.financialLoss or item.paymentAudit) else '-' }}</td>
+                <td class="govuk-table__cell">{{ (item.subsistence | toMoney) if (item.subsistence or item.paymentAudit) else '-' }}</td>
+                <td class="govuk-table__cell">{{ '(' + (item.smartcard | toMoney) + ')' if (item.smartcard or item.paymentAudit) else '-' }}</td>
+                <td class="govuk-table__cell">{{ (item.totalDue | toMoney) if (item.totalDue or item.paymentAudit) else '-' }}</td>
+                <td class="govuk-table__cell">{{ (item.totalPaid | toMoney) if (item.totalPaid or item.paymentAudit) else '-' }}</td>
               </tr>
             {% endfor %}
           </tbody>

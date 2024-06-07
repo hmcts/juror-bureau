@@ -514,7 +514,7 @@
         }
         
         return item;
-      })
+      }).join('');
     },
 
     historyAuditLinkify: function(copy) {

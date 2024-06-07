@@ -1032,8 +1032,6 @@
         ? (await jurorHistoryDAO.get(req, req.params.jurorNumber)).data.sort((a,b) => b.dateCreated.localeCompare(a.dateCreated))
         : (await jurorPaymentsHistoryDAO.get(req, req.params.jurorNumber)));
 
-      console.log(history);
-
       const jurorNumber = req.params.jurorNumber;
       const {data: juror} = await jurorRecordObject.record.get(
         require('request-promise'),
