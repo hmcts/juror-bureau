@@ -317,7 +317,7 @@
             });
           }
 
-          if (header.id === 'payment_audit' && output !== '-') {
+          if (header.id === 'payment_audit' && typeof output !== 'undefined' && output !== '-') {
             return ({
               html: `<a href=${
                 app.namedRoutes.build('reports.financial-audit.get', {auditNumber: output})
@@ -327,7 +327,7 @@
             });
           }
 
-          if (header.id === 'attendance_audit' && output !== '-') {
+          if (header.id === 'attendance_audit' && typeof output !== 'undefined' && output !== '-') {
             let link;
             if (output && output.charAt(0) === 'P') {
               link = app.namedRoutes.build('reports.pool-attendance-audit.report.print', {
