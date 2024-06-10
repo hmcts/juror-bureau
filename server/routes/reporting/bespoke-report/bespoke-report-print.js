@@ -1,5 +1,5 @@
 /* eslint-disable strict */
-const { dateFilter, makeDate } = require('../../../components/filters');
+const { dateFilter, makeDate, capitalizeFully } = require('../../../components/filters');
 const { snakeToCamel } = require('../../../lib/mod-utils');
 const { tableDataMappers } = require('../standard-report/utils');
 
@@ -67,6 +67,72 @@ const bespokeReportTablePrint = {
       },
     ];
   },
+  'unpaid-attendance-detailed': (data) => {
+      const poolTrial = []
+      poolTrial.push({
+        body: [[
+          {text: 'Juror Number ', style: 'sectionHeading'},
+          {text: 'First Name ', style: 'sectionHeading'},
+          {text: 'Last Name ', style: 'sectionHeading'},
+          {text: 'Audit Number ', style: 'sectionHeading'},
+          {text: 'Attendance ', style: 'sectionHeading'},
+          {text: 'Expense Status ', style: 'sectionHeading'},
+        ]],
+        widths:[`${100/6}%`, `${100/6}%`, `${100/6}%`, `${100/6}%`, `${100/6}%`, `${100/6}%`],
+        margin: [0, 10, 0, 0],
+      })
+      for (const [key, value] of Object.entries(data.tableData.data)) {
+        let counter = 0;
+        poolTrial.push({
+          body: [[{text: key, style: 'sectionHeading'}]],
+          widths: '100%',
+          margin: [0, 10, 0, 0],
+          layout: {hLineColor: '#ffffff'},
+        });
+        for (const [date, jurors] of Object.entries(value)) {
+          poolTrial.push({
+            body: [[
+              {text: dateFilter(date, 'DD-MM-YYYY', 'dddd DD MMMM YYYY'), style: 'sectionSubHeading'},
+            ]],
+            widths:['100%'],
+            margin: [0, 0, 0, 0],
+          });
+          jurors.forEach(function(juror) {
+            poolTrial.push({
+              body: [[
+                {text: juror.jurorNumber},
+                {text: juror.firstName},
+                {text: juror.lastName},
+                {text: juror.auditNumber ? juror.auditNumber : '-'},
+                {text: capitalizeFully(juror.attendanceType.replace('_',' '))},
+                {text: juror.expenseStatus},
+              ]],
+              widths:[`${100/6}%`, `${100/6}%`, `${100/6}%`, `${100/6}%`, `${100/6}%`, `${100/6}%`],
+              margin: [0, 0, 0, 0],
+            })
+          })
+          poolTrial.push({
+            body: [[
+              {text: 'Total: ' + jurors.length, style: 'label' },
+            ]],
+            layout: { hLineColor: '#FFFFFF' },
+            widths:['100%'],
+            margin: [0, 0, 0, 0],
+          })
+          counter += jurors.length;
+        }
+        poolTrial.push({
+          body: [[
+            {text: 'Total unpaid attendances for ' + key + ': ' + counter, style: 'label', fillColor: '#F3F2F1'},
+          ]],
+          widths:['100%'],
+          margin: [0, 0, 0, 0],
+          layout: { hLineColor: '#FFFFFF' },
+        })
+      }
+  
+      return [...poolTrial]
+    },
   'daily-utilisation': (data) => {
     const { tableData } = data;
     let rows = [];
