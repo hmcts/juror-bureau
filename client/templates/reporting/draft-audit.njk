@@ -6,7 +6,7 @@
 {% set currentApp = currentApp %}
 
 {% block body_end %}
-  <script>
+  <script nonce="{{ nonce }}">
     open("{{ printRoute }}", '_blank');
     window.location.replace("{{ completeRoute }}");
   </script>

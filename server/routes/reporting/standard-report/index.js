@@ -108,6 +108,7 @@
     standardReportRoutes(app, 'pool-attendance-audit');
     standardReportRoutes(app, 'pool-selection');
     standardReportRoutes(app, 'completion-of-service');
+    require('../reprint-audit-reports')(app);
   };
 
 })();
