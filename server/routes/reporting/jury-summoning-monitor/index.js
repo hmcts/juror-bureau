@@ -45,4 +45,12 @@ module.exports = (app) => {
     isBureauUser,
     getJurySummoningMonitorReport(app),
   );
+
+  // report print
+  app.get('/reporting/jury-summoning-monitor/:type(pool|court)/report/:filter/print',
+    'reports.jury-summoning-monitor.report.print',
+    auth.verify,
+    isBureauUser,
+    getJurySummoningMonitorReport(app, true),
+  );
 };

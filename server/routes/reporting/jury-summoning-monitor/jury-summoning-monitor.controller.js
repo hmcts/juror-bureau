@@ -6,6 +6,7 @@ const { jurySummoningMonitorDAO } = require('../../../objects/reports');
 const { dateRange } = require('../../../config/validation/report-search-by');
 const { constructPageHeading } = require('../standard-report/utils');
 const { reportKeys } = require('../standard-report/definitions');
+const printJurySummoningMonitorReport = require('./jury-summoning-monitor-print');
 
 module.exports.getJurySummoningMonitorSearch = () => (req, res) => {
   const errors = _.clone(req.session.errors);
@@ -100,8 +101,8 @@ module.exports.postJurySummoningMonitorReportFilterByDate = (app) => async (req,
   }) + `?fromDate=${fromDate.format('YYYY-MM-DD')}&toDate=${toDate.format('YYYY-MM-DD')}`);
 };
 
-module.exports.getJurySummoningMonitorReport = (app) => async (req, res) => {
-  const { type } = req.params;
+module.exports.getJurySummoningMonitorReport = (app, isPrint = false) => async (req, res) => {
+  const { type, filter } = req.params;
   let response;
 
   let courts;
@@ -135,11 +136,25 @@ module.exports.getJurySummoningMonitorReport = (app) => async (req, res) => {
   delete response.headings;
   delete response.Headers;
 
+  let printUrl = app.namedRoutes.build('reports.jury-summoning-monitor.report.print', {
+    type,
+    filter,
+  });
+
+  if (filter === 'dateRange') {
+    printUrl += `?fromDate=${req.query.fromDate}&toDate=${req.query.toDate}`;
+  }
+
+  if (isPrint) {
+    return printJurySummoningMonitorReport(app, req, res, reportType, { pageHeadings, data: response });
+  }
+
   return res.render('reporting/standard-reports/standard-report.njk', {
     title,
     pageHeadings,
     bespokeReportFile: '../jury-summoning-monitor/report.njk',
     data: mapSnakeToCamel(response),
+    printUrl,
   });
 };
 
