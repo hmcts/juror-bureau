@@ -38,7 +38,11 @@ const tableDataMappers = {
   Long: (data) => data ? data.toString() : '-',
   Integer: (data) => data.toString(),
   LocalTime: (data) => data ? moment(data, 'HH:mm:ss').format('hh:mma') : '-',
-  BigDecimal: (data) => `£${(Math.round(data * 100) / 100).toFixed(2).toString()}`,
+  BigDecimal: (data) => {
+    return data < 0 
+      ? `(£${(Math.round(Math.abs(data) * 100) / 100).toFixed(2).toString()})`
+      : `£${(Math.round(data * 100) / 100).toFixed(2).toString()}`
+  },
   Boolean: (data) => data ? 'Yes' : 'No',
   Double: (data) => data ? data.toFixed(2).toString() : '-',
 };

@@ -484,7 +484,9 @@
     },
 
     toMoney: function(value) {
-      return `£${(value || 0).toFixed(2)}`;
+      return value < 0 
+        ? `(£${Math.abs(value).toFixed(2)})`
+        : `£${(value || 0).toFixed(2)}`;
     } 
   };
 
