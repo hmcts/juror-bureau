@@ -93,5 +93,14 @@ const { DAO } = require('./dataAccessObject');
       };
     },
   });
+  
+  module.exports.yieldPerformanceDAO = new DAO('moj/reports/yield-performance', {
+    post: function(body) {
+      return {
+        body,
+        transform: mapSnakeToCamel,
+      };
+    },
+  });
 
 })();

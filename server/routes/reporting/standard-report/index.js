@@ -113,6 +113,7 @@
     standardReportRoutes(app, 'jury-summoning-monitor-pool');
     standardReportRoutes(app, 'jury-summoning-monitor-court');
     require('../jury-summoning-monitor')(app);
+    standardReportRoutes(app, 'yield-performance');
   };
 
 })();

@@ -56,6 +56,10 @@ async function standardReportPrint(app, req, res, reportKey, data) {
         if (header.id === 'status') {
           text = capitalizeFully(toSentenceCase(rowData[snakeToCamel(header.id)]))
         }
+        
+        if (header.id === 'comments') {
+          text = text.replace('\n','\n\n')
+        }
 
         if (header.dataType === 'List') {
           const items = text.split(', ');
