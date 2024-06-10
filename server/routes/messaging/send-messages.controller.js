@@ -326,7 +326,8 @@
           tmpBody,
           trialNumber,
           pagination,
-          trials: modUtils.transformRadioSelectTrialsList(data.content, sortBy, sortOrder),
+          trials: modUtils.transformRadioSelectTrialsList(data.data, sortBy, sortOrder),
+          urlPrefix: trialNumber ? `?trialNumber=${trialNumber}` : '',
           errors: {
             title: 'Please check the form',
             count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
