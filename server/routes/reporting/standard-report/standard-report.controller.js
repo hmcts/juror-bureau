@@ -115,7 +115,7 @@
           },
           reportKey,
           title: reportType.title,
-          resultsCount: _resultsCount,
+          resultsCount: _resultsCount || 0,
           jurorList,
           filter,
           filterUrl: app.namedRoutes.build(`reports.${reportKey}.filter.post`),
