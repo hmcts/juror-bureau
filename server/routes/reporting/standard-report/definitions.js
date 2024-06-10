@@ -4,7 +4,7 @@
   const _ = require('lodash');
   const { isCourtUser } = require('../../../components/auth/user-type');
   const { dateFilter, capitalizeFully, toMoney, toSentenceCase } = require('../../../components/filters');
-  const { dailyUtilisationDAO, dailyUtilisationJurorsDAO, viewMonthlyUtilisationDAO, generateMonthlyUtilisationDAO } = require('../../../objects/reports');
+  const { dailyUtilisationDAO, dailyUtilisationJurorsDAO, viewMonthlyUtilisationDAO, generateMonthlyUtilisationDAO, yieldPerformanceDAO } = require('../../../objects/reports');
 
   const makeLink = (app) => {
     return {
@@ -1599,6 +1599,30 @@
           'dateTo',
           'reportTime',
         ],
+        bespokeReport: {
+          dao: (req, config) => yieldPerformanceDAO.post(
+            req,
+            {
+              'court_loc_codes': config.courts,
+              'all_courts': false,
+              'from_date': config.fromDate,
+              'to_date': config.toDate,
+            },
+          ),
+          printWidths: ['*', '*', '*', '*', '*', '25%'],
+        },
+        cellTransformer: (data, key, output, isPrint) => {
+          if (key === 'balance' || key === 'difference') {
+            const text = (data > 0 ? `+${data[key]}` : data[key]) + `${key === 'difference' ? '%' : ''}`;
+            if (isPrint) {
+              return {text: text, bold: data[key] < 0 ? true : false};
+            } 
+            if (data[key] < 0) {
+              return `<b>${text}</b>`
+            };
+          }
+          return output;
+        },
         queryParams: {
           fromDate: req?.query?.fromDate || '',
           toDate: req?.query?.toDate || '',

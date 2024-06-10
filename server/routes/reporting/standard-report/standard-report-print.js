@@ -49,6 +49,10 @@ async function standardReportPrint(app, req, res, reportKey, data) {
           text = text === 'Civ' ? 'Civil' : 'Criminal';
         }
 
+        if (header.id === 'comments') {
+          text = text.replace('\n','\n\n')
+        }
+
         if (header.dataType === 'List') {
           const items = text.split(', ');
           let listText = [];
