@@ -280,8 +280,7 @@
       const rows = tableData.map(data => {
         let row = tableHeadings.map(header => {
           if (!header.name || header.name === '') return;
-
-          let output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
+          let output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);          
 
           if (header.id === 'juror_number' || header.id === 'juror_number_from_trial') {
             return ({
@@ -359,6 +358,10 @@
             output = `${capitalise(output.split('-')[0])} - ${output.split('-')[1]}`;
           }
 
+          if (header.id === 'comments') {
+            output = output.replace('\n','<br><br>')
+          }
+
           if (header.dataType === 'List') {
             const items = output.split(', ');
             let html = '';
@@ -377,11 +380,13 @@
 
           const numericTypes = ['Integer', 'BigDecimal', 'Long', 'Double']
 
+          const sortValue = numericTypes.includes(header.dataType) ? data[snakeToCamel(header.id)] : output;
+
           return ({
             html: output ? output : '-',
             attributes: {
-              "data-sort-value": output && output !== '-' 
-                ? (header.dataType === 'LocalDate' ? data[snakeToCamel(header.id)] : output) 
+              "data-sort-value": sortValue && sortValue !== '-' 
+                ? (header.dataType === 'LocalDate' ? data[snakeToCamel(header.id)] : sortValue) 
                 : (numericTypes.includes(header.dataType) ? '0' : '-')
             },
             format: header.dataType === 'BigDecimal' ? 'numeric' : '',
@@ -570,7 +575,7 @@
 
     try {
       const { headings, tableData } = await (reportType.bespokeReport?.dao
-        ? reportType.bespokeReport.dao(req)
+        ? reportType.bespokeReport.dao(req, config)
         : standardReportDAO.post(req, app, config));
 
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
