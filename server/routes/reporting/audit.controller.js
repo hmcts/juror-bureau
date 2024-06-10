@@ -25,6 +25,13 @@ const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../object
       res.contentType('application/pdf');
       return res.send(document);
     } catch (err) {
+      if (req.session.reprintAuditReport) {
+        req.session.errors = makeManualError('auditReportNumber', 'No audit report found - check number and try again');
+        req.session.formFields = {
+          auditReportNumber: req.params.auditNumber,
+        };
+        return res.redirect(app.namedRoutes.build('reports.reprint-audit-report.filter.get'));
+      }
       app.logger.crit('Failed to render financial audit', {
         auth: req.session.authentication,
         token: req.session.authToken,
