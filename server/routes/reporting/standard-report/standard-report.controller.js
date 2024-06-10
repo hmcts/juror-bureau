@@ -43,14 +43,18 @@
 
         delete req.session.errors;
 
-        if (filter) {
-          errors = {...validate({poolNumber: filter}, {poolNumber: {poolNumberSearched: {}}})};
+        if (typeof filter !== 'undefined') {
+          if (filter === '') {
+            errors = makeManualError('poolNumber', 'Enter a pool number');
+          } else {
+            errors = {...validate({poolNumber: filter}, {poolNumber: {poolNumberSearched: {}}})};
 
-          if (Object.keys(errors).length === 0) {
-            const api = await poolSearchObject.post(rp, app, req.session.authToken, { poolNumber: filter });
+            if (Object.keys(errors).length === 0) {
+              const api = await poolSearchObject.post(rp, app, req.session.authToken, { poolNumber: filter });
 
-            poolList = api.poolRequests;
-            resultsCount = api.resultsCount;
+              poolList = api.poolRequests;
+              resultsCount = api.resultsCount;
+            }
           }
         }
 
