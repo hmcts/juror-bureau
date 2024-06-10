@@ -1,0 +1,14 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+
+{% block page_title %}{{ serviceName }} - Reports - Reprint audit reports{% endblock %}
+{% block page_identifier %}Reports - Reprint audit reports - Redirect to print{% endblock %}
+
+{% set currentApp = currentApp %}
+
+{% block body_end %}
+  <script type="application/javascript" nonce="{{ nonce }}">
+    open("{{ printRoute }}", '_blank');
+    window.location.replace("{{ completeRoute }}");
+  </script>
+{% endblock %}
