@@ -270,7 +270,7 @@
         pageLimit: modUtils.constants.PAGE_SIZE,
         sortField: capitalise(modUtils.camelToSnake(sortBy)),
         sortMethod: sortOrder === 'ascending' ? 'ASC' : 'DESC',
-        trialNumber: trialNumber,
+        trialNumber: trialNumber
       };
 
       if (!req.session.messaging) {
@@ -288,7 +288,6 @@
 
       try {
         let data = await trialsListDAO.post(req, modUtils.mapCamelToSnake(opts));
-
         data = modUtils.replaceAllObjKeys(data, _.camelCase);
 
         app.logger.info('Fetched list of all trials', {
@@ -326,7 +325,8 @@
           tmpBody,
           trialNumber,
           pagination,
-          trials: modUtils.transformRadioSelectTrialsList(data.content, sortBy, sortOrder),
+          trials: modUtils.transformRadioSelectTrialsList(data.data, sortBy, sortOrder),
+          urlPrefix: trialNumber ? `?trialNumber=${trialNumber}` : '',
           errors: {
             title: 'Please check the form',
             count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
