@@ -149,7 +149,7 @@
                   text: "Empanel jury",
                   classes: "govuk-button--secondary",
                   href: url('trial-management.empanel.get', {trialNumber: trial.trial_number, locationCode: locationCode})
-                }) if not trial.is_jury_empanelled }}
+                }) if canEmpanel }}
 
                 {{ govukButton({
                   text: "End trial",
