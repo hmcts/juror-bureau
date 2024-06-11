@@ -1645,12 +1645,20 @@
         },
         cellTransformer: (data, key, output, isPrint) => {
           if (key === 'balance' || key === 'difference') {
-            const text = (data > 0 ? `+${data[key]}` : data[key]) + `${key === 'difference' ? '%' : ''}`;
+            let text;
+            if (key === 'difference') {
+              const percentage = Math.round(data[key] * 100) / 100
+              text = `${percentage > 0 ? `+${percentage}` : percentage}%`
+            } else {
+              text = data[key] > 0 ? `+${data[key]}` : data[key];
+            }
             if (isPrint) {
               return {text: text, bold: data[key] < 0 ? true : false};
             } 
             if (data[key] < 0) {
               return `<b>${text}</b>`
+            } else {
+              return text;
             };
           }
           return output;
