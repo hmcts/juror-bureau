@@ -4,7 +4,12 @@
   const _ = require('lodash');
   const { isCourtUser } = require('../../../components/auth/user-type');
   const { dateFilter, capitalizeFully, toMoney, toSentenceCase } = require('../../../components/filters');
-  const { dailyUtilisationDAO, dailyUtilisationJurorsDAO, viewMonthlyUtilisationDAO, generateMonthlyUtilisationDAO } = require('../../../objects/reports');
+  const {
+    dailyUtilisationDAO,
+    dailyUtilisationJurorsDAO,
+    viewMonthlyUtilisationDAO,
+    generateMonthlyUtilisationDAO,
+  } = require('../../../objects/reports');
 
   const makeLink = (app) => {
     return {
@@ -1585,6 +1590,32 @@
           totals: true,
           groupHeader: true,
         },
+      },
+      'jury-summoning-monitor-pool': {
+        title: 'Jury summoning monitor report (by pool)',
+        apiKey: 'JurySummoningMonitorReport',
+        search: 'poolNumber',
+        headings: [
+          'court',
+          'reportDate',
+          'poolNumber',
+          'reportTime',
+          'poolType',
+          '',
+          'serviceStartDate',
+        ],
+      },
+      'jury-summoning-monitor-court': {
+        title: 'Jury summoning monitor report (by court)',
+        apiKey: 'JurySummoningMonitorReport',
+        search: 'courts',
+        headings: [
+          'courts',
+          'reportDate',
+          'dateFrom',
+          'reportTime',
+          'dateTo',
+        ],
       },
     };
   };

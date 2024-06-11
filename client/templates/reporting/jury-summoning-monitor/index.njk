@@ -1,0 +1,55 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - Reporting - Jury summoning monitor report - Search{% endblock %}
+{% block page_identifier %}Reporting - Jury summoning monitor report - Search{% endblock %}
+
+{% set currentApp = "Reports" %}
+
+{% block content %}
+  {% include "includes/errors.njk" %}
+
+  {% set jurySummoningMonitorSearchTypeError = undefined %}  
+  {% if errors.items["jurySummoningMonitorSearchType"] %}
+    {% set jurySummoningMonitorSearchTypeError = {
+      text: errors.items["jurySummoningMonitorSearchType"][0].details
+    } %}
+  {% endif %}
+
+  <h1 class="govuk-heading-xl">Jury summoning report</h1>
+
+  <form action="{{ url('reports.jury-summoning-monitor.search.post') }}" method="POST">
+
+    {{ govukRadios({
+      name: "jurySummoningMonitorSearchType",
+      fieldset: {
+        legend: {
+          text: "Search by",
+          classes: "govuk-fieldset__legend--m"
+        }
+      },
+      errorMessage: jurySummoningMonitorSearchTypeError,
+      items: [
+        { value: "court", text: "Court" },
+        { value: "poolNumber", text: "Pool number" }
+      ]
+    }) }}
+
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Continue",
+        attributes: {
+          id: "continueButton"
+        }
+      }) }}
+    
+      <a class="govuk-link" href="{{ url('reports.reports.get') }}" id="cancelAnchor">Cancel</a>
+    </div>
+
+    {{ csrfProtection(csrftoken) }}
+
+  </form>
+{% endblock %}

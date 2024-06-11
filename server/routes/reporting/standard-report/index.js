@@ -109,6 +109,10 @@
     standardReportRoutes(app, 'pool-selection');
     standardReportRoutes(app, 'completion-of-service');
     require('../reprint-audit-reports')(app);
+
+    standardReportRoutes(app, 'jury-summoning-monitor-pool');
+    standardReportRoutes(app, 'jury-summoning-monitor-court');
+    require('../jury-summoning-monitor')(app);
   };
 
 })();
