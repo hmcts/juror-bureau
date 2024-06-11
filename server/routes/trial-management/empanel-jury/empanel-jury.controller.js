@@ -101,7 +101,7 @@
   module.exports.getEmpanelJurors = function(app) {
     return function(req, res) {
       const requiredNumberOfJurors = req.session.trial.requiredNumberOfJurors;
-      const availableJurors = req.session.trial.panelledJurors;
+      const availableJurors = req.session.trial.panelledJurors.filter((juror) => juror.juror_status === 'Panel');
       let tmpErrors = _.clone(req.session.empanelJuryError);
       let tmpBody = _.clone(req.session.formFields);
 
