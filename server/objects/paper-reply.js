@@ -34,7 +34,7 @@
             'cjsEmployment': pr.cjsEmployment,
             // this is a weird one that happens on the test environemtn... dates do not convert properly
             // ... this should fix for now but moving to an ISO standard should fix the bigger issue of dates
-            'dateOfBirth': pr.dateOfBirth.split('/').map(num => num.padStart(2, '0')).reverse().join('-'),
+            'dateOfBirth': pr.dateOfBirth !== '' ? pr.dateOfBirth.split('/').map(num => num.padStart(2, '0')).reverse().join('-') : null,
             'deferral': pr.deferral,
             'eligibility': pr.eligibility,
             'emailAddress': pr.emailAddress,
