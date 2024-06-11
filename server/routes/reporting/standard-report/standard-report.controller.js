@@ -393,7 +393,6 @@
 
           if (reportType.cellTransformer) {
             output = reportType.cellTransformer(data, header.id, output);
-            console.log(output)
           }
 
           const numericTypes = ['Integer', 'BigDecimal', 'Long', 'Double']
