@@ -1042,6 +1042,8 @@
         req.session.locCode,
       );
 
+      app.logger.trace('Fetched juror history', { data: { history } });
+
       return res.render('juror-management/juror-record/juror-history', {
         jurorNumber,
         juror,
@@ -1055,7 +1057,15 @@
         },
       });
     } catch (err) {
-      console.log(err);
+      app.logger.crit('Failed to fetch juror history: ', {
+        auth: req.session.authentication,
+        jwt: req.session.authToken,
+        data: {
+          jurorNumber: req.params['jurorNumber'],
+        },
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+
       return res.render('_errors/generic');
     }
   };
