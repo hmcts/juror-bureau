@@ -16,7 +16,7 @@
   const searchValidator = require('../../../config/validation/report-search-by');
   const jurorSearchValidator = require('../../../config/validation/juror-search');
   const moment = require('moment')
-  const { dateFilter, capitalizeFully, capitalise, timeToDuration } = require('../../../components/filters');
+  const { dateFilter, capitalizeFully, capitalise, timeToDuration, toSentenceCase } = require('../../../components/filters');
   const { reportExport } = require('./report-export');
 
   const standardFilterGet = (app, reportKey) => async(req, res) => {
@@ -369,6 +369,10 @@
 
           if (header.id === 'hours_attended') {
             output = timeToDuration(data[snakeToCamel(header.id)])
+          }
+
+          if (header.id === 'status') {
+            output = capitalizeFully(toSentenceCase(data[snakeToCamel(header.id)]))
           }
 
           if (header.dataType === 'List') {
