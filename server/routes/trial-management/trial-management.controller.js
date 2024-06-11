@@ -114,6 +114,8 @@
       })])
         .then(([trialData, panelData, addPanelStatus ]) => {
 
+          let canEmpanel = true;
+
           if (typeof tmpFields === 'undefined') {
             req.session.originalTrialNumber = trialData.trialNumber;
             tmpFields = _.clone(trialData);
@@ -129,12 +131,14 @@
           if (panelData) {
             trialData.panelledJurors = panelData;
             req.session.panelData = panelData;
+            canEmpanel = panelData.filter((juror) => juror.juror_status === 'Panel').length > 0;
           }
 
           req.session.isJuryEmpanelled = trialData['is_jury_empanelled'];
 
           return res.render('trial-management/trial-detail.njk', {
             trial: trialData,
+            canEmpanel,
             locationCode,
             successBanner,
             addPanelStatus: addPanelStatus.data,
