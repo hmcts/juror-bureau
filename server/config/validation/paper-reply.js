@@ -223,13 +223,6 @@
         },
       },
       dateOfBirth: {
-        presence: {
-          allowEmpty: false,
-          message: {
-            summary: 'Date of birth cannot be empty',
-            details: 'Date of birth cannot be empty',
-          },
-        },
         genericDatePicker: {},
         dateOfBirthDatePicker: {},
       },

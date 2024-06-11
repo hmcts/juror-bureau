@@ -475,6 +475,15 @@
       return `${hours > 0 ? hours + (hours > 1 ? ' hours ' : ' hour ') : ''}${mins > 0 ? mins + (mins > 1 ? ' minutes' : ' minute') : ''}`
     },
 
+    timeToDuration: function(time) {
+      let hours = parseInt(time.split(':')[0]);
+      const mins = parseInt(time.split(':')[1]);
+      if (mins > 0) {
+        hours += (mins / 60);
+      }
+      return hours;
+    },
+
     transformCourtName: function(courtObj) {
       return _.startCase(_.toLower(courtObj.locationName)).trim().replace(',', '') + ' (' + courtObj.locationCode + ')';
     },

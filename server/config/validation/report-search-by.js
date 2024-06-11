@@ -173,6 +173,16 @@
         details: 'Enter a date to search trials up until',
       }],
     },
+    yieldPerformance: {
+      dateFrom: [{
+        summary: 'Enter a date to search attendances from',
+        details: 'Enter a date to search attendances from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search attendances up until',
+        details: 'Enter a date to search attendances up until',
+      }],
+    }
   };
 
   module.exports.searchBy = function(reportKey) {

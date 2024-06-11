@@ -16,7 +16,7 @@
   const searchValidator = require('../../../config/validation/report-search-by');
   const jurorSearchValidator = require('../../../config/validation/juror-search');
   const moment = require('moment')
-  const { dateFilter, capitalizeFully, capitalise } = require('../../../components/filters');
+  const { dateFilter, capitalizeFully, capitalise, timeToDuration, toSentenceCase } = require('../../../components/filters');
   const { reportExport } = require('./report-export');
 
   const standardFilterGet = (app, reportKey) => async(req, res) => {
@@ -367,6 +367,18 @@
             output = `${capitalise(output.split('-')[0])} - ${output.split('-')[1]}`;
           }
 
+          if (header.id === 'hours_attended') {
+            output = timeToDuration(data[snakeToCamel(header.id)])
+          }
+
+          if (header.id === 'status') {
+            output = capitalizeFully(toSentenceCase(data[snakeToCamel(header.id)]))
+          }
+          
+          if (header.id === 'comments') {
+            output = output.replaceAll('\n','<br><br>')
+          }
+
           if (header.dataType === 'List') {
             const items = output.split(', ');
             let html = '';
@@ -385,11 +397,13 @@
 
           const numericTypes = ['Integer', 'BigDecimal', 'Long', 'Double']
 
+          const sortValue = numericTypes.includes(header.dataType) ? data[snakeToCamel(header.id)] : output;
+
           return ({
             html: output ? output : '-',
             attributes: {
-              "data-sort-value": output && output !== '-' 
-                ? (header.dataType === 'LocalDate' ? data[snakeToCamel(header.id)] : output) 
+              "data-sort-value": sortValue && sortValue !== '-' 
+                ? (header.dataType === 'LocalDate' ? data[snakeToCamel(header.id)] : sortValue) 
                 : (numericTypes.includes(header.dataType) ? '0' : '-')
             },
             format: header.dataType === 'BigDecimal' ? 'numeric' : '',
@@ -591,7 +605,7 @@
 
     try {
       const { headings, tableData } = await (reportType.bespokeReport?.dao
-        ? reportType.bespokeReport.dao(req)
+        ? reportType.bespokeReport.dao(req, config)
         : standardReportDAO.post(req, app, config));
 
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });

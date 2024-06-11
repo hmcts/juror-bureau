@@ -72,7 +72,7 @@
               }
             }) }}
 
-            {% if attendanceStatus === "Unconfirmed" %}
+            {% if attendanceStatus === "Confirmed" %}
               {% set auditNumbers = [] %}
               {% for auditNumber in poolAttendaceAuditNumbers %}
                 {% set auditNumbers = (auditNumbers.push(
