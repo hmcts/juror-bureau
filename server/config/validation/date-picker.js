@@ -107,7 +107,7 @@
       dateInitial = validateDateInitial(value),
       tmpErrors = [];
 
-    if (!moment(dateInitial.dateAsDate).isBefore(currentDate, 'day')) {
+    if (value !== '' && !moment(dateInitial.dateAsDate).isBefore(currentDate, 'day')) {
       tmpErrors = [{
         summary: 'Date of birth must be in the past',
         details: 'Date of birth must be in the past',
