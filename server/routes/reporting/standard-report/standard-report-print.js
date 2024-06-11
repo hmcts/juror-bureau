@@ -4,7 +4,7 @@ const { tableDataMappers, constructPageHeading } = require('./utils');
 const { bespokeReportTablePrint } = require('../bespoke-report/bespoke-report-print');
 const { snakeToCamel, checkIfArrayEmpty } = require('../../../lib/mod-utils');
 const { reportKeys } = require('./definitions');
-const { capitalizeFully, capitalise, hoursStringToNoHours } = require('../../../components/filters');
+const { capitalizeFully, capitalise, timeToDuration } = require('../../../components/filters');
 
 async function standardReportPrint(app, req, res, reportKey, data) {
   const reportData = reportKeys(app, req)[reportKey];
@@ -50,7 +50,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
         }
 
         if (header.id === 'hours_attended') {
-          text = hoursStringToNoHours(rowData[snakeToCamel(header.id)])
+          text = timeToDuration(rowData[snakeToCamel(header.id)])
         }
 
         if (header.dataType === 'List') {
