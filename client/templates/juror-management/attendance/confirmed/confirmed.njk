@@ -30,7 +30,7 @@
     <div class="govuk-grid-column-full govuk-body">
       
       <b>
-        <span id="confirmedJurors">{{ confirmedJurors.length }}</span> jurors confirmed as attending
+        <span id="confirmedJurors">{{ confirmedJurors.length }}</span> juror{% if confirmedJurors.length > 1 %}s{% endif %} confirmed as attending
       </b>
       
       <table class="govuk-table {% if listedJurors.length === 0 %}js-hidden{% endif %}"
@@ -92,10 +92,10 @@
     <div class="govuk-grid-column-full govuk-body">
 
       <b>
-        <span id="absentJurors">{{ absentJurors.length }}</span> jurors confirmed as absent
+        <span id="absentJurors">{{ absentJurors.length }}</span> juror{% if absentJurors.length > 1 %}s{% endif %} confirmed as absent
       </b>
 
-      <table class="govuk-table {% if listedJurors.length === 0 %}js-hidden{% endif %}"
+      <table class="govuk-table {% if absentJurors.length === 0 %}js-hidden{% endif %}"
       data-module="moj-sortable-table" id="attendanceTable">
         <caption class="govuk-table__caption govuk-visually-hidden">Absent jurors list</caption>
 
