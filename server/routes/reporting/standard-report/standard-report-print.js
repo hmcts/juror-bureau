@@ -58,7 +58,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
         }
         
         if (header.id === 'comments') {
-          text = text.replace('\n','\n\n')
+          text = text.replaceAll('\n','\n\n')
         }
 
         if (header.dataType === 'List') {

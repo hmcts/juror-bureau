@@ -376,7 +376,7 @@
           }
           
           if (header.id === 'comments') {
-            output = output.replace('\n','<br><br>')
+            output = output.replaceAll('\n','<br><br>')
           }
 
           if (header.dataType === 'List') {
