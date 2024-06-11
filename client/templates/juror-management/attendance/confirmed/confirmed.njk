@@ -92,7 +92,7 @@
     <div class="govuk-grid-column-full govuk-body">
 
       <b>
-        <span id="absentJurors">{{ absentJurors.length }}</span> juror{% if listedJurors.length > 1 %}s{% endif %} confirmed as absent
+        <span id="absentJurors">{{ absentJurors.length }}</span> juror{% if absentJurors.length > 1 %}s{% endif %} confirmed as absent
       </b>
 
       <table class="govuk-table {% if absentJurors.length === 0 %}js-hidden{% endif %}"
