@@ -201,6 +201,7 @@ module.exports = async (app) => {
   // error handler
   app.use((err, _, res, next) => {
     if (err.code !== 'EBADCSRFTOKEN') {
+      app.logger.crit('General system error', { error: err });
       return next(err);
     }
 
@@ -208,6 +209,8 @@ module.exports = async (app) => {
     res.locals.releaseVersion = 'v' + releaseVersion;
     res.locals.authenticated = false;
     res.locals.trackingCode = config.trackingCode;
+
+    app.logger.crit('CSRF token error', { error: err });
 
     // handle CSRF token errors here
     return res.status(403).render('_errors/403.njk');
