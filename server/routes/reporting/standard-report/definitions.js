@@ -9,6 +9,7 @@
     dailyUtilisationJurorsDAO,
     viewMonthlyUtilisationDAO,
     generateMonthlyUtilisationDAO,
+    yieldPerformanceDAO
   } = require('../../../objects/reports');
 
   const makeLink = (app) => {
@@ -1616,6 +1617,57 @@
           'reportTime',
           'dateTo',
         ],
+      },
+      'yield-performance': {
+        title: 'Yield performance report',
+        apiKey: 'YieldPerformanceReport',
+        search: 'courts',
+        searchLabelMappers: {
+          dateRange: 'Enter attendance dates to search',
+        },
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+        ],
+        bespokeReport: {
+          dao: (req, config) => yieldPerformanceDAO.post(
+            req,
+            {
+              'court_loc_codes': config.courts,
+              'all_courts': false,
+              'from_date': config.fromDate,
+              'to_date': config.toDate,
+            },
+          ),
+          printWidths: ['*', '*', '*', '*', '*', '25%'],
+        },
+        cellTransformer: (data, key, output, isPrint) => {
+          if (key === 'balance' || key === 'difference') {
+            let text;
+            if (key === 'difference') {
+              const percentage = Math.round(data[key] * 100) / 100
+              text = `${percentage > 0 ? `+${percentage}` : percentage}%`
+            } else {
+              text = data[key] > 0 ? `+${data[key]}` : data[key];
+            }
+            if (isPrint) {
+              return {text: text, bold: data[key] < 0 ? true : false};
+            } 
+            if (data[key] < 0) {
+              return `<b>${text}</b>`
+            } else {
+              return text;
+            };
+          }
+          return output;
+        },
+        queryParams: {
+          fromDate: req?.query?.fromDate || '',
+          toDate: req?.query?.toDate || '',
+        },
+        filterBackLinkUrl: app.namedRoutes.build('reports.yield-performance.filter.dates.get'),
       },
     };
   };
