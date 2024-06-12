@@ -1,5 +1,6 @@
 {% extends "layouts/default-no-nav.njk" %}
 
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% block page_title %}{{ serviceName }} - Reports - Reprint audit reports{% endblock %}
 {% block page_identifier %}Reports - Reprint audit reports - Redirect to print{% endblock %}
@@ -11,6 +12,13 @@
     <p class="govuk-body">Enable pop ups for being able to see and print this report.</p class="govu-body">
 
     <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Refresh",
+        attributes: {
+          id: "refreshButton"
+        }
+      }) }}
+
       <a href="{{ completeRoute }}" class="govuk-link">Go back</a>
     </div>
   </div>
