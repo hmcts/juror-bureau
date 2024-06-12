@@ -1,14 +1,40 @@
 {% extends "layouts/default-no-nav.njk" %}
 
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% block page_title %}{{ serviceName }} - Reports - Reprint audit reports{% endblock %}
 {% block page_identifier %}Reports - Reprint audit reports - Redirect to print{% endblock %}
 
 {% set currentApp = currentApp %}
 
+{% block content %}
+  <div id="refreshForm" class="js-hidden">
+    <p class="govuk-body">Enable pop ups to be able to see and print this report.</p class="govu-body">
+
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Refresh",
+        attributes: {
+          id: "refreshButton"
+        }
+      }) }}
+
+      <a href="{{ completeRoute }}" class="govuk-link">Go back</a>
+    </div>
+  </div>
+{% endblock %}
+
 {% block body_end %}
   <script type="application/javascript" nonce="{{ nonce }}">
-    open("{{ printRoute }}", '_blank');
-    window.location.replace("{{ completeRoute }}");
+    const popUp = open("{{ printRoute }}", '_blank');
+
+    if (!popUp) {
+      document.getElementById('refreshForm').classList.remove('js-hidden');
+      document.getElementById('refreshButton').addEventListener('click', function() {
+        window.location.reload();
+      });
+    } else {
+      window.location.replace("{{ completeRoute }}");
+    }
   </script>
 {% endblock %}
