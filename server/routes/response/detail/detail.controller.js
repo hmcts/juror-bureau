@@ -376,7 +376,6 @@
                     (sendCourtResponse, opticReference) => {
                       app.logger.info('prolcessed response completed: ', {
                         auth: req.session.authentication,
-                        jwt: req.session.authToken,
                         data: {
                           jurorNumber: data.jurorNumber,
                           version: data.version,
@@ -393,7 +392,6 @@
     
                       app.logger.crit('Error processing response completed: ', {
                         auth: req.session.authentication,
-                        jwt: req.session.authToken,
                         data: {
                           jurorNumber: data.jurorNumber,
                           version: data.version,
