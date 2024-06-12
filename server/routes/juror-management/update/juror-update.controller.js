@@ -11,7 +11,8 @@
     , jurorUndeliverableObject = require('../../../objects/juror-undeliverable').jurorUndeliverableObject
     , jurorTransfer = require('../../../objects/juror-transfer').jurorTransfer
     , { dateFilter } = require('../../../components/filters')
-    , { systemCodesDAO } = require('../../../objects/administration');
+    , { systemCodesDAO } = require('../../../objects/administration')
+    , moment = require('moment');
   const { deferralReasonAndDecision } = require('../../../config/validation/deferral-mod');
   const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
   const { makeManualError } = require('../../../lib/mod-utils');
@@ -198,8 +199,7 @@
           req.session.deferralReasons = data;
 
           let minDate = req.session.jurorCommonDetails.startDate;
-
-          req.session.minDate = minDate;
+          const maxDate = moment(minDate, 'yyyy-MM-DD').add(1, 'y').format('YYYY-MM-DD');
 
           return res.render('response/process/deferral.njk', {
             deferralDetails: tmpFields,
@@ -208,6 +208,7 @@
             processURL : processURL,
             cancelUrl : cancelUrl,
             hearingDate: dateFilter(minDate, null, 'DD/MM/YYYY'),
+            maxDate: dateFilter(maxDate, null, 'DD/MM/YYYY'),
             errors: {
               message: '',
               count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -316,7 +317,12 @@
 
       tmpReasons = _.cloneDeep(req.session.deferralReasons);
 
-      const { minDate, maxDate } = req.session;
+      let { minDate, maxDate } = req.session;
+
+      if (!maxDate) {
+        maxDate = moment(minDate, 'yyyy-MM-DD').add(1, 'y').add(1, 'd').format('YYYY-MM-DD');
+      }
+
       const validatorResult = validate(req.body, deferralReasonAndDecision(req.body, minDate, maxDate));
 
       if (typeof validatorResult !== 'undefined') {
