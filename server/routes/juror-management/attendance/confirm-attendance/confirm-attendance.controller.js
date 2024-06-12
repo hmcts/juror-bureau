@@ -6,7 +6,7 @@
     , checkInOutTimeValidator = require('../../../../config/validation/check-in-out-time')
     , { convertAmPmToLong, timeArrayToString, convert12to24 } = require('../../../../components/filters')
     , { jurorAttendanceDao } = require('../../../../objects/juror-attendance');
-
+    const { getJurorStatus } = require('../../../../lib/mod-utils');
 
   module.exports.getConfirmAttendance = function(app) {
     return async function(req, res) {
@@ -67,9 +67,11 @@
         app.logger.crit('Failed to fetch jurors marked as not attending / not checked in', {
           auth: req.session.authentication,
           token: req.session.authToken,
-          data: body,
+          // data: body,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
+
+        console.log(err);
 
         return res.render('_errors/generic');
       }
@@ -207,6 +209,8 @@
         ));
       }
 
+      const promiseArray = [];
+
       const payload = {
         commonData: {
           status: 'CHECK_OUT',
@@ -218,8 +222,27 @@
         juror: notCheckedOutJNs,
       };
 
+      promiseArray.push(jurorAttendanceDao.patch(app, req, payload));
+
+      const panelledJurors = jurorsNotCheckedOut.reduce((prev, juror) => {
+        if (getJurorStatus(juror.juror_status) === 'Panel') {
+          prev.push(juror.juror_number);
+        }
+        return prev;
+      }, []);
+
+      if (panelledJurors.length) {
+        const panelledPayload = _.cloneDeep(payload);
+        panelledPayload.commonData.status = 'CHECK_OUT_PANELLED';
+        panelledPayload.juror = panelledJurors;
+
+        debugger;
+
+        promiseArray.push(jurorAttendanceDao.patch(app, req, panelledPayload));
+      }
+
       try {
-        await jurorAttendanceDao.patch(app, req, payload);
+        await Promise.all(promiseArray);
 
         return res.redirect(
           app.namedRoutes.build('juror-management.attendance.confirm-attendance.get')

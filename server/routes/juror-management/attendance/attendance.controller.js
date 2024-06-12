@@ -164,7 +164,9 @@
         .filter(a => a.checkInTime !== null && a.checkOutTime === null);
 
       const jurors = attendees.reduce((list, juror) => {
-        list.push(juror.jurorNumber);
+        if (juror.jurorStatus !== 'Panel' && juror.checkOutTime === null) {
+          list.push(juror.jurorNumber);
+        }
         return list;
       }, []);
 
