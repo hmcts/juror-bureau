@@ -1,13 +1,41 @@
-{% extends "../layouts/default-no-nav.njk" %}
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "includes/csrf.njk" import csrfProtection %}
 
 {% block page_title %}{{ serviceName}} - {{ serviceTitle }}{% endblock %}
 {% block page_identifier %}{{ pageIdentifier }} - Redirect to print audit report{% endblock %}
 
 {% set currentApp = currentApp %}
 
+{% block content %}
+  <div id="refreshForm" class="js-hidden">
+    <p class="govuk-body">Enable pop ups for being able to see and print this report.</p class="govu-body">
+
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Refresh",
+        attributes: {
+          id: "refreshButton"
+        }
+      }) }}
+
+      <a href="{{ completeRoute }}" class="govuk-link">Go back</a>
+    </div>
+  </div>
+{% endblock %}
+
 {% block body_end %}
   <script nonce="{{ nonce }}">
-    open("{{ printRoute }}", '_blank');
-    window.location.replace("{{ completeRoute }}");
+    const pdfPopUp = open('{{ printRoute }}', '_blank');
+
+    if (!pdfPopUp) {
+      document.getElementById('refreshForm').classList.remove('js-hidden');
+      document.getElementById('refreshButton').addEventListener('click', function() {
+        window.location.reload();
+      });
+    } else {
+      window.location.replace('{{ completeRoute }}');
+    }
   </script>
 {% endblock %}
