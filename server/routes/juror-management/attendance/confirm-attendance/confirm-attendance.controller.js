@@ -231,6 +231,7 @@
 
       if (panelledJurors.length) {
         const panelledPayload = _.cloneDeep(payload);
+
         panelledPayload.commonData.status = 'CHECK_OUT_PANELLED';
         panelledPayload.juror = panelledJurors;
 
