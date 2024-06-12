@@ -67,7 +67,7 @@
         app.logger.crit('Failed to fetch jurors marked as not attending / not checked in', {
           auth: req.session.authentication,
           token: req.session.authToken,
-          // data: body,
+          data: body,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
@@ -235,8 +235,6 @@
         const panelledPayload = _.cloneDeep(payload);
         panelledPayload.commonData.status = 'CHECK_OUT_PANELLED';
         panelledPayload.juror = panelledJurors;
-
-        debugger;
 
         promiseArray.push(jurorAttendanceDao.patch(app, req, panelledPayload));
       }
