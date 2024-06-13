@@ -317,11 +317,9 @@
 
       tmpReasons = _.cloneDeep(req.session.deferralReasons);
 
-      let { minDate, maxDate } = req.session;
+      let { minDate } = req.session;
 
-      if (!maxDate) {
-        maxDate = moment(minDate, 'yyyy-MM-DD').add(1, 'y').add(1, 'd').format('YYYY-MM-DD');
-      }
+      maxDate = moment(minDate, 'yyyy-MM-DD').add(1, 'y').add(1, 'd').format('YYYY-MM-DD');
 
       const validatorResult = validate(req.body, deferralReasonAndDecision(req.body, minDate, maxDate));
 
