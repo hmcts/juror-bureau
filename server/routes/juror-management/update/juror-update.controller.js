@@ -319,7 +319,7 @@
 
       let { minDate } = req.session;
 
-      maxDate = moment(minDate, 'yyyy-MM-DD').add(1, 'y').add(1, 'd').format('YYYY-MM-DD');
+      const maxDate = moment(minDate, 'yyyy-MM-DD').add(1, 'y').add(1, 'd').format('YYYY-MM-DD');
 
       const validatorResult = validate(req.body, deferralReasonAndDecision(req.body, minDate, maxDate));
 
