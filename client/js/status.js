@@ -36,10 +36,7 @@
       $('#modal input[name="version"]').val($('#updateSectionForm #versionNumber').val());
       $('#modal').css({ display: 'block' });
     });
-
   };
 
-
-  };
 
 })();
