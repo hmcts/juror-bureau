@@ -40,6 +40,20 @@
     </div>
   {% endif %}
 
+  {% if responseCompletedMesssage %}
+    <div class="govuk-!-margin-top-3">
+      {% set bannerMessageHtml %}
+        {{responseCompletedMesssage}}
+      {% endset %}
+
+      {{ mojBanner({
+        type: 'information',
+        html: bannerMessageHtml,
+        iconFallbackText: 'Information'
+      }) }}
+    </div>
+  {% endif %}
+
   {% if method === "paper"
     and (response.jurorDetailsComplete === false or response.eligibilityComplete === false or response.signed !== true)
     and not (response.processingStatus === 'Closed' or thirdPartyDetails.reason === 'Deceased') %}
