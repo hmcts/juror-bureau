@@ -5,7 +5,7 @@
   const { validate } = require('validate.js');
   const validator = require('../../../../config/validation/create-users');
   const { usersDAO } = require('../../../../objects/users');
-  const { replaceAllObjKeys } = require('../../../../lib/mod-utils');
+  const { replaceAllObjKeys, makeManualError } = require('../../../../lib/mod-utils');
   const { capitalise } = require('../../../../components/filters');
 
   module.exports.getEditUser = function(app) {
@@ -23,7 +23,6 @@
 
         app.logger.info('Fetched user record', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             user: user,
           },
@@ -54,7 +53,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch user details: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             username,
           },
@@ -96,7 +94,6 @@
 
         app.logger.info('Updated user details', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             username: username,
             data: payload,
@@ -107,12 +104,22 @@
       } catch (err) {
         app.logger.crit('Failed to update user details: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             payload,
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
+
+        if (err.statusCode === 422) {
+          const bvrCodes = {
+            'EMAIL_IN_USE': 'email',
+          };
+
+          req.session.errors = makeManualError(bvrCodes[err.error?.code] || 'userDetails', err.error?.message || 'Failed to update user details');
+          req.session.formFields = req.body;
+
+          return res.redirect(app.namedRoutes.build('administration.users.edit.get', { username }));
+        }
 
         return res.render('_errors/generic.njk');
       }
@@ -138,7 +145,6 @@
 
         app.logger.info('Edited existing users type', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             username,
             userType: capitalise(user.userType),
@@ -147,7 +153,6 @@
       } catch (err) {
         app.logger.crit('Failed to edit existing users type: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             editPayload,
           },
@@ -160,7 +165,6 @@
 
         app.logger.info('Edited existing user', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             username,
             editPayload,
@@ -173,7 +177,6 @@
       } catch (err) {
         app.logger.crit('Failed to edit existing user: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             editPayload,
           },
