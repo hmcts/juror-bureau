@@ -199,7 +199,7 @@
           ],
           // these are important for the footer notes / text
           footerText: officer,
-          signature: data.signature,
+          signature: `${data.firstName} ${data.lastName}`,
         });
       }
 
