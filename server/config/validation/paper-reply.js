@@ -4,7 +4,8 @@
   var validate = require('validate.js')
     , moment = require('moment')
 
-    , phoneRegex = /^[04(+][0-9\s-()]{10,18}$/
+    , phoneRegex = /^[04(+][0-9\s-()]{10,19}$/
+    , areaCodeRegex = /^[127]{1}$/
     , messageMap = {
       primaryPhone: 'Telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
       secondaryPhone: 'Telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
@@ -337,7 +338,7 @@
     }
 
     if (value.slice(0, 2) !== '44' && value.slice(0, 3) !== '+44' && value.slice(0, 4) !== '0044'
-    && value.slice(0, 2) !== '07' && value.slice(0, 2) !== '02') {
+    && !areaCodeRegex.test(value.slice(1, 2))) {
       message.summary = 'Enter a UK telephone number';
       message.details.push('Enter a UK telephone number');
     } else if (stripPrefixes(value).slice(0, 2) === '07' && stripPrefixes(value).length !== 11) {
@@ -446,13 +447,13 @@
 
     if (strippedPhoneNumber.slice(0, 2) === '44') {
       strippedPhoneNumber = strippedPhoneNumber.slice(2);
-    } else if (strippedPhoneNumber.slice(0, 3) !== '+44') {
+    } else if (strippedPhoneNumber.slice(0, 3) === '+44') {
       strippedPhoneNumber = strippedPhoneNumber.slice(3);
-    } else if (strippedPhoneNumber.slice(0, 4) !== '0044') {
+    } else if (strippedPhoneNumber.slice(0, 4) === '0044') {
       strippedPhoneNumber = strippedPhoneNumber.slice(4);
     }
 
-    strippedPhoneNumber = strippedPhoneNumber.replace(/[()-]\s/g, '');
+    strippedPhoneNumber = strippedPhoneNumber.replace(/\s/g, '').replace(/[()-]/g, '');
 
     return strippedPhoneNumber;
     
