@@ -34,6 +34,12 @@
         // always reset the staff list here
         req.session.staffList = _.clone(staffList);
 
+        if (tmpFields && tmpFields['officer_assigned']){
+          tmpFields['officer_assigned'] = tmpFields && tmpFields['officer_assigned'] 
+            ? staffList.find((staff) => staff.login.toLowerCase() === tmpFields['officer_assigned'].toLowerCase()).name 
+            : null;
+        }
+
         return res.render('search/index', {
           staffList: staffList ? flattenStaffList(staffList) : [],
           responses,
@@ -147,6 +153,10 @@
       delete payload._csrf;
 
       const searchParams = _.clone(payload);
+
+      if (staffToSearch.name) {
+        searchParams['officer_assigned'] = staffToSearch.name;
+      }
 
       if (payload.last_name) {
         payload['last_name_display'] = payload.last_name;
