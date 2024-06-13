@@ -317,11 +317,11 @@
 
       tmpReasons = _.cloneDeep(req.session.deferralReasons);
 
-      let { minDate } = req.session;
+      const { hearingDate } = req.body;
 
-      const maxDate = moment(minDate, 'yyyy-MM-DD').add(1, 'y').add(1, 'd').format('YYYY-MM-DD');
+      const maxDate = moment(hearingDate, 'DD/MM/YYYY').add(1, 'y').add(1, 'd').format('YYYY-MM-DD');
 
-      const validatorResult = validate(req.body, deferralReasonAndDecision(req.body, minDate, maxDate));
+      const validatorResult = validate(req.body, deferralReasonAndDecision(req.body, dateFilter(hearingDate, 'DD/MM/YYYY', 'yyyy-MM-DD'), maxDate));
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
