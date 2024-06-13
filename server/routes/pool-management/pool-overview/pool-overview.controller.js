@@ -1,4 +1,3 @@
-/* eslint-disable strict */
 const _ = require('lodash');
 const validate = require('validate.js');
 const jurorTransfer = require('../../../objects/juror-transfer').jurorTransfer;
@@ -117,8 +116,9 @@ module.exports.postFilterJurors = function(app) {
     const poolNumber = req.params.poolNumber;
     const filters = req.body;
 
-    req.session.selectedJurors = req.body.selectedJurors;
-    req.session.selectAll = req.body['check-all-jurors'];
+    // reset filters on every filter submit
+    delete req.session.selectedJurors;
+    delete req.session.selectAll;
 
     const queryParams = new URLSearchParams(req.url.split('?')[1] || '');
 
