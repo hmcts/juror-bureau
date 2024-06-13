@@ -344,44 +344,54 @@ function executeTransfer(app, req, res, transferedJurors) {
 
 function coronerCourtPool(app) {
   return function(req, res) {
-    var currentPage = req.query['page'] || 1
-      , pagination
-      , coronerSuccessCB = function(response) {
-        var members = [];
+    const currentPage = req.query['page'] || 1;
+    let pagination;
+    const coronerSuccessCB = function({response, headers}) {
+      const members = [];
+      const tmpErrors = _.clone(req.session.errors);
 
-        app.logger.info('Fetched pool summary: ', {
-          auth: req.session.authentication,
-          data: response,
+      delete req.session.errors;
+
+      app.logger.info('Fetched pool summary: ', {
+        auth: req.session.authentication,
+        data: response,
+      });
+
+      req.session.coronerCourt = response;
+
+      req.session.coronerCourtEtag = headers.etag;
+
+      if (response.coronerDetailsList.length > 0) {
+        response.coronerDetailsList.forEach(function(member) {
+          members.push([
+            {
+              text: member.jurorNumber,
+            },
+            {
+              text: capitalizeFully(member.firstName),
+            },
+            {
+              text: capitalizeFully(member.lastName),
+            },
+            {
+              text: member.postcode,
+            },
+          ]);
         });
+      }
 
-        req.session.coronerCourt = response;
-
-        if (response.coronerDetailsList.length > 0) {
-          response.coronerDetailsList.forEach(function(member) {
-            members.push([
-              {
-                text: member.jurorNumber,
-              },
-              {
-                text: capitalizeFully(member.firstName),
-              },
-              {
-                text: capitalizeFully(member.lastName),
-              },
-              {
-                text: member.postcode,
-              },
-            ]);
-          });
-        }
-
-        return res.render('pool-management/pool-overview/coroner', {
-          backLinkUrl: 'pool-management.get',
-          members: members,
-          poolDetails: response,
-          pageItems: pagination,
-        });
-      };
+      return res.render('pool-management/pool-overview/coroner', {
+        backLinkUrl: 'pool-management.get',
+        members: members,
+        poolDetails: response,
+        pageItems: pagination,
+        errors: {
+          title: 'Please check the form',
+          count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+          items: tmpErrors,
+        },
+      });
+    };
 
     // temp delete this here 🤔
     delete req.session.newCourtCatchmentArea;

@@ -23,6 +23,7 @@
     "nsp": "nsp check"
   },
   "dependencies": {
+    "@azure/identity": "^4.2.1",
     "@fengyuanchen/datepicker": "^0.6.4",
     "@hmcts/properties-volume": "1.1.0",
     "@ministryofjustice/frontend": "^1.8.1",
@@ -76,12 +77,12 @@
     "nodemon": "^3.1.1",
     "nsp": "^3.1.0",
     "postcss": "^8.4.38",
-    "sass": "^1.72.0",
+    "sass": "^1.77.5",
     "sass-loader": "^14.2.1",
     "sinon": "^18.0.0",
     "sinon-chai": "^3.0.0",
     "style-loader": "^4.0.0",
-    "webpack": "^5.91.0",
+    "webpack": "^5.92.0",
     "webpack-cli": "^5.1.4",
     "webpack-node-externals": "^3.0.0"
   },

@@ -202,7 +202,7 @@
 
     , fetchCoronerPool = {
       resource: 'moj/pool-create/coroner-pool',
-      get: function(rp, app, jwtToken, poolNumber) {
+      get: function(rp, app, jwtToken, poolNumber, etag = null) {
         var reqOptions = _.clone(options);
 
         reqOptions.headers.Authorization = jwtToken;
@@ -217,6 +217,16 @@
             poolNumber: poolNumber,
           },
         });
+
+        if (etag) {
+          reqOptions.headers['If-None-Match'] = `${etag}`;
+        }
+
+        reqOptions.transform = (response, incomingRequest) => {
+          const headers = _.cloneDeep(incomingRequest.headers);
+  
+          return { response, headers };
+        };
 
         return rp(reqOptions);
       },
