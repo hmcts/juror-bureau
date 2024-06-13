@@ -4,8 +4,8 @@
   var validate = require('validate.js')
     , moment = require('moment')
 
-    , phoneRegex = /^[047(+][0-9\s-()]{9,19}$/
-    , areaCodeRegex = /^[12]{1}$/
+    , phoneRegex = /^[01247(+][0-9\s-()]{9,19}$/
+    , areaCodeRegex = /^[127]{1}$/
     , messageMap = {
       primaryPhone: 'Telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
       secondaryPhone: 'Telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
@@ -338,7 +338,7 @@
     }
 
     if (value.slice(0, 2) !== '44' && value.slice(0, 3) !== '+44' && value.slice(0, 4) !== '0044'
-  && value.slice(0, 1) !== '7' && !areaCodeRegex.test(value.slice(1, 2))) {
+  && !areaCodeRegex.test(value.slice(0, 1)) && !areaCodeRegex.test(value.slice(1, 2))) {
       message.summary = 'Enter a UK telephone number';
       message.details.push('Enter a UK telephone number');
     } else if ((stripPrefixes(value).slice(0, 2) === '07' || stripPrefixes(value).slice(0, 1) === '7') && stripPrefixes(value).length !== 11) {
