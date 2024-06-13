@@ -19,19 +19,18 @@
             <li>
               <a href="{{ url('pool-management.get') }}" class="govuk-link govuk-!-font-weight-bold">Pool management</a>
             </li>
-            <li>
-              <a href="{{ url('inbox.todo.get') }}" class="govuk-link govuk-!-font-weight-bold">Summons management</a>
-            </li>
-            <li>
-              <a href="{{ url('juror-management.manage-jurors.approve.get') if isSJO else url('juror-management.manage-jurors.pools.get') }}" class="govuk-link govuk-!-font-weight-bold">Juror management</a>
-            </li>
-            <li>
-              <a href="#" class="govuk-link govuk-!-font-weight-bold">Expense management</a>
-            </li>
+            {% if isBureauUser %}
+              <li>
+                <a href="{{ url('inbox.todo.get') }}" class="govuk-link govuk-!-font-weight-bold">Summons management</a>
+              </li>
+            {% endif %}
             {% if isCourtUser %}
-            <li>
-              <a href="{{ url('trial-management.trials.get') }}" class="govuk-link govuk-!-font-weight-bold">Trial management</a>
-            </li>
+              <li>
+                <a href="{{ url('juror-management.manage-jurors.approve.get') if isSJO else url('juror-management.manage-jurors.pools.get') }}" class="govuk-link govuk-!-font-weight-bold">Juror management</a>
+              </li>
+              <li>
+                <a href="{{ url('trial-management.trials.get') }}" class="govuk-link govuk-!-font-weight-bold">Trial management</a>
+              </li>
             {% endif %}
             <li>
               <a href="{{ url('reports.reports.get') }}" class="govuk-link govuk-!-font-weight-bold">Reporting</a>
