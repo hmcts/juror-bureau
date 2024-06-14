@@ -25,7 +25,8 @@
         },
         { text: juror.first_name },
         { text: juror.last_name },
-        { text: juror.check_in_time | timeArrayToString | convert24to12 }
+        { text: juror.check_in_time | timeArrayToString | convert24to12 },
+        { text: juror.juror_status | jurorStatusToString }
       ]
     ), jurorsNotCheckedOut) %}
   {% endfor %}
@@ -68,6 +69,12 @@
               text: "Checked in",
               attributes: {
                 "aria-label": "Checked in"
+              }
+            },
+            {
+              text: "Juror status",
+              attributes: {
+                "aria-label": "Juror status"
               }
             }
           ],

@@ -1,0 +1,103 @@
+@startuml empanel-jury
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant TrialDetailPage as Trial <</trial-management/trials/:trialNumber/:locationCode/detail>>
+participant JurorQuantityPage as Quantity <</trial-management/trials/:locationCode/:trialnumber/empanel/number-of-jurors>>
+participant EmpanelJuryForm as Form <</trial-management/trials/:locationCode/:trialnumber/empanel/jurors-select>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant EmpanelJuryController as Controller <<empanel-jury.controller.js>> #LightYellow
+participant EmpanelJurorsDAO as DAO <<empanelJurorsDAO.post()>> #LightYellow
+participant RequestPanelDAO as PanelDAO <<requestPanelDAO.get()>> #LightYellow
+
+''' TEMPLATES
+participant JurorQuantityPage as QuantityTemplate <<trial-management/empanel-jury/index.njk>> #lavender
+participant EmpanelJurorsPage as EmpanelTemplate <<trial-management/empanel-jury/empanel-jurors.njk>> #lavender
+participant ErrorTemplate as Error <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant EmpanelJuryValidator as Validator
+participant QuantityValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+Actor -> Trial : Click 'Empanel Jury'
+
+Trial -> Controller : call page controller
+Controller -> QuantityTemplate : request and build template
+Controller <- QuantityTemplate : return HTML
+Quantity <- Controller : return HTML
+Actor <- Quantity : render HTML
+
+Actor -> Quantity : submit form details
+Quantity -> Controller : POST form
+Controller -> QuantityValidator : validate form submission
+
+alt Form missing selections
+  Controller <- QuantityValidator : invalid form
+  Controller -> QuantityTemplate : request and build template
+  Controller <- QuantityTemplate : return HTML
+  Quantity <- Controller : return error HTML
+  Actor <- Quantity : render error message
+end
+
+Controller <- QuantityValidator : valid form submission
+
+Controller -> PanelDAO : build request object
+PanelDAO -> BackendController : send backend request
+PanelDAO <- BackendController : ok response
+
+alt Panel API failure
+  PanelDAO <-- BackendController : error response
+  Controller <-- PanelDAO : reject requestObject
+  Controller -> Error : request and build template
+  Controller <- Error : return HTML
+  Error <- Controller : return HTML
+  Actor <- Error : render error page
+end
+
+Controller <- PanelDAO : resolve request
+
+Controller -> EmpanelTemplate : request and build template
+Controller <- EmpanelTemplate : return HTML
+Form <- Controller : return HTML
+Actor <- Form : render HTML
+
+Actor -> Form : submit form details
+Form -> Controller : POST form
+Controller -> Validator : validate form submission
+
+alt Form missing selections
+  Controller <- Validator : invalid form
+  Controller -> EmpanelTemplate : request and build template
+  Controller <- EmpanelTemplate : return HTML
+  Form <- Controller : return error HTML
+  Actor <- Form : render error message
+end
+
+Controller <- Validator : valid form submission
+
+Controller -> DAO : build request object
+DAO -> BackendController : send backend request
+
+alt Panel API failure
+  DAO <-- BackendController : error response
+  Controller <-- DAO : reject requestObject
+  Controller -> Error : request and build template
+  Controller <- Error : return HTML
+  Error <- Controller : return HTML
+  Actor <- Error : render error page
+end
+
+DAO <- BackendController : ok response
+Controller <- DAO : resolve request
+Trial <- Controller : redirect to trial details
+
+Actor <- Trial : render HTML
