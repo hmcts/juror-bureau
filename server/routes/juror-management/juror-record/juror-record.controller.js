@@ -1045,6 +1045,7 @@
       app.logger.trace('Fetched juror history', { data: { history } });
 
       return res.render('juror-management/juror-record/juror-history', {
+        court: isCourtUser(req, res),
         jurorNumber,
         juror,
         historyUrl: app.namedRoutes.build('juror-record.history.get', { jurorNumber }),

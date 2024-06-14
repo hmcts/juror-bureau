@@ -22,26 +22,28 @@
     History
   </h2>
 
-  <div>
-    {{ mojSubNavigation({
-      label: "Side navigation",
-      items: [{
-        text: "History",
-        href: historyUrl + "?history",
-        attributes: {
-          id: "historyHistoryTabAnchor"
-        },
-        active: historyTab === 'history'
-      }, {
-        html: "Attendance and payments",
-        href: historyUrl + "?attendance",
-        attributes: {
-          id: "historyAttendanceTabAnchor"
-        },
-        active: historyTab === 'attendance'
-      }]
-    }) }}
-  </div>
+  {% if court %}
+    <div>
+      {{ mojSubNavigation({
+        label: "Side navigation",
+        items: [{
+          text: "History",
+          href: historyUrl + "?history",
+          attributes: {
+            id: "historyHistoryTabAnchor"
+          },
+          active: historyTab === 'history'
+        }, {
+          html: "Attendance and payments",
+          href: historyUrl + "?attendance",
+          attributes: {
+            id: "historyAttendanceTabAnchor"
+          },
+          active: historyTab === 'attendance'
+        }]
+      }) }}
+    </div>
+  {% endif%}
 
   {% if historyTab === 'history' %}
     {% include "../_partials/history-tab.njk" %}
