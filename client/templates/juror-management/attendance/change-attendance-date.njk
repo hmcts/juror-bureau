@@ -72,7 +72,7 @@
     </div>
 
     <input type="hidden" name="jurorNumber" value="{{ juror.jurorNumber }}">
-    <input type="hidden" name="originalNextDate" value="{{ originalNextDate }}">
+    <input type="hidden" name="originalNextDate" value="{{ minDate | dateFilter('DD/MM/YYYY', 'YYYY, MM, DD') }}">
     <input type="hidden" name="_csrf" value="{{ csrftoken }}">
 
   </form>

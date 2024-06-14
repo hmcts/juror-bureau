@@ -1,8 +1,9 @@
 ;(function(){
   'use strict';
 
-  var _ = require('lodash')
-    , moment = require('moment');
+  const _ = require('lodash')
+  const moment = require('moment');
+  const modUtils = require('../../lib/mod-utils');
 
   module.exports = {
     prettify: function(str, upperFirst) {
@@ -496,7 +497,11 @@
       return value < 0 
         ? `(£${Math.abs(value).toFixed(2)})`
         : `£${(value || 0).toFixed(2)}`;
-    } 
+    },
+
+    jurorStatusToString: function(status) {
+      return modUtils.getJurorStatus(status);
+    }
   };
 
 })();
