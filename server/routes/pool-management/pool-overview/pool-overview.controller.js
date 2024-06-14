@@ -116,9 +116,13 @@ module.exports.postFilterJurors = function(app) {
     const poolNumber = req.params.poolNumber;
     const filters = req.body;
 
-    // reset filters on every filter submit
-    delete req.session.selectedJurors;
-    delete req.session.selectAll;
+    req.session.selectedJurors = req.body.selectedJurors;
+    req.session.selectAll = req.body['check-all-jurors'];
+
+    if (req.query.reset === 'true') {
+      delete req.session.selectedJurors;
+      delete req.session.selectAll;
+    }
 
     const queryParams = new URLSearchParams(req.url.split('?')[1] || '');
 
@@ -202,10 +206,9 @@ module.exports.postReassign = function(app) {
   return async function(req, res) {
     if (req.body['check-all-jurors']) {
       try {
-        const poolMembers = await poolMembersDAO.get(req, req.params.poolNumber);
+        const poolMembers = await poolMembersDAO.post(req, filtersHelper(req, req.params.poolNumber), true);
 
-        delete poolMembers.Headers;
-        req.body.selectedJurors = Object.values(poolMembers);
+        req.body.selectedJurors = poolMembers.data.map(juror => juror.jurorNumber);
       } catch (err) {
         app.logger.crit('Failed to fetch pool members to reassign: ', {
           auth: req.session.authentication,
@@ -749,3 +752,25 @@ module.exports.postCheckJuror = function(app) {
     return res.send();
   };
 };
+
+function filtersHelper(req, poolNumber) {
+  const queryStatus = !req.query.status || req.query.status === 'all' ? null : req.query.status;
+
+  const payload = {
+    'pool_number': poolNumber,
+    'juror_number': req.query.jurorNumber || null,
+    'first_name': req.query.firstName || null,
+    'last_name': req.query.lastName || null,
+    'attendance': req.query.attendance?.toUpperCase()
+      .replace(/ /g, '_').split(',') || null,
+    'checked_in': req.query.checkedIn || null,
+    'next_due': req.query.nextDue?.split(',') || null,
+    'status': queryStatus?.split(',').map(status => status[0].toUpperCase() + status.slice(1)) || null,
+    'page_number': req.query.page || 1,
+    'sort_field': 'juror_number',
+    'sort_method': 'ascending',
+    'page_limit': 500,
+  };
+
+  return payload;
+}
