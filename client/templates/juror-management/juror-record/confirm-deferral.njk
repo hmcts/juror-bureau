@@ -22,6 +22,7 @@
         <input type="hidden" name="deferralDecision" value="GRANT">
         <input type="hidden" name="deferralDate" value="{{ deferralDate }}">
         <input type="hidden" name="allow_multiple_deferral" value="true">
+        <input type="hidden" name="hearingDate" value="{{ hearingDate | dateFilter('yyyy-MM-dd', 'DD/MM/YYYY') }}">
 
         <div class="govuk-button-group">
           {{ govukButton({

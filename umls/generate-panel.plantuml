@@ -1,0 +1,101 @@
+@startuml generate-panel
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant TrialDetailPage as Trial <</trial-management/trials/:trialNumber/:locationCode/detail>>
+participant GeneratePanelPage as Form <</trial-management/trials/:locationCode/:trialnumber/generate-panel>>
+participant SelectPoolsPage as Pools <</trial-management/trials/:locationCode/:trialnumber/generate-panel/select-pools>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant GeneratePanelController as Controller <<generate-panel.controller.js>> #LightYellow
+participant GeneratePanelDAO as DAO <<generatePanelDAO.post()>> #LightYellow
+participant AvailableJurorsDAO as AvailableJurors <<avialableJurorsDAO.get()>> #LightYellow
+
+''' TEMPLATES
+participant PanelTemplate as PanelTemplate <<trial-management/generate-panel/generate-panel.njk>> #lavender
+participant SelectPoolsTemplate as PoolsTemplate <<trial-management/generate-panel/select-pools.njk>> #lavender
+participant ErrorTemplate as Error <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant GeneratePanelValidator as Validator
+participant GeneratePanelPoolsValidator as PoolsValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+Actor -> Trial : Click 'Generate a Panel'
+
+Trial -> Controller : call page controller
+Controller -> PanelTemplate : request and build template
+Controller <- PanelTemplate : return HTML
+Form <- Controller : return HTML
+Actor <- Trial : render HTML
+
+Actor -> Form : submit form details
+Form -> Controller : POST form
+Controller -> Validator : validate form submission
+
+alt Form missing selections
+  Controller <- Validator : invalid form
+  Controller -> PanelTemplate : request and build template
+  Controller <- PanelTemplate : return HTML
+  Form <- Controller : return error HTML
+  Actor <- Form : render error message
+end
+
+Controller <- Validator : valid form submission
+
+alt All available pools
+  Controller -> DAO : build request object
+  DAO -> BackendController : send backend request
+  DAO <- BackendController : ok response
+  Controller <- DAO : resolve request
+  Trial <- Controller : redirect to trial details
+else Jurors from one or more specific pools
+  Controller -> AvailableJurors : build request object
+  AvailableJurors -> BackendController : send backend request
+  AvailableJurors <- BackendController : ok response
+  
+  alt Available jurors API failure
+    AvailableJurors <-- BackendController : error response
+    Controller <-- AvailableJurors : reject requestObject
+    Controller -> Error : request and build template
+    Controller <- Error : return HTML
+    Error <- Controller : return HTML
+    Actor <- Error : render error page
+  end
+
+  Controller <- AvailableJurors : resolve request
+
+  Controller -> PoolsTemplate : request and build template
+  Controller <- PoolsTemplate : return HTML
+  Pools <- Controller : return HTML
+  Actor <- Pools : render HTML
+
+  Actor -> Pools : submit form details
+  Pools -> Controller : POST form
+  Controller -> PoolsValidator : validate form submission
+
+  alt Form missing selections
+    Controller <- PoolsValidator : invalid form
+    Controller -> PanelTemplate : request and build template
+    Controller <- PanelTemplate : return HTML
+    Pools <- Controller : return error HTML
+    Actor <- Pools : render error message
+  end
+
+  Controller <- PoolsValidator : valid form submission
+
+  Controller -> DAO : build request object
+  DAO -> BackendController : send backend request
+  DAO <- BackendController : ok response
+  Controller <- DAO : resolve request
+  Trial <- Controller : redirect to trial details
+end
+
+Actor <- Trial : render HTML

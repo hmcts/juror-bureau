@@ -1,0 +1,122 @@
+@startuml edit-trial
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant TrialDetailPage <</trial-management/trials/:trialNumber/:locationCode/detail>>
+participant CreateTrialPage <</trial-management/create-trial>>
+participant ManageTrialsPage <</trial-management/trials>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant EditTrialController <<edit-trial.controller.js>> #lightyellow
+participant TrialManagementController <<trial-management.controller.js>> #lightyellow
+participant CourtroomsObject <<courtroomsObject.get()>> #lightyellow
+participant JudgesObject <<judgesObject.get()>> #lightyellow
+participant CreateTrialObject <<createTrialObject.post()>> #lightyellow
+participant TrialDetailsObject <<trialDetailsObject.get()>> #lightyellow
+
+''' TEMPLATES
+participant TrialDetailTemplate <<trial-management/trial-detail.njk>> #lavender
+participant CreateTrialTemplate <<trial-management/create-trial.njk>> #lavender
+participant TrialsTemplate <<trial-management/trials.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant CreateTrialValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> TrialDetailPage : Click 'Edit trial button'
+
+TrialDetailPage -> EditTrialController : call page controller
+
+EditTrialController -> CourtroomsObject : build request object
+CourtroomsObject -> BackendController : send backend request
+CourtroomsObject <- BackendController : ok response
+EditTrialController <- CourtroomsObject : resolve request
+
+alt Failed to fetch courtrooms
+  CourtroomsObject <-- BackendController : error response
+  EditTrialController <-- CourtroomsObject : reject requestObject
+  EditTrialController -> ErrorTemplate : request and build template
+  EditTrialController <- ErrorTemplate : return HTML
+  GenericErrorPage <- EditTrialController : return HTML
+  Actor <- GenericErrorPage : render error page
+end
+
+EditTrialController -> JudgesObject : build request object
+JudgesObject -> BackendController : send backend request
+JudgesObject <- BackendController : ok response
+EditTrialController <- JudgesObject : resolve request
+
+alt Failed to fetch judges
+  JudgesObject <-- BackendController : error response
+  EditTrialController <-- JudgesObject : reject requestObject
+  EditTrialController -> ErrorTemplate : request and build template
+  EditTrialController <- ErrorTemplate : return HTML
+  GenericErrorPage <- EditTrialController : return HTML
+  Actor <- GenericErrorPage : render error page
+end
+
+EditTrialController -> CreateTrialTemplate : request and build template
+EditTrialController <- CreateTrialTemplate : return HTML
+CreateTrialPage <- EditTrialController : return HTML
+Actor <- CreateTrialPage : render HTML
+
+Actor -> CreateTrialPage : Update trial details in form and click 'Edit trial'
+
+CreateTrialPage -> EditTrialController : POST trial details
+EditTrialController -> CreateTrialValidator : validate trial details
+
+alt invalid trial details entered
+  EditTrialController <- CreateTrialValidator : invalid details
+  EditTrialController -> CreateTrialTemplate : request and build template
+  EditTrialController <- CreateTrialTemplate : return HTML
+  CreateTrialPage <- EditTrialController : return error HTML
+  Actor <- CreateTrialPage : render error message
+end
+
+EditTrialController <- CreateTrialValidator : valid details entered
+
+EditTrialController -> CreateTrialObject : build request object
+CreateTrialObject -> BackendController : send backend request
+CreateTrialObject <- BackendController : ok response
+EditTrialController <- CreateTrialObject : resolve request
+
+alt Trial could not be created
+  CreateTrialObject <-- BackendController : error response
+  EditTrialController <-- CreateTrialObject : reject requestObject
+  EditTrialController -> ErrorTemplate : request and build template
+  EditTrialController <- ErrorTemplate : return HTML
+  GenericErrorPage <- EditTrialController : return HTML
+  Actor <- GenericErrorPage : render error page
+end
+
+EditTrialController -> TrialManagementController : call page controller
+
+TrialManagementController -> TrialDetailsObject : build request object
+TrialDetailsObject -> BackendController : send backend request
+TrialDetailsObject <- BackendController : ok response
+TrialManagementController <- TrialDetailsObject : resolve request
+
+alt Failed to fetch trial details
+    TrialDetailsObject <-- BackendController : error response
+    TrialManagementController <-- TrialDetailsObject : reject requestObject
+    TrialManagementController -> TrialsTemplate : request and build template
+    TrialManagementController <- TrialsTemplate : return HTML
+    TrialDetailPage <- TrialManagementController : return HTML
+    Actor <- TrialDetailPage : render HTML
+end
+
+TrialManagementController -> TrialDetailTemplate : request and build template
+TrialManagementController <- TrialDetailTemplate : return HTML
+TrialDetailPage <- TrialManagementController : return HTML
+Actor <- TrialDetailPage : render HTML
+
+
+@enduml

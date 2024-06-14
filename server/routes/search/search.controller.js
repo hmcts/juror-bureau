@@ -36,12 +36,12 @@
 
         if (tmpFields && tmpFields['officer_assigned']){
           tmpFields['officer_assigned'] = tmpFields && tmpFields['officer_assigned'] 
-            ? staffList.find((staff) => staff.login.toLowerCase() === tmpFields['officer_assigned'].toLowerCase()).name 
+            ? staffList?.find((staff) => staff.login.toLowerCase() === tmpFields['officer_assigned'].toLowerCase()).name 
             : null;
         }
 
         return res.render('search/index', {
-          staffList: staffList ? flattenStaffList(staffList) : [],
+          staffList: flattenStaffList(staffList),
           responses,
           resultsStr,
           searchParams: tmpFields,
@@ -154,7 +154,7 @@
 
       const searchParams = _.clone(payload);
 
-      if (staffToSearch.name) {
+      if (staffToSearch?.name) {
         searchParams['officer_assigned'] = staffToSearch.name;
       }
 
@@ -261,10 +261,10 @@
   };
 
   function flattenStaffList(staffList) {
-    return staffList.reduce((list, curr) => {
+    return staffList ? staffList.reduce((list, curr) => {
       list.push(curr.name);
       return list;
-    }, []).join(',');
+    }, []).join(',') : '';
   }
 
   function buildSearchString(payload) {
