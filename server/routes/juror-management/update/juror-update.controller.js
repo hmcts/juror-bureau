@@ -317,13 +317,11 @@
 
       tmpReasons = _.cloneDeep(req.session.deferralReasons);
 
-      let { minDate, maxDate } = req.session;
+      const { hearingDate } = req.body;
 
-      if (!maxDate) {
-        maxDate = moment(minDate, 'yyyy-MM-DD').add(1, 'y').add(1, 'd').format('YYYY-MM-DD');
-      }
+      const maxDate = moment(hearingDate, 'DD/MM/YYYY').add(1, 'y').add(1, 'd').format('YYYY-MM-DD');
 
-      const validatorResult = validate(req.body, deferralReasonAndDecision(req.body, minDate, maxDate));
+      const validatorResult = validate(req.body, deferralReasonAndDecision(req.body, dateFilter(hearingDate, 'DD/MM/YYYY', 'yyyy-MM-DD'), maxDate));
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
@@ -376,11 +374,14 @@
 
       const postUrl = app.namedRoutes.build('juror.update.deferral.post', { jurorNumber });
 
+      const hearingDate = req.session.jurorCommonDetails.startDate;
+
       return res.render('juror-management/juror-record/confirm-deferral.njk', {
         jurorNumber,
         deferralReason,
         deferralDate,
         postUrl,
+        hearingDate,
       });
     }
   };
