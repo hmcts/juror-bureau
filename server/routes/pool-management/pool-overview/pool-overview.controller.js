@@ -257,9 +257,9 @@ module.exports.postTransfer = function(app) {
   return async function(req, res) {
     if (req.body['check-all-jurors']) {
       try {
-        const poolMembers = await poolMembersDAO.get(req, req.params.poolNumber);
+        const poolMembers = await poolMembersDAO.post(req, filtersHelper(req, req.params.poolNumber), true);
 
-        delete poolMembers.Headers;
+        req.body.selectedJurors = poolMembers.data.map(juror => juror.jurorNumber);
         req.body.selectedJurors = Object.values(poolMembers);
       } catch (err) {
         app.logger.crit('Failed to fetch pool members to tranfer: ', {
@@ -460,10 +460,9 @@ module.exports.postCompleteService = function(app) {
   return async function(req, res) {
     if (req.body['check-all-jurors']) {
       try {
-        const poolMembers = await poolMembersDAO.get(req, req.params.poolNumber);
+        const poolMembers = await poolMembersDAO.post(req, filtersHelper(req, req.params.poolNumber), true);
 
-        delete poolMembers.Headers;
-        req.body.selectedJurors = Object.values(poolMembers);
+        req.body.selectedJurors = poolMembers.data.map(juror => juror.jurorNumber);
       } catch (err) {
         app.logger.crit('Failed to fetch pool members to complete service: ', {
           auth: req.session.authentication,
@@ -695,10 +694,9 @@ module.exports.postBulkPostpone = function(app) {
   return async function(req, res) {
     if (req.body['check-all-jurors']) {
       try {
-        const poolMembers = await poolMembersDAO.get(req, req.params.poolNumber);
+        const poolMembers = await poolMembersDAO.post(req, filtersHelper(req, req.params.poolNumber), true);
 
-        delete poolMembers.Headers;
-        req.body.selectedJurors = Object.values(poolMembers);
+        req.body.selectedJurors = poolMembers.data.map(juror => juror.jurorNumber);
       } catch (err) {
         app.logger.crit('Failed to fetch pool members to postpone: ', {
           auth: req.session.authentication,
