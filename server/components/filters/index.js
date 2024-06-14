@@ -3,7 +3,6 @@
 
   const _ = require('lodash')
   const moment = require('moment');
-  const modUtils = require('../../lib/mod-utils');
 
   module.exports = {
     prettify: function(str, upperFirst) {
@@ -500,7 +499,8 @@
     },
 
     jurorStatusToString: function(status) {
-      return modUtils.getJurorStatus(status);
+      const { getJurorStatus } = require('../../lib/mod-utils');
+      return getJurorStatus(status);
     }
   };
 
