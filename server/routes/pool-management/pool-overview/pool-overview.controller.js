@@ -75,6 +75,11 @@ module.exports.getJurors = function(app) {
       return errorCB(app, req, res, poolNumber, errorMessage)(err);
     }
 
+    if (!Object.keys(req.query).length || (Object.keys(req.query).length === 1 && req.query.status)) {
+      delete req.session.selectedJurors;
+      delete req.session.selectAll;
+    }
+
     let queryStatus = !req.query.status || req.query.status === 'all' ? null : req.query.status;
 
     const payload = {
@@ -119,12 +124,14 @@ module.exports.postFilterJurors = function(app) {
     req.session.selectedJurors = req.body.selectedJurors;
     req.session.selectAll = req.body['check-all-jurors'];
 
-    if (req.query.reset === 'true') {
+    const queryParams = new URLSearchParams(req.url.split('?')[1] || '');
+
+    if (req.body.filterType === 'filter') {
+      queryParams.delete('page');
+
       delete req.session.selectedJurors;
       delete req.session.selectAll;
     }
-
-    const queryParams = new URLSearchParams(req.url.split('?')[1] || '');
 
     // I have some weird behaviour with the bureau filter adding an empty checked when I check a single status
     if (Array.isArray(filters.status)) {
@@ -530,16 +537,21 @@ module.exports.getCompleteServiceContinue = function(app) {
 };
 
 function courtView(app, req, res, pool, membersList, _errors, selectedJurors, selectAll) {
-  const assignUrl = app.namedRoutes.build('pool-overview.reassign.post',
-      { poolNumber: req.params.poolNumber })
-    , transferUrl = app.namedRoutes.build('pool-overview.transfer.post',
-      { poolNumber: req.params.poolNumber })
-    , completeServiceUrl = app.namedRoutes.build('pool-overview.complete-service.post',
-      { poolNumber: req.params.poolNumber })
-    , changeServiceDateUrl = app.namedRoutes.build('pool-overview.change-next-due-at-court.post',
-      { poolNumber: req.params.poolNumber })
-    , postponeUrl = app.namedRoutes.build('pool-overview.postpone.post',
-      { poolNumber: req.params.poolNumber });
+  let assignUrl = app.namedRoutes.build('pool-overview.reassign.post', {
+    poolNumber: req.params.poolNumber,
+  });
+  let transferUrl = app.namedRoutes.build('pool-overview.transfer.post', {
+    poolNumber: req.params.poolNumber,
+  });
+  let completeServiceUrl = app.namedRoutes.build('pool-overview.complete-service.post', {
+    poolNumber: req.params.poolNumber,
+  });
+  let changeServiceDateUrl = app.namedRoutes.build('pool-overview.change-next-due-at-court.post', {
+    poolNumber: req.params.poolNumber,
+  });
+  let postponeUrl = app.namedRoutes.build('pool-overview.postpone.post', {
+    poolNumber: req.params.poolNumber,
+  });;
 
   let availableSuccessMessage = false
     , successBanner
@@ -571,6 +583,15 @@ function courtView(app, req, res, pool, membersList, _errors, selectedJurors, se
 
   delete req.session.errors;
   delete req.session.bannerMessage;
+
+  const searchParams = req.url.split('?')[1];
+  if (searchParams) {
+    postponeUrl += `?${searchParams}`;
+    changeServiceDateUrl += `?${searchParams}`;
+    completeServiceUrl += `?${searchParams}`;
+    transferUrl += `?${searchParams}`;
+    assignUrl += `?${searchParams}`;
+  }
 
   let pagination;
 
@@ -608,7 +629,7 @@ function courtView(app, req, res, pool, membersList, _errors, selectedJurors, se
     const pageItems = modUtils.paginationBuilder(
       membersList.totalItems,
       currentPage,
-      req.url
+      req.url,
     );
 
     const queryParams = new URLSearchParams(req.url.split('?')[1]);

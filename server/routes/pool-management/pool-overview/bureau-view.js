@@ -68,7 +68,7 @@ module.exports = function(app, req, res, pool, membersList, _errors, selectedJur
   const pageItems = modUtils.paginationBuilder(
     membersList.totalItems,
     currentPage,
-    req.url
+    req.url,
   );
 
   delete req.session.bannerMessage;
