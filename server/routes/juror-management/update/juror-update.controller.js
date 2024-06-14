@@ -374,11 +374,14 @@
 
       const postUrl = app.namedRoutes.build('juror.update.deferral.post', { jurorNumber });
 
+      const hearingDate = req.session.jurorCommonDetails.startDate;
+
       return res.render('juror-management/juror-record/confirm-deferral.njk', {
         jurorNumber,
         deferralReason,
         deferralDate,
         postUrl,
+        hearingDate,
       });
     }
   };
