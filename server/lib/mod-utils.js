@@ -1044,6 +1044,8 @@
       return 'Transferred';
     case 11:
       return 'Additional info';
+    case 12:
+      return 'Failed to attend';
     }
   };
 
