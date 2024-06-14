@@ -3,10 +3,12 @@
 
   var validate = require('validate.js')
     , moment = require('moment')
-    , phoneRegex = /^[04(+][0-9\s-()]{8,14}$/
+
+    , phoneRegex = /^[01247(+][0-9\s-()]{9,19}$/
+    , areaCodeRegex = /^[127]{1}$/
     , messageMap = {
-      primaryPhone: 'Enter a valid main phone number',
-      secondaryPhone: 'Enter a valid alternative phone number',
+      primaryPhone: 'Telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
+      secondaryPhone: 'Telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
       emailAddress: 'Enter a valid email address',
     };
 
@@ -335,13 +337,22 @@
       return null;
     }
 
-    if (!phoneRegex.test(value)) {
+    if (value.slice(0, 2) !== '44' && value.slice(0, 3) !== '+44' && value.slice(0, 4) !== '0044'
+  && !areaCodeRegex.test(value.slice(0, 1)) && !areaCodeRegex.test(value.slice(1, 2))) {
+      message.summary = 'Enter a UK telephone number';
+      message.details.push('Enter a UK telephone number');
+    } else if ((stripPrefixes(value).slice(0, 2) === '07' || stripPrefixes(value).slice(0, 1) === '7') && stripPrefixes(value).length !== 11) {
+      message.summary = 'UK mobile number can only contain 11 digits';
+      message.details.push('UK mobile number can only contain 11 digits');
+    } else if (stripPrefixes(value).length < 11 || stripPrefixes(value).length > 13) {
+      message.summary = 'UK telephone number must contain 11 to 13 digits';
+      message.details.push('UK telephone number must contain 11 to 13 digits');
+    } else if (!phoneRegex.test(value)) {
       message.fields.push(key);
       message.summary = options.messageMap[key];
       message.details.push(options.messageMap[key]);
-    }
+    };
 
-    // Feedback
     if (message.details.length > 0) {
       return message;
     }
@@ -429,6 +440,27 @@
     }
 
     return null;
+  };
+
+  function stripPrefixes(phoneNumber) {
+    let strippedPhoneNumber = phoneNumber;
+
+    if (strippedPhoneNumber.slice(0, 2) === '44') {
+      strippedPhoneNumber = strippedPhoneNumber.slice(2);
+    } else if (strippedPhoneNumber.slice(0, 3) === '+44') {
+      strippedPhoneNumber = strippedPhoneNumber.slice(3);
+    } else if (strippedPhoneNumber.slice(0, 4) === '0044') {
+      strippedPhoneNumber = strippedPhoneNumber.slice(4);
+    }
+
+    strippedPhoneNumber = strippedPhoneNumber.replace(/\s/g, '').replace(/[()-]/g, '');
+
+    if (strippedPhoneNumber.slice(0, 1) !== '0') {
+      strippedPhoneNumber = '0' + strippedPhoneNumber;
+    }
+
+    return strippedPhoneNumber;
+
   };
 
 })();

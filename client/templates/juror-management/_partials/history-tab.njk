@@ -1,0 +1,39 @@
+{% from "moj/components/timeline/macro.njk" import mojTimeline %}
+
+<section>
+  {% set historyTimeline = [] %}
+  {% set historyHtml = undefined %}
+  {% set bylineHtml = undefined %}
+
+  {% for historyItem in history %}
+
+    {% set bylineHtml %}
+      <div class='moj-timeline__byline'>{{historyItem.username}}</div>
+      <div class='moj-timeline__byline pool-number'>Pool {{historyItem.poolNumber}}</div>
+    {% endset %}
+    
+    {% set historyHtml %}
+      <div class='entry'>{{historyItem.otherInfoDate | historyAttendanceDate}}</div>
+      <div class='entry'>{{historyItem.otherInfoRef | historyAuditLinkify | safe}}</div>
+      <div class='entry'>{{historyItem.otherInfo | historyAuditLinkify | safe}}</div>
+    {% endset %}
+
+    {% set historyTimeline = (historyTimeline.push({
+      label: { text: historyItem.description },
+      html: historyHtml,
+      datetime: {
+        timestamp: historyItem.dateCreated,
+        format: "ddd D MMM yyyy [at] hh:mma"
+      },
+      byline: { html: bylineHtml }
+    }), historyTimeline) %}
+  {% endfor %}
+
+  <div>
+    {{ mojTimeline({
+      classes: "juror-history-timeline govuk-!-width-one-half",
+      items: historyTimeline
+    }) }}
+  </div>
+
+</section>

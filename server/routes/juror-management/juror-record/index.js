@@ -119,6 +119,12 @@
       auth.verify,
       controller.postAddLogs(app));
 
+    app.get('/juror-management/record/:jurorNumber/history',
+      'juror-record.history.get',
+      auth.verify,
+      controller.getHistoryTab(app));
+
+
     require('./confirm-identity')(app);
   };
 
