@@ -328,41 +328,39 @@
   };
 
   module.exports.postPostCodes = function(app) {
-    return function(req, res) {
-      var successCB = function() {
+    return async function(req, res) {
+      const successCB = function() {
+        app.logger.info('Successfully added citizens into the coroner pool', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: req.body,
+        });
 
-          app.logger.info('Successfully added citizens into the coroner pool', {
-            auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: req.body,
-          });
+        return res.redirect(app.namedRoutes.build('pool-overview.get', {
+          poolNumber: req.params['poolNumber'],
+        }));
+      }
+      const errorCB = function(err) {
+        app.logger.crit('Failed to add citizens in pool: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: req.body,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
 
-          return res.redirect(app.namedRoutes.build('pool-overview.get', {
+        req.session.addCitizensError = true;
+
+        return res.redirect(
+          app.namedRoutes.build('coroner-pool.postcodes.get', {
             poolNumber: req.params['poolNumber'],
-          }));
-        }
-        , errorCB = function(err) {
+          })
+        );
+      }
+      const payload = buildPayload(req.body)
 
-          app.logger.crit('Failed to add citizens in pool: ', {
-            auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: req.body,
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
-
-          req.session.addCitizensError = true;
-
-          return res.redirect(
-            app.namedRoutes.build('coroner-pool.postcodes.get', {
-              poolNumber: req.params['poolNumber'],
-            })
-          );
-        }
-        , payload = buildPayload(req.body)
-        , validatorResult;
-
-      validatorResult = validate(req.body, coronerPoolPostcodes(
-        req.session.coronerPostcodes, payload.postcodeAndNumbers, req.session.coronerCourt.totalAdded));
+      const validatorResult = validate(req.body, coronerPoolPostcodes(
+        req.session.coronerPostcodes, payload.postcodeAndNumbers, req.session.coronerCourt.totalAdded
+      ));
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
@@ -372,6 +370,36 @@
         }));
       }
       delete req.session.coronerPostcodes;
+
+      try {
+        await poolObj.fetchCoronerPool.get(
+          require('request-promise'),
+          app,
+          req.session.authToken,
+          req.params['poolNumber'],
+          req.session.coronerCourtEtag
+        );
+
+        delete req.session.coronerCourtEtag;
+
+        req.session.errors = modUtils.makeManualError('coronerPool', 'Total number of jurors in this pool has been updated since you last viewed this record.');
+
+        return res.redirect(app.namedRoutes.build('pool-overview.get', { poolNumber: req.params['poolNumber'] }));
+      } catch (err) {
+        if (err.statusCode !== 304) {
+
+          app.logger.crit('Failed to compare etags for when summoning to coroners court: ', {
+            auth: req.session.authentication,
+            jwt: req.session.authToken,
+            data: {
+              poolNumber: req.params['poolNumber']
+            },
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
+
+          return res.render('_errors/generic');
+        }
+      }
 
       return poolObj.addCoronerCitizens.post(require('request-promise'), app, req.session.authToken, payload)
         .then(successCB)

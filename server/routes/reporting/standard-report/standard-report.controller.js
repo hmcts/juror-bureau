@@ -16,7 +16,7 @@
   const searchValidator = require('../../../config/validation/report-search-by');
   const jurorSearchValidator = require('../../../config/validation/juror-search');
   const moment = require('moment')
-  const { dateFilter, capitalizeFully, capitalise } = require('../../../components/filters');
+  const { dateFilter, capitalizeFully, capitalise, timeToDuration, toSentenceCase } = require('../../../components/filters');
   const { reportExport } = require('./report-export');
 
   const standardFilterGet = (app, reportKey) => async(req, res) => {
@@ -43,14 +43,18 @@
 
         delete req.session.errors;
 
-        if (filter) {
-          errors = {...validate({poolNumber: filter}, {poolNumber: {poolNumberSearched: {}}})};
+        if (typeof filter !== 'undefined') {
+          if (filter === '') {
+            errors = makeManualError('poolNumber', 'Enter a pool number');
+          } else {
+            errors = {...validate({poolNumber: filter}, {poolNumber: {poolNumberSearched: {}}})};
 
-          if (Object.keys(errors).length === 0) {
-            const api = await poolSearchObject.post(rp, app, req.session.authToken, { poolNumber: filter });
+            if (Object.keys(errors).length === 0) {
+              const api = await poolSearchObject.post(rp, app, req.session.authToken, { poolNumber: filter });
 
-            poolList = api.poolRequests;
-            resultsCount = api.resultsCount;
+              poolList = api.poolRequests;
+              resultsCount = api.resultsCount;
+            }
           }
         }
 
@@ -115,7 +119,7 @@
           },
           reportKey,
           title: reportType.title,
-          resultsCount: _resultsCount,
+          resultsCount: _resultsCount || 0,
           jurorList,
           filter,
           filterUrl: app.namedRoutes.build(`reports.${reportKey}.filter.post`),
@@ -134,7 +138,11 @@
               return courtName.includes(filter.toLowerCase());
             });
           }
+
           req.session.courtsList = courtsData.courts;
+          // we should keep a count of how many courts currently exist... also this should not affect anything
+          req.session.totalCourts = courtsData.courts.length;
+
           return res.render('reporting/standard-reports/court-select', {
             reportKey,
             courts,
@@ -317,7 +325,7 @@
             });
           }
 
-          if (header.id === 'payment_audit' && output !== '-') {
+          if (header.id === 'payment_audit' && typeof output !== 'undefined' && output !== '-') {
             return ({
               html: `<a href=${
                 app.namedRoutes.build('reports.financial-audit.get', {auditNumber: output})
@@ -327,7 +335,7 @@
             });
           }
 
-          if (header.id === 'attendance_audit' && output !== '-') {
+          if (header.id === 'attendance_audit' && typeof output !== 'undefined' && output !== '-') {
             let link;
             if (output && output.charAt(0) === 'P') {
               link = app.namedRoutes.build('reports.pool-attendance-audit.report.print', {
@@ -359,6 +367,18 @@
             output = `${capitalise(output.split('-')[0])} - ${output.split('-')[1]}`;
           }
 
+          if (header.id === 'hours_attended') {
+            output = timeToDuration(data[snakeToCamel(header.id)])
+          }
+
+          if (header.id === 'status') {
+            output = capitalizeFully(toSentenceCase(data[snakeToCamel(header.id)]))
+          }
+          
+          if (header.id === 'comments') {
+            output = output.replaceAll('\n','<br><br>')
+          }
+
           if (header.dataType === 'List') {
             const items = output.split(', ');
             let html = '';
@@ -377,11 +397,13 @@
 
           const numericTypes = ['Integer', 'BigDecimal', 'Long', 'Double']
 
+          const sortValue = numericTypes.includes(header.dataType) ? data[snakeToCamel(header.id)] : output;
+
           return ({
             html: output ? output : '-',
             attributes: {
-              "data-sort-value": output && output !== '-' 
-                ? (header.dataType === 'LocalDate' ? data[snakeToCamel(header.id)] : output) 
+              "data-sort-value": sortValue && sortValue !== '-' 
+                ? (header.dataType === 'LocalDate' ? data[snakeToCamel(header.id)] : sortValue) 
                 : (numericTypes.includes(header.dataType) ? '0' : '-')
             },
             format: header.dataType === 'BigDecimal' ? 'numeric' : '',
@@ -568,9 +590,22 @@
       }
     }
 
+    if (reportKey.includes('jury-summoning-monitor')) {
+      if (reportKey.includes('court')) {
+        return res.redirect(app.namedRoutes.build('reports.jury-summoning-monitor.filter-by-date.get', {
+          type: 'court',
+        }));
+      }
+
+      return res.redirect(app.namedRoutes.build('reports.jury-summoning-monitor.report.get', {
+        type: 'pool',
+        filter: req.params.filter,
+      }));
+    }
+
     try {
       const { headings, tableData } = await (reportType.bespokeReport?.dao
-        ? reportType.bespokeReport.dao(req)
+        ? reportType.bespokeReport.dao(req, config)
         : standardReportDAO.post(req, app, config));
 
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });

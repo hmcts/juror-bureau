@@ -16,7 +16,6 @@
         case '5':
         case '6':
         case '7':
-          displayCompletedDialog();
           break;
         case '11':
           displaySelectStatusDialog();
@@ -37,16 +36,7 @@
       $('#modal input[name="version"]').val($('#updateSectionForm #versionNumber').val());
       $('#modal').css({ display: 'block' });
     });
-
   };
 
-  function displayCompletedDialog(){
-    $.get('/response/' + $('#jurorNumber').val() + '/completed/', function(response) {
-      $('#modal').html(response);
-      $('#modal input[name="version"]').val($('#updateSectionForm #versionNumber').val());
-      $('#modal').css({ display: 'block' });
-    });
-
-  };
 
 })();

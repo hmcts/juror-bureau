@@ -436,14 +436,14 @@
   const render = (auditData) => {
     const days = auditData.expenses.expenseDetails;
     const dateFrom = days.reduce((prev, curr) => {
-      if (moment(curr.attendanceDate).isBefore(moment(prev?.attendanceDate))) {
+      if (!prev.attendanceDate || moment(curr.attendanceDate).isBefore(moment(prev?.attendanceDate))) {
         return curr;
       }
 
       return prev;
     }, []);
     const dateTo = days.reduce((prev, curr) => {
-      if (moment(curr.attendanceDate).isAfter(moment(prev?.attendanceDate))) {
+      if (!prev.attendanceDate || moment(curr.attendanceDate).isAfter(moment(prev?.attendanceDate))) {
         return curr;
       }
 

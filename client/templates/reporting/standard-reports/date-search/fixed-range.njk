@@ -4,24 +4,30 @@
   {% include "./from-to.njk" %}
 {% endset %}
 
+{% set dateRangeError = undefined %}
+{% if errors.items["dateRange"] %}
+  {% set dateRangeError = { text: errors.items["dateRange"][0].details } %}
+{% endif %}
+
 {{ govukRadios({
   name: "dateRange",
   fieldset: {
     legend: {
-      text: "Select dates to search",
+      text: searchLabels.dateRange or "Select dates to search",
       classes: "govuk-fieldset__legend--m"
     }
   },
   items: [
     { value: "NEXT_31_DAYS", text: "Next 31 days" } if "NEXT_31_DAYS" in fixedDateRangeValues,
     { value: "LAST_31_DAYS", text: "Last 31 days" } if "LAST_31_DAYS" in fixedDateRangeValues,
+    { value: "NEXT_MONDAY", text: "Next Monday" } if "NEXT_MONDAY" in fixedDateRangeValues,
     {
       value: "CUSTOM_RANGE",
       text: "Custom date range",
       conditional: {
         html: dateRangeHtml
       },
-      checked: errors.count > 0
+      checked:  tmpBody.dateRange === 'CUSTOM_RANGE'
     } if "CUSTOM_RANGE" in fixedDateRangeValues
   ]
 }) }}

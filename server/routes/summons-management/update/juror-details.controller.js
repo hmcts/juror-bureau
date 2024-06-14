@@ -324,7 +324,7 @@
         replyMethod: req.params['type'].toUpperCase(),
       };
 
-      payload.dateOfBirth = dateFilter(req.body.dateOfBirth, 'DD/MM/YYYY', 'YYYY-MM-DD');
+      payload.dateOfBirth = req.body.dateOfBirth !== '' ? dateFilter(req.body.dateOfBirth, 'DD/MM/YYYY', 'YYYY-MM-DD') : null;
       payload.emailAddress = req.body.emailAddress || null;
       payload.primaryPhone = req.body.primaryPhone || null;
       payload.secondaryPhone = req.body.secondaryPhone || null;

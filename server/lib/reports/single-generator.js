@@ -200,7 +200,7 @@
         { ...documentTitle(content.title) },
         { ...documentMetadata(content.metadata) },
         ...largeTotals(content.largeTotals),
-        ...documentContent(content.tables),
+        ...(content.preBuilt || documentContent(content.tables)),
       ];
 
       const finalContent = {

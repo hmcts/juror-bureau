@@ -21,8 +21,8 @@
           presence: {
             allowEmpty: false,
             message: {
-              summary: 'Choose a pool to reassign to',
-              details: 'Choose a pool to reassign to',
+              summary: 'Choose an active pool to add selected jurors to',
+              details: 'Choose an active pool to add selected jurors to',
             },
           },
         },

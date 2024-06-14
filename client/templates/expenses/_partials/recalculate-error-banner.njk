@@ -14,6 +14,14 @@
   {% endset %}
 {% endif %}
 
+{% if isLessThanZero %}
+  {% set messageHtml %}
+    Cannot be less than original expense. 
+    <br><br>
+    Check the numbers and try again.
+  {% endset %}
+{% endif %}
+
 {{ mojBanner({
   type: "warning",
   html: messageHtml,

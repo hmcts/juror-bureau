@@ -39,6 +39,7 @@
             juror: response.data,
             currentTab: 'details',
             jurorStatus: resolveJurorStatus(response.data.commonDetails),
+            canSummon: canSummon(req, response.data.commonDetails),
             hasSummons: response.data.commonDetails.hasSummonsResponse,
             isCourtUser: isCourtUser(req),
           });
@@ -81,7 +82,6 @@
       var successCB = async function([overview, detail]) {
           var availableMessage = false
             , bannerMessage
-            , canSummon = true
             , jurorStatus = resolveJurorStatus(overview.data.commonDetails);
 
           app.logger.info('Fetched the juror record overview: ', {
@@ -112,19 +112,6 @@
 
           const poolDetails = buildPooldetailsRows(app.namedRoutes, overview.data.commonDetails);
 
-          if (overview.data.commonDetails.owner !== '400' && !isCourtUser(req)) {
-            canSummon = false;
-          };
-
-          switch (jurorStatus) {
-          case 'Undeliverable':
-          case 'Responded':
-          case 'Completed':
-          case 'Disqualified':
-            canSummon = false;
-            break;
-          };
-
           req.session.jurorNameChangeAttendance = overview.data.commonDetails.firstName
           + ' ' + overview.data.commonDetails.lastName;
 
@@ -142,7 +129,7 @@
           return res.render('juror-management/juror-record/overview', {
             backLinkUrl: 'homepage.get',
             juror: overview.data,
-            canSummon,
+            canSummon: canSummon(req, overview.data.commonDetails),
             currentTab: 'overview',
             jurorStatus,
             canRunPoliceCheck,
@@ -152,9 +139,6 @@
             hasSummons: overview.data.commonDetails.hasSummonsResponse,
             poolDetails,
             idCheckDescription,
-            // Next service date attributes are hardcoded and
-            // hidden behind a specific query param until backend for this data has been implemented
-            showServiceAttributes: req.query.serviceAttributes,
           });
         }
         , errorCB = function(err) {
@@ -235,6 +219,7 @@
             replyStatus: modUtils.resolveReplyStatus(response.data.replyStatus),
             processingOutcome: modUtils.resolveProcessingOutcome(response.data.commonDetails.jurorStatus,
               response.data.commonDetails.excusalRejected, response.data.commonDetails.excusalDescription),
+            canSummon: canSummon(req, response.data.commonDetails),
             hasSummons: response.data.commonDetails.hasSummonsResponse,
           });
         }
@@ -331,6 +316,7 @@
             juror: jurorOverview.data,
             jurorStatus: resolveJurorStatus(jurorOverview.data.commonDetails),
             currentTab: 'expenses',
+            canSummon: canSummon(req, jurorOverview.data.commonDetails),
             hasSummons: jurorOverview.data.commonDetails.hasSummonsResponse,
             dailyExpenses,
             defaultExpenses,
@@ -464,6 +450,7 @@
           jurorStatus: resolveJurorStatus(jurorOverview.data.commonDetails),
           processingOutcome: modUtils.resolveProcessingOutcome(jurorOverview.data.commonDetails.jurorStatus,
             jurorOverview.data.commonDetails.excusalRejected, jurorOverview.data.commonDetails.excusalDescription),
+          canSummon: canSummon(req, jurorOverview.data.commonDetails),
           hasSummons: jurorOverview.data.commonDetails.hasSummonsResponse,
           attendance,
           formattedDate,
@@ -532,6 +519,7 @@
             juror: response[0].data,
             currentTab: 'notes',
             contactLogs: contactLogs,
+            canSummon: canSummon(req, response[0].data.commonDetails),
             jurorStatus: resolveJurorStatus(response[0].data.commonDetails),
             hasSummons: response[0].data.commonDetails.hasSummonsResponse,
           });
@@ -1178,6 +1166,26 @@
     const { description } = (await systemCodesDAO.get(app, req, 'ID_CHECK')).find(({ code }) => code === idCheckCode);
 
     return Promise.resolve(description);
+  }
+
+  function canSummon(req, commonDetails) {
+    const jurorStatus = resolveJurorStatus(commonDetails);
+    let canSummon = true;
+
+    if (commonDetails.owner !== '400' && !isCourtUser(req)) {
+      canSummon = false;
+    };
+
+    switch (jurorStatus) {
+    case 'Undeliverable':
+    case 'Responded':
+    case 'Completed':
+    case 'Disqualified':
+      canSummon = false;
+      break;
+    };
+
+    return canSummon;
   }
 
 })();

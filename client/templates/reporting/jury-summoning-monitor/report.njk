@@ -1,0 +1,204 @@
+<section>
+  <span class="govuk-heading-m">Summoning</span>
+
+  <div class="jury-summoning-monitor-table">
+    <div class="table-item blue">
+      <div class="title">Total jurors needed</div>
+      <div class="value">{{ data.totalJurorsNeeded }}</div>
+    </div>
+    <div class="table-item gray">
+      <div class="title">Initially Summoned</div>
+      <div class="value">{{ data.initiallySummoned }}</div>
+    </div>
+    <div class="table-item">
+      <div class="title">Bureau deferrals included</div>
+      <div class="value">{{ data.bureauDeferralsIncluded }}</div>
+    </div>
+    <div class="table-item gray">
+      <div class="title">Ratio</div>
+      <div class="value">{{ data.ratio }}</div>
+    </div>
+    <div class="table-item">
+      <div class="title">Bureau to supply</div>
+      <div class="value">{{ data.bureauToSupply }}</div>
+    </div>
+    <div class="table-item gray">
+      <div class="title">Additional summons issued</div>
+      <div class="value">{{ data.additionalSummonsIssued }}</div>
+    </div>
+    <span></span>
+    <div class="table-item gray">
+      <div class="title">Reminder letters issued</div>
+      <div class="value">{{ data.reminderLettersIssued }}</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <span class="govuk-heading-m">Available</span>
+
+  <div class="jury-summoning-monitor-table">
+    <div class="table-item blue">
+      <div class="title">Total confirmed jurors</div>
+      <div class="value">{{ data.totalConfirmedJurors }}</div>
+    </div>
+    <div class="table-item gray">
+      <div class="title">Deferrals refused</div>
+      <div class="value">{{ data.deferralsRefused }}</div>
+    </div>
+    <span></span>
+    <div class="table-item gray">
+      <div class="title">Excusals refused</div>
+      <div class="value">{{ data.excusalsRefused }}</div>
+    </div>
+</section>
+
+<section>
+  <span class="govuk-heading-m">Unavailable</span>
+
+  <div class="jury-summoning-monitor-table">
+    <div class="table-item blue">
+      <div class="title">Total unavailable</div>
+      <div class="value">{{ data.totalUnavailable }}</div>
+    </div>
+    <span></span>
+    <div class="table-item">
+      <div class="title">Non responded</div>
+      <div class="value">{{ data.nonResponded }}</div>
+    </div>
+    <span></span>
+    <div class="table-item">
+      <div class="title">Undeliverable</div>
+      <div class="value">{{ data.undeliverable }}</div>
+    </div>
+    <span></span>
+    <div class="table-item">
+      <div class="title">Awaiting information</div>
+      <div class="value">{{ data.awaitingInformation }}</div>
+    </div>
+    <span></span>
+    <div class="table-item">
+      <div class="title">Disqualified (police check)</div>
+      <div class="value">{{ data.disqualifiedPoliceCheck }}</div>
+    </div>
+    <span></span>
+    <div class="table-item">
+      <div class="title">Disqualified (other)</div>
+      <div class="value">{{ data.disqualifiedOther }}</div>
+    </div>
+    <span></span>
+    <div class="table-item">
+      <div class="title">Deferred</div>
+      <div class="value">{{ data.deferred }}</div>
+    </div>
+    <span></span>
+    <div class="table-item">
+      <div class="title">Postponed</div>
+      <div class="value">{{ data.postponed }}</div>
+    </div>
+    <span></span>
+    <div class="table-item bordered">
+      <div class="title">Excused</div>
+      <div class="value">{{ data.totalExcused }}</div>
+    </div>
+    <span></span>
+  </div>
+  <div class="jury-summoning-monitor-sub-table">
+    <div class="table-item">
+      <div class="title">Bereavement</div>
+      <div class="value">{{ data.bereavement }}</div>
+    </div>
+    <div class="table-item">
+      <div class="title">Language difficulties</div>
+      <div class="value">{{ data.languageDifficulties }}</div>
+    </div>
+    <div class="table-item">
+      <div class="title">Carer</div>
+      <div class="value">{{ data.carer }}</div>
+    </div>
+    <div class="table-item">
+      <div class="title">Medical</div>
+      <div class="value">{{ data.medical }}</div>
+    </div>
+    <div class="table-item">
+      <div class="title">Childcare</div>
+      <div class="value">{{ data.childcare }}</div>
+    </div>
+    <div class="table-item">
+      <div class="title">Mental health</div>
+      <div class="value">{{ data.mentalHealth }}</div>
+    </div>
+    <div class="table-item">
+      <div class="title">CJS employee (unable to transfer)</div>
+      <div class="value">{{ data.cjsEmployment }}</div>
+    </div>
+    <div class="table-item">
+      <div class="title">Moved from area</div>
+      <div class="value">{{ data.movedFromArea }}</div>
+    </div>
+    <div class="table-item">
+      <div class="title">Criminal record</div>
+      <div class="value">{{ data.criminalRecord }}</div>
+    </div>
+    <div class="table-item">
+      <div class="title">Other</div>
+      <div class="value">{{ data.other }}</div>
+    </div>
+    <div class="table-item">
+      <div class="title">Deceased</div>
+      <div class="value">{{ data.deceased }}</div>
+    </div>
+    <div class="table-item">
+      <div class="title">Personal engagement</div>
+      <div class="value">{{ data.personalEngagement }}</div>
+    </div>
+    <div class="table-item">
+      <div class="title">Deferred by court (too many jurors)</div>
+      <div class="value">{{ data.deferredByCourt }}</div>
+    </div>
+    <div class="table-item">
+      <div class="title">Postponement of service</div>
+      <div class="value">{{ data.postponementOfService }}</div>
+    </div>
+    <div class="table-item">
+      <div class="title">Excused by Bureau (too many jurors)</div>
+      <div class="value">{{ data.excusedByBureau }}</div>
+    </div>
+    <div class="table-item">
+      <div class="title">Recently served</div>
+      <div class="value">{{ data.recentlyServed }}</div>
+    </div>
+    <div class="table-item">
+      <div class="title">Financial hardship</div>
+      <div class="value">{{ data.financialHardship }}</div>
+    </div>
+    <div class="table-item">
+      <div class="title">Religious reasons</div>
+      <div class="value">{{ data.religiousReasons }}</div>
+    </div>
+    <div class="table-item">
+      <div class="title">Forces</div>
+      <div class="value">{{ data.forces }}</div>
+    </div>
+    <div class="table-item">
+      <div class="title">Student</div>
+      <div class="value">{{ data.student }}</div>
+    </div>
+    <div class="table-item">
+      <div class="title">Holiday</div>
+      <div class="value">{{ data.holiday }}</div>
+    </div>
+    <div class="table-item">
+      <div class="title">Travelling difficulties</div>
+      <div class="value">{{ data.travellingDifficulties }}</div>
+    </div>
+    <div class="table-item">
+      <div class="title">Ill</div>
+      <div class="value">{{ data.ill }}</div>
+    </div>
+    <div class="table-item">
+      <div class="title">Work-related</div>
+      <div class="value">{{ data.workRelated }}</div>
+    </div>
+  </div>
+</section>

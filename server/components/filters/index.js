@@ -1,8 +1,8 @@
 ;(function(){
   'use strict';
 
-  var _ = require('lodash')
-    , moment = require('moment');
+  const _ = require('lodash')
+  const moment = require('moment');
 
   module.exports = {
     prettify: function(str, upperFirst) {
@@ -475,6 +475,15 @@
       return `${hours > 0 ? hours + (hours > 1 ? ' hours ' : ' hour ') : ''}${mins > 0 ? mins + (mins > 1 ? ' minutes' : ' minute') : ''}`
     },
 
+    timeToDuration: function(time) {
+      let hours = parseInt(time.split(':')[0]);
+      const mins = parseInt(time.split(':')[1]);
+      if (mins > 0) {
+        hours += (mins / 60);
+      }
+      return hours;
+    },
+
     transformCourtName: function(courtObj) {
       return _.startCase(_.toLower(courtObj.locationName)).trim().replace(',', '') + ' (' + courtObj.locationCode + ')';
     },
@@ -484,8 +493,15 @@
     },
 
     toMoney: function(value) {
-      return `£${(value || 0).toFixed(2)}`;
-    } 
+      return value < 0 
+        ? `(£${Math.abs(value).toFixed(2)})`
+        : `£${(value || 0).toFixed(2)}`;
+    },
+
+    jurorStatusToString: function(status) {
+      const { getJurorStatus } = require('../../lib/mod-utils');
+      return getJurorStatus(status);
+    }
   };
 
 })();

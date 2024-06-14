@@ -497,7 +497,7 @@ const bespokeReportBodys = (app, req) => {
       }
 
       return tables;
-    }
+    },
   };
 };
 

@@ -4,12 +4,14 @@
   const _ = require('lodash');
   const validate = require('validate.js');
   const checkOutAllValidator = require('../../../config/validation/check-out-all-jurors');
-  const { getJurorStatus, padTimeForApi } = require('../../../lib/mod-utils');
+  const { getJurorStatus, padTimeForApi, mapCamelToSnake } = require('../../../lib/mod-utils');
   const { convertAmPmToLong, convert12to24, timeArrayToString,
     timeStringToArray } = require('../../../components/filters');
   const { jurorsAttending, jurorAttendanceDao } = require('../../../objects/juror-attendance');
   const { runPoliceCheckDAO } = require('../../../objects');
   const { Logger } = require('../../../components/logger');
+  const { jurorDetailsDAO } = require('../../../objects/expenses');
+  const { modifyJurorAttendance } = require('../../../objects');
 
   module.exports.postCheckIn = function(app) {
     return async function(req, res) {
@@ -162,7 +164,9 @@
         .filter(a => a.checkInTime !== null && a.checkOutTime === null);
 
       const jurors = attendees.reduce((list, juror) => {
-        list.push(juror.jurorNumber);
+        if (juror.jurorStatus !== 'Panel' && juror.checkOutTime === null) {
+          list.push(juror.jurorNumber);
+        }
         return list;
       }, []);
 
@@ -318,30 +322,30 @@
     return async function(req, res) {
       const { jurorNumber } = req.params;
       const attendanceDate = req.session.attendanceListDate;
-
-      const payload = {
-        commonData: {
-          status: 'DELETE',
-          attendanceDate: attendanceDate,
-          locationCode: req.session.authentication.owner,
-          singleJuror: true,
-        },
-        juror: [jurorNumber],
-      };
+      const jurorDetailsPayload = [{
+        "juror_number": jurorNumber,
+        "include": [
+          "ACTIVE_POOL"
+        ]
+      }];
 
       try {
-        await jurorAttendanceDao.delete(
-          app,
-          req,
-          payload,
-        );
+        const jurorDetails = await jurorDetailsDAO.post(app, req, jurorDetailsPayload);
+        const absencePayload = {
+          'jurorNumber': jurorNumber,
+          'poolNumber': jurorDetails[0].active_pool.pool_number,
+          'attendanceDate': attendanceDate,
+          'modifyAttendanceType': 'ABSENCE',
+        };
+
+        await modifyJurorAttendance.patch(req, mapCamelToSnake(absencePayload));
 
         res.redirect(app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate);
       } catch (err) {
         app.logger.crit('Unable to delete the jurors attendance', {
           auth: req.session.authentication,
           token: req.session.authToken,
-          data: payload,
+          data: absencePayload,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
