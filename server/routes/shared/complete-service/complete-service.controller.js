@@ -132,7 +132,7 @@
         // TODO: remove query param once backend implemented, to show data as designed
         successUrl = app.namedRoutes.build('juror-record.overview.get', {
           jurorNumber: req.params.jurorNumber,
-        }) + '?serviceAttributes=true';
+        });
         errorUrl = app.namedRoutes.build('juror.update.complete-service.get', {
           jurorNumber: req.params.jurorNumber,
         });
