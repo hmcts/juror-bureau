@@ -322,18 +322,10 @@
     return async function(req, res) {
       const { jurorNumber } = req.params;
       const attendanceDate = req.session.attendanceListDate;
-      const jurorDetailsPayload = [{
-        "juror_number": jurorNumber,
-        "include": [
-          "ACTIVE_POOL"
-        ]
-      }];
 
       try {
-        const jurorDetails = await jurorDetailsDAO.post(app, req, jurorDetailsPayload);
         const absencePayload = {
           'jurorNumber': jurorNumber,
-          'poolNumber': jurorDetails[0].active_pool.pool_number,
           'attendanceDate': attendanceDate,
           'modifyAttendanceType': 'ABSENCE',
         };
