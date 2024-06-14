@@ -139,9 +139,6 @@
             hasSummons: overview.data.commonDetails.hasSummonsResponse,
             poolDetails,
             idCheckDescription,
-            // Next service date attributes are hardcoded and
-            // hidden behind a specific query param until backend for this data has been implemented
-            showServiceAttributes: req.query.serviceAttributes,
           });
         }
         , errorCB = function(err) {
