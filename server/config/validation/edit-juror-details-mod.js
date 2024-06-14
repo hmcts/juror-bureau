@@ -9,10 +9,8 @@
 
   const opticReferenceRegex = /^$|^\d{8}$/,
     messageMap = {
-      primaryPhone: 'Main phone number cannot contain letters or special characters apart from hyphens, ' +
-      'dashes, brackets or a plus sign',
-      secondaryPhone: 'Alternative phone number cannot contain letters or special characters apart from hyphens, ' +
-      'dashes, brackets or a plus sign',
+      primaryPhone: 'Telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
+      secondaryPhone: 'Telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
       emailAddress: 'Enter the email address in the correct format, like name@example.com',
     };
 
