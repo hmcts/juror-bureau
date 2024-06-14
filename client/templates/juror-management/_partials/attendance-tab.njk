@@ -1,0 +1,68 @@
+
+<div class="juror-history-payments govuk-width-container">
+  <div class="container">
+    <div>Summary</div>
+    <div class="column">
+      <div>Attendances</div>
+      <div>{{ history.attendances }}</div>
+    </div>
+    <div class="column">
+      <div>Non-attendances</div>
+      <div>{{ history.nonAttendances }}</div>
+    </div>
+    <div class="column">
+      <div>Financial loss</div>
+      <div>{{ (history.financialLoss | toMoney) if history.financialLoss else '-'}}</div>
+    </div>
+    <div class="column">
+      <div>Travel</div>
+      <div>{{ (history.travel | toMoney) if history.travel else '-'}}</div>
+    </div>
+    <div class="column">
+      <div>Food and drink</div>
+      <div>{{ (history.subsistence | toMoney) if history.subsistence else '-'}}</div>
+    </div>
+    <div class="column">
+      <div>Total paid</div>
+      <div>{{ (history.totalPaid | toMoney) if history.totalPaid else '-'}}</div>
+    </div>
+  </div>
+</div>
+
+        <table class="govuk-table" data-module="moj-sortable-table">
+          <caption class="govuk-table__caption govuk-visually-hidden">Attendance and payments</caption>
+
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header" aria-sort="descending" aria-label="Attended">Attended</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Attendance audit">Attendance audit</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Payment audit">Payment audit</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Date paid">Date paid</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Time">Time</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Travel">Travel</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Financial loss">Financial loss</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Food and drink">Food and drink</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Smartcard">Smartcard</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Total due">Total due</th>
+              <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Paid">Paid</th>
+            </tr>
+          </thead>
+
+          <tbody class="govuk-table__body">
+            {% for item in history.paymentDays %}
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell">{{ item.attendanceDate | dateFilter(null, 'ddd d MMM YYYY') }}</td>
+                <td class="govuk-table__cell">{{ item.attendanceAudit | historyAuditLinkify | safe }}</td>
+                <td class="govuk-table__cell">{{ (item.paymentAudit | historyAuditLinkify | safe) if item.paymentAudit else '-' }}</td>
+                <td class="govuk-table__cell">{{ (item.datePaid | dateFilter(null, 'd MMM YYYY')) if item.datePaid else '-' }}</td>
+                <td class="govuk-table__cell">{{ (item.timePaid | convert24to12) if (item.timePaid or item.paymentAudit) else '-' }}</td>
+                <td class="govuk-table__cell">{{ (item.travel | toMoney) if (item.travel or item.paymentAudit) else '-' }}</td>
+                <td class="govuk-table__cell">{{ (item.financialLoss | toMoney) if (item.financialLoss or item.paymentAudit) else '-' }}</td>
+                <td class="govuk-table__cell">{{ (item.subsistence | toMoney) if (item.subsistence or item.paymentAudit) else '-' }}</td>
+                <td class="govuk-table__cell">{{ '(' + (item.smartcard | toMoney) + ')' if (item.smartcard or item.paymentAudit) else '-' }}</td>
+                <td class="govuk-table__cell">{{ (item.totalDue | toMoney) if (item.totalDue or item.paymentAudit) else '-' }}</td>
+                <td class="govuk-table__cell">{{ (item.totalPaid | toMoney) if (item.totalPaid or item.paymentAudit) else '-' }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table> 

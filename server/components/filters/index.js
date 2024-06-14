@@ -501,6 +501,32 @@
     jurorStatusToString: function(status) {
       const { getJurorStatus } = require('../../lib/mod-utils');
       return getJurorStatus(status);
+    },
+    
+    historyAttendanceDate: function(date) {
+      const regex = /([0-9]{4}-[0-9]{2}-[0-9]{2})/g
+      const parts = date?.split(regex);
+
+      return parts?.map((item, index) => {
+
+        if (item.match(regex)) {
+          return `${moment(new Date(item)).format('d MMM YYYY')}`
+        }
+        
+        return item;
+      }).join('');
+    },
+
+    historyAuditLinkify: function(copy) {
+      const parts = copy?.split(/([A-Z][0-9]+)/g);
+      
+      return parts?.map((item, index) => {
+        if (item.match(/[A-Z][0-9]+/)) {
+          return `<a href='/reports/financial-audit/${item}' target='_blank'>${item}</a>`
+        }
+        
+        return item;
+      }).join('');
     }
   };
 

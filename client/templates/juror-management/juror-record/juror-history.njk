@@ -1,0 +1,55 @@
+{% extends "layouts/default.njk" %}
+
+{% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+
+{% block page_title %}{{ serviceName }} - Juror record - History{% endblock %}
+{% block page_identifier %}Juror record - History{% endblock %}
+
+{% set currentApp = "Juror management" %}
+
+{% block beforeContent %}
+  {% include "includes/back-link.njk" %}
+{% endblock %}
+
+{% block content %}
+  {% set currentName = [juror.commonDetails.title, juror.commonDetails.firstName, juror.commonDetails.lastName] %}
+
+  {% include "../_partials/heading.njk" %}
+
+  <h2 class="govuk-heading-m">
+    History
+  </h2>
+
+  {% if court %}
+    <div>
+      {{ mojSubNavigation({
+        label: "Side navigation",
+        items: [{
+          text: "History",
+          href: historyUrl + "?history",
+          attributes: {
+            id: "historyHistoryTabAnchor"
+          },
+          active: historyTab === 'history'
+        }, {
+          html: "Attendance and payments",
+          href: historyUrl + "?attendance",
+          attributes: {
+            id: "historyAttendanceTabAnchor"
+          },
+          active: historyTab === 'attendance'
+        }]
+      }) }}
+    </div>
+  {% endif%}
+
+  {% if historyTab === 'history' %}
+    {% include "../_partials/history-tab.njk" %}
+  {% endif %}
+
+  {% if historyTab === 'attendance' %}
+    {% include "../_partials/attendance-tab.njk" %}
+  {% endif %}
+{% endblock %}
