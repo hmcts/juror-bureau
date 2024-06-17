@@ -330,6 +330,7 @@
           groupHeader: !courtUser,
           totals: !courtUser,
         },
+        columnWidths: [80, 90, 90, 80, '*', 110, '*'],
         printLandscape: true,
       },
       'persons-attending-summary': {
