@@ -398,7 +398,7 @@
     return table;
   };
 
-  module.exports.transformCompletedJurorsList = (completedJurors, sortBy, sortOrder, checkedJurors) => {
+  module.exports.transformCompletedJurorsList = (completedJurors, sortBy, sortOrder, checkedJurors, task) => {
     const order = sortOrder || 'ascending';
     const table = {
       head: [{
@@ -424,14 +424,21 @@
         value: 'Postcode',
         sort: sortBy === 'postcode' ? order : 'none',
         sortable: true,
-      },
-      {
+      }],
+      rows: [],
+    };
+
+    if (task === 'uncomplete-service') {
+      table.head.push({
         id: 'completionDate',
         value: 'Completion date',
         sort: !sortBy || sortBy === 'completionDate' ? order : 'none',
         sortable: true,
-      }],
-      rows: [],
+      });
+    }
+
+    const getJurorUrl = (jurorNumber) => {
+      return `/juror-management/record/${jurorNumber}/${task === 'uncomplete-service' ? 'finance' : 'overview'}`;
     };
 
     completedJurors.forEach((juror) => {
@@ -452,8 +459,7 @@
           classes: 'mod-middle-align',
         },
         {
-          html: '<a href="/juror-management/record/' +
-            juror.juror_number + '/finance" class="govuk-link mod-middle-align">' + juror.juror_number + '</a>',
+          html: `<a href="${getJurorUrl(juror.juror_number)}" class="govuk-link mod-middle-align">${juror.juror_number}</a>`,
           attributes: {
             'data-sort-value': juror.juror_number,
           },
@@ -480,14 +486,17 @@
           },
           classes: 'mod-middle-align',
         },
-        {
+      );
+
+      if (task === 'uncomplete-service') {
+        item.push({
           text: dateFilter(juror.completion_date, null, 'ddd DD MMM YYYY'),
           attributes: {
             'data-sort-value': juror.completion_date,
           },
           classes: 'mod-middle-align',
-        },
-      );
+        });
+      }
 
       table.rows.push(item);
     });

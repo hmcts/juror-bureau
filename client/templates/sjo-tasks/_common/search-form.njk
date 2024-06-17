@@ -8,8 +8,8 @@
 
 {% set currentApp = "Senior Jury Officer tasks" %}
 
-{% block page_title %}Senior jury officer tasks - Uncomplete service{% endblock %}
-{% block page_identifier %}Uncomplete service{% endblock %}
+{% block page_title %}{{ serviceName }} - SJO Tasks - {{ title }} - Search{% endblock %}
+{% block page_identifier %}{{ title }} - Search{% endblock %}
 
 {% set searchByJurorError = undefined %}
 {% if errors.items["searchByJuror"] %}
@@ -67,8 +67,8 @@
 
 {% block content %}
 
+  {# TODO: update this here to use both uncomplete and FTA #}
   {% if uncompleteConfirmed %}
-
     {% set jurorText = " juror." %}
     {% if uncompleteConfirmed > 1 %}
       {% set jurorText = " jurors." %}
@@ -81,13 +81,13 @@
     }) }}
   {% endif %}
 
-  {% include "../../includes/errors.njk" %}
+  {% include "includes/errors.njk" %}
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
       <form action="{{ postUrl }}" method="POST" id="searchCompletedJurorsForm">
       
-        <h1 class="govuk-heading-xl">Uncomplete service</h1>
+        <h1 class="govuk-heading-xl">{{ title }}</h1>
         
         {% set searchCompletedJurorsError = undefined %}
         {% if errors.items["searchCompletedJurors"] %}
@@ -97,7 +97,7 @@
         {{ govukRadios({
           fieldset: {
             legend: {
-              text: "Search for completed jurors by",
+              text: searchLabel,
               classes: "govuk-fieldset__legend--m"
               }
             },

@@ -4,8 +4,8 @@
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
-{% block page_title %}{{ serviceName }} - SJO Tasks - Confirm uncomplete{% endblock %}
-{% block page_identifier %}SJO Tasks - Uncomplete service{% endblock %}
+{% block page_title %}{{ serviceName }} - SJO Tasks - Confirm undo failed to attend{% endblock %}
+{% block page_identifier %}SJO Tasks - Confirm undo failed to attend{% endblock %}
 
 {% block beforeContent %}
 
@@ -25,12 +25,14 @@
     <div class="govuk-grid-column-two-thirds">
       <form action="{{ postUrl }}" method="POST" id="confirmUncompleteForm">
       
-        <h1 class="govuk-heading-xl">Confirm you want to uncomplete service</h1>
+        <h1 class="govuk-heading-xl">Undo failed to attend</h1>
 
-        <div class="govuk-body">You're removing the completion of service for {{ jurorsAmount }} juror{% if jurorsAmount > 1 %}s{% endif %}.</div>
+        <div class="govuk-body">
+          You're undoing a failed to attend status for {{ jurorsAmount }} juror{% if jurorsAmount > 1 %}s{% endif %}.
+        </div>
 
         {{ govukInsetText({
-          text: "Their juror status will revert to 'Responded' and they must continue their jury service."
+          text: "Their juror status will revert to ‘Responded’ and they must continue their jury service."
         }) }}
 
         <div class="govuk-button-group">

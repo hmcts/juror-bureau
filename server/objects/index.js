@@ -18,7 +18,8 @@
   const poolMembers = require('./pool-members');
   const reports = require('./reports');
   const summonsForm = require('./summons-form');
-  const summonCitizens = require('./summon-citizens'); 
+  const summonCitizens = require('./summon-citizens');
+  const sjoTasks = require('./sjo-tasks');
 
   module.exports = {
     ...requestPool,
@@ -36,6 +37,7 @@
     ...reports,
     ...summonsForm,
     ...summonCitizens,
+    ...sjoTasks,
   };
 
 })();
