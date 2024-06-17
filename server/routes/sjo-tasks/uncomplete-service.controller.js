@@ -68,7 +68,6 @@ module.exports.postConfirmUncomplete = function(app) {
     } catch (err) {
       app.logger.crit('Unable to uncomplete service', {
         auth: req.session.authentication,
-        token: req.session.authToken,
         error: typeof err.error !== 'undefined' ? err.error : err.toString(),
       });
 

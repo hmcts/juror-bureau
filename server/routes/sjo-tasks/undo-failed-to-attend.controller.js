@@ -51,7 +51,11 @@ module.exports.postConfirmUndoFailedToAttend = (app) => {
     try {
       await undoFailedToAttendBulkDAO.patch(req, payload);
     } catch (err) {
-      console.log(err);
+      app.logger.crit('Failed to undo failed-to-attend status', {
+        auth: req.session.authentication,
+        data: { payload },
+        error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+      });
 
       return res.render('_errors/generic');
     }
