@@ -236,6 +236,7 @@
           'totalPoolMembers',
         ],
         printLandscape: true,
+        columnWidths: [80, 100, 100, 80, 50, 50, '*', '*'],
       },
       'panel-summary': {
         title: 'Panel list (summary)',
@@ -330,6 +331,7 @@
           groupHeader: !courtUser,
           totals: !courtUser,
         },
+        columnWidths: [70, 100, 100, 70, '*', 110, '*'],
         printLandscape: true,
       },
       'persons-attending-summary': {
@@ -382,7 +384,7 @@
             }],
           },
           printInsertColumns: true,
-          printWidths: ['10%', '10%', '10%', '*', '*', 'auto'],
+          printWidths: ['10%', '10%', '10%', '15%', '25%', 'auto'],
         },
       },
       'daily-utilisation': {
