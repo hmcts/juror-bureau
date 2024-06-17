@@ -11,4 +11,4 @@ module.exports.sjoTasksSearchDAO = new DAO('moj/sjo-tasks/juror/search', {
   },
 });
 
-module.exports.undoFailedToAttendBulkDAO = new DAO('moj/sjo-tasks/failed-to-attend/undo');
+module.exports.undoFailedToAttendDAO = new DAO('moj/sjo-tasks/failed-to-attend/undo');

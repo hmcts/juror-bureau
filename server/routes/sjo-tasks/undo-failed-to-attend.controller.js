@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const { makeManualError } = require('../../lib/mod-utils');
 const { urlBuilder } = require('./sjo-tasks.controller');
-const { undoFailedToAttendBulkDAO } = require('../../objects');
+const { undoFailedToAttendDAO } = require('../../objects');
 
 module.exports.postSelectUndoFailedToAttend = (app) => {
   return (req, res) => {
@@ -49,7 +49,7 @@ module.exports.postConfirmUndoFailedToAttend = (app) => {
     }));
 
     try {
-      await undoFailedToAttendBulkDAO.patch(req, payload);
+      await undoFailedToAttendDAO.patch(req, payload);
     } catch (err) {
       app.logger.crit('Failed to undo failed-to-attend status', {
         auth: req.session.authentication,
