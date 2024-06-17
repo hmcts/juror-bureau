@@ -2,9 +2,8 @@ const _ = require('lodash');
 const validate = require('validate.js');
 const urljoin = require('url-join');
 const uncompleteValidator = require('../../config/validation/uncomplete-service');
-const uncompleteJurorsearchObject = require('../../objects/uncomplete-juror').uncompleteJurorSearchObject;
 const modUtils = require('../../lib/mod-utils');
-const { failedToAttendDAO } = require('../../objects');
+const { sjoTasksSearchDAO } = require('../../objects');
 
 module.exports.getSJOTasksSearch = function(app, { nav, title, searchLabel, postRoute, cancelRoute }) {
   return function(req, res) {
@@ -169,20 +168,15 @@ module.exports.getSearchResults = function(app, { task, backLinkRoute, title, po
         'sort_field': sortField,
       };
 
-      let completedJurorsData;
-
       if (task === 'uncomplete-service') {
-        completedJurorsData = await uncompleteJurorsearchObject.post(
-          require('request-promise'),
-          app,
-          req.session.authToken,
-          payload,
-        );
+        payload['juror_status'] = 13;
       }
 
       if (task === 'undo-failed-to-attend') {
-        completedJurorsData = await failedToAttendDAO.post(req, payload);
+        payload['juror_status'] = 12;
       }
+
+      const completedJurorsData = await sjoTasksSearchDAO.post(req, payload);
 
       req.session.membersList = completedJurorsData.data;
       let totalItems = completedJurorsData.total_items;
@@ -287,20 +281,15 @@ module.exports.postCheckJuror = function(app) {
             'sort_field': 'JUROR_NUMBER',
           };
 
-          let completedJurorsData;
-
           if (task === 'uncomplete-service') {
-            completedJurorsData = await uncompleteJurorsearchObject.post(
-              require('request-promise'),
-              app,
-              req.session.authToken,
-              payload
-            );
+            payload['juror_status'] = 13;
           }
 
           if (task === 'undo-failed-to-attend') {
-            completedJurorsData = await failedToAttendDAO.post(req, payload);
+            payload['juror_status'] = 12;
           }
+
+          const completedJurorsData = await sjoTasksSearchDAO.post(req, payload);
 
           app.logger.info('Fetched list of jurors', {
             auth: req.session.authentication,
