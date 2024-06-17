@@ -384,7 +384,7 @@
             }],
           },
           printInsertColumns: true,
-          printWidths: ['10%', '10%', '10%', '*', '*', 'auto'],
+          printWidths: ['10%', '10%', '10%', '15%', '25%', 'auto'],
         },
       },
       'daily-utilisation': {
