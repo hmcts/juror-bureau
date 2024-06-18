@@ -3,7 +3,6 @@ const jurorsToMarkUndeliverableForm = document.getElementById('jurorsToMarkUndel
 const tableWrapper = document.getElementById('tableWrapper');
 const totalJurorsCaption = document.getElementById('totalJurorsCaption');
 const tableBody = document.getElementById('tableBody');
-
 const csrftoken = document.getElementById('csrfToken');
 
 undeliverableJurorNumberForm.addEventListener('submit', async (event) => {

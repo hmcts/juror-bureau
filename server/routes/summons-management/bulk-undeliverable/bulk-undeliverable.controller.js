@@ -77,11 +77,7 @@ module.exports.postFindJuror = (app) => {
     }
 
     const address = Object.keys(jurorDetails[0].address).reduce((acc, key) => {
-      if (key === 'postcode') {
-        return acc;
-      }
-
-      if (jurorDetails[0].address[key] === null) {
+      if (jurorDetails[0].address[key] === null || key === 'postcode') {
         return acc;
       }
 
