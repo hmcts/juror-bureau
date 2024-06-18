@@ -1,0 +1,139 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - Summons Management - Bulk Undeliverable{% endblock %}
+{% block page_identifier %}Summons Management - Bulk Undeliverable{% endblock %}
+
+{% set currentApp = "Summons replies" %}
+
+{% block beforeContent %}
+
+  {% if bannerMessage %}
+    <div class="govuk-!-margin-top-5">
+      {{ mojBanner({
+        type: "success",
+        text: bannerMessage,
+        iconFallbackText: "Success"
+      }) }}
+    </div>
+  {% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+
+      <h1 class="govuk-heading-xl">Bulk mark as undeliverable</h1>
+
+      <form id="undeliverableJurorNumberForm">
+
+          <h2 class="govuk-label-wrapper">
+            <label class="govuk-label govuk-label--m" for="undeliverableJurorNumber">
+              Enter a juror number to mark as undeliverable
+            </label>
+          </h2>
+
+          <p id="undeliverableJurorNumberError" class="govuk-error-message js-hidden">
+            <span class="govuk-visually-hidden">Error:</span>
+            <span id="undeliverableJurorNumberErrorMessage">The error message</span>
+          </p>
+
+          <div class="mod-flex mod-gap-x-2">
+            <input class="govuk-input govuk-!-width-one-half" id="undeliverableJurorNumber" name="undeliverableJurorNumber" type="number" maxlength="9" minlength="9">
+
+            {{ govukButton({
+              text: "Confirm",
+              classes: "govuk-!-margin-bottom-1",
+              type: "submit",
+              attributes: {
+                id: "confirmJurorUndeliverable"
+              }
+            }) }}
+          </div>
+
+      </form>
+
+      <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">
+
+      <form method="POST" action="#">
+        {{ govukTextarea({
+          name: "undeliverableJurors",
+          id: "undeliverableJurors",
+          label: {
+            text: "Juror numbers to be marked as undeliverable"
+          },
+          rows: 8,
+          attributes: {
+            readonly: "readonly"
+          }
+        }) }}
+
+        {{ csrfProtection(csrftoken) }}
+
+        {{ govukButton({
+          text: "Mark as undeliverable",
+          classes: "govuk-!-margin-bottom-1",
+          type: "submit"
+        }) }}
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script nonce="{{ nonce }}">
+    const undeliverableJurorNumberForm = document.getElementById('undeliverableJurorNumberForm');
+
+    undeliverableJurorNumberForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+
+      clearError();
+      const hasError = validateJurorNumber();
+
+      if (hasError) {
+        return;
+      }
+    
+      const undeliverableJurorNumber = document.getElementById('undeliverableJurorNumber');
+      const undeliverableJurors = document.getElementById('undeliverableJurors');
+
+      undeliverableJurors.value += `${undeliverableJurorNumber.value} `;
+      undeliverableJurorNumber.value = '';
+    });
+
+    function clearError() {
+      const undeliverableJurorNumberError = document.getElementById('undeliverableJurorNumberError');
+      undeliverableJurorNumberError.classList.add('js-hidden');
+      undeliverableJurorNumberForm.classList.remove('govuk-form-group--error');
+    }
+
+    function validateJurorNumber() {
+      const undeliverableJurorNumber = document.getElementById('undeliverableJurorNumber');
+      const undeliverableJurorNumberError = document.getElementById('undeliverableJurorNumberError');
+
+      if (undeliverableJurorNumber.value.length !== 9) {
+        undeliverableJurorNumberForm.classList.add('govuk-form-group--error');
+        undeliverableJurorNumberError.classList.remove('js-hidden');
+        undeliverableJurorNumberError.querySelector('#undeliverableJurorNumberErrorMessage')
+          .textContent = 'Juror number must be 9 digits long';
+
+        return true;
+      }
+
+      return false;
+    }
+  </script>
+
+{% endblock %}
