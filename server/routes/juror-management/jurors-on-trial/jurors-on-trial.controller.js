@@ -159,7 +159,7 @@ function buildConfirmAttendancePayload(req) {
   };
 
   if (body.attendanceDate === 'differentDate') {
-    commonData.attendanceDate = body.differentDate;
+    commonData.attendanceDate = dateFilter(body.differentDate, null, 'YYYY-MM-DD');
   }
   if (body.attendanceDate === 'previousWorkingDay') {
     commonData.attendanceDate = req.session.jurorsOnTrial.yesterday;
