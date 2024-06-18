@@ -43,7 +43,8 @@
 
           let attendanceData = {};
 
-          if (req.session.jurorCommonDetails.owner !== '400') {
+          // only court users can see attendance details and they're only needed for court owned records
+          if (isCourtUser(req)) {
             try {
               attendanceData = await jurorRecordObject.attendanceDetails.get(
                 require('request-promise'),
