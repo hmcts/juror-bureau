@@ -145,7 +145,7 @@
         continueUrl = app.namedRoutes.build('pool-overview.transfer.continue.post', {
           poolNumber: req.params.poolNumber,
         });
-        req.body.selectedJurors = req.session.poolJurorsTransfer.selectedJurors;
+        req.body.selectedJurors = req.session.selectedJurors;
         validatorResult = validate(req.body, jurorBulkTransferValidator());
         movementValidateRoute = 'pool-management/movement/bulk-validate.njk';
       }

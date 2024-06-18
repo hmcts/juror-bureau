@@ -259,8 +259,8 @@ module.exports.postTransfer = function(app) {
       try {
         const poolMembers = await poolMembersDAO.post(req, filtersHelper(req, req.params.poolNumber), true);
 
-        req.body.selectedJurors = poolMembers.data.map(juror => juror.jurorNumber);
-        req.body.selectedJurors = Object.values(poolMembers);
+        req.session.selectedJurors = poolMembers.data.map(juror => juror.jurorNumber);
+        // req.body.selectedJurors = Object.values(poolMembers);
       } catch (err) {
         app.logger.crit('Failed to fetch pool members to tranfer: ', {
           auth: req.session.authentication,
@@ -281,16 +281,17 @@ module.exports.postTransfer = function(app) {
       }
     }
 
-    req.session.poolJurorsTransfer = req.body;
-    delete req.session.poolJurorsTransfer._csrf;
-    delete req.session.errors;
+    // req.session.poolJurorsTransfer = req.body;
+    // delete req.session.poolJurorsTransfer._csrf;
+    // delete req.session.errors;
 
     if (!Array.isArray(req.body.selectedJurors)) {
-      req.session.poolJurorsTransfer.selectedJurors = [req.body.selectedJurors];
+      req.session.selectedJurors = [req.session.selectedJurors];
     }
 
-    return res.redirect(app.namedRoutes.build('pool-overview.transfer.select-court.get',
-      { poolNumber: req.params.poolNumber }));
+    return res.redirect(app.namedRoutes.build('pool-overview.transfer.select-court.get', {
+      poolNumber: req.params.poolNumber,
+    }));
   };
 };
 
@@ -298,7 +299,7 @@ module.exports.postTransfer = function(app) {
 
 module.exports.postTransferConfirm = function(app) {
   return function(req, res) {
-    executeTransfer(app, req, res, req.session.poolJurorsTransfer.selectedJurors);
+    executeTransfer(app, req, res, req.session.selectedJurors);
   };
 };
 
@@ -491,24 +492,9 @@ module.exports.postCompleteService = function(app) {
     delete req.session.selectedJurors._csrf;
     delete req.session.errors;
 
-    // eslint-disable-next-line max-len
-    // TODO: we may now be able to complete from any status - if this doesn't end up being the case, we need to build new functionality for this check
-    // req.session.notResponded = req.body.selectedJurors.filter(jurorId =>
-    //   req.session.jurorDetails[jurorId]?.status !== 'Responded').map(jurorId =>
-    //   req.session.jurorDetails[jurorId]);
-
-    // if (req.session.notResponded.length > 0) {
-    //   req.session.selectedJurors = req.body.selectedJurors.filter(juror =>
-    //     req.session.jurorDetails[juror]?.status === 'Responded');
-
-    //   return res.redirect(app.namedRoutes.build('pool-overview.complete-service.continue.get',
-    //     { poolNumber: req.params['poolNumber'] }));
-    // }
-
-    // delete req.session.notResponded;
-
-    return res.redirect(app.namedRoutes.build('pool-overview.complete-service.confirm.get',
-      {poolNumber: req.params.poolNumber}));
+    return res.redirect(app.namedRoutes.build('pool-overview.complete-service.confirm.get',{
+      poolNumber: req.params.poolNumber,
+    }));
   };
 };
 
@@ -793,3 +779,4 @@ function filtersHelper(req, poolNumber) {
 
   return payload;
 }
+module.exports.filtersHelper = filtersHelper;
