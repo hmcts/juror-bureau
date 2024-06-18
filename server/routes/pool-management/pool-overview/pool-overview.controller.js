@@ -260,7 +260,6 @@ module.exports.postTransfer = function(app) {
         const poolMembers = await poolMembersDAO.post(req, filtersHelper(req, req.params.poolNumber), true);
 
         req.session.selectedJurors = poolMembers.data.map(juror => juror.jurorNumber);
-        // req.body.selectedJurors = Object.values(poolMembers);
       } catch (err) {
         app.logger.crit('Failed to fetch pool members to tranfer: ', {
           auth: req.session.authentication,
@@ -281,9 +280,7 @@ module.exports.postTransfer = function(app) {
       }
     }
 
-    // req.session.poolJurorsTransfer = req.body;
-    // delete req.session.poolJurorsTransfer._csrf;
-    // delete req.session.errors;
+    delete req.session.errors;
 
     if (!Array.isArray(req.body.selectedJurors)) {
       req.session.selectedJurors = [req.session.selectedJurors];
@@ -334,7 +331,6 @@ function executeTransfer(app, req, res, transferedJurors) {
     return res.redirect(app.namedRoutes.build('pool-overview.get', {
       poolNumber: req.params.poolNumber,
     }));
-
   };
 
   receivingCourtLocCode = req.session.formField.courtNameOrLocation.match(/\d+/g)[0];
@@ -355,7 +351,6 @@ function executeTransfer(app, req, res, transferedJurors) {
 
 function coronerCourtPool(app) {
   return function(req, res) {
-    const currentPage = req.query['page'] || 1;
     let pagination;
     const coronerSuccessCB = function({response, headers}) {
       const members = [];
