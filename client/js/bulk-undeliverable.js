@@ -36,8 +36,6 @@ function validateJurorNumber() {
   if (undeliverableJurorNumber.value.length !== 9) {
     undeliverableJurorNumberForm.classList.add('govuk-form-group--error');
     undeliverableJurorNumberError.classList.remove('js-hidden');
-    undeliverableJurorNumberError.querySelector('#undeliverableJurorNumberErrorMessage')
-      .textContent = 'Juror number must be 9 digits long';
 
     return true;
   }
