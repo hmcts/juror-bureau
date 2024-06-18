@@ -1,7 +1,6 @@
 {% extends "layouts/default.njk" %}
 
 {% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
 {% from "moj/components/banner/macro.njk" import mojBanner %}
 {% from "includes/csrf.njk" import csrfProtection %}
 
@@ -61,30 +60,52 @@
 
       </form>
 
-      <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">
+    </div>
+  </div>
 
-      <form method="POST" action="#">
-        {{ govukTextarea({
-          name: "undeliverableJurors",
-          id: "undeliverableJurors",
-          label: {
-            text: "Juror numbers to be marked as undeliverable"
-          },
-          rows: 8,
-          attributes: {
-            readonly: "readonly"
-          }
-        }) }}
+  <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">
 
-        {{ csrfProtection(csrftoken) }}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
 
-        {{ govukButton({
-          text: "Mark as undeliverable",
-          classes: "govuk-!-margin-bottom-1",
-          type: "submit"
-        }) }}
+      <form method="POST" action="{{ url('summons-management.bulk-undeliverable.post') }}" id="jurorsToMarkUndeliverableForm">
+
+        <span id="totalJurorsCaption" class="govuk-label govuk-label--s">
+          0 jurors to be marked as undeliverable
+        </span>
+
+        <div id="tableWrapper" class="js-hidden">
+          <table class="govuk-table" data-module="moj-sortable-table">
+            <caption class="govuk-table__caption govuk-table__caption--s govuk-visually-hidden">
+              Table of jurors to be marked as undeliverable
+            </caption>
+
+            <thead class="govuk-table__head">
+              <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header" aria-sort="ascending">Juror number</th>
+                <th scope="col" class="govuk-table__header" aria-sort="none">First name</th>
+                <th scope="col" class="govuk-table__header" aria-sort="none">Last name</th>
+                <th scope="col" class="govuk-table__header" aria-sort="none">Address</th>
+                <th scope="col" class="govuk-table__header" aria-sort="none">Postcode</th>
+                <th scope="col" class="govuk-table__header" aria-sort="none">Court</th>
+              </tr>
+            </thead>
+
+            <tbody class="govuk-table__body" id="tableBody"></tbody>
+
+          </table>
+
+          {{ csrfProtection(csrftoken) }}
+
+          {{ govukButton({
+            text: "Mark as undeliverable",
+            classes: "govuk-!-margin-bottom-1",
+            type: "submit"
+          }) }}
+        </div>
+
       </form>
-
+    
     </div>
   </div>
 
@@ -93,47 +114,5 @@
 {% block body_end %}
   {{ super() }}
 
-  <script nonce="{{ nonce }}">
-    const undeliverableJurorNumberForm = document.getElementById('undeliverableJurorNumberForm');
-
-    undeliverableJurorNumberForm.addEventListener('submit', (event) => {
-      event.preventDefault();
-
-      clearError();
-      const hasError = validateJurorNumber();
-
-      if (hasError) {
-        return;
-      }
-    
-      const undeliverableJurorNumber = document.getElementById('undeliverableJurorNumber');
-      const undeliverableJurors = document.getElementById('undeliverableJurors');
-
-      undeliverableJurors.value += `${undeliverableJurorNumber.value} `;
-      undeliverableJurorNumber.value = '';
-    });
-
-    function clearError() {
-      const undeliverableJurorNumberError = document.getElementById('undeliverableJurorNumberError');
-      undeliverableJurorNumberError.classList.add('js-hidden');
-      undeliverableJurorNumberForm.classList.remove('govuk-form-group--error');
-    }
-
-    function validateJurorNumber() {
-      const undeliverableJurorNumber = document.getElementById('undeliverableJurorNumber');
-      const undeliverableJurorNumberError = document.getElementById('undeliverableJurorNumberError');
-
-      if (undeliverableJurorNumber.value.length !== 9) {
-        undeliverableJurorNumberForm.classList.add('govuk-form-group--error');
-        undeliverableJurorNumberError.classList.remove('js-hidden');
-        undeliverableJurorNumberError.querySelector('#undeliverableJurorNumberErrorMessage')
-          .textContent = 'Juror number must be 9 digits long';
-
-        return true;
-      }
-
-      return false;
-    }
-  </script>
-
+  <script type="application/javascript" src="{{ assetPath }}js/bulk-undeliverable.js"></script>
 {% endblock %}

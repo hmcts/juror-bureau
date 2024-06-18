@@ -1,0 +1,20 @@
+<tr class="govuk-table__row">
+  <td scope="row" class="govuk-table__cell">
+    <a class="govuk-link" href="#">{{ rowData.jurorNumber }}</a>
+  </td>
+  <td scope="row" class="govuk-table__cell">
+    {{ rowData.name.firstName }}
+  </td>
+  <td scope="row" class="govuk-table__cell">
+    {{ rowData.name.lastName }}
+  </td>
+  <td scope="row" class="govuk-table__cell">
+    {{ rowData.address | safe }}
+  </td>
+  <td scope="row" class="govuk-table__cell">
+    {{ rowData.postcode }}
+  </td>
+  <td scope="row" class="govuk-table__cell">
+    {{ rowData.court }}
+  </td>
+</tr>

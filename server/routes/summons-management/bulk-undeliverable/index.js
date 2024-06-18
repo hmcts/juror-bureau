@@ -15,5 +15,12 @@ module.exports = (app) => {
     auth.verify,
     isBureauUser,
     controller.postBulkUndeliverable(app),
+  );
+
+  app.post('/summons-management/bulk-undeliverable/find-juror',
+    'summons-management.bulk-undeliverable.find-juror.post',
+    auth.verify,
+    isBureauUser,
+    controller.postFindJuror(app),
   )
 };
