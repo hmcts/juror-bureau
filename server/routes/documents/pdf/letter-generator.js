@@ -175,9 +175,6 @@
         marginBottom: 50,
         stack: [
           {
-            text: content[current - 1].footerText,
-          },
-          {
             text: content[current - 1].signature,
           },
         ],
@@ -185,7 +182,7 @@
     };
   };
 
-  module.exports.generateDocument = (content, officer) => {
+  module.exports.generateDocument = (content) => {
     return new Promise((resolve, reject) => {
       const printer = new pdfMake(defaultStyles().fonts);
       const chunks = [];
@@ -197,9 +194,7 @@
             { ...documentHeader(data, i) },
             ...documentContent(data, content[i]),
           ],
-          // these are important for the footer notes / text
-          footerText: officer,
-          signature: `${data.firstName} ${data.lastName}`,
+          signature: data.signature,
         });
       }
 
