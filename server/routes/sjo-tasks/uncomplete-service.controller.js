@@ -1,8 +1,8 @@
 const _ = require('lodash');
 const urljoin = require('url-join');
-const uncompleteJurorObject = require('../../objects/uncomplete-juror').uncompleteJurorObject;
 const { urlBuilder } = require('./sjo-tasks.controller');
 const { makeManualError } = require('../../lib/mod-utils');
+const { uncompleteJurorDAO } = require('../../objects');
 
 module.exports.postSelectUncomplete = function(app) {
   return function(req, res) {
@@ -55,11 +55,7 @@ module.exports.postConfirmUncomplete = function(app) {
           });
       });
 
-      await uncompleteJurorObject.patch(
-        require('request-promise'),
-        app,
-        req.session.authToken
-        , payload);
+      await uncompleteJurorDAO.patch(req, payload);
 
       req.session.uncompleteConfirmed = req.session.uncompleteService.selectedJurors.length;
       delete req.session.uncompleteService;

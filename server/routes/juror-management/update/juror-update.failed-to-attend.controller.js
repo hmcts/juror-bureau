@@ -94,10 +94,7 @@ module.exports.postUndoFailedToAttend = function(app) {
     }
 
     try {
-      await undoFailedToAttendDAO.patch(req, [{
-        'juror_number': jurorNumber,
-        'pool_number': poolNumber,
-      }]);
+      await undoFailedToAttendDAO.patch(req, { 'juror_numbers': [jurorNumber] });
 
       req.session.failedToAttend = {
         jurorNumber,

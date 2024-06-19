@@ -43,10 +43,9 @@ module.exports.getConfirmUndoFailedToAttend = (app) => {
 module.exports.postConfirmUndoFailedToAttend = (app) => {
   return async (req, res) => {
 
-    const payload = req.session.undoFailedToAttend.selectedJurors.map(j => ({
-      juror_number: j.juror_number,
-      pool_number: j.pool_number,
-    }));
+    const payload = {
+      'juror_numbers': req.session.undoFailedToAttend.selectedJurors.map(j => j.juror_number),
+    };
 
     try {
       await undoFailedToAttendDAO.patch(req, payload);

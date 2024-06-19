@@ -12,3 +12,4 @@ module.exports.sjoTasksSearchDAO = new DAO('moj/sjo-tasks/juror/search', {
 });
 
 module.exports.undoFailedToAttendDAO = new DAO('moj/sjo-tasks/failed-to-attend/undo');
+module.exports.uncompleteJurorDAO = new DAO('moj/complete-service/uncomplete');
