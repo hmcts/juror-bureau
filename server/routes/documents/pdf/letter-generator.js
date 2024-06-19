@@ -198,7 +198,7 @@
             ...documentContent(data, content[i]),
           ],
           // these are important for the footer notes / text
-          footerText: officer,
+          footerText: data.officerName,
           signature: data.signature,
         });
       }

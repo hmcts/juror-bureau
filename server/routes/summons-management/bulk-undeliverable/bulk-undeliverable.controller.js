@@ -32,8 +32,10 @@ module.exports.postBulkUndeliverable = (app) => {
       return res.redirect(app.namedRoutes.build('summons-management.bulk-undeliverable.get'));
     }
 
+    const jurorNumbers = Array.isArray(undeliverableJurors) ? undeliverableJurors : [undeliverableJurors];
+
     try {
-      await markAsUndeliverableDAO.patch(req, { 'juror_numbers': undeliverableJurors });
+      await markAsUndeliverableDAO.patch(req, { 'juror_numbers': jurorNumbers });
     } catch (err) {
       app.logger.crit('Failed to mark jurors as undeliverable', {
         auth: req.session.authentication,
@@ -44,7 +46,7 @@ module.exports.postBulkUndeliverable = (app) => {
       return res.render('_errors/generic');
     }
 
-    req.session.undeliverableJurorsBannerMessage = `Marked ${undeliverableJurors.length} jurors as undeliverable`;
+    req.session.undeliverableJurorsBannerMessage = `Marked ${jurorNumbers.length} jurors as undeliverable`;
 
     return res.redirect(app.namedRoutes.build('summons-management.bulk-undeliverable.get'));
   };
@@ -73,7 +75,12 @@ module.exports.postFindJuror = (app) => {
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
-      return res.status(err.statusCode || 400).send();
+      return res.status(err.statusCode || 400).render('summons-management/bulk-undeliverable/table-row.njk', {
+        rowData: {
+          jurorNumber,
+        },
+        isFail: true,
+      });
     }
 
     const address = Object.keys(jurorDetails[0].address).reduce((acc, key) => {
