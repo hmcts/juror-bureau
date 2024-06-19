@@ -419,20 +419,22 @@
           req.session.locCode || req.session.authentication.locCode,
         );
 
-        const attendance = await jurorRecordObject.attendanceDetails.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
-          req.session.locCode || req.session.authentication.locCode,
-          jurorNumber,
-        );
+        let attendance = {};
+        if (isCourtUser(req)) {
+          attendance = await jurorRecordObject.attendanceDetails.get(
+            require('request-promise'),
+            app,
+            req.session.authToken,
+            req.session.locCode || req.session.authentication.locCode,
+            jurorNumber,
+          );
+        }
 
-
-        const dates = attendance.juror_attendance_response_data.map(attendances => {
+        const dates = attendance.juror_attendance_response_data?.map(attendances => {
           const [year, month, day] = attendances.attendance_date;
 
           return new Date(year, month - 1, day);
-        });
+        }) || [];
 
         const latestDate = new Date(Math.max(...dates));
 
