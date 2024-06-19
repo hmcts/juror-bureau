@@ -344,6 +344,7 @@
                 juror: jurorOverview.data,
                 jurorStatus: resolveJurorStatus(jurorOverview.data.commonDetails),
                 currentTab: 'expenses',
+                canSummon: canSummon(req, jurorOverview.data.commonDetails),
                 hasSummons: jurorOverview.data.commonDetails.hasSummonsResponse,
                 dailyExpenses,
                 defaultExpenses,
@@ -419,20 +420,22 @@
           req.session.locCode || req.session.authentication.locCode,
         );
 
-        const attendance = await jurorRecordObject.attendanceDetails.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
-          req.session.locCode || req.session.authentication.locCode,
-          jurorNumber,
-        );
+        let attendance = {};
+        if (isCourtUser(req)) {
+          attendance = await jurorRecordObject.attendanceDetails.get(
+            require('request-promise'),
+            app,
+            req.session.authToken,
+            req.session.locCode || req.session.authentication.locCode,
+            jurorNumber,
+          );
+        }
 
-
-        const dates = attendance.juror_attendance_response_data.map(attendances => {
+        const dates = attendance.juror_attendance_response_data?.map(attendances => {
           const [year, month, day] = attendances.attendance_date;
 
           return new Date(year, month - 1, day);
-        });
+        }) || [];
 
         const latestDate = new Date(Math.max(...dates));
 
@@ -1050,6 +1053,8 @@
         juror,
         historyUrl: app.namedRoutes.build('juror-record.history.get', { jurorNumber }),
         historyTab,
+        canSummon: canSummon(req, juror.commonDetails),
+        hasSummons: juror.commonDetails.hasSummonsResponse,
         history,
         currentTab: 'history',
         backLinkUrl: {
