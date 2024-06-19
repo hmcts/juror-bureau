@@ -102,7 +102,7 @@
 
           });
         }
-        const letter = await generateDocument(content, req.session.authentication.staff.name);
+        const letter = await generateDocument(content);
 
         app.logger.info('Generated documents for the selected jurors', {
           userId: req.session.authentication.login,
