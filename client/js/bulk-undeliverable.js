@@ -11,6 +11,11 @@ undeliverableJurorNumberForm.addEventListener('submit', async (event) => {
   const undeliverableJurorNumber = document.getElementById('undeliverableJurorNumber');
   const jurorNumber = undeliverableJurorNumber.value;
 
+  const errorSummary = document.getElementsByClassName('govuk-error-summary');
+
+  if (errorSummary && errorSummary.length > 0) {
+    errorSummary[0].remove();
+  }
   clearError();
   const hasError = validateJurorNumber(jurorNumber);
 
