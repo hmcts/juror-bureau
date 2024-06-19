@@ -45,7 +45,7 @@
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      {% set nextDate = (juror.commonDetails.startDate | dateFilter(null, "dddd D MMMM YYYY")) if juror.commonDetails.startDate else "-" %}
+      {% set nextDate = "-" %}
       {% if attendance["next_date"] %}
         {% set nextDate = attendance["next_date"] | makeDate | dateFilter(null, "dddd D MMMM YYYY") %}
       {% endif %}
