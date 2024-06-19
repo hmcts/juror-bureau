@@ -139,11 +139,10 @@
 
   module.exports.getDeleteAttendance = function(app) {
     return async function(req, res) {
-      const { jurorNumber, poolNumber } = req.params;
+      const { jurorNumber } = req.params;
       const attendanceDate = req.query.date;
       const payload = {
         'jurorNumber': jurorNumber,
-        'poolNumber': poolNumber,
         'attendanceDate': attendanceDate,
         'modifyAttendanceType': 'DELETE',
       };

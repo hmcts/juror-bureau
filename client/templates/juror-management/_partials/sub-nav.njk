@@ -58,7 +58,9 @@
     }
   }, {
     text: "History",
-    href: "#",
+    href: url('juror-record.history.get', {
+      jurorNumber: juror.commonDetails.jurorNumber
+    }),
     active: currentTab === "history",
     attributes: {
       id: "historyTab"

@@ -48,7 +48,7 @@
             this.resource,
             tab,
             `${jurorNumber}`,
-            locCode);
+            `${locCode}`);
         }
 
         app.logger.debug('Sending request to API: ', {

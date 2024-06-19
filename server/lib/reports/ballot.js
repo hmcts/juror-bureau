@@ -11,7 +11,7 @@
         border: [false, false, false, false],
         table: {
           heights: [topMargin],
-          body: [''],
+          body: [[]],
         },        
         layout: 'noBorders',
       },
@@ -45,28 +45,24 @@
   const documentTableData = (data) => {
     const body=[];
     const heights = [];
-    const firsth = 300;
-    const secondh = 195;
-    const third = 360;
+    const tracker = [];
+    const pageBreakHeight = 120;
+    const rowHeight = 200;
 
     for (let i = 0; i < data.length; i = i + 2) {
       const row = [];
 
-      if (i === 0){
-        heights.push(firsth);
+      if (i !== 0 && i % 8 === 0){
+        heights.push(pageBreakHeight);
+        tracker.push(i);
       } else {
-        heights.push(secondh);
+        heights.push(rowHeight);
+        tracker.push(i);
       }
 
       row.push(getTableCell(data[i]));
 
       if (i+1 < data.length){
-        if (i === 0){
-          heights.push(firsth);
-        } else {
-          heights.push(third);
-        }
-
         row.push(getTableCell(data[i+1]));
       } else{
         row.push(getEmptyTableCell());
@@ -74,9 +70,23 @@
 
       body.push(row);
     }
+
+    if (data.length % 8 >= 1) {
+      body.push([getEmptyTableCell(), getEmptyTableCell()])
+      heights.push(rowHeight);
+    }
+    if (data.length % 8 >= 3) {
+      body.push([getEmptyTableCell(), getEmptyTableCell()])
+      heights.push(rowHeight);
+    }
+    if (data.length % 8 >= 5) {
+      body.push([getEmptyTableCell(), getEmptyTableCell()])
+      heights.push(rowHeight);
+    }
+
     return {
       layout: 'noBorders',
-      pageMargins : [25, 25, 25, 25],
+      pageMargins: [25, 25, 25, 25],
       table: {
         widths: ['50%', '50%'],
         heights,
@@ -110,7 +120,7 @@
         ...defaultStyles().defaultStyles,
         content: [ ..._documentContent ],
         styles: layout().otherStyles,
-        pageOrientation: 'landscape',
+        pageOrientation: 'portrait',
         pageMargins: 0,
       };
 
