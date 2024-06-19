@@ -194,8 +194,7 @@
             { ...documentHeader(data, i) },
             ...documentContent(data, content[i]),
           ],
-          
-          : data.signature,
+          signature: data.signature,
         });
       }
 
