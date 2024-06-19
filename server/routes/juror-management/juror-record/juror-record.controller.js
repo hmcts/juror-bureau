@@ -344,6 +344,7 @@
                 juror: jurorOverview.data,
                 jurorStatus: resolveJurorStatus(jurorOverview.data.commonDetails),
                 currentTab: 'expenses',
+                canSummon: canSummon(req, jurorOverview.data.commonDetails),
                 hasSummons: jurorOverview.data.commonDetails.hasSummonsResponse,
                 dailyExpenses,
                 defaultExpenses,
@@ -1052,6 +1053,8 @@
         juror,
         historyUrl: app.namedRoutes.build('juror-record.history.get', { jurorNumber }),
         historyTab,
+        canSummon: canSummon(req, juror.commonDetails),
+        hasSummons: juror.commonDetails.hasSummonsResponse,
         history,
         currentTab: 'history',
         backLinkUrl: {
