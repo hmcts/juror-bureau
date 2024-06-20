@@ -394,7 +394,6 @@
       .then((data) => {
         modUtils.replaceAllObjKeys(data, _.camelCase);
 
-        req.session.locCode = req.session.receivingCourtLocCode;
         delete req.session.receivingCourtLocCode;
         delete req.session.processLateSummons;
 
