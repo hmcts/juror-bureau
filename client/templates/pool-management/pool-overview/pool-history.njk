@@ -9,7 +9,9 @@
     {% set historyHtml = undefined %}
     {% for historyLog in poolHistory %}
       {% set historyHtml %}
-      <p class="govuk-body">{{ historyLog.otherInformation }}</p>
+      {% for historyDetails in historyLog.otherInformation.split('\n') %}
+        <p class="govuk-body">{{ historyDetails }}</p>
+      {% endfor %}
       {% endset %}
       {% set logs = (logs.push({
         label: {
