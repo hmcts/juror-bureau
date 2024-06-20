@@ -283,7 +283,7 @@ module.exports.postTransfer = function(app) {
     delete req.session.errors;
 
     if (!Array.isArray(req.body.selectedJurors)) {
-      req.session.selectedJurors = [req.session.selectedJurors];
+      req.session.selectedJurors = [req.body.selectedJurors];
     }
 
     return res.redirect(app.namedRoutes.build('pool-overview.transfer.select-court.get', {
