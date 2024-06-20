@@ -15,7 +15,7 @@
             </li>
 
             {% if isBureauManager %}
-              <li id="new-replies" class="moj-primary-navigation__item" >
+              <li id="new-replies" class="moj-primary-navigation__item">
                 <a class="moj-primary-navigation__link" href="/new-replies" {% if currentUrl == '/new-replies' %}aria-current="page"{% endif %}>Assign Replies</a>
               </li>
               <li id="staff" class="moj-primary-navigation__item">
@@ -23,8 +23,11 @@
               </li>
             {% endif %}
 
-          {% else %}
-            {# sign in page - no navigation menu #}
+            <li id="bulk-undeliverable" class="moj-primary-navigation__item">
+              <a class="moj-primary-navigation__link" href="{{ url('summons-management.bulk-undeliverable.get') }}" {% if currentUrl == '/bulk-undeliverable' %}aria-current="page"{% endif %}>
+                Bulk Undeliverable
+              </a>
+            </li>
           {% endif %}
         </ul>
 

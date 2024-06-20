@@ -20,6 +20,7 @@
   const summonsForm = require('./summons-form');
   const summonCitizens = require('./summon-citizens');
   const sjoTasks = require('./sjo-tasks');
+  const jurorUndeliverable = require('./juror-undeliverable');
 
   module.exports = {
     ...requestPool,
@@ -38,6 +39,7 @@
     ...summonsForm,
     ...summonCitizens,
     ...sjoTasks,
+    ...jurorUndeliverable,
   };
 
 })();

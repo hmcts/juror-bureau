@@ -18,6 +18,7 @@
     require('./process-reply/disqualify')(app);
     require('./process-reply/reassign-before-process')(app);
     require('./update')(app);
+    require('./bulk-undeliverable')(app);
 
     // express allows us to have optional parameters on a route definition
     // :type? ... in our case we want the type to be just paper or nothing so we use regex to match
