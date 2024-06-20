@@ -179,7 +179,6 @@
 
           app.logger.info('Fetched the number of court deferrals: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               locationCode: req.session.poolDetails.courtCode,
               attendanceDate: dateFilter(req.session.poolDetails.attendanceDate, null, 'YYYY-MM-DD'),
@@ -216,10 +215,8 @@
           });
         }
         , errorCB = function(err) {
-          // todo: maybe show a message to the user?
           app.logger.crit('Failed to fetch the number of court deferrals: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               locationCode: req.session.poolDetails.courtCode,
               attendanceDate: dateFilter(req.session.poolDetails.attendanceDate, null, 'YYYY-MM-DD'),
@@ -227,7 +224,7 @@
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
-          return res.render('pool-management.get');
+          return res.render('_errors/generic');
         };
 
       // set a session var saying that the user is visiting the poolDetailsPage
@@ -448,7 +445,6 @@
 
           app.logger.info('Generated a new pool number: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: req.session.poolDetails.poolNumber,
           });
 
@@ -476,7 +472,6 @@
 
           app.logger.crit('Failed to generate a new pool number: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               locationCode: req.session.poolDetails.courtCode,
               attendanceDate: req.session.poolDetails.attendanceDate,
@@ -519,7 +514,6 @@
 
           app.logger.info('Created a new pool request: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: req.session.poolDetails,
           });
 
@@ -529,7 +523,6 @@
 
           app.logger.crit('Failed to create a new pool request: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: req.session.poolDetails,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
@@ -629,7 +622,6 @@
 
           app.logger.crit('Failed to fetch pool numbers: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: poolNumberPrefix,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });

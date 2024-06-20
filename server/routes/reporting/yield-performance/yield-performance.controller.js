@@ -28,8 +28,6 @@ const { makeManualError } = require('../../../lib/mod-utils');
         tmpBody,
         reportKey: 'yield-performance',
         title: reportType.title,
-        isFixedDateRange: true,
-        fixedDateRangeValues: ['NEXT_MONDAY', 'CUSTOM_RANGE'],
         searchLabels: reportType.searchLabelMappers,
         reportUrl: app.namedRoutes.build(`reports.yield-performance.filter.dates.post`),
         cancelUrl: app.namedRoutes.build('reports.reports.get'),
@@ -41,19 +39,6 @@ const { makeManualError } = require('../../../lib/mod-utils');
     return function(req, res) {
       const reportKey = 'yield-performance'
       const reportType = reportKeys(app, req)[reportKey];
-
-      if (!req.body.dateRange) {
-        req.session.errors = makeManualError('dateRange', 'Select whether you want to select next Monday or enter a custom date range');
-        req.session.formFields = req.body;
-        return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.dates.get`));
-      }
-
-      if (req.body.dateRange && req.body.dateRange === 'NEXT_MONDAY') {
-        let nextMon = new Date();
-        nextMon.setDate(nextMon.getDate() + (((1 + 7 - nextMon.getDay()) % 7) || 7));
-        req.body.dateFrom = dateFilter(nextMon, null, 'DD/MM/YYYY');
-        req.body.dateTo = dateFilter(nextMon, null, 'DD/MM/YYYY');
-      }
 
       const validatorResult = validate(req.body, validator.dateRange(_.camelCase(reportKey), req.body));
       if (typeof validatorResult !== 'undefined') {
