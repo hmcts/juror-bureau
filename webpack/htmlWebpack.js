@@ -18,6 +18,7 @@ const clientJs = [
   'expenses-summary.js',
   'certificate-of-exemption-list.js',
   'export-contact-details.js',
+  'bulk-undeliverable.js',
 ];
 
 const copyClientCode = new CopyWebpackPlugin({
