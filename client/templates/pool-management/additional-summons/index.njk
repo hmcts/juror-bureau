@@ -59,7 +59,8 @@
 
         <p class="govuk-body">
           <span class="govuk-heading-s">Jurors required to complete the request</span>
-          {{ poolDetails.bureauSummoning.required - poolDetails.bureauSummoning.confirmed }}
+          {% set jurorsRequiredToCompleteRequest = poolDetails.bureauSummoning.required - poolDetails.bureauSummoning.confirmed %}
+          {{ jurorsRequiredToCompleteRequest if jurorsRequiredToCompleteRequest > 0 else "0" }}
         </p>
 
         <p class="govuk-body">
