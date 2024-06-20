@@ -22,5 +22,5 @@ module.exports = (app) => {
     auth.verify,
     isBureauUser,
     controller.postFindJuror(app),
-  )
+  );
 };
