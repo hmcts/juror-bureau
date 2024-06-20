@@ -43,12 +43,13 @@
           summary: 'Please enter a valid date for the non-attendance day',
           details: 'Please enter a valid date for the non-attendance day',
         }];
-      } else if (moment(dateInitial.dateAsDate).isAfter(new Date())) {
-        tmpErrors = [{
-          summary: 'Non-attendance day cannot be in the future',
-          details: 'Non-attendance day cannot be in the future',
-        }];
       }
+      // else if (moment(dateInitial.dateAsDate).isAfter(new Date())) {
+      //   tmpErrors = [{
+      //     summary: 'Non-attendance day cannot be in the future',
+      //     details: 'Non-attendance day cannot be in the future',
+      //   }];
+      // }
     }
 
     return tmpErrors.length === 0
