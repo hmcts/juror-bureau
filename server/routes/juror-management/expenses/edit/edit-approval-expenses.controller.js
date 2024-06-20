@@ -841,7 +841,7 @@
       formData = {
         payAttendance: data.time.pay_attendance,
         lossOfEarnings: data.financial_loss.loss_of_earnings,
-        extraCareCosts: data.financial_loss.extra_care_costs,
+        extraCareCosts: data.financial_loss.extra_care_cost,
         otherCosts: data.financial_loss.other_cost,
         otherCostsDescription: data.financial_loss.other_cost_description,
       };

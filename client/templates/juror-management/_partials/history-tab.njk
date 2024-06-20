@@ -13,9 +13,9 @@
     {% endset %}
     
     {% set historyHtml %}
-      <div class='entry'>{{historyItem.otherInfoDate | historyAttendanceDate}}</div>
-      <div class='entry'>{{historyItem.otherInfoRef | historyAuditLinkify | safe}}</div>
-      <div class='entry'>{{historyItem.otherInfo | historyAuditLinkify | safe}}</div>
+      {% for historyDetails in historyItem.historyDetails %}
+        <div class='entry'>{{historyDetails | historyAuditLinkify | safe}}</div>
+      {% endfor %}
     {% endset %}
 
     {% set historyTimeline = (historyTimeline.push({
