@@ -8,10 +8,9 @@
     , jurorRecordObject = require('../../../objects/juror-record')
     , deferralObject = require('../../../objects/deferral-mod').deferralObject
     , jurorDeceasedObject = require('../../../objects/juror-deceased').jurorDeceasedObject
-    , jurorUndeliverableObject = require('../../../objects/juror-undeliverable').jurorUndeliverableObject
     , jurorTransfer = require('../../../objects/juror-transfer').jurorTransfer
     , { dateFilter } = require('../../../components/filters')
-    , { systemCodesDAO } = require('../../../objects/administration')
+    , { systemCodesDAO, markAsUndeliverableDAO } = require('../../../objects')
     , moment = require('moment');
   const { deferralReasonAndDecision } = require('../../../config/validation/deferral-mod');
   const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
@@ -573,7 +572,7 @@
         }));
       };
 
-    jurorUndeliverableObject.put(require('request-promise'), app, req.session.authToken, req.params.jurorNumber)
+    markAsUndeliverableDAO.patch(req, { 'juror_numbers': [req.params.jurorNumber] })
       .then(successCB)
       .catch(errorCB);
   }

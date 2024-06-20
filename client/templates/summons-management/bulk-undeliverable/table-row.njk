@@ -1,0 +1,29 @@
+<tr class="govuk-table__row" id="row-{{ rowData.jurorNumber }}">
+  <td scope="row" class="govuk-table__cell">
+    <a class="govuk-link" href="#">{{ rowData.jurorNumber }}</a>
+  </td>
+  <td scope="row" class="govuk-table__cell">
+    {{ rowData.name.firstName or "-" }}
+  </td>
+  <td scope="row" class="govuk-table__cell">
+    {{ rowData.name.lastName or "-" }}
+  </td>
+  <td scope="row" class="govuk-table__cell">
+    {{ (rowData.address | safe) if rowData.address else "-" }}
+  </td>
+  <td scope="row" class="govuk-table__cell">
+    {{ rowData.postcode or "-" }}
+  </td>
+  <td scope="row" class="govuk-table__cell">
+    {{ rowData.court or "-" }}
+  </td>
+  <td scope="row" class="govuk-table__cell">
+    {% if isFail %}
+      <span class="mod-red-text">Failed</span>
+    {% else %}
+      <a href="#" class="govuk-link" id="remove-{{ rowData.jurorNumber }}">
+        Remove
+      </a>
+    {% endif %}
+  </td>
+</tr>
