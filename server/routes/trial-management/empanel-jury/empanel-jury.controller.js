@@ -171,7 +171,7 @@
         });
       };
 
-      if (juryCount < requiredNumberOfJurors) {
+      if (juryCount != requiredNumberOfJurors) {
 
         req.session.empanelJuryError = true;
         req.session.formFields = tmpBody;

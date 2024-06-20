@@ -18,7 +18,8 @@
   const poolMembers = require('./pool-members');
   const reports = require('./reports');
   const summonsForm = require('./summons-form');
-  const summonCitizens = require('./summon-citizens'); 
+  const summonCitizens = require('./summon-citizens');
+  const jurorUndeliverable = require('./juror-undeliverable');
 
   module.exports = {
     ...requestPool,
@@ -36,6 +37,7 @@
     ...reports,
     ...summonsForm,
     ...summonCitizens,
+    ...jurorUndeliverable,
   };
 
 })();
