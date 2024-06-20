@@ -14,7 +14,7 @@ module.exports.poolMembersDAO = new DAO('moj/pool-create/members', {
   },
   post: function(body) {
     body['page_number'] = body['page_number'] || 1;
-    body['page_limit'] = constants.PAGE_SIZE;
+    body['page_limit'] = body['page_limit'] || constants.PAGE_SIZE;
     body['sort_method'] = body['sort_method'] === 'ascending' ? 'ASC' : 'DESC';
     body['sort_field'] = mapCamelToSnake(body['sort_field'])?.toUpperCase();
 

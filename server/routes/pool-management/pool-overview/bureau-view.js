@@ -7,10 +7,10 @@ module.exports = function(app, req, res, pool, membersList, _errors, selectedJur
   const { poolNumber } = req.params;
   const { status } = req.query;
 
-  const assignUrl = app.namedRoutes.build('pool-overview.reassign.post', { poolNumber });
-  const transferUrl = app.namedRoutes.build('pool-overview.transfer.post', { poolNumber });
-  const completeServiceUrl = app.namedRoutes.build('pool-overview.complete-service.post', { poolNumber });
-  const postponeUrl = app.namedRoutes.build('pool-overview.postpone.post', { poolNumber });
+  let assignUrl = app.namedRoutes.build('pool-overview.reassign.post', { poolNumber });
+  let transferUrl = app.namedRoutes.build('pool-overview.transfer.post', { poolNumber });
+  let completeServiceUrl = app.namedRoutes.build('pool-overview.complete-service.post', { poolNumber });
+  let postponeUrl = app.namedRoutes.build('pool-overview.postpone.post', { poolNumber });
   let availableSuccessMessage = false;
   let successBanner;
   let tmpError;
@@ -68,13 +68,21 @@ module.exports = function(app, req, res, pool, membersList, _errors, selectedJur
   const pageItems = modUtils.paginationBuilder(
     membersList.totalItems,
     currentPage,
-    req.url
+    req.url,
   );
 
   delete req.session.bannerMessage;
 
   // set the loc code for navigating to juror record
   req.session.locCode = pool.poolDetails.locCode;
+
+  const searchParams = req.url.split('?')[1];
+  if (searchParams) {
+    postponeUrl += `?${searchParams}`;
+    assignUrl += `?${searchParams}`;
+    completeServiceUrl += `?${searchParams}`;
+    transferUrl += `?${searchParams}`;
+  }
 
   res.render('pool-management/pool-overview/bureau-pool-overview', {
     backLinkUrl:{
