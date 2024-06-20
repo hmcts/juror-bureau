@@ -11,7 +11,11 @@
       const tmpErrors = _.cloneDeep(req.session.errors);
       const tmpBody = _.cloneDeep(req.session.tmpBody);
       const { jurorNumber, locCode } = req.params;
-      const { status } = req.query;
+      let { status } = req.query;
+
+      if (status !== 'for-approval' && status !== 'approved' && status !== 'for-reapproval') {
+        status = 'draft';
+      }
 
       const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
       const processUrl = app.namedRoutes.build(`${routePrefix}.bank-details.post`, {
@@ -74,7 +78,11 @@
   module.exports.postBankDetails = (app) => {
     return async function(req, res) {
       const { jurorNumber, locCode } = req.params;
-      const { status } = req.query;
+      let { status } = req.query;
+
+      if (status !== 'for-approval' && status !== 'approved' && status !== 'for-reapproval') {
+        status = 'draft';
+      }
 
       const validatorResult = validate(req.body, bankDetailsValidator());
       const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
