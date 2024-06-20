@@ -274,11 +274,13 @@
 
       validationPayload = {
         sourcePoolNumber: req.session.poolJurorsReassign ?
-          req.session.poolJurorsReassign.poolNumber : req.session.jurorCommonDetails.poolNumber
-        , sendingCourtLocCode: req.session.locCode
-        , receivingCourtLocCode: req.session.authentication.locCode
-        , targetServiceStartDate: dateFilter(new Date(), null, 'YYYY-MM-DD')
-        , jurorNumbers: req.session.poolJurorsReassign ?
+          req.session.poolJurorsReassign.poolNumber : req.session.jurorCommonDetails.poolNumber,
+
+        sendingCourtLocCode: req.session.locCode,
+        receivingCourtLocCode: req.session.receivingCourtLocCode || req.session.authentication.locCode,
+        targetServiceStartDate: dateFilter(new Date(), null, 'YYYY-MM-DD'),
+
+        jurorNumbers: req.session.poolJurorsReassign ?
           req.session.poolJurorsReassign.selectedJurors : [req.params['jurorNumber']],
       };
 
@@ -331,7 +333,7 @@
             reassignPayload.sendingCourtLocationCode = validationPayload.sendingCourtLocCode;
           }
 
-          sendReassignRequest(app, req, res, reassignPayload);
+          return sendReassignRequest(app, req, res, reassignPayload);
         })
         .catch((err) => {
           app.logger.crit('Failed to check transfer validity: ', {
@@ -387,7 +389,7 @@
   };
 
   function sendReassignRequest(app, req, res, payload) {
-    requestObj.reassignJuror
+    return requestObj.reassignJuror
       .put(require('request-promise'), app, req.session.authToken, payload)
       .then((data) => {
         modUtils.replaceAllObjKeys(data, _.camelCase);
