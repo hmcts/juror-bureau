@@ -278,13 +278,12 @@ module.exports.postTransfer = function(app) {
         return res.redirect(app.namedRoutes.build('pool-overview.get', {
           poolNumber: req.body.poolNumber}));
       }
+
+      req.session.selectedJurors = Array.isArray(req.body.selectedJurors)
+        ? req.body.selectedJurors : [req.body.selectedJurors];
     }
 
     delete req.session.errors;
-
-    if (!Array.isArray(req.body.selectedJurors)) {
-      req.session.selectedJurors = [req.session.selectedJurors];
-    }
 
     return res.redirect(app.namedRoutes.build('pool-overview.transfer.select-court.get', {
       poolNumber: req.params.poolNumber,
