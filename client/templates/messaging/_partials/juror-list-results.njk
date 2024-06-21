@@ -2,7 +2,7 @@
 
 {% if totalJurors === 0 %}
   <h2 class="govuk-heading-m govuk-!-margin-bottom-6">No matching results</h2>
-{% elif totalJurors > 500 %}
+{% elif totalJurors > 500 or totalJurors === "MAX_ITEMS_EXCEEDED" %}
   <h2 class="govuk-heading-m govuk-!-margin-bottom-6">There are more than 500 results. Refine your search.</h2>
 {% else %}
   <div class="govuk-button-group govuk-!-margin-bottom-0">

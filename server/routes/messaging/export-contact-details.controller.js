@@ -172,7 +172,14 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return renderView(0, []);
+        /** @type {number | 'MAX_ITEMS_EXCEEDED'} */
+        let _totalJurors = 0;
+
+        if (err.error?.code === 'MAX_ITEMS_EXCEEDED') {
+          _totalJurors = 'MAX_ITEMS_EXCEEDED';
+        }
+
+        return renderView(_totalJurors, []);
       }
 
       return renderView(jurorsList.total_items, formatedList, pagination);
