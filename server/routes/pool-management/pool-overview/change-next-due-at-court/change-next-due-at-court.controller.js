@@ -1,25 +1,22 @@
-
 (function(){
   'use strict';
 
-  var _ = require('lodash')
-    , validate = require('validate.js')
-    , jurorSelectValidator = require('../../../../config/validation/change-attendance-date').jurorSelect
-    , attendanceDateValidator = require('../../../../config/validation/change-attendance-date').bulkAttendanceDate
-    , { dateFilter } = require('../../../../components/filters')
-    , { changeNextDueAtCourtDAO } = require('../../../../objects/juror-attendance')
-    , rp = require('request-promise');
+  const _ = require('lodash');
+  const validate = require('validate.js');
+  const jurorSelectValidator = require('../../../../config/validation/change-attendance-date').jurorSelect;
+  const attendanceDateValidator = require('../../../../config/validation/change-attendance-date').bulkAttendanceDate;
+  const { dateFilter } = require('../../../../components/filters');
+  const { changeNextDueAtCourtDAO } = require('../../../../objects/juror-attendance');
   const { poolMembersDAO } = require('../../../../objects');
-
+  const { filtersHelper } = require('../pool-overview.controller');
 
   module.exports.postChangeNextDueAtCourt = function(app) {
     return async function(req, res) {
       if (req.body['check-all-jurors']) {
         try {
-          const poolMembers = await poolMembersDAO.get(req, req.params.poolNumber);
+          const poolMembers = await poolMembersDAO.post(req, filtersHelper(req, req.params.poolNumber), true);
 
-          delete poolMembers.Headers;
-          req.body.selectedJurors = Object.values(poolMembers);
+          req.session.membersList = poolMembers.data;
         } catch (err) {
           app.logger.crit('Failed to fetch pool members to change next due at court date: ', {
             auth: req.session.authentication,
@@ -44,6 +41,8 @@
         return res.redirect(app.namedRoutes.build('pool-overview.get', {
           poolNumber: req.body.poolNumber}));
       }
+
+      req.session.selectedJurors = req.session.membersList.map(juror => juror.jurorNumber);
 
       delete req.session.membersList;
       delete req.session.filteredMembers;

@@ -2,11 +2,12 @@
 (function() {
   'use strict';
 
-  const  _ = require('lodash')
-    , createTrialValidator = require('../../../config/validation/create-trial')
-    , validate = require('validate.js')
-    , { courtroomsObject, judgesObject, createTrialObject } = require('../../../objects/create-trial')
-    , { dateFilter } = require('../../../components/filters');
+  const _ = require('lodash');
+  const createTrialValidator = require('../../../config/validation/create-trial');
+  const validate = require('validate.js');
+  const { courtroomsObject, judgesObject, createTrialObject } = require('../../../objects/create-trial');
+  const { dateFilter } = require('../../../components/filters');
+  const { makeManualError } = require('../../../lib/mod-utils');
 
   const countErrors = (tmpErrors) => typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0;
 
@@ -34,7 +35,6 @@
 
           app.logger.info('Fetched courtrooms and judges list', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               courtrooms: data[0],
               judges: data[1],
@@ -89,9 +89,9 @@
         .catch((err) => {
           app.logger.crit('Failed to fetch judges or courtrooms list: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
+
           return res.render('_errors/generic');
         });
 
@@ -195,7 +195,6 @@
       .then((resp) => {
         app.logger.info('Created a new trial', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: payload,
           response: resp,
         });
@@ -214,10 +213,17 @@
       .catch((err) => {
         app.logger.crit('Failed to create a new trial: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: payload,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
+
+        if (err.error?.message) {
+          req.session.errors = makeManualError('createTrial', err.error.message);
+          req.session.formFields = req.body;
+
+          return res.redirect(app.namedRoutes.build('trial-management.create-trial.get'));
+        }
+
         return res.render('_errors/generic');
       });
   }

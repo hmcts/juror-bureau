@@ -65,7 +65,7 @@
             deletedRecord: deletedRecord,
             newPoolCreated: newPoolCreated,
             pageItems: pageItems,
-            displayPoolManagementActionsButtonMenu: (status === 'requested') ? true : false,
+            displayPoolManagementActionsButtonMenu: status === 'requested',
             pageUrls: pageUrls,
             locCode: req.query['location_code'],
             courts: modUtils.transformCourtNames(req.session.courtsList),
@@ -103,6 +103,10 @@
       delete req.session.newPoolNumber;
       delete req.session.coronerCourt;
       delete req.session.poolCreateFormFields;
+
+      // for backward compatibility
+      delete req.session.selectedJurors;
+      delete req.session.selectAll;
 
       if (status !== 'requested') {
         if (!tab && isCourtUser(req)) {

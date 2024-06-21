@@ -1,4 +1,3 @@
-/* eslint-disable strict */
 const _ = require('lodash');
 const validate = require('validate.js');
 const jurorTransfer = require('../../../objects/juror-transfer').jurorTransfer;
@@ -76,6 +75,11 @@ module.exports.getJurors = function(app) {
       return errorCB(app, req, res, poolNumber, errorMessage)(err);
     }
 
+    if (!Object.keys(req.query).length || (Object.keys(req.query).length === 1 && req.query.status)) {
+      delete req.session.selectedJurors;
+      delete req.session.selectAll;
+    }
+
     let queryStatus = !req.query.status || req.query.status === 'all' ? null : req.query.status;
 
     const payload = {
@@ -121,6 +125,13 @@ module.exports.postFilterJurors = function(app) {
     req.session.selectAll = req.body['check-all-jurors'];
 
     const queryParams = new URLSearchParams(req.url.split('?')[1] || '');
+
+    if (req.body.filterType === 'filter') {
+      queryParams.delete('page');
+
+      delete req.session.selectedJurors;
+      delete req.session.selectAll;
+    }
 
     // I have some weird behaviour with the bureau filter adding an empty checked when I check a single status
     if (Array.isArray(filters.status)) {
@@ -202,10 +213,9 @@ module.exports.postReassign = function(app) {
   return async function(req, res) {
     if (req.body['check-all-jurors']) {
       try {
-        const poolMembers = await poolMembersDAO.get(req, req.params.poolNumber);
+        const poolMembers = await poolMembersDAO.post(req, filtersHelper(req, req.params.poolNumber), true);
 
-        delete poolMembers.Headers;
-        req.body.selectedJurors = Object.values(poolMembers);
+        req.body.selectedJurors = poolMembers.data.map(juror => juror.jurorNumber);
       } catch (err) {
         app.logger.crit('Failed to fetch pool members to reassign: ', {
           auth: req.session.authentication,
@@ -247,10 +257,9 @@ module.exports.postTransfer = function(app) {
   return async function(req, res) {
     if (req.body['check-all-jurors']) {
       try {
-        const poolMembers = await poolMembersDAO.get(req, req.params.poolNumber);
+        const poolMembers = await poolMembersDAO.post(req, filtersHelper(req, req.params.poolNumber), true);
 
-        delete poolMembers.Headers;
-        req.body.selectedJurors = Object.values(poolMembers);
+        req.session.selectedJurors = poolMembers.data.map(juror => juror.jurorNumber);
       } catch (err) {
         app.logger.crit('Failed to fetch pool members to tranfer: ', {
           auth: req.session.authentication,
@@ -269,18 +278,16 @@ module.exports.postTransfer = function(app) {
         return res.redirect(app.namedRoutes.build('pool-overview.get', {
           poolNumber: req.body.poolNumber}));
       }
+
+      req.session.selectedJurors = Array.isArray(req.body.selectedJurors)
+        ? req.body.selectedJurors : [req.body.selectedJurors];
     }
 
-    req.session.poolJurorsTransfer = req.body;
-    delete req.session.poolJurorsTransfer._csrf;
     delete req.session.errors;
 
-    if (!Array.isArray(req.body.selectedJurors)) {
-      req.session.poolJurorsTransfer.selectedJurors = [req.body.selectedJurors];
-    }
-
-    return res.redirect(app.namedRoutes.build('pool-overview.transfer.select-court.get',
-      { poolNumber: req.params.poolNumber }));
+    return res.redirect(app.namedRoutes.build('pool-overview.transfer.select-court.get', {
+      poolNumber: req.params.poolNumber,
+    }));
   };
 };
 
@@ -288,7 +295,7 @@ module.exports.postTransfer = function(app) {
 
 module.exports.postTransferConfirm = function(app) {
   return function(req, res) {
-    executeTransfer(app, req, res, req.session.poolJurorsTransfer.selectedJurors);
+    executeTransfer(app, req, res, req.session.selectedJurors);
   };
 };
 
@@ -323,7 +330,6 @@ function executeTransfer(app, req, res, transferedJurors) {
     return res.redirect(app.namedRoutes.build('pool-overview.get', {
       poolNumber: req.params.poolNumber,
     }));
-
   };
 
   receivingCourtLocCode = req.session.formField.courtNameOrLocation.match(/\d+/g)[0];
@@ -344,7 +350,6 @@ function executeTransfer(app, req, res, transferedJurors) {
 
 function coronerCourtPool(app) {
   return function(req, res) {
-    const currentPage = req.query['page'] || 1;
     let pagination;
     const coronerSuccessCB = function({response, headers}) {
       const members = [];
@@ -450,10 +455,9 @@ module.exports.postCompleteService = function(app) {
   return async function(req, res) {
     if (req.body['check-all-jurors']) {
       try {
-        const poolMembers = await poolMembersDAO.get(req, req.params.poolNumber);
+        const poolMembers = await poolMembersDAO.post(req, filtersHelper(req, req.params.poolNumber), true);
 
-        delete poolMembers.Headers;
-        req.body.selectedJurors = Object.values(poolMembers);
+        req.body.selectedJurors = poolMembers.data.map(juror => juror.jurorNumber);
       } catch (err) {
         app.logger.crit('Failed to fetch pool members to complete service: ', {
           auth: req.session.authentication,
@@ -482,24 +486,9 @@ module.exports.postCompleteService = function(app) {
     delete req.session.selectedJurors._csrf;
     delete req.session.errors;
 
-    // eslint-disable-next-line max-len
-    // TODO: we may now be able to complete from any status - if this doesn't end up being the case, we need to build new functionality for this check
-    // req.session.notResponded = req.body.selectedJurors.filter(jurorId =>
-    //   req.session.jurorDetails[jurorId]?.status !== 'Responded').map(jurorId =>
-    //   req.session.jurorDetails[jurorId]);
-
-    // if (req.session.notResponded.length > 0) {
-    //   req.session.selectedJurors = req.body.selectedJurors.filter(juror =>
-    //     req.session.jurorDetails[juror]?.status === 'Responded');
-
-    //   return res.redirect(app.namedRoutes.build('pool-overview.complete-service.continue.get',
-    //     { poolNumber: req.params['poolNumber'] }));
-    // }
-
-    // delete req.session.notResponded;
-
-    return res.redirect(app.namedRoutes.build('pool-overview.complete-service.confirm.get',
-      {poolNumber: req.params.poolNumber}));
+    return res.redirect(app.namedRoutes.build('pool-overview.complete-service.confirm.get',{
+      poolNumber: req.params.poolNumber,
+    }));
   };
 };
 
@@ -527,16 +516,21 @@ module.exports.getCompleteServiceContinue = function(app) {
 };
 
 function courtView(app, req, res, pool, membersList, _errors, selectedJurors, selectAll) {
-  const assignUrl = app.namedRoutes.build('pool-overview.reassign.post',
-      { poolNumber: req.params.poolNumber })
-    , transferUrl = app.namedRoutes.build('pool-overview.transfer.post',
-      { poolNumber: req.params.poolNumber })
-    , completeServiceUrl = app.namedRoutes.build('pool-overview.complete-service.post',
-      { poolNumber: req.params.poolNumber })
-    , changeServiceDateUrl = app.namedRoutes.build('pool-overview.change-next-due-at-court.post',
-      { poolNumber: req.params.poolNumber })
-    , postponeUrl = app.namedRoutes.build('pool-overview.postpone.post',
-      { poolNumber: req.params.poolNumber });
+  let assignUrl = app.namedRoutes.build('pool-overview.reassign.post', {
+    poolNumber: req.params.poolNumber,
+  });
+  let transferUrl = app.namedRoutes.build('pool-overview.transfer.post', {
+    poolNumber: req.params.poolNumber,
+  });
+  let completeServiceUrl = app.namedRoutes.build('pool-overview.complete-service.post', {
+    poolNumber: req.params.poolNumber,
+  });
+  let changeServiceDateUrl = app.namedRoutes.build('pool-overview.change-next-due-at-court.post', {
+    poolNumber: req.params.poolNumber,
+  });
+  let postponeUrl = app.namedRoutes.build('pool-overview.postpone.post', {
+    poolNumber: req.params.poolNumber,
+  });;
 
   let availableSuccessMessage = false
     , successBanner
@@ -568,6 +562,15 @@ function courtView(app, req, res, pool, membersList, _errors, selectedJurors, se
 
   delete req.session.errors;
   delete req.session.bannerMessage;
+
+  const searchParams = req.url.split('?')[1];
+  if (searchParams) {
+    postponeUrl += `?${searchParams}`;
+    changeServiceDateUrl += `?${searchParams}`;
+    completeServiceUrl += `?${searchParams}`;
+    transferUrl += `?${searchParams}`;
+    assignUrl += `?${searchParams}`;
+  }
 
   let pagination;
 
@@ -605,7 +608,7 @@ function courtView(app, req, res, pool, membersList, _errors, selectedJurors, se
     const pageItems = modUtils.paginationBuilder(
       membersList.totalItems,
       currentPage,
-      req.url
+      req.url,
     );
 
     const queryParams = new URLSearchParams(req.url.split('?')[1]);
@@ -671,10 +674,9 @@ module.exports.postBulkPostpone = function(app) {
   return async function(req, res) {
     if (req.body['check-all-jurors']) {
       try {
-        const poolMembers = await poolMembersDAO.get(req, req.params.poolNumber);
+        const poolMembers = await poolMembersDAO.post(req, filtersHelper(req, req.params.poolNumber), true);
 
-        delete poolMembers.Headers;
-        req.body.selectedJurors = Object.values(poolMembers);
+        req.body.selectedJurors = poolMembers.data.map(juror => juror.jurorNumber);
       } catch (err) {
         app.logger.crit('Failed to fetch pool members to postpone: ', {
           auth: req.session.authentication,
@@ -749,3 +751,26 @@ module.exports.postCheckJuror = function(app) {
     return res.send();
   };
 };
+
+function filtersHelper(req, poolNumber) {
+  const queryStatus = !req.query.status || req.query.status === 'all' ? null : req.query.status;
+
+  const payload = {
+    'pool_number': poolNumber,
+    'juror_number': req.query.jurorNumber || null,
+    'first_name': req.query.firstName || null,
+    'last_name': req.query.lastName || null,
+    'attendance': req.query.attendance?.toUpperCase()
+      .replace(/ /g, '_').split(',') || null,
+    'checked_in': req.query.checkedIn || null,
+    'next_due': req.query.nextDue?.split(',') || null,
+    'status': queryStatus?.split(',').map(status => status[0].toUpperCase() + status.slice(1)) || null,
+    'page_number': req.query.page || 1,
+    'sort_field': 'juror_number',
+    'sort_method': 'ascending',
+    'page_limit': 500,
+  };
+
+  return payload;
+}
+module.exports.filtersHelper = filtersHelper;
