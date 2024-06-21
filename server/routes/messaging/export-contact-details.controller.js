@@ -124,10 +124,11 @@
       const filterUrl = app.namedRoutes.build('messaging.export-contacts.jurors.filter.post') + urlPrefix;
       const submitUrl = app.namedRoutes.build('messaging.export-contacts.jurors.post') + urlPrefix;
 
-      const renderView = (totalJurors, jurors, pagination = null) => {
+      const renderView = (totalJurors, jurors, pagination, errorMetadata) => {
         res.render('messaging/export-contact-details/jurors-list.njk', {
           origin: 'EXPORT_DETAILS',
           totalJurors,
+          errorMetadata,
           jurors,
           pagination,
           checkedJurors: req.session.messaging.checkedJurors,
@@ -179,7 +180,7 @@
           _totalJurors = 'MAX_ITEMS_EXCEEDED';
         }
 
-        return renderView(_totalJurors, []);
+        return renderView(_totalJurors, [], null, err.error?.meta_data);
       }
 
       return renderView(jurorsList.total_items, formatedList, pagination);

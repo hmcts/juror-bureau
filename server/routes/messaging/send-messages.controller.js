@@ -511,7 +511,6 @@
         if (err.statusCode === 404 || err.statusCode === 422) {
           app.logger.info('Fetched list of jurors', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             opts: opts,
           });
 
@@ -527,7 +526,8 @@
               ? app.namedRoutes.build('messaging.send.select-trial.get', { message })
               : app.namedRoutes.build('messaging.send.find-jurors.get', { message }),
             searchUrl: app.namedRoutes.build('messaging.send.find-jurors.post', { message }) + '?searchAgain=true',
-            totalJurors: err.statusCode === 404 ? 0 : 501,
+            totalJurors: err.error?.code === 'MAX_ITEMS_EXCEEDED' ? 'MAX_ITEMS_EXCEEDED' : 0,
+            errorMetadata: err.error?.meta_data,
             searchBy: req.session.messaging.searchBy,
             searchOptions,
             tmpBody,
