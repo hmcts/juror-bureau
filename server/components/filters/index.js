@@ -132,7 +132,7 @@
 
       Array.prototype.push.apply(args, arguments);
       try {
-        mnt = moment(date, inputFormat);
+        mnt = moment(date, inputFormat).utcOffset("Europe/London");
       } catch (err) {
         errs.push(err);
       }
