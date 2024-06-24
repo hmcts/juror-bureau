@@ -40,8 +40,8 @@
       return axiosClient('delete', uri || this.resource, req.session.authToken);
     };
 
-    get(req, body, uri, ...args) {
-      return axiosClient('get', uri || this.resource, req.session.authToken);
+    get(req, body, uri, headers, ...args) {
+      return axiosClient('get', uri || this.resource, req.session.authToken, { headers });
     };
 
     patch(req, body, uri, headers, ...args) {
