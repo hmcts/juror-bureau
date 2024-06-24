@@ -1,16 +1,16 @@
 (function() {
   'use strict';
 
-  var _ = require('lodash')
-    , modUtils = require('../../../lib/mod-utils')
-    , validate = require('validate.js')
-    , selectCourtValidator = require('../../../config/validation/request-pool').coronerPoolSelectCourt
-    , poolDetailsValidator = require('../../../config/validation/request-pool').coronerPoolDetails
-    , coronerPoolPostcodes = require('../../../config/validation/request-pool').coronerPoolPostcodes
-    , dateFilter = require('../../../components/filters').dateFilter
-    , postCodesObject = require('../../../objects/postcodes').postCodesObject
-    , poolObj = require('../../../objects/request-pool')
-    , fetchCoronerPoolObj = require('../../../objects/request-pool').fetchCoronerPool;
+  const _ = require('lodash')
+  const modUtils = require('../../../lib/mod-utils')
+  const validate = require('validate.js')
+  const selectCourtValidator = require('../../../config/validation/request-pool').coronerPoolSelectCourt
+  const poolDetailsValidator = require('../../../config/validation/request-pool').coronerPoolDetails
+  const coronerPoolPostcodes = require('../../../config/validation/request-pool').coronerPoolPostcodes
+  const dateFilter = require('../../../components/filters').dateFilter
+  const postCodesObject = require('../../../objects/postcodes').postCodesObject
+  const poolObj = require('../../../objects/request-pool')
+  const { fetchCoronerPoolDAO, createCoronerPoolDAO } = require('../../../objects');
 
   module.exports.getSelectCourt = function(app) {
     return function(req, res) {
@@ -59,7 +59,6 @@
           // we log here the matched court but we never did an api request.... its ok to just log :-)
           app.logger.info('Matched the selected court', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               matchedCourt: court,
             },
@@ -71,7 +70,6 @@
 
           app.logger.crit('Failed to match the selected court', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               selectedCourt: req.body.courtNameOrLocation,
             },
@@ -193,11 +191,10 @@
   module.exports.postCheckDetails = function(app) {
     return function(req, res) {
       var successCB = function(response) {
-          var poolNumber = new URLSearchParams(response.headers.location).get('poolNumber');
+          var poolNumber = new URLSearchParams(response._headers.location).get('poolNumber');
 
           app.logger.info('Successfully created a coroner court', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: req.body,
           });
 
@@ -209,7 +206,6 @@
 
           app.logger.crit('Failed to create a new coroner court pool', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: req.body,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
@@ -219,7 +215,7 @@
           return res.redirect(app.namedRoutes.build('coroner-pool.check-details.get'));
         };
 
-      return poolObj.createCoronerPool.post(require('request-promise'), app, req.session.authToken, req.body)
+      return createCoronerPoolDAO.post(req, req.body)
         .then(successCB)
         .catch(errorCB);
     };
@@ -294,7 +290,6 @@
 
           app.logger.crit('Failed to fetch pool summary: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               poolNumber: req.session.coronerCourt.poolNumber,
             },
@@ -332,7 +327,6 @@
       const successCB = function() {
         app.logger.info('Successfully added citizens into the coroner pool', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: req.body,
         });
 
@@ -343,7 +337,6 @@
       const errorCB = function(err) {
         app.logger.crit('Failed to add citizens in pool: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: req.body,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
@@ -372,13 +365,7 @@
       delete req.session.coronerPostcodes;
 
       try {
-        await poolObj.fetchCoronerPool.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
-          req.params['poolNumber'],
-          req.session.coronerCourtEtag
-        );
+        await fetchCoronerPoolDAO.get(req, req.params['poolNumber'], req.session.coronerCourtEtag);
 
         delete req.session.coronerCourtEtag;
 
@@ -390,7 +377,6 @@
 
           app.logger.crit('Failed to compare etags for when summoning to coroners court: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               poolNumber: req.params['poolNumber']
             },
@@ -428,17 +414,11 @@
         res.send(csvResult.join('\n'));
       };
 
-      return fetchCoronerPoolObj.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
-        req.params['poolNumber']
-      )
+      fetchCoronerPoolDAO.get(req, req.params['poolNumber'])
         .then(successCB)
         .catch((err) => {
           app.logger.crit('Failed to export the coroner court pool', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: req.body,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });

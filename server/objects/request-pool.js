@@ -176,62 +176,6 @@
       },
     }
 
-    , createCoronerPool = {
-      resource: 'moj/pool-create/create-coroner-pool',
-      post: function(rp, app, jwtToken, body) {
-        var reqOptions = _.clone(options)
-          , tmpBody = _.clone(body);
-
-        delete tmpBody._csrf;
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri, this.resource);
-        reqOptions.method = 'POST';
-        reqOptions.body = tmpBody;
-        reqOptions.transform = includeHeaders;
-
-        app.logger.info('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          body: reqOptions.body,
-        });
-
-        return rp(reqOptions);
-      },
-    }
-
-    , fetchCoronerPool = {
-      resource: 'moj/pool-create/coroner-pool',
-      get: function(rp, app, jwtToken, poolNumber, etag = null) {
-        var reqOptions = _.clone(options);
-
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri, this.resource, '?poolNumber=' + poolNumber);
-        reqOptions.method = 'GET';
-
-        app.logger.info('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          data: {
-            poolNumber: poolNumber,
-          },
-        });
-
-        if (etag) {
-          reqOptions.headers['If-None-Match'] = `${etag}`;
-        }
-
-        reqOptions.transform = (response, incomingRequest) => {
-          const headers = _.cloneDeep(incomingRequest.headers);
-  
-          return { response, headers };
-        };
-
-        return rp(reqOptions);
-      },
-    }
-
     , addCoronerCitizens = {
       resource: 'moj/pool-create/add-citizens',
       post: function(rp, app, jwtToken, payload) {
@@ -279,8 +223,6 @@
   module.exports.checkDayType = checkDayType;
   module.exports.fetchCourtDeferrals = fetchCourtDeferrals;
   module.exports.fetchPoolNumbers = fetchPoolNumbers;
-  module.exports.createCoronerPool = createCoronerPool;
-  module.exports.fetchCoronerPool = fetchCoronerPool;
   module.exports.addCoronerCitizens = addCoronerCitizens;
   module.exports.fetchPoolsAtCourt = fetchPoolsAtCourt;
 
@@ -289,5 +231,23 @@
 
   module.exports.fetchCourtsDAO = new DAO('moj/pool-request/court-locations');
   module.exports.fetchAllCourtsDAO = new DAO('moj/court-location/all-court-locations');
+
+  module.exports.createCoronerPoolDAO = new DAO('moj/pool-create/create-coroner-pool', {
+    post: function(body) {
+      return { body };
+    },
+  });
+  module.exports.fetchCoronerPoolDAO = new DAO('moj/pool-create/coroner-pool', {
+    get: function(poolNumber, etag = null) {
+      const uri = urljoin(this.resource, '?poolNumber=' + poolNumber);
+      const headers = {};
+
+      if (etag) {
+        headers['If-None-Match'] = `${etag}`;
+      }
+
+      return { uri, headers };
+    },
+  });
 
 })();

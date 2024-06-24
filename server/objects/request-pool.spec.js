@@ -82,28 +82,6 @@
       expect(testUri.method).to.equal('GET');
     });
 
-    it('should call the correct endpoint to create a coroner court pool', function() {
-      var testUri = poolRequestObject.createCoronerPool.post(rpStub, appStub, 'test-token', {})
-        , realUri = urljoin(
-          'http://localhost:8080/api/v1',
-          'moj/pool-create/create-coroner-pool'
-        );
-
-      expect(testUri.uri).to.equal(realUri);
-      expect(testUri.method).to.equal('POST');
-    });
-
-    it('should call the correct endpoint to fetch a coroner court pool', function() {
-      var testUri = poolRequestObject.fetchCoronerPool.get(rpStub, appStub, 'test-token', '923040001')
-        , realUri = urljoin(
-          'http://localhost:8080/api/v1',
-          'moj/pool-create/coroner-pool?poolNumber=923040001'
-        );
-
-      expect(testUri.uri).to.equal(realUri);
-      expect(testUri.method).to.equal('GET');
-    });
-
     it('should call the correct endpoint to add voters into a coroner court pool', function() {
       var testUri = poolRequestObject.addCoronerCitizens.post(rpStub, appStub, 'test-token', {})
         , realUri = urljoin(
