@@ -127,7 +127,15 @@
       <div class="mod-juror-record__title">
         <h2 id="overviewLabel" class="govuk-heading-m">Overview</h2>
       </div>
-      {# Next service date attributes are hardcoded and hidden behind a specific query param until backend for this data has been implemented #}
+
+      {% set nextDate = juror.commonDetails.startDate | dateFilter(null, "dddd D MMMM YYYY") %}
+      {% if attendance["next_date"] %}
+        {% set nextDate = attendance["next_date"] | makeDate | dateFilter(null, "dddd D MMMM YYYY") %}
+      {% endif %}
+      {% if attendance["on_call"] === true %}
+        {% set nextDate = "On call" %}
+      {% endif %}
+
       {{ govukSummaryList({
         classes: "govuk-!-width-two-thirds govuk-!-margin-bottom-9",
         rows: [
@@ -136,18 +144,18 @@
               text: "Next due at court"
             },
             value: {
-              text: "Today"
+              text: nextDate
             },
             actions: {
               items: [
                 {
-                  href: "#",
+                  href: url('juror-record.attendance.change-attendance-date.get', { jurorNumber: juror.commonDetails.jurorNumber }),
                   text: "Change",
                   visuallyHiddenText: "nextCourtDate",
                   attributes: {
                     "aria-label": "Change next court date"
                   }
-                }
+                } if isCourtUser
               ]
             }
           },
@@ -158,7 +166,7 @@
             value: {
               text: "9:30am"
             }
-          },
+          } if juror.checkInTime,
           {
             key: {
               text: "Location"
@@ -174,7 +182,7 @@
             value: {
               text: juror.attendances or "0"
             }
-          },
+          } if juror.attendances > 0,
           {
             key: {
               text: "Absences"
@@ -182,7 +190,7 @@
             value: {
               text: juror.absences or "0"
             }
-          },
+          } if juror.absences > 0,
           {
             key: {
               text: "Trials"
@@ -190,7 +198,7 @@
             value: {
               text: juror.trials or "0"
             }
-          },
+          } if juror.trials > 0,
           {
             key: {
               text: "Number of deferrals"
@@ -198,7 +206,7 @@
             value: {
               text: juror.commonDetails.noDeferrals or "0"
             }
-          }
+          } if juror.commonDetails.noDeferrals > 0
         ]
       }) }}
     </div>

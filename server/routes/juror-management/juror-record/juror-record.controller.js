@@ -126,6 +126,17 @@
 
           const idCheckDescription = await resolveIdCheckDescription(app, req, overview.data.idCheckCode);
 
+          let attendance = {};
+          if (isCourtUser(req)) {
+            attendance = await jurorRecordObject.attendanceDetails.get(
+              require('request-promise'),
+              app,
+              req.session.authToken,
+              req.session.locCode || req.session.authentication.locCode,
+              req.params.jurorNumber,
+            );
+          }
+
           // TODO: handle the backLink
           return res.render('juror-management/juror-record/overview', {
             backLinkUrl: 'homepage.get',
@@ -140,6 +151,7 @@
             hasSummons: overview.data.commonDetails.hasSummonsResponse,
             poolDetails,
             idCheckDescription,
+            attendance,
           });
         }
         , errorCB = function(err) {
