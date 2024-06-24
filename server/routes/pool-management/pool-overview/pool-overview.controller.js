@@ -4,14 +4,13 @@ const jurorTransfer = require('../../../objects/juror-transfer').jurorTransfer;
 const jurorSelectValidator = require('../../../config/validation/pool-reassign');
 const poolSummaryObj = require('../../../objects/pool-summary.js').poolSummaryObject;
 const poolHistoryObj = require('../../../objects/pool-history.js').poolHistoryObject;
-const fetchCoronerPool = require('../../../objects/request-pool').fetchCoronerPool;
 const modUtils = require('../../../lib/mod-utils');
 const { dateFilter } = require('../../../components/filters');
 const isCourtUser = require('../../../components/auth/user-type').isCourtUser;
 const capitalizeFully = require('../../../components/filters').capitalizeFully;
 const rp = require('request-promise');
 const paginateJurorsList = require('./paginate-jurors-list');
-const { poolMembersDAO } = require('../../../objects');
+const { poolMembersDAO, fetchCoronerPoolDAO } = require('../../../objects');
 
 function errorCB(app, req, res, poolNumber, errorString) {
   return function(err) {
@@ -351,9 +350,12 @@ function executeTransfer(app, req, res, transferedJurors) {
 function coronerCourtPool(app) {
   return function(req, res) {
     let pagination;
-    const coronerSuccessCB = function({response, headers}) {
+    const coronerSuccessCB = function(response) {
       const members = [];
       const tmpErrors = _.clone(req.session.errors);
+
+      req.session.coronerCourtEtag = response._headers.etag;
+      delete response._headers;
 
       delete req.session.errors;
 
@@ -364,7 +366,6 @@ function coronerCourtPool(app) {
 
       req.session.coronerCourt = response;
 
-      req.session.coronerCourtEtag = headers.etag;
 
       if (response.coronerDetailsList.length > 0) {
         response.coronerDetailsList.forEach(function(member) {
@@ -401,7 +402,7 @@ function coronerCourtPool(app) {
     // temp delete this here 🤔
     delete req.session.newCourtCatchmentArea;
 
-    return fetchCoronerPool.get(rp, app, req.session.authToken, req.params['poolNumber'])
+    return fetchCoronerPoolDAO.get(req, req.params['poolNumber'])
       .then(coronerSuccessCB)
       .catch(errorCB(app, req, res, req.params['poolNumber'], 'Failed to fetch coroner pool:'));
   };
