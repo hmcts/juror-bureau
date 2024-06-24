@@ -164,17 +164,17 @@
               text: "Checked in today"
             },
             value: {
-              text: "9:30am"
+              text: juror.checked_in_today_time | convert24to12
             }
-          } if juror.checkInTime,
+          } if juror.checked_in_today_time,
           {
             key: {
               text: "Location"
             },
             value: {
-              text: "Assembly room"
+              text: juror.location
             }
-          },
+          } if juror.location,
           {
             key: {
               text: "Attendances"
