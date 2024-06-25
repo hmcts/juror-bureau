@@ -48,10 +48,17 @@
 
   function request(jurorNumber, isChecking) {
     var action = isChecking ? 'check' : 'uncheck';
+    let url = '/senior-jury-officer-tasks/uncomplete-service/search/check?jurorNumber='
+        + jurorNumber + '&action=' + action;
+
+    if (window.location.pathname.includes('undo-failed-to-attend')) {
+      url += '&task=undo-failed-to-attend';
+    } else {
+      url += '&task=uncomplete-service';
+    }
 
     return $.ajax({
-      url: '/senior-jury-officer-tasks/uncomplete-service/search/check?jurorNumber='
-        + jurorNumber + '&action=' + action,
+      url,
       method: 'POST',
       data: {
         _csrf: csrfToken.val(),

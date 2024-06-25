@@ -5,8 +5,8 @@
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 {% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
 
-{% block page_title %}Uncomplete service - Select jurors{% endblock %}
-{% block page_identifier %}Uncomplete service{% endblock %}
+{% block page_title %}{{ serviceName }} - SJO Tasks - {{ title }} - Select jurors{% endblock %}
+{% block page_identifier %}SJO Tasks - {{ title }} - Select jurors{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -20,17 +20,18 @@
 
 {% block content %}
 
-  {% include "../../includes/errors.njk" %}
+  {% include "includes/errors.njk" %}
 
   {% set selectedJurorsError = undefined %}
   {% if errors.items["selectedJurors"] %}
     {% set selectedJurorsError = {"text": errors.items['selectedJurors'][0].details} %}
   {% endif %}
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <form action="{{ postUrl }}" method="POST" id="selectJurorsForm">
       
-        <h1 class="govuk-heading-xl">Uncomplete service</h1>
+        <h1 class="govuk-heading-xl">{{ title }}</h1>
         
         <h2 class="govuk-heading-m">
           Showing results for “{{ searchTerm }}”
@@ -57,24 +58,28 @@
 
         <div class="govuk-grid-column-full juror-actions govuk-!-padding-0 govuk-!-margin-bottom-5">
           {{ govukButton({
-            text: "Uncomplete juror",
+            text: title,
             id: "UncompleteJuror",
             classes: "govuk-button--secondary govuk-!-margin-bottom-0",
             type: "submit"
           }) }}
         </div>
-        <div class="govuk-body"><span id="checkedJurors">{{ totalCheckedJurors }}</span> of selected <span id="totalJurors">{{ totalItems }}</span></div>
+
+        <div class="govuk-body">
+          <span id="checkedJurors">{{ totalCheckedJurors }}</span> of selected <span id="totalJurors">{{ totalItems }}</span>
+        </div>
+
         {{ modSortableTable({
-              id: "completedJurorsTable",
-              caption: "Jurors",
-              captionClasses: "govuk-visually-hidden",
-              head: completedJurorsList.head,
-              rows: completedJurorsList.rows,
-              url: urlPrefix,
-              selectable: true,
-              totalCheckedJurors: totalCheckedJurors,
-              totalJurors: totalItems
-            }) }}
+          id: "completedJurorsTable",
+          caption: "Jurors",
+          captionClasses: "govuk-visually-hidden",
+          head: completedJurorsList.head,
+          rows: completedJurorsList.rows,
+          url: urlPrefix,
+          selectable: true,
+          totalCheckedJurors: totalCheckedJurors,
+          totalJurors: totalItems
+        }) }}
 
         {{ govukPagination({
           previous: {

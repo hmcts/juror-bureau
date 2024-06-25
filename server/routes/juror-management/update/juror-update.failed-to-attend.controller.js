@@ -4,6 +4,7 @@
 const _ = require('lodash');
 const { failedToAttendObject } = require('../../../objects/juror-record');
 const { isSJOUser } = require('../../../components/auth/user-type');
+const { undoFailedToAttendDAO } = require('../../../objects');
 
 // TODO: we need to revisit this when the attendances are implemented as the juror cannot be marked
 // as failed to attend if they have attendances to their name
@@ -93,14 +94,7 @@ module.exports.postUndoFailedToAttend = function(app) {
     }
 
     try {
-      await failedToAttendObject.patch(
-        require('request-promise'),
-        app,
-        req.session.authToken,
-        jurorNumber,
-        poolNumber,
-        'undo'
-      );
+      await undoFailedToAttendDAO.patch(req, { 'juror_numbers': [jurorNumber] });
 
       req.session.failedToAttend = {
         jurorNumber,

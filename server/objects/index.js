@@ -19,6 +19,7 @@
   const reports = require('./reports');
   const summonsForm = require('./summons-form');
   const summonCitizens = require('./summon-citizens');
+  const sjoTasks = require('./sjo-tasks');
   const jurorUndeliverable = require('./juror-undeliverable');
 
   module.exports = {
@@ -37,6 +38,7 @@
     ...reports,
     ...summonsForm,
     ...summonCitizens,
+    ...sjoTasks,
     ...jurorUndeliverable,
   };
 
