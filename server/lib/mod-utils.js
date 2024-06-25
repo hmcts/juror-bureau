@@ -640,7 +640,9 @@
       transformedPoolNumbers.push(
         {
           key: {
-            html: '<a class="govuk-link govuk-body" href="#">'+ el.poolNumber +'</a>',
+            html: `<a class="govuk-link govuk-body" href="/pool-management/pool-overview/${el.poolNumber}">
+              ${el.poolNumber}
+            </a>`,
           },
           value: {
             text: dateFilter(el.attendanceDate, 'yyyy-MM-DD', 'ddd DD MMM YYYY'),
