@@ -824,7 +824,7 @@
             ),
           };
 
-          responseClone.isLateSummons = modUtils.isLateSummons(responseClone.serviceStartDate);
+          responseClone.isLateSummons = responseClone.processingStatus != "Closed" && modUtils.isLateSummons(responseClone.serviceStartDate);
 
           req.session.replyDetails = {};
           req.session.replyDetails.jurorNumber = response[0].data.jurorNumber;

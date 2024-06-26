@@ -122,7 +122,7 @@
           req.session.replyDetails.jurorStartDate = data.poolDate;
 
           // we get a unix timestamp with this journey... maybe it gets good when both records are merged into 1
-          data.isLateSummons = modUtils.isLateSummons(dateFilter(data.poolDate, 'DD/MM/YYYY', 'YYYY-MM-DD'));
+          data.isLateSummons = data.processingStatus != "CLOSED" && modUtils.isLateSummons(dateFilter(data.poolDate, 'DD/MM/YYYY', 'YYYY-MM-DD'));
           req.session.replyDetails.isLateSummons = data.isLateSummons;
 
           // too much... so maybe I should extract to a builder function
