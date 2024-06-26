@@ -59,9 +59,7 @@ module.exports.postConfirmUndoFailedToAttend = (app) => {
       return res.render('_errors/generic');
     }
 
-    // still use the uncompleteConfirmed key for using the same logic
-    req.session.uncompleteConfirmed = req.session.undoFailedToAttend.selectedJurors.length;
-    delete req.session.undoFailedToAttend;
+    req.session.undoFailedToAttend = req.session.undoFailedToAttend.selectedJurors.length;
 
     return res.redirect(app.namedRoutes.build('sjo-tasks.undo-failed-to-attend.get'));
   };
