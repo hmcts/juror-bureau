@@ -9,6 +9,7 @@ module.exports.getSJOTasksSearch = function(app, { nav, title, searchLabel, post
   return function(req, res) {
     const tmpErrors = _.cloneDeep(req.session.errors);
     const uncompleteConfirmed = req.session.uncompleteConfirmed;
+    const undoFailedToAttend = req.session.undoFailedToAttend;
     let tmpFields = {};
 
     if (Object.keys(req.query)[0]) {
@@ -31,6 +32,7 @@ module.exports.getSJOTasksSearch = function(app, { nav, title, searchLabel, post
     delete req.session.formFields;
     delete req.session.errors;
     delete req.session.uncompleteService;
+    delete req.session.undoFailedToAttend;
     delete req.session.uncompleteConfirmed;
     delete req.session.membersList;
     delete req.session.checkedJurors;
@@ -43,6 +45,7 @@ module.exports.getSJOTasksSearch = function(app, { nav, title, searchLabel, post
       cancelUrl: app.namedRoutes.build(cancelRoute),
       tmpFields,
       uncompleteConfirmed,
+      undoFailedToAttend,
       errors: {
         message: '',
         count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
