@@ -80,6 +80,19 @@
     }) }}
   {% endif %}
 
+  {% if undoFailedToAttend %}
+    {% set jurorText = " juror." %}
+    {% if undoFailedToAttend > 1 %}
+      {% set jurorText = " jurors." %}
+    {% endif %}
+
+    {{ mojBanner({
+      type: "success",
+      html: "Undo failed to attend for " + undoFailedToAttend + jurorText,
+      iconFallbackText: "Success"
+    }) }}
+  {% endif %}
+
   {% include "includes/errors.njk" %}
 
   <div class="govuk-grid-row">
