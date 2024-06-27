@@ -36,7 +36,7 @@
 {% endif %}
 
 {% if jurorStatus === "Deferred" and owner === "400" %}
-  {% set updateOptions = [deferral, excusal, postpone, disqualify, deceased] %}
+  {% set updateOptions = [responded, deferral, excusal, postpone, disqualify, deceased] %}
 {% endif %}
 
 {# court owned options #}
@@ -73,7 +73,7 @@
 {% endif %}
 
 {% if jurorStatus === "Deferred" and owner !== "400" %}
-  {% set updateOptions = [deferral, excusal, disqualify, postpone, deceased] %}
+  {% set updateOptions = [responded, deferral, excusal, disqualify, postpone, deceased] %}
 {% endif %}
 
 {# responded and juror is on call and no attendances #}
