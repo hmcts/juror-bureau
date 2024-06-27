@@ -55,7 +55,7 @@
           'data_types': req.session.documentsJurorsList.data_types,
           data: paginateJurorsList(req.session.documentsJurorsList.data, page || 1),
         };
-
+console.log(slicedJurorList)
         const { tableHeader, tableRows } = tableGenerator.bind({
           response: slicedJurorList,
           checkedJurors: req.session.documentsJurorsList.checkedJurors || [],
@@ -269,17 +269,23 @@
         if (areAllChecked(req)) {
           req.session.documentsJurorsList.checkedJurors = [];
         } else {
+          const numberIndex = req.session.documentsJurorsList.headings.indexOf('Juror number');
+          const formCodeIndex = req.session.documentsJurorsList.headings.indexOf('hidden_form_code');
+          const dateIndex = req.session.documentsJurorsList.headings.indexOf('Date printed');
+          const extractedIndex = req.session.documentsJurorsList.headings.indexOf('hidden_extracted_flag');
+
           req.session.documentsJurorsList.checkedJurors = [];
           req.session.documentsJurorsList.data.forEach(juror => {
-            if (!isPending(juror[juror.length - 3], juror[juror.length - 2])) {
+            if (!isPending(juror[dateIndex], juror[extractedIndex])) {
               req.session.documentsJurorsList.checkedJurors.push({
-                'juror_number': juror[0],
-                'form_code': juror[juror.length - 1],
-                'date_printed': req.body.date_printed,
+                'juror_number': juror[numberIndex],
+                'form_code': juror[formCodeIndex],
+                'date_printed': juror[dateIndex],
               });
             }
           });
         }
+        console.log(req.session.documentsJurorsList);
 
         app.logger.info('Checked / unchecked all juror documents: ', {
           auth: req.session.authentication,
