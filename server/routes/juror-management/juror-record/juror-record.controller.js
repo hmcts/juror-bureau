@@ -1063,6 +1063,7 @@
         court: isCourtUser(req, res),
         jurorNumber,
         juror,
+        jurorStatus: resolveJurorStatus(juror.commonDetails),
         historyUrl: app.namedRoutes.build('juror-record.history.get', { jurorNumber }),
         historyTab,
         canSummon: canSummon(req, juror.commonDetails),
