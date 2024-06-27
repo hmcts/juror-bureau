@@ -21,6 +21,14 @@ module.exports = function(app) {
     , 'juror.update.deferral.post'
     , auth.verify
     , controller.postDeferral(app));
+  app.get('/juror-management/juror/:jurorNumber/update/deferral/pools',
+    'juror.update.deferral.pools.get',
+    auth.verify,
+    controller.getDeferralPools(app));
+  app.post('/juror-management/juror/:jurorNumber/update/deferral/pools',
+    'juror.update.deferral.pools.post',
+    auth.verify,
+    controller.postDeferralPools(app));
   app.get('/juror-management/juror/:jurorNumber/update/deferral/:letter(grant|refuse)/letter'
     , 'juror.update.deferral.letter.get'
     , auth.verify
