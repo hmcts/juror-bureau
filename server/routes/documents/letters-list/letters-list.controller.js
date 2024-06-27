@@ -55,7 +55,7 @@
           'data_types': req.session.documentsJurorsList.data_types,
           data: paginateJurorsList(req.session.documentsJurorsList.data, page || 1),
         };
-console.log(slicedJurorList)
+
         const { tableHeader, tableRows } = tableGenerator.bind({
           response: slicedJurorList,
           checkedJurors: req.session.documentsJurorsList.checkedJurors || [],
@@ -285,7 +285,6 @@ console.log(slicedJurorList)
             }
           });
         }
-        console.log(req.session.documentsJurorsList);
 
         app.logger.info('Checked / unchecked all juror documents: ', {
           auth: req.session.authentication,
