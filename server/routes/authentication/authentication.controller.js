@@ -128,10 +128,6 @@ module.exports.getSelectCourt = function(app) {
       return res.redirect(app.namedRoutes.build('administration.get'));
     }
 
-    if (req.session.authentication.activeUserType === 'BUREAU') {
-      return res.redirect(app.namedRoutes.build('inbox.todo.get'));
-    }
-
     return res.redirect(app.namedRoutes.build('homepage.get'));
   };
 };
@@ -192,10 +188,6 @@ async function loginSingleCourt(req, res, { app, courtsList, body }) {
     }
 
     return res.redirect(app.namedRoutes.build('administration.get'));
-  }
-
-  if (req.session.authentication.activeUserType === 'BUREAU') {
-    return res.redirect(app.namedRoutes.build('inbox.todo.get'));
   }
 
   return res.redirect(app.namedRoutes.build('homepage.get'));
