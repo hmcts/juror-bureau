@@ -18,9 +18,23 @@
 
   {% include "../_partials/heading.njk" %}
 
+<div class='history-print-container'>
   <h2 class="govuk-heading-m">
     History
   </h2>
+  {% if historyTab === 'history' %}
+    {{ 
+      govukButton({
+        text: "Print",
+        href: printUrl,
+        classes: "govuk-button--secondary",
+        attributes: {
+          target: "_blank"
+        }
+      })
+    }}
+  {% endif %}
+</div>
 
   {% if court %}
     <div>
