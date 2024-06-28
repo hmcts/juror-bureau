@@ -125,7 +125,7 @@
         headers: {
           Authorization: req.session.authToken,
           'Content-Type': 'application/json',
-          'Accept': 'text/csv',
+          'Accept': 'text/csv, application/json',
         },
         json: true,
         body,
