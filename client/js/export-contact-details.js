@@ -101,7 +101,7 @@
     return $.ajax({
       url: '/messaging/export-contact-details/jurors/check?action='
         + action + (queryParams ? queryParams : '&poolNumber=' + poolNumber)
-        + (!isSearchByJurorNumber ? '&jurorNumber=' + jurorNumber : ''),
+        + '&jurorNumber=' + jurorNumber,
       method: 'POST',
       data: {
         _csrf: csrfToken.val(),
