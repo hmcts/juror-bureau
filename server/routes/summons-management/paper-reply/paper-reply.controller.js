@@ -94,6 +94,7 @@
             },
             isCourtUser: isCourtUser(req),
             isTeamLeader: isTeamLeader(req),
+            noWelsh: !response.data.commonDetails.isWelshCourt,
           });
         }
         , errorCB = function(err) {
