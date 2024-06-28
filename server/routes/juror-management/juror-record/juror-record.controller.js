@@ -1,6 +1,6 @@
 (function() {
   'use strict';
-
+  
   const _ = require('lodash');
   const { dateFilter, capitalizeFully, makeDate } = require('../../../components/filters');
   const { isCourtUser } = require('../../../components/auth/user-type');
@@ -10,6 +10,7 @@
   const modUtils = require('../../../lib/mod-utils');
   const { defaultExpensesDAO, jurorBankDetailsDAO } = require('../../../objects/expenses');
   const { systemCodesDAO, expensesSummaryDAO } = require('../../../objects');
+  const { generateDocument } = require('../../../lib/reports/single-generator');
 
   // when accessing a tab (any tab) if the juror record does not exist the api will return a 404
   // this 404 needs to be handled on a different way to all other error codes... it should show a juror-not-found page
@@ -1068,6 +1069,7 @@
         historyTab,
         canSummon: canSummon(req, juror.commonDetails),
         hasSummons: juror.commonDetails.hasSummonsResponse,
+        printUrl: app.namedRoutes.build('juror-record.history.print.get', { jurorNumber }),
         history,
         currentTab: 'history',
         backLinkUrl: {
@@ -1078,7 +1080,6 @@
     } catch (err) {
       app.logger.crit('Failed to fetch juror history: ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         data: {
           jurorNumber: req.params['jurorNumber'],
         },
@@ -1088,6 +1089,69 @@
       return res.render('_errors/generic');
     }
   };
+
+  module.exports.printHistoryTab = (app) => async(req, res) => {
+    try {
+      const history = (await jurorHistoryDAO.get(req, req.params.jurorNumber))
+        .data.sort((a,b) => b.dateCreated.localeCompare(a.dateCreated));
+      const {data: juror} = await jurorRecordObject.record.get(
+        require('request-promise'),
+        app,
+        req.session.authToken,
+        'detail',
+        req.params.jurorNumber,
+        req.session.locCode,
+      );
+
+      const address = [
+        juror.addressLineOne,
+        juror.addressLineTwo,
+        juror.addressLineThree,
+        juror.addressTown,
+        juror.addressCounty,
+        juror.addressPostcode,
+      ].filter(item => item !== null).join('\n');
+
+      const pdf = await generateDocument({
+        title: `Juror history - ${req.params.jurorNumber}`,
+        footerText: `Juror history - ${req.params.jurorNumber}`,
+        metadata: { left: [
+            {key: 'Name', value: `${juror.commonDetails.firstName} ${juror.commonDetails.lastName}`},
+            {key: 'Address', value: address},
+          ],
+          right: [
+            {key:'Printed', value: dateFilter(new Date(), null, 'DD/MM/yy hh:mma')},
+            {key:'Home phone', value: juror.primaryPhone},
+            {key:'Mobile phone', value: juror.primaryPhone},
+          ]
+        },
+        tables: [{
+          head: ['Date', 'Description', 'User', 'Other Information', 'Pool number'],
+          body: history.map(item => [
+            dateFilter(item.dateCreated, null, 'DD/MM/yy HH:mm'),
+            item.description,
+            item.username,
+            item.historyDetails.join('\n'),
+            item.poolNumber,
+          ]),
+          widths: ['18%', '20%', '20%', '24%', '18%'],
+        }],
+      });
+
+      res.contentType('application/pdf');
+      res.send(pdf);
+    } catch (err) {
+      app.logger.crit('Failed to fetch juror history: ', {
+        auth: req.session.authentication,
+        data: {
+          jurorNumber: req.params['jurorNumber'],
+        },
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+
+      return res.render('_errors/generic');
+    }
+  }
 
   function clearInvalidSessionData(req) {
     delete req.session.paperResponseDetails;
