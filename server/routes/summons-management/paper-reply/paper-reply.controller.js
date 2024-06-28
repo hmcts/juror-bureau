@@ -52,6 +52,7 @@
             details.firstName = details.commonDetails.firstName;
             details.lastName = details.commonDetails.lastName;
             details.startDate = details.commonDetails.startDate;
+            details.isWelshCourt = details.commonDetails.is_welsh_court;
 
             // the date of birth comes as a timestamp so we convert to a date object
             details.dateOfBirth = details.dateOfBirth
@@ -94,7 +95,7 @@
             },
             isCourtUser: isCourtUser(req),
             isTeamLeader: isTeamLeader(req),
-            noWelsh: !response.data.commonDetails.isWelshCourt,
+            noWelsh: !req.session.paperResponseDetails.isWelshCourt,
           });
         }
         , errorCB = function(err) {
