@@ -129,9 +129,7 @@
         reqOptions.method = 'PATCH';
 
         tmpBody = _.mapKeys(tmpBody, (value, key) => _.snakeCase(key));
-
-        delete Object.assign(tmpBody, {'welsh_language_required': tmpBody.welsh }).welsh;
-
+        delete Object.assign(tmpBody, {'welsh_language_required': tmpBody.welsh || false }).welsh;
         reqOptions.body = tmpBody;
 
         app.logger.debug('Sending request to API: ', {
