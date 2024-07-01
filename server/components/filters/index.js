@@ -3,6 +3,7 @@
 
   const _ = require('lodash')
   const moment = require('moment');
+  require ('moment-timezone');
 
   module.exports = {
     prettify: function(str, upperFirst) {
@@ -132,7 +133,7 @@
 
       Array.prototype.push.apply(args, arguments);
       try {
-        mnt = moment(date, inputFormat).utcOffset("Europe/London");
+        mnt = moment(date, inputFormat).tz("Europe/London");
       } catch (err) {
         errs.push(err);
       }
