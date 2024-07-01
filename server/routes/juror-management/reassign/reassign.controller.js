@@ -393,6 +393,7 @@
       .put(require('request-promise'), app, req.session.authToken, payload)
       .then((data) => {
         modUtils.replaceAllObjKeys(data, _.camelCase);
+        const tmpLocCode = req.session.receivingCourtLocCode;
 
         delete req.session.receivingCourtLocCode;
         delete req.session.processLateSummons;
@@ -414,7 +415,7 @@
         };
         return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
           jurorNumber: req.session.jurorCommonDetails.jurorNumber,
-        }));
+        }) + '?loc_code=' + tmpLocCode);
       })
       .catch((err) => {
         app.logger.crit('Failed to reassign the juror to a different pool', {
