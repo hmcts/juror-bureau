@@ -94,6 +94,7 @@
               && originalExpense.parking === expense.parking
               && originalExpense.food_and_drink === expense.food_and_drink
               && originalExpense.payment_method === expense.payment_method
+              && originalExpense.smart_card === expense.smart_card
             ) {
               delete originalExpenses[expense.attendance_date];
               delete req.session.editedExpenses[expense.attendance_date];
