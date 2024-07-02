@@ -12,11 +12,13 @@
 
   module.exports.postChangeNextDueAtCourt = function(app) {
     return async function(req, res) {
+      let jurors = req.body.selectedJurors;
+
       if (req.body['check-all-jurors']) {
         try {
           const poolMembers = await poolMembersDAO.post(req, filtersHelper(req, req.params.poolNumber), true);
 
-          req.session.membersList = poolMembers.data;
+          jurors = poolMembers.data.map(juror => juror.jurorNumber);
         } catch (err) {
           app.logger.crit('Failed to fetch pool members to change next due at court date: ', {
             auth: req.session.authentication,
@@ -30,9 +32,9 @@
 
       let validatorResult;
 
-      req.session.selectedJurors = Array.isArray(req.body.selectedJurors)
-        ? req.body.selectedJurors
-        : [req.body.selectedJurors];
+      req.session.selectedJurors = Array.isArray(jurors)
+        ? jurors
+        : [jurors];
 
       validatorResult = validate(req.body, jurorSelectValidator(req.session.membersList));
       if (typeof validatorResult !== 'undefined') {
@@ -41,8 +43,6 @@
         return res.redirect(app.namedRoutes.build('pool-overview.get', {
           poolNumber: req.body.poolNumber}));
       }
-
-      req.session.selectedJurors = req.session.membersList.map(juror => juror.jurorNumber);
 
       delete req.session.membersList;
       delete req.session.filteredMembers;
