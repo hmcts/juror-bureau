@@ -18,47 +18,48 @@
 
 {% block content %}
 <form method="post" action="{{ processUrl }}" id="editDeferralConfirmForm">
-{% if hasActivePools %}
+    {% if hasActivePools %}
 
-    {% include "includes/errors.njk" %}
+        {% include "includes/errors.njk" %}
 
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-            {% set deferralDateAndPool = undefined %}
-            {% if errors.items['deferralDateAndPool'] %}
-            {% set deferralDateAndPool = {
-                text: errors
-                .items['deferralDateAndPool'][0]
-                .details
-            } %}
-            {% endif %}   
-        </div>
-    </div>
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-l">Select a pool for this date</h1>
-            {{ deferralAvailablePoolsWeek ({
-                name: "deferralDateAndPool",
-                deferralPoolWeek: deferralPoolWeek,
-                value: "2023-08-20",
-                url: url,
-                headerClass: "govuk-fieldset__legend--m",
-                errorMessage: deferralDateAndPool
-            }) }}
-            <div class="govuk-button-group">
-                {{ govukButton({
-                    text: "Continue",
-                    type: "continue"
-                    }) }}
-                    <a class="govuk-link govuk-link--no-visited-state" href="{{ url('juror-record.overview.get', {
-                        jurorNumber: jurorNumber
-                }) }}">Cancel</a>
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                {% set deferralDateAndPool = undefined %}
+                {% if errors.items['deferralDateAndPool'] %}
+                {% set deferralDateAndPool = {
+                    text: errors
+                    .items['deferralDateAndPool'][0]
+                    .details
+                } %}
+                {% endif %}   
             </div>
-            <input type="hidden" name="_csrf" value="{{ csrftoken }}">
         </div>
-    </div>
-{% else %}
-    {% include "summons-management/_partials/deferral-no-available-pools.njk" %}
-{% endif %}
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-l">Select a pool for this date</h1>
+                {{ deferralAvailablePoolsWeek ({
+                    name: "deferralDateAndPool",
+                    deferralPoolWeek: deferralPoolWeek,
+                    value: "2023-08-20",
+                    url: url,
+                    headerClass: "govuk-fieldset__legend--m",
+                    errorMessage: deferralDateAndPool
+                }) }}
+                <div class="govuk-button-group">
+                    {{ govukButton({
+                        text: "Continue",
+                        type: "continue"
+                        }) }}
+                        <a class="govuk-link govuk-link--no-visited-state" href="{{ url('juror-record.overview.get', {
+                            jurorNumber: jurorNumber
+                    }) }}">Cancel</a>
+                </div>
+                <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+            </div>
+        </div>
+    {% else %}
+        {% include "summons-management/_partials/deferral-no-available-pools.njk" %}
+    {% endif %}
+    <input type="hidden" name="deferralDecision" value="GRANT">
 </form>
 {% endblock %}
