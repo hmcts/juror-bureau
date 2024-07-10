@@ -175,6 +175,7 @@
     <div class="govuk-grid-column-one-half">
       {{ dashboardChartDoughnut({
         id: "numberOfSummonses",
+        nonce: nonce,
         chartHeading: "Number of summonses sent",
         labels: ["Replied", "Not replied"],
         values: [dashboardData.summonsesSent.repliedCount, dashboardData.summonsesSent.notRepliedCount],
@@ -190,6 +191,7 @@
     <div class="govuk-grid-column-one-half">
       {{ dashboardChartDoughnut({
         id: "responseTypes",
+        nonce: nonce,
         chartHeading: "How did the citizen respond?",
         labels: ["Online (Total)", "Online (Welsh)", "By post"],
         values: [dashboardData.responseMethod.onlineTotal,dashboardData.responseMethod.onlineWelsh,dashboardData.responseMethod.byPost],
@@ -217,6 +219,7 @@
     <div class="govuk-grid-column-one-half">
       {{ dashboardChartDoughnut({
         id: "whoRespondedOnline",
+        nonce: nonce,
         chartHeading: "Who replied to the summons online?",
         labels: ["Juror", "Third party"],
         values: [dashboardData.responseType.jurorCount, dashboardData.responseType.thirdPartyCount],
@@ -231,6 +234,7 @@
     <div class="govuk-grid-column-one-half">
       {{ dashboardAutoProcessed({
         id: "automaticallyProcessed",
+        nonce: nonce,
         chartHeading: "How many online replies were automatically processed?",
         labels: ["Automatically processed"],
         values: [dashboardData.automaticallyProcessed.automaticCount, dashboardData.automaticallyProcessed.manualCount],
@@ -257,6 +261,7 @@
 
       {{ dashboardChartStacked({
         id: "whenReceived",
+        nonce: nonce,
         chartHeading: "When were replies received?",
         labels: dashboardData.timeReceived.labels,
         valuesDigital: [dashboardData.timeReceived.within7DaysDigital, dashboardData.timeReceived.within14DaysDigital, dashboardData.timeReceived.within21DaysDigital, dashboardData.timeReceived.over21DaysDigital],
@@ -305,6 +310,7 @@
           {{ dashboardChartDoughnut({
             id: "satisfaction",
             chartHeading: "",
+            nonce: nonce,
             labels: ["Very satisfied", "Satisfied", "Neither satisfied or dissatisfied", "Dissatisfied", "Very dissatisfied"],
             values: [surveyData.verySatisfiedTotal, surveyData.satisfiedTotal, surveyData.neitherTotal, surveyData.dissatisfiedTotal, surveyData.veryDissatisfiedTotal],
             valuesFormatted: [surveyData.verySatisfiedFormatted, surveyData.satisfiedFormatted, surveyData.neitherFormatted, surveyData.dissatisfiedFormatted, surveyData.veryDissatisfiedFormatted],
