@@ -1,0 +1,30 @@
+@startuml reports.ballot-cards
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant "Pool overview page" as PoolOverviewPage <</pool-management/pool-overview>>
+participant "Trial page" as TrialPage <</trial-management/trial>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant "Ballot cards controller" as BallotCardsController <<ballot-cards.controller.js>> #LightYellow
+
+''' SELECT PAGE
+alt From PoolOverviewPage
+
+  Actor -> PoolOverviewPage : Click 'Print' and then 'Ballot cards'
+  PoolOverviewPage -> BallotCardsController : call ballot cards controller and redirect to report renderer
+
+  Actor <- BallotCardsController : report displayed by ballot pdf renderer
+
+else From TrialPage
+
+  Actor -> TrialPage : Click 'Print' and then 'Ballot cards'
+  TrialPage -> BallotCardsController : call ballot cards controller and redirect to report renderer
+
+  Actor <- BallotCardsController : report displayed by ballot pdf renderer
+
+end
