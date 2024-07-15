@@ -24,7 +24,7 @@
         classes: "govuk-!-padding-right-2 govuk-!-padding-left-2"
       },
       {
-        html: '<a class="govuk-link govuk-link--no-visited-state" href="' + url('juror-record.overview.get', {jurorNumber: juror['jurorNumber']}) + '">' + juror['jurorNumber'] + '</a>',
+        html: '<a class="govuk-link govuk-link--no-visited-state" href="' + url('juror-record.overview.get', {jurorNumber: juror['jurorNumber']}) + '?loc_code='+ juror['locCode'] +'">' + juror['jurorNumber'] + '</a>',
         classes: "mod-middle-align"
       },
       {
