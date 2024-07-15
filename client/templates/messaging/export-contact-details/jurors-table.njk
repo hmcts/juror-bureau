@@ -1,6 +1,7 @@
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 {% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "../_common/juror-record-url.macro.njk" import jurorRecordUrl %}
 
 {% set jurorRows = [] %}
 {% for juror in jurors %}
@@ -24,7 +25,11 @@
         classes: "govuk-!-padding-right-2 govuk-!-padding-left-2"
       },
       {
-        html: '<a class="govuk-link govuk-link--no-visited-state" href="' + url('juror-record.overview.get', {jurorNumber: juror['jurorNumber']}) + '">' + juror['jurorNumber'] + '</a>',
+        html: jurorRecordUrl({
+          url: url,
+          jurorNumber: juror['jurorNumber'],
+          locCode: juror['locCode']
+        }),
         classes: "mod-middle-align"
       },
       {
