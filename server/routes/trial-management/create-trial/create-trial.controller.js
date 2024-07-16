@@ -50,7 +50,7 @@
           req.session.courtrooms = courtrooms.map((court) => {
 
             court.display_name = court.court_location;
-            court.court_location = court.court_location.replace(/ /g, '_');
+            court.court_location = court.court_location.replace(/[ .]/g, '_');
 
             courtroomsToDisplay.push(
               {
