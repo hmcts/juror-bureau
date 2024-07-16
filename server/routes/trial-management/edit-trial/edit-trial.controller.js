@@ -77,7 +77,7 @@
             judge: trial.judge.description,
             courtroom: trial.courtroom.description,
             protected: trial.protected ? 'true' : 'false',
-            courtLocationName: trial.court,
+            courtLocationName: trial.court_room_location_name,
           };
 
           req.session.orignalTrial = {

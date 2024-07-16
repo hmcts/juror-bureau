@@ -105,16 +105,13 @@
       conditional: { 
         html: courtroomHtml
       },
-      checked: trialDetails.courtLocationName === court.courtLocationName
+      checked: trialDetails.courtLocationName === court.displayName
     }
   ), courtRadioItems) %}
 {% endfor %}
 
 {% block content %}
   {% include "includes/errors.njk" %}
-
-  {{ trialDetails | console }}
-  {{ courts | console }}
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -292,7 +289,7 @@
 
         {% for court in courts %}
 
-          {% if court.courtLocationName === trialDetails.courtLocationName %}
+          {% if court.displayName === trialDetails.courtLocationName %}
             $(document).ready(function () {
               const input = document.getElementById('{{court.courtLocationName}}-Courtroom');
               input.value = '{{trialDetails.courtroom}}';
