@@ -166,6 +166,7 @@
           userType: userType,
           name: req.body.name,
           email: req.body.email,
+          approvalLimit: req.body.approvalLimit,
         };
         if (req.body.roles) {
           req.session.editUser.details.roles = req.body.roles;
@@ -176,6 +177,7 @@
             userType: userType,
             name: req.body.name,
             email: req.body.email,
+            approvalLimit: req.body.approvalLimit,
           },
         };
         if (req.body.roles) {
@@ -253,8 +255,9 @@
       const user = _.clone(req.session.createUser.details);
       const payload = {
         'user_type': capitalise(user.userType),
-        'email': user.email,
-        'name': user.name,
+        email: user.email,
+        name: user.name,
+        'approval_limit': user.approvalLimit,
       };
 
       if (user.roles) {

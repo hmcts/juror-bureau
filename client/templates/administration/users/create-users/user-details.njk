@@ -104,6 +104,30 @@
           }) }}
         {% endif %}
 
+        {% if userType === "court" %}
+          {{ govukInput({
+            id: "approvalLimit",
+            name: "approvalLimit",
+            label: {
+              text: "Expenses approval limit",
+              classes: "govuk-label--m"
+            },
+            hint: {
+              text: "Enter maximum they can approve"
+            },
+            prefix: {
+              text: "£"
+            },
+            suffix: {
+              text: "per juror"
+            },
+            classes: "govuk-input--width-4",
+            value: tmpBody.approvalLimit,
+            type: "number",
+            spellcheck: false
+          }) }}
+        {% endif %}
+
         {{ csrfProtection(csrftoken) }}
         <div class="govuk-button-group">
           {{ govukButton({
