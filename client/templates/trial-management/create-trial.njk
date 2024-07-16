@@ -89,9 +89,9 @@
       label: {
         text: "Courtroom"
       },
-      value:  trialDetails[court.courtLocationName],
+      value: trialDetails[court.courtLocationName],
       name: court.courtLocationName,
-      id: court.courtLocationName,
+      id: court.courtLocationName + "-Courtroom",
       data: court.courtrooms,
       errorMessage: courtroomError,
       nonce: nonce
@@ -104,12 +104,11 @@
       text: court.displayName | capitalize,
       conditional: { 
         html: courtroomHtml
-      }
+      },
+      checked: trialDetails.courtLocationName === court.displayName
     }
   ), courtRadioItems) %}
 {% endfor %}
-
-
 
 {% block content %}
   {% include "includes/errors.njk" %}
@@ -130,10 +129,13 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-one-half">
         {% if editTrial %}
+
           <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-2">Case number</h2>
           <p class="govuk-body">{{ trialDetails.trialNumber }}</p>
           <input type="hidden" name="trialNumber" value="{{ trialDetails.trialNumber }}">
+
         {% else %}
+
           {{ govukInput({
             label: {
               text: "Case number"
@@ -144,7 +146,9 @@
             value: trialDetails.trialNumber,
             errorMessage: trialNumberError     
           }) }}
+
         {% endif %}
+
         {{ govukRadios({
           fieldset: {
             legend: {
@@ -199,7 +203,8 @@
           nonce: nonce
         }) }}
 
-        {% if courts|length > 1 %}
+        {% if courts | length > 1 %}
+
           {{ govukRadios({
             fieldset: {
               legend: {
@@ -212,8 +217,10 @@
             items: courtRadioItems,
             value: trialDetails.court,
             errorMessage: courtError
-        }) }}
+          }) }}
+
         {% else %}
+
           {{ modAutocomplete({
             label: {
               text: "Courtroom"
@@ -225,6 +232,7 @@
             errorMessage: courtroomError,
             nonce: nonce
           }) }}
+
         {% endif %}
 
         {{ govukCheckboxes({
@@ -247,7 +255,7 @@
 
     <div class="govuk-button-group">
       {{ govukButton({
-        text: "Create trial",
+        text: "Edit trial" if editTrial else "Create trial",
         type: "submit",
         attributes: {
           id: "saveButton"
@@ -277,19 +285,23 @@
 
     {% if trialDetails.courtroom %}
       {# If there is more than one court to select from then need to handle which courtroom input to populate #}
-      {% if courts|length > 1 %}
+      {% if courts | length > 1 %}
+
         {% for court in courts %}
-          {% if court.locationName === trialDetails.court %}
+
+          {% if court.displayName === trialDetails.courtLocationName %}
             $(document).ready(function () {
-              const input = document.getElementById('{{court.locationName}}' + 'Courtroom');
+              const input = document.getElementById('{{court.courtLocationName}}-Courtroom');
               input.value = '{{trialDetails.courtroom}}';
               isElementLoaded("[id$='Courtroom__option--0']").then((element) => {
-                document.querySelectorAll("[id$='Courtroom__option--0']").forEach(el=>el.click());
+                document.querySelectorAll("[id$='Courtroom__option--0']").forEach(el => el.click());
                 document.activeElement.blur();
-              });    
+              });
             });
           {% endif %}
+
         {% endfor %}
+
       {% else %}
         $(document).ready(function () {
           const input = document.getElementById('courtroom');
@@ -309,7 +321,7 @@
         isElementLoaded("#judge__option--0").then((element) => {
           element.click();
           document.activeElement.blur();
-        });    
+        });
       });
     {% endif %}
   </script>
