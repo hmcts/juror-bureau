@@ -27,7 +27,7 @@
           require('request-promise'),
           app,
           req.session.authToken,
-          req.session.authentication.owner,
+          req.session.authentication.locCode,
         );
 
         app.logger.info('Fetched pools at court location: ', {
@@ -41,7 +41,7 @@
             require('request-promise'),
             app,
             req.session.authToken,
-            req.session.authentication.owner,
+            req.session.authentication.locCode,
             'QUEUED'
           );
 
@@ -64,7 +64,7 @@
             auth: req.session.authentication,
             token: req.session.authToken,
             data: {
-              locationCode: req.session.authentication.owner,
+              locationCode: req.session.authentication.locCode,
               status: 'QUEUED',
             },
             error: typeof error.error !== 'undefined' ? error.error : error.toString(),
@@ -77,7 +77,7 @@
           auth: req.session.authentication,
           jwt: req.session.authToken,
           data: {
-            locationCode: req.session.authentication.owner,
+            locationCode: req.session.authentication.locCode,
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
@@ -104,7 +104,7 @@
         require('request-promise'),
         app,
         req.session.authToken,
-        req.session.authentication.owner,
+        req.session.authentication.locCode,
         'QUEUED'
       )
         .then((data) => {
@@ -123,7 +123,7 @@
             auth: req.session.authentication,
             token: req.session.authToken,
             data: {
-              locationCode: req.session.authentication.owner,
+              locationCode: req.session.authentication.locCode,
               status: 'QUEUED',
             },
             error: typeof err.error !== 'undefined' ? err.error : err.toString(),
@@ -149,7 +149,7 @@
         require('request-promise'),
         app,
         req.session.authToken,
-        req.session.authentication.owner,
+        req.session.authentication.locCode,
         status === 'pending' ? 'QUEUED' : ''
       )
         .then((data) => {
@@ -173,7 +173,7 @@
             auth: req.session.authentication,
             token: req.session.authToken,
             data: {
-              locationCode: req.session.authentication.owner,
+              locationCode: req.session.authentication.locCode,
               status: status === 'pending' ? 'QUEUED' : '',
             },
             error: typeof err.error !== 'undefined' ? err.error : err.toString(),

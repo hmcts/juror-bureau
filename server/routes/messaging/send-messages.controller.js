@@ -51,7 +51,7 @@
           app,
           req,
           messagingCodes[message],
-          req.session.authentication.owner
+          req.session.authentication.locCode,
         );
 
         templateData = modUtils.replaceAllObjKeys(templateData, _.camelCase);
@@ -96,7 +96,7 @@
           token: req.session.authToken,
           data: {
             messageType: messagingCodes[message],
-            locCode: req.session.owner,
+            locCode: req.session.authentication.locCode,
           },
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
@@ -449,7 +449,7 @@
         let jurorsData = await jurorSearchDAO.post(
           app,
           req,
-          req.session.authentication.owner,
+          req.session.authentication.locCode,
           opts
         );
 
@@ -585,7 +585,7 @@
           app,
           req,
           messagingCodes[message],
-          req.session.authentication.owner,
+          req.session.authentication.locCode,
           req.session.messaging.placeholderValues || {}
         );
 
@@ -620,7 +620,7 @@
           token: req.session.authToken,
           data: {
             messageType: messagingCodes[message],
-            locCode: req.session.owner,
+            locCode: req.session.authentication.locCode,
           },
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
@@ -654,7 +654,7 @@
           app,
           req.session.authToken,
           messagingCodes[message],
-          req.session.authentication.owner,
+          req.session.authentication.locCode,
           payload,
         );
 
@@ -725,7 +725,7 @@
             let jurorsData = await jurorSearchDAO.post(
               app,
               req,
-              req.session.authentication.owner,
+              req.session.authentication.locCode,
               opts,
               true
             );
