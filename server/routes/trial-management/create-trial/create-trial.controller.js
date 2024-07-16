@@ -177,7 +177,7 @@
       return cr.description === body.courtroom;
     });
 
-    payload.court_location = courtroom.owner;
+    payload.court_location = courtroom.loc_code;
     payload.courtroom_id = courtroom.id;
 
     payload.protected_trial = body.protected ? true : false;
