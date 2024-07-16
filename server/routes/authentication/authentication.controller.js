@@ -26,8 +26,14 @@ module.exports.getCourtsList = function(app) {
     const expiresIn = secretsConfig.get('secrets.juror.bureau-jwtTTL');
 
     const authToken = jwt.sign({}, signingKey, { expiresIn });
-    const body = { email: req.session.email || req.session.authentication.email };
+    const body = { email: req.session.email || req.session.authentication?.email };
     let courtsList;
+
+    if (!body) {
+      req.session.errors = makeManualError('email', 'Email is required for courts list');
+      
+      return res.redirect(app.namedRoutes.build('login.get'));
+    }
 
     try {
       const courtsResponse = await axiosClient('post', '/auth/moj/courts', authToken, { body });

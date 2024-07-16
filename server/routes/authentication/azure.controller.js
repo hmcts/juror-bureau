@@ -2,6 +2,7 @@
 const secretsConfig = require('config');
 const config = require('../../config/environment')();
 const axios = require('axios');
+const { makeManualError } = require('../../lib/mod-utils');
 
 module.exports.getAzureAuth = function(app) {
   return function(_, res) {
@@ -55,6 +56,28 @@ module.exports.getAzureCallback = function(app) {
 
       return res.redirect(app.namedRoutes.build('login.get'));
     }
+
+    if (!response.data.mail || response.data.mail === '') {
+      app.logger.crit('No email found in user data', {
+        data: {
+          displayName: response.data.displayName,
+          givenName: response.data.givenName,
+          surname: response.data.surname,
+          userPrincipalName: response.data.userPrincipalName, // this matches the mail field
+        },
+      });
+
+      req.session.errors = makeManualError('login', 'Email address not found');
+
+      return res.redirect(app.namedRoutes.build('login.get'));
+    }
+
+    app.logger.info('User authenticated', {
+      email: response.data.mail.toLowerCase(),
+      displayName: response.data.displayName,
+      givenName: response.data.givenName,
+      surname: response.data.surname,
+    });
 
     req.session.email = response.data.mail.toLowerCase();
 
