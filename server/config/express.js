@@ -221,4 +221,11 @@ module.exports = async (app) => {
   if ('development' === env || 'test' === env) {
     app.use(errorHandler());
   }
+
+  process.on('uncaughtException', (error, origin) => {
+    app.logger.crit('Uncaught Exception', { origin, stackTrace: error.stack });
+
+    process.exit(1);
+  });
+
 };
