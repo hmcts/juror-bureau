@@ -36,7 +36,10 @@
         ? jurors
         : [jurors];
 
-      validatorResult = validate(req.body, jurorSelectValidator(req.session.membersList));
+      const membersToCheck = req.session.membersList
+        .filter(member => req.session.selectedJurors.includes(member.jurorNumber));
+
+      validatorResult = validate(req.body, jurorSelectValidator(membersToCheck));
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.noJurorSelect = true;

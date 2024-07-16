@@ -1,9 +1,10 @@
 (function() {
   'use strict';
 
-  const validate = require('validate.js')
-    , { parseDate } = require('./date-picker')
-    , moment = require('moment');
+  const validate = require('validate.js');
+  const { parseDate } = require('./date-picker');
+  const moment = require('moment');
+  const { Logger } = require('../../components/logger');
 
   module.exports.attendanceDate = function(options) {
     return {
@@ -102,7 +103,19 @@
         attributes.selectedJurors : [attributes.selectedJurors];
 
       selectedJurors.forEach(j => {
-        if (options.membersList.filter((member) => j === member.jurorNumber)[0].status !== 'Responded') {
+        const _juror = options.membersList.filter((member) => j === member.jurorNumber)[0];
+
+        if (!_juror) {
+          Logger.instance.warn('Juror not found in members list', {
+            file: 'validation/change-attendance-date.js',
+            jurorNumber: j,
+            membersList: options.membersList,
+          });
+
+          return;
+        };
+
+        if (_juror.status !== 'Responded') {
           incorrectStatus.push(j);
         }
       });
