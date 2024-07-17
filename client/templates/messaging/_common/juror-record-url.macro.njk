@@ -1,0 +1,5 @@
+{% macro jurorRecordUrl(params) %}
+  {% set href = params.url('juror-record.overview.get', { jurorNumber: params.jurorNumber }) + "?loc_code=" + params.locCode %}
+
+  <a class="govuk-link govuk-link--no-visited-state" href="{{ href }}">{{ params.jurorNumber }}</a>
+{% endmacro %}

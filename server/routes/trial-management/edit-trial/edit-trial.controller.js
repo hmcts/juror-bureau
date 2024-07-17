@@ -53,7 +53,7 @@
           req.session.courtrooms = courtrooms.map((court) => {
 
             court.display_name = court.court_location;
-            court.court_location = court.court_location.replace(/ /g, '_');
+            court.court_location = court.court_location.replace(/[ .]/g, '_');
 
             courtroomsToDisplay.push(
               {
@@ -77,6 +77,7 @@
             judge: trial.judge.description,
             courtroom: trial.courtroom.description,
             protected: trial.protected ? 'true' : 'false',
+            courtLocationName: trial.court_room_location_name,
           };
 
           req.session.orignalTrial = {
