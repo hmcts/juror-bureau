@@ -4,7 +4,7 @@
   const _ = require('lodash')
     , modUtils = require('../../lib/mod-utils')
     , validate = require('validate.js')
-    , { panelListDAO, panelMemberStatusDAO} = require('../../objects/panel')
+    , { panelListDAO, panelMemberStatusDAO, juryListDAO } = require('../../objects/panel')
     , { trialDetailsObject, trialsListDAO } = require('../../objects/create-trial')
     , { endTrialObject } = require('../../objects/end-trial')
     , { dateFilter, capitalizeFully, makeDate, capitalise } = require('../../components/filters')
@@ -99,8 +99,6 @@
         req.session.authToken,
         trialNumber,
         locationCode
-      ), panelListDAO.get(
-        app, req, req.params.trialNumber, req.params.locationCode
       ), panelMemberStatusDAO.get(
         req, req.params.trialNumber, req.params.locationCode
       ).catch(err => {
@@ -112,7 +110,25 @@
 
         return {};
       })])
-        .then(([trialData, panelData, addPanelStatus ]) => {
+        .then(async ([trialData, addPanelStatus ]) => {
+          let panelData;
+
+          try {
+            if (trialData.is_jury_empanelled) {
+              panelData = await juryListDAO.get(req, req.params.trialNumber, req.params.locationCode);
+              
+              delete panelData._headers;
+
+              panelData = Object.values(panelData).reduce((prev, curr) => {
+                prev.push(curr);
+                return prev;
+              }, []);
+            } else {
+              panelData = await panelListDAO.get(app, req, req.params.trialNumber, req.params.locationCode);
+            }
+          } catch (err) {
+            throw new Error(err);
+          }
 
           let canEmpanel = true;
 

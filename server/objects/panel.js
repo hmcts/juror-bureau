@@ -40,6 +40,14 @@
     },
   });
 
+  module.exports.juryListDAO = new DAO('moj/trial/panel/jury-list', {
+    get: function(trialNumber, courtLocationCode) {
+      const uri = urljoin(this.resource, `?trial_number=${trialNumber}&court_location_code=${courtLocationCode}`);
+
+      return { uri };
+    },
+  });
+
   module.exports.panelListDAO = {
     get: function(app, req, trialNumber, courtLocationCode) {
       const payload = {
