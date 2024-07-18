@@ -10,14 +10,23 @@
     return async function(req, res) {
       const { generateDocument } = require('./pdf/letter-generator');
       const { document } = req.params;
-      let jurorNumbers;
 
       // bit of a problem here... when a pdf is renedered, clicking download seems to resend a request to download
       // so clearing the list here would break that... but would also break in case of the user pressing F5
-      jurorNumbers = req.session.documentsJurorsList.checkedJurors.reduce((numbers, juror) => {
+      const jurorNumbers = req.session.documentsJurorsList?.checkedJurors?.reduce((numbers, juror) => {
         numbers.push(juror.juror_number);
         return numbers;
       }, []);
+
+      if (!jurorNumbers || jurorNumbers.length === 0) {
+        app.logger.crit('No jurors selected to print', {
+          userId: req.session.authentication.login,
+          jwt: req.session.authToken,
+          error: 'Tried to reprint or direct navigation - missing juror numbers',
+        });
+
+        return res.render('_errors/generic');
+      }
 
       const payload = {
         'letter_type': LetterType[document],
