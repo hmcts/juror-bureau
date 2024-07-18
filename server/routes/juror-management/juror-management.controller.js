@@ -127,10 +127,7 @@
   function isAttendanceConfirmed(attendees) {
     if (!attendees.length) return false;
 
-    return attendees.filter(
-      (attendee) => !attendee.noShow
-        && !['EXPENSE_ENTERED', 'EXPENSE_AUTHORISED', 'EXPENSE_EDITED'].includes(attendee.appStage),
-    ).length === 0;
+    return attendees.filter(attendee => attendee.appearanceConfirmed).length > 0;
   }
 
 })();
