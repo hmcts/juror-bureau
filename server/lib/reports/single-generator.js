@@ -26,23 +26,43 @@
     columnGap: 10,
   };
 
-  const documentFooter = function(footerText) {
-    return function(currentPage, pageCount) {
-      return {
-        marginTop: 10,
-        style: 'body',
-        columns: [
-          {
-            text: footerText,
-            marginLeft: 20,
-          },
-          {
-            text: 'Page ' + currentPage.toString() + ' of ' + pageCount,
-            alignment: 'right',
-            marginRight: 20,
-          },
-        ],
-      };
+  const documentFooter = (content) => {
+    return (current) => {
+
+      let stackPages = 0;
+      let stackPage = 0;
+      let footerText;
+
+      for (const element of content) {
+        const stackFirstpage = element.positions[0].pageNumber;
+        const stackLastPage = element.positions[element.positions.length - 1].pageNumber;
+
+        if (current >= stackFirstpage && current <= stackLastPage) {
+          stackPages = stackLastPage - stackFirstpage + 1;
+          stackPage = current - stackFirstpage + 1;
+          footerText = element.footerText;
+          break;
+        }
+      }
+
+      if (stackPages) {
+        return {
+          marginTop: 10,
+          style: 'footer',
+          columns: [
+            {
+              text: footerText,
+              marginLeft: 20,
+            },
+            {
+              text: `Page ${stackPage} of ${stackPages}`,
+              alignment: 'right',
+              marginRight: 20,
+            },
+          ],
+        };
+      }
+      return { text: '', margin: [55, 0, 0, 0] };
     };
   };
 
@@ -190,26 +210,43 @@
    * @param {Options} options Extra options for the document generation
    * @returns {Promise<Buffer>} the generated pdf document as a buffer
    */
-  module.exports.generateDocument = (content, options = {}) => {
+  module.exports.generateDocument = (data, options = {}) => {
     return new Promise((resolve, reject) => {
       const _defaultStyles = layout(options.pageOrientation).defaultStyles;
       const printer = new pdfMake(layout().fonts);
+      const _documentContent = [];
       const chunks = [];
 
-      const _documentContent = [
-        { ...documentTitle(content.title) },
-        { ...documentMetadata(content.metadata) },
-        ...largeTotals(content.largeTotals),
-        ...(content.preBuilt || documentContent(content.tables)),
-      ];
+      const arrayedData = Array.isArray(data) ? data : [data];
+
+      for (const [i, content] of arrayedData.entries()) {
+        const title = {
+          ...documentTitle(content.title),
+        };
+
+        if (i >= 1) {
+          title['pageBreak'] = 'before';
+        }
+
+        _documentContent.push({
+          stack: [
+            { ...title },
+            { ...documentMetadata(content.metadata) },
+            ...largeTotals(content.largeTotals),
+            ...(content.preBuilt || documentContent(content.tables)),
+          ],
+          footerText: content.footerText,
+        });
+      }
 
       const finalContent = {
         ..._defaultStyles,
         header: documentHeader,
-        footer: documentFooter(content.footerText),
         content: [ ..._documentContent ],
         styles: layout(null, options.fontSize).otherStyles,
       };
+
+      finalContent.footer = documentFooter(finalContent.content);
 
       const document = printer.createPdfKitDocument(finalContent);
 
