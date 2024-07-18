@@ -50,7 +50,7 @@
           req.session.courtrooms = courtrooms.map((court) => {
 
             court.display_name = court.court_location;
-            court.court_location = court.court_location.replace(/ /g, '_');
+            court.court_location = court.court_location.replace(/[ .]/g, '_');
 
             courtroomsToDisplay.push(
               {
@@ -177,7 +177,7 @@
       return cr.description === body.courtroom;
     });
 
-    payload.court_location = courtroom.owner;
+    payload.court_location = courtroom.loc_code;
     payload.courtroom_id = courtroom.id;
 
     payload.protected_trial = body.protected ? true : false;
