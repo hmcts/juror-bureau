@@ -19,9 +19,10 @@
       }, []);
 
       if (!jurorNumbers || jurorNumbers.length === 0) {
-        app.logger.crit('No jurors selected to print', {
+        app.logger.crit('No juror documents to print', {
           userId: req.session.authentication.login,
           jwt: req.session.authToken,
+          data: { document },
           error: 'Tried to reprint or direct navigation - missing juror numbers',
         });
 
