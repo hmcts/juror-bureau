@@ -450,7 +450,7 @@
 
           const poolDetails = req.session.poolDetails;
 
-          if (poolDetails.numberOfJurorsRequired >= poolDetails.numberOfCourtDeferrals) {
+          if (parseInt(poolDetails.numberOfJurorsRequired) >= parseInt(poolDetails.numberOfCourtDeferrals)) {
             poolDetails.actualRequired = poolDetails.numberOfJurorsRequired - poolDetails.numberOfCourtDeferrals;
           } else {
             poolDetails.actualRequired = 0;
