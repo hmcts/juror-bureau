@@ -210,7 +210,7 @@
         commonData: {
           status: 'CHECK_OUT',
           attendanceDate: attendanceDate,
-          locationCode: req.session.authentication.owner,
+          locationCode: req.session.authentication.locCode,
           checkOutTime: padTimeForApi(convert12to24(req.body.time)),
           singleJuror: false,
         },
