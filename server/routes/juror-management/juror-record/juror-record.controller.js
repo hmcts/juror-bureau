@@ -3,7 +3,7 @@
   
   const _ = require('lodash');
   const { dateFilter, capitalizeFully, makeDate } = require('../../../components/filters');
-  const { isCourtUser } = require('../../../components/auth/user-type');
+  const { isCourtUser, isBureauUser } = require('../../../components/auth/user-type');
   const jurorRecordObject = require('../../../objects/juror-record');
   const { jurorHistoryDAO, jurorPaymentsHistoryDAO } = require('../../../objects/juror-history');
   const validate = require('validate.js');
@@ -42,7 +42,6 @@
             currentTab: 'details',
             jurorStatus: resolveJurorStatus(response.data.commonDetails),
             canSummon: canSummon(req, response.data.commonDetails),
-            hasSummons: response.data.commonDetails.hasSummonsResponse,
             isCourtUser: isCourtUser(req),
           });
         }
@@ -149,7 +148,6 @@
             policeCheck: resolvePoliceCheckStatus(req, overview.data.commonDetails.police_check),
             bannerMessage: bannerMessage,
             availableMessage: availableMessage,
-            hasSummons: overview.data.commonDetails.hasSummonsResponse,
             poolDetails,
             idCheckDescription,
             attendance,
@@ -234,7 +232,6 @@
             processingOutcome: modUtils.resolveProcessingOutcome(response.data.commonDetails.jurorStatus,
               response.data.commonDetails.excusalRejected, response.data.commonDetails.excusalDescription),
             canSummon: canSummon(req, response.data.commonDetails),
-            hasSummons: response.data.commonDetails.hasSummonsResponse,
           });
         }
         , errorCB = function(err) {
@@ -331,7 +328,6 @@
             jurorStatus: resolveJurorStatus(jurorOverview.data.commonDetails),
             currentTab: 'expenses',
             canSummon: canSummon(req, jurorOverview.data.commonDetails),
-            hasSummons: jurorOverview.data.commonDetails.hasSummonsResponse,
             dailyExpenses,
             defaultExpenses,
             bankDetails,
@@ -358,7 +354,6 @@
                 jurorStatus: resolveJurorStatus(jurorOverview.data.commonDetails),
                 currentTab: 'expenses',
                 canSummon: canSummon(req, jurorOverview.data.commonDetails),
-                hasSummons: jurorOverview.data.commonDetails.hasSummonsResponse,
                 dailyExpenses,
                 defaultExpenses,
                 bankDetails,
@@ -468,7 +463,6 @@
           processingOutcome: modUtils.resolveProcessingOutcome(jurorOverview.data.commonDetails.jurorStatus,
             jurorOverview.data.commonDetails.excusalRejected, jurorOverview.data.commonDetails.excusalDescription),
           canSummon: canSummon(req, jurorOverview.data.commonDetails),
-          hasSummons: jurorOverview.data.commonDetails.hasSummonsResponse,
           attendance,
           formattedDate,
           failedToAttend,
@@ -538,7 +532,6 @@
             contactLogs: contactLogs,
             canSummon: canSummon(req, response[0].data.commonDetails),
             jurorStatus: resolveJurorStatus(response[0].data.commonDetails),
-            hasSummons: response[0].data.commonDetails.hasSummonsResponse,
           });
         }
         , errorCB = function(err) {
@@ -1075,7 +1068,6 @@
         historyUrl: app.namedRoutes.build('juror-record.history.get', { jurorNumber }),
         historyTab,
         canSummon: canSummon(req, juror.commonDetails),
-        hasSummons: juror.commonDetails.hasSummonsResponse,
         printUrl: app.namedRoutes.build('juror-record.history.print.get', { jurorNumber }),
         history,
         currentTab: 'history',
@@ -1305,23 +1297,7 @@
   }
 
   function canSummon(req, commonDetails) {
-    const jurorStatus = resolveJurorStatus(commonDetails);
-    let canSummon = true;
-
-    if (commonDetails.owner !== '400' && !isCourtUser(req)) {
-      canSummon = false;
-    };
-
-    switch (jurorStatus) {
-    case 'Undeliverable':
-    case 'Responded':
-    case 'Completed':
-    case 'Disqualified':
-      canSummon = false;
-      break;
-    };
-
-    return canSummon;
+    return isBureauUser(req) && !commonDetails.response_entered;
   }
 
 })();
