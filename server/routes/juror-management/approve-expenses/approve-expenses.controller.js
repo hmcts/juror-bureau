@@ -288,6 +288,20 @@
         : `${checkedJurors[0].firstName} ${checkedJurors[0].lastName}`
       }`;
 
+      if (!financialNumbers || !financialNumbers.length) {
+
+        app.logger.info('No financial numbers returned after approving expenses', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            currentTab,
+            payload,
+          }
+        });
+
+        return res.redirect(redirectUrl);
+      }
+
       return res.render('reporting/reprint-audit-report/print-redirect', {
         completeRoute: redirectUrl,
         printRoute: app.namedRoutes.build('reports.financial-audit.bulk.get') + `?auditNumbers=${financialNumbers}`,
