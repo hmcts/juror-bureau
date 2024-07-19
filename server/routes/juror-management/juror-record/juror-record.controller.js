@@ -1058,6 +1058,11 @@
         req.session.locCode,
       );
 
+      history.forEach(item => {
+        item.dateCreated = dateFilter(item.dateCreated, null, 'yyyy-MM-DDTHH:mm:ss.SSSZ');
+        return item;
+      });
+
       app.logger.trace('Fetched juror history', { data: { history } });
 
       return res.render('juror-management/juror-record/juror-history', {

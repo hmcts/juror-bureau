@@ -385,6 +385,7 @@
             response: req.session.excusalReasons,
           });
         }
+
         const tmpErrors = _.clone(req.session.errors),
           tmpFields = req.session.formFields;
 
@@ -459,14 +460,14 @@
       )
         .then(
           () => {
-            app.logger.info('Excusal processed: ', {
+            app.logger.info('Excusal processed (reassign before process): ', {
               auth: req.session.authentication,
               jwt: req.session.authToken,
-              data: req.body,
+              data: { body: req.body, jurorNumber: req.params['id'] },
             });
 
             const codeMessage = (code) => req.session.excusalReasons
-                .filter((el) => el.excusalCode === code)[0].description,
+                .filter((el) => el.code === code)[0].description,
               reason = {
                 REFUSE: 'Excusal refused (' + codeMessage(req.body.excusalCode).toLowerCase() + ')',
                 GRANT: 'Excusal granted (' + codeMessage(req.body.excusalCode).toLowerCase() + ')',
@@ -493,10 +494,10 @@
         )
         .catch(
           (err) => {
-            app.logger.crit('Failed to process excusal: ', {
+            app.logger.crit('Failed to process excusal (reassign before process): ', {
               auth: req.session.authentication,
               jwt: req.session.authToken,
-              data: req.body,
+              data: { body: req.body, jurorNumber: req.params['id'] },
               error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
             });
 

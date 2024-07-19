@@ -60,9 +60,14 @@
               width: 120,
             },
             {
-              ...buildAddress(jurorAddress(content)),
-              marginTop: 30,
-              marginBottom: 30,
+              text: [
+                {
+                  text: content.juror_first_name + ' ' + content.juror_last_name + '\n',
+                },
+                buildAddress(jurorAddress(content)),
+              ],
+              marginTop: 55,
+              marginBottom: 40,
             },
           ],
         },

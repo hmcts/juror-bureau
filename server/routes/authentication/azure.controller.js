@@ -36,7 +36,7 @@ module.exports.getAzureCallback = function(app) {
         },
       });
     } catch (err) {
-      app.logger.error('Error getting token from Azure', {
+      app.logger.crit('Error getting token from Azure', {
         error: err,
       });
 
@@ -50,7 +50,7 @@ module.exports.getAzureCallback = function(app) {
         },
       });
     } catch (err) {
-      app.logger.error('Error getting user data from Azure', {
+      app.logger.crit('Error getting user data from Azure', {
         error: err,
       });
 
@@ -98,7 +98,7 @@ module.exports.getAzureLogout = function(app) {
 
     req.session.destroy((err) => {
       if (err) {
-        app.logger.error('Error destroying session', err);
+        app.logger.crit('Error destroying session', err);
 
         return res.redirect('login.get');
       }
