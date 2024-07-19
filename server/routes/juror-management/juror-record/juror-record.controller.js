@@ -1059,7 +1059,7 @@
       );
 
       history.forEach(item => {
-        item.dateCreated = dateFilter(item.dateCreated, null, 'yyyy-MM-DDTHH:mm:ss.SSSZ');
+        item.dateCreated = dateFilter(item.dateCreated, null, 'ddd D MMM yyyy [at] hh:mma');
         return item;
       });
 
