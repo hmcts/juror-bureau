@@ -1295,6 +1295,16 @@
   }
 
   function canSummon(req, commonDetails) {
+    const jurorStatus = resolveJurorStatus(commonDetails);
+
+    switch (jurorStatus) {
+    case 'Undeliverable':
+    case 'Responded':
+    case 'Completed':
+    case 'Disqualified':
+      return false;
+    };
+
     return isBureauUser(req) && !commonDetails.response_entered;
   }
 
