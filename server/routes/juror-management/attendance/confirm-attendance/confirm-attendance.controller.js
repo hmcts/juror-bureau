@@ -22,7 +22,7 @@
           commonData: {
             tag: 'NOT_CHECKED_OUT',
             attendanceDate,
-            locationCode: req.session.authentication.owner,
+            locationCode: req.session.authentication.locCode,
           },
         };
         const response = await jurorAttendanceDao.get(app, req, body);
@@ -50,7 +50,7 @@
           commonData: {
             tag: 'CONFIRM_ATTENDANCE',
             attendanceDate,
-            locationCode: req.session.authentication.owner,
+            locationCode: req.session.authentication.locCode,
           },
         };
         const response = await jurorAttendanceDao.get(app, req, body);
@@ -85,7 +85,7 @@
         commonData: {
           status: 'CONFIRM_ATTENDANCE',
           attendanceDate: attendanceDate,
-          locationCode: req.session.authentication.owner,
+          locationCode: req.session.authentication.locCode,
           singleJuror: false,
         },
         juror: [],
@@ -213,7 +213,7 @@
         commonData: {
           status: 'CHECK_OUT',
           attendanceDate: req.body.attendanceDate,
-          locationCode: req.session.authentication.owner,
+          locationCode: req.session.authentication.locCode,
           checkOutTime: convert12to24(checkOutTimeHour + ':' + checkOutTimeMinute + checkOutTimePeriod),
           singleJuror: false,
         },
