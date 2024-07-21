@@ -128,9 +128,12 @@
               text: "per juror"
             },
             classes: "govuk-input--width-4",
-            value: tmpBody.approvalLimit,
+            value: tmpBody.approvalLimit or "0",
             type: "number",
             spellcheck: false,
+            attributes: {
+              step: "0.01"
+            },
             errorMessage: approvalLimitError
           }) }}
         {% endif %}
