@@ -43,6 +43,34 @@
           },
         },
       },
+      approvalLimit: (value) => {
+        if (!value) {
+          return {};
+        }
+
+        if (value < 0) {
+          return {
+            numericality: {
+              greaterThan: 0,
+              notGreaterThan: {
+                summary: 'The approval limit cannot be negative',
+                details: 'The approval limit cannot be negative',
+              },
+            },
+          };
+        }
+
+        if (isNaN(value)) {
+          return {
+            numericality: {
+              notValid: {
+                summary: 'The approval limit must be a number',
+                details: 'The approval limit must be a number',
+              },
+            },
+          };
+        }
+      },
     };
   };
 

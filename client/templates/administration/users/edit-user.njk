@@ -46,9 +46,15 @@
   {% if errors.items["name"] %}
     {%  set nameError = { text: errors.items['name'][0].details} %}
   {% endif %}
+
   {% set emailError = undefined %}
   {% if errors.items["email"] %}
     {%  set emailError = { text: errors.items['email'][0].details} %}
+  {% endif %}
+
+  {% set approvalLimitError = undefined %}
+  {% if errors.items["approvalLimit"] %}
+    {%  set approvalLimitError = { text: errors.items['approvalLimit'][0].details} %}
   {% endif %}
 
   {% include "includes/errors.njk" %} 
@@ -141,7 +147,7 @@
           
         {% endif %}
 
-        {% if user.userType === 'COURT' or user.userType === 'BUREAU'%}
+        {% if user.userType === 'COURT' or user.userType === 'BUREAU' %}
           {{ govukCheckboxes({
             name: "roles",
             classes: "govuk-checkboxes--small",
@@ -157,6 +163,31 @@
             },
             items: rolesOptions,
             values: tmpBody.roles if tmpBody.roles else user.roles
+          }) }}
+        {% endif %}
+
+        {% if user.userType === "COURT" and isSystemAdministrator %}
+          {{ govukInput({
+            id: "approvalLimit",
+            name: "approvalLimit",
+            label: {
+              text: "Expenses approval limit",
+              classes: "govuk-label--m"
+            },
+            hint: {
+              text: "Enter maximum they can approve"
+            },
+            prefix: {
+              text: "£"
+            },
+            suffix: {
+              text: "per juror"
+            },
+            classes: "govuk-input--width-4",
+            value: tmpBody.approvalLimit if tmpBody.approvalLimit else user.approvalLimit,
+            type: "number",
+            spellcheck: false,
+            errorMessage: approvalLimitError
           }) }}
         {% endif %}
 

@@ -50,9 +50,15 @@
 {% if errors.items["name"] %}
   {%  set nameError = { text: errors.items['name'][0].details} %}
 {% endif %}
+
 {% set emailError = undefined %}
 {% if errors.items["email"] %}
   {%  set emailError = { text: errors.items['email'][0].details} %}
+{% endif %}
+
+{% set approvalLimitError = undefined %}
+{% if errors.items["approvalLimit"] %}
+  {%  set approvalLimitError = { text: errors.items['approvalLimit'][0].details} %}
 {% endif %}
 
 {% include "includes/errors.njk" %}  
@@ -124,7 +130,8 @@
             classes: "govuk-input--width-4",
             value: tmpBody.approvalLimit,
             type: "number",
-            spellcheck: false
+            spellcheck: false,
+            errorMessage: approvalLimitError
           }) }}
         {% endif %}
 

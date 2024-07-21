@@ -81,6 +81,7 @@
         'is_active': req.body.isActive,
         'email': req.body.email,
         'name': req.body.name,
+        'approval_limit': req.body.approvalLimit,
       };
 
       if (req.body.roles) {
