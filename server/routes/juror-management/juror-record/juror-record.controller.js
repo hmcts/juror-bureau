@@ -1300,6 +1300,8 @@
     switch (jurorStatus) {
     case 'Undeliverable':
     case 'Responded':
+    case 'Deferred':
+    case 'Excused':
     case 'Completed':
     case 'Disqualified':
       return false;
