@@ -100,12 +100,12 @@ const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../object
           county: jurorBank.addressLine5,
           postcode: jurorBank.postcode,
         },
+        mileage: jurorDefault.mileage,
       },
       expenses: {
         expenseDetails,
         total
       },
-      mileage: jurorDefault.mileage,
     };
 
     delete req.session.draftExpense;
