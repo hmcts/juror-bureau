@@ -521,9 +521,20 @@
     historyAuditLinkify: function(copy) {
       const parts = copy?.split(/([A-Z][0-9]+)/g);
       
-      return parts?.map((item, index) => {
+      return parts?.map((item) => {
         if (item.match(/[A-Z][0-9]+/)) {
-          return `<a href='/reports/financial-audit/${item}' target='_blank'>${item}</a>`
+          if (item.startsWith('F')) {
+            return `<a href="/reports/financial-audit/${item}" target="_blank">${item}</a>`;
+          }
+          if (item.startsWith('P')) {
+            return `<a href="/reporting/pool-attendance-audit/report/${item}/print" target="_blank">${item}</a>`;
+          }
+          if (item.startsWith('J')) {
+            return `<a href="/reporting/jury-attendance-audit/report/${item}/print" target="_blank">${item}</a>`;
+          }
+          if (item.startsWith('T')) {
+            return `<a href="#" target="_blank">${item}</a>`;
+          }
         }
         
         return item;
