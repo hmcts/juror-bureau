@@ -51,13 +51,16 @@
       })}}
       <h1 class="govuk-heading-xl govuk-!-margin-top-3 govuk-!-margin-bottom-3">{{ user.name }}</h1>
     </div>
-    <div class="govuk-grid-column-one-half mod-flex mod-justify-end">
-      {{ govukButton({
-        text: "Edit user",
-        classes: "govuk-button--secondary",
-        href: editUserUrl
-      }) }}
-    </div>
+
+    {% if not isSJO and user.email !== authentication.email %}
+      <div class="govuk-grid-column-one-half mod-flex mod-justify-end">
+        {{ govukButton({
+          text: "Edit user",
+          classes: "govuk-button--secondary",
+          href: editUserUrl
+        }) }}
+      </div>
+    {% endif %}
   </div>
 
   <div class="govuk-grid-row">

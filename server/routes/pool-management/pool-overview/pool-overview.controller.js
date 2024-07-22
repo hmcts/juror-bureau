@@ -433,6 +433,12 @@ function renderHistoryItems(app, req, res, data){
         auth: req.session.authentication,
         data: poolHistoryList,
       });
+
+      poolHistoryList.poolHistoryEvents.forEach((item) => {
+        item.datePart = dateFilter(item.datePart, null, 'ddd D MMM yyyy [at] hh:mma');
+        return item;
+      });
+
       res.render(`pool-management/pool-overview/${isCourtUser(req, res) ? 'court' : 'bureau'}-pool-overview`, {
         backLinkUrl: {
           built: true,

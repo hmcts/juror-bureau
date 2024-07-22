@@ -1058,10 +1058,12 @@
         req.session.locCode,
       );
 
-      history.forEach(item => {
-        item.dateCreated = dateFilter(item.dateCreated, null, 'yyyy-MM-DDTHH:mm:ss.SSSZ');
-        return item;
-      });
+      if (historyTab === 'history') {
+        history.forEach(item => {
+          item.dateCreated = dateFilter(item.dateCreated, null, 'ddd D MMM yyyy [at] hh:mma');
+          return item;
+        });
+      }
 
       app.logger.trace('Fetched juror history', { data: { history } });
 
@@ -1083,7 +1085,7 @@
         },
       });
     } catch (err) {
-      app.logger.crit('Failed to fetch juror history: ', {
+      app.logger.crit('Failed to fetch juror history (view): ', {
         auth: req.session.authentication,
         data: {
           jurorNumber: req.params['jurorNumber'],
@@ -1146,7 +1148,7 @@
       res.contentType('application/pdf');
       res.send(pdf);
     } catch (err) {
-      app.logger.crit('Failed to fetch juror history: ', {
+      app.logger.crit('Failed to fetch juror history (print): ', {
         auth: req.session.authentication,
         data: {
           jurorNumber: req.params['jurorNumber'],

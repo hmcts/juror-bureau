@@ -14,6 +14,7 @@
   const { expenseRatesAndLimitsDAO } = require('../../../../objects/administration');
   const { getCourtLocationRates } = require('../../../../objects/court-location');
   const { jurorRecordDetailsDAO } = require('../../../../objects');
+  const { mapCamelToSnake } = require('../../../../lib/mod-utils');
 
   const STATUSES = {
     'for-approval': 'FOR_APPROVAL',
@@ -188,7 +189,7 @@
       }
 
       try {
-        await postEditedExpensesDAO.put(app, req, locCode, jurorNumber, STATUSES[status], expensesToPost);
+        await postEditedExpensesDAO.put(app, req, locCode, jurorNumber, STATUSES[status], mapCamelToSnake(expensesToPost));
 
         delete req.session.editedExpenses;
 

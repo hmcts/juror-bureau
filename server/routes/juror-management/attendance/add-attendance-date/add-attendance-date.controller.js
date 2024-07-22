@@ -116,7 +116,7 @@
         const payload = {
           'juror_number': jurorNumber,
           'pool_number': req.session.jurorCommonDetails.poolNumber,
-          'location_code': req.session.authentication.owner,
+          'location_code': req.session.authentication.locCode,
           'attendance_date': dateFilter(req.body.attendanceDay, 'DD/MM/YYYY', 'YYYY-MM-DD'),
           'check_in_time': convertTimeToHHMM(req.body.checkInTimeHour,
             req.body.checkInTimeMinute, req.body.checkInTimePeriod),

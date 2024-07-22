@@ -19,7 +19,7 @@
 
       const payload = {
         'juror_number': jurorNumber,
-        'location_code': req.session.authentication.owner,
+        'location_code': req.session.authentication.locCode,
         'attendance_date': req.session.attendanceListDate,
         'check_in_time': padTimeForApi(convert12to24(req.body.time)),
         'appearance_stage': 'CHECKED_IN',
@@ -97,7 +97,7 @@
 
       const payload = {
         'juror_number': jurorNumber,
-        'location_code': req.session.authentication.owner,
+        'location_code': req.session.authentication.locCode,
         'attendance_date': req.session.attendanceListDate,
         'check_out_time': padTimeForApi(convert12to24(req.body.time)),
         'appearance_stage': 'CHECKED_OUT',
@@ -210,7 +210,7 @@
         commonData: {
           status: 'CHECK_OUT',
           attendanceDate: attendanceDate,
-          locationCode: req.session.authentication.owner,
+          locationCode: req.session.authentication.locCode,
           checkOutTime: padTimeForApi(convert12to24(req.body.time)),
           singleJuror: false,
         },

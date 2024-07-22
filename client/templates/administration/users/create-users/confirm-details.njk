@@ -14,7 +14,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       
-      {% include "includes/errors.njk" %}  
+      {% include "includes/errors.njk" %}
       
       <h1 class="govuk-heading-xl">Check {{'edited' if editingUser else 'new'}} user details</h1>
       <form action="{{ processUrl }}" method="post" id="confirmDetailsForm">
@@ -99,7 +99,27 @@
                   }
                 ]
               }
-            } if user.userType !== "administrator"
+            } if user.userType !== "administrator",
+            {
+              key: {
+                text: "Expenses approval limit"
+              },
+              value: {
+                text: "£" + user.approvalLimit + " per juror"
+              },
+              actions: {
+                items: [
+                  {
+                    href: changeUserDetailsUrl,
+                    text: "Change",
+                    visuallyHiddenText: "approvalLimit",
+                    attributes: {
+                      "aria-label": "Change user approval limit"
+                    }
+                  }
+                ]
+              }
+            } if user.userType === "court"
           ]
         }) }}
         {{ csrfProtection(csrftoken) }}
