@@ -48,7 +48,7 @@
           allowEmpty: false,
           message: {
             summary: 'The approval limit cannot be empty',
-            details: 'The approval limit cannto be empty',
+            details: 'The approval limit cannot be empty',
           },
         },
         numericality: {
