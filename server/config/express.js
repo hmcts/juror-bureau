@@ -223,8 +223,13 @@ module.exports = async (app) => {
   }
 
   process.on('uncaughtException', (error, origin) => {
+    app.juror.close(); // stop listening for connections
+
     app.logger.crit('Uncaught Exception', { origin, stackTrace: error.stack }, () => {
-      process.exit(1);
+      // allow 5 seconds to post the crash log to app insights and exit
+      setTimeout(() => {
+        process.exit(1);
+      }, 5000);
     });
   });
 
