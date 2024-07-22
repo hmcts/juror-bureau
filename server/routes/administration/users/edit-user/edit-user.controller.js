@@ -3,6 +3,7 @@
 
   const _ = require('lodash');
   const { validate } = require('validate.js');
+  const { isSJOUser } = require('../../../../components/auth/user-type');
   const validator = require('../../../../config/validation/create-users');
   const { usersDAO } = require('../../../../objects/users');
   const { replaceAllObjKeys, makeManualError } = require('../../../../lib/mod-utils');
@@ -18,8 +19,30 @@
       delete req.session.errors;
       delete req.session.editUser;
 
+      if (isSJOUser(req)) {
+        app.logger.warn('SJO user tried to edit user details', {
+          auth: req.session.authentication,
+          data: {
+            username,
+          },
+        });
+
+        return res.redirect(app.namedRoutes.build('administration.users.details.get', { username }));
+      }
+
       try {
         const user = await usersDAO.getUserRecord(app, req, username);
+
+        if (user.email === req.session.authentication.email) {
+          app.logger.warn('User tried to edit their own details', {
+            auth: req.session.authentication,
+            data: {
+              user,
+            },
+          });
+
+          return res.redirect(app.namedRoutes.build('administration.users.details.get', { username }));
+        }
 
         app.logger.info('Fetched user record', {
           auth: req.session.authentication,
