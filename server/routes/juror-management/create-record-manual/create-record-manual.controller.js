@@ -39,7 +39,7 @@
         };
       } else {
         locCode = {
-          courtNameOrLocation: req.session.authentication.staff.courts[0],
+          courtNameOrLocation: req.session.authentication.locCode,
         };
       };
 

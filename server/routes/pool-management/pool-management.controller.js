@@ -103,7 +103,8 @@
       delete req.session.newPoolNumber;
       delete req.session.coronerCourt;
       delete req.session.poolCreateFormFields;
-
+      delete req.session.courtChange;
+      
       // for backward compatibility
       delete req.session.selectedJurors;
       delete req.session.selectAll;
@@ -164,6 +165,7 @@
       delete req.session.errors;
       delete req.session.formFields;
       delete req.session.poolCreateFormFields;
+      delete req.session.courtChange;
 
       res.render('pool-management/pool-create-select.njk', {
         postUrl: app.namedRoutes.build('pool-create-select.post'),
