@@ -133,7 +133,6 @@
               require('request-promise'),
               app,
               req.session.authToken,
-              req.session.locCode || req.session.authentication.locCode,
               req.params.jurorNumber,
             );
           }
@@ -439,7 +438,6 @@
             require('request-promise'),
             app,
             req.session.authToken,
-            req.session.locCode || req.session.authentication.locCode,
             jurorNumber,
           );
         }

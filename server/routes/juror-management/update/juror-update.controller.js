@@ -50,7 +50,6 @@
                 require('request-promise'),
                 app,
                 req.session.authToken,
-                req.session.locCode,
                 req.params['jurorNumber'],
               );
             } catch (err) {
