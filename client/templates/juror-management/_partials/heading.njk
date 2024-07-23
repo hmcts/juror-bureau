@@ -1,9 +1,25 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 
 {% set startDate = "-" %}
 {% if juror.commonDetails.startDate %}
   {% set startDate = juror.commonDetails.startDate | dateFilter('yyyy-MM-DD', "ddd D MMM YYYY") %}
+{% endif %}
+
+{% if bureauTransferDate and isBureauUser %}
+  {% set bureauTransferDateBannerHtml %}
+    <p class="govuk-notification-banner__heading">
+      This juror record was transferred to the court on {{ bureauTransferDate | dateFilter(null, "D MMMM YYYY") }}.
+    </p>
+    <p>
+      You can no longer make changes apart from adding new entries to this juror’s notes or contact log.
+    </p>
+  {% endset %}
+
+  {{ govukNotificationBanner({
+    html: bureauTransferDateBannerHtml
+  }) }}
 {% endif %}
 
 <div class="mod-juror-record--header">
