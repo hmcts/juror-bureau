@@ -10,7 +10,7 @@
 {% if bureauTransferDate and isBureauUser %}
   {% set bureauTransferDateBannerHtml %}
     <p class="govuk-notification-banner__heading">
-      This juror record was transferred to the court on {{ bureauTransferDate | dateFilter(null, "DD MMMM YYYY") }}.
+      This juror record was transferred to the court on {{ bureauTransferDate | dateFilter(null, "D MMMM YYYY") }}.
     </p>
     <p>
       You can no longer make changes apart from adding new entries to this juror’s notes or contact log.
