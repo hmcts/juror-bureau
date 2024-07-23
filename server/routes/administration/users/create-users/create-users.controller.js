@@ -153,7 +153,7 @@
           : req.body.roles;
       }
 
-      const validatorResult = validate(req.body, validator.userDetails());
+      const validatorResult = validate(req.body, validator.userDetails(userType.toUpperCase()));
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
@@ -257,7 +257,7 @@
         'user_type': capitalise(user.userType),
         email: user.email,
         name: user.name,
-        'approval_limit': user.approvalLimit,
+        'approval_limit': user.userType.toUpperCase() === 'COURT' ? user.approvalLimit : null,
       };
 
       if (user.roles) {

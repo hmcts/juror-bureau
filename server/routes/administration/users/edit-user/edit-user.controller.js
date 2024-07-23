@@ -57,6 +57,7 @@
           orignalDetails: {
             name : user.name,
             email: user.email,
+            userType: user.userType,
           },
         };
 
@@ -90,8 +91,9 @@
   module.exports.postEditUser = function(app) {
     return async function(req, res) {
       const { username } = req.params;
+      const { userType } = req.session.editUser.orignalDetails;
 
-      const validatorResult = validate(req.body, validator.userDetails());
+      const validatorResult = validate(req.body, validator.userDetails(userType.toUpperCase()));
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
@@ -104,7 +106,7 @@
         'is_active': req.body.isActive,
         'email': req.body.email,
         'name': req.body.name,
-        'approval_limit': req.body.approvalLimit,
+        'approval_limit': userType.toUpperCase() === 'COURT' ? req.body.approvalLimit : null,
       };
 
       if (req.body.roles) {

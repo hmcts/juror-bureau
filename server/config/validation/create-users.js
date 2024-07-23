@@ -17,7 +17,7 @@
     };
   };
 
-  module.exports.userDetails = function() {
+  module.exports.userDetails = function(userType) {
     return {
       name: {
         presence: {
@@ -43,25 +43,31 @@
           },
         },
       },
-      approvalLimit: {
-        presence: {
-          allowEmpty: false,
-          message: {
-            summary: 'The approval limit cannot be empty',
-            details: 'The approval limit cannot be empty',
+      approvalLimit: () => {
+        if (userType !== 'COURT') {
+          return {};
+        }
+
+        return {
+          presence: {
+            allowEmpty: false,
+            message: {
+              summary: 'The approval limit cannot be empty',
+              details: 'The approval limit cannot be empty',
+            },
           },
-        },
-        numericality: {
-          greaterThanOrEqualTo: 0,
-          notGreaterThanOrEqualTo: {
-            summary: 'The approval limit cannot be negative',
-            details: 'The approval limit cannot be negative',
+          numericality: {
+            greaterThanOrEqualTo: 0,
+            notGreaterThanOrEqualTo: {
+              summary: 'The approval limit cannot be negative',
+              details: 'The approval limit cannot be negative',
+            },
+            notValid: {
+              summary: 'The approval limit must be a number',
+              details: 'The approval limit must be a number',
+            },
           },
-          notValid: {
-            summary: 'The approval limit must be a number',
-            details: 'The approval limit must be a number',
-          },
-        },
+        };
       },
     };
   };
