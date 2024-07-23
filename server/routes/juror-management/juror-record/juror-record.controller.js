@@ -44,6 +44,7 @@
             canSummon: canSummon(req, response.data.commonDetails),
             hasSummons: response.data.commonDetails.hasSummonsResponse,
             isCourtUser: isCourtUser(req),
+            bureauTransferDate: response.data.commonDetails.bureauTransferDate,
           });
         }
         , errorCB = function(err) {
@@ -153,6 +154,7 @@
             poolDetails,
             idCheckDescription,
             attendance,
+            bureauTransferDate: overview.data.commonDetails.bureauTransferDate
           });
         }
         , errorCB = function(err) {
@@ -235,6 +237,7 @@
               response.data.commonDetails.excusalRejected, response.data.commonDetails.excusalDescription),
             canSummon: canSummon(req, response.data.commonDetails),
             hasSummons: response.data.commonDetails.hasSummonsResponse,
+            bureauTransferDate: response.data.commonDetails.bureauTransferDate
           });
         }
         , errorCB = function(err) {
@@ -341,6 +344,7 @@
             viewApprovedExpensesLink,
             editDefaultExpensesLink,
             editBankDetailsLink,
+            bureauTransferDate: jurorOverview.data.commonDetails.bureauTransferDate
           });
 
         } catch (err){
@@ -472,6 +476,7 @@
           attendance,
           formattedDate,
           failedToAttend,
+          bureauTransferDate: jurorOverview.data.commonDetails.bureauTransferDate
         });
       } catch (err) {
         if (err.statusCode === 404) {
@@ -539,6 +544,7 @@
             canSummon: canSummon(req, response[0].data.commonDetails),
             jurorStatus: resolveJurorStatus(response[0].data.commonDetails),
             hasSummons: response[0].data.commonDetails.hasSummonsResponse,
+            bureauTransferDate: response[0].data.commonDetails.bureauTransferDate
           });
         }
         , errorCB = function(err) {
@@ -1083,6 +1089,7 @@
           url: app.namedRoutes.build('juror-record.overview.get', { jurorNumber }),
           built: true,
         },
+        bureauTransferDate: juror.commonDetails.bureauTransferDate
       });
     } catch (err) {
       app.logger.crit('Failed to fetch juror history (view): ', {
