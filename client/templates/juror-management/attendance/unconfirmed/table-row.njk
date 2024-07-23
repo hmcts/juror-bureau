@@ -48,7 +48,6 @@
     {% endif %}
   </td>
   <td class="govuk-table__cell" data-sort-value="{{ row.hasPoliceCheck }}" id="{{ row.jurorNumber }}-police-check">
-    {% set policeCheckUrl = url('juror-management.attendance.change-times.get', { jurorNumber: row.jurorNumber }) %}
     {{ policeCheckStatus(row.policeCheck, row.jurorNumber) }}
   </td>
   <td class="govuk-table__cell" id="{{ row.jurorNumber }}-change">
