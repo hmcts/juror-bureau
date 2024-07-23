@@ -66,13 +66,12 @@
 
     , attendanceDetails = {
       resource: 'moj/juror-record/attendance-detail',
-      get: function(rp, app, jwtToken, locCode, jurorNumber) {
+      get: function(rp, app, jwtToken, jurorNumber) {
         const reqOptions = _.clone(options);
 
         reqOptions.headers.Authorization = jwtToken;
         reqOptions.uri = urljoin(reqOptions.uri,
           this.resource,
-          locCode,
           jurorNumber);
 
         app.logger.info('Sending request to API: ', {
@@ -80,7 +79,6 @@
           headers: reqOptions.headers,
           method: reqOptions.method,
           data: {
-            locCode,
             jurorNumber,
           },
         });
