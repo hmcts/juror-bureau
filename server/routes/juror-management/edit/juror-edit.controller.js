@@ -380,7 +380,7 @@
             response.data.extraSupport = 'yes';
           }
 
-          req.session.editJurorEtag = response.headers.etag;
+          req.session[`editJurorEtag-${response.data.commonDetails.jurorNumber}`] = response.headers.etag;
           req.session[`editJurorDetails-${response.data.commonDetails.jurorNumber}`] = response.data;
 
         }
@@ -618,7 +618,7 @@
           requestBody: requestBody,
         });
 
-        delete req.session.editJurorEtag;
+        delete req.session[`editJurorEtag-${jurorNumber}`];
         delete req.session[`editJurorDetails-${jurorNumber}`];
         delete req.session.dateMax;
         delete req.session.formFields;
@@ -643,16 +643,17 @@
 
   module.exports.getEditDetailsAddress = (app) => {
     return (req, res) => {
+      const { jurorNumber } = req.params;
       let postUrl, cancelUrl,
         tmpErrors = _.clone(req.session.errors);
 
       const address = {
-        part1: req.session.editJurorDetails.addressLineOne,
-        part2: req.session.editJurorDetails.addressLineTwo,
-        part3: req.session.editJurorDetails.addressLineThree,
-        part4: req.session.editJurorDetails.addressTown,
-        part5: req.session.editJurorDetails.addressCounty,
-        postcode: req.session.editJurorDetails.addressPostcode,
+        part1: req.session[`editJurorDetails-${jurorNumber}`].addressLineOne,
+        part2: req.session[`editJurorDetails-${jurorNumber}`].addressLineTwo,
+        part3: req.session[`editJurorDetails-${jurorNumber}`].addressLineThree,
+        part4: req.session[`editJurorDetails-${jurorNumber}`].addressTown,
+        part5: req.session[`editJurorDetails-${jurorNumber}`].addressCounty,
+        postcode: req.session[`editJurorDetails-${jurorNumber}`].addressPostcode,
       };
 
       if (req.url.includes('bank-details')) {
@@ -704,6 +705,7 @@
 
   module.exports.postEditDetailsAddress = (app) => {
     return (req, res) => {
+      const { jurorNumber } = req.params;
       let validatorResult = validate(req.body, paperReplyValidator.jurorAddress());
 
       let formErrorUrl = app.namedRoutes.build('juror-record.details-edit-address.get', {
@@ -727,12 +729,12 @@
         return res.redirect(formErrorUrl);
       }
 
-      req.session.editJurorDetails.addressLineOne = req.body.address1;
-      req.session.editJurorDetails.addressLineTwo = req.body.address2;
-      req.session.editJurorDetails.addressLineThree = req.body.address3;
-      req.session.editJurorDetails.addressTown = req.body.address4;
-      req.session.editJurorDetails.addressCounty = req.body.address5;
-      req.session.editJurorDetails.addressPostcode = req.body.postcode;
+      req.session[`editJurorDetails-${jurorNumber}`].addressLineOne = req.body.address1;
+      req.session[`editJurorDetails-${jurorNumber}`].addressLineTwo = req.body.address2;
+      req.session[`editJurorDetails-${jurorNumber}`].addressLineThree = req.body.address3;
+      req.session[`editJurorDetails-${jurorNumber}`].addressTown = req.body.address4;
+      req.session[`editJurorDetails-${jurorNumber}`].addressCounty = req.body.address5;
+      req.session[`editJurorDetails-${jurorNumber}`].addressPostcode = req.body.postcode;
 
       // If only changing address then resend the data given from original API call
       if (req.url.includes('bank-details')) {
