@@ -20,7 +20,6 @@
 
       delete req.session.errors;
       delete req.session.formFields;
-      delete req.session.originalAppStage;
 
       try {
         attendanceDate = req.query.date ? req.query.date : req.session.attendanceListDate;
@@ -29,7 +28,7 @@
           commonData: {
             tag: 'JUROR_NUMBER',
             attendanceDate,
-            locationCode: req.session.authentication.owner,
+            locationCode: req.session.authentication.locCode,
             singleJuror: true,
           },
           juror: [jurorNumber],
@@ -47,8 +46,6 @@
 
           return res.render('_errors/generic');
         }
-
-        req.session.originalAppStage = juror.appStage;
 
         // Check if user navigated from juror record
         if (req.url.includes('record')) {
@@ -184,7 +181,7 @@
         commonData: {
           status: '',
           attendanceDate,
-          locationCode: req.session.authentication.owner,
+          locationCode: req.session.authentication.locCode,
           singleJuror: true,
         },
         juror: [jurorNumber],
@@ -219,40 +216,7 @@
           },
         });
 
-        if (req.session.originalAppStage !== 'CHECKED_IN' || req.session.originalAppStage !== 'CHECKED_OUT'){
-          const confirmPayload = {
-            commonData: {
-              status: 'CONFIRM_ATTENDANCE',
-              attendanceDate: attendanceDate,
-              locationCode: req.session.authentication.owner,
-              singleJuror: true,
-            },
-            juror: [jurorNumber],
-          };
-
-          try {
-            await jurorAttendanceDao.patch(app, req, confirmPayload);
-
-            app.logger.info('Confirmed the juror\'s attendance', {
-              auth: req.session.authentication,
-              token: req.session.authToken,
-              data: {
-                ...confirmPayload,
-              },
-            });
-
-            return res.redirect(redirectUrl);
-          } catch (err) {
-            app.logger.crit('Failed to confirm the attendance', {
-              auth: req.session.authentication,
-              token: req.session.authToken,
-              data: payload,
-              error: typeof err.error !== 'undefined' ? err.error : err.toString(),
-            });
-
-            return res.render('_errors/generic');
-          }
-        }
+        return res.redirect(redirectUrl);
       } catch (err) {
         app.logger.crit('Unable to update the juror attendance times', {
           auth: req.session.authentication,

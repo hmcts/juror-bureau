@@ -88,7 +88,7 @@
       // redirect the user straight to pool-details form when they are a court user
       // a court user is defined with a court number different than 400 (400 being bureau user)
       if (isCourtUser(req, res) && typeof req.session.poolDetails === 'undefined') {
-        req.body.courtNameOrLocation = req.session.authentication.staff.courts[0];
+        req.body.courtNameOrLocation = req.session.authentication.locCode;
 
         return modUtils.matchUserCourt(req.session.courtsList, req.body)
           .then(successCB)

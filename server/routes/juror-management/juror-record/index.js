@@ -86,14 +86,6 @@
       'juror-record.attendance.non-attendance-day.post',
       auth.verify,
       nonAttendanceDateController.postNonAttendanceDay(app));
-    app.get('/juror-management/record/:jurorNumber/attendance/change-times',
-      'juror-record.attendance.change-times.get',
-      auth.verify,
-      attendanceTimeController.getChangeTimes(app));
-    app.post('/juror-management/record/:jurorNumber/attendance/change-times',
-      'juror-record.attendance.change-times.post',
-      auth.verify,
-      attendanceTimeController.postChangeTimes(app));
 
     // notes and logs
     app.get('/juror-management/record/:jurorNumber/notes',
