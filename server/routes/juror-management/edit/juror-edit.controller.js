@@ -450,6 +450,7 @@
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
+
         return res.render('_errors/generic');
       }
     };
@@ -459,6 +460,10 @@
     return (req, res) => {
       const { jurorNumber } = req.params;
       let validatorResult = validate(req.body, overviewDetailsValidator());
+
+      if (!req.session[`editJurorDetails-${jurorNumber}`]) {
+        return res.render('_errors/generic');
+      }
 
       if (req.body.thirdParty === 'yes') {
         // stubbed - waiting for BE to implement third party for juror record.
@@ -535,8 +540,8 @@
   };
 
   const processJurorEdit = async function(app, req, res, disqualifyAge) {
-    const requestBody = { ...req.session.formFields };
     const { jurorNumber } = req.params;
+    const requestBody = { ...req.session.formFields };
     let successUrl = app.namedRoutes.build('juror-record.details.get', {
       jurorNumber: req.params.jurorNumber,
     });
@@ -596,13 +601,14 @@
       }
     }
 
+    // TODO: this etag is incorrect... it should do a get to compare etags then patch if data has not been changed
     promiseArr.push(editJurorDetailsObject.patch(
       require('request-promise'),
       app,
       req.session.authToken,
       requestBody,
       req.params['jurorNumber'],
-      req.session.editJurorEtag,
+      req.session[`editJurorEtag-${jurorNumber}`],
     ));
 
     if (disqualifyAge) {
