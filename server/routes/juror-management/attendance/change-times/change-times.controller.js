@@ -28,7 +28,7 @@
           commonData: {
             tag: 'JUROR_NUMBER',
             attendanceDate,
-            locationCode: req.session.authentication.owner,
+            locationCode: req.session.authentication.locCode,
             singleJuror: true,
           },
           juror: [jurorNumber],
@@ -181,7 +181,7 @@
         commonData: {
           status: '',
           attendanceDate,
-          locationCode: req.session.authentication.owner,
+          locationCode: req.session.authentication.locCode,
           singleJuror: true,
         },
         juror: [jurorNumber],
