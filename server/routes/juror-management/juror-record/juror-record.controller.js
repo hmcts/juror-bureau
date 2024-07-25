@@ -41,8 +41,7 @@
             juror: response.data,
             currentTab: 'details',
             jurorStatus: resolveJurorStatus(response.data.commonDetails),
-            canSummon: canSummon(req, response.data.commonDetails),
-            hasSummons: response.data.commonDetails.hasSummonsResponse,
+            canEnterSummons: canEnterSummons(req, response.data.commonDetails),
             isCourtUser: isCourtUser(req),
             bureauTransferDate: response.data.commonDetails.bureauTransferDate,
           });
@@ -142,14 +141,13 @@
           return res.render('juror-management/juror-record/overview', {
             backLinkUrl: 'homepage.get',
             juror: overview.data,
-            canSummon: canSummon(req, overview.data.commonDetails),
+            canEnterSummons: canEnterSummons(req, overview.data.commonDetails),
             currentTab: 'overview',
             jurorStatus,
             canRunPoliceCheck,
             policeCheck: resolvePoliceCheckStatus(req, overview.data.commonDetails.police_check),
             bannerMessage: bannerMessage,
             availableMessage: availableMessage,
-            hasSummons: overview.data.commonDetails.hasSummonsResponse,
             poolDetails,
             idCheckDescription,
             attendance,
@@ -234,8 +232,7 @@
             replyStatus: modUtils.resolveReplyStatus(response.data.replyStatus),
             processingOutcome: modUtils.resolveProcessingOutcome(response.data.commonDetails.jurorStatus,
               response.data.commonDetails.excusalRejected, response.data.commonDetails.excusalDescription),
-            canSummon: canSummon(req, response.data.commonDetails),
-            hasSummons: response.data.commonDetails.hasSummonsResponse,
+            canEnterSummons: canEnterSummons(req, response.data.commonDetails),
             bureauTransferDate: response.data.commonDetails.bureauTransferDate
           });
         }
@@ -332,8 +329,7 @@
             juror: jurorOverview.data,
             jurorStatus: resolveJurorStatus(jurorOverview.data.commonDetails),
             currentTab: 'expenses',
-            canSummon: canSummon(req, jurorOverview.data.commonDetails),
-            hasSummons: jurorOverview.data.commonDetails.hasSummonsResponse,
+            canEnterSummons: canEnterSummons(req, jurorOverview.data.commonDetails),
             dailyExpenses,
             defaultExpenses,
             bankDetails,
@@ -360,8 +356,7 @@
                 juror: jurorOverview.data,
                 jurorStatus: resolveJurorStatus(jurorOverview.data.commonDetails),
                 currentTab: 'expenses',
-                canSummon: canSummon(req, jurorOverview.data.commonDetails),
-                hasSummons: jurorOverview.data.commonDetails.hasSummonsResponse,
+                canEnterSummons: canEnterSummons(req, jurorOverview.data.commonDetails),
                 dailyExpenses,
                 defaultExpenses,
                 bankDetails,
@@ -469,8 +464,7 @@
           jurorStatus: resolveJurorStatus(jurorOverview.data.commonDetails),
           processingOutcome: modUtils.resolveProcessingOutcome(jurorOverview.data.commonDetails.jurorStatus,
             jurorOverview.data.commonDetails.excusalRejected, jurorOverview.data.commonDetails.excusalDescription),
-          canSummon: canSummon(req, jurorOverview.data.commonDetails),
-          hasSummons: jurorOverview.data.commonDetails.hasSummonsResponse,
+          canEnterSummons: canEnterSummons(req, jurorOverview.data.commonDetails),
           attendance,
           formattedDate,
           failedToAttend,
@@ -539,7 +533,7 @@
             juror: response[0].data,
             currentTab: 'notes',
             contactLogs: contactLogs,
-            canSummon: canSummon(req, response[0].data.commonDetails),
+            canEnterSummons: canEnterSummons(req, response[0].data.commonDetails),
             jurorStatus: resolveJurorStatus(response[0].data.commonDetails),
             hasSummons: response[0].data.commonDetails.hasSummonsResponse,
             bureauTransferDate: response[0].data.commonDetails.bureauTransferDate
@@ -1078,8 +1072,7 @@
         jurorStatus: resolveJurorStatus(juror.commonDetails),
         historyUrl: app.namedRoutes.build('juror-record.history.get', { jurorNumber }),
         historyTab,
-        canSummon: canSummon(req, juror.commonDetails),
-        hasSummons: juror.commonDetails.hasSummonsResponse,
+        canEnterSummons: canEnterSummons(req, juror.commonDetails),
         printUrl: app.namedRoutes.build('juror-record.history.print.get', { jurorNumber }),
         history,
         currentTab: 'history',
@@ -1309,24 +1302,18 @@
     return Promise.resolve(description);
   }
 
-  function canSummon(req, commonDetails) {
+  function canEnterSummons(req, commonDetails) {
     const jurorStatus = resolveJurorStatus(commonDetails);
-    let canSummon = true;
 
-    if (commonDetails.owner !== '400' && !isCourtUser(req)) {
-      canSummon = false;
-    };
+    if (commonDetails.owner !== req.session.authentication.owner) {
+      return false;
+    }
 
-    switch (jurorStatus) {
-    case 'Undeliverable':
-    case 'Responded':
-    case 'Completed':
-    case 'Disqualified':
-      canSummon = false;
-      break;
-    };
+    if (jurorStatus !== 'Summoned') {
+      return false;
+    }
 
-    return canSummon;
+    return !commonDetails.response_entered;
   }
 
 })();
