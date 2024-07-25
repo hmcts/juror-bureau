@@ -1305,6 +1305,10 @@
   function canEnterSummons(req, commonDetails) {
     const jurorStatus = resolveJurorStatus(commonDetails);
 
+    if (commonDetails.owner !== req.session.authentication.owner) {
+      return false;
+    }
+
     switch (jurorStatus) {
     case 'Undeliverable':
     case 'Responded':
@@ -1312,10 +1316,11 @@
     case 'Excused':
     case 'Completed':
     case 'Disqualified':
+    case 'Deceased':
       return false;
     };
 
-    return isBureauUser(req) && !commonDetails.response_entered;
+    return !commonDetails.response_entered;
   }
 
 })();
