@@ -1309,17 +1309,9 @@
       return false;
     }
 
-    switch (jurorStatus) {
-    case 'Undeliverable':
-    case 'Responded':
-    case 'Deferred':
-    case 'Excused':
-    case 'Completed':
-    case 'Disqualified':
-    case 'Deceased':
-    case 'Transferred':
+    if (jurorStatus !== 'Summoned') {
       return false;
-    };
+    }
 
     return !commonDetails.response_entered;
   }
