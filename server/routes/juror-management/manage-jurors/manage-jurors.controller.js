@@ -21,6 +21,7 @@
       delete req.session.newJuror;
       delete req.session.poolCreateFormFields;
       delete req.session.dismissJurors;
+      delete req.session.courtChange;
 
       try {
         const pools = await fetchPoolsAtCourt.get(

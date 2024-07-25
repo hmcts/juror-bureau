@@ -24,7 +24,7 @@
           require('request-promise'),
           app,
           req.session.authToken,
-          req.session.authentication.owner,
+          req.session.authentication.locCode,
           'QUEUED'
         );
 

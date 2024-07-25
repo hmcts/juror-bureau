@@ -42,7 +42,7 @@
             },
           });
 
-          const queryTotal = data.totalItems;
+          const queryTotal = data.total_items;
 
           if (queryTotal > modUtils.constants.PAGE_SIZE) {
             pagination = modUtils.paginationBuilder(queryTotal, currentPage, req.url);

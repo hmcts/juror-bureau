@@ -32,7 +32,7 @@
       } else if (req.session.poolCreateFormFields.poolDetails) {
         req.body.courtNameOrLocation = req.session.poolCreateFormFields.poolDetails.courtLocCode;
       } else {
-        req.body.courtNameOrLocation = req.session.authentication.staff.courts[0];
+        req.body.courtNameOrLocation = req.session.authentication.locCode;
       }
 
       if (createJurorMode) {

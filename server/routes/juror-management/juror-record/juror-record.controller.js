@@ -43,6 +43,7 @@
             jurorStatus: resolveJurorStatus(response.data.commonDetails),
             canEnterSummons: canEnterSummons(req, response.data.commonDetails),
             isCourtUser: isCourtUser(req),
+            bureauTransferDate: response.data.commonDetails.bureauTransferDate,
           });
         }
         , errorCB = function(err) {
@@ -132,7 +133,6 @@
               require('request-promise'),
               app,
               req.session.authToken,
-              req.session.locCode || req.session.authentication.locCode,
               req.params.jurorNumber,
             );
           }
@@ -151,6 +151,7 @@
             poolDetails,
             idCheckDescription,
             attendance,
+            bureauTransferDate: overview.data.commonDetails.bureauTransferDate
           });
         }
         , errorCB = function(err) {
@@ -232,6 +233,7 @@
             processingOutcome: modUtils.resolveProcessingOutcome(response.data.commonDetails.jurorStatus,
               response.data.commonDetails.excusalRejected, response.data.commonDetails.excusalDescription),
             canEnterSummons: canEnterSummons(req, response.data.commonDetails),
+            bureauTransferDate: response.data.commonDetails.bureauTransferDate
           });
         }
         , errorCB = function(err) {
@@ -337,6 +339,7 @@
             viewApprovedExpensesLink,
             editDefaultExpensesLink,
             editBankDetailsLink,
+            bureauTransferDate: jurorOverview.data.commonDetails.bureauTransferDate
           });
 
         } catch (err){
@@ -434,7 +437,6 @@
             require('request-promise'),
             app,
             req.session.authToken,
-            req.session.locCode || req.session.authentication.locCode,
             jurorNumber,
           );
         }
@@ -466,6 +468,7 @@
           attendance,
           formattedDate,
           failedToAttend,
+          bureauTransferDate: jurorOverview.data.commonDetails.bureauTransferDate
         });
       } catch (err) {
         if (err.statusCode === 404) {
@@ -532,6 +535,8 @@
             contactLogs: contactLogs,
             canEnterSummons: canEnterSummons(req, response[0].data.commonDetails),
             jurorStatus: resolveJurorStatus(response[0].data.commonDetails),
+            hasSummons: response[0].data.commonDetails.hasSummonsResponse,
+            bureauTransferDate: response[0].data.commonDetails.bureauTransferDate
           });
         }
         , errorCB = function(err) {
@@ -1075,6 +1080,7 @@
           url: app.namedRoutes.build('juror-record.overview.get', { jurorNumber }),
           built: true,
         },
+        bureauTransferDate: juror.commonDetails.bureauTransferDate
       });
     } catch (err) {
       app.logger.crit('Failed to fetch juror history (view): ', {
