@@ -3,7 +3,7 @@
   
   const _ = require('lodash');
   const { dateFilter, capitalizeFully, makeDate } = require('../../../components/filters');
-  const { isCourtUser, isBureauUser } = require('../../../components/auth/user-type');
+  const { isCourtUser } = require('../../../components/auth/user-type');
   const jurorRecordObject = require('../../../objects/juror-record');
   const { jurorHistoryDAO, jurorPaymentsHistoryDAO } = require('../../../objects/juror-history');
   const validate = require('validate.js');
