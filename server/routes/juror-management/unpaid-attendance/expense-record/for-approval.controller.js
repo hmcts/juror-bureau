@@ -3,7 +3,6 @@
 
   const _ = require('lodash');
   const { getExpenseRecordsDAO } = require('../../../../objects/expense-record');
-  const { jurorOverviewDAO } = require('../../../../objects/juror-record');
   const { jurorRecordDetailsDAO } = require('../../../../objects');
 
   const STATUSES = {
