@@ -22,11 +22,15 @@ module.exports.getSearch = function(app) {
       try {
         const response = await searchJurorRecordDAO.post(req, payload);
 
-        if (response.total_items === 1 && response.data.length === 1) {
+        if (response.total_items === 1 && response.data.length === 1 && req.session.isJurorSearchResult) {
           const jurorRecord = response.data[0];
           const jurorRecordUrl = urljoin(app.namedRoutes.build('juror-record.select.get'),
             '?jurorNumber=' + jurorRecord.juror_number,
             '&locCode=' + jurorRecord.loc_code);
+
+          delete req.session.isJurorSearchResult;
+
+          return res.redirect(jurorRecordUrl);
         }
 
         totalResults = response.total_items;
@@ -94,6 +98,8 @@ module.exports.postSearch = function(app) {
     }
 
     const queryParams = buildQueryParams(req.body);
+
+    req.session.isJurorSearchResult = true;
 
     return res.redirect(redirectUrl + `?${queryParams.join('&')}`);
   };
