@@ -34,7 +34,7 @@
           STATUSES[status],
           jurorNumber,
         ));
-        promiseArr.push(jurorRecordDetailsDAO.get(req, [{
+        promiseArr.push(jurorRecordDetailsDAO.post(req, [{
           'juror_number': jurorNumber,
           'juror_version': null,
           'include': ['ACTIVE_POOL'],
