@@ -281,14 +281,31 @@
     replaceAllObjKeys(payload, _.snakeCase);
 
     try {
-      await approveExpensesDAO.post(app, req, locCode, currentTab, payload);
+      const financialNumbers = await approveExpensesDAO.post(app, req, locCode, currentTab, payload);
 
       req.session.bannerMessage = `Expenses approved for ${checkedJurors.length > 1
         ? `${checkedJurors.length} jurors`
         : `${checkedJurors[0].firstName} ${checkedJurors[0].lastName}`
       }`;
 
-      return res.redirect(redirectUrl);
+      if (!financialNumbers || !financialNumbers.length) {
+
+        app.logger.info('No financial numbers returned after approving expenses', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            currentTab,
+            payload,
+          }
+        });
+
+        return res.redirect(redirectUrl);
+      }
+
+      return res.render('reporting/reprint-audit-report/print-redirect', {
+        completeRoute: redirectUrl,
+        printRoute: app.namedRoutes.build('reports.financial-audit.bulk.get') + `?auditNumbers=${financialNumbers}`,
+      });
     } catch (err) {
 
       app.logger.crit('Unable to approve selected expenses', {
