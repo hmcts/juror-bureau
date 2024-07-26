@@ -1,3 +1,5 @@
+const ignoredUrls = ['juror-record/select?'];
+
 function resolveBackLink(req) {
   const url = req.url;
   
@@ -22,7 +24,15 @@ function resolveBackLink(req) {
     req.session.historyStack.pop();
   }
 
+  if (isIgnoredUrl(url)) {
+    return;
+  }
+
   req.session.historyStack.push(url);
+}
+
+function isIgnoredUrl(url) {
+  return ignoredUrls.some(ignoredUrl => url.includes(ignoredUrl));
 }
 
 module.exports = { resolveBackLink };
