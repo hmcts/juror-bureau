@@ -4,6 +4,7 @@
   const _ = require('lodash');
   const { getExpenseRecordsDAO } = require('../../../../objects/expense-record');
   const { jurorOverviewDAO } = require('../../../../objects/juror-record');
+  const { jurorRecordDetailsDAO } = require('../../../../objects');
 
   const STATUSES = {
     'for-approval': 'FOR_APPROVAL',
@@ -34,7 +35,11 @@
           STATUSES[status],
           jurorNumber,
         ));
-        promiseArr.push(jurorOverviewDAO.get(req, jurorNumber, locCode));
+        promiseArr.push(jurorRecordDetailsDAO.get(req, [{
+          'juror_number': jurorNumber,
+          'juror_version': null,
+          'include': ['ACTIVE_POOL'],
+        }]));
 
         const [data, jurorDetails] = await Promise.all(promiseArr);
 
@@ -59,7 +64,7 @@
           data,
           jurorNumber,
           locCode,
-          poolNumber: jurorDetails.commonDetails.poolNumber,
+          poolNumber: jurorDetails['0'].active_pool.pool_number,
           counts: req.expensesCount,
           jurorDetails: req.jurorDetails,
           bannerMessage,
