@@ -539,7 +539,11 @@
         
         return item;
       }).join('');
-    }
+    },
+
+    appendBackQuery: (url) => {
+      return url.includes('?') ? `${url}&back=true` : `${url}?back=true`;
+    },
   };
 
 })();

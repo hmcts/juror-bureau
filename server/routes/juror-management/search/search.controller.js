@@ -27,8 +27,6 @@ module.exports.getSearch = function(app) {
           const jurorRecordUrl = urljoin(app.namedRoutes.build('juror-record.select.get'),
             '?jurorNumber=' + jurorRecord.juror_number,
             '&locCode=' + jurorRecord.loc_code);
-
-          return res.redirect(jurorRecordUrl);
         }
 
         totalResults = response.total_items;
