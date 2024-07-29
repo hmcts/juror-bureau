@@ -59,7 +59,7 @@ const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../object
     ));
 
     if (!jurorDetails || !jurorBank || !jurorDefault) {
-      app.logger.crit('Failed to render draft financial audit: essential data is missing', {
+      app.logger.crit('Failed to build and render financial audit preview: essential data is missing', {
         auth: req.session.authentication,
         data: {
           jurorDetails,
