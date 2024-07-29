@@ -116,11 +116,17 @@
         app.namedRoutes.build('juror-management.approve-expenses.get'),
         urlBuilder(dateFilters, currentTab)
       );
+
+      app.logger.debug('Will approve expenses for jurors: ', {
+        auth: req.session.authentication,
+        jurors: req.session.approveExpenses?.jurors || 'No jurors found in the session',
+      });
+
       const jurors = _.clone(req.session.approveExpenses.jurors);
 
       delete req.session.approveExpenses.jurors;
 
-      if (!jurors.length && !req.body.selectedJurors) {
+      if (!jurors || !req.body.selectedJurors) {
         req.session.errors = {
           selectedJurors: [{
             summary: 'Select at least one juror\'s expenses to approve',

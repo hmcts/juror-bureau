@@ -69,8 +69,6 @@
     }
 
     addTempRow(jn);
-    jurorNumber.val('');
-    jurorNumber.focus();
 
     $.ajax({
       url: '/juror-management/attendance/check-in',
@@ -86,6 +84,9 @@
 
         checkInTimeError(null, true);
         jurorNumberError(null, true);
+
+        jurorNumber.val('');
+        jurorNumber.focus();
       })
       .catch(function(err) {
         if (err.status === 403) {
@@ -107,6 +108,9 @@
             attendeesTable.addClass('js-hidden');
           }
         }
+
+        jurorNumber.val('');
+        jurorNumber.focus();
       });
   });
 
@@ -127,9 +131,6 @@
 
     jn = jurorNumber.val();
 
-    jurorNumber.val('');
-    jurorNumber.focus();
-
     $.ajax({
       url: '/juror-management/attendance/check-out',
       method: 'POST',
@@ -144,6 +145,10 @@
 
         checkOutTimeError(null, true);
         jurorNumberError(null, true);
+
+        // reset the input on response
+        jurorNumber.val('');
+        jurorNumber.focus();
       })
       .catch(function(err) {
         if (err.status === 403) {
@@ -157,9 +162,22 @@
           }]);
         }
 
+        if (err.status === 422) {
+          const errorMessages = {
+            'JUROR_NOT_CHECKED_IN': 'This juror has not been checked in or does not have a check in time',
+            'CHECK_OUT_TIME_BEFORE_CHECK_IN_TIME': 'Check out time cannot be earlier than check in time',
+            'JUROR_ALREADY_CHECKED_OUT': 'This juror has already been checked out',
+          };
+
+          addError([{
+            message: errorMessages[err.responseText],
+            field: 'checkOutTimeHour',
+          }]);
+        }
+
         if (err.status === 400) {
           addError([{
-            message: 'Check out time cannot be earlier than check in time',
+            message: 'Something went wrong when trying to check out this juror',
             field: 'checkOutTimeHour',
           }]);
         }
@@ -193,9 +211,6 @@
       return;
     }
 
-    jurorNumber.val('');
-    jurorNumber.focus();
-
     $.ajax({
       url: '/juror-management/attendance/check-out',
       method: 'POST',
@@ -210,6 +225,9 @@
 
         checkOutTimeError(null, true);
         jurorNumberError(null, true);
+
+        jurorNumber.val('');
+        jurorNumber.focus();
       })
       .catch(function(err) {
         if (err.status === 403) {
@@ -221,6 +239,7 @@
             field: 'checkOutTimeHour',
           }]);
         }
+
         jurorNumber.val(jn);
         jurorNumber.focus();
       });

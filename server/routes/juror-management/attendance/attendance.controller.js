@@ -88,11 +88,19 @@
         return res.status(404).send();
       }
 
+      if (!attendee.checkInTime) {
+        return res.status(422).send('JUROR_NOT_CHECKED_IN');
+      }
+
+      if (attendee.checkOutTime) {
+        return res.status(422).send('JUROR_ALREADY_CHECKED_OUT');
+      }
+
       const checkInTime = convertAmPmToLong(timeArrayToString(attendee.checkInTime));
       const checkOutTime = convertAmPmToLong(req.body.time);
 
       if (checkInTime >= checkOutTime) {
-        return res.status(400).send('check out earlier than check in');
+        return res.status(422).send('CHECK_OUT_TIME_BEFORE_CHECK_IN_TIME');
       }
 
       const payload = {

@@ -1,7 +1,7 @@
 const { makeManualError, mapSnakeToCamel } = require('../../lib/mod-utils');
 const { render } = require('../../lib/reports/financial-audit');
 const { generateDocument } = require('../../lib/reports/single-generator');
-const { record } = require('../../objects');
+const { jurorRecordDetailsDAO } = require('../../objects');
 const rp = require('request-promise');
 const { jurorBankDetailsDAO, defaultExpensesDAO } = require('../../objects/expenses');
 const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../objects/expense-record');
@@ -43,12 +43,11 @@ const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../object
   };
 
   const makePreviewAudit = async(app, req, res, expenseDetails) => {
-    const jurorDetails = mapSnakeToCamel(await record.get(rp, app,
-      req.session.authToken,
-      'overview',
-      req.params.jurorNumber,
-      req.session.locCode
-    )).data.commonDetails;
+    const jurorDetails = mapSnakeToCamel(await jurorRecordDetailsDAO.post(req, [{
+      'juror_number': req.params.jurorNumber,
+      'juror_version': null,
+      'include': ['NAME_DETAILS'],
+    }]))['0'];
     const jurorBank = mapSnakeToCamel(await jurorBankDetailsDAO.get(
       app, req,
       req.params.jurorNumber
@@ -58,6 +57,19 @@ const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../object
       req.params.locCode,
       req.params.jurorNumber
     ));
+
+    if (!jurorDetails || !jurorBank || !jurorDefault) {
+      app.logger.crit('Failed to render draft financial audit: essential data is missing', {
+        auth: req.session.authentication,
+        data: {
+          jurorDetails,
+          jurorBank,
+          jurorDefault,
+        }
+      });
+
+      return res.render('_errors/generic');
+    }
 
     const total = expenseDetails.reduce((prev, curr) => {
       const out = {};
@@ -84,9 +96,9 @@ const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../object
       jurorDetails: {
         jurorNumber: jurorDetails.jurorNumber,
         name: {
-          title: jurorDetails.title,
-          firstName: jurorDetails.firstName,
-          lastName: jurorDetails.lastName,
+          title: jurorDetails.name.title,
+          firstName: jurorDetails.name.firstName,
+          lastName: jurorDetails.name.lastName,
         },
         paymentDetails: {
           sortCode: jurorBank.sortCode,
