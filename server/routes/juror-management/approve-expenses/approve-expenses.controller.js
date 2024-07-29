@@ -120,7 +120,7 @@
 
       delete req.session.approveExpenses.jurors;
 
-      if (!req.body.selectedJurors) {
+      if (!jurors.length && !req.body.selectedJurors) {
         req.session.errors = {
           selectedJurors: [{
             summary: 'Select at least one juror\'s expenses to approve',
