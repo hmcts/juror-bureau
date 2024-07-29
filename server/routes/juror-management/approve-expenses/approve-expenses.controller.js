@@ -294,6 +294,13 @@
         : `${checkedJurors[0].firstName} ${checkedJurors[0].lastName}`
       }`;
 
+      app.logger.info('Successfully approved expenses for jurors: ', {
+        auth: req.session.authentication,
+        data: {
+          payload,
+        },
+      });
+
       if (!financialNumbers || !financialNumbers.length) {
 
         app.logger.info('No financial numbers returned after approving expenses', {
