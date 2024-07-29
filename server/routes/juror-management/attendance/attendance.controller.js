@@ -84,11 +84,7 @@
         (a) => a.jurorNumber === jurorNumber,
       );
 
-      if (!attendee) {
-        return res.status(404).send();
-      }
-
-      if (!attendee.checkInTime) {
+      if (!attendee || !attendee.checkInTime) {
         return res.status(422).send('JUROR_NOT_CHECKED_IN');
       }
 
