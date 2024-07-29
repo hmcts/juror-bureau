@@ -101,6 +101,7 @@
         'attendance_date': req.session.attendanceListDate,
         'check_out_time': padTimeForApi(convert12to24(req.body.time)),
         'appearance_stage': 'CHECKED_OUT',
+        'juror_in_waiting': true
       };
 
       try {
