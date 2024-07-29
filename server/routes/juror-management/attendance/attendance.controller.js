@@ -138,17 +138,8 @@
         });
       } catch (err) {
         if (err.statusCode === 404) {
-          return res.status(404).send('juror not found');
+          return res.status(404).send('JUROR_NOT_FOUND');
         }
-
-        const _attendee = {
-          jurorNumber: jurorNumber,
-          firstName: '-',
-          lastName: '-',
-          jurorStatus: '-',
-          checkOutTime: 'Fail',
-          kind: 'checkOut',
-        };
 
         Logger.instance.crit('Failed to check out juror', {
           auth: req.session.authentication,
@@ -157,10 +148,7 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('juror-management/attendance/unconfirmed/table-row.njk', {
-          row: _attendee,
-          error: true,
-        });
+        return res.status(400).send('FAILED_TO_CHECK_OUT');
       }
     };
   };
