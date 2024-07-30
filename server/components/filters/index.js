@@ -518,7 +518,7 @@
       }).join('');
     },
 
-    historyAuditLinkify: function(copy, locCode, isCourt = true) {
+    historyAuditLinkify: function(copy, locCode, isCourt) {
       if (!isCourt) {
         return copy;
       }
