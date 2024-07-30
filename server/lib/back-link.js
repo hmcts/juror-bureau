@@ -1,7 +1,25 @@
-const ignoredUrls = ['juror-record/select?'];
+const whitelistedUrls = [
+  '/juror-management/record/',
+  '/juror-record/search',
+  '/pool-management',
+  '/summons-replies/response',
+];
+const bypassUrls = [
+  '/juror-record/select',
+];
 
-function resolveBackLink(req) {
+function resolveBackLink(req, res) {
   const url = req.url;
+
+  if (isAssetUrl(url) || isBypassUrl(url)) {
+    return;
+  }
+
+  if (!isUrlWhitelisted(url)) {
+    // if the url is not whitelisted we don't want to keep it in the history stack
+    req.session.historyStack = [];
+    return;
+  }
   
   if (!req.session.historyStack || req.session.historyStack.length === 0) {
     // the history stack keeps all the "curren" pages visited
@@ -24,15 +42,19 @@ function resolveBackLink(req) {
     req.session.historyStack.pop();
   }
 
-  if (isIgnoredUrl(url)) {
-    return;
-  }
-
   req.session.historyStack.push(url);
 }
 
-function isIgnoredUrl(url) {
-  return ignoredUrls.some(ignoredUrl => url.includes(ignoredUrl));
+function isUrlWhitelisted(url) {
+  return whitelistedUrls.some(whitelistedUrl => url.includes(whitelistedUrl));
+}
+
+function isBypassUrl(url) {
+  return bypassUrls.some(bypassUrl => url.includes(bypassUrl));
+}
+
+function isAssetUrl(url) {
+  return url.includes('/assets/', '/js/', '/css/');
 }
 
 module.exports = { resolveBackLink };

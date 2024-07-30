@@ -153,9 +153,9 @@ module.exports = async (app) => {
 
     if (typeof req.session.authentication !== 'undefined' && typeof res.locals.authentication === 'undefined') {
       res.locals.authentication = req.session.authentication;
-      resolveBackLink(req);
 
-      res.locals.backLink = req.session.historyStack[req.session.historyStack.length - 2] || '/';
+      resolveBackLink(req);
+      res.locals.dynamicBackLink = req.session.historyStack[req.session.historyStack.length - 2];
     }
 
     res.locals.currentUrl = req.url;
