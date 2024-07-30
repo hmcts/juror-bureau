@@ -96,6 +96,8 @@ module.exports.getJurors = function(app) {
       'sort_method': req.query.sortOrder || 'ascending',
     };
 
+    console.log('\n\n\n\n', selectedJurors, '\n\n\n\n');
+
     poolMembersDAO.post(req, payload)
       .then((members) => isCourtUser(req, res)
         ? courtView(app, req, res, pool, members, tmpError, selectedJurors || [], selectAll)

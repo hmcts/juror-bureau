@@ -192,5 +192,10 @@
       buttonText: 'Print',
       buttonClasses: 'govuk-!-margin-bottom-1 govuk-button--secondary moj-button-menu__toggle-button--secondary',
     });
+
+    $('#changeServiceDateButton').click(function(event) {
+      $('#poolDetailsForm').attr('action', '{{ postUrls.changeServiceDateUrl }}').submit();
+      $(event.target).attr('disabled', true);
+    });
   </script>
 {% endblock %}
