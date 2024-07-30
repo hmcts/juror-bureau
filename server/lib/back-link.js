@@ -4,11 +4,12 @@ const whitelistedUrls = [
   '/pool-management',
   '/summons-replies/response',
 ];
+
 const bypassUrls = [
   '/juror-record/select',
 ];
 
-function resolveBackLink(req, res) {
+function resolveBackLink(req) {
   const url = req.url;
 
   if (isAssetUrl(url) || isBypassUrl(url)) {
