@@ -518,7 +518,11 @@
       }).join('');
     },
 
-    historyAuditLinkify: function(copy) {
+    historyAuditLinkify: function(copy, locCode, isCourt = true) {
+      if (!isCourt) {
+        return copy;
+      }
+
       const parts = copy?.split(/([A-Z][0-9]+)/g);
       
       return parts?.map((item) => {
@@ -533,7 +537,7 @@
             return `<a href="/reporting/jury-attendance-audit/report/${item}/print" target="_blank">${item}</a>`;
           }
           if (item.startsWith('T')) {
-            return `<a href="#" target="_blank">${item}</a>`;
+            return `<a href="/trial-management/trials/${item}/${locCode}/detail" target="_blank">${item}</a>`;
           }
         }
         
