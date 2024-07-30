@@ -37,7 +37,7 @@
     {% endif %}
   </td>
   <td class="govuk-table__cell {% if row.checkInTime === "Fail" or row.checkOutTime === "Fail" %}mod-red-text{% endif %}"
-    data-sort-value="{{row.checkOutTime | timeArrayToString | convertAmPmToLong if row.checkOutTime and row.checkOutTime !== "Fail" else "0000"}}"
+    data-sort-value="{% if row.checkOutTime and row.checkOutTime !== 'Fail' %}{{ row.checkOutTime | timeArrayToString | convertAmPmToLong }}{% else %}0000{% endif %}"
     id="{{ row.jurorNumber }}-checkOutTime">
     {% if row.checkOutTime %}
       {{ row.checkOutTime | timeArrayToString | convert24to12 }}

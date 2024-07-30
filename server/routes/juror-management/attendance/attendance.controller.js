@@ -84,15 +84,19 @@
         (a) => a.jurorNumber === jurorNumber,
       );
 
-      if (!attendee) {
-        return res.status(404).send();
+      if (!attendee || !attendee.checkInTime) {
+        return res.status(422).send('JUROR_NOT_CHECKED_IN');
+      }
+
+      if (attendee.checkOutTime) {
+        return res.status(422).send('JUROR_ALREADY_CHECKED_OUT');
       }
 
       const checkInTime = convertAmPmToLong(timeArrayToString(attendee.checkInTime));
       const checkOutTime = convertAmPmToLong(req.body.time);
 
       if (checkInTime >= checkOutTime) {
-        return res.status(400).send('check out earlier than check in');
+        return res.status(422).send('CHECK_OUT_TIME_BEFORE_CHECK_IN_TIME');
       }
 
       const payload = {
@@ -130,17 +134,8 @@
         });
       } catch (err) {
         if (err.statusCode === 404) {
-          return res.status(404).send('juror not found');
+          return res.status(404).send('JUROR_NOT_FOUND');
         }
-
-        const _attendee = {
-          jurorNumber: jurorNumber,
-          firstName: '-',
-          lastName: '-',
-          jurorStatus: '-',
-          checkOutTime: 'Fail',
-          kind: 'checkOut',
-        };
 
         Logger.instance.crit('Failed to check out juror', {
           auth: req.session.authentication,
@@ -149,10 +144,7 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('juror-management/attendance/unconfirmed/table-row.njk', {
-          row: _attendee,
-          error: true,
-        });
+        return res.status(400).send('FAILED_TO_CHECK_OUT');
       }
     };
   };
