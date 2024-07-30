@@ -32,9 +32,13 @@
 
       let validatorResult;
 
-      req.session.selectedJurors = Array.isArray(jurors)
-        ? jurors
-        : [jurors];
+      req.session.selectedJurors = [];
+
+      if (jurors) {
+        req.session.selectedJurors = Array.isArray(jurors)
+          ? jurors
+          : [jurors];
+      }
 
       const membersToCheck = req.session.membersList
         .filter(member => req.session.selectedJurors.includes(member.jurorNumber));

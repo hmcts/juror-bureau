@@ -10,7 +10,10 @@
 
     {{ govukButton({
       type: "submit",
-      text: "Approve"
+      text: "Approve",
+      attributes: {
+        id: "approveExpensesButton"
+      }
     }) }}
     
     {% if errors.items["selectedJurors"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
