@@ -113,6 +113,10 @@
       const { document } = req.params;
       const { origin } = req.query;
 
+      if (!req.session.documentsJurorsList) {
+        return res.redirect(app.namedRoutes.build('documents.get'));
+      }
+
       if (origin === 'statusChanged') {
         removeStatusChangedJurors(req);
       }
