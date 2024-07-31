@@ -24,6 +24,7 @@
             attendanceDate,
             locationCode: req.session.authentication.locCode,
           },
+          juror_in_waiting: true
         };
         const response = await jurorAttendanceDao.get(app, req, body);
         const jurorsNotCheckedOut = response.details;
@@ -218,6 +219,7 @@
           singleJuror: false,
         },
         juror: notCheckedOutJNs,
+        juror_in_waiting: true
       };
 
       promiseArray.push(jurorAttendanceDao.patch(app, req, payload));
