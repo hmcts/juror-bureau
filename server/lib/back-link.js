@@ -3,6 +3,7 @@ const whitelistedUrls = [
   '/juror-record/search',
   '/pool-management',
   '/summons-replies/response',
+  '/search',
 ];
 
 const bypassUrls = [
