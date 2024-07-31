@@ -104,7 +104,7 @@
     </div>
   </div>
   <span>
-    {% if juror.commonDetails.loc_code === authentication.locCode and (juror.commonDetails.jurorStatus == 'Responded' or juror.commonDetails.jurorStatus == 'Panelled' or juror.commonDetails.jurorStatus == 'Juror' or juror.commonDetails.jurorStatus == 'Completed') %}
+    {% if juror.commonDetails.loc_code === authentication.locCode and (juror.commonDetails.jurorStatus == 'Responded' or juror.commonDetails.jurorStatus == 'Panel' or juror.commonDetails.jurorStatus == 'Juror' or juror.commonDetails.jurorStatus == 'Completed') %}
       {{ govukButton({
         text: "Add attendance day",
         href: url('juror-record.attendance.add-attendance-date.get', {
