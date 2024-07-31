@@ -116,6 +116,7 @@
       if (!req.session.documentsJurorsList) {
         app.logger.warn('No document jurors list found. Redirecting back to document-type list page', {
           auth: req.session.authentication,
+          data: { document, origin },
         });
 
         return res.redirect(app.namedRoutes.build('documents.get'));
