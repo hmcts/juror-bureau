@@ -113,6 +113,14 @@
       const { document } = req.params;
       const { origin } = req.query;
 
+      if (!req.session.documentsJurorsList) {
+        app.logger.warn('No document jurors list found. Redirecting back to document-type list page', {
+          auth: req.session.authentication,
+        });
+
+        return res.redirect(app.namedRoutes.build('documents.get'));
+      }
+
       if (origin === 'statusChanged') {
         removeStatusChangedJurors(req);
       }
