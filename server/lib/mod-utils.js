@@ -1050,6 +1050,8 @@
       return 'Additional info';
     case 12:
       return 'Failed to attend';
+    case 13:
+      return 'Completed';
     }
   };
 
