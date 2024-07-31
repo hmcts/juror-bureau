@@ -27,7 +27,7 @@
         tmpBody.excusalReasonCode = body.excusalCode;
 
         if (replyMethod) {
-           tmpBody.replyMethod = modUtils.toReplyMethod(replyMethod);
+          tmpBody.replyMethod = modUtils.toReplyMethod(replyMethod);
         }
 
         reqOptions.headers.Authorization = jwtToken;

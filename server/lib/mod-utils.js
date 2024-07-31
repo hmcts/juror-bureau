@@ -1330,9 +1330,9 @@
   }
   module.exports.toReplyMethod = (replyMethod) => {
     const types = {
-        'PAPER': 'PAPER',
-        'DIGITAL': 'DIGITAL',
-        'RESPONSE N/A': 'NONE'
+      'PAPER': 'PAPER',
+      'DIGITAL': 'DIGITAL',
+      'RESPONSE N/A': 'NONE'
     };
     const foundReplyMethod = types[replyMethod.toUpperCase()];
     return foundReplyMethod ? foundReplyMethod : 'NONE';
