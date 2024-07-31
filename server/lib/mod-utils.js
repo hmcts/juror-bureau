@@ -1328,5 +1328,15 @@
   module.exports.checkIfArrayEmpty = (array) => {
     return Array.isArray(array) && (array.length == 0 || array.every(modUtils.checkIfArrayEmpty));
   }
+  module.exports.toReplyMethod = (replyMethod) => {
+    const types = {
+        'PAPER': 'PAPER',
+        'DIGITAL': 'DIGITAL',
+        'RESPONSE N/A': 'NONE'
+    };
+    const foundReplyMethod = types[replyMethod.toUpperCase()];
+    return foundReplyMethod ? foundReplyMethod : 'NONE';
+  }
+
 
 })();
