@@ -8,6 +8,7 @@ const whitelistedUrls = [
 
 const bypassUrls = [
   '/juror-record/select',
+  '/submit-paper',
 ];
 
 function resolveBackLink(req) {
