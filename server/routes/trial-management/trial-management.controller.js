@@ -142,10 +142,6 @@
             locationCode,
             successBanner,
             addPanelStatus: addPanelStatus.data,
-            editTrialUrl: app.namedRoutes.build('trial-management.edit-trial.get', {
-              trialNumber: trialNumber,
-              locationCode: locationCode,
-            }),
             formActions: {
               returnUrl: app.namedRoutes.build('trial-management.trials.return.post',
                 {
