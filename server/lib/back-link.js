@@ -3,12 +3,23 @@ const whitelistedUrls = [
   '/juror-record/search',
   '/pool-management',
   '/summons-replies/response',
+  '/response',
   '/search',
 ];
 
 const bypassUrls = [
   '/juror-record/select',
   '/submit-paper',
+  '/digital/process',
+  '/paper/process',
+  '/responded/digital',
+  '/responded/paper',
+  '/digital/deferral',
+  '/paper/deferral',
+  '/digital/excusal',
+  '/paper/excusal',
+  '/digital/disqualify',
+  '/paper/disqualify',
 ];
 
 function resolveBackLink(req) {
