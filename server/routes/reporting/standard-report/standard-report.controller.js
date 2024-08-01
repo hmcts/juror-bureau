@@ -265,7 +265,7 @@
         filter = req.body.jurorNumber;
         break;
       case 'trial':
-        filter = req.body.filterTrialNumber;
+        filter = encodeURIComponent(req.body.filterTrialNumber);
         break;
     }
 
