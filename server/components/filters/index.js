@@ -523,9 +523,9 @@
         return copy;
       }
 
-      const parts = copy?.split(/([A-Z][0-9]+)/g);
+      let parts = copy?.split(/([A-Z][0-9]+)/g);
       
-      return parts?.map((item) => {
+      parts = parts?.map((item) => {
         if (item.match(/[A-Z][0-9]+/)) {
           if (item.startsWith('F')) {
             return `<a href="/reports/financial-audit/${item}" target="_blank">${item}</a>`;
@@ -536,11 +536,20 @@
           if (item.startsWith('J')) {
             return `<a href="/reporting/jury-attendance-audit/report/${item}/print" target="_blank">${item}</a>`;
           }
-          if (item.startsWith('T')) {
-            return `<a href="/trial-management/trials/${item}/${locCode}/detail" target="_blank">${item}</a>`;
-          }
         }
         
+        return item;
+      }).join('');
+
+      const trialLinks = parts?.split(/(Trial: .+)/g);
+
+      return trialLinks?.map((item) => {
+        if (item.match(/Trial: .+/)) {
+          const trialParts = item.split(' ');
+
+          return `Trial: <a href="/trial-management/trials/${trialParts[1]}/${locCode}/detail" target="_blank">${trialParts[1]}</a>`;
+        }
+
         return item;
       }).join('');
     }
