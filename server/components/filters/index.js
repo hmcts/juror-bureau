@@ -541,10 +541,10 @@
         return item;
       }).join('');
 
-      const trialLinks = parts?.split(/(Trial: .+)/g);
+      const trialLinks = parts?.split(/(Trial:* .+)/g);
 
       return trialLinks?.map((item) => {
-        if (item.match(/Trial: .+/)) {
+        if (item.match(/Trial:* .+/)) {
           const trialParts = item.split(' ');
 
           return `Trial: <a href="/trial-management/trials/${trialParts[1]}/${locCode}/detail" target="_blank">${trialParts[1]}</a>`;
