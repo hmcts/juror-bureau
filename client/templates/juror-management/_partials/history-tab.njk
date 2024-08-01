@@ -14,7 +14,7 @@
     
     {% set historyHtml %}
       {% for historyDetails in historyItem.historyDetails %}
-        <div class='entry'>{{historyDetails | historyAuditLinkify | safe}}</div>
+        <div class='entry'>{{historyDetails | historyAuditLinkify(juror.commonDetails.loc_code, isCourtUser) | safe}}</div>
       {% endfor %}
     {% endset %}
 
