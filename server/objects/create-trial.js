@@ -20,13 +20,13 @@
       resource: 'moj/trial/summary',
       get: function(rp, app, jwtToken, trialNumber, locationCode) {
         var reqOptions = _.clone(options);
+        const params = new URLSearchParams({ 'trial_number': trialNumber, 'location_code': locationCode });
 
         reqOptions.headers.Authorization = jwtToken;
         reqOptions.uri = urljoin(
           reqOptions.uri,
           this.resource,
-          '?trial_number=' + trialNumber,
-          '&location_code=' + locationCode
+          `?${params.toString()}`,
         );
         reqOptions.method = 'GET';
 
