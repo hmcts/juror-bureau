@@ -16,6 +16,7 @@ const utils = require('../lib/utils.js');
 const modUtils = require('../lib/mod-utils');
 const isCourtUser = require('../components/auth/user-type').isCourtUser;
 const rateLimit = require('express-rate-limit');
+const { AppInsights } = require('../lib/appinsights');
 
 // Grab environment variables to enable/disable certain services
 const pkg = require(__dirname + '/../../package.json');
@@ -139,6 +140,11 @@ module.exports = async (app) => {
 
   // Send data to all views
   app.use((req, res, next) => {
+    AppInsights.client()?.trackNodeHttpRequest({
+      request: req,
+      response: res,
+    });
+
     res.locals.assetPath = '/';
     res.locals.releaseVersion = 'v' + releaseVersion;
     res.locals.csrftoken = req.csrfToken();
