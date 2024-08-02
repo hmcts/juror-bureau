@@ -163,7 +163,7 @@
 
       if (content.signature) {
         contentArray.push({
-          text: content.signature,
+          text: content.welsh ? 'Yn gywir,' : 'Yours sincerely,',
           marginTop: 20,
           marginBottom: 15,
         });
