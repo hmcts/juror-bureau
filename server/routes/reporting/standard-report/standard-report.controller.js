@@ -204,7 +204,7 @@
         const opts = {
           active: false, // we want all trials not just active
           pageNumber: 1,
-          pageLimit: 500,
+          pageLimit: 100,
           sortField: capitalise(camelToSnake(sortBy)),
           sortMethod: sortOrder === 'ascending' ? 'ASC' : 'DESC',
         };
@@ -231,6 +231,7 @@
             reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
             cancelUrl: app.namedRoutes.build('reports.reports.get'),
             trials: transformRadioSelectTrialsList(data.data, sortBy, sortOrder),
+            totalItems: data.totalItems,
             backLinkUrl: {
               built: true,
               url: reportType.filterBackLinkUrl,

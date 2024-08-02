@@ -38,7 +38,12 @@
         <a class="govuk-body govuk-link govuk-link--no-visited-state govuk-!-margin-bottom-7" id="clearSearchAnchor" href="{{ clearSearchUrl }}">Clear search</a>
         <input type="hidden" id="csrfToken" name="_csrf" value="{{ csrftoken }}"/>
       </form>
+
       <h2 class="govuk-heading-m">Select a trial</h2>
+      {% if totalItems > 100 %}
+        <span class="govuk-caption-m">Results are limited to 100. Search for narrowing the results.</span>
+      {% endif %}
+      
       <form action="{{ reportUrl }}" method="post" id="trialSelectForm" >
         {% if trials.rows | length > 0 %}
           <div class="govuk-grid-row">
