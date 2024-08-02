@@ -202,7 +202,7 @@
         const sortBy = req.query['sortBy'] || 'trialNumber';
         const sortOrder = req.query['sortOrder'] || 'ascending';
         const opts = {
-          active: true,
+          active: false, // we want all trials not just active
           pageNumber: 1,
           pageLimit: 500,
           sortField: capitalise(camelToSnake(sortBy)),
