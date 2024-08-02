@@ -4,7 +4,7 @@
   const _ = require('lodash');
   const validate = require('validate.js');
   const checkOutAllValidator = require('../../../config/validation/check-out-all-jurors');
-  const { getJurorStatus, padTimeForApi, mapCamelToSnake } = require('../../../lib/mod-utils');
+  const { getJurorStatus, padTimeForApi, mapCamelToSnake, makeManualError } = require('../../../lib/mod-utils');
   const { convertAmPmToLong, convert12to24, timeArrayToString,
     timeStringToArray } = require('../../../components/filters');
   const { jurorsAttending, jurorAttendanceDao } = require('../../../objects/juror-attendance');
@@ -185,7 +185,9 @@
       const checkOutTime = convertAmPmToLong(req.body.time);
 
       if (latestStartTime >= checkOutTime) {
-        return res.status(400).send('check out earlier than check in');
+        req.session.formFields = req.body;
+        req.session.errors = makeManualError('checkOutTimeHour', 'Check out time cannot be earlier than check in time')
+        return res.redirect(app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate);
       }
 
       let panelledJurors = [];
