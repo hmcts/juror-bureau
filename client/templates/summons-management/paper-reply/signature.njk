@@ -3,13 +3,20 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 
 {% block page_title %}{{ serviceName }} - Paper response - Juror signature{% endblock %}
 {% block page_identifier %}Paper response - Juror signature{% endblock %}
 
 {% block beforeContent %}
   {% if backLinkUrl %}
-    {% include "includes/back-link.njk" %}
+    {{ govukBackLink({
+      text: "Back",
+      href: backLinkUrl.url,
+      attributes: {
+        id: "backLinkAnchor"
+      }
+    }) }}
   {% endif %}
 
   {% if error !== undefined %}
