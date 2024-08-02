@@ -477,8 +477,8 @@
     },
 
     timeToDuration: function(time) {
-      let hours = parseInt(time.split(':')[0]);
-      const mins = parseInt(time.split(':')[1]);
+      let hours = parseInt(time?.split(':')[0]);
+      const mins = parseInt(time?.split(':')[1]);
       if (mins > 0) {
         hours += (mins / 60);
       }

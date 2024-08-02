@@ -5,6 +5,7 @@
     , urljoin = require('url-join')
     , config = require('../config/environment')()
     , utils = require('../lib/utils')
+    , modUtils = require('../lib/mod-utils')
     , options = {
       uri: config.apiEndpoint,
       headers: {
@@ -26,7 +27,7 @@
         tmpBody.excusalReasonCode = body.excusalCode;
 
         if (replyMethod) {
-          tmpBody.replyMethod = replyMethod.toUpperCase();
+          tmpBody.replyMethod = modUtils.toReplyMethod(replyMethod);
         }
 
         reqOptions.headers.Authorization = jwtToken;

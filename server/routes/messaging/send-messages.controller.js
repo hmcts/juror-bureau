@@ -327,7 +327,7 @@
           trialNumber,
           pagination,
           trials: modUtils.transformRadioSelectTrialsList(data.data, sortBy, sortOrder),
-          urlPrefix: trialNumber ? `?trialNumber=${trialNumber}` : '',
+          urlPrefix: trialNumber ? `?trialNumber=${encodeURIComponent(trialNumber)}` : '',
           errors: {
             title: 'Please check the form',
             count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -363,7 +363,7 @@
         return res.redirect(url);
       }
 
-      return res.redirect(url + '?trialNumber=' + req.body.searchTrialNumber);
+      return res.redirect(url + '?trialNumber=' + encodeURIComponent(req.body.searchTrialNumber));
     };
   };
 
@@ -387,7 +387,7 @@
 
       if (message === 'export-contact-details') {
         return res.redirect(app.namedRoutes.build('messaging.export-contacts.jurors.get')
-          + '?searchBy=trial&trialNumber=' + req.body.selectedTrial);
+          + '?searchBy=trial&trialNumber=' + encodeURIComponent(req.body.selectedTrial));
       }
 
       const searchOptions = {
