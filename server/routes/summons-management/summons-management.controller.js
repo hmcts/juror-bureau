@@ -940,7 +940,7 @@
               isBureauUser: isBureauUser(req),
               isAddChangeVisible: data.responseClone.processingStatus !== 'Closed',
               catchmentWarning: req.session.catchmentWarning,
-              backLinkUrl: 'inbox.todo.get',
+              backLinkUrl: typeof req.session.searchResponse !== 'undefined' ? app.namedRoutes.build('search.get') : app.namedRoutes.build('inbox.todo.get'),
             });
 
           }
@@ -982,7 +982,7 @@
                 isBureauUser: isBureauUser(req),
                 isAddChangeVisible: data.responseClone.processingStatus !== 'Closed',
                 catchmentWarning: req.session.catchmentWarning,
-                backLinkUrl: 'inbox.todo.get',
+                backLinkUrl: typeof req.session.searchResponse !== 'undefined' ? app.namedRoutes.build('search.get') : app.namedRoutes.build('inbox.todo.get'),
               });
             }
 
@@ -1007,7 +1007,7 @@
       processedBannerMessage: data.processedBannerMessage,
       isAddChangeVisible: data.responseClone.processingStatus !== 'Closed',
       isBureauUser: isBureauUser(req),
-      backLinkUrl: 'inbox.todo.get',
+      backLinkUrl: typeof req.session.searchResponse !== 'undefined' ? app.namedRoutes.build('search.get') : app.namedRoutes.build('inbox.todo.get'),
     });
   }
 

@@ -3,7 +3,6 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 
 {% block page_title %}{{ serviceName }} - Process response{% endblock %}
 {% block page_identifier %}Process - what to do{% endblock %}
@@ -11,13 +10,7 @@
 {% set currentApp = "Summons replies" %}
 
 {% block beforeContent %}
-  {{ govukBackLink({
-    text: "Back",
-    href: backLinkUrl.url,
-    attributes: {
-      id: "backLinkAnchor"
-    }
-  }) }}
+  {% include "includes/back-link.njk" %}
 {% endblock %}
 
 {% block content %}

@@ -16,7 +16,6 @@ const utils = require('../lib/utils.js');
 const modUtils = require('../lib/mod-utils');
 const isCourtUser = require('../components/auth/user-type').isCourtUser;
 const rateLimit = require('express-rate-limit');
-const { resolveBackLink } = require('../lib/back-link');
 
 // Grab environment variables to enable/disable certain services
 const pkg = require(__dirname + '/../../package.json');
@@ -153,9 +152,6 @@ module.exports = async (app) => {
 
     if (typeof req.session.authentication !== 'undefined' && typeof res.locals.authentication === 'undefined') {
       res.locals.authentication = req.session.authentication;
-
-      resolveBackLink(req);
-      res.locals.dynamicBackLink = req.session.historyStack[req.session.historyStack.length - 2];
     }
 
     res.locals.currentUrl = req.url;

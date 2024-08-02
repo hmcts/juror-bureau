@@ -289,7 +289,7 @@
                           opticReference,
                           processedBannerMessage: data.processedBannerMessage ? data.processedBannerMessage : null,
                           catchmentWarning: req.session.catchmentWarning,
-                          backLinkUrl: 'inbox.todo.get',
+                          backLinkUrl: typeof req.session.searchResponse !== 'undefined' ? app.namedRoutes.build('search.get') : app.namedRoutes.build('inbox.todo.get'),
                         });
                       }
                     )
@@ -338,7 +338,7 @@
                             opticReference,
                             processedBannerMessage: data.processedBannerMessage ? data.processedBannerMessage : null,
                             catchmentWarning: req.session.catchmentWarning,
-                            backLinkUrl: 'inbox.todo.get',
+                            backLinkUrl: typeof req.session.searchResponse !== 'undefined' ? app.namedRoutes.build('search.get') : app.namedRoutes.build('inbox.todo.get'),
                           });
                         }
 
@@ -448,7 +448,7 @@
                 processedBannerMessage: data.processedBannerMessage ? data.processedBannerMessage : null,
                 responseCompletedMesssage: responseCompletedMesssage,
                 method: 'digital',
-                backLinkUrl: 'inbox.todo.get',
+                backLinkUrl: typeof req.session.searchResponse !== 'undefined' ? app.namedRoutes.build('search.get') : app.namedRoutes.build('inbox.todo.get'),
               });
             });
         }

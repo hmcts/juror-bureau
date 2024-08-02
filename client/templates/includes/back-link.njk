@@ -10,7 +10,7 @@
 {% if backLinkUrl %}
   {{ govukBackLink({
     text: "Back",
-    href: dynamicBackLink if dynamicBackLink else backUrl,
+    href: backUrl,
     attributes: {
       id: "backLinkAnchor"
     }
