@@ -137,7 +137,7 @@
         req.body.courtroom = courtroom;
       }
 
-      let validatorResult = validate(req.body, createTrialValidator.trialDetails(courtrooms, judges));
+      let validatorResult = validate(req.body, createTrialValidator.trialDetails(courtrooms, judges, true));
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;

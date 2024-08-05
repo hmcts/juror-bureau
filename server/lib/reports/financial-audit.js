@@ -96,14 +96,24 @@
     } = auditData;
 
     const right = financialAuditNumber ? [
-      {key: 'Audit number', value: financialAuditNumber},
-      {key: 'Date submitted', value: `${dateFilter(submittedAt, '', 'ddd DD MMM YYYY')} by ${submittedBy.name}`},
+      { key: 'Audit number', value: financialAuditNumber},
+      {
+        key: 'Date submitted',
+        value: submittedAt.includes('2000-01-01')
+          ? '-' : `${dateFilter(submittedAt, '', 'ddd DD MMM YYYY')} by ${submittedBy.name}`,
+      },
      ] : [
-      {key: 'Audit number', value: 'Draft'},
-     ]
+      { key: 'Audit number', value: 'Draft' },
+     ];
 
     if (approvedAt) {
-      right.push({key: 'Date approved', value: `${dateFilter(approvedAt, '', 'ddd DD MMM YYYY')} by ${approvedBy.name}`})
+      right.push(
+        {
+          key: 'Date approved',
+          value: approvedAt.includes('2000-01-01')
+            ? '-' : `${dateFilter(approvedAt, '', 'ddd DD MMM YYYY')} by ${approvedBy.name}`,
+        },
+      );
     }
 
     const method = auditData.expenses.expenseDetails.reduce((prev, curr) => {

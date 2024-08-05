@@ -408,7 +408,7 @@
       payload['juror_search'].postcode = query.postcode;
       break;
     case 'trial':
-      payload['trial_number'] = query.trialNumber;
+      payload['trial_number'] = decodeURIComponent(query.trialNumber);
       break;
     }
 
@@ -455,7 +455,7 @@
       queryParams = `?searchBy=postcode&postcode=${query.postcode}`;
       break;
     case 'trial':
-      queryParams = `?searchBy=trial&trialNumber=${query.trialNumber}`;
+      queryParams = `?searchBy=trial&trialNumber=${encodeURIComponent(query.trialNumber)}`;
       break;
     }
 
