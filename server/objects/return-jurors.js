@@ -20,14 +20,14 @@
 
       post: function(rp, app, jwtToken, type, trialNumber, locCode, payload) {
         var reqOptions = _.clone(options);
+        const params = new URLSearchParams({ trial_number: trialNumber, location_code: locCode });
 
         reqOptions.headers.Authorization = jwtToken;
         reqOptions.method = 'POST';
         reqOptions.uri = urljoin(
           reqOptions.uri,
           this.resource + type,
-          '?trial_number=' + trialNumber,
-          '&location_code=' + locCode
+          `?${params.toString()}`,
         );
 
         reqOptions.body = payload;
