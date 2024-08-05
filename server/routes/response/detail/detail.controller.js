@@ -1718,7 +1718,7 @@
               type: 'Responded',
             };
 
-            return res.redirect(app.namedRoutes.build('inbox.todo.get'));
+            return res.redirect(app.namedRoutes.build('response.detail.get', {id: req.params.id}));
           }
 
           return res.redirect(app.namedRoutes.build('response.detail.get', {id: req.params.id}));
@@ -1792,7 +1792,7 @@
               type: 'Responded',
             };
 
-            return res.redirect(app.namedRoutes.build('inbox.todo.get'));
+            return res.redirect(app.namedRoutes.build('response.paper.details.get', {id: req.params.id, type:'paper'}));
           }
         }).catch(errorCB);
       }

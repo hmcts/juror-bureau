@@ -13,11 +13,6 @@
     { systemCodesDAO } = require('../../../../objects/administration'),
     excusalObj = require('../../../../objects/excusal-mod.js').excusalObject,
     excusalValidator = require('../../../../config/validation/excusal-mod.js'),
-    actionPaths = {
-      responded: 'response.detail.responded.get',
-      deferral: 'process-deferral-dates.get',
-      excused: 'inbox.todo.get',
-    },
     requestObj = require('../../../../objects/pool-management.js').reassignJurors;
 
   module.exports.getReassignBeforeProcess = (app) => {
@@ -122,7 +117,7 @@
       }).then(
         (court) => {
           if (court.locationCode === req.session.locCode) {
-            return res.redirect(app.namedRoutes.build(actionPaths[req.params.action], {
+            return res.redirect(app.namedRoutes.build(actionPaths(req.params.action, req.params.type), {
               id: req.params.id,
               type: req.params.type,
             }));
@@ -131,7 +126,7 @@
           req.session.receivingCourtLocCode = court.locationCode;
 
           if (req.params.action === 'deferral') {
-            return res.redirect(app.namedRoutes.build(actionPaths[req.params.action], {
+            return res.redirect(app.namedRoutes.build(actionPaths(req.params.action, req.params.type), {
               id: req.params.id,
               type: req.params.type,
             }));
@@ -261,7 +256,7 @@
             req.session.locCode = req.session.receivingCourtLocCode;
             delete req.session.receivingCourtLocCode;
 
-            return res.redirect(app.namedRoutes.build(actionPaths[req.params.action], {
+            return res.redirect(app.namedRoutes.build(actionPaths(req.params.action, req.params.type), {
               id: req.params.id,
               type: req.params.type,
             }));
@@ -489,7 +484,10 @@
 
             delete req.session.excusalReasons;
 
-            return res.redirect(app.namedRoutes.build('inbox.todo.get'));
+            if (req.params.type === 'paper') {
+              return res.redirect(app.namedRoutes.build('response.paper.details.get', req.params));
+            }
+            return res.redirect(app.namedRoutes.build('response.detail.get', req.params));
           }
         )
         .catch(
@@ -506,5 +504,14 @@
         );
     };
   };
+
+  function actionPaths(action, responseType) {
+    const actionPaths = {
+      responded: 'response.detail.responded.get',
+      deferral: 'process-deferral-dates.get',
+      excused: responseType === 'paper' ? 'response.paper.details.get' : 'response.detail.get',
+    }
+    return actionPaths[action];
+  }
 
 })();

@@ -425,8 +425,10 @@
             return res.redirect(app.namedRoutes.build('process-deferral.letter.get', routeParameters));
           }
 
-          return res.redirect(app.namedRoutes.build('inbox.todo.get'));
-
+          if (routeParameters.type === 'paper') {
+            return res.redirect(app.namedRoutes.build('response.paper.details.get', routeParameters));
+          }
+          return res.redirect(app.namedRoutes.build('response.detail.get', routeParameters));
         }
         , errorCB = function(err) {
           app.logger.crit('Failed to process Deferral: ', {
@@ -635,7 +637,10 @@
             }));
           }
 
-          return res.redirect(app.namedRoutes.build('inbox.todo.get'));
+          if (routeParameters.type === 'paper') {
+            return res.redirect(app.namedRoutes.build('response.paper.details.get', routeParameters));
+          }
+          return res.redirect(app.namedRoutes.build('response.detail.get', routeParameters));
         }
         , errorCB = function(err) {
           app.logger.crit('Failed to process excusal: ', {

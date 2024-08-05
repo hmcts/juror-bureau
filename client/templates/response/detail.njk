@@ -16,7 +16,7 @@
 
   {% include "includes/back-link.njk" %}
 
-  {% if response.processingStatus === 'Closed' %}
+  {% if response.processingStatus in ['Closed', 'CLOSED'] %}
     <div class="govuk-!-margin-top-3">
       {% set bannerMessageHtml %}
         Summons reply processed on {{ response.completedAt | dateFilter('DD/MM/YYYY', 'D MMMM YYYY') }} by {{ response.assignedStaffMember.name | isAutoProcessed }}: <b>{{ processedBannerMessage }}</b>
