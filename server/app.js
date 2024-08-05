@@ -44,7 +44,7 @@ async function stopServer () {
     callback: () => {
       process.exit();
     },
-  }) ?? process.exit();
+  });
 }
 
 // Handle shutdown
