@@ -85,12 +85,12 @@
     let dateInitial = validateDateInitial(value),
       tmpErrors = [];
 
-    if (options.minDate && !moment(dateInitial.dateAsDate).isAfter(moment(options.minDate))) {
+    if (options.minDate && moment(dateInitial.dateAsDate).isBefore(moment(options.minDate))) {
       tmpErrors = [{
         summary: 'Date cannot be earlier than original summons date',
         details: 'Date cannot be earlier than original summons date',
       }];
-    } else if (options.maxDate && !moment(dateInitial.dateAsDate).isBefore(options.maxDate)) {
+    } else if (options.maxDate && moment(dateInitial.dateAsDate).isAfter(options.maxDate)) {
       tmpErrors = [{
         summary: 'Date cannot be more than 12 months after the original summons date',
         details: 'Date cannot be more than 12 months after the original summons date',
