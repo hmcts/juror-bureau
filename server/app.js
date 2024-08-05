@@ -33,22 +33,18 @@ function startServer () {
 
 async function stopServer () {
   if (config.logConsole !== false) {
-    console.info('\nExpress server shutdown signal received');
+    console.info('Express server shutdown signal received.');
+    console.info('Express server closing down.');
   }
-  await new Promise((res) => setTimeout(res, 5000));
-  if (config.logConsole !== false) {
-    console.info('\nExpress server closing down');
-  }
-  app.server.close();
-  await new Promise((res) => setTimeout(res, 2000));
-  appInsightsClient?.flush({ callback: () => process.exit() });
-}
 
-function msleep (n) {
-  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, n);
-}
-function sleep (n) {
-  msleep(n*1000);
+  app.juror.close();
+  await sleep(5000);
+
+  AppInsights.client()?.flush({
+    callback: () => {
+      process.exit();
+    },
+  }) ?? process.exit();
 }
 
 // Handle shutdown
@@ -59,7 +55,6 @@ process.on('SIGINT', function () {
 process.on('SIGTERM', function () {
   stopServer();
 });
-
 
 setImmediate(startServer);
 
