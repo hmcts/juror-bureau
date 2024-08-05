@@ -61,8 +61,7 @@
         return `I certify that ${data.firstName} ${data.lastName} served as a Juror on the above trial.\n\n`
           + `In the opinion of RH ${data.judge} who presided at the trial it would be reasonable and proper that `
           + `${data.firstName} ${data.lastName} should be exempt from Jury Service ${data.exemptionPeriod === 'indefinite' ? 'indefinitely' : `for a period of ${data.exemptionPeriod} years`}.\n\n`
-          + 'Yours sincerely,\n\n\n'
-          + `${data.signature}`;
+          + 'Yours sincerely,';
       },
 
       'show-cause': (data) => {
@@ -172,8 +171,7 @@
         return `Tystiaf fod ${data.firstName} ${data.lastName} wedi gwasanaethu fel Rheithiwr yn yr achos uchod.\n\n`
           + `Ym marn RH ${data.judge} a lywyddodd yr achos, byddai'n rhesymol ac yn iawn i `
           + `${data.firstName} ${data.lastName} gael ei h/esgusodi o orfod Gwasanaethu ar Reithgor ${data.exemptionPeriod === 'indefinite' ? 'amhenodol' : `am gyfnod o ${data.exemptionPeriod} flynyddoedd.`}.\n\n`
-          + 'Yn gywir\n\n\n'
-          + `${data.signature}`;
+          + 'Yn gywir';
       },
       'certificate-attendance': (data) => {
         return `Cadarnhaf fod ${data.firstName} ${data.lastName} swedi gwasanaethu fel reithiwr ar y dyddiau a ganlyn: \n\n`;
