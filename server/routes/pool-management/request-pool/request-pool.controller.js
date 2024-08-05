@@ -457,6 +457,10 @@
             poolDetails.numberOfCourtDeferrals = poolDetails.numberOfJurorsRequired;
           }
 
+          const tmpErrors = _.clone(req.session.errors);
+
+          delete req.session.errors;
+
           return res.render('pool-management/_common/check-request-details', {
             poolDetails: poolDetails,
             submitUrl: app.namedRoutes.build('request-pool.check-details.post'),
@@ -466,6 +470,11 @@
             pageIdentifier: 'Request a Pool',
             pageTitle: 'Check your pool request',
             buttonLabel: 'Request pool',
+            errors: {
+              title: 'Please check all details',
+              count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+              items: tmpErrors,
+            },
           });
         },
         errorCB = function(err) {
@@ -527,7 +536,9 @@
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
-          return res.redirect(app.namedRoutes.build('pool-management.get'));
+          req.session.errors = modUtils.makeManualError('poolRequest', 'Something went wrong when trying to request a new pool');
+
+          return res.redirect(app.namedRoutes.build('request-pool.check-details.get'));
         };
 
       tmpBody.attendanceTime = req.session.poolDetails.attendanceTime;
