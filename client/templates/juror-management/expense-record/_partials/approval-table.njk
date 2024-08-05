@@ -71,7 +71,13 @@
           {% if status === "for-reapproval" %}
             <td class="govuk-table__cell"><b>£{{ expense.balance_to_pay | toFixed(2) }}</b></td>
           {% endif %}
-          <td class="govuk-table__cell" data-sort-value="{{ expense.audit_created_on }}">{{ expense.audit_created_on | dateFilter("YYYY-MM-DD hh:mm:ss", "ddd DD MMM YYYY [at] h:mma") }}</td>
+          <td class="govuk-table__cell" data-sort-value="{{ expense.audit_created_on }}">
+            {% if "2000-01-01" in expense.audit_created_on %}
+              -
+            {% else %}
+              {{ expense.audit_created_on | dateFilter("YYYY-MM-DD hh:mm:ss", "ddd DD MMM YYYY [at] h:mma") }}
+            {% endif %}
+          </td>
         </tr>
 
       {% endfor %}
