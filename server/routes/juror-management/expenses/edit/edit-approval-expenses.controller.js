@@ -807,9 +807,10 @@
         },
         travel: {
           'traveled_by_car': false,
-          'traveled_by_motorcycle': body.motoPassengers,
+          'traveled_by_motorcycle': false,
           'traveled_by_bicycle': false,
           'jurors_taken_by_car': body.carPassengers,
+          'jurors_taken_by_motorcycle': body.motoPassengers,
           'miles_traveled': body.milesTravelled,
           parking: body.parking,
           'public_transport': body.publicTransport,
