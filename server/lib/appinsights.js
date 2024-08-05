@@ -15,7 +15,13 @@ module.exports.AppInsights = class AppInsights {
         .start();
 
       appInsights.defaultClient.context.tags[appInsights.defaultClient.context.keys.cloudRole] = 'juror-bureau';
+
+      this.appInsights = appInsights;
     }
+  }
+  
+  client() {
+    return this.appInsights?.defaultClient;
   }
 
 };
