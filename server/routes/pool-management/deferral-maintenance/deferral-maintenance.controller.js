@@ -68,8 +68,8 @@
 
       if (isCourtUser(req) && !req.session.errors) {
         return requestObj
-          .deferrals.get(rp, app, req.session.authToken, req.session.authentication.owner)
-          .then((data) => successCB(data, req.session.authentication.owner)(app, req, res))
+          .deferrals.get(rp, app, req.session.authToken, req.session.authentication.locCode)
+          .then((data) => successCB(data, req.session.authentication.locCode)(app, req, res))
           .catch((err) => errorCB(err)(app, req, res));
       }
 

@@ -289,7 +289,7 @@
                           opticReference,
                           processedBannerMessage: data.processedBannerMessage ? data.processedBannerMessage : null,
                           catchmentWarning: req.session.catchmentWarning,
-                          backLinkUrl: typeof req.session.searchResponse !== 'undefined' ? app.namedRoutes.build('search.get') : app.namedRoutes.build('inbox.todo.get'),
+                          backLinkUrl: 'inbox.todo.get',
                         });
                       }
                     )
@@ -338,7 +338,7 @@
                             opticReference,
                             processedBannerMessage: data.processedBannerMessage ? data.processedBannerMessage : null,
                             catchmentWarning: req.session.catchmentWarning,
-                            backLinkUrl: typeof req.session.searchResponse !== 'undefined' ? app.namedRoutes.build('search.get') : app.namedRoutes.build('inbox.todo.get'),
+                            backLinkUrl: 'inbox.todo.get',
                           });
                         }
 
@@ -448,7 +448,7 @@
                 processedBannerMessage: data.processedBannerMessage ? data.processedBannerMessage : null,
                 responseCompletedMesssage: responseCompletedMesssage,
                 method: 'digital',
-                backLinkUrl: typeof req.session.searchResponse !== 'undefined' ? app.namedRoutes.build('search.get') : app.namedRoutes.build('inbox.todo.get'),
+                backLinkUrl: 'inbox.todo.get',
               });
             });
         }
@@ -1718,7 +1718,7 @@
               type: 'Responded',
             };
 
-            return res.redirect(app.namedRoutes.build('inbox.todo.get'));
+            return res.redirect(app.namedRoutes.build('response.detail.get', {id: req.params.id}));
           }
 
           return res.redirect(app.namedRoutes.build('response.detail.get', {id: req.params.id}));
@@ -1792,7 +1792,7 @@
               type: 'Responded',
             };
 
-            return res.redirect(app.namedRoutes.build('inbox.todo.get'));
+            return res.redirect(app.namedRoutes.build('response.paper.details.get', {id: req.params.id, type:'paper'}));
           }
         }).catch(errorCB);
       }

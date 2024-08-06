@@ -425,8 +425,10 @@
             return res.redirect(app.namedRoutes.build('process-deferral.letter.get', routeParameters));
           }
 
-          return res.redirect(app.namedRoutes.build('inbox.todo.get'));
-
+          if (routeParameters.type === 'paper') {
+            return res.redirect(app.namedRoutes.build('response.paper.details.get', routeParameters));
+          }
+          return res.redirect(app.namedRoutes.build('response.detail.get', routeParameters));
         }
         , errorCB = function(err) {
           app.logger.crit('Failed to process Deferral: ', {
@@ -635,7 +637,10 @@
             }));
           }
 
-          return res.redirect(app.namedRoutes.build('inbox.todo.get'));
+          if (routeParameters.type === 'paper') {
+            return res.redirect(app.namedRoutes.build('response.paper.details.get', routeParameters));
+          }
+          return res.redirect(app.namedRoutes.build('response.detail.get', routeParameters));
         }
         , errorCB = function(err) {
           app.logger.crit('Failed to process excusal: ', {
@@ -936,7 +941,7 @@
               isBureauUser: isBureauUser(req),
               isAddChangeVisible: data.responseClone.processingStatus !== 'Closed',
               catchmentWarning: req.session.catchmentWarning,
-              backLinkUrl: typeof req.session.searchResponse !== 'undefined' ? app.namedRoutes.build('search.get') : app.namedRoutes.build('inbox.todo.get'),
+              backLinkUrl: 'inbox.todo.get',
             });
 
           }
@@ -978,7 +983,7 @@
                 isBureauUser: isBureauUser(req),
                 isAddChangeVisible: data.responseClone.processingStatus !== 'Closed',
                 catchmentWarning: req.session.catchmentWarning,
-                backLinkUrl: typeof req.session.searchResponse !== 'undefined' ? app.namedRoutes.build('search.get') : app.namedRoutes.build('inbox.todo.get'),
+                backLinkUrl: 'inbox.todo.get',
               });
             }
 
@@ -1003,7 +1008,7 @@
       processedBannerMessage: data.processedBannerMessage,
       isAddChangeVisible: data.responseClone.processingStatus !== 'Closed',
       isBureauUser: isBureauUser(req),
-      backLinkUrl: typeof req.session.searchResponse !== 'undefined' ? app.namedRoutes.build('search.get') : app.namedRoutes.build('inbox.todo.get'),
+      backLinkUrl: 'inbox.todo.get',
     });
   }
 

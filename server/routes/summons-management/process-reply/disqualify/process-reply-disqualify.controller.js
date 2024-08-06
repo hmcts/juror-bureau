@@ -109,7 +109,11 @@
             return res.redirect(app.namedRoutes.build('process-disqualify.letter.get', routeParameters));
           }
 
-          return res.redirect(app.namedRoutes.build('inbox.todo.get'));
+          if (routeParameters.type === 'paper') {
+            return res.redirect(app.namedRoutes.build('response.paper.details.get', routeParameters));
+          }
+          return res.redirect(app.namedRoutes.build('response.detail.get', routeParameters));
+
         }).catch((err) => {
           app.logger.crit('Failed to process juror disqualification', {
             auth: req.session.authentication,

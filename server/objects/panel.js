@@ -28,7 +28,8 @@
 
   module.exports.panelMemberStatusDAO = new DAO('moj/trial/panel/status', {
     get: function(trialNumber, courtLocationCode) {
-      const uri = urljoin(this.resource, `?trial_number=${trialNumber}&court_location_code=${courtLocationCode}`);
+      const params = new URLSearchParams({ 'trial_number': trialNumber, 'court_location_code': courtLocationCode });
+      const uri = urljoin(this.resource, `?${params.toString()}`);
 
       return { uri };
     },
@@ -42,10 +43,11 @@
 
   module.exports.panelListDAO = {
     get: function(app, req, trialNumber, courtLocationCode) {
+      const params = new URLSearchParams({ 'trial_number': trialNumber, 'court_location_code': courtLocationCode });
       const payload = {
         uri: urljoin(
           config.apiEndpoint,
-          `moj/trial/panel/list?trial_number=${trialNumber}&court_location_code=${courtLocationCode}`,
+          `moj/trial/panel/list?${params.toString()}`,
         ),
         method: 'GET',
         headers: {
@@ -64,16 +66,15 @@
 
   module.exports.requestPanelDAO = {
     get: function(app, req, trialNumber, courtLocationCode, numberRequested) {
+      const params = new URLSearchParams({
+        'trial_number': trialNumber,
+        'court_location_code': courtLocationCode,
+        'number_requested': numberRequested,
+      });
       const payload = {
         uri: urljoin(
           config.apiEndpoint,
-          `moj/trial/panel/list?trial_number=${
-            trialNumber
-          }&court_location_code=${
-            courtLocationCode
-          }&number_requested=${
-            numberRequested
-          }`,
+          `moj/trial/panel/list?${params.toString()}`,
         ),
         method: 'GET',
         headers: {

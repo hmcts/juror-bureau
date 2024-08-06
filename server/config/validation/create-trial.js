@@ -5,30 +5,36 @@
     , { parseDate } = require('./date-picker')
     , moment = require('moment');
 
-  module.exports.trialDetails = function(courtsList, judgesList) {
+  module.exports.trialDetails = function(courtsList, judgesList, isEdit = false) {
     return {
-      trialNumber: {
-        presence: {
-          allowEmpty: false,
-          message: {
-            summary: 'Enter a trial number',
-            details: 'Enter a trial number',
+      trialNumber: () => {
+        if (isEdit) {
+          return {};
+        }
+
+        return {
+          presence: {
+            allowEmpty: false,
+            message: {
+              summary: 'Enter a trial number',
+              details: 'Enter a trial number',
+            },
           },
-        },
-        format: {
-          pattern: '^[A-Z0-9]*$',
-          message: {
-            summary: 'Enter a trial number using uppercase letters only',
-            details: 'Enter a trial number using uppercase letters only',
+          format: {
+            pattern: '^[A-Z0-9]*$',
+            message: {
+              summary: 'Enter a trial number using uppercase letters only',
+              details: 'Enter a trial number using uppercase letters only',
+            },
           },
-        },
-        length: {
-          maximum: 16,
-          message: {
-            summary: 'Trial number must be 16 characters or less',
-            details: 'Trial number must be 16 characters or less',
+          length: {
+            maximum: 16,
+            message: {
+              summary: 'Trial number must be 16 characters or less',
+              details: 'Trial number must be 16 characters or less',
+            },
           },
-        },
+        };
       },
       trialType: {
         presence: {

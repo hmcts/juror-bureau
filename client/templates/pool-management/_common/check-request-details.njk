@@ -10,6 +10,8 @@
 
 {% block content %}
 
+  {% include "includes/errors.njk" %}
+
   {% set _submitUrl = submitUrl %}
   {% set _cancelUrl = cancelUrl %}
   {% set _changeUrl = changeUrl %}

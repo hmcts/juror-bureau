@@ -31,6 +31,31 @@ function startServer () {
   });
 }
 
+async function stopServer () {
+  if (config.logConsole !== false) {
+    console.info('Express server shutdown signal received.');
+    console.info('Express server closing down.');
+  }
+
+  app.juror.close();
+  await sleep(5000);
+
+  AppInsights.client()?.flush({
+    callback: () => {
+      process.exit();
+    },
+  });
+}
+
+// Handle shutdown
+process.on('SIGINT', function () {
+  stopServer();
+});
+
+process.on('SIGTERM', function () {
+  stopServer();
+});
+
 setImmediate(startServer);
 
 // Expose app

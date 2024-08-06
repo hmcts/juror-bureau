@@ -35,7 +35,7 @@
           text: "Date from"
         },
         hint: "Use dd/mm/yyyy format. For example, 31/01/2024.",
-        dateValue: filters.filterStartDate,
+        dateValue: filters.filterStartDate | dateFilter("yyyy-MM-DD", "DD/MM/YYYY") if filters.filterStartDate,
         dateError: unpaidAttendanceFromDateError
       }) }}
 
@@ -46,7 +46,7 @@
         },
         hint: "Use dd/mm/yyyy format. For example, 31/01/2024.",
         dateMin: filters.filterStartDate,
-        dateValue: filters.filterEndDate,
+        dateValue: filters.filterEndDate | dateFilter("yyyy-MM-DD", "DD/MM/YYYY") if filters.filterEndDate,
         dateError: unpaidAttendanceToDateError
       }) }}
 
