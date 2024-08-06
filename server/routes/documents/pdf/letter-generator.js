@@ -191,7 +191,7 @@
           columns.push({
             text: `Page ${stackPage} of ${stackPages}`,
             alignment: 'right',
-            marginRight: 20,
+            marginRight: 50,
           });
 
           break;
