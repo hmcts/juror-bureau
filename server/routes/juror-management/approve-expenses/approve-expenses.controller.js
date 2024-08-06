@@ -43,15 +43,12 @@
       delete req.session.fromFields;
 
       try {
-        let { response: data, headers } = await approveExpensesDAO.get(
-          app,
+        let data = await approveExpensesDAO.get(
           req,
           locCode,
           currentTab,
-          dateFilters
+          dateFilters,
         );
-
-        req.session.approveExpensesEtag = headers.etag;
 
         app.logger.info('Fetched expenses awaiting approval: ', {
           auth: req.session.authentication,
@@ -97,8 +94,6 @@
           token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
-
-        console.log(err);
 
         return res.render('_errors/generic.njk');
       };
@@ -238,42 +233,6 @@
 
     const payload = [];
 
-    try {
-      await approveExpensesDAO.get(
-        app,
-        req,
-        locCode,
-        currentTab,
-        dateFilters,
-        req.session.approveExpensesEtag
-      );
-
-      // TODO: update error message content once confirmed
-      req.session.errors = {
-        approveExpenses: [{
-          summary: 'Expenses were updated or some have already been approved',
-          details: 'Expenses were updated or some have already been approved',
-        }],
-      };
-
-      return res.redirect(redirectUrl);
-
-    } catch (err) {
-      if (err.statusCode !== 304) {
-
-        app.logger.crit('Failed to compare etags for when approving expenses: ', {
-          auth: req.session.authentication,
-          jwt: req.session.authToken,
-          data: {
-            expenses: checkedJurors,
-          },
-          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-        });
-
-        return res.render('_errors/generic');
-      }
-    }
-
     checkedJurors.forEach(j => {
       payload.push({
         jurorNumber: j.jurorNumber,
@@ -287,7 +246,10 @@
     replaceAllObjKeys(payload, _.snakeCase);
 
     try {
-      const financialNumbers = await approveExpensesDAO.post(app, req, locCode, currentTab, payload);
+      const response = await approveExpensesDAO.post(req, locCode, currentTab, payload);
+      delete response._headers;
+
+      const financialNumbers = Object.values(response).map((financialNumber) => financialNumber).join(',');
 
       req.session.bannerMessage = `Expenses approved for ${checkedJurors.length > 1
         ? `${checkedJurors.length} jurors`
@@ -328,11 +290,18 @@
       });
 
       if (err.statusCode === 422) {
+        const errorMessages = {
+          'DATA_OUT_OF_DATE': 'Some of the expenses were updated. Review your selection and try again.',
+          'CAN_NOT_APPROVE_OWN_EDIT': 'You cannot approve your own submitted expenses.',
+          'CAN_NOT_APPROVE_MORE_THAN_LIMIT': 'You cannot approve more than your allowed limit.',
+        };
+
         req.session.errors = {
           selectedJurors: [{
-            details: err.error.message,
+            details: errorMessages[err.error.code] || 'Unable to approve selected expenses',
           }],
         };
+
         return res.redirect(redirectUrl);
       }
 

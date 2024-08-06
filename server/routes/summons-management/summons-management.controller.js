@@ -830,6 +830,7 @@
           };
 
           responseClone.isLateSummons = responseClone.processingStatus != "Closed" && modUtils.isLateSummons(responseClone.serviceStartDate);
+          responseClone.completedAt = responseClone.completed_at;
 
           req.session.replyDetails = {};
           req.session.replyDetails.jurorNumber = response[0].data.jurorNumber;
@@ -940,7 +941,7 @@
               isBureauUser: isBureauUser(req),
               isAddChangeVisible: data.responseClone.processingStatus !== 'Closed',
               catchmentWarning: req.session.catchmentWarning,
-              backLinkUrl: typeof req.session.searchResponse !== 'undefined' ? app.namedRoutes.build('search.get') : app.namedRoutes.build('inbox.todo.get'),
+              backLinkUrl: 'inbox.todo.get',
             });
 
           }
@@ -982,7 +983,7 @@
                 isBureauUser: isBureauUser(req),
                 isAddChangeVisible: data.responseClone.processingStatus !== 'Closed',
                 catchmentWarning: req.session.catchmentWarning,
-                backLinkUrl: typeof req.session.searchResponse !== 'undefined' ? app.namedRoutes.build('search.get') : app.namedRoutes.build('inbox.todo.get'),
+                backLinkUrl: 'inbox.todo.get',
               });
             }
 
@@ -1007,7 +1008,7 @@
       processedBannerMessage: data.processedBannerMessage,
       isAddChangeVisible: data.responseClone.processingStatus !== 'Closed',
       isBureauUser: isBureauUser(req),
-      backLinkUrl: typeof req.session.searchResponse !== 'undefined' ? app.namedRoutes.build('search.get') : app.namedRoutes.build('inbox.todo.get'),
+      backLinkUrl: 'inbox.todo.get',
     });
   }
 

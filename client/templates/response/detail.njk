@@ -14,17 +14,7 @@
 
 {% block beforeContent %}
 
-  {% if backLinkUrl === undefined %}
-   {% set backLinkUrl = url('inbox.todo.get') %}
-  {% endif %}
-
-  {{ govukBackLink({
-    text: "Back",
-    href: backLinkUrl,
-    attributes: {
-      id: "backLinkAnchor"
-    }
-  }) }}
+  {% include "includes/back-link.njk" %}
 
   {% if response.processingStatus in ['Closed', 'CLOSED'] %}
     <div class="govuk-!-margin-top-3">

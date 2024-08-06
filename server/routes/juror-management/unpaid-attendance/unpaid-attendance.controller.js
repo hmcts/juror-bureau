@@ -7,12 +7,13 @@
   const urljoin = require('url-join');
   const fetchUnpaidExpenses = require('../../../objects/expenses').fetchUnpaidExpenses;
   const unpaidAttendanceFilterValidation = require('../../../config/validation/unpaid-attendance');
+  const { dateFilter } = require('../../../components/filters');
 
   module.exports.getUnpaidAttendance = function(app) {
     return function(req, res) {
       const currentPage = req.query['page'] || 1;
       const minDate = req.query['filterStartDate'] || null;
-      const maxDate = req.query['filterEndDate']|| null;
+      const maxDate = req.query['filterEndDate'] || null;
       const sortOrder = req.query['sortOrder'] || 'descending';
       const sortBy = req.query['sortBy'] || 'totalInDraft';
       const tmpErrors = _.clone(req.session.errors);
@@ -114,11 +115,11 @@
 
     if (!clearFilter) {
       if (params.filterStartDate) {
-        parameters.push('filterStartDate=' + params.filterStartDate);
+        parameters.push('filterStartDate=' + dateFilter(params.filterStartDate, 'DD/MM/YYYY', 'yyyy-MM-DD'));
       }
 
       if (params.filterEndDate) {
-        parameters.push('filterEndDate=' + params.filterEndDate);
+        parameters.push('filterEndDate=' + dateFilter(params.filterEndDate, 'DD/MM/YYYY', 'yyyy-MM-DD'));
       }
     } else {
       parameters.push('clearFilter=true');

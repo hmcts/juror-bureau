@@ -4,13 +4,20 @@
 {% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 
 {% block page_title %}{{ serviceName }} - Paper response - Reasonable adjustments{% endblock %}
 {% block page_identifier %}Paper response - Reasonable adjustments{% endblock %}
 
 {% block beforeContent %}
   {% if backLinkUrl %}
-    {% include "includes/back-link.njk" %}
+    {{ govukBackLink({
+      text: "Back",
+      href: backLinkUrl.url,
+      attributes: {
+        id: "backLinkAnchor"
+      }
+    }) }}
   {% endif %}
 {% endblock %}
 
