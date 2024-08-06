@@ -68,6 +68,10 @@
       }],
     },
     reasonableAdjustments: {
+      dateRange: [{
+        summary: 'Select which dates you want to search',
+        details: 'Select which dates you want to search',
+      }],
       dateFrom: [{
         summary: 'Enter a date to search reasonable adjustments from',
         details: 'Enter a date to search reasonable adjustments from',
@@ -182,7 +186,81 @@
         summary: 'Enter a date to search attendances up until',
         details: 'Enter a date to search attendances up until',
       }],
-    }
+    },
+    unconfirmedAttendance: {
+      dateFrom: [{
+        summary: 'Enter a date to search unconfirmed attendances from',
+        details: 'Enter a date to search unconfirmed attendances from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search unconfirmed attendances up until',
+        details: 'Enter a date to search unconfirmed attendances up until',
+      }],
+    },
+    juryExpenditureLowLevel: {
+      dateFrom: [{
+        summary: 'Enter a date to search approved expenses from',
+        details: 'Enter a date to search approved expenses from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search approved expenses up until',
+        details: 'Enter a date to search approved expenses up until',
+      }],
+    },
+    juryExpenditureHighLevel: {
+      dateFrom: [{
+        summary: 'Enter a date to search approved expenses from',
+        details: 'Enter a date to search approved expenses from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search approved expenses up until',
+        details: 'Enter a date to search approved expenses up until',
+      }],
+    },
+    juryExpenditureMidLevel: {
+      dateFrom: [{
+        summary: 'Enter a date to search approved expenses from',
+        details: 'Enter a date to search approved expenses from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search approved expenses up until',
+        details: 'Enter a date to search approved expenses up until',
+      }],
+    },
+    trialStatistics: {
+      dateFrom: [{
+        summary: 'Enter a date to search trial statistics from',
+        details: 'Enter a date to search trial statistics from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search trial statistics up until',
+        details: 'Enter a date to search trial statistics up until',
+      }],
+    },
+    poolAnalysis: {
+      dateFrom: [{
+        summary: 'Enter a date to analyse pools from',
+        details: 'Enter a date to analyse pools from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to analyse pools up until',
+        details: 'Enter a date to analyse pools up until',
+      }],
+    },
+    completionOfService: {
+      dateRange: [{
+        summary: 'Select which dates you want to search',
+        details: 'Select which dates you want to search',
+      }],
+      dateFrom: [{
+        summary: 'Enter a date to search completion of service from',
+        details: 'Enter a date to search completion of service from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search completion of service up until',
+        details: 'Enter a date to search completion of service up until',
+      }],
+    },
   };
 
   module.exports.searchBy = function(reportKey) {
@@ -220,6 +298,16 @@
     };
   };
 
+  module.exports.fixedDateRange = function(reportKey) {
+    return {
+      dateRange: {
+        reportsFixedDateRange: {
+          messageKey: reportKey,
+        },
+      }
+    }
+  }
+
   validate.validators.reportSearchBy = function(value, options, key, attributes) {
     if (typeof value === 'undefined' || value === '') {
       return messageMatrix[options.messageKey].searchBy;
@@ -251,6 +339,12 @@
       }];
     };
     return null;
+  };
+
+  validate.validators.reportsFixedDateRange = function(value, options, key, attributes) {
+    if (typeof value === 'undefined' || value === '') {
+      return messageMatrix[options.messageKey].dateRange;
+    }
   };
 
 })();
