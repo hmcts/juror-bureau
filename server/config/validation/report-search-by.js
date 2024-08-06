@@ -182,6 +182,26 @@
         summary: 'Enter a date to search attendances up until',
         details: 'Enter a date to search attendances up until',
       }],
+    },
+    unconfirmedAttendance: {
+      dateFrom: [{
+        summary: 'Enter a date to search unconfirmed attendances from',
+        details: 'Enter a date to search unconfirmed attendances from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search unconfirmed attendances up until',
+        details: 'Enter a date to search unconfirmed attendances up until',
+      }],
+    },
+    juryExpenditureLowLevel: {
+      dateFrom: [{
+        summary: 'Enter a date to search from',
+        details: 'Enter a date to search from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search up until',
+        details: 'Enter a date to search up until',
+      }],
     }
   };
 
