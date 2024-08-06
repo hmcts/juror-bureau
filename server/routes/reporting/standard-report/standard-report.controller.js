@@ -720,6 +720,17 @@
       return res.redirect(addURLQueryParams(reportType, app.namedRoutes.build(`reports.${reportKey}.report.get`, { filter: 'courts' })));
     }
     if (reportType.search === 'dateRange' || reportType.search === 'fixedDateRange') {
+      let validatorResult;
+      
+      if (reportType.search === 'fixedDateRange') {
+        validatorResult = validate(req.body, searchValidator.fixedDateRange(_.camelCase(reportKey), req.body));
+        if (typeof validatorResult !== 'undefined') {
+          req.session.errors = validatorResult;
+          req.session.formFields = req.body;
+          return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`));
+        }
+      }
+
       if (req.body.dateRange && req.body.dateRange === 'NEXT_31_DAYS') {
         req.body.dateFrom = moment().format('DD/MM/YYYY');
         req.body.dateTo = moment().add(31, 'days').format('DD/MM/YYYY');
@@ -729,7 +740,7 @@
         req.body.dateTo = moment().format('DD/MM/YYYY');
       }
 
-      const validatorResult = validate(req.body, searchValidator.dateRange(_.camelCase(reportKey), req.body));
+      validatorResult = validate(req.body, searchValidator.dateRange(_.camelCase(reportKey), req.body));
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
