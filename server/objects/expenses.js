@@ -16,6 +16,7 @@
     json: true,
     transform: utils.basicDataTransform,
   };
+  const { DAO } = require('./dataAccessObject');
 
   module.exports.fetchUnpaidExpenses = {
     resource: 'moj/expenses/{locCode}/unpaid-summary/',
@@ -171,51 +172,26 @@
     },
   };
 
-  module.exports.approveExpensesDAO = {
-    get: function(app, req, locCode, paymentMethod, dates, etag = null) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, `moj/expenses/${locCode}/${paymentMethod}/pending-approval`)
-          + (dates ? `?from=${dates.from}&to=${dates.to}` : ''),
-        method: 'GET',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
+  module.exports.approveExpensesDAO = new DAO('moj/expenses/{locCode}/{paymentMethod}', {
+    get: function(locCode, paymentMethod, dates) {
+      const uri = urljoin(this.resource, 'pending-approval')
+        .replace('{locCode}', locCode)
+        .replace('{paymentMethod}', paymentMethod)
+          + (dates ? `?from=${dates.from}&to=${dates.to}` : '');
+
+      return {
+        uri,
       };
-
-      if (etag) {
-        payload.headers['If-None-Match'] = `${etag}`;
-      }
-
-      app.logger.info('Sending request to API: ', payload);
-
-      payload.transform = (response, incomingRequest) => {
-        const headers = _.cloneDeep(incomingRequest.headers);
-
-        return { response, headers };
-      };
-
-      return rp(payload);
     },
-    post: function(app, req, locCode, paymentMethod, body) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, `moj/expenses/${locCode}/${paymentMethod}/approve`),
-        method: 'POST',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
+    post: function(locCode, paymentMethod, body) {
+      const uri = urljoin(this.resource, 'approve')
+        .replace('{locCode}', locCode).replace('{paymentMethod}', paymentMethod);
+
+      return {
+        uri,
         body,
       };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
     },
-  };
+  });
 
 })();

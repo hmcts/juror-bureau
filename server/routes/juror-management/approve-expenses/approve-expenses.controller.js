@@ -43,15 +43,12 @@
       delete req.session.fromFields;
 
       try {
-        let { response: data, headers } = await approveExpensesDAO.get(
-          app,
+        let data = await approveExpensesDAO.get(
           req,
           locCode,
           currentTab,
-          dateFilters
+          dateFilters,
         );
-
-        req.session.approveExpensesEtag = headers.etag;
 
         app.logger.info('Fetched expenses awaiting approval: ', {
           auth: req.session.authentication,
@@ -97,8 +94,6 @@
           token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
-
-        console.log(err);
 
         return res.render('_errors/generic.njk');
       };
@@ -251,7 +246,10 @@
     replaceAllObjKeys(payload, _.snakeCase);
 
     try {
-      const financialNumbers = await approveExpensesDAO.post(app, req, locCode, currentTab, payload);
+      const response = await approveExpensesDAO.post(req, locCode, currentTab, payload);
+      delete response._headers;
+
+      const financialNumbers = Object.values(response).map((financialNumber) => financialNumber).join(',');
 
       req.session.bannerMessage = `Expenses approved for ${checkedJurors.length > 1
         ? `${checkedJurors.length} jurors`
