@@ -21,7 +21,6 @@
       if (!jurorNumbers || jurorNumbers.length === 0) {
         app.logger.crit('No juror documents to print', {
           userId: req.session.authentication.login,
-          jwt: req.session.authToken,
           data: { document },
           error: 'Tried to reprint or direct navigation - missing juror numbers',
         });
@@ -116,7 +115,7 @@
 
         app.logger.info('Generated documents for the selected jurors', {
           userId: req.session.authentication.login,
-          jwt: req.session.authToken,
+          data: { ...payload },
         });
 
         res.contentType('application/pdf');
@@ -124,11 +123,9 @@
       } catch (err) {
         app.logger.crit('Unable to generate and print selected jurors', {
           userId: req.session.authentication.login,
-          jwt: req.session.authToken,
+          data: { ...payload },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
-
-        console.log(err);
 
         return res.render('_errors/generic');
       }
