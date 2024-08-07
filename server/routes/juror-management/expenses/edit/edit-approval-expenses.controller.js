@@ -190,7 +190,7 @@
       }
 
       try {
-        await postEditedExpensesDAO.put(app, req, locCode, jurorNumber, STATUSES[status], mapCamelToSnake(expensesToPost));
+        await postEditedExpensesDAO.put(req, locCode, jurorNumber, STATUSES[status], mapCamelToSnake(expensesToPost));
 
         delete req.session.editedExpenses;
 

@@ -171,7 +171,6 @@
       }
 
       submitDraftExpenses.post(
-        app,
         req,
         locCode,
         jurorNumber,
