@@ -27,6 +27,7 @@ const basicAuthUsername = process.env.USERNAME;
 const basicAuthPassword = process.env.PASSWORD;
 
 const { SessionConfig } = require('../lib/session-config.js');
+const { AppInsights } = require('../lib/appinsights.js');
 
 const generateNonce = () => {
   return require('crypto').randomBytes(16).toString('base64');
@@ -227,8 +228,16 @@ module.exports = async (app) => {
   }
 
   process.on('uncaughtException', (error, origin) => {
-    app.logger.crit('Uncaught Exception', { origin, stackTrace: error.stack }, () => {
-      process.exit(1);
+    app.logger.crit('Uncaught Exception', { origin, stackTrace: error.stack });
+
+    if (env !== 'production') {
+      return process.exit();
+    }
+
+    AppInsights.client()?.flush({
+      callback: () => {
+        process.exit();
+      },
     });
   });
 

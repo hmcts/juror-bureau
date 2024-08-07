@@ -547,7 +547,9 @@
         if (item.match(/Trial:* .+/)) {
           const trialParts = item.split(' ');
 
-          return `Trial: <a href="/trial-management/trials/${encodeURIComponent(trialParts[1])}/${locCode}/detail" target="_blank">${trialParts[1]}</a>`;
+          return `Trial: <a href="/trial-management/trials/${encodeURIComponent(trialParts[1])}/${locCode}/detail" target="_blank">
+            ${trialParts[1]}</a>
+          `;
         }
 
         return item;
