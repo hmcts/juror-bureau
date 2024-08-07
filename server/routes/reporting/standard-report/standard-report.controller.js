@@ -2,7 +2,18 @@
   'use strict';
 
   const _ = require('lodash');
-  const { snakeToCamel, transformCourtNames, makeManualError, checkIfArrayEmpty, transformRadioSelectTrialsList, replaceAllObjKeys, camelToSnake, mapCamelToSnake } = require('../../../lib/mod-utils');
+  const {
+    snakeToCamel,
+    transformCourtNames,
+    makeManualError,
+    checkIfArrayEmpty,
+    transformRadioSelectTrialsList,
+    replaceAllObjKeys,
+    camelToSnake,
+    mapCamelToSnake,
+    paginationBuilder,
+    constants,
+  } = require('../../../lib/mod-utils');
   const { standardReportDAO } = require('../../../objects/reports');
   const { validate } = require('validate.js');
   const { poolSearchObject } = require('../../../objects/pool-search');
@@ -199,12 +210,13 @@
           },
         });
       case 'trial':
+        const { page } = req.query;
         const sortBy = req.query['sortBy'] || 'trialNumber';
         const sortOrder = req.query['sortOrder'] || 'ascending';
         const opts = {
           active: false, // we want all trials not just active
-          pageNumber: 1,
-          pageLimit: 100,
+          pageNumber: page || 1,
+          pageLimit: constants.PAGE_SIZE,
           sortField: capitalise(camelToSnake(sortBy)),
           sortMethod: sortOrder === 'ascending' ? 'ASC' : 'DESC',
         };
@@ -215,6 +227,11 @@
           let data = await trialsListDAO.post(req, mapCamelToSnake(opts));
 
           data = replaceAllObjKeys(data, _.camelCase);
+
+          let paginationObject;
+          if (data.totalItems > constants.PAGE_SIZE) {
+            paginationObject = paginationBuilder(data.totalItems, page || 1, req.url);
+          }
   
           return res.render('reporting/standard-reports/trial-select', {
             errors: {
@@ -231,7 +248,7 @@
             reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
             cancelUrl: app.namedRoutes.build('reports.reports.get'),
             trials: transformRadioSelectTrialsList(data.data, sortBy, sortOrder),
-            totalItems: data.totalItems,
+            paginationObject,
             backLinkUrl: {
               built: true,
               url: reportType.filterBackLinkUrl,
