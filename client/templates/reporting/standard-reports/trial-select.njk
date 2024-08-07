@@ -47,15 +47,13 @@
         {% if trials.rows | length > 0 %}
           <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
-              {# <div class="fixTableHead"> #}
-                {{ modSortableTable({
-                  id: "trialsTable",
-                  head: trials.head,
-                  rows: trials.rows,
-                  url: urlPrefix,
-                  classes: "govuk-!-padding-left-2"
-                }) }}
-              {# </div> #}
+              {{ modSortableTable({
+                id: "trialsTable",
+                head: trials.head,
+                rows: trials.rows,
+                url: urlPrefix,
+                classes: "govuk-!-padding-left-2"
+              }) }}
 
               {{ govukPagination({
                 previous: {
