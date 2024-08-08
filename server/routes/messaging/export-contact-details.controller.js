@@ -135,7 +135,7 @@
           errorMetadata,
           jurors,
           pagination,
-          checkedJurors: req.session.messaging?.checkedJurors,
+          checkedJurors: req.session.messaging?.checkedJurors || [],
           urlPrefix,
           sortBy,
           sortOrder,
