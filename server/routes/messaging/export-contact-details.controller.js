@@ -159,7 +159,7 @@
       let pagination;
 
       try {
-        jurorsList = await jurorSearchDAO.post(app, req, locCode, payload);
+        jurorsList = await jurorSearchDAO.post(req, locCode, payload);
 
         formatedList = modUtils.replaceAllObjKeys(jurorsList.data, _.camelCase);
 
@@ -322,7 +322,6 @@
             };
 
             let jurorsData = await jurorSearchDAO.post(
-              app,
               req,
               req.session.authentication.owner,
               opts,
