@@ -142,7 +142,7 @@
           },
         },
         format: {
-          pattern: '^[A-Z0-9&]*$',
+          pattern: '^[A-Z0-9&/]*$',
           message: {
             summary: 'Enter a trial number using uppercase letters only',
             details: 'Enter a trial number using uppercase letters only',

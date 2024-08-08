@@ -5,6 +5,7 @@
   const urljoin = require('url-join');
   const config = require('../config/environment')();
   const rp = require('request-promise');
+  const { DAO } = require('./dataAccessObject');
 
   const endpoint = config.apiEndpoint + '/moj/expenses/{locCode}';
 
@@ -37,27 +38,16 @@
     },
   };
 
-  module.exports.submitDraftExpenses = {
-    post: function(app, req, locCode, jurorNumber, attendanceDates) {
-      const payload = {
-        uri: urljoin(endpoint.replace('{locCode}', locCode), jurorNumber, 'submit-for-approval'),
-        method: 'POST',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
+  module.exports.submitDraftExpenses = new DAO(endpoint, {
+    post: function(locCode, jurorNumber, attendanceDates) {
+      return { 
+        uri: urljoin(this.resource.replace('{locCode}', locCode), jurorNumber, 'submit-for-approval'),
         body: {
           dates: attendanceDates,
         },
       };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
     },
-  };
+  });
 
   module.exports.getEnteredExpensesDAO = {
     post: function(app, req, locCode, jurorNumber, body) {
@@ -79,25 +69,14 @@
     },
   };
 
-  module.exports.postEditedExpensesDAO = {
-    put: function(app, req, locCode, jurorNumber, expenseType, body) {
-      const payload = {
-        uri: urljoin(endpoint.replace('{locCode}', locCode), jurorNumber, expenseType, 'edit'),
-        method: 'PUT',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
+  module.exports.postEditedExpensesDAO = new DAO(endpoint, {
+    put: function(locCode, jurorNumber, expenseType, body) {
+      return { 
+        uri: urljoin(this.resource.replace('{locCode}', locCode), jurorNumber, expenseType, 'edit'),
         body,
       };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
     },
-  };
+  });
 
   module.exports.getExpenseRecordsDAO = {
     get: function(app, req, locCode, expenseType, jurorNumber) {

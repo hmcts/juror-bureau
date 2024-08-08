@@ -115,8 +115,6 @@
         tmpBody = req.session.editExpenseTravelOverLimit.body;
       }
 
-      delete req.session.editExpenseTravelOverLimit;
-
       return res.render(renderTemplate, {
         postUrls,
         cancelUrl,
@@ -233,9 +231,6 @@
         }
       }
 
-      // clear any data related to the edit expense travel over limit
-      delete req.session.editExpenseTravelOverLimit;
-
       try {
         const payload = {
           'expense_list': [{ ...data }],
@@ -258,7 +253,7 @@
       }
 
       try {
-        const [response] = await postEditedExpensesDAO.put(app, req, locCode, jurorNumber, 'DRAFT', [data]);
+        const { '0': response } = await postEditedExpensesDAO.put(req, locCode, jurorNumber, 'DRAFT', [data]);
 
         if (response.financial_loss_warning) {
           req.session.financialLossWarning = response.financial_loss_warning;
@@ -347,8 +342,16 @@
     };
   };
 
-  module.exports.getTravelOverLimit = () => {
+  module.exports.getTravelOverLimit = (app) => {
     return async function(req, res) {
+      if (!req.session.editExpenseTravelOverLimit) {
+        app.logger.crit('Tried to navigate back to loss-over-limit page without the session data', {
+          auth: req.session.authentication,
+        });
+
+        return res.render('_errors/generic');
+      }
+
       const { continueUrl, cancelUrl, travelOverLimit, body } = req.session.editExpenseTravelOverLimit;
 
       return res.render('expenses/travel-over-limit.njk', {
@@ -405,7 +408,7 @@
       }
 
       try {
-        await postEditedExpensesDAO.put(app, req, locCode, jurorNumber, 'DRAFT', [data]);
+        await postEditedExpensesDAO.put(req, locCode, jurorNumber, 'DRAFT', [data]);
 
         return res.redirect(redirectUrl);
       } catch (err) {

@@ -190,7 +190,7 @@
       }
 
       try {
-        await postEditedExpensesDAO.put(app, req, locCode, jurorNumber, STATUSES[status], mapCamelToSnake(expensesToPost));
+        await postEditedExpensesDAO.put(req, locCode, jurorNumber, STATUSES[status], mapCamelToSnake(expensesToPost));
 
         delete req.session.editedExpenses;
 
@@ -325,8 +325,6 @@
           tmpBody = req.session.editExpenseTravelOverLimit.body;
         }
 
-        delete req.session.editExpenseTravelOverLimit;
-
         return res.render(template, {
           jurorNumber,
           locCode,
@@ -453,9 +451,6 @@
           }));
         }
       }
-
-      // clear any data related to the edit expense travel over limit
-      delete req.session.editExpenseTravelOverLimit;
 
       let response;
 

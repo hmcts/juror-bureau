@@ -14,6 +14,7 @@
 
   const urljoin = require('url-join');
   const rp = require('request-promise');
+  const { DAO } = require('./dataAccessObject');
 
   module.exports.messageTemplateDAO = {
     get: function(app, req, messageType, locCode) {
@@ -56,35 +57,25 @@
     },
   };
 
-  module.exports.jurorSearchDAO = {
-    post: function(app, req, locCode, body, simpleResponse) {
+  module.exports.jurorSearchDAO = new DAO('moj/messages/search', {
+    post: function(locCode, _body, simpleResponse) {
       let _locCode = locCode;
 
-      if (body.court_name) {
-        _locCode = body.court_name.match(/\d+/g)[0];
+      if (_body.court_name) {
+        _locCode = _body.court_name.match(/\d+/g)[0];
       }
 
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/messages/search', _locCode),
-        method: 'POST',
-        headers: {
-          Authorization: req.session.authToken,
-          'Content-Type': 'application/vnd.api+json',
-        },
-        json: true,
-      };
+      let uri = urljoin(this.resource, _locCode);
 
       if (simpleResponse) {
-        payload.uri = urljoin(payload.uri, '?simple_response=true');
+        uri = urljoin(uri, '?simple_response=true');
       }
 
-      payload.body = _.mapKeys(body, (__, key) => _.snakeCase(key));
+      const body = _.mapKeys(_body, (__, key) => _.snakeCase(key));
 
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
-    },
-  };
+      return { uri, body };
+    }
+  });
 
   const sendMessage = {
     resource: 'moj/messages/send',
