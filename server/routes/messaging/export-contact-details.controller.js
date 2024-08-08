@@ -124,6 +124,10 @@
       const filterUrl = app.namedRoutes.build('messaging.export-contacts.jurors.filter.post') + urlPrefix;
       const submitUrl = app.namedRoutes.build('messaging.export-contacts.jurors.post') + urlPrefix;
 
+      if (!req.session.messaging) {
+        req.session.messaging = {};
+      }
+
       const renderView = (totalJurors, jurors, pagination, errorMetadata) => {
         res.render('messaging/export-contact-details/jurors-list.njk', {
           origin: 'EXPORT_DETAILS',
@@ -131,7 +135,7 @@
           errorMetadata,
           jurors,
           pagination,
-          checkedJurors: req.session.messaging.checkedJurors,
+          checkedJurors: req.session.messaging?.checkedJurors || [],
           urlPrefix,
           sortBy,
           sortOrder,
