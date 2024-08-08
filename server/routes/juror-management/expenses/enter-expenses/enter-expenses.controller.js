@@ -342,8 +342,16 @@
     };
   };
 
-  module.exports.getTravelOverLimit = () => {
+  module.exports.getTravelOverLimit = (app) => {
     return async function(req, res) {
+      if (!req.session.editExpenseTravelOverLimit) {
+        app.logger.crit('Tried to navigate back to loss-over-limit page without the session data', {
+          auth: req.session.authentication,
+        });
+
+        return res.render('_errors/generic');
+      }
+
       const { continueUrl, cancelUrl, travelOverLimit, body } = req.session.editExpenseTravelOverLimit;
 
       return res.render('expenses/travel-over-limit.njk', {
