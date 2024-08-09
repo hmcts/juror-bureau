@@ -352,7 +352,7 @@
       item.push(
         {
           html: '<a href="/trial-management/trials/' +
-              trial.trial_number + '/' +
+          encodeURIComponent(trial.trial_number) + '/' +
               trial.court_location + '/detail" class="govuk-link">' + trial.trial_number + '</a>',
           attributes: {
             'data-sort-value': trial.trial_number,

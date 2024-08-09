@@ -5,6 +5,8 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+
 {% from "includes/csrf.njk" import csrfProtection %}
 
 {% block page_title %}{{ serviceName }} - Reports - {{ title }} - select trial{% endblock %}
@@ -38,20 +40,30 @@
         <a class="govuk-body govuk-link govuk-link--no-visited-state govuk-!-margin-bottom-7" id="clearSearchAnchor" href="{{ clearSearchUrl }}">Clear search</a>
         <input type="hidden" id="csrfToken" name="_csrf" value="{{ csrftoken }}"/>
       </form>
+
       <h2 class="govuk-heading-m">Select a trial</h2>
+      
       <form action="{{ reportUrl }}" method="post" id="trialSelectForm" >
         {% if trials.rows | length > 0 %}
           <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
-              <div class="fixTableHead">
-                {{ modSortableTable({
-                  id: "trialsTable",
-                  head: trials.head,
-                  rows: trials.rows,
-                  url: urlPrefix,
-                  classes: "govuk-!-padding-left-2"
-                }) }}
-              </div>
+              {{ modSortableTable({
+                id: "trialsTable",
+                head: trials.head,
+                rows: trials.rows,
+                url: urlPrefix,
+                classes: "govuk-!-padding-left-2"
+              }) }}
+
+              {{ govukPagination({
+                previous: {
+                  href: paginationObject.prev
+                },
+                next: {
+                  href: paginationObject.next
+                },
+                items: paginationObject.items
+              }) }}
             </div>
           </div>
           {{ csrfProtection(csrftoken) }}

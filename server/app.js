@@ -32,6 +32,12 @@ function startServer () {
 }
 
 async function stopServer () {
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  if (!isProduction) {
+    return process.exit();
+  }
+
   if (config.logConsole !== false) {
     console.info('Express server shutdown signal received.');
     console.info('Express server closing down.');

@@ -175,15 +175,56 @@
 
   function documentFooter(content) {
     return (current) => {
-      return {
-        marginLeft: 50,
-        marginBottom: 50,
-        stack: [
-          {
-            text: content[current - 1].signature,
-          },
-        ],
-      };
+      let stackPages = 0;
+      let stackPage = 0;
+      let footerText;
+      const columns = [];
+
+      for (const element of content) {
+        const stackFirstpage = element.positions[0].pageNumber;
+        const stackLastPage = element.positions[element.positions.length - 1].pageNumber;
+
+        if (current >= stackFirstpage && current < stackLastPage) {
+          stackPages = stackLastPage - stackFirstpage + 1;
+          stackPage = current - stackFirstpage + 1;
+
+          columns.push({
+            text: `Page ${stackPage} of ${stackPages}`,
+            alignment: 'right',
+            marginRight: 50,
+          });
+
+          break;
+        }
+
+        if (current === stackLastPage) {
+          stackPages = stackLastPage - stackFirstpage + 1;
+          stackPage = current - stackFirstpage + 1;
+          footerText = element.signature;
+
+          columns.push(
+            {
+              text: footerText,
+            },
+            {
+              text: `Page ${stackPage} of ${stackPages}`,
+              alignment: 'right',
+              marginRight: 50,
+            },
+          );
+
+          break;
+        }
+      }
+
+      if (stackPages) {
+        return {
+          marginLeft: 50,
+          marginBottom: 50,
+          columns,
+        };
+      }
+      return { text: '', margin: [55, 0, 0, 0] };
     };
   };
 

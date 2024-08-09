@@ -553,7 +553,7 @@
                 '<input class="govuk-radios__input" id="' + trial.trialNumber + '" name="selectedTrial" ' +
                   'type="radio" value="' + trial.trialNumber + '">' +
                 '<label class="govuk-label govuk-radios__label">' +
-                  '<a href="/trial-management/trials/' + trial.trialNumber + '/'
+                  '<a href="/trial-management/trials/' + encodeURIComponent(trial.trialNumber) + '/'
                   + trial.courtLocation + '/detail'+ '" ' +
                   'class="govuk-link">' + trial.trialNumber + '</a></label>' +
               '</div>' +

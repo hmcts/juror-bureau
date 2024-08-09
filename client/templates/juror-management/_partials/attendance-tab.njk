@@ -55,7 +55,7 @@
                 <td class="govuk-table__cell">{{ item.attendanceAudit | historyAuditLinkify(juror.commonDetails.loc_code, isCourtUser) | safe }}</td>
                 <td class="govuk-table__cell">{{ (item.paymentAudit | historyAuditLinkify(juror.commonDetails.loc_code, isCourtUser) | safe) if item.paymentAudit else '-' }}</td>
                 <td class="govuk-table__cell">
-                  {% if "2000-01-01" in item.datePaid %}
+                  {% if not item.datePaid or "2000-01-01" in item.datePaid %}
                     -
                   {% else %}
                     {{ (item.datePaid | dateFilter(null, 'D MMM YYYY')) if item.datePaid else '-' }}

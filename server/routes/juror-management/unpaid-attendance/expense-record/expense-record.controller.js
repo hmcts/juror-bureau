@@ -36,6 +36,7 @@
 
       // always clear the list of edited expenses
       delete req.session.editedExpenses;
+      delete req.session.editExpenseTravelOverLimit;
 
       switch (status) {
       case 'draft':
