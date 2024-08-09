@@ -48,6 +48,7 @@ module.exports.verify = function(req, res, next) {
         req.session.authentication = decoded;
       }
 
+      req.session.authentication.multipleTabs = req.session.multipleTabs || false;
       // Send login status to templates
       res.locals.authentication = req.session.authentication;
       res.locals.isSJO = isSJOUser(req, res);
