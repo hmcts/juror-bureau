@@ -47,6 +47,21 @@
     require('./messaging')(app);
     require('./administration')(app);
 
+    app.route('/multiple-tabs')
+      .get((req, res) => {
+        const { action } = req.query;
+
+        req.session.multipleTabs = action === 'opened';
+
+        if (action === 'opened') {
+          app.logger.info('User has opened multiple tabs', {
+            auth: req.session.authentication,
+          });
+        }
+
+        return res.send();
+      });
+
     app.route('/health')
       .get(function(req, res) {
         return errors(req, res, 200);
