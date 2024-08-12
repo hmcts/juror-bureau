@@ -351,8 +351,8 @@
 
   module.exports.getTravelOverLimit = (app) => {
     return async function(req, res) {
-      const {date} = req.query;
-      if (!req.session.editExpenseTravelOverLimit[date]) {
+      const { date } = req.query;
+      if (!req.session.editExpenseTravelOverLimit || !req.session.editExpenseTravelOverLimit[date]) {
         app.logger.crit('Tried to navigate back to loss-over-limit page without the session data', {
           auth: req.session.authentication,
         });
