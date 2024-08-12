@@ -680,3 +680,13 @@ dt.govuk-summary-list-mod {
   flex-direction: row;
   justify-content: space-between;
 }
+
+.multiple-tabs {
+  @include govuk-font($size: 19);
+
+  background-color: govuk-colour("red");
+  color: govuk-colour("white");
+  padding-inline: 20px;
+  padding-block: 10px;
+  display: none;
+}
