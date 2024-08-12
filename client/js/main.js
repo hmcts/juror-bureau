@@ -72,6 +72,5 @@
   require('./modal');
   require('./status');
   require('./export-coroner');
-  require('./multiple-tabs')
 
 })();

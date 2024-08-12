@@ -5,7 +5,9 @@ tabChannel.postMessage({ source: tabID });
 tabChannel.onmessage = function(e) {
   if (e.data.source !== tabID) { 
     $('#multiple-tabs').show();
-    tabChannel.postMessage({ source: tabID });
+    if (!e.data.isResponse) {
+      tabChannel.postMessage({ source: tabID, isResponse: true });
+    }
   }
 };
 
