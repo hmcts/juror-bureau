@@ -111,8 +111,8 @@
 
       const [timeSpentAtCourtHour, timeSpentAtCourtMinute] = expensesData.time.time_spent_at_court.split(':');
 
-      if (req.session.editExpenseTravelOverLimit && req.session.editExpenseTravelOverLimit.body) {
-        tmpBody = req.session.editExpenseTravelOverLimit.body;
+      if (req.session.editExpenseTravelOverLimit && req.session.editExpenseTravelOverLimit[date] && req.session.editExpenseTravelOverLimit[date].body) {
+        tmpBody = req.session.editExpenseTravelOverLimit[date].body;
       }
 
       return res.render(renderTemplate, {
@@ -151,7 +151,7 @@
       delete req.session.nonAttendanceDay;
 
       if (travelOverLimit === 'true') {
-        req.body = req.session.editExpenseTravelOverLimit.body;
+        req.body = req.session.editExpenseTravelOverLimit[date].body;
       }
 
       req.body.applyToAllDays =
@@ -183,9 +183,16 @@
       if (!travelOverLimit) {
         const { showTravelOverLimit, error } = await isTravelOverLimit(app, req);
 
-        req.session.editExpenseTravelOverLimit = {
-          body: req.body,
-        };
+        if (req.session.editExpenseTravelOverLimit) {
+          req.session.editExpenseTravelOverLimit[date] = {
+            body: req.body,
+          };
+        } else {
+          req.session.editExpenseTravelOverLimit = {};
+          req.session.editExpenseTravelOverLimit[date] = {
+            body: req.body,
+          }
+        }
 
         if (error) {
           app.logger.crit('Failed to check if travel is over the limit', {
@@ -218,16 +225,16 @@
             }) + `?date=${date}&page=${page}&action=next&travel-over-limit=true`;
           }
 
-          req.session.editExpenseTravelOverLimit.continueUrl = continueUrl;
-          req.session.editExpenseTravelOverLimit.cancelUrl = cancelUrl;
-          req.session.editExpenseTravelOverLimit.travelOverLimit = {
+          req.session.editExpenseTravelOverLimit[date].continueUrl = continueUrl;
+          req.session.editExpenseTravelOverLimit[date].cancelUrl = cancelUrl;
+          req.session.editExpenseTravelOverLimit[date].travelOverLimit = {
             ...showTravelOverLimit,
           };
 
           return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.travel-over-limit.get', {
             jurorNumber,
             locCode,
-          }));
+          }) + '?date=' + date);
         }
       }
 
@@ -344,7 +351,8 @@
 
   module.exports.getTravelOverLimit = (app) => {
     return async function(req, res) {
-      if (!req.session.editExpenseTravelOverLimit) {
+      const {date} = req.query;
+      if (!req.session.editExpenseTravelOverLimit[date]) {
         app.logger.crit('Tried to navigate back to loss-over-limit page without the session data', {
           auth: req.session.authentication,
         });
@@ -352,7 +360,7 @@
         return res.render('_errors/generic');
       }
 
-      const { continueUrl, cancelUrl, travelOverLimit, body } = req.session.editExpenseTravelOverLimit;
+      const { continueUrl, cancelUrl, travelOverLimit, body } = req.session.editExpenseTravelOverLimit[date];
 
       return res.render('expenses/travel-over-limit.njk', {
         continueUrl,
