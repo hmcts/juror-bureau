@@ -60,7 +60,7 @@ const copyClientCode = new CopyWebpackPlugin({
     },
     {
       context: 'client/assets/images/',
-      from: '*.{png,jpg,jpeg,gif,svg}',
+      from: '**/*.{png,jpg,jpeg,gif,svg}',
       to: '../client/assets/images',
     },
     {
