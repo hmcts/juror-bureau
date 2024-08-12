@@ -5,11 +5,11 @@
     , auth = require('../../../components/auth');
 
   module.exports = function(app) {
-    app.get('/pool-management/delete-pool',
+    app.get('/pool-management/delete-pool/:poolNumber',
       'pool-management.delete-pool.get',
       auth.verify,
       controller.index(app));
-    app.post('/pool-management/delete-pool',
+    app.post('/pool-management/delete-pool/:poolNumber',
       'pool-management.delete-pool.post',
       auth.verify,
       controller.postDeletePool(app));

@@ -8,6 +8,7 @@
   var errors = require('./../components/errors')
     , Router = require('named-routes')
     , router = new Router();
+  const auth = require('../components/auth');
 
   module.exports = function(app) {
     // Set up named routes
@@ -48,7 +49,7 @@
     require('./administration')(app);
 
     app.route('/multiple-tabs')
-      .get((req, res) => {
+      .get(auth.verify, (req, res) => {
         const { action } = req.query;
 
         req.session.multipleTabs = action === 'opened';

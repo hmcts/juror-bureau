@@ -14,7 +14,7 @@
 
       <h1 class="govuk-heading-l">Are you sure you want to delete this {{ "pool" if isActive else "request" }}?</h1>
 
-      <form action="{{ url(confirmUrl) }}" method="post">
+      <form action="{{ url(confirmUrl, { poolNumber: poolNumber }) }}" method="post">
         <div class="govuk-button-group">
           {{ govukButton({
             text: "Delete pool" if isActive else "Delete pool request",

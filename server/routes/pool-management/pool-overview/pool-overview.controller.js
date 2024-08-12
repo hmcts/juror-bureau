@@ -62,12 +62,13 @@ module.exports.getJurors = function(app) {
     delete req.session.selectedJurors;
     delete req.session.selectedAll;
     delete req.session.processLateSummons;
-    delete req.session.editPool;
+    delete req.session[`editPool-${poolNumber}`];
+    delete req.session[`summonJurors-${poolNumber}`];
 
     let pool;
 
     try {
-      pool = await poolSummaryObj.get(rp, app, req.session.authToken, poolNumber);
+      pool = await poolSummaryObj.get(req, poolNumber);
     } catch (err) {
       const errorMessage = `Failed to fetch pool summary for ${isCourtUser(req, res) ? 'court' : 'bureau'} user:`;
 
@@ -197,12 +198,7 @@ module.exports.getHistory = function(app) {
       auth: req.session.authentication,
     });
 
-    return poolSummaryObj.get(
-      rp,
-      app,
-      req.session.authToken,
-      poolNumber,
-    )
+    return poolSummaryObj.get(req, poolNumber)
       .then(renderHistory(app, req, res))
       .catch(errorCB(app, req, res, poolNumber, 'Failed to fetch pool summary:'));
   };
@@ -410,14 +406,11 @@ function coronerCourtPool(app) {
 
 function renderHistory(app, req, res) {
   return function(data) {
-    req.session.poolDetails = data;
-
     app.logger.info('Rendering Pool history: ', {
       auth: req.session.authentication,
     });
 
     return renderHistoryItems(app, req, res, data);
-
   };
 }
 
@@ -608,8 +601,6 @@ function courtView(app, req, res, pool, membersList, _errors, selectedJurors, se
     // eslint-disable-next-line no-param-reassign, eqeqeq
     selectedJurors = selectedJurors.filter(item => !membersList.data.find(data => data.jurorNumber == item));
 
-
-    req.session.poolDetails = pool;
     req.session.locCode = pool.poolDetails.locCode; // set the loc code for navigating to juror record
 
     const pageItems = modUtils.paginationBuilder(
@@ -647,7 +638,7 @@ function courtView(app, req, res, pool, membersList, _errors, selectedJurors, se
       successBanner: successBanner,
       poolDetails: pool.poolDetails,
       isNil: pool.poolDetails.is_nil_pool,
-      isActive: pool.isActive,
+      isActive: pool.poolDetails.isActive,
       currentOwner: pool.poolDetails.current_owner,
       currentTab: 'jurors',
       postUrls: { assignUrl, transferUrl, completeServiceUrl, changeServiceDateUrl, postponeUrl },
