@@ -1179,7 +1179,16 @@
     }
 
     if (commonDetails.jurorStatus === 'Responded' && commonDetails.excusalRejected !== null) {
-      return 'Responded <span class="icon mod-icon-urgent"></span>';
+      let title;
+
+      if (commonDetails.excusalCode) {
+        title = 'Excusal refused';
+      }
+      if (commonDetails.deferral_code) {
+        title = 'Deferral refused';
+      }
+
+      return `Responded <span class="icon mod-icon-urgent" title="${title || ''}"></span>`;
     }
 
     if (commonDetails.jurorStatus === 'Deferred' && commonDetails.excusalCode === 'P') {
