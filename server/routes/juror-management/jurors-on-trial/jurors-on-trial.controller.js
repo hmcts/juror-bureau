@@ -5,7 +5,7 @@ const { dateFilter, convert12to24 } = require('../../../components/filters');
 const { jurorsOnTrialDAO, confirmAttendanceDAO } = require('../../../objects');
 const { panelListDAO } = require('../../../objects/panel');
 const { Logger } = require('../../../components/logger');
-const { setPreviousWorkingDay } = require('../../../lib/mod-utils');
+const { setPreviousWorkingDay, makeManualError } = require('../../../lib/mod-utils');
 const validate = require('validate.js');
 const { jurorsOnTrial: jurorsOnTrialValidator } = require('../../../config/validation/jurors-on-trial');
 const { changeAttendanceTimes } = require('../../../config/validation/change-attendance-times');
@@ -137,6 +137,14 @@ module.exports.postConfirmAttendance = function(app) {
         data: { trialNumber, payload },
       });
     } catch (err) {
+      if (err.error?.code === 'DAY_ALREADY_CONFIRMED') {
+        req.session.errors = makeManualError('dayAlreadyConfirmedForJuror', err.error.message);
+
+        return res.redirect(app.namedRoutes.build('juror-management.jurors-on-trial.confirm-attendance.get', {
+          trialNumber,
+        }));
+      }
+
       Logger.instance.crit('Failed to confirm the jurors in a trial', {
         auth: req.session.authentication,
         data: { trialNumber, payload },
