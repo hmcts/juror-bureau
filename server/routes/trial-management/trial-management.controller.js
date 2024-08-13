@@ -1,23 +1,23 @@
 (function() {
   'use strict';
 
-  const _ = require('lodash')
-    , modUtils = require('../../lib/mod-utils')
-    , validate = require('validate.js')
-    , { panelListDAO, panelMemberStatusDAO} = require('../../objects/panel')
-    , { trialDetailsObject, trialsListDAO } = require('../../objects/create-trial')
-    , { endTrialObject } = require('../../objects/end-trial')
-    , { dateFilter, capitalizeFully, makeDate, capitalise } = require('../../components/filters')
-    , endTrialDateValidator = require('../../config/validation/end-trial')
-    , moment = require('moment');
+  const _ = require('lodash');
+  const modUtils = require('../../lib/mod-utils');
+  const validate = require('validate.js');
+  const { panelListDAO, panelMemberStatusDAO} = require('../../objects/panel');
+  const { trialDetailsObject, trialsListDAO } = require('../../objects/create-trial');
+  const { endTrialObject } = require('../../objects/end-trial');
+  const { dateFilter, capitalizeFully, makeDate, capitalise } = require('../../components/filters');
+  const endTrialDateValidator = require('../../config/validation/end-trial');
+  const moment = require('moment');
 
 
   module.exports.getTrials = function(app) {
     return function(req, res) {
       const currentPage = req.query['page'] || 1
-        , isActive = req.query['isActive'] || 'true'
-        , sortBy = req.query['sortBy'] || 'startDate'
-        , sortOrder = req.query['sortOrder'] || 'ascending';
+      const isActive = req.query['isActive'] || 'true'
+      const sortBy = req.query['sortBy'] || 'startDate'
+      const sortOrder = req.query['sortOrder'] || 'ascending';
       let pagination;
 
       const opts = {
@@ -27,8 +27,6 @@
         sortField: capitalise(modUtils.camelToSnake(sortBy)),
         sortMethod: sortOrder === 'ascending' ? 'ASC' : 'DESC',
       };
-
-      delete req.session.continueToEndTrial;
 
       trialsListDAO.post(req, modUtils.mapCamelToSnake(opts))
         .then((data) => {
@@ -73,25 +71,22 @@
   module.exports.getTrialDetail = function(app) {
     return function(req, res) {
       let tmpErrors
-        , tmpFields
-        , successBanner;
+      let tmpFields
+      let successBanner;
 
-      const trialNumber = req.params.trialNumber
-        , locationCode = req.params.locationCode;
+      const { trialNumber, locationCode } = req.params;
 
       tmpErrors = _.clone(req.session.errors);
       tmpFields = _.clone(req.session.formFields);
       delete req.session.errors;
       delete req.session.formFields;
-      delete req.session.trial;
-      delete req.session.continueToEndTrial;
+      delete req.session[`${trialNumber}-${locationCode}-trial`];
+      delete req.session[`${trialNumber}-${locationCode}-continueToEndTrial`];
 
       // Clear returns flow
-      delete req.session.panel;
-      delete req.session.handleAttendance;
-      delete req.session.checkInTime;
-      delete req.session.checkOutTime;
-      delete req.session.isJuryEmpanelled;
+      delete req.session[`${trialNumber}-${locationCode}-handleAttendance`];
+      delete req.session[`${trialNumber}-${locationCode}-checkInTime`];
+      delete req.session[`${trialNumber}-${locationCode}-checkOutTime`];
 
       Promise.all([trialDetailsObject.get(
         require('request-promise'),
@@ -117,7 +112,6 @@
           let canEmpanel = true;
 
           if (typeof tmpFields === 'undefined') {
-            req.session.originalTrialNumber = trialData.trialNumber;
             tmpFields = _.clone(trialData);
             tmpFields.defendants = trialData.trial_type === 'criminal' ? trialData.defendants : '';
             tmpFields.respondents = trialData.trial_type === 'civil' ? trialData.defendants : '';
@@ -130,11 +124,8 @@
 
           if (panelData) {
             trialData.panelledJurors = panelData;
-            req.session.panelData = panelData;
             canEmpanel = panelData.filter((juror) => juror.juror_status === 'Panel').length > 0;
           }
-
-          req.session.isJuryEmpanelled = trialData['is_jury_empanelled'];
 
           return res.render('trial-management/trial-detail.njk', {
             trial: trialData,
@@ -175,9 +166,10 @@
 
   module.exports.getEndTrial = function(app) {
     return async function(req, res) {
+      const { trialNumber, locationCode } = req.params;
       let tmpErrors
-        , tmpFields
-        , radioToggle = typeof req.session.formFields !== 'undefined' &&
+      let tmpFields
+      let radioToggle = typeof req.session.formFields !== 'undefined' &&
         typeof req.session.formFields.endTrial !== 'undefined';
 
       tmpErrors = _.clone(req.session.errors);
@@ -192,20 +184,42 @@
       delete req.session.errors;
       delete req.session.formFields;
 
+      let trialData;
+      try {
+        trialData = await trialDetailsObject.get(
+          require('request-promise'),
+          app,
+          req.session.authToken,
+          trialNumber,
+          locationCode
+        );
+      } catch (err) {
+        app.logger.crit('Failed to fetch trial details: ', {
+          auth: req.session.authentication,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          body: {
+            trialNumber,
+            locationCode
+          }
+        });
+        return res.render('_errors/generic');
+      }
+      
+
       try {
         let panelData = await panelListDAO.get(
           app, req, req.params.trialNumber, req.params.locationCode
         );
 
-        if (panelData.length > 0 && typeof req.session.continueToEndTrial === 'undefined') {
+        if (panelData.length > 0 && typeof req.session[`${trialNumber}-${locationCode}-continueToEndTrial`] === 'undefined') {
           return res.render('trial-management/end-trial/cannot-end-trial.njk', {
-            isJuryEmpanelled: req.session.isJuryEmpanelled,
+            isJuryEmpanelled: trialData['is_jury_empanelled'],
             cancelUrl: app.namedRoutes.build('trial-management.trials.detail.get', {
               trialNumber: req.params.trialNumber,
               locationCode: req.params.locationCode,
             }),
           });
-        } else if (panelData.length > 0 && req.session.continueToEndTrial) {
+        } else if (panelData.length > 0 && req.session[`${trialNumber}-${locationCode}-continueToEndTrial`]) {
           return res.redirect(app.namedRoutes.build('trial-management.trials.detail.get', {
             trialNumber: req.params.trialNumber,
             locationCode: req.params.locationCode,
