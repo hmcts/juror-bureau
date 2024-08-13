@@ -12,6 +12,7 @@
 
   module.exports.get = function(app) {
     return async function(req, res) {
+      const { id } = req.params;
       const postUrl = app.namedRoutes.build('summons.update-adjustments.post', {
         id: req.params['id'],
         type: req.params['type'],
@@ -32,7 +33,7 @@
           req.params['id']
         );
 
-        req.session.summonsUpdate = {
+        req.session[`summonsUpdate-${id}`] = {
           etag: headers['etag'],
         };
 
@@ -88,6 +89,7 @@
 
   module.exports.post = function(app) {
     return async function(req, res) {
+      const { id } = req.params;
       const payload = { specialNeeds: [] };
 
       if (req.body.adjustmentsResponse === 'yes') {
@@ -132,6 +134,8 @@
           token: req.session.authToken,
           data: payload,
         });
+
+        delete req.session[`summonsUpdate-${id}`];
 
         return res.redirect(app.namedRoutes.build('response.paper.details.get', {
           id: req.params['id'],
