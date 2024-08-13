@@ -10,14 +10,15 @@
 
   module.exports.getEmpanelAmount = function(app) {
     return function(req, res) {
+      const { trialNumber, locationCode } = req.params;
       trialDetailsObject.get(
         require('request-promise'),
         app,
         req.session.authToken,
-        req.params.trialNumber,
-        req.params.locationCode
+        trialNumber,
+        locationCode
       ).then(trialData => {
-        req.session.trial = trialData;
+        req.session[`${trialNumber}-${locationCode}-trial`] = trialData;
 
         const tmpErrors = _.clone(req.session.errors);
         let tmpBody = _.clone(req.session.formFields);
@@ -25,18 +26,16 @@
         delete req.session.errors;
         delete req.session.formFields;
 
-        if (req.session.trialManagement) {
-          tmpBody = req.session.trialManagement.empanelJury.numberOfJurors;
-        };
+        console.log('HELLO!!!!!!!!!!!!!!!!!')
 
         return res.render('trial-management/empanel-jury/index.njk', {
           submitUrl: app.namedRoutes.build('trial-management.empanel.post',  {
-            trialNumber: req.params.trialNumber,
-            locationCode: req.params.locationCode,
+            trialNumber,
+            locationCode,
           }),
           cancelUrl: app.namedRoutes.build('trial-management.trials.detail.get', {
-            trialNumber: req.params.trialNumber,
-            locationCode: req.params.locationCode,
+            trialNumber,
+            locationCode,
           }),
           errors: {
             title: 'Please check the form',
@@ -59,11 +58,12 @@
 
   module.exports.postEmpanelAmount = function(app) {
     return function(req, res) {
+      const { trialNumber, locationCode } = req.params;
       requestPanelDAO.get(
         app,
         req,
-        req.params.trialNumber,
-        req.params.locationCode,
+        trialNumber,
+        locationCode,
         req.body.numberOfJurors
       ).then(resp => {
         const noOfJurors = resp.length;
@@ -74,17 +74,17 @@
           req.session.formFields = req.body;
 
           return res.redirect(app.namedRoutes.build('trial-management.empanel.get', {
-            trialNumber: req.params.trialNumber,
-            locationCode: req.params.locationCode,
+            trialNumber,
+            locationCode,
           }));
         };
 
-        req.session.trial.requiredNumberOfJurors = req.body.numberOfJurors;
-        req.session.trial.panelledJurors = resp;
+        req.session[`${trialNumber}-${locationCode}-trial`].requiredNumberOfJurors = req.body.numberOfJurors;
+        req.session[`${trialNumber}-${locationCode}-trial`].panelledJurors = resp;
 
         return res.redirect(app.namedRoutes.build('trial-management.empanel.select.get', {
-          trialNumber: req.params.trialNumber,
-          locationCode: req.params.locationCode,
+          trialNumber,
+          locationCode,
         }));
       }, err => {
         app.logger.crit('Failed to post empanel amount', {
@@ -100,31 +100,32 @@
 
   module.exports.getEmpanelJurors = function(app) {
     return function(req, res) {
-      const requiredNumberOfJurors = req.session.trial.requiredNumberOfJurors;
-      const availableJurors = req.session.trial.panelledJurors.filter((juror) => juror.juror_status === 'Panel');
-      let tmpErrors = _.clone(req.session.empanelJuryError);
+      const { trialNumber, locationCode } = req.params;
+      const requiredNumberOfJurors = req.session[`${trialNumber}-${locationCode}-trial`].requiredNumberOfJurors;
+      const availableJurors = req.session[`${trialNumber}-${locationCode}-trial`].panelledJurors.filter((juror) => juror.juror_status === 'Panel');
+      let tmpErrors = _.clone(req.session[`${trialNumber}-${locationCode}-empanelJuryError`]);
       let tmpBody = _.clone(req.session.formFields);
 
       let BVRErrors = _.clone(req.session.errors);
 
       delete req.session.errors;
-      delete req.session.empanelJuryError;
+      delete req.session[`${trialNumber}-${locationCode}-empanelJuryError`];
       delete req.session.formFields;
 
       return res.render('trial-management/empanel-jury/select-jurors.njk', {
         submitUrl: app.namedRoutes.build('trial-management.empanel.select.post',  {
-          trialNumber: req.params.trialNumber,
-          locationCode: req.params.locationCode,
+          trialNumber,
+          locationCode,
         }),
         cancelUrl: app.namedRoutes.build('trial-management.trials.detail.get', {
-          trialNumber: req.params.trialNumber,
-          locationCode: req.params.locationCode,
+          trialNumber,
+          locationCode,
         }),
         backLinkUrl: app.namedRoutes.build('trial-management.empanel.get', {
-          trialNumber: req.params.trialNumber,
-          locationCode: req.params.locationCode,
+          trialNumber,
+          locationCode,
         }),
-        trialNumber: req.params.trialNumber,
+        trialNumber,
         tmpErrors,
         tmpBody: tmpBody,
         jurors: availableJurors,
@@ -140,9 +141,10 @@
 
   module.exports.postEmpanelJurors = function(app) {
     return function(req, res) {
+      const { trialNumber, locationCode } = req.params;
 
       const tmpBody = req.body;
-      const requiredNumberOfJurors = Number(req.session.trial.requiredNumberOfJurors);
+      const requiredNumberOfJurors = Number(req.session[`${trialNumber}-${locationCode}-trial`].requiredNumberOfJurors);
 
       delete tmpBody._csrf;
       delete tmpBody.requiredNumberOfJurors;
@@ -157,7 +159,7 @@
         returned: 'RETURNED',
       };
 
-      req.session.trial.panelledJurors.forEach(member => {
+      req.session[`${trialNumber}-${locationCode}-trial`].panelledJurors.forEach(member => {
         panel[member.juror_number] = member;
       });
 
@@ -173,28 +175,27 @@
 
       if (juryCount != requiredNumberOfJurors) {
 
-        req.session.empanelJuryError = true;
+        req.session[`${trialNumber}-${locationCode}-empanelJuryError`] = true;
         req.session.formFields = tmpBody;
 
         return res.redirect(app.namedRoutes.build('trial-management.empanel.select.get', {
-          trialNumber: req.params.trialNumber,
-          locationCode: req.params.locationCode,
+          trialNumber,
+          locationCode,
         }));
       }
 
       empanelJurorsDAO.post(app, req, {
         jurors,
-        trial_number: req.params.trialNumber,
-        court_location_code: req.params.locationCode,
+        trial_number: trialNumber,
+        court_location_code: locationCode,
         number_requested: requiredNumberOfJurors,
       }).then(() => {
 
-        delete req.session.trial;
-        delete req.session.trialManagement;
+        delete req.session[`${trialNumber}-${locationCode}-trial`];
 
         return res.redirect(app.namedRoutes.build('trial-management.trials.detail.get', {
-          trialNumber: req.params.trialNumber,
-          locationCode: req.params.locationCode,
+          trialNumber,
+          locationCode,
         }));
       }, (err) => {
 
@@ -212,8 +213,8 @@
           }
 
           return res.redirect(app.namedRoutes.build('trial-management.empanel.select.get', {
-            trialNumber: req.params.trialNumber,
-            locationCode: req.params.locationCode,
+            trialNumber,
+            locationCode,
           }));
         }
 

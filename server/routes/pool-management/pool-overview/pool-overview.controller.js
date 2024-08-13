@@ -320,7 +320,6 @@ function executeTransfer(app, req, res, transferedJurors) {
     req.session.bannerMessage = `${transferedJurors.length} juror${transferedJurors.length > 1 ? 's' : ''} transferred to ${courtName}`;
 
     delete req.session.formField;
-    delete req.session.poolJurorsTransfer;
 
     return res.redirect(app.namedRoutes.build('pool-overview.get', {
       poolNumber: req.params.poolNumber,

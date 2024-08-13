@@ -47,23 +47,12 @@
             },
           });
 
-          const courtroomsToDisplay = [];
-
-          req.session.judges = judges.judges;
-          req.session.courtrooms = courtrooms.map((court) => {
-
-            court.display_name = court.court_location;
-            court.court_location = court.court_location.replace(/[ .]/g, '_');
-
-            courtroomsToDisplay.push(
-              {
-                displayName: court.display_name,
-                courtLocationName: court.court_location,
-                courtrooms: court.court_rooms.map(room => room.description),
-              }
-            );
-
-            return court;
+          const courtroomsToDisplay = courtrooms.map((court) => {
+            return {
+              displayName: court.court_location,
+              courtLocationName: court.court_location.replace(/[ .]/g, '_'),
+              courtrooms: court.court_rooms.map(room => room.description),
+            };
           });
 
           const judgesToDisplay = judges.judges.map(j => j.description);
@@ -80,19 +69,15 @@
             courtLocationName: trial.court_room_location_name,
           };
 
-          req.session.orignalTrial = {
-            protected: trial.protected,
-          };
-
           tmpErrors = _.clone(req.session.errors);
-          tmpFields = typeof req.session.editTrial !== 'undefined'
-            ? _.clone(req.session.editTrial.tmpFields)
+          tmpFields = typeof req.session[`${trialNumber}-${locationCode}-editTrial`] !== 'undefined'
+            ? _.clone(req.session[`${trialNumber}-${locationCode}-editTrial`].tmpFields)
             : (typeof req.session.formFields !== 'undefined'
               ? _.clone(req.session.formFields)
               : originalTrial);
           delete req.session.errors;
           delete req.session.formFields;
-          delete req.session.editTrial;
+          delete req.session[`${trialNumber}-${locationCode}-editTrial`];
 
           return res.render('trial-management/create-trial.njk', {
             nav: 'trials',
@@ -123,13 +108,42 @@
   };
 
   module.exports.postEditTrial = function(app) {
-    return function(req, res) {
+    return async function(req, res) {
       const { trialNumber, locationCode } = req.params;
-      const judges = _.clone(req.session.judges);
-      const courtrooms = _.clone(req.session.courtrooms);
+      
+      let judges;
+      try {
+        judges = (await judgesObject.get(
+          require('request-promise'),
+          app,
+          req.session.authToken
+        )).judges;
+      } catch (err) {
+        app.logger.crit('Failed to fetch judges: ', {
+          auth: req.session.authentication,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+        return res.render('_errors/generic');
+      }
 
-      delete req.session.judges;
-      delete req.session.courtrooms;
+      let courtrooms;
+      try {
+        courtrooms = (await courtroomsObject.get(
+          require('request-promise'),
+          app,
+          req.session.authToken
+        )).map((court) => {
+          court.display_name = court.court_location;
+          court.court_location = court.court_location.replace(/[ .]/g, '_');
+          return court
+        })
+      } catch (err) {
+        app.logger.crit('Failed to fetch courtrooms: ', {
+          auth: req.session.authentication,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+        return res.render('_errors/generic');
+      }
 
       if (courtrooms.length > 1){
         const courtroom = req.body[req.body.court];
@@ -148,9 +162,26 @@
 
       const payload = trialPayloadBuilder(req.body, judges, courtrooms);
 
-      if ((!req.session.orignalTrial.protected && req.body.protected === 'true')
-        || (req.session.orignalTrial.protected && !req.body.protected)) {
-        req.session.editTrial = {
+      let originalTrial;
+      try {
+        originalTrial = await trialDetailsObject.get(
+          require('request-promise'),
+          app,
+          req.session.authToken,
+          trialNumber,
+          locationCode
+        );
+      } catch (err) {
+        app.logger.crit('Failed to fetch trial details: ', {
+          auth: req.session.authentication,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+        return res.render('_errors/generic');
+      }
+
+      if ((!originalTrial.protected && req.body.protected === 'true')
+        || (originalTrial.protected && !req.body.protected)) {
+        req.session[`${trialNumber}-${locationCode}-editTrial`] = {
           payload: _.clone(payload),
           tmpFields: req.body,
         };
@@ -177,18 +208,20 @@
           trialNumber,
           locationCode,
         }),
-        unprotected: req.session.editTrial.tmpFields.protected !== 'true',
+        unprotected: req.session[`${trialNumber}-${locationCode}-editTrial`].tmpFields.protected !== 'true',
       });
     };
   };
 
   module.exports.postEditProtectedTrial = function(app) {
     return function(req, res) {
-      editTrial(app, req, res, req.session.editTrial.payload);
+      const { trialNumber, locationCode } = req.params;
+      editTrial(app, req, res, req.session[`${trialNumber}-${locationCode}-editTrial`].payload);
     };
   };
 
   async function editTrial(app, req, res, payload){
+    const { trialNumber, locationCode } = req.params; 
     try {
       const resp = await editTrialDAO.patch(req, payload);
 
@@ -198,8 +231,8 @@
         response: resp,
       });
 
-      if (typeof req.session.editTrial !== 'undefined') {
-        delete req.session.editTrial;
+      if (typeof req.session[`${trialNumber}-${locationCode}-editTrial`] !== 'undefined') {
+        delete req.session[`${trialNumber}-${locationCode}-editTrial`];
       };
 
       return res.redirect(

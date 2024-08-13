@@ -1,27 +1,39 @@
 (() => {
   'use strict';
 
-  const _ = require('lodash'),
-    returnsValidator = require('../../config/validation/return-panel-jury'),
-    validate = require('validate.js'),
-    returnsObject = require('../../objects/return-jurors').returnsObject,
-    { jurorAttendanceDao } = require('../../objects/juror-attendance'),
-    { convert12to24, dateFilter, convertAmPmToLong } = require('../../components/filters'),
-    { padTimeForApi } = require('../../lib/mod-utils');
+  const _ = require('lodash')
+  const returnsValidator = require('../../config/validation/return-panel-jury');
+  const validate = require('validate.js');
+  const returnsObject = require('../../objects/return-jurors').returnsObject;
+  const { jurorAttendanceDao } = require('../../objects/juror-attendance');
+  const { convert12to24, dateFilter, convertAmPmToLong } = require('../../components/filters');
+  const { padTimeForApi } = require('../../lib/mod-utils');
+  const { panelListDAO, trialDetailsObject } = require('../../objects');
 
-  module.exports.postReturnJurors = (app) => (req, res) => {
-    delete req.session.checkInTime;
-    delete req.session.checkOutTime;
-    delete req.session.handleAttendance;
+
+  module.exports.postReturnJurors = (app) => async (req, res) => {
+    const { trialNumber, locationCode } = req.params;
+    delete req.session[`${trialNumber}-${locationCode}-checkInTime`];
+    delete req.session[`${trialNumber}-${locationCode}-checkOutTime`];
+    delete req.session[`${trialNumber}-${locationCode}-handleAttendance`];
     delete req.session.formFields;
-    delete req.session.panel;
 
-    const isJuryEmpanelled = _.clone(req.session.isJuryEmpanelled);
-    const panelData  = _.clone(req.session.panelData);
+    let panelData;
+    try {
+      panelData = await panelListDAO.get(
+        app, req, trialNumber, locationCode
+      )
+    } catch (err) {
+      app.logger.crit('Failed to fetch panel data: ', {
+        auth: req.session.authentication,
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+      return res.render('_errors/generic');
+    }
+
+    const isJuryEmpanelled = (await fetchTrialDetails(app)(req, res))['is_jury_empanelled'];
+
     let validatorResult;
-
-    delete req.session.panelData;
-    delete req.session.isJuryEmpanelled;
 
     validatorResult = isJuryEmpanelled
       ? validate(req.body, returnsValidator.returnJury())
@@ -32,8 +44,8 @@
       req.session.formFields = req.body;
 
       return res.redirect(app.namedRoutes.build('trial-management.trials.detail.get', {
-        trialNumber: req.params.trialNumber,
-        locationCode: req.params.locationCode,
+        trialNumber,
+        locationCode,
       }));
     }
 
@@ -48,77 +60,81 @@
       }
       delete juror['juror_status'];
     });
-    req.session.selectedJurors = panelData.filter(juror => req.body.selectedJurors.includes(juror['juror_number']));
+    req.session[`${trialNumber}-${locationCode}-returnJurors`] = panelData.filter(juror => req.body.selectedJurors.includes(juror['juror_number']));
+    console.log(req.session[`${trialNumber}-${locationCode}-returnJurors`]);
 
     if (!isJuryEmpanelled) {
       // Panel route
-      req.session.panel = true;
       return res.redirect(app.namedRoutes.build('trial-management.trials.return.confirm.get', {
-        trialNumber: req.params.trialNumber,
-        locationCode: req.params.locationCode,
+        trialNumber,
+        locationCode,
       }));
     }
 
     // Jury route
     return res.redirect(app.namedRoutes.build('trial-management.trials.return.attendance.get', {
-      trialNumber: req.params.trialNumber,
-      locationCode: req.params.locationCode,
+      trialNumber,
+      locationCode,
     }));
   };
 
   module.exports.getReturnAttendance = (app) => (req, res) => {
+    const { trialNumber, locationCode } = req.params;
     const tmpErrors = _.clone(req.session.errors);
 
     delete req.session.errors;
-    delete req.session.checkInTime;
-    delete req.session.checkOutTime;
+    delete req.session[`${trialNumber}-${locationCode}-checkInTime`];
+    delete req.session[`${trialNumber}-${locationCode}-checkOutTime`];
 
     return res.render('trial-management/returns/return-attendance.njk', {
       formActions: {
         returnUrl: app.namedRoutes.build('trial-management.trials.return.check-out.get', {
-          trialNumber: req.params.trialNumber,
-          locationCode: req.params.locationCode,
+          trialNumber,
+          locationCode,
         }),
       },
-      selectedJurors: req.session.selectedJurors,
+      selectedJurors: req.session[`${trialNumber}-${locationCode}-returnJurors`],
       cancelUrl: app.namedRoutes.build('trial-management.trials.detail.get', {
-        trialNumber: req.params.trialNumber,
-        locationCode: req.params.locationCode,
+        trialNumber,
+        locationCode,
       }),
       errors: {
         title: 'Please check the form',
         count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
         items: tmpErrors,
       },
-      prevAnswer: req.session.handleAttendance,
+      prevAnswer: req.session[`${trialNumber}-${locationCode}-handleAttendance`],
     });
   };
 
   module.exports.postReturnAttendance = (app) => (req, res) => {
+    const { trialNumber, locationCode } = req.params;
     if (!req.body.handleAttendance) {
       req.session.errors = {handleAttendance: [{details: 'Select how you want to return the jurors'}]};
 
       return res.redirect(app.namedRoutes.build('trial-management.trials.return.attendance.get', {
-        trialNumber: req.params.trialNumber,
-        locationCode: req.params.locationCode,
+        trialNumber,
+        locationCode,
       }));
     }
 
-    req.session.handleAttendance = req.body.handleAttendance;
+    req.session[`${trialNumber}-${locationCode}-handleAttendance`] = req.body.handleAttendance;
+
     if (req.body.handleAttendance === 'return') {
       return res.redirect(app.namedRoutes.build('trial-management.trials.return.confirm.get', {
-        trialNumber: req.params.trialNumber,
-        locationCode: req.params.locationCode,
+        trialNumber,
+        locationCode,
       }));
     }
 
     return res.redirect(app.namedRoutes.build('trial-management.trials.return.check-out.get', {
-      trialNumber: req.params.trialNumber,
-      locationCode: req.params.locationCode,
+      trialNumber,
+      locationCode,
     }));
   };
 
   module.exports.getReturnCheckOut = (app) => (req, res) => {
+    const { trialNumber, locationCode } = req.params;
     const tmpErrors = _.clone(req.session.errors);
     const tmpFields = _.clone(req.session.formFields);
 
@@ -128,9 +144,9 @@
       commonData: {
         tag: 'JUROR_NUMBER',
         attendanceDate: dateFilter(new Date(), null, 'YYYY-MM-DD'),
-        locationCode: req.params.locationCode,
+        locationCode,
       },
-      juror: req.session.selectedJurors.map(juror => juror['juror_number']),
+      juror: req.session[`${trialNumber}-${locationCode}-returnJurors`].map(juror => juror['juror_number']),
     };
 
     jurorAttendanceDao.get(
@@ -152,15 +168,15 @@
         return res.render('trial-management/returns/return-check-out.njk', {
           formActions: {
             returnUrl: app.namedRoutes.build('trial-management.trials.return.confirm.post', {
-              trialNumber: req.params.trialNumber,
-              locationCode: req.params.locationCode,
+              trialNumber,
+              locationCode,
             }),
           },
-          selectedJurors: req.session.selectedJurors,
-          trialNumber: req.params.trialNumber,
+          selectedJurors: req.session[`${trialNumber}-${locationCode}-returnJurors`],
+          trialNumber,
           cancelUrl: app.namedRoutes.build('trial-management.trials.detail.get', {
-            trialNumber: req.params.trialNumber,
-            locationCode: req.params.locationCode,
+            trialNumber,
+            locationCode,
           }),
           errors: {
             title: 'Please check the form',
@@ -172,8 +188,8 @@
           backLinkUrl: {
             built: true,
             url: app.namedRoutes.build('trial-management.trials.return.attendance.get', {
-              trialNumber: req.params.trialNumber,
-              locationCode: req.params.locationCode,
+              trialNumber,
+              locationCode,
             }),
           },
         });
@@ -191,6 +207,7 @@
 
   module.exports.postReturnCheckOut = function(app) {
     return function(req, res) {
+      const { trialNumber, locationCode } = req.params;
       const checkInTimeHour = req.body.checkInTimeHour
         , checkInTimeMinute = req.body.checkInTimeMinute
         , checkInTimePeriod = req.body.checkInTimePeriod
@@ -229,8 +246,8 @@
         req.session.errors = completeValidatorResult;
         req.session.formFields = req.body;
         return res.redirect(app.namedRoutes.build('trial-management.trials.return.check-out.get', {
-          trialNumber: req.params.trialNumber,
-          locationCode: req.params.locationCode,
+          trialNumber,
+          locationCode,
         }));
       }
 
@@ -250,27 +267,27 @@
         };
         req.session.formFields = req.body;
         return res.redirect(app.namedRoutes.build('trial-management.trials.return.check-out.get', {
-          trialNumber: req.params.trialNumber,
-          locationCode: req.params.locationCode,
+          trialNumber,
+          locationCode,
         }));
       }
 
-      req.session.checkInTime = checkInTime;
-      req.session.checkOutTime = checkOutTime;
+      req.session[`${trialNumber}-${locationCode}-checkInTime`] = checkInTime;
+      req.session[`${trialNumber}-${locationCode}-checkOutTime`] = checkOutTime;
 
       return res.redirect(app.namedRoutes.build('trial-management.trials.return.confirm.get', {
-        trialNumber: req.params.trialNumber,
-        locationCode: req.params.locationCode,
+        trialNumber,
+        locationCode,
       }));
 
     };
   };
 
-  module.exports.getReturnConfirm = (app) => (req, res) => {
-    const isPanel = req.session.panel;
-    const handleAttendance = req.session.handleAttendance;
-    const checkInTime = req.session.checkInTime;
-    const checkOutTime = req.session.checkOutTime;
+  module.exports.getReturnConfirm = (app) => async (req, res) => {
+    const { trialNumber, locationCode } = req.params;
+    const handleAttendance = req.session[`${trialNumber}-${locationCode}-handleAttendance`];
+    const checkInTime = req.session[`${trialNumber}-${locationCode}-checkInTime`];
+    const checkOutTime = req.session[`${trialNumber}-${locationCode}-checkOutTime`];
     const tmpErrors = _.clone(req.session.errors);
     const tmpBody = _.clone(req.session.formFields);
 
@@ -279,34 +296,36 @@
 
     let backUrl;
 
+    const isPanel = !(await fetchTrialDetails(app)(req, res))['is_jury_empanelled']
+
     if (isPanel) {
       backUrl = app.namedRoutes.build('trial-management.trials.detail.get', {
-        trialNumber: req.params.trialNumber,
-        locationCode: req.params.locationCode,
+        trialNumber,
+        locationCode,
       });
     } else if (handleAttendance === 'return') {
       backUrl = app.namedRoutes.build('trial-management.trials.return.attendance.get', {
-        trialNumber: req.params.trialNumber,
-        locationCode: req.params.locationCode,
+        trialNumber,
+        locationCode,
       });
     } else {
       backUrl = app.namedRoutes.build('trial-management.trials.return.check-out.get', {
-        trialNumber: req.params.trialNumber,
-        locationCode: req.params.locationCode,
+        trialNumber,
+        locationCode,
       });
     }
 
     return res.render('trial-management/returns/confirm-return.njk', {
       formActions: {
         returnUrl: app.namedRoutes.build('trial-management.trials.return.confirm.post', {
-          trialNumber: req.params.trialNumber,
-          locationCode: req.params.locationCode,
+          trialNumber,
+          locationCode,
         }),
       },
-      selectedJurors: req.session.selectedJurors,
+      selectedJurors: req.session[`${trialNumber}-${locationCode}-returnJurors`],
       cancelUrl: app.namedRoutes.build('trial-management.trials.detail.get', {
-        trialNumber: req.params.trialNumber,
-        locationCode: req.params.locationCode,
+        trialNumber,
+        locationCode,
       }),
       isPanel,
       handleAttendance,
@@ -325,17 +344,17 @@
     });
   };
 
-  module.exports.postReturnConfirm = (app) => (req, res) => {
+  module.exports.postReturnConfirm = (app) => async (req, res) => {
+    const { trialNumber, locationCode } = req.params;
     // TODO: call the backend here
-    let checkInTime = req.session.checkInTime ? padTimeForApi(convert12to24(req.session.checkInTime)) : '';
-    const checkOutTime = req.session.checkOutTime ? padTimeForApi(convert12to24(req.session.checkOutTime)) : '';
-    const selectedJurors = req.session.selectedJurors;
-    const trialNumber = req.params.trialNumber;
-    const locCode = req.params.locationCode;
-    const panelType = req.session.panel ? 'panel' : 'jury';
-    const completeService = req.session.handleAttendance === 'complete' ? 'true' : 'false';
+    let checkInTime = req.session[`${trialNumber}-${locationCode}-checkInTime`] ? padTimeForApi(convert12to24(req.session[`${trialNumber}-${locationCode}-checkInTime`])) : '';
+    const checkOutTime = req.session[`${trialNumber}-${locationCode}-checkOutTime`] ? padTimeForApi(convert12to24(req.session[`${trialNumber}-${locationCode}-checkOutTime`])) : '';
+    const selectedJurors = req.session[`${trialNumber}-${locationCode}-returnJurors`];
+    const completeService = req.session[`${trialNumber}-${locationCode}-handleAttendance`] === 'complete' ? 'true' : 'false';
 
-    if (req.session.handleAttendance === 'return') {
+    const panelType = (await fetchTrialDetails(app)(req, res))['is_jury_empanelled'] ? 'jury' : 'panel';
+
+    if (req.session[`${trialNumber}-${locationCode}-handleAttendance`] === 'return') {
       let validatorResult = validate({
         checkInTime: {
           hour: req.body.checkInTimeHour,
@@ -348,8 +367,8 @@
         req.session.errors = validatorResult.checkInTime[0];
         req.session.formFields = req.body;
         return res.redirect(app.namedRoutes.build('trial-management.trials.return.confirm.get', {
-          trialNumber: trialNumber,
-          locationCode: locCode,
+          trialNumber,
+          locationCode,
         }));
       }
 
@@ -358,10 +377,9 @@
       );
     }
 
-    delete req.session.panel;
-    delete req.session.checkInTime;
-    delete req.session.checkOutTime;
-    delete req.session.selectedJurors;
+    delete req.session[`${trialNumber}-${locationCode}-checkInTime`];
+    delete req.session[`${trialNumber}-${locationCode}-checkOutTime`];
+    delete req.session[`${trialNumber}-${locationCode}-returnJurors`];
 
     let payload;
 
@@ -382,18 +400,18 @@
       req.session.authToken,
       panelType,
       trialNumber,
-      locCode,
+      locationCode,
       payload
     )
       .then(() => {
         req.session.bannerMessage =
         `${selectedJurors.length} juror${selectedJurors.length > 1 ? 's' : ''} returned`;
 
-        req.session.continueToEndTrial = true;
+        req.session[`${trialNumber}-${locationCode}-continueToEndTrial`] = true;
 
         return res.redirect(app.namedRoutes.build('trial-management.trials.end-trial.get', {
-          trialNumber: trialNumber,
-          locationCode: locCode,
+          trialNumber,
+          locationCode,
         }));
       })
       .catch((err) => {
@@ -406,4 +424,28 @@
         return res.render('_errors/generic.njk');
       });
   };
+
+  const fetchTrialDetails = (app) => async (req, res) => {
+    const { trialNumber, locationCode } = req.params;
+    try {
+      return await trialDetailsObject.get(
+        require('request-promise'),
+        app,
+        req.session.authToken,
+        trialNumber,
+        locationCode
+      );
+    } catch (err) {
+      app.logger.crit('Failed to fetch trial details: ', {
+        auth: req.session.authentication,
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        body: {
+          trialNumber,
+          locationCode
+        }
+      });
+      return res.render('_errors/generic');
+    }
+  };
+
 })();
