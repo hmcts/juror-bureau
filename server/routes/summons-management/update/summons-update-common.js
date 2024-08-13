@@ -5,6 +5,8 @@
 
   module.exports.hasBeenModified = function(app, req, replyMethod) {
     return new Promise((resolve) => {
+      const { id } = req.params;
+
       if (replyMethod !== 'paper') {
         return resolve(false);
       };
@@ -15,7 +17,7 @@
         req.session.authToken,
         req.params['id']
       ).then(({headers}) => {
-        if (headers.etag !== req.session.summonsUpdate.etag) {
+        if (headers.etag !== req.session[`summonsUpdate-${id}`].etag) {
           req.session.errors = {
             updated: [{
               summary: 'This summons has been modified',

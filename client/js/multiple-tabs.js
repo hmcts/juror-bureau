@@ -3,7 +3,7 @@ const tabChannel = new BroadcastChannel('tab-channel');
 tabChannel.postMessage({ source: tabID });
 
 tabChannel.onmessage = function(e) {
-  if (e.data.source !== tabID) { 
+  if (e.data.source !== tabID) {
     $('#multiple-tabs').show();
     if (!e.data.isResponse) {
       tabChannel.postMessage({ source: tabID, isResponse: true });

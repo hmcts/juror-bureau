@@ -721,6 +721,7 @@
 
   module.exports.getPaperResponseDetails = function(app) {
     return function(req, res) {
+      const { id } = req.params;
       var promiseArr = []
         , successCB = function(response) {
           var responseClone = _.clone(response[0].data)
@@ -739,6 +740,7 @@
           delete req.session.jurorName;
           delete req.session.specialNeeds;
           delete req.session.catchmentWarning;
+          delete req.session[`summonsUpdate-${id}`];
 
           jurorDetails = {
             name: nameDetails,
