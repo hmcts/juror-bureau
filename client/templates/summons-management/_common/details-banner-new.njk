@@ -6,9 +6,19 @@
   {% set serviceStartDate = response.hearingDate | dateFilter("DD/MM/YYYY", "ddd DD MMM YYYY") %}
 {% endif %}
 
-{% if (response.statusRender) === "Responded" and (response.excusalReason != null or replyType === "EXCUSAL") %}
+{% if (response.statusRender) === "Responded" and (response.deferral != null or response.excusal != null) %}
+  {% set title = "" %}
+
+  {% if replyType === "EXCUSAL" %}
+    {% set title = "Excusal refused" %}
+  {% endif %}
+
+  {% if replyType === "DEFERRAL" %}
+    {% set title = "Deferral refused" %}
+  {% endif %}
+
   {% set iconHtml %}
-    <span class="icon mod-icon-urgent"></span>
+    <span class="icon mod-icon-urgent" title="{{ title }}"></span>
   {% endset %}
 {% endif %}
 
