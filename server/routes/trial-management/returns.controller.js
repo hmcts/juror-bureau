@@ -61,7 +61,6 @@
       delete juror['juror_status'];
     });
     req.session[`${trialNumber}-${locationCode}-returnJurors`] = panelData.filter(juror => req.body.selectedJurors.includes(juror['juror_number']));
-    console.log(req.session[`${trialNumber}-${locationCode}-returnJurors`]);
 
     if (!isJuryEmpanelled) {
       // Panel route

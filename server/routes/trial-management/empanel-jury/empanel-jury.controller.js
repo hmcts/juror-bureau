@@ -26,8 +26,6 @@
         delete req.session.errors;
         delete req.session.formFields;
 
-        console.log('HELLO!!!!!!!!!!!!!!!!!')
-
         return res.render('trial-management/empanel-jury/index.njk', {
           submitUrl: app.namedRoutes.build('trial-management.empanel.post',  {
             trialNumber,
