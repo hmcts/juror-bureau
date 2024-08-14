@@ -349,6 +349,7 @@
 
   module.exports.getEditDetails = (app) => {
     return async(req, res) => {
+      const { jurorNumber } = req.params;
 
       req.session.dateMax = moment().subtract(1, 'days');
 
@@ -365,7 +366,7 @@
             });
         });
 
-        if (!req.session.editJurorDetails) {
+        if (!req.session[`editJurorDetails-${jurorNumber}`]) {
           const response = await jurorRecordObject.get(require('request-promise'), app, req.session.authToken, 'detail',
             req.params['jurorNumber'], req.session.locCode);
 
@@ -379,12 +380,12 @@
             response.data.extraSupport = 'yes';
           }
 
-          req.session.editJurorEtag = response.headers.etag;
-          req.session.editJurorDetails = response.data;
+          req.session[`editJurorEtag-${response.data.commonDetails.jurorNumber}`] = response.headers.etag;
+          req.session[`editJurorDetails-${response.data.commonDetails.jurorNumber}`] = response.data;
 
         }
 
-        let jurorDetails = req.session.editJurorDetails;
+        let jurorDetails = req.session[`editJurorDetails-${jurorNumber}`]
 
         if (req.session.formFields) {
           req.session.formFields.specialNeed = req.session.formFields.specNeedValue;
@@ -399,12 +400,12 @@
 
         delete req.session.errors;
 
-        if (req.session.editJurorDetails.fixedName) {
-          const { title, firstName, lastName } = req.session.editJurorDetails.fixedName;
+        if (req.session[`editJurorDetails-${jurorNumber}`].fixedName) {
+          const { title, firstName, lastName } = req.session[`editJurorDetails-${jurorNumber}`].fixedName;
 
-          req.session.editJurorDetails.commonDetails.title = title;
-          req.session.editJurorDetails.commonDetails.firstName = firstName;
-          req.session.editJurorDetails.commonDetails.lastName = lastName;
+          req.session[`editJurorDetails-${jurorNumber}`].commonDetails.title = title;
+          req.session[`editJurorDetails-${jurorNumber}`].commonDetails.firstName = firstName;
+          req.session[`editJurorDetails-${jurorNumber}`].commonDetails.lastName = lastName;
         }
 
         if (req.url.includes('bank-details/address')) {
@@ -449,6 +450,7 @@
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
+
         return res.render('_errors/generic');
       }
     };
@@ -456,7 +458,12 @@
 
   module.exports.postEditDetails = (app) => {
     return (req, res) => {
+      const { jurorNumber } = req.params;
       let validatorResult = validate(req.body, overviewDetailsValidator());
+
+      if (!req.session[`editJurorDetails-${jurorNumber}`]) {
+        return res.render('_errors/generic');
+      }
 
       if (req.body.thirdParty === 'yes') {
         // stubbed - waiting for BE to implement third party for juror record.
@@ -486,7 +493,7 @@
       }
 
       const tmpAge = modUtils.dateDifference(
-        makeDate(req.session.editJurorDetails.commonDetails.startDate),
+        makeDate(req.session[`editJurorDetails-${jurorNumber}`].commonDetails.startDate),
         req.body.dateOfBirth,
         'years'
       );
@@ -533,6 +540,7 @@
   };
 
   const processJurorEdit = async function(app, req, res, disqualifyAge) {
+    const { jurorNumber } = req.params;
     const requestBody = { ...req.session.formFields };
     let successUrl = app.namedRoutes.build('juror-record.details.get', {
       jurorNumber: req.params.jurorNumber,
@@ -551,9 +559,9 @@
     delete requestBody.thirdParty;
     delete requestBody.extraSupport;
 
-    requestBody.pendingTitle = req.session.editJurorDetails.commonDetails.pendingTitle;
-    requestBody.pendingFirstName = req.session.editJurorDetails.commonDetails.pendingFirstName;
-    requestBody.pendingLastName = req.session.editJurorDetails.commonDetails.pendingLastName;
+    requestBody.pendingTitle = req.session[`editJurorDetails-${jurorNumber}`].commonDetails.pendingTitle;
+    requestBody.pendingFirstName = req.session[`editJurorDetails-${jurorNumber}`].commonDetails.pendingFirstName;
+    requestBody.pendingLastName = req.session[`editJurorDetails-${jurorNumber}`].commonDetails.pendingLastName;
 
     requestBody.primaryPhone = req.session.formFields.primaryPhone === ''
       ? null
@@ -571,7 +579,7 @@
 
     const promiseArr = [];
 
-    if (req.session.editJurorDetails.fixedName) {
+    if (req.session[`editJurorDetails-${jurorNumber}`].fixedName) {
       try {
         await fixNameObj.patch(
           require('request-promise'),
@@ -579,13 +587,13 @@
           req.session.authToken,
           req.params['jurorNumber'],
           'fix-name',
-          req.session.editJurorDetails.fixedName,
+          req.session[`editJurorDetails-${jurorNumber}`].fixedName,
         );
       } catch (err) {
         app.logger.crit('Failed to fix current name: ', {
           auth: req.session.authentication,
           jwt: req.session.authToken,
-          data: req.session.editJurorDetails.fixedName,
+          data: req.session[`editJurorDetails-${jurorNumber}`].fixedName,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
@@ -593,13 +601,14 @@
       }
     }
 
+    // TODO: this etag is incorrect... it should do a get to compare etags then patch if data has not been changed
     promiseArr.push(editJurorDetailsObject.patch(
       require('request-promise'),
       app,
       req.session.authToken,
       requestBody,
       req.params['jurorNumber'],
-      req.session.editJurorEtag,
+      req.session[`editJurorEtag-${jurorNumber}`],
     ));
 
     if (disqualifyAge) {
@@ -615,8 +624,8 @@
           requestBody: requestBody,
         });
 
-        delete req.session.editJurorEtag;
-        delete req.session.editJurorDetails;
+        delete req.session[`editJurorEtag-${jurorNumber}`];
+        delete req.session[`editJurorDetails-${jurorNumber}`];
         delete req.session.dateMax;
         delete req.session.formFields;
 
@@ -640,16 +649,17 @@
 
   module.exports.getEditDetailsAddress = (app) => {
     return (req, res) => {
+      const { jurorNumber } = req.params;
       let postUrl, cancelUrl,
         tmpErrors = _.clone(req.session.errors);
 
       const address = {
-        part1: req.session.editJurorDetails.addressLineOne,
-        part2: req.session.editJurorDetails.addressLineTwo,
-        part3: req.session.editJurorDetails.addressLineThree,
-        part4: req.session.editJurorDetails.addressTown,
-        part5: req.session.editJurorDetails.addressCounty,
-        postcode: req.session.editJurorDetails.addressPostcode,
+        part1: req.session[`editJurorDetails-${jurorNumber}`].addressLineOne,
+        part2: req.session[`editJurorDetails-${jurorNumber}`].addressLineTwo,
+        part3: req.session[`editJurorDetails-${jurorNumber}`].addressLineThree,
+        part4: req.session[`editJurorDetails-${jurorNumber}`].addressTown,
+        part5: req.session[`editJurorDetails-${jurorNumber}`].addressCounty,
+        postcode: req.session[`editJurorDetails-${jurorNumber}`].addressPostcode,
       };
 
       if (req.url.includes('bank-details')) {
@@ -701,6 +711,7 @@
 
   module.exports.postEditDetailsAddress = (app) => {
     return (req, res) => {
+      const { jurorNumber } = req.params;
       let validatorResult = validate(req.body, paperReplyValidator.jurorAddress());
 
       let formErrorUrl = app.namedRoutes.build('juror-record.details-edit-address.get', {
@@ -724,12 +735,12 @@
         return res.redirect(formErrorUrl);
       }
 
-      req.session.editJurorDetails.addressLineOne = req.body.address1;
-      req.session.editJurorDetails.addressLineTwo = req.body.address2;
-      req.session.editJurorDetails.addressLineThree = req.body.address3;
-      req.session.editJurorDetails.addressTown = req.body.address4;
-      req.session.editJurorDetails.addressCounty = req.body.address5;
-      req.session.editJurorDetails.addressPostcode = req.body.postcode;
+      req.session[`editJurorDetails-${jurorNumber}`].addressLineOne = req.body.address1;
+      req.session[`editJurorDetails-${jurorNumber}`].addressLineTwo = req.body.address2;
+      req.session[`editJurorDetails-${jurorNumber}`].addressLineThree = req.body.address3;
+      req.session[`editJurorDetails-${jurorNumber}`].addressTown = req.body.address4;
+      req.session[`editJurorDetails-${jurorNumber}`].addressCounty = req.body.address5;
+      req.session[`editJurorDetails-${jurorNumber}`].addressPostcode = req.body.postcode;
 
       // If only changing address then resend the data given from original API call
       if (req.url.includes('bank-details')) {
@@ -775,17 +786,17 @@
 
       if (action === 'fix') {
         jurorDetails = {
-          title: req.session.editJurorDetails.commonDetails.title,
-          firstName: req.session.editJurorDetails.commonDetails.firstName,
-          lastName: req.session.editJurorDetails.commonDetails.lastName,
+          title: req.session[`editJurorDetails-${jurorNumber}`].commonDetails.title,
+          firstName: req.session[`editJurorDetails-${jurorNumber}`].commonDetails.firstName,
+          lastName: req.session[`editJurorDetails-${jurorNumber}`].commonDetails.lastName,
         };
       }
 
       if (action === 'new') {
         jurorDetails = {
-          title: req.session.editJurorDetails.commonDetails.pendingTitle,
-          firstName: req.session.editJurorDetails.commonDetails.pendingFirstName,
-          lastName: req.session.editJurorDetails.commonDetails.pendingLastName,
+          title: req.session[`editJurorDetails-${jurorNumber}`].commonDetails.pendingTitle,
+          firstName: req.session[`editJurorDetails-${jurorNumber}`].commonDetails.pendingFirstName,
+          lastName: req.session[`editJurorDetails-${jurorNumber}`].commonDetails.pendingLastName,
         };
       }
 
@@ -822,7 +833,7 @@
       const { title, firstName, lastName } = req.body;
 
       if (action === 'fix') {
-        req.session.editJurorDetails.fixedName = {
+        req.session[`editJurorDetails-${jurorNumber}`].fixedName = {
           title,
           firstName,
           lastName,
@@ -830,9 +841,9 @@
       }
 
       if (action === 'new') {
-        req.session.editJurorDetails.commonDetails.pendingTitle = title;
-        req.session.editJurorDetails.commonDetails.pendingFirstName = firstName;
-        req.session.editJurorDetails.commonDetails.pendingLastName = lastName;
+        req.session[`editJurorDetails-${jurorNumber}`].commonDetails.pendingTitle = title;
+        req.session[`editJurorDetails-${jurorNumber}`].commonDetails.pendingFirstName = firstName;
+        req.session[`editJurorDetails-${jurorNumber}`].commonDetails.pendingLastName = lastName;
       }
 
       app.logger.debug('New name added to current juror details', {

@@ -8,6 +8,7 @@
 
   module.exports.get = function(app) {
     return async function(req, res) {
+      const { id } = req.params;
       const postUrl = app.namedRoutes.build('summons.update-reply-type.post', {
         id: req.params['id'],
         type: req.params['type'],
@@ -28,7 +29,7 @@
           req.params['id']
         );
 
-        req.session.summonsUpdate = {
+        req.session[`summonsUpdate-${id}`] = {
           etag: headers['etag'],
         };
 
@@ -67,6 +68,7 @@
 
   module.exports.post = function(app) {
     return async function(req, res) {
+      const { id } = req.params;
       // no need for validation as we can allow empty forms... will still pre-populated though (null means can-serve)
       const payload = {
         deferral: req.body['deferralValue'] === 'deferral-request',
@@ -92,7 +94,7 @@
           payload
         );
 
-        delete req.session.summonsUpdate;
+        delete req.session[`summonsUpdate-${id}`];
 
         app.logger.info('Updated the summons reply type', {
           auth: req.session.authentication,

@@ -43,24 +43,12 @@
 
           const courtrooms = data[0];
           const judges = data[1];
-
-          const courtroomsToDisplay = [];
-
-          req.session.judges = judges.judges;
-          req.session.courtrooms = courtrooms.map((court) => {
-
-            court.display_name = court.court_location;
-            court.court_location = court.court_location.replace(/[ .]/g, '_');
-
-            courtroomsToDisplay.push(
-              {
-                displayName: court.display_name,
-                courtLocationName: court.court_location,
+          const courtroomsToDisplay = courtrooms.map((court) => {
+            return {
+                displayName: court.court_location,
+                courtLocationName: court.court_location.replace(/[ .]/g, '_'),
                 courtrooms: court.court_rooms.map(room => room.description),
               }
-            );
-
-            return court;
           });
 
           const judgesToDisplay = judges.judges.map(j => j.description);
@@ -99,13 +87,40 @@
   };
 
   module.exports.postCreateTrial = function(app) {
-    return function(req, res) {
+    return async function(req, res) {
+      let judges;
+      try {
+        judges = (await judgesObject.get(
+          require('request-promise'),
+          app,
+          req.session.authToken
+        )).judges;
+      } catch (err) {
+        app.logger.crit('Failed to fetch judges: ', {
+          auth: req.session.authentication,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+        return res.render('_errors/generic');
+      }
 
-      const judges = _.clone(req.session.judges)
-        , courtrooms = _.clone(req.session.courtrooms);
-
-      delete req.session.judges;
-      delete req.session.courtrooms;
+      let courtrooms;
+      try {
+        courtrooms = (await courtroomsObject.get(
+          require('request-promise'),
+          app,
+          req.session.authToken
+        )).map((court) => {
+          court.display_name = court.court_location;
+          court.court_location = court.court_location.replace(/[ .]/g, '_');
+          return court
+        })
+      } catch (err) {
+        app.logger.crit('Failed to fetch courtrooms: ', {
+          auth: req.session.authentication,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+        return res.render('_errors/generic');
+      }
 
       if (courtrooms.length > 1){
         const courtroom = req.body[req.body.court];

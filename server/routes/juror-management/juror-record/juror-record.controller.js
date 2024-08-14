@@ -1159,6 +1159,8 @@
   }
 
   function clearInvalidSessionData(req) {
+    const { jurorNumber } = req.params;
+
     delete req.session.paperResponseDetails;
     delete req.session.startedPaperResponse;
     delete req.session.jurorCommonDetails;
@@ -1166,7 +1168,7 @@
     delete req.session.replyMethod;
     delete req.session.postponeToDate;
     delete req.session.changeName;
-    delete req.session.editJurorDetails;
+    delete req.session[`editJurorDetails-${jurorNumber}`];
   }
 
   function cacheJurorCommonDetails(req, commonDetails) {

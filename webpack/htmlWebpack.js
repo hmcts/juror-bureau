@@ -19,6 +19,7 @@ const clientJs = [
   'certificate-of-exemption-list.js',
   'export-contact-details.js',
   'bulk-undeliverable.js',
+  'multiple-tabs.js',
 ];
 
 const copyClientCode = new CopyWebpackPlugin({
