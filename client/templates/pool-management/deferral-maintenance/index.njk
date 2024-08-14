@@ -67,63 +67,66 @@
     </div>
 
     {% if data.hasData %}
-      <form method="post">
+      
         <div class="govuk-grid-column-full">
           {% if isBureauUser %}<hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-5">{% endif %}
           <h2 class="govuk-heading-l">{{ data.court.locationName | capitalizeFully }} ({{ data.court.locationCode }})</h2>
-
-          <div class="mod-flex mod-gap-x-2">
-            {{ govukButton({
-              text: "Show filter",
-              classes: "govuk-button--secondary",
-              attributes: {
-                id: "deferral-maintenance-show-filter"
-              }
-            }) }}
-            {{ govukButton({
-              text: "Add to a pool",
-              href: url('pool-management.deferral-maintencance.process.get', { locationCode: data.court.locationCode }),
-              classes: "govuk-button--secondary"
-            }) }}
-            {{ govukButton({
-              text: "Postpone",
-              attributes: {
-                formAction: url('pool-management.deferral-maintenance.postpone.post', { locationCode: data.court.locationCode })
-              },
-              classes: "govuk-button--secondary"
-            }) }}
-          </div>
-
           <div class="govuk-grid-row">
+            
             <div class="govuk-grid-column-one-third">
               {% include "./_partials/filters.njk" %}
             </div>
 
-            <div id="deferral-maintenance-table-wrapper" class="govuk-grid-column-full">
-              <div class="{% if errors.count > 0 %}govuk-form-group--error{% endif %}">
-
-                {% if errors.count > 0 %}
-                  <p id="information-error" class="govuk-error-message">
-                    <span class="govuk-visually-hidden">Error:</span>
-                    {{ errors.items["deferrals"][0].details }}
-                  </p>
-                {% endif %}
-
-                {% include "./_partials/deferrals-table.njk" %}
+            <form method="post">
+              <div class="mod-flex mod-gap-x-2">
+                {{ govukButton({
+                  text: "Show filter",
+                  classes: "govuk-button--secondary",
+                  attributes: {
+                    id: "deferral-maintenance-show-filter"
+                  }
+                }) }}
+                {{ govukButton({
+                  text: "Add to a pool",
+                  href: url('pool-management.deferral-maintencance.process.get', { locationCode: data.court.locationCode }),
+                  classes: "govuk-button--secondary"
+                }) }}
+                {{ govukButton({
+                  text: "Postpone",
+                  attributes: {
+                    formAction: url('pool-management.deferral-maintenance.postpone.post', { locationCode: data.court.locationCode })
+                  },
+                  classes: "govuk-button--secondary"
+                }) }}
               </div>
-              {{ govukPagination({
-                previous: {
-                  href: data.pagination.prev
-                },
-                next: {
-                  href: data.pagination.next
-                },
-                items: data.pagination.items
-              }) }}
-            </div>
+
+              <div id="deferral-maintenance-table-wrapper" class="govuk-grid-column-full">
+                <div class="{% if errors.count > 0 %}govuk-form-group--error{% endif %}">
+
+                  {% if errors.count > 0 %}
+                    <p id="information-error" class="govuk-error-message">
+                      <span class="govuk-visually-hidden">Error:</span>
+                      {{ errors.items["deferrals"][0].details }}
+                    </p>
+                  {% endif %}
+
+                  {% include "./_partials/deferrals-table.njk" %}
+                </div>
+                {{ govukPagination({
+                  previous: {
+                    href: data.pagination.prev
+                  },
+                  next: {
+                    href: data.pagination.next
+                  },
+                  items: data.pagination.items
+                }) }}
+              </div>
+              <input type="hidden" id="csrftoken" name="_csrf" value="{{ csrftoken }}"/>
+            </form>
           </div>
         </div>
-      </form>
+      
     {% endif %}
 
   </div>
