@@ -102,7 +102,7 @@
     };
   }
 
-  function documentContent(content, jurorData) {
+  function documentContent(content, jurorData, document) {
     const isWelsh = content.welsh;
     const contentArray = [
       {
@@ -149,12 +149,8 @@
       });
     }
 
-    contentArray.push({
-      stack: [
-        { text: content.content },
-        { text: content.signature },
-      ],
-    });
+    contentArray.push({ text: content.content });
+        // { text: content.signature },
 
     if (typeof jurorData.table !== 'undefined') {
       contentArray.push(
@@ -177,7 +173,9 @@
           ],
         });
       }
-    };
+    } else {
+      contentArray.push({ text: content.signature });
+    }
 
     return contentArray;
   };
