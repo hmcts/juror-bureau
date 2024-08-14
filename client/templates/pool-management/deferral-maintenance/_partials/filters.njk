@@ -43,7 +43,7 @@
 
 {% endset %}
 
-<form action="{{ url('pool-management.deferral-maintenance.filter.post', { locationCode: data.court.locationCode }) }}?showFilter=true" method="POST">
+<form action="{{ url('pool-management.deferral-maintenance.filter.search.post', { locationCode: data.court.locationCode }) }}?showFilter=true" method="POST">
   {{ modFilter({
     heading: {
       text: "Filter"

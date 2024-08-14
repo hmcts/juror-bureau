@@ -15,6 +15,11 @@
       auth.verify,
       controller.getDeferrals(app));
 
+    app.post('/pool-management/deferral-maintenance/location/:locationCode/filter',
+        'pool-management.deferral-maintenance.filter.search.post',
+        auth.verify,
+        controller.postFilterSearch(app));
+
     app.get('/pool-management/deferral-maintenance/location/:locationCode',
       'pool-management.deferral-maintenance.filter.get',
       auth.verify,
