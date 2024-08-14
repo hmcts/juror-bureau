@@ -26,7 +26,6 @@
         return res.render('_errors/generic');
       }
 
-
       if (members === 0) {
         return res.render('pool-management/delete-pool/confirm', {
           poolNumber,
@@ -67,7 +66,14 @@
         , errorCB = function(err) {
           var cancelUrl = '/pool-management/pool-overview/' + poolNumber;
 
-          if (err.response.status === 423) {
+          if (err.response?.status === 423) {
+
+            app.logger.crit('Failed to delete locked pool', {
+              auth: req.session.authentication,
+              data: { poolNumber },
+              error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+            });
+
             return res.render('pool-management/delete-pool/locked', {
               cancelUrl: cancelUrl,
             });
@@ -75,9 +81,7 @@
 
           app.logger.crit('Failed to delete pool: ', {
             auth: req.session.authentication,
-            data: {
-              poolNumber,
-            },
+            data: { poolNumber },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
