@@ -169,12 +169,10 @@
         contentArray.push({
           stack: [
             {
-              text: content.welsh ? 'Yn gywir,' : 'Yours sincerely,',
-              marginTop: 20,
-              marginBottom: 15,
+              text: content.welsh ? '\nYn gywir,\n\n' : '\nYours sincerely,\n\n',
             },
             {
-              text: 'hello world',
+              text: content.signature,
             }
           ],
         });
