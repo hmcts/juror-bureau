@@ -143,7 +143,7 @@
 
       checkedJurors.forEach((juror) => {
         if (juror['date_printed'] === 'null') {
-          juror['date_printed'] = dateFilter(new Date(), null, 'YYYY-MM-DD');
+          juror['date_printed'] = null;
         }
       });
 
