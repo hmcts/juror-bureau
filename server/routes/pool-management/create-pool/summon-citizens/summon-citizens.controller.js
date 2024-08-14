@@ -315,7 +315,7 @@
         , errorUrl;
 
       if (page === 'summon-citizens') {
-        currentBureauDeferrals = req.session[`summonJurors-${poolNumber}`].availableBureauDeferrals;
+        currentBureauDeferrals = req.session[`summonJurors-${poolNumber}`].currentBureauDeferrals;
         errorUrl = app.namedRoutes.build('summon-citizens.change-deferrals.get', { poolNumber });
         renderUrl = app.namedRoutes.build('summon-citizens.get', { poolNumber });
       } else if (page === 'summon-additional-citizens') {
