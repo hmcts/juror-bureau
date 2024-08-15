@@ -102,7 +102,7 @@
     };
   }
 
-  function documentContent(content, jurorData, document) {
+  function documentContent(content, jurorData) {
     const isWelsh = content.welsh;
     const contentArray = [
       {
@@ -150,7 +150,6 @@
     }
 
     contentArray.push({ text: content.content });
-        // { text: content.signature },
 
     if (typeof jurorData.table !== 'undefined') {
       contentArray.push(
