@@ -86,7 +86,12 @@
         {% endif %}
       </div>
       <div class="govuk-grid-column-one-half govuk-!-padding-2">
-        {% if jurorStatus !== "Postponed" %}
+        {% if jurorStatus === "Deferred" %}
+            <div class="govuk-grid-column-one-third">
+                <div id="courtDeferredDateLabel" class="label info">Deferred to</div>
+                <span id="courtDeferredDate" class="info">{{ juror.commonDetails.deferredTo | dateFilter('yyyy-MM-DD', "ddd D MMM YYYY") }}</span>
+            </div>
+        {% elif jurorStatus !== "Postponed" %}
           <div class="govuk-grid-column-one-third">
             <div id="courtStartDateLabel" class="label info">Service start date</div>
             <span id="courtStartDate" class="info">{{ startDate }}</span>
