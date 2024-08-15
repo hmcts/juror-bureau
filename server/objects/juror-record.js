@@ -6,6 +6,7 @@
     , urljoin = require('url-join')
     , config = require('../config/environment')()
     , utils = require('../lib/utils')
+    , modUtils = require('../lib/mod-utils')
     , options = {
       uri: config.apiEndpoint,
       headers: {
@@ -125,8 +126,7 @@
           this.resource,
           jurorNumber);
         reqOptions.method = 'PATCH';
-
-        tmpBody = _.mapKeys(tmpBody, (value, key) => _.snakeCase(key));
+        tmpBody = modUtils.mapCamelToSnake(tmpBody);
         delete Object.assign(tmpBody, {'welsh_language_required': tmpBody.welsh || false }).welsh;
         reqOptions.body = tmpBody;
 

@@ -15,7 +15,6 @@
 
 {% block content %}
   {% include "includes/errors.njk" %}
-
   {% set dateOfBirthError = undefined %}
   {% if errors.items["dateOfBirth"] %}
     {% set dateOfBirthError = {
@@ -43,6 +42,70 @@
     } %}
   {% endif %}
 
+
+  {% set thirdPartyFirstNameError = undefined %}
+    {% if errors.items["thirdParty-first-name"] %}
+      {% set thirdPartyFirstNameError = {
+        text: errors
+          .items["thirdParty-first-name"][0]
+          .details
+      } %}
+  {% endif %}
+
+  {% set thirdPartyLastNameError = undefined %}
+    {% if errors.items["thirdParty-last-name"] %}
+      {% set thirdPartyLastNameError = {
+        text: errors
+          .items["thirdParty-last-name"][0]
+          .details
+      } %}
+  {% endif %}
+
+  {% set thirdPartyRelationError = undefined %}
+    {% if errors.items["thirdParty-relation"] %}
+      {% set thirdPartyRelationError = {
+        text: errors
+          .items["thirdParty-relation"][0]
+          .details
+      } %}
+  {% endif %}
+
+  {% set thirdPartyMainPhoneError = undefined %}
+    {% if errors.items["thirdParty-mainPhone"] %}
+      {% set thirdPartyMainPhoneError = {
+        text: errors
+          .items["thirdParty-mainPhone"][0]
+          .details
+      } %}
+  {% endif %}
+
+  {% set thirdPartySecPhoneError = undefined %}
+    {% if errors.items["thirdParty-secPhone"] %}
+      {% set thirdPartySecPhoneError = {
+        text: errors
+          .items["thirdParty-secPhone"][0]
+          .details
+      } %}
+  {% endif %}
+
+  {% set thirdPartyEmailError = undefined %}
+    {% if errors.items["thirdParty-email"] %}
+      {% set thirdPartyEmailError = {
+        text: errors
+          .items["thirdParty-email"][0]
+          .details
+      } %}
+  {% endif %}
+
+  {% set thirdPartyReasonError = undefined %}
+    {% if errors.items["thirdParty-reason"] %}
+      {% set thirdPartyReasonError = {
+        text: errors
+          .items["thirdParty-reason"][0]
+          .details
+      } %}
+  {% endif %}
+
   {% set emailAddressError = undefined %}
   {% if errors.items["emailAddress"] %}
     {% set emailAddressError = {
@@ -66,6 +129,15 @@
     {% set specNeedMsgError = {
       text: errors
         .item["specNeedMsg"][0]
+        .details
+    } %}
+  {% endif %}
+
+  {% set thirdPartReasonError = undefined %}
+  {% if errors.items["thirdPartReasonError"] %}
+    {% set thirdPartReasonError = {
+      text: errors
+        .item["thirdPartReasonError"][0]
         .details
     } %}
   {% endif %}
@@ -195,21 +267,34 @@
         }) }}
       </div>
     </div>
-
     {% block jurorContact %}
       {% set thirdPartyHtml %}
       {{ govukInput({
-          id: "thirdParty-name",
-          name: "thirdParty-name",
+          id: "thirdParty-first-name",
+          name: "thirdParty-first-name",
+          value: juror.thirdParty.thirdPartyFName,
           classes: "govuk-!-width-one-half",
+          errorMessage: thirdPartyFirstNameError,
           label: {
-            text: "Name"
+            text: "First Name (optional)"
+          }
+        }) }}
+      {{ govukInput({
+          id: "thirdParty-last-name",
+          name: "thirdParty-last-name",
+          value: juror.thirdParty.thirdPartyLName,
+          classes: "govuk-!-width-one-half",
+          errorMessage: thirdPartyLastNameError,
+          label: {
+            text: "Last Name (optional)"
           }
         }) }}
       {{ govukInput({
           id: "thirdParty-relation",
           name: "thirdParty-relation",
           classes: "govuk-!-width-one-half",
+          value: juror.thirdParty.relationship,
+          errorMessage: thirdPartyRelationError,
           label: {
             text: "Relationship to juror"
           }
@@ -218,6 +303,8 @@
           id: "thirdParty-mainPhone",
           name: "thirdParty-mainPhone",
           classes: "govuk-!-width-one-third",
+          value: juror.thirdParty.mainPhone,
+          errorMessage: thirdPartyMainPhoneError,
           label: {
             text: "Main phone (optional)"
           }
@@ -226,6 +313,8 @@
           id: "thirdParty-secPhone",
           name: "thirdParty-secPhone",
           classes: "govuk-!-width-one-third",
+          value: juror.thirdParty.otherPhone,
+          errorMessage: thirdPartySecPhoneError,
           label: {
             text: "Another phone (optional)"
           }
@@ -240,34 +329,72 @@
           },
           autocomplete: "off",
           classes: "govuk-!-width-one-half",
+          value: juror.thirdParty.emailAddress,
+          errorMessage: thirdPartyEmailError,
           label: {
             text: "Email (optional)"
           }
         }) }}
+      {{ govukCharacterCount({
+            name: "thirdParty-reason",
+            id: "thirdParty-reason",
+            classes: "govuk-!-width-one-half",
+            value: juror.thirdParty.thirdPartyReason,
+            errorMessage: thirdPartyReasonError,
+            maxlength: 1000,
+            rows: 10,
+            label: {
+              text: "Reason"
+            },
+            errorMessage: thirdPartReasonError
+          }) }}
+           {{ govukCheckboxes({
+                      name: "thirdParty-contact-preferences",
+                      fieldset: {
+                        legend: {
+                          text: "Third party contact preferences",
+                          classes: "govuk-fieldset__legend--m"
+                        }
+                      },
+                      items: [
+                        {
+                          value: "contact-juror-by-email",
+                          text: "Contact juror instead of third party for email communications",
+                          checked: juror.thirdParty.useJurorEmailDetails
+                        },
+                        {
+                          value: "contact-juror-by-phone",
+                          text: "Contact juror instead of third party for phone communications",
+                          checked: juror.thirdParty.useJurorPhoneDetails
+                        }
+                      ]
+                    }) }}
       {% endset -%}
 
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
           {{ govukRadios({
-            name: "thirdParty",
+            name: "thirdPartyEnabled",
+            id: "thirdPartyEnabled",
             fieldset: {
               legend: {
                 text: "Is there a third party that can be contacted on behalf of the juror?",
                 classes: "govuk-fieldset__legend--m"
               }
             },
-            value: juror.thirdParty,
             items: [
               {
                 value: "yes",
                 text: "Yes",
+                checked: juror.thirdParty != null,
                 conditional: {
                   html: thirdPartyHtml
                 }
               },
               {
                 value: "no",
-                text: "No"
+                text: "No",
+                checked: juror.thirdParty == null
               }
             ]
           }) }}
