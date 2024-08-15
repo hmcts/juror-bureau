@@ -166,7 +166,7 @@
       const { jurorNumber, locCode, status } = req.params;
       const editedExpenses = _.clone(req.session.editedExpenses);
 
-      if (!Object.keys(editedExpenses).length) {
+      if (!editedExpenses || !Object.keys(editedExpenses).length) {
         req.session.errors = {
           noEditedExpenses: [{
             details: 'Edit at least one expense before submitting',
