@@ -2,7 +2,10 @@
 
 <!-- Bureau page scripts -->
 <script src="{{ assetPath }}js/bundle.js"></script>
-<script src="{{ assetPath }}js/multiple-tabs.js"></script>
+
+{% if authentication %}
+  <script src="{{ assetPath }}js/multiple-tabs.js"></script>
+{% endif %}
 
 {% if authentication %}
   <script src="{{ assetPath }}js/multiple-tabs.js"></script>
