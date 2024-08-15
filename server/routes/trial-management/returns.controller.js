@@ -9,6 +9,7 @@
   const { convert12to24, dateFilter, convertAmPmToLong } = require('../../components/filters');
   const { padTimeForApi } = require('../../lib/mod-utils');
   const { panelListDAO, trialDetailsObject } = require('../../objects');
+  const isAttendanceConfirmed = require('../juror-management/juror-management.controller').isAttendanceConfirmed;
 
 
   module.exports.postReturnJurors = (app) => async (req, res) => {
@@ -77,13 +78,15 @@
     }));
   };
 
-  module.exports.getReturnAttendance = (app) => (req, res) => {
+  module.exports.getReturnAttendance = (app) => function(app) {
+  return async function(req, res) {
     const { trialNumber, locationCode } = req.params;
     const tmpErrors = _.clone(req.session.errors);
 
     delete req.session.errors;
     delete req.session[`${trialNumber}-${locationCode}-checkInTime`];
     delete req.session[`${trialNumber}-${locationCode}-checkOutTime`];
+    const dayIsConfirmed = await isAttendanceConfirmed(app, req, req.params.locationCode, dateFilter(new Date(), null, 'YYYY-MM-DD'));
 
     return res.render('trial-management/returns/return-attendance.njk', {
       formActions: {
@@ -103,6 +106,7 @@
         items: tmpErrors,
       },
       prevAnswer: req.session[`${trialNumber}-${locationCode}-handleAttendance`],
+      dayIsConfirmed: dayIsConfirmed
     });
   };
 
