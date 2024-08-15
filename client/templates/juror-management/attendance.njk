@@ -5,6 +5,7 @@
 {% from "custom-components/macros/arrows.njk" import leftArrowSVG %}
 {% from "./_partials/attendance-sub-nav.njk" import attendanceSubNav %}
 {% from "moj/components/button-menu/macro.njk" import mojButtonMenu %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
 
 {% block page_title %}{{ serviceName }} - Juror management - Attendance{% endblock %}
 {% block page_identifier %}Juror management - Attendance{% endblock %}
@@ -21,7 +22,15 @@
   {% if tmpFields !== undefined %}
     {% include "includes/errors.njk" %}
   {% endif %}
-
+ {% if previousDayIsConfirmed == false and attendanceStatus !== "Confirmed" %}
+     <div class="govuk-grid-column-full">
+      {{ mojBanner({
+        type: "information",
+        text: yesterday + " has not been confirmed yet, confirm that days attendance before checking in jurors for today",
+        iconFallbackText: "information"
+      }) }}
+      </div>
+ {% endif %}
   <div class="govuk-error-summary js-hidden" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
     <p class="govuk-error-summary__title" id="error-summary-title">
       There is a problem
@@ -43,6 +52,7 @@
       <span class="govuk-caption-l">Jurors in waiting</span>
       <h1 class="govuk-heading-l" id="attendanceDate">{{ selectedDate }}</h1>
     </div>
+
     <div class="govuk-grid-column-one-half">
       <div class="govuk-button-group mod-flex mod-justify-end">
         <div class="moj-button-menu">

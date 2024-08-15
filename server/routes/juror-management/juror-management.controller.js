@@ -42,9 +42,12 @@
       const selectedDate = date ? new Date(date) : new Date();
       const selectedDateString = dateFilter(selectedDate, null, 'YYYY-MM-DD');
 
+      const yesterday = new Date().setDate(selectedDate.getDate() - 1);
+
       const confirmedTab = tab || 'attended';
 
       try {
+        const previousDayIsConfirmed = isAttendanceConfirmedByAttendances(await getAppearances(app, req, req.session.authentication.locCode, dateFilter(yesterday, null, 'YYYY-MM-DD')));
 
         const attendees = await getAppearances(app,req, req.session.authentication.locCode, selectedDateString);
         req.session.dailyAttendanceList = attendees;
@@ -95,8 +98,9 @@
           attendanceStatus: attendanceConfirmed ? 'Confirmed' : 'Unconfirmed',
           confirmedTab,
           selectedDate: dateFilter(selectedDate, null, dateFormat),
-          yesterday: dateFilter(selectedDate.setDate(selectedDate.getDate() - 1), null, dateFormat),
-          yesterdayRaw: dateFilter(selectedDate, null, 'YYYY-MM-DD'),
+          yesterday: dateFilter(yesterday, null, dateFormat),
+          yesterdayRaw: dateFilter(yesterday, null, 'YYYY-MM-DD'),
+          previousDayIsConfirmed: previousDayIsConfirmed,
           listedJurors,
           confirmedJurors,
           absentJurors,
