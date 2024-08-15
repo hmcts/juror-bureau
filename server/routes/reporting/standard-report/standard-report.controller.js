@@ -450,7 +450,7 @@
 
     const buildStandardTable = function(reportType, tableData, tableHeadings, sectionHeading = '') {
       let tableRows = [];
-      const tableHeaders = buildTableHeaders(reportType, tableHeadings);
+      const tableHeaders = buildTableHeaders(reportType, tableHeadings, req.query);
       const tableFoot = reportType.totalsRow ? reportType.totalsRow(tableData) : null;
 
       if (reportType.grouped) {

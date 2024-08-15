@@ -12,6 +12,8 @@ async function standardReportPrint(app, req, res, reportKey, data) {
 
   const { headings, tableData } = data;
 
+  sortTableData(req.query, tableData);
+
   const buildReportHeadings = (pageHeadings) => pageHeadings.map(heading => {
     if (heading === '') {
       return null;
@@ -291,6 +293,32 @@ async function standardReportPrint(app, req, res, reportKey, data) {
     return res.render('_errors/generic.njk');
   }
 };
+
+function sortTableData({ sortBy, sortDirection }, tableData) {
+  if (sortBy) {
+    if (sortDirection === 'descending') {
+      tableData.data = tableData.data.sort((a, b) => {
+        if (a[snakeToCamel(sortBy)] > b[snakeToCamel(sortBy)]) {
+          return -1;
+        }
+        if (a[snakeToCamel(sortBy)] < b[snakeToCamel(sortBy)]) {
+          return 1;
+        }
+        return 0;
+      });
+    } else {
+      tableData.data = tableData.data.sort((a, b) => {
+        if (a[snakeToCamel(sortBy)] < b[snakeToCamel(sortBy)]) {
+          return -1;
+        }
+        if (a[snakeToCamel(sortBy)] > b[snakeToCamel(sortBy)]) {
+          return 1;
+        }
+        return 0;
+      });
+    }
+  }
+}
 
 module.exports = {
   standardReportPrint,
