@@ -105,8 +105,6 @@ const buildTableHeaders = (reportType, tableHeadings, query) => {
       return ({
         html: reportType.tableHeaderTransformer ? reportType.tableHeaderTransformer(data) : data.name,
         attributes: {
-          // 'aria-sort': !sortBy && toCamelCase(data) === 'lastName'
-          //   ? 'ascending' : (toCamelCase(data) === sortBy ? sortDirection : 'none'),
           'aria-sort': resolveSortDirection(toCamelCase(data.name)),
           'aria-label': data.name,
           'data-sort-key': toCamelCase(data.name),

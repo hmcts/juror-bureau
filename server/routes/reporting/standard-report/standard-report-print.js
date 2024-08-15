@@ -298,26 +298,42 @@ function sortTableData({ sortBy, sortDirection }, tableData) {
   if (sortBy) {
     if (sortDirection === 'descending') {
       tableData.data = tableData.data.sort((a, b) => {
-        if (a[snakeToCamel(sortBy)] > b[snakeToCamel(sortBy)]) {
+        const [_a, _b] = formatSortableData(a, b, sortBy);
+
+        if (_a > _b) {
           return -1;
         }
-        if (a[snakeToCamel(sortBy)] < b[snakeToCamel(sortBy)]) {
+        if (_a < _b) {
           return 1;
         }
         return 0;
       });
     } else {
       tableData.data = tableData.data.sort((a, b) => {
-        if (a[snakeToCamel(sortBy)] < b[snakeToCamel(sortBy)]) {
+        const [_a, _b] = formatSortableData(a, b, sortBy);
+
+        if (_a < _b) {
           return -1;
         }
-        if (a[snakeToCamel(sortBy)] > b[snakeToCamel(sortBy)]) {
+        if (_a > _b) {
           return 1;
         }
         return 0;
       });
     }
   }
+}
+
+function formatSortableData(a, b, sortBy) {
+  let _a = a[snakeToCamel(sortBy)];
+  let _b = b[snakeToCamel(sortBy)];
+
+  if (sortBy === 'address') {
+    _a = Object.values(a.jurorPostalAddress).join(' ');
+    _b = Object.values(b.jurorPostalAddress).join(' ');
+  }
+
+  return [_a, _b];
 }
 
 module.exports = {
