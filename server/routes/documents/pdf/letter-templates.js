@@ -76,7 +76,7 @@
         + ' at '
         + `${data.noShowTime}`
         + ' to explain why you should not be fined. \n\n\n\n'
-        + 'By order of the Court';
+        + 'By order of the Court\n\n';
       },
 
       'failed-to-attend': (data) => {
@@ -109,7 +109,7 @@
         + ' Am '
         + `${data.noShowTime}`
         + 'i ddadlau eich achos pam an ddylech gael eich dirwyo \n\n\n\n'
-        + 'Trwy orchymyn y Llys';
+        + 'Trwy orchymyn y Llys\n\n';
       },
 
       'failed-to-attend': (data) => {
