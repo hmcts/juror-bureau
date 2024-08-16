@@ -74,7 +74,7 @@
                 }
               ]
             } if isCourtUser and juror.commonDetails.jurorStatus === "Responded" and juror.commonDetails.loc_code === authentication.locCode
-          },
+          } if juror.commonDetails.jurorStatus !== "Deferred",
           {
             key: {
               text: "Attendances"

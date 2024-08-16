@@ -158,7 +158,7 @@
                 } if isCourtUser
               ]
             }
-          },
+          } if juror.commonDetails.jurorStatus !== 'Deferred',
           {
             key: {
               text: "Checked in today"
