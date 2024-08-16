@@ -128,16 +128,20 @@
               </div>
             {% endif %}
 
-            {{ govukTableWithFoot({
-              attributes: {
-                'data-module': 'moj-sortable-table'
-              } if not unsortable and not grouped,
-              caption: "Report data",
-              captionClasses: "govuk-visually-hidden",
-              head: table.headers,
-              rows: table.rows,
-              foot: tableFootHtml
-            }) }}
+            {% if grouped %}
+              {% include "./grouped-table.njk" %}
+            {% else %}
+              {{ govukTableWithFoot({
+                attributes: {
+                  'data-module': 'moj-sortable-table'
+                } if not unsortable and not grouped,
+                caption: "Report data",
+                captionClasses: "govuk-visually-hidden",
+                head: table.headers,
+                rows: table.rows,
+                foot: tableFootHtml
+              }) }}
+            {% endif %}
 
           </div>
         </div>
@@ -150,4 +154,10 @@
 {% block body_end %}
   {{ super() }}
   <script src="/js/print-sortable.js"></script>
+
+  {% if grouped %}
+    <script type="application/javascript" nonce="{{ nonce }}">
+    </script>
+  {% endif %}
+
 {% endblock %}

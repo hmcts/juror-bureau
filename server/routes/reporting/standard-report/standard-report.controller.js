@@ -450,6 +450,7 @@
 
     const buildStandardTable = function(reportType, tableData, tableHeadings, sectionHeading = '') {
       let tableRows = [];
+      const groups = [];
       const tableHeaders = buildTableHeaders(reportType, tableHeadings, req.query);
       const tableFoot = reportType.totalsRow ? reportType.totalsRow(tableData) : null;
 
@@ -465,7 +466,7 @@
           }
           tableData = ordered;
         }
-        
+
         for (const [header, data] of Object.entries(tableData)) {
           let group = buildStandardTableRows(data, tableHeadings);
           let link;
@@ -489,12 +490,16 @@
             html: groupHeaderTransformer(),
             colspan: group[0].length,
             classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
+            'data-fixed-index': 0,
           }] : []
             
           const totalsRow = reportType.grouped.totals ? [{
             text: `Total: ${group.length}`,
             colspan: longestGroup,
             classes: 'govuk-body-s govuk-!-font-weight-bold mod-table-no-border',
+            attributes: {
+              'data-fixed-index': group.length,
+            },
           }] : null;
 
           if (checkIfArrayEmpty(group)) {
@@ -505,20 +510,21 @@
             }
           }
 
-          tableRows = tableRows.concat([
+          groups.push({
             headRow,
-            ...group,
+            rows: group,
             totalsRow,
-          ]);
+          })
         }
       } else {
         tableRows = buildStandardTableRows(tableData, tableHeadings);
       }
 
-      return tableRows.length ? [{
+      return tableRows.length || groups.length ? [{
         title: capitalizeFully(sectionHeading),
         headers: tableHeaders,
         rows: tableRows,
+        groups,
         tableFoot,
       }] : [];
     }
