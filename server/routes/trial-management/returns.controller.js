@@ -78,8 +78,7 @@
     }));
   };
 
-  module.exports.getReturnAttendance = (app) => function(app) {
-  return async function(req, res) {
+  module.exports.getReturnAttendance = (app) => async (req, res) => {
     const { trialNumber, locationCode } = req.params;
     const tmpErrors = _.clone(req.session.errors);
 
