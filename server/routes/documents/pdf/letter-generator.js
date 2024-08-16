@@ -149,9 +149,8 @@
       });
     }
 
-    contentArray.push({
-      text: content.content,
-    });
+    contentArray.push({ text: content.content });
+
     if (typeof jurorData.table !== 'undefined') {
       contentArray.push(
         {
@@ -163,12 +162,19 @@
 
       if (content.signature) {
         contentArray.push({
-          text: content.welsh ? 'Yn gywir,' : 'Yours sincerely,',
-          marginTop: 20,
-          marginBottom: 15,
+          stack: [
+            {
+              text: content.welsh ? '\nYn gywir,\n\n' : '\nYours sincerely,\n\n',
+            },
+            {
+              text: content.signature,
+            }
+          ],
         });
       }
-    };
+    } else {
+      contentArray.push({ text: content.signature });
+    }
 
     return contentArray;
   };
@@ -177,7 +183,6 @@
     return (current) => {
       let stackPages = 0;
       let stackPage = 0;
-      let footerText;
       const columns = [];
 
       for (const element of content) {
@@ -200,12 +205,8 @@
         if (current === stackLastPage) {
           stackPages = stackLastPage - stackFirstpage + 1;
           stackPage = current - stackFirstpage + 1;
-          footerText = element.signature;
 
           columns.push(
-            {
-              text: footerText,
-            },
             {
               text: `Page ${stackPage} of ${stackPages}`,
               alignment: 'right',
