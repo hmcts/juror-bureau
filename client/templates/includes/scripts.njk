@@ -3,6 +3,10 @@
 <!-- Bureau page scripts -->
 <script src="{{ assetPath }}js/bundle.js"></script>
 
+{% if authentication %}
+  <script src="{{ assetPath }}js/multiple-tabs.js"></script>
+{% endif %}
+
 <!--  Init GDS and MOJ toolkits -->
 <script src="{{ assetPath }}js/govuk/all.js"></script>
 <script src="{{ assetPath }}js/moj/all.js"></script>

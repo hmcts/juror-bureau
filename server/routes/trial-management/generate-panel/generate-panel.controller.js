@@ -1,11 +1,11 @@
 (function() {
   'use strict';
 
-  const  _ = require('lodash')
-    , { generatePanelDAO, availableJurorsDAO } = require('../../../objects/panel')
-    , generatePanelValidator = require('../../../config/validation/generate-panel')
-    , poolsValidator = require('../../../config/validation/generate-panel-pools')
-    , validate = require('validate.js');
+  const  _ = require('lodash');
+  const { generatePanelDAO, availableJurorsDAO } = require('../../../objects/panel');
+  const generatePanelValidator = require('../../../config/validation/generate-panel');
+  const poolsValidator = require('../../../config/validation/generate-panel-pools');
+  const validate = require('validate.js');;
   const { makeManualError } = require('../../../lib/mod-utils');
 
 
@@ -41,6 +41,7 @@
 
   module.exports.postGeneratePanel = function(app) {
     return function(req, res) {
+      const { trialNumber, locationCode } = req.params;
       let validatorResult;
 
       validatorResult = validate(req.body, generatePanelValidator());
@@ -49,28 +50,29 @@
         req.session.formFields = req.body;
 
         return res.redirect(app.namedRoutes.build('trial-management.generate-panel.get', {
-          trialNumber: req.params.trialNumber,
-          locationCode: req.params.locationCode,
+          trialNumber,
+          locationCode,
         }));
       }
 
       if (req.body.jurorType === 'specificPools') {
-        req.session.noPanelJurors = +req.body.noJurors;
+        req.session[`${trialNumber}-${locationCode}-noPanelJurors`] = +req.body.noJurors;
+
         return res.redirect(app.namedRoutes.build('trial-management.generate-panel.select-pools.get', {
-          trialNumber: req.params.trialNumber,
-          locationCode: req.params.locationCode,
+          trialNumber: trialNumber,
+          locationCode: locationCode,
         }));
       }
 
       return generatePanelDAO.post(app, req, {
-        trial_number: req.params.trialNumber,
+        trial_number: trialNumber,
         number_requested: +req.body.noJurors,
         pool_numbers: [],
-        court_location_code: req.params.locationCode,
+        court_location_code: locationCode,
       }).then((success) => {
         return res.redirect(app.namedRoutes.build('trial-management.trials.detail.get', {
-          trialNumber: req.params.trialNumber,
-          locationCode: req.params.locationCode,
+          trialNumber,
+          locationCode,
         }));
       }, (err) => {
         if (err.statusCode === 422) {
@@ -88,8 +90,8 @@
           };
 
           return res.redirect(app.namedRoutes.build('trial-management.generate-panel.get', {
-            trialNumber: req.params.trialNumber,
-            locationCode: req.params.locationCode,
+            trialNumber,
+            locationCode,
           }));
         }
 
@@ -106,29 +108,30 @@
 
   module.exports.getSelectPools = function(app) {
     return async function(req, res) {
+      const { trialNumber, locationCode } = req.params;
       let tmpErrors;
 
       tmpErrors = _.clone(req.session.errors);
       delete req.session.errors;
 
-      const noJurorsRequired = req.session.noPanelJurors;
+      const noJurorsRequired = req.session[`${trialNumber}-${locationCode}-noPanelJurors`];
 
-      availableJurorsDAO.get(app, req, req.params.locationCode).then(pools => {
+      availableJurorsDAO.get(app, req, locationCode).then(pools => {
         return res.render('trial-management/generate-panel/select-pools.njk', {
           pools,
           processUrl: app.namedRoutes.build('trial-management.generate-panel.select-pools.post', {
-            trialNumber: req.params.trialNumber,
-            locationCode: req.params.locationCode,
+            trialNumber,
+            locationCode,
           }),
           cancelUrl: app.namedRoutes.build('trial-management.trials.detail.get', {
-            trialNumber: req.params.trialNumber,
-            locationCode: req.params.locationCode,
+            trialNumber,
+            locationCode,
           }),
           backLinkUrl: {
             built: true,
             url: app.namedRoutes.build('trial-management.generate-panel.get', {
-              trialNumber: req.params.trialNumber,
-              locationCode: req.params.locationCode,
+              trialNumber,
+              locationCode,
             }),
           },
           noJurorsRequired: noJurorsRequired,
@@ -151,6 +154,7 @@
 
   module.exports.postSelectPools = function(app) {
     return function(req, res) {
+      const { trialNumber, locationCode } = req.params;
       let validatorResult
         , selectedPools;
 
@@ -158,12 +162,11 @@
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         return res.redirect(app.namedRoutes.build('trial-management.generate-panel.select-pools.get', {
-          trialNumber: req.params.trialNumber,
-          locationCode: req.params.locationCode,
+          trialNumber,
+          locationCode,
         }));
       }
 
-      req.session.poolJurorsTransfer = req.body;
       delete req.session.errors;
 
       if (!Array.isArray(req.body.selectedPools)) {
@@ -172,16 +175,16 @@
         selectedPools = req.body.selectedPools;
       }
       return generatePanelDAO.post(app, req, {
-        trial_number: req.params.trialNumber,
-        number_requested: +req.session.noPanelJurors,
+        trial_number: trialNumber,
+        number_requested: +req.session[`${trialNumber}-${locationCode}-noPanelJurors`],
         pool_numbers: selectedPools,
-        court_location_code: req.params.locationCode,
+        court_location_code: locationCode,
       }).then((success) => {
-        delete req.session.noPanelJurors;
+        delete req.session[`${trialNumber}-${locationCode}-noPanelJurors`];
 
         return res.redirect(app.namedRoutes.build('trial-management.trials.detail.get', {
-          trialNumber: req.params.trialNumber,
-          locationCode: req.params.locationCode,
+          trialNumber,
+          locationCode,
         }));
       }, (err) => {
         app.logger.crit('Failed to generate a panel of jurors from specific pools', {
@@ -193,8 +196,8 @@
         req.session.errors = makeManualError('Pool selection', err.error.message);
 
         return res.redirect(app.namedRoutes.build('trial-management.generate-panel.select-pools.get', {
-          trialNumber: req.params.trialNumber,
-          locationCode: req.params.locationCode,
+          trialNumber,
+          locationCode,
         }));
       });
     };

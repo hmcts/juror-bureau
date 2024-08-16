@@ -19,6 +19,7 @@ const clientJs = [
   'certificate-of-exemption-list.js',
   'export-contact-details.js',
   'bulk-undeliverable.js',
+  'multiple-tabs.js',
 ];
 
 const copyClientCode = new CopyWebpackPlugin({
@@ -60,7 +61,7 @@ const copyClientCode = new CopyWebpackPlugin({
     },
     {
       context: 'client/assets/images/',
-      from: '*.{png,jpg,jpeg,gif,svg}',
+      from: '**/*.{png,jpg,jpeg,gif,svg}',
       to: '../client/assets/images',
     },
     {

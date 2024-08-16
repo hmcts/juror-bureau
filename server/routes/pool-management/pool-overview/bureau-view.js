@@ -17,8 +17,6 @@ module.exports = function(app, req, res, pool, membersList, _errors, selectedJur
   let error = null;
   let isOnlyResponded = false;
 
-  req.session.poolDetails = pool;
-
   const filters = req.query;
 
   if (status && status === 'responded') {
@@ -109,7 +107,7 @@ module.exports = function(app, req, res, pool, membersList, _errors, selectedJur
     poolSummary: pool.poolSummary,
     additionalStatistics: pool.additionalStatistics,
     isNil: pool.poolDetails.is_nil_pool,
-    isActive: pool.isActive,
+    isActive: pool.poolDetails.isActive,
     currentOwner: pool.poolDetails.current_owner,
     currentTab: 'jurors',
     postUrls: { assignUrl, transferUrl, completeServiceUrl, postponeUrl },

@@ -1159,6 +1159,8 @@
   }
 
   function clearInvalidSessionData(req) {
+    const { jurorNumber } = req.params;
+
     delete req.session.paperResponseDetails;
     delete req.session.startedPaperResponse;
     delete req.session.jurorCommonDetails;
@@ -1166,7 +1168,7 @@
     delete req.session.replyMethod;
     delete req.session.postponeToDate;
     delete req.session.changeName;
-    delete req.session.editJurorDetails;
+    delete req.session[`editJurorDetails-${jurorNumber}`];
   }
 
   function cacheJurorCommonDetails(req, commonDetails) {
@@ -1179,7 +1181,16 @@
     }
 
     if (commonDetails.jurorStatus === 'Responded' && commonDetails.excusalRejected !== null) {
-      return 'Responded <span class="icon mod-icon-urgent"></span>';
+      let title;
+
+      if (commonDetails.excusalCode) {
+        title = 'Excusal refused';
+      }
+      if (commonDetails.deferral_code) {
+        title = 'Deferral refused';
+      }
+
+      return `Responded <span class="icon mod-icon-urgent" title="${title || ''}"></span>`;
     }
 
     if (commonDetails.jurorStatus === 'Deferred' && commonDetails.excusalCode === 'P') {

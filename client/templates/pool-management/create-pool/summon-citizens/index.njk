@@ -62,7 +62,8 @@
 
         <div class="not-editable-field govuk-!-width-one-half">
           <p class="govuk-label--s">Jurors required to complete this request</p>
-          <p class="govuk-!-font-size-19">{{ poolDetails.poolSummary.requiredPoolSize - bureauDeferrals }}</p>
+          {% set deferralsNeededToComplete = poolDetails.poolSummary.requiredPoolSize - bureauDeferrals %}
+          <p class="govuk-!-font-size-19">{{ deferralsNeededToComplete if deferralsNeededToComplete > 0 else "0" }}</p>
         </div>
 
         {{ govukInput({
@@ -82,7 +83,7 @@
             text: "Court catchment area",
             classes: "govuk-label--s"
           },
-          value: poolDetails.currentCatchmentArea,
+          value: catchmentAreaCode,
           id: "catchmentArea",
           name: "catchmentArea",
           classes: "govuk-!-width-one-half",
@@ -124,7 +125,7 @@
         <input type="hidden" name="noRequested" value="{{ poolDetails.poolSummary.requiredPoolSize }}">
         <input type="hidden" name="bureauDeferrals" value="{{ bureauDeferrals }}">
         <input type="hidden" name="numberRequired" value="{{ numberRequired }}">
-        <input type="hidden" name="catchmentArea" value="{{ poolDetails.currentCatchmentArea }}">
+        <input type="hidden" name="catchmentArea" value="{{ catchmentAreaCode }}">
         <input type="hidden" name="poolNumber" value="{{ poolDetails.poolDetails.poolNumber }}">
         <input type="hidden" name="courtDate" value="{{ poolDetails.poolDetails.courtStartDate }}">
         <input type="hidden" name="previous_juror_count" value="{{ previousJurorCount }}">

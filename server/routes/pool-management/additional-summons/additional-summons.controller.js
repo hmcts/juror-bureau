@@ -120,14 +120,7 @@
         catchmentArea = req.params['poolNumber'].slice(0, 3);
       }
 
-      promiseArr.push(
-        poolSummaryObj.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
-          req.params['poolNumber']
-        )
-      );
+      promiseArr.push(poolSummaryObj.get(req, req.params['poolNumber']));
       promiseArr.push(
         postCodesObj.get(
           require('request-promise'),

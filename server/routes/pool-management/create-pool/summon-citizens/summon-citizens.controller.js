@@ -11,11 +11,16 @@
     , validate = require('validate.js');
 
   const { summonsFormDAO, summonCitizensDAO } = require('../../../../objects');
+  const { poolSummaryObject } = require('../../../../objects/pool-summary');
 
   module.exports.index = function(app) {
-    return function(req, res) {
+    return async function(req, res) {
+      const { poolNumber } = req.params;
+      const catchmentAreaCode = req.session[`summonJurors-${poolNumber}`]?.newCourtCatchmentArea
+        ? req.session[`summonJurors-${poolNumber}`].newCourtCatchmentArea.locationCode : poolNumber.slice(0, 3);
+      let pool;
+
       var tmpErrors
-        , catchmentAreaCode
         , successCB = function(data) {
           var transformedPostCodes;
 
@@ -25,11 +30,9 @@
 
           app.logger.info('Fetched pool details for summoning citizens: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               locationCode: catchmentAreaCode,
-              attendanceDate: dateFilter(new Date(req.session.poolDetails.poolDetails.courtStartDate),
-                null, 'YYYY-MM-DD'),
+              attendanceDate: dateFilter(new Date(pool.poolDetails.courtStartDate), null, 'YYYY-MM-DD'),
               numberOfCourtDeferrals: data,
             },
           });
@@ -38,28 +41,25 @@
           delete req.session.errors;
           delete req.session.formFields;
 
-          req.session.poolDetails.courtYield =
+          req.session[`summonJurors-${poolNumber}`].courtYield =
             (typeof transformedPostCodes !== 'undefined') ? transformedPostCodes[1] : 0;
 
-          req.session.availableBureauDeferrals = data.bureauDeferrals;
+          req.session[`summonJurors-${poolNumber}`].availableBureauDeferrals = data.bureauDeferrals;
 
-          if (typeof req.session.newBureauDeferrals !== 'undefined') {
-            req.session.poolDetails.currentBureauDeferrals = req.session.newBureauDeferrals;
+          if (typeof req.session[`summonJurors-${poolNumber}`].newBureauDeferrals !== 'undefined') {
+            req.session[`summonJurors-${poolNumber}`].currentBureauDeferrals = req.session[`summonJurors-${poolNumber}`].newBureauDeferrals;
           } else {
-            req.session.poolDetails.currentBureauDeferrals = data.bureauDeferrals;
+            req.session[`summonJurors-${poolNumber}`].currentBureauDeferrals = data.bureauDeferrals;
           }
 
           res.render('pool-management/create-pool/summon-citizens/index', {
-            poolDetails: req.session.poolDetails,
-            bureauDeferrals: req.session.poolDetails.currentBureauDeferrals,
-            changeCatchmentAreaUrl: app.namedRoutes.build('summon-citizens.change-catchment-area.get', {
-              poolNumber: req.params['poolNumber'],
-            }),
-            changeDeferralsUrl: app.namedRoutes.build('summon-citizens.change-deferrals.get', {
-              poolNumber: req.params['poolNumber'],
-            }),
+            poolDetails: pool,
+            bureauDeferrals: req.session[`summonJurors-${poolNumber}`].currentBureauDeferrals,
+            changeCatchmentAreaUrl: app.namedRoutes.build('summon-citizens.change-catchment-area.get', { poolNumber }),
+            changeDeferralsUrl: app.namedRoutes.build('summon-citizens.change-deferrals.get', { poolNumber }),
             numberRequired: data.numberRequired,
             postcodes: (typeof transformedPostCodes !== 'undefined') ? transformedPostCodes[0] : [],
+            catchmentAreaCode,
             errors: {
               title: 'Please check the form',
               count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -71,25 +71,30 @@
         , errorCB = function(err) {
           app.logger.crit('Failed to fetch pool details for summoning citizens: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: {
-              poolNumber: req.session.poolDetails.poolDetails.poolNumber,
-            },
+            data: { poolNumber },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
           res.redirect(app.namedRoutes.build('pool-management.get'));
         };
 
-      if (typeof req.session.newCourtCatchmentArea !== 'undefined') {
-        catchmentAreaCode = req.session.newCourtCatchmentArea;
-        req.session.poolDetails.currentCatchmentArea = catchmentAreaCode.locationCode;
-      } else {
-        catchmentAreaCode = req.params['poolNumber'].slice(0, 3);
-        req.session.poolDetails.currentCatchmentArea = catchmentAreaCode;
+      try {
+        pool = await poolSummaryObject.get(req, poolNumber);
+      } catch (err) {
+        app.logger.crit('Failed to fetch pool details for summoning citizens: ', {
+          auth: req.session.authentication,
+          data: { poolNumber },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic');
       }
 
-      summonsFormDAO.post(req, req.session.poolDetails)
+      if (!req.session[`summonJurors-${poolNumber}`]) {
+        req.session[`summonJurors-${poolNumber}`] = {};
+      }
+
+      summonsFormDAO.post(req, pool, catchmentAreaCode)
         .then(successCB)
         .catch(errorCB);
     };
@@ -97,16 +102,17 @@
 
   module.exports.post = function(app) {
     return function(req, res) {
+      const { poolNumber } = req.params;
+
       var validatorResult
         , successCB = function() {
 
           app.logger.info('Successfully created pool and summoned citizens: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: {
-              body: req.body,
-            },
+            data: { body: req.body },
           });
+
+          delete req.session[`summonJurors-${req.params.poolNumber}`];
 
           return res.redirect(app.namedRoutes.build('pool-management.get') + '?status=created');
         }
@@ -114,10 +120,7 @@
 
           app.logger.crit('Failed to create pool and summon citizens: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: {
-              body: req.body,
-            },
+            data: { body: req.body },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
@@ -133,17 +136,17 @@
           }
 
           return res.redirect(app.namedRoutes.build('summon-citizens.get', {
-            poolNumber: req.params['poolNumber'],
+            poolNumber,
           }));
         };
 
-      validatorResult = validate(req.body, additionalSummonsValidator(req.session.poolDetails.courtYield));
+      validatorResult = validate(req.body, additionalSummonsValidator(req.session[`summonJurors-${poolNumber}`].courtYield));
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
 
         return res.redirect(app.namedRoutes.build('summon-citizens.get', {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }));
       };
 
@@ -155,6 +158,8 @@
 
   module.exports.getChangeCatchmentArea = function(app, page) {
     return function(req, res) {
+      const { poolNumber } = req.params;
+
       var transformedCourtNames
         , tmpErrors
         , submitUrl
@@ -184,28 +189,16 @@
         };
 
       if (page === 'summon-citizens') {
-        submitUrl = app.namedRoutes.build('summon-citizens.change-catchment-area.post', {
-          poolNumber: req.params['poolNumber'],
-        });
-        cancelUrl = app.namedRoutes.build('summon-citizens.get', {
-          poolNumber: req.params['poolNumber'],
-        });
+        submitUrl = app.namedRoutes.build('summon-citizens.change-catchment-area.post', { poolNumber });
+        cancelUrl = app.namedRoutes.build('summon-citizens.get', { poolNumber });
         pageIdentifier = 'Summon Citizens';
       } else if (page === 'summon-additional-citizens') {
-        submitUrl = app.namedRoutes.build('pool.additional-summons.change-catchment-area.post', {
-          poolNumber: req.params['poolNumber'],
-        });
-        cancelUrl = app.namedRoutes.build('pool.additional-summons.get', {
-          poolNumber: req.params['poolNumber'],
-        });
+        submitUrl = app.namedRoutes.build('pool.additional-summons.change-catchment-area.post', { poolNumber });
+        cancelUrl = app.namedRoutes.build('pool.additional-summons.get', { poolNumber });
         pageIdentifier = 'Summon Additional Citizens';
       } else if (page === 'coroner-pool') {
-        submitUrl = app.namedRoutes.build('coroner-pool.change-catchment-area.post', {
-          poolNumber: req.params['poolNumber'],
-        });
-        cancelUrl = app.namedRoutes.build('coroner-pool.catchment-area.get', {
-          poolNumber: req.params['poolNumber'],
-        });
+        submitUrl = app.namedRoutes.build('coroner-pool.change-catchment-area.post', { poolNumber });
+        cancelUrl = app.namedRoutes.build('coroner-pool.catchment-area.get', { poolNumber });
         pageIdentifier = 'Coroner Pool';
       }
 
@@ -224,12 +217,18 @@
 
   module.exports.postChangeCatchmentArea = function(app, page) {
     return function(req, res) {
+      const { poolNumber } = req.params;
+
       var validatorResult
         , renderUrl
         , errorUrl
         , successCB = function(data) {
 
-          req.session.newCourtCatchmentArea = data;
+          if (page === 'summon-citizens') {
+            req.session[`summonJurors-${poolNumber}`].newCourtCatchmentArea = data;
+          } else {
+            req.session.newCourtCatchmentArea = data;
+          }
 
           return res.redirect(renderUrl);
         }
@@ -245,26 +244,14 @@
         };
 
       if (page === 'summon-citizens') {
-        renderUrl = app.namedRoutes.build('summon-citizens.get', {
-          poolNumber: req.params['poolNumber'],
-        });
-        errorUrl = app.namedRoutes.build('summon-citizens.change-catchment-area.get', {
-          poolNumber: req.params['poolNumber'],
-        });
+        renderUrl = app.namedRoutes.build('summon-citizens.get', { poolNumber });
+        errorUrl = app.namedRoutes.build('summon-citizens.change-catchment-area.get', { poolNumber });
       } else if (page === 'summon-additional-citizens') {
-        renderUrl = app.namedRoutes.build('pool.additional-summons.get', {
-          poolNumber: req.params['poolNumber'],
-        });
-        errorUrl = app.namedRoutes.build('pool.additional-summons.change-catchment-area.get', {
-          poolNumber: req.params['poolNumber'],
-        });
+        renderUrl = app.namedRoutes.build('pool.additional-summons.get', { poolNumber });
+        errorUrl = app.namedRoutes.build('pool.additional-summons.change-catchment-area.get', { poolNumber });
       } else if (page === 'coroner-pool') {
-        renderUrl = app.namedRoutes.build('coroner-pool.catchment-area.get', {
-          poolNumber: req.params['poolNumber'],
-        });
-        errorUrl = app.namedRoutes.build('coroner-pool.change-catchment-area.get', {
-          poolNumber: req.params['poolNumber'],
-        });
+        renderUrl = app.namedRoutes.build('coroner-pool.catchment-area.get', { poolNumber });
+        errorUrl = app.namedRoutes.build('coroner-pool.change-catchment-area.get', { poolNumber });
       }
 
       validatorResult = validate(req.body, courtNameOrLocationValidator(req));
@@ -283,27 +270,21 @@
 
   module.exports.getChangeDeferrals = function(app, page) {
     return function(req, res) {
+      const { poolNumber } = req.params;
+
       var tmpErrors
         , deferrals
         , submitUrl
         , cancelUrl;
 
       if (page === 'summon-citizens') {
-        deferrals = req.session.availableBureauDeferrals;
-        submitUrl = app.namedRoutes.build('summon-citizens.change-deferrals.post', {
-          poolNumber: req.params['poolNumber'],
-        });
-        cancelUrl = app.namedRoutes.build('summon-citizens.get', {
-          poolNumber: req.params['poolNumber'],
-        });
+        deferrals = req.session[`summonJurors-${poolNumber}`].availableBureauDeferrals;
+        submitUrl = app.namedRoutes.build('summon-citizens.change-deferrals.post', { poolNumber });
+        cancelUrl = app.namedRoutes.build('summon-citizens.get', { poolNumber });
       } else if (page === 'summon-additional-citizens') {
-        deferrals = req.session.poolDetails.additionalStatistics.bureauSupply;
-        submitUrl = app.namedRoutes.build('pool.additional-summons.change-deferrals.post', {
-          poolNumber: req.params['poolNumber'],
-        });
-        cancelUrl = app.namedRoutes.build('pool.additional-summons.get', {
-          poolNumber: req.params['poolNumber'],
-        });
+        deferrals = req.session.poolDetails.additionalStatistics.bureauSupply; // TODO: Check this
+        submitUrl = app.namedRoutes.build('pool.additional-summons.change-deferrals.post', { poolNumber });
+        cancelUrl = app.namedRoutes.build('pool.additional-summons.get', { poolNumber });
       }
 
       tmpErrors = _.clone(req.session.errors);
@@ -326,27 +307,21 @@
 
   module.exports.postChangeDeferrals = function(app, page) {
     return function(req, res) {
+      const { poolNumber } = req.params;
+
       var validatorResult
         , currentBureauDeferrals
         , renderUrl
         , errorUrl;
 
       if (page === 'summon-citizens') {
-        currentBureauDeferrals = req.session.poolDetails.currentBureauDeferrals;
-        errorUrl = app.namedRoutes.build('summon-citizens.change-deferrals.get'
-          , {poolNumber: req.params['poolNumber'],
-          });
-        renderUrl = app.namedRoutes.build('summon-citizens.get', {
-          poolNumber: req.params['poolNumber'],
-        });
+        currentBureauDeferrals = req.session[`summonJurors-${poolNumber}`].availableBureauDeferrals;
+        errorUrl = app.namedRoutes.build('summon-citizens.change-deferrals.get', { poolNumber });
+        renderUrl = app.namedRoutes.build('summon-citizens.get', { poolNumber });
       } else if (page === 'summon-additional-citizens') {
-        currentBureauDeferrals = req.session.poolDetails.additionalStatistics.bureauSupply;
-        errorUrl = app.namedRoutes.build('pool.additional-summons.change-deferrals.get', {
-          poolNumber: req.params['poolNumber'],
-        });
-        renderUrl = app.namedRoutes.build('pool.additional-summons.get', {
-          poolNumber: req.params['poolNumber'],
-        });
+        currentBureauDeferrals = req.session.poolDetails.additionalStatistics.bureauSupply; // TODO: check this
+        errorUrl = app.namedRoutes.build('pool.additional-summons.change-deferrals.get', { poolNumber });
+        renderUrl = app.namedRoutes.build('pool.additional-summons.get', { poolNumber });
       }
 
       validatorResult = validate({
@@ -361,7 +336,7 @@
 
       if (req.body.numberOfDeferrals !== currentBureauDeferrals) {
         if (page === 'summon-citizens') {
-          req.session.newBureauDeferrals = req.body.numberOfDeferrals;
+          req.session[`summonJurors-${poolNumber}`].newBureauDeferrals = req.body.numberOfDeferrals;
         } else if (page === 'summon-additional-citizens') {
           req.session.tmpSelectedBureauSupply = req.body.numberOfDeferrals;
         }

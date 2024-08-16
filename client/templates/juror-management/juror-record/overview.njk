@@ -60,7 +60,7 @@
       {% if juror.commonDetails.jurorStatus === "Responded" %}
         {% set manualCheckUrl %}
           <p class="govuk-body">
-            <a href="{{ url("juror-record.police-check.get", { jurorNumber: juror.commonDetails.jurorNumber }) }}" class="govuk-link govuk-link--no-visited-state">
+            <a href="{{ url('juror-record.police-check.get', { jurorNumber: juror.commonDetails.jurorNumber }) }}" class="govuk-link govuk-link--no-visited-state">
               Run a police check
             </a>
           </p>
@@ -82,7 +82,7 @@
       {% if juror.commonDetails.jurorStatus === "Responded" %}
         {% set manualCheckUrl %}
           <p class="govuk-body">
-            Check name and <a href="' + url("juror-record.police-check.get", { jurorNumber: juror.commonDetails.jurorNumber }) + '" class="govuk-link govuk-link--no-visited-state">try again</a>. 
+            Check name and <a href="{{ url('juror-record.police-check.get', { jurorNumber: juror.commonDetails.jurorNumber }) }}" class="govuk-link govuk-link--no-visited-state">try again</a>. 
             if problem persists, raise an incident following your usual process.
           </p>
         {% endset %}

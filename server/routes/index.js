@@ -8,6 +8,7 @@
   var errors = require('./../components/errors')
     , Router = require('named-routes')
     , router = new Router();
+  const auth = require('../components/auth');
 
   module.exports = function(app) {
     // Set up named routes
@@ -46,6 +47,21 @@
     require('./documents')(app);
     require('./messaging')(app);
     require('./administration')(app);
+
+    app.route('/multiple-tabs')
+      .get(auth.verify, (req, res) => {
+        const { action } = req.query;
+
+        req.session.multipleTabs = action === 'opened';
+
+        if (action === 'opened') {
+          app.logger.info('User has opened multiple tabs', {
+            auth: req.session.authentication,
+          });
+        }
+
+        return res.send();
+      });
 
     app.route('/health')
       .get(function(req, res) {

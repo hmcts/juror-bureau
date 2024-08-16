@@ -1,3 +1,5 @@
+const { SessionConfig } = require('../../../../lib/session-config');
+
 (function() {
   'use strict';
 
@@ -8,7 +10,9 @@
     , editPoolValidator = require('../../../../config/validation/edit-pool');
 
   module.exports.index = function(app) {
-    return function(req, res) {
+    return async function(req, res) {
+      const { poolNumber } = req.params;
+
       var tmpErrors
         , successCB = function(response) {
           var noRequested
@@ -16,12 +20,12 @@
             , reasonForChange
             , tmpError;
 
-          if (req.session.hasOwnProperty('editPool')) {
-            reasonForChange = req.session.editPool.reasonForChange;
+          if (req.session.hasOwnProperty(`editPool-${poolNumber}`)) {
+            reasonForChange = req.session[`editPool-${poolNumber}`].reasonForChange;
             if (req.session.authentication.owner === '400') {
-              noRequested = req.session.editPool.noOfJurors;
+              noRequested = req.session[`editPool-${poolNumber}`].noOfJurors;
             } else if (req.session.authentication.owner !== '400') {
-              totalRequired = req.session.editPool.noOfJurors;
+              totalRequired = req.session[`editPool-${poolNumber}`].noOfJurors;
             }
           }
 
@@ -78,12 +82,7 @@
       delete req.session.errors;
       delete req.session.formFields;
 
-      poolSummaryObj.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
-        req.params['poolNumber']
-      )
+      poolSummaryObj.get(req, req.params['poolNumber'])
         .then(successCB)
         .catch(errorCB);
     };
@@ -91,6 +90,7 @@
 
   module.exports.post = function(app) {
     return function(req, res) {
+      const { poolNumber } = req.params;
       var validatorResult
         , successCB = function() {
 
@@ -105,7 +105,7 @@
           });
 
           // if the inputs passes validation and posts we can then delete what was set on line 105
-          delete req.session.editPool;
+          delete req.session[`editPool-${poolNumber}`];
 
           return res.redirect(app.namedRoutes.build('pool-overview.get', {
             poolNumber: req.params['poolNumber'],
@@ -134,10 +134,10 @@
         , bodyKey;
 
       // we should store some data in session for page reloads and to re-populate in case of error
-      req.session.editPool = {};
+      req.session[`editPool-${req.params['poolNumber']}`] = {};
       for (bodyKey in req.body) {
         if (req.body.hasOwnProperty(bodyKey)) {
-          req.session.editPool[bodyKey] = req.body[bodyKey];
+          req.session[`editPool-${req.params['poolNumber']}`][bodyKey] = req.body[bodyKey];
         }
       }
 

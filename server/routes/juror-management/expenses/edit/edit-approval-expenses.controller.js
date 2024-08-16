@@ -166,7 +166,7 @@
       const { jurorNumber, locCode, status } = req.params;
       const editedExpenses = _.clone(req.session.editedExpenses);
 
-      if (!Object.keys(editedExpenses).length) {
+      if (!editedExpenses || !Object.keys(editedExpenses).length) {
         req.session.errors = {
           noEditedExpenses: [{
             details: 'Edit at least one expense before submitting',
@@ -321,8 +321,8 @@
 
         req.session.editDateTotalsOriginal = originalTotals.expense_details[0];
 
-        if (req.session.editExpenseTravelOverLimit && req.session.editExpenseTravelOverLimit.body) {
-          tmpBody = req.session.editExpenseTravelOverLimit.body;
+        if (req.session.editExpenseTravelOverLimit && req.session.editExpenseTravelOverLimit[date] && req.session.editExpenseTravelOverLimit[date].body) {
+          tmpBody = req.session.editExpenseTravelOverLimit[date].body;
         }
 
         return res.render(template, {
@@ -371,7 +371,7 @@
       let validatorResult;
 
       if (travelOverLimit === 'true') {
-        req.body = req.session.editExpenseTravelOverLimit.body;
+        req.body = req.session.editExpenseTravelOverLimit[date].body;
       }
 
       if (nonAttendanceDay) {
@@ -401,9 +401,12 @@
       if (!travelOverLimit) {
         const { showTravelOverLimit, error } = await isTravelOverLimit(app, req);
 
-        req.session.editExpenseTravelOverLimit = {
-          body: req.body,
-        };
+        if (!req.session.editExpenseTravelOverLimit) {
+          req.session.editExpenseTravelOverLimit = {};
+        }
+        req.session.editExpenseTravelOverLimit[date] = {
+          body: req.body
+        }
 
         if (error) {
           app.logger.crit('Failed to check if travel is over the limit', {
@@ -439,16 +442,16 @@
             }) + `?date=${date}&page=${page}&action=next&travel-over-limit=true`;
           }
 
-          req.session.editExpenseTravelOverLimit.continueUrl = continueUrl;
-          req.session.editExpenseTravelOverLimit.cancelUrl = cancelUrl;
-          req.session.editExpenseTravelOverLimit.travelOverLimit = {
+          req.session.editExpenseTravelOverLimit[date].continueUrl = continueUrl;
+          req.session.editExpenseTravelOverLimit[date].cancelUrl = cancelUrl;
+          req.session.editExpenseTravelOverLimit[date].travelOverLimit = {
             ...showTravelOverLimit,
           };
 
           return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.travel-over-limit.get', {
             jurorNumber,
             locCode,
-          }));
+          }) + '?date=' + date);
         }
       }
 

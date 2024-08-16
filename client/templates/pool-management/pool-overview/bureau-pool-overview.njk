@@ -132,7 +132,7 @@
         {% if (authentication.owner === "400" and poolDetails.isActive) or poolDetails.isActive === false %}
           {{ govukButton({
             text: "Delete pool" if (poolDetails.isActive or bureauSummoning.required === 0) else "Delete pool request",
-            href: url('pool-management.delete-pool.get'),
+            href: url('pool-management.delete-pool.get', { poolNumber: poolDetails.poolNumber }),
             classes: "govuk-button--secondary govuk-!-margin-bottom-0",
             attributes: {
               id: "deletePoolButton"

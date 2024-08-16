@@ -16,6 +16,7 @@
 
   module.exports.getPaper = function(app) {
     return async function(req, res) {
+      const { id } = req.params;
       const postUrl = app.namedRoutes.build('summons.update-details.post', {
         id: req.params['id'],
         type: req.params['type'],
@@ -52,8 +53,8 @@
           part5: details.addressCounty,
         };
 
-        req.session.summonsUpdate = {
-          ...req.session.summonsUpdate,
+        req.session[`summonsUpdate-${id}`] = {
+          ...req.session[`summonsUpdate-${id}`],
           jurorDetails: {
             title: details.title,
             firstName: details.firstName,
@@ -68,34 +69,34 @@
           },
         };
 
-        req.session.summonsUpdate.etag = headers['etag'];
+        req.session[`summonsUpdate-${id}`].etag = headers['etag'];
 
-        if (typeof req.session.summonsUpdate.newJurorDetails !== 'undefined') {
-          details.title = req.session.summonsUpdate.newJurorDetails.title;
-          details.firstName = req.session.summonsUpdate.newJurorDetails.firstName;
-          details.lastName = req.session.summonsUpdate.newJurorDetails.lastName;
-          req.session.summonsUpdate.jurorDetails = req.session.summonsUpdate.newJurorDetails;
+        if (typeof req.session[`summonsUpdate-${id}`].newJurorDetails !== 'undefined') {
+          details.title = req.session[`summonsUpdate-${id}`].newJurorDetails.title;
+          details.firstName = req.session[`summonsUpdate-${id}`].newJurorDetails.firstName;
+          details.lastName = req.session[`summonsUpdate-${id}`].newJurorDetails.lastName;
+          req.session[`summonsUpdate-${id}`].jurorDetails = req.session[`summonsUpdate-${id}`].newJurorDetails;
 
-          delete req.session.summonsUpdate.newJurorDetails;
+          delete req.session[`summonsUpdate-${id}`].newJurorDetails;
         }
 
-        if (typeof req.session.summonsUpdate.pendingJurorName !== 'undefined') {
-          const { title, firstName, lastName } = req.session.summonsUpdate.pendingJurorName;
+        if (typeof req.session[`summonsUpdate-${id}`].pendingJurorName !== 'undefined') {
+          const { title, firstName, lastName } = req.session[`summonsUpdate-${id}`].pendingJurorName;
 
           details.pendingTitle = title;
           details.pendingFirstName = firstName;
           details.pendingLastName = lastName;
 
-          req.session.summonsUpdate.jurorDetails.pendingTitle = title;
-          req.session.summonsUpdate.jurorDetails.pendingFirstName = firstName;
-          req.session.summonsUpdate.jurorDetails.pendingLastName = lastName;
+          req.session[`summonsUpdate-${id}`].jurorDetails.pendingTitle = title;
+          req.session[`summonsUpdate-${id}`].jurorDetails.pendingFirstName = firstName;
+          req.session[`summonsUpdate-${id}`].jurorDetails.pendingLastName = lastName;
 
-          delete req.session.summonsUpdate.pendingJurorName;
+          delete req.session[`summonsUpdate-${id}`].pendingJurorName;
         }
 
-        if (typeof req.session.summonsUpdate.newAddress !== 'undefined') {
-          req.session.summonsUpdate.address = req.session.summonsUpdate.newAddress;
-          const newAddress = _.clone(req.session.summonsUpdate.newAddress);
+        if (typeof req.session[`summonsUpdate-${id}`].newAddress !== 'undefined') {
+          req.session[`summonsUpdate-${id}`].address = req.session[`summonsUpdate-${id}`].newAddress;
+          const newAddress = _.clone(req.session[`summonsUpdate-${id}`].newAddress);
 
           details.addressLineOne = newAddress.part1;
           details.addressLineTwo = newAddress.part2;
@@ -104,7 +105,7 @@
           details.addressLineCounty = newAddress.part5;
           details.addressPostcode = newAddress.postcode;
 
-          delete req.session.summonsUpdate.newAddress;
+          delete req.session[`summonsUpdate-${id}`].newAddress;
         }
 
         if (details.thirdParty) {
@@ -154,6 +155,7 @@
 
   module.exports.getDigital = function(app) {
     return function(req, res) {
+      const { id } = req.params;
       const postUrl = app.namedRoutes.build('summons.update-details.post', {
         id: req.params['id'],
         type: req.params['type'],
@@ -189,8 +191,8 @@
             part6: details.newJurorAddress6,
           };
 
-          req.session.summonsUpdate = {
-            ...req.session.summonsUpdate,
+          req.session[`summonsUpdate-${id}`] = {
+            ...req.session[`summonsUpdate-${id}`],
             jurorDetails: {
               title: details.title,
               firstName: details.firstName,
@@ -206,37 +208,37 @@
           };
 
           // need to add etag headers to API obj
-          // req.session.summonsUpdate.etag = headers['etag'];
+          // req.session[`summonsUpdate-${id}`].etag = headers['etag'];
 
-          if (typeof req.session.summonsUpdate.newJurorDetails !== 'undefined') {
-            details.title = req.session.summonsUpdate.newJurorDetails.title;
-            details.firstName = req.session.summonsUpdate.newJurorDetails.firstName;
-            details.lastName = req.session.summonsUpdate.newJurorDetails.lastName;
-            req.session.summonsUpdate.jurorDetails = req.session.summonsUpdate.newJurorDetails;
+          if (typeof req.session[`summonsUpdate-${id}`].newJurorDetails !== 'undefined') {
+            details.title = req.session[`summonsUpdate-${id}`].newJurorDetails.title;
+            details.firstName = req.session[`summonsUpdate-${id}`].newJurorDetails.firstName;
+            details.lastName = req.session[`summonsUpdate-${id}`].newJurorDetails.lastName;
+            req.session[`summonsUpdate-${id}`].jurorDetails = req.session[`summonsUpdate-${id}`].newJurorDetails;
 
-            delete req.session.summonsUpdate.newJurorDetails;
+            delete req.session[`summonsUpdate-${id}`].newJurorDetails;
           };
 
-          if (typeof req.session.summonsUpdate.pendingJurorName !== 'undefined') {
-            const { title, firstName, lastName } = req.session.summonsUpdate.pendingJurorName;
+          if (typeof req.session[`summonsUpdate-${id}`].pendingJurorName !== 'undefined') {
+            const { title, firstName, lastName } = req.session[`summonsUpdate-${id}`].pendingJurorName;
 
             details.pendingTitle = title;
             details.pendingFirstName = firstName;
             details.pendingLastName = lastName;
 
-            req.session.summonsUpdate.jurorDetails.pendingTitle = title;
-            req.session.summonsUpdate.jurorDetails.pendingFirstName = firstName;
-            req.session.summonsUpdate.jurorDetails.pendingLastName = lastName;
+            req.session[`summonsUpdate-${id}`].jurorDetails.pendingTitle = title;
+            req.session[`summonsUpdate-${id}`].jurorDetails.pendingFirstName = firstName;
+            req.session[`summonsUpdate-${id}`].jurorDetails.pendingLastName = lastName;
 
-            delete req.session.summonsUpdate.pendingJurorName;
+            delete req.session[`summonsUpdate-${id}`].pendingJurorName;
           }
 
-          if (typeof req.session.summonsUpdate.newAddress !== 'undefined') {
-            details.postcode = req.session.summonsUpdate.newAddress.postcode;
-            details.address = req.session.summonsUpdate.newAddress;
-            req.session.summonsUpdate.address = req.session.summonsUpdate.newAddress;
+          if (typeof req.session[`summonsUpdate-${id}`].newAddress !== 'undefined') {
+            details.postcode = req.session[`summonsUpdate-${id}`].newAddress.postcode;
+            details.address = req.session[`summonsUpdate-${id}`].newAddress;
+            req.session[`summonsUpdate-${id}`].address = req.session[`summonsUpdate-${id}`].newAddress;
 
-            delete req.session.summonsUpdate.newAddress;
+            delete req.session[`summonsUpdate-${id}`].newAddress;
           };
 
           if (details.thirdPartyOtherReason) {
@@ -294,6 +296,7 @@
 
   module.exports.post = function(app) {
     return async function(req, res) {
+      const { id } = req.params;
       const successPath = req.params['type'] === 'paper' ?
         'response.paper.details.get' :
         'response.detail.get';
@@ -314,13 +317,13 @@
       }
 
       const payload = {
-        addressLineOne: req.session.summonsUpdate.address.part1,
-        addressLineTwo: req.session.summonsUpdate.address.part2,
-        addressLineThree: req.session.summonsUpdate.address.part3,
-        addressTown: req.session.summonsUpdate.address.part4,
-        addressCounty: req.session.summonsUpdate.address.part5,
-        addressPostcode: req.session.summonsUpdate.address.postcode,
-        ...req.session.summonsUpdate.jurorDetails,
+        addressLineOne: req.session[`summonsUpdate-${id}`].address.part1,
+        addressLineTwo: req.session[`summonsUpdate-${id}`].address.part2,
+        addressLineThree: req.session[`summonsUpdate-${id}`].address.part3,
+        addressTown: req.session[`summonsUpdate-${id}`].address.part4,
+        addressCounty: req.session[`summonsUpdate-${id}`].address.part5,
+        addressPostcode: req.session[`summonsUpdate-${id}`].address.postcode,
+        ...req.session[`summonsUpdate-${id}`].jurorDetails,
         replyMethod: req.params['type'].toUpperCase(),
       };
 
@@ -375,14 +378,14 @@
           }));
         }
 
-        if (req.session.summonsUpdate.fixedName) {
+        if (req.session[`summonsUpdate-${id}`].fixedName) {
           await fixNameObj.patch(
             require('request-promise'),
             app,
             req.session.authToken,
             req.params['id'],
             'fix-name',
-            req.session.summonsUpdate.fixedName,
+            req.session[`summonsUpdate-${id}`].fixedName,
           );
         }
 
@@ -395,7 +398,7 @@
           payload,
         );
 
-        delete req.session.summonsUpdate;
+        delete req.session[`summonsUpdate-${id}`];
 
         app.logger.info('Successfully updated the summons juror details', {
           auth: req.session.authentication,
@@ -453,8 +456,8 @@
   };
 
   module.exports.postIneligibleAge = function(app) {
-
     return async function(req, res) {
+      const { id } = req.params;
       const payload = req.session.jurorPaperUpdatePayload;
       const successPath = req.params['type'] === 'paper' ?
         'response.paper.details.get' :
@@ -473,14 +476,14 @@
           }));
         }
 
-        if (req.session.summonsUpdate.fixedName) {
+        if (req.session[`summonsUpdate-${id}`].fixedName) {
           await fixNameObj.patch(
             require('request-promise'),
             app,
             req.session.authToken,
             req.params['id'],
             'fix-name',
-            req.session.summonsUpdate.fixedName,
+            req.session[`summonsUpdate-${id}`].fixedName,
           );
         }
 
@@ -493,7 +496,7 @@
           payload,
         );
 
-        delete req.session.summonsUpdate;
+        delete req.session[`summonsUpdate-${id}`];
         delete req.session.jurorPaperUpdatePayload;
 
         app.logger.info('Successfully updated the summons juror details', {
@@ -526,6 +529,7 @@
 
   module.exports.getEditName = function(app) {
     return async function(req, res) {
+      const { id } = req.params;
       const { action } = req.query;
       const postUrl = app.namedRoutes.build('summons.update-details.edit-name.post', {
         id: req.params['id'],
@@ -545,17 +549,17 @@
 
       if (action === 'fix') {
         jurorDetails = {
-          title: req.session.summonsUpdate.jurorDetails.title,
-          firstName: req.session.summonsUpdate.jurorDetails.firstName,
-          lastName: req.session.summonsUpdate.jurorDetails.lastName,
+          title: req.session[`summonsUpdate-${id}`].jurorDetails.title,
+          firstName: req.session[`summonsUpdate-${id}`].jurorDetails.firstName,
+          lastName: req.session[`summonsUpdate-${id}`].jurorDetails.lastName,
         };
       }
 
       if (action === 'new') {
         jurorDetails = {
-          title: req.session.summonsUpdate.jurorDetails.pendingTitle,
-          firstName: req.session.summonsUpdate.jurorDetails.pendingFirstName,
-          lastName: req.session.summonsUpdate.jurorDetails.pendingLastName,
+          title: req.session[`summonsUpdate-${id}`].jurorDetails.pendingTitle,
+          firstName: req.session[`summonsUpdate-${id}`].jurorDetails.pendingFirstName,
+          lastName: req.session[`summonsUpdate-${id}`].jurorDetails.pendingLastName,
         };
       }
 
@@ -575,6 +579,7 @@
 
   module.exports.postEditName = function(app) {
     return async function(req, res) {
+      const { id } = req.params;
       const validatorResult = validate(req.body, validator.jurorName());
       const { action } = req.query;
       const { title, firstName, lastName } = req.body;
@@ -582,7 +587,7 @@
         'summons.update-details.get' :
         'summons.update-details-digital.get';
 
-      req.session.summonsUpdate.newJurorDetails = {
+      req.session[`summonsUpdate-${id}`].newJurorDetails = {
         title,
         firstName,
         lastName,
@@ -599,17 +604,17 @@
       }
 
       if (action === 'new') {
-        req.session.summonsUpdate.pendingJurorName = {
+        req.session[`summonsUpdate-${id}`].pendingJurorName = {
           title,
           firstName,
           lastName,
         };
 
-        delete req.session.summonsUpdate.newJurorDetails;
+        delete req.session[`summonsUpdate-${id}`].newJurorDetails;
       }
 
       if (action === 'fix') {
-        req.session.summonsUpdate.fixedName = {
+        req.session[`summonsUpdate-${id}`].fixedName = {
           title,
           firstName,
           lastName,
@@ -625,6 +630,7 @@
 
   module.exports.getEditAddress = function(app) {
     return async function(req, res) {
+      const { id } = req.params;
       const cancelPath = req.params['type'] === 'paper' ?
         'summons.update-details.get' :
         'summons.update-details-digital.get';
@@ -638,8 +644,8 @@
         type: req.params['type'],
       });
       const address = typeof req.session.formFields !== 'undefined'
-        ? req.session.formFields : (typeof req.session.summonsUpdate.newAddress !== 'undefined'
-          ? req.session.summonsUpdate.newAddress : req.session.summonsUpdate.address);
+        ? req.session.formFields : (typeof req.session[`summonsUpdate-${id}`].newAddress !== 'undefined'
+          ? req.session[`summonsUpdate-${id}`].newAddress : req.session[`summonsUpdate-${id}`].address);
       const tmpErrors = _.clone(req.session.errors);
 
       delete req.session.formFields;
@@ -660,6 +666,7 @@
 
   module.exports.postEditAddress = function(app) {
     return async function(req, res) {
+      const { id } = req.params;
       const validatorResult = validate(req.body, validator.jurorAddress());
       const redirectPath = req.params['type'] === 'paper' ?
         'summons.update-details.get' :
@@ -682,7 +689,7 @@
         }));
       }
 
-      req.session.summonsUpdate.newAddress = {
+      req.session[`summonsUpdate-${id}`].newAddress = {
         part1: req.body['address1'],
         part2: req.body['address2'],
         part3: req.body['address3'],

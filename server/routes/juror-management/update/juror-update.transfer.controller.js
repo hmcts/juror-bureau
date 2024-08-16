@@ -10,6 +10,8 @@
     { dateFilter } = require('../../../components/filters'),
     fetchAllCourts = require('../../../objects/request-pool').fetchAllCourts,
     validateMovementObj = require('../../../objects/pool-management').validateMovement;
+  const { poolSummaryObject } = require('../../../objects/pool-summary');
+  const { Logger } = require('../../../components/logger');
 
   // TODO This controller is used both for single and bulk transfers
   module.exports.getCourtTransfer = function(app) {
@@ -160,7 +162,7 @@
       }
 
       modUtils.matchUserCourt(req.session.filteredCourts, req.body)
-        .then((court) => {
+        .then(async (court) => {
           app.logger.info('Matched the selected court', {
             auth: req.session.authentication,
             jwt: req.session.authToken,
@@ -174,7 +176,7 @@
 
           validateMovementObj.validateMovement.put(require('request-promise'), app, req.session.authToken, {
             sourcePoolNumber: req.params.poolNumber || req.session.jurorUpdate.poolNumber,
-            sendingCourtLocCode: resolveLocationCode(req),
+            sendingCourtLocCode: await resolveLocationCode(req),
             receivingCourtLocCode: modUtils.getLocCodeFromCourtNameOrLocation(req.body.courtNameOrLocation),
             targetServiceStartDate: dateFilter(req.body.attendanceDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
             jurorNumbers: req.body.selectedJurors,
@@ -231,11 +233,24 @@
     };
   };
 
-  function resolveLocationCode(req) {
+  async function resolveLocationCode(req) {
     if (typeof req.params.poolNumber === 'undefined') {
       return req.session.locCode;
     }
 
-    return req.session.poolDetails.poolDetails.locCode;
+    const { poolNumber } = req.params;
+    let poolSummary;
+
+    try {
+      poolSummary = await poolSummaryObject.get(req, poolNumber);
+    } catch (err) {
+      Logger.instance.crit('Failed to fetch pool summary for juror transfer', {
+        auth: req.session.authentication,
+        data: { poolNumber },
+        error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+      });
+    }
+
+    return poolSummary.poolDetails.locCode;
   }
 })();

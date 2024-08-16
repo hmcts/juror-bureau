@@ -317,8 +317,7 @@
         if (req.params.poolNumber === 'new-pool') {
           courtStartDate = req.session.poolCreateFormFields.poolDetails.serviceStartDate;
         } else {
-          const poolData = await poolSummary
-            .get(require('request-promise'), app, req.session.authToken, req.params.poolNumber);
+          const poolData = await poolSummary.get(req, req.params.poolNumber);
 
           courtStartDate = dateFilter(new Date(poolData.poolDetails.courtStartDate), null, 'DD/MM/YYYY');
         }

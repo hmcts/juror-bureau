@@ -523,18 +523,18 @@
         return copy;
       }
 
-      let parts = copy?.split(/([A-Z][0-9]+)/g);
+      let parts = copy?.split(/( [A-Z][0-9]+)/g);
       
       parts = parts?.map((item) => {
-        if (item.match(/[A-Z][0-9]+/)) {
-          if (item.startsWith('F')) {
-            return `<a href="/reports/financial-audit/${item}" target="_blank">${item}</a>`;
+        if (item.match(/ [A-Z][0-9]+/)) {
+          if (item.startsWith(' F')) {
+            return ` <a href="/reports/financial-audit/${item.trim()}" target="_blank">${item.trim()}</a>`;
           }
-          if (item.startsWith('P')) {
-            return `<a href="/reporting/pool-attendance-audit/report/${item}/print" target="_blank">${item}</a>`;
+          if (item.startsWith(' P')) {
+            return ` <a href="/reporting/pool-attendance-audit/report/${item.trim()}/print" target="_blank">${item.trim()}</a>`;
           }
-          if (item.startsWith('J')) {
-            return `<a href="/reporting/jury-attendance-audit/report/${item}/print" target="_blank">${item}</a>`;
+          if (item.startsWith(' J')) {
+            return ` <a href="/reporting/jury-attendance-audit/report/${item.trim()}/print" target="_blank">${item.trim()}</a>`;
           }
         }
         

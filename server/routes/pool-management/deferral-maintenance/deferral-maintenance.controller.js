@@ -102,19 +102,43 @@
     };
   };
 
+  module.exports.postFilterSearch = function(app) {
+    return function(req, res) {
+      const { locationCode } = req.params;
+      const filters = req.body;
+      let filterString;
+      
+      delete filters._csrf;
+
+      Object.keys(filters).forEach((k) => filters[k] === '' && delete filters[k]);
+
+      if (!_.isEmpty(filters)) {
+        filterString = new URLSearchParams(filters).toString();
+      }
+
+      return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.filter.get', {
+        locationCode: locationCode,
+      }) + `?showFilter=true${filterString ? `&${filterString}` : ''}`);
+    }
+  }
+
   module.exports.postFilterDeferrals = function(app) {
     return function(req, res) {
-      var data = {
-          court: req.session.deferralMaintenance.court,
-          deferrals: req.session.deferralMaintenance.deferrals,
-          filters: {},
-        }
-        , currentPage = req.query['page'] || 1
-        , offset = 0
-        , filters = _.clone(req.body);
+      const data = {
+        court: req.session.deferralMaintenance.court,
+        deferrals: req.session.deferralMaintenance.deferrals,
+        filters: {},
+      };
+      const currentPage = req.query['page'] || 1;
+      const filters = {
+        jurorNumber: req.query['jurorNumber'],
+        firstName: req.query['firstName'],
+        lastName: req.query['lastName'],
+        deferredTo: req.query['deferredTo'],
+      };
+      let offset = 0
 
       req.session.deferralMaintenance.filtered = [];
-      delete filters._csrf;
 
       app.logger.info('Filtering deferrals: ', {
         auth: req.session.authentication,

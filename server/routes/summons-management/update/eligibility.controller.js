@@ -8,6 +8,7 @@
 
   module.exports.get = function(app) {
     return async function(req, res) {
+      const { id } = req.params;
       const postUrl = app.namedRoutes.build('summons.update-eligibility.post', {
         id: req.params['id'],
         type: req.params['type'],
@@ -28,7 +29,7 @@
           req.params['id']
         );
 
-        req.session.summonsUpdate = {
+        req.session[`summonsUpdate-${id}`] = {
           etag: headers['etag'],
         };
 
@@ -77,6 +78,7 @@
 
   module.exports.post = function(app) {
     return async function(req, res) {
+      const { id } = req.params;
       const eligibility = {
         convicted: null,
         livedConsecutive: null,
@@ -110,6 +112,8 @@
           'ELIGIBILITY',
           payload,
         );
+
+        delete req.session[`summonsUpdate-${id}`];
 
         app.logger.info('Successfully updated the juror eligibility: ', {
           auth: req.session.authentication,
