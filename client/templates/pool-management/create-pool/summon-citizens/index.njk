@@ -62,7 +62,8 @@
 
         <div class="not-editable-field govuk-!-width-one-half">
           <p class="govuk-label--s">Jurors required to complete this request</p>
-          <p class="govuk-!-font-size-19">{{ poolDetails.poolSummary.requiredPoolSize - bureauDeferrals }}</p>
+          {% set deferralsNeededToComplete = poolDetails.poolSummary.requiredPoolSize - bureauDeferrals %}
+          <p class="govuk-!-font-size-19">{{ deferralsNeededToComplete if deferralsNeededToComplete > 0 else "0" }}</p>
         </div>
 
         {{ govukInput({

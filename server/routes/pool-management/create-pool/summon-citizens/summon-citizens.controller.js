@@ -315,7 +315,7 @@
         , errorUrl;
 
       if (page === 'summon-citizens') {
-        currentBureauDeferrals = req.session[`summonJurors-${poolNumber}`].currentBureauDeferrals;
+        currentBureauDeferrals = req.session[`summonJurors-${poolNumber}`].availableBureauDeferrals;
         errorUrl = app.namedRoutes.build('summon-citizens.change-deferrals.get', { poolNumber });
         renderUrl = app.namedRoutes.build('summon-citizens.get', { poolNumber });
       } else if (page === 'summon-additional-citizens') {
@@ -336,7 +336,7 @@
 
       if (req.body.numberOfDeferrals !== currentBureauDeferrals) {
         if (page === 'summon-citizens') {
-          req.session.newBureauDeferrals = req.body.numberOfDeferrals;
+          req.session[`summonJurors-${poolNumber}`].newBureauDeferrals = req.body.numberOfDeferrals;
         } else if (page === 'summon-additional-citizens') {
           req.session.tmpSelectedBureauSupply = req.body.numberOfDeferrals;
         }
