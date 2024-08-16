@@ -524,7 +524,7 @@
         },
         dob: req.session.formFields.dateOfBirth,
         yearsOld: modUtils.dateDifference(
-          makeDate(req.session.editJurorDetails.commonDetails.startDate),
+          makeDate(req.session[`editJurorDetails-${jurorNumber}`].commonDetails.startDate),
           req.session.formFields.dateOfBirth,
           'years'
         ),
@@ -745,12 +745,12 @@
       // If only changing address then resend the data given from original API call
       if (req.url.includes('bank-details')) {
         const body = {
-          specNeedValue: req.session.editJurorDetails.specialNeed,
-          specNeedMsg: req.session.editJurorDetails.specialNeedMessage,
-          title: req.session.editJurorDetails.commonDetails.title,
-          firstName: req.session.editJurorDetails.commonDetails.firstName,
-          lastName: req.session.editJurorDetails.commonDetails.lastName,
-          ...req.session.editJurorDetails,
+          specNeedValue: req.session[`editJurorDetails-${jurorNumber}`].specialNeed,
+          specNeedMsg: req.session[`editJurorDetails-${jurorNumber}`].specialNeedMessage,
+          title: req.session[`editJurorDetails-${jurorNumber}`].commonDetails.title,
+          firstName: req.session[`editJurorDetails-${jurorNumber}`].commonDetails.firstName,
+          lastName: req.session[`editJurorDetails-${jurorNumber}`].commonDetails.lastName,
+          ...req.session[`editJurorDetails-${jurorNumber}`],
         };
 
         delete body.commonDetails;
