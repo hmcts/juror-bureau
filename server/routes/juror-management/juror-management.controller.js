@@ -2,7 +2,7 @@
   'use strict';
 
   const _ = require('lodash');
-  const { getJurorStatus } = require('../../lib/mod-utils');
+  const { getJurorStatus, setPreviousWorkingDay } = require('../../lib/mod-utils');
   const dateFilter = require('../../components/filters').dateFilter;
   const { jurorsAttending, poolAttedanceAuditDAO } = require('../../objects/juror-attendance');
 
@@ -42,12 +42,13 @@
       const selectedDate = date ? new Date(date) : new Date();
       const selectedDateString = dateFilter(selectedDate, null, 'YYYY-MM-DD');
 
-      const yesterday = new Date().setDate(selectedDate.getDate() - 1);
-
       const confirmedTab = tab || 'attended';
 
       try {
-        const previousDayIsConfirmed = isAttendanceConfirmedByAttendances(await getAppearances(app, req, req.session.authentication.locCode, dateFilter(yesterday, null, 'YYYY-MM-DD')));
+        const yesterday = new Date();
+        yesterday.setDate(selectedDate.getDate() - 1);
+        const previousWorkingDay = setPreviousWorkingDay(new Date(selectedDate));
+        const previousWorkingDayIsConfirmed = isAttendanceConfirmedByAttendances(await getAppearances(app, req, req.session.authentication.locCode, dateFilter(previousWorkingDay, null, 'YYYY-MM-DD')));
 
         const attendees = await getAppearances(app,req, req.session.authentication.locCode, selectedDateString);
         req.session.dailyAttendanceList = attendees;
@@ -100,7 +101,8 @@
           selectedDate: dateFilter(selectedDate, null, dateFormat),
           yesterday: dateFilter(yesterday, null, dateFormat),
           yesterdayRaw: dateFilter(yesterday, null, 'YYYY-MM-DD'),
-          previousDayIsConfirmed: previousDayIsConfirmed,
+          previousWorkingDay: dateFilter(previousWorkingDay, null, dateFormat),
+          previousWorkingDayIsConfirmed: previousWorkingDayIsConfirmed,
           listedJurors,
           confirmedJurors,
           absentJurors,

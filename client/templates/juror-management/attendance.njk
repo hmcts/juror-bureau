@@ -22,11 +22,11 @@
   {% if tmpFields !== undefined %}
     {% include "includes/errors.njk" %}
   {% endif %}
- {% if previousDayIsConfirmed == false and attendanceStatus !== "Confirmed" %}
+ {% if previousWorkingDayIsConfirmed == false and attendanceStatus !== "Confirmed" %}
      <div class="govuk-grid-column-full">
       {{ mojBanner({
         type: "information",
-        text: yesterday + " has not been confirmed yet, confirm that days attendance before checking in jurors for today",
+        text: previousWorkingDay + " has not been confirmed yet, confirm that days attendance before checking in jurors for today",
         iconFallbackText: "information"
       }) }}
       </div>
