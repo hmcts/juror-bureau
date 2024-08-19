@@ -79,46 +79,46 @@
   };
 
   module.exports.getReturnAttendance = (app) => async (req, res) => {
-  try{
       const { trialNumber, locationCode } = req.params;
       const tmpErrors = _.clone(req.session.errors);
 
       delete req.session.errors;
       delete req.session[`${trialNumber}-${locationCode}-checkInTime`];
       delete req.session[`${trialNumber}-${locationCode}-checkOutTime`];
-      const dayIsConfirmed = await isAttendanceConfirmed(app, req, req.params.locationCode, dateFilter(new Date(), null, 'YYYY-MM-DD'));
-
-      return res.render('trial-management/returns/return-attendance.njk', {
-        formActions: {
-          returnUrl: app.namedRoutes.build('trial-management.trials.return.check-out.get', {
-            trialNumber,
-            locationCode,
-          }),
-        },
-        selectedJurors: req.session[`${trialNumber}-${locationCode}-returnJurors`],
-        cancelUrl: app.namedRoutes.build('trial-management.trials.detail.get', {
-          trialNumber,
-          locationCode,
-        }),
-        errors: {
-          title: 'Please check the form',
-          count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-          items: tmpErrors,
-        },
-        prevAnswer: req.session[`${trialNumber}-${locationCode}-handleAttendance`],
-        dayIsConfirmed: dayIsConfirmed
-      });
-    } catch(err) {
-        app.logger.crit('Failed to get return attendances: ', {
+      const dayIsConfirmed;
+      try {
+      dayIsConfirmed = await isAttendanceConfirmed(app, req, req.params.locationCode, dateFilter(new Date(), null, 'YYYY-MM-DD'));
+     } catch(err) {
+        app.logger.crit('Failed to check if day is confirmed ', {
           auth: req.session.authentication,
           data: {
-            locCode: locCode
-            attendanceDate: attendanceDate,
+            locCode: req.params.locationCode
+            attendanceDate: dateFilter(new Date(), null, 'YYYY-MM-DD'),
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
       return res.render('_errors/generic.njk');
     }
+    return res.render('trial-management/returns/return-attendance.njk', {
+      formActions: {
+        returnUrl: app.namedRoutes.build('trial-management.trials.return.check-out.get', {
+          trialNumber,
+          locationCode,
+        }),
+      },
+      selectedJurors: req.session[`${trialNumber}-${locationCode}-returnJurors`],
+      cancelUrl: app.namedRoutes.build('trial-management.trials.detail.get', {
+        trialNumber,
+        locationCode,
+      }),
+      errors: {
+        title: 'Please check the form',
+        count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+        items: tmpErrors,
+      },
+      prevAnswer: req.session[`${trialNumber}-${locationCode}-handleAttendance`],
+      dayIsConfirmed: dayIsConfirmed
+    });
   };
 
   module.exports.postReturnAttendance = (app) => (req, res) => {
