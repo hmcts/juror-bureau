@@ -186,21 +186,10 @@
       }
 
       if (sortBy) {
-        if (sortBy !== 'jurorNumber' || sortBy !== 'poolNumber') {
-          data.deferrals.sort((a, b) => {
-            const sortA = a[sortBy].toUpperCase();
-            const sortB = b[sortBy].toUpperCase();
-            if (sortA < sortB) {
-              return sortOrder === 'ascending' ? -1 : 1;
-            }
-            if (sortA > sortB) {
-              return sortOrder === 'ascending' ? 1 : -1;
-            }
-
-            return 0;
-          });
+        if (sortOrder === 'ascending') {
+          data.deferrals.sort((a, b) => a[sortBy].toUpperCase().localeCompare(b[sortBy].toUpperCase()))
         } else {
-          data.deferrals.sort((a, b) => a[sortBy] - b[sortBy]);
+          data.deferrals.sort((a, b) => b[sortBy].toUpperCase().localeCompare(a[sortBy].toUpperCase()))
         }
       }
 
@@ -234,8 +223,6 @@
       var juror, total;
 
       if (req.params.jurorNumber === 'all') {
-        console.log(req.session.deferralMaintenance.filtered);
-        console.log(req.session.deferralMaintenance.filtered.length)
         if (req.query['isFiltered'] === 'true') {
           req.session.deferralMaintenance.deferrals.forEach((deferral) => {
             if (req.session.deferralMaintenance.filtered.includes(deferral.jurorNumber)) {
