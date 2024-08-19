@@ -144,121 +144,54 @@
 
     {# staff selection #}
     <div class="govuk-grid-row">
-
       <div class="govuk-grid-column-three-quarters">
-
-        {%if hasModAccess %}
         
           {% if errors.items["staff"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
 
-            <table class="govuk-table" data-module="moj-sortable-table" data-multi-select-checkbox="#select-all">
-              <caption class="govuk-table__caption govuk-visually-hidden">Officers list</caption>
-
-              <h2 class="govuk-heading-m">Select the officers you want to assign these replies to</h2>
-
-              {% if errors.items["staff"]%}<div class="error-allocation">
-                    <p class="govuk-error-message">{{ staffErrorMeesage }}</p>
-              {% endif %}
-
-              <h3 class="govuk-heading-s">Officers and replies they’re currently assigned</h3>
-
-              <a href="#" id="selectAllButton" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " data-module="govuk-button">
-                Select all
-              </a>
-
-              <a href="#" id="selectNoneButton" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " data-module="govuk-button">
-                Unselect all
-              </a>
-
-              <button id="allocateRepliesButtonMod" type="submit" class="govuk-button" data-module="govuk-button"/>
-                Assign replies
-              </button>
-
-              <thead class="govuk-table__head">
-                <tr class="govuk-table__row">
-                  <th class="govuk-table__header jd-assign-replies-table-head" scope="col" id="select-all"></th>
-                  <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="ascending" aria-label="Staff name">Staff name</th>
-                  <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none" aria-label="Urgent">Urgent</th>
-                  <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none" aria-label="Standard">Standard</th>
-                  <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none" aria-label="Total">Total</th>
-                </tr>
-
-                <tr class="govuk-table__row">
-                  <td class="govuk-table__cell">&nbsp;</td>
-                  <td class="govuk-table__cell">
-                    <span class="govuk-!-font-weight-bold">Total currently assigned</span>
-                  </td>
-                  <td id="total-urgent" class="govuk-table__cell govuk-!-font-weight-bold" data-sort-value="{{ totals.urgent }}">{{ staffData.totalUrgent }}</td>
-                  <td id="total-standard" class="govuk-table__cell govuk-!-font-weight-bold" data-sort-value="{{ totals.nonUrgent }}">{{ staffData.totalNonUrgent }}</td>
-                  <td id="total-all" class="govuk-table__cell govuk-!-font-weight-bold" data-sort-value="{{ totals.allReplies }}">{{ staffData.totalAll }}</td>
-                </tr>
-
-              </thead>
-
-              <tbody class="govuk-table__body">
-              
-                {% for officer in staffData.officerList %}
-
-                  <tr class="govuk-table__row govuk-table__row--selected">
-                    <td class="govuk-table__cell">
-                      <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
-                        <input type="checkbox" class="govuk-checkboxes__input select-check staff-select-check" id="select-{{ officer.login }}" name="selectedstaff" value="{{ officer.login }}"
-                        {% for staff in selectedStaffMembers %}
-                          {% if officer.login == staff%} checked {% endif %}
-                        {% endfor %}
-                        >
-                        <label class="govuk-label govuk-checkboxes__label" for="select-{{ officer.login }}">
-                          <span class="govuk-visually-hidden">Select {{ officer.name }}</span>
-                        </label>
-                      </div>
-                    </td>
-                    <td id="{{officer.login}}" class="govuk-table__cell jd-middle-align">{{ officer.name }}</td>
-                    <td id="{{officer.login}}-urgent" class="govuk-table__cell jd-middle-align">{{ officer.countUrgent }}</td>
-                    <td id="{{officer.login}}-standard" class="govuk-table__cell jd-middle-align">{{ officer.countNonUrgent }}</td>
-                    <td id="{{officer.login}}-total" class="govuk-table__cell jd-middle-align">{{ officer.countTotal }}</td>
-                  </tr>
-
-                {% endfor %}
-
-              </tbody>
-            </table>
-
-          {% if errors.items["staff"] %}</div>{% endif %}
-
-        {% else %}
-
-          <table class="govuk-table" data-module="moj-multi-select" data-multi-select-checkbox="#select-all">
+          <table class="govuk-table" data-module="moj-sortable-table" data-multi-select-checkbox="#select-all">
             <caption class="govuk-table__caption govuk-visually-hidden">Officers list</caption>
 
             <h2 class="govuk-heading-m">Select the officers you want to assign these replies to</h2>
 
+            {% if errors.items["staff"]%}<div class="error-allocation">
+                  <p class="govuk-error-message">{{ staffErrorMeesage }}</p>
+            {% endif %}
+
             <h3 class="govuk-heading-s">Officers and replies they’re currently assigned</h3>
 
-            <button id="allocateRepliesButton" type="submit" class="govuk-button" data-module="govuk-button" disabled/>
+            <a href="#" id="selectAllButton" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " data-module="govuk-button">
+              Select all
+            </a>
+
+            <a href="#" id="selectNoneButton" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " data-module="govuk-button">
+              Unselect all
+            </a>
+
+            <button id="allocateRepliesButtonMod" type="submit" class="govuk-button" data-module="govuk-button"/>
               Assign replies
             </button>
 
             <thead class="govuk-table__head">
               <tr class="govuk-table__row">
                 <th class="govuk-table__header jd-assign-replies-table-head" scope="col" id="select-all"></th>
-                <th scope="col" class="govuk-table__header jd-assign-replies-table-head">Staff name</th>
-                <th scope="col" class="govuk-table__header  jd-assign-replies-table-head" aria-sort="none" aria-label="Send to court">Send to court</th>
-                <th scope="col" class="govuk-table__header  jd-assign-replies-table-head" aria-sort="none" aria-label="Urgent">Urgent</th>
-                <th scope="col" class="govuk-table__header  jd-assign-replies-table-head" aria-sort="none" aria-label="Standard">Standard</th>
-                <th scope="col" class="govuk-table__header  jd-assign-replies-table-head" aria-sort="none" aria-label="Total">Total</th>
+                <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="ascending" aria-label="Staff name">Staff name</th>
+                <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none" aria-label="Urgent">Urgent</th>
+                <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none" aria-label="Standard">Standard</th>
+                <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none" aria-label="Total">Total</th>
               </tr>
-              {# totals row #}
+
               <tr class="govuk-table__row">
                 <td class="govuk-table__cell">&nbsp;</td>
                 <td class="govuk-table__cell">
                   <span class="govuk-!-font-weight-bold">Total currently assigned</span>
                 </td>
-                <td id="total-send" class="govuk-table__cell govuk-!-font-weight-bold" data-sort-value="{{ totals.superUrgent }}">{{ staffData.totalSuperUrgent }}</td>
                 <td id="total-urgent" class="govuk-table__cell govuk-!-font-weight-bold" data-sort-value="{{ totals.urgent }}">{{ staffData.totalUrgent }}</td>
                 <td id="total-standard" class="govuk-table__cell govuk-!-font-weight-bold" data-sort-value="{{ totals.nonUrgent }}">{{ staffData.totalNonUrgent }}</td>
                 <td id="total-all" class="govuk-table__cell govuk-!-font-weight-bold" data-sort-value="{{ totals.allReplies }}">{{ staffData.totalAll }}</td>
               </tr>
+
             </thead>
+
             <tbody class="govuk-table__body">
             
               {% for officer in staffData.officerList %}
@@ -266,14 +199,17 @@
                 <tr class="govuk-table__row govuk-table__row--selected">
                   <td class="govuk-table__cell">
                     <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
-                      <input type="checkbox" class="govuk-checkboxes__input select-check staff-select-check" id="select-{{ officer.login }}" name="selectedstaff" value="{{ officer.login }}">
+                      <input type="checkbox" class="govuk-checkboxes__input select-check staff-select-check" id="select-{{ officer.login }}" name="selectedstaff" value="{{ officer.login }}"
+                      {% for staff in selectedStaffMembers %}
+                        {% if officer.login == staff%} checked {% endif %}
+                      {% endfor %}
+                      >
                       <label class="govuk-label govuk-checkboxes__label" for="select-{{ officer.login }}">
                         <span class="govuk-visually-hidden">Select {{ officer.name }}</span>
                       </label>
                     </div>
                   </td>
                   <td id="{{officer.login}}" class="govuk-table__cell jd-middle-align">{{ officer.name }}</td>
-                  <td id="{{officer.login}}-send" class="govuk-table__cell jd-middle-align">{{ officer.countSuperUrgent }}</td>
                   <td id="{{officer.login}}-urgent" class="govuk-table__cell jd-middle-align">{{ officer.countUrgent }}</td>
                   <td id="{{officer.login}}-standard" class="govuk-table__cell jd-middle-align">{{ officer.countNonUrgent }}</td>
                   <td id="{{officer.login}}-total" class="govuk-table__cell jd-middle-align">{{ officer.countTotal }}</td>
@@ -284,10 +220,9 @@
             </tbody>
           </table>
 
-        {% endif %}
+          {% if errors.items["staff"] %}</div>{% endif %}
 
       </div>
-
     </div>
 
     <input type="hidden" name="_csrf" value="{{ csrftoken }}" id="_csrf">
