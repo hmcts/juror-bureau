@@ -116,6 +116,11 @@
         filterString = new URLSearchParams(filters).toString();
       }
 
+      // Clear all checked when filtering
+      req.session.deferralMaintenance.deferrals.forEach((deferral) => {
+        deferral.isChecked = false
+      })
+
       return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.filter.get', {
         locationCode: locationCode,
       }) + `?showFilter=true${filterString ? `&${filterString}` : ''}`);
@@ -136,7 +141,9 @@
         lastName: req.query['lastName'],
         deferredTo: req.query['deferredTo'],
       };
-      let offset = 0
+      const sortBy = req.query.sortBy || '';
+      const sortOrder = req.query.sortOrder || '';
+      let offset = 0;
 
       req.session.deferralMaintenance.filtered = [];
 
@@ -178,15 +185,26 @@
         });
       }
 
+      if (sortBy) {
+        if (sortBy !== 'jurorNumber' || sortBy !== 'poolNumber') {
+          data.deferrals.sort((a, b) => {
+            const sortA = a[sortBy].toUpperCase();
+            const sortB = b[sortBy].toUpperCase();
+            if (sortA < sortB) {
+              return sortOrder === 'ascending' ? -1 : 1;
+            }
+            if (sortA > sortB) {
+              return sortOrder === 'ascending' ? 1 : -1;
+            }
+
+            return 0;
+          });
+        } else {
+          data.deferrals.sort((a, b) => a[sortBy] - b[sortBy]);
+        }
+      }
+
       data.queryTotal = data.deferrals.length;
-
-      if (currentPage > 1) {
-        offset = modUtils.constants.PAGE_SIZE * (currentPage - 1);
-      }
-
-      if (data.queryTotal > modUtils.constants.PAGE_SIZE) {
-        data.deferrals = data.deferrals.slice(offset, offset + modUtils.constants.PAGE_SIZE);
-      }
 
       // if we have filters, we then store the filtered deferrals because we need them
       const filterLength = Object.entries(data.filters).length;
@@ -199,6 +217,14 @@
           }, []);
       }
 
+      if (currentPage > 1) {
+        offset = modUtils.constants.PAGE_SIZE * (currentPage - 1);
+      }
+
+      if (data.queryTotal > modUtils.constants.PAGE_SIZE) {
+        data.deferrals = data.deferrals.slice(offset, offset + modUtils.constants.PAGE_SIZE);
+      }
+
       return render(data, !!Object.entries(data.filters).length)(req, res);
     };
   };
@@ -208,6 +234,8 @@
       var juror, total;
 
       if (req.params.jurorNumber === 'all') {
+        console.log(req.session.deferralMaintenance.filtered);
+        console.log(req.session.deferralMaintenance.filtered.length)
         if (req.query['isFiltered'] === 'true') {
           req.session.deferralMaintenance.deferrals.forEach((deferral) => {
             if (req.session.deferralMaintenance.filtered.includes(deferral.jurorNumber)) {
@@ -395,9 +423,11 @@
 
   function render(data, isFiltered = false) {
     return function(req, res) {
-      var tmpErrors = _.clone(req.session.errors)
-        , renderData
-        , bannerMessage = req.session.bannerMessage;
+      const tmpErrors = _.clone(req.session.errors);
+      const bannerMessage = req.session.bannerMessage;
+      let renderData;
+      const sortBy = req.query.sortBy || '';
+      const sortOrder = req.query.sortOrder || '';
 
       delete req.session.bannerMessage;
       delete req.session.errors;
@@ -418,6 +448,18 @@
         }
       }
 
+      const table = renderData ? createDeferralsTable(renderData, sortBy, sortOrder, isFiltered) : '';
+
+      let urlPrefix = '';
+      if (isFiltered) {
+        const filters = _.clone(req.query);
+        delete filters.sortOrder;
+        delete filters.sortBy;
+        delete filters.page;
+        urlPrefix = `?${new URLSearchParams(filters).toString()}`
+      }
+
+
       return res.render('pool-management/deferral-maintenance/index', {
         deferralMaintenance: true,
         isBureauUser: isBureauUser(req),
@@ -432,7 +474,8 @@
           bannerMessage,
           ...renderData,
         },
-        isFiltered,
+        table,
+        urlPrefix,
       });
     };
   }
@@ -474,6 +517,95 @@
       }
       return deferralNumbers;
     }, []);
+  }
+
+  function createDeferralsTable(data, sortBy, order, isFiltered){
+    const headers = [
+      {
+        id: 'selectAll',
+        html: `<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">\n` +
+        `  <input\n` +
+        `    type="checkbox"\n` +
+        `    class="govuk-checkboxes__input select-check staff-select-check"\n` +
+        `    id="deferral-all"\n` +
+        `    name="check-all-jurors"\n` +
+        `    aria-label="select-all-deferrals"\n` +
+        `    data-is-filtered="${ isFiltered }"\n` +
+        (data.count.selected === data.queryTotal ? "    checked\n" : "") +
+        `  >\n` +
+        `  <label class="govuk-label govuk-checkboxes__label" for="deferral-all">\n` +
+        `    <span class="govuk-visually-hidden">Select All</span>\n` +
+        `  </label>\n` +
+        `</div>`,
+        sortable: false,
+        sort: 'none',
+      },
+      {
+        id: 'jurorNumber',
+        value: 'Juror number',
+        sort: sortBy === 'jurorNumber' ? order : 'none',
+        sortable: true,
+      },
+      {
+        id: 'firstName',
+        value: 'First name',
+        sort: sortBy === 'firstName' ? order : 'none',
+        sortable: true,
+      },
+      {
+        id: 'lastName',
+        value: 'Last name',
+        sort: sortBy === 'lastName' ? order : 'none',
+        sortable: true,
+      },
+      {
+        id: 'poolNumber',
+        value: 'Pool number',
+        sort: sortBy === 'poolNumber' ? order : 'none',
+        sortable: true,
+      },
+      {
+        id: 'deferredTo',
+        value: 'Deferred to',
+        sort: sortBy === 'deferredTo' ? order : 'none',
+        sortable: true,
+      }
+    ]
+
+    const rows = data.deferrals.map((juror) => {
+      return [
+        {
+          html: `<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">\n` +
+                  `<input type="checkbox" class="govuk-checkboxes__input select-check staff-select-check"\n` +
+                    `id="deferral-${ juror.jurorNumber }"\n` +
+                    `${juror.isChecked ? 'checked' : ''}\n` +
+                    `name="selectedJurors"\n` +
+                    `value="${juror.jurorNumber}"\n` +
+                    `aria-label="deferral-select-${juror.jurorNumber}"/>\n` +
+                  `<label class="govuk-label govuk-checkboxes__label" for="deferral-${ juror.jurorNumber }">\n` +
+                    `<span class="govuk-visually-hidden">Select juror number ${ juror.jurorNumber }</span>\n` +
+                  `</label>\n` +
+                `</div>`
+        },
+        {
+          text: juror.jurorNumber,
+        },
+        {
+          text: juror.firstName
+        },
+        {
+          text: juror.lastName
+        },
+        {
+          text: juror.poolNumber
+        },
+        {
+          text: dateFilter(juror.deferredTo, "yyyy-MM-DD", "ddd DD MMM YYYY")
+        },
+      ]
+    })
+  
+    return {headers, rows}
   }
 
 })();
