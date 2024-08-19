@@ -29,7 +29,7 @@
           value: prevAnswer,
           items: [
             { value: 'confirm', text: 'Return and confirm attendance' },
-            { value: 'return', text: 'Return but do not confirm attendance'},
+            { value: 'return', text: 'Return but do not confirm attendance'} if dayIsConfirmed == false,
             { value: 'complete', text: 'Return, confirm attendance and complete their service' }
           ]})
         }}
