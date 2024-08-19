@@ -335,7 +335,7 @@
             text: "Email (optional)"
           }
         }) }}
-      {{ govukCharacterCount({
+        {{ govukCharacterCount({
             name: "thirdParty-reason",
             id: "thirdParty-reason",
             classes: "govuk-!-width-one-half",
@@ -348,27 +348,27 @@
             },
             errorMessage: thirdPartReasonError
           }) }}
-           {{ govukCheckboxes({
-                      name: "thirdParty-contact-preferences",
-                      fieldset: {
-                        legend: {
-                          text: "Third party contact preferences",
-                          classes: "govuk-fieldset__legend--m"
-                        }
-                      },
-                      items: [
-                        {
-                          value: "contact-juror-by-email",
-                          text: "Contact juror instead of third party for email communications",
-                          checked: juror.thirdParty.useJurorEmailDetails
-                        },
-                        {
-                          value: "contact-juror-by-phone",
-                          text: "Contact juror instead of third party for phone communications",
-                          checked: juror.thirdParty.useJurorPhoneDetails
-                        }
-                      ]
-                    }) }}
+        {{ govukCheckboxes({
+          name: "thirdParty-contact-preferences",
+          fieldset: {
+            legend: {
+              text: "Third party contact preferences",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          items: [
+            {
+              value: "contact-juror-by-email",
+              text: "Contact juror instead of third party for email communications",
+              checked: juror.thirdParty.useJurorEmailDetails
+            },
+            {
+              value: "contact-juror-by-phone",
+              text: "Contact juror instead of third party for phone communications",
+              checked: juror.thirdParty.useJurorPhoneDetails
+            }
+          ]
+        }) }}
       {% endset -%}
 
       <div class="govuk-grid-row">

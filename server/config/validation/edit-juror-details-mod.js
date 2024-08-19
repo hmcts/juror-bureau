@@ -19,64 +19,64 @@
 
   // Validates the 'third party' conditional
   module.exports.thirdParty = () => ({
-        'thirdParty-relation': {
-            presence: {
-                allowEmpty: false,
-                message: {
-                    summary: 'Enter your relationship to the juror',
-                    details: 'Enter your relationship to the juror',
-                },
-            },
-            length: {
-               maximum: 50,
-               message: {
-                summary: 'Please check the third party relationship',
-                details: 'Please check the third party relationship',
-               },
-            }
+    'thirdParty-relation': {
+      presence: {
+        allowEmpty: false,
+        message: {
+          summary: 'Enter your relationship to the juror',
+          details: 'Enter your relationship to the juror',
         },
-        'thirdParty-first-name': {
-            length: {
-               maximum: 50,
-               message: {
-                summary: 'Please check the third party first name',
-                details: 'Please check the third party first name',
-               },
-            }
+      },
+      length: {
+        maximum: 50,
+        message: {
+          summary: 'Please check the third party relationship',
+          details: 'Please check the third party relationship',
         },
-        'thirdParty-last-name': {
-            length: {
-               maximum: 50,
-               message: {
-                summary: 'Please check the third party last name',
-                details: 'Please check the third party last name',
-               },
-            }
+      }
+    },
+    'thirdParty-first-name': {
+      length: {
+        maximum: 50,
+        message: {
+          summary: 'Please check the third party first name',
+          details: 'Please check the third party first name',
         },
-        'thirdParty-mainPhone': {
-            phoneNumber: {
-                messageMap: messageMap,
-            },
+      }
+    },
+    'thirdParty-last-name': {
+      length: {
+        maximum: 50,
+        message: {
+          summary: 'Please check the third party last name',
+          details: 'Please check the third party last name',
         },
-        'thirdParty-secPhone': {
-            phoneNumber: {
-                messageMap: messageMap,
-            },
+      }
+    },
+    'thirdParty-mainPhone': {
+      phoneNumber: {
+        messageMap: messageMap,
+      },
+    },
+    'thirdParty-secPhone': {
+      phoneNumber: {
+        messageMap: messageMap,
+      },
+    },
+    'thirdParty-email': {
+      commonEmailAddress: {
+        messageMap: messageMap,
+      },
+    },
+    'thirdParty-reason': {
+      length: {
+        maximum: 1000,
+        message: {
+          summary: 'Please check the third party reason',
+          details: 'Please check the third party reason',
         },
-        'thirdParty-email': {
-            commonEmailAddress: {
-                messageMap: messageMap,
-            },
-        },
-        'thirdParty-reason': {
-            length: {
-               maximum: 1000,
-               message: {
-                summary: 'Please check the third party reason',
-                details: 'Please check the third party reason',
-               },
-            }
-        },
+      }
+    },
   });
 
   // Validates the 'extra support' conditional
