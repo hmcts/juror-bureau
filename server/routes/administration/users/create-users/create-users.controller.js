@@ -153,7 +153,7 @@
           : req.body.roles;
       }
 
-      const validatorResult = validate(req.body, validator.userDetails(userType.toUpperCase()));
+      const validatorResult = validate(req.body, validator.userDetails(res, userType.toUpperCase()));
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
