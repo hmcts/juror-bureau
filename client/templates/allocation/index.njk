@@ -182,7 +182,19 @@
                   <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none" aria-label="Standard">Standard</th>
                   <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none" aria-label="Total">Total</th>
                 </tr>
+
+                <tr class="govuk-table__row">
+                  <td class="govuk-table__cell">&nbsp;</td>
+                  <td class="govuk-table__cell">
+                    <span class="govuk-!-font-weight-bold">Total currently assigned</span>
+                  </td>
+                  <td id="total-urgent" class="govuk-table__cell govuk-!-font-weight-bold" data-sort-value="{{ totals.urgent }}">{{ staffData.totalUrgent }}</td>
+                  <td id="total-standard" class="govuk-table__cell govuk-!-font-weight-bold" data-sort-value="{{ totals.nonUrgent }}">{{ staffData.totalNonUrgent }}</td>
+                  <td id="total-all" class="govuk-table__cell govuk-!-font-weight-bold" data-sort-value="{{ totals.allReplies }}">{{ staffData.totalAll }}</td>
+                </tr>
+
               </thead>
+
               <tbody class="govuk-table__body">
               
                 {% for officer in staffData.officerList %}
@@ -209,19 +221,6 @@
                 {% endfor %}
 
               </tbody>
-              <tfoot class="govuk-table__foot">
-
-                <tr class="govuk-table__row">
-                  <td class="govuk-table__cell">&nbsp;</td>
-                  <td class="govuk-table__cell">
-                    <span class="govuk-!-font-weight-bold">Total currently assigned</span>
-                  </td>
-                  <td id="total-urgent" class="govuk-table__cell govuk-!-font-weight-bold" data-sort-value="{{ totals.urgent }}">{{ staffData.totalUrgent }}</td>
-                  <td id="total-standard" class="govuk-table__cell govuk-!-font-weight-bold" data-sort-value="{{ totals.nonUrgent }}">{{ staffData.totalNonUrgent }}</td>
-                  <td id="total-all" class="govuk-table__cell govuk-!-font-weight-bold" data-sort-value="{{ totals.allReplies }}">{{ staffData.totalAll }}</td>
-                </tr>
-
-              </tfoot>
             </table>
 
           {% if errors.items["staff"] %}</div>{% endif %}
