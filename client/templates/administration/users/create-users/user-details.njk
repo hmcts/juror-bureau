@@ -110,7 +110,7 @@
           }) }}
         {% endif %}
 
-        {% if userType === "court" %}
+        {% if userType === "court" and isSystemAdministrator %}
           {{ govukInput({
             id: "approvalLimit",
             name: "approvalLimit",

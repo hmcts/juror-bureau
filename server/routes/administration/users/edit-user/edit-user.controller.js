@@ -93,7 +93,7 @@
       const { username } = req.params;
       const { userType } = req.session.editUser.orignalDetails;
 
-      const validatorResult = validate(req.body, validator.userDetails(userType.toUpperCase()));
+      const validatorResult = validate(req.body, validator.userDetails(res, userType.toUpperCase()));
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
