@@ -10,9 +10,8 @@
 {% set currentApp = "Summons replies" %}
 
 {% block content %}
-  {% if hasModAccess %}
-    {% include "includes/errors.njk" %}
-  {% endif %}
+  {% include "includes/errors.njk" %}
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds govuk-body">
       <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
@@ -42,36 +41,15 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full govuk-body">
 
-        {% if not hasModAccess %}
+        <div class="jd-assign-replies-total">
+          <div class="govuk-!-font-size-80 govuk-!-font-weight-bold">{{totals.modAllReplies}}</div><br/>
+          <div class="govuk-!-font-size-24">Total</div>
+        </div>
 
-          <div class="jd-assign-replies-total">
-            <div class="govuk-!-font-size-80 govuk-!-font-weight-bold">{{totals.allReplies}}</div><br/>
-            <div class="govuk-!-font-size-24">Total</div>
-          </div>
-
-          <div class="jd-assign-replies-send">
-            <div class="govuk-!-font-size-80 govuk-!-font-weight-bold">{{totals.superUrgent}}</div><br/>
-            <div class="govuk-!-font-size-24">Send to court</div>
-          </div>
-
-          <div class="jd-assign-replies-urgent">
-            <div class="govuk-!-font-size-80 govuk-!-font-weight-bold">{{totals.urgent}}</div><br/>
-            <div class="govuk-!-font-size-24">Urgent</div>
-          </div>
-
-        {% else %}
-
-          <div class="jd-assign-replies-total">
-            <div class="govuk-!-font-size-80 govuk-!-font-weight-bold">{{totals.modAllReplies}}</div><br/>
-            <div class="govuk-!-font-size-24">Total</div>
-          </div>
-
-          <div class="jd-assign-replies-send">
-            <div class="govuk-!-font-size-80 govuk-!-font-weight-bold">{{totals.urgent}}</div><br/>
-            <div class="govuk-!-font-size-24">Urgent</div>
-          </div>
-
-        {% endif %}
+        <div class="jd-assign-replies-send">
+          <div class="govuk-!-font-size-80 govuk-!-font-weight-bold">{{totals.urgent}}</div><br/>
+          <div class="govuk-!-font-size-24">Urgent</div>
+        </div>
 
         <div class="jd-assign-replies-standard">
           <div class="govuk-!-font-size-80 govuk-!-font-weight-bold">{{totals.nonUrgent}}</div><br/>
@@ -88,7 +66,7 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
 
-        {% if errors.items["replies"] and hasModAccess %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
+        {% if errors.items["replies"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
 
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
@@ -97,45 +75,24 @@
             </h2>
           </legend>
           
-          {% if errors.items["replies"] and hasModAccess %}<div class="error-allocation">
-                <p class="govuk-error-message">{{ repliesErrorMeesage }}</p>
+          {% if errors.items["replies"] %}
+            <div class="error-allocation">
+              <p class="govuk-error-message">{{ repliesErrorMeesage }}</p>
           {% endif %}
 
-          {% if hasModAccess %}
+          <div class="govuk-input__wrapper">
+            <label class="govuk-body jd-assign-replies-input-label jd-assign-replies-border-send" for="allocateUrgent">Urgent</label>
+            <input class="govuk-input govuk-input--width-3 allocateInput" maxlength="5" id="allocateUrgent" name="allocateUrgent" type="text" spellcheck="false" value={{ formFields.allocateUrgent }}>
+          </div>
 
-            <div class="govuk-input__wrapper">
-              <label class="govuk-body jd-assign-replies-input-label jd-assign-replies-border-send" for="allocateUrgent">Urgent</label>
-              <input class="govuk-input govuk-input--width-3 allocateInput" maxlength="5" id="allocateUrgent" name="allocateUrgent" type="text" spellcheck="false" value={{ formFields.allocateUrgent }}>
-            </div>
-
-            <div class="govuk-input__wrapper">
-              <label class="govuk-body jd-assign-replies-input-label jd-assign-replies-border-standard" for="allocateNonUrgent">Standard</label>
-              <input class="govuk-input govuk-input--width-3 allocateInput" maxlength="5" id="allocateNonUrgent" name="allocateNonUrgent" type="text" spellcheck="false" value={{ formFields.allocateNonUrgent }}>
-            </div>
-
-
-          {% else %}
-
-            <div class="govuk-input__wrapper">
-              <label class="govuk-body jd-assign-replies-input-label jd-assign-replies-border-send" for="allocateSuperUrgent">Send to court</label>
-              <input class="govuk-input govuk-input--width-3 allocateInput" maxlength="5" id="allocateSuperUrgent" name="allocateSuperUrgent" type="text" spellcheck="false">
-            </div>
-
-            <div class="govuk-input__wrapper">
-              <label class="govuk-body jd-assign-replies-input-label jd-assign-replies-border-urgent" for="allocateUrgent">Urgent</label>
-              <input class="govuk-input govuk-input--width-3 allocateInput" maxlength="5" id="allocateUrgent" name="allocateUrgent" type="text" spellcheck="false">
-            </div>
-
-            <div class="govuk-input__wrapper">
-              <label class="govuk-body jd-assign-replies-input-label jd-assign-replies-border-standard" for="allocateNonUrgent">Standard</label>
-              <input class="govuk-input govuk-input--width-3 allocateInput" maxlength="5" id="allocateNonUrgent" name="allocateNonUrgent" type="text" spellcheck="false">
-            </div>
-
-          {% endif %}
+          <div class="govuk-input__wrapper">
+            <label class="govuk-body jd-assign-replies-input-label jd-assign-replies-border-standard" for="allocateNonUrgent">Standard</label>
+            <input class="govuk-input govuk-input--width-3 allocateInput" maxlength="5" id="allocateNonUrgent" name="allocateNonUrgent" type="text" spellcheck="false" value={{ formFields.allocateNonUrgent }}>
+          </div>
 
         </fieldset>
 
-        {% if errors.items["replies"] and hasModAccess %}</div>{% endif %}
+        {% if errors.items["replies"] %}</div>{% endif %}{# close for line 79 #}
 
       </div>
     </div>
@@ -230,10 +187,7 @@
     <input type="hidden" name="backlogNonUrgent" value="{{ totals.nonUrgent }}">
     <input type="hidden" name="backlogUrgent" value="{{ totals.urgent }}">
     <input type="hidden" name="backlogSuperUrgent" value="{{ totals.superUrgent }}">
-
-    {% if hasModAccess %}
-      <input type="hidden" name="allocateSuperUrgent" value="">
-    {% endif %}
+    <input type="hidden" name="allocateSuperUrgent" value="">
 
   </form>
 
