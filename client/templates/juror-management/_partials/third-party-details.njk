@@ -1,4 +1,4 @@
-{% set thirdPartyNameParts = [juror.thirdPartyFName, juror.thirdPartLName] %}
+{% set thirdPartyNameParts = [juror.thirdParty.thirdPartyFName, juror.thirdParty.thirdPartyLName] | join(" ") %}
 
 <div class="mod-juror-record__title govuk-body">
   <h2 id="jurorDetailsLabel" class="govuk-heading-m">Third party details</h2>
@@ -13,7 +13,7 @@
             text: "Name"
           },
           value: {
-            text: thirdPartyNameParts | join(' ') | capitalizeFully
+            text: thirdPartyNameParts if (thirdPartyNameParts and thirdPartyNameParts !== " ") else "-"
           }
         },
         {
@@ -21,7 +21,7 @@
             text: "Relationship to juror"
           },
           value: {
-            text: juror.thirdParty.relationship
+            text: juror.thirdParty.relationship or "-"
           }
         },
         {
@@ -29,7 +29,7 @@
             text: "Reason for completing"
           },
           value: {
-            text: juror.thirdParty.thirdPartyReason
+            text: juror.thirdParty.thirdPartyReason or "-"
           }
         },
         {
@@ -37,7 +37,7 @@
             text: "Main phone"
           },
           value: {
-            text: juror.thirdParty.mainPhone | replace(' ', '')
+            text: (juror.thirdParty.mainPhone | replace(' ', '')) or "-"
           }
         },
         {
@@ -45,7 +45,7 @@
             text: "Other phone"
           },
           value: {
-            text: juror.thirdParty.otherPhone | replace(' ', '')
+            text: (juror.thirdParty.otherPhone | replace(' ', '')) or "-"
           }
         },
         {
@@ -53,7 +53,7 @@
             text: "Email"
           },
           value: {
-            text: juror.thirdParty.emailAddress | lower
+            text: (juror.thirdParty.emailAddress | lower) or "-"
           }
         }
       ]

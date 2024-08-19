@@ -15,6 +15,7 @@
     , jurorRecordObject = require('../../../objects/juror-record').record
     , overviewDetailsValidator = require('../../../config/validation/edit-juror-details-mod').overviewDetails
     , extraSupportValidator = require('../../../config/validation/edit-juror-details-mod').extraSupport
+    , thirdPartyValidator = require('../../../config/validation/edit-juror-details-mod').thirdParty
     , editJurorDetailsObject = require('../../../objects/juror-record').editDetails
     , deleteDeferralObject = require('../../../objects/deferral-mod').deleteDeferralObject
     , paperReplyValidator = require('../../../config/validation/paper-reply')
@@ -374,8 +375,6 @@
             ? dateFilter(response.data.dateOfBirth, null, 'DD/MM/YYYY')
             : '';
 
-          response.data.thirdParty = response.data.extraSupport = 'no';
-
           if (response.data.specialNeed !== null) {
             response.data.extraSupport = 'yes';
           }
@@ -393,6 +392,41 @@
 
           Object.assign(jurorDetails, req.session.formFields);
 
+          if (req.session.formFields['thirdPartyEnabled'] && jurorDetails.thirdParty == null) {
+            jurorDetails.thirdParty = {};
+          }
+          if (req.session.formFields['thirdParty-first-name']) {
+            jurorDetails.thirdParty.thirdPartyFName = req.session.formFields['thirdParty-first-name'];
+          }
+          if (req.session.formFields['thirdParty-last-name']) {
+            jurorDetails.thirdParty.thirdPartyLName = req.session.formFields['thirdParty-last-name'];
+          }
+          if (req.session.formFields['thirdParty-relation']) {
+            jurorDetails.thirdParty.relationship = req.session.formFields['thirdParty-relation'];
+          }
+          if (req.session.formFields['thirdParty-mainPhone']) {
+            jurorDetails.thirdParty.mainPhone = req.session.formFields['thirdParty-mainPhone'];
+          }
+          if (req.session.formFields['thirdParty-secPhone']) {
+            jurorDetails.thirdParty.otherPhone = req.session.formFields['thirdParty-secPhone'];
+          }
+          if (req.session.formFields['thirdParty-email']) {
+            jurorDetails.thirdParty.emailAddress = req.session.formFields['thirdParty-email'];
+          }
+          if (req.session.formFields['thirdParty-reason']) {
+            jurorDetails.thirdParty.thirdPartyReason = req.session.formFields['thirdParty-reason'];
+          }
+
+          const thirdPartyDetails = Array.isArray(req.session.formFields['thirdParty-contact-preferences'])
+            ? req.session.formFields['thirdParty-contact-preferences']
+            : [req.session.formFields['thirdParty-contact-preferences']];
+
+          if (thirdPartyDetails.includes('contact-juror-by-email')) {
+            jurorDetails.thirdParty.useJurorEmailDetails = true;
+          }
+          if (thirdPartyDetails.includes('contact-juror-by-phone')) {
+            jurorDetails.thirdParty.useJurorPhoneDetails = true;
+          }
           delete req.session.formFields;
         }
 
@@ -479,9 +513,23 @@
         req.body.opticReference = null;
       }
 
+      let thirdPartyValidatorResult;
+      if (req.body.thirdPartyEnabled === 'yes') {
+        thirdPartyValidatorResult = validate(req.body, thirdPartyValidator());
+      } else {
+        req.body.thirdParty = null;
+        req.body['thirdParty-first-name'] = null;
+        req.body['thirdParty-last-name'] = null;
+        req.body['thirdParty-relation'] = null;
+        req.body['thirdParty-mainPhone'] = null;
+        req.body['thirdParty-secPhone'] = null;
+        req.body['thirdParty-email'] = null;
+        req.body['thirdParty-reason'] = null;
+      }
+
       let combinedErrorResult = {};
 
-      Object.assign(combinedErrorResult, validatorResult, extraSupportValidatorResult);
+      Object.assign(combinedErrorResult, validatorResult, extraSupportValidatorResult, thirdPartyValidatorResult);
 
       req.session.formFields = req.body;
       if (Object.keys(combinedErrorResult).length !== 0) {
@@ -556,7 +604,33 @@
       });
     }
 
-    delete requestBody.thirdParty;
+    if(requestBody.thirdPartyEnabled === 'yes') {
+      const thirdPartyDetails = Array.isArray(requestBody['thirdParty-contact-preferences'])
+        ? requestBody['thirdParty-contact-preferences']
+        : [requestBody['thirdParty-contact-preferences']];
+
+      requestBody.thirdParty = {
+        firstName: requestBody['thirdParty-first-name'],
+        lastName: requestBody['thirdParty-last-name'],
+        relationship: requestBody['thirdParty-relation'],
+        mainPhone: requestBody['thirdParty-mainPhone'],
+        otherPhone: requestBody['thirdParty-secPhone'],
+        emailAddress: requestBody['thirdParty-email'],
+        reason: requestBody['thirdParty-reason'],
+        contactJurorByPhone: thirdPartyDetails.includes('contact-juror-by-phone'),
+        contactJurorByEmail: thirdPartyDetails.includes('contact-juror-by-email'),
+      }
+    }
+
+    delete requestBody.thirdPartyEnabled;
+    delete requestBody['thirdParty-first-name'];
+    delete requestBody['thirdParty-last-name'];
+    delete requestBody['thirdParty-relation'];
+    delete requestBody['thirdParty-mainPhone'];
+    delete requestBody['thirdParty-secPhone'];
+    delete requestBody['thirdParty-email'];
+    delete requestBody['thirdParty-reason'];
+    delete requestBody['thirdParty-contact-preferences'];
     delete requestBody.extraSupport;
 
     requestBody.pendingTitle = req.session[`editJurorDetails-${jurorNumber}`].commonDetails.pendingTitle;
