@@ -79,24 +79,27 @@
   };
 
   module.exports.getReturnAttendance = (app) => async (req, res) => {
-      const { trialNumber, locationCode } = req.params;
-      const tmpErrors = _.clone(req.session.errors);
+    const { trialNumber, locationCode } = req.params;
+    const tmpErrors = _.clone(req.session.errors);
 
-      delete req.session.errors;
-      delete req.session[`${trialNumber}-${locationCode}-checkInTime`];
-      delete req.session[`${trialNumber}-${locationCode}-checkOutTime`];
-      const dayIsConfirmed;
-      try {
+    delete req.session.errors;
+    delete req.session[`${trialNumber}-${locationCode}-checkInTime`];
+    delete req.session[`${trialNumber}-${locationCode}-checkOutTime`];
+    let dayIsConfirmed;
+
+    try {
       dayIsConfirmed = await isAttendanceConfirmed(app, req, req.params.locationCode, dateFilter(new Date(), null, 'YYYY-MM-DD'));
-     } catch(err) {
-        app.logger.crit('Failed to check if day is confirmed ', {
-          auth: req.session.authentication,
-          data: {
-            locCode: req.params.locationCode
-            attendanceDate: dateFilter(new Date(), null, 'YYYY-MM-DD'),
-          },
-          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-        });
+    } catch(err) {
+      app.logger.crit('Failed to check if day is confirmed ', {
+        auth: req.session.authentication,
+        data: {
+          locationCode,
+          trialNumber,
+          attendanceDate: dateFilter(new Date(), null, 'YYYY-MM-DD'),
+        },
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+  
       return res.render('_errors/generic.njk');
     }
     return res.render('trial-management/returns/return-attendance.njk', {
@@ -117,7 +120,7 @@
         items: tmpErrors,
       },
       prevAnswer: req.session[`${trialNumber}-${locationCode}-handleAttendance`],
-      dayIsConfirmed: dayIsConfirmed
+      dayIsConfirmed: dayIsConfirmed,
     });
   };
 
