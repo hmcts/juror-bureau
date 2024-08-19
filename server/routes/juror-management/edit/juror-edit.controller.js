@@ -561,13 +561,15 @@
 
   module.exports.getIneligibleAge = function(app) {
     return function(req, res) {
+      const { jurorNumber } = req.params;
+
       return res.render('summons-management/paper-reply/ineligible-age', {
         postUrl: app.namedRoutes.build('juror-record.details-edit.ineligible-age.post', {
-          jurorNumber: req.params.jurorNumber,
+          jurorNumber,
         }),
         backLinkUrl: {
           url: app.namedRoutes.build('juror-record.details-edit.get', {
-            jurorNumber: req.params.jurorNumber,
+            jurorNumber,
           }),
         },
         dob: req.session.formFields.dateOfBirth,
