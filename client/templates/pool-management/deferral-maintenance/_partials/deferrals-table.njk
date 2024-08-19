@@ -8,15 +8,15 @@
 
 {% else %}
 
-  <div class="govuk-caption-m">
-    <span id="deferral-selected-count">{{ data.count.selected }}</span> of <span id="deferral-total-count">{{ data.queryTotal }}</span> selected
-  </div>
-
   {% if errors.items["selectedJurors"] %}
     <div class="error-allocation">
       <p class="govuk-error-message">{{ errors.items['selectedJurors'][0].details }}</p>
     </div>
   {% endif %}
+
+  <div class="govuk-caption-m">
+    <span id="deferral-selected-count">{{ data.count.selected }}</span> of <span id="deferral-total-count">{{ data.queryTotal }}</span> selected
+  </div>
 
   {{ modSortableTable({
     id: "deferralsTable",
