@@ -78,7 +78,7 @@ const buildTableHeaders = (reportType, tableHeadings, query) => {
   const { sortBy, sortDirection } = query;
 
   const resolveSortDirection = (key) => {
-    if (!sortBy) return key === 'lastName' ? 'ascending' : 'none';
+    if (!sortBy) return reportType.defaultSortColumn === key ? 'ascending' : 'none';
     return sortBy === key ? (sortDirection ? sortDirection : 'ascending') : 'none';
   };
 
@@ -105,9 +105,9 @@ const buildTableHeaders = (reportType, tableHeadings, query) => {
       return ({
         html: reportType.tableHeaderTransformer ? reportType.tableHeaderTransformer(data) : data.name,
         attributes: {
-          'aria-sort': resolveSortDirection(toCamelCase(data.name)),
+          'aria-sort': resolveSortDirection(toCamelCase(data.id)),
           'aria-label': data.name,
-          'data-sort-key': toCamelCase(data.name),
+          'data-sort-key': toCamelCase(data.id),
           'data-is-print-sortable': true,
         },
         classes: reportType.bespokeReport?.tableHeadClasses

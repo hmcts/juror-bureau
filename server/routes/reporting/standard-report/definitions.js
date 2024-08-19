@@ -72,6 +72,7 @@
   //   totalsRow?: (data, isPrint) => [object], // custom totals row for the report
   //   columnWidths?: [string | number], // custom widths for the main table columns
   //   filterBackLinkUrl?: string,  // backlink url for the inital filter page
+  //   defaultSortColumn?: string, // default sort column
   // }};
   module.exports.reportKeys = (app, req = null) => {
     const courtUser = req ? isCourtUser(req) : false;
@@ -89,6 +90,7 @@
           'serviceStartDate',
           'courtName',
         ],
+        defaultSortColumn: 'lastName',
       },
       'undelivered': {
         title: 'Undelivered list',
@@ -103,6 +105,7 @@
           'courtName',
           'totalUndelivered',
         ],
+        defaultSortColumn: 'lastName',
       },
       'non-responded': {
         title: 'Non-responded list',
@@ -131,6 +134,7 @@
           'courtName',
           'totalPostponed',
         ],
+        defaultSortColumn: 'lastName',
         backUrl: app.namedRoutes.build('reports.postponed.search.get'),
       },
       'postponed-date': {
@@ -143,6 +147,7 @@
           'reportTime',
           'totalPostponed',
         ].concat(courtUser ? ['courtName'] : []),
+        defaultSortColumn: 'lastName',
         grouped: {
           headings: {
             transformer: (data, isPrint) => {
@@ -168,6 +173,7 @@
           'jurorName',
           'reportTime',
         ],
+        defaultSortColumn: 'changedOnDate',
         backUrl: app.namedRoutes.build('reports.juror-amendment.search.get'),
       },
       'amendment-pool': {
@@ -183,6 +189,7 @@
           'serviceStartDate',
           'courtName',
         ],
+        defaultSortColumn: 'jurorNumber',
         backUrl: app.namedRoutes.build('reports.juror-amendment.search.get'),
       },
       'amendment-date': {
@@ -195,6 +202,7 @@
           'dateTo',
           'reportTime',
         ].concat(courtUser ? ['courtName'] : []),
+        defaultSortColumn: 'jurorNumber',
         backUrl: app.namedRoutes.build('reports.juror-amendment.search.get'),
       },
       'incomplete-service': {
@@ -221,6 +229,7 @@
           '',
           'courtName',
         ],
+        defaultSortColumn: 'lastName',
       },
       'current-pool-status': {
         title: 'Current pool status report',
@@ -235,6 +244,7 @@
           'courtName',
           'totalPoolMembers',
         ],
+        defaultSortColumn: 'lastName',
         printLandscape: true,
         columnWidths: [80, 100, 100, 80, 60, 60, '*', 120],
       },
@@ -251,6 +261,7 @@
           'courtName',
           'judge',
         ],
+        defaultSortColumn: 'lastName',
       },
       'bulk-print-audit': {
         title: 'Bulk-print audit report',
@@ -262,6 +273,7 @@
           'dateTo',
           'reportTime',
         ],
+        defaultSortColumn: 'dateSent',
       },
       'panel-detail': {
         title: 'Panel list (Detail)',
@@ -276,6 +288,7 @@
           'courtName',
           'judge',
         ],
+        defaultSortColumn: 'lastName',
       },
       'jury-list': {
         title: 'Jury list',
@@ -292,6 +305,7 @@
           '',
           'judge',
         ],
+        defaultSortColumn: 'lastName',
       },
       'pool-status': {
         title: 'Pool status report',
@@ -327,6 +341,7 @@
           '',
           'courtName',
         ],
+        defaultSortColumn: 'lastName',
         grouped: {
           groupHeader: !courtUser,
           totals: !courtUser,
@@ -349,6 +364,7 @@
           '',
           'courtName',
         ],
+        defaultSortColumn: 'lastName',
       },
       'persons-attending-detail': {
         title: 'Persons attending (detailed)',
@@ -365,6 +381,7 @@
           '',
           'courtName',
         ],
+        defaultSortColumn: 'lastName',
         grouped: {
           headings: {
             transformer: (data, isPrint) => {
@@ -442,6 +459,7 @@
           'dateTo',
           'reportTime',
         ],
+        defaultSortColumn: 'trialNumber',
       },
       'unconfirmed-attendance': {
         title: 'Unconfirmed attendance report',
@@ -455,6 +473,7 @@
           '',
           'courtName',
         ],
+        defaultSortColumn: 'lastName',
         grouped: {
           headings: {
             transformer: (data, isPrint) => {
@@ -485,6 +504,7 @@
           'totalManuallyCreatedJurors',
           'courtName',
         ],
+        defaultSortColumn: 'lastName',
       },
       'panel-members-status': {
         title: 'Panel members status report',
@@ -499,6 +519,7 @@
           'courtName',
           'judge',
         ],
+        defaultSortColumn: 'jurorNumber',
         largeTotals: {
           values: (data) => {
             return [
@@ -558,6 +579,7 @@
         unsortable: true,
         exportLabel: 'Export raw data',
       },
+      // this one may be unsortable
       'jury-expenditure-high-level': {
         title: 'Juror expenditure report (high-level)',
         apiKey: 'JurorExpenditureReportHighLevelReport',
@@ -578,6 +600,7 @@
           body: true,
         },
       },
+      // this maybe unsortable too
       'jury-expenditure-mid-level': {
         title: 'Juror expenditure report (mid-level)',
         apiKey: 'JurorExpenditureReportMidLevelReport',
@@ -622,6 +645,7 @@
           '',
           'overallTotal',
         ],
+        defaultSortColumn: 'lastName',
         multiTable: {
           sectionHeadings: true,
         },
@@ -924,6 +948,7 @@
           'totalAbsences',
           'courtName',
         ],
+        defaultSortColumn: 'lastName',
       },
       'summoned-responded': {
         title: 'Summoned and responded pool members report',
@@ -935,6 +960,7 @@
           '',
           'reportTime',
         ],
+        defaultSortColumn: 'lastName',
         columnWidths: [80, '*', '*', '*', 60, 60],
       },
       'trial-statistics': {
@@ -947,6 +973,7 @@
           'dateTo',
           'reportTime',
         ],
+        defaultSortColumn: 'trialNumber',
         largeTotals: {
           values:(data) => {
             const criminalTrials = data.filter(trial => trial.trialType === 'CRI');
@@ -991,6 +1018,7 @@
           'courtName',
           'totalAvailablePoolMembers'
         ],
+        defaultSortColumn: 'lastName',
       },
       'available-list-date': {
         title: 'Available list (by date)',
@@ -1010,6 +1038,7 @@
           '',
           'courtName',
         ],
+        defaultSortColumn: 'lastName',
         multiTable: !courtUser ? {
           sectionHeadings: true,
         } : null,
@@ -1045,6 +1074,7 @@
           '',
           'courtName',
         ],
+        defaultSortColumn: 'poolNumberByJp',
         cellTransformer: (data, key, output, isPrint) => {
           const percentageKey = _.camelCase(`${key}_percentage`);
 
@@ -1119,6 +1149,7 @@
           'courtName',
           'totalOnCall',
         ],
+        defaultSortColumn: 'lastName',
       },
       'trial-attendance': {
         title: 'Trial attendance report',
@@ -1137,6 +1168,7 @@
           '',
           'judge'
         ],
+        defaultSortColumn: 'lastName',
         grouped: {
           headings: {
             transformer: (data, isPrint) => {
@@ -1281,6 +1313,7 @@
           '',
           'judge'
         ],     
+        defaultSortColumn: 'attendanceDate',
         cellTransformer: (data, key, output, isPrint) => {
           if (key === 'total_paid_sum') {
             if (isPrint) return output;
@@ -1331,6 +1364,7 @@
           '',
           'courtName',
         ],
+        defaultSortColumn: 'creationDate',
         grouped: {
           headings: {
             transformer: (data, isPrint) => {
@@ -1354,6 +1388,7 @@
           'totalUnpaidAttendances',
           'courtName',
         ],
+        defaultSortColumn: 'lastName',
         grouped: {
           headings: {
             transformer: (data) => dateFilter(data, 'YYYY-mm-dd', 'dddd D MMMM YYYY'),
@@ -1374,6 +1409,7 @@
           'totalUnpaidAttendances',
           'courtName',
         ],
+        defaultSortColumn: 'lastName',
         bespokeReport: {
           body: true,
           file: './bespoke-report-body/unpaid-attendance-detailed.njk',
@@ -1388,6 +1424,7 @@
           '',
           'reportTime',
         ],
+        defaultSortColumn: 'deferredTo',
         backUrl: app.namedRoutes.build('reports.deferred-list.filter.get')
       },
       'deferred-list-court': {
@@ -1399,6 +1436,7 @@
           '',
           'reportTime',
         ],
+        defaultSortColumn: 'deferredTo',
         grouped: {
           groupHeader: true,
           totals: true,
@@ -1418,6 +1456,7 @@
           'courtName',
           'totalExcusedAndDisqualified',
         ],
+        defaultSortColumn: 'lastName',
         grouped: {
           groupHeader: true,
         },
@@ -1432,6 +1471,7 @@
           'dateTo',
           'reportTime',
         ],
+        defaultSortColumn: 'poolNumber',
         totalsRow: (data, isPrint = false) => {
           const totals = {
             policeCheckResponded: 0,
@@ -1492,6 +1532,7 @@
           'courtName',
           'total',
         ],
+        defaultSortColumn: 'lastName',
       },
       'pool-ratio': {
         title: 'Pool ratio report',
@@ -1546,6 +1587,7 @@
           'total',
           'courtName',
         ],
+        defaultSortColumn: 'lastName',
       },
       'pool-selection': {
         title: 'Pool selection list',
@@ -1559,6 +1601,7 @@
           'serviceStartDate',
           'courtName',
         ],
+        defaultSortColumn: 'lastName',
       },
       'completion-of-service': {
         title: 'Completion of service report',
@@ -1573,6 +1616,7 @@
           'totalPoolMembersCompleted',
           'courtName'
         ],
+        defaultSortColumn: 'lastName',
         grouped: {
           headings: {
             transformer: (data, isPrint) => {
@@ -1633,6 +1677,7 @@
           'dateTo',
           'reportTime',
         ],
+        defaultSortColumn: 'courtName',
         bespokeReport: {
           dao: (req, config) => yieldPerformanceDAO.post(
             req,

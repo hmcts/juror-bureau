@@ -12,7 +12,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
 
   const { headings, tableData } = data;
 
-  sortTableData(req.query, tableData, reportData.grouped);
+  sortTableData(req.query, tableData, reportData);
 
   const buildReportHeadings = (pageHeadings) => pageHeadings.map(heading => {
     if (heading === '') {
@@ -294,30 +294,32 @@ async function standardReportPrint(app, req, res, reportKey, data) {
   }
 };
 
-function sortTableData({ sortBy, sortDirection }, tableData, grouped) {
-  if (sortBy) {
-    if (grouped) {
-      Object.keys(tableData.data).forEach(key => {
-        tableData.data[key] = tableData.data[key].sort((a, b) => {
-          const [_a, _b] = formatSortableData(a, b, sortBy);
-          
-          if (sortDirection === 'ascending') {
-            return _a.localeCompare(_b);
-          } else {
-            return _b.localeCompare(_a);
-          }
+function sortTableData({ sortBy, sortDirection }, tableData, reportData) {
+  const _sortBy = resolveSortBy(sortBy, reportData);
+
+  if (reportData.grouped) {
+    Object.keys(tableData.data).forEach(key => {
+      if (reportData.multiTable) {
+        Object.keys(tableData.data[key]).forEach(subKey => {
+          tableData.data[key][subKey] = tableData.data[key][subKey].sort(sort(_sortBy, sortDirection));
         });
-      });
+      } else {
+        tableData.data[key] = tableData.data[key].sort(sort(_sortBy, sortDirection));
+      }
+    });
+  } else {
+    tableData.data = tableData.data.sort(sort(_sortBy, sortDirection));
+  }
+}
+
+function sort(sortBy, sortDirection) {
+  return (a, b) => {
+    const [_a, _b] = formatSortableData(a, b, sortBy);
+      
+    if (sortDirection === 'descending') {
+      return _b.localeCompare(_a);
     } else {
-      tableData.data = tableData.data.sort((a, b) => {
-        const [_a, _b] = formatSortableData(a, b, sortBy);
-        
-        if (sortDirection === 'ascending') {
-          return _a.localeCompare(_b);
-        } else {
-          return _b.localeCompare(_a);
-        }
-      });
+      return _a.localeCompare(_b);
     }
   }
 }
@@ -331,7 +333,15 @@ function formatSortableData(a, b, sortBy) {
     _b = Object.values(b.jurorPostalAddress).join(' ');
   }
 
-  return [_a, _b];
+  return [_a.toString(), _b.toString()];
+}
+
+function resolveSortBy(sortBy, reportData) {
+  if (sortBy) {
+    return sortBy;
+  }
+
+  return reportData.defaultSortColumn;
 }
 
 module.exports = {

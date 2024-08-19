@@ -514,7 +514,7 @@
             headRow,
             rows: group,
             totalsRow,
-          })
+          });
         }
       } else {
         tableRows = buildStandardTableRows(tableData, tableHeadings);
