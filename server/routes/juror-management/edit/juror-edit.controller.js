@@ -741,8 +741,9 @@
         part5: req.session[`editJurorDetails-${jurorNumber}`].addressCounty,
         postcode: req.session[`editJurorDetails-${jurorNumber}`].addressPostcode,
       };
-
+      let saveBtnLabel;
       if (req.url.includes('bank-details')) {
+        saveBtnLabel = 'Save';
         const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
         const { locCode } = req.params;
 
@@ -755,6 +756,7 @@
           locCode,
         });
       } else {
+        saveBtnLabel = 'Review Edit';
         postUrl = app.namedRoutes.build('juror-record.details-edit-address.post', {
           jurorNumber: req.params['jurorNumber'],
         });
@@ -780,6 +782,7 @@
         address: address,
         postUrl,
         cancelUrl,
+        saveBtnLabel: saveBtnLabel,
         errors: {
           title: 'Please check the form',
           count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
