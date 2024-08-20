@@ -668,7 +668,6 @@
       } catch (err) {
         app.logger.crit('Failed to fix current name: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: req.session[`editJurorDetails-${jurorNumber}`].fixedName,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
@@ -677,50 +676,55 @@
       }
     }
 
-    // TODO: this etag is incorrect... it should do a get to compare etags then patch if data has not been changed
-    promiseArr.push(editJurorDetailsObject.patch(
-      require('request-promise'),
-      app,
-      req.session.authToken,
-      requestBody,
-      req.params['jurorNumber'],
-      req.session[`editJurorEtag-${jurorNumber}`],
-    ));
+    try {
+      await editJurorDetailsObject.patch(
+        require('request-promise'),
+        app,
+        req.session.authToken,
+        requestBody,
+        req.params['jurorNumber'],
+        req.session[`editJurorEtag-${jurorNumber}`],
+      );
+    } catch (err) {
+      app.logger.crit('Failed to change juror details: ', {
+        auth: req.session.authentication,
+        data: { jurorNumber: req.params['jurorNumber'], requestBody },
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
 
-    if (disqualifyAge) {
-      promiseArr.push(disqualifyAgeDAO.patch(app, req, req.params.jurorNumber));
+      return res.render('_errors/generic');
     }
 
-    Promise.all(promiseArr)
-      .then(() => {
-        app.logger.info('Changed juror details: ', {
+    app.logger.info('Changed juror details: ', {
+      auth: req.session.authentication,
+      data: { jurorNumber: req.params['jurorNumber'], requestBody: requestBody },
+    });
+
+    delete req.session[`editJurorEtag-${jurorNumber}`];
+    delete req.session[`editJurorDetails-${jurorNumber}`];
+    delete req.session.dateMax;
+    delete req.session.formFields;
+
+    if (disqualifyAge) {
+      try {
+        await disqualifyAgeDAO.patch(app, req, req.params.jurorNumber);
+
+        app.logger.info('Disqualified juror due to age: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
-          jurorNumber: req.params['jurorNumber'],
-          requestBody: requestBody,
+          data: { jurorNumber: req.params['jurorNumber'] },
         });
-
-        delete req.session[`editJurorEtag-${jurorNumber}`];
-        delete req.session[`editJurorDetails-${jurorNumber}`];
-        delete req.session.dateMax;
-        delete req.session.formFields;
-
-        return res.redirect(successUrl);
-      })
-      .catch((err) => {
-        app.logger.crit('Failed to change juror details: ', {
+      } catch (err) {
+        app.logger.crit('Failed to disqualify juror due to age: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
-          etag: req.session.editJurorEtag,
-          data: {
-            jurorNumber: req.params['jurorNumber'],
-            requestBody: requestBody,
-          },
+          data: { jurorNumber: req.params['jurorNumber'] },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic');
-      });
+        // if the disqulification fails, we allow to go through and show the updated details
+      }
+    }
+
+    return res.redirect(successUrl);
   };
 
   module.exports.getEditDetailsAddress = (app) => {
