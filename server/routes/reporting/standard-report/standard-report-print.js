@@ -335,8 +335,8 @@ function sort(sortBy, sortDirection) {
 }
 
 function formatSortableData(a, b, sortBy) {
-  let _a = a[snakeToCamel(sortBy)];
-  let _b = b[snakeToCamel(sortBy)];
+  let _a = a[snakeToCamel(sortBy)] || '-';
+  let _b = b[snakeToCamel(sortBy)] || '-';
 
   if (sortBy === 'jurorPostalAddress') {
     _a = Object.values(a.jurorPostalAddress).join(' ');

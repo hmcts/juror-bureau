@@ -1460,6 +1460,7 @@
         defaultSortColumn: 'lastName',
         grouped: {
           groupHeader: true,
+          totals: true,
         },
       },
       'electronic-police-check': {
