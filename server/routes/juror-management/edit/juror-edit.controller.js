@@ -708,6 +708,11 @@
     if (disqualifyAge) {
       try {
         await disqualifyAgeDAO.patch(app, req, req.params.jurorNumber);
+
+        app.logger.info('Disqualified juror due to age: ', {
+          auth: req.session.authentication,
+          data: { jurorNumber: req.params['jurorNumber'] },
+        });
       } catch (err) {
         app.logger.crit('Failed to disqualify juror due to age: ', {
           auth: req.session.authentication,
@@ -715,14 +720,9 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic');
+        // if the disqulification fails, we allow to go through and show the updated details
       }
     }
-
-    app.logger.info('Disqualified juror due to age: ', {
-      auth: req.session.authentication,
-      data: { jurorNumber: req.params['jurorNumber'] },
-    });
 
     return res.redirect(successUrl);
   };
