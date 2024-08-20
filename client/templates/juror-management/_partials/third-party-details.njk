@@ -1,5 +1,16 @@
 {% set thirdPartyNameParts = [juror.thirdParty.thirdPartyFName, juror.thirdParty.thirdPartyLName] | join(" ") %}
 
+{% set thirdPartyReason = "-" %}
+
+{% if juror.thirdParty.thirdPartyReason and juror.thirdParty.thirdPartyOtherReason %}
+    {% set thirdPartyReason = juror.thirdParty.thirdPartyReason + " - " + juror.thirdParty.thirdPartyOtherReason %}
+{% elif juror.thirdParty.thirdPartyReason %}
+    {% set thirdPartyReason = juror.thirdParty.thirdPartyReason %}
+{% elif juror.thirdParty.thirdPartyOtherReason %}
+    {% set thirdPartyReason = juror.thirdParty.thirdPartyOtherReason %}
+{% endif %}
+
+
 <div class="mod-juror-record__title govuk-body">
   <h2 id="jurorDetailsLabel" class="govuk-heading-m">Third party details</h2>
 </div>
@@ -29,7 +40,7 @@
             text: "Reason for completing"
           },
           value: {
-            text: juror.thirdParty.thirdPartyReason or "-"
+            text: thirdPartyReason
           }
         },
         {
