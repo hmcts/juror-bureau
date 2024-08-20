@@ -81,7 +81,7 @@ class GroupedSortableTable {
     const sortDirection = button.parent().attr('aria-sort') === 'ascending' ? 'descending' : 'ascending';
 
     for (const body of this.body) {
-      const rows = $(body).find('tr');
+      const rows = $(body).find('tr').filter(':not([data-fixed-index])');
       const sortedRows = this.sort(rows, columnNumber, sortDirection);
       this.addRows(body, sortedRows);
     }
@@ -100,7 +100,7 @@ class GroupedSortableTable {
 
   initialiseSortedColumn() {
     for (const body of this.body) {
-      const rows = $(body).find('tr');
+      const rows = $(body).find('tr').filter(':not([data-fixed-index])');
 
       this.table.find('th')
         .filter('[aria-sort="ascending"], [aria-sort="descending"]')
@@ -128,14 +128,45 @@ class GroupedSortableTable {
 
   sort(rows, columnNumber, sortDirection) {
     return rows.sort((a, b) => {
-      const aValue = $(a).find('td').eq(columnNumber).text();
-      const bValue = $(b).find('td').eq(columnNumber).text();
+      let aValue = $(a).find('td').eq(columnNumber).attr('data-sort-value') || $(a).find('td').eq(columnNumber).text();
+      let bValue = $(b).find('td').eq(columnNumber).attr('data-sort-value') || $(b).find('td').eq(columnNumber).text();
 
-      if (sortDirection === 'ascending') {
-        return aValue.localeCompare(bValue);
-      } else {
-        return bValue.localeCompare(aValue);
+      if (typeof this.cellValue(aValue) === 'number' && typeof this.cellValue(bValue) === 'number') {
+        aValue = this.cellValue(aValue);
+        bValue = this.cellValue(bValue);
+
+        return this.numericSort(sortDirection, aValue, bValue);
       }
+
+      return this.comparableSort(sortDirection, aValue, bValue);
     });
+  }
+
+  numericSort(sortDirection, aValue, bValue) {
+    if (sortDirection === 'ascending') {
+      if (aValue > bValue) return 1;
+      if (aValue < bValue) return -1;
+      return 0;
+    } else {
+      if (aValue < bValue) return 1;
+      if (aValue > bValue) return -1;
+      return 0;
+    }
+  }
+
+  comparableSort(sortDirection, aValue, bValue) {
+    if (sortDirection === 'ascending') {
+      return aValue.localeCompare(bValue);
+    } else {
+      return bValue.localeCompare(aValue);
+    }
+  }
+
+  cellValue(value) {
+    if ($.isNumeric(value)) {
+      return parseFloat(value, 10);
+    }
+
+    return value;
   }
 }

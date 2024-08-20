@@ -649,6 +649,7 @@
         multiTable: {
           sectionHeadings: true,
         },
+        unsortable: true,
         grouped: {
           groupHeader: true,
           headings: {

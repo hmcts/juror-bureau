@@ -73,7 +73,7 @@ const constructPageHeading = (headingType, data) => {
   return {};
 };
 
-const buildTableHeaders = (reportType, tableHeadings, query) => {
+const buildTableHeaders = (reportType, tableHeadings, query = {}) => {
   let tableHeaders;
   const { sortBy, sortDirection } = query;
 

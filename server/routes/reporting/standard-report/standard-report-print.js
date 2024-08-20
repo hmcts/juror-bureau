@@ -305,6 +305,8 @@ async function standardReportPrint(app, req, res, reportKey, data) {
 };
 
 function sortTableData({ sortBy, sortDirection }, tableData, reportData) {
+  if (reportData.bespokeReport) return; // we do not sort bespoke reports for now
+
   const _sortBy = resolveSortBy(sortBy, reportData);
 
   if (reportData.grouped) {
@@ -348,6 +350,11 @@ function formatSortableData(a, b, sortBy) {
       ? Object.values(a.jurorReasonableAdjustmentWithMessage).join(' ') : '-';
     _b = b.jurorReasonableAdjustmentWithMessage
       ? Object.values(b.jurorReasonableAdjustmentWithMessage).join(' ') : '-';
+  }
+
+  if (sortBy === 'contactDetails') {
+    _a = a.contactDetails ? Object.values(a.contactDetails).join(' ') : '-';
+    _b = b.contactDetails ? Object.values(b.contactDetails).join(' ') : '-';
   }
 
   return [_a.toString(), _b.toString()];

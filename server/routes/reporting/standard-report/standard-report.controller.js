@@ -439,6 +439,7 @@
 
         return row;
       });
+
       if (reportType.bespokeReport && reportType.bespokeReport.insertRows) {
         Object.keys(reportType.bespokeReport.insertRows).map((key) => {
           if (key === 'last') {
@@ -448,6 +449,7 @@
           }
         });
       }
+
       return rows;
     };
 
@@ -687,6 +689,8 @@
         data: { reportKey, isPrint, isExport },
         error: (typeof e.error !== 'undefined') ? e.error : e.toString,
       });
+
+      console.log(e);
     }
 
     return res.render('_errors/generic');
