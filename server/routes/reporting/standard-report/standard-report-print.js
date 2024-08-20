@@ -12,7 +12,17 @@ async function standardReportPrint(app, req, res, reportKey, data) {
 
   const { headings, tableData } = data;
 
-  sortTableData(req.query, tableData, reportData);
+  try {
+    sortTableData(req.query, tableData, reportData);
+  } catch (err) {
+    app.logger.crit('Something went wrong when sorting the table data for printing a report:', {
+      auth: req.session.authentication,
+      data: { reportKey },
+      error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+    });
+
+    return res.render('_errors/generic.njk');
+  }
 
   const buildReportHeadings = (pageHeadings) => pageHeadings.map(heading => {
     if (heading === '') {
@@ -70,9 +80,9 @@ async function standardReportPrint(app, req, res, reportKey, data) {
           items.forEach((element, i, array) => {
             if (element.includes('<b>')) {
               listText.push({
-                  text:`${element.replace(/(<([^>]+)>)/ig, '')}${header.id === 'juror_postal_address' ? (!(i === array.length - 1) ? ',' : '') : ''}\n`,
-                  bold: true
-                });
+                text:`${element.replace(/(<([^>]+)>)/ig, '')}${header.id === 'juror_postal_address' ? (!(i === array.length - 1) ? ',' : '') : ''}\n`,
+                bold: true
+              });
             } else {
               listText.push(`${element}${header.id === 'juror_postal_address' ? (!(i === array.length - 1) ? ',' : '') : ''}\n`);
             }
@@ -328,9 +338,16 @@ function formatSortableData(a, b, sortBy) {
   let _a = a[snakeToCamel(sortBy)];
   let _b = b[snakeToCamel(sortBy)];
 
-  if (sortBy === 'address') {
+  if (sortBy === 'jurorPostalAddress') {
     _a = Object.values(a.jurorPostalAddress).join(' ');
     _b = Object.values(b.jurorPostalAddress).join(' ');
+  }
+
+  if (sortBy === 'jurorReasonableAdjustmentWithMessage') {
+    _a = a.jurorReasonableAdjustmentWithMessage
+      ? Object.values(a.jurorReasonableAdjustmentWithMessage).join(' ') : '-';
+    _b = b.jurorReasonableAdjustmentWithMessage
+      ? Object.values(b.jurorReasonableAdjustmentWithMessage).join(' ') : '-';
   }
 
   return [_a.toString(), _b.toString()];

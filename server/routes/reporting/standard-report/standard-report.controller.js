@@ -174,12 +174,12 @@
             },
           });
         } catch (err) {
-          console.log(err);
-
-          app.logger.crit('Failed to fetch courts list: ', {
+          app.logger.crit('Failed to fetch courts list (for report generation): ', {
             auth: req.session.authentication,
+            data: { reportKey },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
+
           return res.render('_errors/generic');
         }
       case 'fixedDateRange':
@@ -406,6 +406,9 @@
             });
             return ({
               html: `${html}`,
+              attributes: {
+                'data-sort-value': output.replace(/(<([^>]+)>)/g, ''),
+              },
             });
           }
 
@@ -420,7 +423,7 @@
           return ({
             html: output ? output : '-',
             attributes: {
-              "data-sort-value": sortValue && sortValue !== '-' 
+              'data-sort-value': sortValue && sortValue !== '-' 
                 ? (header.dataType === 'LocalDate' ? data[snakeToCamel(header.id)] : sortValue) 
                 : (numericTypes.includes(header.dataType) ? '0' : '-')
             },
@@ -491,7 +494,7 @@
             colspan: group[0].length,
             classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
             'data-fixed-index': 0,
-          }] : []
+          }] : [];
             
           const totalsRow = reportType.grouped.totals ? [{
             text: `Total: ${group.length}`,
@@ -679,7 +682,11 @@
         largeTotals: reportType.largeTotals?.values ? reportType.largeTotals.values(tableData.data) : [],
       });
     } catch (e) {
-      console.error(e);
+      app.logger.crit('Failed to fetch standard report data: ', {
+        auth: req.session.authentication,
+        data: { reportKey, isPrint, isExport },
+        error: (typeof e.error !== 'undefined') ? e.error : e.toString,
+      });
     }
 
     return res.render('_errors/generic');

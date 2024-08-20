@@ -1044,6 +1044,7 @@
         } : null,
         grouped: {
           groupHeader: true,
+          totals: true,
           headings: {
             transformer: (data, isPrint) => {
               const [poolNumber, poolType] = data.split(',');

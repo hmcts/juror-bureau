@@ -15,6 +15,7 @@
           {{ group.headRow[0].html | safe }}
         </td>
       </tr>
+
       {% for row in group.rows %}
         <tr class="govuk-table__row">
           {% for cell in row %}
@@ -22,6 +23,7 @@
           {% endfor %}
         </tr>
       {% endfor %}
+
       <tr class="govuk-table__row" data-fixed-index="{{ group.totalsRow[0]['data-fixed-index'] }}">
         <td colspan="{{ group.totalsRow[0].colspan }}" class="govuk-table__cell {{ group.totalsRow[0].classes }}">
           {{ group.totalsRow[0].text | safe }}
