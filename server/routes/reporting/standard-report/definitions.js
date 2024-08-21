@@ -1179,6 +1179,7 @@
           },
           groupHeader: true,
         },
+        unsortable: true,
         bespokeReport: {
           tableHeadClasses: [
             '', '', '', '', '', '', '', '',
