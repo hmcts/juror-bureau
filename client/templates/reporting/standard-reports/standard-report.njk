@@ -154,10 +154,4 @@
 {% block body_end %}
   {{ super() }}
   <script src="/js/print-sortable.js"></script>
-
-  {% if grouped %}
-    <script type="application/javascript" nonce="{{ nonce }}">
-    </script>
-  {% endif %}
-
 {% endblock %}

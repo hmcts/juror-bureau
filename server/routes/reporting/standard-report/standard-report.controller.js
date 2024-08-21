@@ -542,6 +542,12 @@
       if (req.query.fromDate) {
         url = url + '?fromDate=' + req.query.fromDate + '&toDate=' + req.query.toDate;
       }
+      if (req.query.sortBy) {
+        url = url + (url.includes('?') ? '&' : '?') + 'sortBy=' + req.query.sortBy;
+      }
+      if (req.query.sortDirection) {
+        url = url + (url.includes('?') ? '&' : '?') + 'sortDirection=' + req.query.sortDirection;
+      }
 
       return addURLQueryParams(reportType,  url);
     };
