@@ -655,6 +655,7 @@
         postUrl,
         cancelUrl,
         address,
+        saveBtnLabel: 'Review Edit',
         errors: {
           title: 'Please check the form',
           count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
