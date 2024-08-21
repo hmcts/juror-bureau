@@ -305,7 +305,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
 };
 
 function sortTableData({ sortBy, sortDirection }, tableData, reportData) {
-  if (reportData.bespokeReport.body) return; // we do not sort bespoke reports for now
+  if (reportData.bespokeReport?.body) return; // we do not sort bespoke reports for now
 
   const _sortBy = resolveSortBy(sortBy, reportData);
 
