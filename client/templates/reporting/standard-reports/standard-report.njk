@@ -53,7 +53,8 @@
         href: printUrl,
         classes: "govuk-button--secondary",
         attributes: {
-          target: "_blank"
+          target: "_blank",
+          id: "print-button"
         }
       }) }}
     </div>
@@ -126,20 +127,31 @@
                 <h2 class="govuk-heading-m govuk-!-margin-bottom-2">{{ table.title }}</h2>
               </div>
             {% endif %}
-            {{ govukTableWithFoot({
-              attributes: {
-                'data-module': 'moj-sortable-table'
-              } if not unsortable and not grouped,
-              caption: "Report data",
-              captionClasses: "govuk-visually-hidden",
-              head: table.headers,
-              rows: table.rows,
-              foot: tableFootHtml
-            }) }}
+
+            {% if grouped %}
+              {% include "./grouped-table.njk" %}
+            {% else %}
+              {{ govukTableWithFoot({
+                attributes: {
+                  'data-module': 'mod-sortable-table'
+                } if not unsortable and not grouped,
+                caption: "Report data",
+                captionClasses: "govuk-visually-hidden",
+                head: table.headers,
+                rows: table.rows,
+                foot: tableFootHtml
+              }) }}
+            {% endif %}
+
           </div>
         </div>
       {% endfor %}
     {% endif %}
   {% endif %}
 
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+  <script src="/js/print-sortable.js"></script>
 {% endblock %}

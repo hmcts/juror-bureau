@@ -174,12 +174,12 @@
             },
           });
         } catch (err) {
-          console.log(err);
-
-          app.logger.crit('Failed to fetch courts list: ', {
+          app.logger.crit('Failed to fetch courts list (for report generation): ', {
             auth: req.session.authentication,
+            data: { reportKey },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
+
           return res.render('_errors/generic');
         }
       case 'fixedDateRange':
@@ -406,6 +406,9 @@
             });
             return ({
               html: `${html}`,
+              attributes: {
+                'data-sort-value': output.replace(/(<([^>]+)>)/g, ''),
+              },
             });
           }
 
@@ -420,7 +423,7 @@
           return ({
             html: output ? output : '-',
             attributes: {
-              "data-sort-value": sortValue && sortValue !== '-' 
+              'data-sort-value': sortValue && sortValue !== '-' 
                 ? (header.dataType === 'LocalDate' ? data[snakeToCamel(header.id)] : sortValue) 
                 : (numericTypes.includes(header.dataType) ? '0' : '-')
             },
@@ -436,6 +439,7 @@
 
         return row;
       });
+
       if (reportType.bespokeReport && reportType.bespokeReport.insertRows) {
         Object.keys(reportType.bespokeReport.insertRows).map((key) => {
           if (key === 'last') {
@@ -445,12 +449,14 @@
           }
         });
       }
+
       return rows;
     };
 
     const buildStandardTable = function(reportType, tableData, tableHeadings, sectionHeading = '') {
       let tableRows = [];
-      const tableHeaders = buildTableHeaders(reportType, tableHeadings);
+      const groups = [];
+      const tableHeaders = buildTableHeaders(reportType, tableHeadings, req.query);
       const tableFoot = reportType.totalsRow ? reportType.totalsRow(tableData) : null;
 
       if (reportType.grouped) {
@@ -465,7 +471,7 @@
           }
           tableData = ordered;
         }
-        
+
         for (const [header, data] of Object.entries(tableData)) {
           let group = buildStandardTableRows(data, tableHeadings);
           let link;
@@ -489,12 +495,16 @@
             html: groupHeaderTransformer(),
             colspan: group[0].length,
             classes: 'govuk-!-padding-top-7 govuk-body-l govuk-!-font-weight-bold',
-          }] : []
+            'data-fixed-index': 0,
+          }] : [];
             
           const totalsRow = reportType.grouped.totals ? [{
             text: `Total: ${group.length}`,
             colspan: longestGroup,
             classes: 'govuk-body-s govuk-!-font-weight-bold mod-table-no-border',
+            attributes: {
+              'data-fixed-index': group.length,
+            },
           }] : null;
 
           if (checkIfArrayEmpty(group)) {
@@ -505,20 +515,21 @@
             }
           }
 
-          tableRows = tableRows.concat([
+          groups.push({
             headRow,
-            ...group,
+            rows: group,
             totalsRow,
-          ]);
+          });
         }
       } else {
         tableRows = buildStandardTableRows(tableData, tableHeadings);
       }
 
-      return tableRows.length ? [{
+      return tableRows.length || groups.length ? [{
         title: capitalizeFully(sectionHeading),
         headers: tableHeaders,
         rows: tableRows,
+        groups,
         tableFoot,
       }] : [];
     }
@@ -530,6 +541,12 @@
 
       if (req.query.fromDate) {
         url = url + '?fromDate=' + req.query.fromDate + '&toDate=' + req.query.toDate;
+      }
+      if (req.query.sortBy) {
+        url = url + (url.includes('?') ? '&' : '?') + 'sortBy=' + req.query.sortBy;
+      }
+      if (req.query.sortDirection) {
+        url = url + (url.includes('?') ? '&' : '?') + 'sortDirection=' + req.query.sortDirection;
       }
 
       return addURLQueryParams(reportType,  url);
@@ -673,7 +690,13 @@
         largeTotals: reportType.largeTotals?.values ? reportType.largeTotals.values(tableData.data) : [],
       });
     } catch (e) {
-      console.error(e);
+      app.logger.crit('Failed to fetch standard report data: ', {
+        auth: req.session.authentication,
+        data: { reportKey, isPrint, isExport },
+        error: (typeof e.error !== 'undefined') ? e.error : e.toString,
+      });
+
+      console.log(e);
     }
 
     return res.render('_errors/generic');

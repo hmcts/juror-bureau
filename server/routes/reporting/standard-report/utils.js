@@ -1,5 +1,5 @@
 /* eslint-disable strict */
-const { dateFilter, capitalizeFully, toSentenceCase, capitalise } = require('../../../components/filters');
+const { dateFilter, capitalizeFully, toSentenceCase, capitalise, toCamelCase } = require('../../../components/filters');
 const moment = require('moment');
 
 const tableDataMappers = {
@@ -50,7 +50,7 @@ const tableDataMappers = {
 const headingDataMappers = {
   String: (data) => capitalizeFully(data),
   LocalDate: (data) => dateFilter(data, 'YYYY-mm-dd', 'dddd D MMMM YYYY'),
-  timeFromISO: (data) => dateFilter(data, 'YYYY-MM-DDTHH:mm:ss', 'hh:mm:ss a'),
+  timeFromISO: (data) => dateFilter(data, 'YYYY-MM-DDTHH:mm:ss', 'h:mm:ss a'),
   Integer: (data) => data.toString(),
   Long: (data) => data.toString(),
 };
@@ -73,15 +73,23 @@ const constructPageHeading = (headingType, data) => {
   return {};
 };
 
-const buildTableHeaders = (reportType, tableHeadings) => {
+const buildTableHeaders = (reportType, tableHeadings, query = {}) => {
   let tableHeaders;
+  const { sortBy, sortDirection } = query;
+
+  const resolveSortDirection = (key) => {
+    if (!sortBy) return reportType.defaultSortColumn === key ? 'ascending' : 'none';
+    return sortBy === key ? (sortDirection ? sortDirection : 'ascending') : 'none';
+  };
 
   if (reportType.bespokeReport && reportType.bespokeReport.tableHeaders) {
     tableHeaders = reportType.bespokeReport.tableHeaders.map((data, index) => ({
       text: data,
       attributes: {
-        'aria-sort': index === 0 ? 'ascending' : 'none',
+        'aria-sort': resolveSortDirection(toCamelCase(data)),
         'aria-label': data,
+        'data-sort-key': toCamelCase(data),
+        'data-is-print-sortable': true,
       },
       classes: reportType.bespokeReport?.tableHeadClasses ? reportType.bespokeReport?.tableHeadClasses[index] : ''
     }));
@@ -97,8 +105,10 @@ const buildTableHeaders = (reportType, tableHeadings) => {
       return ({
         html: reportType.tableHeaderTransformer ? reportType.tableHeaderTransformer(data) : data.name,
         attributes: {
-          'aria-sort': index === 0 ? 'ascending' : 'none',
+          'aria-sort': resolveSortDirection(toCamelCase(data.id)),
           'aria-label': data.name,
+          'data-sort-key': toCamelCase(data.id),
+          'data-is-print-sortable': true,
         },
         classes: reportType.bespokeReport?.tableHeadClasses
           ? reportType.bespokeReport?.tableHeadClasses[index]

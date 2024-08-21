@@ -1,0 +1,70 @@
+<table class="govuk-table" {% if not unsortable %}data-module="mod-sortable-table"{% endif %}>
+  <caption class="govuk-table__caption govuk-visually-hidden">Report data</caption>
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      {% for header in table.headers %}
+        <th scope="col" class="govuk-table__header {% if header.format %}govuk-table__header--{{ header.format }}{% endif %}" {% for attribute, value in header.attributes %} {{ attribute }}="{{ value }}"{% endfor %}>
+          {{ (header.html | safe) if header.html else header.text }}
+        </th>
+      {% endfor %}
+    </tr>
+  </thead>
+
+  {% if table.groups %}
+    {% for group in table.groups %}
+      <tbody class="govuk-table__body">
+
+        {% if group.headRow[0] %}
+          <tr class="govuk-table__row" data-fixed-index="{{ group.headRow[0]['data-fixed-index'] }}">
+            <td colspan="{{ group.headRow[0].colspan }}" class="govuk-table__cell {{ group.headRow[0].classes }} {% if group.headRow[0].format %}govuk-table__cell--{{ group.headRow[0].format }}{% endif %}">
+              {{ (group.headRow[0].html | safe) if group.headRow[0].html else group.headRow[0].text }}
+            </td>
+          </tr>
+        {% endif %}
+
+        {% for row in group.rows %}
+          <tr class="govuk-table__row">
+            {% for cell in row %}
+              <td class="govuk-table__cell {{ cell.classes }} {% if cell.format %}govuk-table__cell--{{ cell.format }}{% endif %}"
+                {% for attribute, value in cell.attributes %} {{ attribute }}="{{ value }}"{% endfor %}
+                {% if cell.colspan %} colspan="{{ cell.colspan }}"{% endif %}
+                {% if cell.format %} format="{{ cell.format }}"{% endif %}
+              >
+                {{ (cell.html | safe) if cell.html else cell.text }}
+              </td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+
+        {% if group.totalsRow[0] %}
+          <tr class="govuk-table__row" data-fixed-index="{{ group.totalsRow[0]['data-fixed-index'] }}">
+            <td colspan="{{ group.totalsRow[0].colspan }}" class="govuk-table__cell {{ group.totalsRow[0].classes }} {% if group.totalsRow[0].format %}govuk-table__cell--{{ group.totalsRow[0].format }}{% endif %}">
+              {{ (group.totalsRow[0].text | safe) if group.totalsRow[0].html else group.totalsRow[0].text }}
+            </td>
+          </tr>
+        {% endif %}
+
+      </tbody>
+    {% endfor %}
+  {% endif %}
+
+  {% if table.rows %}
+    {% for row in table.rows %}
+      <tbody class="govuk-table__body">
+      
+        <tr class="govuk-table__row">
+          {% for cell in row %}
+            <td class="govuk-table__cell {{ cell.classes }} {% if cell.format %}govuk-table__cell--{{ cell.format }}{% endif%}"
+              {% if cell.colspan %} colspan="{{ cell.colspan }}"{% endif %}
+              {% if cell.format %} format="{{ cell.format }}"{% endif %}
+            >
+              {{ (cell.html | safe) if cell.html else cell.text }}
+            </td>
+          {% endfor %}
+        </tr>
+
+      </tbody>
+    {% endfor %}
+  {% endif %}
+
+</table>
