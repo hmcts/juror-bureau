@@ -1432,6 +1432,7 @@
           'dateTo',
           'reportTime',
         ],
+        defaultSortColumn: 'poolNumberJp',
         totalsRow: (data, isPrint = false) => {
           const totals = {
             policeCheckResponded: 0,
