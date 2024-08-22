@@ -51,17 +51,11 @@
           <tbody class="govuk-table__body">
             {% for item in history.paymentDays %}
               <tr class="govuk-table__row">
-                <td class="govuk-table__cell">{{ item.attendanceDate | dateFilter(null, 'ddd d MMM YYYY') }}</td>
-                <td class="govuk-table__cell">{{ item.attendanceAudit | historyAuditLinkify(juror.commonDetails.loc_code, isCourtUser) | safe }}</td>
-                <td class="govuk-table__cell">{{ (item.paymentAudit | historyAuditLinkify(juror.commonDetails.loc_code, isCourtUser) | safe) if item.paymentAudit else '-' }}</td>
-                <td class="govuk-table__cell">
-                  {% if not item.datePaid or "2000-01-01" in item.datePaid %}
-                    -
-                  {% else %}
-                    {{ (item.datePaid | dateFilter(null, 'D MMM YYYY')) if item.datePaid else '-' }}
-                  {% endif %}
-                </td>
-                <td class="govuk-table__cell">{{ (item.timePaid | convert24to12) if (item.timePaid or item.paymentAudit) else '-' }}</td>
+                <td class="govuk-table__cell">{{ item.attendanceDate | dateFilter('yyyy-MM-DD', 'ddd DD MMM yyyy') }}</td>
+                <td class="govuk-table__cell">{{ item.attendanceAudit | historyAuditLinkify(juror.commonDetails.loc_code, isCourtUser, false) | safe }}</td>
+                <td class="govuk-table__cell">{{ (item.paymentAudit | historyAuditLinkify(juror.commonDetails.loc_code, isCourtUser, false) | safe) if item.paymentAudit else '-' }}</td>
+                <td class="govuk-table__cell"> {{ (item.datePaid | dateFilter('yyyy-MM-DD', 'ddd DD MMM yyyy')) if item.datePaid else '-' }}</td>
+                <td class="govuk-table__cell"> {{ (item.datePaid | convertDateTimeToTime | convert24to12) if item.datePaid else '-' }}</td>
                 <td class="govuk-table__cell">{{ (item.travel | toMoney) if (item.travel or item.paymentAudit) else '-' }}</td>
                 <td class="govuk-table__cell">{{ (item.financialLoss | toMoney) if (item.financialLoss or item.paymentAudit) else '-' }}</td>
                 <td class="govuk-table__cell">{{ (item.subsistence | toMoney) if (item.subsistence or item.paymentAudit) else '-' }}</td>
