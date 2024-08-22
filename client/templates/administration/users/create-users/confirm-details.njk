@@ -119,7 +119,7 @@
                   }
                 ]
               }
-            } if user.userType === "court"
+            } if user.userType === "court" and isSystemAdministrator
           ]
         }) }}
         {{ csrfProtection(csrftoken) }}

@@ -11,13 +11,73 @@
     messageMap = {
       primaryPhone: 'Telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
       secondaryPhone: 'Telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
+      'thirdParty-mainPhone': 'Telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
+      'thirdParty-secPhone': 'Telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
       emailAddress: 'Enter the email address in the correct format, like name@example.com',
+      'thirdParty-email': 'Enter the email address in the correct format, like name@example.com',
     };
 
   // Validates the 'third party' conditional
-  module.exports.thirdParty = () => {
-
-  };
+  module.exports.thirdParty = () => ({
+    'thirdParty-relation': {
+      presence: {
+        allowEmpty: false,
+        message: {
+          summary: 'Enter your relationship to the juror',
+          details: 'Enter your relationship to the juror',
+        },
+      },
+      length: {
+        maximum: 50,
+        message: {
+          summary: 'Please check the third party relationship',
+          details: 'Please check the third party relationship',
+        },
+      }
+    },
+    'thirdParty-first-name': {
+      length: {
+        maximum: 50,
+        message: {
+          summary: 'Please check the third party first name',
+          details: 'Please check the third party first name',
+        },
+      }
+    },
+    'thirdParty-last-name': {
+      length: {
+        maximum: 50,
+        message: {
+          summary: 'Please check the third party last name',
+          details: 'Please check the third party last name',
+        },
+      }
+    },
+    'thirdParty-mainPhone': {
+      phoneNumber: {
+        messageMap: messageMap,
+      },
+    },
+    'thirdParty-secPhone': {
+      phoneNumber: {
+        messageMap: messageMap,
+      },
+    },
+    'thirdParty-email': {
+      commonEmailAddress: {
+        messageMap: messageMap,
+      },
+    },
+    'thirdParty-reason': {
+      length: {
+        maximum: 1000,
+        message: {
+          summary: 'Please check the third party reason',
+          details: 'Please check the third party reason',
+        },
+      }
+    },
+  });
 
   // Validates the 'extra support' conditional
   module.exports.extraSupport = () => {

@@ -1,11 +1,11 @@
 /* eslint-disable strict */
-const { dateFilter, capitalizeFully, toSentenceCase, capitalise } = require('../../../components/filters');
+const { dateFilter, capitalizeFully, toSentenceCase, capitalise, toCamelCase } = require('../../../components/filters');
 const moment = require('moment');
 
 const tableDataMappers = {
   String: (data) => isNaN(data) ? capitalizeFully(data) : (data?.toString() || '-' ),
   LocalDate: (data) => data ? dateFilter(data, 'YYYY-mm-dd', 'ddd D MMM YYYY') : '-',
-  LocalDateTime: (data) => data ? moment(data).utcOffset(0).format('D MMM YYYY [at] HH:mm a') : '-',
+  LocalDateTime: (data) => data ? moment(data).tz('Europe/London').format('D MMM YYYY [at] HH:mm a') : '-',
   List: (data) => {
     if (data) {
       if (Object.keys(data)[0] === 'jurorAddressLine1') {
@@ -37,7 +37,7 @@ const tableDataMappers = {
   },
   Long: (data) => data ? data.toString() : '-',
   Integer: (data) => data.toString(),
-  LocalTime: (data) => data ? moment(data, 'HH:mm:ss').format('hh:mma') : '-',
+  LocalTime: (data) => data ? moment(data, 'HH:mm:ss').tz('Europe/London').format('hh:mma') : '-',
   BigDecimal: (data) => {
     return data < 0 
       ? `(£${(Math.round(Math.abs(data) * 100) / 100).toFixed(2).toString()})`
@@ -50,17 +50,7 @@ const tableDataMappers = {
 const headingDataMappers = {
   String: (data) => capitalizeFully(data),
   LocalDate: (data) => dateFilter(data, 'YYYY-mm-dd', 'dddd D MMMM YYYY'),
-  timeFromISO: (data) => {
-    let time = data.split('T')[1].split('.')[0];
-
-    if (parseInt(time.split(':')[0]) === 12) {
-      return time + ' pm';
-    } else if (parseInt(time.split(':')[0]) > 12) {
-      return `${parseInt(time.split(':')[0]) - 12}:${time.split(':').slice(1).join(':')} pm`;
-    }
-
-    return time + ' am';
-  },
+  timeFromISO: (data) => dateFilter(data, 'YYYY-MM-DDTHH:mm:ss', 'h:mm:ss a'),
   Integer: (data) => data.toString(),
   Long: (data) => data.toString(),
 };
@@ -83,15 +73,23 @@ const constructPageHeading = (headingType, data) => {
   return {};
 };
 
-const buildTableHeaders = (reportType, tableHeadings) => {
+const buildTableHeaders = (reportType, tableHeadings, query = {}) => {
   let tableHeaders;
+  const { sortBy, sortDirection } = query;
+
+  const resolveSortDirection = (key) => {
+    if (!sortBy) return reportType.defaultSortColumn === key ? 'ascending' : 'none';
+    return sortBy === key ? (sortDirection ? sortDirection : 'ascending') : 'none';
+  };
 
   if (reportType.bespokeReport && reportType.bespokeReport.tableHeaders) {
     tableHeaders = reportType.bespokeReport.tableHeaders.map((data, index) => ({
       text: data,
       attributes: {
-        'aria-sort': index === 0 ? 'ascending' : 'none',
+        'aria-sort': resolveSortDirection(toCamelCase(data)),
         'aria-label': data,
+        'data-sort-key': toCamelCase(data),
+        'data-is-print-sortable': true,
       },
       classes: reportType.bespokeReport?.tableHeadClasses ? reportType.bespokeReport?.tableHeadClasses[index] : ''
     }));
@@ -107,8 +105,10 @@ const buildTableHeaders = (reportType, tableHeadings) => {
       return ({
         html: reportType.tableHeaderTransformer ? reportType.tableHeaderTransformer(data) : data.name,
         attributes: {
-          'aria-sort': index === 0 ? 'ascending' : 'none',
+          'aria-sort': resolveSortDirection(toCamelCase(data.id)),
           'aria-label': data.name,
+          'data-sort-key': toCamelCase(data.id),
+          'data-is-print-sortable': true,
         },
         classes: reportType.bespokeReport?.tableHeadClasses
           ? reportType.bespokeReport?.tableHeadClasses[index]

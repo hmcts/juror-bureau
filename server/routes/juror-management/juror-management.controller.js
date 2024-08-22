@@ -2,9 +2,31 @@
   'use strict';
 
   const _ = require('lodash');
-  const { getJurorStatus } = require('../../lib/mod-utils');
+  const { getJurorStatus, setPreviousWorkingDay } = require('../../lib/mod-utils');
   const dateFilter = require('../../components/filters').dateFilter;
   const { jurorsAttending, poolAttedanceAuditDAO } = require('../../objects/juror-attendance');
+
+  module.exports.isAttendanceConfirmed = async function(app, req, locCode, attendanceDate) {
+      return isAttendanceConfirmedByAttendances(await getAppearances(app,req, locCode, attendanceDate));
+  }
+
+  async function getAppearances(app, req, locCode, attendanceDate) {
+    const group = 'IN_WAITING';
+    let { 'juror_appearance_response_data': attendees } = await jurorsAttending.get(
+      require('request-promise'),
+      app,
+      req.session.authToken,
+      locCode,
+      attendanceDate,
+      group
+    );
+    attendees = attendees.map((attendee) => {
+        attendee['juror_status'] = getJurorStatus(attendee['juror_status']);
+        return _.mapKeys(attendee, (__, key) => _.camelCase(key));
+    });
+
+    return typeof attendees !== 'undefined' ? attendees : [];
+  }
 
   module.exports.getAttendance = function(app) {
     return async function(req, res) {
@@ -19,25 +41,17 @@
 
       const selectedDate = date ? new Date(date) : new Date();
       const selectedDateString = dateFilter(selectedDate, null, 'YYYY-MM-DD');
-      const group = 'IN_WAITING';
 
       const confirmedTab = tab || 'attended';
 
       try {
-        let { 'juror_appearance_response_data': attendees } = await jurorsAttending.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
-          req.session.authentication.locCode,
-          selectedDateString,
-          group
-        );
+        const yesterday = new Date();
+        yesterday.setDate(selectedDate.getDate() - 1);
+        const previousWorkingDay = setPreviousWorkingDay(new Date(selectedDate));
+        const previousWorkingDayIsConfirmed = isAttendanceConfirmedByAttendances(await getAppearances(app, req, req.session.authentication.locCode, dateFilter(previousWorkingDay, null, 'YYYY-MM-DD')));
 
-        attendees = attendees.map((attendee) => {
-          attendee['juror_status'] = getJurorStatus(attendee['juror_status']);
-          return _.mapKeys(attendee, (__, key) => _.camelCase(key));
-        });
-        req.session.dailyAttendanceList = typeof attendees !== 'undefined' ? attendees : [];
+        const attendees = await getAppearances(app,req, req.session.authentication.locCode, selectedDateString);
+        req.session.dailyAttendanceList = attendees;
         req.session.attendanceListDate = selectedDateString;
 
         const listedJurors = req.session.dailyAttendanceList.filter(attendee => attendee.checkInTime !== null);
@@ -59,7 +73,7 @@
         );
         // TODO: until here
 
-        const attendanceConfirmed = isAttendanceConfirmed(attendees);
+        const attendanceConfirmed = isAttendanceConfirmedByAttendances(attendees);
 
         req.session.preReportRoute = app.namedRoutes.build('juror-management.attendance.get')
           + `?date=${date || dateFilter(new Date(), null, 'yyyy-MM-DD')}`;
@@ -85,8 +99,10 @@
           attendanceStatus: attendanceConfirmed ? 'Confirmed' : 'Unconfirmed',
           confirmedTab,
           selectedDate: dateFilter(selectedDate, null, dateFormat),
-          yesterday: dateFilter(selectedDate.setDate(selectedDate.getDate() - 1), null, dateFormat),
-          yesterdayRaw: dateFilter(selectedDate, null, 'YYYY-MM-DD'),
+          yesterday: dateFilter(yesterday, null, dateFormat),
+          yesterdayRaw: dateFilter(yesterday, null, 'YYYY-MM-DD'),
+          previousWorkingDay: dateFilter(previousWorkingDay, null, dateFormat),
+          previousWorkingDayIsConfirmed: previousWorkingDayIsConfirmed,
           listedJurors,
           confirmedJurors,
           absentJurors,
@@ -124,7 +140,7 @@
     };
   };
 
-  function isAttendanceConfirmed(attendees) {
+  function isAttendanceConfirmedByAttendances(attendees) {
     if (!attendees.length) return false;
 
     return attendees.filter(attendee => attendee.appearanceConfirmed).length > 0;

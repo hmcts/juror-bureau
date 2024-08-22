@@ -3,7 +3,7 @@
 
   const _ = require('lodash');
   const { validate } = require('validate.js');
-  const { isSJOUser } = require('../../../../components/auth/user-type');
+  const { isSJOUser, isManager } = require('../../../../components/auth/user-type');
   const validator = require('../../../../config/validation/create-users');
   const { usersDAO } = require('../../../../objects/users');
   const { replaceAllObjKeys, makeManualError } = require('../../../../lib/mod-utils');
@@ -19,7 +19,7 @@
       delete req.session.errors;
       delete req.session.editUser;
 
-      if (isSJOUser(req)) {
+      if (isSJOUser(req) && !isManager(req)) {
         app.logger.warn('SJO user tried to edit user details', {
           auth: req.session.authentication,
           data: {
@@ -93,7 +93,7 @@
       const { username } = req.params;
       const { userType } = req.session.editUser.orignalDetails;
 
-      const validatorResult = validate(req.body, validator.userDetails(userType.toUpperCase()));
+      const validatorResult = validate(req.body, validator.userDetails(res, userType.toUpperCase()));
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;

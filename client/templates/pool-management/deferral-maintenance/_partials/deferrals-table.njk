@@ -1,8 +1,10 @@
 {% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
 
 {% if data.deferrals | length === 0 %}
 
   <span class="govuk-body">There are no results to display.</span>
+
 
 {% else %}
 
@@ -13,68 +15,16 @@
   {% endif %}
 
   <div class="govuk-caption-m">
-    <span id="deferral-selected-count">{{ data.count.selected }}</span> of <span id="deferral-total-count">{{ data.count.total }}</span> selected
+    <span id="deferral-selected-count">{{ data.count.selected }}</span> of <span id="deferral-total-count">{{ data.queryTotal }}</span> selected
   </div>
 
-  <table class="govuk-table" data-module="moj-sortable-table">
-    <caption class="govuk-table__caption govuk-visually-hidden">Deferrals list</caption>
-    
-    <thead class="govuk-table__head">
-      <tr class="govuk-table__row">
-        <th scope="col" class="govuk-table__header">
-
-          <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
-            <input type="checkbox" class="govuk-checkboxes__input select-check staff-select-check"
-                id="deferral-all" {% if data.count.selected === data.count.total %}checked{% endif %}
-                name="check-all-jurors"
-                aria-label="select-all-deferrals" data-is-filtered="{{ isFiltered }}"/>
-            <label class="govuk-label govuk-checkboxes__label" for="deferral-all">
-              <span class="govuk-visually-hidden">Select juror number {{ juror.jurorNumber }}</span>
-            </label>
-          </div>
-
-        </th>
-        <th scope="col" class="govuk-table__header jd-middle-align" aria-sort="none" aria-label="Juror number">Juror number</th>
-        <th scope="col" class="govuk-table__header jd-middle-align" aria-sort="none" aria-label="First name">First name</th>
-        <th scope="col" class="govuk-table__header jd-middle-align" aria-sort="none" aria-label="Last name">Last name</th>
-        <th scope="col" class="govuk-table__header jd-middle-align" aria-sort="none" aria-label="Pool number">Pool number</th>
-        <th scope="col" class="govuk-table__header govuk-table__header--numeric jd-middle-align" aria-sort="none" aria-label="Deferred to">Deferred to</th>
-      </tr>
-    </thead>
-
-    <tbody class="govuk-table__body">
-      {% for juror in data.deferrals %}
-
-        <tr class="govuk-table__row govuk-table__row--selected">
-          <td class="govuk-table__cell">
-
-            <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
-              <input type="checkbox" class="govuk-checkboxes__input select-check staff-select-check"
-                id="deferral-{{ juror.jurorNumber }}" {% if juror.isChecked%}checked{% endif %}
-                name="selectedJurors"
-                value="{{ juror.jurorNumber }}"
-                aria-label="deferral-select-{{ juror.jurorNumber }}"/>
-              <label class="govuk-label govuk-checkboxes__label" for="deferral-{{ juror.jurorNumber }}">
-                <span class="govuk-visually-hidden">Select juror number {{ juror.jurorNumber }}</span>
-              </label>
-            </div>
-
-          </td>
-          <td class="govuk-table__cell jd-middle-align" data-sort-value="{{ juror.jurorNumber }}">
-            <a href="{{ url('juror-record.overview.get', { jurorNumber: juror.jurorNumber }) }}" class="govuk-link">{{ juror.jurorNumber }}</a>
-          </td>
-          <td class="govuk-table__cell jd-middle-align" data-sort-value="{{ juror.firstName }}">{{ juror.firstName }}</td>
-          <td class="govuk-table__cell jd-middle-align" data-sort-value="{{ juror.lastName }}">{{ juror.lastName }}</td>
-          <td class="govuk-table__cell jd-middle-align" data-sort-value="{{ juror.poolNumber }}">
-            <a href="{{ url('pool-overview.get', { poolNumber: juror.poolNumber }) }}" class="govuk-link">{{ juror.poolNumber }}</a>
-          </td>
-          <td class="govuk-table__cell govuk-table__cell--numeric jd-middle-align" data-sort-value="{{ juror.deferredTo }}">
-            {{ juror.deferredTo | dateFilter("YYYY/MM/DD", "ddd DD MMM YYYY") }}
-          </td>
-        </tr>
-
-      {% endfor %}
-    </tbody>
-  </table>
+  {{ modSortableTable({
+    id: "deferralsTable",
+    caption: "Deferrals list",
+    captionClasses: "govuk-visually-hidden",
+    head: table.headers,
+    rows: table.rows,
+    url: urlPrefix
+  }) }}
 
 {% endif %}

@@ -15,6 +15,7 @@
     , jurorRecordObject = require('../../../objects/juror-record').record
     , overviewDetailsValidator = require('../../../config/validation/edit-juror-details-mod').overviewDetails
     , extraSupportValidator = require('../../../config/validation/edit-juror-details-mod').extraSupport
+    , thirdPartyValidator = require('../../../config/validation/edit-juror-details-mod').thirdParty
     , editJurorDetailsObject = require('../../../objects/juror-record').editDetails
     , deleteDeferralObject = require('../../../objects/deferral-mod').deleteDeferralObject
     , paperReplyValidator = require('../../../config/validation/paper-reply')
@@ -374,8 +375,6 @@
             ? dateFilter(response.data.dateOfBirth, null, 'DD/MM/YYYY')
             : '';
 
-          response.data.thirdParty = response.data.extraSupport = 'no';
-
           if (response.data.specialNeed !== null) {
             response.data.extraSupport = 'yes';
           }
@@ -393,6 +392,41 @@
 
           Object.assign(jurorDetails, req.session.formFields);
 
+          if (req.session.formFields['thirdPartyEnabled'] && jurorDetails.thirdParty == null) {
+            jurorDetails.thirdParty = {};
+          }
+          if (req.session.formFields['thirdParty-first-name']) {
+            jurorDetails.thirdParty.thirdPartyFName = req.session.formFields['thirdParty-first-name'];
+          }
+          if (req.session.formFields['thirdParty-last-name']) {
+            jurorDetails.thirdParty.thirdPartyLName = req.session.formFields['thirdParty-last-name'];
+          }
+          if (req.session.formFields['thirdParty-relation']) {
+            jurorDetails.thirdParty.relationship = req.session.formFields['thirdParty-relation'];
+          }
+          if (req.session.formFields['thirdParty-mainPhone']) {
+            jurorDetails.thirdParty.mainPhone = req.session.formFields['thirdParty-mainPhone'];
+          }
+          if (req.session.formFields['thirdParty-secPhone']) {
+            jurorDetails.thirdParty.otherPhone = req.session.formFields['thirdParty-secPhone'];
+          }
+          if (req.session.formFields['thirdParty-email']) {
+            jurorDetails.thirdParty.emailAddress = req.session.formFields['thirdParty-email'];
+          }
+          if (req.session.formFields['thirdParty-reason']) {
+            jurorDetails.thirdParty.thirdPartyReason = req.session.formFields['thirdParty-reason'];
+          }
+
+          const thirdPartyDetails = Array.isArray(req.session.formFields['thirdParty-contact-preferences'])
+            ? req.session.formFields['thirdParty-contact-preferences']
+            : [req.session.formFields['thirdParty-contact-preferences']];
+
+          if (thirdPartyDetails.includes('contact-juror-by-email')) {
+            jurorDetails.thirdParty.useJurorEmailDetails = true;
+          }
+          if (thirdPartyDetails.includes('contact-juror-by-phone')) {
+            jurorDetails.thirdParty.useJurorPhoneDetails = true;
+          }
           delete req.session.formFields;
         }
 
@@ -479,9 +513,23 @@
         req.body.opticReference = null;
       }
 
+      let thirdPartyValidatorResult;
+      if (req.body.thirdPartyEnabled === 'yes') {
+        thirdPartyValidatorResult = validate(req.body, thirdPartyValidator());
+      } else {
+        req.body.thirdParty = null;
+        req.body['thirdParty-first-name'] = null;
+        req.body['thirdParty-last-name'] = null;
+        req.body['thirdParty-relation'] = null;
+        req.body['thirdParty-mainPhone'] = null;
+        req.body['thirdParty-secPhone'] = null;
+        req.body['thirdParty-email'] = null;
+        req.body['thirdParty-reason'] = null;
+      }
+
       let combinedErrorResult = {};
 
-      Object.assign(combinedErrorResult, validatorResult, extraSupportValidatorResult);
+      Object.assign(combinedErrorResult, validatorResult, extraSupportValidatorResult, thirdPartyValidatorResult);
 
       req.session.formFields = req.body;
       if (Object.keys(combinedErrorResult).length !== 0) {
@@ -513,13 +561,15 @@
 
   module.exports.getIneligibleAge = function(app) {
     return function(req, res) {
+      const { jurorNumber } = req.params;
+
       return res.render('summons-management/paper-reply/ineligible-age', {
         postUrl: app.namedRoutes.build('juror-record.details-edit.ineligible-age.post', {
-          jurorNumber: req.params.jurorNumber,
+          jurorNumber,
         }),
         backLinkUrl: {
           url: app.namedRoutes.build('juror-record.details-edit.get', {
-            jurorNumber: req.params.jurorNumber,
+            jurorNumber,
           }),
         },
         dob: req.session.formFields.dateOfBirth,
@@ -556,7 +606,33 @@
       });
     }
 
-    delete requestBody.thirdParty;
+    if(requestBody.thirdPartyEnabled === 'yes') {
+      const thirdPartyDetails = Array.isArray(requestBody['thirdParty-contact-preferences'])
+        ? requestBody['thirdParty-contact-preferences']
+        : [requestBody['thirdParty-contact-preferences']];
+
+      requestBody.thirdParty = {
+        firstName: requestBody['thirdParty-first-name'],
+        lastName: requestBody['thirdParty-last-name'],
+        relationship: requestBody['thirdParty-relation'],
+        mainPhone: requestBody['thirdParty-mainPhone'],
+        otherPhone: requestBody['thirdParty-secPhone'],
+        emailAddress: requestBody['thirdParty-email'],
+        reason: requestBody['thirdParty-reason'],
+        contactJurorByPhone: thirdPartyDetails.includes('contact-juror-by-phone'),
+        contactJurorByEmail: thirdPartyDetails.includes('contact-juror-by-email'),
+      }
+    }
+
+    delete requestBody.thirdPartyEnabled;
+    delete requestBody['thirdParty-first-name'];
+    delete requestBody['thirdParty-last-name'];
+    delete requestBody['thirdParty-relation'];
+    delete requestBody['thirdParty-mainPhone'];
+    delete requestBody['thirdParty-secPhone'];
+    delete requestBody['thirdParty-email'];
+    delete requestBody['thirdParty-reason'];
+    delete requestBody['thirdParty-contact-preferences'];
     delete requestBody.extraSupport;
 
     requestBody.pendingTitle = req.session[`editJurorDetails-${jurorNumber}`].commonDetails.pendingTitle;
@@ -592,7 +668,6 @@
       } catch (err) {
         app.logger.crit('Failed to fix current name: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: req.session[`editJurorDetails-${jurorNumber}`].fixedName,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
@@ -601,50 +676,55 @@
       }
     }
 
-    // TODO: this etag is incorrect... it should do a get to compare etags then patch if data has not been changed
-    promiseArr.push(editJurorDetailsObject.patch(
-      require('request-promise'),
-      app,
-      req.session.authToken,
-      requestBody,
-      req.params['jurorNumber'],
-      req.session[`editJurorEtag-${jurorNumber}`],
-    ));
+    try {
+      await editJurorDetailsObject.patch(
+        require('request-promise'),
+        app,
+        req.session.authToken,
+        requestBody,
+        req.params['jurorNumber'],
+        req.session[`editJurorEtag-${jurorNumber}`],
+      );
+    } catch (err) {
+      app.logger.crit('Failed to change juror details: ', {
+        auth: req.session.authentication,
+        data: { jurorNumber: req.params['jurorNumber'], requestBody },
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
 
-    if (disqualifyAge) {
-      promiseArr.push(disqualifyAgeDAO.patch(app, req, req.params.jurorNumber));
+      return res.render('_errors/generic');
     }
 
-    Promise.all(promiseArr)
-      .then(() => {
-        app.logger.info('Changed juror details: ', {
+    app.logger.info('Changed juror details: ', {
+      auth: req.session.authentication,
+      data: { jurorNumber: req.params['jurorNumber'], requestBody: requestBody },
+    });
+
+    delete req.session[`editJurorEtag-${jurorNumber}`];
+    delete req.session[`editJurorDetails-${jurorNumber}`];
+    delete req.session.dateMax;
+    delete req.session.formFields;
+
+    if (disqualifyAge) {
+      try {
+        await disqualifyAgeDAO.patch(app, req, req.params.jurorNumber);
+
+        app.logger.info('Disqualified juror due to age: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
-          jurorNumber: req.params['jurorNumber'],
-          requestBody: requestBody,
+          data: { jurorNumber: req.params['jurorNumber'] },
         });
-
-        delete req.session[`editJurorEtag-${jurorNumber}`];
-        delete req.session[`editJurorDetails-${jurorNumber}`];
-        delete req.session.dateMax;
-        delete req.session.formFields;
-
-        return res.redirect(successUrl);
-      })
-      .catch((err) => {
-        app.logger.crit('Failed to change juror details: ', {
+      } catch (err) {
+        app.logger.crit('Failed to disqualify juror due to age: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
-          etag: req.session.editJurorEtag,
-          data: {
-            jurorNumber: req.params['jurorNumber'],
-            requestBody: requestBody,
-          },
+          data: { jurorNumber: req.params['jurorNumber'] },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic');
-      });
+        // if the disqulification fails, we allow to go through and show the updated details
+      }
+    }
+
+    return res.redirect(successUrl);
   };
 
   module.exports.getEditDetailsAddress = (app) => {
@@ -661,8 +741,9 @@
         part5: req.session[`editJurorDetails-${jurorNumber}`].addressCounty,
         postcode: req.session[`editJurorDetails-${jurorNumber}`].addressPostcode,
       };
-
+      let saveBtnLabel;
       if (req.url.includes('bank-details')) {
+        saveBtnLabel = 'Save';
         const routePrefix = req.url.includes('record') ? 'juror-record' : 'juror-management';
         const { locCode } = req.params;
 
@@ -675,6 +756,7 @@
           locCode,
         });
       } else {
+        saveBtnLabel = 'Review Edit';
         postUrl = app.namedRoutes.build('juror-record.details-edit-address.post', {
           jurorNumber: req.params['jurorNumber'],
         });
@@ -700,6 +782,7 @@
         address: address,
         postUrl,
         cancelUrl,
+        saveBtnLabel: saveBtnLabel,
         errors: {
           title: 'Please check the form',
           count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,

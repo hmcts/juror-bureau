@@ -20,6 +20,7 @@ const clientJs = [
   'export-contact-details.js',
   'bulk-undeliverable.js',
   'multiple-tabs.js',
+  'print-sortable.js',
 ];
 
 const copyClientCode = new CopyWebpackPlugin({
