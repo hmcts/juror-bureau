@@ -75,7 +75,7 @@
       body.push([getEmptyTableCell(), getEmptyTableCell()])
       heights.push(rowHeight);
     } else {
-      switch(data.length % 8) {
+      switch (data.length % 8) {
         case 1:
         case 3:
         case 5:
