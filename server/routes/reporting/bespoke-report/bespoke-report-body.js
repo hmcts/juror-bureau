@@ -261,6 +261,9 @@ const bespokeReportBodys = (app, req) => {
         rows.push([
           {
             text: month.month,
+            attributes: {
+              "data-sort-value": dateFilter(month.month, 'mmmm yyyy', 'yyyy-MM-DD')
+            }
           },
           {
             text: month.jurorWorkingDays.toString(),
@@ -284,26 +287,44 @@ const bespokeReportBodys = (app, req) => {
         {
           text: tableData.months.length > 1 ? 'Overall total' : '',
           classes: 'govuk-!-padding-left-2 govuk-!-font-weight-bold mod-highlight-table-data__blue',
+          attributes: {
+            'data-fixed-index': tableData.months.length,
+          },
         },
         {
           text: tableData.totalJurorWorkingDays.toString(),
           classes: 'govuk-!-font-weight-bold mod-highlight-table-data__blue',
+          attributes: {
+            'data-fixed-index': tableData.months.length,
+          },
         },
         {
           text: tableData.totalSittingDays.toString(),
           classes: 'govuk-!-font-weight-bold mod-highlight-table-data__blue',
+          attributes: {
+            'data-fixed-index': tableData.months.length,
+          },
         },
         {
           text: tableData.totalAttendanceDays.toString(),
           classes: 'govuk-!-font-weight-bold mod-highlight-table-data__blue',
+          attributes: {
+            'data-fixed-index': tableData.months.length,
+          },
         },
         {
           text: tableData.totalNonAttendanceDays.toString(),
           classes: 'govuk-!-font-weight-bold mod-highlight-table-data__blue',
+          attributes: {
+            'data-fixed-index': tableData.months.length,
+          },
         },
         {
           text: `${(Math.round(tableData.totalUtilisation * 100) / 100).toString()}%`,
           classes: 'govuk-!-font-weight-bold mod-highlight-table-data__blue',
+          attributes: {
+            'data-fixed-index': tableData.months.length,
+          },
         },
       ]);
 

@@ -5,7 +5,8 @@ const { tableDataMappers, constructPageHeading } = require('./utils');
 const { bespokeReportTablePrint } = require('../bespoke-report/bespoke-report-print');
 const { snakeToCamel, checkIfArrayEmpty } = require('../../../lib/mod-utils');
 const { reportKeys } = require('./definitions');
-const { capitalizeFully, capitalise, timeToDuration, toSentenceCase } = require('../../../components/filters');
+const { capitalizeFully, capitalise, timeToDuration, toSentenceCase, dateFilter } = require('../../../components/filters');
+const moment = require('moment');
 
 async function standardReportPrint(app, req, res, reportKey, data) {
   const reportData = reportKeys(app, req)[reportKey];
@@ -14,7 +15,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
   const { headings, tableData } = data;
 
   try {
-    sortTableData(req.query, tableData, reportData);
+    sortTableData(reportKey, req.query, tableData, reportData);
   } catch (err) {
     app.logger.crit('Something went wrong when sorting the table data for printing a report:', {
       auth: req.session.authentication,
@@ -305,8 +306,8 @@ async function standardReportPrint(app, req, res, reportKey, data) {
   }
 };
 
-function sortTableData({ sortBy, sortDirection }, tableData, reportData) {
-  if (reportData.bespokeReport?.body) return; // we do not sort bespoke reports for now
+function sortTableData(reportKey, { sortBy, sortDirection }, tableData, reportData) {
+  if (reportData.bespokeReport?.body && !reportData.bespokeReport?.printSorting) return; // we do not sort bespoke reports for now
 
   const _sortBy = resolveSortBy(sortBy, reportData);
 
@@ -321,7 +322,11 @@ function sortTableData({ sortBy, sortDirection }, tableData, reportData) {
       }
     });
   } else {
-    tableData.data = tableData.data.sort(sort(_sortBy, sortDirection));
+    if (reportData.bespokeReport?.printSorting?.dataSet) {
+      tableData[reportData.bespokeReport.printSorting.dataSet] = tableData[reportData.bespokeReport.printSorting.dataSet].sort(sort(_sortBy, sortDirection))
+    } else {
+      tableData.data = tableData.data.sort(sort(_sortBy, sortDirection));
+    }
   }
 }
 
@@ -360,6 +365,11 @@ function formatSortableData(a, b, sortBy) {
   if (sortBy === 'contactDetails') {
     _a = a.contactDetails ? Object.values(a.contactDetails).join(' ') : '-';
     _b = b.contactDetails ? Object.values(b.contactDetails).join(' ') : '-';
+  }
+
+  if (sortBy === 'month') {
+    _a = dateFilter(a.month, 'mmmm yyyy', 'yyyy-MM-DD');
+    _b = dateFilter(b.month, 'mmmm yyyy', 'yyyy-MM-DD');
   }
 
   return [_a.toString(), _b.toString()];
