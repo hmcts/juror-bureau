@@ -1,4 +1,5 @@
 /* eslint-disable strict */
+const moment = require('moment');
 const { generateDocument } = require('../../../lib/reports/single-generator');
 const { tableDataMappers, constructPageHeading } = require('./utils');
 const { bespokeReportTablePrint } = require('../bespoke-report/bespoke-report-print');
@@ -328,6 +329,10 @@ function sort(sortBy, sortDirection) {
   return (a, b) => {
     const [_a, _b] = formatSortableData(a, b, sortBy);
       
+    if (isNumber(_a) && isNumber(_b)) {
+      return sortDirection === 'descending' ? _b - _a : _a - _b;
+    }
+
     if (sortDirection === 'descending') {
       return _b.localeCompare(_a);
     } else {
@@ -366,6 +371,10 @@ function resolveSortBy(sortBy, reportData) {
   }
 
   return reportData.defaultSortColumn;
+}
+
+function isNumber(n) {
+  return !isNaN(parseFloat(n)) && !(moment(n, 'yyyy-MM-DD', true).isValid());
 }
 
 module.exports = {
