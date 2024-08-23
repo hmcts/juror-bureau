@@ -336,9 +336,9 @@
           if (header.id.includes('trial_number') && output) {
             return ({
               html: `<a href=${
-                app.namedRoutes.build('trial-management.trials.detail.get', {trialNumber: output, locationCode: req.session.authentication.locCode})
+                app.namedRoutes.build('trial-management.trials.detail.get', {trialNumber: data[snakeToCamel(header.id)], locationCode: req.session.authentication.locCode})
               }>${
-                output
+                data[snakeToCamel(header.id)]
               }</a>`,
             });
           }
