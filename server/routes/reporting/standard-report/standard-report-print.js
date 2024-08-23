@@ -12,6 +12,18 @@ async function standardReportPrint(app, req, res, reportKey, data) {
 
   const { headings, tableData } = data;
 
+  try {
+    sortTableData(req.query, tableData, reportData);
+  } catch (err) {
+    app.logger.crit('Something went wrong when sorting the table data for printing a report:', {
+      auth: req.session.authentication,
+      data: { reportKey },
+      error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+    });
+
+    return res.render('_errors/generic.njk');
+  }
+
   const buildReportHeadings = (pageHeadings) => pageHeadings.map(heading => {
     if (heading === '') {
       return null;
@@ -68,9 +80,9 @@ async function standardReportPrint(app, req, res, reportKey, data) {
           items.forEach((element, i, array) => {
             if (element.includes('<b>')) {
               listText.push({
-                  text:`${element.replace(/(<([^>]+)>)/ig, '')}${header.id === 'juror_postal_address' ? (!(i === array.length - 1) ? ',' : '') : ''}\n`,
-                  bold: true
-                });
+                text:`${element.replace(/(<([^>]+)>)/ig, '')}${header.id === 'juror_postal_address' ? (!(i === array.length - 1) ? ',' : '') : ''}\n`,
+                bold: true
+              });
             } else {
               listText.push(`${element}${header.id === 'juror_postal_address' ? (!(i === array.length - 1) ? ',' : '') : ''}\n`);
             }
@@ -291,6 +303,70 @@ async function standardReportPrint(app, req, res, reportKey, data) {
     return res.render('_errors/generic.njk');
   }
 };
+
+function sortTableData({ sortBy, sortDirection }, tableData, reportData) {
+  if (reportData.bespokeReport?.body) return; // we do not sort bespoke reports for now
+
+  const _sortBy = resolveSortBy(sortBy, reportData);
+
+  if (reportData.grouped) {
+    Object.keys(tableData.data).forEach(key => {
+      if (reportData.multiTable) {
+        Object.keys(tableData.data[key]).forEach(subKey => {
+          tableData.data[key][subKey] = tableData.data[key][subKey].sort(sort(_sortBy, sortDirection));
+        });
+      } else {
+        tableData.data[key] = tableData.data[key].sort(sort(_sortBy, sortDirection));
+      }
+    });
+  } else {
+    tableData.data = tableData.data.sort(sort(_sortBy, sortDirection));
+  }
+}
+
+function sort(sortBy, sortDirection) {
+  return (a, b) => {
+    const [_a, _b] = formatSortableData(a, b, sortBy);
+      
+    if (sortDirection === 'descending') {
+      return _b.localeCompare(_a);
+    } else {
+      return _a.localeCompare(_b);
+    }
+  }
+}
+
+function formatSortableData(a, b, sortBy) {
+  let _a = a[snakeToCamel(sortBy)] || '-';
+  let _b = b[snakeToCamel(sortBy)] || '-';
+
+  if (sortBy === 'jurorPostalAddress') {
+    _a = Object.values(a.jurorPostalAddress).join(' ');
+    _b = Object.values(b.jurorPostalAddress).join(' ');
+  }
+
+  if (sortBy === 'jurorReasonableAdjustmentWithMessage') {
+    _a = a.jurorReasonableAdjustmentWithMessage
+      ? Object.values(a.jurorReasonableAdjustmentWithMessage).join(' ') : '-';
+    _b = b.jurorReasonableAdjustmentWithMessage
+      ? Object.values(b.jurorReasonableAdjustmentWithMessage).join(' ') : '-';
+  }
+
+  if (sortBy === 'contactDetails') {
+    _a = a.contactDetails ? Object.values(a.contactDetails).join(' ') : '-';
+    _b = b.contactDetails ? Object.values(b.contactDetails).join(' ') : '-';
+  }
+
+  return [_a.toString(), _b.toString()];
+}
+
+function resolveSortBy(sortBy, reportData) {
+  if (sortBy) {
+    return sortBy;
+  }
+
+  return reportData.defaultSortColumn;
+}
 
 module.exports = {
   standardReportPrint,

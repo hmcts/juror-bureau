@@ -17,7 +17,7 @@
     };
   };
 
-  module.exports.userDetails = function(userType) {
+  module.exports.userDetails = function(res, userType) {
     return {
       name: {
         presence: {
@@ -44,7 +44,7 @@
         },
       },
       approvalLimit: () => {
-        if (userType !== 'COURT') {
+        if (userType !== 'COURT' || !res.locals.isSystemAdministrator) {
           return {};
         }
 

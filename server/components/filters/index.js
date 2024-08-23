@@ -359,7 +359,9 @@
 
       return `${hours}:${minutes}`;
     },
-
+    convertDateTimeToTime: function(time24) {
+      return time24.split('T')[1].split('.')[0];
+    },
     convert24to12: function(time24) {
       let [hours, minutes] = time24.split(':');
 
@@ -518,26 +520,25 @@
       }).join('');
     },
 
-    historyAuditLinkify: function(copy, locCode, isCourt) {
+    historyAuditLinkify: function(copy, locCode, isCourt, hasSpacePrefix = true) {
       if (!isCourt) {
         return copy;
       }
-
-      let parts = copy?.split(/( [A-Z][0-9]+)/g);
-      
+      let parts = copy?.split(hasSpacePrefix ? /( [A-Z][0-9]+)/g : /([A-Z][0-9]+)/g);
+      const prefix = hasSpacePrefix ? ' ' : '';
       parts = parts?.map((item) => {
-        if (item.match(/ [A-Z][0-9]+/)) {
-          if (item.startsWith(' F')) {
+        if (item.match(hasSpacePrefix ? / [A-Z][0-9]+/ : /[A-Z][0-9]+/)) {
+          if (item.startsWith(prefix + 'F')) {
             return ` <a href="/reports/financial-audit/${item.trim()}" target="_blank">${item.trim()}</a>`;
           }
-          if (item.startsWith(' P')) {
+          if (item.startsWith(prefix + 'P')) {
             return ` <a href="/reporting/pool-attendance-audit/report/${item.trim()}/print" target="_blank">${item.trim()}</a>`;
           }
-          if (item.startsWith(' J')) {
+          if (item.startsWith(prefix + 'J')) {
             return ` <a href="/reporting/jury-attendance-audit/report/${item.trim()}/print" target="_blank">${item.trim()}</a>`;
           }
         }
-        
+
         return item;
       }).join('');
 

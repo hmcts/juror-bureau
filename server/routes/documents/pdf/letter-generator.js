@@ -168,12 +168,13 @@
             },
             {
               text: content.signature,
+              marginTop: 50,
             }
           ],
         });
       }
     } else {
-      contentArray.push({ text: content.signature });
+      contentArray.push({ text: content.signature, marginTop: 50 });
     }
 
     return contentArray;

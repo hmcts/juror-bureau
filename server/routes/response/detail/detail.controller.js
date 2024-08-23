@@ -2567,6 +2567,7 @@
 
     if (responseData.excusalReason){
       isExcusal = true;
+      responseData.excusal = true;
 
       if (hasModAccess && responseData.excusalReason === 'D') {
         isDeceased = true;

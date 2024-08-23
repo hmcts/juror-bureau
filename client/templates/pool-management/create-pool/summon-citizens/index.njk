@@ -120,7 +120,7 @@
           <a class="govuk-link" href="{{ url('pool-overview.get', { poolNumber: poolDetails.poolDetails.poolNumber }) }}" id="cancelAnchor">Cancel</a>
         </div>
 
-        {% set previousJurorCount = poolDetails.bureauSummoning.totalSummoned + poolDetails.additionalStatistics.courtSupply %}
+        {% set previousJurorCount = poolDetails.additionalStatistics.totalJurorsInPool %}
 
         <input type="hidden" name="noRequested" value="{{ poolDetails.poolSummary.requiredPoolSize }}">
         <input type="hidden" name="bureauDeferrals" value="{{ bureauDeferrals }}">
