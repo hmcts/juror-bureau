@@ -20,7 +20,8 @@ const bypassUrls = [
   '/paper/excusal',
   '/digital/disqualify',
   '/paper/disqualify',
-  /\/juror-management\/record\/\d{9}\/details\/.*/,
+  '/details/edit',
+  '/details/ineligible-age'
 ];
 
 function resolveBackLink(req) {
@@ -65,12 +66,7 @@ function isUrlWhitelisted(url) {
 }
 
 function isBypassUrl(url) {
-  return bypassUrls.some(bypassUrl => {
-    if (bypassUrl instanceof RegExp) {
-      return bypassUrl.test(url);
-    }
-    return url.includes(bypassUrl);
-  })
+  return bypassUrls.some(bypassUrl => url.includes(bypassUrl));
 }
 
 function isAssetUrl(url) {
