@@ -127,7 +127,6 @@
             id: 'jurorsConfirmed',
             value: 'Jurors confirmed',
             sort: sortBy === 'jurorsConfirmed' ? order : 'none',
-            sortable: false,
           } :
           {
             id: 'jurorsInPool',
