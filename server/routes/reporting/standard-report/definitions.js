@@ -120,6 +120,7 @@
           'courtName',
           'totalNonResponded',
         ],
+        defaultSortColumn: 'lastName',
       },
       'postponed-pool': {
         title: 'Postponed list (by pool)',
