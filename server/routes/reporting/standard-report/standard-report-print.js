@@ -373,7 +373,7 @@ function resolveSortBy(sortBy, reportData) {
 }
 
 function isNumber(n) {
-  return !isNaN(parseFloat(n));
+  return !isNaN(parseFloat(n)) && !(moment(n, 'yyyy-MM-DD', true).isValid());
 }
 
 module.exports = {
