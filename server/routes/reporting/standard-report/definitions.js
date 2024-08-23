@@ -1475,7 +1475,7 @@
           'dateTo',
           'reportTime',
         ],
-        defaultSortColumn: 'poolNumber',
+        defaultSortColumn: 'poolNumberJp',
         totalsRow: (data, isPrint = false) => {
           const totals = {
             policeCheckResponded: 0,
@@ -1553,7 +1553,6 @@
           toDate: req?.query?.toDate || '',
         },
         filterBackLinkUrl: app.namedRoutes.build('reports.pool-ratio.filter.dates.get'),
-        unsortable: true,
         tableHeaderTransformer: (data, isPrint = false) => {
           const template = (name, hintValue) => {
             return !isPrint
@@ -1576,8 +1575,9 @@
               return template(data.name, '(3-2)/(4-2)');
             default:
               return data.name;
-          }
-        }
+          };
+        },
+        defaultSortColumn: 'courtLocationNameAndCodeJp',
       },
       'pool-attendance-audit': {
         title: 'Pool attendance audit report',
