@@ -1,55 +1,45 @@
-;(function(){
-  'use strict';
+const urljoin = require('url-join');
+const modUtils = require('../lib/mod-utils')
+const { DAO } = require('./dataAccessObject');
 
-  var _ = require('lodash')
-    , urljoin = require('url-join')
-    , config = require('../config/environment')()
-    , utils = require('../lib/utils')
-    , options = {
-      uri: config.apiEndpoint,
-      headers: {
-        'User-Agent': 'Request-Promise',
-        'Content-Type': 'application/vnd.api+json',
-      },
-      json: true,
-      transform: utils.basicDataTransform,
-    }
+const SORT_KEYS = {
+  returnDate: 'RETURN_DATE',
+  poolNumber: 'POOL_NUMBER',
+  poolType: 'POOL_TYPE',
+  courtName: 'COURT_NAME',
+  numberRequested: 'JURORS_REQUESTED',
+  serviceStartDate: 'SERVICE_START_DATE',
+  jurorsInPool: 'JURORS_IN_POOL',
+  totalNumberRequested: 'TOTAL_NUMBER_REQUESTED',
+  jurorsConfirmed: 'JURORS_CONFIRMED',
+  poolCapacity: 'POOL_CAPACITY',
+}
 
-    , poolRequests = {
-      resource: 'moj/pool-request/pools-',
-      get: function(rp, app, jwtToken, opts) {
-        var reqOptions = _.clone(options)
-          , status = {
-            created: 'active',
-            requested: 'requested',
-          }
-          , order = (opts.sortOrder === 'descending') ? 'desc' : 'asc';
+const STATUS = {
+  created: 'active',
+  requested: 'requested',
+}
 
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri,
-          this.resource + status[opts.status],
-          '?status=' + opts.status,
-          '&tab=' + opts.tab,
-          '&offset=' + (opts.page - 1).toString(),
-          '&sortBy=' + opts.sortBy,
-          '&sortOrder=' + order);
-        reqOptions.method = 'GET';
-
-        // NOTE: tests will say this is 2 way if but the second way is not covered
-        if (typeof opts.locCode !== 'undefined') {
-          reqOptions.uri += '&locCode=' + opts.locCode;
-        }
-
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          data: opts,
-        });
-
-        return rp(reqOptions);
-      },
+module.exports.poolRequestsDAO = new DAO('moj/pool-request/pools-', {
+  get: function(options) {
+    const defaultSortBy = options.status === 'requested' ? 'RETURN_DATE' : 'SERVICE_START_DATE';
+    const query = {
+      status: options.status,
+      tab: options.tab,
+      pageNumber: options.page,
+      sortBy: SORT_KEYS[options.sortBy] || defaultSortBy,
+      sortOrder: options.sortOrder === 'descending' ? 'DESC' : 'ASC',
+      pageLimit: modUtils.constants.PAGE_SIZE,
     };
 
-  module.exports.poolRequests = poolRequests;
-})();
+    let uri = urljoin(this.resource + STATUS[options.status], '?');
+
+    if (options.locCode) {
+      query.locCode = options.locCode;
+    }
+
+    uri = uri + Object.keys(query).map(key => `${key}=${query[key]}`).join('&');
+
+    return { uri };
+  },
+});

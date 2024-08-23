@@ -4,7 +4,7 @@
   var _ = require('lodash')
     , validate = require('validate.js')
     , modUtils = require('../../lib/mod-utils')
-    , poolRequests = require('../../objects/pool-list').poolRequests
+    , { poolRequestsDAO } = require('../../objects/pool-list')
     , poolTypeSelectValidator = require('../../config/validation/pool-create-select')
     , { fetchCourtsDAO } = require('../../objects/index')
     , { isCourtUser } = require('../../components/auth/user-type');
@@ -21,13 +21,7 @@
         , pageItems
         , pageUrls
         , successCB = function(data) {
-          var listToRender
-            , statusList = {
-              created: 'poolRequestsActive',
-              requested: 'poolRequests',
-            };
-
-          listToRender = modUtils.transformPoolList(data[0][statusList[status]], status, tab, sortBy, sortOrder);
+          const listToRender = modUtils.transformPoolList(data[0].data, status, tab, sortBy, sortOrder);
 
           // previously we only cached if it wasn't cached already but there was problems
           // to avoid those we need to fetch and cache every time
@@ -46,8 +40,8 @@
           // for the moment we only paginate through the active pools list
           // the status === created is just because we haven't still
           // ... implemented pagination on the 'requested' endpoint
-          if (data[0].totalSize > modUtils.constants.PAGE_SIZE) {
-            pageItems = modUtils.paginationBuilder(data[0].totalSize, page, req.url);
+          if (data[0].total_items > modUtils.constants.PAGE_SIZE) {
+            pageItems = modUtils.paginationBuilder(data[0].total_items, page, req.url);
           }
 
           pageUrls = {
@@ -117,13 +111,13 @@
         }
       }
 
-      promiseArr.push(poolRequests.get(require('request-promise'), app, req.session.authToken, {
+      promiseArr.push(poolRequestsDAO.get(req, {
         status: status,
         tab: tab,
         page: page,
         locCode: req.query['location_code'],
-        sortBy: sortBy || (status === 'created' ? 'serviceStartDate' : 'returnDate'),
-        sortOrder: sortOrder || 'ascending',
+        sortBy,
+        sortOrder,
       }));
       // this can later be replaced by a "in memory" cached version of the courts list
       // having this stored in a memory ds/db can make faster reads and improves our code

@@ -91,7 +91,6 @@
               id: 'poolCapacity',
               value: 'Pool capacity',
               sort: sortBy === 'poolCapacity' ? order : 'none',
-              sortable: false,
             } :
             {
               id: 'jurorsRequested',
@@ -108,7 +107,6 @@
         id: 'courtName',
         value: 'Court name',
         sort: sortBy === 'courtName' ? order : 'none',
-        sortable: status === 'created',
       },
       {
         id: 'poolType',
