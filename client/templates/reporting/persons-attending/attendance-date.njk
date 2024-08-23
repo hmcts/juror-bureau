@@ -70,15 +70,19 @@
           errorMessage: searchByError
         }) }}
         {{ govukCheckboxes({
-          name: "includeSummoned",
+          name: "optionsToInclude",
           classes: "govuk-checkboxes--small",
           items: [
             {
-              value: true,
+              value: "includeSummoned",
               text: "Include jurors with summoned status"
+            },
+            {
+              value: "includePanelMembers",
+              text: "Include jurors with panel or juror status"
             }
           ],
-          values: tmpBody.includeSummoned
+          values: tmpBody.optionsToInclude
         }) }}
         {{ csrfProtection(csrftoken) }}
         <div class="govuk-button-group">

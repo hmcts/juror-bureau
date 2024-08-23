@@ -605,6 +605,7 @@
 
     if (reportKey.includes('persons-attending')) {
       config.includeSummoned = req.query.includeSummoned || false;
+      config.includePanelMembers = req.query.includePanelMembers || false;
     }
     if(req.query.includeJurorsOnCall) {
       config.includeJurorsOnCall = req.query.includeJurorsOnCall;
