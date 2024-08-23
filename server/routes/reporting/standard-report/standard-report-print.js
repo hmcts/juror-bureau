@@ -1,4 +1,5 @@
 /* eslint-disable strict */
+const moment = require('moment');
 const { generateDocument } = require('../../../lib/reports/single-generator');
 const { tableDataMappers, constructPageHeading } = require('./utils');
 const { bespokeReportTablePrint } = require('../bespoke-report/bespoke-report-print');
