@@ -578,8 +578,12 @@
             req.query.previousMonths
           ),
           body: true,
+          printSorting: {
+            dataSet: 'months',
+
+          }
         },
-        unsortable: true,
+        defaultSortColumn: 'month',
         exportLabel: 'Export raw data',
       },
       // this one may be unsortable
