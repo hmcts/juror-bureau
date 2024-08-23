@@ -1592,6 +1592,7 @@
           'courtName',
         ],
         defaultSortColumn: 'lastName',
+        columnWidths: [68, '*', '*', 50, 60, 60, '*'],
       },
       'pool-selection': {
         title: 'Pool selection list',
