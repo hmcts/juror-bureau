@@ -5,7 +5,7 @@ const moment = require('moment');
 const tableDataMappers = {
   String: (data) => isNaN(data) ? capitalizeFully(data) : (data?.toString() || '-' ),
   LocalDate: (data) => data ? dateFilter(data, 'YYYY-mm-dd', 'ddd D MMM YYYY') : '-',
-  LocalDateTime: (data) => data ? moment(data).tz('Europe/London').format('D MMM YYYY [at] HH:mm a') : '-',
+  LocalDateTime: (data) => data ? moment(data).utcOffset(0).format('D MMM YYYY [at] HH:mm a') : '-',
   List: (data) => {
     if (data) {
       if (Object.keys(data)[0] === 'jurorAddressLine1') {
@@ -37,7 +37,7 @@ const tableDataMappers = {
   },
   Long: (data) => data ? data.toString() : '-',
   Integer: (data) => data.toString(),
-  LocalTime: (data) => data ? moment(data, 'HH:mm:ss').tz('Europe/London').format('hh:mma') : '-',
+  LocalTime: (data) => data ? moment(data, 'HH:mm:ss').format('hh:mma') : '-',
   BigDecimal: (data) => {
     return data < 0 
       ? `(£${(Math.round(Math.abs(data) * 100) / 100).toFixed(2).toString()})`
