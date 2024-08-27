@@ -356,6 +356,7 @@
         search: 'date',
         queryParams: {
           includeSummoned: req?.query?.includeSummoned || false,
+          includePanelMembers: req?.query?.includePanelMembers || false,
         },
         headings: [
           'attendanceDate',
@@ -373,6 +374,7 @@
         search: 'date',
         queryParams: {
           includeSummoned: req?.query?.includeSummoned || false,
+          includePanelMembers: req?.query?.includePanelMembers || false,
         },
         headings: [
           'attendanceDate',
