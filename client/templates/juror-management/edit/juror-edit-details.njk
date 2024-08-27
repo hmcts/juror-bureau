@@ -165,11 +165,9 @@
     <div class="mod-juror-record__title govuk-body">
       <h2 class="govuk-heading-m">Name</h2>
       <div class="flex mod-flex mod-gap-x-4">
-        {% if isTeamLeader or isCourtUser %}
-          <a id="fixNameAnchor" href="{{ url('juror-record.details-edit.name.get', { jurorNumber: jurorNumber }) }}?action=fix" class="govuk-link">
-            Fix error in current name
-          </a>
-        {% endif %}
+        <a id="fixNameAnchor" href="{{ url('juror-record.details-edit.name.get', { jurorNumber: jurorNumber }) }}?action=fix" class="govuk-link">
+          Fix error in current name
+        </a>
         <a id="newNameAnchor" href="{{ url('juror-record.details-edit.name.get', { jurorNumber: jurorNumber }) }}?action=new" class="govuk-link">
           Enter a new name
         </a>
