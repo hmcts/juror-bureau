@@ -24,7 +24,11 @@
 
         {{ govukButton({
           text: "Print list",
-          classes: "govuk-button--secondary"
+          classes: "govuk-button--secondary",
+          attributes: {
+            id: "printListButton",
+            type: "button"
+          }
         }) }}
       </div>
     </div>
@@ -112,6 +116,11 @@
 
       $('#allTrialsRadio').on('click', function() {
         window.location.href = '{{url('trial-management.trials.get')}}?isActive=false';
+      });
+
+      $('#printListButton').on('click', function() {
+        const params = new URLSearchParams(window.location.search);
+        window.open('{{url('trial-management.trials.print.get')}}' + '?' + params.toString(), '_blank');
       });
     });
   </script>
