@@ -2,7 +2,13 @@
   <span id="total-checked-jurors">{{ totalCheckedJurors }}</span> of <span id="total-jurors-count">{{ totalJurors }}</span> selected
 </div>
 
-<table class="govuk-table" data-module="moj-sortable-table">
+{% macro sortUrl(_id, _sortBy, _direction) %}
+  {{ "?sortBy=" + _id + "&sortDirection=" + (_direction if _sortBy === _id else "ascending") }}
+{% endmacro %}
+
+{% set nextSortDirection = "ascending" if sortDirection === "descending" else "descending" %}
+
+<table class="govuk-table">
   <caption class="govuk-table__caption govuk-visually-hidden">Jurors list</caption>
   
   <thead class="govuk-table__head">
@@ -16,13 +22,41 @@
           </label>
         </div>
       </th>
-      <th scope="col" class="govuk-table__header jd-middle-align mod-padding-block--0" aria-sort="none" aria-label="Juror number">Juror number</th>
-      <th scope="col" class="govuk-table__header jd-middle-align mod-padding-block--0" aria-sort="none" aria-label="First name">First name</th>
-      <th scope="col" class="govuk-table__header jd-middle-align mod-padding-block--0" aria-sort="none" aria-label="Last name">Last name</th>
-      <th scope="col" class="govuk-table__header jd-middle-align mod-padding-block--0" aria-sort="none" aria-label="Attending">Attending?</th>
-      <th scope="col" class="govuk-table__header jd-middle-align mod-padding-block--0" aria-sort="none" aria-label="Checked in">Checked in</th>
-      <th scope="col" class="govuk-table__header jd-middle-align mod-padding-block--0" aria-sort="none" aria-label="Next due at court">Next due at court</th>
-      <th scope="col" class="govuk-table__header govuk-table__header--numeric jd-middle-align mod-padding-block--0" aria-sort="none" aria-label="Service start date">Service start date</th>
+      <th scope="col" class="govuk-table__header jd-middle-align mod-padding-block--0 mod-sortable-table-head" aria-sort="{{ sortDirection if sortBy === 'jurorNumber' else 'none' }}" aria-label="Juror number">
+        <a class="govuk-link govuk-link--no-visited-state govuk-link--no-underline" href="{{ sortUrl('jurorNumber', sortBy, nextSortDirection) }}" id="jurorNumber" aria-label="jurorNumber" role="button" data-module="govuk-button">
+          Juror Number
+        </a>
+      </th>
+      <th scope="col" class="govuk-table__header jd-middle-align mod-padding-block--0 mod-sortable-table-head" aria-sort="{{ sortDirection if sortBy === 'firstName' else 'none' }}" aria-label="First name">
+        <a class="govuk-link govuk-link--no-visited-state govuk-link--no-underline" href="{{ sortUrl('firstName', sortBy, nextSortDirection) }}" id="firstName" aria-label="firstName" role="button" data-module="govuk-button">
+          First name
+        </a>
+      </th>
+      <th scope="col" class="govuk-table__header jd-middle-align mod-padding-block--0 mod-sortable-table-head" aria-sort="{{ sortDirection if sortBy === 'lastName' else 'none' }}" aria-label="Last name">
+        <a class="govuk-link govuk-link--no-visited-state govuk-link--no-underline" href="{{ sortUrl('lastName', sortBy, nextSortDirection) }}" id="lastName" aria-label="lastName" role="button" data-module="govuk-button">
+          Last name
+        </a>
+      </th>
+      <th scope="col" class="govuk-table__header jd-middle-align mod-padding-block--0 mod-sortable-table-head" aria-sort="{{ sortDirection if sortBy === 'attending' else 'none' }}" aria-label="Attending">
+        <a class="govuk-link govuk-link--no-visited-state govuk-link--no-underline" href="{{ sortUrl('attending', sortBy, nextSortDirection) }}" id="attending" aria-label="attending" role="button" data-module="govuk-button">
+          Attending?
+        </a>
+      </th>
+      <th scope="col" class="govuk-table__header jd-middle-align mod-padding-block--0 mod-sortable-table-head" aria-sort="{{ sortDirection if sortBy === 'checkedInTime' else 'none' }}" aria-label="Checked in">
+        <a class="govuk-link govuk-link--no-visited-state govuk-link--no-underline" href="{{ sortUrl('checkedInTime', sortBy, nextSortDirection) }}" id="checkedInTime" aria-label="checkedInTime" role="button" data-module="govuk-button">
+          Checked in
+        </a>
+      </th>
+      <th scope="col" class="govuk-table__header jd-middle-align mod-padding-block--0 mod-sortable-table-head" aria-sort="{{ sortDirection if sortBy === 'nextDueAtCourt' else 'none' }}" aria-label="Next due at court">
+        <a class="govuk-link govuk-link--no-visited-state govuk-link--no-underline" href="{{ sortUrl('nextDueAtCourt', sortBy, nextSortDirection) }}" id="nextDueAtCourt" aria-label="nextDueAtCourt" role="button" data-module="govuk-button">
+          Next due at court
+        </a>
+      </th>
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric jd-middle-align mod-padding-block--0 mod-sortable-table-head" aria-sort="{{ sortDirection if sortBy === 'serviceStartDate' else 'none' }}" aria-label="Service start date">
+        <a class="govuk-link govuk-link--no-visited-state govuk-link--no-underline" href="{{ sortUrl('serviceStartDate', sortBy, nextSortDirection) }}" id="serviceStartDate" aria-label="serviceStartDate" role="button" data-module="govuk-button">
+          Service start date
+        </a>
+      </th>
     </tr>
   </thead>
 
