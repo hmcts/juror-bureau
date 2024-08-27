@@ -2,12 +2,19 @@
 
 {% if totalJurors === 0 %}
   <h2 class="govuk-heading-m govuk-!-margin-bottom-6">No matching results</h2>
+
+  {% if origin === "EXPORT_DETAILS" %}
+    <a href="{{ url('messaging.export-contacts.get') }}" class="govuk-body govuk-link">Search again</a>
+  {% endif %}
 {% elif totalJurors === "MAX_ITEMS_EXCEEDED" %}
   {% set maxItems = 500 %}
   {% if errorMetadata and errorMetadata.max_items %}
     {% set maxItems = errorMetadata.max_items %}
   {% endif %}
   <h2 class="govuk-heading-m govuk-!-margin-bottom-6">There are more than {{ maxItems }} results. Refine your search.</h2>
+  {% if origin === "EXPORT_DETAILS" %}
+    <a href="{{ url('messaging.export-contacts.get') }}" class="govuk-body govuk-link">Search again</a>
+  {% endif %}
 {% else %}
   <div class="govuk-button-group govuk-!-margin-bottom-0">
     {{ govukButton({
