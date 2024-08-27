@@ -20,6 +20,9 @@ const bypassUrls = [
   '/paper/excusal',
   '/digital/disqualify',
   '/paper/disqualify',
+  '/details/edit',
+  '/details/ineligible-age',
+  '/multiple-tabs',
 ];
 
 function resolveBackLink(req) {
@@ -36,7 +39,7 @@ function resolveBackLink(req) {
   }
   
   if (!req.session.historyStack || req.session.historyStack.length === 0) {
-    // the history stack keeps all the "curren" pages visited
+    // the history stack keeps all the "current" pages visited
     // this way we will be able to identify a refresh or a back-link click....
     // refresh should match historyStack[0] and back-link should match historyStack[1]
     // if it is a refresh we keep the stack normal and if it is a back-link click we need to pop 2 (?) elements
