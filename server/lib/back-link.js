@@ -21,7 +21,8 @@ const bypassUrls = [
   '/digital/disqualify',
   '/paper/disqualify',
   '/details/edit',
-  '/details/ineligible-age'
+  '/details/ineligible-age',
+  '/multiple-tabs',
 ];
 
 function resolveBackLink(req) {
