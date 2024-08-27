@@ -253,9 +253,8 @@
                           },
                         });
 
-                        req.session.catchmentWarning = resolveCatchmentResponse(catchmentResponse,
+                        req.session[`catchmentWarning-${req.params.id}`] = resolveCatchmentResponse(catchmentResponse,
                           req.session.locCode);
-
 
                         return res.render('response/detail.njk', {
                           response: data,
@@ -288,7 +287,7 @@
                           },
                           opticReference,
                           processedBannerMessage: data.processedBannerMessage ? data.processedBannerMessage : null,
-                          catchmentWarning: req.session.catchmentWarning,
+                          catchmentWarning: req.session[`catchmentWarning-${req.params.id}`],
                           backLinkUrl: 'inbox.todo.get',
                         });
                       }
@@ -304,7 +303,7 @@
                             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
                           });
 
-                          req.session.catchmentWarning = resolveCatchmentResponse([], req.session.locCode);
+                          req.session[`catchmentWarning-${req.params.id}`] = resolveCatchmentResponse([], req.session.locCode);
 
                           return res.render('response/detail', {
                             response: data,
@@ -337,7 +336,7 @@
                             },
                             opticReference,
                             processedBannerMessage: data.processedBannerMessage ? data.processedBannerMessage : null,
-                            catchmentWarning: req.session.catchmentWarning,
+                            catchmentWarning: req.session[`catchmentWarning-${req.params.id}`],
                             backLinkUrl: 'inbox.todo.get',
                           });
                         }
@@ -466,6 +465,7 @@
           return res.render('index.njk');
         };
 
+      delete req.session[`catchmentWarning-${req.params.id}`];
       delete req.session.requestInfo;
       req.session.replyDetails = {};
       req.session.editableReplyDetails = {};
