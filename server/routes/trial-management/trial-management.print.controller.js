@@ -35,8 +35,12 @@ module.exports.getPrintTrials = (app) => {
     try {
       document = await generateDocument(documentContent);
     } catch (err) {
-      console.log(err);
-      return;
+      app.logger.crit('Failed to generate PDF document', {
+        auth: req.session.authentication,
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+
+      return res.render('_errors/generic');
     }
 
     res.contentType('application/pdf');
