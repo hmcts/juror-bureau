@@ -162,37 +162,10 @@
           processingStatus = data.processingStatus;
           renderPage = 'detail';
 
-          if (poolStatus && processingStatus === 'TODO'){
-            switch (poolStatus) {
-            case 2:
-              responseCompletedMesssage = 'The juror record has been processed as responded and the summons reply has been completed';
-              renderPage = 'response-completed';
-              break;
-            case 5:
-              responseCompletedMesssage = 'The juror record has been processed as excused or deceased and the summons reply has been completed';
-              renderPage = 'response-completed';
-              break;
-            case 6:
-              responseCompletedMesssage = 'The juror record has been processed as disqualified and the summons reply has been completed';
-              renderPage = 'response-completed';
-              break;
-            case 7:
-              responseCompletedMesssage = 'The juror record has been processed as deferred and the summons reply has been completed';
-              renderPage = 'response-completed';
-              break;
-            case 11:
-              renderPage = 'awaiting-information';
-              req.session.awaitingInformation.required = true;
-              req.session.awaitingInformation.cancelUrl = req.session.sourceUrl;
-              break;
-            default:
-              break;
-            }
-
-            if (responseCompletedMesssage) {
-              req.session['responseCompletedMesssage'] = responseCompletedMesssage;
-            }
-
+          if (poolStatus && processingStatus === 'TODO'  && poolStatus === 11){
+            renderPage = 'awaiting-information';
+            req.session.awaitingInformation.required = true;
+            req.session.awaitingInformation.cancelUrl = req.session.sourceUrl;
           };
 
           if (renderPage === 'awaiting-information'){
@@ -360,48 +333,6 @@
                     isDeceased: data.thirdPartyReason === 'deceased' || data.excusalReason === 'D',
                   });
                 }
-              }
-
-
-              if (renderPage === 'response-completed'){
-                return sendCourtObj.post(
-                  require('request-promise'),
-                  app,
-                  req.session.authToken,
-                  data.jurorNumber,
-                  data.version,
-                )
-                  .then(
-                    (sendCourtResponse, opticReference) => {
-                      app.logger.info('prolcessed response completed: ', {
-                        auth: req.session.authentication,
-                        data: {
-                          jurorNumber: data.jurorNumber,
-                          version: data.version,
-                        },
-                        response: sendCourtResponse,
-                      });
-    
-                      return res.redirect(app.namedRoutes.build('response.detail.get', {id: data.jurorNumber}));
-                        
-                    }
-                  )
-                  .catch(
-                    (err) => {
-    
-                      app.logger.crit('Error processing response completed: ', {
-                        auth: req.session.authentication,
-                        data: {
-                          jurorNumber: data.jurorNumber,
-                          version: data.version,
-                        },
-                        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-                      });
-    
-                      return res.redirect(app.namedRoutes.build('response.detail.get', {id: data.jurorNumber}));
-    
-                    }
-                  );
               }
               
               if (req.session.responseCompletedMesssage) {
