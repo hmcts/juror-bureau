@@ -739,7 +739,7 @@
           delete req.session.jurorDetails;
           delete req.session.jurorName;
           delete req.session.specialNeeds;
-          delete req.session.catchmentWarning;
+          delete req.session[`catchmentWarning-${id}`];
           delete req.session[`summonsUpdate-${id}`];
 
           jurorDetails = {
@@ -923,7 +923,7 @@
               },
             });
 
-            req.session.catchmentWarning = resolveCatchmentResponse(catchmentResponse,
+            req.session[`catchmentWarning-${req.params.id}`] = resolveCatchmentResponse(catchmentResponse,
               req.session.locCode);
 
             return res.render('response/detail', {
@@ -942,7 +942,7 @@
               processedBannerMessage: data.processedBannerMessage,
               isBureauUser: isBureauUser(req),
               isAddChangeVisible: data.responseClone.processingStatus !== 'Closed',
-              catchmentWarning: req.session.catchmentWarning,
+              catchmentWarning: req.session[`catchmentWarning-${req.params.id}`],
               backLinkUrl: 'inbox.todo.get',
             });
 
@@ -966,7 +966,7 @@
                 error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
               });
 
-              req.session.catchmentWarning = resolveCatchmentResponse([], req.session.locCode);
+              req.session[`catchmentWarning-${req.params.id}`] = resolveCatchmentResponse([], req.session.locCode);
 
               return res.render('response/detail', {
                 method: req.params['type'] || 'digital',
@@ -984,7 +984,7 @@
                 processedBannerMessage: data.processedBannerMessage,
                 isBureauUser: isBureauUser(req),
                 isAddChangeVisible: data.responseClone.processingStatus !== 'Closed',
-                catchmentWarning: req.session.catchmentWarning,
+                catchmentWarning: req.session[`catchmentWarning-${req.params.id}`],
                 backLinkUrl: 'inbox.todo.get',
               });
             }

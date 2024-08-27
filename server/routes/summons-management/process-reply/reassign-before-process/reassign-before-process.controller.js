@@ -70,7 +70,7 @@
               type: req.params.type,
               action: req.params.action,
             }),
-            catchmentWarning: req.session.catchmentWarning,
+            catchmentWarning: req.session[`catchmentWarning-${req.params.id}`],
             currentCourt: currentCourt,
             courts: req.session.transformedCourtsList,
             userInput: tmpFields,
