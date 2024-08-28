@@ -46,6 +46,7 @@
   //     body?: boolean, // fully bespoke report body
   //     file?: string, // bespoke nunjucks file route to handle body
   //     tableHeadClasses?: [string], // classes to be added to each table header in order i.e. size classes
+  //     sortReload?: boolean, // reload the page on sort
   //   },
   //   headings: string[], // corresponds to the ids provided for the headings in the API
   //                       // (except report created dateTime)
@@ -580,7 +581,6 @@
           body: true,
           printSorting: {
             dataSet: 'months',
-
           }
         },
         defaultSortColumn: 'month',
@@ -1405,7 +1405,7 @@
           },
           groupHeader: true,
           totals: true,
-        }
+        },
       },
       'unpaid-attendance-detailed': {
         title: 'Unpaid attendance report (detailed)',
@@ -1422,8 +1422,9 @@
         defaultSortColumn: 'lastName',
         bespokeReport: {
           body: true,
-          file: './bespoke-report-body/unpaid-attendance-detailed.njk',
+          sortReload: true
         },
+        defaultSortColumn: 'lastName',
       },
       'deferred-list-date': {
         title: 'Deferred list (by date)',

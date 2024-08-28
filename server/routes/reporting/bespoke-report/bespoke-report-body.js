@@ -1,5 +1,6 @@
 /* eslint-disable strict */
-const { dateFilter, makeDate, toMoney } = require('../../../components/filters');
+const moment = require('moment');
+const { dateFilter, makeDate, toMoney, capitalizeFully } = require('../../../components/filters');
 const { snakeToCamel } = require('../../../lib/mod-utils');
 const { tableDataMappers, buildTableHeaders } = require('../standard-report/utils');
 
@@ -62,36 +63,12 @@ const bespokeReportBodys = (app, req) => {
       return { activeRows, inactiveRows };
     },
     'unpaid-attendance-detailed': (reportType, tableData) => {
-      let poolTrial = [];
-      const headers = [
-        {
-          text: 'Juror Number',
-          classes: 'mod-!-width-one-sixth',
-        },
-        {
-          text: 'First Name',
-          classes: 'mod-!-width-one-sixth',
-        },
-        {
-          text: 'Last Name',
-          classes: 'mod-!-width-one-sixth',
-        },
-        {
-          text: 'Audit number',
-          classes: 'mod-!-width-one-sixth',
-        },
-        {
-          text: 'Attendance Type',
-          classes: 'mod-!-width-one-sixth',
-        },
-        {
-          text: 'Expense Status',
-          classes: 'mod-!-width-one-sixth',
-        }
-      ]
+      const sortBy = req.query.sortBy || 'lastName';
+      const sortDirection = req.query.sortDirection || 'ascending';
+
+      let rows = [];
 
       for (const [header, data] of Object.entries(tableData.data)) {
-        let tableDetails = [];
         let counter = 0;
         const poolTrialLink = header.includes('Pool')
         ? app.namedRoutes.build('pool-overview.get', {
@@ -101,22 +78,65 @@ const bespokeReportBodys = (app, req) => {
           trialNumber: header.replace('Trial ',''),
           locationCode: req.session.authentication.locCode,
         })
-          for (const [key, value] of Object.entries(data)) {
-            counter += value.length;
-            tableDetails.push({
-              date: key,
-              values: value,
-            });
+        rows.push([
+          {
+            html: `<a class="govuk-link" href="${poolTrialLink}">${header}</a>`,
+            classes: 'govuk-heading-m mod-table-no-border govuk-!-padding-top-5 govuk-!-margin-bottom-0 govuk-!-padding-bottom-0',
+            colspan: 6,
+          },
+        ])
+        for (const [key, value] of Object.entries(data)) {
+          counter += value.length;
+          rows.push([
+            {
+              text: dateFilter(makeDate(key), null, 'dddd D MMMM YYYY'),
+              classes: 'govuk-body-l govuk-!-padding-top-5',
+              colspan: 6,
+            }
+          ])
+          value.sort(sort(sortBy, sortDirection));
+          value.forEach((juror) => {
+            let auditNumber = '-'
+            if (juror.auditNumber.charAt(0) === 'J') {
+              auditNumber = `<a class="govuk-link" href="${app.namedRoutes.build('reports.jury-attendance-audit.report.print', {filter: juror.auditNumber})}" target="_blank">${juror.auditNumber}</a>`
+            } else if (juror.auditNumber.charAt(0) === 'P') {
+              auditNumber = `<a class="govuk-link" href="${app.namedRoutes.build('reports.pool-attendance-audit.report.print', {filter: juror.auditNumber})}" target="_blank">${juror.auditNumber}</a>`
+            }
+            rows.push([
+              {
+                html: `<a class="govuk-link" href="${app.namedRoutes.build('juror-record.overview.get', {jurorNumber: juror.jurorNumber})}">${juror.jurorNumber}</a>`,
+              },
+              {
+                text: juror.firstName,
+              },
+              {
+                text: juror.lastName,
+              },
+              {
+                html: auditNumber,
+              },
+              {
+                text: capitalizeFully(juror.attendanceType.replace('_', ' ')),
+              },
+              {
+                text: juror.expenseStatus
+              }
+            ])
+          });
+          rows.push([{
+            text: `Total: ${value.length}`,
+            colspan: 6,
+            classes: 'govuk-!-font-weight-bold',
+          }]);
         }
-        poolTrial.push({
-          header,
-          dates: tableDetails,
-          totalLength: counter,
-          poolTrialLink,
-        })
+        rows.push([{
+          text: `Total unpaid attendences for ${header}: ${counter}`,
+          colspan: 6,
+          classes: 'govuk-!-font-weight-bold mod-table-no-border mod-highlight-table-data__grey',
+        }])
       }
 
-      return [{headers: headers, rows: poolTrial}];
+      return [{headers: buildTableHeaders(reportType, tableData.headings, { sortBy, sortDirection }), rows: rows}];
     },
     'daily-utilisation': (reportType, tableData) => {
       let rows = [];
@@ -521,5 +541,54 @@ const bespokeReportBodys = (app, req) => {
     },
   };
 };
+
+function sort(sortBy, sortDirection) {
+  return (a, b) => {
+    const [_a, _b] = formatSortableData(a, b, sortBy);
+      
+    if (isNumber(_a) && isNumber(_b)) {
+      return sortDirection === 'descending' ? _b - _a : _a - _b;
+    }
+
+    if (sortDirection === 'descending') {
+      return _b.localeCompare(_a);
+    } else {
+      return _a.localeCompare(_b);
+    }
+  }
+}
+
+function formatSortableData(a, b, sortBy) {
+  let _a = a[snakeToCamel(sortBy)] || '-';
+  let _b = b[snakeToCamel(sortBy)] || '-';
+
+  if (sortBy === 'jurorPostalAddress') {
+    _a = Object.values(a.jurorPostalAddress).join(' ');
+    _b = Object.values(b.jurorPostalAddress).join(' ');
+  }
+
+  if (sortBy === 'jurorReasonableAdjustmentWithMessage') {
+    _a = a.jurorReasonableAdjustmentWithMessage
+      ? Object.values(a.jurorReasonableAdjustmentWithMessage).join(' ') : '-';
+    _b = b.jurorReasonableAdjustmentWithMessage
+      ? Object.values(b.jurorReasonableAdjustmentWithMessage).join(' ') : '-';
+  }
+
+  if (sortBy === 'contactDetails') {
+    _a = a.contactDetails ? Object.values(a.contactDetails).join(' ') : '-';
+    _b = b.contactDetails ? Object.values(b.contactDetails).join(' ') : '-';
+  }
+
+  if (sortBy === 'month') {
+    _a = dateFilter(a.month, 'mmmm yyyy', 'yyyy-MM-DD');
+    _b = dateFilter(b.month, 'mmmm yyyy', 'yyyy-MM-DD');
+  }
+
+  return [_a.toString(), _b.toString()];
+}
+
+function isNumber(n) {
+  return !isNaN(parseFloat(n)) && !(moment(n, 'yyyy-MM-DD', true).isValid());
+}
 
 module.exports.bespokeReportBodys = bespokeReportBodys;
