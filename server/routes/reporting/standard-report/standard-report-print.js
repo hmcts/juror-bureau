@@ -223,7 +223,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
   let reportBody = [];
 
   if (reportData.bespokeReport && reportData.bespokeReport.body) {
-    reportBody = bespokeReportTablePrint[reportKey](data, app, req);
+    reportBody = bespokeReportTablePrint[reportKey](data, req);
   } else if (reportData.multiTable) {
     for (const [key, value] of Object.entries(tableData.data)) {
       reportBody.push(
