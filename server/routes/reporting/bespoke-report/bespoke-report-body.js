@@ -139,15 +139,21 @@ const bespokeReportBodys = (app, req) => {
       return [{headers: buildTableHeaders(reportType, tableData.headings, { sortBy, sortDirection }), rows: rows}];
     },
     'daily-utilisation': (reportType, tableData) => {
+      const sortBy = req.query.sortBy || 'date';
+      const sortDirection = req.query.sortDirection || 'ascending';
       let rows = [];
 
       tableData.weeks.forEach((week) => {
+        week.days.sort(sort(sortBy, sortDirection));
         week.days.forEach((day) => {
           rows.push([
             {
               html: `<a class="govuk-link" href="${app.namedRoutes.build('reports.daily-utilisation-jurors.report.get', {
                 filter: dateFilter(makeDate(day.date), null, 'yyyy-MM-DD'),
               })}">${dateFilter(makeDate(day.date), null, 'dddd D MMMM YYYY')}</a>`,
+              attributes: {
+                'data-sort-value': dateFilter(makeDate(day.date), null, 'yyyy-MM-DD'),
+              }
             },
             {
               text: day.jurorWorkingDays.toString(),
@@ -220,7 +226,7 @@ const bespokeReportBodys = (app, req) => {
         },
       ]);
 
-      return [{headers: buildTableHeaders(reportType, tableData.headings), rows: rows}];
+      return [{headers: buildTableHeaders(reportType, tableData.headings, { sortBy, sortDirection }), rows: rows}];
     },
     'daily-utilisation-jurors': (reportType, tableData) => {
       let rows = [];
@@ -582,6 +588,11 @@ function formatSortableData(a, b, sortBy) {
   if (sortBy === 'month') {
     _a = dateFilter(a.month, 'mmmm yyyy', 'yyyy-MM-DD');
     _b = dateFilter(b.month, 'mmmm yyyy', 'yyyy-MM-DD');
+  }
+
+  if (sortBy === 'date' && (Array.isArray(_a) && Array.isArray(_b))) {
+    _a = dateFilter(makeDate(_a), null, 'yyyy-MM-DD');
+    _b = dateFilter(makeDate(_b), null, 'yyyy-MM-DD');
   }
 
   return [_a.toString(), _b.toString()];

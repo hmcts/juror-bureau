@@ -428,8 +428,9 @@
             req.query.toDate
           ),
           body: true,
+          sortReload: true,
         },
-        unsortable: true,
+        defaultSortColumn: 'date',
         exportLabel: 'Export raw data',
       },
       'daily-utilisation-jurors': {

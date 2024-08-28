@@ -68,9 +68,9 @@ const bespokeReportTablePrint = {
       },
     ];
   },
-  'unpaid-attendance-detailed': (data, app, req) => {
-      const _sortBy = req.query.sortBy || 'lastName';
-      const _sortDirection= req.query.sortDirection || 'ascending';
+  'unpaid-attendance-detailed': (data, req) => {
+      const sortBy = req.query.sortBy || 'lastName';
+      const sortDirection = req.query.sortDirection || 'ascending';
       const poolTrial = []
       poolTrial.push({
         body: [[
@@ -100,7 +100,7 @@ const bespokeReportTablePrint = {
             widths:['100%'],
             margin: [0, 0, 0, 0],
           });
-          jurors.sort(sort(_sortBy, _sortDirection));
+          jurors.sort(sort(sortBy, sortDirection));
           jurors.forEach(function(juror) {
             poolTrial.push({
               body: [[
@@ -137,11 +137,15 @@ const bespokeReportTablePrint = {
   
       return [...poolTrial]
     },
-  'daily-utilisation': (data) => {
+  'daily-utilisation': (data, req) => {
     const { tableData } = data;
     let rows = [];
 
+    const sortBy = req.query.sortBy || 'date';
+    const sortDirection = req.query.sortDirection || 'ascending';
+
     tableData.weeks.forEach((week) => {
+      week.days.sort(sort(sortBy, sortDirection));
       week.days.forEach((day) => {
         rows.push([
           {
@@ -585,6 +589,11 @@ function formatSortableData(a, b, sortBy) {
   if (sortBy === 'month') {
     _a = dateFilter(a.month, 'mmmm yyyy', 'yyyy-MM-DD');
     _b = dateFilter(b.month, 'mmmm yyyy', 'yyyy-MM-DD');
+  }
+
+  if (sortBy === 'date' && (Array.isArray(_a) && Array.isArray(_b))) {
+    _a = dateFilter(makeDate(_a), null, 'yyyy-MM-DD');
+    _b = dateFilter(makeDate(_b), null, 'yyyy-MM-DD');
   }
 
   return [_a.toString(), _b.toString()];
