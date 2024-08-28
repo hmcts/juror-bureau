@@ -6,7 +6,6 @@ const { bespokeReportTablePrint } = require('../bespoke-report/bespoke-report-pr
 const { snakeToCamel, checkIfArrayEmpty } = require('../../../lib/mod-utils');
 const { reportKeys } = require('./definitions');
 const { capitalizeFully, capitalise, timeToDuration, toSentenceCase, dateFilter } = require('../../../components/filters');
-const moment = require('moment');
 
 async function standardReportPrint(app, req, res, reportKey, data) {
   const reportData = reportKeys(app, req)[reportKey];
@@ -224,7 +223,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
   let reportBody = [];
 
   if (reportData.bespokeReport && reportData.bespokeReport.body) {
-    reportBody = bespokeReportTablePrint[reportKey](data);
+    reportBody = bespokeReportTablePrint[reportKey](data, app, req);
   } else if (reportData.multiTable) {
     for (const [key, value] of Object.entries(tableData.data)) {
       reportBody.push(
