@@ -34,8 +34,8 @@
       let footerText;
 
       for (const element of content) {
-        const stackFirstpage = element.positions[0].pageNumber;
-        const stackLastPage = element.positions[element.positions.length - 1].pageNumber;
+        const stackFirstpage = element.positions[0]?.pageNumber || 1;
+        const stackLastPage = element.positions[element.positions.length - 1]?.pageNumber || 1;
 
         if (current >= stackFirstpage && current <= stackLastPage) {
           stackPages = stackLastPage - stackFirstpage + 1;

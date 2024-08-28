@@ -28,9 +28,9 @@
             [{ text: id, bold: true, margin: [40, 0, 0, 0] }],
             [
               { text: (firstName && lastName ? [
-                { text: '\n' + firstName, bold: true },
+                { text: '\n' + firstName, bold: false },
                 { text: ', ', bold: true },
-                { text: lastName, bold: false },
+                { text: lastName, bold: true },
                 ] : ''), margin: [40, -15, 0, 0],
               },
             ],
@@ -71,17 +71,17 @@
       body.push(row);
     }
 
-    if (data.length % 8 >= 1) {
+    if (!data.length) {
       body.push([getEmptyTableCell(), getEmptyTableCell()])
       heights.push(rowHeight);
-    }
-    if (data.length % 8 >= 3) {
-      body.push([getEmptyTableCell(), getEmptyTableCell()])
-      heights.push(rowHeight);
-    }
-    if (data.length % 8 >= 5) {
-      body.push([getEmptyTableCell(), getEmptyTableCell()])
-      heights.push(rowHeight);
+    } else {
+      switch (data.length % 8) {
+        case 1:
+        case 3:
+        case 5:
+          body.push([getEmptyTableCell(), getEmptyTableCell()])
+          heights.push(rowHeight);
+      }
     }
 
     return {

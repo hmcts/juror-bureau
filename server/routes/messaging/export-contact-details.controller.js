@@ -52,7 +52,7 @@
 
   module.exports.postExportContacts = function(app) {
     return function(req, res) {
-      const { searchBy } = req.body;
+      let { searchBy } = req.body;
 
       const validatorResult = validate(req.body, exportContactDetailsValidator(req.body));
 
@@ -68,6 +68,10 @@
         return res.redirect(app.namedRoutes.build('messaging.export-contacts.trials.get', {
           message: 'export-contact-details',
         }));
+      }
+
+      if (searchBy === 'nextDueAtCourtDate' || searchBy === 'dateDeferredTo') {
+        searchBy = 'date';
       }
 
       const postUrl = app.namedRoutes.build('messaging.export-contacts.jurors.get');
@@ -400,10 +404,10 @@
       break;
     case 'date':
       if (query.dateDeferredTo) {
-        payload['date_deferred_to'] = dateFilter(query.dateDeferredTo, 'DD/MM/YYYY', 'YYYY-MM-DD');
+        payload['date_deferred_to'] = query.dateDeferredTo;
       }
       if (query.nextDueAtCourtDate) {
-        payload['next_due_at_court_date'] = dateFilter(query.nextDueAtCourtDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
+        payload['next_due_at_court_date'] = query.nextDueAtCourtDate;
       }
       break;
     case 'postcode':
@@ -448,11 +452,13 @@
       queryParams = `?searchBy=court&courtName=${query.courtName}`;
       query.showOnly = 'SHOW_ONLY_DEFERRED';
       break;
-    case 'dateDeferredTo':
-      queryParams = `?searchBy=date&dateDeferredTo=${query.dateDeferredTo}`;
-      break;
-    case 'nextDueAtCourtDate':
-      queryParams = `?searchBy=date&nextDueAtCourtDate=${query.nextDueAtCourtDate}`;
+    case 'date':
+      if (query.dateDeferredTo) {
+        queryParams = `?searchBy=date&dateDeferredTo=${dateFilter(query.dateDeferredTo, 'DD/MM/yyyy', 'yyyy-MM-DD')}`;
+      }
+      if (query.nextDueAtCourtDate) {
+        queryParams = `?searchBy=date&nextDueAtCourtDate=${dateFilter(query.nextDueAtCourtDate, 'DD/MM/yyyy', 'yyyy-MM-DD')}`;
+      }
       break;
     case 'postcode':
       queryParams = `?searchBy=postcode&postcode=${query.postcode}`;

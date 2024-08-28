@@ -19,7 +19,7 @@
       {% if totalJurors > 0 and totalJurors !== "MAX_ITEMS_EXCEEDED" %}
         <div class="mod-flex mod-items-center mod-gap-x-2">
           <h2 class="govuk-heading-m">Showing {{ totalJurors }} jurors</h2>
-          <a href="#" class="govuk-body govuk-link">Search again</a>
+          <a href="{{ url('messaging.export-contacts.get') }}" class="govuk-body govuk-link">Search again</a>
         </div>
       {% endif %}
     </div>

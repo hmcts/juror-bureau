@@ -3,6 +3,7 @@
 
   const auth = require('../../components/auth');
   const controller = require('./trial-management.controller');
+  const trialManagementPrintController = require('./trial-management.print.controller');
   const returnsController = require('./returns.controller');
   const { isCourtUser } = require('../../components/auth/user-type');
 
@@ -18,6 +19,13 @@
       auth.verify,
       isCourtUser,
       controller.getTrials(app),
+    );
+
+    app.get('/trial-management/trials/print',
+      'trial-management.trials.print.get',
+      auth.verify,
+      isCourtUser,
+      trialManagementPrintController.getPrintTrials(app),
     );
 
     app.get('/trial-management/trials/:trialNumber/:locationCode/detail',

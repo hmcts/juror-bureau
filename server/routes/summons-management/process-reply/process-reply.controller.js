@@ -125,7 +125,7 @@ module.exports.postProcessReply = function(app) {
       return res.redirect(app.namedRoutes.build('process-reply.get', routeParameters));
     }
 
-    if (req.session.catchmentWarning && req.session.catchmentWarning.isOutwithCatchment) {
+    if (req.session[`catchmentWarning-${req.params.id}`] && req.session[`catchmentWarning-${req.params.id}`].isOutwithCatchment) {
       routeParameters.action = req.body.processActionType;
 
       if (req.body.processActionType === 'disqualify') {

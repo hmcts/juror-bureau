@@ -52,14 +52,12 @@
     <div class="mod-juror-record__title govuk-body">
       <h2 class="govuk-heading-m">Name</h2>
       <div class="flex mod-flex mod-gap-x-4">
-        {% if isCourtUser or isTeamLeader %}
-          <a id="fixNameAnchor" href="{{ url(editNameRoute if editNameRoute else 'paper-reply.edit-name.get', {
-              id: details.jurorNumber,
-              type: replyMethod
-            }) }}?action=fix" class="govuk-link">
-            Fix error in current name
-          </a>
-        {% endif %}
+        <a id="fixNameAnchor" href="{{ url(editNameRoute if editNameRoute else 'paper-reply.edit-name.get', {
+            id: details.jurorNumber,
+            type: replyMethod
+          }) }}?action=fix" class="govuk-link">
+          Fix error in current name
+        </a>
         <a id="newNameAnchor" href="{{ url(editNameRoute if editNameRoute else 'paper-reply.edit-name.get', {
             id: details.jurorNumber,
             type: replyMethod

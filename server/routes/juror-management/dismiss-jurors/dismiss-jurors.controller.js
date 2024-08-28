@@ -99,9 +99,12 @@ module.exports.getJurorsList = function(app) {
   return async function(req, res) {
     const currentPage = req.query.page || 1;
     const tmpErrors = _.clone(req.session.errors);
+    const { sortBy, sortDirection } = req.query;
     let pagination;
 
     delete req.session.errors;
+
+    sortJurors(req);
 
     try {
       if (req.session.dismissJurors && !req.session.dismissJurors.jurors) {
@@ -136,6 +139,8 @@ module.exports.getJurorsList = function(app) {
         pagination,
         totalJurors,
         totalCheckedJurors,
+        sortBy,
+        sortDirection: sortDirection || 'ascending',
         backLinkUrl: {
           built: true,
           url: app.namedRoutes.build('juror-management.dismiss-jurors.pools.get'),
@@ -449,6 +454,43 @@ function calculateTotalJurorsAvailable(selections, allPools){
   }
 
   return 0;
+}
+
+function sortJurors(req) {
+  const SORT_BY = {
+    jurorNumber: 'juror_number',
+    firstName: 'first_name',
+    lastName: 'last_name',
+    attending: 'attending',
+    checkedInTime: 'check_in_time',
+    nextDueAtCourt: 'next_due_at_court',
+    serviceStartDate: 'service_start_date',
+  };
+
+  const { sortBy, sortDirection } = req.query;
+  const _sortBy = SORT_BY[sortBy] || 'juror_number';
+
+  const isNumber = (value) => !isNaN(value);
+
+  if (sortBy) {
+    req.session.dismissJurors.jurors = req.session.dismissJurors.jurors.sort((a, b) => {
+      let _a = a[_sortBy] ? a[_sortBy] : '-';
+      let _b = b[_sortBy] ? b[_sortBy] : '-';
+
+      if (_sortBy === 'check_in_time') {
+        _a = _a === '-' ? '0000' : convertAmPmToLong(timeArrayToString(_a));
+        _b = _b === '-' ? '0000' : convertAmPmToLong(timeArrayToString(_b));
+      }
+
+      if (sortDirection === 'ascending') {
+        if (isNumber(_a) && isNumber(_b)) return _a - _b;
+        return _a.localeCompare(_b);
+      }
+
+      if (isNumber(_a) && isNumber(_b)) return _b - _a;
+      return _b.localeCompare(_a);
+    });
+  }
 }
 
 function paginateJurorsList(jurors, params, currentPage) {

@@ -29,6 +29,10 @@
 
         if (isTeamLeader(req, res)) {
           staffList = await staffRosterObj.get(require('request-promise'), app, req.session.authToken);
+          staffList.unshift({
+            login: 'AUTO',
+            name:'AUTO'
+          });
         }
 
         // always reset the staff list here

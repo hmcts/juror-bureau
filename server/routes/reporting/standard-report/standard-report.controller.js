@@ -336,9 +336,9 @@
           if (header.id.includes('trial_number') && output) {
             return ({
               html: `<a href=${
-                app.namedRoutes.build('trial-management.trials.detail.get', {trialNumber: output, locationCode: req.session.authentication.locCode})
+                app.namedRoutes.build('trial-management.trials.detail.get', {trialNumber: data[snakeToCamel(header.id)], locationCode: req.session.authentication.locCode})
               }>${
-                output
+                data[snakeToCamel(header.id)]
               }</a>`,
             });
           }
@@ -605,6 +605,7 @@
 
     if (reportKey.includes('persons-attending')) {
       config.includeSummoned = req.query.includeSummoned || false;
+      config.includePanelMembers = req.query.includePanelMembers || false;
     }
     if(req.query.includeJurorsOnCall) {
       config.includeJurorsOnCall = req.query.includeJurorsOnCall;

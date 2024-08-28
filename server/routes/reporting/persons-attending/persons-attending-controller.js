@@ -6,6 +6,7 @@
   const { validate } = require('validate.js');
   const validator = require('../../../config/validation/report-search-by');
   const { dateFilter } = require('../../../components/filters');
+  const { checkConvertArray } = require('../../../lib/mod-utils');
 
   module.exports.getFilterAttendanceDate = function(app) {
     return function(req, res) {
@@ -51,13 +52,16 @@
         }
       }
 
-      const includeSummoned = req.body.includeSummoned ? `?includeSummoned=${req.body.includeSummoned}` : '';
+      req.body.optionsToInclude = checkConvertArray(req.body.optionsToInclude);
+
+      const includeSummoned = `?includeSummoned=${req.body.optionsToInclude.includes('includeSummoned')}`;
+      const includePanelMembers = `&includePanelMembers=${req.body.optionsToInclude.includes('includePanelMembers')}`;
 
       switch (req.body.searchBy) {
       case 'today':
         return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, {
           filter: dateFilter(new Date(), null, 'YYYY-MM-DD'),
-        }) + includeSummoned);
+        }) + includeSummoned + includePanelMembers);
       case 'nextWorkingDay':
         const date = new Date();
         const day = date.getDay();
@@ -72,11 +76,11 @@
         date.setDate(date.getDate() + addDays);
         return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, {
           filter: dateFilter(date, null, 'YYYY-MM-DD'),
-        }) + includeSummoned);
+        }) + includeSummoned + includePanelMembers);
       case 'otherDate':
         return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, {
           filter: dateFilter(req.body.date, null, 'YYYY-MM-DD'),
-        }) + includeSummoned);
+        }) + includeSummoned + includePanelMembers);
       default:
         return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`));
       }
