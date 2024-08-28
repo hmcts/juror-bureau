@@ -1,0 +1,41 @@
+@startuml reports.reprint-audit-reports
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant "Reprint audit report form page" as ReprintAuditReportFormPage <</reporting/reprint-audit-report>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant "Reprint audit report controller" as ReprintAuditReportController <<reprint-audit-report.controller.js>> #LightYellow
+participant "Standard report controller" as StandardReportController <<standard-report.controller.js>> #LightYellow
+
+''' TEMPLATES
+participant "Standard report" as StandardReport <<reporting/standard-reports/standard-report.njk>> #lavender
+
+''' VALIDATORS
+participant "'Reprint audit report' validator" as Validator
+
+''' SELECT PAGE
+Actor -> ReprintAuditReportFormPage : fill form and submit
+ReprintAuditReportFormPage -> ReprintAuditReportController : call page controller
+ReprintAuditReportController -> Validator : validate form data
+
+alt Invalid form data
+
+  ReprintAuditReportController <- Validator : invalid form data
+  ReprintAuditReportController -> ReprintAuditReportFormPage : request and build template
+  ReprintAuditReportController <- ReprintAuditReportFormPage : return HTML
+  Actor <- ReprintAuditReportController : return and render HTML with error messages
+
+end
+|||
+
+ReprintAuditReportController <- Validator : valid form data
+ReprintAuditReportController -> StandardReportController : redirect to standard report controller
+
+StandardReportController -> StandardReport : request and build template
+StandardReportController <- StandardReport : return HTML
+Actor <- StandardReportController : report displayed by standard renderer
