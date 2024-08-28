@@ -321,6 +321,7 @@ function sortTableData(reportKey, { sortBy, sortDirection }, tableData, reportDa
       }
     });
   } else {
+
     if (reportData.bespokeReport?.printSorting?.dataSet) {
       tableData[reportData.bespokeReport.printSorting.dataSet] = tableData[reportData.bespokeReport.printSorting.dataSet].sort(sort(_sortBy, sortDirection))
     } else {

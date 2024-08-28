@@ -442,6 +442,9 @@
             req.params.filter
           ),
           body: true,
+          printSorting: {
+            dataSet: 'jurors',
+          }
         },
         headings: [
           'date',
@@ -451,7 +454,6 @@
           '',
           'courtName',
         ],
-        unsortable: true,
         exportLabel: 'Export raw data',
       },
       'voir-dire': {

@@ -259,22 +259,37 @@ const bespokeReportBodys = (app, req) => {
         {
           text: 'Daily total',
           classes: 'govuk-!-padding-left-2 govuk-!-font-weight-bold mod-highlight-table-data__blue',
+          attributes: {
+            'data-fixed-index': tableData.jurors.length,
+          }
         },
         {
           text: tableData.totalJurorWorkingDays.toString(),
           classes: 'govuk-!-font-weight-bold mod-highlight-table-data__blue',
+          attributes: {
+            'data-fixed-index': tableData.jurors.length,
+          }
         },
         {
           text: tableData.totalSittingDays.toString(),
           classes: 'govuk-!-font-weight-bold mod-highlight-table-data__blue',
+          attributes: {
+            'data-fixed-index': tableData.jurors.length,
+          }
         },
         {
           text: tableData.totalAttendanceDays.toString(),
           classes: 'govuk-!-font-weight-bold mod-highlight-table-data__blue',
+          attributes: {
+            'data-fixed-index': tableData.jurors.length,
+          }
         },
         {
           text: tableData.totalNonAttendanceDays.toString(),
           classes: 'govuk-!-font-weight-bold mod-highlight-table-data__blue',
+          attributes: {
+            'data-fixed-index': tableData.jurors.length,
+          }
         },
       ]);
 
