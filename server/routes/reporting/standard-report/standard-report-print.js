@@ -74,6 +74,10 @@ async function standardReportPrint(app, req, res, reportKey, data) {
           text = text.replaceAll('\n','\n\n')
         }
 
+        if (header.id === 'trial_number') {
+          text = rowData[snakeToCamel(header.id)];
+        }
+
         if (header.dataType === 'List') {
           const items = text.split(', ');
           let listText = [];
