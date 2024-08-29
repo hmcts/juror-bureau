@@ -659,7 +659,6 @@
         multiTable: {
           sectionHeadings: true,
         },
-        unsortable: true,
         grouped: {
           groupHeader: true,
           headings: {
@@ -723,11 +722,17 @@
                   text: 'Daily sub total',
                   colspan: 8,
                   classes: 'govuk-!-padding-left-2 govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                  attributes: {
+                    'data-fixed-index': data.length
+                  }
                 },
                 {
                   text: toMoney(total),
                   classes: 'govuk-!-padding-right-2 govuk-!-font-weight-bold mod-highlight-table-data__grey',
                   format: 'numeric',
+                  attributes: {
+                    'data-fixed-index': data.length
+                  }
                 },
               ];
             },
@@ -925,6 +930,7 @@
             },
           },
           printInsertTables: true,
+          defaultSortColumn: 'lastName',
         },
       },
       'absences': {

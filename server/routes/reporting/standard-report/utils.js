@@ -174,6 +174,13 @@ function formatSortableData(a, b, sortBy) {
     _b = dateFilter(makeDate(_b), null, 'yyyy-MM-DD');
   }
 
+  if (isNumber(_a) && _b === '-') {
+    _b = 0;
+  }
+  if (isNumber(_b) && _a === '-') {
+    _a = 0;
+  }
+
   return [_a.toString(), _b.toString()];
 }
 
