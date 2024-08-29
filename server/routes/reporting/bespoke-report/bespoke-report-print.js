@@ -2,7 +2,7 @@
 const moment = require('moment');
 const { dateFilter, makeDate, capitalizeFully } = require('../../../components/filters');
 const { snakeToCamel } = require('../../../lib/mod-utils');
-const { tableDataMappers } = require('../standard-report/utils');
+const { tableDataMappers, sort } = require('../standard-report/utils');
 
 const bespokeReportTablePrint = {
   'pool-status': (data) => {
@@ -548,59 +548,5 @@ const bespokeReportTablePrint = {
     return tables;
   },
 };
-
-function sort(sortBy, sortDirection) {
-  return (a, b) => {
-    const [_a, _b] = formatSortableData(a, b, sortBy);
-      
-    if (isNumber(_a) && isNumber(_b)) {
-      return sortDirection === 'descending' ? _b - _a : _a - _b;
-    }
-
-    if (sortDirection === 'descending') {
-      return _b.localeCompare(_a);
-    } else {
-      return _a.localeCompare(_b);
-    }
-  }
-}
-
-function formatSortableData(a, b, sortBy) {
-  let _a = a[snakeToCamel(sortBy)] || '-';
-  let _b = b[snakeToCamel(sortBy)] || '-';
-
-  if (sortBy === 'jurorPostalAddress') {
-    _a = Object.values(a.jurorPostalAddress).join(' ');
-    _b = Object.values(b.jurorPostalAddress).join(' ');
-  }
-
-  if (sortBy === 'jurorReasonableAdjustmentWithMessage') {
-    _a = a.jurorReasonableAdjustmentWithMessage
-      ? Object.values(a.jurorReasonableAdjustmentWithMessage).join(' ') : '-';
-    _b = b.jurorReasonableAdjustmentWithMessage
-      ? Object.values(b.jurorReasonableAdjustmentWithMessage).join(' ') : '-';
-  }
-
-  if (sortBy === 'contactDetails') {
-    _a = a.contactDetails ? Object.values(a.contactDetails).join(' ') : '-';
-    _b = b.contactDetails ? Object.values(b.contactDetails).join(' ') : '-';
-  }
-
-  if (sortBy === 'month') {
-    _a = dateFilter(a.month, 'mmmm yyyy', 'yyyy-MM-DD');
-    _b = dateFilter(b.month, 'mmmm yyyy', 'yyyy-MM-DD');
-  }
-
-  if (sortBy === 'date' && (Array.isArray(_a) && Array.isArray(_b))) {
-    _a = dateFilter(makeDate(_a), null, 'yyyy-MM-DD');
-    _b = dateFilter(makeDate(_b), null, 'yyyy-MM-DD');
-  }
-
-  return [_a.toString(), _b.toString()];
-}
-
-function isNumber(n) {
-  return !isNaN(parseFloat(n)) && !(moment(n, 'yyyy-MM-DD', true).isValid());
-}
 
 module.exports.bespokeReportTablePrint = bespokeReportTablePrint;
