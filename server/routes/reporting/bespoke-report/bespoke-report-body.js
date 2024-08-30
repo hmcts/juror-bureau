@@ -229,6 +229,8 @@ const bespokeReportBodys = (app, req) => {
       return [{headers: buildTableHeaders(reportType, tableData.headings, { sortBy, sortDirection }), rows: rows}];
     },
     'daily-utilisation-jurors': (reportType, tableData) => {
+      const sortBy = req.query.sortBy || 'juror';
+      const sortDirection = req.query.sortDirection || 'ascending';
       let rows = [];
 
       tableData.jurors.forEach((juror) => {
@@ -293,7 +295,7 @@ const bespokeReportBodys = (app, req) => {
         },
       ]);
 
-      return [{headers: buildTableHeaders(reportType, tableData.headings), rows: rows}];
+      return [{headers: buildTableHeaders(reportType, tableData.headings, { sortBy, sortDirection }), rows: rows}];
     },
     'prepare-monthly-utilisation': (reportType, tableData) => {
       let rows = [];
