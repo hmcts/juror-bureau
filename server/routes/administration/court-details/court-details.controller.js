@@ -23,7 +23,7 @@
       ])
         .then(([{ response: courtDetails, headers }, courtrooms]) => {
 
-          req.session.courtDetails = {
+          req.session[`courtDetails-${locationCode}`] = {
             etag: headers.etag,
           };
 
@@ -87,7 +87,7 @@
       }
 
       try {
-        await courtDetailsDAO.get(app, req, locationCode, req.session.courtDetails.etag);
+        await courtDetailsDAO.get(app, req, locationCode, req.session[`courtDetails-${locationCode}`].etag);
 
         req.session.errors = {
           bankDetails: [{

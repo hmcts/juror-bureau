@@ -24,7 +24,8 @@
 
       try {
         const holidayDates = await bankHolidaysDAO.get(app, req);
-        const nonSittingDates = await nonSittingDayDAO.get(app, req, req.session.authentication.owner);
+        // TODO - replace back to authentication.owner if not needed
+        const nonSittingDates = await nonSittingDayDAO.get(app, req, req.session.authentication.locCode);
         const fetchAllAvailableCourts = await fetchAllCourts.get(
           require('request-promise'), app, req.session.authToken);
 

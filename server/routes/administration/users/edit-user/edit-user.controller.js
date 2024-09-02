@@ -17,7 +17,7 @@
 
       delete req.session.formFields;
       delete req.session.errors;
-      delete req.session.editUser;
+      delete req.session[`editUser-${username}`];
 
       if (isSJOUser(req) && !isManager(req)) {
         app.logger.warn('SJO user tried to edit user details', {
@@ -53,7 +53,7 @@
 
         replaceAllObjKeys(user, _.camelCase);
 
-        req.session.editUser = {
+        req.session[`editUser-${username}`] = {
           orignalDetails: {
             name : user.name,
             email: user.email,
@@ -91,7 +91,7 @@
   module.exports.postEditUser = function(app) {
     return async function(req, res) {
       const { username } = req.params;
-      const { userType } = req.session.editUser.orignalDetails;
+      const { userType } = req.session[`editUser-${username}`].orignalDetails;
 
       const validatorResult = validate(req.body, validator.userDetails(res, userType.toUpperCase()));
 
@@ -155,7 +155,7 @@
   module.exports.postConfirmEditUserType = function(app) {
     return async function(req, res) {
       const { username } = req.params;
-      const user = _.clone(req.session.editUser.details);
+      const user = _.clone(req.session[`editUser-${username}`].details);
       const editPayload = {
         'is_active': true,
         'email': user.email,

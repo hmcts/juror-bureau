@@ -7,30 +7,26 @@
   module.exports.getCourtsAndBureau = function(app) {
     return async(req, res) => {
       let courts = [];
-      let { filter, action } = req.query;
-
-      if (action === 'clear') {
-        delete req.session.courtsAndBureau;
-      }
+      let { filter } = req.query;
 
       try {
-        if (req.session.courtsAndBureau && req.session.courtsAndBureau.filteredCourts && filter) {
-          courts = _.clone(req.session.courtsAndBureau.filteredCourts);
-        } else {
-          const courtsData = await courtsDAO.get(app, req);
+        let courtsData = await courtsDAO.get(app, req);
 
-          courts = mapAdminToPoolRequestCourts(courtsData);
+        courts = mapAdminToPoolRequestCourts(courtsData);
 
-          req.session.courtsAndBureau = {
-            courts: courts,
-          };
+        if (filter) {
+          courts = courts.filter((court) =>{
+            const courtName = transformCourtName(court).toLowerCase();
+
+            return courtName.includes(filter.toLowerCase());
+          });
         }
 
         return res.render('administration/courts-and-bureau.njk', {
           courts,
           filter,
           filterUrl: app.namedRoutes.build('administration.courts-and-bureau.filter'),
-          clearFilterUrl: app.namedRoutes.build('administration.courts-and-bureau.get') + '?action=clear',
+          clearFilterUrl: app.namedRoutes.build('administration.courts-and-bureau.get'),
         });
       } catch (err) {
         app.logger.crit('Failed to fetch all courts', {
@@ -46,20 +42,9 @@
 
   module.exports.postFilterCourts = function(app) {
     return async function(req, res) {
-
       if (req.body.courtSearch === '') {
-        delete req.session.courtsAndBureau;
         return res.redirect(app.namedRoutes.build('administration.courts-and-bureau.get'));
       }
-      const courts = _.clone(req.session.courtsAndBureau.courts);
-
-      const filteredList = courts.filter((court) =>{
-        const courtName = transformCourtName(court).toLowerCase();
-
-        return courtName.includes(req.body.courtSearch.toLowerCase());
-      });
-
-      req.session.courtsAndBureau.filteredCourts = filteredList;
       return res.redirect(app.namedRoutes.build('administration.courts-and-bureau.get') + '?filter=' + req.body.courtSearch);
     };
   };
