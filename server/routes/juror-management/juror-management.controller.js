@@ -45,8 +45,8 @@
       const confirmedTab = tab || 'attended';
 
       try {
-        const yesterday = new Date();
-        yesterday.setDate(selectedDate.getDate() - 1);
+        const yesterday = new Date(selectedDate);
+        yesterday.setDate(yesterday.getDate() - 1);
         const previousWorkingDay = setPreviousWorkingDay(new Date(selectedDate));
         const previousWorkingDayIsConfirmed = isAttendanceConfirmedByAttendances(await getAppearances(app, req, req.session.authentication.locCode, dateFilter(previousWorkingDay, null, 'YYYY-MM-DD')));
 
