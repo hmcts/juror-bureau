@@ -1,7 +1,8 @@
 /* eslint-disable strict */
-const { dateFilter, makeDate, toMoney } = require('../../../components/filters');
+const moment = require('moment');
+const { dateFilter, makeDate, toMoney, capitalizeFully } = require('../../../components/filters');
 const { snakeToCamel } = require('../../../lib/mod-utils');
-const { tableDataMappers, buildTableHeaders } = require('../standard-report/utils');
+const { tableDataMappers, buildTableHeaders, sort  } = require('../standard-report/utils');
 
 const bespokeReportBodys = (app, req) => {
   return {
@@ -62,36 +63,12 @@ const bespokeReportBodys = (app, req) => {
       return { activeRows, inactiveRows };
     },
     'unpaid-attendance-detailed': (reportType, tableData) => {
-      let poolTrial = [];
-      const headers = [
-        {
-          text: 'Juror Number',
-          classes: 'mod-!-width-one-sixth',
-        },
-        {
-          text: 'First Name',
-          classes: 'mod-!-width-one-sixth',
-        },
-        {
-          text: 'Last Name',
-          classes: 'mod-!-width-one-sixth',
-        },
-        {
-          text: 'Audit number',
-          classes: 'mod-!-width-one-sixth',
-        },
-        {
-          text: 'Attendance Type',
-          classes: 'mod-!-width-one-sixth',
-        },
-        {
-          text: 'Expense Status',
-          classes: 'mod-!-width-one-sixth',
-        }
-      ]
+      const sortBy = req.query.sortBy || 'lastName';
+      const sortDirection = req.query.sortDirection || 'ascending';
+
+      let rows = [];
 
       for (const [header, data] of Object.entries(tableData.data)) {
-        let tableDetails = [];
         let counter = 0;
         const poolTrialLink = header.includes('Pool')
         ? app.namedRoutes.build('pool-overview.get', {
@@ -101,33 +78,82 @@ const bespokeReportBodys = (app, req) => {
           trialNumber: header.replace('Trial ',''),
           locationCode: req.session.authentication.locCode,
         })
-          for (const [key, value] of Object.entries(data)) {
-            counter += value.length;
-            tableDetails.push({
-              date: key,
-              values: value,
-            });
+        rows.push([
+          {
+            html: `<a class="govuk-link" href="${poolTrialLink}">${header}</a>`,
+            classes: 'govuk-heading-m mod-table-no-border govuk-!-padding-top-5 govuk-!-margin-bottom-0 govuk-!-padding-bottom-0',
+            colspan: 6,
+          },
+        ])
+        for (const [key, value] of Object.entries(data)) {
+          counter += value.length;
+          rows.push([
+            {
+              text: dateFilter(makeDate(key), null, 'dddd D MMMM YYYY'),
+              classes: 'govuk-body-l govuk-!-padding-top-5',
+              colspan: 6,
+            }
+          ])
+          value.sort(sort(sortBy, sortDirection));
+          value.forEach((juror) => {
+            let auditNumber = '-'
+            if (juror.auditNumber.charAt(0) === 'J') {
+              auditNumber = `<a class="govuk-link" href="${app.namedRoutes.build('reports.jury-attendance-audit.report.print', {filter: juror.auditNumber})}" target="_blank">${juror.auditNumber}</a>`
+            } else if (juror.auditNumber.charAt(0) === 'P') {
+              auditNumber = `<a class="govuk-link" href="${app.namedRoutes.build('reports.pool-attendance-audit.report.print', {filter: juror.auditNumber})}" target="_blank">${juror.auditNumber}</a>`
+            }
+            rows.push([
+              {
+                html: `<a class="govuk-link" href="${app.namedRoutes.build('juror-record.overview.get', {jurorNumber: juror.jurorNumber})}">${juror.jurorNumber}</a>`,
+              },
+              {
+                text: juror.firstName,
+              },
+              {
+                text: juror.lastName,
+              },
+              {
+                html: auditNumber,
+              },
+              {
+                text: capitalizeFully(juror.attendanceType.replace('_', ' ')),
+              },
+              {
+                text: juror.expenseStatus
+              }
+            ])
+          });
+          rows.push([{
+            text: `Total: ${value.length}`,
+            colspan: 6,
+            classes: 'govuk-!-font-weight-bold',
+          }]);
         }
-        poolTrial.push({
-          header,
-          dates: tableDetails,
-          totalLength: counter,
-          poolTrialLink,
-        })
+        rows.push([{
+          text: `Total unpaid attendences for ${header}: ${counter}`,
+          colspan: 6,
+          classes: 'govuk-!-font-weight-bold mod-table-no-border mod-highlight-table-data__grey',
+        }])
       }
 
-      return [{headers: headers, rows: poolTrial}];
+      return [{headers: buildTableHeaders(reportType, tableData.headings, { sortBy, sortDirection }), rows: rows}];
     },
     'daily-utilisation': (reportType, tableData) => {
+      const sortBy = req.query.sortBy || 'date';
+      const sortDirection = req.query.sortDirection || 'ascending';
       let rows = [];
 
       tableData.weeks.forEach((week) => {
+        week.days.sort(sort(sortBy, sortDirection));
         week.days.forEach((day) => {
           rows.push([
             {
               html: `<a class="govuk-link" href="${app.namedRoutes.build('reports.daily-utilisation-jurors.report.get', {
                 filter: dateFilter(makeDate(day.date), null, 'yyyy-MM-DD'),
               })}">${dateFilter(makeDate(day.date), null, 'dddd D MMMM YYYY')}</a>`,
+              attributes: {
+                'data-sort-value': dateFilter(makeDate(day.date), null, 'yyyy-MM-DD'),
+              }
             },
             {
               text: day.jurorWorkingDays.toString(),
@@ -200,9 +226,11 @@ const bespokeReportBodys = (app, req) => {
         },
       ]);
 
-      return [{headers: buildTableHeaders(reportType, tableData.headings), rows: rows}];
+      return [{headers: buildTableHeaders(reportType, tableData.headings, { sortBy, sortDirection }), rows: rows}];
     },
     'daily-utilisation-jurors': (reportType, tableData) => {
+      const sortBy = req.query.sortBy || 'juror';
+      const sortDirection = req.query.sortDirection || 'ascending';
       let rows = [];
 
       tableData.jurors.forEach((juror) => {
@@ -233,26 +261,41 @@ const bespokeReportBodys = (app, req) => {
         {
           text: 'Daily total',
           classes: 'govuk-!-padding-left-2 govuk-!-font-weight-bold mod-highlight-table-data__blue',
+          attributes: {
+            'data-fixed-index': tableData.jurors.length,
+          }
         },
         {
           text: tableData.totalJurorWorkingDays.toString(),
           classes: 'govuk-!-font-weight-bold mod-highlight-table-data__blue',
+          attributes: {
+            'data-fixed-index': tableData.jurors.length,
+          }
         },
         {
           text: tableData.totalSittingDays.toString(),
           classes: 'govuk-!-font-weight-bold mod-highlight-table-data__blue',
+          attributes: {
+            'data-fixed-index': tableData.jurors.length,
+          }
         },
         {
           text: tableData.totalAttendanceDays.toString(),
           classes: 'govuk-!-font-weight-bold mod-highlight-table-data__blue',
+          attributes: {
+            'data-fixed-index': tableData.jurors.length,
+          }
         },
         {
           text: tableData.totalNonAttendanceDays.toString(),
           classes: 'govuk-!-font-weight-bold mod-highlight-table-data__blue',
+          attributes: {
+            'data-fixed-index': tableData.jurors.length,
+          }
         },
       ]);
 
-      return [{headers: buildTableHeaders(reportType, tableData.headings), rows: rows}];
+      return [{headers: buildTableHeaders(reportType, tableData.headings, { sortBy, sortDirection }), rows: rows}];
     },
     'prepare-monthly-utilisation': (reportType, tableData) => {
       let rows = [];
@@ -261,6 +304,9 @@ const bespokeReportBodys = (app, req) => {
         rows.push([
           {
             text: month.month,
+            attributes: {
+              "data-sort-value": dateFilter(month.month, 'mmmm yyyy', 'yyyy-MM-DD')
+            }
           },
           {
             text: month.jurorWorkingDays.toString(),
@@ -284,26 +330,44 @@ const bespokeReportBodys = (app, req) => {
         {
           text: tableData.months.length > 1 ? 'Overall total' : '',
           classes: 'govuk-!-padding-left-2 govuk-!-font-weight-bold mod-highlight-table-data__blue',
+          attributes: {
+            'data-fixed-index': tableData.months.length,
+          },
         },
         {
           text: tableData.totalJurorWorkingDays.toString(),
           classes: 'govuk-!-font-weight-bold mod-highlight-table-data__blue',
+          attributes: {
+            'data-fixed-index': tableData.months.length,
+          },
         },
         {
           text: tableData.totalSittingDays.toString(),
           classes: 'govuk-!-font-weight-bold mod-highlight-table-data__blue',
+          attributes: {
+            'data-fixed-index': tableData.months.length,
+          },
         },
         {
           text: tableData.totalAttendanceDays.toString(),
           classes: 'govuk-!-font-weight-bold mod-highlight-table-data__blue',
+          attributes: {
+            'data-fixed-index': tableData.months.length,
+          },
         },
         {
           text: tableData.totalNonAttendanceDays.toString(),
           classes: 'govuk-!-font-weight-bold mod-highlight-table-data__blue',
+          attributes: {
+            'data-fixed-index': tableData.months.length,
+          },
         },
         {
           text: `${(Math.round(tableData.totalUtilisation * 100) / 100).toString()}%`,
           classes: 'govuk-!-font-weight-bold mod-highlight-table-data__blue',
+          attributes: {
+            'data-fixed-index': tableData.months.length,
+          },
         },
       ]);
 

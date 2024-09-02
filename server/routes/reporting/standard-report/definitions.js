@@ -46,6 +46,7 @@
   //     body?: boolean, // fully bespoke report body
   //     file?: string, // bespoke nunjucks file route to handle body
   //     tableHeadClasses?: [string], // classes to be added to each table header in order i.e. size classes
+  //     sortReload?: boolean, // reload the page on sort
   //   },
   //   headings: string[], // corresponds to the ids provided for the headings in the API
   //                       // (except report created dateTime)
@@ -427,8 +428,9 @@
             req.query.toDate
           ),
           body: true,
+          sortReload: true,
         },
-        unsortable: true,
+        defaultSortColumn: 'date',
         exportLabel: 'Export raw data',
       },
       'daily-utilisation-jurors': {
@@ -440,6 +442,9 @@
             req.params.filter
           ),
           body: true,
+          printSorting: {
+            dataSet: 'jurors',
+          }
         },
         headings: [
           'date',
@@ -449,7 +454,6 @@
           '',
           'courtName',
         ],
-        unsortable: true,
         exportLabel: 'Export raw data',
       },
       'voir-dire': {
@@ -578,8 +582,11 @@
             req.query.previousMonths
           ),
           body: true,
+          printSorting: {
+            dataSet: 'months',
+          }
         },
-        unsortable: true,
+        defaultSortColumn: 'month',
         exportLabel: 'Export raw data',
       },
       // this one may be unsortable
@@ -652,7 +659,6 @@
         multiTable: {
           sectionHeadings: true,
         },
-        unsortable: true,
         grouped: {
           groupHeader: true,
           headings: {
@@ -716,11 +722,17 @@
                   text: 'Daily sub total',
                   colspan: 8,
                   classes: 'govuk-!-padding-left-2 govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                  attributes: {
+                    'data-fixed-index': data.length
+                  }
                 },
                 {
                   text: toMoney(total),
                   classes: 'govuk-!-padding-right-2 govuk-!-font-weight-bold mod-highlight-table-data__grey',
                   format: 'numeric',
+                  attributes: {
+                    'data-fixed-index': data.length
+                  }
                 },
               ];
             },
@@ -918,6 +930,7 @@
             },
           },
           printInsertTables: true,
+          defaultSortColumn: 'lastName',
         },
       },
       'absences': {
@@ -1401,7 +1414,7 @@
           },
           groupHeader: true,
           totals: true,
-        }
+        },
       },
       'unpaid-attendance-detailed': {
         title: 'Unpaid attendance report (detailed)',
@@ -1418,8 +1431,9 @@
         defaultSortColumn: 'lastName',
         bespokeReport: {
           body: true,
-          file: './bespoke-report-body/unpaid-attendance-detailed.njk',
+          sortReload: true
         },
+        defaultSortColumn: 'lastName',
       },
       'deferred-list-date': {
         title: 'Deferred list (by date)',
