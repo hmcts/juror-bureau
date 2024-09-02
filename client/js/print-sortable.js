@@ -3,14 +3,11 @@ $('DOMContentLoaded', () => {
     $(element).click((e) => {
       e.preventDefault();
       if (e.target.tagName.toLowerCase() !== 'button') return;
+
       const sortBy = $(element).data('sort-key');
       const sortDirection = $(element).attr('aria-sort') === 'ascending' ? 'descending' : 'ascending';
       setUrlSortedBy(sortBy, sortDirection);
       updatePrintUrl(sortBy, sortDirection);
-      if ($('#sortReload').val() === 'true') {
-        window.location.reload(); 
-        return;
-      }
     });
   });
 
@@ -45,7 +42,6 @@ class GroupedSortableTable {
 
     this.createStatusBox();
     this.createHeadingButtons();
-
     this.initialiseSortedColumn();
     this.table.on('click', 'th button', this.onSortButtonClick.bind(this));
 
@@ -77,10 +73,6 @@ class GroupedSortableTable {
 
   onSortButtonClick(e) {
     e.preventDefault();
-    if ($('#sortReload').val() === 'true') {
-      window.location.reload(); 
-      return;
-    }
     if (e.target.tagName.toLowerCase() !== 'button') return;
 
     const button = $(e.target);
@@ -107,9 +99,6 @@ class GroupedSortableTable {
   }
 
   initialiseSortedColumn() {
-    if ($('#sortReload').val() === 'true') {
-      return;
-    }
     for (const body of this.body) {
       const rows = $(body).find('tr').filter(':not([data-fixed-index])');
 

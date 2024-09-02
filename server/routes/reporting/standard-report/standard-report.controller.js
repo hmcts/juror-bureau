@@ -689,7 +689,6 @@
         },
         bannerMessage,
         largeTotals: reportType.largeTotals?.values ? reportType.largeTotals.values(tableData.data) : [],
-        sortReload: reportType.bespokeReport?.sortReload || false,
       });
     } catch (e) {
       app.logger.crit('Failed to fetch standard report data: ', {
