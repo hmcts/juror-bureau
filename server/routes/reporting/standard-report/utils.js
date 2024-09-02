@@ -66,6 +66,9 @@ const constructPageHeading = (headingType, data) => {
     return { title: 'Time created', data: headingDataMappers.timeFromISO(data.reportCreated.value) };
   }
   const headingData = data[headingType];
+  if (headingType === 'trialNumber') {
+    return { title: headingData.displayName, data: headingData.value};
+  }
 
   if (headingData) {
     return { title: headingData.displayName, data: headingDataMappers[headingData.dataType](headingData.value)};
