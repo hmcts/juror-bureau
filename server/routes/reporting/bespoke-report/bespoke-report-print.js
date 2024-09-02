@@ -1,7 +1,8 @@
 /* eslint-disable strict */
+const moment = require('moment');
 const { dateFilter, makeDate, capitalizeFully } = require('../../../components/filters');
 const { snakeToCamel } = require('../../../lib/mod-utils');
-const { tableDataMappers } = require('../standard-report/utils');
+const { tableDataMappers, sort } = require('../standard-report/utils');
 
 const bespokeReportTablePrint = {
   'pool-status': (data) => {
@@ -67,7 +68,9 @@ const bespokeReportTablePrint = {
       },
     ];
   },
-  'unpaid-attendance-detailed': (data) => {
+  'unpaid-attendance-detailed': (data, req) => {
+      const sortBy = req.query.sortBy || 'lastName';
+      const sortDirection = req.query.sortDirection || 'ascending';
       const poolTrial = []
       poolTrial.push({
         body: [[
@@ -97,6 +100,7 @@ const bespokeReportTablePrint = {
             widths:['100%'],
             margin: [0, 0, 0, 0],
           });
+          jurors.sort(sort(sortBy, sortDirection));
           jurors.forEach(function(juror) {
             poolTrial.push({
               body: [[
@@ -133,11 +137,15 @@ const bespokeReportTablePrint = {
   
       return [...poolTrial]
     },
-  'daily-utilisation': (data) => {
+  'daily-utilisation': (data, req) => {
     const { tableData } = data;
     let rows = [];
 
+    const sortBy = req.query.sortBy || 'date';
+    const sortDirection = req.query.sortDirection || 'ascending';
+
     tableData.weeks.forEach((week) => {
+      week.days.sort(sort(sortBy, sortDirection));
       week.days.forEach((day) => {
         rows.push([
           {

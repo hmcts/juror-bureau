@@ -1,11 +1,11 @@
 /* eslint-disable strict */
 const moment = require('moment');
 const { generateDocument } = require('../../../lib/reports/single-generator');
-const { tableDataMappers, constructPageHeading } = require('./utils');
+const { tableDataMappers, constructPageHeading, sort } = require('./utils');
 const { bespokeReportTablePrint } = require('../bespoke-report/bespoke-report-print');
 const { snakeToCamel, checkIfArrayEmpty } = require('../../../lib/mod-utils');
 const { reportKeys } = require('./definitions');
-const { capitalizeFully, capitalise, timeToDuration, toSentenceCase } = require('../../../components/filters');
+const { capitalizeFully, capitalise, timeToDuration, toSentenceCase, dateFilter } = require('../../../components/filters');
 
 async function standardReportPrint(app, req, res, reportKey, data) {
   const reportData = reportKeys(app, req)[reportKey];
@@ -14,7 +14,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
   const { headings, tableData } = data;
 
   try {
-    sortTableData(req.query, tableData, reportData);
+    sortTableData(reportKey, req.query, tableData, reportData);
   } catch (err) {
     app.logger.crit('Something went wrong when sorting the table data for printing a report:', {
       auth: req.session.authentication,
@@ -223,7 +223,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
   let reportBody = [];
 
   if (reportData.bespokeReport && reportData.bespokeReport.body) {
-    reportBody = bespokeReportTablePrint[reportKey](data);
+    reportBody = bespokeReportTablePrint[reportKey](data, req);
   } else if (reportData.multiTable) {
     for (const [key, value] of Object.entries(tableData.data)) {
       reportBody.push(
@@ -305,8 +305,8 @@ async function standardReportPrint(app, req, res, reportKey, data) {
   }
 };
 
-function sortTableData({ sortBy, sortDirection }, tableData, reportData) {
-  if (reportData.bespokeReport?.body) return; // we do not sort bespoke reports for now
+function sortTableData(reportKey, { sortBy, sortDirection }, tableData, reportData) {
+  if (reportData.bespokeReport?.body && !reportData.bespokeReport?.printSorting) return; // we do not sort bespoke reports for now
 
   const _sortBy = resolveSortBy(sortBy, reportData);
 
@@ -321,48 +321,13 @@ function sortTableData({ sortBy, sortDirection }, tableData, reportData) {
       }
     });
   } else {
-    tableData.data = tableData.data.sort(sort(_sortBy, sortDirection));
-  }
-}
 
-function sort(sortBy, sortDirection) {
-  return (a, b) => {
-    const [_a, _b] = formatSortableData(a, b, sortBy);
-      
-    if (isNumber(_a) && isNumber(_b)) {
-      return sortDirection === 'descending' ? _b - _a : _a - _b;
-    }
-
-    if (sortDirection === 'descending') {
-      return _b.localeCompare(_a);
+    if (reportData.bespokeReport?.printSorting?.dataSet) {
+      tableData[reportData.bespokeReport.printSorting.dataSet] = tableData[reportData.bespokeReport.printSorting.dataSet].sort(sort(_sortBy, sortDirection))
     } else {
-      return _a.localeCompare(_b);
+      tableData.data = tableData.data.sort(sort(_sortBy, sortDirection));
     }
   }
-}
-
-function formatSortableData(a, b, sortBy) {
-  let _a = a[snakeToCamel(sortBy)] || '-';
-  let _b = b[snakeToCamel(sortBy)] || '-';
-
-  if (sortBy === 'jurorPostalAddress') {
-    _a = Object.values(a.jurorPostalAddress).join(' ');
-    _b = Object.values(b.jurorPostalAddress).join(' ');
-  }
-
-  if (sortBy === 'jurorReasonableAdjustmentWithMessage') {
-    _a = a.jurorReasonableAdjustmentWithMessage
-      ? Object.values(a.jurorReasonableAdjustmentWithMessage).join(' ') : '-';
-    _b = b.jurorReasonableAdjustmentWithMessage
-      ? Object.values(b.jurorReasonableAdjustmentWithMessage).join(' ') : '-';
-  }
-
-  if (sortBy === 'contactDetails') {
-    _a = a.contactDetails ? Object.values(a.contactDetails).join(' ') : '-';
-    _b = b.contactDetails ? Object.values(b.contactDetails).join(' ') : '-';
-  }
-
-  return [_a.toString(), _b.toString()];
 }
 
 function resolveSortBy(sortBy, reportData) {
@@ -371,10 +336,6 @@ function resolveSortBy(sortBy, reportData) {
   }
 
   return reportData.defaultSortColumn;
-}
-
-function isNumber(n) {
-  return !isNaN(parseFloat(n)) && !(moment(n, 'yyyy-MM-DD', true).isValid());
 }
 
 module.exports = {
