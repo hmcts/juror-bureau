@@ -35,7 +35,7 @@
       getDraftExpensesDAO.get(app, req, jurorNumber, locCode)
         .then(async function({ response: expenseData, headers }) {
 
-          req.session.draftExpensesEtag = headers.etag;
+          req.session[`draftExpensesEtag-${jurorNumber}`] = headers.etag;
 
           app.logger.info('Fetched draft expenses for juror: ', {
             auth: req.session.authentication,
@@ -47,7 +47,7 @@
 
           const totalExpenses = req.expensesCount.total_draft;
 
-          req.session.expensesData = {
+          req.session[`expensesData-${jurorNumber}`] = {
             total: totalExpenses,
             dates: expenseData.expense_details.reduce((prev, expense) => {
               prev.push(expense.attendance_date);
@@ -140,7 +140,7 @@
           req,
           jurorNumber,
           locCode,
-          req.session.draftExpensesEtag
+          req.session[`draftExpensesEtag-${jurorNumber}`]
         );
 
         req.session.errors = {

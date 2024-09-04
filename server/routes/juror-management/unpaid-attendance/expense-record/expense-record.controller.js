@@ -35,8 +35,8 @@
       }
 
       // always clear the list of edited expenses
-      delete req.session.editedExpenses;
-      delete req.session.editExpenseTravelOverLimit;
+      delete req.session[`editedExpenses-${jurorNumber}`];
+      delete req.session[`editExpenseTravelOverLimit-${jurorNumber}`];
 
       switch (status) {
       case 'draft':

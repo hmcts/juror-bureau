@@ -25,7 +25,7 @@
   module.exports.getEditApprovalExpenses = function(app) {
     return async function(req, res) {
       const { jurorNumber, locCode, status } = req.params;
-      const expenseDates = _.clone(req.session.editApprovalDates);
+      const expenseDates = _.clone(req.session[`editApprovalDates-${jurorNumber}`]);
       const tmpErrors = _.clone(req.session.errors);
 
       delete req.session.errors;
@@ -33,8 +33,8 @@
       try {
         const requests = [];
 
-        if (!req.session.editedExpenses) {
-          req.session.editedExpenses = {};
+        if (!req.session[`editedExpenses-${jurorNumber}`]) {
+          req.session[`editedExpenses-${jurorNumber}`] = {};
         }
 
         const payload = {
@@ -42,8 +42,8 @@
         };
 
         for (const expenseDate of expenseDates) {
-          if (req.session.editedExpenses[expenseDate]) {
-            payload.expense_list.push(req.session.editedExpenses[expenseDate].formData);
+          if (req.session[`editedExpenses-${jurorNumber}`][expenseDate]) {
+            payload.expense_list.push(req.session[`editedExpenses-${jurorNumber}`][expenseDate].formData);
           } else {
             payload.expense_list.push({
               'date_of_expense': expenseDate,
@@ -65,11 +65,11 @@
         editedTotals = expensesData.total;
 
         // get the original values for showing comparison and make them {expenseDate: values}
-        if (Object.keys(req.session.editedExpenses).length) {
+        if (Object.keys(req.session[`editedExpenses-${jurorNumber}`]).length) {
           originalExpenses = await getApprovalExpenseListDAO.post(app, req, locCode, jurorNumber, expenseDates);
 
           originalExpenses = originalExpenses.expense_details.reduce((prev, originalExpense) => {
-            if (req.session.editedExpenses[originalExpense.attendance_date]) {
+            if (req.session[`editedExpenses-${jurorNumber}`][originalExpense.attendance_date]) {
               prev[originalExpense.attendance_date] = originalExpense;
             }
 
@@ -77,7 +77,7 @@
           }, {});
         }
 
-        delete req.session.editExpenseTravelOverLimit;
+        delete req.session[`editExpenseTravelOverLimit-${jurorNumber}`];
 
         if (typeof originalExpenses !== 'undefined') {
           expensesData.expense_details.forEach(function(expense) {
@@ -99,7 +99,7 @@
               && originalExpense.public_transport === expense.public_transport
             ) {
               delete originalExpenses[expense.attendance_date];
-              delete req.session.editedExpenses[expense.attendance_date];
+              delete req.session[`editedExpenses-${jurorNumber}`][expense.attendance_date];
             }
           })
         }
@@ -142,7 +142,7 @@
         });
 
         if (err.statusCode === 422 && err.error.code === 'EXPENSE_VALUES_REDUCED_LESS_THAN_PAID'){
-          delete req.session.editedExpenses;
+          delete req.session[`editedExpenses-${jurorNumber}`];
           req.session.errors = {
             noEditedExpenses: [{
               details: 'Default financial loss would bring value less than originally paid',
@@ -164,7 +164,7 @@
   module.exports.postEditApprovalExpenses = function(app) {
     return async function(req, res) {
       const { jurorNumber, locCode, status } = req.params;
-      const editedExpenses = _.clone(req.session.editedExpenses);
+      const editedExpenses = _.clone(req.session[`editedExpenses-${jurorNumber}`]);
 
       if (!editedExpenses || !Object.keys(editedExpenses).length) {
         req.session.errors = {
@@ -192,13 +192,13 @@
       try {
         await postEditedExpensesDAO.put(req, locCode, jurorNumber, STATUSES[status], mapCamelToSnake(expensesToPost));
 
-        delete req.session.editedExpenses;
+        delete req.session[`editedExpenses-${jurorNumber}`];
 
         if (status === 'for-approval') {
-          req.session.submitExpensesBanner = 'Expenses resubmitted for approval';
+          req.session[`submitExpensesBanner-${jurorNumber}`] = 'Expenses resubmitted for approval';
         }
         if (status === 'for-reapproval' || status === 'approved') {
-          req.session.submitExpensesBanner = 'Expenses submitted for reapproval';
+          req.session[`submitExpensesBanner-${jurorNumber}`] = 'Expenses submitted for reapproval';
         }
 
         return res.redirect(app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
@@ -228,7 +228,7 @@
     return async function(req, res) {
       const { status, jurorNumber, locCode } = req.params;
       const { date, page } = req.query;
-      const dates = req.session.editApprovalDates;
+      const dates = req.session[`editApprovalDates-${jurorNumber}`];
       const cancelUrl = app.namedRoutes.build('juror-management.edit-expense.get', {
         jurorNumber,
         locCode,
@@ -237,7 +237,7 @@
 
       const pagination = {
         currPage: +page || 1,
-        totalPages: req.session.editApprovalDates.length,
+        totalPages: req.session[`editApprovalDates-${jurorNumber}`].length,
         prevLink: app.namedRoutes.build('juror-management.edit-expense.edit.get', {
           jurorNumber,
           locCode,
@@ -290,8 +290,8 @@
 
         let [[expensesData], jurorDetails] = await Promise.all(requests);
 
-        if (req.session.editedExpenses[date]) {
-          expensesData = _.merge(expensesData, req.session.editedExpenses[date].formData);
+        if (req.session[`editedExpenses-${jurorNumber}`][date]) {
+          expensesData = _.merge(expensesData, req.session[`editedExpenses-${jurorNumber}`][date].formData);
         }
 
         let tmpBody = manipulateExpensesApiData(expensesData, expensesData.none_attendance_day);
@@ -305,7 +305,6 @@
           ? 'expenses/enter-expenses-non-attendance.njk'
           : 'expenses/enter-expenses.njk';
 
-        req.session.editForApprovalInNonAttendance = expensesData.none_attendance_day;
 
         // get the original values for a day and cache to compare if there are changes
         const originalTotals = await postRecalculateSummaryTotalsDAO.post(app, req, locCode, jurorNumber, {
@@ -317,12 +316,13 @@
           ...payload,
         });
 
-        req.session.editOriginalValues = _.clone(expensesData);
+        req.session[`editDateTotalsOriginal-${jurorNumber}`] = originalTotals.expense_details[0];
 
-        req.session.editDateTotalsOriginal = originalTotals.expense_details[0];
-
-        if (req.session.editExpenseTravelOverLimit && req.session.editExpenseTravelOverLimit[date] && req.session.editExpenseTravelOverLimit[date].body) {
-          tmpBody = req.session.editExpenseTravelOverLimit[date].body;
+        if (req.session[`editExpenseTravelOverLimit-${jurorNumber}`] 
+          && req.session[`editExpenseTravelOverLimit-${jurorNumber}`][date] 
+          && req.session[`editExpenseTravelOverLimit-${jurorNumber}`][date].body
+        ) {
+          tmpBody = req.session[`editExpenseTravelOverLimit-${jurorNumber}`][date].body;
         }
 
         return res.render(template, {
@@ -365,13 +365,13 @@
       const { status, jurorNumber, locCode } = req.params;
       const { date, page, action, ['travel-over-limit']: travelOverLimit } = req.query;
 
-      const nextDate = req.session.editApprovalDates[+page];
+      const nextDate = req.session[`editApprovalDates-${jurorNumber}`][+page];
 
       const nonAttendanceDay = !!req.body.nonAttendance;
       let validatorResult;
 
       if (travelOverLimit === 'true') {
-        req.body = req.session.editExpenseTravelOverLimit[date].body;
+        req.body = req.session[`editExpenseTravelOverLimit-${jurorNumber}`][date].body;
       }
 
       if (nonAttendanceDay) {
@@ -401,10 +401,10 @@
       if (!travelOverLimit) {
         const { showTravelOverLimit, error } = await isTravelOverLimit(app, req);
 
-        if (!req.session.editExpenseTravelOverLimit) {
-          req.session.editExpenseTravelOverLimit = {};
+        if (!req.session[`editExpenseTravelOverLimit-${jurorNumber}`]) {
+          req.session[`editExpenseTravelOverLimit-${jurorNumber}`] = {};
         }
-        req.session.editExpenseTravelOverLimit[date] = {
+        req.session[`editExpenseTravelOverLimit-${jurorNumber}`][date] = {
           body: req.body
         }
 
@@ -442,9 +442,9 @@
             }) + `?date=${date}&page=${page}&action=next&travel-over-limit=true`;
           }
 
-          req.session.editExpenseTravelOverLimit[date].continueUrl = continueUrl;
-          req.session.editExpenseTravelOverLimit[date].cancelUrl = cancelUrl;
-          req.session.editExpenseTravelOverLimit[date].travelOverLimit = {
+          req.session[`editExpenseTravelOverLimit-${jurorNumber}`][date].continueUrl = continueUrl;
+          req.session[`editExpenseTravelOverLimit-${jurorNumber}`][date].cancelUrl = cancelUrl;
+          req.session[`editExpenseTravelOverLimit-${jurorNumber}`][date].travelOverLimit = {
             ...showTravelOverLimit,
           };
 
@@ -463,20 +463,20 @@
         });
 
         // I want to compare the previous with this one to check
-        const originalValues = _.clone(req.session.editDateTotalsOriginal);
+        const originalValues = _.clone(req.session[`editDateTotalsOriginal-${jurorNumber}`]);
         const responseValues = _.clone(response.expense_details[0]);
 
         delete originalValues.financial_loss_apportioned_applied;
         delete responseValues.financial_loss_apportioned_applied;
 
         if (JSON.stringify(originalValues) !== JSON.stringify(responseValues)) {
-          req.session.editedExpenses[date] = {
+          req.session[`editedExpenses-${jurorNumber}`][date] = {
             tableData: { ...response.expense_details[0] },
             formData: data,
           };
         } else {
           // if we somehow go back and reupdate to original data, just clear it :-)
-          delete req.session.editedExpenses[date];
+          delete req.session[`editedExpenses-${jurorNumber}`][date];
         }
       } catch (err) {
         if (err.error.code === 'EXPENSE_VALUES_REDUCED_LESS_THAN_PAID' && err.error.meta_data) {
@@ -547,7 +547,7 @@
       }
 
       if (showLossOverLimit) {
-        req.session.editExpenseLossOverLimitNextUrl = nextUrl;
+        req.session[`editExpenseLossOverLimitNextUrl-${jurorNumber}`] = nextUrl;
 
         return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.loss-over-limit.get', {
           jurorNumber,
@@ -643,7 +643,7 @@
 
       try {
         expensesData = await getEnteredExpensesDAO.post(app, req, locCode, jurorNumber, {
-          'expense_dates': req.session.editApprovalDates,
+          'expense_dates': req.session[`editApprovalDates-${jurorNumber}`],
         });
 
         if (status !== 'for-approval') {
@@ -744,10 +744,10 @@
 
         for (const expense of expensesData) {
           const expenseDate = expense.date_of_expense;
-          let editedExpense = req.session.editedExpenses[expenseDate];
+          let editedExpense = req.session[`editedExpenses-${jurorNumber}`][expenseDate];
 
           if (!editedExpense) {
-            req.session.editedExpenses[expenseDate] = {
+            req.session[`editedExpenses-${jurorNumber}`][expenseDate] = {
               formData: { ..._.merge(expense, applyToAllPayload) },
             };
           } else {
@@ -873,6 +873,7 @@
   }
 
   async function isLossOverLimit(app, req, attendancType, date) {
+    const { jurorNumber } = req.params;
     let showLossOverLimit;
     const totalFinancialLoss = Number(req.body.lossOfEarnings)
     + Number(req.body.extraCareCosts) + Number(req.body.otherCosts);
@@ -916,13 +917,13 @@
         message: `The amount you entered will automatically be recalculated to limit the juror's loss to £${lossLimit}`,
       };
 
-      if (req.session.editedExpenses[date] && req.session.editedExpenses[date].formData) {
-        req.session.editedExpenses[date].formData['financial_loss']['loss_of_earnings'] = lossLimit;
-        req.session.editedExpenses[date].formData['financial_loss']['extra_care_cost'] = 0;
-        req.session.editedExpenses[date].formData['financial_loss']['other_cost'] = 0;
+      if (req.session[`editedExpenses-${jurorNumber}`][date] && req.session[`editedExpenses-${jurorNumber}`][date].formData) {
+        req.session[`editedExpenses-${jurorNumber}`][date].formData['financial_loss']['loss_of_earnings'] = lossLimit;
+        req.session[`editedExpenses-${jurorNumber}`][date].formData['financial_loss']['extra_care_cost'] = 0;
+        req.session[`editedExpenses-${jurorNumber}`][date].formData['financial_loss']['other_cost'] = 0;
       }
 
-      req.session.financialLossWarning = showLossOverLimit;
+      req.session[`financialLossWarning-${req.params.jurorNumber}`] = showLossOverLimit;
     }
 
     return { showLossOverLimit, error: false };

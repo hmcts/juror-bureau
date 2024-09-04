@@ -48,10 +48,11 @@
 
       const juror = _.mapKeys(data, (__, key) => _.camelCase(key));
 
-      req.session.bankDetails = {};
-      req.session.bankDetails.etag = headers.etag;
-      req.session.bankDetails.originalDetails = juror;
-
+      req.session[`bankDetails-${jurorNumber}`] = {
+        etag: headers.etag,
+        originalDetails: juror,
+      }
+      
       juror.anonymisedAccountNumber = juror.bankAccountNumber ? '########' : '';
       juror.anonymisedSortCode = juror.sortCode ? '##-##-##' : '';
 
@@ -110,7 +111,7 @@
           app,
           req,
           jurorNumber,
-          req.session.bankDetails.etag
+          req.session[`bankDetails-${jurorNumber}`].etag
         );
 
         req.session.errors = {
@@ -139,11 +140,11 @@
 
       try {
         const accountNumber = req.body.accountNumber === '########'
-          ? req.session.bankDetails.originalDetails.bankAccountNumber
+          ? req.session[`bankDetails-${jurorNumber}`].originalDetails.bankAccountNumber
           : req.body.accountNumber;
 
         const sortCode = req.body.sortCode === '##-##-##'
-          ? req.session.bankDetails.originalDetails.sortCode
+          ? req.session[`bankDetails-${jurorNumber}`].originalDetails.sortCode
           : req.body.sortCode.replace(/-/g, '');
 
         const body = {
@@ -163,7 +164,7 @@
           data: payload,
         });
 
-        delete req.session.bankDetails;
+        delete req.session[`bankDetails-${jurorNumber}`];
 
         return res.redirect(redirectUrl);
       } catch (err) {
