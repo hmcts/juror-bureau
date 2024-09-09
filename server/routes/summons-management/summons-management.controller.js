@@ -361,8 +361,6 @@
           return res.redirect(app.namedRoutes.build('process-deferral-dates.get', routeParameters));
         };
 
-      // If new address entered and reassigning to new court
-      const courtLocCode = _.clone(req.session.receivingCourtLocCode);
 
       // get the available pools for these dates
       postBody.deferralDates = req.session.deferralDates;
@@ -373,7 +371,6 @@
         req.session.authToken,
         postBody,
         req.params['id'],
-        courtLocCode
       )
         .then(successCB)
         .catch(errorCB);
