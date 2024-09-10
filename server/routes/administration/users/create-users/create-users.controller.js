@@ -80,20 +80,21 @@
       let backLinkUrl = app.namedRoutes.build('administration.users.create.type.get');
 
       if (editingUser) {
+        const username = req.params.username;
         processUrl = app.namedRoutes.build('administration.users.edit.type.details.post', {
-          username: req.params.username,
+          username,
           userType,
         });
         cancelUrl = app.namedRoutes.build('administration.users.edit.get', {
-          username: req.params.username,
+          username,
         });
         backLinkUrl = app.namedRoutes.build('administration.users.edit.type.get', {
-          username: req.params.username,
+          username,
         });
-        if (req.session.editUser && req.session.editUser.details) {
-          tmpBody = _.clone(req.session.editUser.details);
-        } else if (req.session.editUser && req.session.editUser.orignalDetails) {
-          tmpBody = _.clone(req.session.editUser.orignalDetails);
+        if (req.session[`editUser-${username}`] && req.session[`editUser-${username}`].details) {
+          tmpBody = _.clone(req.session[`editUser-${username}`].details);
+        } else if (req.session[`editUser-${username}`]&& req.session[`editUser-${username}`].orignalDetails) {
+          tmpBody = _.clone(req.session[`editUser-${username}`].orignalDetails);
         }
       } else if (req.session.createUser && req.session.createUser.details) {
         tmpBody = _.clone(req.session.createUser.details);
@@ -162,14 +163,15 @@
         return res.redirect(errorUrl);
       }
       if (editingUser) {
-        req.session.editUser.details = {
+        const username = req.params.username;
+        req.session[`editUser-${username}`].details = {
           userType: userType,
           name: req.body.name,
           email: req.body.email,
           approvalLimit: req.body.approvalLimit,
         };
         if (req.body.roles) {
-          req.session.editUser.details.roles = req.body.roles;
+          req.session[`editUser-${username}`].details.roles = req.body.roles;
         }
       } else {
         req.session.createUser = {
@@ -207,8 +209,8 @@
       delete req.session.errors;
 
       if (editingUser) {
-        user = _.clone(req.session.editUser.details);
-        const { username } = req.params;
+        const username = req.params.username;
+        user = _.clone(req.session[`editUser-${username}`].details);
 
         changeUserTypeUrl = app.namedRoutes.build('administration.users.edit.type.get', {
           username,
@@ -252,6 +254,7 @@
 
   module.exports.postConfirmUserDetails = function(app) {
     return async function(req, res) {
+      const { userType } = req.params;
       const user = _.clone(req.session.createUser.details);
       const payload = {
         'user_type': capitalise(user.userType),

@@ -34,27 +34,25 @@
       }
 
       try {
-        if (req.session.assignCourts && req.session.assignCourts.filteredCourts && filter) {
-          courts = _.clone(req.session.assignCourts.filteredCourts)
-            .filter((c) => c.courtType === 'MAIN')
-            .filter((c) => !assignedPrimaryCourts.find((pc) => pc.primary_court.loc_code === c.locCode));
-        } else {
-          const courtsData = await courtsDAO.get(app, req);
+        const courtsData = await courtsDAO.get(app, req);
 
-          app.logger.info('Fetched list of courts', {
-            auth: req.session.authentication,
-          });
+        app.logger.info('Fetched list of courts', {
+          auth: req.session.authentication,
+        });
 
-          replaceAllObjKeys(courtsData, _.camelCase);
+        replaceAllObjKeys(courtsData, _.camelCase);
 
-          req.session.assignCourts = {
-            courts: courtsData,
-          };
+        courts = courtsData
+          .filter((c) => c.courtType === 'MAIN')
+          .filter((c) => !assignedPrimaryCourts.find((pc) => pc.primary_court.loc_code === c.locCode));
 
-          courts = courtsData
-            .filter((c) => c.courtType === 'MAIN')
-            .filter((c) => !assignedPrimaryCourts.find((pc) => pc.primary_court.loc_code === c.locCode));
-        }
+          if (filter) {
+            courts = courtsData
+              .filter((court) => {
+                const courtName = ((court.courtName).trim().replace(',', '') + ' (' + court.locCode + ')').toLowerCase();
+                return courtName.includes(filter.toLowerCase());
+              });
+          }
 
         return res.render('administration/users/assign-courts/assign-courts.njk', {
           courts,
@@ -85,21 +83,6 @@
   module.exports.postFilterCourts = function(app) {
     return async function(req, res) {
       const { username } = req.params;
-      const { action } = req.query;
-
-      if (req.body.courtSearch === '' || action === 'clear') {
-        delete req.session.assignCourts;
-        return res.redirect(app.namedRoutes.build('administration.users.assign-courts.get', { username }));
-      }
-      const courts = _.clone(req.session.assignCourts.courts);
-
-      const filteredList = courts.filter((court) =>{
-        const courtName = ((court.courtName).trim().replace(',', '') + ' (' + court.locCode + ')').toLowerCase();
-
-        return courtName.includes(req.body.courtSearch.toLowerCase());
-      });
-
-      req.session.assignCourts.filteredCourts = filteredList;
       return res.redirect(app.namedRoutes.build('administration.users.assign-courts.get', {
         username,
       }) + '?filter=' + req.body.courtSearch);
@@ -110,7 +93,6 @@
     return async function(req, res) {
       const { username } = req.params;
 
-      delete req.session.assignCourts;
       return res.redirect(app.namedRoutes.build('administration.users.assign-courts.get', { username }));
     };
   };
@@ -128,6 +110,7 @@
           username,
         }));
       }
+
 
       try {
 
