@@ -125,6 +125,12 @@
       'response.contact-logs.add.post',
       auth.verify,
       postAddLogs(app, true));
+
+    app.get('/summons-replies/response/:id/view-juror-record',
+      'response.view-juror-record.get',
+      auth.verify,
+      controller.getViewJurorRecord(app)
+    );
   };
 
 })();

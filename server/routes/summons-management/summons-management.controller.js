@@ -1096,6 +1096,13 @@
     };
   };
 
+  module.exports.getViewJurorRecord = function(app) {
+    return function(req, res) {
+      req.session.isJurorSearchResult = true;
+      return res.redirect(app.namedRoutes.build('juror-record.search.get') + `?jurorNumber=${req.params.id}`);
+    }
+  }
+
   // Helper functions
   function isComplete(elements) {
     var el;
