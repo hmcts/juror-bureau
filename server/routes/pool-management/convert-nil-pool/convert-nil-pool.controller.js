@@ -1,14 +1,15 @@
 ;(function() {
   'use strict';
 
-  var _ = require('lodash')
-    , fetchCourtDeferrals = require('../../../objects/request-pool').fetchCourtDeferrals
-    , dateFilter = require('../../../components/filters').dateFilter
-    , validate = require('validate.js')
-    , nilPoolConvertObj = require('../../../objects/nil-pool').nilPoolConvert;
+  const _ = require('lodash')
+  const fetchCourtDeferrals = require('../../../objects/request-pool').fetchCourtDeferrals
+  const dateFilter = require('../../../components/filters').dateFilter
+  const validate = require('validate.js')
+  const nilPoolConvertObj = require('../../../objects/nil-pool').nilPoolConvert;
+  const { poolSummaryObject } = require('../../../objects/pool-summary');
 
   module.exports.index = function(app) {
-    return function(req, res) {
+    return async function(req, res) {
       var selectedPool
         , selectedCourt
         , transformedDate
@@ -63,14 +64,39 @@
           }));
         };
 
+      if (!req.session.hasOwnProperty('poolDetails') || req.params['poolNumber'] !== req.session.poolDetails.poolDetails.poolNumber) {
+        try {
+          req.session.poolDetails = await poolSummaryObject.get(req, req.params['poolNumber']);
+        } catch (err) {
+          app.logger.crit('Failed to fetch the pool details when converting a nil pool: ', {
+            auth: req.session.authentication,
+            jwt: req.session.authToken,
+            data: {
+              poolNumber: req.params.poolNumber,
+            },
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });       
+        }
+      }
+
       if (!req.session.hasOwnProperty('poolDetails') ||
         !req.session.poolDetails.poolDetails.hasOwnProperty('is_nil_pool') ||
         !req.session.poolDetails.poolDetails.is_nil_pool) {
-        return res.redirect(app.namedRoutes.build('pool-management.get'));
-      }
-
-      if (req.params['poolNumber'] !== req.session.poolDetails.poolDetails.poolNumber) {
-        return res.redirect(app.namedRoutes.build('pool-management.get'));
+        app.logger.crit('Failed to convert pool to active pool as the pool is not a nil pool: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            poolNumber: req.params.poolNumber,
+          },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });  
+        req.session.deletePoolError = {
+          message: 'Unable to convert nil pool to active pool',
+          type: 'pool-delete-error',
+        };
+        return res.redirect(app.namedRoutes.build('pool-overview.get', {
+          poolNumber: req.params['poolNumber'],
+        }));
       }
 
       selectedPool = _.clone(req.session.poolDetails.poolDetails);
