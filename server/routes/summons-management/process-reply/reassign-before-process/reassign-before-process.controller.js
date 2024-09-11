@@ -126,13 +126,6 @@
 
           req.session.receivingCourtLocCode = court.locationCode;
 
-          if (req.params.action === 'deferral') {
-            return res.redirect(app.namedRoutes.build(actionPaths(req.params.action, req.params.type), {
-              id: req.params.id,
-              type: req.params.type,
-            }));
-          }
-
           res.redirect(app.namedRoutes.build('reassign-before-process.available-pools.get', {
             id: req.params.id,
             type: req.params.type,
