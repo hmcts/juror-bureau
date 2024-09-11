@@ -1,19 +1,20 @@
 (function() {
   'use strict';
 
-  const _ = require('lodash'),
-    validate = require('validate.js'),
-    modUtils = require('../../../../lib/mod-utils.js'),
-    reassignBeforeProcessValidator = require('../../../../config/validation/reassign-before-process.js')
-      .reassignBeforeProcess,
-    CourtNameOrLocationValidator = require('../../../../config/validation/request-pool.js').courtNameOrLocation,
-    selectedActivePoolValidator = require('../../../../config/validation/pool-management.js')
-      .deferralMaintenance.selectedActivePool,
-    requestCourtsObj = require('../../../../objects/request-pool').fetchCourts,
-    { systemCodesDAO } = require('../../../../objects/administration'),
-    excusalObj = require('../../../../objects/excusal-mod.js').excusalObject,
-    excusalValidator = require('../../../../config/validation/excusal-mod.js'),
-    requestObj = require('../../../../objects/pool-management.js').reassignJurors;
+  const _ = require('lodash');
+  const validate = require('validate.js');
+  const modUtils = require('../../../../lib/mod-utils.js');
+  const reassignBeforeProcessValidator = require('../../../../config/validation/reassign-before-process.js')
+    .reassignBeforeProcess;
+  const CourtNameOrLocationValidator = require('../../../../config/validation/request-pool.js').courtNameOrLocation;
+  const selectedActivePoolValidator = require('../../../../config/validation/pool-management.js')
+    .deferralMaintenance.selectedActivePool;
+  const requestCourtsObj = require('../../../../objects/request-pool').fetchCourts;
+  const { systemCodesDAO } = require('../../../../objects/administration');
+  const excusalObj = require('../../../../objects/excusal-mod.js').excusalObject;
+  const excusalValidator = require('../../../../config/validation/excusal-mod.js');
+  const requestObj = require('../../../../objects/pool-management.js').reassignJurors;
+  const { record } = require('../../../../objects/juror-record.js');
 
   module.exports.getReassignBeforeProcess = (app) => {
     return async(req, res) => {
@@ -161,14 +162,36 @@
 
   module.exports.getReassignBeforeProcessPools = (app) => {
     return (req, res) => {
+      const { id } = req.params;
       return requestObj
         .availablePools
         .get(require('request-promise'), app, req.session.authToken, req.session.receivingCourtLocCode)
-        .then((response) => {
-          const court = req.session.courtsList.find(c => c.locationCode === req.session.receivingCourtLocCode),
-            tmpErrors = _.clone(req.session.errors),
-            filteredPools = response.availablePools
-              .filter(pool => pool.poolNumber !== req.session.jurorCommonDetails.poolNumber);
+        .then(async (response) => {
+          const court = req.session.courtsList.find(c => c.locationCode === req.session.receivingCourtLocCode);
+          const tmpErrors = _.clone(req.session.errors);
+
+          try {
+            req.session[`reassignProcessCurrentPool-${id}`] = (await record.get(
+              require('request-promise'),
+              app,
+              req.session.authToken,
+              'detail',
+              id,
+              req.session.locCode,
+            )).data.commonDetails.poolNumber;
+          } catch (err) {
+            app.logger.crit('Failed to fetch the juror\'s current details', {
+              auth: req.session.authentication,
+              token: req.session.authToken,
+              jurorNumber: id,
+              error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+            });
+    
+            return res.render('_errors/generic.njk');
+          }
+
+          const filteredPools = response.availablePools
+              .filter(pool => pool.poolNumber !== req.session[`reassignProcessCurrentPool-${id}`]);
 
           delete req.session.errors;
           delete req.session.fields;
@@ -229,6 +252,7 @@
 
   module.exports.postReassignBeforeProcessPools = (app) => {
     return (req, res) => {
+      const { id } = req.params;
       const validatorResult = validate(req.body, selectedActivePoolValidator());
 
       if (typeof validatorResult !== 'undefined') {
@@ -246,7 +270,7 @@
         receivingCourtLocCode: req.body.poolNumber.substring(0, 3),
         receivingPoolNumber: req.body.poolNumber,
         sourceCourtLocCode: req.session.locCode,
-        sourcePoolNumber: req.session.jurorCommonDetails.poolNumber,
+        sourcePoolNumber: req.session[`reassignProcessCurrentPool-${id}`],
       };
 
       requestObj.reassignJuror
@@ -255,6 +279,7 @@
           () => {
             req.session.locCode = req.session.receivingCourtLocCode;
             delete req.session.receivingCourtLocCode;
+            delete req.session[`reassignProcessCurrentPool-${id}`];
 
             return res.redirect(app.namedRoutes.build(actionPaths(req.params.action, req.params.type), {
               id: req.params.id,
