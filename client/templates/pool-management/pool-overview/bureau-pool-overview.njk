@@ -105,6 +105,18 @@
             }
           }) }}
         {% endif %}
+        {% if canCreateNewJuror %}
+          {{ govukButton({
+            text: "Create juror record",
+            href: url("bureau-create-juror-record.get", {
+              poolNumber: poolDetails.poolNumber
+            }),
+            classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+            attributes: {
+              id: "createJurorRecordButton"
+            }
+          }) }}
+        {% endif %}
         {% if isNil === false %}
           {{ govukButton({
             text: "Edit pool",

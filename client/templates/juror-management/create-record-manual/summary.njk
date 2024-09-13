@@ -32,7 +32,7 @@
                 text: "Date of birth"
               },
               value: {
-                text: formFields.jurorDob
+                text: formFields.jurorDob if jurorDetails.jurorContact.jurorDob else "-"
               },
               actions: {
                 items: [{
@@ -168,7 +168,8 @@
                     attributes: {
                       "aria-label": "Change pool number"
                     }
-              }]}
+                }] if not isBureauCreation else []
+              }
             }
           ]
         }) }}

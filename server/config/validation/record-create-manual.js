@@ -58,10 +58,12 @@
     };
   };
 
-  module.exports.jurorDob = function() {
+  module.exports.jurorDob = function(isBureauCreation) {
     return {
       jurorDob: {
-        jurorDob: {},
+        jurorDob: {
+          isBureauCreation
+        },
       },
     };
   };
@@ -132,6 +134,10 @@
     today = moment(dateFilter(today, null, 'YYYY/MM/DD'), 'YYYY-MM-DD');
 
     if (!attributes[key]) {
+      if (options.isBureauCreation){
+        console.log('\n\n VALIDATING BUREAU CREATION \n\n')
+        return null;
+      }
       message.summary = 'Enter their date of birth';
       message.details.push('Enter their date of birth');
 

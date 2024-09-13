@@ -146,6 +146,26 @@
     return false;
   }
 
+  function canCreateNewJuror(req, res, next) {
+    if (
+      isBureauUser(req, res) &&
+      req.session.authentication.hasOwnProperty('permissions') === true &&
+      req.session.authentication.permissions.includes('CREATE_JUROR')
+    ) {
+      if (typeof next !== 'undefined') {
+        return next();
+      }
+
+      return true;
+    }
+
+    if (typeof next !== 'undefined') {
+      return errors(req, res, 403);
+    }
+
+    return false;
+  };
+
   module.exports.isBureauUser = isBureauUser;
   module.exports.isCourtUser = isCourtUser;
   module.exports.isSJOUser = isSJOUser;
@@ -154,5 +174,6 @@
   module.exports.isBureauManager = isBureauManager;
   module.exports.isCourtManager = isCourtManager;
   module.exports.isSystemAdministrator = isSystemAdministrator;
+  module.exports.canCreateNewJuror = canCreateNewJuror;
 
 })();
