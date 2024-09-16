@@ -146,9 +146,9 @@
     return false;
   }
 
-  function canCreateNewJuror(req, res, next) {
+  function canCreateBureauJuror(req, res, next) {
     if (
-      isBureauUser(req, res) &&
+      isBureauManager(req, res) &&
       req.session.authentication.hasOwnProperty('permissions') === true &&
       req.session.authentication.permissions.includes('CREATE_JUROR')
     ) {
@@ -174,6 +174,6 @@
   module.exports.isBureauManager = isBureauManager;
   module.exports.isCourtManager = isCourtManager;
   module.exports.isSystemAdministrator = isSystemAdministrator;
-  module.exports.canCreateNewJuror = canCreateNewJuror;
+  module.exports.canCreateBureauJuror = canCreateBureauJuror;
 
 })();

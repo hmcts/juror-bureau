@@ -5,26 +5,28 @@
   const validate = require('validate.js');
   const moment = require('moment');
   const validator = require('../../../config/validation/record-create-manual');
-  const { jurorCreateObject } = require('../../../objects/juror-create-manual');
-  const requestObj = require('../../../objects/pool-management').reassignJurors;
+  const { jurorCreateObject, bureauCreateJuror } = require('../../../objects/juror-create-manual');
+  const { reassignJurors } = require('../../../objects/pool-management');
   const courtSelectValidator = require('../../../config/validation/request-pool').courtNameOrLocation;
-  const poolSummary = require('../../../objects/pool-summary').poolSummaryObject;
-  const fetchCourts = require('../../../objects/request-pool').fetchCourts;
-  const modUtils = require('../../../lib/mod-utils');
+  const { poolSummaryObject } = require('../../../objects/pool-summary');
+  const { fetchCourts } = require('../../../objects/request-pool');
+  const { matchUserCourt, transformCourtNames, dateDifference, splitPostCode } = require('../../../lib/mod-utils');
   const { generatePoolNumber } = require('../../../objects/request-pool');
-  const addressBuilder = require('../../../components/filters/index').buildRecordAddress;
-  const dateFilter = require('../../../components/filters').dateFilter;
-  const subServiceName = 'Create juror record';
+  const { buildRecordAddress } = require('../../../components/filters/index');
+  const { dateFilter } = require('../../../components/filters');
   const { courtLocationsFromPostcodeObj } = require('../../../objects/court-location');
-  const { canCreateNewJuror } = require('../../../components/auth/user-type');
+  const { canCreateBureauJuror } = require('../../../components/auth/user-type');
+  const subServiceName = 'Create juror record';
 
   module.exports.hasStarted = function(app) {
     return function(req, res, next) {
-      if (typeof req.session.newJuror === 'undefined') {
-        if (isBureauCreation(req, res)) {
-          const { poolNumber } = req.params;
+      if (isBureauCreation(req, res)) {
+        const { poolNumber } = req.params;
+        if (typeof req.session.newJuror === 'undefined' || req.session.newJuror.poolNumber !== poolNumber) {
           return res.redirect(app.namedRoutes.build('bureau-create-juror-record.get', { poolNumber }));
         }
+      }
+      if (typeof req.session.newJuror === 'undefined') {
         return res.redirect(app.namedRoutes.build('create-juror-record.get'));
       };
 
@@ -56,8 +58,8 @@
 
       try {
         const courtsList = await fetchCourts.get(require('request-promise'), app, req.session.authToken);
-        const courtData = await modUtils.matchUserCourt(courtsList.courts, locCode);
-        const poolsList = await requestObj.availableCourtOwnedPools
+        const courtData = await matchUserCourt(courtsList.courts, locCode);
+        const poolsList = await reassignJurors.availableCourtOwnedPools
           .get(require('request-promise'), app, req.session.authToken, courtData.locationCode);
         const multiCourt = courtsList.courts.length > 1;
 
@@ -141,7 +143,7 @@
 
   module.exports.getChangeCourt = function(app) {
     return function(req, res) {
-      const transformedCourtNames = modUtils.transformCourtNames(req.session.courtsList);
+      const transformedCourtNames = transformCourtNames(req.session.courtsList);
       const tmpErrors = _.cloneDeep(req.session.errors);
       let formFields;
 
@@ -181,7 +183,7 @@
       }
 
       try {
-        const courtData = await modUtils.matchUserCourt(courtsList, req.body);
+        const courtData = await matchUserCourt(courtsList, req.body);
 
         req.session.courtChange = courtData.locationCode;
 
@@ -238,6 +240,7 @@
 
   module.exports.postJurorName = function(app) {
     return function(req, res) {
+      const { poolNumber } = req.params;
       const routePrefix = isBureauCreation(req, res) ? 'bureau-' : '';
       const validatorResult = validate(req.body, validator.jurorName());
       let tmpBody = req.body;
@@ -247,7 +250,7 @@
         req.session.formFields = req.body;
 
         return res.redirect(app.namedRoutes.build(`${routePrefix}create-juror-record.juror-name.get`, {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }));
       };
 
@@ -256,20 +259,21 @@
       req.session.newJuror.jurorName = tmpBody;
 
       return res.redirect(app.namedRoutes.build(summaryStageCheck(`${routePrefix}create-juror-record.juror-dob.post`, req, res), {
-        poolNumber: req.params.poolNumber,
+        poolNumber,
       }));
     };
   };
 
   module.exports.getJurorDob = function(app) {
     return function(req, res) {
+      const { poolNumber } = req.params;
       const routePrefix = isBureauCreation(req, res) ? 'bureau-' : '';
       const tmpErrors = _.cloneDeep(req.session.errors);
       let formFields;
 
       if (typeof req.session.newJuror.jurorName === 'undefined') {
         return res.redirect(app.namedRoutes.build(`${routePrefix}create-juror-record.juror-name.get`, {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }));
       };
 
@@ -287,11 +291,11 @@
 
       return res.render('juror-management/create-record-manual/juror-dob.njk', {
         postUrl: app.namedRoutes.build(`${routePrefix}create-juror-record.juror-dob.post`, {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }),
         cancelUrl: cancelUrl(req, res, app),
         backLinkUrl: app.namedRoutes.build(`${routePrefix}create-juror-record.juror-name.get`, {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }),
         subServiceName: subServiceName,
         pageIdentifier: 'What\'s their date of birth?',
@@ -328,13 +332,13 @@
         if (poolNumber === 'new-pool') {
           courtStartDate = req.session.poolCreateFormFields.poolDetails.serviceStartDate;
         } else {
-          const poolData = await poolSummary.get(req, poolNumber);
+          const poolData = await poolSummaryObject.get(req, poolNumber);
 
           courtStartDate = dateFilter(new Date(poolData.poolDetails.courtStartDate), null, 'DD/MM/YYYY');
         }
 
         if (tmpBody.jurorDob) {
-          const ageAtStartDate = modUtils.dateDifference(courtStartDate, req.body.jurorDob, 'years');
+          const ageAtStartDate = dateDifference(courtStartDate, req.body.jurorDob, 'years');
 
           req.session.newJuror.jurorDob = tmpBody.jurorDob || null;
           req.session.newJuror.ageAtStartDate = ageAtStartDate;
@@ -364,6 +368,7 @@
 
   module.exports.getIneligibleAge = function(app) {
     return function(req, res) {
+      const { poolNumber } = req.params;
       const routePrefix = isBureauCreation(req, res) ? 'bureau-' : '';
       const tmpErrors = _.cloneDeep(req.session.errors);
       const formOptions = [
@@ -379,7 +384,7 @@
 
       if (typeof req.session.newJuror.jurorDob === 'undefined') {
         return res.redirect(app.namedRoutes.build(`${routePrefix}create-juror-record.juror-dob.get`, {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }));
       };
 
@@ -387,7 +392,7 @@
 
       return res.render('juror-management/create-record-manual/ineligible-age.njk', {
         postUrl: app.namedRoutes.build(`${routePrefix}create-juror-record.ineligible-age.post`, {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }),
         cancelUrl: cancelUrl(req, res, app),
         subServiceName: subServiceName,
@@ -407,6 +412,7 @@
 
   module.exports.postIneligibleAge = function(app) {
     return function(req, res) {
+      const { poolNumber } = req.params;
       const routePrefix = isBureauCreation(req, res) ? 'bureau-' : '';
       const validatorResult = validate(req.body, validator.confirmIneligibleAge());
 
@@ -414,13 +420,13 @@
         req.session.errors = validatorResult;
 
         return res.redirect(app.namedRoutes.build(`${routePrefix}create-juror-record.ineligible-age.get`, {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }));
       };
 
       if (req.body.confirmIneligibleAge === 'change') {
         return res.redirect(app.namedRoutes.build(`${routePrefix}create-juror-record.juror-dob.get`, {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }));
       };
 
@@ -430,13 +436,14 @@
 
   module.exports.getJurorAddress = function(app) {
     return function(req, res) {
+      const { poolNumber } = req.params;
       const routePrefix = isBureauCreation(req, res) ? 'bureau-' : '';
       const tmpErrors = _.cloneDeep(req.session.errors);
       let formFields;
 
       if (typeof req.session.newJuror.jurorDob === 'undefined' && !isBureauCreation(req, res)) {
         return res.redirect(app.namedRoutes.build('create-juror-record.juror-dob.get', {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }));
       };
 
@@ -451,11 +458,11 @@
 
       return res.render('juror-management/create-record-manual/juror-address.njk', {
         postUrl: app.namedRoutes.build(`${routePrefix}create-juror-record.juror-address.post`, {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }),
         cancelUrl: cancelUrl(req, res, app),
         backLinkUrl: app.namedRoutes.build(`${routePrefix}create-juror-record.juror-dob.get`, {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }),
         subServiceName: subServiceName,
         pageIdentifier: 'What\'s the juror\'s address?',
@@ -471,6 +478,7 @@
 
   module.exports.postJurorAddress = function(app) {
     return async function(req, res) {
+      const { poolNumber } = req.params;
       const routePrefix = isBureauCreation(req, res) ? 'bureau-' : '';
       const validatorResult = validate(req.body, validator.jurorAddress());
       let tmpBody = req.body;
@@ -480,13 +488,13 @@
         req.session.formFields = req.body;
 
         return res.redirect(app.namedRoutes.build(`${routePrefix}create-juror-record.juror-address.get`, {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }));
       };
 
       try {
-        const locCode = req.params.poolNumber === 'new-pool' ?
-          req.session.newJuror.createPool.courtLocCode : req.params.poolNumber.slice(0, 3);
+        const locCode = poolNumber === 'new-pool' ?
+          req.session.newJuror.createPool.courtLocCode : poolNumber.slice(0, 3);
 
         delete tmpBody._csrf;
 
@@ -494,7 +502,7 @@
 
         req.session.newJuror.jurorAddress = tmpBody;
 
-        const postcode = modUtils.splitPostCode(tmpBody.addressPostcode);
+        const postcode = splitPostCode(tmpBody.addressPostcode);
         const catchmentAreas = await courtLocationsFromPostcodeObj
           .get(require('request-promise'), app, req.session.authToken, postcode);
 
@@ -502,26 +510,26 @@
 
         if (!catchmentAreas.some(loc => loc.locationCode === locCode)) {
           return res.redirect(app.namedRoutes.build(`${routePrefix}create-juror-record.outside-postcode.get`, {
-            poolNumber: req.params.poolNumber,
+            poolNumber,
           }));
         };
 
         return res.redirect(app.namedRoutes.build(summaryStageCheck(`${routePrefix}create-juror-record.juror-contact.get`, req, res), {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }));
 
       } catch (err) {
         if (err.statusCode === 404) {
           req.session.newJuror.catchmentAreas = [];
           return res.redirect(app.namedRoutes.build(`${routePrefix}create-juror-record.outside-postcode.get`, {
-            poolNumber: req.params.poolNumber,
+            poolNumber,
           }));
         }
         app.logger.crit('Unable to check postcode', {
           auth: req.session.authentication,
           token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
-          data: { postcode: tmpBody.addressPostcode},
+          data: { postcode: tmpBody.addressPostcode },
         });
         return res.render('_errors/generic.njk');
 
@@ -531,14 +539,15 @@
 
   module.exports.getOutsidePostcode = function(app) {
     return function(req, res) {
+      const { poolNumber } = req.params;
       const routePrefix = isBureauCreation(req, res) ? 'bureau-' : '';
 
       return res.render('juror-management/create-record-manual/outside-postcode.njk', {
         continueUrl: app.namedRoutes.build(summaryStageCheck(`${routePrefix}create-juror-record.juror-contact.get`, req, res), {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }),
         changeUrl: app.namedRoutes.build(`${routePrefix}create-juror-record.juror-address.get`, {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }),
         subServiceName: subServiceName,
         catchmentAreas: req.session.newJuror.catchmentAreas.length,
@@ -549,12 +558,13 @@
 
   module.exports.getContact = function(app) {
     return function(req, res) {
+      const { poolNumber } = req.params;
       const routePrefix = isBureauCreation(req, res) ? 'bureau-' : '';
       let formFields
 
       if (typeof req.session.newJuror.jurorAddress === 'undefined') {
         return res.redirect(app.namedRoutes.build(`${routePrefix}create-juror-record.juror-address.get`, {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }));
       };
 
@@ -570,11 +580,11 @@
 
       return res.render('juror-management/create-record-manual/juror-contact.njk', {
         postUrl: app.namedRoutes.build(`${routePrefix}create-juror-record.juror-contact.post`, {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }),
         cancelUrl: cancelUrl(req, res, app),
         backLinkUrl: app.namedRoutes.build(`${routePrefix}create-juror-record.juror-address.get`, {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }),
         subServiceName: subServiceName,
         pageIdentifier: 'Enter their contact details',
@@ -591,6 +601,7 @@
 
   module.exports.postContact = function(app) {
     return function(req, res) {
+      const { poolNumber } = req.params;
       const routePrefix = isBureauCreation(req, res) ? 'bureau-' : '';
       const validatorResult = validate(req.body, validator.contactDetails(req.body));
 
@@ -599,7 +610,7 @@
         req.session.formFields = req.body;
 
         return res.redirect(app.namedRoutes.build(`${routePrefix}create-juror-record.juror-contact.get`, {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }));
       }
 
@@ -612,19 +623,20 @@
       req.session.newJuror.jurorContact = tmpBody;
 
       return res.redirect(app.namedRoutes.build(summaryStageCheck(`${routePrefix}create-juror-record.notes.get`, req, res), {
-        poolNumber: req.params.poolNumber,
+        poolNumber,
       }));
     };
   };
 
   module.exports.getNotes = function(app) {
     return function(req, res) {
+      const { poolNumber } = req.params;
       const routePrefix = isBureauCreation(req, res) ? 'bureau-' : '';
       let formFields;
       
       if (typeof req.session.newJuror.jurorAddress === 'undefined') {
         return res.redirect(app.namedRoutes.build(`${routePrefix}create-juror-record.juror-address.get`, {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }));
       };
 
@@ -636,19 +648,20 @@
 
       return res.render('juror-management/create-record-manual/notes.njk', {
         postUrl: app.namedRoutes.build(`${routePrefix}create-juror-record.notes.post`, {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }),
         cancelUrl: cancelUrl(req, res, app),
         subServiceName: subServiceName,
         pageIdentifier: 'Notes',
         formFields: formFields,
-        poolNumber: req.params.poolNumber,
+        poolNumber,
       });
     };
   };
 
   module.exports.postNotes = function(app) {
     return function(req, res) {
+      const { poolNumber } = req.params;
       const routePrefix = isBureauCreation(req, res) ? 'bureau-' : '';
       let tmpBody = req.body;
 
@@ -657,26 +670,27 @@
       req.session.newJuror.notes = tmpBody.notes;
 
       return res.redirect(app.namedRoutes.build(`${routePrefix}create-juror-record.summary.get`, {
-        poolNumber: req.params.poolNumber,
+        poolNumber,
       }));
     };
   };
 
   module.exports.getSummary = function(app) {
     return async function(req, res) {
+      const { poolNumber } = req.params;
       const routePrefix = isBureauCreation(req, res) ? 'bureau-' : '';
       if (typeof req.session.newJuror.jurorAddress === 'undefined') {
         return res.redirect(app.namedRoutes.build(`${routePrefix}create-juror-record.juror-address.get`, {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }));
       };
 
       req.session.newJuror.summaryStage = true;
 
-      let poolNumber;
+      let newPoolNumber;
 
-      if (req.params.poolNumber === 'new-pool') {
-        poolNumber = await generatePoolNumber.get(
+      if (poolNumber === 'new-pool') {
+        newPoolNumber = await generatePoolNumber.get(
           require('request-promise'),
           app,
           req.session.authToken,
@@ -696,40 +710,40 @@
       const formFields = {
         jurorDob: req.session.newJuror.jurorDob ? constructDob(req.session.newJuror.jurorDob, req.session.newJuror.ageAtStartDate) : null,
         jurorName: constructName(req.session.newJuror.jurorName),
-        jurorAddress: addressBuilder(addressParts),
-        poolNumber: poolNumber || req.params.poolNumber,
+        jurorAddress: buildRecordAddress(addressParts),
+        poolNumber: newPoolNumber || poolNumber,
       };
 
       const changeUrls = {
         poolNumber: app.namedRoutes.build('create-juror-record.get'),
         jurorName: app.namedRoutes.build(`${routePrefix}create-juror-record.juror-name.get`, {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }),
         jurorDob: app.namedRoutes.build(`${routePrefix}create-juror-record.juror-dob.get`, {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }),
         jurorAddress: app.namedRoutes.build(`${routePrefix}create-juror-record.juror-address.get`, {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }),
         jurorContact: app.namedRoutes.build(`${routePrefix}create-juror-record.juror-contact.get`, {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }),
         notes: app.namedRoutes.build(`${routePrefix}create-juror-record.notes.get`, {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }),
       };
 
-      const jurorDetails = poolNumber ? { ...req.session.newJuror, poolNumber} : req.session.newJuror;
+      const jurorDetails = newPoolNumber ? { ...req.session.newJuror, newPoolNumber } : req.session.newJuror;
 
       const cancelUrl = isBureauCreation(req, res)
         ? app.namedRoutes.build('pool-overview.get', {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         })
         : app.namedRoutes.build('juror-management.manage-jurors.pools.get');
 
       return res.render('juror-management/create-record-manual/summary.njk', {
         postUrl: app.namedRoutes.build(`${routePrefix}create-juror-record.summary.post`, {
-          poolNumber: req.params.poolNumber,
+          poolNumber,
         }),
         cancelUrl,
         pageIdentifier: 'Check your answers',
@@ -737,17 +751,16 @@
         formFields,
         jurorDetails,
         changeUrls: changeUrls,
-        isBureauCreation: isBureauCreation(req, res),
       });
     };
   };
 
   module.exports.postSummary = function(app) {
     return async function(req, res) {
-      console.log('\n\n', buildCreationPayload(req.session.newJuror), '\n\n');
+      const { poolNumber } = req.params;
       try {
         if (isBureauCreation(req, res)) {
-          // TODO - Add call to new object to create a juror record
+          await bureauCreateJuror.post(req, buildCreationPayload(req.session.newJuror));
         } else {
           await jurorCreateObject.post(req, buildCreationPayload(req.session.newJuror))
         }
@@ -758,25 +771,26 @@
         };
         const constructedName = constructName(jurorName);
         const bannerMessage = isBureauCreation(req, res)
-          ? 'Juror record created for ' + constructedName + ' and summoned to pool ' + req.session.newJuror.poolNumber
-          : 'Draft juror record created for ' + constructedName +' - senior jury officer will need to approve this';
+          ? `Juror record created for ${constructedName} and summoned to pool ${req.session.newJuror.poolNumber}`
+          : `Draft juror record created for ${constructName} - senior jury officer will need to approve this`;
 
         req.session.bannerMessage = bannerMessage;
         delete req.session.newJuror;
 
         const redirectUrl = isBureauCreation(req, res)
           ? app.namedRoutes.build('pool-overview.get', {
-            poolNumber: req.params.poolNumber,
+            poolNumber,
           })
           : app.namedRoutes.build('juror-management.manage-jurors.pending-approval.get');
 
         return res.redirect(redirectUrl);
 
       } catch (err) {
-        app.logger.crit('Unable to manually create a juror', {
+        app.logger.crit(`Unable to manually create a juror at the ${isBureauCreation(req, res) ? 'bureau' : 'court'}`, {
           auth: req.session.authentication,
           token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+          data: buildCreationPayload(req.session.newJuror),
         });
 
         return res.render('_errors/generic.njk');
@@ -812,6 +826,7 @@
   };
 
   function cancelUrl(req, res, app) {
+    const { poolNumber } = req.params;
     if (typeof req.session.newJuror !== 'undefined' && typeof req.session.newJuror.summaryStage !== 'undefined') {
       return isBureauCreation(req, res)
         ? app.namedRoutes.build('bureau-create-juror-record.summary.get', {
@@ -823,13 +838,13 @@
     }
     return isBureauCreation(req, res)
       ? app.namedRoutes.build('pool-overview.get', {
-        poolNumber: req.params.poolNumber,
+        poolNumber,
       })
       : app.namedRoutes.build('juror-management.manage-jurors.pools.get');
   }
 
   function isBureauCreation(req, res) {
-    return req.url.includes('pool-management') && canCreateNewJuror(req, res);
+    return req.url.includes('pool-management') && canCreateBureauJuror(req, res);
   }
 
   function buildCreationPayload(jurorDetails) {
@@ -845,7 +860,7 @@
         'county': jurorDetails.jurorAddress.addressCounty,
         'postcode': jurorDetails.jurorAddress.addressPostcode,
       },
-      'date_of_birth': jurorDetails.jurorDob ? dateFilter(jurorDetails.jurorDob, 'DD/MM/YYYY', 'YYYY-MM-DD') : '',
+      ...(jurorDetails.jurorDob && {'date_of_birth': dateFilter(jurorDetails.jurorDob, 'DD/MM/YYYY', 'YYYY-MM-DD')}),
       ...(jurorDetails.jurorContact.mainPhone && {'primary_phone': jurorDetails.jurorContact.mainPhone}),
       ...(jurorDetails.jurorContact.alternativePhone && {'alternative_phone': jurorDetails.jurorContact.alternativePhone}),
       ...(jurorDetails.jurorContact.emailAddress && {'email_address': jurorDetails.jurorContact.emailAddress}),
