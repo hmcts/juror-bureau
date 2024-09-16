@@ -135,7 +135,6 @@
 
     if (!attributes[key]) {
       if (options.isBureauCreation){
-        console.log('\n\n VALIDATING BUREAU CREATION \n\n')
         return null;
       }
       message.summary = 'Enter their date of birth';
