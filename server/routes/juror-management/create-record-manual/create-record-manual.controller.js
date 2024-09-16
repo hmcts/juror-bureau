@@ -5,7 +5,7 @@
   const validate = require('validate.js');
   const moment = require('moment');
   const validator = require('../../../config/validation/record-create-manual');
-  const jurorCreateObject = require('../../../objects/juror-create-manual').jurorCreateObject;
+  const { jurorCreateObject } = require('../../../objects/juror-create-manual');
   const requestObj = require('../../../objects/pool-management').reassignJurors;
   const courtSelectValidator = require('../../../config/validation/request-pool').courtNameOrLocation;
   const poolSummary = require('../../../objects/pool-summary').poolSummaryObject;
@@ -744,11 +744,12 @@
 
   module.exports.postSummary = function(app) {
     return async function(req, res) {
+      console.log('\n\n', buildCreationPayload(req.session.newJuror), '\n\n');
       try {
         if (isBureauCreation(req, res)) {
           // TODO - Add call to new object to create a juror record
         } else {
-          await jurorCreateObject.post(require('request-promise'), app, req.session.authToken, req.session.newJuror);
+          await jurorCreateObject.post(req, buildCreationPayload(req.session.newJuror))
         }
 
         const jurorName = {
@@ -829,6 +830,36 @@
 
   function isBureauCreation(req, res) {
     return req.url.includes('pool-management') && canCreateNewJuror(req, res);
+  }
+
+  function buildCreationPayload(jurorDetails) {
+    const payload = {
+      'title': jurorDetails.jurorName.title,
+      'first_name': jurorDetails.jurorName.firstName,
+      'last_name': jurorDetails.jurorName.lastName,
+      'address': {
+        'line_one': jurorDetails.jurorAddress.addressLineOne,
+        'line_two': jurorDetails.jurorAddress.addressLineTwo,
+        'line_three': jurorDetails.jurorAddress.addressLineThree,
+        'town': jurorDetails.jurorAddress.addressTown,
+        'county': jurorDetails.jurorAddress.addressCounty,
+        'postcode': jurorDetails.jurorAddress.addressPostcode,
+      },
+      'date_of_birth': jurorDetails.jurorDob ? dateFilter(jurorDetails.jurorDob, 'DD/MM/YYYY', 'YYYY-MM-DD') : '',
+      ...(jurorDetails.jurorContact.mainPhone && {'primary_phone': jurorDetails.jurorContact.mainPhone}),
+      ...(jurorDetails.jurorContact.alternativePhone && {'alternative_phone': jurorDetails.jurorContact.alternativePhone}),
+      ...(jurorDetails.jurorContact.emailAddress && {'email_address': jurorDetails.jurorContact.emailAddress}),
+      'notes': jurorDetails.notes,
+      'pool_number': jurorDetails.poolNumber,
+      'court_code' : jurorDetails.courtLocCode,
+    }
+    if (jurorDetails.hasOwnProperty('createPool')) {
+      payload['service_start_date'] = dateFilter(payload.createPool.attendanceDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
+      payload['pool_type'] = payload.createPool.poolType;
+      payload['court_code'] = payload.createPool.courtLocCode;
+      delete payload['pool_number'];
+    }
+    return payload;
   }
 
 })();
