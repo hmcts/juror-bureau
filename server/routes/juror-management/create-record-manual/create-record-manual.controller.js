@@ -751,6 +751,7 @@
         formFields,
         jurorDetails,
         changeUrls: changeUrls,
+        isBureauCreation: isBureauCreation(req, res),
       });
     };
   };
