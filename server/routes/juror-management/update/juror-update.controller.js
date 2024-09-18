@@ -428,6 +428,9 @@
         deferReason,
       );
 
+      delete req.session.deferralPools;
+      delete req.session.partialDeferralObj;
+
       const reason = req.session.deferralReasons.filter(item => item.code === deferReason);
 
       req.session.bannerMessage = 'Deferral granted (' + (reason.length > 0 ? reason[0].description : deferReason) + ')';
@@ -445,6 +448,20 @@
     }
 
     catch (err) {
+      if (err.statusCode === 422 && err.error?.code === 'CANNOT_DEFER_TO_EXISTING_POOL') {
+        app.logger.crit('Failed to process Deferral - cannot add to existing pool: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: req.body,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        req.session.errors = makeManualError('deferralDateAndPool', 'You cannot defer into the juror\'s existing pool - please select a different pool or date');
+        req.session.formFields = req.body;
+        return res.redirect(app.namedRoutes.build('juror.update.deferral.pools.get', {
+          jurorNumber: req.params['jurorNumber'],
+        }));
+      }
       app.logger.crit('Failed to defer juror: ', {
         auth: req.session.authentication,
         data: { codes: 'EXCUSAL_AND_DEFERRAL' },
