@@ -399,7 +399,7 @@
         pageIdentifier: 'Check the date of birth',
         formTitle: 'Is their date of birth correct?',
         formOptions: formOptions,
-        dob: dateFilter(new Date(req.session.newJuror.jurorDob), null, 'DD MMMM YYYY'),
+        dob: dateFilter(req.session.newJuror.jurorDob, 'DD/MM/YYYY', 'DD MMMM YYYY'),
         yearsOld: req.session.newJuror.ageAtStartDate,
         errors: {
           title: 'Please check the form',
