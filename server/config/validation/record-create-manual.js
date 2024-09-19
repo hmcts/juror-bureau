@@ -183,6 +183,23 @@
     };
   };
 
+  module.exports.jurorNotes = function() {
+    return {
+      notes: {
+        presence: {
+          allowEmpty: true,
+        },
+        length: {
+          maximum: 2000,
+          message: {
+            summary: 'The notes priovided are too long',
+            details: 'The notes priovided are too long',
+          },
+        },
+      },
+    };
+  };
+
   validate.validators.jurorDob = function(value, options, key, attributes) {
     const message = {
         summary: '',
