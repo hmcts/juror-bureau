@@ -11,6 +11,11 @@
 
   {% include "includes/errors.njk" %}
 
+  {% set titleError = undefined %}
+  {% if errors.items["title"] %}
+    {% set titleError = { text: errors.items["title"][0].details } %}
+  {% endif %}
+
   {% set firstNameError = undefined %}
   {% if errors.items["firstName"] %}
     {% set firstNameError = { text: errors.items["firstName"][0].details } %}
@@ -44,7 +49,8 @@
             id: "title",
             name: "title",
             classes: "govuk-!-width-three-quarters",
-            value: formFields.title
+            value: formFields.title,
+            errorMessage: titleError
           }) }}
 
           {{ govukInput({
