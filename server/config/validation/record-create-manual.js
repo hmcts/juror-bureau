@@ -192,8 +192,8 @@
         length: {
           maximum: 2000,
           message: {
-            summary: 'The notes priovided are too long',
-            details: 'The notes priovided are too long',
+            summary: 'The notes provided are too long',
+            details: 'The notes provided are too long',
           },
         },
       },
