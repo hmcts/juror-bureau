@@ -90,6 +90,37 @@
             details: 'Enter address line 1',
           },
         },
+        length: {
+          maximum: 35,
+          message: {
+            summary: 'Address line 1 cannot contain more than 35 characters',
+            details: 'Address line 1 cannot contain more than 35 characters',
+          },
+        },
+      },
+      addressLineTwo: {
+        presence: {
+          allowEmpty: true,
+        },
+        length: {
+          maximum: 35,
+          message: {
+            summary: 'Address line 2 cannot contain more than 35 characters',
+            details: 'Address line 2 cannot contain more than 35 characters',
+          },
+        },
+      },
+      addressLineThree: {
+        presence: {
+          allowEmpty: true,
+        },
+        length: {
+          maximum: 35,
+          message: {
+            summary: 'Address line 3 cannot contain more than 35 characters',
+            details: 'Address line 3 cannot contain more than 35 characters',
+          },
+        },
       },
       addressTown: {
         presence: {
@@ -97,6 +128,25 @@
           message: {
             summary: 'Enter a town or city',
             details: 'Enter a town or city',
+          },
+        },
+        length: {
+          maximum: 35,
+          message: {
+            summary: 'Town or city cannot contain more than 35 characters',
+            details: 'Town or city cannot contain more than 35 characters',
+          },
+        },
+      },
+      addressCounty: {
+        presence: {
+          allowEmpty: true,
+        },
+        length: {
+          maximum: 35,
+          message: {
+            summary: 'County cannot contain more than 35 characters',
+            details: 'County cannot contain more than 35 characters',
           },
         },
       },
@@ -127,6 +177,23 @@
           message: {
             summary: 'Select whether their date of birth is correct or not',
             details: 'Select whether their date of birth is correct or not',
+          },
+        },
+      },
+    };
+  };
+
+  module.exports.jurorNotes = function() {
+    return {
+      notes: {
+        presence: {
+          allowEmpty: true,
+        },
+        length: {
+          maximum: 2000,
+          message: {
+            summary: 'The notes priovided are too long',
+            details: 'The notes priovided are too long',
           },
         },
       },

@@ -632,6 +632,12 @@
     return function(req, res) {
       const { poolNumber } = req.params;
       const routePrefix = isBureauCreation(req, res) ? 'bureau-' : '';
+      const tmpErrors = _.cloneDeep(req.session.errors);
+      const tmpFields = _.cloneDeep(req.session.formFields);
+
+      delete req.session.errors;
+      delete req.session.formFields;
+      
       let formFields;
       
       if (typeof req.session.newJuror.jurorAddress === 'undefined') {
@@ -655,6 +661,12 @@
         pageIdentifier: 'Notes',
         formFields: formFields,
         poolNumber,
+        tmpFields,
+        errors: {
+          title: 'Please check the form',
+          count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+          items: tmpErrors,
+        },
       });
     };
   };
@@ -663,6 +675,17 @@
     return function(req, res) {
       const { poolNumber } = req.params;
       const routePrefix = isBureauCreation(req, res) ? 'bureau-' : '';
+      const validatorResult = validate(req.body, validator.jurorNotes(req.body));
+
+      if (validatorResult) {
+        req.session.errors = validatorResult;
+        req.session.formFields = req.body;
+
+        return res.redirect(app.namedRoutes.build(`${routePrefix}create-juror-record.notes.get`, {
+          poolNumber,
+        }));
+      }
+
       let tmpBody = req.body;
 
       delete tmpBody._csrf;

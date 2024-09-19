@@ -29,9 +29,24 @@
     {% set addressLineOneError = { text: errors.items["addressLineOne"][0].details } %}
   {% endif %}
 
+  {% set addressLineTwoError = undefined %}
+  {% if errors.items["addressLineTwo"] %}
+    {% set addressLineTwoError = { text: errors.items["addressLineTwo"][0].details } %}
+  {% endif %}
+
+  {% set addressLineThreeError = undefined %}
+  {% if errors.items["addressLineThree"] %}
+    {% set addressLineThreeError = { text: errors.items["addressLineThree"][0].details } %}
+  {% endif %}
+
   {% set addressTownError = undefined %}
   {% if errors.items["addressTown"] %}
     {% set addressTownError = { text: errors.items["addressTown"][0].details } %}
+  {% endif %}
+
+  {% set addressCountyError = undefined %}
+  {% if errors.items["addressCounty"] %}
+    {% set addressCountyError = { text: errors.items["addressCounty"][0].details } %}
   {% endif %}
 
   {% set addressPostcodeError = undefined %}
@@ -71,7 +86,8 @@
             },
             id: "addressLineTwo",
             name: "addressLineTwo",
-            value: formFields.addressLineTwo
+            value: formFields.addressLineTwo,
+            errorMessage: addressLineTwoError
           }) }}
 
           {{ govukInput({
@@ -80,7 +96,8 @@
             },
             id: "addressLineThree",
             name: "addressLineThree",
-            value: formFields.addressLineThree
+            value: formFields.addressLineThree,
+            errorMessage: addressLineThreeError
           }) }}
 
           {{ govukInput({
@@ -100,7 +117,8 @@
             id: "addressCounty",
             name: "addressCounty",
             classes: "govuk-!-width-one-half",
-            value: formFields.addressCounty
+            value: formFields.addressCounty,
+            errorMessage: addressCountyError
           }) }}
 
           {{ govukInput({
