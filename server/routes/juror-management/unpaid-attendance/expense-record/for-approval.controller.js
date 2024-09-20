@@ -48,10 +48,10 @@
         });
 
         const tmpErrors = _.clone(req.session.errors);
-        const bannerMessage = req.session.submitExpensesBanner;
+        const bannerMessage = req.session[`submitExpensesBanner-${jurorNumber}`];
 
         delete req.session.errors;
-        delete req.session.submitExpensesBanner;
+        delete req.session[`submitExpensesBanner-${jurorNumber}`];
 
         return res.render('juror-management/expense-record/expense-record.njk', {
           backLinkUrl: app.namedRoutes.build('juror-management.unpaid-attendance.get'),
@@ -112,7 +112,7 @@
       }
 
       // always rewrite this
-      req.session.editApprovalDates = (req.body['checked-expenses'] instanceof Array)
+      req.session[`editApprovalDates-${jurorNumber}`] = (req.body['checked-expenses'] instanceof Array)
         ? req.body['checked-expenses']
         : [req.body['checked-expenses']];
 

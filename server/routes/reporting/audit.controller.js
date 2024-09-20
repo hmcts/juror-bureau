@@ -129,41 +129,43 @@ const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../object
   };
 
   const postEditAudit = (app) => async(req, res) => {
-    if (!req.session.editedExpenses) {
+    const { jurorNumber, locCode, status } = req.params;
+    if (!req.session[`editedExpenses-${jurorNumber}`]) {
       req.session.errors = makeManualError('data', 'No expenses have been updated to preview audit report.');
 
       return res.redirect(app.namedRoutes.build(
         'juror-management.edit-expense.get', {
-          jurorNumber: req.params.jurorNumber,
-          locCode: req.params.locCode,
-          status: req.params.status,
+          jurorNumber,
+          locCode,
+          status,
         }));
     }
 
     return res.render('reporting/draft-audit', {
       completeRoute: app.namedRoutes.build(
         'juror-management.edit-expense.get', {
-          jurorNumber: req.params.jurorNumber,
-          locCode: req.params.locCode,
-          status: req.params.status,
+          jurorNumber,
+          locCode,
+          status,
         }
       ),
       printRoute: app.namedRoutes.build('juror-management.edit-expense.preview.get', {
-        jurorNumber: req.params.jurorNumber,
-        locCode: req.params.locCode,
-        status: req.params.status,
+        jurorNumber,
+        locCode,
+        status,
       }),
     });
   };
 
   const getEditAudit = (app) => async(req, res) => {
+    const { jurorNumber, locCode } = req.params
     try {
-      const expenseDates = mapSnakeToCamel(req.session.editApprovalDates);
-      const editedExpenses = mapSnakeToCamel(req.session.editedExpenses);
+      const expenseDates = mapSnakeToCamel(req.session[`editApprovalDates-${jurorNumber}`]);
+      const editedExpenses = mapSnakeToCamel(req.session[`editedExpenses-${jurorNumber}`]);
       const originalExpenses = mapSnakeToCamel(await getApprovalExpenseListDAO.post(
         app, req,
-        req.params.locCode,
-        req.params.jurorNumber,
+        locCode,
+        jurorNumber,
         expenseDates,
       ));
 

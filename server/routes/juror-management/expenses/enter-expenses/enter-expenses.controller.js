@@ -23,10 +23,7 @@
         return res.render('_errors/generic');
       }
 
-      delete req.session.jurorsLoss;
-      delete req.session.lossCap;
-      delete req.session.currentExpensePage;
-      delete req.session.nonAttendanceDay;
+      delete req.session[`nonAttendanceDay-${jurorNumber}`]
 
       const tmpErrors = _.cloneDeep(req.session.errors)
         , postUrls = {
@@ -97,7 +94,7 @@
         ? 'expenses/enter-expenses-non-attendance.njk'
         : 'expenses/enter-expenses.njk';
 
-      req.session.nonAttendanceDay = expensesData.none_attendance_day;
+      req.session[`nonAttendanceDay-${jurorNumber}`] = expensesData.none_attendance_day;
 
       if (!req.session.tmpBody) {
         tmpBody = manipulateExpensesApiData(expensesData);
@@ -107,12 +104,14 @@
 
       delete req.session.errors;
       delete req.session.tmpBody;
-      delete req.session.lowerLossCap;
 
       const [timeSpentAtCourtHour, timeSpentAtCourtMinute] = expensesData.time.time_spent_at_court.split(':');
 
-      if (req.session.editExpenseTravelOverLimit && req.session.editExpenseTravelOverLimit[date] && req.session.editExpenseTravelOverLimit[date].body) {
-        tmpBody = req.session.editExpenseTravelOverLimit[date].body;
+      if (req.session[`editExpenseTravelOverLimit-${jurorNumber}`] 
+        && req.session[`editExpenseTravelOverLimit-${jurorNumber}`][date] 
+        && req.session[`editExpenseTravelOverLimit-${jurorNumber}`][date].body
+      ) {
+        tmpBody = req.session[`editExpenseTravelOverLimit-${jurorNumber}`][date].body;
       }
 
       return res.render(renderTemplate, {
@@ -143,15 +142,15 @@
       const { jurorNumber, locCode } = req.params;
       const { date, action, ['travel-over-limit']: travelOverLimit } = req.query;
       const page = parseInt(req.query['page']);
-      const nonAttendanceDay = _.clone(req.session.nonAttendanceDay);
-      const nextDate = req.session.expensesData.dates[page];
+      const nonAttendanceDay = _.clone(req.session[`nonAttendanceDay-${jurorNumber}`]);
+      const nextDate = req.session[`expensesData-${jurorNumber}`].dates[page];
       const nextPage = page + 1;
       let validatorResult;
 
-      delete req.session.nonAttendanceDay;
+      delete req.session[`nonAttendanceDay-${jurorNumber}`];
 
       if (travelOverLimit === 'true') {
-        req.body = req.session.editExpenseTravelOverLimit[date].body;
+        req.body = req.session[`editExpenseTravelOverLimit-${jurorNumber}`][date].body;
       }
 
       req.body.applyToAllDays =
@@ -183,13 +182,13 @@
       if (!travelOverLimit) {
         const { showTravelOverLimit, error } = await isTravelOverLimit(app, req);
 
-        if (req.session.editExpenseTravelOverLimit) {
-          req.session.editExpenseTravelOverLimit[date] = {
+        if (req.session[`editExpenseTravelOverLimit-${jurorNumber}`]) {
+          req.session[`editExpenseTravelOverLimit-${jurorNumber}`][date] = {
             body: req.body,
           };
         } else {
-          req.session.editExpenseTravelOverLimit = {};
-          req.session.editExpenseTravelOverLimit[date] = {
+          req.session[`editExpenseTravelOverLimit-${jurorNumber}`] = {};
+          req.session[`editExpenseTravelOverLimit-${jurorNumber}`][date] = {
             body: req.body,
           }
         }
@@ -225,9 +224,9 @@
             }) + `?date=${date}&page=${page}&action=next&travel-over-limit=true`;
           }
 
-          req.session.editExpenseTravelOverLimit[date].continueUrl = continueUrl;
-          req.session.editExpenseTravelOverLimit[date].cancelUrl = cancelUrl;
-          req.session.editExpenseTravelOverLimit[date].travelOverLimit = {
+          req.session[`editExpenseTravelOverLimit-${jurorNumber}`][date].continueUrl = continueUrl;
+          req.session[`editExpenseTravelOverLimit-${jurorNumber}`][date].cancelUrl = cancelUrl;
+          req.session[`editExpenseTravelOverLimit-${jurorNumber}`][date].travelOverLimit = {
             ...showTravelOverLimit,
           };
 
@@ -263,10 +262,10 @@
         const { '0': response } = await postEditedExpensesDAO.put(req, locCode, jurorNumber, 'DRAFT', [data]);
 
         if (response.financial_loss_warning) {
-          req.session.financialLossWarning = response.financial_loss_warning;
+          req.session[`financialLossWarning-${jurorNumber}`] = response.financial_loss_warning;
 
-          req.session.nextExpensePage = action === 'next' ? nextPage : false;
-          req.session.nextExpenseDate = action === 'next' ? nextDate : false;
+          req.session[`nextExpensePage-${jurorNumber}`] = action === 'next' ? nextPage : false;
+          req.session[`nextExpenseDate-${jurorNumber}`] = action === 'next' ? nextDate : false;
 
           return res.redirect(app.namedRoutes.build('juror-management.enter-expenses.loss-over-limit.get', {
             jurorNumber,
@@ -307,7 +306,7 @@
       const { jurorNumber, locCode } = req.params;
 
       return res.render('expenses/loss-over-limit.njk', {
-        jurorLossData: req.session.financialLossWarning,
+        jurorLossData: req.session[`financialLossWarning-${jurorNumber}`],
         processUrl: app.namedRoutes.build('juror-management.enter-expenses.loss-over-limit.post', {
           jurorNumber,
           locCode,
@@ -319,17 +318,17 @@
   module.exports.postLossOverLimit = (app) => {
     return function(req, res) {
       const { jurorNumber, locCode } = req.params;
-      const date = req.session.nextExpenseDate;
-      const page = req.session.nextExpensePage;
+      const date = req.session[`nextExpenseDate-${jurorNumber}`];
+      const page = req.session[`nextExpensePage-${jurorNumber}`];
 
-      delete req.session.financialLossWarning;
-      delete req.session.nextExpensePage;
-      delete req.session.nextExpenseDate;
+      delete req.session[`financialLossWarning-${jurorNumber}`];
+      delete req.session[`nextExpensePage-${jurorNumber}`];
+      delete req.session[`nextExpenseDate-${jurorNumber}`];
 
-      if (req.session.editExpenseLossOverLimitNextUrl) {
-        const nextUrl = req.session.editExpenseLossOverLimitNextUrl;
+      if (req.session[`editExpenseLossOverLimitNextUrl-${jurorNumber}`]) {
+        const nextUrl = req.session[`editExpenseLossOverLimitNextUrl-${jurorNumber}`];
 
-        delete req.session.editExpenseLossOverLimitNextUrl;
+        delete req.session[`editExpenseLossOverLimitNextUrl-${jurorNumber}`];
 
         return res.redirect(nextUrl);
       }
@@ -351,8 +350,9 @@
 
   module.exports.getTravelOverLimit = (app) => {
     return async function(req, res) {
+      const { jurorNumber } = req.params;
       const { date } = req.query;
-      if (!req.session.editExpenseTravelOverLimit || !req.session.editExpenseTravelOverLimit[date]) {
+      if (!req.session[`editExpenseTravelOverLimit-${jurorNumber}`] || !req.session[`editExpenseTravelOverLimit-${jurorNumber}`][date]) {
         app.logger.crit('Tried to navigate back to loss-over-limit page without the session data', {
           auth: req.session.authentication,
         });
@@ -360,7 +360,7 @@
         return res.render('_errors/generic');
       }
 
-      const { continueUrl, cancelUrl, travelOverLimit, body } = req.session.editExpenseTravelOverLimit[date];
+      const { continueUrl, cancelUrl, travelOverLimit, body } = req.session[`editExpenseTravelOverLimit-${jurorNumber}`][date];
 
       return res.render('expenses/travel-over-limit.njk', {
         continueUrl,
@@ -394,7 +394,7 @@
         return res.redirect(redirectUrl);
       }
 
-      const data = buildDataPayload(req.body, req.session.nonAttendanceDay);
+      const data = buildDataPayload(req.body, req.session[`nonAttendanceDay-${jurorNumber}`]);
 
       data['date_of_expense'] = date;
       data['apply_to_days'] = [];
@@ -500,29 +500,26 @@
   };
 
   function buildExpensesPagination(app, req, res, page) {
+    const { jurorNumber, locCode } = req.params;
     let pagination = {
       currPage: page,
-      totalPages: req.session.expensesData.total,
+      totalPages: req.session[`expensesData-${req.params.jurorNumber}`].total,
     };
 
-    delete req.session.totalPages;
+    const nextDate = req.session[`expensesData-${jurorNumber}`].dates[page];
+    const prevDate = req.session[`expensesData-${jurorNumber}`].dates[page - 2];
 
-    req.session.totalPages = pagination.totalPages;
-
-    const nextDate = req.session.expensesData.dates[page];
-    const prevDate = req.session.expensesData.dates[page - 2];
-
-    if (req.session.expensesData.total > 1) {
+    if (req.session[`expensesData-${jurorNumber}`].total > 1) {
       if (page !== 1) {
         pagination.prevLink = app.namedRoutes.build('juror-management.enter-expenses.get', {
-          jurorNumber: req.params.jurorNumber,
-          locCode: req.params.locCode,
+          jurorNumber,
+          locCode,
         }) + `?date=${prevDate}&page=${page - 1}`;
       }
-      if (page !== req.session.expensesData.total) {
+      if (page !== req.session[`expensesData-${jurorNumber}`].total) {
         pagination.nextLink = app.namedRoutes.build('juror-management.enter-expenses.get', {
-          jurorNumber: req.params.jurorNumber,
-          locCode: req.params.locCode,
+          jurorNumber,
+          locCode,
         }) + `?date=${nextDate}&page=${page + 1}`;
       }
     }
