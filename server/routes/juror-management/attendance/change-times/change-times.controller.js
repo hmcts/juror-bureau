@@ -11,12 +11,12 @@
   module.exports.getChangeTimes = function(app) {
     return async function(req, res) {
       const { jurorNumber } = req.params;
-      let processUrl
-        , cancelUrl
-        , deleteUrl
-        , attendanceDate
-        , tmpErrors = _.clone(req.session.errors)
-        , tmpBody = _.clone(req.session.formFields);
+      let processUrl;
+      let cancelUrl;
+      let deleteUrl;
+      let attendanceDate;
+      let tmpErrors = _.clone(req.session.errors);
+      let tmpBody = _.clone(req.session.formFields);
 
       delete req.session.errors;
       delete req.session.formFields;
@@ -56,6 +56,11 @@
             jurorNumber: juror.jurorNumber,
           });
           req.session.jurorNameChangeAttendance = juror.firstName + ' ' + juror.lastName;
+        } else if (req.url.includes('attendance/unconfirmed-attendances')) {
+          processUrl = app.namedRoutes.build('juror-management.attendance.unconfirmed-attendances.update.post', {
+            jurorNumber: juror.jurorNumber,
+          }) + '?date=' + attendanceDate;
+          cancelUrl = app.namedRoutes.build('juror-management.attendance.unconfirmed-attendances.get') + '?date=' + attendanceDate;
         } else {
           processUrl = app.namedRoutes.build('juror-management.attendance.change-times.post', {
             jurorNumber: juror.jurorNumber,
@@ -102,6 +107,8 @@
           },
           checkInTime,
           checkOutTime,
+          caption: req.url.includes('attendance/unconfirmed-attendances') ? 'Unconfirmed Attendance' : 'Attendance',
+          submitButtonText: req.url.includes('attendance/unconfirmed-attendances') ? 'Confirm attendance' : 'Save changes'
         });
       } catch (err) {
         app.logger.crit('Failed to fetch attendance records for given day and juror number', {

@@ -4,7 +4,7 @@
   const _ = require('lodash');
   const { getJurorStatus, setPreviousWorkingDay } = require('../../lib/mod-utils');
   const dateFilter = require('../../components/filters').dateFilter;
-  const { jurorsAttending, poolAttedanceAuditDAO } = require('../../objects/juror-attendance');
+  const { jurorsAttending, poolAttedanceAuditDAO, unconfirmedJurorAttendancesDAO } = require('../../objects/juror-attendance');
 
   module.exports.isAttendanceConfirmed = async function(app, req, locCode, attendanceDate) {
       return isAttendanceConfirmedByAttendances(await getAppearances(app,req, locCode, attendanceDate));
@@ -93,6 +93,23 @@
           return res.render('_errors/generic.njk');
         }
 
+        let unconfirmedJurors = [];
+        if (attendanceConfirmed) {
+          try {
+            unconfirmedJurors = await unconfirmedJurorAttendancesDAO.get(req, req.session.authentication.locCode, date || dateFilter(new Date(), null, 'yyyy-MM-DD'));
+          } catch (err) {
+            app.logger.crit('Failed to fetch list of unconfirmed attendances', {
+              auth: req.session.authentication,
+              token: req.session.authToken,
+              data: {
+                locCode: req.session.authentication.locCode,
+                date: date || dateFilter(new Date(), null, 'yyyy-MM-DD'),
+              },
+              error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+            });
+          }
+        }
+
         return res.render('juror-management/attendance.njk', {
           nav: 'attendance',
           status: status || 'in-waiting',
@@ -123,6 +140,9 @@
             }),
           },
           poolAttendaceAuditNumbers,
+          unconfirmedAttendancesUrl:  unconfirmedJurors.length > 0
+            ? app.namedRoutes.build('juror-management.attendance.unconfirmed-attendances.get') + `?date=${dateFilter(date, null, 'YYYY-MM-DD')}`
+            : null,
         });
       } catch (err) {
         app.logger.crit('Failed to fetch jurors attendance list: ', {
