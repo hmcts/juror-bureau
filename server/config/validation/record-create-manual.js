@@ -23,6 +23,18 @@
 
   module.exports.jurorName = function() {
     return {
+      title: {
+        presence: {
+          allowEmpty: true,
+        },
+        length: {
+          maximum: 10,
+          message: {
+            summary: 'Title cannot contain more than 10 characters',
+            details: 'Title cannot contain more than 10 characters',
+          },
+        },
+      },
       firstName: {
         presence: {
           allowEmpty: false,
@@ -58,10 +70,12 @@
     };
   };
 
-  module.exports.jurorDob = function() {
+  module.exports.jurorDob = function(isBureauCreation) {
     return {
       jurorDob: {
-        jurorDob: {},
+        jurorDob: {
+          isBureauCreation
+        },
       },
     };
   };
@@ -76,6 +90,37 @@
             details: 'Enter address line 1',
           },
         },
+        length: {
+          maximum: 35,
+          message: {
+            summary: 'Address line 1 cannot contain more than 35 characters',
+            details: 'Address line 1 cannot contain more than 35 characters',
+          },
+        },
+      },
+      addressLineTwo: {
+        presence: {
+          allowEmpty: true,
+        },
+        length: {
+          maximum: 35,
+          message: {
+            summary: 'Address line 2 cannot contain more than 35 characters',
+            details: 'Address line 2 cannot contain more than 35 characters',
+          },
+        },
+      },
+      addressLineThree: {
+        presence: {
+          allowEmpty: true,
+        },
+        length: {
+          maximum: 35,
+          message: {
+            summary: 'Address line 3 cannot contain more than 35 characters',
+            details: 'Address line 3 cannot contain more than 35 characters',
+          },
+        },
       },
       addressTown: {
         presence: {
@@ -83,6 +128,25 @@
           message: {
             summary: 'Enter a town or city',
             details: 'Enter a town or city',
+          },
+        },
+        length: {
+          maximum: 35,
+          message: {
+            summary: 'Town or city cannot contain more than 35 characters',
+            details: 'Town or city cannot contain more than 35 characters',
+          },
+        },
+      },
+      addressCounty: {
+        presence: {
+          allowEmpty: true,
+        },
+        length: {
+          maximum: 35,
+          message: {
+            summary: 'County cannot contain more than 35 characters',
+            details: 'County cannot contain more than 35 characters',
           },
         },
       },
@@ -119,26 +183,48 @@
     };
   };
 
+  module.exports.jurorNotes = function() {
+    return {
+      notes: {
+        presence: {
+          allowEmpty: true,
+        },
+        length: {
+          maximum: 2000,
+          message: {
+            summary: 'The notes provided are too long',
+            details: 'The notes provided are too long',
+          },
+        },
+      },
+    };
+  };
+
   validate.validators.jurorDob = function(value, options, key, attributes) {
-    var message = {
+    const message = {
         summary: '',
         details: [],
-      }
-      , formattedDate
-      , dateSplit = attributes[key].split('/').reverse()
-      , today = new Date();
+      };
+    const dateSplit = value.split('/').reverse()
+    const dateAsDate = new Date(dateSplit[0], dateSplit[1] - 2, dateSplit[2]);
 
+    let formattedDate
+    let today = new Date();
+  
     formattedDate = moment(dateSplit, 'YYYY-MM-DD');
     today = moment(dateFilter(today, null, 'YYYY/MM/DD'), 'YYYY-MM-DD');
 
-    if (!attributes[key]) {
+    if (!value) {
+      if (options.isBureauCreation){
+        return null;
+      }
       message.summary = 'Enter their date of birth';
       message.details.push('Enter their date of birth');
 
       return message;
     }
 
-    if (/[^\d/]+/g.test(attributes[key])) {
+    if (/[^\d/]+/g.test(value)) {
       message.summary = 'Date of birth must only include numbers and forward slashes';
       message.details.push('Date of birth must only include numbers and forward slashes');
 
@@ -153,7 +239,15 @@
       return message;
     }
 
-    if (dateSplit[2] > 31 || !formattedDate.isValid()) {
+    if (
+      dateSplit[2] > 31 || 
+      !formattedDate.isValid() || 
+      !moment(dateAsDate).isValid() || 
+      dateSplit[0].length !== 4 || 
+      dateSplit[1].length !== 2 || 
+      dateSplit[2].length !== 2 || 
+      value.length !== 10
+    ) {
       message.summary = 'Enter a date of birth in the correct format, for example, 31/01/1980';
       message.details.push('Enter a date of birth in the correct format, for example, 31/01/1980');
 

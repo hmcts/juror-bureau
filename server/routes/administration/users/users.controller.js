@@ -43,7 +43,6 @@
 
       delete req.query['isActive'];
       delete req.session.createUser;
-      delete req.session.editUser;
 
       try {
         const courtsData = await courtsDAO.get(app, req);
@@ -272,7 +271,7 @@
         delete req.session.bannerMessage;
       }
 
-      delete req.session.editUser;
+      delete req.session[`editUser-${username}`];
 
       try {
         const user = await usersDAO.getUserRecord(app, req, username);

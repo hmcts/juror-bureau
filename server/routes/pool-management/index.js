@@ -30,6 +30,7 @@
     require('./coroner-court')(app);
     require('./deferral-maintenance')(app);
     require('./pool-create-manual')(app);
+    require('./bureau-create-juror-record')(app);
   };
 
 })();

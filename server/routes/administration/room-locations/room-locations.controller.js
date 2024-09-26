@@ -55,7 +55,7 @@
       try {
         const { response: courtroom, headers } = await courtroomsDAO.getDetails(app, req, locationCode, id);
 
-        req.session.editCourtroom = {
+        req.session[`editCourtroom-${locationCode}-${id}`] = {
           etag: headers.etag,
         };
 
@@ -105,7 +105,7 @@
       }
 
       try {
-        await courtroomsDAO.getDetails(app, req, locationCode, id, req.session.editCourtroom.etag);
+        await courtroomsDAO.getDetails(app, req, locationCode, id, req.session[`editCourtroom-${locationCode}-${id}`].etag);
 
         req.session.errors = {
           bankDetails: [{

@@ -16,7 +16,7 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
 
       delete req.session.errors;
       delete req.session.formFields;
-      delete req.session.expenseRatesEtag;
+      delete req.session.expenseLimitsCourtEtag;
 
       const locCode = req.session.authentication.locCode;
 
@@ -26,7 +26,7 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
 
         replaceAllObjKeys(response, _.camelCase);
 
-        req.session.expenseRatesEtag = headers.etag;
+        req.session.expenseLimitsCourtEtag = headers.etag;
 
         return res.render('administration/expense-limits-court.njk', {
           expenseLimitsTransport: response,
@@ -65,7 +65,7 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
       }
 
       try {
-        await transportRates.get(app, req, locCode, req.session.expenseRatesEtag);
+        await transportRates.get(app, req, locCode, req.session.expenseLimitsCourtEtag);
 
         req.session.errors = {
           expenseRates: [{
@@ -92,7 +92,7 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
         }
       }
 
-      delete req.session.expenseRatesEtag;
+      delete req.session.expenseLimitsCourtEtag;
 
       try {
         const body = {

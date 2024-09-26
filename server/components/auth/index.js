@@ -10,6 +10,7 @@ const {
   isSystemAdministrator,
   isManager,
   isTeamLeader,
+  canCreateBureauJuror
 } = require('./user-type');
 
 module.exports.logout = function(req, res) {
@@ -59,6 +60,7 @@ module.exports.verify = function(req, res, next) {
       res.locals.isCourtManager = isCourtManager(req, res);
       res.locals.isSystemAdministrator = isSystemAdministrator(req, res);
       res.locals.isTeamLeader = isTeamLeader(req, res);
+      res.locals.canCreateBureauJuror = canCreateBureauJuror(req, res);
       res.locals.selectedCourt = req.session.selectedCourt;
 
       return next();

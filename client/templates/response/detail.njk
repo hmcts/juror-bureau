@@ -154,7 +154,7 @@
     <div class="govuk-grid-column-full">
       <div class="govuk-grid-column-one-third">
         {% if hasModAccess %}
-          <a href="{{ url('juror-record.overview.get', { jurorNumber: response.jurorNumber }) }}" class="govuk-link">View juror's record</a>
+          <a href="{{ url('response.view-juror-record.get', { id: response.jurorNumber }) }}" class="govuk-link">View juror's record</a>
         {% endif %}
       </div>
     </div>
