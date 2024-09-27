@@ -1,0 +1,127 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "../_partials/attendance-sub-nav.njk" import attendanceSubNav %}
+
+{% block page_title %}{{ serviceName }} - Juror management - Attendance - Unconfirmed attendances{% endblock %}
+{% block page_identifier %}Juror management - Attendance - Unconfirmed attendances{% endblock %}
+
+{% set currentApp = "Jurors" %}
+
+{% block beforeContent %}
+  {% include "includes/back-link.njk" %}
+{% endblock %}
+
+{% block content %}
+
+  {% if bannerMessage %}
+    {{ mojBanner({
+      type: "success",
+      html: bannerMessage,
+      iconFallbackText: "Success"
+    }) }}
+  {% endif %}
+
+  {% set unconfirmedRows = [] %}
+  {% for juror in unconfirmedJurors %}
+    {% set row = [
+      { 
+        html: "<a href='" + url('juror-record.overview.get', { jurorNumber: juror.jurorNumber }) + "' class='govuk-link'>" + juror.jurorNumber + "</a>",
+        attributes: {
+          "data-sort-value": juror.jurorNumber
+        }
+      },
+      { 
+        text: juror.firstName,
+        attributes: {
+          "data-sort-value": juror.firstName
+        }
+      },
+      { 
+        text: juror.lastName,
+        attributes: {
+          "data-sort-value": juror.lastName        }
+      },
+      { 
+        text: juror.status | toSentenceCase,
+        attributes: {
+          "data-sort-value": juror.status | toSentenceCase
+        }
+      },
+      { 
+        text: (juror.checkInTime | timeArrayToString | convert24to12) if juror.checkInTime else "-",
+        attributes: {
+          "data-sort-value": (juror.checkInTime | timeArrayToString | convertAmPmToLong) if juror.checkInTime else 0
+        }
+      },
+      { 
+        text: (juror.checkOutTime | timeArrayToString | convert24to12) if juror.checkOutTime else "-",
+        attributes: {
+          "data-sort-value": (juror.checkOutTime | timeArrayToString | convertAmPmToLong) if juror.checkOutTime else 0
+        }
+      },
+      {
+        html: "<a href='" + url('juror-management.attendance.unconfirmed-attendances.update.get', { jurorNumber: juror.jurorNumber }) + "?date=" + date + "' class='govuk-link'>Change</a>"
+      }
+    ] %}
+    {% set unconfirmedRows = (unconfirmedRows.push(row), unconfirmedRows) %}
+  {% endfor %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <span class="govuk-caption-l">Unconfirmed attendances</span>
+      <h1 class="govuk-heading-l" id="attendanceDate">{{ selectedDate }}</h1>
+    </div>
+  </div>
+
+  {% if unconfirmedRows | length %}
+    {{ govukTable({
+      attributes: {
+        'data-module': 'moj-sortable-table'
+      },
+      head: [
+        {
+          text: "Juror number",
+          attributes: {
+            "aria-sort": "none"
+          }
+        },
+        {
+          text: "First name",
+          attributes: {
+            "aria-sort": "none"
+          }
+        },
+        {
+          text: "Last name",
+          attributes: {
+            "aria-sort": "ascending"
+          }
+        },
+        {
+          text: "Status",
+          attributes: {
+            "aria-sort": "none"
+          }
+        },
+        {
+          text: "Checked in",
+          attributes: {
+            "aria-sort": "none"
+          }
+        },
+        {
+          text: "Checked out",
+          attributes: {
+            "aria-sort": "none"
+          }
+        },
+        {}
+      ],
+      rows: unconfirmedRows
+    }) }}
+  {% else %}
+    <p class="govuk-body govuk-!-font-weight-bold">No unconfirmed attendances for this date</p>
+  {% endif %}
+
+ {% endblock %}

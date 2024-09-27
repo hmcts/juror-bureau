@@ -16,6 +16,7 @@
     transform: utils.basicDataTransform,
   };
   const rp = require('request-promise');
+  const { replaceAllObjKeys } = require('../lib/mod-utils');
 
   module.exports.jurorsAttending = {
     resource: 'moj/juror-management/appearance',
@@ -164,5 +165,14 @@
       };
     },
   });
+  module.exports.unconfirmedJurorAttendancesDAO = new DAO('moj/juror-management/unconfirmed-jurors/{locCode}', {
+    get: function(locCode, date) {
+      return {
+        uri: this.resource.replace('{locCode}', locCode) + `?attendanceDate=${date}`,
+        transform: (data) => { delete data['_headers']; return replaceAllObjKeys(data.jurors, _.camelCase); },
+      };
+    },
+  });
+  module.exports.confirmJurorAttendanceDAO = new DAO('moj/juror-management/confirm-attendance');
 
 })();

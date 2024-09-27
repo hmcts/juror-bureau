@@ -8,6 +8,7 @@
 
   module.exports = function(app) {
     require('./confirm-attendance')(app);
+    require('./unconfirmed-attendances')(app);
 
     app.post('/juror-management/attendance/check-in',
       'juror-management.check-in.post',
