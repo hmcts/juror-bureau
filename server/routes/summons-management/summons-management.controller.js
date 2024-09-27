@@ -428,14 +428,28 @@
           return res.redirect(app.namedRoutes.build('response.detail.get', routeParameters));
         }
         , errorCB = function(err) {
+          if (err.statusCode === 422 && err.error?.code === 'CANNOT_DEFER_TO_EXISTING_POOL') {
+            app.logger.crit('Failed to process Deferral - cannot add to existing pool: ', {
+              auth: req.session.authentication,
+              jwt: req.session.authToken,
+              data: req.body,
+              error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+            });
+    
+            req.session.errors = modUtils.makeManualError('deferralDateSelection', 'You cannot defer into the juror\'s existing pool - please select a different pool or date');
+            req.session.formFields = req.body;
+            return res.redirect(app.namedRoutes.build('process-deferral.get', routeParameters));
+          }
+
           app.logger.crit('Failed to process Deferral: ', {
             auth: req.session.authentication,
             jwt: req.session.authToken,
             data: req.body,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
-
+  
           return res.render('_errors/generic');
+          
         };
 
 

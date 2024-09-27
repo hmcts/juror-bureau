@@ -367,6 +367,20 @@
             .catch((err) => errorCB(err)(app, req, res));
         }
         , processErrorCB = function(err) {
+          if (err.statusCode === 422 && err.error?.code === 'CANNOT_DEFER_TO_EXISTING_POOL') {
+            app.logger.crit('Failed to add to pool - cannot add to existing pool: ', {
+              auth: req.session.authentication,
+              jwt: req.session.authToken,
+              data: req.body,
+              error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+            });
+    
+            req.session.errors = makeManualError('deferrals', 'You cannot defer into the juror\'s existing pool - please select a different pool or date');
+            req.session.formFields = req.body;
+            return res.redirect(app.namedRoutes.build('pool-management.deferral-maintencance.process.get', {
+              locationCode: req.params['locationCode'],
+            }));
+          }
 
           req.session.errors = {
             deferrals: [{
