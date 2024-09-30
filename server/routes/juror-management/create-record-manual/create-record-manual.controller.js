@@ -796,7 +796,7 @@
         const constructedName = constructName(jurorName);
         const bannerMessage = isBureauCreation(req, res)
           ? `Juror record created for ${constructedName} and summoned to pool ${req.session.newJuror.poolNumber}`
-          : `Draft juror record created for ${constructName} - senior jury officer will need to approve this`;
+          : `Draft juror record created for ${constructedName} - senior jury officer will need to approve this`;
 
         req.session.bannerMessage = bannerMessage;
         delete req.session.newJuror;
