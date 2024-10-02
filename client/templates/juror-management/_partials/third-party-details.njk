@@ -2,10 +2,14 @@
 
 {% set thirdPartyReason = "-" %}
 
-{% if juror.thirdParty.thirdPartyReason and juror.thirdParty.thirdPartyOtherReason %}
-    {% set thirdPartyReason = juror.thirdParty.thirdPartyReason + " - " + juror.thirdParty.thirdPartyOtherReason %}
-{% elif juror.thirdParty.thirdPartyReason %}
-    {% set thirdPartyReason = juror.thirdParty.thirdPartyReason %}
+{% if juror.thirdParty.thirdPartyReason === "other" and juror.thirdParty.thirdPartyOtherReason %}
+    {% set thirdPartyReason = "Other - " + juror.thirdParty.thirdPartyOtherReason %}
+{% elif juror.thirdParty.thirdPartyReason === "nothere"%}
+    {% set thirdPartyReason = "Juror is not here" %}
+{% elif juror.thirdParty.thirdPartyReason === "assistance"%}
+    {% set thirdPartyReason = "Assistance" %}
+{% elif juror.thirdParty.thirdPartyReason === "deceased"%}
+    {% set thirdPartyReason = "Deceased" %}
 {% elif juror.thirdParty.thirdPartyOtherReason %}
     {% set thirdPartyReason = juror.thirdParty.thirdPartyOtherReason %}
 {% endif %}
