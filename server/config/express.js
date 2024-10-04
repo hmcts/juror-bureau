@@ -120,7 +120,7 @@ module.exports = async (app) => {
   // Setup templating engine
   app.set('view engine', 'njk');
   app.set('views', [
-    'node_modules/govuk-frontend',
+    'node_modules/govuk-frontend/dist',
     'node_modules/@ministryofjustice/frontend/',
     path.join(app.get('appPath'), 'templates'),
   ]);
