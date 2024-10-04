@@ -384,25 +384,33 @@
               req.session.errors = modUtils.makeManualError('deferrals', 'You cannot postpone a juror without a date of birth - please ensure all selected jurors have a date of birth');
               break;
             default:
+              app.logger.crit('Failed to process the selected deferrals: ', {
+                auth: req.session.authentication,
+                jwt: req.session.authToken,
+                data: {
+                  deferrals: deferralsToProcess,
+                  poolNumber: req.body.poolNumber,
+                },
+                error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+              });
               req.session.errors = modUtils.makeManualError('deferrals', 'Failed to process the selected deferrals');
           }
         } else {
+          app.logger.crit('Failed to process the selected deferrals: ', {
+            auth: req.session.authentication,
+            jwt: req.session.authToken,
+            data: {
+              deferrals: deferralsToProcess,
+              poolNumber: req.body.poolNumber,
+            },
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
           req.session.errors = modUtils.makeManualError('deferrals', 'Failed to process the selected deferrals');
         }
-
-        app.logger.crit('Failed to process the selected deferrals: ', {
-          auth: req.session.authentication,
-          jwt: req.session.authToken,
-          data: {
-            deferrals: deferralsToProcess,
-            poolNumber: req.body.poolNumber,
-          },
-          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-        });
-
         return res.redirect(app.namedRoutes.build('pool-management.deferral-maintencance.process.get', {
           locationCode: req.params['locationCode'],
         }));
+
       }
     };
   };
