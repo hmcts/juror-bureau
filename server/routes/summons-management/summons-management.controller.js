@@ -428,15 +428,24 @@
           return res.redirect(app.namedRoutes.build('response.detail.get', routeParameters));
         }
         , errorCB = function(err) {
-          if (err.statusCode === 422 && err.error?.code === 'CANNOT_DEFER_TO_EXISTING_POOL') {
-            app.logger.crit('Failed to process Deferral - cannot add to existing pool: ', {
-              auth: req.session.authentication,
-              jwt: req.session.authToken,
-              data: req.body,
-              error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-            });
-    
-            req.session.errors = modUtils.makeManualError('deferralDateSelection', 'You cannot defer into the juror\'s existing pool - please select a different pool or date');
+          if (err.statusCode === 422) {
+            switch (err.error?.code) {
+              case 'CANNOT_DEFER_TO_EXISTING_POOL':      
+                req.session.errors = modUtils.makeManualError('deferralDateSelection', 'You cannot defer into the juror\'s existing pool - please select a different pool or date');
+                break;
+              case 'JUROR_DATE_OF_BIRTH_REQUIRED':
+                req.session.errors = modUtils.makeManualError('deferralDateSelection', 'You cannot defer a juror without a date of birth - please add date of birth to the juror record');
+                break;
+              default:
+                app.logger.crit('Failed to process Deferral: ', {
+                  auth: req.session.authentication,
+                  jwt: req.session.authToken,
+                  data: req.body,
+                  error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+                });
+                req.session.errors = modUtils.makeManualError('deferralDateSelection', 'Something went wrong when trying to defer the juror');
+            }
+            
             req.session.formFields = req.body;
             return res.redirect(app.namedRoutes.build('process-deferral.get', routeParameters));
           }
