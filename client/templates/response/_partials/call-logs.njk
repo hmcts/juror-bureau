@@ -27,7 +27,7 @@
         {% if log.enquiryType %}
           {{ govukTag({
             text: log.enquiryType.description or log.enquiryType,
-            classes: "govuk-tag--grey govuk-body"
+            classes: "govuk-tag--grey govuk-body mod-tag--full-width govuk-!-margin-bottom-3"
           }) }}
         {% endif %}
         <p class="govuk-body">{{ log.notes }}</p>

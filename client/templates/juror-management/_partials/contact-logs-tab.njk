@@ -21,8 +21,8 @@
   {% for contactLog in contactLogs %}
     {% set contactHtml %}
       {{ govukTag({
-        text: contactLog.enquiryType,
-        classes: "govuk-tag--grey govuk-body"
+        text: contactLog.enquiryType | toSentenceCase,
+        classes: "govuk-tag--grey govuk-body mod-tag--full-width govuk-!-margin-bottom-3"
       }) }}
       <p class="govuk-body">{{ contactLog.notes }}</p>
     {% endset %}

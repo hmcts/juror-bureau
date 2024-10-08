@@ -690,3 +690,24 @@ dt.govuk-summary-list-mod {
   padding-block: 10px;
   display: none;
 }
+
+.govuk-tag--dark-blue {
+  color: govuk-colour("white");
+  background-color: govuk-colour("blue");
+}
+
+.mod-tag {
+  &--dark-blue {
+    color: govuk-colour("white");
+    background-color: govuk-colour("blue");
+  }
+  &--full-width {
+    max-width: 100%;
+  }
+}
+
+.mod-centre-checkbox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
