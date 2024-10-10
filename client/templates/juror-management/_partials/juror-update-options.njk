@@ -95,6 +95,13 @@
   {% set updateOptions = [responded, deferral, excusal, postpone, disqualify] %}
 {% endif %}
 
+
+{# If a juror has confirmed attendances or appearances, the options to defer or postpone the juror are removed from the list of available options. #}
+{% if hasAppearances or attendances > 0 %}
+  {% set updateOptions = updateOptions | removeFromArray(deferral) %}
+  {% set updateOptions = updateOptions | removeFromArray(postpone) %}
+{% endif %}
+
 {% if updateOptions.length > 0 %}
   {{ govukRadios({
     name: "jurorRecordUpdate",
