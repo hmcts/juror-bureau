@@ -1,17 +1,17 @@
 (function() {
   'use strict';
 
-  var _ = require('lodash')
-    , validate = require('validate.js')
-    , { isCourtUser } = require('../../../components/auth/user-type')
-    , jurorUpdateValidator = require('../../../config/validation/juror-record-update')
-    , jurorRecordObject = require('../../../objects/juror-record')
-    , deferralObject = require('../../../objects/deferral-mod').deferralObject
-    , jurorDeceasedObject = require('../../../objects/juror-deceased').jurorDeceasedObject
-    , jurorTransfer = require('../../../objects/juror-transfer').jurorTransfer
-    , { dateFilter } = require('../../../components/filters')
-    , { systemCodesDAO, markAsUndeliverableDAO } = require('../../../objects')
-    , moment = require('moment');
+  const _ = require('lodash');
+  const validate = require('validate.js');
+  const { isCourtUser } = require('../../../components/auth/user-type');
+  const jurorUpdateValidator = require('../../../config/validation/juror-record-update');
+  const jurorRecordObject = require('../../../objects/juror-record');
+  const deferralObject = require('../../../objects/deferral-mod').deferralObject;
+  const jurorDeceasedObject = require('../../../objects/juror-deceased').jurorDeceasedObject;
+  const jurorTransfer = require('../../../objects/juror-transfer').jurorTransfer;
+  const { dateFilter } = require('../../../components/filters');
+  const { systemCodesDAO, markAsUndeliverableDAO } = require('../../../objects');
+  const moment = require('moment');
   const { deferralPoolsObject, changeDeferralObject } = require('../../../objects/deferral-mod');
   const { deferralReasonAndDecision, deferralDateAndPool } = require('../../../config/validation/deferral-mod');
   const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
@@ -19,83 +19,6 @@
 
   module.exports.index = function(app) {
     return function(req, res) {
-      var successCB = async function(response) {
-          var processUrl
-            , cancelUrl
-            , tmpErrors
-            , radioChecked
-            , thirdPartyDeceased = false
-            , jurorStatus = req.session.jurorCommonDetails.jurorStatus;
-
-          tmpErrors = _.cloneDeep(req.session.errors);
-          radioChecked = _.cloneDeep(req.session.updateOption);
-          thirdPartyDeceased = _.cloneDeep(req.session.thirdPartyDeceased);
-          delete req.session.errors;
-          delete req.session.updateOption;
-          delete req.session.thirdPartyDeceased;
-          delete req.session.replyMethod;
-          delete req.session.processLateSummons;
-
-          req.session.replyMethod = response.data.replyMethod;
-
-          processUrl = app.namedRoutes.build('juror.update.post', { jurorNumber: req.params['jurorNumber'] });
-          cancelUrl = app.namedRoutes.build('juror-record.overview.get', { jurorNumber: req.params['jurorNumber'] });
-
-          let attendanceData = {};
-
-          // only court users can see attendance details and they're only needed for court owned records
-          if (isCourtUser(req)) {
-            try {
-              attendanceData = await jurorRecordObject.attendanceDetails.get(
-                require('request-promise'),
-                app,
-                req.session.authToken,
-                req.params['jurorNumber'],
-              );
-            } catch (err) {
-              app.logger.crit('Failed to fetch juror attendance details: ', {
-                auth: req.session.authentication,
-                data: {
-                  jurorNumber: req.params['jurorNumber'],
-                  locCode: req.session.locCode,
-                },
-                error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-              });
-
-              return res.render('_errors/generic');
-            }
-          }
-
-          return res.render('juror-management/update-juror-record.njk', {
-            jurorNumber: req.params.jurorNumber,
-            owner: req.session.jurorCommonDetails.owner,
-            excusalCode: req.session.jurorCommonDetails.excusalCode,
-            attendances: attendanceData.attendances,
-            onCall: attendanceData.on_call,
-            processUrl,
-            cancelUrl,
-            radioChecked: radioChecked,
-            thirdPartyDeceased: thirdPartyDeceased,
-            replyStatus: response.data.replyStatus,
-            errors: {
-              message: '',
-              count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-              items: tmpErrors,
-            },
-            isCourtUser: isCourtUser(req),
-            jurorStatus,
-          });
-        }
-        , errorCB = function(err) {
-
-          app.logger.crit('Failed to fetch juror record details: ', {
-            auth: req.session.authentication,
-            jurorNumber: req.params['jurorNumber'],
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
-          return res.render('_errors/generic');
-        };
-
       jurorRecordObject.record.get(
         require('request-promise'),
         app,
@@ -104,26 +27,99 @@
         req.params['jurorNumber'],
         req.session.locCode,
       )
-        .then(successCB)
-        .catch(errorCB);
+      .then(async (response) => {
+        let processUrl;
+        let cancelUrl;
+        let tmpErrors;
+        let radioChecked;
+        let thirdPartyDeceased = false;
+        const jurorStatus = req.session.jurorCommonDetails.jurorStatus;
+
+        tmpErrors = _.cloneDeep(req.session.errors);
+        radioChecked = _.cloneDeep(req.session.updateOption);
+        thirdPartyDeceased = _.cloneDeep(req.session.thirdPartyDeceased);
+        delete req.session.errors;
+        delete req.session.updateOption;
+        delete req.session.thirdPartyDeceased;
+        delete req.session.replyMethod;
+        delete req.session.processLateSummons;
+
+        req.session.replyMethod = response.data.replyMethod;
+
+        processUrl = app.namedRoutes.build('juror.update.post', { jurorNumber: req.params['jurorNumber'] });
+        cancelUrl = app.namedRoutes.build('juror-record.overview.get', { jurorNumber: req.params['jurorNumber'] });
+
+        let attendanceData = {};
+
+        // only court users can see attendance details and they're only needed for court owned records
+        if (isCourtUser(req)) {
+          try {
+            attendanceData = await jurorRecordObject.attendanceDetails.get(
+              require('request-promise'),
+              app,
+              req.session.authToken,
+              req.params['jurorNumber'],
+            );
+          } catch (err) {
+            app.logger.crit('Failed to fetch juror attendance details: ', {
+              auth: req.session.authentication,
+              data: {
+                jurorNumber: req.params['jurorNumber'],
+                locCode: req.session.locCode,
+              },
+              error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+            });
+
+            return res.render('_errors/generic');
+          }
+        }
+
+        return res.render('juror-management/update-juror-record.njk', {
+          jurorNumber: req.params.jurorNumber,
+          owner: req.session.jurorCommonDetails.owner,
+          excusalCode: req.session.jurorCommonDetails.excusalCode,
+          attendances: attendanceData.attendances,
+          onCall: attendanceData.on_call,
+          processUrl,
+          cancelUrl,
+          radioChecked: radioChecked,
+          thirdPartyDeceased: thirdPartyDeceased,
+          replyStatus: response.data.replyStatus,
+          errors: {
+            message: '',
+            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+            items: tmpErrors,
+          },
+          isCourtUser: isCourtUser(req),
+          jurorStatus,
+        });
+      })
+      .catch((err) => {
+        app.logger.crit('Failed to fetch juror record details: ', {
+          auth: req.session.authentication,
+          jurorNumber: req.params['jurorNumber'],
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+        return res.render('_errors/generic');
+      });
     };
   };
 
   module.exports.post = function(app) {
     return function(req, res) {
-      var validatorResult
-        , postPaths = {
-          deferral: 'juror.update.deferral.get',
-          transfer: 'juror.update.transfer.get',
-          reassign: 'juror-management.reassign.get',
-          postpone: 'juror.update.postpone-date.get',
-          complete: 'juror.update.complete-service.get',
-          'failed-to-attend': 'juror.update.failed-to-attend.get',
-          'undo-failed-to-attend': 'juror.update.failed-to-attend.undo.get',
-          excusal: 'juror.excusal.get',
-          disqualify: 'juror.update.disqualify.get',
-          responded: 'juror.update.responded.get',
-        };
+      let validatorResult;
+      const postPaths = {
+        deferral: 'juror.update.deferral.get',
+        transfer: 'juror.update.transfer.get',
+        reassign: 'juror-management.reassign.get',
+        postpone: 'juror.update.postpone-date.get',
+        complete: 'juror.update.complete-service.get',
+        'failed-to-attend': 'juror.update.failed-to-attend.get',
+        'undo-failed-to-attend': 'juror.update.failed-to-attend.undo.get',
+        excusal: 'juror.excusal.get',
+        disqualify: 'juror.update.disqualify.get',
+        responded: 'juror.update.responded.get',
+      };
 
       validatorResult = validate(req.body, jurorUpdateValidator.updateOptions());
       if (typeof validatorResult !== 'undefined') {
@@ -175,12 +171,10 @@
 
   module.exports.getDeferral = function(app) {
     return function(req, res) {
-      var tmpErrors
-        , tmpFields
-        , processURL
-        , cancelUrl
+      const cancelUrl = app.namedRoutes.build('juror-record.overview.get', { jurorNumber: req.params['jurorNumber'] });
 
-        , successCB = function(data) {
+      systemCodesDAO.get(app, req, 'EXCUSAL_AND_DEFERRAL')
+        .then((data) => {
           app.logger.info('Fetched list of deferral reasons: ', {
             auth: req.session.authentication,
             data: {
@@ -189,13 +183,13 @@
             },
           });
 
-          tmpFields = _.cloneDeep(req.session.formFields);
-          tmpErrors = _.cloneDeep(req.session.errors);
+          const tmpFields = _.cloneDeep(req.session.formFields);
+          const tmpErrors = _.cloneDeep(req.session.errors);
 
           delete req.session.formFields;
           delete req.session.errors;
 
-          processURL = app.namedRoutes.build('juror.update.deferral.post', { jurorNumber: req.params.jurorNumber });
+          const processURL = app.namedRoutes.build('juror.update.deferral.post', { jurorNumber: req.params.jurorNumber });
           req.session.deferralReasons = data;
 
           let minDate = req.session.jurorCommonDetails.startDate;
@@ -215,9 +209,8 @@
               items: tmpErrors,
             },
           });
-        }
-
-        , errorCB = function(err) {
+        })
+        .catch((err) => {
           app.logger.crit('Failed to fetch list of deferral reasons: ', {
             auth: req.session.authentication,
             data: {
@@ -236,80 +229,14 @@
             'juror-record.overview.get',
             { jurorNumber: req.params.jurorNumber },
           ));
-        };
-
-      cancelUrl = app.namedRoutes.build('juror-record.overview.get', { jurorNumber: req.params['jurorNumber'] });
-
-      systemCodesDAO.get(app, req, 'EXCUSAL_AND_DEFERRAL')
-        .then(successCB)
-        .catch(errorCB);
+        });
     };
   };
 
   module.exports.postDeferral = function(app) {
     return async function(req, res) {
-      var tmpReasons
-        , deferralReason
-
-        , successCB = function(data) {
-          app.logger.info('Deferral update processed: ', {
-            auth: req.session.authentication,
-            data: {
-              responseId: req.params.jurorNumber,
-            },
-            reasons: data,
-          });
-
-          if (req.body.deferralDecision === 'REFUSE') {
-            req.session.bannerMessage = 'Deferral refused (' + deferralReason + ')';
-          } else {
-            req.session.bannerMessage = 'Deferral granted (' + deferralReason + ')';
-          }
-
-          if (res.locals.isCourtUser) {
-            return res.redirect(app.namedRoutes.build('juror.update.deferral.letter.get', {
-              jurorNumber: req.params.jurorNumber,
-              letter: req.body.deferralDecision.toLowerCase(),
-            }));
-          }
-
-          return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
-            jurorNumber: req.params.jurorNumber,
-          }));
-        }
-
-        , errorCB = function(err) {
-          app.logger.crit('Failed to process deferral update: ', {
-            auth: req.session.authentication,
-            data: {
-              responseId: req.params.jurorNumber,
-            },
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
-
-          if (err.statusCode === 422) {
-            app.logger.warn('Failed to decline deferral for juror', {
-              auth: req.session.authentication,
-              error: typeof err.error !== 'undefined' ? err.error : err.toString(),
-            });
-          }
-
-          switch (err.error?.code) {
-            case 'CANNOT_REFUSE_FIRST_DEFERRAL':
-              req.session.errors = makeManualError('deferral', 'Cannot refuse first deferral');
-              break;
-            case 'JUROR_HAS_BEEN_DEFERRED_BEFORE':
-              return res.redirect(app.namedRoutes.build('juror.update.deferral.confirm.get', {
-                jurorNumber: req.params.jurorNumber,
-              }) + `?deferralReason=${req.body.deferralReason}&deferralDate=${req.body.deferralDate}`);
-            default:
-              req.session.errors = makeManualError('deferral', 'Something went wrong when trying to defer the juror');
-          }
-
-          return res.redirect(app.namedRoutes.build('juror.update.deferral.get', {
-            jurorNumber: req.params.jurorNumber,
-          }));
-        };
+      let tmpReasons
+      let deferralReason;
 
       tmpReasons = _.cloneDeep(req.session.deferralReasons);
 
@@ -368,8 +295,64 @@
         .find(reason => reason.code === req.body.deferralReason).description.toLowerCase();
 
       deferralObject.put(require('request-promise'), app, req.session.authToken, req.body, req.params.jurorNumber)
-        .then(successCB)
-        .catch(errorCB);
+        .then((data) => {
+          app.logger.info('Deferral update processed: ', {
+            auth: req.session.authentication,
+            data: {
+              responseId: req.params.jurorNumber,
+            },
+            reasons: data,
+          });
+
+          if (req.body.deferralDecision === 'REFUSE') {
+            req.session.bannerMessage = 'Deferral refused (' + deferralReason + ')';
+          } else {
+            req.session.bannerMessage = 'Deferral granted (' + deferralReason + ')';
+          }
+
+          if (res.locals.isCourtUser) {
+            return res.redirect(app.namedRoutes.build('juror.update.deferral.letter.get', {
+              jurorNumber: req.params.jurorNumber,
+              letter: req.body.deferralDecision.toLowerCase(),
+            }));
+          }
+
+          return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
+            jurorNumber: req.params.jurorNumber,
+          }));
+        })
+        .catch((err) => {
+          app.logger.crit('Failed to process deferral update: ', {
+            auth: req.session.authentication,
+            data: {
+              responseId: req.params.jurorNumber,
+            },
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
+
+          if (err.statusCode === 422) {
+            app.logger.warn('Failed to decline deferral for juror', {
+              auth: req.session.authentication,
+              error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+            });
+          }
+
+          switch (err.error?.code) {
+            case 'CANNOT_REFUSE_FIRST_DEFERRAL':
+              req.session.errors = makeManualError('deferral', 'Cannot refuse first deferral');
+              break;
+            case 'JUROR_HAS_BEEN_DEFERRED_BEFORE':
+              return res.redirect(app.namedRoutes.build('juror.update.deferral.confirm.get', {
+                jurorNumber: req.params.jurorNumber,
+              }) + `?deferralReason=${req.body.deferralReason}&deferralDate=${req.body.deferralDate}`);
+            default:
+              req.session.errors = makeManualError('deferral', 'Something went wrong when trying to defer the juror');
+          }
+
+          return res.redirect(app.namedRoutes.build('juror.update.deferral.get', {
+            jurorNumber: req.params.jurorNumber,
+          }));
+        });
     };
   };
 
@@ -414,9 +397,6 @@
 
     const deferReason = req.session.partialDeferralObj.deferralReason;
 
-    delete req.session.deferralPools;
-    delete req.session.partialDeferralObj;
-
     try {
       await changeDeferralObject.post(
         require('request-promise'),
@@ -427,6 +407,9 @@
         req.body.deferralDateAndPool.split("_")[1],
         deferReason,
       );
+
+      delete req.session.deferralPools;
+      delete req.session.partialDeferralObj;
 
       const reason = req.session.deferralReasons.filter(item => item.code === deferReason);
 
@@ -445,6 +428,32 @@
     }
 
     catch (err) {
+      if (err.statusCode === 422 ) {
+        app.logger.crit('Failed to process Deferral - business rule violation ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: req.body,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        switch (err.error?.code) {
+          case 'CANNOT_DEFER_TO_EXISTING_POOL':
+            req.session.errors = makeManualError('deferralDateAndPool', 'You cannot defer into the juror\'s existing pool - please select a different pool or date');
+            break;
+          case 'JUROR_DATE_OF_BIRTH_REQUIRED':
+            req.session.errors = makeManualError('defer', 'You cannot defer a juror without a date of birth - please add date of birth to the juror record');
+            break;
+          default:
+            req.session.errors = makeManualError('defer', 'Something went wrong when trying to defer the juror');
+            break;
+        }
+
+        req.session.formFields = req.body;
+        return res.redirect(app.namedRoutes.build('juror.update.deferral.pools.get', {
+          jurorNumber: req.params['jurorNumber'],
+        }));
+      }
+
       app.logger.crit('Failed to defer juror: ', {
         auth: req.session.authentication,
         data: { codes: 'EXCUSAL_AND_DEFERRAL' },
@@ -523,11 +532,25 @@
 
   module.exports.postCourtTransferConfirm = function(app) {
     return function(req, res) {
-      var newServiceStartDate
-        , receivingCourtLocCode
-        , sourcePoolNumber
+      let newServiceStartDate;
+      let receivingCourtLocCode;
+      let sourcePoolNumber;
 
-        , successCB = function(data) {
+      receivingCourtLocCode = req.session.formField.courtNameOrLocation.match(/\d+/g)[0];
+
+      newServiceStartDate = dateFilter(req.session.formField.attendanceDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
+
+      sourcePoolNumber = _.cloneDeep(req.session.jurorUpdate.poolNumber);
+
+      jurorTransfer.put(
+        require('request-promise'),
+        app,
+        req.session.authToken,
+        req.params.jurorNumber,
+        receivingCourtLocCode,
+        newServiceStartDate,
+        sourcePoolNumber)
+        .then((data) => {
           app.logger.info('Juror succesfully transferred: ', {
             auth: req.session.authentication,
             data: {
@@ -545,10 +568,8 @@
           return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
             jurorNumber: req.params.jurorNumber,
           }));
-
-        }
-
-        , errorCB = function(err) {
+        })
+        .catch((err) => {
           app.logger.crit('Failed to transfer juror: ', {
             auth: req.session.authentication,
             data: {
@@ -559,31 +580,25 @@
           });
 
           return res.render('_errors/generic');
-        };
-
-      receivingCourtLocCode = req.session.formField.courtNameOrLocation.match(/\d+/g)[0];
-
-      newServiceStartDate = dateFilter(req.session.formField.attendanceDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
-
-      sourcePoolNumber = _.cloneDeep(req.session.jurorUpdate.poolNumber);
-
-      jurorTransfer.put(
-        require('request-promise'),
-        app,
-        req.session.authToken,
-        req.params.jurorNumber,
-        receivingCourtLocCode,
-        newServiceStartDate,
-        sourcePoolNumber)
-        .then(successCB)
-        .catch(errorCB);
+        });
     };
   };
 
   function postDeceased(req, res, app) {
-    var validatorResult
-      , successCB = function(data) {
+    const validatorResult = validate(req.body, jurorUpdateValidator.deceasedComment());
+    
+    if (typeof validatorResult !== 'undefined') {
+      req.session.errors = validatorResult;
+      req.session.updateOption = req.body.jurorRecordUpdate;
+      req.session.thirdPartyDeceased = req.body.thirdPartyDeceased;
 
+      return res.redirect(app.namedRoutes.build('juror.update.get', {
+        jurorNumber: req.params.jurorNumber,
+      }));
+    }
+
+    jurorDeceasedObject.post(require('request-promise'), app, req.session.authToken, req.body, req.params.jurorNumber)
+      .then((data) => {
         app.logger.info('Juror processed as deceased: ', {
           auth: req.session.authentication,
           data: {
@@ -597,9 +612,8 @@
         return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
           jurorNumber: req.params.jurorNumber,
         }));
-      }
-
-      , errorCB = function(err) {
+      })
+      .catch((err) => {
         app.logger.crit('Failed to process juror as deceased: ', {
           auth: req.session.authentication,
           data: {
@@ -617,27 +631,12 @@
         return res.redirect(app.namedRoutes.build('juror.update.get', {
           jurorNumber: req.params.jurorNumber,
         }));
-      };
-
-    validatorResult = validate(req.body, jurorUpdateValidator.deceasedComment());
-    if (typeof validatorResult !== 'undefined') {
-      req.session.errors = validatorResult;
-      req.session.updateOption = req.body.jurorRecordUpdate;
-      req.session.thirdPartyDeceased = req.body.thirdPartyDeceased;
-
-      return res.redirect(app.namedRoutes.build('juror.update.get', {
-        jurorNumber: req.params.jurorNumber,
-      }));
-    }
-
-    jurorDeceasedObject.post(require('request-promise'), app, req.session.authToken, req.body, req.params.jurorNumber)
-      .then(successCB)
-      .catch(errorCB);
+      });
   }
 
   function postUndeliverable(req, res, app) {
-    var successCB = function(data) {
-
+    markAsUndeliverableDAO.patch(req, { 'juror_numbers': [req.params.jurorNumber] })
+      .then((data) => {
         app.logger.info('Juror processed as undeliverable: ', {
           auth: req.session.authentication,
           data: {
@@ -651,9 +650,8 @@
         return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
           jurorNumber: req.params.jurorNumber,
         }));
-      }
-
-      , errorCB = function(err) {
+      })
+      .catch((err) => {
         app.logger.crit('Failed to process juror as undeliverable: ', {
           auth: req.session.authentication,
           data: {
@@ -671,11 +669,7 @@
         return res.redirect(app.namedRoutes.build('juror.update.get', {
           jurorNumber: req.params.jurorNumber,
         }));
-      };
-
-    markAsUndeliverableDAO.patch(req, { 'juror_numbers': [req.params.jurorNumber] })
-      .then(successCB)
-      .catch(errorCB);
+      });
   }
 
 })();

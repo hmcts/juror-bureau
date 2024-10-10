@@ -1,22 +1,21 @@
-const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
-
 (function() {
   'use strict';
 
-  var _ = require('lodash')
-    , validate = require('validate.js')
-    , postponeObj = require('../../../objects/postpone').postponeObject
-    , availablePoolsObj = require('../../../objects/pool-management').deferralMaintenance.availablePools
-    , postponeValidator = require('../../../config/validation/postpone')
-    , validateMovementObj = require('../../../objects/pool-management').validateMovement
-    , moment = require('moment')
-    , modUtils = require('../../../lib/mod-utils')
-    , { dateFilter } = require('../../../components/filters');
+  const _ = require('lodash');
+  const validate = require('validate.js');
+  const postponeObj = require('../../../objects/postpone').postponeObject;
+  const availablePoolsObj = require('../../../objects/pool-management').deferralMaintenance.availablePools;
+  const postponeValidator = require('../../../config/validation/postpone');
+  const validateMovementObj = require('../../../objects/pool-management').validateMovement;
+  const moment = require('moment');
+  const modUtils = require('../../../lib/mod-utils');
+  const { dateFilter } = require('../../../components/filters');
   const rp = require('request-promise');
+  const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
 
   module.exports.getPostponeDate = function(app) {
     return function(req, res) {
-      var tmpErrors = _.clone(req.session.errors);
+      const tmpErrors = _.clone(req.session.errors);
 
       delete req.session.formFields;
       delete req.session.errors;
@@ -73,7 +72,7 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
 
   module.exports.getPostponeDateDeferralMaintenance = function(app) {
     return function(req, res) {
-      var tmpErrors = _.clone(req.session.errors);
+      const tmpErrors = _.clone(req.session.errors);
 
       delete req.session.formFields;
       delete req.session.errors;
@@ -118,10 +117,9 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
 
   module.exports.postPostponeDate = function(app) {
     return function(req, res) {
-      var validatorResult
-        , originalDate
-        , errorUrl
-        , continueUrl;
+      let originalDate;
+      let errorUrl;
+      let continueUrl;
 
       if (typeof req.session.poolJurorsPostpone !== 'undefined'){
         originalDate = new Date(req.session.poolJurorsPostpone.courtStartDate);
@@ -139,7 +137,7 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
           jurorNumber: req.params['jurorNumber'],
         });
       }
-      validatorResult = validate(req.body, postponeValidator.postponeDate(originalDate));
+      const validatorResult = validate(req.body, postponeValidator.postponeDate(originalDate));
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
@@ -174,13 +172,27 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
 
   module.exports.getAvailablePools = function(app) {
     return function(req, res) {
-      var tmpErrors = _.clone(req.session.errors)
+      const tmpErrors = _.clone(req.session.errors);
+      let jurorNumber;
 
-        , successCB = function(poolOptions) {
-          let backLinkUrl,
-            processUrl,
-            cancelUrl,
-            originalDate;
+      if (typeof req.session.poolJurorsPostpone !== 'undefined') {
+        jurorNumber = req.session.poolJurorsPostpone.selectedJurors[0];
+      } else {
+        jurorNumber = req.params['jurorNumber'];
+      }
+
+      availablePoolsObj.post(
+        rp,
+        app,
+        req.session.authToken,
+        jurorNumber,
+        [req.session.postponeToDate.split('/').reverse().join('-')]
+      )
+        .then((poolOptions) => {
+          let backLinkUrl;
+          let processUrl;
+          let cancelUrl;
+          let originalDate;
 
           app.logger.info('Fetch pool options:  ', {
             auth: req.session.authentication,
@@ -251,10 +263,8 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
               items: tmpErrors,
             },
           });
-        }
-
-        , errorCB = function(err) {
-
+        })
+        .catch((err) => {
           app.logger.crit('Failed to fetch pool options: ', {
             auth: req.session.authentication,
             jwt: req.session.authToken,
@@ -262,25 +272,7 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
           });
 
           return res.render('_errors/generic');
-        };
-
-      let jurorNumber;
-
-      if (typeof req.session.poolJurorsPostpone !== 'undefined') {
-        jurorNumber = req.session.poolJurorsPostpone.selectedJurors[0];
-      } else {
-        jurorNumber = req.params['jurorNumber'];
-      }
-
-      availablePoolsObj.post(
-        rp,
-        app,
-        req.session.authToken,
-        jurorNumber,
-        [req.session.postponeToDate.split('/').reverse().join('-')]
-      )
-        .then(successCB)
-        .catch(errorCB);
+        });
     };
   };
 
@@ -359,11 +351,10 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
 
   module.exports.postAvailablePools = function(app) {
     return function(req, res) {
-      var validatorResult
-        , errorUrl
-        , sendingCourtLocCode
-        , sourcePoolNumber
-        , jurorNumbers;
+      let errorUrl;
+      let sendingCourtLocCode;
+      let sourcePoolNumber;
+      let jurorNumbers;
 
       if (typeof req.session.poolJurorsPostpone !== 'undefined') {
         errorUrl = app.namedRoutes.build('juror.update-bulk-postpone.available-pools.get', {
@@ -382,7 +373,7 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
       };
 
       if (typeof req.body.sendToDeferralMaintence === 'undefined') {
-        validatorResult = validate(req.body, postponeValidator.postponePool());
+       const validatorResult = validate(req.body, postponeValidator.postponePool());
         if (typeof validatorResult !== 'undefined') {
           req.session.errors = validatorResult;
           req.session.formFields = req.body;
@@ -401,12 +392,12 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
       }
 
       let validationPayload = {
-        sourcePoolNumber
-        , sendingCourtLocCode
-        , receivingPoolNumber: pn
-        , receivingCourtLocCode
-        , targetServiceStartDate: dateFilter(req.session.postponeToDate, 'DD/MM/YYYY', 'YYYY-MM-DD')
-        , jurorNumbers,
+        sourcePoolNumber,
+        sendingCourtLocCode,
+        receivingPoolNumber: pn,
+        receivingCourtLocCode,
+        targetServiceStartDate: dateFilter(req.session.postponeToDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
+        jurorNumbers,
       };
 
       typeof req.session.poolJurorsPostpone !== 'undefined' ? req.session.poolJurorsPostpone.deferralDateAndPool =
@@ -627,7 +618,6 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
         let receivingPoolNumberDate = typeof req.session.poolJurorsPostpone !== 'undefined' ?
           req.session.poolJurorsPostpone.deferralDateAndPool : req.session.jurorCommonDetails.deferralDateAndPool;
         let jurorNumber;
-        let redirectUrl;
         let deferralUrl = app.namedRoutes.build('pool-management.deferral-maintenance.get');
         let selectedJurors = payload.juror_numbers;
         let jurorString = selectedJurors.length > 1 ? selectedJurors.length + ' jurors' : '1 juror';
@@ -686,12 +676,29 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
         } else {
           jurorNumber = req.params.jurorNumber;
         }
-        app.logger.crit('Failed to transfer juror: ', {
+        app.logger.crit('Failed to postpone juror: ', {
           auth: req.session.authentication,
           jwt: req.session.authToken,
           jurorNumber: jurorNumber,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
+
+        if (err.statusCode === 422 && err.error?.code === 'JUROR_DATE_OF_BIRTH_REQUIRED') {
+          let errorUrl;
+          if (typeof req.session.poolJurorsPostpone !== 'undefined') {
+            errorUrl = app.namedRoutes.build('juror.update-bulk-postpone.available-pools.get', {
+              poolNumber: req.params.poolNumber,
+            });
+            req.session.errors = modUtils.makeManualError('postpone', 'You cannot postpone a juror without a date of birth - please ensure all selected jurors have a date of birth');
+          } else {
+            errorUrl = app.namedRoutes.build('juror.update.available-pools.get', {
+              jurorNumber,
+            });
+            req.session.errors = modUtils.makeManualError('postpone', 'You cannot postpone a juror without a date of birth - please add date of birth to the juror record');
+          };
+
+          return res.redirect(errorUrl);
+        }
 
         return res.render('_errors/generic');
       };
@@ -711,7 +718,7 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
       app,
       req.session.authToken,
       payload)
-      .then(resp => {
+      .then((resp) => {
         let receivingPoolNumberDate = req.body.deferralDateAndPool;
         let selectedJurors = payload.juror_numbers;
         let jurorString = selectedJurors.length > 1 ? selectedJurors.length + ' jurors' : '1 juror';
@@ -737,13 +744,21 @@ const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
         }));
 
       })
-      .catch(err => {
-        app.logger.crit('Failed to transfer juror: ', {
+      .catch((err) => {
+        app.logger.crit('Failed to postpone juror: ', {
           auth: req.session.authentication,
           jwt: req.session.authToken,
           payload,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
+
+        if (err.statusCode === 422 && err.error?.code === 'JUROR_DATE_OF_BIRTH_REQUIRED') {
+          req.session.errors = modUtils.makeManualError('postpone', 'You cannot postpone a juror without a date of birth - please ensure all selected jurors have a date of birth');
+
+          return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.postpone.pool.get', {
+            locationCode: req.params.locationCode,
+          }));
+        }
 
         return res.render('_errors/generic');
       });

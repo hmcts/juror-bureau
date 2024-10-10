@@ -22,7 +22,7 @@
 
       {% include "includes/errors.njk" %}
 
-      <span class="govuk-caption-l">Attendance</span>
+      <span class="govuk-caption-l">{{ caption }}</span>
       <h1 class="govuk-heading-l">{{juror.firstName}} {{juror.lastName}}</h1>
 
       <p class="govuk-body-l ">{{attendanceDate | dateFilter(null, "dddd D MMMM YYYY")}}</p>
@@ -91,7 +91,7 @@
 
       <div class="govuk-button-group">
         {{ govukButton({
-          text: "Save changes",
+          text: submitButtonText,
           type: "submit"
         }) }}
         <a class="govuk-link" href="{{ _cancelUrl }}">Cancel</a>

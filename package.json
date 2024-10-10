@@ -10,6 +10,7 @@
     "build": "NODE_ENV=development webpack --config webpack.config.js",
     "build:prod": "NODE_ENV=production webpack --config webpack.config.js",
     "dev": "yarn build && NODE_ENV=development node ./dev/server/index.js",
+    "dev:debug": "yarn build && NODE_ENV=development node --inspect ./dev/server/index.js",
     "dev:watch": "yarn build && NODE_ENV=development nodemon",
     "serve": "yarn build:prod && NODE_ENV=production node ./dist/server/index.js",
     "debug": "yarn build:prod && NODE_ENV=production node --inspect-brk ./dist/server/index.js",
@@ -19,8 +20,7 @@
     "test:a11y": "echo TODO: a11y",
     "test:smoke": "echo TODO: smoke",
     "test:functional": "echo TODO: functional",
-    "cichecks": "echo TODO: cichecks",
-    "nsp": "nsp check"
+    "cichecks": "echo TODO: cichecks"
   },
   "dependencies": {
     "@azure/identity": "^4.2.1",
@@ -38,7 +38,7 @@
     "connect-redis": "^7.1.0",
     "csurf": "^1.9.0",
     "errorhandler": "^1.4.3",
-    "express": "^4.19.2",
+    "express": "^4.21.0",
     "express-nunjucks": "^3.1.1",
     "express-rate-limit": "^7.3.1",
     "express-session": "^1.14.0",
@@ -76,7 +76,6 @@
     "mocha": "^10.0.0",
     "mochawesome": "^3.0.0",
     "nodemon": "^3.1.1",
-    "nsp": "^3.1.0",
     "postcss": "^8.4.38",
     "sass": "^1.77.5",
     "sass-loader": "^14.2.1",

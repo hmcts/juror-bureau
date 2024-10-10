@@ -1,18 +1,18 @@
 (function() {
   'use strict';
 
-  var _ = require('lodash')
-    , rp = require('request-promise')
-    , { isBureauUser, isCourtUser } = require('../../../components/auth/user-type')
-    , modUtils = require('../../../lib/mod-utils')
-    , validator = require('../../../config/validation/pool-management').deferralMaintenance
-    , validate = require('validate.js')
-    , requestObj = require('../../../objects/pool-management').deferralMaintenance
-    , dateFilter = require('../../../components/filters').dateFilter;
+  const _ = require('lodash');
+  const rp = require('request-promise');
+  const { isBureauUser, isCourtUser } = require('../../../components/auth/user-type');
+  const modUtils = require('../../../lib/mod-utils');
+  const validator = require('../../../config/validation/pool-management').deferralMaintenance;
+  const validate = require('validate.js');
+  const requestObj = require('../../../objects/pool-management').deferralMaintenance;
+  const dateFilter = require('../../../components/filters').dateFilter;
 
   function successCB(data, courtCode) {
     return function(app, req, res) {
-      var court = req.session.courtsList.find((element) => {
+      const court = req.session.courtsList.find((element) => {
         return element.locationCode === courtCode;
       });
 
@@ -79,8 +79,8 @@
 
   module.exports.getDeferrals = function(app) {
     return function(req, res) {
-      var validatorResult
-        , courtCode;
+      let validatorResult;
+      let courtCode;
 
       validatorResult = validate(req.body, validator.courtNameOrLocation());
       if (typeof validatorResult !== 'undefined') {
@@ -220,7 +220,8 @@
 
   module.exports.getCheckDeferral = function(app) {
     return function(req, res) {
-      var juror, total;
+      let juror;
+      let total;
 
       if (req.params.jurorNumber === 'all') {
         if (req.query['isFiltered'] === 'true') {
@@ -261,60 +262,8 @@
   };
 
   module.exports.getProcessCheckedDeferrals = function(app) {
-    return function(req, res) {
-      var deferralsToProcess
-        , processSuccessCB = function(data) {
-          var tmpErrors = _.clone(req.session.errors);
-
-          delete req.session.errors;
-
-          app.logger.info('Fetched available pools: ', {
-            auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: {
-              pools: data.deferralPoolsSummary[0].deferralOptions,
-              courtCode: req.params['locationCode'],
-            },
-          });
-
-          const sortedPools = data.deferralPoolsSummary[0].deferralOptions.sort(function(a, b){
-            return new Date(a.serviceStartDate) - new Date(b.serviceStartDate);
-          });
-
-          return res.render('pool-management/deferral-maintenance/pools.njk', {
-            locationCode: req.params['locationCode'],
-            pools: sortedPools,
-            errors: {
-              title: 'There is a problem',
-              count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-              items: tmpErrors,
-            },
-          });
-        }
-        , processErrorCB = function() {
-
-          req.session.errors = {
-            deferrals: [{
-              summary: 'Failed to fetch available pools',
-              details: 'Failed to fetch available pools',
-            }],
-          };
-
-          app.logger.crit('Failed to fetch available pools: ', {
-            auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: {
-              courtCode: req.params['locationCode'],
-            },
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
-
-          return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.filter.get', {
-            locationCode: req.params['locationCode'],
-          }));
-        };
-
-      deferralsToProcess = extractDeferralsToProcess(req.session.deferralMaintenance.deferrals);
+    return async function(req, res) {
+      const deferralsToProcess = extractDeferralsToProcess(req.session.deferralMaintenance.deferrals);
 
       if (!deferralsToProcess || !deferralsToProcess.length) {
         req.session.errors = {
@@ -329,66 +278,63 @@
         }));
       }
 
-      return requestObj
-        .availablePools.get(rp, app, req.session.authToken, req.params['locationCode'])
-        .then(processSuccessCB)
-        .catch(processErrorCB);
-    };
+      try {
+        const data = await requestObj.availablePools.get(rp, app, req.session.authToken, req.params['locationCode'])
+
+        const tmpErrors = _.clone(req.session.errors);
+
+        delete req.session.errors;
+
+        app.logger.info('Fetched available pools: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            pools: data.deferralPoolsSummary[0].deferralOptions,
+            courtCode: req.params['locationCode'],
+          },
+        });
+
+        const sortedPools = data.deferralPoolsSummary[0].deferralOptions.sort(function(a, b){
+          return new Date(a.serviceStartDate) - new Date(b.serviceStartDate);
+        });
+
+        return res.render('pool-management/deferral-maintenance/pools.njk', {
+          locationCode: req.params['locationCode'],
+          pools: sortedPools,
+          errors: {
+            title: 'There is a problem',
+            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+            items: tmpErrors,
+          },
+        });
+      } catch (err) {
+        req.session.errors = {
+          deferrals: [{
+            summary: 'Failed to fetch available pools',
+            details: 'Failed to fetch available pools',
+          }],
+        };
+
+        app.logger.crit('Failed to fetch available pools: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            courtCode: req.params['locationCode'],
+          },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.filter.get', {
+          locationCode: req.params['locationCode'],
+        }));
+      }
+    }
   };
 
   module.exports.postProcessCheckedDeferrals = function(app) {
-    return function(req, res) {
-      var validatorResult
-        , deferralsToProcess
-        , processSuccessCB = function() {
-          var courtCode = req.params['locationCode']
-            , poolUrl = app.namedRoutes.build('pool-overview.get', {
-              poolNumber: req.body.poolNumber,
-            });
-
-          delete req.session.deferralMaintenance;
-
-          req.session.bannerMessage
-            = `Selected jurors added to pool <a href="${poolUrl}" class="govuk-link">${req.body.poolNumber}</a>`;
-
-          app.logger.info('Finished processing all selected deferrals: ', {
-            auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: {
-              deferrals: deferralsToProcess,
-              poolNumber: req.body.poolNumber,
-            },
-          });
-
-          return requestObj
-            .deferrals.get(rp, app, req.session.authToken, courtCode)
-            .then((data) => successCB(data, courtCode)(app, req, res))
-            // eslint-disable-next-line no-use-before-define
-            .catch((err) => errorCB(err)(app, req, res));
-        }
-        , processErrorCB = function(err) {
-
-          req.session.errors = {
-            deferrals: [{
-              summary: 'Failed to process the selected deferrals',
-              details: 'Failed to process the selected deferrals',
-            }],
-          };
-
-          app.logger.crit('Failed to process the selected deferrals: ', {
-            auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: {
-              deferrals: deferralsToProcess,
-              poolNumber: req.body.poolNumber,
-            },
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
-
-          return res.redirect(app.namedRoutes.build('pool-management.deferral-maintencance.process.get', {
-            locationCode: req.params['locationCode'],
-          }));
-        };
+    return async function(req, res) {
+      let validatorResult;
+      let deferralsToProcess;
 
       validatorResult = validate(req.body, validator.selectedActivePool());
       if (typeof validatorResult !== 'undefined') {
@@ -401,10 +347,71 @@
 
       deferralsToProcess = extractDeferralsToProcess(req.session.deferralMaintenance.deferrals);
 
-      return requestObj
-        .allocateJurors.post(rp, app, req.session.authToken, deferralsToProcess, req.body.poolNumber)
-        .then(processSuccessCB)
-        .catch(processErrorCB);
+      try {
+        await requestObj.allocateJurors.post(rp, app, req.session.authToken, deferralsToProcess, req.body.poolNumber);
+
+        const courtCode = req.params['locationCode'];
+        const poolUrl = app.namedRoutes.build('pool-overview.get', {
+          poolNumber: req.body.poolNumber,
+        });
+
+        delete req.session.deferralMaintenance;
+
+        req.session.bannerMessage
+          = `Selected jurors added to pool <a href="${poolUrl}" class="govuk-link">${req.body.poolNumber}</a>`;
+
+        app.logger.info('Finished processing all selected deferrals: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            deferrals: deferralsToProcess,
+            poolNumber: req.body.poolNumber,
+          },
+        });
+
+        return requestObj
+          .deferrals.get(rp, app, req.session.authToken, courtCode)
+          .then((data) => successCB(data, courtCode)(app, req, res))
+          .catch((err) => errorCB(err)(app, req, res));
+          
+      } catch (err) {
+        if (err.statusCode === 422) {
+          switch (err.error?.code) {
+            case 'CANNOT_DEFER_TO_EXISTING_POOL':
+              req.session.errors = modUtils.makeManualError('deferrals', 'You cannot defer into the juror\'s existing pool - please select a different pool or date');
+              break;
+            case 'JUROR_DATE_OF_BIRTH_REQUIRED':
+              req.session.errors = modUtils.makeManualError('deferrals', 'You cannot postpone a juror without a date of birth - please ensure all selected jurors have a date of birth');
+              break;
+            default:
+              app.logger.crit('Failed to process the selected deferrals: ', {
+                auth: req.session.authentication,
+                jwt: req.session.authToken,
+                data: {
+                  deferrals: deferralsToProcess,
+                  poolNumber: req.body.poolNumber,
+                },
+                error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+              });
+              req.session.errors = modUtils.makeManualError('deferrals', 'Failed to process the selected deferrals');
+          }
+        } else {
+          app.logger.crit('Failed to process the selected deferrals: ', {
+            auth: req.session.authentication,
+            jwt: req.session.authToken,
+            data: {
+              deferrals: deferralsToProcess,
+              poolNumber: req.body.poolNumber,
+            },
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
+          req.session.errors = modUtils.makeManualError('deferrals', 'Failed to process the selected deferrals');
+        }
+        return res.redirect(app.namedRoutes.build('pool-management.deferral-maintencance.process.get', {
+          locationCode: req.params['locationCode'],
+        }));
+
+      }
     };
   };
 
