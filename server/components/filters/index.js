@@ -555,7 +555,11 @@
 
         return item;
       }).join('');
-    }
+    },
+
+    removeFromArray: function(arr, obj) {
+      return arr.filter(item => !_.isEqual(item, obj));
+    },
   };
 
 })();
