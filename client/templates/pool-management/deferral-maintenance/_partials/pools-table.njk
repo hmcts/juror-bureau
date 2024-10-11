@@ -20,10 +20,9 @@
       <tr class="govuk-table__row">
         <td class="govuk-table__cell jd-middle-align">
           <div class="govuk-radios--small" data-module="govuk-radios">
-            <div class="govuk-radios__item -margin-top-4">
-
+            <div class="govuk-radios__item">
               <input class="govuk-radios__input" id="pool-{{ pool.poolNumber }}" name="poolNumber" type="radio" {{ checkedOption }} value="{{ pool.poolNumber }}">
-                <label class="govuk-label govuk-radios__label" for="pool-{{ pool.poolNumber }}">
+                <label class="govuk-label govuk-radios__label govuk-!-padding-0" for="pool-{{ pool.poolNumber }}">
                 <span class="govuk-visually-hidden">Select pool {{ pool.poolNumber }}</span>
               </label>
             </div>
@@ -37,7 +36,7 @@
         <td class="govuk-table__cell jd-middle-align">
           {% set tagLabel = pool.utilisation + " JURORS " + pool.utilisationDescription %}
           {{ govukTag({
-            text: tagLabe | toSentenceCase,
+            text: tagLabel | toSentenceCase,
             classes: ("govuk-tag--pink" if pool.utilisationDescription === "SURPLUS" else "govuk-tag--blue") + " mod-tag--full-width"
           }) }}
         </td>
