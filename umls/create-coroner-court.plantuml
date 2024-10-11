@@ -1,0 +1,136 @@
+@startuml coroner-court
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant PoolManagement as HomePage <</pool-management>>
+participant CreatePool <</pool-management/pool-create-select>>
+participant CreateCoronerCourtPool as FormPage <</pool-management/coroner-pool/select-court>>
+participant CoronerPoolDetails as DetailsPage <</pool-management/coroner-pool/pool-details>>
+participant ConfirmationPage <</pool-management/coroner-pool/check-details>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant CreateCoronerCourtController as Controller <<create-coroner-pool.controller.js>> #LightYellow
+participant FetchCourtsDAO as DataDAO <<fetchCourts.get()>> #LightYellow
+participant CreatePoolDAO as SubmitDAO <<createCoronerPool.post()>> #LightYellow
+
+''' TEMPLATES
+participant CreatePoolPage <<pool-management/pool-create-select>> #lavender
+participant CreateCoronerPoolPage as FormTemplate <<pool-management/coroner-court/select-court.njk>> #lavender
+participant CreateCoronerDetailsPage as DetailsTemplate <<pool-management/coroner-court/details.njk>> #lavender
+participant CheckDetailsPage as ConfirmationTemplate <<pool-management/coroner-court/check-details.njk>> #lavender
+participant ErrorTemplate as Error <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant RequestPoolValidator as Validator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+Actor -> HomePage : Click 'Create Pool'
+
+HomePage -> Controller : call page controller
+
+''' Pool type Interstitial 
+Controller -> CreatePoolPage : request and build template
+Controller <- CreatePoolPage : return HTML
+CreatePool <- Controller : return HTML
+Actor <- CreatePool : render HTML
+Actor -> CreatePool : Select 'Coroner's court pool'
+CreatePool -> Controller : call page controller
+''' End interstitial
+
+''' Data DAO
+alt No cached court locations in session
+  Controller -> DataDAO : build request object
+  DataDAO -> BackendController : send backend request
+  DataDAO <- BackendController : ok response
+
+  alt API failure
+    DataDAO <-- BackendController : error response
+    Controller <-- DataDAO : reject requestObject
+    Controller -> Error : request and build template
+    Controller <- Error : return HTML
+    Actor <- Controller : render error page
+  end
+  |||
+
+  Controller <- DataDAO : resolve request
+end
+|||
+
+''' Form
+Controller -> FormTemplate : request and build template
+Controller <- FormTemplate : return HTML
+FormPage <- Controller : return HTML
+Actor <- FormPage : render HTML
+
+Actor -> FormPage : submit form details
+FormPage -> Controller : POST form
+Controller -> Validator : validate form submission
+
+alt Form missing selections
+  Controller <-- Validator : invalid form
+  Controller -> FormTemplate : request and build template
+  Controller <- FormTemplate : return HTML
+  FormPage <- Controller : return error HTML
+  Actor <- FormPage : render error message
+end
+|||
+
+Controller <- Validator : valid form submission
+
+
+'' Details form
+Controller -> DetailsTemplate : request and build template
+Controller <- DetailsTemplate : return HTML
+DetailsPage <- Controller : return HTML
+Actor <- DetailsPage : render HTML
+
+Actor -> DetailsPage : submit details
+DetailsPage -> Controller : POST details
+Controller -> Validator : validate details submission
+
+alt Details missing selections
+  Controller <-- Validator : invalid details
+  Controller -> DetailsTemplate : request and build template
+  Controller <- DetailsTemplate : return HTML
+  DetailsPage <- Controller : return error HTML
+  Actor <- DetailsPage : render error message
+end
+|||
+
+Controller <- Validator : valid details submission
+
+
+''' Confirmation
+Controller -> ConfirmationTemplate : request and build template
+Controller <- ConfirmationTemplate : return HTML
+ConfirmationPage <- Controller : return HTML
+Actor <- ConfirmationPage : render HTML
+
+
+Actor -> ConfirmationPage : submit form details
+ConfirmationPage -> Controller : POST form
+Controller -> SubmitDAO : build request object
+SubmitDAO -> BackendController : send backend request
+
+alt API failure
+  SubmitDAO <-- BackendController : error response
+  Controller <-- SubmitDAO : reject requestObject
+  Controller -> Error : request and build template
+  Controller <- Error : return HTML
+  Error <- Controller : return HTML
+  Actor <- Error : render error page
+end
+|||
+
+SubmitDAO <- BackendController : ok response
+Controller <- SubmitDAO : resolve request
+HomePage <- Controller : redirect to trial details
+
+Actor <- HomePage : render HTML

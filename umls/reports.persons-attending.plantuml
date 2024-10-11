@@ -1,0 +1,55 @@
+@startuml reports.persons-attending
+
+skinparam Style strictuml
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant "Persons attending form page" as PersonsAttendingFormPage <</reporting/deferred-list>> 
+participant "Juror in waiting page" as JurorInWaitingPage <</juror-management/attendance/in-waiting>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant "Persons attending controller" as PersonsAttendingController <<persons-attending-controller.js>> #LightYellow
+participant "Standard report controller" as StandardReportController <<standard-report.controller.js>> #LightYellow
+
+''' TEMPLATES
+participant "Standard report" as StandardReport <<reporting/standard-reports/standard-report.njk>> #lavender
+
+''' VALIDATORS
+participant "'Persons attending' validator" as Validator
+
+''' SELECT PAGE
+alt From reports list page
+
+  Actor -> PersonsAttendingFormPage : fill form and submit
+  PersonsAttendingFormPage -> PersonsAttendingController : call page controller
+  PersonsAttendingController -> Validator : validate form data
+
+  alt Invalid form data
+
+    PersonsAttendingController <- Validator : invalid form data
+    PersonsAttendingController -> PersonsAttendingFormPage : request and build template
+    PersonsAttendingController <- PersonsAttendingFormPage : return HTML
+    Actor <- PersonsAttendingController : return and render HTML with error messages
+
+  end
+  |||
+
+  PersonsAttendingController <- Validator : valid form data
+  PersonsAttendingController -> StandardReportController : redirect to standard report controller
+
+  StandardReportController -> StandardReport : request and build template
+  StandardReportController <- StandardReport : return HTML
+  Actor <- StandardReportController : report displayed by standard renderer
+
+else From jurors in waiting page
+
+  Actor -> JurorInWaitingPage : Click 'Print' and then 'Persons attending ({summary | detailed})'
+  JurorInWaitingPage -> PersonsAttendingController : call page controller
+  PersonsAttendingController -> StandardReportController : redirect to standard report controller
+  StandardReportController -> StandardReport : request and build template
+  StandardReportController <- StandardReport : return HTML
+  Actor <- StandardReportController : report displayed by standard renderer
+
+end
