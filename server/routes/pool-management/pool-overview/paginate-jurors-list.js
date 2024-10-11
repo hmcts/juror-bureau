@@ -13,7 +13,7 @@ module.exports = function(jurors, sortBy, order, isCourt, selectedJurors, select
     `    aria-label="check-all-jurors"\n` +
     (selectAll ? "    checked\n" : "") +
     `  >\n` +
-    `  <label class="govuk-label govuk-checkboxes__label" for="check-all-jurors">\n` +
+    `  <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="check-all-jurors">\n` +
     `    <span class="govuk-visually-hidden">Select All</span>\n` +
     `  </label>\n` +
     `</div>`,
@@ -86,10 +86,10 @@ module.exports = function(jurors, sortBy, order, isCourt, selectedJurors, select
         `    aria-label="check-juror"\n` +
         (selectAll || selectedJurors.indexOf(juror.jurorNumber) > -1 ? 'checked' : '') +
         `  >\n` +
-        `    <label class="govuk-label govuk-checkboxes__label" for="select-${juror.jurorNumber}">\n` +
+        `    <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="juror-${juror.jurorNumber}">\n` +
         `    <span class="govuk-visually-hidden">Select ${juror.jurorNumber}</span>\n` +
         `  </label>\n`+
-        `</div>\n`
+        `</div>\n`,
       },
       {
         html: '<a href="/juror-management/record/' +
@@ -97,18 +97,21 @@ module.exports = function(jurors, sortBy, order, isCourt, selectedJurors, select
         attributes: {
           'data-sort-value': juror.jurorNumber,
         },
+        classes: "mod-middle-align",
       },
       {
         text: filters.capitalizeFully(juror.firstName?.toLowerCase()),
         attributes: {
           'data-sort-value': juror.firstName,
         },
+        classes: "mod-middle-align",
       },
       {
         text: filters.capitalizeFully(juror.lastName?.toLowerCase()),
         attributes: {
           'data-sort-value': juror.lastName,
         },
+        classes: "mod-middle-align",
       }];
       
     if (isCourt) {
@@ -118,18 +121,21 @@ module.exports = function(jurors, sortBy, order, isCourt, selectedJurors, select
           attributes: {
             'data-sort-value': juror.attendance,
           },
+          classes: "mod-middle-align",
         },
         {
           text: juror.checkedIn ? filters.convert24to12(filters.timeArrayToString(juror.checkedIn)) : '',
           attributes: {
             'data-sort-value': juror.checkedIn,
           },
+          classes: "mod-middle-align",
         },
         {
           text: juror.nextDate && filters.dateFilter(juror.nextDate),
           attributes: {
             'data-sort-value': juror.nextDate,
           },
+          classes: "mod-middle-align",
         },
       ])
     } else {
@@ -138,6 +144,7 @@ module.exports = function(jurors, sortBy, order, isCourt, selectedJurors, select
         attributes: {
           'data-sort-value': juror.postcode,
         },
+        classes: "mod-middle-align",
       })
     }
     row.push({
@@ -145,6 +152,7 @@ module.exports = function(jurors, sortBy, order, isCourt, selectedJurors, select
       attributes: {
         'data-sort-value': juror.status,
       },
+      classes: "mod-middle-align",
     });
     
     return row;
