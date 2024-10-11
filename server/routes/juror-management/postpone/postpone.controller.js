@@ -173,6 +173,11 @@
   module.exports.getAvailablePools = function(app) {
     return function(req, res) {
       const tmpErrors = _.clone(req.session.errors);
+      const tmpFields = _.clone(req.session.formFields);
+
+      delete req.session.errors;
+      delete req.session.formFields;
+
       let jurorNumber;
 
       if (typeof req.session.poolJurorsPostpone !== 'undefined') {
@@ -188,91 +193,96 @@
         jurorNumber,
         [req.session.postponeToDate.split('/').reverse().join('-')]
       )
-        .then((poolOptions) => {
-          let backLinkUrl;
-          let processUrl;
-          let cancelUrl;
-          let originalDate;
+      .then(poolOptions => {
+        let backLinkUrl;
+        let processUrl;
+        let cancelUrl;
+        let originalDate;
 
-          app.logger.info('Fetch pool options:  ', {
-            auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: poolOptions,
-          });
-          delete req.session.errors;
-          delete req.session.formFields;
-          if (typeof req.session.poolJurorsPostpone !== 'undefined'){
-            backLinkUrl = {
-              built: true,
-              url: app.namedRoutes.build('pool-management.postpone.get', {
-                poolNumber: req.params['poolNumber'],
-              }),
-            };
-            processUrl = app.namedRoutes.build('juror.update-bulk-postpone.available-pools.post', {
+        app.logger.info('Fetch pool options:  ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: poolOptions,
+        });
+        
+        if (typeof req.session.poolJurorsPostpone !== 'undefined'){
+          backLinkUrl = {
+            built: true,
+            url: app.namedRoutes.build('pool-management.postpone.get', {
               poolNumber: req.params['poolNumber'],
-            });
-            cancelUrl = app.namedRoutes.build('pool-overview.get', {
-              poolNumber: req.params['poolNumber'],
-            });
-            originalDate = new Date(req.session.poolJurorsPostpone.courtStartDate);
-          } else {
-            backLinkUrl = {
-              built: true,
-              url: app.namedRoutes.build('juror.update.postpone-date.get', {
-                jurorNumber: req.params['jurorNumber'],
-              }),
-            };
-            processUrl = app.namedRoutes.build('juror.update.available-pools.post', {
-              jurorNumber: req.params['jurorNumber'],
-            });
-            cancelUrl = app.namedRoutes.build('juror-record.overview.get', {
-              jurorNumber: req.params['jurorNumber'],
-            });
-            originalDate = moment(req.session.jurorCommonDetails.startDate);
-          }
-
-          if (typeof req.session.processLateSummons !== 'undefined') {
-            cancelUrl = req.session.processLateSummons.cancelUrl;
-          }
-
-          // eslint-disable-next-line one-var
-          const filteredPools = {
-            ...poolOptions.deferralPoolsSummary[0],
-            deferralOptions: poolOptions.deferralPoolsSummary[0].deferralOptions.filter(pool => {
-              return moment(pool.serviceStartDate).isAfter(originalDate);
             }),
           };
-
-          if (!filteredPools.deferralOptions.length) {
-            return res.render('juror-management/postpone/no-pools.njk', {
-              processUrl,
-              cancelUrl,
-              selectedDeferralDate: req.session.postponeToDate.split('/').reverse().join('-'),
-            });
-          }
-
-          return res.render('juror-management/postpone/pools.njk', {
+          processUrl = app.namedRoutes.build('juror.update-bulk-postpone.available-pools.post', {
+            poolNumber: req.params['poolNumber'],
+          });
+          cancelUrl = app.namedRoutes.build('pool-overview.get', {
+            poolNumber: req.params['poolNumber'],
+          });
+          originalDate = new Date(req.session.poolJurorsPostpone.courtStartDate);
+        } else {
+          backLinkUrl = {
+            built: true,
+            url: app.namedRoutes.build('juror.update.postpone-date.get', {
+              jurorNumber: req.params['jurorNumber'],
+            }),
+          };
+          processUrl = app.namedRoutes.build('juror.update.available-pools.post', {
             jurorNumber: req.params['jurorNumber'],
-            backLinkUrl,
+          });
+          cancelUrl = app.namedRoutes.build('juror-record.overview.get', {
+            jurorNumber: req.params['jurorNumber'],
+          });
+          originalDate = moment(req.session.jurorCommonDetails.startDate);
+        }
+
+        if (typeof req.session.processLateSummons !== 'undefined') {
+          cancelUrl = req.session.processLateSummons.cancelUrl;
+        }
+
+        // eslint-disable-next-line one-var
+        const filteredPools = {
+          ...poolOptions.deferralPoolsSummary[0],
+          deferralOptions: poolOptions.deferralPoolsSummary[0].deferralOptions.filter(pool => {
+            return moment(pool.serviceStartDate).isAfter(originalDate);
+          }),
+        };
+
+        if (!filteredPools.deferralOptions.length) {
+          return res.render('juror-management/postpone/no-pools.njk', {
             processUrl,
             cancelUrl,
-            deferralPoolsSummary: filteredPools,
+            selectedDeferralDate: req.session.postponeToDate.split('/').reverse().join('-'),
             errors: {
               title: 'Please check the form',
               count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
               items: tmpErrors,
             },
           });
-        })
-        .catch((err) => {
-          app.logger.crit('Failed to fetch pool options: ', {
-            auth: req.session.authentication,
-            jwt: req.session.authToken,
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
+        }
 
-          return res.render('_errors/generic');
+        return res.render('juror-management/postpone/pools.njk', {
+          jurorNumber: req.params['jurorNumber'],
+          backLinkUrl,
+          processUrl,
+          cancelUrl,
+          deferralPoolsSummary: filteredPools,
+          errors: {
+            title: 'Please check the form',
+            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+            items: tmpErrors,
+          },
+          tmpFields,
         });
+      })
+      .catch(err => {
+        app.logger.crit('Failed to fetch pool options: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic');
+      });
     };
   };
 
@@ -670,13 +680,28 @@
       }
       , errorCB = function(err) {
         let jurorNumber;
-
+        let errorRedirect;
         if (typeof req.session.poolJurorsPostpone !== 'undefined') {
           jurorNumber = req.session.poolJurorsPostpone.selectedJurors;
+          if (err.statusCode = 422 && err.error?.code === 'CANNOT_DEFER_JUROR_WITH_APPEARANCE') {
+            errorRedirect = app.namedRoutes.build('juror.update-bulk-postpone.available-pools.get', {
+              poolNumber: req.params.poolNumber,
+            });
+            req.session.errors = modUtils.makeManualError('postpone', 'One or more jurors cannot be postponed as they already have an appearance at court');
+            req.session.formFields = req.body;
+          }
         } else {
           jurorNumber = req.params.jurorNumber;
+          if (err.statusCode = 422 && err.error?.code === 'CANNOT_DEFER_JUROR_WITH_APPEARANCE') {
+            errorRedirect = app.namedRoutes.build('juror.update.available-pools.get', {
+              jurorNumber: req.params.jurorNumber,
+            });
+            req.session.errors = modUtils.makeManualError('postpone', 'Juror cannot be postponed as they already have an appearance at court');
+            req.session.formFields = req.body;
+          }
         }
-        app.logger.crit('Failed to postpone juror: ', {
+
+        app.logger.crit('Failed to transfer juror: ', {
           auth: req.session.authentication,
           jwt: req.session.authToken,
           jurorNumber: jurorNumber,
@@ -700,7 +725,7 @@
           return res.redirect(errorUrl);
         }
 
-        return res.render('_errors/generic');
+        return errorRedirect ? res.redirect(errorRedirect) : res.render('_errors/generic');
       };
 
     postponeObj.post(
