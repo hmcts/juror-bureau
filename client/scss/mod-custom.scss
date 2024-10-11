@@ -706,8 +706,21 @@ dt.govuk-summary-list-mod {
   }
 }
 
-.mod-centre-checkbox {
+.mod-center-items {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.mod-radio {
+  &__label{
+    &--full-width {
+      div {
+        width: fit-content;
+      }
+      label {
+        white-space: nowrap;
+      }
+    }
+  }
 }
