@@ -259,13 +259,27 @@
       delete req.session.formFields;
 
       if (req.body.deferralDecision === "GRANT") {
-        const pools = await deferralPoolsObject.post(
-          require('request-promise'),
-          app,
-          req.session.authToken,
-          [dateFilter(req.body.deferralDate, 'DD/MM/YYYY', 'yyyy-MM-DD')],
-          req.params.jurorNumber
-        );
+        let pools;
+        try {
+          pools = await deferralPoolsObject.post(
+            require('request-promise'),
+            app,
+            req.session.authToken,
+            [dateFilter(req.body.deferralDate, 'DD/MM/YYYY', 'yyyy-MM-DD')],
+            req.params.jurorNumber
+          );
+        } catch (err) {
+          app.logger.crit('Failed to fetch deferral pools: ', {
+            auth: req.session.authentication,
+            data: {
+              jurorNumber: req.params.jurorNumber,
+              date: dateFilter(req.body.deferralDate, 'DD/MM/YYYY', 'yyyy-MM-DD')
+            },
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
+
+          return res.render('_errors/generic');
+        }
         
         if (pools.deferralPoolsSummary[0].deferralOptions[0].poolNumber) {
           req.session.deferralPools = pools.deferralPoolsSummary[0];
