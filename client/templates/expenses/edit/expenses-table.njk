@@ -32,7 +32,7 @@
       {% set originalExpense = originalExpenses[expense.attendance_date] %}
 
       <tr class="govuk-table__row {% if originalExpense %}mod-highlight-table-row__light-blue{% endif %}">
-        <td class="govuk-table__cell mod-middle-align">
+        <td class="govuk-table__cell jd-middle-align">
           <a class="govuk-link govuk-link--no-visited-state" href="{{ url('juror-management.edit-expense.edit.get', {
             jurorNumber: jurorNumber,
             locCode: locCode,

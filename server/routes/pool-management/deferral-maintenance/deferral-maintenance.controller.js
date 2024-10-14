@@ -582,23 +582,23 @@
         },
         {
           html: `<a class='govuk-link' href='${app.namedRoutes.build('juror-record.overview.get', { jurorNumber: juror.jurorNumber })}'> ${juror.jurorNumber} </a>`,
-          classes: 'mod-middle-align',
+          classes: 'jd-middle-align',
         },
         {
           text: juror.firstName,
-          classes: 'mod-middle-align',
+          classes: 'jd-middle-align',
         },
         {
           text: juror.lastName,
-          classes: 'mod-middle-align',
+          classes: 'jd-middle-align',
         },
         {
           html: `<a class='govuk-link' href='${app.namedRoutes.build('pool-overview.get', { poolNumber: juror.poolNumber })}'> ${juror.poolNumber} </a>`,
-          classes: 'mod-middle-align',
+          classes: 'jd-middle-align',
         },
         {
           text: dateFilter(juror.deferredTo, "yyyy-MM-DD", "ddd DD MMM YYYY"),
-          classes: 'mod-middle-align',
+          classes: 'jd-middle-align',
         },
       ]
     })

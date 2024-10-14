@@ -97,21 +97,21 @@ module.exports = function(jurors, sortBy, order, isCourt, selectedJurors, select
         attributes: {
           'data-sort-value': juror.jurorNumber,
         },
-        classes: "mod-middle-align",
+        classes: "jd-middle-align",
       },
       {
         text: filters.capitalizeFully(juror.firstName?.toLowerCase()),
         attributes: {
           'data-sort-value': juror.firstName,
         },
-        classes: "mod-middle-align",
+        classes: "jd-middle-align",
       },
       {
         text: filters.capitalizeFully(juror.lastName?.toLowerCase()),
         attributes: {
           'data-sort-value': juror.lastName,
         },
-        classes: "mod-middle-align",
+        classes: "jd-middle-align",
       }];
       
     if (isCourt) {
@@ -121,21 +121,21 @@ module.exports = function(jurors, sortBy, order, isCourt, selectedJurors, select
           attributes: {
             'data-sort-value': juror.attendance,
           },
-          classes: "mod-middle-align",
+          classes: "jd-middle-align",
         },
         {
           text: juror.checkedIn ? filters.convert24to12(filters.timeArrayToString(juror.checkedIn)) : '',
           attributes: {
             'data-sort-value': juror.checkedIn,
           },
-          classes: "mod-middle-align",
+          classes: "jd-middle-align",
         },
         {
           text: juror.nextDate && filters.dateFilter(juror.nextDate),
           attributes: {
             'data-sort-value': juror.nextDate,
           },
-          classes: "mod-middle-align",
+          classes: "jd-middle-align",
         },
       ])
     } else {
@@ -144,7 +144,7 @@ module.exports = function(jurors, sortBy, order, isCourt, selectedJurors, select
         attributes: {
           'data-sort-value': juror.postcode,
         },
-        classes: "mod-middle-align",
+        classes: "jd-middle-align",
       })
     }
     row.push({
@@ -152,7 +152,7 @@ module.exports = function(jurors, sortBy, order, isCourt, selectedJurors, select
       attributes: {
         'data-sort-value': juror.status,
       },
-      classes: "mod-middle-align",
+      classes: "jd-middle-align",
     });
     
     return row;

@@ -32,15 +32,15 @@
             <th scope="col" class="govuk-table__header" >
               <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
                 <input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check" id="selectAllCheckbox" name="selectAllCheckbox"/>
-                <label class="govuk-label govuk-checkboxes__label" for="selectAllCheckbox">
+                <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="selectAllCheckbox">
                   <span class="govuk-visually-hidden">Select All</span>
                 </label>
               </div>
             </th>
-            <th scope="col" class="govuk-table__header" aria-sort="ascending" aria-label="Juror number">Juror number</th>
-            <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="First name">First name</th>
-            <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Last name">Last name</th>
-            <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Status">Status</th>
+            <th scope="col" class="govuk-table__header jd-middle-align" aria-sort="ascending" aria-label="Juror number">Juror number</th>
+            <th scope="col" class="govuk-table__header jd-middle-align" aria-sort="none" aria-label="First name">First name</th>
+            <th scope="col" class="govuk-table__header jd-middle-align" aria-sort="none" aria-label="Last name">Last name</th>
+            <th scope="col" class="govuk-table__header jd-middle-align" aria-sort="none" aria-label="Status">Status</th>
           </tr>
         </thead>
         <tbody class="govuk-table__body">
@@ -50,7 +50,7 @@
             <td class="govuk-table__cell">
               <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
                 <input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check" id="select-{{ member.juror_number }}" name="selectedJurors" value="{{ member.juror_number }}">
-                <label class="govuk-label govuk-checkboxes__label" for="select-{{ member.juror_number }}">
+                <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="select-{{ member.juror_number }}">
                   <span class="govuk-visually-hidden">Select {{ member.first_name }} {{ member.last_name }}</span>
                 </label>
               </div>
