@@ -425,9 +425,9 @@
       return false;
     }
 
-    return req.session.documentsJurorsList.data.filter((juror) => (
+    return req.session.documentsJurorsList.checkedJurors.length ? req.session.documentsJurorsList.data.filter((juror) => (
       !isPending(juror[juror.length - 3], juror[juror.length - 2])
-    )).length === req.session.documentsJurorsList.checkedJurors.length;
+    )).length === req.session.documentsJurorsList.checkedJurors.length : false;
   }
 
   function isPending(datePrinted, isPrinted) {
