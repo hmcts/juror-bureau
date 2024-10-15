@@ -157,7 +157,7 @@
               data-printed="${jurorInfo[datePrintedIdx]}"
               name="checked-jurors"
             />
-            <label class="govuk-label govuk-checkboxes__label" for="juror-${jurorInfo[0]}">
+            <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="juror-${jurorInfo[0]}">
               <span class="govuk-visually-hidden">Select juror ${jurorInfo[0]}</span>
             </label>
           </div>

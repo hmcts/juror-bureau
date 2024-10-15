@@ -441,7 +441,7 @@
             + '<input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check" id="select-'
             + juror.juror_number +'" '
             + 'name="selectedJurors"' + checked + ' value="' + juror.juror_number + '">'
-            + '<label class="govuk-label govuk-checkboxes__label" for="select-'+ juror.juror_number +'">'
+            + '<label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="select-'+ juror.juror_number +'">'
             + '<span class="govuk-visually-hidden">Select '+ juror.juror_number +'</span> </label> </div>',
           attributes: {
             'data-sort-value': juror.juror_number,

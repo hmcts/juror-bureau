@@ -17,7 +17,7 @@
         <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
           <input type="checkbox" class="govuk-checkboxes__input" id="check-all-jurors"
             aria-label="check-all-jurors" {% if totalCheckedJurors === totalJurors %}checked{% endif %}/>
-          <label class="govuk-label govuk-checkboxes__label" for="jurors-all">
+          <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="jurors-all">
             <span class="govuk-visually-hidden">Select all jurors</span>
           </label>
         </div>
@@ -78,7 +78,7 @@
             <input type="checkbox" class="govuk-checkboxes__input"
               id="juror-{{ juror.juror_number }}" {% if juror.checked %}checked{% endif %}
               aria-label="check-juror-{{ juror.juror_number }}" name="checked-jurors"/>
-            <label class="govuk-label govuk-checkboxes__label" for="juror-{{ juror.juror_number }}">
+            <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="juror-{{ juror.juror_number }}">
               <span class="govuk-visually-hidden">Select juror {{ juror.juror_number }}</span>
             </label>
           </div>
