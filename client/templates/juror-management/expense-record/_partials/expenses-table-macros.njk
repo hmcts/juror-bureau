@@ -23,7 +23,7 @@
             <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
               <input type="checkbox" class="govuk-checkboxes__input" id="check-all-expenses"
                 aria-label="check-all-expenses" {% if params.totalCheckedExpenses === params.totalExpenses %}checked{% endif %}/>
-              <label class="govuk-label govuk-checkboxes__label" for="expenses-all">
+              <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="expenses-all">
                 <span class="govuk-visually-hidden">Select all expenses</span>
               </label>
             </div>
@@ -59,7 +59,7 @@
       <input type="checkbox" class="govuk-checkboxes__input"
         id="expense-{{ params.attendanceDate | dateFilter('YYYY-MM-DD', 'YYYYMMDD') }}"
         aria-label="check-expense-{{ params.attendanceDate | dateFilter('YYYY-MM-DD', 'YYYYMMDD') }}" name="checked-expenses" value="{{ params.attendanceDate }}"/>
-      <label class="govuk-label govuk-checkboxes__label" for="expense-{{ params.attendanceDate | dateFilter('YYYY-MM-DD', 'YYYYMMDD') }}">
+      <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="expense-{{ params.attendanceDate | dateFilter('YYYY-MM-DD', 'YYYYMMDD') }}">
         <span class="govuk-visually-hidden">Select expense {{ params.attendanceDate | dateFilter('YYYY-MM-DD', 'YYYYMMDD') }}</span>
       </label>
     </div>

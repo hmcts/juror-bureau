@@ -9,7 +9,7 @@
             {% if method === "paper" %}
               {{ govukTag({
                 text: "Section complete" if response.eligibilityComplete else "incomplete",
-                classes: "govuk-tag" if response.eligibilityComplete else "govuk-tag--grey"
+                classes: "mod-tag--dark-blue" if response.eligibilityComplete else "govuk-tag--grey"
               }) }}
             {% endif %}
           </h2>

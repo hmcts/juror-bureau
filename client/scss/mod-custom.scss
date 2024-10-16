@@ -350,10 +350,6 @@ dt.govuk-summary-list-mod {
   text-align: center;
 }
 
-.mod-middle-align {
-  vertical-align: middle;
-}
-
 .mod-horizontal-scroll-table {
   display: block;
   overflow-x: auto;
@@ -689,4 +685,38 @@ dt.govuk-summary-list-mod {
   padding-inline: 20px;
   padding-block: 10px;
   display: none;
+}
+
+.govuk-tag--dark-blue {
+  color: govuk-colour("white");
+  background-color: govuk-colour("blue");
+}
+
+.mod-tag {
+  &--dark-blue {
+    color: govuk-colour("white");
+    background-color: govuk-colour("blue");
+  }
+  &--full-width {
+    max-width: 100%;
+  }
+}
+
+.mod-center-items {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mod-radio {
+  &__label{
+    &--full-width {
+      div {
+        width: fit-content;
+      }
+      label {
+        white-space: nowrap;
+      }
+    }
+  }
 }

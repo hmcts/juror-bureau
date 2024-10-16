@@ -26,8 +26,8 @@
             {{poolRowDate}}
         </span>
         {{govukTag({
-            text: poolRow.utilisation + poolRowUtilisationText,
-            classes: poolRowUtilisationClass
+            text: (poolRow.utilisation + poolRowUtilisationText) | toSentenceCase,
+            classes: poolRowUtilisationClass + " mod-tag--full-width"
         })}}
     {% endset %}
     {% if poolRow.poolNumber %}
@@ -39,8 +39,8 @@
         {% set poolRowOutput %}
         <span class='govuk-!-margin-right-4'>Send to deferral maintenance for this date</span>
         {{govukTag({
-            text: poolRow.utilisation + poolRowUtilisationText,
-            classes: poolRowUtilisationClass
+            text: (poolRow.utilisation + poolRowUtilisationText) | toSentenceCase,
+            classes: poolRowUtilisationClass + " mod-tag--full-width"
         }) }}
         {% endset %}
         {% set poolRowList = (poolRowList.push({
