@@ -780,7 +780,7 @@
 
           responseClone.jurorDetailsComplete = isComplete({
             name: nameDetails.currentName,
-            address: addressDetails.currentAddress,
+            address: { addressLineOne: responseClone.addressLineOne, addressTown: responseClone.addressTown, addressPostcode: responseClone.addressPostcode },
             dob: responseClone.dateOfBirth,
           });
 
@@ -821,6 +821,7 @@
             jurorDetails: (
               nameDetails.changed ||
               addressDetails.changed ||
+              addressDetails.currentAddress?.includes('mod-reply-section__required') ||
               thirdPartyDetails.isThirdParty ||
               jurorDetails.dateOfBirth.ageIneligible === true
             ),
@@ -1129,10 +1130,18 @@
   // Helper functions
   function isComplete(elements) {
     var el;
-
     for (el in elements) {
-      if (elements[el] === null || typeof elements[el] === 'undefined') return false;
+      if (el === 'address') {
+        const address = elements[el];
+        let line;
+        for (line in address) {
+          if (address[line] === null || typeof address[line] === 'undefined' || address[line] === '') return false;
+        }
+      } else {
+        if (elements[el] === null || typeof elements[el] === 'undefined') return false;
+      }
     }
+    
 
     return true;
   }
@@ -1162,7 +1171,7 @@
 
   // also taken from response -> detail.controller.js
   function resolveJurorAddress(response) {
-    var newAddressRender = filters.buildRecordAddress([
+    var newAddressRender = filters.buildSummonsAddress([
         response.addressLineOne,
         response.addressLineTwo,
         response.addressLineThree,
@@ -1171,7 +1180,7 @@
         response.addressPostcode,
         '',
       ])
-      , addressRender = filters.buildRecordAddress([
+      , addressRender = filters.buildSummonsAddress([
         response.existingAddressLineOne,
         response.existingAddressLineTwo,
         response.existingAddressLineThree,
