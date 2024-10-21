@@ -325,7 +325,7 @@
     table.head.push(
       {
         id: 'trialNumber',
-        value: 'Case number',
+        value: 'Trial number',
         sort: sortBy === 'trialNumber' ? order : 'none',
       },
       {
