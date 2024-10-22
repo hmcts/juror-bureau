@@ -25,51 +25,17 @@
     },
   });
 
-  module.exports.expenseRatesAndLimitsDAO = {
-    get: function(app, req, etag = null) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/administration/expenses/rates'),
-        method: 'GET',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-      };
+  module.exports.expenseRatesAndLimitsDAO = new DAO('moj/administration/expenses/rates', {
+    get: function(etag = null) {
+      const headers = {};
 
       if (etag) {
-        payload.headers['If-None-Match'] = `${etag}`;
+        headers['If-None-Match'] = `${etag}`;
       }
 
-      app.logger.info('Sending request to API: ', payload);
-
-      payload.transform = (response, incomingRequest) => {
-        const headers = _.cloneDeep(incomingRequest.headers);
-
-        return { response, headers };
-      };
-
-      return rp(payload);
+      return { uri: this.resource, headers};
     },
-    put: function(app, req, body) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/administration/expenses/rates'),
-        method: 'PUT',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-        body,
-      };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
-    },
-  };
+  });
 
   module.exports.transportRates = {
     get: function(app, req, locCode, etag = null) {
