@@ -19,7 +19,7 @@
 
       Promise.all([
         courtDetailsDAO.get(app, req, locationCode),
-        courtroomsDAO.get(app, req, locationCode),
+        courtroomsDAO.get(req, locationCode),
       ])
         .then(([{ response: courtDetails, headers }, courtrooms]) => {
 
