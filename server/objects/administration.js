@@ -36,7 +36,11 @@ const { extractDataAndHeaders } = require('../lib/mod-utils');
         headers['If-None-Match'] = `${etag}`;
       }
 
-      return { uri: this.resource, headers};
+      return { 
+        uri: this.resource, 
+        headers,
+        transform: extractDataAndHeaders,
+      };
     },
   });
 
@@ -48,7 +52,11 @@ const { extractDataAndHeaders } = require('../lib/mod-utils');
         headers['If-None-Match'] = `${etag}`;
       }
 
-      return { uri: this.resource.replace('{locCode}', locCode), headers};
+      return { 
+        uri: this.resource.replace('{locCode}', locCode),
+        headers,
+        transform: extractDataAndHeaders,
+      };
     },
     put: function(locCode, body) {
       return { uri: `moj/administration/courts/${locCode}/rates`, body};
@@ -85,7 +93,11 @@ const { extractDataAndHeaders } = require('../lib/mod-utils');
         headers['If-None-Match'] = `${etag}`;
       }
 
-      return { uri: this.resource.replace('{locCode}', locCode).replace('{id}', id), headers};
+      return { 
+        uri: this.resource.replace('{locCode}', locCode).replace('{id}', id),
+        headers,
+        transform: extractDataAndHeaders,
+      };
     }
   });
 
