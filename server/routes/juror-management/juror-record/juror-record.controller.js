@@ -1275,7 +1275,7 @@
   async function resolveIdCheckDescription(app, req, idCheckCode) {
     if (!idCheckCode) return Promise.resolve('');
 
-    const { description } = (await systemCodesDAO.get(app, req, 'ID_CHECK')).find(({ code }) => code === idCheckCode);
+    const { description } = (await systemCodesDAO.get(req, 'ID_CHECK')).find(({ code }) => code === idCheckCode);
 
     return Promise.resolve(description);
   }

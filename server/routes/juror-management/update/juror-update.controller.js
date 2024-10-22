@@ -170,7 +170,7 @@
     return function(req, res) {
       const cancelUrl = app.namedRoutes.build('juror-record.overview.get', { jurorNumber: req.params['jurorNumber'] });
 
-      systemCodesDAO.get(app, req, 'EXCUSAL_AND_DEFERRAL')
+      systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL')
         .then((data) => {
           app.logger.info('Fetched list of deferral reasons: ', {
             auth: req.session.authentication,
@@ -290,7 +290,7 @@
 
       if (!tmpReasons) {
         try {
-          tmpReasons = await systemCodesDAO.get(app, req, 'EXCUSAL_AND_DEFERRAL');
+          tmpReasons = await systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL');
         } catch (err) {
           app.logger.crit('Failed to fetch system codes: ', {
             auth: req.session.authentication,

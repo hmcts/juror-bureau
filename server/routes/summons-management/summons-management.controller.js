@@ -265,7 +265,7 @@
           });
 
           //GET DEFFERAL CODES FROM BACKEND
-          systemCodesDAO.get(app, req, 'EXCUSAL_AND_DEFERRAL')
+          systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL')
             .then((data) => {
               app.logger.info('Retrieved excusal codes: ', {
                 auth: req.session.authentication,
@@ -617,7 +617,7 @@
         cancelUrl = app.namedRoutes.build('response.detail.get', routeParameters);
       }
 
-      systemCodesDAO.get(app, req, 'EXCUSAL_AND_DEFERRAL')
+      systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL')
         .then(successCB)
         .catch(errorCB);
     };
@@ -899,7 +899,7 @@
         };
 
       promiseArr.push(paperReplyObj.get(require('request-promise'), app, req.session.authToken, req.params['id']));
-      promiseArr.push(systemCodesDAO.get(app, req, 'REASONABLE_ADJUSTMENTS'));
+      promiseArr.push(systemCodesDAO.get(req, 'REASONABLE_ADJUSTMENTS'));
       Promise.all(promiseArr)
         .then(successCB)
         .catch(errorCB);

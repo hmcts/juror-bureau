@@ -642,7 +642,7 @@
       }
 
       try {
-        let adjustmentsReasons = modUtils.reasonsArrToObj(await systemCodesDAO.get(app, req, 'REASONABLE_ADJUSTMENTS'));
+        let adjustmentsReasons = modUtils.reasonsArrToObj(await systemCodesDAO.get(req, 'REASONABLE_ADJUSTMENTS'));
 
         Object.keys(adjustmentsReasons).forEach((key) => {
           reasons.push(
