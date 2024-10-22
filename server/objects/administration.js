@@ -88,90 +88,29 @@ const { get, put } = require('request');
     }
   });
 
-  module.exports.judgesDAO = {
-    getJudges: function(app, req, isActive) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/administration/judges?is_active=' + isActive),
-        method: 'GET',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
+  module.exports.judgesDAO = new DAO('moj/administration/judges', {
+    get: function(isActive) {
+      return { 
+        uri: this.resource + `?is_active=${isActive}`,
+        transform: (data) => { delete data['_headers']; return Object.values(data) } 
       };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
     },
-    getJudgeDetails: function(app, req, judgeId) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/administration/judges', judgeId),
-        method: 'GET',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-      };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
+    put: function(judgeId, body) {
+      return { uri: this.resource + `/${judgeId}`, body };
     },
-    put: function(app, req, judgeId, body) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/administration/judges', judgeId),
-        method: 'PUT',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-        body,
-      };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
+    post: function(body) {
+      return { uri: this.resource, body };
     },
-    post: function(app, req, body) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/administration/judges'),
-        method: 'POST',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-        body,
-      };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
+    delete: function(judgeId) {
+      return { uri: this.resource + `/${judgeId}` };
     },
-    delete: function(app, req, judgeId) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/administration/judges', judgeId),
-        method: 'DELETE',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-      };
+  });
 
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
-    },
-  };
+  module.exports.judgeDetailsDAO = new DAO('moj/administration/judges/{judgeId}', {
+    get: function(judgeId) {
+      return { uri: this.resource.replace('{judgeId}', judgeId)};
+    }
+  });
 
   module.exports.bankHolidaysDAO = {
     get: function(app, req, etag = null) {

@@ -2,7 +2,7 @@
   'use strict';
 
   const _ = require('lodash');
-  const { judgesDAO } = require('../../../objects/administration');
+  const { judgesDAO, judgeDetailsDAO } = require('../../../objects/administration');
   const { replaceAllObjKeys } = require('../../../lib/mod-utils');
   const { validate } = require('validate.js');
   const editJudgeValidator = require('../../../config/validation/edit-judge');
@@ -21,10 +21,10 @@
       delete req.session.bannerMessage;
 
       try {
-        activeJudges = await judgesDAO.getJudges(app, req, true);
+        activeJudges = await judgesDAO.get(req, true);
 
         if (judgeType === 'all') {
-          inactiveJudges = await judgesDAO.getJudges(app, req, false);
+          inactiveJudges = await judgesDAO.get(req, false);
         }
 
         const judges = activeJudges.concat(inactiveJudges);
@@ -69,7 +69,7 @@
       delete req.session.errors;
 
       try {
-        const judge = await judgesDAO.getJudgeDetails(app, req, judgeId);
+        const judge = await judgeDetailsDAO.get(req, judgeId);
 
         app.logger.info('Fetched judges details: ', {
           auth: req.session.authentication,
@@ -127,7 +127,7 @@
 
         delete payload._csrf;
 
-        await judgesDAO.put(app, req, judgeId, payload);
+        await judgesDAO.put(req, judgeId, payload);
 
         app.logger.info('Updated judges details: ', {
           auth: req.session.authentication,
@@ -161,7 +161,7 @@
       const { judgeId } = req.params;
 
       try {
-        const judge = await judgesDAO.getJudgeDetails(app, req, judgeId);
+        const judge = await judgeDetailsDAO.get(req, judgeId);
 
         app.logger.info('Fetched judges details: ', {
           auth: req.session.authentication,
@@ -201,7 +201,7 @@
 
       try {
 
-        await judgesDAO.delete(app, req, judgeId);
+        await judgesDAO.delete(req, judgeId);
 
         app.logger.info('Deleted the unused judge: ', {
           auth: req.session.authentication,
@@ -271,7 +271,7 @@
       delete payload._csrf;
 
       try {
-        await judgesDAO.post(app, req, payload);
+        await judgesDAO.post(req, payload);
 
         app.logger.info('Added new judge: ', {
           auth: req.session.authentication,
