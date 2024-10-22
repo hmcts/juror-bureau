@@ -5,7 +5,7 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
 
   const _ = require('lodash');
   const { courtRatesFromLocation } = require('../../../objects/court-location');
-  const { transportRates } = require('../../../objects/administration');
+  const { transportRatesDAO } = require('../../../objects/administration');
   const { validate } = require('validate.js');
   const updateExpenseLimits = require('../../../config/validation/update-expense-transport-limits');
 
@@ -21,12 +21,13 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
       const locCode = req.session.authentication.locCode;
 
       try {
-        const  {response, headers } = await transportRates.get(
-          app, req, locCode);
+        const response = await transportRatesDAO.get(req, locCode);
+
+        req.session.expenseLimitsCourtEtag = response._headers.etag;
+
+        delete response._headers;
 
         replaceAllObjKeys(response, _.camelCase);
-
-        req.session.expenseLimitsCourtEtag = headers.etag;
 
         return res.render('administration/expense-limits-court.njk', {
           expenseLimitsTransport: response,
@@ -65,7 +66,7 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
       }
 
       try {
-        await transportRates.get(app, req, locCode, req.session.expenseLimitsCourtEtag);
+        await transportRatesDAO.get(req, locCode, req.session.expenseLimitsCourtEtag);
 
         req.session.errors = {
           expenseRates: [{
@@ -100,7 +101,7 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
           'taxi_soft_limit': req.body.taxiDailyLimit,
         };
 
-        await transportRates.put(app, req, req.session.authentication.locCode, body);
+        await transportRatesDAO.put(req, req.session.authentication.locCode, body);
 
         return res.redirect(app.namedRoutes.build('administration.expense-limits-court.get'));
       } catch (err) {
