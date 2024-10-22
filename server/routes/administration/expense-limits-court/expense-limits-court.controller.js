@@ -21,16 +21,14 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
       const locCode = req.session.authentication.locCode;
 
       try {
-        const response = await transportRatesDAO.get(req, locCode);
+        const { response: expenseLimitsTransport, headers } = await transportRatesDAO.get(req, locCode);
 
-        req.session.expenseLimitsCourtEtag = response._headers.etag;
+        req.session.expenseLimitsCourtEtag = headers.etag;
 
-        delete response._headers;
-
-        replaceAllObjKeys(response, _.camelCase);
+        replaceAllObjKeys(expenseLimitsTransport, _.camelCase);
 
         return res.render('administration/expense-limits-court.njk', {
-          expenseLimitsTransport: response,
+          expenseLimitsTransport,
           processUrl: app.namedRoutes.build('administration.expense-limits-court.post'),
           cancelUrl: app.namedRoutes.build('administration.expense-limits-court.get'),
           tmpBody,

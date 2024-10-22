@@ -1,4 +1,3 @@
-const { response } = require('express');
 const { replaceAllObjKeys } = require('../../../lib/mod-utils');
 
 (function() {
@@ -19,16 +18,14 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
       delete req.session.expenseRatesEtag;
 
       try {
-        const response = await expenseRatesAndLimitsDAO.get(req);
+        const { response: expenseLimits, headers } = await expenseRatesAndLimitsDAO.get(req);
 
-        req.session.expenseRatesEtag = response._headers.etag;
+        req.session.expenseRatesEtag = headers.etag;
 
-        delete response._headers;
-
-        replaceAllObjKeys(response, _.camelCase);
+        replaceAllObjKeys(expenseLimits, _.camelCase);
 
         return res.render('administration/expense-limits.njk', {
-          expenseLimits: response,
+          expenseLimits,
           processUrl: app.namedRoutes.build('administration.expense-limits.post'),
           cancelUrl: app.namedRoutes.build('administration.expense-limits.get'),
           tmpBody,

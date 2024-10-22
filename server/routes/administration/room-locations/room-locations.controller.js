@@ -53,19 +53,17 @@
       delete req.session.formFields;
 
       try {
-        const response = await courtroomDetailsDAO.get(req, locationCode, id);
+        const { response: courtroom, headers } = await courtroomDetailsDAO.get(req, locationCode, id);
 
         req.session[`editCourtroom-${locationCode}-${id}`] = {
-          etag: response._headers.etag,
+          etag: headers.etag,
         };
 
-        delete response._headers;
-
-        replaceAllObjKeys(response, _.camelCase);
+        replaceAllObjKeys(courtroom, _.camelCase);
 
         return res.render('administration/room-locations/add-edit-room.njk', {
           action: 'edit',
-          courtroom: response,
+          courtroom,
           processUrl: app.namedRoutes.build('administration.room-locations.edit.post', { locationCode, id }),
           cancelUrl: app.namedRoutes.build('administration.room-locations.get', { locationCode }),
           tmpBody,
