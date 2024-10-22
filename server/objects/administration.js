@@ -1,3 +1,5 @@
+const { get } = require('request');
+
 ;(function() {
   'use strict';
 
@@ -52,24 +54,11 @@
     }
   });
 
-  module.exports.courtsDAO = {
-    get: function(app, req) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/administration/courts'),
-        method: 'GET',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-      };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
-    },
-  };
+  module.exports.courtsDAO = new DAO('moj/administration/courts', {
+    get: function() {
+      return { transform: (data) => { delete data['_headers']; return Object.values(data) } };
+    }
+  });
 
   module.exports.courtroomsDAO = {
     get: function(app, req, loc) {

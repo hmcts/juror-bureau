@@ -45,7 +45,7 @@
       delete req.session.createUser;
 
       try {
-        const courtsData = await courtsDAO.get(app, req);
+        const courtsData = await courtsDAO.get(req);
 
         app.logger.info('Fetched list of courts', {
           auth: req.session.authentication,
