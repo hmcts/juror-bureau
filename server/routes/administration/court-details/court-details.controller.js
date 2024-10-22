@@ -18,11 +18,11 @@
       delete req.session.errors;
 
       Promise.all([
-        courtDetailsDAO.get(app, req, locationCode),
+        courtDetailsDAO.get(req, locationCode),
         courtroomsDAO.get(req, locationCode),
       ])
         .then(([{ response: courtDetails, headers }, courtrooms]) => {
-
+          
           req.session[`courtDetails-${locationCode}`] = {
             etag: headers.etag,
           };
@@ -87,7 +87,7 @@
       }
 
       try {
-        await courtDetailsDAO.get(app, req, locationCode, req.session[`courtDetails-${locationCode}`].etag);
+        await courtDetailsDAO.get(req, locationCode, req.session[`courtDetails-${locationCode}`].etag);
 
         req.session.errors = {
           bankDetails: [{
@@ -132,7 +132,7 @@
       replaceAllObjKeys(payload, _.snakeCase);
 
       try {
-        await courtDetailsDAO.put(app, req, locationCode, payload);
+        await courtDetailsDAO.put(req, locationCode, payload);
         res.redirect(redirectUrl);
       } catch (err) {
         app.logger.crit('Failed to update court details', {

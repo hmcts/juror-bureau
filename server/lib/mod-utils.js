@@ -1337,5 +1337,13 @@
     return foundReplyMethod ? foundReplyMethod : 'NONE';
   }
 
+  module.exports.extractDataAndHeaders = (data) => {
+    const headers = data._headers;
+    delete data._headers
+    return {
+      headers,
+      response: data,
+    }; 
+  }
 
 })();
