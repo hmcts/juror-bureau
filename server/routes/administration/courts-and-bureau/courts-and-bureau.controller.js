@@ -10,7 +10,7 @@
       let { filter } = req.query;
 
       try {
-        let courtsData = await courtsDAO.get(app, req);
+        let courtsData = await courtsDAO.get(req);
 
         courts = mapAdminToPoolRequestCourts(courtsData);
 
