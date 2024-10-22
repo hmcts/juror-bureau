@@ -49,7 +49,7 @@
           assistanceTypeDetails = data.specialNeeds[0].assistanceTypeDetails;
         }
 
-        const adjustmentReasons = reasonsArrToObj(await systemCodesDAO.get(app, req, 'REASONABLE_ADJUSTMENTS'));
+        const adjustmentReasons = reasonsArrToObj(await systemCodesDAO.get(req, 'REASONABLE_ADJUSTMENTS'));
 
         const reasons = Object.keys(adjustmentReasons).reduce((prev, key) => {
           prev.push({

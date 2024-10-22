@@ -19,7 +19,7 @@ module.exports.getConfirmIdentity = function(app) {
     let idCheckCodes;
 
     try {
-      idCheckCodes = (await systemCodesDAO.get(app, req, 'ID_CHECK')).reduce((acc, code) => {
+      idCheckCodes = (await systemCodesDAO.get(req, 'ID_CHECK')).reduce((acc, code) => {
         acc.push({
           value: code.code,
           text: code.description,

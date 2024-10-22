@@ -24,7 +24,7 @@
 
   module.exports.getEditDeferral = (app) => {
     return (req, res) => {
-      systemCodesDAO.get(app, req, 'EXCUSAL_AND_DEFERRAL')
+      systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL')
         .then((data) => {
           app.logger.info('Retrieved excusal codes: ', {
             auth: req.session.authentication,

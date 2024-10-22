@@ -44,7 +44,9 @@
       const { codeType } = req.params;
 
       try {
-        const codes = await systemCodesDAO.get(app, req, systemCodes[codeType].key);
+        const codes = await systemCodesDAO.get(req, systemCodes[codeType].key);
+
+        console.log('\n\n',codes,'\n\n');
 
         return res.render('administration/system-codes.njk', {
           backLinkUrl: {
