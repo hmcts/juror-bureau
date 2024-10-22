@@ -23,7 +23,7 @@
       const postUrl = app.namedRoutes.build('administration.non-sitting-days.post');
 
       try {
-        const holidayDates = await bankHolidaysDAO.get(app, req);
+        const holidayDates = await bankHolidaysDAO.get(req);
         const nonSittingDates = await nonSittingDayDAO.get(app, req, req.session.authentication.owner);
         const fetchAllAvailableCourts = await fetchAllCourts.get(
           require('request-promise'), app, req.session.authToken);
@@ -32,11 +32,11 @@
           ({locationCode}) => locationCode === req.session.authentication.locCode);
 
 
-        const holidayDateYears = Object.keys(holidayDates.response);
+        const holidayDateYears = Object.keys(holidayDates);
 
         return res.render('administration/non-sitting-days.njk', {
           postUrl,
-          holidayDates: holidayDates.response,
+          holidayDates: holidayDates,
           nonSittingDates: nonSittingDates,
           holidayDateYears,
           locationName: loggedInName.locationName,

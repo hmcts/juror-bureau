@@ -6,7 +6,7 @@
   module.exports.getBankHolidays = function(app) {
     return async function(req, res) {
       try {
-        const { response: bankHolidays } = await bankHolidaysDAO.get(app, req);
+        const bankHolidays = await bankHolidaysDAO.get(req);
 
         return res.render('administration/bank-holidays.njk', {
           bankHolidays,

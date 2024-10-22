@@ -1,5 +1,3 @@
-const { get, put } = require('request');
-
 ;(function() {
   'use strict';
 
@@ -112,34 +110,11 @@ const { get, put } = require('request');
     }
   });
 
-  module.exports.bankHolidaysDAO = {
-    get: function(app, req, etag = null) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/administration/bank-holidays'),
-        method: 'GET',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-      };
-
-      if (etag) {
-        payload.headers['If-None-Match'] = `${etag}`;
-      }
-
-      app.logger.info('Sending request to API: ', payload);
-
-      payload.transform = (response, incomingRequest) => {
-        const headers = _.cloneDeep(incomingRequest.headers);
-
-        return { response, headers };
-      };
-
-      return rp(payload);
+  module.exports.bankHolidaysDAO = new DAO('moj/administration/bank-holidays', {
+    get: function() {
+      return { uri: this.resource, transform: (data) => { delete data['_headers']; return data} };
     },
-  };
+  })
 
   module.exports.nonSittingDayDAO = {
     get: function(app, req, locCode) {
