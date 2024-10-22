@@ -1,4 +1,4 @@
-const { get } = require('request');
+const { get, put } = require('request');
 
 ;(function() {
   'use strict';
@@ -60,84 +60,33 @@ const { get } = require('request');
     }
   });
 
-  module.exports.courtroomsDAO = {
-    get: function(app, req, loc) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/administration/court-rooms', loc),
-        method: 'GET',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
+  module.exports.courtroomsDAO = new DAO('moj/administration/court-rooms', {
+    get: function(locCode) {
+      console.log(locCode);
+      return { 
+        uri: urljoin(this.resource, locCode),
+        transform: (data) => { delete data['_headers']; return Object.values(data) }
       };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
     },
-    getDetails: function(app, req, loc, id, etag = null) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/administration/court-rooms', loc, id),
-        method: 'GET',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-      };
+    put: function(locCode, id, body) {
+      return { uri: urljoin(this.resource, locCode, id), body };
+    },
+    post: function(locCode, body) {
+      return { uri: urljoin(this.resource, locCode), body };
+    },
+  })
+
+  module.exports.courtroomDetailsDAO = new DAO('moj/administration/court-rooms/{locCode}/{id}', {
+    get: function(locCode, id, etag = null) {
+      const headers = {};
 
       if (etag) {
-        payload.headers['If-None-Match'] = `${etag}`;
+        headers['If-None-Match'] = `${etag}`;
       }
 
-      app.logger.info('Sending request to API: ', payload);
-
-      payload.transform = (response, incomingRequest) => {
-        const headers = _.cloneDeep(incomingRequest.headers);
-
-        return { response, headers };
-      };
-
-      return rp(payload);
-    },
-    put: function(app, req, loc, id, body) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/administration/court-rooms', loc, id),
-        method: 'PUT',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-        body,
-      };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
-    },
-    post: function(app, req, loc, body) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/administration/court-rooms', loc),
-        method: 'POST',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-        body,
-      };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
-    },
-  };
+      return { uri: this.resource.replace('{locCode}', locCode).replace('{id}', id), headers};
+    }
+  });
 
   module.exports.judgesDAO = {
     getJudges: function(app, req, isActive) {
