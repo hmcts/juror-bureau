@@ -1,130 +1,33 @@
 ;(function() {
   'use strict';
 
-  const rp = require('request-promise');
+  const { DAO } = require('./dataAccessObject');
+  const urljoin = require('url-join')
 
-  var _ = require('lodash')
-    , urljoin = require('url-join')
-    , config = require('../config/environment')();
+  module.exports.usersDAO = new DAO('moj/users');
 
-  module.exports.usersDAO = {
-    getUsers: function(app, req, body) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/users'),
-        method: 'POST',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-        body,
-      };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
+  module.exports.userRecordDAO = new DAO('moj/users', {
+    post: function(body) {
+      return { uri: urljoin(this.resource, 'create'), body };
     },
-    createUser: function(app, req, body) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/users/create'),
-        method: 'POST',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-        body,
-      };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
+    get: function(username) {
+      return { uri: urljoin(this.resource, username) };
     },
-    getUserRecord: function(app, req, username) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/users', username),
-        method: 'GET',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-      };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
+    put: function(username, body) {
+      return { uri: urljoin(this.resource, username), body };
     },
-    assignCourts: function(app, req, username, body) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/users', username, 'courts'),
-        method: 'PATCH',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-        body,
-      };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
+    patch: function(username, userType) {
+      return { uri: urljoin(this.resource, username, 'type', userType) };
     },
-    removeCourts: function(app, req, username, body) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/users', username, 'courts'),
-        method: 'DELETE',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-        body,
-      };
+  });
 
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
+  module.exports.assignCourtsDAO = new DAO('moj/users/{username}/courts', {
+    patch: function(username, body) {
+      return { uri: this.resource.replace('{username}', username), body };
     },
-    editUser: function(app, req, username, body) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/users', username),
-        method: 'PUT',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-        body,
-      };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
+    delete: function(username, body) {
+      return { uri: this.resource.replace('{username}', username), body };
     },
-    editUserType: function(app, req, username, userType) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/users', username, 'type', userType),
-        method: 'PATCH',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-      };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
-    },
-  };
+  });
 
 })();

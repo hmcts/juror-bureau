@@ -2,7 +2,7 @@
   'use strict';
 
   const _ = require('lodash');
-  const { usersDAO } = require('../../../objects/users');
+  const { usersDAO, userRecordDAO } = require('../../../objects/users');
   const modUtils = require('../../../lib/mod-utils');
   const {
     replaceAllObjKeys,
@@ -105,7 +105,7 @@
           sortUrlPrefix = `${sortUrlPrefix}&userType=${req.query.userType}`;
         };
 
-        const users = await usersDAO.getUsers(app, req, payload);
+        const users = await usersDAO.post(req, payload);
 
         replaceAllObjKeys(users, _.camelCase);
 
@@ -220,7 +220,7 @@
           'page_limit': modUtils.constants.PAGE_SIZE,
         };
 
-        const users = await usersDAO.getUsers(app, req, payload);
+        const users = await usersDAO.post(req, payload);
 
         replaceAllObjKeys(users, _.camelCase);
 
@@ -274,7 +274,7 @@
       delete req.session[`editUser-${username}`];
 
       try {
-        const user = await usersDAO.getUserRecord(app, req, username);
+        const user = await userRecordDAO.get(req, username);
 
         replaceAllObjKeys(user, _.camelCase);
 

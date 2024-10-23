@@ -57,7 +57,16 @@ function isResponseDataPlain(data) {
 
 module.exports.axiosClient = function(method, url, jwtToken, variables) {
   if (variables && variables.body) {
-    return client[method](url, variables.body, {
+    if (method !== 'delete') {
+      return client[method](url, variables.body, {
+        headers: {
+          Authorization: jwtToken,
+          ...variables.headers,
+        },
+      });
+    }
+    return client[method](url, {
+      data: variables.body,
       headers: {
         Authorization: jwtToken,
         ...variables.headers,
