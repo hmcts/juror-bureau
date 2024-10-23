@@ -4,7 +4,7 @@
   const _ = require('lodash');
   const { validate } = require('validate.js');
   const validator = require('../../../../config/validation/create-users');
-  const { usersDAO } = require('../../../../objects/users');
+  const { usersDAO, userRecordDAO } = require('../../../../objects/users');
   const { capitalise } = require('../../../../components/filters');
   const roles = require('../users.controller').roles;
 
@@ -268,7 +268,7 @@
       }
 
       try {
-        const data = await usersDAO.createUser(app, req, payload);
+        const data = await userRecordDAO.post(req, payload);
         const username = data.username;
 
         app.logger.info('Created new user', {

@@ -1,15 +1,9 @@
-const { response } = require('express');
-const { extractDataAndHeaders } = require('../lib/mod-utils');
-
 ;(function() {
   'use strict';
 
-  const rp = require('request-promise');
   const { DAO } = require('./dataAccessObject');
-
-  var _ = require('lodash')
-    , urljoin = require('url-join')
-    , config = require('../config/environment')();
+  const urljoin = require('url-join');
+  const { extractDataAndHeaders } = require('../lib/mod-utils');
 
   module.exports.systemCodesDAO = new DAO('moj/administration/codes', {
     get: function(codeType) {
