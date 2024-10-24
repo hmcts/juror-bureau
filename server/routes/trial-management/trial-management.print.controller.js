@@ -72,7 +72,7 @@ function buildPdfTable(data, amount, includeInactive) {
     tables: [
       {
         head: [
-          { text: 'Case number', style: 'label' },
+          { text: 'Trial number', style: 'label' },
           { text: 'Names', style: 'label' },
           { text: 'Trial type', style: 'label' },
           { text: 'Court', style: 'label' },
