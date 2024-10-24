@@ -1337,5 +1337,15 @@
     return foundReplyMethod ? foundReplyMethod : 'NONE';
   }
 
+  module.exports.extractDataAndHeadersFromResponse = (responseName = 'response') => (data) => {
+    const headers = data._headers;
+    delete data._headers
+    
+    return {
+      headers,
+      data: data,
+    }; 
+  }
+
 
 })();

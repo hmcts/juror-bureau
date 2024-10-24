@@ -186,12 +186,10 @@
 
           data.phoneLogs = response.results[3].data.contactLogs;
 
-          return opticReferenceObj.get(require('request-promise'),
-            app,
-            req.session.authToken,
+          return opticReferenceObj.get(
+            req,
             data.jurorNumber,
             data.poolNumber,
-            req.session.hasModAccess
           )
             .then((opticReference) => {
 
@@ -416,9 +414,7 @@
         systemCodesDAO.get(app, req, 'REASONABLE_ADJUSTMENTS'));
       promiseArr.push(
         jurorRecordObject.record.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           'contact-log',
           req.params['id'],
         ),

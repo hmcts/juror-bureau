@@ -331,9 +331,7 @@ function executeTransfer(app, req, res, transferedJurors) {
   newServiceStartDate = dateFilter(req.session.formField.attendanceDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
 
   jurorTransfer.put(
-    rp,
-    app,
-    req.session.authToken,
+    req,
     transferedJurors,
     receivingCourtLocCode,
     newServiceStartDate,

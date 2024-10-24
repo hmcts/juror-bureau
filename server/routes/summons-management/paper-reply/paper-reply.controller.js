@@ -123,9 +123,7 @@
       }
 
       return getJurorDetailsObj.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         'detail',
         req.params['id'],
         req.session.locCode
@@ -853,9 +851,7 @@
       if (req.session.paperResponseDetails.fixedName) {
         try {
           await fixNameObj.patch(
-            require('request-promise'),
-            app,
-            req.session.authToken,
+            req,
             req.params['id'],
             'fix-name',
             req.session.paperResponseDetails.fixedName,

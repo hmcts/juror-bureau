@@ -380,9 +380,7 @@
 
         if (req.session[`summonsUpdate-${id}`].fixedName) {
           await fixNameObj.patch(
-            require('request-promise'),
-            app,
-            req.session.authToken,
+            req,
             req.params['id'],
             'fix-name',
             req.session[`summonsUpdate-${id}`].fixedName,
@@ -478,9 +476,7 @@
 
         if (req.session[`summonsUpdate-${id}`].fixedName) {
           await fixNameObj.patch(
-            require('request-promise'),
-            app,
-            req.session.authToken,
+            req,
             req.params['id'],
             'fix-name',
             req.session[`summonsUpdate-${id}`].fixedName,

@@ -63,9 +63,7 @@
     const payload = _.clone(req.session.changeName);
 
     return changeName.patch(
-      require('request-promise'),
-      app,
-      req.session.authToken,
+      req,
       jurorNumber,
       'change-name',
       payload,
@@ -117,9 +115,7 @@
       delete req.session.changeName;
 
       return changeName.patch(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         jurorNumber,
         'change-name',
         payload,

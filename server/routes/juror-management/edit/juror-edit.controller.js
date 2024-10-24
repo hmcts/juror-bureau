@@ -382,8 +382,12 @@
         });
 
         if (!req.session[`editJurorDetails-${jurorNumber}`]) {
-          const response = await jurorRecordObject.get(require('request-promise'), app, req.session.authToken, 'detail',
-            req.params['jurorNumber'], req.session.locCode);
+          const response = await jurorRecordObject.get(
+            req, 
+            'detail',
+            req.params['jurorNumber'], 
+            req.session.locCode
+          );
 
           response.data.dateOfBirth = response.data.dateOfBirth
             ? dateFilter(response.data.dateOfBirth, null, 'DD/MM/YYYY')
@@ -672,9 +676,7 @@
     if (req.session[`editJurorDetails-${jurorNumber}`].fixedName) {
       try {
         await fixNameObj.patch(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.params['jurorNumber'],
           'fix-name',
           req.session[`editJurorDetails-${jurorNumber}`].fixedName,
@@ -692,9 +694,7 @@
 
     try {
       await editJurorDetailsObject.patch(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         requestBody,
         req.params['jurorNumber'],
         req.session[`editJurorEtag-${jurorNumber}`],
@@ -721,7 +721,7 @@
 
     if (disqualifyAge) {
       try {
-        await disqualifyAgeDAO.patch(app, req, req.params.jurorNumber);
+        await disqualifyAgeDAO.patch(req, req.params.jurorNumber);
 
         app.logger.info('Disqualified juror due to age: ', {
           auth: req.session.authentication,
