@@ -388,7 +388,7 @@
     return async(req, res) => {
       try {
         if (!req.session.excusalReasons) {
-          req.session.excusalReasons = await systemCodesDAO.get(app, req, 'EXCUSAL_AND_DEFERRAL');
+          req.session.excusalReasons = await systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL');
 
           app.logger.info('Retrieved excusal codes: ', {
             auth: req.session.authentication,

@@ -413,7 +413,7 @@
       promiseArr.push(
         courtObj.getCatchmentStatus(require('request-promise'), app, req.session.authToken, req.params.id));
       promiseArr.push(
-        systemCodesDAO.get(app, req, 'REASONABLE_ADJUSTMENTS'));
+        systemCodesDAO.get(req, 'REASONABLE_ADJUSTMENTS'));
       promiseArr.push(
         jurorRecordObject.record.get(
           require('request-promise'),
@@ -1038,8 +1038,7 @@
           return res.render('index.njk');
         };
 
-      promiseArr.push(systemCodesDAO.get(
-        app, req, 'EXCUSAL_AND_DEFERRAL'));
+      promiseArr.push(systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL'));
       promiseArr.push(responseDetailObj.get(require('request-promise'), app, req.session.authToken, req.params.id));
       Promise.all(promiseArr)
         .then(successCB)
@@ -1211,8 +1210,7 @@
           return res.render('index.njk');
         };
 
-      promiseArr.push(systemCodesDAO.get(
-        app, req, 'EXCUSAL_AND_DEFERRAL'));
+      promiseArr.push(systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL'));
       promiseArr.push(responseDetailObj.get(require('request-promise'), app, req.session.authToken, req.params.id));
       Promise.all(promiseArr)
         .then(successCB)
