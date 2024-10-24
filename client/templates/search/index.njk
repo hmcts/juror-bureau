@@ -1,7 +1,6 @@
 {% extends "../layouts/default.njk" %}
 
 {% from "govuk/components/input/macro.njk" import govukInput %}
-{% from "govuk/components/tag/macro.njk" import govukTag %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/details/macro.njk" import govukDetails %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
@@ -367,7 +366,7 @@
                             value="{{ item.juror_number }}"
                             {% if item.reply_status === "Completed" %}disabled{% endif %}
                           >
-                          <label class="govuk-label govuk-checkboxes__label " for="selectedResponse_{{item.juror_number}}"></label>
+                          <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="selectedResponse_{{item.juror_number}}"></label>
                         </div>
                       {% endif %}
 
