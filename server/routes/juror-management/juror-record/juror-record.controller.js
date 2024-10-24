@@ -67,9 +67,7 @@
       clearInvalidSessionData(req);
 
       jurorRecordObject.record.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         'detail',
         req.params['jurorNumber'],
         req.session.locCode || req.session.authentication.locCode,
@@ -82,6 +80,9 @@
   module.exports.getOverviewTab = function(app) {
     return function(req, res) {
       var successCB = async function([overview, detail]) {
+
+          console.log('\n\n', overview, '\n\n');
+          
           var availableMessage = false
             , bannerMessage
             , jurorStatus = resolveJurorStatus(overview.data.commonDetails);
@@ -130,9 +131,7 @@
           let attendance = {};
           if (isCourtUser(req)) {
             attendance = await jurorRecordObject.attendanceDetails.get(
-              require('request-promise'),
-              app,
-              req.session.authToken,
+              req,
               req.params.jurorNumber,
             );
           }
@@ -182,18 +181,14 @@
       }
 
       promiseArr.push(jurorRecordObject.record.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         'overview',
         req.params['jurorNumber'],
         req.session.locCode || req.session.authentication.locCode,
       ));
 
       promiseArr.push(jurorRecordObject.record.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         'detail',
         req.params['jurorNumber'],
         req.session.locCode || req.session.authentication.locCode,
@@ -257,9 +252,7 @@
       clearInvalidSessionData(req);
 
       jurorRecordObject.record.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         'summons-reply',
         req.params['jurorNumber'],
         req.session.locCode || req.session.authentication.locCode,
@@ -278,9 +271,7 @@
 
         // TODO - Make call to relevant API once available
         const jurorOverview = await jurorRecordObject.record.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           'overview',
           jurorNumber,
           req.session.locCode || req.session.authentication.locCode,
@@ -423,9 +414,7 @@
         clearInvalidSessionData(req);
 
         const jurorOverview = await jurorRecordObject.record.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           'overview',
           jurorNumber,
           req.session.locCode || req.session.authentication.locCode,
@@ -434,9 +423,7 @@
         let attendance = {};
         if (isCourtUser(req)) {
           attendance = await jurorRecordObject.attendanceDetails.get(
-            require('request-promise'),
-            app,
-            req.session.authToken,
+            req,
             jurorNumber,
           );
         }
@@ -560,9 +547,7 @@
 
       promiseArr.push(
         jurorRecordObject.record.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           'notes',
           req.params['jurorNumber'],
         ),
@@ -570,9 +555,7 @@
 
       promiseArr.push(
         jurorRecordObject.record.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           'contact-log',
           req.params['jurorNumber'],
         ),
@@ -671,9 +654,7 @@
         };
 
       jurorRecordObject.record.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         'notes',
         req.params['jurorNumber'] || req.params.id,
       )
@@ -793,9 +774,7 @@
             delete req.session.etag;
 
             return jurorRecordObject.notes.patch(
-              require('request-promise'),
-              app,
-              req.session.authToken,
+              req,
               req.body,
               req.params['jurorNumber'] || req.params.id,
             )
@@ -834,9 +813,7 @@
       }
 
       jurorRecordObject.record.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         'notes',
         req.params['jurorNumber'] || req.params.id,
         req.session.authentication.owner, // TODO: Verify this?
@@ -862,9 +839,7 @@
 
         try {
           const jurorDetailsResponse = await jurorRecordObject.record.get(
-            require('request-promise'),
-            app,
-            req.session.authToken,
+            req,
             'detail',
             id,
             req.session.locCode || req.session.authentication.locCode,
@@ -959,9 +934,7 @@
       // ... we still need the juror-number though but because the api endpoint still needs the extra url part
       // then the juror number can be replaced with this part (enquiry-types)
       jurorRecordObject.record.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         'contact-log/enquiry-types',
       )
         .then(successCB)
@@ -1029,9 +1002,7 @@
       tmpBody.startCall = dateFilter(new Date(), null, 'YYYY-MM-DD HH:mm:ss');
 
       jurorRecordObject.contactLog.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         tmpBody,
       )
         .then(successCB)
@@ -1048,9 +1019,7 @@
 
       const jurorNumber = req.params.jurorNumber;
       const {data: juror} = await jurorRecordObject.record.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         'overview',
         jurorNumber,
         req.session.locCode,
@@ -1100,9 +1069,7 @@
       const history = (await jurorHistoryDAO.get(req, req.params.jurorNumber))
         .data.sort((a,b) => b.dateCreated.localeCompare(a.dateCreated));
       const {data: juror} = await jurorRecordObject.record.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         'detail',
         req.params.jurorNumber,
         req.session.locCode,

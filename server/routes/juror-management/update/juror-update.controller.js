@@ -7,7 +7,7 @@
   const jurorUpdateValidator = require('../../../config/validation/juror-record-update');
   const jurorRecordObject = require('../../../objects/juror-record');
   const deferralObject = require('../../../objects/deferral-mod').deferralObject;
-  const jurorDeceasedObject = require('../../../objects/juror-deceased').jurorDeceasedObject;
+  const { jurorDeceasedObject } = require('../../../objects/juror-deceased');
   const jurorTransfer = require('../../../objects/juror-transfer').jurorTransfer;
   const { dateFilter } = require('../../../components/filters');
   const { systemCodesDAO, markAsUndeliverableDAO } = require('../../../objects');
@@ -20,9 +20,7 @@
   module.exports.index = function(app) {
     return function(req, res) {
       jurorRecordObject.record.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         'summons-reply',
         req.params['jurorNumber'],
         req.session.locCode,
@@ -55,9 +53,7 @@
         if (isCourtUser(req)) {
           try {
             attendanceData = await jurorRecordObject.attendanceDetails.get(
-              require('request-promise'),
-              app,
-              req.session.authToken,
+              req,
               req.params['jurorNumber'],
             );
           } catch (err) {
@@ -566,9 +562,7 @@
       sourcePoolNumber = _.cloneDeep(req.session.jurorUpdate.poolNumber);
 
       jurorTransfer.put(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.params.jurorNumber,
         receivingCourtLocCode,
         newServiceStartDate,
@@ -620,7 +614,7 @@
       }));
     }
 
-    jurorDeceasedObject.post(require('request-promise'), app, req.session.authToken, req.body, req.params.jurorNumber)
+    jurorDeceasedObject.post(req, req.body, req.params.jurorNumber)
       .then((data) => {
         app.logger.info('Juror processed as deceased: ', {
           auth: req.session.authentication,

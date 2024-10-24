@@ -32,9 +32,7 @@
 
       if (!req.session.jurorCommonDetails) {
         req.session.jurorCommonDetails = (await record.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           'detail',
           req.params['jurorNumber'],
           req.session.locCode,
@@ -146,7 +144,7 @@
       return res.redirect(failValidationUrl);
     }
 
-    completeService.patch(app, req.session.authToken, {
+    completeService.patch(req, {
       pool: req.params.poolNumber || req.session.jurorCommonDetails.poolNumber,
       completionDate: req.body.completionDate,
       selectedJurors: req.body.selectedJurors,

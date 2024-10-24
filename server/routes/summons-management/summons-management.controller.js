@@ -868,12 +868,11 @@
 
           responseClone.statusRender = response[0].data.jurorStatus;
 
-          return opticReferenceObj.get(require('request-promise'),
-            app,
-            req.session.authToken,
+          return opticReferenceObj.get(
+            req,
             req.params['id'],
             jurorDetails.poolNumber,
-            req.session.hasModAccess)
+          )
             .then((opticReference) => getOpticReferenceSuccess(app, req, res, {
               responseClone,
               nameDetails,
@@ -908,6 +907,8 @@
   };
 
   function getOpticReferenceSuccess(app, req, res, data) {
+
+    console.log(data.opticReference);
 
     app.logger.info('Fetched the optic reference for the juror if available: ', {
       auth: req.session.authentication,
@@ -1107,9 +1108,7 @@
       }
 
       opticReferenceObj.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.body,
         req.params['id'],
         req.session.jurorDetails.poolNumber,
