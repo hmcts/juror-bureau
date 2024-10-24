@@ -1337,12 +1337,13 @@
     return foundReplyMethod ? foundReplyMethod : 'NONE';
   }
 
-  module.exports.extractDataAndHeaders = (data) => {
+  module.exports.extractDataAndHeadersFromResponse = (responseName = 'response') => (data) => { 
     const headers = data._headers;
     delete data._headers
+    
     return {
       headers,
-      response: data,
+      [responseName]: data,
     }; 
   }
 
