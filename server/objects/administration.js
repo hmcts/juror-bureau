@@ -3,7 +3,7 @@
 
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
-  const { extractDataAndHeaders } = require('../lib/mod-utils');
+  const { extractDataAndHeadersFromResponse } = require('../lib/mod-utils');
 
   module.exports.systemCodesDAO = new DAO('moj/administration/codes', {
     get: function(codeType) {
@@ -33,7 +33,7 @@
       return { 
         uri: this.resource, 
         headers,
-        transform: extractDataAndHeaders,
+        transform: extractDataAndHeadersFromResponse(),
       };
     },
   });
@@ -49,7 +49,7 @@
       return { 
         uri: this.resource.replace('{locCode}', locCode),
         headers,
-        transform: extractDataAndHeaders,
+        transform: extractDataAndHeadersFromResponse(),
       };
     },
     put: function(locCode, body) {
@@ -90,7 +90,7 @@
       return { 
         uri: this.resource.replace('{locCode}', locCode).replace('{id}', id),
         headers,
-        transform: extractDataAndHeaders,
+        transform: extractDataAndHeadersFromResponse(),
       };
     }
   });
@@ -151,7 +151,7 @@
       return { 
         uri: this.resource.replace('{locCode}', locCode), 
         headers,
-        transform: extractDataAndHeaders,
+        transform: extractDataAndHeadersFromResponse(),
       };
     },
     put: function(locCode, body) {
