@@ -78,6 +78,7 @@
           jurorNumber: req.params.jurorNumber,
           owner: req.session.jurorCommonDetails.owner,
           excusalCode: req.session.jurorCommonDetails.excusalCode,
+          hasAppearances: attendanceData.has_appearances,
           attendances: attendanceData.attendances,
           onCall: attendanceData.on_call,
           processUrl,
@@ -259,13 +260,27 @@
       delete req.session.formFields;
 
       if (req.body.deferralDecision === "GRANT") {
-        const pools = await deferralPoolsObject.post(
-          require('request-promise'),
-          app,
-          req.session.authToken,
-          [dateFilter(req.body.deferralDate, 'DD/MM/YYYY', 'yyyy-MM-DD')],
-          req.params.jurorNumber
-        );
+        let pools;
+        try {
+          pools = await deferralPoolsObject.post(
+            require('request-promise'),
+            app,
+            req.session.authToken,
+            [dateFilter(req.body.deferralDate, 'DD/MM/YYYY', 'yyyy-MM-DD')],
+            req.params.jurorNumber
+          );
+        } catch (err) {
+          app.logger.crit('Failed to fetch deferral pools: ', {
+            auth: req.session.authentication,
+            data: {
+              jurorNumber: req.params.jurorNumber,
+              date: dateFilter(req.body.deferralDate, 'DD/MM/YYYY', 'yyyy-MM-DD')
+            },
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
+
+          return res.render('_errors/generic');
+        }
         
         if (pools.deferralPoolsSummary[0].deferralOptions[0].poolNumber) {
           req.session.deferralPools = pools.deferralPoolsSummary[0];
@@ -331,23 +346,31 @@
           });
 
           if (err.statusCode === 422) {
-            app.logger.warn('Failed to decline deferral for juror', {
-              auth: req.session.authentication,
-              error: typeof err.error !== 'undefined' ? err.error : err.toString(),
-            });
+            switch (err.error?.code) {
+              case 'CANNOT_REFUSE_FIRST_DEFERRAL':
+                app.logger.warn('Failed to decline deferral for juror', {
+                  auth: req.session.authentication,
+                  error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+                });
+                req.session.errors = makeManualError('deferral', 'Cannot refuse first deferral');
+                break;
+              case 'JUROR_HAS_BEEN_DEFERRED_BEFORE':
+                app.logger.warn('Failed to decline deferral for juror', {
+                  auth: req.session.authentication,
+                  error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+                });
+                return res.redirect(app.namedRoutes.build('juror.update.deferral.confirm.get', {
+                  jurorNumber: req.params.jurorNumber,
+                }) + `?deferralReason=${req.body.deferralReason}&deferralDate=${req.body.deferralDate}`);
+              case 'CANNOT_DEFER_JUROR_WITH_APPEARANCE':
+                req.session.errors = makeManualError('deferral', 'Juror cannot be deferred as they already have an appearance at court');
+                break;
+              default:
+                req.session.errors = makeManualError('deferral', 'Something went wrong when trying to defer the juror');
+            }
           }
 
-          switch (err.error?.code) {
-            case 'CANNOT_REFUSE_FIRST_DEFERRAL':
-              req.session.errors = makeManualError('deferral', 'Cannot refuse first deferral');
-              break;
-            case 'JUROR_HAS_BEEN_DEFERRED_BEFORE':
-              return res.redirect(app.namedRoutes.build('juror.update.deferral.confirm.get', {
-                jurorNumber: req.params.jurorNumber,
-              }) + `?deferralReason=${req.body.deferralReason}&deferralDate=${req.body.deferralDate}`);
-            default:
-              req.session.errors = makeManualError('deferral', 'Something went wrong when trying to defer the juror');
-          }
+          req.session.formFields = req.body;
 
           return res.redirect(app.namedRoutes.build('juror.update.deferral.get', {
             jurorNumber: req.params.jurorNumber,

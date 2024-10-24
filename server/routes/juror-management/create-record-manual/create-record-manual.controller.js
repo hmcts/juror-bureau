@@ -893,9 +893,9 @@
       'court_code' : jurorDetails.courtLocCode,
     }
     if (jurorDetails.hasOwnProperty('createPool')) {
-      payload['service_start_date'] = dateFilter(payload.createPool.attendanceDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
-      payload['pool_type'] = payload.createPool.poolType;
-      payload['court_code'] = payload.createPool.courtLocCode;
+      payload['service_start_date'] = dateFilter(jurorDetails.createPool.attendanceDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
+      payload['pool_type'] = jurorDetails.createPool.poolType;
+      payload['court_code'] = jurorDetails.createPool.courtLocCode;
       delete payload['pool_number'];
     }
     return payload;
