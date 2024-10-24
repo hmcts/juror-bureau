@@ -560,6 +560,35 @@
     removeFromArray: function(arr, obj) {
       return arr.filter(item => !_.isEqual(item, obj));
     },
+
+    buildSummonsAddress: function(lines) {
+      const addressParts = []
+      let address = '';
+      lines.forEach((line, i) => {
+        if ([0, 3, 5].includes(i) && (typeof line === 'undefined' || line === null || line === '')) {
+          let lineName;
+          switch (i) {
+            case 0:
+              lineName = 'Address line one';
+              break;
+            case 3:
+              lineName = 'Town or city';
+              break;
+            case 5:
+              lineName = 'Postcode';
+              break;
+            default:
+              break;
+          }
+          addressParts.push(`<span class="mod-reply-section__required">${lineName} is required</span>`);
+        } 
+        if (typeof line !== 'undefined' && line !== null && line !== '') {
+          addressParts.push(line);
+        }
+      });
+      address = addressParts.join('<br> ');
+      return address;
+    },
   };
 
 })();
