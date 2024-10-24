@@ -102,3 +102,5 @@ build/
 config/*
 !config/environment.template.json
 server/config/environment/bk_development.js
+
+.DS_Store
