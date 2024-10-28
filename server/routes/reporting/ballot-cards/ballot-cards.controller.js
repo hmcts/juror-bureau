@@ -30,7 +30,7 @@ module.exports.printPoolBallotCards = (app) => {
     let tableData;
 
     try {
-      ({ tableData } = await standardReportDAO.post(req, app, config));
+      ({ tableData } = await standardReportDAO.post(req, config));
     } catch (err) {
 
       app.logger.crit('Error getting ballot panel data', {

@@ -642,7 +642,7 @@
     try {
       const { headings, tableData } = await (reportType.bespokeReport?.dao
         ? reportType.bespokeReport.dao(req, config)
-        : standardReportDAO.post(req, app, config));
+        : standardReportDAO.post(req, config));
 
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
       if (isExport) return reportExport(app, req, res, reportKey, { headings, tableData }) ;
