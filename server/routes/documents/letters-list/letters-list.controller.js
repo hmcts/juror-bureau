@@ -154,7 +154,7 @@
       delete req.session.statusChangedList;
 
       try {
-        const { juror_list: jurorList } = await reissueLetterDAO.postList(app, req, payload);
+        const { juror_list: jurorList } = await reissueLetterDAO.postList(req, payload);
 
         if (jurorList && jurorList.length) {
           req.session.statusChangedList = jurorList;
@@ -207,7 +207,7 @@
       };
 
       try {
-        await reissueLetterDAO.deletePending(app, req, payload);
+        await reissueLetterDAO.deletePending(req, payload);
 
         const index = req.session.documentsJurorsList.data
           .findIndex((juror) => (

@@ -36,8 +36,8 @@
       }
     };
 
-    delete(req, body, uri, ...args) {
-      return axiosClient('delete', uri || this.resource, req.session.authToken);
+    delete(req, body, uri, headers, ...args) {
+      return axiosClient('delete', uri || this.resource, req.session.authToken, { body, headers });
     };
 
     get(req, body, uri, headers, ...args) {

@@ -91,14 +91,14 @@
         let response;
 
         if (isCourtUser(req, res)) {
-          response = await reissueLetterDAO.getListCourt(app, req, payload);
+          response = await reissueLetterDAO.getListCourt(req, payload);
           response.data_types.push('hidden');
           response.headings.push('Row Id');
           response.data.forEach((juror, i) => {
             juror.id = i;
           });
         } else {
-          response = await reissueLetterDAO.getList(app, req, payload);
+          response = await reissueLetterDAO.getList(req, payload);
         }
 
 
