@@ -98,7 +98,7 @@ const { standardReportPrint } = require('../standard-report/standard-report-prin
       try {
         await (reportType.bespokeReport?.dao
           ? reportType.bespokeReport.dao(req)
-          : standardReportDAO.post(req, app, config));
+          : standardReportDAO.post(req, config));
 
         req.session.formFields = req.body;
 
