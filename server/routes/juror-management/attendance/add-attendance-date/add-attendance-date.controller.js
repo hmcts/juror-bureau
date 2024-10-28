@@ -124,7 +124,7 @@
             req.body.checkOutTimeMinute, req.body.checkOutTimePeriod),
         };
 
-        await jurorAddAttendanceDao.post(app, req, payload);
+        await jurorAddAttendanceDao.post(req, payload);
         req.session.bannerMessage = 'Attendance date added';
 
         return res.redirect(successUrl);

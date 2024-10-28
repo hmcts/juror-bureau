@@ -13,9 +13,7 @@
   async function getAppearances(app, req, locCode, attendanceDate) {
     const group = 'IN_WAITING';
     let { 'juror_appearance_response_data': attendees } = await jurorsAttending.get(
-      require('request-promise'),
-      app,
-      req.session.authToken,
+      req,
       locCode,
       attendanceDate,
       group
