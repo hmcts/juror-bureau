@@ -10,7 +10,7 @@ const modUtils = require('../../../lib/mod-utils');
 const { getJurorsObject, dismissJurorsObject } = require('../../../objects/dismiss-jurors');
 const { fetchPoolsAtCourt } = require('../../../objects/request-pool');
 const { convertAmPmToLong, dateFilter, timeArrayToString, convert12to24 } = require('../../../components/filters');
-const { jurorAttendanceDao } = require('../../../objects/juror-attendance');
+const { jurorAttendanceDao, updateJurorAttendanceDAO } = require('../../../objects/juror-attendance');
 
 module.exports.getDismissJurorsPools = function(app) {
   return async function(req, res) {
@@ -108,8 +108,7 @@ module.exports.getJurorsList = function(app) {
 
     try {
       if (req.session.dismissJurors && !req.session.dismissJurors.jurors) {
-        const jurorList = await getJurorsObject
-          .get(require('request-promise'),
+        const jurorList = await getJurorsObject.get(require('request-promise'),
             app,
             req.session.authToken,
             req.session.dismissJurors,
@@ -278,7 +277,7 @@ module.exports.postCompleteService = function(app) {
         'completion_date': dateFilter(req.body.completionDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
       };
 
-      await dismissJurorsObject.patch(require('request-promise'), app, req.session.authToken, payload);
+      await dismissJurorsObject.patch(req, payload);
 
       app.logger.info('Jurors dismissed and service completed: ', {
         auth: req.session.authentication,
@@ -370,7 +369,7 @@ module.exports.postCheckOutJurors = function(app) {
         juror: req.session.dismissJurors.notCheckedOut.map((j) => j.juror_number),
       };
 
-      await jurorAttendanceDao.patch(app, req, payload);
+      await updateJurorAttendanceDAO.patch(req, payload);
 
       app.logger.info('Checked-out selected jurors: ', {
         auth: req.session.authentication,

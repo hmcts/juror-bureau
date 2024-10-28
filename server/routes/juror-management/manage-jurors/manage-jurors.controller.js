@@ -39,9 +39,7 @@
 
         try {
           const forApproval = await jurorsForApproval.get(
-            require('request-promise'),
-            app,
-            req.session.authToken,
+            req,
             req.session.authentication.locCode,
             'QUEUED'
           );
@@ -102,9 +100,7 @@
       delete req.session.poolCreateFormFields;
 
       jurorsForApproval.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.session.authentication.locCode,
         'QUEUED'
       )
@@ -147,9 +143,7 @@
       delete req.session.approveReject;
 
       jurorsForApproval.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.session.authentication.locCode,
         status === 'pending' ? 'QUEUED' : ''
       )
@@ -229,9 +223,7 @@
       }
 
       processPendingJuror.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.params.jurorNumber,
         req.body.approveReject,
         req.body.approveReject === 'REJECT' ? req.body.rejectComments : ''

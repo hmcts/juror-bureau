@@ -89,7 +89,7 @@
           ),
         };
 
-        await jurorNonAttendanceDao.post(app, req, payload);
+        await jurorNonAttendanceDao.post(req, payload);
 
         if (status && status !== 'draft') {
           // We do not need to add the non-attendance date to the dates list

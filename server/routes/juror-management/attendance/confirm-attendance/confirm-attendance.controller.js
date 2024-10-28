@@ -5,7 +5,7 @@
     , validate = require('validate.js')
     , checkInOutTimeValidator = require('../../../../config/validation/check-in-out-time')
     , { convertAmPmToLong, timeArrayToString, convert12to24 } = require('../../../../components/filters')
-    , { jurorAttendanceDao } = require('../../../../objects/juror-attendance');
+    , { jurorAttendanceDao, updateJurorAttendanceDAO } = require('../../../../objects/juror-attendance');
     const { getJurorStatus } = require('../../../../lib/mod-utils');
 
   module.exports.getConfirmAttendance = function(app) {
@@ -93,7 +93,7 @@
       };
 
       try {
-        await jurorAttendanceDao.patch(app, req, payload);
+        await updateJurorAttendanceDAO.patch(req, payload);
 
         return res.redirect(app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate);
       } catch (err) {
@@ -222,7 +222,7 @@
         juror_in_waiting: true
       };
 
-      promiseArray.push(jurorAttendanceDao.patch(app, req, payload));
+      promiseArray.push(updateJurorAttendanceDAO.patch(req, payload));
 
       const panelledJurors = jurorsNotCheckedOut.reduce((prev, juror) => {
         if (getJurorStatus(juror.juror_status) === 'Panel') {
@@ -237,7 +237,7 @@
         panelledPayload.commonData.status = 'CHECK_OUT_PANELLED';
         panelledPayload.juror = panelledJurors;
 
-        promiseArray.push(jurorAttendanceDao.patch(app, req, panelledPayload));
+        promiseArray.push(updateJurorAttendanceDAO.patch(req, panelledPayload));
       }
 
       try {

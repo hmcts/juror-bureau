@@ -7,7 +7,7 @@
   const { getJurorStatus, padTimeForApi, mapCamelToSnake, makeManualError } = require('../../../lib/mod-utils');
   const { convertAmPmToLong, convert12to24, timeArrayToString,
     timeStringToArray } = require('../../../components/filters');
-  const { jurorsAttending, jurorAttendanceDao } = require('../../../objects/juror-attendance');
+  const { jurorsAttending, jurorAttendanceDao, updateJurorAttendanceDAO } = require('../../../objects/juror-attendance');
   const { runPoliceCheckDAO } = require('../../../objects');
   const { Logger } = require('../../../components/logger');
   const { jurorDetailsDAO } = require('../../../objects/expenses');
@@ -27,9 +27,7 @@
 
       try {
         let attendee = await jurorsAttending.put(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           payload,
         );
 
@@ -110,9 +108,7 @@
 
       try {
         await jurorsAttending.put(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           payload,
         );
 
@@ -213,8 +209,7 @@
       };
 
       try {
-        await jurorAttendanceDao.patch(
-          app,
+        await updateJurorAttendanceDAO.patch(
           req,
           payload,
         );
@@ -271,8 +266,7 @@
       payload.commonData.status = 'CHECK_OUT_PANELLED';
 
       try {
-        await jurorAttendanceDao.patch(
-          app,
+        await updateJurorAttendanceDAO.patch(
           req,
           payload,
         );
