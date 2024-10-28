@@ -1,21 +1,8 @@
 ;(function() {
   'use strict';
 
-  const rp = require('request-promise');
-  const _ = require('lodash');
   const urljoin = require('url-join');
-  const config = require('../config/environment')();
-  const utils = require('../lib/utils');
   const modUtils = require('../lib/mod-utils');
-  const options = {
-    uri: config.apiEndpoint,
-    headers: {
-      'User-Agent': 'Request-Promise',
-      'Content-Type': 'application/vnd.api+json',
-    },
-    json: true,
-    transform: utils.basicDataTransform,
-  };
   const { DAO } = require('./dataAccessObject');
 
   module.exports.fetchUnpaidExpenses = new DAO('moj/expenses/{locCode}/unpaid-summary/', {
@@ -39,7 +26,7 @@
     },
     post: function(locCode, body) {
       return {
-        uri: urljoin(config.apiEndpoint, `moj/expenses/${locCode}/unpaid-summary`),
+        uri: urljoin(`moj/expenses/${locCode}/unpaid-summary`),
         body: modUtils.mapCamelToSnake(body),
       };
     },

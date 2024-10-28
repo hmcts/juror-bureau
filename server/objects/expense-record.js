@@ -1,16 +1,11 @@
-const { post } = require('request');
-
 ;(function(){
   'use strict';
 
-  const _ = require('lodash');
   const urljoin = require('url-join');
-  const config = require('../config/environment')();
-  const rp = require('request-promise');
   const { DAO } = require('./dataAccessObject');
   const { extractDataAndHeadersFromResponse } = require('../lib/mod-utils');
 
-  const endpoint = config.apiEndpoint + '/moj/expenses/{locCode}';
+  const endpoint = '/moj/expenses/{locCode}';
 
   module.exports.getDraftExpensesDAO = new DAO(endpoint, {
     get: function(jurorNumber, locCode, etag = null) {
