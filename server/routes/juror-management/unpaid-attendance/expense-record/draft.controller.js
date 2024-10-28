@@ -32,7 +32,7 @@
       delete req.session.errors;
       delete req.session.bannerMessage;
 
-      getDraftExpensesDAO.get(app, req, jurorNumber, locCode)
+      getDraftExpensesDAO.get(req, jurorNumber, locCode)
         .then(async function({ response: expenseData, headers }) {
 
           req.session.draftExpensesEtag = headers.etag;
@@ -136,7 +136,6 @@
 
       try {
         await getDraftExpensesDAO.get(
-          app,
           req,
           jurorNumber,
           locCode,

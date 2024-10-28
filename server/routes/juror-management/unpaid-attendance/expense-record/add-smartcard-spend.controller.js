@@ -68,7 +68,7 @@
       };
 
       try {
-        await addSmartcardSpend.patch(app, req, locCode, jurorNumber, body);
+        await addSmartcardSpend.patch(req, locCode, jurorNumber, body);
 
         app.logger.info('Successfully updated the smartcard amount for all selected days', {
           auth: req.session.authentication,
