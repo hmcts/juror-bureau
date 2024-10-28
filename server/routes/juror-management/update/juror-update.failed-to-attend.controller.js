@@ -43,9 +43,7 @@ module.exports.postFailedToAttend = function(app) {
 
     try {
       await failedToAttendObject.patch(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         jurorNumber,
         poolNumber,
       );

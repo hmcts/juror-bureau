@@ -74,6 +74,16 @@ module.exports.axiosClient = function(method, url, jwtToken, variables) {
     });
   }
 
+  // PATCH requests with no body need diferent handling
+  if (method === 'patch' && !variables?.body) {
+    return client[method](url, {}, {
+      headers: {
+        Authorization: jwtToken,
+        ...(variables && variables.headers),
+      },
+    });
+  }
+
   return client[method](url, {
     headers: {
       Authorization: jwtToken,

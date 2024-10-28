@@ -40,9 +40,7 @@
       try {
 
         const attendance = await jurorRecordObject.attendanceDetails.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           jurorNumber,
         );
 
@@ -143,9 +141,7 @@
       };
 
       return jurorRecordObject.changeDate.patch(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         payload,
       )
         .then(successCB)
