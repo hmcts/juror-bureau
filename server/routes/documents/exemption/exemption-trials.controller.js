@@ -14,7 +14,6 @@
       const locCode = req.session.authentication.owner;
 
       certificateOfExemptionDAO.getTrialExemptionList(
-        app,
         req,
         locCode
       )

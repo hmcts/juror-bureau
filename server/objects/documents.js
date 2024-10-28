@@ -1,192 +1,87 @@
 (function() {
   'use strict';
 
-  const config = require('../config/environment')();
+  const { axiosClient } = require('./axios-instance');
+  const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
-  const rp = require('request-promise');
-
-  const _rp = (res) => Promise.resolve(res);
 
   module.exports.reissueLetterDAO = {
-    getList: function(app, req, body) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/letter/reissue-letter-list'),
-        method: 'POST',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-        body,
-      };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
+    getList: function(req, body) {
+      return axiosClient('post', 'moj/letter/reissue-letter-list', req.session.authToken, { body });
     },
 
-    getListCourt: function(app, req, body) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/letter/court-letter-list'),
-        method: 'POST',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-        body,
-      };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
+    getListCourt: function(req, body) {
+      return axiosClient('post', 'moj/letter/court-letter-list', req.session.authToken, { body });
     },
 
-    getDuringServiceList: function(app, req, letterType, includePrinted) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/letter/court-letter-list', letterType, includePrinted),
-        method: 'GET',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-      };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
+    getDuringServiceList: function(req, letterType, includePrinted) {
+      return axiosClient('get', urljoin('moj/letter/court-letter-list', letterType, includePrinted), req.session.authToken);
     },
 
-    postList: function(app, req, body) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/letter/reissue-letter'),
-        method: 'POST',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-        body,
-      };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
+    postList: function(req, body) {
+      return axiosClient('post', 'moj/letter/reissue-letter', req.session.authToken, { body });
     },
 
-    printCourtLetters: function(app, req, body) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/letter/print-court-letter'),
-        method: 'POST',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
+    printCourtLetters: function(req, body) {
+      const dao = new DAO('moj/letter/print-court-letter', {
+        post: function(body) {
+          return {
+            uri: this.resource,
+            body,
+            transform: (data) => { delete data['_headers']; return Object.values(data) },
+          };
         },
-        json: true,
-        body,
-      };
+      });
 
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
+      return dao.post(req, body);
     },
 
-    deletePending: function(app, req, body) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/letter/delete-pending-letter'),
-        method: 'DELETE',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-        body,
-      };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
+    deletePending: function(req, body) {
+      return axiosClient('delete', 'moj/letter/delete-pending-letter', req.session.authToken, { body });
     },
 
-    getJurorInfo: function(app, req, body) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/letter/request-information'),
-        method: 'POST',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-        body,
-      };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return _rp(payload);
+    getJurorInfo: function(req, body) {
+      return axiosClient('post', 'moj/letter/request-information', req.session.authToken, { body });
     },
   };
 
   module.exports.certificateOfExemptionDAO = {
-    getTrialExemptionList: function(app, req, courtLocationCode) {
-      const payload = {
-        uri: urljoin(
-          config.apiEndpoint,
-          `moj/letter/trials-exemption-list?court_location=${courtLocationCode}`),
-        method: 'GET',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
+    getTrialExemptionList: function(req, courtLocationCode) {
+      const dao = new DAO('moj/letter/trials-exemption-list', {
+        get: function(courtLocationCode) {
+          return {
+            uri: `${this.resource}?court_location=${courtLocationCode}`,
+            transform: (data) => { delete data['_headers']; return Object.values(data) },
+          };
         },
-        json: true,
-      };
+      });
 
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
+      return dao.get(req, courtLocationCode);
     },
-    getJurorsForExemptionList: function(app, req, caseNumber, courtLocationCode) {
-      const payload = {
-        uri: urljoin(
-          config.apiEndpoint,
-          `moj/letter/jurors-exemption-list?case_number=${caseNumber}&court_location=${courtLocationCode}`),
-        method: 'GET',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
+    getJurorsForExemptionList: function(req, caseNumber, courtLocationCode) {
+      const dao = new DAO('moj/letter/jurors-exemption-list', {
+        get: function(caseNumber, courtLocationCode) {
+          return {
+            uri: `${this.resource}?case_number=${caseNumber}&court_location=${courtLocationCode}`,
+            transform: (data) => { delete data['_headers']; return Object.values(data) },
+          };
         },
-        json: true,
-      };
+      });
 
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
+      return dao.get(req, caseNumber, courtLocationCode);
     },
-    postPrintLetter: function(app, req, body) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/letter/print-certificate-of-exemption'),
-        method: 'POST',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
+    postPrintLetter: function(req, body) {
+      const dao = new DAO('moj/letter/print-certificate-of-exemption', {
+        post: function(body) {
+          return {
+            uri: this.resource,
+            body,
+            transform: (data) => { delete data['_headers']; return Object.values(data) },
+          };
         },
-        json: true,
-        body,
-      };
+      });
 
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
+      return dao.post(req, body);
     },
 
   };

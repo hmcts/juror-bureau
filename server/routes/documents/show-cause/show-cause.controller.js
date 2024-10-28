@@ -46,7 +46,7 @@
 
       try {
 
-        const response = await reissueLetterDAO.getDuringServiceList(app, req, 'SHOW_CAUSE', 'true');
+        const response = await reissueLetterDAO.getDuringServiceList(req, 'SHOW_CAUSE', 'true');
 
         response.data.forEach((item) => {
           delete item.status;

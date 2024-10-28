@@ -19,7 +19,7 @@
         let response;
 
         if (isCourtUser(req, res)) {
-          response = await reissueLetterDAO.getDuringServiceList(app, req, 'FAILED_TO_ATTEND', 'true');
+          response = await reissueLetterDAO.getDuringServiceList(req, 'FAILED_TO_ATTEND', 'true');
           response.data.forEach((item) => {
             delete item.status;
             delete item.postcode;
