@@ -28,7 +28,6 @@
         const promiseArr = [];
 
         promiseArr.push(getExpenseRecordsDAO.get(
-          app,
           req,
           locCode,
           STATUSES[status],

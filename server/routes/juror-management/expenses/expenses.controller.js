@@ -34,7 +34,7 @@
       delete req.session.tmpBody;
 
       try {
-        const data = await defaultExpensesDAO.get(app, req, req.session.authentication.locCode, jurorNumber);
+        const data = await defaultExpensesDAO.get(req, req.session.authentication.locCode, jurorNumber);
         const defaultExpenses = modUtils.replaceAllObjKeys(_.cloneDeep(data), _.camelCase);
 
         defaultExpenses['travelTime-hour'] = defaultExpenses.travelTime
@@ -118,7 +118,7 @@
         delete req.body['travelTime-minute'];
         delete req.body._csrf;
 
-        await defaultExpensesDAO.post(app, req, req.session.authentication.locCode, jurorNumber, req.body);
+        await defaultExpensesDAO.post(req, req.session.authentication.locCode, jurorNumber, req.body);
 
         return res.redirect(redirectUrl);
       } catch (err) {

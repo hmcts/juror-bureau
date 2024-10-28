@@ -10,7 +10,6 @@
   const { jurorsAttending, jurorAttendanceDao, updateJurorAttendanceDAO } = require('../../../objects/juror-attendance');
   const { runPoliceCheckDAO } = require('../../../objects');
   const { Logger } = require('../../../components/logger');
-  const { jurorDetailsDAO } = require('../../../objects/expenses');
   const { modifyJurorAttendance } = require('../../../objects');
 
   module.exports.postCheckIn = function(app) {

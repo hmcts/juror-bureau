@@ -280,7 +280,7 @@
         cacheJurorCommonDetails(req, jurorOverview.data.commonDetails);
 
         const locCode = req.session.authentication.locCode;
-        const defaultExpenses = await defaultExpensesDAO.get(app, req, locCode, jurorNumber);
+        const defaultExpenses = await defaultExpensesDAO.get(locCode, jurorNumber);
         const { response: bankDetails } = await jurorBankDetailsDAO.get(app, req, jurorNumber);
         const viewAllExpensesLink = app.namedRoutes.build('juror-management.unpaid-attendance.get');
         const viewDraftExpensesLink = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {

@@ -72,7 +72,6 @@
       delete req.session.expensesList;
 
       fetchUnpaidExpenses.post(
-        app,
         req,
         locCode,
         body

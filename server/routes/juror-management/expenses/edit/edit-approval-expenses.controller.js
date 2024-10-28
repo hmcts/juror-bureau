@@ -51,8 +51,8 @@
           }
         }
 
-        requests.push(postRecalculateSummaryTotalsDAO.post(app, req, locCode, jurorNumber, payload));
-        requests.push(defaultExpensesDAO.get(app, req, locCode, jurorNumber));
+        requests.push(postRecalculateSummaryTotalsDAO.post(req, locCode, jurorNumber, payload));
+        requests.push(defaultExpensesDAO.get(req, locCode, jurorNumber));
         requests.push(jurorRecordDetailsDAO.post(req, [{
           'juror_number': jurorNumber,
           'juror_version': null,
@@ -66,7 +66,7 @@
 
         // get the original values for showing comparison and make them {expenseDate: values}
         if (Object.keys(req.session.editedExpenses).length) {
-          originalExpenses = await getApprovalExpenseListDAO.post(app, req, locCode, jurorNumber, expenseDates);
+          originalExpenses = await getApprovalExpenseListDAO.post(req, locCode, jurorNumber, expenseDates);
 
           originalExpenses = originalExpenses.expense_details.reduce((prev, originalExpense) => {
             if (req.session.editedExpenses[originalExpense.attendance_date]) {
@@ -281,7 +281,7 @@
           'expense_dates': [date],
         };
 
-        requests.push(getEnteredExpensesDAO.post(app, req, locCode, jurorNumber, payload));
+        requests.push(getEnteredExpensesDAO.post(req, locCode, jurorNumber, payload));
         requests.push(jurorRecordDetailsDAO.post(req, [{
           'juror_number': jurorNumber,
           'juror_version': null,
@@ -308,7 +308,7 @@
         req.session.editForApprovalInNonAttendance = expensesData.none_attendance_day;
 
         // get the original values for a day and cache to compare if there are changes
-        const originalTotals = await postRecalculateSummaryTotalsDAO.post(app, req, locCode, jurorNumber, {
+        const originalTotals = await postRecalculateSummaryTotalsDAO.post(req, locCode, jurorNumber, {
           'expense_list': [
             {
               'date_of_expense': date,
@@ -458,7 +458,7 @@
       let response;
 
       try {
-        response = await postRecalculateSummaryTotalsDAO.post(app, req, locCode, jurorNumber, {
+        response = await postRecalculateSummaryTotalsDAO.post(req, locCode, jurorNumber, {
           'expense_list': [data],
         });
 
@@ -572,7 +572,7 @@
 
       if (req.query.action === 'apply-default-loss') {
         try {
-          const defaultExpenses = await defaultExpensesDAO.get(app, req, locCode, jurorNumber);
+          const defaultExpenses = await defaultExpensesDAO.get(req, locCode, jurorNumber);
 
           req.body = {
             applyToAllDays: ['lossOfEarnings'],
@@ -642,7 +642,7 @@
       let expensesData;
 
       try {
-        expensesData = await getEnteredExpensesDAO.post(app, req, locCode, jurorNumber, {
+        expensesData = await getEnteredExpensesDAO.post(req, locCode, jurorNumber, {
           'expense_dates': req.session.editApprovalDates,
         });
 

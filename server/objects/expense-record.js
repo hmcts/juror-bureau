@@ -1,42 +1,27 @@
 ;(function(){
   'use strict';
 
-  const _ = require('lodash');
   const urljoin = require('url-join');
-  const config = require('../config/environment')();
-  const rp = require('request-promise');
   const { DAO } = require('./dataAccessObject');
+  const { extractDataAndHeadersFromResponse } = require('../lib/mod-utils');
 
-  const endpoint = config.apiEndpoint + '/moj/expenses/{locCode}';
+  const endpoint = '/moj/expenses/{locCode}';
 
-  module.exports.getDraftExpensesDAO = {
-    get: function(app, req, jurorNumber, locCode, etag = null) {
-      const payload = {
-        uri: urljoin(endpoint.replace('{locCode}', locCode), jurorNumber, 'DRAFT/view'),
-        method: 'GET',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-      };
+  module.exports.getDraftExpensesDAO = new DAO(endpoint, {
+    get: function(jurorNumber, locCode, etag = null) {
+      const headers = {};
 
       if (etag) {
-        payload.headers['If-None-Match'] = `${etag}`;
+        headers['If-None-Match'] = `${etag}`;
       }
 
-      app.logger.info('Sending request to API: ', payload);
-
-      payload.transform = (response, incomingRequest) => {
-        const headers = _.cloneDeep(incomingRequest.headers);
-
-        return { response, headers };
+      return { 
+        uri: urljoin(this.resource.replace('{locCode}', locCode), jurorNumber, 'DRAFT/view'),
+        headers,
+        transform: extractDataAndHeadersFromResponse(),
       };
-
-      return rp(payload);
-    },
-  };
+    }
+  })
 
   module.exports.submitDraftExpenses = new DAO(endpoint, {
     post: function(locCode, jurorNumber, attendanceDates) {
@@ -49,25 +34,15 @@
     },
   });
 
-  module.exports.getEnteredExpensesDAO = {
-    post: function(app, req, locCode, jurorNumber, body) {
-      const payload = {
-        uri: urljoin(endpoint.replace('{locCode}', locCode), jurorNumber, 'entered'),
-        method: 'POST',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
+  module.exports.getEnteredExpensesDAO = new DAO(endpoint, {
+    post: function(locCode, jurorNumber, body) {
+      return { 
+        uri: urljoin(this.resource.replace('{locCode}', locCode), jurorNumber, 'entered'),
         body,
-      };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
-    },
-  };
+        transform: (data) => { delete data._headers; return Object.values(data); }
+      }
+    }
+  });
 
   module.exports.postEditedExpensesDAO = new DAO(endpoint, {
     put: function(locCode, jurorNumber, expenseType, body) {
@@ -78,83 +53,43 @@
     },
   });
 
-  module.exports.getExpenseRecordsDAO = {
-    get: function(app, req, locCode, expenseType, jurorNumber) {
-      const payload = {
-        uri: urljoin(endpoint.replace('{locCode}', locCode), jurorNumber, expenseType, 'view/simplified'),
-        method: 'GET',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-      };
+  module.exports.getExpenseRecordsDAO = new DAO(endpoint, {
+    get: function(locCode, expenseType, jurorNumber) {
+      return { 
+        uri: urljoin(this.resource.replace('{locCode}', locCode), jurorNumber, expenseType, 'view/simplified'),
+      }
+    }
+  });
 
-      app.logger.info('Sending API request to: ', payload);
-
-      return rp(payload);
-    },
-  };
-
-  module.exports.postRecalculateSummaryTotalsDAO = {
-    post: function(app, req, locCode, jurorNumber, body) {
-      const payload = {
-        uri: urljoin(endpoint.replace('{locCode}', locCode), jurorNumber, 'calculate/totals'),
-        method: 'POST',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
+  module.exports.postRecalculateSummaryTotalsDAO = new DAO(endpoint, {
+    post: function(locCode, jurorNumber, body) {
+      return { 
+        uri: urljoin(this.resource.replace('{locCode}', locCode), jurorNumber, 'calculate/totals'),
         body,
       };
+    }
+  });
 
-      app.logger.info('Sending API request to: ', payload);
-
-      return rp(payload);
-    },
-  };
-
-  module.exports.addSmartcardSpend = {
-    patch: function(app, req, locCode, jurorNumber, body) {
-      const payload = {
-        uri: urljoin(endpoint.replace('{locCode}', locCode), jurorNumber, 'smartcard'),
-        method: 'PATCH',        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
+  module.exports.addSmartcardSpend = new DAO(endpoint, {
+    patch: function(locCode, jurorNumber, body) {
+      return { 
+        uri: urljoin(this.resource.replace('{locCode}', locCode), jurorNumber, 'smartcard'),
         body,
       };
+    }
+  })
 
-      app.logger.info('Sending request to API: ', payload);
 
-      return rp(payload);
-    },
-  };
-
+  // TODO: This still needs migrating to Axios DAO - currently getting accessDenied error
   module.exports.getExpenseCountDAO = {
     get: function(app) {
       return async function(req, res, next) {
         const { jurorNumber, locCode } = req.params;
 
-        const payload = {
-          uri: urljoin(endpoint.replace('{locCode}', locCode), jurorNumber, 'counts'),
-          headers: {
-            'User-Agent': 'Request-Promise',
-            'Content-Type': 'application/vnd.api+json',
-            Authorization: req.session.authToken,
-          },
-          json: true,
-        };
-
-        app.logger.info('Sending request to API: ', payload);
+        const dao = new DAO(urljoin(endpoint.replace('{locCode}', locCode), jurorNumber, 'counts'));
 
         try {
-          const response = await rp(payload);
+          const response = await dao.get(req);
           req.expensesCount = response;
           return next();
         } catch (err) {
@@ -173,44 +108,22 @@
     },
   };
 
-  module.exports.getApprovalExpenseListDAO = {
-    post: function(app, req, locCode, jurorNumber, body) {
-      const payload = {
-        uri: urljoin(endpoint.replace('{locCode}', locCode), jurorNumber, 'view'),
-        method: 'POST',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
+  module.exports.getApprovalExpenseListDAO = new DAO(endpoint, {
+    post: function(locCode, jurorNumber, body) {
+      return { 
+        uri: urljoin(this.resource.replace('{locCode}', locCode), jurorNumber, 'view'),
         body,
       };
+    }
+  });
 
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
-    },
-  };
-
-  module.exports.editApprovalExpenseListDAO = {
-    post: function(app, req, locCode, jurorNumber, type, body) {
-      const payload = {
-        uri: urljoin(endpoint.replace('{locCode}', locCode), jurorNumber, 'edit', type),
-        method: 'POST',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
+  module.exports.editApprovalExpenseListDAO = new DAO(endpoint, {
+    post: function(locCode, jurorNumber, type, body) {
+      return { 
+        uri: urljoin(this.resource.replace('{locCode}', locCode), jurorNumber, 'edit', type),
         body,
-      };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
-    },
-  };
+      }
+    }
+  });
 
 })();
