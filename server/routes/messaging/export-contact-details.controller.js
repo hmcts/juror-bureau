@@ -287,7 +287,7 @@
       populateContactExportProperties(payload, req.body);
 
       try {
-        const csv = await downloadCSVDAO.post(app, req, locCode, payload);
+        const csv = await downloadCSVDAO.post(req, locCode, payload);
 
         app.logger.info('Generated and downloded a csv with contact details', {
           auth: req.session.authentication,
