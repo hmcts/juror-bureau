@@ -5,7 +5,7 @@
   const { validate } = require('validate.js');
   const { isSJOUser, isManager } = require('../../../../components/auth/user-type');
   const validator = require('../../../../config/validation/create-users');
-  const { usersDAO } = require('../../../../objects/users');
+  const { usersDAO, userRecordDAO } = require('../../../../objects/users');
   const { replaceAllObjKeys, makeManualError } = require('../../../../lib/mod-utils');
   const { capitalise } = require('../../../../components/filters');
 
@@ -31,7 +31,7 @@
       }
 
       try {
-        const user = await usersDAO.getUserRecord(app, req, username);
+        const user = await userRecordDAO.get(req, username);
 
         if (user.email === req.session.authentication.email) {
           app.logger.warn('User tried to edit their own details', {
@@ -116,7 +116,7 @@
       }
 
       try {
-        await usersDAO.editUser(app, req, username, payload);
+        await userRecordDAO.put(req, username, payload);
 
         app.logger.info('Updated user details', {
           auth: req.session.authentication,
@@ -167,7 +167,7 @@
       }
 
       try {
-        await usersDAO.editUserType(app, req, username, capitalise(user.userType));
+        await userRecordDAO.patch(req, username, capitalise(user.userType));
 
         app.logger.info('Edited existing users type', {
           auth: req.session.authentication,
@@ -187,7 +187,7 @@
       }
 
       try {
-        await usersDAO.editUser(app, req, username, editPayload);
+        await userRecordDAO.put(req, username, editPayload);
 
         app.logger.info('Edited existing user', {
           auth: req.session.authentication,

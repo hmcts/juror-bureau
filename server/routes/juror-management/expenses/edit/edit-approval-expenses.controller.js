@@ -879,7 +879,7 @@
     let lossLimit;
 
     try {
-      const { response } = await expenseRatesAndLimitsDAO.get(app, req);
+      const { response } = await expenseRatesAndLimitsDAO.get(req);
 
       switch (attendancType) {
       case 'FULL_DAY':

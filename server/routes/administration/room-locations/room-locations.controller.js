@@ -2,7 +2,7 @@
   'use strict';
   const _ = require('lodash');
   const { validate } = require('validate.js');
-  const { courtroomsDAO } = require('../../../objects/administration');
+  const { courtroomsDAO, courtroomDetailsDAO } = require('../../../objects/administration');
   const validator = require('../../../config/validation/create-courtroom');
   const { replaceAllObjKeys } = require('../../../lib/mod-utils');
 
@@ -17,7 +17,7 @@
       }
 
       try {
-        const courtrooms = await courtroomsDAO.get(app, req, locationCode);
+        const courtrooms = await courtroomsDAO.get(req, locationCode);
 
         replaceAllObjKeys(courtrooms, _.camelCase);
 
@@ -53,7 +53,7 @@
       delete req.session.formFields;
 
       try {
-        const { response: courtroom, headers } = await courtroomsDAO.getDetails(app, req, locationCode, id);
+        const { response: courtroom, headers } = await courtroomDetailsDAO.get(req, locationCode, id);
 
         req.session[`editCourtroom-${locationCode}-${id}`] = {
           etag: headers.etag,
@@ -105,7 +105,7 @@
       }
 
       try {
-        await courtroomsDAO.getDetails(app, req, locationCode, id, req.session[`editCourtroom-${locationCode}-${id}`].etag);
+        await courtroomDetailsDAO.get(req, locationCode, id, req.session[`editCourtroom-${locationCode}-${id}`].etag);
 
         req.session.errors = {
           bankDetails: [{
@@ -140,7 +140,7 @@
       const payload = replaceAllObjKeys(req.body, _.snakeCase);
 
       try {
-        await courtroomsDAO.put(app, req, locationCode, id, payload);
+        await courtroomsDAO.put(req, locationCode, id, payload);
 
         req.session.bannerMessage = 'Room location updated';
 
@@ -206,7 +206,7 @@
       const payload = replaceAllObjKeys(req.body, _.snakeCase);
 
       try {
-        await courtroomsDAO.post(app, req, locationCode, payload);
+        await courtroomsDAO.post(req, locationCode, payload);
 
         req.session.bannerMessage = 'Room location added';
 

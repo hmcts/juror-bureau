@@ -43,7 +43,7 @@
     const { reportDate } = req.params;
 
     try {
-      const {response} = await courtDetailsDAO.get(app, req, req.session.authentication.locCode);
+      const {response} = await courtDetailsDAO.get(req, req.session.authentication.locCode);
       const courtName = capitalizeFully(response.english_court_name);
 
       return res.render('reporting/monthly-utilisation/confirm-prepare', {

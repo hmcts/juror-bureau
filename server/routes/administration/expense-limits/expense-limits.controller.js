@@ -18,11 +18,11 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
       delete req.session.expenseRatesEtag;
 
       try {
-        const { response: expenseLimits, headers } = await expenseRatesAndLimitsDAO.get(app, req);
-
-        replaceAllObjKeys(expenseLimits, _.camelCase);
+        const { response: expenseLimits, headers } = await expenseRatesAndLimitsDAO.get(req);
 
         req.session.expenseRatesEtag = headers.etag;
+
+        replaceAllObjKeys(expenseLimits, _.camelCase);
 
         return res.render('administration/expense-limits.njk', {
           expenseLimits,
@@ -59,7 +59,7 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
       }
 
       try {
-        await expenseRatesAndLimitsDAO.get(app, req, req.session.expenseRatesEtag);
+        await expenseRatesAndLimitsDAO.get(req, req.session.expenseRatesEtag);
 
         req.session.errors = {
           expenseRates: [{
@@ -104,7 +104,7 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
           'subsistence_rate_long_day': req.body.subsistenceRateLongDay,
         };
 
-        await expenseRatesAndLimitsDAO.put(app, req, body);
+        await expenseRatesAndLimitsDAO.put(req, body);
 
         return res.redirect(app.namedRoutes.build('administration.expense-limits.get'));
       } catch (err) {
