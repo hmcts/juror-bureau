@@ -21,9 +21,7 @@
 
     let panelData;
     try {
-      panelData = await panelListDAO.get(
-        app, req, trialNumber, locationCode
-      )
+      panelData = await panelListDAO.get(req, trialNumber, locationCode)
     } catch (err) {
       app.logger.crit('Failed to fetch panel data: ', {
         auth: req.session.authentication,

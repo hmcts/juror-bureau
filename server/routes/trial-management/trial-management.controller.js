@@ -93,7 +93,7 @@
         trialNumber,
         locationCode
       ), panelListDAO.get(
-        app, req, req.params.trialNumber, req.params.locationCode
+        req, req.params.trialNumber, req.params.locationCode
       ), panelMemberStatusDAO.get(
         req, req.params.trialNumber, req.params.locationCode
       ).catch(err => {
@@ -204,7 +204,7 @@
 
       try {
         let panelData = await panelListDAO.get(
-          app, req, req.params.trialNumber, req.params.locationCode
+          req, req.params.trialNumber, req.params.locationCode
         );
 
         if (panelData.length > 0 && typeof req.session[`${trialNumber}-${locationCode}-continueToEndTrial`] === 'undefined') {

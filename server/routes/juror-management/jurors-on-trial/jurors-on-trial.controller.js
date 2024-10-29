@@ -65,7 +65,7 @@ module.exports.getConfirmAttendance = function(app) {
     let jurorsList;
 
     try {
-      jurorsList = await panelListDAO.get(app, req, trialNumber, locCode);
+      jurorsList = await panelListDAO.get(req, trialNumber, locCode);
 
       Logger.instance.info('Fetched the jurors on this trial', {
         auth: req.session.authentication,
