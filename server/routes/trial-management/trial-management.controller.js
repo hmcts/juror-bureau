@@ -89,9 +89,7 @@
       delete req.session[`${trialNumber}-${locationCode}-checkOutTime`];
 
       Promise.all([trialDetailsObject.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         trialNumber,
         locationCode
       ), panelListDAO.get(
@@ -187,9 +185,7 @@
       let trialData;
       try {
         trialData = await trialDetailsObject.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           trialNumber,
           locationCode
         );
@@ -259,9 +255,7 @@
     return async function(req, res) {
       try {
         const trialDetails = await trialDetailsObject.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.params.trialNumber,
           req.params.locationCode,
         );

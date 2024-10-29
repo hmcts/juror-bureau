@@ -12,9 +12,7 @@
     return function(req, res) {
       const { trialNumber, locationCode } = req.params;
       trialDetailsObject.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         trialNumber,
         locationCode
       ).then(trialData => {

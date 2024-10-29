@@ -446,9 +446,7 @@
     const { trialNumber, locationCode } = req.params;
     try {
       return await trialDetailsObject.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         trialNumber,
         locationCode
       );

@@ -24,11 +24,7 @@
       });
 
       try {
-        const judgeData = await judgesObject.get(
-          require('request-promise'),
-          app,
-          req.session.authToken
-        );
+        const judgeData = await judgesObject.get(req);
 
         req.session.exemptionLetter = { judges: judgeData.judges };
 
