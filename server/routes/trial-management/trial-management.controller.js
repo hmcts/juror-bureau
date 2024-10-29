@@ -279,11 +279,7 @@
             'location_code': req.params.locationCode,
           };
 
-          await endTrialObject.patch(
-            require('request-promise')
-            , app
-            , req.session.authToken
-            , payload);
+          await endTrialObject.patch(req, payload);
 
           req.session.bannerMessage = typeof req.session.bannerMessage !== 'undefined' ?
             req.session.bannerMessage + ' and trial ended' : 'Trial ended';
