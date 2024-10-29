@@ -5,6 +5,7 @@
   const { getJurorStatus, setPreviousWorkingDay } = require('../../lib/mod-utils');
   const dateFilter = require('../../components/filters').dateFilter;
   const { jurorsAttending, poolAttedanceAuditDAO, unconfirmedJurorAttendancesDAO } = require('../../objects/juror-attendance');
+  const moment = require('moment');
 
   module.exports.isAttendanceConfirmed = async function(app, req, locCode, attendanceDate) {
       return isAttendanceConfirmedByAttendances(await getAppearances(app,req, locCode, attendanceDate));
@@ -71,7 +72,8 @@
         );
         // TODO: until here
 
-        const attendanceConfirmed = isAttendanceConfirmedByAttendances(attendees);
+        const attedancesLockedDate = moment().subtract(7,'d');
+        const attendanceConfirmed = moment(selectedDate).isBefore(attedancesLockedDate);
 
         req.session.preReportRoute = app.namedRoutes.build('juror-management.attendance.get')
           + `?date=${date || dateFilter(new Date(), null, 'yyyy-MM-DD')}`;
