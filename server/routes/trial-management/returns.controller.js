@@ -410,9 +410,7 @@
     }
 
     returnsObject.post(
-      require('request-promise'),
-      app,
-      req.session.authToken,
+      req,
       panelType,
       trialNumber,
       locationCode,
