@@ -410,7 +410,7 @@
 
           Object.assign(jurorDetails, req.session.formFields);
 
-          if (req.session.formFields['thirdPartyEnabled'] && jurorDetails.thirdParty == null) {
+          if (req.session.formFields['thirdPartyEnabled'] == 'yes' && jurorDetails.thirdParty == null) {
             jurorDetails.thirdParty = {};
           }
           if (req.session.formFields['thirdParty-first-name']) {
