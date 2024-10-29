@@ -109,7 +109,7 @@
 
       const noJurorsRequired = req.session[`${trialNumber}-${locationCode}-noPanelJurors`];
 
-      availableJurorsDAO.get(app, req, locationCode).then(pools => {
+      availableJurorsDAO.get(req, locationCode).then(pools => {
 
         return res.render('trial-management/generate-panel/select-pools.njk', {
           pools,

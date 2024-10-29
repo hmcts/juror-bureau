@@ -21,9 +21,7 @@
 
     let panelData;
     try {
-      panelData = await panelListDAO.get(
-        app, req, trialNumber, locationCode
-      )
+      panelData = await panelListDAO.get(req, trialNumber, locationCode)
     } catch (err) {
       app.logger.crit('Failed to fetch panel data: ', {
         auth: req.session.authentication,
@@ -412,9 +410,7 @@
     }
 
     returnsObject.post(
-      require('request-promise'),
-      app,
-      req.session.authToken,
+      req,
       panelType,
       trialNumber,
       locationCode,
@@ -446,9 +442,7 @@
     const { trialNumber, locationCode } = req.params;
     try {
       return await trialDetailsObject.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         trialNumber,
         locationCode
       );

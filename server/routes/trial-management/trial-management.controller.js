@@ -89,13 +89,11 @@
       delete req.session[`${trialNumber}-${locationCode}-checkOutTime`];
 
       Promise.all([trialDetailsObject.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         trialNumber,
         locationCode
       ), panelListDAO.get(
-        app, req, req.params.trialNumber, req.params.locationCode
+        req, req.params.trialNumber, req.params.locationCode
       ), panelMemberStatusDAO.get(
         req, req.params.trialNumber, req.params.locationCode
       ).catch(err => {
@@ -187,9 +185,7 @@
       let trialData;
       try {
         trialData = await trialDetailsObject.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           trialNumber,
           locationCode
         );
@@ -208,7 +204,7 @@
 
       try {
         let panelData = await panelListDAO.get(
-          app, req, req.params.trialNumber, req.params.locationCode
+          req, req.params.trialNumber, req.params.locationCode
         );
 
         if (panelData.length > 0 && typeof req.session[`${trialNumber}-${locationCode}-continueToEndTrial`] === 'undefined') {
@@ -259,9 +255,7 @@
     return async function(req, res) {
       try {
         const trialDetails = await trialDetailsObject.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.params.trialNumber,
           req.params.locationCode,
         );
@@ -285,11 +279,7 @@
             'location_code': req.params.locationCode,
           };
 
-          await endTrialObject.patch(
-            require('request-promise')
-            , app
-            , req.session.authToken
-            , payload);
+          await endTrialObject.patch(req, payload);
 
           req.session.bannerMessage = typeof req.session.bannerMessage !== 'undefined' ?
             req.session.bannerMessage + ' and trial ended' : 'Trial ended';

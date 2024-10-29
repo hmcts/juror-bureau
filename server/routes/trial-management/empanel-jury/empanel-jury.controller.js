@@ -12,9 +12,7 @@
     return function(req, res) {
       const { trialNumber, locationCode } = req.params;
       trialDetailsObject.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         trialNumber,
         locationCode
       ).then(trialData => {
@@ -58,7 +56,6 @@
     return function(req, res) {
       const { trialNumber, locationCode } = req.params;
       requestPanelDAO.get(
-        app,
         req,
         trialNumber,
         locationCode,
@@ -182,7 +179,7 @@
         }));
       }
 
-      empanelJurorsDAO.post(app, req, {
+      empanelJurorsDAO.post(req, {
         jurors,
         trial_number: trialNumber,
         court_location_code: locationCode,

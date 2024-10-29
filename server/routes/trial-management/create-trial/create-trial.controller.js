@@ -18,17 +18,9 @@
 
       let promiseArr = [];
 
-      promiseArr.push(courtroomsObject.get(
-        require('request-promise'),
-        app,
-        req.session.authToken
-      ));
+      promiseArr.push(courtroomsObject.get(req));
 
-      promiseArr.push(judgesObject.get(
-        require('request-promise'),
-        app,
-        req.session.authToken
-      ));
+      promiseArr.push(judgesObject.get(req));
 
       Promise.all(promiseArr)
         .then((data) => {
@@ -90,11 +82,7 @@
     return async function(req, res) {
       let judges;
       try {
-        judges = (await judgesObject.get(
-          require('request-promise'),
-          app,
-          req.session.authToken
-        )).judges;
+        judges = (await judgesObject.get(req)).judges;
       } catch (err) {
         app.logger.crit('Failed to fetch judges: ', {
           auth: req.session.authentication,
@@ -105,11 +93,7 @@
 
       let courtrooms;
       try {
-        courtrooms = (await courtroomsObject.get(
-          require('request-promise'),
-          app,
-          req.session.authToken
-        )).map((court) => {
+        courtrooms = (await courtroomsObject.get(req)).map((court) => {
           court.display_name = court.court_location;
           court.court_location = court.court_location.replace(/[ .]/g, '_');
           return court
@@ -201,12 +185,7 @@
   }
 
   function createTrial(app, req, res, payload){
-    createTrialObject.post(
-      require('request-promise'),
-      app,
-      req.session.authToken,
-      payload
-    )
+    createTrialObject.post(req, payload)
       .then((resp) => {
         app.logger.info('Created a new trial', {
           auth: req.session.authentication,
