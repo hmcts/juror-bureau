@@ -370,7 +370,7 @@
 
       try {
         let adjustmentReasonsObj = modUtils.reasonsArrToObj(await systemCodesDAO.get(
-            app, req, 'REASONABLE_ADJUSTMENTS')),
+            req, 'REASONABLE_ADJUSTMENTS')),
           reasons = [{value: '', text: 'Select a reason...', selected: true}];
 
         Object.keys(adjustmentReasonsObj).forEach((key) => {
