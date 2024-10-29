@@ -578,7 +578,9 @@
       const { id } = req.params;
       const validatorResult = validate(req.body, validator.jurorName());
       const { action } = req.query;
-      const { title, firstName, lastName } = req.body;
+      const title = req.body.title.trim();
+      const firstName = req.body.firstName.trim();
+      const lastName = req.body.lastName.trim();
       const postPath = req.params['type'] === 'paper' ?
         'summons.update-details.get' :
         'summons.update-details-digital.get';

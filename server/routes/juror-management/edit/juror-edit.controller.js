@@ -927,7 +927,9 @@
         }) + `?action=${action}`);
       }
 
-      const { title, firstName, lastName } = req.body;
+      const title = req.body.title.trim();
+      const firstName = req.body.firstName.trim();
+      const lastName = req.body.lastName.trim();
 
       if (action === 'fix') {
         req.session[`editJurorDetails-${jurorNumber}`].fixedName = {
