@@ -412,13 +412,9 @@ function renderHistory(app, req, res) {
 }
 
 function renderHistoryItems(app, req, res, data){
-  return poolHistoryObj.get(
-    rp,
-    app,
-    req.session.authToken,
-    data.poolDetails.poolNumber,
-  )
+  return poolHistoryObj.get(req, data.poolDetails.poolNumber)
     .then(function(poolHistoryList) {
+      console.log('poolHistoryList', poolHistoryList);
       app.logger.info('Fetched Pool Request history: ', {
         auth: req.session.authentication,
         data: poolHistoryList,
