@@ -156,9 +156,7 @@ const { SessionConfig } = require('../../../../lib/session-config');
       }
 
       editNoRequested.put(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.body,
         req.session.authentication.owner
       )

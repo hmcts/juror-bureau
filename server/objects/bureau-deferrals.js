@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  const  { DAO } = require('./dataAccessObject');
+  const { DAO } = require('./dataAccessObject');
   const { basicDataTransform } = require('../lib/utils')
 
 
