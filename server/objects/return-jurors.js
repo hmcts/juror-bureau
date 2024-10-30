@@ -5,7 +5,7 @@
   const urljoin = require('url-join')
 
   module.exports.returnsObject = new DAO('moj/trial/return-', {
-    post: function(trialNumber, locCode, body) {
+    post: function(type, trialNumber, locCode, body) {
       const params = new URLSearchParams({ trial_number: trialNumber, location_code: locCode });
 
       return {
