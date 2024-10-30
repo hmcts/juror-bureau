@@ -121,9 +121,7 @@
       promiseArr.push(poolSummaryObj.get(req, req.params['poolNumber']));
       promiseArr.push(
         postCodesObj.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           catchmentArea
         )
       );

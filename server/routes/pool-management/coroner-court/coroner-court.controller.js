@@ -311,9 +311,7 @@
       }
 
       return postCodesObject.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         locationCode,
         isCoronersPool
       )

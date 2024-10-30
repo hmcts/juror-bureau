@@ -27,9 +27,6 @@
         ),
       ])
         .then(([courtrooms, judges, trial]) => {
-
-          console.log('\n\n', judges, '\n\n');
-
           app.logger.info('Fetched trial details, courtrooms and judges list', {
             auth: req.session.authentication,
             data: {

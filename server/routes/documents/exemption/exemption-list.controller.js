@@ -82,7 +82,6 @@
       try {
         const response = await certificateOfExemptionDAO.postPrintLetter(req, payload);
 
-        console.log('\n\n', response, '\n\n');
 
         const content = getLetterTemplate(response);
         const letter = await generateDocument(content, req.session.authentication.staff.name);

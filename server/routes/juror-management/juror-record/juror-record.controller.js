@@ -81,7 +81,6 @@
     return function(req, res) {
       var successCB = async function([overview, detail]) {
 
-          console.log('\n\n', overview, '\n\n');
           
           var availableMessage = false
             , bannerMessage
