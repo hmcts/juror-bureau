@@ -119,9 +119,7 @@
         , poolSearchRequest = function() {
         // Run API request
           return searchPoolObj.post(
-            require('request-promise'),
-            app,
-            req.session.authToken,
+            req,
             req.query
           )
             .then(successfulSearch(app, req, res))
@@ -237,9 +235,7 @@
 
       // Run API request
       return searchPoolObj.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.body
       )
         .then(successfulSearch(app, req, res))
