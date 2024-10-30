@@ -144,7 +144,7 @@
 
       // a fallback request in case the user haven't cached courts yet
       if (typeof req.session.courtsList === 'undefined') {
-        return fetchCourts.get(require('request-promise'), app, req.session.authToken)
+        return fetchCourts.get(req)
           .then(function(data) {
             req.session.courtsList = data.courts;
 

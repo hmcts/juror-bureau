@@ -82,7 +82,7 @@
         };
 
       fetchAllCourts
-        .get(require('request-promise'), app, req.session.authToken)
+        .get(req)
         .then(successCB)
         .catch(errorCB);
     };

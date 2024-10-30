@@ -115,9 +115,7 @@
       req.session.poolDetails.courtName = selectedCourt.locationName;
 
       return fetchCourtDeferrals.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         selectedCourt.locationCode,
         transformedDate
       )

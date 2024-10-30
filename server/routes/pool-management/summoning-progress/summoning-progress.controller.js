@@ -77,13 +77,10 @@
       }
 
       if (typeof req.session.courtsList === 'undefined') {
-        return fetchCourts.get(
-          require('request-promise'),
-          app,
-          req.session.authToken
-        ).then((data) => {
-          req.session.courtsList = data.courts;
-        })
+        return fetchCourts.get(req)
+          .then((data) => {
+            req.session.courtsList = data.courts;
+          })
       }
       return getSummoningProgress(app, req, res, req.query);
     }

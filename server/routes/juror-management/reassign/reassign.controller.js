@@ -93,7 +93,7 @@
           ? req.session.locCode : req.session.receivingCourtLocCode;
 
       if (typeof req.session.courtsList === 'undefined') {
-        let { courts } = await requestCourtsObj.get(require('request-promise'), app, req.session.authToken);
+        let { courts } = await requestCourtsObj.get(req);
 
         req.session.courtsList = courts;
       }

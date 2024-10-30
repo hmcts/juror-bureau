@@ -24,7 +24,7 @@
       req.session.messaging = {};
 
       try {
-        courtsResponse = await fetchAllCourts.get(require('request-promise'), app, req.session.authToken);
+        courtsResponse = await fetchAllCourts.get(req);
       } catch (err) {
         app.logger.crit('Failed to fetch all courts', {
           auth: req.session.authentication,
