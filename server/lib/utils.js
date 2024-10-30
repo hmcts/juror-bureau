@@ -137,6 +137,8 @@
   module.exports.basicDataTransform = function(object, key) {
     var activeKey = key;
 
+    console.log(object, key)
+
     // Ensure key has a default value
     if (typeof activeKey !== 'string') {
       activeKey = 'data';

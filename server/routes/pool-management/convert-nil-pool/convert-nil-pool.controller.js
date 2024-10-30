@@ -262,7 +262,7 @@
         };
 
       tmpBody.attendanceTime = req.session.attendanceTime;
-      nilPoolConvertObj.put(require('request-promise'), app, req.session.authToken, tmpBody)
+      nilPoolConvertObj.put(req, tmpBody)
         .then(successCB)
         .catch(errorCB);
     }
