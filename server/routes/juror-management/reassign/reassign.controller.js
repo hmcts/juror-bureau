@@ -100,7 +100,7 @@
 
       return requestObj
         .availablePools
-        .get(require('request-promise'), app, req.session.authToken, req.session.receivingCourtLocCode)
+        .get(req, req.session.receivingCourtLocCode)
         .then(successCB)
         .catch(errorCB);
     };
@@ -302,9 +302,7 @@
       }
 
       return validateMovementObj.validateMovement.put(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         validationPayload
       )
         .then((data) => {
@@ -390,7 +388,7 @@
 
   function sendReassignRequest(app, req, res, payload) {
     return requestObj.reassignJuror
-      .put(require('request-promise'), app, req.session.authToken, payload)
+      .put(req, payload)
       .then((data) => {
         modUtils.replaceAllObjKeys(data, _.camelCase);
         const tmpLocCode = req.session.receivingCourtLocCode;

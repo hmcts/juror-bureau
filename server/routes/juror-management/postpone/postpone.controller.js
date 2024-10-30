@@ -187,9 +187,7 @@
       }
 
       availablePoolsObj.post(
-        rp,
-        app,
-        req.session.authToken,
+        req,
         jurorNumber,
         [req.session.postponeToDate.split('/').reverse().join('-')]
       )
@@ -292,7 +290,7 @@
       const { jurorNumber } = req.session.selectedDeferralJurors[0];
 
       availablePoolsObj.post(
-        rp, app, req.session.authToken, jurorNumber,
+        req, jurorNumber,
         [req.session.postponeToDate.split('/').reverse().join('-')]
       ).then(poolOptions => {
         app.logger.info('Fetch pool options:  ', {
@@ -414,9 +412,7 @@
       req.body.deferralDateAndPool : req.session.jurorCommonDetails.deferralDateAndPool = req.body.deferralDateAndPool;
 
       validateMovementObj.validateMovement.put(
-        rp,
-        app,
-        req.session.authToken,
+        req,
         validationPayload
       )
         .then((data) => {
@@ -480,9 +476,7 @@
       Promise.all(
         poolNumbers.map(poolNumber => {
           return validateMovementObj.validateMovement.put(
-            rp,
-            app,
-            req.session.authToken,
+            req,
             {
               sourcePoolNumber: poolNumber,
               sendingCourtLocCode: req.params.locationCode,
