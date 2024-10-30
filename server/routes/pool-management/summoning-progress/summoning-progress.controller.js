@@ -129,9 +129,7 @@
     }
 
     return summoningProgressObject.get(
-      require('request-promise'),
-      app,
-      req.session.authToken,
+      req,
       query
     ).then(successfulRequest(app, req, res)
     ).catch((err) => {
