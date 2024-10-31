@@ -865,7 +865,7 @@
         }
 
       promiseArr.push(staffRosterObj.get(require('request-promise'), app, req.session.authToken));
-      promiseArr.push(responseOverviewObj.get(require('request-promise'), app, req.session.authToken, req.params.login));
+      promiseArr.push(responseOverviewObj.get(req, req.params.login));
 
       Promise.all(promiseArr)
         .then(successCB)
