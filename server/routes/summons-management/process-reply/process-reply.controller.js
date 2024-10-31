@@ -13,16 +13,8 @@ module.exports.checkOwner = function(app) {
 
     try {
       let response;
-      if (req.params['type'] === 'paper') {
-        response = await responseObj.get(
-          req,
-          req.params['id'],
-        );
-      }
       response = await responseObj.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.params['id'],
       );
 

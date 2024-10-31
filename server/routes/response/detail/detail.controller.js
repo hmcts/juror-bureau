@@ -11,8 +11,8 @@
     , _ = require('lodash')
     , pdfMake = require('pdfmake')
     , modUtils = require('../../../lib/mod-utils')
-    , responseDetailObj = require('../../../objects/response-detail').object
-    , notesDetailObj = require('../../../objects/response-detail').object
+    , responseDetailObj = require('../../../objects/response-detail.js').object
+    , notesDetailObj = require('../../../objects/response-detail.js').object
     , disqualifyObj = require('../../../objects/disqualify').object
     , excusalObj = require('../../../objects/excusal').object
     , deferralObj = require('../../../objects/deferral').object
@@ -398,9 +398,7 @@
 
       promiseArr.push(
         responseDetailObj.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.params.id,
           req.session.hasModAccess
         )
@@ -517,7 +515,7 @@
         };
 
       responseDetailObj
-        .getNotes(require('request-promise'), app, req.session.authToken, req.params.id)
+        .getNotes(req, req.params.id)
         .then(successCB)
         .catch(errorCB);
     };
@@ -556,9 +554,7 @@
 
       responseDetailObj
         .putNotes(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.params.id,
           req.body.notes,
           req.body.version
@@ -721,9 +717,7 @@
 
       responseDetailObj
         .putNotes(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.params.id,
           notesText,
           req.body.notesVersion
@@ -826,9 +820,7 @@
 
       responseDetailObj
         .postPhoneLog(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.params.id,
           req.body.callNotes
         )
@@ -1030,7 +1022,7 @@
         };
 
       promiseArr.push(systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL'));
-      promiseArr.push(responseDetailObj.get(require('request-promise'), app, req.session.authToken, req.params.id));
+      promiseArr.push(responseDetailObj.get(req, req.params.id));
       Promise.all(promiseArr)
         .then(successCB)
         .catch(errorCB);
@@ -1199,7 +1191,7 @@
         };
 
       promiseArr.push(systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL'));
-      promiseArr.push(responseDetailObj.get(require('request-promise'), app, req.session.authToken, req.params.id));
+      promiseArr.push(responseDetailObj.get(req, req.params.id));
       Promise.all(promiseArr)
         .then(successCB)
         .catch(errorCB);
@@ -1563,7 +1555,7 @@
       };
 
       //Get response data from back end API
-      responseDetailObj.get(require('request-promise'), app, req.session.authToken, req.params.id)
+      responseDetailObj.get(req, req.params.id)
         .then(successData);
 
     };
@@ -1878,7 +1870,7 @@
 
       // Get most recent version of response to check the version number for any changes
       // since beginning the edit process
-      responseDetailObj.get(require('request-promise'), app, req.session.authToken, req.params.id)
+      responseDetailObj.get(req, req.params.id)
         .then(successCB)
         .catch(errorCB);
     };
@@ -1954,26 +1946,26 @@
       // Handle each edit type
       switch (req.body.target) {
       case 'juror-details':
-        return responseDetailObj.editJurorDetails(require('request-promise'), app, req.session.authToken, req.params.id, req.body)
+        return responseDetailObj.editJurorDetails(req, req.params.id, req.body)
           .then(successCB)
           .catch(errorCB);
         break;
       case 'eligibility':
-        return responseDetailObj.editEligibility(require('request-promise'), app, req.session.authToken, req.params.id, req.body)
+        return responseDetailObj.editEligibility(req, req.params.id, req.body)
           .then(successCB)
           .catch(errorCB);
         break;
       case 'deferral-excusal':
-        return responseDetailObj.editDeferralExcusal(require('request-promise'), app, req.session.authToken, req.params.id, req.body)
+        return responseDetailObj.editDeferralExcusal(req, req.params.id, req.body)
           .then(successCB)
           .catch(errorCB);
         break;
       case 'cjs-employment':
-        return responseDetailObj.editCjsEmployment(require('request-promise'), app, req.session.authToken, req.params.id, req.body)
+        return responseDetailObj.editCjsEmployment(req, req.params.id, req.body)
           .then(successCB)
           .catch(errorCB);
       case 'reasonable-adjustments':
-        return responseDetailObj.editReasonableAdjustments(require('request-promise'), app, req.session.authToken, req.params.id, req.body)
+        return responseDetailObj.editReasonableAdjustments(req, req.params.id, req.body)
           .then(successCB)
           .catch(errorCB);
       default:

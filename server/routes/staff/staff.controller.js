@@ -6,7 +6,7 @@
     , staffRosterObj = require('../../objects/staff-roster').object
     , assignObj = require('../../objects/assign').object
     , assignMultiObj = require('../../objects/assign-multi').object
-    , responseDetailObj = require('../../objects/response-detail').object
+    , responseDetailObj = require('../../objects/response-detail.js').object
     , reallocateObj = require('../../objects/reallocate').object
     , responseOverviewObj = require('../../objects/response-overview').object
     , assignmentsMultiObj = require('../../objects/assignments-multi').object
@@ -465,7 +465,7 @@
         }
 
       promiseArr.push(staffRosterObj.get(require('request-promise'), app, req.session.authToken));
-      promiseArr.push(responseDetailObj.get(require('request-promise'), app, req.session.authToken, req.params.id));
+      promiseArr.push(responseDetailObj.get(req, req.params.id));
 
       Promise.all(promiseArr)
         .then(successCB)
