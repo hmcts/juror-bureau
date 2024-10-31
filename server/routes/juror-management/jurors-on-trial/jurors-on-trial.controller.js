@@ -67,8 +67,7 @@ module.exports.getConfirmAttendance = function(app) {
     let jurorsList;
 
     try {
-      // TODO: ADD DATE HERE!!!!!!!
-      jurorsList = await panelListDAO.get(req, trialNumber, locCode);
+      jurorsList = await panelListDAO.get(req, trialNumber, locCode, attendanceDate);
 
       Logger.instance.info('Fetched the jurors on this trial', {
         auth: req.session.authentication,
@@ -147,7 +146,7 @@ module.exports.postConfirmAttendance = function(app) {
 
         return res.redirect(app.namedRoutes.build('juror-management.jurors-on-trial.confirm-attendance.get', {
           trialNumber,
-        }));
+        }) + '?attendance_date=' + attendanceDate);
       }
 
       Logger.instance.crit('Failed to confirm the jurors in a trial', {
@@ -163,7 +162,6 @@ module.exports.postConfirmAttendance = function(app) {
   };
 };
 
-// TODO: ADD TRIAL NUMBER TO THE PAYLOAD
 function buildConfirmAttendancePayload(req) {
   const { body } = req;
   const payload = {};
@@ -191,6 +189,7 @@ function buildConfirmAttendancePayload(req) {
 
   payload.juror = Array.isArray(body.selectedJurors) ? body.selectedJurors : [body.selectedJurors];
   payload.commonData = commonData;
+  payload.trialNumber = body.trialNumber;
 
   return payload;
 }
