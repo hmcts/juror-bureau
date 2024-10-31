@@ -203,12 +203,13 @@
 
       try {
         promiseArr.push(staffRosterObj.get(require('request-promise'), app, req.session.authToken));
-        promiseArr.push(searchResponsesDAO.post(app, req, payload));
+        promiseArr.push(searchResponsesDAO.post(req, payload));
 
         const response = await Promise.all(promiseArr);
 
         staff = response[0];
         responses = response[1];
+        console.log('\n\n',response);
         staff.push({
           login: "AUTO",
           name: "AUTO"
