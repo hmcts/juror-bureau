@@ -644,7 +644,7 @@
       req.session.sendToMulti = {};
       req.session.sendToMulti.jurorNumbers = selectedJurorNumbers;
 
-      promiseArr.push(assignmentsMultiObj.post(require('request-promise'), app, req.session.authToken, selectedJurorNumbers));
+      promiseArr.push(assignmentsMultiObj.post(req, selectedJurorNumbers));
       promiseArr.push(staffRosterObj.get(require('request-promise'), app, req.session.authToken));
 
 
