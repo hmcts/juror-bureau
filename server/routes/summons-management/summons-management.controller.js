@@ -81,9 +81,7 @@
       if (routeParameters.type === 'digital') {
         try {
           const digitalDates = await preferredDatesObj.get(
-            require('request-promise'),
-            app,
-            req.session.authToken,
+            req,
             req.params['id'],
           );
 
