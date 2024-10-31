@@ -685,9 +685,7 @@
       }
 
       excusalObj.put(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.body,
         routeParameters.id,
         routeParameters.type,
