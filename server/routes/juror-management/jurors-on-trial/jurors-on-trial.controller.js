@@ -189,7 +189,7 @@ function buildConfirmAttendancePayload(req) {
 
   payload.juror = Array.isArray(body.selectedJurors) ? body.selectedJurors : [body.selectedJurors];
   payload.commonData = commonData;
-  payload.trialNumber = body.trialNumber;
+  payload['trial_number'] = body.trialNumber;
 
   return payload;
 }
