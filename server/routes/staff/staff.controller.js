@@ -542,7 +542,7 @@
       }
 
       // eslint-disable-next-line max-len
-      assignObj.post(require('request-promise'), app, req.session.authToken, req.body.jurorNumber, req.body.sendToOfficer, req.body.version)
+      assignObj.post(req, req.body.jurorNumber, req.body.sendToOfficer, req.body.version)
         .then(successCB)
         .catch(errorCB);
     };
