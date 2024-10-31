@@ -776,7 +776,7 @@
         req.body.sendToOfficer = '';
       }
 
-      assignMultiObj.post(require('request-promise'), app, req.session.authToken, req.body.sendToOfficer, responses)
+      assignMultiObj.post(req, req.body.sendToOfficer, responses)
         .then(successCB)
         .catch(errorCB);
     };
