@@ -41,7 +41,7 @@
         }
 
       responsesObj
-        .query(require('request-promise'), app, req.session.authToken, 'pending', req.session.hasModAccess)
+        .query(req, 'pending')
         .then(successCB)
         .catch(errorCB);
     };

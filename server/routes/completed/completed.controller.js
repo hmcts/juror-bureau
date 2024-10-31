@@ -36,7 +36,7 @@
         };
 
       responsesObj
-        .query(require('request-promise'), app, req.session.authToken, 'completed', req.session.hasModAccess)
+        .query(req, 'completed')
         .then(successCB)
         .catch(errorCB);
     };
