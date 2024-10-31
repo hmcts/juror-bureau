@@ -816,7 +816,7 @@
           return res.status(err.statusCode).send((typeof err.error !== 'undefined') ? err.error : err);
         };
 
-      reallocateObj.post(require('request-promise'), app, req.session.authToken, req.body.staffToDeactivate, req.body.pendingLogin, req.body.todoLogin, req.body.urgentsLogin)
+      reallocateObj.post(req, req.body.staffToDeactivate, req.body.pendingLogin, req.body.todoLogin, req.body.urgentsLogin)
         .then(successCB)
         .catch(errorCB);
     };
