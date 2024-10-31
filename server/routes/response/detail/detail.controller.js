@@ -407,7 +407,7 @@
         )
       );
       promiseArr.push(
-        courtObj.getCatchmentStatus(require('request-promise'), app, req.session.authToken, req.params.id));
+        courtObj.get(req, req.params.id));
       promiseArr.push(
         systemCodesDAO.get(req, 'REASONABLE_ADJUSTMENTS'));
       promiseArr.push(
