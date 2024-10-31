@@ -504,9 +504,7 @@
       req.session.deferralReason = req.body.deferralReason;
 
       deferralObj.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         routeParameters.id,
         data.poolNumber,
         data.deferralDate,

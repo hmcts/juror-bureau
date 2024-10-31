@@ -259,9 +259,7 @@
         let pools;
         try {
           pools = await deferralPoolsObject.post(
-            require('request-promise'),
-            app,
-            req.session.authToken,
+            req,
             [dateFilter(req.body.deferralDate, 'DD/MM/YYYY', 'yyyy-MM-DD')],
             req.params.jurorNumber
           );
@@ -305,7 +303,7 @@
       deferralReason = tmpReasons
         .find(reason => reason.code === req.body.deferralReason).description.toLowerCase();
 
-      deferralObject.put(require('request-promise'), app, req.session.authToken, req.body, req.params.jurorNumber)
+      deferralObject.put(req, req.body, req.params.jurorNumber)
         .then((data) => {
           app.logger.info('Deferral update processed: ', {
             auth: req.session.authentication,
@@ -418,9 +416,7 @@
 
     try {
       await changeDeferralObject.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.params.jurorNumber,
         req.body.deferralDateAndPool.split("_")[0],
         req.body.deferralDateAndPool.split("_")[1],
