@@ -1313,9 +1313,7 @@
 
       // Send to API
       deferralObj.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.params.id,
         req.body.version,
         acceptDeferral,
