@@ -182,9 +182,9 @@
                 items: undefined,
               },
             });
-          }
+          }          
 
-          data.phoneLogs = response.results[3].data.contactLogs;
+          data.phoneLogs = response.results[2].data.contactLogs;
 
           return opticReferenceObj.get(
             req,
@@ -192,7 +192,6 @@
             data.poolNumber,
           )
             .then((opticReference) => {
-
               // for now we only log this if the user has mod access
               if (req.session.hasModAccess) {
                 app.logger.info('Fetched the optic reference for the juror if available: ', {
@@ -1110,10 +1109,8 @@
       // Send to API
 
       if (acceptExcusal){
-        excusalObj.accept(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+        excusalObj.post(
+          req,
           req.params.id,
           req.body.version,
           req.body.excusalCode
@@ -1124,13 +1121,12 @@
       }
 
       if (refuseExcusal){
-        excusalObj.reject(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+        excusalObj.post(
+          req,
           req.params.id,
           req.body.version,
-          req.body.excusalCode
+          req.body.excusalCode,
+          true
         )
           .then(successCB)
           .catch(errorCB);
