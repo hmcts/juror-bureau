@@ -503,8 +503,7 @@
         req.session.newJuror.jurorAddress = tmpBody;
 
         const postcode = splitPostCode(tmpBody.addressPostcode);
-        const catchmentAreas = await courtLocationsFromPostcodeObj
-          .get(require('request-promise'), app, req.session.authToken, postcode);
+        const catchmentAreas = await courtLocationsFromPostcodeObj.get(req, postcode);
 
         req.session.newJuror.catchmentAreas = catchmentAreas;
 

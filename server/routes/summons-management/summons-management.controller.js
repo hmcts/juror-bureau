@@ -929,8 +929,7 @@
     if (data.addressDetails.changed &&
       (data.responseClone.existingAddressPostcode !== data.responseClone.addressPostcode &&
         data.responseClone.processingStatus !== 'Closed')) {
-      return courtLocationsFromPostcodeObj.get(require('request-promise'), app, req.session.authToken,
-        postcode)
+      return courtLocationsFromPostcodeObj.get(req, postcode)
         .then(
           (catchmentResponse) => {
             app.logger.info('Fetched the courts for new address: ', {

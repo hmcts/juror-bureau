@@ -208,9 +208,7 @@
                   const postcode = modUtils.splitPostCode(data.newJurorPostcode);
 
                   return courtLocationsFromPostcodeObj.get(
-                    require('request-promise'),
-                    app,
-                    req.session.authToken,
+                    req,
                     postcode
                   )
                     .then(
