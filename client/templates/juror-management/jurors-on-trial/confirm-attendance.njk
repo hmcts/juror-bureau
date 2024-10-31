@@ -83,7 +83,7 @@
         text: "Enter date"
       },
       hint: "Use dd/mm/yyyy format. For example, 31/01/2024.",
-      dateValue: tmpBody.differentDate,
+      dateValue: tmpBody.differentDate if tmpBody.differentDate else (attendanceDate if attendanceDate !== today and attendanceDate !== yesterday else ""),
       dateError: differentDateError
     }) }}
   {% endset %}
@@ -111,12 +111,12 @@
             {
               value: "previousWorkingDay",
               text: "Previous working day",
-              checked: tmpBody.attendanceDate === "previousWorkingDay"
+              checked: true if tmpBody.attendanceDate === "previousWorkingDay" else (true if (attendanceDate === yesterday and not tmpBody.attendanceDate) else false)
             },
             {
               value: "today",
               text: "Today",
-              checked: tmpBody.attendanceDate === "today"
+              checked: true if tmpBody.attendanceDate === "today" else (true if (attendanceDate === today and not tmpBody.attendanceDate) else false)
             },
             {
               value: "differentDate",
@@ -124,7 +124,7 @@
               conditional: {
                 html: datePickerHtml | safe
               },
-              checked: tmpBody.attendanceDate === "differentDate"
+              checked: true if tmpBody.attendanceDate === "differentDate" else (true if (attendanceDate !== today and attendanceDate !== yesterday and not tmpBody.attendanceDate) else false)
             }
           ],
           errorMessage: attendanceDateError
@@ -273,8 +273,10 @@
         }
       }) }}
     
-      <a class="govuk-link" id="cancelAnchor" href="{{ url('juror-management.jurors-on-trial.get') }}">Cancel</a>
+      <a class="govuk-link" id="cancelAnchor" href="{{ url('juror-management.jurors-on-trial.get') }}?attendance_date={{ attendanceDate }}">Cancel</a>
     </div>
+
+    <input type="hidden" name="trialNumber" value="{{ trialNumber }}">
 
     {{ csrfProtection(csrftoken) }}
 
