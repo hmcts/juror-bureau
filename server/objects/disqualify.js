@@ -1,58 +1,21 @@
 ;(function(){
   'use strict';
 
-  var _ = require('lodash')
-    , urljoin = require('url-join')
-    , config = require('../config/environment')()
-    , utils = require('../lib/utils')
-    , options = {
-      uri: config.apiEndpoint,
-      headers: {
-        'User-Agent': 'Request-Promise',
-        'Content-Type': 'application/vnd.api+json'
-      },
-      json: true,
-      transform: utils.basicDataTransform,
-    }
+  const { DAO } = require('./dataAccessObject');
+  const urljoin = require('url-join');
+  const { basicDataTransform } = require('../lib/utils');
 
-    , responseObject = {
-      resource: 'bureau/juror/disqualify',
-      get: function(rp, app, jwtToken) {
-        var reqOptions = _.clone(options)
-
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri, this.resource);
-
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          body: reqOptions.body,
-        });
-
-        return rp(reqOptions);
-      },
-      post: function(rp, app, jwtToken, jurorNumber, version, code) {
-        var reqOptions = _.clone(options);
-
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.method = 'POST';
-        reqOptions.uri = urljoin(reqOptions.uri, this.resource, jurorNumber);
-        reqOptions.body = {
+  module.exports.object = new DAO('bureau/juror/disqualify', {
+    post: function(jurorNumber, version, code) {
+      return {
+        uri: urljoin(this.resource, jurorNumber),
+        body: {
           disqualifyCode: code,
           description: '',
           version: version,
-        };
-
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          body: reqOptions.body,
-        });
-
-        return rp(reqOptions);
+        },
+        transform: basicDataTransform,
       }
     }
-
-  module.exports.object = responseObject;
+  });
 })();

@@ -905,7 +905,7 @@
 
         };
 
-      disqualifyObj.get(require('request-promise'), app, req.session.authToken)
+      disqualifyObj.get(req)
         .then(successCB)
         .catch(errorCB);
     };
@@ -970,9 +970,7 @@
 
       // Send to API
       disqualifyObj.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.params.id,
         req.body.version,
         req.body.disqualifyReason
