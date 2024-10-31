@@ -3,8 +3,9 @@
 {% macro jurorsAttendedCell(params) %}
   {% if params.totalAttended > 0 %}
     {{ params.totalAttended }} of {{ params.totalJurors }}
-  {% else %}
-    <a href="{{ url('juror-management.jurors-on-trial.confirm-attendance.get', { trialNumber: params.trialNumber }) }}" class="govuk-link govuk-link--no-visited-state">
+  {% endif %}
+  {% if params.totalAttended !== params.totalJurors %}
+    <a href="{{ url('juror-management.jurors-on-trial.confirm-attendance.get', { trialNumber: params.trialNumber }) }}?attendance_date={{attendanceDate}}" class="govuk-link govuk-link--no-visited-state">
       Confirm attendance
     </a>
   {% endif %}

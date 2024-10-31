@@ -48,6 +48,7 @@ module.exports.getJurorsOnTrial = function() {
     return res.render('juror-management/jurors-on-trial/list-of-trials', {
       nav: 'attendance',
       locCode,
+      attendanceDate: dateFilter(currentDay, 'dddd D MMMM YYYY', 'YYYY-MM-DD'),
       currentDay,
       previousDayISO: dateFilter(_previousDay, null, 'YYYY-MM-DD'),
       previousDay: dateFilter(_previousDay, null, 'dddd D MMMM YYYY'),
@@ -59,12 +60,14 @@ module.exports.getJurorsOnTrial = function() {
 module.exports.getConfirmAttendance = function(app) {
   return async function(req, res) {
     const { trialNumber } = req.params;
+    const { attendance_date: attendanceDate } = req.query;
     const locCode = req.session.authentication.locCode;
     const { today, yesterday } = req.session.jurorsOnTrial;
 
     let jurorsList;
 
     try {
+      // TODO: ADD DATE HERE!!!!!!!
       jurorsList = await panelListDAO.get(req, trialNumber, locCode);
 
       Logger.instance.info('Fetched the jurors on this trial', {
@@ -99,6 +102,7 @@ module.exports.getConfirmAttendance = function(app) {
     return res.render('juror-management/jurors-on-trial/confirm-attendance', {
       trialNumber,
       jurorsList,
+      attendanceDate,
       today,
       yesterday,
       tmpBody,
@@ -115,6 +119,7 @@ module.exports.getConfirmAttendance = function(app) {
 module.exports.postConfirmAttendance = function(app) {
   return async function(req, res) {
     const { trialNumber } = req.params;
+    const { attendance_date: attendanceDate } = req.query;
 
     const validatorResult = validatePostConfirm(req);
 
@@ -124,7 +129,7 @@ module.exports.postConfirmAttendance = function(app) {
 
       return res.redirect(app.namedRoutes.build('juror-management.jurors-on-trial.confirm-attendance.get', {
         trialNumber,
-      }));
+      }) + '?attendance_date=' + attendanceDate);
     };
 
     const payload = buildConfirmAttendancePayload(req);
@@ -158,6 +163,7 @@ module.exports.postConfirmAttendance = function(app) {
   };
 };
 
+// TODO: ADD TRIAL NUMBER TO THE PAYLOAD
 function buildConfirmAttendancePayload(req) {
   const { body } = req;
   const payload = {};
