@@ -1702,8 +1702,7 @@
 
       if (req.params['type'] === 'paper') {
         return paperUpdateStatus.put(
-          app,
-          req.session.authToken,
+          req,
           req.params.id,
           'CLOSED'
         ).then(function() {
@@ -1828,8 +1827,7 @@
       // if a response is paper we process is through the paper response endpoint
       if (req.session.hasModAccess && req.params['type'] === 'paper') {
         return paperUpdateStatus.put(
-          app,
-          req.session.authToken,
+          req,
           req.params.id,
           req.body.awaitingInformation
         ).then(function() {
@@ -2012,9 +2010,7 @@
 
       // Send to API
       sendCourtObj.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.params.id,
         req.body.version
       )

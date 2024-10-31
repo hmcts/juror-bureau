@@ -386,9 +386,7 @@
         }
 
         await summonsUpdate.patch(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.params['id'],
           'PERSONAL',
           payload,
@@ -482,9 +480,7 @@
         }
 
         await summonsUpdate.patch(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.params['id'],
           'PERSONAL',
           payload,

@@ -178,9 +178,7 @@
       }
 
       requestInfoObj.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.params['id'].toString(),
         req.session.letterInfoDto,
         req.params['type'].toUpperCase()

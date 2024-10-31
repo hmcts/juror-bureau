@@ -83,9 +83,7 @@
         }
 
         await summonsUpdate.patch(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.params['id'],
           'SIGNATURE',
           payload

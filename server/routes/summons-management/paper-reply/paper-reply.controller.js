@@ -913,8 +913,7 @@
       }
 
       return updateStatus.put(
-        app,
-        req.session.authToken,
+        req,
         req.body.response,
         'CLOSED')
         .then(() => {

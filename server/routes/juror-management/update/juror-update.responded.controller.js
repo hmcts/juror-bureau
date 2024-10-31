@@ -65,7 +65,7 @@ module.exports.postResponded = function(app) {
         await updateStatusDAO.post(req, jurorNumber, payload);
         break;
       case 'PAPER':
-        await updateStatus.put(app, req.session.authToken, jurorNumber, 'CLOSED');
+        await updateStatus.put(req, jurorNumber, 'CLOSED');
         break;
       default:
         await markAsRespondedDAO.patch(req, jurorNumber);
