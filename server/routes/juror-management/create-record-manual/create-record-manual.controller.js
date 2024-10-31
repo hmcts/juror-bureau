@@ -57,10 +57,10 @@
       delete req.session.errors;
 
       try {
-        const courtsList = await fetchCourts.get(require('request-promise'), app, req.session.authToken);
+        const courtsList = await fetchCourts.get(req);
         const courtData = await matchUserCourt(courtsList.courts, locCode);
         const poolsList = await reassignJurors.availableCourtOwnedPools
-          .get(require('request-promise'), app, req.session.authToken, courtData.locationCode);
+          .get(req, courtData.locationCode);
         const multiCourt = courtsList.courts.length > 1;
 
         req.session.courtsList = courtsList.courts;
@@ -714,9 +714,7 @@
 
       if (poolNumber === 'new-pool') {
         newPoolNumber = await generatePoolNumber.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.session.poolCreateFormFields.poolDetails.courtLocCode,
           dateFilter(req.session.poolCreateFormFields.poolDetails.serviceStartDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
         );

@@ -25,8 +25,7 @@
       try {
         const holidayDates = await bankHolidaysDAO.get(req);
         const nonSittingDates = await nonSittingDayDAO.get(req, req.session.authentication.owner);
-        const fetchAllAvailableCourts = await fetchAllCourts.get(
-          require('request-promise'), app, req.session.authToken);
+        const fetchAllAvailableCourts = await fetchAllCourts.get(req);
 
         const loggedInName = fetchAllAvailableCourts.courts.find(
           ({locationCode}) => locationCode === req.session.authentication.locCode);

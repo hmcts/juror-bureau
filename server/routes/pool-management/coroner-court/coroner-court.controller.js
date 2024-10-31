@@ -41,7 +41,7 @@
       delete req.session.formFields;
 
       if (typeof req.session.courtsList === 'undefined') {
-        return poolObj.fetchCourts.get(require('request-promise'), app, req.session.authToken)
+        return poolObj.fetchCourts.get(req)
           .then(renderFn);
       }
 
@@ -311,9 +311,7 @@
       }
 
       return postCodesObject.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         locationCode,
         isCoronersPool
       )
@@ -387,7 +385,7 @@
         }
       }
 
-      return poolObj.addCoronerCitizens.post(require('request-promise'), app, req.session.authToken, payload)
+      return poolObj.addCoronerCitizens.post(req, payload)
         .then(successCB)
         .catch(errorCB);
     };

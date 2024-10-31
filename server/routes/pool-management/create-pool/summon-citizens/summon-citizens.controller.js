@@ -207,7 +207,7 @@
       delete req.session.formFields;
 
       if (typeof req.session.courtsList === 'undefined') {
-        return fetchCourts.get(require('request-promise'), app, req.session.authToken)
+        return fetchCourts.get(req)
           .then(renderFn);
       }
 

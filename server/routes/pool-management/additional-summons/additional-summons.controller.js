@@ -45,9 +45,7 @@
           });
 
           bureauDeferralsObj.get(
-            require('request-promise'),
-            app,
-            req.session.authToken,
+            req,
             catchmentArea,
             dateFilter(new Date(response[0].poolDetails.courtStartDate), null, 'YYYY-MM-DD')
           )
@@ -123,9 +121,7 @@
       promiseArr.push(poolSummaryObj.get(req, req.params['poolNumber']));
       promiseArr.push(
         postCodesObj.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           catchmentArea
         )
       );

@@ -25,9 +25,7 @@
 
       try {
         const pools = await fetchPoolsAtCourt.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.session.authentication.locCode,
         );
 

@@ -908,9 +908,6 @@
   };
 
   function getOpticReferenceSuccess(app, req, res, data) {
-
-    console.log(data.opticReference);
-
     app.logger.info('Fetched the optic reference for the juror if available: ', {
       auth: req.session.authentication,
       jwt: req.session.authToken,

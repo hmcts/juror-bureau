@@ -31,7 +31,7 @@
         // Only fetch courts list if not known.
         if (!req.session.courtsList || !req.session.transformedCourtsList) {
           try {
-            const { courts } = await requestCourtsObj.get(require('request-promise'), app, req.session.authToken);
+            const { courts } = await requestCourtsObj.get(req);
 
             req.session.courtsList = courts;
             req.session.transformedCourtsList = modUtils.transformCourtNames(courts);

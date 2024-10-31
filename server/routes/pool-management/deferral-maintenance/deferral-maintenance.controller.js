@@ -68,7 +68,7 @@
 
       if (isCourtUser(req) && !req.session.errors) {
         return requestObj
-          .deferrals.get(rp, app, req.session.authToken, req.session.authentication.locCode)
+          .deferrals.get(req, req.session.authentication.locCode)
           .then((data) => successCB(data, req.session.authentication.locCode)(app, req, res))
           .catch((err) => errorCB(err)(app, req, res));
       }
@@ -96,7 +96,7 @@
       }
 
       return requestObj
-        .deferrals.get(rp, app, req.session.authToken, courtCode)
+        .deferrals.get(req, courtCode)
         .then((data) => successCB(data, courtCode[0])(app, req, res))
         .catch((err) => errorCB(err)(app, req, res));
     };
@@ -279,7 +279,7 @@
       }
 
       try {
-        const data = await requestObj.availablePools.get(rp, app, req.session.authToken, req.params['locationCode'])
+        const data = await requestObj.availablePools.get(req, req.params['locationCode'])
 
         const tmpErrors = _.clone(req.session.errors);
 
@@ -348,7 +348,7 @@
       deferralsToProcess = extractDeferralsToProcess(req.session.deferralMaintenance.deferrals);
 
       try {
-        await requestObj.allocateJurors.post(rp, app, req.session.authToken, deferralsToProcess, req.body.poolNumber);
+        await requestObj.allocateJurors.post(req, deferralsToProcess, req.body.poolNumber);
 
         const courtCode = req.params['locationCode'];
         const poolUrl = app.namedRoutes.build('pool-overview.get', {
@@ -370,7 +370,7 @@
         });
 
         return requestObj
-          .deferrals.get(rp, app, req.session.authToken, courtCode)
+          .deferrals.get(req, courtCode)
           .then((data) => successCB(data, courtCode)(app, req, res))
           .catch((err) => errorCB(err)(app, req, res));
           

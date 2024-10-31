@@ -235,16 +235,13 @@
       );
 
       const poolNumber = await generatePoolNumber.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.session.poolCreateFormFields.poolDetails.courtLocCode,
         attendanceDate,
       );
 
       requestPoolObj.createPoolRequest.post(
-        require('request-promise'),
-        app, req.session.authToken,
+        req,
         {
           attendanceDate,
           courtCode: req.session.poolCreateFormFields.poolDetails.courtLocCode,

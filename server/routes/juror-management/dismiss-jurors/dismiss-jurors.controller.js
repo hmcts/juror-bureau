@@ -31,9 +31,7 @@ module.exports.getDismissJurorsPools = function(app) {
 
     try {
       const pools = await fetchPoolsAtCourt.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.session.authentication.owner
       );
 
