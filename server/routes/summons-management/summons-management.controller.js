@@ -366,9 +366,7 @@
       postBody.deferralDates = req.session.deferralDates;
 
       deferralPoolsObj.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         postBody,
         req.params['id'],
       )
