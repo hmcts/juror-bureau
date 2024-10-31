@@ -58,7 +58,7 @@
       delete req.session.searchResponse;
 
       // Perform each request and then wait for all to resolve
-      backlogObj.get(require('request-promise'), app, req.session.authToken)
+      backlogObj.get(req)
         .then(successCB)
         .catch(errorCB);
     };
@@ -177,13 +177,13 @@
         }
       }
 
-      backlogObj.get(require('request-promise'), app, req.session.authToken, rejectUpdate)
+      backlogObj.get(req, rejectUpdate)
         .then(readSuccess)
         .catch(readError)
         .then(function(){
           if (rejectUpdate === false){
             payload = getAllocationList(req.body);
-            backlogObj.post(require('request-promise'), app, req.session.authToken, payload)
+            backlogObj.post(req, payload)
               .then(updateSuccess)
               .catch(updateError);
           }
