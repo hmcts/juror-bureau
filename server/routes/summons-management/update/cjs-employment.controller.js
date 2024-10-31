@@ -25,9 +25,7 @@
 
       try {
         const { headers, data } = await paperReplyObj.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.params['id']
         );
 

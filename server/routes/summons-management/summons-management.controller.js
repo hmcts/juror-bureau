@@ -744,6 +744,8 @@
             , eligibilityDetails
             , thirdPartyDetails;
 
+          console.log('\n\n',response,'\n\n');
+
           nameDetails = resolveJurorName(responseClone);
           addressDetails = resolveJurorAddress(responseClone);
           thirdPartyDetails = resolveThirdParty(responseClone);
@@ -891,7 +893,7 @@
           return res.redirect(app.namedRoutes.build('homepage.get'));
         };
 
-      promiseArr.push(paperReplyObj.get(require('request-promise'), app, req.session.authToken, req.params['id']));
+      promiseArr.push(paperReplyObj.get(req, req.params['id']));
       promiseArr.push(systemCodesDAO.get(req, 'REASONABLE_ADJUSTMENTS'));
       Promise.all(promiseArr)
         .then(successCB)
