@@ -464,7 +464,7 @@
           });
         }
 
-      promiseArr.push(staffRosterObj.get(require('request-promise'), app, req.session.authToken));
+      promiseArr.push(staffRosterObj.get(req));
       promiseArr.push(responseDetailObj.get(req, req.params.id));
 
       Promise.all(promiseArr)
@@ -645,7 +645,7 @@
       req.session.sendToMulti.jurorNumbers = selectedJurorNumbers;
 
       promiseArr.push(assignmentsMultiObj.post(req, selectedJurorNumbers));
-      promiseArr.push(staffRosterObj.get(require('request-promise'), app, req.session.authToken));
+      promiseArr.push(staffRosterObj.get(req));
 
 
       Promise.all(promiseArr)
@@ -864,7 +864,7 @@
           return res.render('includes/staffInactive');
         }
 
-      promiseArr.push(staffRosterObj.get(require('request-promise'), app, req.session.authToken));
+      promiseArr.push(staffRosterObj.get(req));
       promiseArr.push(responseOverviewObj.get(req, req.params.login));
 
       Promise.all(promiseArr)
