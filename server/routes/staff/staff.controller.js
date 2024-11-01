@@ -115,7 +115,7 @@
           return res.redirect(app.namedRoutes.build('staff.get'));
         };
 
-      teamObj.getList(require('request-promise'), app, req.session.authToken)
+      teamObj.get(req)
         .then(successCB)
         .catch(errorCB);
 
@@ -290,7 +290,7 @@
 
 
       promiseArr.push(staffObj.get(req, req.params.login));
-      promiseArr.push(teamObj.getList(require('request-promise'), app, req.session.authToken));
+      promiseArr.push(teamObj.get(req));
       Promise.all(promiseArr)
         .then(successCB)
         .catch(errorCB);
