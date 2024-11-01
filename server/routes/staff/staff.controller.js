@@ -68,7 +68,7 @@
       delete req.session.formFields;
       delete req.session.errors;
 
-      staffObj.get(require('request-promise'), app, req.session.authToken)
+      staffObj.get(req)
         .then(successCB)
         .catch(errorCB);
     };
@@ -115,7 +115,7 @@
           return res.redirect(app.namedRoutes.build('staff.get'));
         };
 
-      teamObj.getList(require('request-promise'), app, req.session.authToken)
+      teamObj.get(req)
         .then(successCB)
         .catch(errorCB);
 
@@ -207,7 +207,7 @@
 
 
       // Send Create request
-      staffObj.post(require('request-promise'), app, req.session.authToken, postBody)
+      staffObj.post(req, postBody)
         .then(successCB)
         .catch(failureCB);
     };
@@ -289,8 +289,8 @@
         };
 
 
-      promiseArr.push(staffObj.getOne(require('request-promise'), app, req.session.authToken, req.params.login));
-      promiseArr.push(teamObj.getList(require('request-promise'), app, req.session.authToken));
+      promiseArr.push(staffObj.get(req, req.params.login));
+      promiseArr.push(teamObj.get(req));
       Promise.all(promiseArr)
         .then(successCB)
         .catch(errorCB);
@@ -380,7 +380,7 @@
 
 
       // Send Create request
-      staffObj.put(require('request-promise'), app, req.session.authToken, req.body['_login'], putBody)
+      staffObj.put(req, req.body['_login'], putBody)
         .then(successCB)
         .catch(failureCB);
     };
@@ -464,7 +464,7 @@
           });
         }
 
-      promiseArr.push(staffRosterObj.get(require('request-promise'), app, req.session.authToken));
+      promiseArr.push(staffRosterObj.get(req));
       promiseArr.push(responseDetailObj.get(req, req.params.id));
 
       Promise.all(promiseArr)
@@ -645,7 +645,7 @@
       req.session.sendToMulti.jurorNumbers = selectedJurorNumbers;
 
       promiseArr.push(assignmentsMultiObj.post(req, selectedJurorNumbers));
-      promiseArr.push(staffRosterObj.get(require('request-promise'), app, req.session.authToken));
+      promiseArr.push(staffRosterObj.get(req));
 
 
       Promise.all(promiseArr)
@@ -864,7 +864,7 @@
           return res.render('includes/staffInactive');
         }
 
-      promiseArr.push(staffRosterObj.get(require('request-promise'), app, req.session.authToken));
+      promiseArr.push(staffRosterObj.get(req));
       promiseArr.push(responseOverviewObj.get(req, req.params.login));
 
       Promise.all(promiseArr)
@@ -927,7 +927,7 @@
 
 
 
-      staffObj.get(require('request-promise'), app, req.session.authToken)
+      staffObj.get(req)
         .then(successCB)
         .catch(errorCB);
     };

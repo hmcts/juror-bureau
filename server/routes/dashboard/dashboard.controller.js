@@ -1,7 +1,7 @@
 ;(function(){
   'use strict';
 
-  var dashboardObj = require('../../objects/dashboard').object,
+  var {dashboardStats} = require('../../objects/dashboard'),
     secretsConfig = require('config'),
     jwt = require('jsonwebtoken'),
     moment = require('moment'),
@@ -141,8 +141,8 @@
         'endDate': moment().format('YYYY-MM-DD') + 'T00:00:00',
       };
 
-      dashboardObj
-        .post(require('request-promise'), app, jwtToken, apiDates)
+
+      dashboardStats.post(jwtToken, apiDates)
         .then(successCB)
         .catch(errorCB);
 
@@ -415,11 +415,9 @@
         'endDate': dashboardDates.endDate + 'T00:00:00',
       };
 
-      dashboardObj
-        .post(require('request-promise'), app, jwtToken, apiDates)
+      dashboardStats.post(jwtToken, apiDates)
         .then(successCB)
         .catch(errorCB);
-
 
     };
   };

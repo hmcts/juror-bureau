@@ -36,7 +36,7 @@
         };
 
 
-      healthObj.get(require('request-promise'), app)
+      healthObj.get(req)
         .then(successCB)
         .catch(errorCB);
     };

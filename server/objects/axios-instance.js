@@ -20,6 +20,11 @@ client.interceptors.request.use(function(request) {
     delete logBody.body.password;
   }
 
+  if (request.customBaseUrl) {
+    request.baseURL = request.customBaseUrl;
+    delete request.customBaseUrl;
+  }
+
   Logger.instance.debug('Sending DAO request to API: ', {
     baseUrl: request.baseURL,
     url: request.url,
@@ -55,7 +60,7 @@ function isResponseDataPlain(data) {
   return typeof data === 'string' || typeof data === 'number' || typeof data === 'boolean';
 }
 
-module.exports.axiosClient = function(method, url, jwtToken, variables) {
+module.exports.axiosClient = function(method, url, jwtToken, variables, customBaseUrl) {
   if (variables && variables.body) {
     if (method === 'delete') {
       return client[method](url, {
@@ -64,6 +69,7 @@ module.exports.axiosClient = function(method, url, jwtToken, variables) {
           Authorization: jwtToken,
           ...variables.headers,
         },
+        customBaseUrl
       });
     }
     return client[method](url, variables.body, {
@@ -71,6 +77,7 @@ module.exports.axiosClient = function(method, url, jwtToken, variables) {
         Authorization: jwtToken,
         ...variables.headers,
       },
+      customBaseUrl
     });
   }
 
@@ -81,6 +88,7 @@ module.exports.axiosClient = function(method, url, jwtToken, variables) {
         Authorization: jwtToken,
         ...(variables && variables.headers),
       },
+      customBaseUrl
     });
   }
 
@@ -89,5 +97,6 @@ module.exports.axiosClient = function(method, url, jwtToken, variables) {
       Authorization: jwtToken,
       ...(variables && variables.headers),
     },
+    customBaseUrl
   });
 };
