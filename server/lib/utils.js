@@ -144,10 +144,12 @@
 
     // If object has key then return the given key
     if (typeof object === 'object' && Object.prototype.hasOwnProperty.call(object, activeKey)) {
+      console.log('\n\n', object[activeKey], '\n\n');
       return object[activeKey];
     }
 
     // Otherwise return the object as-is.
+    console.log('\n\n', object, '\n\n');
     return object;
   };
 

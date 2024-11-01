@@ -36,7 +36,7 @@
       }
     };
 
-    delete(req, body, uri, headers, ...args) {
+    delete(req, body, uri, headers, baseUrl, ...args) {
       return axiosClient('delete', uri || this.resource, req.session.authToken, { body, headers }, baseUrl);
     };
 
@@ -44,15 +44,15 @@
       return axiosClient('get', uri || this.resource, req.session.authToken, { headers }, baseUrl);
     };
 
-    patch(req, body, uri, headers, ...args) {
+    patch(req, body, uri, headers, baseUrl, ...args) {
       return axiosClient('patch', uri || this.resource, req.session.authToken, { body, headers }, baseUrl);
     };
 
-    post(req, body, uri, headers, ...args) {
+    post(req, body, uri, headers, baseUrl, ...args) {
       return axiosClient('post', uri || this.resource, req.session.authToken, { body, headers }, baseUrl);
     };
 
-    put(req, body, uri, headers, ...args) {
+    put(req, body, uri, headers, baseUrl, ...args) {
       return axiosClient('put', uri || this.resource, req.session.authToken, { body, headers }, baseUrl);
     };
   };
