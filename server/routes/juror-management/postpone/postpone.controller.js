@@ -723,9 +723,7 @@
       };
 
     postponeObj.post(
-      rp,
-      app,
-      req.session.authToken,
+      req,
       payload)
       .then(successCB)
       .catch(errorCB);
@@ -733,9 +731,7 @@
 
   function sendPostponeFromDeferralMaintenance(app, req, res, payload) {
     postponeObj.post(
-      rp,
-      app,
-      req.session.authToken,
+      req,
       payload)
       .then((resp) => {
         let receivingPoolNumberDate = req.body.deferralDateAndPool;

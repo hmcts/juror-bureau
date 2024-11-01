@@ -12,10 +12,9 @@ module.exports.checkOwner = function(app) {
     const responseObj = req.params['type'] === 'paper' ? paperResponseObj : digitalResponseObj;
 
     try {
-      const response = await responseObj.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+      let response;
+      response = await responseObj.get(
+        req,
         req.params['id'],
       );
 

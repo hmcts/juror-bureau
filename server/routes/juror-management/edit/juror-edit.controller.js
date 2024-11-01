@@ -138,8 +138,7 @@
         // No change in date, change reason and return to juror record overview.
         deferralDate = dateFilter(deferralDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
 
-        changeDeferralObject.post(require('request-promise'), app, req.session.authToken,
-          req.params['jurorNumber'], deferralDate, null, deferralReason)
+        changeDeferralObject.post(req, req.params['jurorNumber'], deferralDate, null, deferralReason)
           .then((data) => {
             app.logger.info('Changed deferral details: ', {
               auth: req.session.authentication,
@@ -219,8 +218,7 @@
 
   module.exports.getEditDeferralConfirm = (app) => {
     return (req, res) => {
-      activePoolsObj.post(require('request-promise'), app, req.session.authToken,
-        req.session.deferralDates, req.params['jurorNumber'])
+      activePoolsObj.post(req, req.session.deferralDates, req.params['jurorNumber'])
         .then((data) => {
           app.logger.info('Retrieved active pools: ', {
             auth: req.session.authentication,
@@ -313,8 +311,7 @@
           ? deferralSelection[1]
           : null;
 
-      changeDeferralObject.post(require('request-promise'), app, req.session.authToken,
-        req.params['jurorNumber'], newDeferralDate, newPoolNumber, req.session.newDeferralReason)
+      changeDeferralObject.post(req, req.params['jurorNumber'], newDeferralDate, newPoolNumber, req.session.newDeferralReason)
         .then(() => {
           app.logger.info('Changed deferral details: ', {
             auth: req.session.authentication,

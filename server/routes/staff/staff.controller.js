@@ -6,7 +6,7 @@
     , staffRosterObj = require('../../objects/staff-roster').object
     , assignObj = require('../../objects/assign').object
     , assignMultiObj = require('../../objects/assign-multi').object
-    , responseDetailObj = require('../../objects/response-detail').object
+    , responseDetailObj = require('../../objects/response-detail.js').object
     , reallocateObj = require('../../objects/reallocate').object
     , responseOverviewObj = require('../../objects/response-overview').object
     , assignmentsMultiObj = require('../../objects/assignments-multi').object
@@ -465,7 +465,7 @@
         }
 
       promiseArr.push(staffRosterObj.get(require('request-promise'), app, req.session.authToken));
-      promiseArr.push(responseDetailObj.get(require('request-promise'), app, req.session.authToken, req.params.id));
+      promiseArr.push(responseDetailObj.get(req, req.params.id));
 
       Promise.all(promiseArr)
         .then(successCB)
@@ -542,7 +542,7 @@
       }
 
       // eslint-disable-next-line max-len
-      assignObj.post(require('request-promise'), app, req.session.authToken, req.body.jurorNumber, req.body.sendToOfficer, req.body.version)
+      assignObj.post(req, req.body.jurorNumber, req.body.sendToOfficer, req.body.version)
         .then(successCB)
         .catch(errorCB);
     };
@@ -644,7 +644,7 @@
       req.session.sendToMulti = {};
       req.session.sendToMulti.jurorNumbers = selectedJurorNumbers;
 
-      promiseArr.push(assignmentsMultiObj.post(require('request-promise'), app, req.session.authToken, selectedJurorNumbers));
+      promiseArr.push(assignmentsMultiObj.post(req, selectedJurorNumbers));
       promiseArr.push(staffRosterObj.get(require('request-promise'), app, req.session.authToken));
 
 
@@ -776,7 +776,7 @@
         req.body.sendToOfficer = '';
       }
 
-      assignMultiObj.post(require('request-promise'), app, req.session.authToken, req.body.sendToOfficer, responses)
+      assignMultiObj.post(req, req.body.sendToOfficer, responses)
         .then(successCB)
         .catch(errorCB);
     };
@@ -816,7 +816,7 @@
           return res.status(err.statusCode).send((typeof err.error !== 'undefined') ? err.error : err);
         };
 
-      reallocateObj.post(require('request-promise'), app, req.session.authToken, req.body.staffToDeactivate, req.body.pendingLogin, req.body.todoLogin, req.body.urgentsLogin)
+      reallocateObj.post(req, req.body.staffToDeactivate, req.body.pendingLogin, req.body.todoLogin, req.body.urgentsLogin)
         .then(successCB)
         .catch(errorCB);
     };
@@ -865,7 +865,7 @@
         }
 
       promiseArr.push(staffRosterObj.get(require('request-promise'), app, req.session.authToken));
-      promiseArr.push(responseOverviewObj.get(require('request-promise'), app, req.session.authToken, req.params.login));
+      promiseArr.push(responseOverviewObj.get(req, req.params.login));
 
       Promise.all(promiseArr)
         .then(successCB)

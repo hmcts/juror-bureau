@@ -31,9 +31,7 @@
 
       try {
         const { headers, data } = await paperReplyObj.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.params['id']
         );
 
@@ -288,7 +286,7 @@
         };
 
       digitalReplyObj
-        .get(require('request-promise'), app, req.session.authToken, req.params.id, req.session.hasModAccess)
+        .get(req, req.params.id, req.session.hasModAccess)
         .then(successCB)
         .catch(errorCB);
     };
@@ -388,9 +386,7 @@
         }
 
         await summonsUpdate.patch(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.params['id'],
           'PERSONAL',
           payload,
@@ -484,9 +480,7 @@
         }
 
         await summonsUpdate.patch(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.params['id'],
           'PERSONAL',
           payload,

@@ -358,7 +358,7 @@
         }
       }
 
-      paperReplyObjectObj.post(require('request-promise'), app, req.session.authToken, req.session.paperResponseDetails)
+      paperReplyObjectObj.post(req, req.session.paperResponseDetails)
         .then(successCB)
         .catch(errorCB);
     };
@@ -869,9 +869,7 @@
       }
 
       paperReplyObjectObj.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.session.paperResponseDetails
       )
         .then(successCB)
@@ -915,8 +913,7 @@
       }
 
       return updateStatus.put(
-        app,
-        req.session.authToken,
+        req,
         req.body.response,
         'CLOSED')
         .then(() => {

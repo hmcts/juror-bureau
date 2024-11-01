@@ -12,9 +12,7 @@
       };
 
       paperReplyObject.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.params['id']
       ).then(({headers}) => {
         if (headers.etag !== req.session[`summonsUpdate-${id}`].etag) {

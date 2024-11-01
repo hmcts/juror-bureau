@@ -11,8 +11,8 @@
     , _ = require('lodash')
     , pdfMake = require('pdfmake')
     , modUtils = require('../../../lib/mod-utils')
-    , responseDetailObj = require('../../../objects/response-detail').object
-    , notesDetailObj = require('../../../objects/response-detail').object
+    , responseDetailObj = require('../../../objects/response-detail.js').object
+    , notesDetailObj = require('../../../objects/response-detail.js').object
     , disqualifyObj = require('../../../objects/disqualify').object
     , excusalObj = require('../../../objects/excusal').object
     , deferralObj = require('../../../objects/deferral').object
@@ -182,9 +182,9 @@
                 items: undefined,
               },
             });
-          }
+          }          
 
-          data.phoneLogs = response.results[3].data.contactLogs;
+          data.phoneLogs = response.results[2].data.contactLogs;
 
           return opticReferenceObj.get(
             req,
@@ -192,7 +192,6 @@
             data.poolNumber,
           )
             .then((opticReference) => {
-
               // for now we only log this if the user has mod access
               if (req.session.hasModAccess) {
                 app.logger.info('Fetched the optic reference for the juror if available: ', {
@@ -208,9 +207,7 @@
                   const postcode = modUtils.splitPostCode(data.newJurorPostcode);
 
                   return courtLocationsFromPostcodeObj.get(
-                    require('request-promise'),
-                    app,
-                    req.session.authToken,
+                    req,
                     postcode
                   )
                     .then(
@@ -401,15 +398,13 @@
 
       promiseArr.push(
         responseDetailObj.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.params.id,
           req.session.hasModAccess
         )
       );
       promiseArr.push(
-        courtObj.getCatchmentStatus(require('request-promise'), app, req.session.authToken, req.params.id));
+        courtObj.get(req, req.params.id));
       promiseArr.push(
         systemCodesDAO.get(req, 'REASONABLE_ADJUSTMENTS'));
       promiseArr.push(
@@ -520,7 +515,7 @@
         };
 
       responseDetailObj
-        .getNotes(require('request-promise'), app, req.session.authToken, req.params.id)
+        .getNotes(req, req.params.id)
         .then(successCB)
         .catch(errorCB);
     };
@@ -559,9 +554,7 @@
 
       responseDetailObj
         .putNotes(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.params.id,
           req.body.notes,
           req.body.version
@@ -724,9 +717,7 @@
 
       responseDetailObj
         .putNotes(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.params.id,
           notesText,
           req.body.notesVersion
@@ -829,9 +820,7 @@
 
       responseDetailObj
         .postPhoneLog(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.params.id,
           req.body.callNotes
         )
@@ -907,7 +896,7 @@
 
         };
 
-      disqualifyObj.get(require('request-promise'), app, req.session.authToken)
+      disqualifyObj.get(req)
         .then(successCB)
         .catch(errorCB);
     };
@@ -972,9 +961,7 @@
 
       // Send to API
       disqualifyObj.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.params.id,
         req.body.version,
         req.body.disqualifyReason
@@ -1035,7 +1022,7 @@
         };
 
       promiseArr.push(systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL'));
-      promiseArr.push(responseDetailObj.get(require('request-promise'), app, req.session.authToken, req.params.id));
+      promiseArr.push(responseDetailObj.get(req, req.params.id));
       Promise.all(promiseArr)
         .then(successCB)
         .catch(errorCB);
@@ -1114,10 +1101,8 @@
       // Send to API
 
       if (acceptExcusal){
-        excusalObj.accept(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+        excusalObj.post(
+          req,
           req.params.id,
           req.body.version,
           req.body.excusalCode
@@ -1128,13 +1113,12 @@
       }
 
       if (refuseExcusal){
-        excusalObj.reject(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+        excusalObj.post(
+          req,
           req.params.id,
           req.body.version,
-          req.body.excusalCode
+          req.body.excusalCode,
+          true
         )
           .then(successCB)
           .catch(errorCB);
@@ -1207,7 +1191,7 @@
         };
 
       promiseArr.push(systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL'));
-      promiseArr.push(responseDetailObj.get(require('request-promise'), app, req.session.authToken, req.params.id));
+      promiseArr.push(responseDetailObj.get(req, req.params.id));
       Promise.all(promiseArr)
         .then(successCB)
         .catch(errorCB);
@@ -1315,9 +1299,7 @@
 
       // Send to API
       deferralObj.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.params.id,
         req.body.version,
         acceptDeferral,
@@ -1573,7 +1555,7 @@
       };
 
       //Get response data from back end API
-      responseDetailObj.get(require('request-promise'), app, req.session.authToken, req.params.id)
+      responseDetailObj.get(req, req.params.id)
         .then(successData);
 
     };
@@ -1720,8 +1702,7 @@
 
       if (req.params['type'] === 'paper') {
         return paperUpdateStatus.put(
-          app,
-          req.session.authToken,
+          req,
           req.params.id,
           'CLOSED'
         ).then(function() {
@@ -1846,8 +1827,7 @@
       // if a response is paper we process is through the paper response endpoint
       if (req.session.hasModAccess && req.params['type'] === 'paper') {
         return paperUpdateStatus.put(
-          app,
-          req.session.authToken,
+          req,
           req.params.id,
           req.body.awaitingInformation
         ).then(function() {
@@ -1888,7 +1868,7 @@
 
       // Get most recent version of response to check the version number for any changes
       // since beginning the edit process
-      responseDetailObj.get(require('request-promise'), app, req.session.authToken, req.params.id)
+      responseDetailObj.get(req, req.params.id)
         .then(successCB)
         .catch(errorCB);
     };
@@ -1964,26 +1944,26 @@
       // Handle each edit type
       switch (req.body.target) {
       case 'juror-details':
-        return responseDetailObj.editJurorDetails(require('request-promise'), app, req.session.authToken, req.params.id, req.body)
+        return responseDetailObj.editJurorDetails(req, req.params.id, req.body)
           .then(successCB)
           .catch(errorCB);
         break;
       case 'eligibility':
-        return responseDetailObj.editEligibility(require('request-promise'), app, req.session.authToken, req.params.id, req.body)
+        return responseDetailObj.editEligibility(req, req.params.id, req.body)
           .then(successCB)
           .catch(errorCB);
         break;
       case 'deferral-excusal':
-        return responseDetailObj.editDeferralExcusal(require('request-promise'), app, req.session.authToken, req.params.id, req.body)
+        return responseDetailObj.editDeferralExcusal(req, req.params.id, req.body)
           .then(successCB)
           .catch(errorCB);
         break;
       case 'cjs-employment':
-        return responseDetailObj.editCjsEmployment(require('request-promise'), app, req.session.authToken, req.params.id, req.body)
+        return responseDetailObj.editCjsEmployment(req, req.params.id, req.body)
           .then(successCB)
           .catch(errorCB);
       case 'reasonable-adjustments':
-        return responseDetailObj.editReasonableAdjustments(require('request-promise'), app, req.session.authToken, req.params.id, req.body)
+        return responseDetailObj.editReasonableAdjustments(req, req.params.id, req.body)
           .then(successCB)
           .catch(errorCB);
       default:
@@ -2030,9 +2010,7 @@
 
       // Send to API
       sendCourtObj.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.params.id,
         req.body.version
       )

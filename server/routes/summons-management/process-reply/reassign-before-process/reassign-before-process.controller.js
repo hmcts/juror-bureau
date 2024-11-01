@@ -464,9 +464,7 @@
         }));
       }
       excusalObj.put(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.body,
         req.params.id,
         req.params.type

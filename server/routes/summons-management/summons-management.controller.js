@@ -81,9 +81,7 @@
       if (routeParameters.type === 'digital') {
         try {
           const digitalDates = await preferredDatesObj.get(
-            require('request-promise'),
-            app,
-            req.session.authToken,
+            req,
             req.params['id'],
           );
 
@@ -366,9 +364,7 @@
       postBody.deferralDates = req.session.deferralDates;
 
       deferralPoolsObj.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         postBody,
         req.params['id'],
       )
@@ -506,9 +502,7 @@
       req.session.deferralReason = req.body.deferralReason;
 
       deferralObj.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         routeParameters.id,
         data.poolNumber,
         data.deferralDate,
@@ -691,9 +685,7 @@
       }
 
       excusalObj.put(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.body,
         routeParameters.id,
         routeParameters.type,
@@ -751,6 +743,8 @@
             , importantNavItems
             , eligibilityDetails
             , thirdPartyDetails;
+
+          console.log('\n\n',response,'\n\n');
 
           nameDetails = resolveJurorName(responseClone);
           addressDetails = resolveJurorAddress(responseClone);
@@ -899,7 +893,7 @@
           return res.redirect(app.namedRoutes.build('homepage.get'));
         };
 
-      promiseArr.push(paperReplyObj.get(require('request-promise'), app, req.session.authToken, req.params['id']));
+      promiseArr.push(paperReplyObj.get(req, req.params['id']));
       promiseArr.push(systemCodesDAO.get(req, 'REASONABLE_ADJUSTMENTS'));
       Promise.all(promiseArr)
         .then(successCB)
@@ -929,8 +923,7 @@
     if (data.addressDetails.changed &&
       (data.responseClone.existingAddressPostcode !== data.responseClone.addressPostcode &&
         data.responseClone.processingStatus !== 'Closed')) {
-      return courtLocationsFromPostcodeObj.get(require('request-promise'), app, req.session.authToken,
-        postcode)
+      return courtLocationsFromPostcodeObj.get(req, postcode)
         .then(
           (catchmentResponse) => {
             app.logger.info('Fetched the courts for new address: ', {
