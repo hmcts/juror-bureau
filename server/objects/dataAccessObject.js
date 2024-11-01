@@ -28,7 +28,7 @@
                 return customData.debug;
               }
 
-              return prev(req, customData.body, customData.uri || this.resource, customData.headers)
+              return prev(req, customData.body, customData.uri || this.resource, customData.headers, customData.baseUrl)
                 .then(response => (customData.transform || ((data) => data))(response));
             }.bind(this);
           }
@@ -37,23 +37,24 @@
     };
 
     delete(req, body, uri, headers, ...args) {
-      return axiosClient('delete', uri || this.resource, req.session.authToken, { body, headers });
+      return axiosClient('delete', uri || this.resource, req.session.authToken, { body, headers }, baseUrl);
     };
 
-    get(req, body, uri, headers, ...args) {
-      return axiosClient('get', uri || this.resource, req.session.authToken, { headers });
+    get(req, body, uri, headers, baseUrl, ...args) {
+      console.log(baseUrl);
+      return axiosClient('get', uri || this.resource, req.session.authToken, { headers }, baseUrl);
     };
 
     patch(req, body, uri, headers, ...args) {
-      return axiosClient('patch', uri || this.resource, req.session.authToken, { body, headers });
+      return axiosClient('patch', uri || this.resource, req.session.authToken, { body, headers }, baseUrl);
     };
 
     post(req, body, uri, headers, ...args) {
-      return axiosClient('post', uri || this.resource, req.session.authToken, { body, headers });
+      return axiosClient('post', uri || this.resource, req.session.authToken, { body, headers }, baseUrl);
     };
 
     put(req, body, uri, headers, ...args) {
-      return axiosClient('put', uri || this.resource, req.session.authToken, { body, headers });
+      return axiosClient('put', uri || this.resource, req.session.authToken, { body, headers }, baseUrl);
     };
   };
 })();
