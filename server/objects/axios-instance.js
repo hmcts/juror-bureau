@@ -22,7 +22,6 @@ client.interceptors.request.use(function(request) {
 
   if (request.customBaseUrl) {
     request.baseURL = request.customBaseUrl;
-
     delete request.customBaseUrl;
   }
 
@@ -62,7 +61,6 @@ function isResponseDataPlain(data) {
 }
 
 module.exports.axiosClient = function(method, url, jwtToken, variables, customBaseUrl) {
-  console.log('\n\n', customBaseUrl, '\n\n');
   if (variables && variables.body) {
     if (method === 'delete') {
       return client[method](url, {

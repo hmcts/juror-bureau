@@ -41,7 +41,6 @@
     };
 
     get(req, body, uri, headers, baseUrl, ...args) {
-      console.log(baseUrl);
       return axiosClient('get', uri || this.resource, req.session.authToken, { headers }, baseUrl);
     };
 
