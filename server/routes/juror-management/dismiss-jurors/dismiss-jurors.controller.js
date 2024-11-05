@@ -106,9 +106,8 @@ module.exports.getJurorsList = function(app) {
 
     try {
       if (req.session.dismissJurors && !req.session.dismissJurors.jurors) {
-        const jurorList = await getJurorsObject.get(require('request-promise'),
-            app,
-            req.session.authToken,
+        const jurorList = await getJurorsObject.post(
+            req,
             req.session.dismissJurors,
             req.session.authentication.owner
           );
@@ -191,7 +190,7 @@ module.exports.postJurorsList = function(app) {
       },
       juror: selectedJurorNo,
     };
-    const response = await jurorAttendanceDao.get(app, req, payload);
+    const response = await jurorAttendanceDao.post(req, payload);
     const notCheckedOut = response.details.filter((juror) => selectedJurorNo.includes(juror.juror_number));
 
     if (notCheckedOut.length) {

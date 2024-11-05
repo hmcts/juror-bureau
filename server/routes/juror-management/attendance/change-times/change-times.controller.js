@@ -34,7 +34,7 @@
           juror: [jurorNumber],
         };
 
-        const data = await jurorAttendanceDao.get(app, req, body);
+        const data = await jurorAttendanceDao.post(req, body);
         const juror = replaceAllObjKeys(data.details[0], _.camelCase);
 
         if (!juror) {

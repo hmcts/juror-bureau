@@ -3,19 +3,6 @@
 
   const { DAO } = require('./dataAccessObject');
   const _ = require('lodash');
-  const config = require('../config/environment')();
-  const utils = require('../lib/utils');
-  const urljoin = require('url-join');
-  const options = {
-    uri: config.apiEndpoint,
-    headers: {
-      'User-Agent': 'Request-Promise',
-      'Content-Type': 'application/vnd.api+json',
-    },
-    json: true,
-    transform: utils.basicDataTransform,
-  };
-  const rp = require('request-promise');
   const { replaceAllObjKeys } = require('../lib/mod-utils');
 
   module.exports.jurorsAttending = new DAO('moj/juror-management/appearance', {
@@ -26,26 +13,7 @@
     },
   });
 
-  module.exports.jurorAttendanceDao = {
-    // GET WITH BODY NOT SUPPORTED BY AXIOS
-    get: function(app, req, body) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/juror-management/attendance'),
-        method: 'GET',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-        body,
-      };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
-    },
-  };
+  module.exports.jurorAttendanceDao = new DAO('moj/juror-management/attendance');
 
   module.exports.updateJurorAttendanceDAO = new DAO('moj/juror-management/attendance');
 
