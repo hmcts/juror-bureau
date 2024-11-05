@@ -26,14 +26,16 @@
           deferralDate: deferralDate,
           excusalReasonCode: deferralReason,
           poolNumber: poolNumber,
-          replyMethod: replyMethod.toUpperCase(),
         };
       } else {
         body = {
           'deferralDate': deferralDate,
           'excusalReasonCode': deferralReason,
-          'replyMethod': replyMethod.toUpperCase(),
         };
+      }
+
+      if (replyMethod) {
+        body.replyMethod = replyMethod.toUpperCase();
       }
 
       return {
