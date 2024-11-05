@@ -26,7 +26,7 @@
           },
           juror_in_waiting: true
         };
-        const response = await jurorAttendanceDao.get(app, req, body);
+        const response = await jurorAttendanceDao.post(req, body);
         const jurorsNotCheckedOut = response.details;
 
         if (jurorsNotCheckedOut.length) {
@@ -54,7 +54,7 @@
             locationCode: req.session.authentication.locCode,
           },
         };
-        const response = await jurorAttendanceDao.get(app, req, body);
+        const response = await jurorAttendanceDao.post(req, body);
         const jurorsNotCheckedIn = response.details;
 
         return res.render('juror-management/attendance/confirm-attendance', {

@@ -164,11 +164,7 @@
       juror: req.session[`${trialNumber}-${locationCode}-returnJurors`].map(juror => juror['juror_number']),
     };
 
-    jurorAttendanceDao.get(
-      app,
-      req,
-      body
-    )
+    jurorAttendanceDao.post(req, body)
       .then((attendanceRecords) => {
         let earliestCheckInTime;
 
