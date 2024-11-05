@@ -57,7 +57,6 @@
     "redis": "^4.6.12",
     "referrer-policy": "^1.0.0",
     "request": "^2.79.0",
-    "request-promise": "^4.1.1",
     "url-join": "^4.0.1",
     "validate.js": "^0.13.1",
     "winston": "^2.4.5"
