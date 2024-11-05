@@ -158,16 +158,14 @@
       const { id } = req.params;
       return requestObj
         .availablePools
-        .get(require('request-promise'), app, req.session.authToken, req.session.receivingCourtLocCode)
+        .get(req, req.session.receivingCourtLocCode)
         .then(async (response) => {
           const court = req.session.courtsList.find(c => c.locationCode === req.session.receivingCourtLocCode);
           const tmpErrors = _.clone(req.session.errors);
 
           try {
             req.session[`reassignProcessCurrentPool-${id}`] = (await record.get(
-              require('request-promise'),
-              app,
-              req.session.authToken,
+              req,
               'detail',
               id,
               req.session.locCode,
@@ -267,7 +265,7 @@
       };
 
       requestObj.reassignJuror
-        .put(require('request-promise'), app, req.session.authToken, payload)
+        .put(req, payload)
         .then(
           () => {
             req.session.locCode = req.session.receivingCourtLocCode;

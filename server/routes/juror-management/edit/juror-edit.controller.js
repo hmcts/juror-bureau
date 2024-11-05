@@ -184,7 +184,7 @@
 
   module.exports.postDeleteDeferral = (app) => {
     return (req, res) => {
-      deleteDeferralObject.delete(require('request-promise'), app, req.session.authToken, req.body.jurorNumber)
+      deleteDeferralObject.delete(req, req.body.jurorNumber)
         .then(
           () => {
             app.logger.info('Deleted deferral: ', {

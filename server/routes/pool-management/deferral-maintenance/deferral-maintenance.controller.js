@@ -2,7 +2,6 @@
   'use strict';
 
   const _ = require('lodash');
-  const rp = require('request-promise');
   const { isBureauUser, isCourtUser } = require('../../../components/auth/user-type');
   const modUtils = require('../../../lib/mod-utils');
   const validator = require('../../../config/validation/pool-management').deferralMaintenance;

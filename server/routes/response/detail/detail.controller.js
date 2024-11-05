@@ -37,7 +37,7 @@
 
         , successCB = function(response) {
           var data = response.results[0]
-            , catchmentStatus = response.results[1].status
+            , catchmentStatus = response.results[0].status
             , nameDetails = getNameDetails(data)
             , addressDetails = getAddressDetails(data)
             , additionalChangeDetails = getAdditionalChangedDetails(data)
@@ -109,7 +109,7 @@
             poolNumber: data.poolNumber,
             replyType: 'digital',
             specialNeeds: data.specialNeeds.length > 0 ? [{
-              assistanceType: modUtils.reasonsArrToObj(response.results[2])[data.specialNeeds[0].code],
+              assistanceType: modUtils.reasonsArrToObj(response.results[1])[data.specialNeeds[0].code],
               assistanceTypeDetails: data.specialNeedsArrangements || data.specialNeeds[0].detail,
             }] : [],
           };
@@ -636,7 +636,7 @@
       }
 
       notesDetailObj
-        .getNotes(require('request-promise'), app, req.session.authToken, req.params.id)
+        .getNotes(req, req.params.id)
         .then(notesSuccessCB)
         .catch(notesErrorCB);
 
@@ -2384,7 +2384,7 @@
         return catchmentStatus;
       };
 
-    courtObj.getCatchmentStatus(require('request-promise'), app, req.session.authToken, req.params.id)
+    courtObj.get(req, req.params.id)
       .then(successCB)
       .catch(errorCB);
   }
