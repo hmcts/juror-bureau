@@ -415,11 +415,11 @@
     const deferReason = req.session.partialDeferralObj.deferralReason;
 
     try {
-      await changeDeferralObject.post(
+      await deferralObject.post(
         req,
         req.params.jurorNumber,
-        req.body.deferralDateAndPool.split("_")[0],
         req.body.deferralDateAndPool.split("_")[1],
+        req.body.deferralDateAndPool.split("_")[0],
         deferReason,
       );
 
