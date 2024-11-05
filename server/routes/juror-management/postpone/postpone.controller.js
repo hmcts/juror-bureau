@@ -10,7 +10,6 @@
   const moment = require('moment');
   const modUtils = require('../../../lib/mod-utils');
   const { dateFilter } = require('../../../components/filters');
-  const rp = require('request-promise');
   const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
 
   module.exports.getPostponeDate = function(app) {

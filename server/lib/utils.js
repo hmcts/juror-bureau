@@ -3,7 +3,7 @@
 
   var fse = require('fs-extra')
     , _ = require('lodash')
-    , searchObj = require('../objects/search').object;
+    , searchObj = require('../objects/search').searchResponsesDAO;
 
 
   /// Will require HTTP basic auth username and password
@@ -321,8 +321,7 @@
         searchParams.status = null;
       }
 
-      // searchObj.post(require('request-promise'), app, req.session.authToken, searchParams)
-      searchObj.get(require('request-promise'), app, req.session.authToken, searchParams)
+      searchObj.get(req, searchParams)
         .then(successCB)
         .catch(errorCB);
     });

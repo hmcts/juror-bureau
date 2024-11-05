@@ -2,7 +2,6 @@ const { makeManualError, mapSnakeToCamel } = require('../../lib/mod-utils');
 const { render } = require('../../lib/reports/financial-audit');
 const { generateDocument } = require('../../lib/reports/single-generator');
 const { jurorRecordDetailsDAO } = require('../../objects');
-const rp = require('request-promise');
 const { jurorBankDetailsDAO, defaultExpensesDAO } = require('../../objects/expenses');
 const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../objects/expense-record');
 

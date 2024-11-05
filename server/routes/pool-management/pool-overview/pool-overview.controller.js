@@ -8,7 +8,6 @@ const modUtils = require('../../../lib/mod-utils');
 const { dateFilter } = require('../../../components/filters');
 const isCourtUser = require('../../../components/auth/user-type').isCourtUser;
 const capitalizeFully = require('../../../components/filters').capitalizeFully;
-const rp = require('request-promise');
 const paginateJurorsList = require('./paginate-jurors-list');
 const { poolMembersDAO, fetchCoronerPoolDAO } = require('../../../objects');
 
