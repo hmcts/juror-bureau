@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  var validate = require('validate.js')
-    , priceRegex = /^[0-9]*(\.[0-9]{1,2})?$/;
+  const validate = require('validate.js');
+  const priceRegex = /^[0-9]*(\.[0-9]{1,2})?$/;
 
   module.exports.attendanceDay = () => {
     return {
