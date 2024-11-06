@@ -44,12 +44,16 @@
               poolNumber: req.params['poolNumber']});
             changeCourtUrl = app.namedRoutes.build('pool-management.reassign.select-court.get', {
               poolNumber: req.params['poolNumber']});
+            backUrl = app.namedRoutes.build('pool-overview.get', {
+              poolNumber: req.params['poolNumber']});
           } else {
             postUrl = app.namedRoutes.build('juror-management.reassign.post', {
               jurorNumber: req.params['jurorNumber']});
             cancelUrl = app.namedRoutes.build('juror-record.overview.get', {
               jurorNumber: req.params['jurorNumber']});
             changeCourtUrl = app.namedRoutes.build('juror-management.reassign.select-court.get', {
+              jurorNumber: req.params['jurorNumber']});
+            backUrl = app.namedRoutes.build('juror.update.get', {
               jurorNumber: req.params['jurorNumber']});
           }
 
