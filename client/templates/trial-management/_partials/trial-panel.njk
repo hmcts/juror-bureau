@@ -22,7 +22,7 @@
     {% endif %}
     {% if errors.items["selectedJurors"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
 
-      <div class="govuk-body"> <span id="checkedJurors"></span> of selected <span id="totalJurors"></span> </div>
+      <div class="govuk-body"> <span id="checkedJurors">0</span> of selected <span id="totalJurors">{{panelMembers.length}}</span> </div>
 
       <table class="govuk-table" data-module="moj-sortable-table" data-multi-select-checkbox="#select-all" id="panelledJurors" name="panelledJurors">
         <caption class="govuk-table__caption govuk-visually-hidden">Panelled jurors list</caption>
@@ -77,39 +77,45 @@
 
     let allChecked = false;
     let chkbxs = document.getElementsByName('selectedJurors');
-    document.getElementById("totalJurors").innerHTML = chkbxs.length;
-    document.getElementById("checkedJurors").innerHTML = 0;
+
+    const checkedJurors = document.getElementById("checkedJurors");
+    const totalJurors = document.getElementById("totalJurors");
 
     document.getElementById('selectAllCheckbox').addEventListener('change', selectAll);
-    document.getElementsByName('selectedCourts').forEach((checkbox) => {
+    document.getElementsByName('selectedJurors').forEach((checkbox) => {
       checkbox.addEventListener('change', checkSet);
     });
 
     function selectAll() {
-
       if (allChecked) {
         allChecked = false;
         for(var i = 0; i < chkbxs.length; i++){
           if (chkbxs[i].type=='checkbox')
           chkbxs[i].checked = false;   
         }
-        document.getElementById("checkedJurors").innerHTML = $('input:checkbox:checked').length;
+        checkedJurors.innerHTML = $('input:checkbox:checked').length;
       } else {
         allChecked = true;
         for(var i = 0; i <chkbxs.length; i++){
           if (chkbxs[i].type=='checkbox')
           chkbxs[i].checked = true;  
         }
-        document.getElementById("checkedJurors").innerHTML = $('input:checkbox:checked').length - 1;
+        checkedJurors.innerHTML = $('input:checkbox:checked').length - 1;
       }
       
     };
 
     function checkSet() {
-      document.getElementById("checkedJurors").innerHTML = $('input:checkbox:checked').length;
-      if (chkbxs.length > document.getElementsByName('selectedJurors:checked').length) {
+      const selectedJurors = $("input[name='selectedJurors']:checked");
+      checkedJurors.innerHTML = selectedJurors.length;
+
+      if (chkbxs.length > selectedJurors.length) {
         document.getElementsByName('selectAllCheckbox')[0].checked = false;
         allChecked = false;
+      }
+      if (selectedJurors.length === parseInt(totalJurors.innerHTML)) {
+        document.getElementsByName('selectAllCheckbox')[0].checked = true;
+        allChecked = true;
       }
     }
   
