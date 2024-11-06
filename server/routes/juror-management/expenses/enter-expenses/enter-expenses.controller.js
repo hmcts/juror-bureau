@@ -628,7 +628,7 @@
 
     try {
       const { publicTransport, taxi } = req.body;
-      const response = await getCourtLocationRates(req, req.session.authentication.owner);
+      const response = await getCourtLocationRates.get(req, req.session.authentication.owner);
 
       const publicTransportLimit = response.public_transport_soft_limit;
       const taxiLimit = response.taxi_soft_limit;
