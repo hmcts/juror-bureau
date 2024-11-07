@@ -41,8 +41,8 @@
               {% if response.processingStatus %}
                 {% set statusHTML %}
                   {{govukTag({
-                    text: response.processingStatus.toUpperCase(),
-                    classes: "govuk-tag--blue"
+                    text: response.processingStatus | toSentenceCase,
+                    classes: "govuk-tag--blue mod-tag--full-width"
                   })}}
                 {% endset %}
               {% endif %}

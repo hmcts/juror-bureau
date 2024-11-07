@@ -8,12 +8,16 @@
 {% endif %}
 
 <!--  Init GDS and MOJ toolkits -->
-<script src="{{ assetPath }}js/govuk/all.js"></script>
+<script src="{{ assetPath }}js/govuk/govuk-frontend.min.js" type="module"></script>
 <script src="{{ assetPath }}js/moj/all.js"></script>
+
+<script nonce="{{ nonce }}" type="module">
+  import { initAll } from '{{ assetPath }}js/govuk/govuk-frontend.min.js'
+  initAll()
+</script>
 
 <script nonce="{{ nonce }}">
   $(document).ready(function () {
-    window.GOVUKFrontend.initAll();
     window.MOJFrontend.initAll();
   });
 </script>

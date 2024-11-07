@@ -42,7 +42,7 @@
                   },
                   value: {
                     html: govukTag({
-                      text: "Summons not Received" if jurorStatus === "Undeliverable" else (replyStatus or "Summoned"),
+                      text: "Summons not received" if jurorStatus === "Undeliverable" else (replyStatus or "Summoned"),
                       classes: "govuk-tag--blue" if replyStatus === "Completed" else "govuk-tag--grey"
                     }) | safe
                   }

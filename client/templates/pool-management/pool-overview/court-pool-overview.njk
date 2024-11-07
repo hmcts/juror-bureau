@@ -53,7 +53,7 @@
         {% if isNil === false %}
           {{ govukTag({
             text: "Active" if poolDetails.isActive else "Requested",
-            classes: "" if poolDetails.isActive else "govuk-tag--blue" 
+            classes: "mod-tag--dark-blue" if poolDetails.isActive else "govuk-tag--blue" 
           }) }}
         {% endif %}
       </div>
@@ -133,7 +133,7 @@
   {% else %}
 
     {{ govukRadios({
-      classes: "govuk-radios--inline govuk-radios--small",
+      classes: "govuk-radios--inline govuk-radios--small mod-radio__label--full-width",
       name: "jurorsInPool",
       value: jurorStatuses,
       fieldset: {

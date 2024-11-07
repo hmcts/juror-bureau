@@ -18,7 +18,7 @@
           ${isBureauUser ? `<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
             <input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check"
             id="check-all-jurors" ${selectAllCheck} name="selectAllCheckbox"/>
-            <label class="govuk-label govuk-checkboxes__label" for="selectAllCheckbox">
+            <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="check-all-jurors">
               <span class="govuk-visually-hidden">Select All</span>
             </label>
           </div>
@@ -86,7 +86,7 @@
               data-printed="${curr.date_printed}"
               name="checked-jurors"
             />
-            <label class="govuk-label govuk-checkboxes__label" for="juror-${jurorInfo[0]}">
+            <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="juror-${jurorInfo[0]}">
               <span class="govuk-visually-hidden">Select juror ${jurorInfo[0]}</span>
             </label>
           </div>
@@ -140,7 +140,7 @@
     const checkedJuror = this.checkedJurors.filter((juror) => (
       juror.juror_number === jurorInfo[0]
       && juror.form_code === jurorInfo[formCodeIdx]
-      && juror.date_printed === (curr.date_printed || 'null')
+      && juror.date_printed === jurorInfo[datePrintedIdx]
     ));
 
     const isChecked = (checkedJuror && checkedJuror.length) ? 'checked' : '';
@@ -157,7 +157,7 @@
               data-printed="${jurorInfo[datePrintedIdx]}"
               name="checked-jurors"
             />
-            <label class="govuk-label govuk-checkboxes__label" for="juror-${jurorInfo[0]}">
+            <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="juror-${jurorInfo[0]}">
               <span class="govuk-visually-hidden">Select juror ${jurorInfo[0]}</span>
             </label>
           </div>

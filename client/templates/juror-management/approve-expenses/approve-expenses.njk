@@ -24,15 +24,15 @@
 {% set nav = "approve-expenses" %}
 
 {% block beforeContent %}
-  <div class="govuk-!-margin-top-5">
-    {% if bannerMessage %}
+  {% if bannerMessage %}
+    <div class="govuk-!-margin-top-5">
       {{ mojBanner({
         type: "success",
         text: bannerMessage,
         iconFallbackText: "Success"
       }) }}
-    {% endif %}
-  </div>
+    </div>
+  {% endif %}
 {% endblock %}
 
 {% block content %}

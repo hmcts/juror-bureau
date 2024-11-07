@@ -526,7 +526,7 @@
                   `data-is-filtered="${ isFiltered }"\n` +
                   (data.count.selected === data.queryTotal ? "    checked\n" : "") +
                 `>\n` +
-                `<label class="govuk-label govuk-checkboxes__label" for="deferral-all">\n` +
+                `<label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="deferral-all">\n` +
                   `<span class="govuk-visually-hidden">Select All</span>\n` +
                 `</label>\n` +
               `</div>`,
@@ -575,25 +575,30 @@
                     `name="selectedJurors"\n` +
                     `value="${juror.jurorNumber}"\n` +
                     `aria-label="deferral-select-${juror.jurorNumber}"/>\n` +
-                  `<label class="govuk-label govuk-checkboxes__label" for="deferral-${ juror.jurorNumber }">\n` +
+                  `<label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="deferral-${ juror.jurorNumber }">\n` +
                     `<span class="govuk-visually-hidden">Select juror number ${ juror.jurorNumber }</span>\n` +
                   `</label>\n` +
                 `</div>`
         },
         {
           html: `<a class='govuk-link' href='${app.namedRoutes.build('juror-record.overview.get', { jurorNumber: juror.jurorNumber })}'> ${juror.jurorNumber} </a>`,
+          classes: 'jd-middle-align',
         },
         {
-          text: juror.firstName
+          text: juror.firstName,
+          classes: 'jd-middle-align',
         },
         {
-          text: juror.lastName
+          text: juror.lastName,
+          classes: 'jd-middle-align',
         },
         {
           html: `<a class='govuk-link' href='${app.namedRoutes.build('pool-overview.get', { poolNumber: juror.poolNumber })}'> ${juror.poolNumber} </a>`,
+          classes: 'jd-middle-align',
         },
         {
-          text: dateFilter(juror.deferredTo, "yyyy-MM-DD", "ddd DD MMM YYYY")
+          text: dateFilter(juror.deferredTo, "yyyy-MM-DD", "ddd DD MMM YYYY"),
+          classes: 'jd-middle-align',
         },
       ]
     })
