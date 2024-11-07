@@ -41,6 +41,11 @@
     {% set secondaryPhoneError = { text: errors.items["secondaryPhone"][0].details } %}
   {% endif %}
 
+  {% set relationshipError = undefined %}
+  {% if errors.items["relationship"] %}
+    {% set relationshipError = { text: errors.items["relationship"][0].details } %}
+  {% endif %}
+
   {% set thirdPartyDetailsError = undefined %}
   {% if errors.items["otherDetails"] %}
     {% set thirdPartyDetailsError = { text: errors.items["otherDetails"][0].details } %}
@@ -193,7 +198,8 @@
             "aria-label": "Enter the third party’s relationship with the juror"
             }
           },
-          value: details.thirdParty.relationship
+          value: details.thirdParty.relationship,
+          errorMessage: relationshipError
         }) }}
 
         {% set otherDetailsHTML %}
