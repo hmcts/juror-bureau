@@ -676,20 +676,35 @@
         let errorRedirect;
         if (typeof req.session.poolJurorsPostpone !== 'undefined') {
           jurorNumber = req.session.poolJurorsPostpone.selectedJurors;
-          if (err.statusCode = 422 && err.error?.code === 'CANNOT_DEFER_JUROR_WITH_APPEARANCE') {
+          if (err.statusCode === 422 && err.error.code === 'CANNOT_DEFER_JUROR_WITH_APPEARANCE') {
             errorRedirect = app.namedRoutes.build('juror.update-bulk-postpone.available-pools.get', {
               poolNumber: req.params.poolNumber,
             });
             req.session.errors = modUtils.makeManualError('postpone', 'One or more jurors cannot be postponed as they already have an appearance at court');
             req.session.formFields = req.body;
           }
+          if (err.statusCode === 422 && err.error.code === 'JUROR_DATE_OF_BIRTH_REQUIRED') {
+            errorRedirect = app.namedRoutes.build('juror.update-bulk-postpone.available-pools.get', {
+              poolNumber: req.params.poolNumber,
+            });
+            req.session.errors = modUtils.makeManualError('postpone', 'You cannot postpone a juror without a date of birth - please ensure all selected jurors have a date of birth');
+            req.session.formFields = req.body;
+          }
         } else {
           jurorNumber = req.params.jurorNumber;
-          if (err.statusCode = 422 && err.error?.code === 'CANNOT_DEFER_JUROR_WITH_APPEARANCE') {
+          if (err.statusCode === 422 && err.error.code === 'CANNOT_DEFER_JUROR_WITH_APPEARANCE') {
             errorRedirect = app.namedRoutes.build('juror.update.available-pools.get', {
               jurorNumber: req.params.jurorNumber,
             });
             req.session.errors = modUtils.makeManualError('postpone', 'Juror cannot be postponed as they already have an appearance at court');
+            req.session.formFields = req.body;
+          }
+          if (err.statusCode === 422 && err.error?.code === 'JUROR_DATE_OF_BIRTH_REQUIRED') {
+            console.log('\n\nIN HERE2\n\n');
+            errorRedirect = app.namedRoutes.build('juror.update.available-pools.get', {
+              jurorNumber: req.params.jurorNumber,
+            });
+            req.session.errors = modUtils.makeManualError('postpone', 'You cannot postpone a juror without a date of birth - please add date of birth to the juror record');
             req.session.formFields = req.body;
           }
         }
@@ -700,23 +715,6 @@
           jurorNumber: jurorNumber,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
-
-        if (err.statusCode === 422 && err.error?.code === 'JUROR_DATE_OF_BIRTH_REQUIRED') {
-          let errorUrl;
-          if (typeof req.session.poolJurorsPostpone !== 'undefined') {
-            errorUrl = app.namedRoutes.build('juror.update-bulk-postpone.available-pools.get', {
-              poolNumber: req.params.poolNumber,
-            });
-            req.session.errors = modUtils.makeManualError('postpone', 'You cannot postpone a juror without a date of birth - please ensure all selected jurors have a date of birth');
-          } else {
-            errorUrl = app.namedRoutes.build('juror.update.available-pools.get', {
-              jurorNumber,
-            });
-            req.session.errors = modUtils.makeManualError('postpone', 'You cannot postpone a juror without a date of birth - please add date of birth to the juror record');
-          };
-
-          return res.redirect(errorUrl);
-        }
 
         return errorRedirect ? res.redirect(errorRedirect) : res.render('_errors/generic');
       };
