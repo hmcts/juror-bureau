@@ -44,12 +44,16 @@
               poolNumber: req.params['poolNumber']});
             changeCourtUrl = app.namedRoutes.build('pool-management.reassign.select-court.get', {
               poolNumber: req.params['poolNumber']});
+            backUrl = app.namedRoutes.build('pool-overview.get', {
+              poolNumber: req.params['poolNumber']});
           } else {
             postUrl = app.namedRoutes.build('juror-management.reassign.post', {
               jurorNumber: req.params['jurorNumber']});
             cancelUrl = app.namedRoutes.build('juror-record.overview.get', {
               jurorNumber: req.params['jurorNumber']});
             changeCourtUrl = app.namedRoutes.build('juror-management.reassign.select-court.get', {
+              jurorNumber: req.params['jurorNumber']});
+            backUrl = app.namedRoutes.build('juror.update.get', {
               jurorNumber: req.params['jurorNumber']});
           }
 
@@ -93,14 +97,14 @@
           ? req.session.locCode : req.session.receivingCourtLocCode;
 
       if (typeof req.session.courtsList === 'undefined') {
-        let { courts } = await requestCourtsObj.get(require('request-promise'), app, req.session.authToken);
+        let { courts } = await requestCourtsObj.get(req);
 
         req.session.courtsList = courts;
       }
 
       return requestObj
         .availablePools
-        .get(require('request-promise'), app, req.session.authToken, req.session.receivingCourtLocCode)
+        .get(req, req.session.receivingCourtLocCode)
         .then(successCB)
         .catch(errorCB);
     };
@@ -302,9 +306,7 @@
       }
 
       return validateMovementObj.validateMovement.put(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         validationPayload
       )
         .then((data) => {
@@ -390,7 +392,7 @@
 
   function sendReassignRequest(app, req, res, payload) {
     return requestObj.reassignJuror
-      .put(require('request-promise'), app, req.session.authToken, payload)
+      .put(req, payload)
       .then((data) => {
         modUtils.replaceAllObjKeys(data, _.camelCase);
         const tmpLocCode = req.session.receivingCourtLocCode;

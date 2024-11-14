@@ -30,7 +30,7 @@
       delete req.session.errors;
       delete req.session.formFields;
 
-      getDisqualificationReasons.get(require('request-promise'), app, req.session.authToken)
+      getDisqualificationReasons.get(req)
         .then((data) => {
           app.logger.info('Fetched disqualification reasons: ', {
             auth: req.session.authentication,
@@ -85,7 +85,7 @@
         return res.redirect(app.namedRoutes.build('process-disqualify.get', routeParameters));
       }
 
-      disqualifyJuror.patch(require('request-promise'), app, req.session.authToken, req.params.id,
+      disqualifyJuror.patch(req, req.params.id,
         req.body.disqualifyReason, req.params.type)
         .then(() => {
           app.logger.info('Juror disqualified: ', {

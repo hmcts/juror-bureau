@@ -172,7 +172,7 @@
       };
 
       try {
-        const response = await changeNextDueAtCourtDAO.patch(app, req, payload);
+        const response = (await changeNextDueAtCourtDAO.patch(req, payload)).data;
 
         // Extract no of jurors updated from response
         const jurorsUpdated = response.split('Attendance date updated for ')[1].split(' ')[0];

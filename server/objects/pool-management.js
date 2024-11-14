@@ -1,150 +1,66 @@
 (function() {
   'use strict';
 
-  var _ = require('lodash')
-    , urljoin = require('url-join')
-    , config = require('../config/environment')()
-    , utils = require('../lib/utils')
-    , options = {
-      uri: config.apiEndpoint,
-      headers: {
-        'User-Agent': 'Request-Promise',
-        'Content-Type': 'application/vnd.api+json',
-      },
-      method: 'GET',
-      json: true,
-      transform: utils.basicDataTransform,
-    }
-    , deferralMaintenance = {
-      deferrals: {
-        resource: 'moj/deferral-maintenance/deferrals/{}',
-        get: function(rp, app, jwtToken, locationCode) {
-          var reqOptions = _.clone(options);
-
-          reqOptions.headers.Authorization = jwtToken;
-          reqOptions.uri = urljoin(reqOptions.uri, this.resource.replace('{}', locationCode));
-
-          app.logger.info('Sending request to API: ', {
-            uri: reqOptions.uri,
-            headers: reqOptions.headers,
-            method: reqOptions.method,
-            locationCode: locationCode,
-          });
-
-          return rp(reqOptions);
-        },
-      },
-      allocateJurors: {
-        resource: 'moj/deferral-maintenance/deferrals/allocate-jurors-to-pool',
-        post: function(rp, app, jwtToken, jurors, poolNumber) {
-          var reqOptions = _.clone(options)
-            , body = {
-              poolNumber: poolNumber,
-              jurors: jurors, // jurors needs to be an array
-            };
-
-          reqOptions.headers.Authorization = jwtToken;
-          reqOptions.uri = urljoin(reqOptions.uri, this.resource);
-          reqOptions.method = 'POST';
-          reqOptions.body = body;
-
-          app.logger.info('Sending request to API: ', {
-            uri: reqOptions.uri,
-            headers: reqOptions.headers,
-            method: reqOptions.method,
-            data: body,
-          });
-
-          return rp(reqOptions);
-        },
-      },
-      availablePools: {
-        get: availablePools.bind({ resource: 'moj/deferral-maintenance/available-pools/{}' }),
-        post: availablePools.bind({ resource: 'moj/deferral-maintenance/available-pools/{}', method: 'POST' }),
-      },
-    }
-
-    , reassignJurors = {
-      availablePools: {
-        get: availablePools.bind({ resource: 'moj/manage-pool/available-pools/{}?is-reassign=true' }),
-      },
-      availableCourtOwnedPools: {
-        get: availablePools.bind({ resource: 'moj/manage-pool/available-pools-court-owned/{}' }),
-      },
-      reassignJuror: {
-        resource: 'moj/manage-pool/reassign-jurors',
-        put: function(rp, app, jwtToken, payload) {
-          var reqOptions = _.clone(options);
-
-          reqOptions.headers.Authorization = jwtToken;
-          reqOptions.uri = urljoin(reqOptions.uri, this.resource);
-          reqOptions.method = 'PUT';
-          reqOptions.body = payload;
-
-          app.logger.info('Sending request to API: ', {
-            uri: reqOptions.uri,
-            headers: reqOptions.headers,
-            method: reqOptions.method,
-            body: payload,
-          });
-
-          return rp(reqOptions);
-        },
-      },
-    }
-
-    , validateMovement = {
-      validateMovement: {
-        resource: 'moj/manage-pool/movement/validation',
-        put: function(rp, app, jwtToken, payload) {
-          var reqOptions = _.clone(options);
-
-          reqOptions.headers.Authorization = jwtToken;
-          reqOptions.uri = urljoin(reqOptions.uri, this.resource);
-          reqOptions.method = 'PUT';
-          reqOptions.body = payload;
-
-          app.logger.info('Sending request to API: ', {
-            uri: reqOptions.uri,
-            headers: reqOptions.headers,
-            method: reqOptions.method,
-            body: payload,
-          });
-
-          return rp(reqOptions);
-        },
-      },
-    };
+  const { DAO } = require('./dataAccessObject');
+  const urljoin = require('url-join');
 
 
-  function availablePools(rp, app, jwtToken, locationCode, deferralDates) {
-    var reqOptions = _.clone(options);
+  module.exports.deferralMaintenance = {
+    deferrals: new DAO('moj/deferral-maintenance/deferrals', {
+      get: function(locationCode) {
+        return {
+          uri: urljoin(this.resource, locationCode.toString()),
+        }
+      }
+    }),
+    allocateJurors: new DAO('moj/deferral-maintenance/deferrals/allocate-jurors-to-pool', {
+      post: function(jurors, poolNumber) {
+        return {
+          uri: this.resource,
+          body: {
+            poolNumber: poolNumber,
+            jurors: jurors,
+          }
+        }
+      }
+    }),
+    availablePools: {
+      get: availablePools.bind({ resource: 'moj/deferral-maintenance/available-pools/{}' }),
+      post: availablePools.bind({ resource: 'moj/deferral-maintenance/available-pools/{}', method: 'POST' }),
+    },
+  };
 
-    reqOptions.headers.Authorization = jwtToken;
-    reqOptions.uri = urljoin(reqOptions.uri, this.resource.replace('{}', locationCode));
+  module.exports.reassignJurors = {
+    availablePools: {
+      get: availablePools.bind({ resource: 'moj/manage-pool/available-pools/{}?is-reassign=true' }),
+    },
+    availableCourtOwnedPools: {
+      get: availablePools.bind({ resource: 'moj/manage-pool/available-pools-court-owned/{}' }),
+    },
+    reassignJuror: new DAO('moj/manage-pool/reassign-jurors'),
+  };
 
-    if (this.method === 'POST') {
-      reqOptions.method = 'POST';
-    }
+  module.exports.validateMovement = {
+    validateMovement: new DAO('moj/manage-pool/movement/validation')
+  };
 
+  async function availablePools(req, locationCode, deferralDates) {
+    const uri = this.resource.replace('{}', locationCode);
+
+    let body;
     if (deferralDates) {
-      reqOptions.body = {
+      body = {
         deferralDates,
       };
     }
 
-    app.logger.info('Sending request to API: ', {
-      uri: reqOptions.uri,
-      headers: reqOptions.headers,
-      method: reqOptions.method,
-      locationCode: locationCode,
-    });
+    const dao = new DAO(uri);
 
-    return rp(reqOptions);
+    if (this.method === 'POST') {
+      return await dao.post(req, body);
+    }
+
+    return await dao.get(req, body);
   }
-
-  module.exports.deferralMaintenance = deferralMaintenance;
-  module.exports.reassignJurors = reassignJurors;
-  module.exports.validateMovement = validateMovement;
 
 })();

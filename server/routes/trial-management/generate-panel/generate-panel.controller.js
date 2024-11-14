@@ -64,7 +64,7 @@
         }));
       }
 
-      return generatePanelDAO.post(app, req, {
+      return generatePanelDAO.post(req, {
         trial_number: trialNumber,
         number_requested: +req.body.noJurors,
         pool_numbers: [],
@@ -116,7 +116,7 @@
 
       const noJurorsRequired = req.session[`${trialNumber}-${locationCode}-noPanelJurors`];
 
-      availableJurorsDAO.get(app, req, locationCode).then(pools => {
+      availableJurorsDAO.get(req, locationCode).then(pools => {
         return res.render('trial-management/generate-panel/select-pools.njk', {
           pools,
           processUrl: app.namedRoutes.build('trial-management.generate-panel.select-pools.post', {
@@ -174,7 +174,7 @@
       } else {
         selectedPools = req.body.selectedPools;
       }
-      return generatePanelDAO.post(app, req, {
+      return generatePanelDAO.post(req, {
         trial_number: trialNumber,
         number_requested: +req.session[`${trialNumber}-${locationCode}-noPanelJurors`],
         pool_numbers: selectedPools,

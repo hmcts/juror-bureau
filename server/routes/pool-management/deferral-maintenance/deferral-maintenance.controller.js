@@ -2,7 +2,6 @@
   'use strict';
 
   const _ = require('lodash');
-  const rp = require('request-promise');
   const { isBureauUser, isCourtUser } = require('../../../components/auth/user-type');
   const modUtils = require('../../../lib/mod-utils');
   const validator = require('../../../config/validation/pool-management').deferralMaintenance;
@@ -68,7 +67,7 @@
 
       if (isCourtUser(req) && !req.session.errors) {
         return requestObj
-          .deferrals.get(rp, app, req.session.authToken, req.session.authentication.locCode)
+          .deferrals.get(req, req.session.authentication.locCode)
           .then((data) => successCB(data, req.session.authentication.locCode)(app, req, res))
           .catch((err) => errorCB(err)(app, req, res));
       }
@@ -96,7 +95,7 @@
       }
 
       return requestObj
-        .deferrals.get(rp, app, req.session.authToken, courtCode)
+        .deferrals.get(req, courtCode)
         .then((data) => successCB(data, courtCode[0])(app, req, res))
         .catch((err) => errorCB(err)(app, req, res));
     };
@@ -279,7 +278,7 @@
       }
 
       try {
-        const data = await requestObj.availablePools.get(rp, app, req.session.authToken, req.params['locationCode'])
+        const data = await requestObj.availablePools.get(req, req.params['locationCode'])
 
         const tmpErrors = _.clone(req.session.errors);
 
@@ -348,7 +347,7 @@
       deferralsToProcess = extractDeferralsToProcess(req.session.deferralMaintenance.deferrals);
 
       try {
-        await requestObj.allocateJurors.post(rp, app, req.session.authToken, deferralsToProcess, req.body.poolNumber);
+        await requestObj.allocateJurors.post(req, deferralsToProcess, req.body.poolNumber);
 
         const courtCode = req.params['locationCode'];
         const poolUrl = app.namedRoutes.build('pool-overview.get', {
@@ -370,7 +369,7 @@
         });
 
         return requestObj
-          .deferrals.get(rp, app, req.session.authToken, courtCode)
+          .deferrals.get(req, courtCode)
           .then((data) => successCB(data, courtCode)(app, req, res))
           .catch((err) => errorCB(err)(app, req, res));
           
@@ -527,7 +526,7 @@
                   `data-is-filtered="${ isFiltered }"\n` +
                   (data.count.selected === data.queryTotal ? "    checked\n" : "") +
                 `>\n` +
-                `<label class="govuk-label govuk-checkboxes__label" for="deferral-all">\n` +
+                `<label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="deferral-all">\n` +
                   `<span class="govuk-visually-hidden">Select All</span>\n` +
                 `</label>\n` +
               `</div>`,
@@ -576,25 +575,30 @@
                     `name="selectedJurors"\n` +
                     `value="${juror.jurorNumber}"\n` +
                     `aria-label="deferral-select-${juror.jurorNumber}"/>\n` +
-                  `<label class="govuk-label govuk-checkboxes__label" for="deferral-${ juror.jurorNumber }">\n` +
+                  `<label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="deferral-${ juror.jurorNumber }">\n` +
                     `<span class="govuk-visually-hidden">Select juror number ${ juror.jurorNumber }</span>\n` +
                   `</label>\n` +
                 `</div>`
         },
         {
           html: `<a class='govuk-link' href='${app.namedRoutes.build('juror-record.overview.get', { jurorNumber: juror.jurorNumber })}'> ${juror.jurorNumber} </a>`,
+          classes: 'jd-middle-align',
         },
         {
-          text: juror.firstName
+          text: juror.firstName,
+          classes: 'jd-middle-align',
         },
         {
-          text: juror.lastName
+          text: juror.lastName,
+          classes: 'jd-middle-align',
         },
         {
           html: `<a class='govuk-link' href='${app.namedRoutes.build('pool-overview.get', { poolNumber: juror.poolNumber })}'> ${juror.poolNumber} </a>`,
+          classes: 'jd-middle-align',
         },
         {
-          text: dateFilter(juror.deferredTo, "yyyy-MM-DD", "ddd DD MMM YYYY")
+          text: dateFilter(juror.deferredTo, "yyyy-MM-DD", "ddd DD MMM YYYY"),
+          classes: 'jd-middle-align',
         },
       ]
     })

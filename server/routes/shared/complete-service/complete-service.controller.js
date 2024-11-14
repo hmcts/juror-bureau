@@ -30,16 +30,32 @@
     } else if (typeof req.params.jurorNumber !== 'undefined') {
       req.session.selectedJurors = req.params.jurorNumber;
 
-      if (!req.session.jurorCommonDetails) {
+      try {
         req.session.jurorCommonDetails = (await record.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           'detail',
           req.params['jurorNumber'],
-          req.session.locCode,
+          req.session.authentication.locCode,
         )).data.commonDetails;
-      }
+
+        app.logger.info('Fetched the juror\'s details for completing service:', {
+          auth: req.session.authentication,
+          data: {
+            selectedJurors: req.body.selectedJurors,
+          },
+        });
+        
+      } catch (err) {
+        app.logger.crit('Failed to fetch the juror\'s details for completing service: ', {
+          auth: req.session.authentication,
+          data: {
+            selectedJurors: req.body.selectedJurors,
+          },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic');
+      }   
 
       const { startDate } = req.session.jurorCommonDetails;
 
@@ -146,7 +162,7 @@
       return res.redirect(failValidationUrl);
     }
 
-    completeService.patch(app, req.session.authToken, {
+    completeService.patch(req, {
       pool: req.params.poolNumber || req.session.jurorCommonDetails.poolNumber,
       completionDate: req.body.completionDate,
       selectedJurors: req.body.selectedJurors,

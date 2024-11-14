@@ -21,9 +21,7 @@
     if (isSJOUser(req)) {
       try {
         const approvals = await jurorsForApproval.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.session.authentication.locCode,
           'QUEUED'
         );

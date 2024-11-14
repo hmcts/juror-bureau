@@ -4,7 +4,7 @@
   const _ = require('lodash');
   const { validate } = require('validate.js');
   const validator = require('../../../../config/validation/assign-courts');
-  const { usersDAO } = require('../../../../objects/users');
+  const { usersDAO, userRecordDAO, assignCourtsDAO } = require('../../../../objects/users');
   const { courtsDAO } = require('../../../../objects/administration');
   const { replaceAllObjKeys } = require('../../../../lib/mod-utils');
 
@@ -20,7 +20,7 @@
       let assignedPrimaryCourts = [];
 
       try {
-        const { courts } = await usersDAO.getUserRecord(app, req, username);
+        const { courts } = await userRecordDAO.get(req, username);
 
         assignedPrimaryCourts = courts;
       } catch (err) {
@@ -34,7 +34,7 @@
       }
 
       try {
-        const courtsData = await courtsDAO.get(app, req);
+        const courtsData = await courtsDAO.get(req);
 
         app.logger.info('Fetched list of courts', {
           auth: req.session.authentication,
@@ -111,12 +111,10 @@
         }));
       }
 
+      const payload = !Array.isArray(req.body.selectedCourts) ? [req.body.selectedCourts] : req.body.selectedCourts;
 
       try {
-
-        const payload = !Array.isArray(req.body.selectedCourts) ? [req.body.selectedCourts] : req.body.selectedCourts;
-
-        await usersDAO.assignCourts(app, req, username, payload);
+        await assignCourtsDAO.patch(req, username, payload);
 
         app.logger.info('Assigned courts to user', {
           auth: req.session.authentication,
@@ -148,7 +146,7 @@
       const { username, locCode } = req.params;
 
       try {
-        const user = await usersDAO.getUserRecord(app, req, username);
+        const user = await userRecordDAO.get(req, username);
 
         app.logger.info('Fetched user record', {
           auth: req.session.authentication,
@@ -185,7 +183,7 @@
       const payload = req.body.courts.split(',');
 
       try {
-        await usersDAO.removeCourts(app, req, username, payload);
+        await assignCourtsDAO.delete(req, username, payload);
         app.logger.info('Removed courts from user', {
           auth: req.session.authentication,
           data: {

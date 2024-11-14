@@ -7,7 +7,7 @@
   const jurorUpdateValidator = require('../../../config/validation/juror-record-update');
   const jurorRecordObject = require('../../../objects/juror-record');
   const deferralObject = require('../../../objects/deferral-mod').deferralObject;
-  const jurorDeceasedObject = require('../../../objects/juror-deceased').jurorDeceasedObject;
+  const { jurorDeceasedObject } = require('../../../objects/juror-deceased');
   const jurorTransfer = require('../../../objects/juror-transfer').jurorTransfer;
   const { dateFilter } = require('../../../components/filters');
   const { systemCodesDAO, markAsUndeliverableDAO } = require('../../../objects');
@@ -20,9 +20,7 @@
   module.exports.index = function(app) {
     return function(req, res) {
       jurorRecordObject.record.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         'summons-reply',
         req.params['jurorNumber'],
         req.session.locCode,
@@ -55,9 +53,7 @@
         if (isCourtUser(req)) {
           try {
             attendanceData = await jurorRecordObject.attendanceDetails.get(
-              require('request-promise'),
-              app,
-              req.session.authToken,
+              req,
               req.params['jurorNumber'],
             );
           } catch (err) {
@@ -174,7 +170,7 @@
     return function(req, res) {
       const cancelUrl = app.namedRoutes.build('juror-record.overview.get', { jurorNumber: req.params['jurorNumber'] });
 
-      systemCodesDAO.get(app, req, 'EXCUSAL_AND_DEFERRAL')
+      systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL')
         .then((data) => {
           app.logger.info('Fetched list of deferral reasons: ', {
             auth: req.session.authentication,
@@ -263,9 +259,7 @@
         let pools;
         try {
           pools = await deferralPoolsObject.post(
-            require('request-promise'),
-            app,
-            req.session.authToken,
+            req,
             [dateFilter(req.body.deferralDate, 'DD/MM/YYYY', 'yyyy-MM-DD')],
             req.params.jurorNumber
           );
@@ -294,7 +288,7 @@
 
       if (!tmpReasons) {
         try {
-          tmpReasons = await systemCodesDAO.get(app, req, 'EXCUSAL_AND_DEFERRAL');
+          tmpReasons = await systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL');
         } catch (err) {
           app.logger.crit('Failed to fetch system codes: ', {
             auth: req.session.authentication,
@@ -309,7 +303,7 @@
       deferralReason = tmpReasons
         .find(reason => reason.code === req.body.deferralReason).description.toLowerCase();
 
-      deferralObject.put(require('request-promise'), app, req.session.authToken, req.body, req.params.jurorNumber)
+      deferralObject.put(req, req.body, req.params.jurorNumber)
         .then((data) => {
           app.logger.info('Deferral update processed: ', {
             auth: req.session.authentication,
@@ -421,13 +415,11 @@
     const deferReason = req.session.partialDeferralObj.deferralReason;
 
     try {
-      await changeDeferralObject.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+      await deferralObject.post(
+        req,
         req.params.jurorNumber,
-        req.body.deferralDateAndPool.split("_")[0],
         req.body.deferralDateAndPool.split("_")[1],
+        req.body.deferralDateAndPool.split("_")[0],
         deferReason,
       );
 
@@ -566,9 +558,7 @@
       sourcePoolNumber = _.cloneDeep(req.session.jurorUpdate.poolNumber);
 
       jurorTransfer.put(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.params.jurorNumber,
         receivingCourtLocCode,
         newServiceStartDate,
@@ -620,7 +610,7 @@
       }));
     }
 
-    jurorDeceasedObject.post(require('request-promise'), app, req.session.authToken, req.body, req.params.jurorNumber)
+    jurorDeceasedObject.post(req, req.body, req.params.jurorNumber)
       .then((data) => {
         app.logger.info('Juror processed as deceased: ', {
           auth: req.session.authentication,

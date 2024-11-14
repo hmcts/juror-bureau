@@ -369,6 +369,14 @@
         }) }}
       {% endset -%}
 
+      {% set thirdPartyYesChecked = false %}
+      {% set thirdPartyNoChecked = false %}
+      {% if juror.thirdParty %}
+        {% set thirdPartyYesChecked = true %}
+      {% else %}
+        {% set thirdPartyNoChecked = true %}
+      {% endif %}
+
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
           {{ govukRadios({
@@ -384,7 +392,7 @@
               {
                 value: "yes",
                 text: "Yes",
-                checked: juror.thirdParty != null,
+                checked: thirdPartyYesChecked,
                 conditional: {
                   html: thirdPartyHtml
                 }
@@ -392,7 +400,7 @@
               {
                 value: "no",
                 text: "No",
-                checked: juror.thirdParty == null
+                checked: thirdPartyNoChecked
               }
             ]
           }) }}

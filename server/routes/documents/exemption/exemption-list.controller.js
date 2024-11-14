@@ -17,7 +17,7 @@
       delete req.session.errors;
 
       try {
-        const response = await certificateOfExemptionDAO.getJurorsForExemptionList(app, req, caseNumber, locCode);
+        const response = await certificateOfExemptionDAO.getJurorsForExemptionList(req, caseNumber, locCode);
 
         req.session.exemptionLetter.jurors = response.map(j => j.juror_number);
 
@@ -80,7 +80,9 @@
       };
 
       try {
-        const response = await certificateOfExemptionDAO.postPrintLetter(app, req, payload);
+        const response = await certificateOfExemptionDAO.postPrintLetter(req, payload);
+
+
         const content = getLetterTemplate(response);
         const letter = await generateDocument(content, req.session.authentication.staff.name);
 

@@ -253,9 +253,7 @@
       delete req.session.checkDetailsPage;
 
       requestPoolObj.fetchCourtDeferrals.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.session.poolDetails.courtCode,
         req.session.poolDetails.attendanceDate
       )
@@ -501,9 +499,7 @@
       // conditionally send an api request to generate a pool number
       if (typeof req.session.newPoolNumber === 'undefined') {
         requestPoolObj.generatePoolNumber.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.session.poolDetails.courtCode,
           req.session.poolDetails.attendanceDate
         )
@@ -547,7 +543,7 @@
       delete req.session.errors;
       delete req.session.formFields;
 
-      requestPoolObj.createPoolRequest.post(require('request-promise'), app, req.session.authToken, tmpBody)
+      requestPoolObj.createPoolRequest.post(req, tmpBody)
         .then(successCB)
         .catch(errorCB);
     }
@@ -651,7 +647,7 @@
 
       poolNumberPrefix = poolNumberPrefixBuilder(req.session.poolDetails);
 
-      requestPoolObj.fetchPoolNumbers.get(require('request-promise'), app, req.session.authToken, poolNumberPrefix)
+      requestPoolObj.fetchPoolNumbers.get(req, poolNumberPrefix)
         .then(successCB)
         .catch(errorCB);
     }

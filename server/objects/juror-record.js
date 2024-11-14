@@ -2,372 +2,126 @@
   'use strict';
 
   const { DAO } = require('./dataAccessObject');
-  var _ = require('lodash')
-    , urljoin = require('url-join')
-    , config = require('../config/environment')()
-    , utils = require('../lib/utils')
-    , modUtils = require('../lib/mod-utils')
-    , options = {
-      uri: config.apiEndpoint,
-      headers: {
-        'User-Agent': 'Request-Promise',
-        'Content-Type': 'application/vnd.api+json',
-      },
-      json: true,
-      transform: utils.basicDataTransform,
+  const urljoin = require('url-join');
+  const { extractDataAndHeadersFromResponse, mapCamelToSnake } = require('../lib/mod-utils')
+
+  module.exports.record = new DAO('moj/juror-record', {
+    get: function(tab, jurorNumber, locCode, etag) {
+      const headers = {}; 
+      let uri;
+      if (typeof etag === 'string') {
+        headers['If-None-Match'] = etag;
+      }
+
+      if (tab === 'notes' || tab === 'contact-log') {
+        uri = urljoin(this.resource, tab, jurorNumber);
+      } else if (tab === 'contact-log/enquiry-types') {
+        uri = urljoin(this.resource, tab);
+      } else {
+        uri = urljoin(this.resource, tab, jurorNumber, locCode);
+      }
+
+      return { 
+        uri,
+        headers,
+        transform: extractDataAndHeadersFromResponse('data')
+      };
     }
-    , includeHeaders = function(body, response) {
-      return { 'headers': response.headers, 'data': body };
+  });
+
+  module.exports.attendanceDetails = new DAO('moj/juror-record/attendance-detail', {
+    get: function(jurorNumber) {
+      return { uri: urljoin(this.resource, jurorNumber) };
     }
+  });
 
-    // at the moment we only need a simple tab string to identify which tab we want to fetch data for
-    // ... if it gets more complex than a simple tab string then I can update this
-    , record = {
-      resource: 'moj/juror-record',
-      get: function(rp, app, jwtToken, tab, jurorNumber, locCode, etag) {
-        var reqOptions = _.cloneDeep(options);
+  module.exports.changeDate = new DAO('moj/juror-record/update-attendance');
 
-        if (typeof etag === 'string') {
-          reqOptions.headers['If-None-Match'] = etag;
-        }
+  module.exports.editDetails = new DAO('moj/juror-record/edit-juror', {
+    patch: function(body, jurorNumber, etag) {
+      const headers = {};
+      if (typeof etag === 'string') {
+        headers['If-None-Match'] = etag;
+      }
 
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.method = 'GET';
-        reqOptions.transform = includeHeaders;
+      body = mapCamelToSnake(body);
+      delete Object.assign(body, {'welsh_language_required': body.welsh || false }).welsh;
 
-        if (tab === 'notes' || tab === 'contact-log') {
-          reqOptions.uri = urljoin(reqOptions.uri,
-            this.resource,
-            tab,
-            jurorNumber);
-        } else if (tab === 'contact-log/enquiry-types') {
-          reqOptions.uri = urljoin(reqOptions.uri,
-            this.resource,
-            tab);
-        } else {
-          reqOptions.uri = urljoin(reqOptions.uri,
-            this.resource,
-            tab,
-            `${jurorNumber}`,
-            `${locCode}`);
-        }
-
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          data: {
-            jurorNumber: jurorNumber,
-          },
-        });
-
-        return rp(reqOptions);
-      },
+      return {
+        uri: urljoin(this.resource, jurorNumber),
+        body,
+      }
     }
+  });
 
-    , attendanceDetails = {
-      resource: 'moj/juror-record/attendance-detail',
-      get: function(rp, app, jwtToken, jurorNumber) {
-        const reqOptions = _.clone(options);
-
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri,
-          this.resource,
-          jurorNumber);
-
-        app.logger.info('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          data: {
-            jurorNumber,
-          },
-        });
-
-        return rp(reqOptions);
-      },
+  module.exports.notes = new DAO('moj/juror-record/notes', {
+    patch: function(body, jurorNumber) {
+      return {
+        uri: urljoin(this.resource, jurorNumber),
+        body
+      }
     }
+  });
 
-    , changeDate = {
-      resource: 'moj/juror-record/update-attendance',
-      patch: function(rp, app, jwtToken, body) {
-        var reqOptions = _.clone(options);
+  module.exports.contactLog = new DAO('moj/juror-record/create/contact-log');
 
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri, this.resource);
-        reqOptions.method = 'PATCH';
-        reqOptions.body = body;
-
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          data: body,
-        });
-
-        return rp(reqOptions);
-      },
+  module.exports.search = new DAO('moj/juror-record/single-search', {
+    get: function(jurorNumber) {
+      return { uri: urljoin(this.resource, '?jurorNumber=' + jurorNumber) };
     }
+  });
 
-    , editDetails = {
-      resource: 'moj/juror-record/edit-juror',
-      patch: function(rp, app, jwtToken, body, jurorNumber, etag) {
-        let reqOptions = _.cloneDeep(options),
-          tmpBody = _.clone(body);
-
-        delete tmpBody._csrf;
-
-        if (typeof etag === 'string') {
-          reqOptions.headers['If-None-Match'] = etag;
-        }
-
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri,
-          this.resource,
-          jurorNumber);
-        reqOptions.method = 'PATCH';
-        tmpBody = modUtils.mapCamelToSnake(tmpBody);
-        delete Object.assign(tmpBody, {'welsh_language_required': tmpBody.welsh || false }).welsh;
-        reqOptions.body = tmpBody;
-
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          data: {
-            jurorNumber: jurorNumber,
-            body: tmpBody,
-          },
-        });
-
-        return rp(reqOptions);
-      },
+  module.exports.opticReferenceObject = new DAO('moj/juror-record/optic-reference', {
+    get: function(jurorNumber, poolNumber) {
+      return { 
+        uri: urljoin(this.resource, jurorNumber, poolNumber),
+        transform: (data) => { return data.data },
+      };
+    },
+    post: function(body, jurorNumber, poolNumber) {
+      body.jurorNumber = jurorNumber;
+      body.poolNumber = poolNumber;
+      return {
+        uri: urljoin('moj/juror-record/create/optic-reference', ),
+        body
+      }
     }
+  });
 
-    , notes = {
-      resource: 'moj/juror-record/notes',
-      patch: function(rp, app, jwtToken, body, jurorNumber) {
-        var reqOptions = _.clone(options)
-          , tmpBody = _.clone(body);
-
-        delete tmpBody._csrf;
-
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri,
-          this.resource,
-          jurorNumber);
-        reqOptions.method = 'PATCH';
-        reqOptions.body = tmpBody;
-
-
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          data: {
-            jurorNumber: jurorNumber,
-            notes: tmpBody,
-          },
-        });
-
-        return rp(reqOptions);
-      },
-    }
-
-    , logs = {
-      resource: 'moj/juror-record/create/contact-log',
-      post: function(rp, app, jwtToken, body) {
-        var reqOptions = _.clone(options)
-          , tmpBody = _.clone(body);
-
-        delete tmpBody._csrf;
-
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri, this.resource);
-        reqOptions.method = 'POST';
-        reqOptions.body = tmpBody;
-
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          data: tmpBody,
-        });
-
-        return rp(reqOptions);
-      },
-    }
-
-    , search = {
-      resource: 'moj/juror-record/single-search',
-      get: function(rp, app, jwtToken, jurorNumber) {
-        var reqOptions = _.clone(options);
-
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri,
-          this.resource,
-          '?jurorNumber=' + jurorNumber);
-        reqOptions.method = 'GET';
-
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          data: {
-            jurorNumber: jurorNumber,
-          },
-        });
-
-        return rp(reqOptions);
-      },
-    }
-
-    , opticReferenceObject = {
-      resourcePost: 'moj/juror-record/create/optic-reference',
-      resourceGet: 'moj/juror-record/optic-reference',
-      post: function(rp, app, jwtToken, body, jurorNumber, poolNumber) {
-        var reqOptions = _.clone(options)
-          , tmpBody = _.clone(body);
-
-        tmpBody.jurorNumber = jurorNumber;
-        tmpBody.poolNumber = poolNumber;
-
-        delete tmpBody._csrf;
-
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri, this.resourcePost);
-        reqOptions.method = 'POST';
-        reqOptions.body = tmpBody;
-
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          data: tmpBody,
-        });
-
-        return rp(reqOptions);
-      },
-      get: function(rp, app, jwtToken, jurorNumber, poolNumber, hasModAccess) {
-        var reqOptions = _.clone(options);
-
-        if (!hasModAccess) {
-          return Promise.resolve(null);
-        }
-
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(
-          reqOptions.uri,
-          this.resourceGet,
-          jurorNumber,
-          poolNumber,
-        );
-        reqOptions.method = 'GET';
-
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          data: {
-            jurorNumber,
-            poolNumber,
-          },
-        });
-
-        return rp(reqOptions);
-      },
-    }
-
-    , changeName = {
-      resource: 'moj/juror-record/{part}/{}',
-      patch: function(rp, app, jwtToken, jurorNumber, part, payload) {
-        const reqOptions = _.clone(options);
-
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(
-          reqOptions.uri,
-          this.resource.replace('{part}', part).replace('{}', jurorNumber),
-        );
-        reqOptions.method = 'PATCH';
-        reqOptions.body = payload;
-
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          data: payload,
-        });
-
-        return rp(reqOptions);
-      },
-    }
-
-    , failedToAttendObject = {
-      resource: 'moj/juror-record/failed-to-attend',
-      patch: function(rp, app, jwtToken, jurorNumber, poolNumber, undo) {
-        const reqOptions = _.clone(options);
-
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri, this.resource.replace('{}', jurorNumber));
-        reqOptions.method = 'PATCH';
-        reqOptions.body = {
-          'juror_number': jurorNumber,
-          'pool_number': poolNumber,
-        };
-
-        if (undo) reqOptions.uri += '/undo';
-
-        app.logger.info('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          data: reqOptions.body,
-        });
-
-        return rp(reqOptions);
-      },
-    };
-
-  const jurorOverviewDAO = new DAO('moj/juror-record/overview', {
-    get: function(jurorNumber, loc) {
-      return { uri: urljoin(this.resource, jurorNumber, loc)};
+  module.exports.changeName = new DAO('moj/juror-record/{part}/{jurorNumber}', {
+    patch: function(jurorNumber, part, body) {
+      return { 
+        uri: this.resource.replace('{part}', part).replace('{jurorNumber}', jurorNumber),
+        body
+      };
     },
   });
 
-  module.exports.record = record;
-  module.exports.attendanceDetails = attendanceDetails;
-  module.exports.changeDate = changeDate;
-  module.exports.editDetails = editDetails;
-  module.exports.notes = notes;
-  module.exports.contactLog = logs;
-  module.exports.search = search;
-  module.exports.opticReferenceObject = opticReferenceObject;
-  module.exports.changeName = changeName;
-  module.exports.failedToAttendObject = failedToAttendObject;
-  module.exports.jurorOverviewDAO = jurorOverviewDAO;
-
-  const rp = require('request-promise');
-
-  module.exports.disqualifyAgeDAO = {
-    patch: function(app, req, jurorNumber) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/disqualify/juror', jurorNumber, 'age'),
-        method: 'PATCH',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
+  module.exports.failedToAttendObject = new DAO('moj/juror-record/failed-to-attend', {
+    patch: function(jurorNumber, poolNumber, undo) {
+      const body = {
+        'juror_number': jurorNumber,
+        'pool_number': poolNumber,
       };
+      const uri = this.resource;
 
-      app.logger.info('Sending request to API: ', payload);
+      if (undo) uri += '/undo';
 
-      return rp(payload);
+      return { uri, body };
+    }
+  });
+
+  module.exports.jurorOverviewDAO = new DAO('moj/juror-record/overview', {
+    get: function(jurorNumber, loc) {
+      return { uri: urljoin(this.resource, jurorNumber, loc)};
     },
-  };
+  });;
 
-  // new DAO
+  module.exports.disqualifyAgeDAO = new DAO('moj/disqualify/juror/{jurorNumber}/age', {
+    patch: function(jurorNumber) {
+      return { uri: this.resource.replace('{jurorNumber}', jurorNumber) };
+    },
+  })
 
   module.exports.expensesSummaryDAO = new DAO('moj/expenses/{locCode}/{jurorNumber}/summary/totals', {
     get: function(jurorNumber, locCode) {
@@ -376,6 +130,7 @@
   });
 
   module.exports.searchJurorRecordDAO = new DAO('moj/juror-record/search');
+
   module.exports.jurorRecordDetailsDAO = new DAO('moj/juror-record/details');
 
 })();

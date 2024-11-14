@@ -23,20 +23,19 @@
       const postUrl = app.namedRoutes.build('administration.non-sitting-days.post');
 
       try {
-        const holidayDates = await bankHolidaysDAO.get(app, req);
-        const nonSittingDates = await nonSittingDayDAO.get(app, req, req.session.authentication.owner);
-        const fetchAllAvailableCourts = await fetchAllCourts.get(
-          require('request-promise'), app, req.session.authToken);
+        const holidayDates = await bankHolidaysDAO.get(req);
+        const nonSittingDates = await nonSittingDayDAO.get(req, req.session.authentication.owner);
+        const fetchAllAvailableCourts = await fetchAllCourts.get(req);
 
         const loggedInName = fetchAllAvailableCourts.courts.find(
           ({locationCode}) => locationCode === req.session.authentication.locCode);
 
 
-        const holidayDateYears = Object.keys(holidayDates.response);
+        const holidayDateYears = Object.keys(holidayDates);
 
         return res.render('administration/non-sitting-days.njk', {
           postUrl,
-          holidayDates: holidayDates.response,
+          holidayDates: holidayDates,
           nonSittingDates: nonSittingDates,
           holidayDateYears,
           locationName: loggedInName.locationName,
@@ -126,7 +125,7 @@
       };
 
       try {
-        await nonSittingDayDAO.post(app, req, req.session.authentication.locCode, payload);
+        await nonSittingDayDAO.post(req, req.session.authentication.locCode, payload);
         req.session.bannerMessage = 'Non-sitting day added';
         return res.redirect(app.namedRoutes.build('administration.non-sitting-days.get'));
 
@@ -158,7 +157,7 @@
       const date = dateFilter(req.body.nonSittingDate, null, 'YYYY-MM-DD');
 
       try {
-        await nonSittingDayDAO.delete(app, req, req.session.authentication.locCode, date);
+        await nonSittingDayDAO.delete(req, req.session.authentication.locCode, date);
         req.session.bannerMessage = 'Non-sitting day deleted';
         return res.redirect(app.namedRoutes.build('administration.non-sitting-days.get'));
 

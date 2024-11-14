@@ -224,28 +224,28 @@
             attributes: {
               'data-sort-value': trial.parties,
             },
-            classes: 'mod-middle-align',
+            classes: 'jd-middle-align',
           },
           {
             text: capitalizeFully(trial.judge),
             attributes: {
               'data-sort-value': trial.judge,
             },
-            classes: 'mod-middle-align',
+            classes: 'jd-middle-align',
           },
           {
             text: dateFilter(trial.start_date, 'YYYY,MM,DD', 'ddd DD MMM YYYY'),
             attributes: {
               'data-sort-value': makeDate(trial.start_date),
             },
-            classes: 'mod-middle-align',
+            classes: 'jd-middle-align',
           },
           {
             text: trial.end_date ? dateFilter(trial.end_date, 'YYYY,MM,DD', 'ddd DD MMM YYYY') : '-',
             attributes: {
               'data-sort-value': trial.end_date ? trial.end_date : '-',
             },
-            classes: 'mod-middle-align',
+            classes: 'jd-middle-align',
           },
         ]);
     });
@@ -441,40 +441,40 @@
             + '<input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check" id="select-'
             + juror.juror_number +'" '
             + 'name="selectedJurors"' + checked + ' value="' + juror.juror_number + '">'
-            + '<label class="govuk-label govuk-checkboxes__label" for="select-'+ juror.juror_number +'">'
+            + '<label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="select-'+ juror.juror_number +'">'
             + '<span class="govuk-visually-hidden">Select '+ juror.juror_number +'</span> </label> </div>',
           attributes: {
             'data-sort-value': juror.juror_number,
           },
-          classes: 'mod-middle-align',
+          classes: 'jd-middle-align',
         },
         {
-          html: `<a href="${getJurorUrl(juror.juror_number)}" class="govuk-link mod-middle-align">${juror.juror_number}</a>`,
+          html: `<a href="${getJurorUrl(juror.juror_number)}" class="govuk-link jd-middle-align">${juror.juror_number}</a>`,
           attributes: {
             'data-sort-value': juror.juror_number,
           },
-          classes: 'mod-middle-align',
+          classes: 'jd-middle-align',
         },
         {
           text: capitalizeFully(juror.first_name),
           attributes: {
             'data-sort-value': juror.first_name,
           },
-          classes: 'mod-middle-align',
+          classes: 'jd-middle-align',
         },
         {
           text: capitalizeFully(juror.last_name),
           attributes: {
             'data-sort-value': juror.last_name,
           },
-          classes: 'mod-middle-align',
+          classes: 'jd-middle-align',
         },
         {
           text: juror.postcode,
           attributes: {
             'data-sort-value': juror.postcode,
           },
-          classes: 'mod-middle-align',
+          classes: 'jd-middle-align',
         },
       );
 
@@ -484,7 +484,7 @@
           attributes: {
             'data-sort-value': juror.completion_date,
           },
-          classes: 'mod-middle-align',
+          classes: 'jd-middle-align',
         });
       }
 
@@ -564,42 +564,42 @@
           attributes: {
             'data-sort-value': trial.parties,
           },
-          classes: 'mod-middle-align',
+          classes: 'jd-middle-align',
         },
         {
           text: capitalizeFully(trial.trialType),
           attributes: {
             'data-sort-value': trial.trialType,
           },
-          classes: 'mod-middle-align',
+          classes: 'jd-middle-align',
         },
         {
           text: capitalizeFully(trial.court),
           attributes: {
             'data-sort-value': trial.court,
           },
-          classes: 'mod-middle-align',
+          classes: 'jd-middle-align',
         },
         {
           text: capitalizeFully(trial.courtroom),
           attributes: {
             'data-sort-value': trial.courtroom,
           },
-          classes: 'mod-middle-align',
+          classes: 'jd-middle-align',
         },
         {
           text: capitalizeFully(trial.judge),
           attributes: {
             'data-sort-value': trial.judge,
           },
-          classes: 'mod-middle-align',
+          classes: 'jd-middle-align',
         },
         {
           text: dateFilter(makeDate(trial.startDate), 'YYYY,MM,DD', 'ddd DD MMM YYYY'),
           attributes: {
             'data-sort-value': makeDate(trial.startDate),
           },
-          classes: 'mod-middle-align',
+          classes: 'jd-middle-align',
         },
       );
 
@@ -1337,5 +1337,14 @@
     return foundReplyMethod ? foundReplyMethod : 'NONE';
   }
 
+  module.exports.extractDataAndHeadersFromResponse = (responseName = 'response') => (data) => { 
+    const headers = data._headers;
+    delete data._headers
+
+    return {
+      headers,
+      [responseName]: data,
+    }; 
+  }
 
 })();

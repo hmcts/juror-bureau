@@ -4,7 +4,7 @@
   const _ = require('lodash')
     , validate = require('validate.js')
     , changeTimesValidator = require('../../../../config/validation/change-attendance-times').changeAttendanceTimes
-    , { jurorAttendanceDao } = require('../../../../objects/juror-attendance')
+    , { jurorAttendanceDao, updateJurorAttendanceDAO } = require('../../../../objects/juror-attendance')
     , { convert12to24, convert24to12, timeArrayToString } = require('../../../../components/filters')
     , { replaceAllObjKeys } = require('../../../../lib/mod-utils');
 
@@ -34,7 +34,7 @@
           juror: [jurorNumber],
         };
 
-        const data = await jurorAttendanceDao.get(app, req, body);
+        const data = await jurorAttendanceDao.post(req, body);
         const juror = replaceAllObjKeys(data.details[0], _.camelCase);
 
         if (!juror) {
@@ -209,8 +209,7 @@
       payload.commonData.status = status;
 
       try {
-        await jurorAttendanceDao.patch(
-          app,
+        await updateJurorAttendanceDAO.patch(
           req,
           payload,
         );

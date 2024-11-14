@@ -51,7 +51,9 @@
       }
 
       try {
-        const response = await reissueLetterDAO.printCourtLetters(app, req, payload);
+        const response = await reissueLetterDAO.printCourtLetters(req, payload);
+
+        console.log(response);
 
         const content = getLetterTemplate(document, response);
 

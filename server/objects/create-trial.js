@@ -1,113 +1,34 @@
 (function() {
   'use strict';
 
-  const _ = require('lodash')
-    , { DAO } = require('./dataAccessObject')
-    , urljoin = require('url-join')
-    , config = require('../config/environment')()
-    , utils = require('../lib/utils')
-    , options = {
-      uri: config.apiEndpoint,
-      headers: {
-        'User-Agent': 'Request-Promise',
-        'Content-Type': 'application/vnd.api+json',
-      },
-      json: true,
-      transform: utils.basicDataTransform,
+  const { DAO } = require('./dataAccessObject')
+  const urljoin = require('url-join')
+
+  module.exports.trialDetailsObject = new DAO('moj/trial/summary', {
+    get: function(trialNumber, locationCode) {
+      const params = new URLSearchParams({ 'trial_number': trialNumber, 'location_code': locationCode });
+
+      return {
+        uri: urljoin(this.resource, `?${params.toString()}`),
+      }
     }
+  });
 
-    , trialDetailsObject = {
-      resource: 'moj/trial/summary',
-      get: function(rp, app, jwtToken, trialNumber, locationCode) {
-        var reqOptions = _.clone(options);
-        const params = new URLSearchParams({ 'trial_number': trialNumber, 'location_code': locationCode });
-
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(
-          reqOptions.uri,
-          this.resource,
-          `?${params.toString()}`,
-        );
-        reqOptions.method = 'GET';
-
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          data: {
-            trialNumber,
-            locationCode,
-          },
-        });
-
-        return rp(reqOptions);
-      },
+  module.exports.courtroomsObject = new DAO('moj/trial/courtrooms/list', {
+    get: function() {
+      return {
+        uri: this.resource,
+        transform: (data) => { delete data._headers; return Object.values(data); },
+      };
     }
+  });
 
-    , courtroomsObject = {
-      resource: 'moj/trial/courtrooms/list',
-      get: function(rp, app, jwtToken) {
-        var reqOptions = _.clone(options);
+  module.exports.judgesObject = new DAO('moj/trial/judge/list');
 
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri, this.resource);
-        reqOptions.method = 'GET';
+  module.exports.createTrialObject = new DAO('moj/trial/create');
 
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-        });
-
-        return rp(reqOptions);
-      },
-    }
-
-    , judgesObject = {
-      resource: 'moj/trial/judge/list',
-      get: function(rp, app, jwtToken) {
-        var reqOptions = _.clone(options);
-
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri, this.resource);
-        reqOptions.method = 'GET';
-
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-        });
-
-        return rp(reqOptions);
-      },
-    }
-
-    , createTrialObject = {
-      resource: 'moj/trial/create',
-      post: function(rp, app, jwtToken, payload) {
-        var reqOptions = _.clone(options);
-
-        reqOptions.headers.Authorization = jwtToken;
-        reqOptions.uri = urljoin(reqOptions.uri, this.resource);
-        reqOptions.method = 'POST';
-        reqOptions.body = payload;
-
-        app.logger.debug('Sending request to API: ', {
-          uri: reqOptions.uri,
-          headers: reqOptions.headers,
-          method: reqOptions.method,
-          body: reqOptions.body,
-        });
-
-        return rp(reqOptions);
-      },
-    };
-
-  module.exports.trialDetailsObject = trialDetailsObject;
-  module.exports.courtroomsObject = courtroomsObject;
-  module.exports.judgesObject = judgesObject;
-  module.exports.createTrialObject = createTrialObject;
   module.exports.editTrialDAO = new DAO('moj/trial/edit');
+
   module.exports.trialsListDAO = new DAO('moj/trial/list');
 
 })();

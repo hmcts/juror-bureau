@@ -28,7 +28,7 @@
         let staffList;
 
         if (isTeamLeader(req, res)) {
-          staffList = await staffRosterObj.get(require('request-promise'), app, req.session.authToken);
+          staffList = await staffRosterObj.get(req);
           staffList.unshift({
             login: 'AUTO',
             name:'AUTO'
@@ -202,13 +202,14 @@
       let resultsStr;
 
       try {
-        promiseArr.push(staffRosterObj.get(require('request-promise'), app, req.session.authToken));
-        promiseArr.push(searchResponsesDAO.post(app, req, payload));
+        promiseArr.push(staffRosterObj.get(req));
+        promiseArr.push(searchResponsesDAO.post(req, payload));
 
         const response = await Promise.all(promiseArr);
 
         staff = response[0];
         responses = response[1];
+        console.log('\n\n',response);
         staff.push({
           login: "AUTO",
           name: "AUTO"

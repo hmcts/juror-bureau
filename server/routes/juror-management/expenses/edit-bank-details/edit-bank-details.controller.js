@@ -38,7 +38,7 @@
           status: status ? status : 'draft',
         });
 
-      const { response: data, headers } = await jurorBankDetailsDAO.get(app, req, jurorNumber);
+      const { response: data, headers } = await jurorBankDetailsDAO.get(req, jurorNumber);
 
       app.logger.info('Fetch juror\'s bank details:  ', {
         auth: req.session.authentication,
@@ -107,7 +107,6 @@
 
       try {
         await jurorBankDetailsDAO.get(
-          app,
           req,
           jurorNumber,
           req.session.bankDetails.etag
@@ -155,7 +154,7 @@
 
         const payload = _.mapKeys(body, (__, key) => _.snakeCase(key));
 
-        await jurorBankDetailsDAO.patch(app, req, payload);
+        await jurorBankDetailsDAO.patch(req, payload);
 
         app.logger.info('Updated juror\'s bank details:  ', {
           auth: req.session.authentication,

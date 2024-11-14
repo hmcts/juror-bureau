@@ -119,7 +119,7 @@
       delete req.session.errors;
       delete req.session.formFields;
 
-      nilPoolCheck.post(require('request-promise'), app, req.session.authToken, req.body)
+      nilPoolCheck.post(req, req.body)
         .then(successCB)
         .catch(errorCB);
     };
@@ -296,7 +296,7 @@
           return res.redirect(app.namedRoutes.build('pool-management.get'));
         };
 
-      nilPoolCreate.post(require('request-promise'), app, req.session.authToken, req.body)
+      nilPoolCreate.post(req, req.body)
         .then(successCB)
         .catch(errorCB);
     };

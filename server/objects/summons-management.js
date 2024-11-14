@@ -1,65 +1,32 @@
 (function() {
   'use strict';
 
-  var _ = require('lodash')
-    , urljoin = require('url-join')
-    , config = require('../config/environment')()
-    , utils = require('../lib/utils')
-    , options = {
-      uri: config.apiEndpoint,
-      headers: {
-        'User-Agent': 'Request-Promise',
-        'Content-Type': 'application/vnd.api+json',
-      },
-      json: true,
-      transform: utils.basicDataTransform,
-    };
-  const rp = require('request-promise');
+  const { DAO } = require('./dataAccessObject');
+  const { basicDataTransform } = require('../lib/utils');
+  const urljoin = require('url-join');
 
-  module.exports.requestInfoObject = {
-    resource: 'moj/letter/request-information',
-    post: function(__, app, jwtToken, jurorNumber, data, replyMethod) {
-      var reqOptions = _.clone(options)
-        , tmpBody = {
+  module.exports.requestInfoObject = new DAO('moj/letter/request-information', {
+    post: function(jurorNumber, data, replyMethod) {
+      return {
+        uri: urljoin(this.resource),
+        body: {
           informationRequired: data,
           jurorNumber: jurorNumber,
           replyMethod: replyMethod,
-        };
-
-      reqOptions.headers.Authorization = jwtToken;
-      reqOptions.uri = urljoin(reqOptions.uri, this.resource);
-      reqOptions.method = 'POST';
-      reqOptions.body = tmpBody;
-
-      app.logger.info('Sending request to API: ', {
-        uri: reqOptions.uri,
-        headers: reqOptions.headers,
-        method: reqOptions.method,
-        data: reqOptions.body,
-      });
-
-      return rp(reqOptions);
+        },
+        transform: basicDataTransform,
+      };
     },
-  };
+  });
 
-  module.exports.updateStatus = {
-    resource: 'moj/juror-paper-response/update-status',
-    put: function(app, jwtToken, jurorNumber, key) {
-      var reqOptions = _.clone(options);
-
-      reqOptions.headers.Authorization = jwtToken;
-      reqOptions.uri = urljoin(reqOptions.uri, this.resource, jurorNumber, key);
-      reqOptions.method = 'PUT';
-
-      app.logger.info('Sending request to API: ', {
-        uri: reqOptions.uri,
-        headers: reqOptions.headers,
-        method: reqOptions.method,
-      });
-
-      return rp(reqOptions);
+  module.exports.updateStatus = new DAO('moj/juror-paper-response/update-status', {
+    put: function(jurorNumber, key) {
+      return {
+        uri: urljoin(this.resource, jurorNumber, key),
+        transform: basicDataTransform,
+      };
     },
-  };
+  });
 
   module.exports.summonsUpdate = {
     resource: {
@@ -71,30 +38,27 @@
       ADJUSTMENTS: 'special-needs',
       SIGNATURE: 'signature',
     },
-    patch: function(__, app, jwtToken, id, part, payload) {
-      const reqOptions = _.cloneDeep(options); // clone deep for the etag trickery
-      const tmpBody = _.clone(payload);
-
-      reqOptions.headers.Authorization = jwtToken;
+    patch: function(req, id, part, payload) {
+      let uri;
 
       if (part === 'PERSONAL') {
-        reqOptions.uri = urljoin(reqOptions.uri, this.resource['PERSONAL'].replace('{}', id));
+        uri = urljoin(this.resource['PERSONAL'].replace('{}', id));
       } else {
-        reqOptions.uri = urljoin(reqOptions.uri, this.resource['BASE'].replace('{}', id), this.resource[part]);
+        uri = urljoin(this.resource['BASE'].replace('{}', id), this.resource[part]);
       }
 
-      reqOptions.method = 'PATCH';
-      reqOptions.body = tmpBody;
-
-      app.logger.info('Sending request to API: ', {
-        uri: reqOptions.uri,
-        headers: reqOptions.headers,
-        method: reqOptions.method,
-        body: reqOptions.body,
+      const dao = new DAO(uri, {
+        patch: function(body) {
+          return {
+            uri: uri,
+            body,
+            transform: basicDataTransform,
+          };
+        },
       });
 
-      return rp(reqOptions);
-    },
+      return dao.patch(req, payload);
+    }
   };
 
 })();

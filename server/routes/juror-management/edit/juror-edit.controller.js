@@ -24,7 +24,7 @@
 
   module.exports.getEditDeferral = (app) => {
     return (req, res) => {
-      systemCodesDAO.get(app, req, 'EXCUSAL_AND_DEFERRAL')
+      systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL')
         .then((data) => {
           app.logger.info('Retrieved excusal codes: ', {
             auth: req.session.authentication,
@@ -138,8 +138,7 @@
         // No change in date, change reason and return to juror record overview.
         deferralDate = dateFilter(deferralDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
 
-        changeDeferralObject.post(require('request-promise'), app, req.session.authToken,
-          req.params['jurorNumber'], deferralDate, null, deferralReason)
+        changeDeferralObject.post(req, req.params['jurorNumber'], deferralDate, null, deferralReason)
           .then((data) => {
             app.logger.info('Changed deferral details: ', {
               auth: req.session.authentication,
@@ -185,7 +184,7 @@
 
   module.exports.postDeleteDeferral = (app) => {
     return (req, res) => {
-      deleteDeferralObject.delete(require('request-promise'), app, req.session.authToken, req.body.jurorNumber)
+      deleteDeferralObject.delete(req, req.body.jurorNumber)
         .then(
           () => {
             app.logger.info('Deleted deferral: ', {
@@ -219,8 +218,7 @@
 
   module.exports.getEditDeferralConfirm = (app) => {
     return (req, res) => {
-      activePoolsObj.post(require('request-promise'), app, req.session.authToken,
-        req.session.deferralDates, req.params['jurorNumber'])
+      activePoolsObj.post(req, req.session.deferralDates, req.params['jurorNumber'])
         .then((data) => {
           app.logger.info('Retrieved active pools: ', {
             auth: req.session.authentication,
@@ -313,8 +311,7 @@
           ? deferralSelection[1]
           : null;
 
-      changeDeferralObject.post(require('request-promise'), app, req.session.authToken,
-        req.params['jurorNumber'], newDeferralDate, newPoolNumber, req.session.newDeferralReason)
+      changeDeferralObject.post(req, req.params['jurorNumber'], newDeferralDate, newPoolNumber, req.session.newDeferralReason)
         .then(() => {
           app.logger.info('Changed deferral details: ', {
             auth: req.session.authentication,
@@ -370,7 +367,7 @@
 
       try {
         let adjustmentReasonsObj = modUtils.reasonsArrToObj(await systemCodesDAO.get(
-            app, req, 'REASONABLE_ADJUSTMENTS')),
+            req, 'REASONABLE_ADJUSTMENTS')),
           reasons = [{value: '', text: 'Select a reason...', selected: true}];
 
         Object.keys(adjustmentReasonsObj).forEach((key) => {
@@ -382,8 +379,12 @@
         });
 
         if (!req.session[`editJurorDetails-${jurorNumber}`]) {
-          const response = await jurorRecordObject.get(require('request-promise'), app, req.session.authToken, 'detail',
-            req.params['jurorNumber'], req.session.locCode);
+          const response = await jurorRecordObject.get(
+            req, 
+            'detail',
+            req.params['jurorNumber'], 
+            req.session.locCode
+          );
 
           response.data.dateOfBirth = response.data.dateOfBirth
             ? dateFilter(response.data.dateOfBirth, null, 'DD/MM/YYYY')
@@ -406,7 +407,7 @@
 
           Object.assign(jurorDetails, req.session.formFields);
 
-          if (req.session.formFields['thirdPartyEnabled'] && jurorDetails.thirdParty == null) {
+          if (req.session.formFields['thirdPartyEnabled'] == 'yes' && jurorDetails.thirdParty == null) {
             jurorDetails.thirdParty = {};
           }
           if (req.session.formFields['thirdParty-first-name']) {
@@ -672,9 +673,7 @@
     if (req.session[`editJurorDetails-${jurorNumber}`].fixedName) {
       try {
         await fixNameObj.patch(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.params['jurorNumber'],
           'fix-name',
           req.session[`editJurorDetails-${jurorNumber}`].fixedName,
@@ -692,9 +691,7 @@
 
     try {
       await editJurorDetailsObject.patch(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         requestBody,
         req.params['jurorNumber'],
         req.session[`editJurorEtag-${jurorNumber}`],
@@ -721,7 +718,7 @@
 
     if (disqualifyAge) {
       try {
-        await disqualifyAgeDAO.patch(app, req, req.params.jurorNumber);
+        await disqualifyAgeDAO.patch(req, req.params.jurorNumber);
 
         app.logger.info('Disqualified juror due to age: ', {
           auth: req.session.authentication,
@@ -927,7 +924,9 @@
         }) + `?action=${action}`);
       }
 
-      const { title, firstName, lastName } = req.body;
+      const title = req.body.title.trim();
+      const firstName = req.body.firstName.trim();
+      const lastName = req.body.lastName.trim();
 
       if (action === 'fix') {
         req.session[`editJurorDetails-${jurorNumber}`].fixedName = {

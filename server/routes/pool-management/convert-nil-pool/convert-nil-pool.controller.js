@@ -115,9 +115,7 @@
       req.session.poolDetails.courtName = selectedCourt.locationName;
 
       return fetchCourtDeferrals.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         selectedCourt.locationCode,
         transformedDate
       )
@@ -262,7 +260,7 @@
         };
 
       tmpBody.attendanceTime = req.session.attendanceTime;
-      nilPoolConvertObj.put(require('request-promise'), app, req.session.authToken, tmpBody)
+      nilPoolConvertObj.put(req, tmpBody)
         .then(successCB)
         .catch(errorCB);
     }

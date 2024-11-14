@@ -119,9 +119,7 @@
         , poolSearchRequest = function() {
         // Run API request
           return searchPoolObj.post(
-            require('request-promise'),
-            app,
-            req.session.authToken,
+            req,
             req.query
           )
             .then(successfulSearch(app, req, res))
@@ -146,7 +144,7 @@
 
       // a fallback request in case the user haven't cached courts yet
       if (typeof req.session.courtsList === 'undefined') {
-        return fetchCourts.get(require('request-promise'), app, req.session.authToken)
+        return fetchCourts.get(req)
           .then(function(data) {
             req.session.courtsList = data.courts;
 
@@ -237,9 +235,7 @@
 
       // Run API request
       return searchPoolObj.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.body
       )
         .then(successfulSearch(app, req, res))

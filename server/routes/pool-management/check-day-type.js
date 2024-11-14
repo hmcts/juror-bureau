@@ -81,9 +81,7 @@
         };
 
       requestObj.checkDayType.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.session.poolDetails.courtCode,
         (typeof req.session.tmpDate !== 'undefined') ? req.session.tmpDate : req.session.poolDetails.attendanceDate
       )

@@ -70,7 +70,7 @@
       delete req.session.nav;
 
       responsesObj
-        .query(require('request-promise'), app, req.session.authToken, 'todo', req.session.hasModAccess)
+        .query(req, 'todo')
         .then(successCB)
         .catch(errorCB);
     };

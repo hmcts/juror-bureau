@@ -81,9 +81,7 @@
       if (routeParameters.type === 'digital') {
         try {
           const digitalDates = await preferredDatesObj.get(
-            require('request-promise'),
-            app,
-            req.session.authToken,
+            req,
             req.params['id'],
           );
 
@@ -265,7 +263,7 @@
           });
 
           //GET DEFFERAL CODES FROM BACKEND
-          systemCodesDAO.get(app, req, 'EXCUSAL_AND_DEFERRAL')
+          systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL')
             .then((data) => {
               app.logger.info('Retrieved excusal codes: ', {
                 auth: req.session.authentication,
@@ -366,9 +364,7 @@
       postBody.deferralDates = req.session.deferralDates;
 
       deferralPoolsObj.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         postBody,
         req.params['id'],
       )
@@ -506,9 +502,7 @@
       req.session.deferralReason = req.body.deferralReason;
 
       deferralObj.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         routeParameters.id,
         data.poolNumber,
         data.deferralDate,
@@ -617,7 +611,7 @@
         cancelUrl = app.namedRoutes.build('response.detail.get', routeParameters);
       }
 
-      systemCodesDAO.get(app, req, 'EXCUSAL_AND_DEFERRAL')
+      systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL')
         .then(successCB)
         .catch(errorCB);
     };
@@ -691,9 +685,7 @@
       }
 
       excusalObj.put(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.body,
         routeParameters.id,
         routeParameters.type,
@@ -752,6 +744,8 @@
             , eligibilityDetails
             , thirdPartyDetails;
 
+          console.log('\n\n',response,'\n\n');
+
           nameDetails = resolveJurorName(responseClone);
           addressDetails = resolveJurorAddress(responseClone);
           thirdPartyDetails = resolveThirdParty(responseClone);
@@ -780,7 +774,7 @@
 
           responseClone.jurorDetailsComplete = isComplete({
             name: nameDetails.currentName,
-            address: addressDetails.currentAddress,
+            address: { addressLineOne: responseClone.addressLineOne, addressTown: responseClone.addressTown, addressPostcode: responseClone.addressPostcode },
             dob: responseClone.dateOfBirth,
           });
 
@@ -821,6 +815,7 @@
             jurorDetails: (
               nameDetails.changed ||
               addressDetails.changed ||
+              addressDetails.currentAddress?.includes('mod-reply-section__required') ||
               thirdPartyDetails.isThirdParty ||
               jurorDetails.dateOfBirth.ageIneligible === true
             ),
@@ -868,12 +863,11 @@
 
           responseClone.statusRender = response[0].data.jurorStatus;
 
-          return opticReferenceObj.get(require('request-promise'),
-            app,
-            req.session.authToken,
+          return opticReferenceObj.get(
+            req,
             req.params['id'],
             jurorDetails.poolNumber,
-            req.session.hasModAccess)
+          )
             .then((opticReference) => getOpticReferenceSuccess(app, req, res, {
               responseClone,
               nameDetails,
@@ -899,8 +893,8 @@
           return res.redirect(app.namedRoutes.build('homepage.get'));
         };
 
-      promiseArr.push(paperReplyObj.get(require('request-promise'), app, req.session.authToken, req.params['id']));
-      promiseArr.push(systemCodesDAO.get(app, req, 'REASONABLE_ADJUSTMENTS'));
+      promiseArr.push(paperReplyObj.get(req, req.params['id']));
+      promiseArr.push(systemCodesDAO.get(req, 'REASONABLE_ADJUSTMENTS'));
       Promise.all(promiseArr)
         .then(successCB)
         .catch(errorCB);
@@ -908,7 +902,6 @@
   };
 
   function getOpticReferenceSuccess(app, req, res, data) {
-
     app.logger.info('Fetched the optic reference for the juror if available: ', {
       auth: req.session.authentication,
       jwt: req.session.authToken,
@@ -930,8 +923,7 @@
     if (data.addressDetails.changed &&
       (data.responseClone.existingAddressPostcode !== data.responseClone.addressPostcode &&
         data.responseClone.processingStatus !== 'Closed')) {
-      return courtLocationsFromPostcodeObj.get(require('request-promise'), app, req.session.authToken,
-        postcode)
+      return courtLocationsFromPostcodeObj.get(req, postcode)
         .then(
           (catchmentResponse) => {
             app.logger.info('Fetched the courts for new address: ', {
@@ -1107,9 +1099,7 @@
       }
 
       opticReferenceObj.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.body,
         req.params['id'],
         req.session.jurorDetails.poolNumber,
@@ -1129,10 +1119,18 @@
   // Helper functions
   function isComplete(elements) {
     var el;
-
     for (el in elements) {
-      if (elements[el] === null || typeof elements[el] === 'undefined') return false;
+      if (el === 'address') {
+        const address = elements[el];
+        let line;
+        for (line in address) {
+          if (address[line] === null || typeof address[line] === 'undefined' || address[line] === '') return false;
+        }
+      } else {
+        if (elements[el] === null || typeof elements[el] === 'undefined') return false;
+      }
     }
+    
 
     return true;
   }
@@ -1162,7 +1160,7 @@
 
   // also taken from response -> detail.controller.js
   function resolveJurorAddress(response) {
-    var newAddressRender = filters.buildRecordAddress([
+    var newAddressRender = filters.buildSummonsAddress([
         response.addressLineOne,
         response.addressLineTwo,
         response.addressLineThree,
@@ -1171,7 +1169,7 @@
         response.addressPostcode,
         '',
       ])
-      , addressRender = filters.buildRecordAddress([
+      , addressRender = filters.buildSummonsAddress([
         response.existingAddressLineOne,
         response.existingAddressLineTwo,
         response.existingAddressLineThree,

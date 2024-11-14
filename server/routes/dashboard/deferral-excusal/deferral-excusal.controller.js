@@ -1,7 +1,7 @@
 ;(function(){
   'use strict';
 
-  var dashboardObj = require('../../../objects/deferral-excusal-dashboard').object
+  var {deferralExcusalStats} = require('../../../objects/deferral-excusal-dashboard')
     , excusalObj = require('../../../objects/excusal').object
     , jwt = require('jsonwebtoken')
     , secretsConfig = require('config')
@@ -126,7 +126,7 @@
         console.log('Calling deferral-excusal API - excuse codes');
 
         excusalObj
-          .get(require('request-promise'), app, jwtToken)
+          .get(req)
           .then(reasonsSuccessCB)
           .catch(reasonsErrorCB);
 
@@ -361,8 +361,8 @@
       // Create JWT
       jwtToken = jwt.sign(apiUserObj, secretsConfig.get('secrets.juror.bureau-jwtKey'), { expiresIn: secretsConfig.get('secrets.juror.bureau-jwtTTL') });
 
-      dashboardObj
-        .post(require('request-promise'), app, jwtToken, apiParams)
+      deferralExcusalStats
+        .post(jwtToken, apiParams)
         .then(successCB)
         .catch(failureCB);
 

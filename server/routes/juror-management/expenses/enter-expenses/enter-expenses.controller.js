@@ -51,7 +51,7 @@
       let tmpBody, responses;
 
       try {
-        const _expensesData = getEnteredExpensesDAO.post(app, req, locCode, jurorNumber, {
+        const _expensesData = getEnteredExpensesDAO.post(req, locCode, jurorNumber, {
           'expense_dates': [date],
         });
 
@@ -243,7 +243,7 @@
           'expense_list': [{ ...data }],
         };
 
-        await postRecalculateSummaryTotalsDAO.post(app, req, locCode, jurorNumber, payload);
+        await postRecalculateSummaryTotalsDAO.post(req, locCode, jurorNumber, payload);
       } catch (err) {
         if (err.error && err.error.code === 'EXPENSES_CANNOT_BE_LESS_THAN_ZERO') {
           req.session.tmpBody = {
@@ -467,7 +467,7 @@
       };
 
       try {
-        const response = await postRecalculateSummaryTotalsDAO.post(app, req, locCode, jurorNumber, data);
+        const response = await postRecalculateSummaryTotalsDAO.post(req, locCode, jurorNumber, data);
 
         app.logger.info('Recalculated summary totals for: ', {
           auth: req.session.authentication,
@@ -628,7 +628,7 @@
 
     try {
       const { publicTransport, taxi } = req.body;
-      const response = await getCourtLocationRates(app, req);
+      const response = await getCourtLocationRates.get(req, req.session.authentication.owner);
 
       const publicTransportLimit = response.public_transport_soft_limit;
       const taxiLimit = response.taxi_soft_limit;

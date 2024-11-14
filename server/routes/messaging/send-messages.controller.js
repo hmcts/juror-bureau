@@ -48,7 +48,6 @@
 
       try {
         let templateData = await messageTemplateDAO.get(
-          app,
           req,
           messagingCodes[message],
           req.session.authentication.locCode,
@@ -581,7 +580,6 @@
 
       try {
         let messageData = await populatedMessageDAO.post(
-          app,
           req,
           messagingCodes[message],
           req.session.authentication.locCode,
@@ -650,8 +648,7 @@
         };
 
         await sendMessage.post(
-          app,
-          req.session.authToken,
+          req,
           messagingCodes[message],
           req.session.authentication.locCode,
           payload,

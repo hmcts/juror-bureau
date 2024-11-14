@@ -21,7 +21,7 @@
 
   {% if params.replyType %}
     {{govukTag({
-      text: params.replyType,
+      text: params.replyType | toSentenceCase,
       classes: replyTypeClass
     })}}
   {% endif %}

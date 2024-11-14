@@ -18,7 +18,6 @@
   const { validate } = require('validate.js');
   const { poolSearchObject } = require('../../../objects/pool-search');
   const { searchJurorRecordDAO } = require('../../../objects');
-  const rp = require('request-promise');
   const { tableDataMappers, constructPageHeading, buildTableHeaders } = require('./utils');
   const { bespokeReportBodys } = require('../bespoke-report/bespoke-report-body');
   const { reportKeys } = require('./definitions');
@@ -61,7 +60,7 @@
             errors = {...validate({poolNumber: filter}, {poolNumber: {poolNumberSearched: {}}})};
 
             if (Object.keys(errors).length === 0) {
-              const api = await poolSearchObject.post(rp, app, req.session.authToken, { poolNumber: filter });
+              const api = await poolSearchObject.post(req, { poolNumber: filter });
 
               poolList = api.poolRequests;
               resultsCount = api.resultsCount;
@@ -642,7 +641,7 @@
     try {
       const { headings, tableData } = await (reportType.bespokeReport?.dao
         ? reportType.bespokeReport.dao(req, config)
-        : standardReportDAO.post(req, app, config));
+        : standardReportDAO.post(req, config));
 
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
       if (isExport) return reportExport(app, req, res, reportKey, { headings, tableData }) ;

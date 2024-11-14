@@ -2,7 +2,6 @@ const { makeManualError, mapSnakeToCamel } = require('../../lib/mod-utils');
 const { render } = require('../../lib/reports/financial-audit');
 const { generateDocument } = require('../../lib/reports/single-generator');
 const { jurorRecordDetailsDAO } = require('../../objects');
-const rp = require('request-promise');
 const { jurorBankDetailsDAO, defaultExpensesDAO } = require('../../objects/expenses');
 const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../objects/expense-record');
 
@@ -49,11 +48,11 @@ const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../object
       'include': ['NAME_DETAILS'],
     }]))['0'];
     const jurorBank = mapSnakeToCamel(await jurorBankDetailsDAO.get(
-      app, req,
+      req,
       req.params.jurorNumber
     )).response;
     const jurorDefault = mapSnakeToCamel(await defaultExpensesDAO.get(
-      app, req,
+      req,
       req.params.locCode,
       req.params.jurorNumber
     ));
@@ -161,7 +160,7 @@ const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../object
       const expenseDates = mapSnakeToCamel(req.session.editApprovalDates);
       const editedExpenses = mapSnakeToCamel(req.session.editedExpenses);
       const originalExpenses = mapSnakeToCamel(await getApprovalExpenseListDAO.post(
-        app, req,
+        req,
         req.params.locCode,
         req.params.jurorNumber,
         expenseDates,
@@ -225,7 +224,7 @@ const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../object
   const getDraftAudit = (app) => async(req, res) => {
     try {
       const expenses = mapSnakeToCamel(await getDraftExpensesDAO.get(
-        app, req,
+        req,
         req.params.jurorNumber,
         req.params.locCode,
       )).response;

@@ -8,7 +8,6 @@ const modUtils = require('../../../lib/mod-utils');
 const { dateFilter } = require('../../../components/filters');
 const isCourtUser = require('../../../components/auth/user-type').isCourtUser;
 const capitalizeFully = require('../../../components/filters').capitalizeFully;
-const rp = require('request-promise');
 const paginateJurorsList = require('./paginate-jurors-list');
 const { poolMembersDAO, fetchCoronerPoolDAO } = require('../../../objects');
 
@@ -331,9 +330,7 @@ function executeTransfer(app, req, res, transferedJurors) {
   newServiceStartDate = dateFilter(req.session.formField.attendanceDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
 
   jurorTransfer.put(
-    rp,
-    app,
-    req.session.authToken,
+    req,
     transferedJurors,
     receivingCourtLocCode,
     newServiceStartDate,
@@ -414,12 +411,7 @@ function renderHistory(app, req, res) {
 }
 
 function renderHistoryItems(app, req, res, data){
-  return poolHistoryObj.get(
-    rp,
-    app,
-    req.session.authToken,
-    data.poolDetails.poolNumber,
-  )
+  return poolHistoryObj.get(req, data.poolDetails.poolNumber)
     .then(function(poolHistoryList) {
       app.logger.info('Fetched Pool Request history: ', {
         auth: req.session.authentication,

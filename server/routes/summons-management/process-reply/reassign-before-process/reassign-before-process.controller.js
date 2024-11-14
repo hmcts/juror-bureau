@@ -31,7 +31,7 @@
         // Only fetch courts list if not known.
         if (!req.session.courtsList || !req.session.transformedCourtsList) {
           try {
-            const { courts } = await requestCourtsObj.get(require('request-promise'), app, req.session.authToken);
+            const { courts } = await requestCourtsObj.get(req);
 
             req.session.courtsList = courts;
             req.session.transformedCourtsList = modUtils.transformCourtNames(courts);
@@ -158,16 +158,14 @@
       const { id } = req.params;
       return requestObj
         .availablePools
-        .get(require('request-promise'), app, req.session.authToken, req.session.receivingCourtLocCode)
+        .get(req, req.session.receivingCourtLocCode)
         .then(async (response) => {
           const court = req.session.courtsList.find(c => c.locationCode === req.session.receivingCourtLocCode);
           const tmpErrors = _.clone(req.session.errors);
 
           try {
             req.session[`reassignProcessCurrentPool-${id}`] = (await record.get(
-              require('request-promise'),
-              app,
-              req.session.authToken,
+              req,
               'detail',
               id,
               req.session.locCode,
@@ -267,7 +265,7 @@
       };
 
       requestObj.reassignJuror
-        .put(require('request-promise'), app, req.session.authToken, payload)
+        .put(req, payload)
         .then(
           () => {
             req.session.locCode = req.session.receivingCourtLocCode;
@@ -388,7 +386,7 @@
     return async(req, res) => {
       try {
         if (!req.session.excusalReasons) {
-          req.session.excusalReasons = await systemCodesDAO.get(app, req, 'EXCUSAL_AND_DEFERRAL');
+          req.session.excusalReasons = await systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL');
 
           app.logger.info('Retrieved excusal codes: ', {
             auth: req.session.authentication,
@@ -464,9 +462,7 @@
         }));
       }
       excusalObj.put(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.body,
         req.params.id,
         req.params.type

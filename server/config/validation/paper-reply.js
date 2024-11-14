@@ -228,6 +228,15 @@
         genericDatePicker: {},
         dateOfBirthDatePicker: {},
       },
+      relationship: {
+        length: {
+          maximum: 50,
+          message: {
+            summary: 'The character limit for the \'Relationship\' field has been exceeded. Please reduce your input to complete the juror service response.',
+            details: 'The character limit for the \'Relationship\' field has been exceeded. Please reduce your input to complete the juror service response.',
+          },
+        },
+      },
       otherDetails: {
         presence: {
           allowEmpty: true,

@@ -18,7 +18,7 @@ module.exports.getDisqualifyJurorRecord = function(app) {
     let disqualifyReasons;
 
     try {
-      const response = await getDisqualificationReasons.get(null, app, req.session.authToken);
+      const response = await getDisqualificationReasons.get(req);
 
       disqualifyReasons = response.disqualifyReasons;
     } catch (err) {
@@ -63,9 +63,7 @@ module.exports.postDisqualifyJurorRecord = function(app) {
 
     try {
       await disqualifyJuror.patch(
-        null,
-        app,
-        req.session.authToken,
+        req,
         jurorNumber,
         req.body.disqualifyReason,
         type

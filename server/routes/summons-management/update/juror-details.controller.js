@@ -31,9 +31,7 @@
 
       try {
         const { headers, data } = await paperReplyObj.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.params['id']
         );
 
@@ -288,7 +286,7 @@
         };
 
       digitalReplyObj
-        .get(require('request-promise'), app, req.session.authToken, req.params.id, req.session.hasModAccess)
+        .get(req, req.params.id, req.session.hasModAccess)
         .then(successCB)
         .catch(errorCB);
     };
@@ -380,9 +378,7 @@
 
         if (req.session[`summonsUpdate-${id}`].fixedName) {
           await fixNameObj.patch(
-            require('request-promise'),
-            app,
-            req.session.authToken,
+            req,
             req.params['id'],
             'fix-name',
             req.session[`summonsUpdate-${id}`].fixedName,
@@ -390,9 +386,7 @@
         }
 
         await summonsUpdate.patch(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.params['id'],
           'PERSONAL',
           payload,
@@ -478,9 +472,7 @@
 
         if (req.session[`summonsUpdate-${id}`].fixedName) {
           await fixNameObj.patch(
-            require('request-promise'),
-            app,
-            req.session.authToken,
+            req,
             req.params['id'],
             'fix-name',
             req.session[`summonsUpdate-${id}`].fixedName,
@@ -488,9 +480,7 @@
         }
 
         await summonsUpdate.patch(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.params['id'],
           'PERSONAL',
           payload,
@@ -582,7 +572,9 @@
       const { id } = req.params;
       const validatorResult = validate(req.body, validator.jurorName());
       const { action } = req.query;
-      const { title, firstName, lastName } = req.body;
+      const title = req.body.title.trim();
+      const firstName = req.body.firstName.trim();
+      const lastName = req.body.lastName.trim();
       const postPath = req.params['type'] === 'paper' ?
         'summons.update-details.get' :
         'summons.update-details-digital.get';

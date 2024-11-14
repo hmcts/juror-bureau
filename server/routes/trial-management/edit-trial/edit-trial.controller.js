@@ -18,26 +18,15 @@
       let tmpFields;
 
       Promise.all([
-        courtroomsObject.get(
-          require('request-promise'),
-          app,
-          req.session.authToken
-        ),
-        judgesObject.get(
-          require('request-promise'),
-          app,
-          req.session.authToken
-        ),
+        courtroomsObject.get(req),
+        judgesObject.get(req),
         trialDetailsObject.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           trialNumber,
           locationCode
         ),
       ])
         .then(([courtrooms, judges, trial]) => {
-
           app.logger.info('Fetched trial details, courtrooms and judges list', {
             auth: req.session.authentication,
             data: {
@@ -113,11 +102,7 @@
       
       let judges;
       try {
-        judges = (await judgesObject.get(
-          require('request-promise'),
-          app,
-          req.session.authToken
-        )).judges;
+        judges = (await judgesObject.get(req)).judges;
       } catch (err) {
         app.logger.crit('Failed to fetch judges: ', {
           auth: req.session.authentication,
@@ -128,11 +113,7 @@
 
       let courtrooms;
       try {
-        courtrooms = (await courtroomsObject.get(
-          require('request-promise'),
-          app,
-          req.session.authToken
-        )).map((court) => {
+        courtrooms = (await courtroomsObject.get(req)).map((court) => {
           court.display_name = court.court_location;
           court.court_location = court.court_location.replace(/[ .]/g, '_');
           return court
@@ -165,9 +146,7 @@
       let originalTrial;
       try {
         originalTrial = await trialDetailsObject.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           trialNumber,
           locationCode
         );

@@ -1,29 +1,13 @@
 ;(function() {
   'use strict';
 
-  const rp = require('request-promise');
-  const _ = require('lodash');
   const urljoin = require('url-join');
-  const config = require('../config/environment')();
-  const utils = require('../lib/utils');
   const modUtils = require('../lib/mod-utils');
-  const options = {
-    uri: config.apiEndpoint,
-    headers: {
-      'User-Agent': 'Request-Promise',
-      'Content-Type': 'application/vnd.api+json',
-    },
-    json: true,
-    transform: utils.basicDataTransform,
-  };
   const { DAO } = require('./dataAccessObject');
 
-  module.exports.fetchUnpaidExpenses = {
-    resource: 'moj/expenses/{locCode}/unpaid-summary/',
-    get: function(app, jwtToken, locCode, opts) {
-      var reqOptions = _.clone(options);
-
-      var parameters = [];
+  module.exports.fetchUnpaidExpenses = new DAO('moj/expenses/{locCode}/unpaid-summary/', {
+    get: function(locCode, opts) {
+      const parameters = [];
 
       parameters.push('page_number=' + opts.pageNumber);
       parameters.push('sort_by=' + opts.sortBy);
@@ -35,142 +19,56 @@
       if (opts.maxDate) {
         parameters.push('max_date=' + opts.maxDate);
       }
-      reqOptions.headers.Authorization = jwtToken;
-      reqOptions.method = 'GET';
-      reqOptions.uri = urljoin(
-        reqOptions.uri,
-        this.resource.replace('{locCode}', locCode) + '?' + parameters.join('&')
-      );
 
-      app.logger.debug('Sending request to API: ', {
-        uri: reqOptions.uri,
-        headers: reqOptions.headers,
-        method: reqOptions.method,
-        data: opts,
-      });
-
-      return rp(reqOptions);
+      return {
+        uri: this.resource.replace('{locCode}', locCode) + '?' + parameters.join('&'),
+      }
     },
-    post: function(app, req, locCode, body) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, `moj/expenses/${locCode}/unpaid-summary`),
-        method: 'POST',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
+    post: function(locCode, body) {
+      return {
+        uri: urljoin(`moj/expenses/${locCode}/unpaid-summary`),
         body: modUtils.mapCamelToSnake(body),
       };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
     },
-  };
+  })
 
-  module.exports.jurorDetailsDAO = {
-    post: function(app, req, body) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/juror-record/details'),
-        method: 'POST',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-        body,
+  module.exports.jurorDetailsDAO = new DAO('moj/juror-record/details');
+
+  module.exports.defaultExpensesDAO = new DAO('moj/expenses/{locCode}/{jurorNumber}/default-expenses', {
+    get: function(locCode, jurorNumber) {
+      return {
+        uri: urljoin(this.resource.replace('{locCode}', locCode).replace('{jurorNumber}', jurorNumber)),
       };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
     },
-  };
-
-  module.exports.defaultExpensesDAO = {
-    get: function(app, req, locCode, jurorNumber) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, `moj/expenses/${locCode}/${jurorNumber}/default-expenses`),
-        method: 'GET',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-      };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
-    },
-    post: function(app, req, locCode, jurorNumber, body) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, `moj/expenses/${locCode}/${jurorNumber}/default-expenses`),
-        method: 'POST',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
+    post: function(locCode, jurorNumber, body) {
+      return {
+        uri: urljoin(this.resource.replace('{locCode}', locCode).replace('{jurorNumber}', jurorNumber)),
         body: modUtils.mapCamelToSnake(body),
-      };
+      }
+    }
+  });
 
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
-    },
-  };
-
-  module.exports.jurorBankDetailsDAO = {
-    get: function(app, req, jurorNumber, etag = null) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/juror-record', jurorNumber, 'bank-details'),
-        method: 'GET',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
-      };
+  module.exports.jurorBankDetailsDAO = new DAO('moj/juror-record/{jurorNumber}/bank-details', {
+    get: function(jurorNumber, etag = null) {
+      const headers = {};
 
       if (etag) {
-        payload.headers['If-None-Match'] = `${etag}`;
+        headers['If-None-Match'] = `${etag}`;
       }
 
-      app.logger.info('Sending request to API: ', payload);
-
-      payload.transform = (response, incomingRequest) => {
-        const headers = _.cloneDeep(incomingRequest.headers);
-
-        return { response, headers };
+      return { 
+        uri: this.resource.replace('{jurorNumber}', jurorNumber),
+        headers,
+        transform: modUtils.extractDataAndHeadersFromResponse(),
       };
-
-      return rp(payload);
     },
-    patch: function(app, req, body) {
-      const payload = {
-        uri: urljoin(config.apiEndpoint, 'moj/juror-record/update-bank-details'),
-        method: 'PATCH',
-        headers: {
-          'User-Agent': 'Request-Promise',
-          'Content-Type': 'application/vnd.api+json',
-          Authorization: req.session.authToken,
-        },
-        json: true,
+    patch: function(body){
+      return {
+        uri: 'moj/juror-record/update-bank-details',
         body,
       };
-
-      app.logger.info('Sending request to API: ', payload);
-
-      return rp(payload);
-    },
-  };
+    }
+  });
 
   module.exports.approveExpensesDAO = new DAO('moj/expenses/{locCode}/{paymentMethod}', {
     get: function(locCode, paymentMethod, dates) {

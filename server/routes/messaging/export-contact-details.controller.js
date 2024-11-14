@@ -24,7 +24,7 @@
       req.session.messaging = {};
 
       try {
-        courtsResponse = await fetchAllCourts.get(require('request-promise'), app, req.session.authToken);
+        courtsResponse = await fetchAllCourts.get(req);
       } catch (err) {
         app.logger.crit('Failed to fetch all courts', {
           auth: req.session.authentication,
@@ -287,7 +287,7 @@
       populateContactExportProperties(payload, req.body);
 
       try {
-        const csv = await downloadCSVDAO.post(app, req, locCode, payload);
+        const csv = await downloadCSVDAO.post(req, locCode, payload);
 
         app.logger.info('Generated and downloded a csv with contact details', {
           auth: req.session.authentication,

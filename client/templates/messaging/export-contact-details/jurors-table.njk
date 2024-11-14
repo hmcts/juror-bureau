@@ -30,55 +30,55 @@
           jurorNumber: juror['jurorNumber'],
           locCode: juror['locCode']
         }),
-        classes: "mod-middle-align"
+        classes: "jd-middle-align"
       },
       {
         text: juror['firstName'] | capitalizeFully,
-        classes: "mod-middle-align"
+        classes: "jd-middle-align"
       },
       {
         text: juror['lastName'] | capitalizeFully,
-        classes: "mod-middle-align"
+        classes: "jd-middle-align"
       },
       {
         text: juror['email'] | lower if juror['email'] else "-",
-        classes: "mod-middle-align"
+        classes: "jd-middle-align"
       },
       {
         text: juror['phone'] if juror['phone'] else "-",
-        classes: "mod-middle-align"
+        classes: "jd-middle-align"
       },
       {
         text: juror['poolNumber'],
-        classes: "mod-middle-align"
+        classes: "jd-middle-align"
       },
       {
         text: juror['status'] | toSentenceCase,
-        classes: "mod-middle-align"
+        classes: "jd-middle-align"
       },
       {
         text: juror['trialNumber'] if juror['trialNumber'] else "-",
-        classes: "mod-middle-align"
+        classes: "jd-middle-align"
       },
       {
         text: "Yes" if juror['onCall'] else "No",
-        classes: "mod-middle-align"
+        classes: "jd-middle-align"
       },
       {
         text: juror['nextDueAtCourt'] | dateFilter('yyyy-MM-DD', 'D MMM YYYY') if juror['nextDueAtCourt'] else "-",
-        classes: "mod-middle-align"
+        classes: "jd-middle-align"
       },
       {
         text: juror['dateDeferredTo'] | dateFilter('yyyy-MM-DD', 'D MMM YYYY') if juror['dateDeferredTo'] else "-",
-        classes: "mod-middle-align"
+        classes: "jd-middle-align"
       },
       {
         text: juror['completionDate'] | dateFilter('yyyy-MM-DD', 'D MMM YYYY') if juror['completionDate'] else "-",
-        classes: "mod-middle-align"
+        classes: "jd-middle-align"
       },
       {
         text: "Yes" if juror['welshLanguage'] else "No",
-        classes: "mod-middle-align"
+        classes: "jd-middle-align"
       }
     ]
   ), jurorRows) %}
@@ -102,7 +102,7 @@
         sortable: false,
         html: '<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">' + 
               '<input type="checkbox" class="govuk-checkboxes__input" id="check-all-jurors" aria-label="check-all-jurors"' + _allChecked + '/>' +
-              '<label class="govuk-label govuk-checkboxes__label" for="check-all-jurors">' +
+              '<label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="check-all-jurors">' +
               '<span class="govuk-visually-hidden">Select all jurors</span>' +
               '</label>' +
               '</div>',

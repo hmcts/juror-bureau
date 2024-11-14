@@ -23,7 +23,7 @@
         });
 
       try {
-        req.session.excusalReasons = await systemCodesDAO.get(app, req, 'EXCUSAL_AND_DEFERRAL');
+        req.session.excusalReasons = await systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL');
 
       } catch (err) {
         app.logger.crit('Failed to fetch excusal codes: ', {
@@ -110,9 +110,7 @@
       }
 
       return excusalObj.put(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.body,
         req.params['jurorNumber'],
         req.session.replyMethod || null,

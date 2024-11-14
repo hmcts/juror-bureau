@@ -82,7 +82,7 @@
         };
 
       fetchAllCourts
-        .get(require('request-promise'), app, req.session.authToken)
+        .get(req)
         .then(successCB)
         .catch(errorCB);
     };
@@ -174,7 +174,7 @@
           // eslint-disable-next-line max-len
           req.session.formField.courtNameOrLocation = filters.capitalizeFully(court.locationName + ' (' + court.locationCode + ')');
 
-          validateMovementObj.validateMovement.put(require('request-promise'), app, req.session.authToken, {
+          validateMovementObj.validateMovement.put(req, {
             sourcePoolNumber: req.params.poolNumber || req.session.jurorUpdate.poolNumber,
             sendingCourtLocCode: await resolveLocationCode(req),
             receivingCourtLocCode: modUtils.getLocCodeFromCourtNameOrLocation(req.body.courtNameOrLocation),

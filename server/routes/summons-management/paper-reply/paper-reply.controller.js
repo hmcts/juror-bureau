@@ -123,9 +123,7 @@
       }
 
       return getJurorDetailsObj.get(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         'detail',
         req.params['id'],
         req.session.locCode
@@ -360,7 +358,7 @@
         }
       }
 
-      paperReplyObjectObj.post(require('request-promise'), app, req.session.authToken, req.session.paperResponseDetails)
+      paperReplyObjectObj.post(req, req.session.paperResponseDetails)
         .then(successCB)
         .catch(errorCB);
     };
@@ -644,7 +642,7 @@
       }
 
       try {
-        let adjustmentsReasons = modUtils.reasonsArrToObj(await systemCodesDAO.get(app, req, 'REASONABLE_ADJUSTMENTS'));
+        let adjustmentsReasons = modUtils.reasonsArrToObj(await systemCodesDAO.get(req, 'REASONABLE_ADJUSTMENTS'));
 
         Object.keys(adjustmentsReasons).forEach((key) => {
           reasons.push(
@@ -853,9 +851,7 @@
       if (req.session.paperResponseDetails.fixedName) {
         try {
           await fixNameObj.patch(
-            require('request-promise'),
-            app,
-            req.session.authToken,
+            req,
             req.params['id'],
             'fix-name',
             req.session.paperResponseDetails.fixedName,
@@ -873,9 +869,7 @@
       }
 
       paperReplyObjectObj.post(
-        require('request-promise'),
-        app,
-        req.session.authToken,
+        req,
         req.session.paperResponseDetails
       )
         .then(successCB)
@@ -919,8 +913,7 @@
       }
 
       return updateStatus.put(
-        app,
-        req.session.authToken,
+        req,
         req.body.response,
         'CLOSED')
         .then(() => {

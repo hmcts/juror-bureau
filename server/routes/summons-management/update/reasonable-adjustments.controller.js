@@ -27,9 +27,7 @@
 
       try {
         const { headers, data } = await paperReplyObj.get(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.params['id']
         );
 
@@ -49,7 +47,7 @@
           assistanceTypeDetails = data.specialNeeds[0].assistanceTypeDetails;
         }
 
-        const adjustmentReasons = reasonsArrToObj(await systemCodesDAO.get(app, req, 'REASONABLE_ADJUSTMENTS'));
+        const adjustmentReasons = reasonsArrToObj(await systemCodesDAO.get(req, 'REASONABLE_ADJUSTMENTS'));
 
         const reasons = Object.keys(adjustmentReasons).reduce((prev, key) => {
           prev.push({
@@ -121,9 +119,7 @@
         }
 
         await summonsUpdate.patch(
-          require('request-promise'),
-          app,
-          req.session.authToken,
+          req,
           req.params['id'],
           'ADJUSTMENTS',
           payload
