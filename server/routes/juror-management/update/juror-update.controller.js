@@ -18,86 +18,93 @@
   const { makeManualError } = require('../../../lib/mod-utils');
 
   module.exports.index = function(app) {
-    return function(req, res) {
-      jurorRecordObject.record.get(
-        req,
-        'summons-reply',
-        req.params['jurorNumber'],
-        req.session.locCode,
-      )
-      .then(async (response) => {
-        let processUrl;
-        let cancelUrl;
-        let tmpErrors;
-        let radioChecked;
-        let thirdPartyDeceased = false;
-        const jurorStatus = req.session.jurorCommonDetails.jurorStatus;
+    return async function(req, res) {
+      let jurorDetails;
 
-        tmpErrors = _.cloneDeep(req.session.errors);
-        radioChecked = _.cloneDeep(req.session.updateOption);
-        thirdPartyDeceased = _.cloneDeep(req.session.thirdPartyDeceased);
-        delete req.session.errors;
-        delete req.session.updateOption;
-        delete req.session.thirdPartyDeceased;
-        delete req.session.replyMethod;
-        delete req.session.processLateSummons;
-
-        req.session.replyMethod = response.data.replyMethod;
-
-        processUrl = app.namedRoutes.build('juror.update.post', { jurorNumber: req.params['jurorNumber'] });
-        cancelUrl = app.namedRoutes.build('juror-record.overview.get', { jurorNumber: req.params['jurorNumber'] });
-
-        let attendanceData = {};
-
-        // only court users can see attendance details and they're only needed for court owned records
-        if (isCourtUser(req)) {
-          try {
-            attendanceData = await jurorRecordObject.attendanceDetails.get(
-              req,
-              req.params['jurorNumber'],
-            );
-          } catch (err) {
-            app.logger.crit('Failed to fetch juror attendance details: ', {
-              auth: req.session.authentication,
-              data: {
-                jurorNumber: req.params['jurorNumber'],
-                locCode: req.session.locCode,
-              },
-              error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-            });
-
-            return res.render('_errors/generic');
-          }
-        }
-
-        return res.render('juror-management/update-juror-record.njk', {
-          jurorNumber: req.params.jurorNumber,
-          owner: req.session.jurorCommonDetails.owner,
-          excusalCode: req.session.jurorCommonDetails.excusalCode,
-          hasAppearances: attendanceData.has_appearances,
-          attendances: attendanceData.attendances,
-          onCall: attendanceData.on_call,
-          processUrl,
-          cancelUrl,
-          radioChecked: radioChecked,
-          thirdPartyDeceased: thirdPartyDeceased,
-          replyStatus: response.data.replyStatus,
-          errors: {
-            message: '',
-            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-            items: tmpErrors,
-          },
-          isCourtUser: isCourtUser(req),
-          jurorStatus,
-        });
-      })
-      .catch((err) => {
+      try {
+        jurorDetails = (await jurorRecordObject.record.get(
+          req,
+          'detail',
+          req.params['jurorNumber'],
+          req.session.locCode || req.session.authentication.locCode,
+        )).data;
+      } catch (err) {
         app.logger.crit('Failed to fetch juror record details: ', {
           auth: req.session.authentication,
-          jurorNumber: req.params['jurorNumber'],
+          jwt: req.session.authToken,
+          data: {
+            jurorNumber: req.params['jurorNumber'],
+            locationCode: req.session.locCode || req.session.authentication.locCode,
+          },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
+  
         return res.render('_errors/generic');
+      }
+
+      let processUrl;
+      let cancelUrl;
+      let tmpErrors;
+      let radioChecked;
+      let thirdPartyDeceased = false;
+
+      tmpErrors = _.cloneDeep(req.session.errors);
+      radioChecked = _.cloneDeep(req.session.updateOption);
+      thirdPartyDeceased = _.cloneDeep(req.session.thirdPartyDeceased);
+      delete req.session.errors;
+      delete req.session.updateOption;
+      delete req.session.thirdPartyDeceased;
+      delete req.session.replyMethod;
+      delete req.session.processLateSummons;
+
+      req.session.replyMethod = jurorDetails.replyMethod;
+
+      processUrl = app.namedRoutes.build('juror.update.post', { jurorNumber: req.params['jurorNumber'] });
+      cancelUrl = app.namedRoutes.build('juror-record.overview.get', { jurorNumber: req.params['jurorNumber'] });
+
+      let attendanceData = {};
+
+      // only court users can see attendance details and they're only needed for court owned records
+      if (isCourtUser(req)) {
+        try {
+          attendanceData = await jurorRecordObject.attendanceDetails.get(
+            req,
+            req.params['jurorNumber'],
+          );
+        } catch (err) {
+          app.logger.crit('Failed to fetch juror attendance details: ', {
+            auth: req.session.authentication,
+            data: {
+              jurorNumber: req.params['jurorNumber'],
+              locCode: req.session.locCode,
+            },
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
+
+          return res.render('_errors/generic');
+        }
+      }
+
+      return res.render('juror-management/update-juror-record.njk', {
+        jurorNumber: req.params.jurorNumber,
+        owner: jurorDetails.commonDetails.owner,
+        excusalCode: jurorDetails.commonDetails.excusalCode,
+        hasAppearances: attendanceData.has_appearances,
+        attendances: attendanceData.attendances,
+        onCall: attendanceData.on_call,
+        processUrl,
+        cancelUrl,
+        radioChecked: radioChecked,
+        thirdPartyDeceased: thirdPartyDeceased,
+        replyStatus: jurorDetails.replyProcessingStatus,
+        errors: {
+          message: '',
+          count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+          items: tmpErrors,
+        },
+        isCourtUser: isCourtUser(req),
+        jurorStatus: jurorDetails.commonDetails.jurorStatus,
+        jurorDOB: jurorDetails.dateOfBirth,
       });
     };
   };
