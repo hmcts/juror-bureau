@@ -1,0 +1,34 @@
+{% extends "../../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{% block page_title %}{{ serviceName }} - On-call{% endblock %}
+{% block page_identifier %}On-call{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <form method="POST" id="onCallForm">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l ">Are you sure you want to put {{ jurors | length }} juror(s) on call</h1>
+      </div>
+    </div>
+
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Place juror(s) on call",
+        attributes: {
+          formAction: continueUrl
+        }
+      }) }}
+
+      <a href="{{ cancelUrl }}" class="govuk-body govuk-link--no-visited-state" id="cancelAnchor">Cancel</a>
+    </div>
+
+    <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+  </form>
+{% endblock %}
+

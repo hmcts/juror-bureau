@@ -135,7 +135,7 @@
       }
 
       const payload = {
-        jurorNumber,
+        'juror_numbers': [jurorNumber],
         'next_date': req.body.attendanceDate !== '' ? dateFilter(req.body.attendanceDate, null, 'YYYY-MM-DD') : '',
         'on_call': req.body.onCall || false,
       };
