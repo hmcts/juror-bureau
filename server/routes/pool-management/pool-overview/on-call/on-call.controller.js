@@ -3,7 +3,8 @@
 
   const _ = require('lodash');
   const { makeManualError, buildMovementProblems } = require('../../../../lib/mod-utils');
-  const { changeDate, jurorRecordDetailsDAO } = require('../../../../objects');
+  const { changeDate, jurorRecordSimpleDetailsDAO } = require('../../../../objects');
+  const filters = require('../../../../components/filters');
 
   module.exports.getValidateOnCallJurors = (app) => {
     return async (req, res) => {
@@ -15,21 +16,12 @@
         poolNumber: req.params.poolNumber
       });
 
-      let poolMembers;
+      let selectedJurorDetails;
       try {
-        poolMembers = await jurorRecordDetailsDAO.post(req, selectedJurorNumbers.map(jurorNumber => {
-          return {
-            'juror_number': jurorNumber,
-            'juror_version': null,
-            'include': ['NAME_DETAILS', 'ACTIVE_POOL'],
-          }
-        }));
+        selectedJurorDetails = await jurorRecordSimpleDetailsDAO.post(req, selectedJurorNumbers, req.session.authentication.locCode);
 
-        delete poolMembers['_headers'];
-
-        poolMembers = Object.values(poolMembers);
       } catch (err) {
-        app.logger.crit('Failed to fetch pool members to validate bulk placing on call: ', {
+        app.logger.crit('Failed to fetch juror statuses to validate bulk placing on call: ', {
           auth: req.session.authentication,
           poolNumber: req.params.poolNumber,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
@@ -38,14 +30,19 @@
         return res.render('_errors/generic.njk');
       };
 
-      const unavailableJurors = poolMembers.filter(juror => !['Responded', 'Panel', 'Juror'].includes(juror.active_pool.status)).map((juror) => {
+      const unavailableJurors = selectedJurorDetails.filter(juror => !['RESPONDED', 'PANEL', 'JUROR'].includes(juror.status)).map((juror) => {
         return {
-          jurorNumber: juror.juror_number,
-          firstName: juror.name.firstName,
-          lastname: juror.name.lastName,
-          failureReason: `Invalid Status: ${juror.active_pool.status}`,
+          jurorNumber: juror.jurorNumber,
+          firstName: juror.firstName,
+          lastname: juror.lastName,
+          failureReason: `Invalid Status: ${filters.jurorStatus(juror.status)}`,
         };
       });
+
+      const availableJurors = selectedJurorDetails.filter(juror => ['RESPONDED', 'PANEL', 'JUROR'].includes(juror.status)).map((juror) => juror.jurorNumber);
+      req.session.poolJurorsOnCall.availableJurors = availableJurors;
+
+      delete req.session.poolJurorsOnCall.selectedJurors
 
       if (!unavailableJurors.length) {
         return res.redirect(app.namedRoutes.build('pool-management.on-call.confirm.get', {
@@ -64,43 +61,16 @@
   };
 
   module.exports.postValidateOnCallJurors = (app) => {
-    return async (req, res) => {
-      const selectedJurorNumbers = _.clone(req.session.poolJurorsOnCall).selectedJurors;
-
-      let poolMembers;
-      try {
-        poolMembers = await jurorRecordDetailsDAO.post(req, selectedJurorNumbers.map(jurorNumber => {
-          return {
-            'juror_number': jurorNumber,
-            'juror_version': null,
-            'include': ['NAME_DETAILS', 'ACTIVE_POOL'],
-          }
-        }));
-
-        delete poolMembers['_headers'];
-
-        poolMembers = Object.values(poolMembers)
-      } catch (err) {
-        app.logger.crit('Failed to fetch pool members to validate bulk placing on call: ', {
-          auth: req.session.authentication,
-          poolNumber: req.params.poolNumber,
-          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-        });
-
-        return res.render('_errors/generic.njk');
-      };
-
-      req.session.poolJurorsOnCall.selectedJurors = poolMembers.filter(juror => ['Responded', 'Panel', 'Juror'].includes(juror.active_pool.status)).map(juror => juror.juror_number);
-
+    return (req, res) => {
       return res.redirect(app.namedRoutes.build('pool-management.on-call.confirm.get', {
         poolNumber: req.params.poolNumber,
       }));
     }
-  };
+  }
 
   module.exports.getConfirmOnCallJurors = (app) => {
     return (req, res) => {
-      const selectedJurors = _.clone(req.session.poolJurorsOnCall).selectedJurors;
+      const selectedJurors = _.clone(req.session.poolJurorsOnCall).availableJurors;
 
       return res.render('pool-management/on-call/on-call-confirmation', {
         jurors: selectedJurors,
@@ -113,11 +83,13 @@
 
   module.exports.postConfirmOnCallJurors = (app) => {
     return async (req, res) => {
-      const jurors = _.clone(req.session.poolJurorsOnCall).selectedJurors;
+      const jurors = _.clone(req.session.poolJurorsOnCall).availableJurors;
       const payload = {
         'juror_numbers': jurors,
         'on_call': true,
       };
+
+      delete req.session.poolJurorsOnCall;
 
       try {
        await changeDate.patch(

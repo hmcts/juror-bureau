@@ -589,6 +589,18 @@
       address = addressParts.join('<br> ');
       return address;
     },
+
+    jurorStatus: function(status) {
+      const longStatus = {
+        'FAILEDTOATTEND': 'Failed to attend',
+        'AWAITINGINFO': 'Awaiting info'
+      }
+      if (`${status}` in longStatus) {
+        return longStatus[status];
+      }
+      return this.toSentenceCase(status);
+    },
+  
   };
 
 })();

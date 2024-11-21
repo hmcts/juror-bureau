@@ -1,9 +1,10 @@
 (function() {
   'use strict';
 
+  const _ = require('lodash');
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
-  const { extractDataAndHeadersFromResponse, mapCamelToSnake } = require('../lib/mod-utils')
+  const { extractDataAndHeadersFromResponse, mapCamelToSnake, replaceAllObjKeys } = require('../lib/mod-utils')
 
   module.exports.record = new DAO('moj/juror-record', {
     get: function(tab, jurorNumber, locCode, etag) {
@@ -132,5 +133,18 @@
   module.exports.searchJurorRecordDAO = new DAO('moj/juror-record/search');
 
   module.exports.jurorRecordDetailsDAO = new DAO('moj/juror-record/details');
+
+  module.exports.jurorRecordSimpleDetailsDAO = new DAO('moj/juror-record/simple-details', {
+    post: function(jurorNumbers, locCode) {
+      return {
+        uri: this.resource,
+        body: {
+          juror_numbers: jurorNumbers,
+          court_code: locCode,
+        },
+        transform: (data) => { delete data['_headers']; return replaceAllObjKeys(data.juror_details, _.camelCase) }
+      }
+    }
+  })
 
 })();
