@@ -11,6 +11,7 @@
   module.exports = function(app) {
 
     require('./change-next-due-at-court')(app);
+    require('./on-call')(app);
 
     app.get('/pool-management/pool-overview/:poolNumber',
       'pool-overview.get',
@@ -106,5 +107,12 @@
       'pool-management.postpone.get',
       auth.verify,
       postponeController.getPostponeDate(app));
+
+     // Bulk on-call
+    app.post('/pool-management/:poolNumber/on-call',
+      'pool-overview.on-call.post',
+      auth.verify,
+      controller.postBulkOnCall(app));
   };
+
 })();
