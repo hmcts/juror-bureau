@@ -764,7 +764,7 @@
             jwt: req.session.authToken,
             data: {
               jurorNumber,
-              recalcPayload,
+              recalculatePayload,
             },
             error: typeof err.error !== 'undefined' ? err.error : err.toString(),
           });
