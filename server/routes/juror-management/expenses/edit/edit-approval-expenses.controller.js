@@ -742,15 +742,54 @@
           }
         }
 
+        const recalculatePayload = []
+        for (const expense of expensesData) {
+          const expenseDate = expense.date_of_expense;
+          let editedExpense = req.session.editedExpenses[expenseDate];
+          if (!editedExpense) {
+            recalculatePayload.push({ ..._.merge(expense, applyToAllPayload) });
+          } else {
+            recalculatePayload.push({ ..._.merge(editedExpense.formData, applyToAllPayload) });
+          }
+        }
+
+        let recalculateValues;
+        try {
+          recalculateValues = (await postRecalculateSummaryTotalsDAO.post(req, locCode, jurorNumber, {
+            'expense_list': recalculatePayload,
+          })).expense_details;
+        } catch (err) {
+          app.logger.crit('Failed to recalculate the totals for an updated expense', {
+            auth: req.session.authentication,
+            jwt: req.session.authToken,
+            data: {
+              jurorNumber,
+              recalcPayload,
+            },
+            error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+          });
+  
+          return res.redirect(app.namedRoutes.build('juror-management.edit-expense.get', {
+            jurorNumber,
+            locCode,
+            status,
+          }));
+        }
+
         for (const expense of expensesData) {
           const expenseDate = expense.date_of_expense;
           let editedExpense = req.session.editedExpenses[expenseDate];
 
-          if (!editedExpense) {
+          const expenseTableValues = _.clone(recalculateValues.find(expense => expense['attendance_date'] === expenseDate));
+          delete expenseTableValues.financial_loss_apportioned_applied;
+
+          if (!editedExpense) {      
             req.session.editedExpenses[expenseDate] = {
+              tableData: { ...expenseTableValues },
               formData: { ..._.merge(expense, applyToAllPayload) },
             };
-          } else {
+          } else {      
+            editedExpense.tableData = { ...expenseTableValues };
             editedExpense.formData = {
               ..._.merge(editedExpense.formData, applyToAllPayload),
             };
