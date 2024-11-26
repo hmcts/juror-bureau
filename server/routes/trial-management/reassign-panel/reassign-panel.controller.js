@@ -8,7 +8,7 @@
   const { capitalise } = require('../../../components/filters');
   const { buildMovementProblems } = require('../../../lib/mod-utils');
   const modUtils = require('../../../lib/mod-utils');
-
+  const { reassignPanelDAO } = require('../../../objects/reassign-panel');
 
   module.exports.postReassignPanel = (app) => async (req, res) => {
     const { trialNumber, locationCode } = req.params;
@@ -278,24 +278,29 @@
   };
 
   module.exports.postConfirmReassignPanel = function(app) {
-    return function(req, res) {
+    return async function(req, res) {
       const { trialNumber, locationCode, newTrialNumber, newLocationCode } = req.params;
       const selectedJurors = req.session[`${trialNumber}-${locationCode}-reassignPanel`].selectedJurors;
 
       delete req.session[`${trialNumber}-${locationCode}-reassignPanel`];
 
-      // TODO - MAKE API CALL
       try {
-        fail;
+        await reassignPanelDAO.post(req, {
+          jurors: selectedJurors,
+          source_trial_number: trialNumber,
+          source_trial_loc_code: locationCode,
+          target_trial_number: newTrialNumber,
+          target_trial_loc_code: newLocationCode,
+        });
       } catch (err) {
         app.logger.crit('Failed to reassign panel members: ', {
           auth: req.session.authentication,
           data: {
-            trialNumber,
-            locationCode,
-            newTrialNumber,
-            newLocationCode,
-            selectedJurors,
+            jurors: selectedJurors,
+            source_trial_number: trialNumber,
+            source_trial_loc_code: locationCode,
+            target_trial_number: newTrialNumber,
+            target_trial_loc_code: newLocationCode,
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
