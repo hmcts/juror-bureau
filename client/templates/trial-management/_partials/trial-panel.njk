@@ -16,6 +16,15 @@
       }
     }) }}
 
+    {{ govukButton({
+      text: "Reassign panel member",
+      classes: "govuk-button--secondary govuk-!-margin-bottom-4",
+      attributes: {
+        id: "reassignPanelButton",
+        formAction: formActions.reassignUrl
+      }
+    }) if canEmpanel }}
+
     {% if errors.items["selectedJurors"] %}<div class="error-allocation">
       <p class="govuk-error-message">{{ errors.items['selectedJurors'][0].details }}</p>
       </div>
@@ -49,7 +58,7 @@
           <tr class="govuk-table__row govuk-table__row--selected">
             <td class="govuk-table__cell">
               <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
-                <input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check" id="select-{{ member.juror_number }}" name="selectedJurors" value="{{ member.juror_number }}">
+                <input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check" id=" " name="selectedJurors" value="{{ member.juror_number }}">
                 <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="select-{{ member.juror_number }}">
                   <span class="govuk-visually-hidden">Select {{ member.first_name }} {{ member.last_name }}</span>
                 </label>

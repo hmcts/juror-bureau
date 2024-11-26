@@ -30,8 +30,6 @@
       return res.render('_errors/generic');
     }
 
-    const isJuryEmpanelled = (await fetchTrialDetails(app)(req, res))['is_jury_empanelled'];
-
     let validatorResult;
 
     validatorResult = isJuryEmpanelled

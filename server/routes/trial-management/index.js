@@ -13,6 +13,7 @@
     require('./generate-panel')(app);
     require('./empanel-jury')(app);
     require('./add-panel-members')(app);
+    require('./reassign-panel')(app);
 
     app.get('/trial-management/trials',
       'trial-management.trials.get',
