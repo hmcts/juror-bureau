@@ -84,6 +84,7 @@
         problems: buildMovementProblems({
           unavailableForMove: invalidJurors
         }),
+        validStatuses: ['panel', 'juror', 'respondend'],
       });
     }
 
@@ -167,6 +168,10 @@
           trialNumber,
           locationCode,
         }),
+        cancelUrl: app.namedRoutes.build('trial-management.trials.detail.get', {
+          trialNumber,
+          locationCode,
+        }),
         tmpBody,
         pagination,
         trials: modUtils.transformRadioSelectTrialsList(data.data, sortBy, sortOrder, true),
@@ -186,8 +191,8 @@
       if (typeof req.body.selectedTrial === 'undefined') {
         req.session.errors = {
           selectedTrial: [{
-            summary: 'Select a trial',
-            details: 'Select a trial',
+            summary: 'Select a trial to reassign the juror(s) into',
+            details: 'Select a trial to reassign the juror(s) into',
           }],
         };
         req.session.formFields = req.body;

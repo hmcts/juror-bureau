@@ -105,10 +105,14 @@
         {% endif %}
 
         {% if problemList.invalidStatus|length%}
+        {% set validStatusesString = "responded or summoned" %}
+        {% if validStatuses %}
+            {% set validStatusesString = validStatuses | prettyList("or") %}
+        {% endif %}
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
                 <h2 class="govuk-heading-m">Cannot be moved due to juror status</h2>
-                <p class="govuk-body">You can only move jurors with a responded or summoned status. The following jurors have a different status and cannot be moved.</p>
+                <p class="govuk-body">You can only move jurors with a {{ validStatusesString }} status. The following jurors have a different status and cannot be moved.</p>
                 <div class="govuk-grid-column-full govuk-!-margin-bottom-7">
                     {{ govukTable({
                     firstCellIsHeader: true,
