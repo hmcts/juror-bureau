@@ -219,6 +219,9 @@
     return async function(req, res) {
       const { trialNumber, locationCode, newTrialNumber, newLocationCode } = req.params;
       const selectedJurors = req.session[`${trialNumber}-${locationCode}-reassignPanel`].selectedJurors;
+      const tmpErrors = _.clone(req.session.errors);
+
+      delete req.session.errors;
 
       let trialDetails;
       try {
@@ -272,7 +275,12 @@
         cancelUrl: app.namedRoutes.build('trial-management.trials.detail.get', {
           trialNumber,
           locationCode,
-        })
+        }),
+        errors: {
+          title: 'Please check the form',
+          count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+          items: tmpErrors,
+        },
       })
     };
   };
@@ -281,8 +289,6 @@
     return async function(req, res) {
       const { trialNumber, locationCode, newTrialNumber, newLocationCode } = req.params;
       const selectedJurors = req.session[`${trialNumber}-${locationCode}-reassignPanel`].selectedJurors;
-
-      delete req.session[`${trialNumber}-${locationCode}-reassignPanel`];
 
       try {
         await reassignPanelDAO.post(req, {
@@ -305,16 +311,31 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        req.session.errors = modUtils.makeManualError(
-          'selectedJurors', 
-          `Failed to reassign ${selectedJurors.length} panel member${selectedJurors.length ? 's' : ''} to trial ${newTrialNumber}`
-        );
+        const standardErrorMessage = `Failed to reassign ${selectedJurors.length} panel member${selectedJurors.length ? 's' : ''} to trial ${newTrialNumber}`;
 
-        return res.redirect(app.namedRoutes.build('trial-management.trials.detail.get', {
+        if (err.error.statusCode = 422) {
+          req.session.errors = {
+            invalidData: [{
+              details: err.error.message ? err.error.message : standardErrorMessage,
+              summary: err.error.message ? err.error.message : standardErrorMessage,
+            }],
+          };
+        } else  {
+          req.session.errors = modUtils.makeManualError(
+            'selectedJurors', 
+            standardErrorMessage
+          );
+        }
+
+        return res.redirect(app.namedRoutes.build('trial-management.trials.reassign.confirm.get', {
           trialNumber,
           locationCode,
+          newTrialNumber,
+          newLocationCode,
         }));
       }
+
+      delete req.session[`${trialNumber}-${locationCode}-reassignPanel`];
 
       const newTrialLink = app.namedRoutes.build('trial-management.trials.detail.get', {
         trialNumber: newTrialNumber,
