@@ -327,6 +327,12 @@
                 '1 or more juror(s) have an unconfirmed attendance for this trial',
               );
               break;
+            case 'CANNOT_PROCESS_EMPANELLED_JUROR':
+              req.session.errors = modUtils.makeManualError(
+                'invalidData',
+                '1 or more juror(s) has been empanelled and cannot be reassigned',
+              );
+              break;
             default:
               req.session.errors = modUtils.makeManualError(
                 'invalidData',
