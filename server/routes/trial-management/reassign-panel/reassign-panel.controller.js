@@ -84,7 +84,7 @@
         problems: buildMovementProblems({
           unavailableForMove: invalidJurors
         }),
-        validStatuses: ['panel', 'juror', 'respondend'],
+        validStatuses: ['panel', 'juror', 'responded'],
       });
     }
 
