@@ -314,12 +314,25 @@
         const standardErrorMessage = `Failed to reassign ${selectedJurors.length} panel member${selectedJurors.length ? 's' : ''} to trial ${newTrialNumber}`;
 
         if (err.error.statusCode = 422) {
-          req.session.errors = {
-            invalidData: [{
-              details: err.error.message ? err.error.message : standardErrorMessage,
-              summary: err.error.message ? err.error.message : standardErrorMessage,
-            }],
-          };
+          switch (err.error.code) {
+            case 'CANNOT_RE_ADD_JUROR_TO_PANEL':
+              req.session.errors = modUtils.makeManualError(
+                'invalidData',
+                'Juror(s) can not be reassigned back to a panel they have already been on',
+              );
+              break;
+            case 'UNCONFIRMED_ATTENDANCE_EXISTS': 
+              req.session.errors = modUtils.makeManualError(
+                'invalidData',
+                '1 or more juror(s) have an unconfirmed attendance for this trial',
+              );
+              break;
+            default:
+              req.session.errors = modUtils.makeManualError(
+                'invalidData',
+                err.error.message ? err.error.message : standardErrorMessage,
+              );
+          }
         } else  {
           req.session.errors = modUtils.makeManualError(
             'selectedJurors', 
