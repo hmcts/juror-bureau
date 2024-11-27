@@ -56,6 +56,7 @@
         problems: buildMovementProblems({
           unavailableForMove: unavailableJurors
         }),
+        validStatuses: ['responded', 'panel', 'juror']
       });
     }
   };

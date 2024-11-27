@@ -493,7 +493,7 @@
     return table;
   };
 
-  module.exports.transformRadioSelectTrialsList = (trials, sortBy, sortOrder) => {
+  module.exports.transformRadioSelectTrialsList = (trials, sortBy, sortOrder, includeLocCodeValue = false) => {
     const table = {
         head: [],
         rows: [],
@@ -548,7 +548,7 @@
             '<div class="govuk-radios govuk-radios--small" data-module="govuk-radios">' +
               '<div class="govuk-radios__item">' +
                 '<input class="govuk-radios__input" id="' + trial.trialNumber + '" name="selectedTrial" ' +
-                  'type="radio" value="' + trial.trialNumber + '">' +
+                  'type="radio" value="' + trial.trialNumber + (includeLocCodeValue ? `-${trial.courtLocation}` : '') + '">' +
                 '<label class="govuk-label govuk-radios__label">' +
                   '<a href="/trial-management/trials/' + encodeURIComponent(trial.trialNumber) + '/'
                   + trial.courtLocation + '/detail'+ '" ' +
