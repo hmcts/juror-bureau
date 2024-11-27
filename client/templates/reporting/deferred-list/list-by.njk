@@ -45,6 +45,18 @@
           value: tmpBody.searchBy,
           errorMessage: searchByError
         }) }}
+
+        {{ govukCheckboxes({
+          name: "filterOwnedDeferrals",
+          classes: "govuk-checkboxes--small",
+          items: [
+            {
+              value: true,
+              text: "Court owned deferrals only" if isCourtUser else "Bureau owned deferrals only"
+            }
+          ]
+        }) }}
+
         {{ csrfProtection(csrftoken) }}
         <div class="govuk-button-group">
           {{ govukButton({

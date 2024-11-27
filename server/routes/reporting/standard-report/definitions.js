@@ -1445,7 +1445,10 @@
           'reportTime',
         ],
         defaultSortColumn: 'deferredTo',
-        backUrl: app.namedRoutes.build('reports.deferred-list.filter.get')
+        backUrl: app.namedRoutes.build('reports.deferred-list.filter.get'),
+        queryParams: {
+          filterOwnedDeferrals: req?.query?.filterOwnedDeferrals || false,
+        }
       },
       'deferred-list-court': {
         title: 'Deferred list (by court name)',
