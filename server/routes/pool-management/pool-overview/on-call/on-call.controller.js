@@ -56,7 +56,13 @@
         problems: buildMovementProblems({
           unavailableForMove: unavailableJurors
         }),
-        validStatuses: ['responded', 'panel', 'juror']
+        uniqueWording: {
+            title: 'You cannot place some of these jurors on call',
+            mainDescription: 'There’s a problem placing one or more jurors on call for the following reasons.',
+            invalidStatusTitle: 'Cannot be placed on call due to juror status',
+            invalidStatusDescription: 'You can only place a juror on call with a responded, panel or juror status. The following jurors have a different status and cannot be placed on call.',
+            continueButton: 'Continue and place remaining jurors on call'
+        }
       });
     }
   };
