@@ -27,12 +27,12 @@ module.exports = function(app) {
     isCourtUser,
     controller.postJurorsList(app));
 
-  app.get('/pool-management/dismiss-jurors/complete-service',
+  app.get('/pool-management/dismiss-jurors/dismiss-complete-service',
     'pool-management.dismiss-jurors.complete-service.get',
     auth.verify,
     isCourtUser,
     controller.getCompleteService(app));
-  app.post('/pool-management/dismiss-jurors/complete-service',
+  app.post('/pool-management/dismiss-jurors/dismiss-complete-service',
     'pool-management.dismiss-jurors.complete-service.post',
     auth.verify,
     isCourtUser,
