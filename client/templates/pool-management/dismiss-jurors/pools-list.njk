@@ -5,12 +5,13 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "includes/csrf.njk" import csrfProtection %}
 
-{% block page_title %}{{ serviceName }} - Juror management - Dismiss jurors - Pools{% endblock %}
-{% block page_identifier %}Juror management - Dismiss jurors - Pools{% endblock %}
+{% block page_title %}{{ serviceName }} - Pool management - Dismiss jurors - Pools{% endblock %}
+{% block page_identifier %}Pool management - Dismiss jurors - Pools{% endblock %}
 
 {% block content %}
-  {% set actionUrl = url("juror-management.dismiss-jurors.pools.post") %}
-  {% set cancelUrl = url("juror-management.manage-jurors.pools.get") %}
+  {% set actionUrl = url("pool-management.dismiss-jurors.pools.post") %}
+  {% set cancelUrl = url("pool-management.get") + "?status=created" %}
+
 
   {% set jurorsToDismissError = undefined %}
   {% if errors.items["jurorsToDismiss"] %}

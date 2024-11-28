@@ -63,6 +63,7 @@
             pageUrls: pageUrls,
             locCode: req.query['location_code'],
             courts: modUtils.transformCourtNames(req.session.courtsList),
+            bannerMessage,
           });
         }
         , errorCB = function(err) {
@@ -85,6 +86,12 @@
         newPoolCreated = _.clone(req.session.newPoolCreated);
       }
 
+      let bannerMessage;
+      if (typeof req.session.bannerMessage !== 'undefined') {
+        bannerMessage = req.session.bannerMessage;
+      }
+      delete req.session.bannerMessage;
+
       // clear session data
       delete req.session.deletedRecord;
       delete req.session.newPoolCreated;
@@ -98,6 +105,7 @@
       delete req.session.coronerCourt;
       delete req.session.poolCreateFormFields;
       delete req.session.courtChange;
+      delete req.session.dismissJurors;
       
       // for backward compatibility
       delete req.session.selectedJurors;

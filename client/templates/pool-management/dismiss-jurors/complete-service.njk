@@ -4,8 +4,8 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "includes/csrf.njk" import csrfProtection %}
 
-{% block page_title %}{{ serviceName }} - Juror management - Complete service{% endblock %}
-{% block page_identifier %}Juror management - Complete service{% endblock %}
+{% block page_title %}{{ serviceName }} - Pool management - Complete service{% endblock %}
+{% block page_identifier %}Pool management - Complete service{% endblock %}
 
 {% block content %}
 
@@ -16,7 +16,7 @@
 
   {% include "includes/errors.njk" %}
 
-  <form action="{{ url('juror-management.dismiss-jurors.complete-service.post') }}" method="POST">
+  <form action="{{ url('pool-management.dismiss-jurors.complete-service.post') }}" method="POST">
 
     <h1 class="govuk-heading-l">Complete service</h1>
 
@@ -40,7 +40,7 @@
         type: "submit"
       }) }}
 
-      <a class="govuk-link" href="{{ url('juror-management.dismiss-jurors.pools.get') }}">Cancel</a>
+      <a class="govuk-link" href="{{ url('pool-management.dismiss-jurors.pools.get') }}">Cancel</a>
     </div>
 
   </form>

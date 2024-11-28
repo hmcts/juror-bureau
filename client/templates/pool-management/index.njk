@@ -7,6 +7,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "moj/components/banner/macro.njk" import mojBanner %}
 {% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
 
 {% set currentApp = "Pool management" %}
 
@@ -41,6 +42,14 @@
     }) }}
   {% endif %}
 
+  {% if bannerMessage %}
+    {{ mojBanner({
+      type: "success",
+      text: bannerMessage,
+      iconFallbackText: "Success"
+    }) }}
+  {% endif %}
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
       <h1 class="govuk-heading-l">{{ "Pool requests" if poolStatus === "requested" else "Active pools" }}</h1>
@@ -56,6 +65,18 @@
           }
         }) }}
       </div>
+    {% endif %}
+
+    {% if isCourtUser %}
+      {% if poolStatus === "created" %}
+        <div class="govuk-button-group mod-flex mod-justify-end">
+          {{ govukButton({
+            text: "Dismiss jurors",
+            classes: "govuk-button--secondary",
+            href: url('pool-management.dismiss-jurors.pools.get')
+          }) }}
+        </div>
+      {% endif %}
     {% endif %}
   </div>
 

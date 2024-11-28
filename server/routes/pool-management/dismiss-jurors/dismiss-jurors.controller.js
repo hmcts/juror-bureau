@@ -42,7 +42,7 @@ module.exports.getDismissJurorsPools = function(app) {
         jwt: req.session.authToken,
       });
 
-      return res.render('juror-management/dismiss-jurors/pools-list.njk', {
+      return res.render('pool-management/dismiss-jurors/pools-list.njk', {
         totalCurrentlySelected: totalCurrentlySelected(tmpForm['checked-pools']),
         pools: req.session.poolsAtCourt,
         tmpForm,
@@ -78,7 +78,7 @@ module.exports.postDismissJurorsPools = function(app) {
     if (action === calculateAvailableJurors) {
       req.session.dismissJurors.jurorsAvailableToDismiss = jurorsAvailable;
 
-      return res.redirect(app.namedRoutes.build('juror-management.dismiss-jurors.pools.get'));
+      return res.redirect(app.namedRoutes.build('pool-management.dismiss-jurors.pools.get'));
     }
 
     const validatorResult = validate(req.body, jurorsToDismiss(jurorsAvailable));
@@ -86,10 +86,10 @@ module.exports.postDismissJurorsPools = function(app) {
     if (validatorResult) {
       req.session.errors = validatorResult;
 
-      return res.redirect(app.namedRoutes.build('juror-management.dismiss-jurors.pools.get'));
+      return res.redirect(app.namedRoutes.build('pool-management.dismiss-jurors.pools.get'));
     }
 
-    return res.redirect(app.namedRoutes.build('juror-management.dismiss-jurors.jurors.get'));
+    return res.redirect(app.namedRoutes.build('pool-management.dismiss-jurors.jurors.get'));
   };
 };
 
@@ -130,7 +130,7 @@ module.exports.getJurorsList = function(app) {
       const totalJurors = req.session.dismissJurors.jurors.length;
       const totalCheckedJurors = req.session.dismissJurors.jurors.filter(juror => juror.checked).length;
 
-      return res.render('juror-management/dismiss-jurors/jurors-list.njk', {
+      return res.render('pool-management/dismiss-jurors/jurors-list.njk', {
         jurors,
         pagination,
         totalJurors,
@@ -139,7 +139,7 @@ module.exports.getJurorsList = function(app) {
         sortDirection: sortDirection || 'ascending',
         backLinkUrl: {
           built: true,
-          url: app.namedRoutes.build('juror-management.dismiss-jurors.pools.get'),
+          url: app.namedRoutes.build('pool-management.dismiss-jurors.pools.get'),
         },
         errors: {
           title: 'Please check the form',
@@ -162,9 +162,9 @@ module.exports.getJurorsList = function(app) {
 module.exports.postJurorsList = function(app) {
   return async function(req, res) {
     const urls = {
-      jurors: 'juror-management.dismiss-jurors.jurors.get',
-      checkOut: 'juror-management.dismiss-jurors.check-out.get',
-      completeService: 'juror-management.dismiss-jurors.complete-service.get',
+      jurors: 'pool-management.dismiss-jurors.jurors.get',
+      checkOut: 'pool-management.dismiss-jurors.check-out.get',
+      completeService: 'pool-management.dismiss-jurors.complete-service.get',
     };
 
     const checkedJurors = req.session.dismissJurors.jurors.filter(juror => juror.checked);
@@ -224,7 +224,7 @@ module.exports.getCompleteService = function() {
 
     req.session.dismissJurors.latestServiceStartDate = latestServiceStartDate;
 
-    return res.render('juror-management/dismiss-jurors/complete-service.njk', {
+    return res.render('pool-management/dismiss-jurors/complete-service.njk', {
       today,
       latestServiceStartDate,
       dateLimit,
@@ -247,7 +247,7 @@ module.exports.postCompleteService = function(app) {
         completionDate: validatorResult.dateToCheck,
       };
 
-      return res.redirect(app.namedRoutes.build('juror-management.dismiss-jurors.complete-service.get'));
+      return res.redirect(app.namedRoutes.build('pool-management.dismiss-jurors.complete-service.get'));
     }
 
     const latestServiceStartDate = req.session.dismissJurors.latestServiceStartDate;
@@ -262,7 +262,7 @@ module.exports.postCompleteService = function(app) {
         }],
       };
 
-      return res.redirect(app.namedRoutes.build('juror-management.dismiss-jurors.complete-service.get'));
+      return res.redirect(app.namedRoutes.build('pool-management.dismiss-jurors.complete-service.get'));
     }
 
     try {
@@ -285,7 +285,7 @@ module.exports.postCompleteService = function(app) {
 
       delete req.session.dismissJurors;
 
-      return res.redirect(app.namedRoutes.build('juror-management.manage-jurors.pools.get'));
+      return res.redirect(app.namedRoutes.build('pool-management.get') + '?status=created');
     } catch (err) {
       app.logger.crit('Failed to dismiss the selected jurors: ', {
         auth: req.session.authentication,
@@ -293,7 +293,7 @@ module.exports.postCompleteService = function(app) {
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
-      return res.redirect(app.namedRoutes.build('juror-management.dismiss-jurors.complete-service.get'));
+      return res.redirect(app.namedRoutes.build('pool-management.dismiss-jurors.complete-service.get'));
     }
   };
 };
@@ -309,7 +309,7 @@ module.exports.getCheckOutJurors = function() {
       _checkOutTime = req.session.dismissJurors.checkOutTime;
     }
 
-    return res.render('juror-management/dismiss-jurors/check-out.njk', {
+    return res.render('pool-management/dismiss-jurors/check-out.njk', {
       checkOutTime: _checkOutTime,
       notCheckedOut: req.session.dismissJurors.notCheckedOut,
       errors: {
@@ -336,7 +336,7 @@ module.exports.postCheckOutJurors = function(app) {
     if (validatorResult) {
       req.session.errors = validatorResult;
 
-      return res.redirect(app.namedRoutes.build('juror-management.dismiss-jurors.check-out.get'));
+      return res.redirect(app.namedRoutes.build('pool-management.dismiss-jurors.check-out.get'));
     }
 
     const checkOutTimeErrors = compareCheckInAndCheckOutTimes(req.session.dismissJurors);
@@ -349,7 +349,7 @@ module.exports.postCheckOutJurors = function(app) {
         }],
       };
 
-      return res.redirect(app.namedRoutes.build('juror-management.dismiss-jurors.check-out.get'));
+      return res.redirect(app.namedRoutes.build('pool-management.dismiss-jurors.check-out.get'));
     }
 
     try {
@@ -373,7 +373,7 @@ module.exports.postCheckOutJurors = function(app) {
         jwt: req.session.authToken,
       });
 
-      return res.redirect(app.namedRoutes.build('juror-management.dismiss-jurors.complete-service.get'));
+      return res.redirect(app.namedRoutes.build('pool-management.dismiss-jurors.complete-service.get'));
     } catch (err) {
       app.logger.crit('Failed to checkout the selected jurors: ', {
         auth: req.session.authentication,
@@ -388,7 +388,7 @@ module.exports.postCheckOutJurors = function(app) {
         }],
       };
 
-      return res.redirect(app.namedRoutes.build('juror-management.dismiss-jurors.check-out.get'));
+      return res.redirect(app.namedRoutes.build('pool-management.dismiss-jurors.check-out.get'));
     }
   };
 };

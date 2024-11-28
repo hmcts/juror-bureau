@@ -94,7 +94,7 @@
     var action = isChecking ? 'check' : 'uncheck';
 
     return $.ajax({
-      url: '/juror-management/dismiss-jurors/jurors/check?jurorNumber=' + jurorNumber + '&action=' + action,
+      url: '/pool-management/dismiss-jurors/jurors/check?jurorNumber=' + jurorNumber + '&action=' + action,
       method: 'POST',
       data: {
         _csrf: csrfToken.val(),

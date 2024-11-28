@@ -4,8 +4,8 @@
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 {% from "includes/csrf.njk" import csrfProtection %}
 
-{% block page_title %}{{ serviceName }} - Juror management - Dismiss jurors - Jurors{% endblock %}
-{% block page_identifier %}Juror management - Dismiss jurors - Jurors{% endblock %}
+{% block page_title %}{{ serviceName }} - Pool management - Dismiss jurors - Jurors{% endblock %}
+{% block page_identifier %}Pool management - Dismiss jurors - Jurors{% endblock %}
 
 {% block beforeContent %}
   {% include "includes/back-link.njk" %}
@@ -42,7 +42,7 @@
     items: pagination.items
   }) }}
 
-  {% set postAction = url("juror-management.dismiss-jurors.jurors.post") %}
+  {% set postAction = url("pool-management.dismiss-jurors.jurors.post") %}
   <form action="{{ postAction }}" method="POST">
     {{ csrfProtection(csrftoken) }}
 
@@ -52,7 +52,7 @@
         type: "submit"
       }) }}
 
-      <a class="govuk-link" href="{{ url('juror-management.dismiss-jurors.pools.get') }}">Cancel</a>
+      <a class="govuk-link" href="{{ url('pool-management.dismiss-jurors.pools.get') }}">Cancel</a>
     </div>
   </form>
 

@@ -17,7 +17,6 @@
     require('./attendance/index')(app);
     require('./manage-jurors/index')(app);
     require('./create-record-manual/index')(app);
-    require('./dismiss-jurors')(app);
     require('./unpaid-attendance')(app);
     require('./expenses/index')(app);
     require('./approve-expenses/index')(app);
