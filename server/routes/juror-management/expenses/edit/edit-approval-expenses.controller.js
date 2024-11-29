@@ -562,7 +562,7 @@
   module.exports.postEditApprovalExpensesEditApplyToAll = function(app) {
     return async function(req, res) {
       const { jurorNumber, locCode, status } = req.params;
-      const page = parseInt(req.query['page']) || 1;
+      const page = parseFloat(req.query['page']) || 1;
       const date = req.query.date;
       let redirectUrl = app.namedRoutes.build('juror-management.edit-expense.edit.get', {
         jurorNumber,
@@ -653,7 +653,7 @@
             if (req.body.applyToAllDays.includes('lossOfEarnings') && applyToAllPayload.financial_loss) {
               if (applyToAllPayload.financial_loss.loss_of_earnings
                 // eslint-disable-next-line max-len
-                && parseInt(applyToAllPayload.financial_loss.loss_of_earnings) < expense.financial_loss.loss_of_earnings) {
+                && parseFloat(applyToAllPayload.financial_loss.loss_of_earnings) < expense.financial_loss.loss_of_earnings) {
                 errors.lossOfEarnings = [{
                   summary: 'The new financial loss cannot be less than originally paid in the selected expenses',
                   details: 'The new financial loss cannot be less than originally paid in the selected expenses',
@@ -664,7 +664,7 @@
             if (req.body.applyToAllDays.includes('extraCareCosts') && applyToAllPayload.financial_loss) {
               if (applyToAllPayload.financial_loss.extra_care_cost
                 // eslint-disable-next-line max-len
-                && parseInt(applyToAllPayload.financial_loss.extra_care_cost) < expense.financial_loss.extra_care_cost) {
+                && parseFloat(applyToAllPayload.financial_loss.extra_care_cost) < expense.financial_loss.extra_care_cost) {
                 errors.extraCareCosts = [{
                   summary: 'The new extra care costs cannot be less than originally paid in the selected expenses',
                   details: 'The new extra care costs cannot be less than originally paid in the selected expenses',
@@ -674,7 +674,7 @@
 
             if (req.body.applyToAllDays.includes('otherCosts') && applyToAllPayload.financial_loss) {
               if (applyToAllPayload.financial_loss.other_cost
-                && parseInt(applyToAllPayload.financial_loss.other_cost) < expense.financial_loss.other_cost) {
+                && parseFloat(applyToAllPayload.financial_loss.other_cost) < expense.financial_loss.other_cost) {
                 errors.otherCosts = [{
                   summary: 'The new other costs cannot be less than originally paid in the selected expenses',
                   details: 'The new other costs cannot be less than originally paid in the selected expenses',
@@ -684,7 +684,7 @@
 
             if (req.body.applyToAllDays.includes('travel') && applyToAllPayload.travel) {
               if (applyToAllPayload.travel.miles_traveled
-                && parseInt(applyToAllPayload.travel.miles_traveled) < expense.travel.miles_traveled) {
+                && parseFloat(applyToAllPayload.travel.miles_traveled) < expense.travel.miles_traveled) {
                 errors.milesTravelled = [{
                   summary: 'The new miles traveled cannot be less than originally paid in the selected expenses',
                   details: 'The new miles traveled cannot be less than originally paid in the selected expenses',
@@ -692,7 +692,7 @@
               }
 
               if (applyToAllPayload.travel.parking
-                && parseInt(applyToAllPayload.travel.parking) < expense.travel.parking) {
+                && parseFloat(applyToAllPayload.travel.parking) < expense.travel.parking) {
                 errors.parking = [{
                   summary: 'The new parking costs cannot be less than originally paid in the selected expenses',
                   details: 'The new parking costs cannot be less than originally paid in the selected expenses',
@@ -700,7 +700,7 @@
               }
 
               if (applyToAllPayload.travel.public_transport
-                && parseInt(applyToAllPayload.travel.public_transport) < expense.travel.public_transport) {
+                && parseFloat(applyToAllPayload.travel.public_transport) < expense.travel.public_transport) {
                 errors.publicTransport = [{
                   // eslint-disable-next-line max-len
                   summary: 'The new public transport costs cannot be less than originally paid in the selected expenses',
@@ -710,7 +710,7 @@
               }
 
               if (applyToAllPayload.travel.taxi
-                && parseInt(applyToAllPayload.travel.taxi) < expense.travel.taxi) {
+                && parseFloat(applyToAllPayload.travel.taxi) < expense.travel.taxi) {
                 errors.taxi = [{
                   summary: 'The new taxi costs cannot be less than originally paid in the selected expenses',
                   details: 'The new taxi costs cannot be less than originally paid in the selected expenses',
@@ -718,7 +718,7 @@
               }
 
               if (applyToAllPayload.travel.jurors_taken_by_car
-                && parseInt(applyToAllPayload.travel.jurors_taken_by_car) < expense.travel.jurors_taken_by_car) {
+                && parseFloat(applyToAllPayload.travel.jurors_taken_by_car) < expense.travel.jurors_taken_by_car) {
                 errors.passengers = [{
                   summary: 'The new passengers taken cannot be less than originally paid in the selected expenses',
                   details: 'The new passengers taken cannot be less than originally paid in the selected expenses',
