@@ -221,7 +221,7 @@
       <div class="jd-panel-title">
         <h2 class="govuk-heading-m">Third party details
           {% if canEdit and responseEditEnabled %}
-            <div class="edit-actions govuk-body jd-right-align">
+            <div class="edit-actions govuk-body jd-right-align"
                  id="jurorDetailsEditTP" 
                  class="govuk-link edit-action edit-trigger" 
                  data-target="juror-details" 
@@ -249,7 +249,7 @@
         
         <div class="govuk-summary-list__row info" id="thirdPartyRelationshipRow">
           <dt class="govuk-summary-list__key">
-            {{ "Relationship to juror" if hasModAccess else "Third party relationship" }}
+            Relationship to juror
           </dt>
           <dd class="govuk-summary-list__value" id="thirdPartyRelationship">
             {{ thirdPartyDetails.relationship }}
@@ -257,7 +257,7 @@
         </div>
         <div class="govuk-summary-list__row info" id="thirdPartyReasonRow">
           <dt class="govuk-summary-list__key">
-            {{ "Reason for completing" if hasModAccess else "Third party reason" }}
+            Reason for completing
           </dt>
           <dd class="govuk-summary-list__value" id="thirdPartyReason">
             {{ thirdPartyDetails.reason }}
@@ -267,7 +267,7 @@
         {% if method !== "paper" %}
           <div class="govuk-summary-list__row info" id="thirdPartyMainPhoneRow">
             <dt class="govuk-summary-list__key">
-              {{ "Main phone" if hasModAccess else "Third party primary phone" }}
+              Main phone
             </dt>
             <dd class="govuk-summary-list__value" id="thirdPartyMainPhone">
               {{ thirdPartyDetails.mainPhone }}
@@ -275,7 +275,7 @@
           </div>
           <div class="govuk-summary-list__row info" id="thirdPartyOtherPhoneRow">
             <dt class="govuk-summary-list__key">
-              {{ "Another phone" if hasModAccess else "Third party secondary phone" }}
+              Another phone
             </dt>
             <dd class="govuk-summary-list__value" id="thirdPartyOtherPhone">
               {{ thirdPartyDetails.otherPhone }}
@@ -283,7 +283,7 @@
           </div>
           <div class="govuk-summary-list__row info" id="thirdPartyEmailRow">
             <dt class="govuk-summary-list__key">
-              {{ "Email" if hasModAccess else "Third party email" }}
+              Email
             </dt>
             <dd class="govuk-summary-list__value" id="thirdPartyEmail">
               {{ thirdPartyDetails.email }}

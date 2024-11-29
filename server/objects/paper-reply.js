@@ -47,6 +47,8 @@
         body.lastName = pr.pendingLastName;
       }
 
+      console.log('\n\nPAPER RESPONSE REQUEST BODY\n', body, '\n\n')
+
       return {
         uri: this.resource,
         body,

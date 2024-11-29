@@ -151,13 +151,23 @@
 
       req.session.startedPaperResponse = true;
 
-      // build thirdParty Object if any detail in the relationship field
-      tempThirdParty.relationship = req.body.relationship;
-      if (req.body.thirdPartyReason === 'other') {
-        tempThirdParty.thirdPartyReason = req.body.otherDetails;
-        otherThirdPartyReason = true;
-      } else {
-        tempThirdParty.thirdPartyReason = req.body.thirdPartyReason;
+      if (req.body.thirdPartyEnabled) {
+        // build thirdParty Object if any detail in the relationship field
+        tempThirdParty.relationship = req.body.relationship;
+        if (req.body.thirdPartyReason === 'other') {
+          tempThirdParty.thirdPartyReason = req.body.otherDetails;
+          otherThirdPartyReason = true;
+        } else {
+          tempThirdParty.thirdPartyReason = req.body.thirdPartyReason;
+        }
+
+        tempThirdParty.thirdPartyFName = req.body.thirdPartyFName;
+        tempThirdParty.thirdPartyLName = req.body.thirdPartyFName;
+        tempThirdParty.thirdPartyPhone = req.body.thirdPartyMainPhone;
+        tempThirdParty.otherPhone = req.body.thirdPartyOtherPhone;
+        tempThirdParty.thirdPartyEmail = req.body.thirdPartyEmailAddress;
+        tempThirdParty.useJurorEmailDetails = req.body.thirdPartyContactPreferences?.includes('useJurorEmailDetails');
+        tempThirdParty.useJurorPhoneDetails = req.body.thirdPartyContactPreferences?.includes('useJurorPhoneDetails');
       }
 
       req.session.paperResponseDetails.thirdParty = tempThirdParty;

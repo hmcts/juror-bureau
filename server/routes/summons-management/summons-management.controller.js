@@ -744,7 +744,7 @@
             , eligibilityDetails
             , thirdPartyDetails;
 
-          console.log('\n\n',response,'\n\n');
+          console.log('\n\n', response[0], '\n\n');
 
           nameDetails = resolveJurorName(responseClone);
           addressDetails = resolveJurorAddress(responseClone);
@@ -1217,7 +1217,7 @@
   }
 
   function resolveThirdParty(response) {
-    var isThirdParty = response.thirdParty.relationship !== null && response.thirdParty.thirdPartyReason !== null;
+    const isThirdParty = response.thirdParty.relationship !== null && response.thirdParty.thirdPartyReason !== null;
 
     return {
       isThirdParty: isThirdParty,
