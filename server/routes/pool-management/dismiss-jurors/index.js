@@ -56,10 +56,11 @@ module.exports = function(app) {
     isCourtUser,
     controller.postCheckJuror(app));
 
-  // ajax route to check / uncheck jurors
+  // ajax route to check / uncheck pools
   app.post('/pool-management/dismiss-jurors/pools/check',
     'pool-management.dismiss-jurors.pools.check-uncheck.post',
     auth.verify,
     isCourtUser,
     controller.postCheckPool(app));
+
 };
