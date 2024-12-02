@@ -3,6 +3,7 @@
 
   var csrfToken = $('#csrfToken');
   var totalCheckedPools = $('#total-checked-pools');
+  var totalPools = $('#total-pools-count')
   var checkAllPools = $('#check-all-pools');
   var poolRows = $('input[aria-label^=check-pool]');
   var checkAllJurors = $('#check-all-jurors');
@@ -15,30 +16,38 @@
     checkAllPools[0].addEventListener('change', function() {
       var isCheckingAll = this.checked;
 
-      poolRows.each(function(_, element) {
-        element.checked = isCheckingAll;
-      });
+      checkPoolRequest(this.id, isCheckingAll).then(function() {
+        poolRows.each(function(_, element) {
+          element.checked = isCheckingAll;
+        });
 
-      totalCheckedPools.text(isCheckingAll ? poolRows.length : '0');
+        totalCheckedPools.text(isCheckingAll ? totalPools.text() : '0');
+      });
     });
   }
 
   if (poolRows && poolRows.length) {
     poolRows.each(function(_, element) {
-      element.addEventListener('change', function() {
-        if (this.checked) {
+      element.addEventListener('change', async function() {
+        var poolNumber = this.id.split('-')[1];
+        var isCheckingPool = this.checked;
+
+        await checkPoolRequest(poolNumber, isCheckingPool);
+
+        if (isCheckingPool) {
           totalCheckedPools.text(+totalCheckedPools.text() + 1);
         } else {
           totalCheckedPools.text(+totalCheckedPools.text() - 1);
         }
-        updateCheckAllPoolsCheckbox(this.checked);
+
+        updateCheckAllPoolsCheckbox(isCheckingPool);
       });
     });
   }
 
   function updateCheckAllPoolsCheckbox(checking) {
     if (checking) {
-      if (+totalCheckedPools.text() === poolRows.length) {
+      if (totalCheckedPools.text() === totalPools.text()) {
         checkAllPools[0].checked = true;
       }
     } else {
@@ -46,12 +55,25 @@
     }
   }
 
+  function checkPoolRequest(poolNumber, isChecking) {
+    var action = isChecking ? 'check' : 'uncheck';
+
+    return $.ajax({
+      url: '/pool-management/dismiss-jurors/pools/check?poolNumber=' + poolNumber + '&action=' + action,
+      method: 'POST',
+      data: {
+        _csrf: csrfToken.val(),
+      },
+    });
+  }
+
+
   // jurors related logic
   if (checkAllJurors && checkAllJurors.length) {
     checkAllJurors[0].addEventListener('change', function() {
       var isCheckingAll = this.checked;
 
-      request(this.id, isCheckingAll).then(function() {
+      checkJurorRequest(this.id, isCheckingAll).then(function() {
         jurorRows.each(function(_, element) {
           element.checked = isCheckingAll;
         });
@@ -67,7 +89,7 @@
         var jurorNumber = this.id.split('-')[1];
         var isCheckingJuror = this.checked;
 
-        await request(jurorNumber, isCheckingJuror);
+        await checkJurorRequest(jurorNumber, isCheckingJuror);
 
         if (isCheckingJuror) {
           totalCheckedJurors.text(+totalCheckedJurors.text() + 1);
@@ -90,7 +112,7 @@
     }
   }
 
-  function request(jurorNumber, isChecking) {
+  function checkJurorRequest(jurorNumber, isChecking) {
     var action = isChecking ? 'check' : 'uncheck';
 
     return $.ajax({

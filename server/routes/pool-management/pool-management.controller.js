@@ -105,6 +105,7 @@
       delete req.session.coronerCourt;
       delete req.session.poolCreateFormFields;
       delete req.session.courtChange;
+      delete req.session.selectedDismissalPools;
       delete req.session.dismissJurors;
       
       // for backward compatibility
