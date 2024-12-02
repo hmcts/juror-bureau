@@ -1465,6 +1465,9 @@
           totals: true,
         },
         backUrl: app.namedRoutes.build('reports.deferred-list.filter.get'),
+        queryParams: {
+          filterOwnedDeferrals: req?.query?.filterOwnedDeferrals || false,
+        }
       },
       'excused-disqualified': {
         title: 'Excused and disqualified list',
