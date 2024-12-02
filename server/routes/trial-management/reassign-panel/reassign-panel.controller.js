@@ -14,7 +14,7 @@
     const { trialNumber, locationCode } = req.params;
     delete req.session.formFields;
 
-    const validatorResult = validate(req.body, returnsValidator.returnPanel());
+    const validatorResult = validate(req.body, returnsValidator.reassignPanel());
 
     if (typeof validatorResult !== 'undefined') {
       req.session.errors = validatorResult;
