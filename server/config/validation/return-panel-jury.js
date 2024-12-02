@@ -11,8 +11,20 @@
   module.exports.returnPanel = function() {
     return {
       selectedJurors: {
-        returnJurorSelect: {
+        trialJurorSelect: {
           type: 'panel member',
+          process: 'return',
+        },
+      },
+    };
+  };
+
+  module.exports.reassignPanel = function() {
+    return {
+      selectedJurors: {
+        trialJurorSelect: {
+          type: 'panel member',
+          process: 'reassign',
         },
       },
     };
@@ -21,8 +33,9 @@
   module.exports.returnJury = function() {
     return {
       selectedJurors: {
-        returnJurorSelect: {
+        trialJurorSelect: {
           type: 'juror',
+          process: 'return',
         },
       },
     };
@@ -50,15 +63,15 @@
     };
   };
 
-  validate.validators.returnJurorSelect = function(value, options, key, attributes) {
+  validate.validators.trialJurorSelect = function(value, options, key, attributes) {
     var message = {
       summary: '',
       details: [],
     };
 
     if (!attributes.selectedJurors) {
-      message.summary = 'Select at least one ' + options.type + ' to return';
-      message.details.push('Select at least one ' + options.type + ' to return');
+      message.summary = 'Select at least one ' + options.type + ' to ' + options.process;
+      message.details.push('Select at least one ' + options.type + ' to ' + options.process);
     }
 
     if (message.summary !== '') {
