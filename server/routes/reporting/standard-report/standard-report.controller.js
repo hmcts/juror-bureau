@@ -615,6 +615,9 @@
     if(req.query.includePanelMembers) {
       config.includePanelMembers = req.query.includePanelMembers;
     }
+    if(req.query.filterOwnedDeferrals) {
+      config.filterOwnedDeferrals = req.query.filterOwnedDeferrals;
+    }
 
     // Backlink routing needs saved for jurors report
     if (reportKey === 'daily-utilisation') {
@@ -830,7 +833,6 @@
 
   function addURLQueryParams(reportType, url){
     let queryParams = _.clone(reportType.queryParams);
-
     if(url.includes('?')) {
       url
         .split('?')[1]
