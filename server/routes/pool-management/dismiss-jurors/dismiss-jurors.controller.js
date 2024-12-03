@@ -39,7 +39,7 @@ module.exports.getDismissJurorsPools = function(app) {
         req.session.authentication.owner
       );
 
-      let poolsAtCourt = sortPools(req,  pools.active_pools_at_court_location.filter(pool => pool.total_jurors !== 0));
+      let poolsAtCourt = sortPools(req,  pools.pools_at_court_location.filter(pool => pool.total_jurors !== 0));
 
       let pageItems;
       if (poolsAtCourt.length > modUtils.constants.PAGE_SIZE) {
@@ -58,7 +58,7 @@ module.exports.getDismissJurorsPools = function(app) {
       return res.render('pool-management/dismiss-jurors/pools-list.njk', {
         pools: poolsAtCourt,
         totalCheckedPools: req.session.selectedDismissalPools?.length || 0,
-        totalPools: pools.active_pools_at_court_location.filter(pool => pool.total_jurors !== 0).length,
+        totalPools: pools.pools_at_court_location.filter(pool => pool.total_jurors !== 0).length,
         poolsTable: transformPoolsList(app, poolsAtCourt, sortBy, sortOrder, req.session.selectedDismissalPools || [], poolsAtCourt.length),
         pageItems,
         tmpForm,
@@ -452,7 +452,7 @@ module.exports.postCheckPool = function(app) {
         pools = (await getDismissablePools.get(
           req,
           req.session.authentication.owner
-        )).active_pools_at_court_location.filter(pool => pool.total_jurors !== 0).map(p => p.pool_number);
+        )).pools_at_court_location.filter(pool => pool.total_jurors !== 0).map(p => p.pool_number);
 
       } catch (err) {
         app.logger.crit('Failed to fetch pools to dismiss jurors when checking all pools: ', {
@@ -493,7 +493,7 @@ async function calculateTotalJurorsAvailable(app, req, res, selections, selected
       pools = (await getDismissablePools.get(
         req,
         req.session.authentication.owner
-      )).active_pools_at_court_location;
+      )).pools_at_court_location;
     } catch (err) { 
       app.logger.crit('Failed to fetch pools to calculate available jurors to dismiss ', {
         auth: req.session.authentication,

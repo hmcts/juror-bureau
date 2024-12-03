@@ -66,27 +66,31 @@
         </p>
       {% endif %}
 
-      <div class="govuk-caption-m">
-        <span id="total-checked-pools">{{ totalCheckedPools }}</span> of <span id="total-pools-count">{{ totalPools }}</span> selected
-      </div>
+      {% if totalPools > 0 %}
+        <div class="govuk-caption-m">
+          <span id="total-checked-pools">{{ totalCheckedPools }}</span> of <span id="total-pools-count">{{ totalPools }}</span> selected
+        </div>
 
-      {{ modSortableTable({
-        id: "poolsTable",
-        caption: "Pool list",
-        captionClasses: "govuk-visually-hidden",
-        head: poolsTable.head,
-        rows: poolsTable.rows
-      }) }}
+        {{ modSortableTable({
+          id: "poolsTable",
+          caption: "Pool list",
+          captionClasses: "govuk-visually-hidden",
+          head: poolsTable.head,
+          rows: poolsTable.rows
+        }) }}
 
-      {{ govukPagination({
-        previous: {
-          href: pageItems.prev
-        },
-        next: {
-          href: pageItems.next
-        },
-        items: pageItems.items
-      }) }}
+        {{ govukPagination({
+          previous: {
+            href: pageItems.prev
+          },
+          next: {
+            href: pageItems.next
+          },
+          items: pageItems.items
+        }) }}
+      {% else %}
+        <p class="govuk-body">No pools currently available to dismiss jurors from</p>
+      {% endif %}
 
     </div>
 
