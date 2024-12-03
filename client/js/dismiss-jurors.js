@@ -13,6 +13,9 @@
 
   // pools related logic
   if (checkAllPools && checkAllPools.length) {
+    if (totalCheckedPools.text() === totalPools.text()) {
+      checkAllPools[0].checked = true;
+    }
     checkAllPools[0].addEventListener('change', function() {
       var isCheckingAll = this.checked;
 

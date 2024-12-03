@@ -16,6 +16,10 @@
     "/pool-management/summoning-progress"
   ]
 %}
+{% set courtOnlyRoutes = [
+    "/pool-management/dismiss-jurors/pools"
+  ]
+%}
 
 {% set allNavBarElements = [
     {
@@ -51,6 +55,14 @@
       }
     },
     {
+      text: "Dismiss jurors",
+      href: '/pool-management/dismiss-jurors/pools',
+      active: false,
+      attributes: {
+        id: "dismissJurorsAnchor"
+      }
+    }, 
+    {
       text: "Search",
       href: "/pool-management/search",
       active: true if isPoolSearch else false,
@@ -64,6 +76,10 @@
 {% for item in allNavBarElements %}
   {% if bureauOnlyRoutes.includes(item.href)%}
       {% if authentication.owner === "400" %}
+        {% set navBarElements = (navBarElements.push(item), navBarElements) %}
+      {% endif %}
+  {% elif courtOnlyRoutes.includes(item.href)%}
+      {% if authentication.owner !== "400" %}
         {% set navBarElements = (navBarElements.push(item), navBarElements) %}
       {% endif %}
   {% else %}

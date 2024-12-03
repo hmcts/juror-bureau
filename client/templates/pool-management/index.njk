@@ -66,18 +66,6 @@
         }) }}
       </div>
     {% endif %}
-
-    {% if isCourtUser %}
-      {% if poolStatus === "created" %}
-        <div class="govuk-button-group mod-flex mod-justify-end">
-          {{ govukButton({
-            text: "Dismiss jurors",
-            classes: "govuk-button--secondary",
-            href: url('pool-management.dismiss-jurors.pools.get')
-          }) }}
-        </div>
-      {% endif %}
-    {% endif %}
   </div>
 
   <div class="govuk-grid-row">

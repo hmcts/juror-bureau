@@ -4,6 +4,15 @@
 const { DAO } = require('./dataAccessObject');
 const utils = require('../lib/utils');
 
+module.exports.getDismissablePools = new DAO('moj/pool-request/active-pools-by-court', {
+  get: function(locCode) {
+    return {
+      uri: this.resource + '?locCode=' + locCode,
+      transform: utils.basicDataTransform
+    }
+  }
+});
+
 module.exports.getJurorsObject = new DAO('moj/juror-management/jurors-to-dismiss', {
   post: function(params, locCode) {
     const jurorsToInclude = params['jurors-to-include'] instanceof Array
