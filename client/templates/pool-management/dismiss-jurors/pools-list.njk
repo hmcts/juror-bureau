@@ -4,13 +4,16 @@
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "includes/csrf.njk" import csrfProtection %}
+{% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
 
-{% block page_title %}{{ serviceName }} - Juror management - Dismiss jurors - Pools{% endblock %}
-{% block page_identifier %}Juror management - Dismiss jurors - Pools{% endblock %}
+{% block page_title %}{{ serviceName }} - Pool management - Dismiss jurors - Pools{% endblock %}
+{% block page_identifier %}Pool management - Dismiss jurors - Pools{% endblock %}
 
 {% block content %}
-  {% set actionUrl = url("juror-management.dismiss-jurors.pools.post") %}
-  {% set cancelUrl = url("juror-management.manage-jurors.pools.get") %}
+  {% set actionUrl = url("pool-management.dismiss-jurors.pools.post") %}
+  {% set cancelUrl = url("pool-management.get") + "?status=created" %}
+
 
   {% set jurorsToDismissError = undefined %}
   {% if errors.items["jurorsToDismiss"] %}
@@ -63,7 +66,32 @@
         </p>
       {% endif %}
 
-      {% include "./pools-table.njk" %}
+      {% if totalPools > 0 %}
+        <div class="govuk-caption-m">
+          <span id="total-checked-pools">{{ totalCheckedPools }}</span> of <span id="total-pools-count">{{ totalPools }}</span> selected
+        </div>
+
+        {{ modSortableTable({
+          id: "poolsTable",
+          caption: "Pool list",
+          captionClasses: "govuk-visually-hidden",
+          head: poolsTable.head,
+          rows: poolsTable.rows
+        }) }}
+
+        {{ govukPagination({
+          previous: {
+            href: pageItems.prev
+          },
+          next: {
+            href: pageItems.next
+          },
+          items: pageItems.items
+        }) }}
+      {% else %}
+        <p class="govuk-body">No pools currently available to dismiss jurors from</p>
+      {% endif %}
+
     </div>
 
     <h2 class="govuk-heading-m">Number of available jurors from selected pools</h2>

@@ -19,15 +19,6 @@ module.exports.jurorsToDismiss = (jurorsAvailable) => {
         jurorsAvailable,
       },
     },
-    'checked-pools': {
-      presence: {
-        allowEmpty: false,
-        message: {
-          details: 'Select at least one pool',
-          summary: 'Select at least one pool',
-        },
-      },
-    },
   };
 };
 

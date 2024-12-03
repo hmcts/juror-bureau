@@ -23,6 +23,7 @@
     require('./nil-pool')(app);
     require('./convert-nil-pool')(app);
     require('./delete-pool')(app);
+    require('./dismiss-jurors')(app);
     require('./create-pool/summon-citizens')(app);
     require('./additional-summons')(app);
     require('./summoning-progress')(app);
