@@ -141,6 +141,12 @@ module.exports.postConfirmAttendance = function(app) {
         data: { trialNumber, payload },
       });
     } catch (err) {
+      Logger.instance.crit('Failed to confirm the jurors in a trial', {
+        auth: req.session.authentication,
+        data: { trialNumber, payload },
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+
       if (err.error?.code === 'DAY_ALREADY_CONFIRMED') {
         req.session.errors = makeManualError('dayAlreadyConfirmedForJuror', err.error.message);
 
@@ -148,12 +154,6 @@ module.exports.postConfirmAttendance = function(app) {
           trialNumber,
         }) + '?attendance_date=' + attendanceDate);
       }
-
-      Logger.instance.crit('Failed to confirm the jurors in a trial', {
-        auth: req.session.authentication,
-        data: { trialNumber, payload },
-        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-      });
 
       return res.render('_errors/generic');
     }
