@@ -16,6 +16,7 @@
   {{ attendanceSubNav({
     inWaitingUrl: url("juror-management.attendance.get"),
     onTrialUrl: url("juror-management.jurors-on-trial.get"),
+    canAccessJurorsOnTrial: canRecordAttendance,
     currentView: "in-waiting"
   }) }}
 
