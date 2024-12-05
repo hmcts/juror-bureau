@@ -82,6 +82,7 @@
       delete req.session.formFields;
       delete req.session[`${trialNumber}-${locationCode}-trial`];
       delete req.session[`${trialNumber}-${locationCode}-continueToEndTrial`];
+      delete req.session[`${trialNumber}-${locationCode}-reassignPanel`];
 
       // Clear returns flow
       delete req.session[`${trialNumber}-${locationCode}-handleAttendance`];
@@ -132,11 +133,14 @@
             successBanner,
             addPanelStatus: addPanelStatus.data,
             formActions: {
-              returnUrl: app.namedRoutes.build('trial-management.trials.return.post',
-                {
-                  trialNumber: req.params.trialNumber,
-                  locationCode: req.params.locationCode,
-                }),
+              returnUrl: app.namedRoutes.build('trial-management.trials.return.post', {
+                trialNumber: req.params.trialNumber,
+                locationCode: req.params.locationCode,
+              }),
+              reassignUrl: app.namedRoutes.build('trial-management.trials.reassign.post', {
+                trialNumber: req.params.trialNumber,
+                locationCode: req.params.locationCode,
+              }),
             },
             errors: {
               title: 'Please check the form',

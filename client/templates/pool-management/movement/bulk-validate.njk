@@ -43,8 +43,12 @@
     <form method="POST" id="deferralForm">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
-                <h1 class="govuk-heading-l govuk-!-margin-bottom-6">You cannot move some of these jurors</h1>
-                <p class="govuk-body govuk-!-margin-bottom-6">There's a problem moving one or more jurors for the following reasons.</p>
+                <h1 class="govuk-heading-l govuk-!-margin-bottom-6">
+                    {{ uniqueWording.title or "You cannot move some of these jurors" }}
+                </h1>
+                <p class="govuk-body govuk-!-margin-bottom-6">
+                    {{ uniqueWording.mainDescription or "There's a problem moving one or more jurors for the following reasons." }}
+                </p>
             </div>
         </div>
 
@@ -105,10 +109,18 @@
         {% endif %}
 
         {% if problemList.invalidStatus|length%}
+        {% set validStatusesString = "responded or summoned" %}
+        {% if validStatuses %}
+            {% set validStatusesString = validStatuses | prettyList("or") %}
+        {% endif %}
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
-                <h2 class="govuk-heading-m">Cannot be moved due to juror status</h2>
-                <p class="govuk-body">You can only move jurors with a responded or summoned status. The following jurors have a different status and cannot be moved.</p>
+                <h2 class="govuk-heading-m">
+                    {{ uniqueWording.invalidStatusTitle or "Cannot be moved due to juror status" }}
+                </h2>
+                <p class="govuk-body">
+                    {{ uniqueWording.invalidStatusDescription or "You can only move jurors with a " + validStatusesString + " status. The following jurors have a different status and cannot be moved." }}
+                </p>
                 <div class="govuk-grid-column-full govuk-!-margin-bottom-7">
                     {{ govukTable({
                     firstCellIsHeader: true,
@@ -138,7 +150,7 @@
         <div class="govuk-button-group">
             {% if (eligibleJurorLength === undefined) or (eligibleJurorLength > 0) %}
                 {{ govukButton({
-                    text: "Continue and move remaining jurors",
+                    text: uniqueWording.continueButton or "Continue and move remaining jurors",
                     attributes: {
                         formAction: continueUrl
                 }

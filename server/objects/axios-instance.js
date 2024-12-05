@@ -51,6 +51,10 @@ client.interceptors.response.use(
         trace: err.response?.data.trace,
       },
     };
+    
+    if (err.response?.data.reasonCode) {
+      error.error.reasonCode = err.response.data.reasonCode
+    }
 
     return Promise.reject(error);
   },

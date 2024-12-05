@@ -16,6 +16,15 @@
       }
     }) }}
 
+    {{ govukButton({
+      text: "Reassign panel member",
+      classes: "govuk-button--secondary govuk-!-margin-bottom-4",
+      attributes: {
+        id: "reassignPanelButton",
+        formAction: formActions.reassignUrl
+      }
+    }) if canEmpanel }}
+
     {% if errors.items["selectedJurors"] %}<div class="error-allocation">
       <p class="govuk-error-message">{{ errors.items['selectedJurors'][0].details }}</p>
       </div>

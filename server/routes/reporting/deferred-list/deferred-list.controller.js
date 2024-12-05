@@ -37,11 +37,13 @@
         return res.redirect(app.namedRoutes.build(`reports.deferred-list.filter.get`));
       }
 
+      const queryParams = '?filterOwnedDeferrals=' + (req.body.filterOwnedDeferrals ? 'true' : 'false');
+
       switch (req.body.searchBy) {
       case 'date':
-        return res.redirect(app.namedRoutes.build('reports.deferred-list-date.report.get', {filter: 'date'}));
+        return res.redirect(app.namedRoutes.build('reports.deferred-list-date.report.get', {filter: 'date'}) + queryParams);
       case 'court':
-        return res.redirect(app.namedRoutes.build('reports.deferred-list-court.report.get', {filter: 'court'}))
+        return res.redirect(app.namedRoutes.build('reports.deferred-list-court.report.get', {filter: 'court'}) + queryParams)
       default:
         return res.redirect(app.namedRoutes.build('reports.deferred-list.filter.get'));
       }

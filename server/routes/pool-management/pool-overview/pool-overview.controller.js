@@ -521,7 +521,10 @@ function courtView(app, req, res, pool, membersList, _errors, selectedJurors, se
   });
   let postponeUrl = app.namedRoutes.build('pool-overview.postpone.post', {
     poolNumber: req.params.poolNumber,
-  });;
+  });
+  let onCallUrl = app.namedRoutes.build('pool-overview.on-call.post', {
+    poolNumber: req.params.poolNumber,
+  });
 
   let availableSuccessMessage = false
     , successBanner
@@ -561,6 +564,7 @@ function courtView(app, req, res, pool, membersList, _errors, selectedJurors, se
     completeServiceUrl += `?${searchParams}`;
     transferUrl += `?${searchParams}`;
     assignUrl += `?${searchParams}`;
+    onCallUrl += `?${searchParams}`;
   }
 
   let pagination;
@@ -632,7 +636,7 @@ function courtView(app, req, res, pool, membersList, _errors, selectedJurors, se
       isActive: pool.poolDetails.isActive,
       currentOwner: pool.poolDetails.current_owner,
       currentTab: 'jurors',
-      postUrls: { assignUrl, transferUrl, completeServiceUrl, changeServiceDateUrl, postponeUrl },
+      postUrls: { assignUrl, transferUrl, completeServiceUrl, changeServiceDateUrl, postponeUrl, onCallUrl },
       navData: _.clone(req.session.poolManagementNav),
       errors: {
         title: 'Please check the form',
@@ -695,6 +699,48 @@ module.exports.postBulkPostpone = function(app) {
     }
     return res.redirect(app.namedRoutes.build('pool-management.postpone.get', {
       poolNumber: req.body.poolNumber,
+    }));
+  };
+};
+
+module.exports.postBulkOnCall = function(app) {
+  return async function(req, res) {
+
+    if (req.body['check-all-jurors']) {
+      try {
+        const poolMembers = await poolMembersDAO.post(req, filtersHelper(req, req.params.poolNumber), true);
+
+        req.body.selectedJurors = poolMembers.data.map(juror => juror.jurorNumber);
+      } catch (err) {
+        app.logger.crit('Failed to fetch pool members to bulk place on call: ', {
+          auth: req.session.authentication,
+          poolNumber: req.params.poolNumber,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic.njk');
+      };
+    } else {
+      const validatorResult = validate(req.body, jurorSelectValidator());
+
+      if (typeof validatorResult !== 'undefined') {
+        req.session.errors = validatorResult;
+        req.session.noJurorSelect = true;
+        return res.redirect(app.namedRoutes.build('pool-overview.get', {
+          poolNumber: req.body.poolNumber}));
+      }
+    }
+
+    req.session.poolJurorsOnCall = req.body;
+    delete req.session.poolJurorsOnCall._csrf;
+    delete req.session.errors;
+
+    if (!Array.isArray(req.body.selectedJurors)) {
+      req.session.poolJurorsOnCall.selectedJurors = [req.body.selectedJurors];
+    }
+
+    return res.redirect(app.namedRoutes.build('pool-management.on-call.validate.get', {
+      poolNumber: req.params.poolNumber,
     }));
   };
 };

@@ -420,11 +420,11 @@
      * @param {array} inputList input list
      * @returns {string} gramatically correct output
      */
-    prettyList: (inputList) => {
+    prettyList: (inputList, endingConnection = 'and') => {
       return inputList.reduce(
         (acc, current, index) => {
           if (index === inputList.length - 1) {
-            return acc + ' and ' + current;
+            return acc + ' ' + endingConnection + ' ' + current;
           }
           return acc + ', ' + current;
         },
@@ -589,6 +589,18 @@
       address = addressParts.join('<br> ');
       return address;
     },
+
+    jurorStatus: function(status) {
+      const longStatus = {
+        'FAILEDTOATTEND': 'Failed to attend',
+        'AWAITINGINFO': 'Awaiting info'
+      }
+      if (`${status}` in longStatus) {
+        return longStatus[status];
+      }
+      return this.toSentenceCase(status);
+    },
+  
   };
 
 })();

@@ -5,8 +5,8 @@
 {% from "custom-components/time-input-12-hour/macro.njk" import timeInput12Hour %}
 {% from "includes/csrf.njk" import csrfProtection %}
 
-{% block page_title %}{{ serviceName }} - Juror management - Dismiss jurors - Check out{% endblock %}
-{% block page_identifier %}Juror management - Dismiss jurors - Check out{% endblock %}
+{% block page_title %}{{ serviceName }} - Pool management - Dismiss jurors - Check out{% endblock %}
+{% block page_identifier %}Pool management - Dismiss jurors - Check out{% endblock %}
 
 {% block content %}
 
@@ -22,7 +22,7 @@
 
   {% include "includes/errors.njk" %}
 
-  <form action="{{ url('juror-management.dismiss-jurors.check-out.post') }}" method="POST">
+  <form action="{{ url('pool-management.dismiss-jurors.check-out.post') }}" method="POST">
 
     {{ govukTable({
       caption: "Some jurors have not been checked out",
@@ -99,7 +99,7 @@
         type: "submit"
       }) }}
 
-      <a class="govuk-link" href="{{ url('juror-management.dismiss-jurors.jurors.get') }}">
+      <a class="govuk-link" href="{{ url('pool-management.dismiss-jurors.jurors.get') }}">
         Back to select jurors
       </a>
     </div>

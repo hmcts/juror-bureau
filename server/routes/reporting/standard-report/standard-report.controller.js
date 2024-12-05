@@ -615,6 +615,9 @@
     if(req.query.includePanelMembers) {
       config.includePanelMembers = req.query.includePanelMembers;
     }
+    if(req.query.filterOwnedDeferrals) {
+      config.filterOwnedDeferrals = req.query.filterOwnedDeferrals;
+    }
 
     // Backlink routing needs saved for jurors report
     if (reportKey === 'daily-utilisation') {
@@ -642,6 +645,8 @@
       const { headings, tableData } = await (reportType.bespokeReport?.dao
         ? reportType.bespokeReport.dao(req, config)
         : standardReportDAO.post(req, config));
+
+      console.log(tableData);
 
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
       if (isExport) return reportExport(app, req, res, reportKey, { headings, tableData }) ;
@@ -828,7 +833,6 @@
 
   function addURLQueryParams(reportType, url){
     let queryParams = _.clone(reportType.queryParams);
-
     if(url.includes('?')) {
       url
         .split('?')[1]

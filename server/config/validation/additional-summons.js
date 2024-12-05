@@ -38,8 +38,8 @@
       message.summary = 'Number of citizens to summon is wrong';
       message.details.push('Number of citizens to summon is wrong');
     } else if (+attributes[key] > options.total) {
-      message.summary = 'Number of citizens to summon is too high';
-      message.details.push('Number of citizens to summon is too high');
+      message.summary = 'The number of citizens summoned is too high and exceeds the yield';
+      message.details.push('The number of citizens summoned is too high and exceeds the yield');
     }
 
     // Feedback

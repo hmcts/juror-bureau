@@ -8,7 +8,7 @@ The jurors selected by the officer are not random, but the list presented is ind
 The officer needs to have available a selection of active pools to select and generate a list of random jurors from.
 
 ## X.0.3 Controllers
-`bureau/server/routes/juror-management/dismiss-jurors/dismiss-jurors.controller.js`
+`bureau/server/routes/pool-management/dismiss-jurors/dismiss-jurors.controller.js`
 
 | Method name | Purpose |
 |-|-|
@@ -68,22 +68,22 @@ The officer needs to have available a selection of active pools to select and ge
 * Failed to checkout the selected jurors
 
 ## X.0.10 Templates
-`bureau/client/templates/juror-management/manage-jurors/dismiss-jurors/pools-list.njk`
+`bureau/client/templates/pool-management/dismiss-jurors/pools-list.njk`
 This template displays the list of pools and options that the officer can select for generating a random list of jurors to dismiss.
 
-`bureau/client/templates/juror-management/manage-jurors/dismiss-jurors/pools-table.njk`
+`bureau/client/templates/pool-management/dismiss-jurors/pools-table.njk`
 This template is partial and just displays the table of pools for the template above.
 
-`bureau/client/templates/juror-management/manage-jurors/dismiss-jurors/jurors-list.njk`
+`bureau/client/templates/pool-managementdismiss-jurors/jurors-list.njk`
 This template displays the list of jurors that the jury officer has available to dismiss. This also changes with pagination.
 
-`bureau/client/templates/juror-management/manage-jurors/dismiss-jurors/jurors-table.njk`
+`bureau/client/templates/pool-management/dismiss-jurors/jurors-table.njk`
 This template is partial and just displays the table of jurors avaiable to dismiss from.
 
-`bureau/client/templates/juror-management/manage-jurors/dismiss-jurors/complete-service.njk`
+`bureau/client/templates/pool-management/dismiss-jurors/complete-service.njk`
 This template displays a datepicker that the jury officer can use to select a date to complete the jurors service with.
 
-`bureau/client/templates/juror-management/manage-jurors/dismiss-jurors/check-out.njk`
+`bureau/client/templates/pool-management/dismiss-jurors/check-out.njk`
 This template displays the list of jurors still not checked out and a time input form to enter a checkout time. It allows the officer to post the time and checkout the jurors listed.
 
 ## X.0.11 Sequence diagram

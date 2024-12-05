@@ -14,85 +14,93 @@
 
 {% set updateOptions = [] %}
 
-{# bureau owned options #}
-{% if jurorStatus === "Summoned" and owner === "400" %}
-  {% set updateOptions = [responded, deferral, excusal, disqualify, postpone, deceased, undeliverable, reassign] %}
-{% endif %}
+{% if not jurorDOB %}
 
-{% if jurorStatus === "Responded" and owner === "400" %}
-  {% set updateOptions = [deferral, excusal, disqualify, postpone, reassign] %}
-{% endif %}
+  {% set updateOptions = [excusal, disqualify, deceased, undeliverable, reassign] %}
 
-{% if jurorStatus === "Excused" and owner === "400" %}
-  {% set updateOptions = [responded, deferral, excusal, disqualify, postpone, deceased] %}
-{% endif %}
+{% else %}
 
-{% if jurorStatus === "Disqualified" and owner === "400" %}
-  {% set updateOptions = [responded, deferral, excusal, postpone, deceased] %}
-{% endif %}
+  {# bureau owned options #}
+  {% if jurorStatus === "Summoned" and owner === "400" %}
+    {% set updateOptions = [responded, deferral, excusal, disqualify, postpone, deceased, undeliverable, reassign] %}
+  {% endif %}
 
-{% if jurorStatus === "Excused" and excusalCode === "D" and owner === "400" %}
-  {% set updateOptions = [responded, deferral, excusal, postpone, disqualify] %}
-{% endif %}
+  {% if jurorStatus === "Responded" and owner === "400" %}
+    {% set updateOptions = [deferral, excusal, disqualify, postpone, reassign] %}
+  {% endif %}
 
-{% if jurorStatus === "Deferred" and owner === "400" %}
-  {% set updateOptions = [responded, deferral, excusal, postpone, disqualify, deceased] %}
-{% endif %}
+  {% if jurorStatus === "Excused" and owner === "400" %}
+    {% set updateOptions = [responded, deferral, excusal, disqualify, postpone, deceased] %}
+  {% endif %}
 
-{# court owned options #}
-{% if jurorStatus === "Summoned" and owner !== "400" %}
-  {% set updateOptions = [responded, deferral, excusal, disqualify, postpone, deceased, undeliverable, reassign] %}
-{% endif %}
+  {% if jurorStatus === "Disqualified" and owner === "400" %}
+    {% set updateOptions = [responded, deferral, excusal, postpone, deceased] %}
+  {% endif %}
 
-{# responded and no attendances #}
-{% if jurorStatus === "Responded" and attendances === 0 and owner !== "400" %}
-  {% set updateOptions = [deferral, excusal, disqualify, postpone, deceased, complete, failedToAttend, reassign] %}
-{% endif %}
+  {% if jurorStatus === "Excused" and excusalCode === "D" and owner === "400" %}
+    {% set updateOptions = [responded, deferral, excusal, postpone, disqualify] %}
+  {% endif %}
 
-{# responded and attendances #}
-{% if jurorStatus === "Responded" and attendances > 0 and owner !== "400" %}
-  {% set updateOptions = [disqualify, deceased, complete, reassign] %}
-{% endif %}
+  {% if jurorStatus === "Deferred" and owner === "400" %}
+    {% set updateOptions = [responded, deferral, excusal, postpone, disqualify, deceased] %}
+  {% endif %}
 
-{% if jurorStatus === "Excused" and owner !== "400" %}
-  {% set updateOptions = [responded, deferral, excusal, disqualify, postpone, deceased] %}
-{% endif %}
+  {# court owned options #}
+  {% if jurorStatus === "Summoned" and owner !== "400" %}
+    {% set updateOptions = [responded, deferral, excusal, disqualify, postpone, deceased, undeliverable, reassign] %}
+  {% endif %}
 
-{% if jurorStatus === "Disqualified" and owner !== "400" %}
-  {% set updateOptions = [responded, deferral, excusal, postpone, deceased, complete] %}
-{% endif %}
+  {# responded and no attendances #}
+  {% if jurorStatus === "Responded" and attendances === 0 and owner !== "400" %}
+    {% set updateOptions = [deferral, excusal, disqualify, postpone, deceased, complete, failedToAttend, reassign] %}
+  {% endif %}
 
-{# deceased and no attendances #}
-{% if jurorStatus === "Excused" and excusalCode === "D" and attendances === 0 and owner !== "400" %}
-  {% set updateOptions = [responded, deferral, excusal, disqualify, postpone, complete] %}
-{% endif %}
+  {# responded and attendances #}
+  {% if jurorStatus === "Responded" and attendances > 0 and owner !== "400" %}
+    {% set updateOptions = [disqualify, deceased, complete, reassign] %}
+  {% endif %}
 
-{# deceased and attendances #}
-{% if jurorStatus === "Excused" and excusalCode === "D" and attendances > 0 and owner !== "400" %}
-  {% set updateOptions = [responded, disqualify, complete] %}
-{% endif %}
+  {% if jurorStatus === "Excused" and owner !== "400" %}
+    {% set updateOptions = [responded, deferral, excusal, disqualify, postpone, deceased] %}
+  {% endif %}
 
-{% if jurorStatus === "Deferred" and owner !== "400" %}
-  {% set updateOptions = [responded, deferral, excusal, disqualify, postpone, deceased] %}
-{% endif %}
+  {% if jurorStatus === "Disqualified" and owner !== "400" %}
+    {% set updateOptions = [responded, deferral, excusal, postpone, deceased, complete] %}
+  {% endif %}
 
-{# responded and juror is on call and no attendances #}
-{% if jurorStatus === "Responded" and attendances === 0 and onCall and owner !== "400" %}
-  {% set updateOptions = [deferral, excusal, disqualify, postpone, deceased, complete, failedToAttend, reassign] %}
-{% endif %}
+  {# deceased and no attendances #}
+  {% if jurorStatus === "Excused" and excusalCode === "D" and attendances === 0 and owner !== "400" %}
+    {% set updateOptions = [responded, deferral, excusal, disqualify, postpone, complete] %}
+  {% endif %}
 
-{# responded an juror is on call and has attendances #}
-{% if jurorStatus === "Responded" and attendances > 0 and onCall and owner !== "400" %}
-  {% set updateOptions = [disqualify, deceased, complete, reassign] %}
-{% endif %}
+  {# deceased and attendances #}
+  {% if jurorStatus === "Excused" and excusalCode === "D" and attendances > 0 and owner !== "400" %}
+    {% set updateOptions = [responded, disqualify, complete] %}
+  {% endif %}
 
-{% if jurorStatus === "FailedToAttend" and owner !== "400" and isSJO %}
-  {% set updateOptions = [undoFailedToAttend] %}
-{% endif %}
+  {% if jurorStatus === "Deferred" and owner !== "400" %}
+    {% set updateOptions = [responded, deferral, excusal, disqualify, postpone, deceased] %}
+  {% endif %}
 
-{# user type agnostic options #}
-{% if jurorStatus === "Undeliverable" %}
-  {% set updateOptions = [responded, deferral, excusal, postpone, disqualify] %}
+  {# responded and juror is on call and no attendances #}
+  {% if jurorStatus === "Responded" and attendances === 0 and onCall and owner !== "400" %}
+    {% set updateOptions = [deferral, excusal, disqualify, postpone, deceased, complete, failedToAttend, reassign] %}
+  {% endif %}
+
+  {# responded an juror is on call and has attendances #}
+  {% if jurorStatus === "Responded" and attendances > 0 and onCall and owner !== "400" %}
+    {% set updateOptions = [disqualify, deceased, complete, reassign] %}
+  {% endif %}
+
+  {% if jurorStatus === "FailedToAttend" and owner !== "400" and isSJO %}
+    {% set updateOptions = [undoFailedToAttend] %}
+  {% endif %}
+
+  {# user type agnostic options #}
+  {% if jurorStatus === "Undeliverable" %}
+    {% set updateOptions = [responded, deferral, excusal, postpone, disqualify] %}
+  {% endif %}
+
 {% endif %}
 
 

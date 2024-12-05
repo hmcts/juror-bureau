@@ -7,13 +7,15 @@ const validate = require('validate.js');
 const { jurorsToDismiss, completeService } = require('../../../config/validation/dismiss-jurors');
 const { checkOutTime } = require('../../../config/validation/check-in-out-time');
 const modUtils = require('../../../lib/mod-utils');
-const { getJurorsObject, dismissJurorsObject } = require('../../../objects/dismiss-jurors');
-const { fetchPoolsAtCourt } = require('../../../objects/request-pool');
-const { convertAmPmToLong, dateFilter, timeArrayToString, convert12to24 } = require('../../../components/filters');
+const { getDismissablePools, getJurorsObject, dismissJurorsObject } = require('../../../objects/dismiss-jurors');
+const { convertAmPmToLong, dateFilter, timeArrayToString, convert12to24, fullCourtType } = require('../../../components/filters');
 const { jurorAttendanceDao, updateJurorAttendanceDAO } = require('../../../objects/juror-attendance');
 
 module.exports.getDismissJurorsPools = function(app) {
   return async function(req, res) {
+    const page = req.query.page || 1;
+    const sortBy = req.query.sortBy || 'poolNumber';
+    const sortOrder = req.query.sortOrder || 'ascending';
     let tmpForm = {};
 
     const tmpErrors = _.clone(req.session.errors);
@@ -27,24 +29,38 @@ module.exports.getDismissJurorsPools = function(app) {
 
     if (req.session.dismissJurors) {
       tmpForm = req.session.dismissJurors;
+    } else {
+      req.session.dismissJurors = {};
     }
 
     try {
-      const pools = await fetchPoolsAtCourt.get(
+      const pools = await getDismissablePools.get(
         req,
         req.session.authentication.owner
       );
 
-      req.session.poolsAtCourt = pools.pools_at_court_location.filter(pool => pool.total_jurors !== 0);
+      let poolsAtCourt = sortPools(req,  pools.pools_at_court_location.filter(pool => pool.total_jurors !== 0));
+
+      let pageItems;
+      if (poolsAtCourt.length > modUtils.constants.PAGE_SIZE) {
+        pageItems = modUtils.paginationBuilder(poolsAtCourt.length, page, req.url);
+        poolsAtCourt = await paginatePoolsList(poolsAtCourt, page);
+      }
+
+      req.session.poolsAtCourt = poolsAtCourt;
+
 
       app.logger.info('Fetched the pools to dismiss jurors from: ', {
         auth: req.session.authentication,
         jwt: req.session.authToken,
       });
 
-      return res.render('juror-management/dismiss-jurors/pools-list.njk', {
-        totalCurrentlySelected: totalCurrentlySelected(tmpForm['checked-pools']),
-        pools: req.session.poolsAtCourt,
+      return res.render('pool-management/dismiss-jurors/pools-list.njk', {
+        pools: poolsAtCourt,
+        totalCheckedPools: req.session.selectedDismissalPools?.length || 0,
+        totalPools: pools.pools_at_court_location.filter(pool => pool.total_jurors !== 0).length,
+        poolsTable: transformPoolsList(app, poolsAtCourt, sortBy, sortOrder, req.session.selectedDismissalPools || [], poolsAtCourt.length),
+        pageItems,
         tmpForm,
         errors: {
           title: 'Please check the form',
@@ -65,31 +81,37 @@ module.exports.getDismissJurorsPools = function(app) {
 };
 
 module.exports.postDismissJurorsPools = function(app) {
-  return function(req, res) {
+  return async function(req, res) {
     const { action } = req.query;
     const calculateAvailableJurors = 'calculate_available_jurors';
-    const availablePools = _.clone(req.session.poolsAtCourt);
-    const jurorsAvailable = calculateTotalJurorsAvailable(req.body, availablePools);
+    const jurorsAvailable = await calculateTotalJurorsAvailable(app, req, res, req.body, _.clone(req.session.selectedDismissalPools));
 
     req.session.dismissJurors = req.body;
+    req.session.dismissJurors['checked-pools'] =_.clone(req.session.selectedDismissalPools);
     delete req.session.dismissJurors._csrf;
     delete req.session.poolsAtCourt;
+
 
     if (action === calculateAvailableJurors) {
       req.session.dismissJurors.jurorsAvailableToDismiss = jurorsAvailable;
 
-      return res.redirect(app.namedRoutes.build('juror-management.dismiss-jurors.pools.get'));
+      return res.redirect(app.namedRoutes.build('pool-management.dismiss-jurors.pools.get'));
+    }
+
+    if (!req.session.dismissJurors || !req.session.dismissJurors['checked-pools'] || !req.session.dismissJurors['checked-pools'].length) {
+      req.session.errors = modUtils.makeManualError('checked-pools', 'Select at least one pool')
+      return res.redirect(app.namedRoutes.build('pool-management.dismiss-jurors.pools.get'));
     }
 
     const validatorResult = validate(req.body, jurorsToDismiss(jurorsAvailable));
 
-    if (validatorResult) {
+    if (validatorResult ) {
       req.session.errors = validatorResult;
 
-      return res.redirect(app.namedRoutes.build('juror-management.dismiss-jurors.pools.get'));
+      return res.redirect(app.namedRoutes.build('pool-management.dismiss-jurors.pools.get'));
     }
 
-    return res.redirect(app.namedRoutes.build('juror-management.dismiss-jurors.jurors.get'));
+    return res.redirect(app.namedRoutes.build('pool-management.dismiss-jurors.jurors.get'));
   };
 };
 
@@ -130,7 +152,7 @@ module.exports.getJurorsList = function(app) {
       const totalJurors = req.session.dismissJurors.jurors.length;
       const totalCheckedJurors = req.session.dismissJurors.jurors.filter(juror => juror.checked).length;
 
-      return res.render('juror-management/dismiss-jurors/jurors-list.njk', {
+      return res.render('pool-management/dismiss-jurors/jurors-list.njk', {
         jurors,
         pagination,
         totalJurors,
@@ -139,7 +161,7 @@ module.exports.getJurorsList = function(app) {
         sortDirection: sortDirection || 'ascending',
         backLinkUrl: {
           built: true,
-          url: app.namedRoutes.build('juror-management.dismiss-jurors.pools.get'),
+          url: app.namedRoutes.build('pool-management.dismiss-jurors.pools.get'),
         },
         errors: {
           title: 'Please check the form',
@@ -162,9 +184,9 @@ module.exports.getJurorsList = function(app) {
 module.exports.postJurorsList = function(app) {
   return async function(req, res) {
     const urls = {
-      jurors: 'juror-management.dismiss-jurors.jurors.get',
-      checkOut: 'juror-management.dismiss-jurors.check-out.get',
-      completeService: 'juror-management.dismiss-jurors.complete-service.get',
+      jurors: 'pool-management.dismiss-jurors.jurors.get',
+      checkOut: 'pool-management.dismiss-jurors.check-out.get',
+      completeService: 'pool-management.dismiss-jurors.complete-service.get',
     };
 
     const checkedJurors = req.session.dismissJurors.jurors.filter(juror => juror.checked);
@@ -224,7 +246,7 @@ module.exports.getCompleteService = function() {
 
     req.session.dismissJurors.latestServiceStartDate = latestServiceStartDate;
 
-    return res.render('juror-management/dismiss-jurors/complete-service.njk', {
+    return res.render('pool-management/dismiss-jurors/complete-service.njk', {
       today,
       latestServiceStartDate,
       dateLimit,
@@ -247,7 +269,7 @@ module.exports.postCompleteService = function(app) {
         completionDate: validatorResult.dateToCheck,
       };
 
-      return res.redirect(app.namedRoutes.build('juror-management.dismiss-jurors.complete-service.get'));
+      return res.redirect(app.namedRoutes.build('pool-management.dismiss-jurors.complete-service.get'));
     }
 
     const latestServiceStartDate = req.session.dismissJurors.latestServiceStartDate;
@@ -262,7 +284,7 @@ module.exports.postCompleteService = function(app) {
         }],
       };
 
-      return res.redirect(app.namedRoutes.build('juror-management.dismiss-jurors.complete-service.get'));
+      return res.redirect(app.namedRoutes.build('pool-management.dismiss-jurors.complete-service.get'));
     }
 
     try {
@@ -284,8 +306,9 @@ module.exports.postCompleteService = function(app) {
       req.session.bannerMessage = `${checkedJurors.length} jurors dismissed and service completed.`;
 
       delete req.session.dismissJurors;
+      delete req.session.selectedDismissalPools;
 
-      return res.redirect(app.namedRoutes.build('juror-management.manage-jurors.pools.get'));
+      return res.redirect(app.namedRoutes.build('pool-management.get') + '?status=created');
     } catch (err) {
       app.logger.crit('Failed to dismiss the selected jurors: ', {
         auth: req.session.authentication,
@@ -293,7 +316,7 @@ module.exports.postCompleteService = function(app) {
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
-      return res.redirect(app.namedRoutes.build('juror-management.dismiss-jurors.complete-service.get'));
+      return res.redirect(app.namedRoutes.build('pool-management.dismiss-jurors.complete-service.get'));
     }
   };
 };
@@ -309,7 +332,7 @@ module.exports.getCheckOutJurors = function() {
       _checkOutTime = req.session.dismissJurors.checkOutTime;
     }
 
-    return res.render('juror-management/dismiss-jurors/check-out.njk', {
+    return res.render('pool-management/dismiss-jurors/check-out.njk', {
       checkOutTime: _checkOutTime,
       notCheckedOut: req.session.dismissJurors.notCheckedOut,
       errors: {
@@ -336,7 +359,7 @@ module.exports.postCheckOutJurors = function(app) {
     if (validatorResult) {
       req.session.errors = validatorResult;
 
-      return res.redirect(app.namedRoutes.build('juror-management.dismiss-jurors.check-out.get'));
+      return res.redirect(app.namedRoutes.build('pool-management.dismiss-jurors.check-out.get'));
     }
 
     const checkOutTimeErrors = compareCheckInAndCheckOutTimes(req.session.dismissJurors);
@@ -349,7 +372,7 @@ module.exports.postCheckOutJurors = function(app) {
         }],
       };
 
-      return res.redirect(app.namedRoutes.build('juror-management.dismiss-jurors.check-out.get'));
+      return res.redirect(app.namedRoutes.build('pool-management.dismiss-jurors.check-out.get'));
     }
 
     try {
@@ -373,7 +396,7 @@ module.exports.postCheckOutJurors = function(app) {
         jwt: req.session.authToken,
       });
 
-      return res.redirect(app.namedRoutes.build('juror-management.dismiss-jurors.complete-service.get'));
+      return res.redirect(app.namedRoutes.build('pool-management.dismiss-jurors.complete-service.get'));
     } catch (err) {
       app.logger.crit('Failed to checkout the selected jurors: ', {
         auth: req.session.authentication,
@@ -388,7 +411,7 @@ module.exports.postCheckOutJurors = function(app) {
         }],
       };
 
-      return res.redirect(app.namedRoutes.build('juror-management.dismiss-jurors.check-out.get'));
+      return res.redirect(app.namedRoutes.build('pool-management.dismiss-jurors.check-out.get'));
     }
   };
 };
@@ -419,22 +442,72 @@ module.exports.postCheckJuror = function(app) {
   };
 };
 
-// the checked pools can be posted as a single string or as an array of pool numbers
-// to calculate how many is selected we need first to check what it is to count
-function totalCurrentlySelected(checkedPools) {
-  const checkedPoolsType = typeof checkedPools;
+module.exports.postCheckPool = function(app) {
+  return async function(req, res) {
+    const { poolNumber, action } = req.query;
 
-  if (checkedPoolsType === 'string') return 1;
-  if (checkedPools instanceof Array) return checkedPools.length;
-  return 0;
-}
+    if (poolNumber === 'check-all-pools') {
+      let pools;
+      try {
+        pools = (await getDismissablePools.get(
+          req,
+          req.session.authentication.owner
+        )).pools_at_court_location.filter(pool => pool.total_jurors !== 0).map(p => p.pool_number);
 
-function calculateTotalJurorsAvailable(selections, allPools){
-  if (selections['checked-pools']){
-    const selectedPools = allPools.filter((pool) => selections['checked-pools'].includes(pool.pool_number));
+      } catch (err) {
+        app.logger.crit('Failed to fetch pools to dismiss jurors when checking all pools: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+  
+        return res.render('_errors/generic.njk');
+      }
+      req.session.selectedDismissalPools = action === 'check' ? pools : [];
+    } else {
+      if (action === 'check') {
+        req.session.selectedDismissalPools ? req.session.selectedDismissalPools.push(poolNumber) : req.session.selectedDismissalPools = [poolNumber];
+      } else {
+        if (req.session.selectedDismissalPools) {
+          req.session.selectedDismissalPools = req.session.selectedDismissalPools.filter(p => p !== poolNumber);
+        }
+      }
+    }
+
+    app.logger.info('Checked or unchecked one or more pools: ', {
+      auth: req.session.authentication,
+      jwt: req.session.authToken,
+      data: {
+        poolNumber,
+      },
+    });
+
+    return res.send();
+  };
+};
+
+async function calculateTotalJurorsAvailable(app, req, res, selections, selectedPools){
+  if (selectedPools){
+    let pools;
+    try {
+      pools = (await getDismissablePools.get(
+        req,
+        req.session.authentication.owner
+      )).pools_at_court_location;
+    } catch (err) { 
+      app.logger.crit('Failed to fetch pools to calculate available jurors to dismiss ', {
+        auth: req.session.authentication,
+        jwt: req.session.authToken,
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+
+      return res.render('_errors/generic.njk');
+    }
+
     let totalAvailable = 0;
 
-    selectedPools.forEach((pool) => {
+    selectedPools.forEach((poolNo) => {
+      const pool = pools.find(pool => pool.pool_number === poolNo);
       totalAvailable = totalAvailable + pool.jurors_in_attendance;
       if (selections['jurors-to-include']) {
         if (selections['jurors-to-include'].includes('on-call')) {
@@ -510,4 +583,189 @@ function compareCheckInAndCheckOutTimes({ notCheckedOut, checkOutTime: time }) {
 
   return notCheckedOut
     .filter(juror => _checkOutTime < convertAmPmToLong(timeArrayToString(juror.check_in_time)));
+}
+
+function transformPoolsList(app, pools, sortBy, sortOrder, checkedPools, totalPools) {  
+  const order = sortOrder || 'ascending';
+  const allPoolsChecked = checkedPools.length === totalPools ? 'checked' : '';
+  const table = {
+    head: [
+      {
+        id: 'checkAllPools',
+        html: 
+          '<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">'
+          + '<input type="checkbox" class="govuk-checkboxes__input" id="check-all-pools" aria-label="check-all-pools" ' + allPoolsChecked + '/>'
+          + '<label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="check-all-pools">'
+          + '<span class="govuk-visually-hidden">Select all pools</span>'
+          + '</label>'
+          + '</div>'
+          ,
+        sort: 'none',
+        sortable: false,
+      },
+      {
+        id: 'poolNumber',
+        value: 'Pool Number',
+        sort: sortBy === 'poolNumber' ? order : 'none',
+        sortable: true,
+      },
+      {
+        id: 'jurorsInAttendance',
+        value: 'Jurors in attendance',
+        sort: sortBy === 'jurorsInAttendance' ? order : 'none',
+        sortable: true,
+      },
+      {
+        id: 'jurorsOnCall',
+        value: 'Jurors on call',
+        sort: sortBy === 'jurorsOnCall' ? order : 'none',
+        sortable: true,
+      },
+      {
+        id: 'others',
+        value: 'Others',
+        sort: sortBy === 'others' ? order : 'none',
+        sortable: true,
+      },
+      {
+        id: 'total',
+        value: 'Total',
+        sort: sortBy === 'total' ? order : 'none',
+        sortable: true,
+      },
+      {
+        id: 'poolType',
+        value: 'Pool type',
+        sort: sortBy === 'poolType' ? order : 'none',
+        sortable: true,
+      },
+      {
+        id: 'serviceStartDate',
+        classes: 'jd-middle-align mod-padding-block--0',
+        value: 'Service start date',
+        sort: sortBy === 'serviceStartDate' ? order : 'none',
+        sortable: true,
+      },
+    ],
+    rows: [],
+  };
+
+  pools.forEach((pool) => {
+    const checked = checkedPools.some(p => p === pool.pool_number) ? 'checked' : '';
+    table.rows.push([
+      {
+        html: '<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">'
+          + '<input type="checkbox" class="govuk-checkboxes__input"'
+          + 'id="pool-' + pool.pool_number + '" aria-label="check-pool-' + pool.pool_number + '"'
+          + 'name="checked-pools" value="' + pool.pool_number + '" '
+          + checked + '/>'
+          + '<label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="pool-' + pool.pool_number + '">'
+          + '<span class="govuk-visually-hidden">Select pool ' + pool.pool_number + '</span>'
+          + '</label>'
+          + '</div>',
+        attributes: {
+          'data-sort-value': pool.pool_number,
+        },
+        classes: 'mod-padding-block--0',
+      },
+      {
+        html: `<a href="${app.namedRoutes.build('pool-overview.get', {poolNumber: pool.pool_number})}" class="govuk-link">${pool.pool_number}</a>`,
+        attributes: {
+          'data-sort-value': pool.pool_number,
+        },
+        classes: 'jd-middle-align mod-padding-block--0',
+      },
+      {
+        text: pool.jurors_in_attendance ,
+        attributes: {
+          'data-sort-value': pool.jurors_in_attendance ,
+        },
+        classes: 'jd-middle-align mod-padding-block--0',
+      },
+      {
+        text: pool.jurors_on_call,
+        attributes: {
+          'data-sort-value': pool.jurors_on_call,
+        },
+        classes: 'jd-middle-align mod-padding-block--0',
+      },
+      {
+        text: pool.other_jurors,
+        attributes: {
+          'data-sort-value': pool.other_jurors,
+        },
+        classes: 'jd-middle-align mod-padding-block--0',
+      },
+      {
+        text: pool.total_jurors,
+        attributes: {
+          'data-sort-value': pool.total_jurors,
+        },
+        classes: 'jd-middle-align mod-padding-block--0',
+      },
+      {
+        text: fullCourtType(pool.pool_type),
+        attributes: {
+          'data-sort-value': pool.pool_type,
+        },
+        classes: 'jd-middle-align mod-padding-block--0',
+      },
+      {
+        text: dateFilter(pool.service_start_date, 'YYYY-MM-DD', 'ddd D MMM YYYY'),
+        attributes: {
+          'data-sort-value': pool.service_start_date,
+        },
+        classes: 'jd-middle-align mod-padding-block--0',
+      }
+    ]);
+  });
+
+  return table;
+};
+
+function sortPools(req, pools) {
+  const SORT_BY = {
+    poolNumger: 'pool_number',
+    jurorsInAttendance: 'jurors_in_attendance',
+    jurorsOnCall: 'jurors_on_call',
+    others: 'other_jurors',
+    total: 'total_jurors',
+    poolType: 'pool_type',
+    serviceStartDate: 'service_start_date',
+  };
+
+  const sortBy = req.query.sortBy || 'poolNumber';
+  const sortDirection = req.query.sortOrder || 'ascending';
+  const _sortBy = SORT_BY[sortBy] || 'pool_number';
+
+  const isNumber = (value) => !isNaN(value);
+
+  if (sortBy) {
+    return pools.sort((a, b) => {
+      let _a = a[_sortBy] ? a[_sortBy] : '-';
+      let _b = b[_sortBy] ? b[_sortBy] : '-';
+
+      if (sortDirection === 'ascending') {
+        if (isNumber(_a) && isNumber(_b)) return _a - _b;
+        return _a.localeCompare(_b);
+      }
+
+      if (isNumber(_a) && isNumber(_b)) return _b - _a;
+      return _b.localeCompare(_a);
+    });
+  }
+}
+
+function paginatePoolsList(jurors, currentPage) {
+  return new Promise((resolve) => {
+    let start = 0;
+    let end = modUtils.constants.PAGE_SIZE;
+
+    if (currentPage > 1) {
+      start = (currentPage - 1) * modUtils.constants.PAGE_SIZE;
+      end = currentPage * modUtils.constants.PAGE_SIZE;
+    }
+
+    resolve(jurors.slice(start, end));
+  });
 }

@@ -1135,6 +1135,7 @@
     delete req.session.postponeToDate;
     delete req.session.changeName;
     delete req.session[`editJurorDetails-${jurorNumber}`];
+    delete req.session[`catchmentWarning-${jurorNumber}`];
   }
 
   function cacheJurorCommonDetails(req, commonDetails) {

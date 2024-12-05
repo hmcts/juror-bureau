@@ -1,0 +1,76 @@
+{% extends "layouts/default.njk" %}
+
+{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{%- from "moj/components/button-menu/macro.njk" import mojButtonMenu -%}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{% block page_title %}{{ serviceName }} - Trial management - Reassign panel - Confirm{% endblock %}
+{% block page_identifier %}Trial management - Reassign panel - Confirm{% endblock %}
+
+{% set currentApp = "Trials" %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <form method="POST" id="deferralForm">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">Reassign panel members</h1>
+      </div>
+    </div>
+
+    <div class="govuk-grid-row govuk-!-margin-bottom-5">
+      <div class="govuk-grid-column-two-thirds">
+        {% for juror in jurors %}
+          <p>{{juror.juror_number}} - {{juror.first_name}} {{juror.last_name}}</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {{ govukTable({
+          caption: "Reassign to",
+          captionClasses: "govuk-table__caption--m",
+          head: [
+            {
+              text: "Trial number"
+            },
+            {
+              text: "Defendants" if trial.trial_type === "Criminal" else "Respondents"
+            }
+          ],
+          rows: [
+            [
+              {
+                text: trial.trial_number
+              },
+              {
+                text: trial.defendants
+              }
+            ]
+          ]
+        }) }}
+      </div>
+    </div>
+
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Continue and move remaining jurors",
+        attributes: {
+          formAction: continueUrl
+        }
+      }) }}
+      <a href="{{ cancelUrl }}" class="govuk-body govuk-link--no-visited-state" id="cancelAnchor">Cancel</a>
+        
+    </div>
+
+    <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">
+    <input type="hidden" name="version" id="version" value="{{ version }}">
+  </form>
+
+{% endblock %}
