@@ -98,7 +98,7 @@ module.exports.postDismissJurorsPools = function(app) {
       return res.redirect(app.namedRoutes.build('pool-management.dismiss-jurors.pools.get'));
     }
 
-    if (!req.session.dismissJurors['checked-pools'].length) {
+    if (!req.session.dismissJurors || !req.session.dismissJurors['checked-pools'] || !req.session.dismissJurors['checked-pools'].length) {
       req.session.errors = modUtils.makeManualError('checked-pools', 'Select at least one pool')
       return res.redirect(app.namedRoutes.build('pool-management.dismiss-jurors.pools.get'));
     }
