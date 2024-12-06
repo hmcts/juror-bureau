@@ -118,6 +118,9 @@
       }).then(
         (court) => {
           if (court.locationCode === req.session.locCode) {
+            if (req.params.action === 'excused' && req.session[`reassignExcusalPayload-${req.params.id}`]?.excusalDecision === 'REFUSE') {
+              return sendExcusalRequest(app)(req, res, req.session[`reassignExcusalPayload-${req.params.id}`]);
+            }
             return res.redirect(app.namedRoutes.build(actionPaths(req.params.action, req.params.type), {
               id: req.params.id,
               type: req.params.type,
@@ -272,6 +275,10 @@
             delete req.session.receivingCourtLocCode;
             delete req.session[`reassignProcessCurrentPool-${id}`];
 
+            if (req.params.action === 'excused' && req.session[`reassignExcusalPayload-${req.params.id}`]?.excusalDecision === 'REFUSE') {
+              return sendExcusalRequest(app)(req, res, req.session[`reassignExcusalPayload-${req.params.id}`]);
+            }
+
             return res.redirect(app.namedRoutes.build(actionPaths(req.params.action, req.params.type), {
               id: req.params.id,
               type: req.params.type,
@@ -384,6 +391,7 @@
 
   module.exports.getReassignBeforeProcessExcusal = (app) => {
     return async(req, res) => {
+      delete req.session[`reassignExcusalPayload-${req.params.id}`];
       try {
         if (!req.session.excusalReasons) {
           req.session.excusalReasons = await systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL');
@@ -461,61 +469,19 @@
           action: req.params.action,
         }));
       }
-      excusalObj.put(
-        req,
-        req.body,
-        req.params.id,
-        req.params.type
-      )
-        .then(
-          () => {
-            app.logger.info('Excusal processed (reassign before process): ', {
-              auth: req.session.authentication,
-              jwt: req.session.authToken,
-              data: { body: req.body, jurorNumber: req.params['id'] },
-            });
 
-            const codeMessage = (code) => req.session.excusalReasons
-                .filter((el) => el.code === code)[0].description,
-              reason = {
-                REFUSE: 'Excusal refused (' + codeMessage(req.body.excusalCode).toLowerCase() + ')',
-                GRANT: 'Excusal granted (' + codeMessage(req.body.excusalCode).toLowerCase() + ')',
-              };
+      if (req.body.excusalDecision === 'GRANT') {
+        return sendExcusalRequest(app)(req, res, req.body);
+      }
 
-            req.session.responseWasActioned = {
-              jurorDetails: req.session.replyDetails,
-              type: reason[req.body.excusalDecision],
-            };
-
-            if (req.body.excusalDecision === 'REFUSE') {
-              // if refused we need to offer chance to reassign
-              return res.redirect(app.namedRoutes.build('reassign-before-process.get', {
-                id: req.params.id,
-                type: req.params.type,
-                action: 'excused',
-              }));
-            }
-
-            delete req.session.excusalReasons;
-
-            if (req.params.type === 'paper') {
-              return res.redirect(app.namedRoutes.build('response.paper.details.get', req.params));
-            }
-            return res.redirect(app.namedRoutes.build('response.detail.get', req.params));
-          }
-        )
-        .catch(
-          (err) => {
-            app.logger.crit('Failed to process excusal (reassign before process): ', {
-              auth: req.session.authentication,
-              jwt: req.session.authToken,
-              data: { body: req.body, jurorNumber: req.params['id'] },
-              error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-            });
-
-            return res.render('_errors/generic');
-          }
-        );
+      req.session[`reassignExcusalPayload-${req.params.id}`] = req.body;
+      // if refused we need to offer chance to reassign
+      return res.redirect(app.namedRoutes.build('reassign-before-process.get', {
+        id: req.params.id,
+        type: req.params.type,
+        action: 'excused',
+      }));
+      
     };
   };
 
@@ -526,6 +492,54 @@
       excused: responseType === 'paper' ? 'response.paper.details.get' : 'response.detail.get',
     }
     return actionPaths[action];
+  }
+
+  const sendExcusalRequest = (app) => {
+    return async (req, res, payload) => {
+      try {
+        await excusalObj.put(
+          req,
+          payload,
+          req.params.id,
+          req.params.type
+        );
+
+        app.logger.info('Excusal processed (reassign before process): ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: { body: payload, jurorNumber: req.params['id'] },
+        });
+
+        const codeMessage = (code) => req.session.excusalReasons
+            .filter((el) => el.code === code)[0].description,
+          reason = {
+            REFUSE: 'Excusal refused (' + codeMessage(payload.excusalCode).toLowerCase() + ')',
+            GRANT: 'Excusal granted (' + codeMessage(payload.excusalCode).toLowerCase() + ')',
+          };
+
+        req.session.responseWasActioned = {
+          jurorDetails: req.session.replyDetails,
+          type: reason[payload.excusalDecision],
+        };
+
+        delete req.session.excusalReasons;
+        delete req.session[`reassignExcusalPayload-${req.params.id}`];
+
+        if (req.params.type === 'paper') {
+          return res.redirect(app.namedRoutes.build('response.paper.details.get', req.params));
+        }
+        return res.redirect(app.namedRoutes.build('response.detail.get', req.params));
+      } catch (err) {
+        app.logger.crit('Failed to process excusal (reassign before process): ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: { body: payload, jurorNumber: req.params['id'] },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic');
+      }
+    }
   }
 
 })();
