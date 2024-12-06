@@ -6,6 +6,7 @@
   const dateFilter = require('../../components/filters').dateFilter;
   const { jurorsAttending, poolAttedanceAuditDAO, unconfirmedJurorAttendancesDAO } = require('../../objects/juror-attendance');
   const moment = require('moment');
+  const { isSJOUser, isCourtManager, isCourtUser } = require('../../components/auth/user-type');
 
   module.exports.isAttendanceConfirmed = async function(app, req, locCode, attendanceDate) {
       return isAttendanceConfirmedByAttendances(await getAppearances(app,req, locCode, attendanceDate));
@@ -29,6 +30,8 @@
 
   module.exports.getAttendance = function(app) {
     return async function(req, res) {
+      const canRecordAttendance = isCourtUser(req) && !(isSJOUser(req) && !isCourtManager(req));
+
       const { status } = req.params;
       const { date, tab } = req.query;
       const dateFormat = 'dddd D MMMM YYYY';
@@ -56,7 +59,7 @@
         const listedJurors = req.session.dailyAttendanceList.filter(attendee => attendee.checkInTime !== null);
 
         const confirmedJurors = req.session.dailyAttendanceList.filter(
-          attendee => (attendee.checkInTime !== null && attendee.checkOutTime !== null)
+          attendee => (attendee.checkInTime !== null && attendee.checkOutTime !== null && (attendee.appearanceConfirmed || (attendee.appStage === 'EXPENSE_ENTERED' || attendee.appStage === 'EXPENSE_AUTHORISED')))
         );
 
         const absentJurors = req.session.dailyAttendanceList.filter(
@@ -94,7 +97,7 @@
         }
 
         let unconfirmedJurors = [];
-        if (attendanceConfirmed) {
+        if (attendanceConfirmed && isSJOUser(req, res)) {
           try {
             unconfirmedJurors = await unconfirmedJurorAttendancesDAO.get(req, req.session.authentication.locCode, date || dateFilter(new Date(), null, 'yyyy-MM-DD'));
           } catch (err) {
@@ -143,6 +146,7 @@
           unconfirmedAttendancesUrl:  unconfirmedJurors.length > 0
             ? app.namedRoutes.build('juror-management.attendance.unconfirmed-attendances.get') + `?date=${dateFilter(date, null, 'YYYY-MM-DD')}`
             : null,
+          canRecordAttendance,
         });
       } catch (err) {
         app.logger.crit('Failed to fetch jurors attendance list: ', {
