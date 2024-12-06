@@ -562,7 +562,7 @@
   module.exports.postEditApprovalExpensesEditApplyToAll = function(app) {
     return async function(req, res) {
       const { jurorNumber, locCode, status } = req.params;
-      const page = parseFloat(req.query['page']) || 1;
+      const page = parseInt(req.query['page']) || 1;
       const date = req.query.date;
       let redirectUrl = app.namedRoutes.build('juror-management.edit-expense.edit.get', {
         jurorNumber,
