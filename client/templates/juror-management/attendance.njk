@@ -16,6 +16,7 @@
   {{ attendanceSubNav({
     inWaitingUrl: url("juror-management.attendance.get"),
     onTrialUrl: url("juror-management.jurors-on-trial.get"),
+    canAccessJurorsOnTrial: canRecordAttendance,
     currentView: "in-waiting"
   }) }}
 
@@ -57,7 +58,7 @@
       <div class="govuk-button-group mod-flex mod-justify-end">
         <div class="moj-button-menu">
           <div class="moj-button-menu__wrapper">
-            {% if attendanceStatus === "Unconfirmed" %}
+            {% if attendanceStatus === "Unconfirmed" and canRecordAttendance%}
               {{ govukButton({
                 text: "Confirm attendance",
                 classes: "govuk-button--secondary",
@@ -82,7 +83,6 @@
               }
             }) }}
 
-            {% if attendanceStatus === "Confirmed" %}
               {% set auditNumbers = [] %}
               {% for auditNumber in poolAttendaceAuditNumbers %}
                 {% set auditNumbers = (auditNumbers.push(
@@ -94,27 +94,26 @@
                 ), auditNumbers) %}
               {% endfor %}
 
-              {{ mojButtonMenu({
-                items: auditNumbers.concat([{
-                    text: "Panel selection report",
-                    href: reportUrls.panelSelectionReport,
-                    classes: "govuk-button--secondary"
-                  }]),
-                attributes: {
-                  id: 'printAttendanceButtonMenu'
-                }
-              }) }}
-            {% endif %}
+              {% if auditNumbers | length %}
+                {{ mojButtonMenu({
+                  items: auditNumbers,
+                  attributes: {
+                    id: 'printAttendanceButtonMenu'
+                  }
+                }) }}
+              {% endif %}
           </div>
         </div>
       </div>
     </div>
-    <div class="govuk-grid-column-full">
-      {{ govukTag({
-        text: attendanceStatus,
-        classes: "mod-tag--dark-blue" if attendanceStatus === "Confirmed" else "govuk-tag--grey"
-      }) }}
-    </div>
+    {% if attendanceStatus === "Confirmed" %}
+      <div class="govuk-grid-column-full"> 
+        {{ govukTag({
+          text: "Locked",
+          classes: "mod-tag--dark-blue"
+        }) }}
+      </div>
+    {% endif %}
   </div>
 
   {% if status === "in-waiting" %}

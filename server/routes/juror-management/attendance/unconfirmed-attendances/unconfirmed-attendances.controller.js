@@ -6,6 +6,7 @@
   const { validate } = require('validate.js');
   const { changeAttendanceTimes } = require('../../../../config/validation/change-attendance-times');
   const { unconfirmedJurorAttendancesDAO, confirmJurorAttendanceDAO } = require('../../../../objects');
+  const { makeManualError } = require('../../../../lib/mod-utils');
 
   module.exports.getUnconfirmedAttendances = function(app) {
     return async function(req, res) {
@@ -113,6 +114,12 @@
           data: payload,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
+
+        if (err.statusCode = 422 && err.error.statusCode === 'code=INVALID_JUROR_STATUS') {
+          req.session.errors = makeManualError('status', err.error.message);
+          req.session.formFields = req.body;
+          return res.redirect(app.namedRoutes.build('juror-management.attendance.unconfirmed-attendances.update.get', { jurorNumber }) + `${date ? `?date=${date}` : ''}`);
+        }
 
         return res.render('_errors/generic.njk');
       }

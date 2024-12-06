@@ -6,7 +6,7 @@
 
 {% set currentTab = confirmedTab %}
 
-{% if unconfirmedAttendancesUrl %}
+{% if unconfirmedAttendancesUrl and isSJO %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full govuk-body govuk-!-margin-top-3 govuk-!-margin-bottom-2">
       <a href="{{ unconfirmedAttendancesUrl }}" class="govuk-link">Jurors with a check in/check out time that have not had attendance confirmed</a>
@@ -41,7 +41,7 @@
         <span id="confirmedJurors">{{ confirmedJurors.length }}</span> juror{% if confirmedJurors.length > 1 %}s{% endif %} confirmed as attending
       </b>
       
-      <table class="govuk-table {% if listedJurors.length === 0 %}js-hidden{% endif %}"
+      <table class="govuk-table {% if confirmedJurors.length === 0 %}js-hidden{% endif %}"
       data-module="moj-sortable-table" id="attendanceTable">
         <caption class="govuk-table__caption govuk-visually-hidden">Confirmed jurors list</caption>
 
