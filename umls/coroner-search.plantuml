@@ -1,0 +1,86 @@
+@startuml coroner-court-search
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant SearchPage as HomePage <</pool-management/search>>
+participant CoronerPoolSearchPage as FormPage <</pool-management/coroner-pool/search>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant CoronerSearchController as Controller <<coroner-pool-search.controller.js>> #LightYellow
+participant FetchCourtsDAO as DataDAO <<fetchCourts.get()>> #LightYellow
+participant CoronerPoolSearchDAO as SubmitDAO <<searchCoronerPoolsDAO.post()>> #LightYellow
+
+''' TEMPLATES
+participant CoronerSearchTemplate <<pool-management/coroner-court/coroner-pool-search>> #lavender
+participant ErrorTemplate as Error <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant RequestPoolValidator as Validator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+Actor -> HomePage : Click 'different search'
+
+HomePage -> Controller : call page controller
+
+''' Data DAO
+Controller -> DataDAO : build request object
+DataDAO -> BackendController : send backend request
+DataDAO <- BackendController : ok response
+
+alt API failure
+  DataDAO <-- BackendController : error response
+  Controller <-- DataDAO : reject requestObject
+  Controller -> Error : request and build template
+  Controller <- Error : return HTML
+  Actor <- Controller : render error page
+end
+|||
+
+Controller <- DataDAO : resolve request
+
+''' Form
+Controller -> FormTemplate : request and build template
+Controller <- FormTemplate : return HTML
+FormPage <- Controller : return HTML
+Actor o<- FormPage : render HTML
+
+Actor -> FormPage : submit form details
+FormPage -> Controller : POST form
+Controller -> Validator : validate form submission
+
+alt Form missing selections
+  Controller <-- Validator : invalid form
+  Controller -> FormTemplate : request and build template
+  Controller <- FormTemplate : return HTML
+  FormPage <- Controller : return error HTML
+  Actor <- FormPage : render error message
+end
+|||
+
+Controller <- Validator : valid form submission
+
+Controller -> SubmitDAO : build request object
+SubmitDAO -> BackendController : send backend request
+
+alt API failure
+  SubmitDAO <-- BackendController : error response
+  Controller <-- SubmitDAO : reject requestObject
+  Controller -> Error : request and build template
+  Controller <- Error : return HTML
+  Error <- Controller : return HTML
+  Actor <- Error : render error page
+end
+|||
+
+SubmitDAO <- BackendController : ok response
+Controller <- SubmitDAO : resolve request
+FormPage <- Controller : redirect to trial details
+
+Actor o<- FormPage : render HTML
