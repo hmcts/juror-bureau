@@ -6,7 +6,7 @@
     , changeTimesValidator = require('../../../../config/validation/change-attendance-times').changeAttendanceTimes
     , { jurorAttendanceDao, updateJurorAttendanceDAO } = require('../../../../objects/juror-attendance')
     , { convert12to24, convert24to12, timeArrayToString } = require('../../../../components/filters')
-    , { replaceAllObjKeys } = require('../../../../lib/mod-utils');
+    , { replaceAllObjKeys, makeManualError } = require('../../../../lib/mod-utils');
 
   module.exports.getChangeTimes = function(app) {
     return async function(req, res) {
@@ -232,6 +232,12 @@
           },
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
+
+        if (err.statusCode === 422 && err.error.code === 'CANNOT_UPDATE_CONFIRMED_ATTENDANCE') {
+          req.session.errors = makeManualError('invalidAttendance', 'You cannot update a confirmed attendance, please make any changes to this attendance from the juror record');
+          req.session.formFields = req.body;
+          return res.redirect(invalidUrl);
+        }
 
         return res.render('_errors/generic');
       }
