@@ -53,6 +53,7 @@
             <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Status">Status</th>
             <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Checked in">Checked in</th>
             <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Checked out">Checked out</th>
+            <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Confirmed">Confirmed</th>
           </tr>
         </thead>
 
@@ -76,14 +77,17 @@
                 {{ row.jurorStatus }}
               </td>
               <td class="govuk-table__cell"
-                data-sort-value="{{ row.checkInTime | timeArrayToString | convertAmPmToLong }}"
+                data-sort-value="{{ (row.checkInTime | timeArrayToString | convertAmPmToLong) if row.checkInTime else '-' }}"
                 id="{{ row.jurorNumber }}-checkInTime">
-                {{ row.checkInTime | timeArrayToString | convert24to12 }}
+                {{ (row.checkInTime | timeArrayToString | convert24to12) if row.checkInTime else "-" }}
               </td>
               <td class="govuk-table__cell"
-                data-sort-value="{{ row.checkOutTime | timeArrayToString | convertAmPmToLong }}"
+                data-sort-value="{{ (row.checkOutTime | timeArrayToString | convertAmPmToLong) if row.checkOutTime else '-' }}"
                 id="{{ row.jurorNumber }}-checkOutTime">
-                {{ row.checkOutTime | timeArrayToString | convert24to12 }}
+                {{ (row.checkOutTime | timeArrayToString | convert24to12) if row.checkOutTime else "-" }}
+              </td>
+              <td class="govuk-table__cell" data-sort-value="{{ row.confirmed }}" id="{{ row.jurorNumber }}-confirmed">
+                {{ "Confirmed" if row.appearanceConfirmed or row.appStage === "EXPENSE_ENTERED" or row.appStage === "EXPENSE_AUTHORISED" else  "-" }}
               </td>
             </tr>
 

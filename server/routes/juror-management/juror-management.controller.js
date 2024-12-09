@@ -59,7 +59,7 @@
         const listedJurors = req.session.dailyAttendanceList.filter(attendee => attendee.checkInTime !== null);
 
         const confirmedJurors = req.session.dailyAttendanceList.filter(
-          attendee => (attendee.checkInTime !== null && attendee.checkOutTime !== null && (attendee.appearanceConfirmed || (attendee.appStage === 'EXPENSE_ENTERED' || attendee.appStage === 'EXPENSE_AUTHORISED')))
+          attendee => (attendee.checkInTime !== null || attendee.checkOutTime !== null)
         );
 
         const absentJurors = req.session.dailyAttendanceList.filter(
