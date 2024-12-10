@@ -1,6 +1,10 @@
 {% macro policeCheckStatus(status, jurorNumber) %}
   {% if status === "NOT_CHECKED" or status === "UNCHECKED_MAX_RETRIES_EXCEEDED" or status === "INSUFFICIENT_INFORMATION" %}
-    <a href="#" class="govuk-link" id="run-police-check-{{ jurorNumber }}" data-juror-number="{{ jurorNumber }}">Run police check</a>
+    {% if canRecordAttendance %}
+      <a href="#" class="govuk-link" id="run-police-check-{{ jurorNumber }}" data-juror-number="{{ jurorNumber }}">Run police check</a>
+    {% else %}
+      -
+    {% endif %}
   {% elif status === "ELIGIBLE" %}
     Passed
   {% elif status === "IN_PROGRESS" %}
@@ -46,6 +50,9 @@
     {% else %}
       <a href="#checkOutTimeHour" class="govuk-link" id="{{ row.jurorNumber }}-recordCheckOut">Record time</a>
     {% endif %}
+  </td>
+  <td class="govuk-table__cell" data-sort-value="{{ row.confirmed }}" id="{{ row.jurorNumber }}-confirmed">
+    {{ "Confirmed" if row.appearanceConfirmed or (row.appStage and row.appStage !== "CHECKED_IN" and row.appStage !== "CHECKED_OUT") else  "-" }}
   </td>
   <td class="govuk-table__cell" data-sort-value="{{ row.hasPoliceCheck }}" id="{{ row.jurorNumber }}-police-check">
     {{ policeCheckStatus(row.policeCheck, row.jurorNumber) }}

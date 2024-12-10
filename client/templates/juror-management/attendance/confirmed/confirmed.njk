@@ -6,7 +6,7 @@
 
 {% set currentTab = confirmedTab %}
 
-{% if unconfirmedAttendancesUrl %}
+{% if unconfirmedAttendancesUrl and isSJO %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full govuk-body govuk-!-margin-top-3 govuk-!-margin-bottom-2">
       <a href="{{ unconfirmedAttendancesUrl }}" class="govuk-link">Jurors with a check in/check out time that have not had attendance confirmed</a>
@@ -41,7 +41,7 @@
         <span id="confirmedJurors">{{ confirmedJurors.length }}</span> juror{% if confirmedJurors.length > 1 %}s{% endif %} confirmed as attending
       </b>
       
-      <table class="govuk-table {% if listedJurors.length === 0 %}js-hidden{% endif %}"
+      <table class="govuk-table {% if confirmedJurors.length === 0 %}js-hidden{% endif %}"
       data-module="moj-sortable-table" id="attendanceTable">
         <caption class="govuk-table__caption govuk-visually-hidden">Confirmed jurors list</caption>
 
@@ -53,6 +53,7 @@
             <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Status">Status</th>
             <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Checked in">Checked in</th>
             <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Checked out">Checked out</th>
+            <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Confirmed">Confirmed</th>
           </tr>
         </thead>
 
@@ -76,14 +77,17 @@
                 {{ row.jurorStatus }}
               </td>
               <td class="govuk-table__cell"
-                data-sort-value="{{ row.checkInTime | timeArrayToString | convertAmPmToLong }}"
+                data-sort-value="{{ (row.checkInTime | timeArrayToString | convertAmPmToLong) if row.checkInTime else '-' }}"
                 id="{{ row.jurorNumber }}-checkInTime">
-                {{ row.checkInTime | timeArrayToString | convert24to12 }}
+                {{ (row.checkInTime | timeArrayToString | convert24to12) if row.checkInTime else "-" }}
               </td>
               <td class="govuk-table__cell"
-                data-sort-value="{{ row.checkOutTime | timeArrayToString | convertAmPmToLong }}"
+                data-sort-value="{{ (row.checkOutTime | timeArrayToString | convertAmPmToLong) if row.checkOutTime else '-' }}"
                 id="{{ row.jurorNumber }}-checkOutTime">
-                {{ row.checkOutTime | timeArrayToString | convert24to12 }}
+                {{ (row.checkOutTime | timeArrayToString | convert24to12) if row.checkOutTime else "-" }}
+              </td>
+              <td class="govuk-table__cell" data-sort-value="{{ row.confirmed }}" id="{{ row.jurorNumber }}-confirmed">
+                {{ "Confirmed" if row.appearanceConfirmed or (row.appStage and row.appStage !== "CHECKED_IN" and row.appStage !== "CHECKED_OUT") else  "-" }}
               </td>
             </tr>
 

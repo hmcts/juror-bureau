@@ -754,6 +754,7 @@
           delete req.session.jurorName;
           delete req.session.specialNeeds;
           delete req.session[`catchmentWarning-${id}`];
+          delete req.session[`reassignExcusalPayload-${req.params.id}`];
           delete req.session[`summonsUpdate-${id}`];
 
           jurorDetails = {
