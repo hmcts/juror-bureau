@@ -46,7 +46,7 @@
       const attedancesLockedDate = moment().subtract(7,'d');
 
       if (!canRecordAttendance && !moment(selectedDate).isBefore(attedancesLockedDate)) {
-        const redirectDate = dateFilter(new Date(attedancesLockedDate), null, 'yyyy-MM-DD');
+        const redirectDate = attedancesLockedDate.format('yyyy-MM-DD');
         return res.redirect(app.namedRoutes.build('juror-management.attendance.get') + `?date=${redirectDate}`)
       }
 
