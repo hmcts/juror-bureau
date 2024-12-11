@@ -178,7 +178,10 @@
       if (!isHidden) {
         row.push({
           html: formatValue(_formatValue),
-          classes: `jd-middle-align ${paddingClass} ${isPrintedHighlight}`
+          classes: `jd-middle-align ${paddingClass} ${isPrintedHighlight}`,
+          attributes: {
+            id: `${jurorInfo[0]}_${jurorInfo[datePrintedIdx]}_${_.camelCase(this.headings[index])}`,
+          },
         })
       }
     }
@@ -194,14 +197,6 @@
 
   function isPending(value) {
     return !value;
-  }
-
-  function sortValue(isDate, isNumber, value) {
-    if (isDate || isNumber) {
-      return value === '-' ? 'top' : value;
-    }
-
-    return '';
   }
 
   function formatValue({ isDate, value, version, jurorNumber, showPending, isCourtPending }) {
