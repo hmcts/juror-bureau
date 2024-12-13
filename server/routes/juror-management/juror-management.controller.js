@@ -6,6 +6,7 @@
   const dateFilter = require('../../components/filters').dateFilter;
   const { jurorsAttending, poolAttedanceAuditDAO, unconfirmedJurorAttendancesDAO } = require('../../objects/juror-attendance');
   const moment = require('moment');
+  const { isSJOUser, isCourtManager, isCourtUser } = require('../../components/auth/user-type');
 
   module.exports.isAttendanceConfirmed = async function(app, req, locCode, attendanceDate) {
       return isAttendanceConfirmedByAttendances(await getAppearances(app,req, locCode, attendanceDate));
@@ -29,6 +30,8 @@
 
   module.exports.getAttendance = function(app) {
     return async function(req, res) {
+      const canRecordAttendance = isCourtUser(req) && !(isSJOUser(req) && !isCourtManager(req));
+
       const { status } = req.params;
       const { date, tab } = req.query;
       const dateFormat = 'dddd D MMMM YYYY';
@@ -39,6 +42,14 @@
       delete req.session.formFields;
 
       const selectedDate = date ? new Date(date) : new Date();
+
+      const attedancesLockedDate = moment().subtract(7,'d');
+
+      if (!canRecordAttendance && !moment(selectedDate).isBefore(attedancesLockedDate)) {
+        const redirectDate = attedancesLockedDate.format('yyyy-MM-DD');
+        return res.redirect(app.namedRoutes.build('juror-management.attendance.get') + `?date=${redirectDate}`)
+      }
+
       const selectedDateString = dateFilter(selectedDate, null, 'YYYY-MM-DD');
 
       const confirmedTab = tab || 'attended';
@@ -56,7 +67,7 @@
         const listedJurors = req.session.dailyAttendanceList.filter(attendee => attendee.checkInTime !== null);
 
         const confirmedJurors = req.session.dailyAttendanceList.filter(
-          attendee => (attendee.checkInTime !== null && attendee.checkOutTime !== null)
+          attendee => (attendee.checkInTime !== null || attendee.checkOutTime !== null)
         );
 
         const absentJurors = req.session.dailyAttendanceList.filter(
@@ -72,11 +83,10 @@
         );
         // TODO: until here
 
-        const attedancesLockedDate = moment().subtract(7,'d');
         const attendanceConfirmed = moment(selectedDate).isBefore(attedancesLockedDate);
 
         req.session.preReportRoute = app.namedRoutes.build('juror-management.attendance.get')
-          + `?date=${date || dateFilter(new Date(), null, 'yyyy-MM-DD')}`;
+          + `?date=${selectedDateString}`;
 
         let poolAttendaceAuditNumbers = [];
         try {
@@ -94,16 +104,16 @@
         }
 
         let unconfirmedJurors = [];
-        if (attendanceConfirmed) {
+        if (attendanceConfirmed && isSJOUser(req, res)) {
           try {
-            unconfirmedJurors = await unconfirmedJurorAttendancesDAO.get(req, req.session.authentication.locCode, date || dateFilter(new Date(), null, 'yyyy-MM-DD'));
+            unconfirmedJurors = await unconfirmedJurorAttendancesDAO.get(req, req.session.authentication.locCode, selectedDateString);
           } catch (err) {
             app.logger.crit('Failed to fetch list of unconfirmed attendances', {
               auth: req.session.authentication,
               token: req.session.authToken,
               data: {
                 locCode: req.session.authentication.locCode,
-                date: date || dateFilter(new Date(), null, 'yyyy-MM-DD'),
+                date: selectedDateString,
               },
               error: typeof err.error !== 'undefined' ? err.error : err.toString(),
             });
@@ -133,16 +143,17 @@
           },
           reportUrls: {
             personsAttendingSummary: app.namedRoutes.build('reports.persons-attending-summary.report.get', {
-              filter: date || dateFilter(new Date(), null, 'yyyy-MM-DD'),
+              filter: selectedDateString,
             }),
             personsAttendingDetail: app.namedRoutes.build('reports.persons-attending-detail.report.get', {
-              filter: date || dateFilter(new Date(), null, 'yyyy-MM-DD'),
+              filter: selectedDateString,
             }),
           },
           poolAttendaceAuditNumbers,
           unconfirmedAttendancesUrl:  unconfirmedJurors.length > 0
-            ? app.namedRoutes.build('juror-management.attendance.unconfirmed-attendances.get') + `?date=${dateFilter(date, null, 'YYYY-MM-DD')}`
+            ? app.namedRoutes.build('juror-management.attendance.unconfirmed-attendances.get') + `?date=${selectedDateString}`
             : null,
+          canRecordAttendance,
         });
       } catch (err) {
         app.logger.crit('Failed to fetch jurors attendance list: ', {
