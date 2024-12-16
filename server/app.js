@@ -3,7 +3,6 @@ const config = require('./config/environment')();
 const http = require('http');
 const app = express();
 const server = http.createServer(app);
-const releaseVersion = require(__dirname + '/../package.json').version;
 const { LaunchDarkly } = require('./lib/launchdarkly');
 const { AppInsights } = require('./lib/appinsights');
 const { Logger } = require('./components/logger');
@@ -19,10 +18,12 @@ require('./routes')(app);
 
 console.info('\n\n');
 console.info('################################');
-console.info('##    Juror-Bureau v' + releaseVersion + '    ##');
+console.info('##    Juror-Bureau v' + process.env.npm_package_version + '     ##');
 console.info('################################');
 console.info('\n\n');
 
+console.info('app name: ' + process.env.npm_package_name);
+console.info('app version: ' + process.env.npm_package_version);
 
 // Start server
 function startServer () {
