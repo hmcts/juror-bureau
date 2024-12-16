@@ -7,6 +7,9 @@ const { LaunchDarkly } = require('./lib/launchdarkly');
 const { AppInsights } = require('./lib/appinsights');
 const { Logger } = require('./components/logger');
 
+const pkg = require(__dirname + '/../package.json');
+const versionStr = pkg.version;
+
 // initialize helpers
 new AppInsights();
 new LaunchDarkly();
@@ -15,15 +18,14 @@ new Logger(config).initLogger(app);
 require('./config/express')(app);
 require('./routes')(app);
 
-
 console.info('\n\n');
 console.info('################################');
-console.info('##    Juror-Bureau v' + process.env.npm_package_version + '     ##');
+console.info('##    Juror-Bureau v' + versionStr + '     ##');
 console.info('################################');
 console.info('\n\n');
 
-console.info('app name: ' + process.env.npm_package_name);
-console.info('app version: ' + process.env.npm_package_version);
+console.info('app name: ' + pkg.name);
+console.info('app version: ' + pkg.version);
 
 // Start server
 function startServer () {
