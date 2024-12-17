@@ -120,10 +120,10 @@
           details: 'Account holder\'s name must be 18 characters or fewer',
         };
       }
-      if (/[^a-zA-Z0-9 ./&-]/.test(value)) {
+      if (/[^a-zA-Z0-9 +./&-]/.test(value)) {
         tmpErrors = {
-          summary: 'Account holder\'s name can only include letters, numbers, spaces, commas, hyphens, forward slash, and ampersands',
-          details: 'Account holder\'s name can only include letters, numbers, spaces, commas, hyphens, forward slash, and ampersands',
+          summary: 'Account holder\'s name cannot contain invalid characters',
+          details: 'Account holder\'s name cannot contain invalid characters',
         };
       }
     }

@@ -64,6 +64,9 @@
           label: {
             text: "Account holder's name"
           },
+          hint: {
+            text: "The only valid characters are the following; A-Z, a-z, 0-9, -, ., /, &, ' and +"
+          },
           value: tmpBody.accountHolderName if tmpBody.accountHolderName else juror.accountHolderName,
           errorMessage: accountHolderNameError,
           classes: "govuk-input--width-20",
