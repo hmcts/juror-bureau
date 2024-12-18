@@ -3,6 +3,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
 
 {% block page_title %}{{ serviceName }} - Juror record - Juror's bank details{% endblock %}
 {% block page_identifier %}Juror's bank details{% endblock %}
@@ -28,6 +29,22 @@
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
+
+      {% set bannerHTML %}
+      <p class="govuk-body">Account holders name will accept A-Z, 0-9 and the following special characters:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>.</li>
+        <li>/</li>
+        <li>'</li>
+        <li>&</li>
+        <li>-</li>
+      </ul>
+      {% endset %}
+
+      {{ mojBanner({
+        type: 'information',
+        html: bannerHTML
+      }) }}
 
       <h1 class="govuk-heading-l govuk-!-margin-bottom-4">Juror's Bank Details</h1>
       <p><span class="govuk-body govuk-!-margin-bottom-4">If you do not enter bank details, the juror will be sent a cheque by post.</span></p>
@@ -63,9 +80,6 @@
           name: "accountHolderName",
           label: {
             text: "Account holder's name"
-          },
-          hint: {
-            text: "The only valid characters are the following; A-Z, a-z, 0-9, -, ., /, &, ' and +"
           },
           value: tmpBody.accountHolderName if tmpBody.accountHolderName else juror.accountHolderName,
           errorMessage: accountHolderNameError,
