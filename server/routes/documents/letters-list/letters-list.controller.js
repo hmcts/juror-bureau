@@ -6,10 +6,10 @@
   const modUtils = require('../../../lib/mod-utils');
   const validate = require('validate.js');
   const validator = require('../../../config/validation/letters-list');
-  const { isBureauUser } = require('../../../components/auth/user-type');
+  const { isBureauUser, isCourtUser } = require('../../../components/auth/user-type');
   const { reissueLetterDAO } = require('../../../objects/documents');
   const { tableGenerator } = require('../helper/table-generator');
-  const { dateFilter } = require('../../../components/filters');
+  const { toSentenceCase } = require('../../../components/filters');
   const { Logger } = require('../../../components/logger');
 
   module.exports.getListLetters = function(app) {
@@ -23,7 +23,7 @@
         });
         const tmpErrors = _.clone(req.session.errors);
 
-        const { documentSearchBy, jurorNumber, jurorName, postcode, poolDetails, page } = req.query;
+        const { documentSearchBy, jurorNumber, jurorName, postcode, poolDetails, page, sortBy, sortOrder } = req.query;
         let searchBy, paginationObject;
 
         delete req.session.errors;
@@ -41,6 +41,8 @@
         if (!req.session.documentsJurorsList) {
           return res.redirect(app.namedRoutes.build('documents.get'));
         }
+
+        req.session.documentsJurorsList.data = sortLettersList(sortBy, sortOrder, _.clone(req.session.documentsJurorsList), isCourtUser(req))
 
         if (req.session.documentsJurorsList.data.length > modUtils.constants.PAGE_SIZE) {
           paginationObject = modUtils.paginationBuilder(
@@ -60,6 +62,7 @@
           response: slicedJurorList,
           checkedJurors: req.session.documentsJurorsList.checkedJurors || [],
           allChecked: areAllChecked(req),
+          sortBy, sortOrder
         })(_isBureauUser);
 
         const postUrl = urljoin(app.namedRoutes.build('documents.letters-list.post', {
@@ -74,6 +77,9 @@
           && req.session.documentsJurorsList.checkedJurors.length) || 0;
 
         delete req.session.statusChangedList;
+
+        delete req.query.sortBy;
+        delete req.query.sortOrder;
 
         return res.render('documents/_common/letters-list.njk', {
           pageIdentifier: modUtils.getLetterIdentifier(document),
@@ -96,6 +102,7 @@
             count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
             items: tmpErrors,
           },
+          queryString: new URLSearchParams(req.query).toString(),
         });
       } catch (err) {
         app.logger.crit('Failed to retrive letters: ', {
@@ -432,6 +439,33 @@
 
   function isPending(datePrinted, isPrinted) {
     return datePrinted !== null && !isPrinted;
+  }
+
+  function sortLettersList(sortBy, sortDirection, tableData, isCourtUser) {
+    let _sortBy = 0;
+    if (isCourtUser) {
+      _sortBy = sortBy ? _.snakeCase(sortBy) : 'juror_number';
+    } else {
+      _sortBy = sortBy ? tableData.headings.indexOf(toSentenceCase(sortBy)) : 0;
+    }
+  
+    const isNumber = (value) => !isNaN(value);
+  
+    if (sortBy) {
+      return tableData.data.sort((a, b) => {
+        let _a = a[_sortBy] ? a[_sortBy] : '-';
+        let _b = b[_sortBy] ? b[_sortBy] : '-';
+  
+        if (sortDirection === 'ascending') {
+          if (isNumber(_a) && isNumber(_b)) return _a - _b;
+          return _a.localeCompare(_b);
+        }
+  
+        if (isNumber(_a) && isNumber(_b)) return _b - _a;
+        return _b.localeCompare(_a);
+      });
+    }
+    return tableData.data;
   }
 
 })();

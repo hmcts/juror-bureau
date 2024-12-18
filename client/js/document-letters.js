@@ -43,7 +43,7 @@
       var documentVersion = $(link).attr('data-version');
       var jurorNumber = $(link).attr('data-juror-number');
       var datePrinted = $(link).attr('data-printed');
-      var row = $(`#row-${jurorNumber}`);
+      var row = link.closest("tr");
 
       event.preventDefault();
 
