@@ -8,7 +8,6 @@
 
   module.exports.paperReplyObject = new DAO('moj/juror-paper-response/response', {
     post: function(pr) {
-      console.log('\n\nPR THIRD PARTY\n', pr.thirdParty, '\n\n');
       let body = {
         'addressCounty': pr.addressCounty,
         'addressLineOne': pr.addressLineOne,
@@ -47,8 +46,6 @@
         body.firstName = pr.pendingFirstName;
         body.lastName = pr.pendingLastName;
       }
-
-      console.log('\n\nREQUEST BODY\n', body, '\n\n');
 
       return {
         uri: this.resource,

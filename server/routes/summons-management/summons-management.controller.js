@@ -744,8 +744,6 @@
             , eligibilityDetails
             , thirdPartyDetails;
 
-          console.log('\n\n', response[0].data, '\n\n');
-
           nameDetails = resolveJurorName(responseClone);
           addressDetails = resolveJurorAddress(responseClone);
           thirdPartyDetails = resolveThirdParty(responseClone.thirdParty);
@@ -779,14 +777,10 @@
             dob: responseClone.dateOfBirth,
           });
 
-          console.log('\n\nTHIRD PARTY DETAILS ', thirdPartyDetails, '\n\n')
-
           responseClone.thirdPartyComplete = thirdPartyDetails.isThirdParty ? isComplete({
             relationship: thirdPartyDetails.relationship,
             reason: thirdPartyDetails.reason,
           }) : true;
-
-          console.log('\n\nTHIRD PARTY COMPLETE ', responseClone.thirdPartyComplete, '\n\n')
 
           req.session.jurorName = nameDetails.currentName;
           req.session.specialNeeds = responseClone.specialNeeds;

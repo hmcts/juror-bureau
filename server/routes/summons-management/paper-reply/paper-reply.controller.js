@@ -79,8 +79,6 @@
           delete req.session.errors;
           delete req.session.formFields;
 
-          console.log(req.session.paperResponseDetails);
-
           let isThirdPartyResponse = false;
           if (req.session.paperResponseDetails.thirdParty) {
             isThirdPartyResponse = typeof req.session.paperResponseDetails.thirdParty.thirdPartyFName !== 'undefined'
@@ -182,9 +180,6 @@
         || !(req.body.thirdPartyMainPhone === '' || req.body.thirdPartyMainPhone === null)
         || !(req.body.thirdPartyEmailAddress === '' || req.body.thirdPartyEmailAddress === null)
         || !(req.body.thirdPartyOtherPhone === '' || req.body.thirdPartyOtherPhone === null);
-
-      console.log('\n\nREQ BODY\n', req.body, '\n\n');
-      console.log('\n\nIS THIRD PARTY ENTRY\n', isThirdParty, '\n\n');
 
       if (req.body.thirdPartyEnabled === 'yes' && isThirdParty) {
         validatorResult = validate(req.body, paperReplyValidator.thirdParty());
