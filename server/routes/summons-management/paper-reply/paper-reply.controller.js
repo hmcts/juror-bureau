@@ -79,6 +79,19 @@
           delete req.session.errors;
           delete req.session.formFields;
 
+          console.log(req.session.paperResponseDetails);
+
+          let isThirdPartyResponse = false;
+          if (req.session.paperResponseDetails.thirdParty) {
+            isThirdPartyResponse = typeof req.session.paperResponseDetails.thirdParty.thirdPartyFName !== 'undefined'
+              || typeof req.session.paperResponseDetails.thirdParty.thirdPartyLName !== 'undefined'
+              || typeof req.session.paperResponseDetails.thirdParty.thirdPartyPhone !== 'undefined'
+              || typeof req.session.paperResponseDetails.thirdParty.otherPhone !== 'undefined'
+              || typeof req.session.paperResponseDetails.thirdParty.thirdPartyEmail !== 'undefined'
+              || typeof req.session.paperResponseDetails.thirdParty.relationship !== 'undefined'
+              || typeof req.session.paperResponseDetails.thirdParty.thirdPartyReason !== 'undefined';
+          }
+
           return res.render('summons-management/paper-reply/index', {
             details: req.session.paperResponseDetails,
             cancelUrl: app.namedRoutes.build('juror-record.overview.get', {
@@ -96,6 +109,7 @@
             isCourtUser: isCourtUser(req),
             isTeamLeader: isTeamLeader(req),
             noWelsh: !req.session.paperResponseDetails.isWelshCourt,
+            isThirdPartyResponse,
           });
         }
         , errorCB = function(err) {
@@ -152,12 +166,35 @@
       req.session.startedPaperResponse = true;
 
       // build thirdParty Object if any detail in the relationship field
-      tempThirdParty.relationship = req.body.relationship;
-      if (req.body.thirdPartyReason === 'other') {
-        tempThirdParty.thirdPartyReason = req.body.otherDetails;
-        otherThirdPartyReason = true;
-      } else {
-        tempThirdParty.thirdPartyReason = req.body.thirdPartyReason;
+      const isThirdParty = !(req.body.relationship === '' || req.body.relationship === null)
+        || !(req.body.thirdPartyReason === '' || req.body.thirdPartyReason === null || !req.body.thirdPartyReason)
+        || !(req.body.thirdPartyFName === '' || req.body.thirdPartyFName === null)
+        || !(req.body.thirdPartyLName === '' || req.body.thirdPartyLName === null)
+        || !(req.body.thirdPartyMainPhone === '' || req.body.thirdPartyMainPhone === null)
+        || !(req.body.thirdPartyEmailAddress === '' || req.body.thirdPartyEmailAddress === null)
+        || !(req.body.thirdPartyOtherPhone === '' || req.body.thirdPartyOtherPhone === null);
+
+      console.log('\n\nREQ BODY\n', req.body, '\n\n');
+      console.log('\n\nIS THIRD PARTY ENTRY\n', isThirdParty, '\n\n');
+
+      if (req.body.thirdPartyEnabled === 'yes' && isThirdParty) {
+        // build thirdParty Object if any detail in the relationship field
+        tempThirdParty.relationship = req.body.relationship;
+        if (req.body.thirdPartyReason === 'other') {
+          tempThirdParty.thirdPartyReason = req.body.otherDetails;
+          otherThirdPartyReason = true;
+        } else {
+          tempThirdParty.thirdPartyReason = req.body.thirdPartyReason;
+        }
+        tempThirdParty.thirdPartyFName = req.body.thirdPartyFName;
+        tempThirdParty.thirdPartyLName = req.body.thirdPartyLName;
+        tempThirdParty.thirdPartyPhone = req.body.thirdPartyMainPhone;
+        tempThirdParty.otherPhone = req.body.thirdPartyOtherPhone;
+        tempThirdParty.thirdPartyEmail = req.body.thirdPartyEmailAddress;
+        tempThirdParty.useJurorEmailDetails = req.body.thirdPartyContactPreferences?.includes('useJurorEmailDetails') ? true : false;
+        tempThirdParty.useJurorPhoneDetails = req.body.thirdPartyContactPreferences?.includes('useJurorPhoneDetails') ? true : false;
+      } else  {
+        tempThirdParty = {};
       }
 
       req.session.paperResponseDetails.thirdParty = tempThirdParty;

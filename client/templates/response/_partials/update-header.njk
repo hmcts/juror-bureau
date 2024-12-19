@@ -18,7 +18,7 @@
 
       {% if hasModAccess and (response.processingStatus | capitalise !== 'CLOSED') %}
 
-        {% if (method === "paper" and response.jurorDetailsComplete and response.eligibilityComplete and response.signed === true) or method !== "paper" or thirdPartyDetails.reason === "Deceased" %}
+        {% if (method === "paper" and response.jurorDetailsComplete and response.eligibilityComplete and response.thirdPartyComplete and response.signed === true) or method !== "paper" or thirdPartyDetails.reason === "Deceased" %}
           {% if method === "paper" %}
             {% set processUrl = url('process-reply.get', { id: response.jurorNumber, type: "paper" }) %}
           {% else %}

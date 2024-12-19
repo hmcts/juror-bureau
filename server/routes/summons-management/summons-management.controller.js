@@ -744,11 +744,11 @@
             , eligibilityDetails
             , thirdPartyDetails;
 
-          console.log('\n\n',response,'\n\n');
+          console.log('\n\n', response[0].data, '\n\n');
 
           nameDetails = resolveJurorName(responseClone);
           addressDetails = resolveJurorAddress(responseClone);
-          thirdPartyDetails = resolveThirdParty(responseClone);
+          thirdPartyDetails = resolveThirdParty(responseClone.thirdParty);
 
           delete req.session.jurorDetails;
           delete req.session.jurorName;
@@ -778,6 +778,15 @@
             address: { addressLineOne: responseClone.addressLineOne, addressTown: responseClone.addressTown, addressPostcode: responseClone.addressPostcode },
             dob: responseClone.dateOfBirth,
           });
+
+          console.log('\n\nTHIRD PARTY DETAILS ', thirdPartyDetails, '\n\n')
+
+          responseClone.thirdPartyComplete = thirdPartyDetails.isThirdParty ? isComplete({
+            relationship: thirdPartyDetails.relationship,
+            reason: thirdPartyDetails.reason,
+          }) : true;
+
+          console.log('\n\nTHIRD PARTY COMPLETE ', responseClone.thirdPartyComplete, '\n\n')
 
           req.session.jurorName = nameDetails.currentName;
           req.session.specialNeeds = responseClone.specialNeeds;
@@ -1128,10 +1137,9 @@
           if (address[line] === null || typeof address[line] === 'undefined' || address[line] === '') return false;
         }
       } else {
-        if (elements[el] === null || typeof elements[el] === 'undefined') return false;
+        if (elements[el] === null || typeof elements[el] === 'undefined' || elements[el] === '') return false;
       }
-    }
-    
+    } 
 
     return true;
   }
@@ -1217,13 +1225,25 @@
     };
   }
 
-  function resolveThirdParty(response) {
-    var isThirdParty = response.thirdParty.relationship !== null && response.thirdParty.thirdPartyReason !== null;
-
+  function resolveThirdParty(thirdParty) {
+    const isThirdParty = !(thirdParty.relationship === '' || thirdParty.relationship === null)
+      || !(thirdParty.thirdPartyReason === '' || thirdParty.thirdPartyReason === null)
+      || !(thirdParty.thirdPartyFName === '' || thirdParty.thirdPartyFName === null)
+      || !(thirdParty.thirdPartyLName === '' || thirdParty.thirdPartyLName === null)
+      || !(thirdParty.thirdPartyPhone === '' || thirdParty.thirdPartyPhone === null)
+      || !(thirdParty.thirdPartyEmail === '' || thirdParty.thirdPartyEmail === null)
+      || !(thirdParty.otherPhone === '' || thirdParty.otherPhone === null);
+    
     return {
       isThirdParty: isThirdParty,
-      relationship: response.thirdParty.relationship,
-      reason: response.thirdParty.thirdPartyReason,
+      relationship: thirdParty.relationship,
+      reason: thirdParty.thirdPartyReason,
+      name: thirdParty.thirdPartyFName ? `${thirdParty.thirdPartyFName}${thirdParty.thirdPartyLName ? ` ${thirdParty.thirdPartyLName}` : ''}` : null,
+      useJurorEmailDetails: thirdParty.useJurorEmailDetails,
+      useJurorPhoneDetails: thirdParty.useJurorPhoneDetails,
+      mainPhone: thirdParty.thirdPartyPhone,
+      otherPhone: thirdParty.otherPhone,
+      email: thirdParty.thirdPartyEmail,
     };
   }
 

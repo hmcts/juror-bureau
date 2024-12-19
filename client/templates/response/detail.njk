@@ -45,7 +45,7 @@
   {% endif %}
 
   {% if method === "paper"
-    and (response.jurorDetailsComplete === false or response.eligibilityComplete === false or response.signed !== true)
+    and (response.jurorDetailsComplete === false or response.eligibilityComplete === false or response.thirdPartyComplete === false or response.signed !== true)
     and not (response.processingStatus === 'Closed' or thirdPartyDetails.reason === 'Deceased') %}
     {{ mojBanner({
       type: 'information',

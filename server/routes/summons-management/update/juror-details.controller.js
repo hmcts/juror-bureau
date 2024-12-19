@@ -106,7 +106,16 @@
           delete req.session[`summonsUpdate-${id}`].newAddress;
         }
 
+        let isThirdPartyResponse = false;
         if (details.thirdParty) {
+          isThirdPartyResponse = !(details.thirdParty.relationship === '' || details.thirdParty.relationship === null)
+            || !(details.thirdParty.thirdPartyReason === '' || details.thirdParty.thirdPartyReason === null)
+            || !(details.thirdParty.thirdPartyFName === '' || details.thirdParty.thirdPartyFName === null)
+            || !(details.thirdParty.thirdPartyLName === '' || details.thirdParty.thirdPartyLName === null)
+            || !(details.thirdParty.thirdPartyPhone === '' || details.thirdParty.thirdPartyPhone === null)
+            || !(details.thirdParty.thirdPartyEmail === '' || details.thirdParty.thirdPartyEmail === null)
+            || !(details.thirdParty.otherPhone === '' || details.thirdParty.otherPhone === null);
+
           const thirdPartyReasons = [
             'Deceased',
             'Juror is not there',
@@ -135,6 +144,7 @@
           },
           isCourtUser: isCourtUser(req),
           isTeamLeader: isTeamLeader(req),
+          isThirdPartyResponse,
         });
       } catch (err) {
         app.logger.crit('Unable to fetch the summons details', {
@@ -338,10 +348,20 @@
         return req.body.otherDetails;
       };
 
-      payload.thirdParty = {
-        relationship: req.body.relationship,
-      };
-      payload.thirdParty.thirdPartyReason = getReason();
+      payload.thirdParty = {};
+      // build thirdParty Object if any detail in the relationship field
+      if (req.body.thirdPartyEnabled === 'yes') {
+        // build thirdParty Object if any detail in the relationship field
+        payload.thirdParty.relationship = req.body.relationship;
+        payload.thirdParty.thirdPartyReason = getReason();
+        payload.thirdParty.thirdPartyFName = req.body.thirdPartyFName;
+        payload.thirdParty.thirdPartyLName = req.body.thirdPartyLName;
+        payload.thirdParty.thirdPartyPhone = req.body.thirdPartyMainPhone;
+        payload.thirdParty.otherPhone = req.body.thirdPartyOtherPhone;
+        payload.thirdParty.thirdPartyEmail = req.body.thirdPartyEmailAddress;
+        payload.thirdParty.useJurorEmailDetails = req.body.thirdPartyContactPreferences?.includes('useJurorEmailDetails') ? true : false;
+        payload.thirdParty.useJurorPhoneDetails = req.body.thirdPartyContactPreferences?.includes('useJurorPhoneDetails') ? true : false;
+      }
 
       if (payload.pendingFirstName && payload.pendingLastName) {
         payload.title = payload.pendingTitle;

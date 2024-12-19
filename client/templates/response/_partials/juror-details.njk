@@ -154,7 +154,11 @@
         <dt class="govuk-summary-list__key">
           Main Phone
         </dt>
-        {% if jurorDetails.phone.current === null %}
+        {% if thirdPartyDetails.isThirdParty and not thirdPartyDetails.useJurorPhoneDetails %}
+          <dd class="govuk-summary-list__value mod-contact-third-party" id="jurorPrimaryPhone">
+            Contact Third Party
+          </dd>
+        {% elif jurorDetails.phone.current === null %}
           <dd class="govuk-summary-list__value" id="jurorPrimaryPhone">-</dd>
           <dd class="govuk-summary-list__value"></dd>
         {% else %}
@@ -176,7 +180,11 @@
         <dt class="govuk-summary-list__key">
           {{ "Alternative phone" if hasModAccess else "Another Phone" }}
         </dt>
-        {% if jurorDetails.altPhone.current === null %}
+        {% if thirdPartyDetails.isThirdParty and not thirdPartyDetails.useJurorPhoneDetails %}
+          <dd class="govuk-summary-list__value mod-contact-third-party" id="jurorSecondaryPhone">
+            Contact Third Party
+          </dd>
+        {% elif jurorDetails.altPhone.current === null %}
           <dd class="govuk-summary-list__value" id="jurorSecondaryPhone">-</dd>
         {% else %}
           <dd class="govuk-summary-list__value" id="jurorSecondaryPhone">
@@ -197,7 +205,11 @@
         <dt class="govuk-summary-list__key">
           Email 
         </dt>
-        {% if jurorDetails.email.current === null %}
+        {% if thirdPartyDetails.isThirdParty and not thirdPartyDetails.useJurorEmailDetails %}
+          <dd class="govuk-summary-list__value mod-contact-third-party" id="jurorEmailAddress">
+            Contact Third Party
+          </dd>
+        {% elif not jurorDetails.email.current %}
           <dd class="govuk-summary-list__value" id="jurorEmailAddress">-</dd>
         {% else %}
           <dd class="govuk-summary-list__value" id="jurorEmailAddress">
@@ -218,78 +230,77 @@
 
     {% if thirdPartyDetails.isThirdParty == true %}
       <br><br>
-      <div class="jd-panel-title">
+      <div class="mod-reply-section__title">
         <h2 class="govuk-heading-m">Third party details
-          {% if canEdit and responseEditEnabled %}
-            <div class="edit-actions govuk-body jd-right-align">
-                 id="jurorDetailsEditTP" 
-                 class="govuk-link edit-action edit-trigger" 
-                 data-target="juror-details" 
-                 data-ref="#thirdPartySection"
-                 aria-label="Change third party details"
-              >
-                Change
-              </a>
-            </div>
+          {% if method === "paper" %}
+            {{ govukTag({
+              text: "Section complete" if response.thirdPartyComplete else "incomplete",
+              classes: "mod-tag--dark-blue" if response.thirdPartyComplete else "govuk-tag--grey"
+            }) }}
           {% endif %}
         </h2>
+        {% if isAddChangeVisible %}
+          <div class="govuk-body">
+            <a id="jurorDetailsEdit" 
+                class="govuk-link"
+                aria-label="Add or change juror details" 
+                href="{{ url( updateUrl, { id: response.jurorNumber, type: replyType }) }}"
+            >
+              Add or change
+            </a>
+          </div>
+        {% endif %}
       </div>
 
       <dl class="govuk-summary-list juror-details">
-        {% if method !== "paper" %}
-          <div class="govuk-summary-list__row info" id="thirdPartyNameRow">
-            <dt class="govuk-summary-list__key">
-              {{ "Name" if hasModAccess else "Third party name" }}
-            </dt>
-            <dd class="govuk-summary-list__value" id="thirdPartyName">
-              {{ thirdPartyDetails.name }}
-            </dd>
-          </div>
-        {% endif %}
-        
+        <div class="govuk-summary-list__row info" id="thirdPartyNameRow">
+          <dt class="govuk-summary-list__key">
+            Name
+          </dt>
+          <dd class="govuk-summary-list__value" id="thirdPartyName">
+            {{ thirdPartyDetails.name or "-" }}
+          </dd>
+        </div>
         <div class="govuk-summary-list__row info" id="thirdPartyRelationshipRow">
           <dt class="govuk-summary-list__key">
-            {{ "Relationship to juror" if hasModAccess else "Third party relationship" }}
+            Relationship to juror
           </dt>
           <dd class="govuk-summary-list__value" id="thirdPartyRelationship">
-            {{ thirdPartyDetails.relationship }}
+            {{ thirdPartyDetails.relationship or "-" }}
           </dd>
         </div>
         <div class="govuk-summary-list__row info" id="thirdPartyReasonRow">
           <dt class="govuk-summary-list__key">
-            {{ "Reason for completing" if hasModAccess else "Third party reason" }}
+            Reason for completing
           </dt>
           <dd class="govuk-summary-list__value" id="thirdPartyReason">
-            {{ thirdPartyDetails.reason }}
+            {{ thirdPartyDetails.reason or "-" }}
           </dd>
         </div>
-          
-        {% if method !== "paper" %}
-          <div class="govuk-summary-list__row info" id="thirdPartyMainPhoneRow">
-            <dt class="govuk-summary-list__key">
-              {{ "Main phone" if hasModAccess else "Third party primary phone" }}
-            </dt>
-            <dd class="govuk-summary-list__value" id="thirdPartyMainPhone">
-              {{ thirdPartyDetails.mainPhone }}
-            </dd>
-          </div>
-          <div class="govuk-summary-list__row info" id="thirdPartyOtherPhoneRow">
-            <dt class="govuk-summary-list__key">
-              {{ "Another phone" if hasModAccess else "Third party secondary phone" }}
-            </dt>
-            <dd class="govuk-summary-list__value" id="thirdPartyOtherPhone">
-              {{ thirdPartyDetails.otherPhone }}
-            </dd>
-          </div>
-          <div class="govuk-summary-list__row info" id="thirdPartyEmailRow">
-            <dt class="govuk-summary-list__key">
-              {{ "Email" if hasModAccess else "Third party email" }}
-            </dt>
-            <dd class="govuk-summary-list__value" id="thirdPartyEmail">
-              {{ thirdPartyDetails.email }}
-            </dd>
-          </div>
-        {% endif %}
+        <div class="govuk-summary-list__row info" id="thirdPartyMainPhoneRow">
+          <dt class="govuk-summary-list__key">
+            Main phone
+          </dt>
+          <dd class="govuk-summary-list__value" id="thirdPartyMainPhone">
+            {{ thirdPartyDetails.mainPhone or "-" }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row info" id="thirdPartyOtherPhoneRow">
+          <dt class="govuk-summary-list__key">
+            Another phone
+          </dt>
+          <dd class="govuk-summary-list__value" id="thirdPartyOtherPhone">
+            {{ thirdPartyDetails.otherPhone or "-" }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row info" id="thirdPartyEmailRow">
+          <dt class="govuk-summary-list__key">
+            Email
+          </dt>
+          <dd class="govuk-summary-list__value" id="thirdPartyEmail">
+            {{ thirdPartyDetails.email or "-" }}
+          </dd>
+        </div>
       </dl>
     {% endif %}
   </div>
