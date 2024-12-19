@@ -120,10 +120,10 @@
           details: 'Account holder\'s name must be 18 characters or fewer',
         };
       }
-      if (/[.,"]/.test(value)) {
+      if (/[^a-zA-Z0-9 ./'&-]/.test(value)) {
         tmpErrors = {
-          summary: 'Account holder\'s name cannot include full stops, commas or double quote marks',
-          details: 'Account holder\'s name cannot include full stops, commas or double quote marks',
+          summary: 'Invalid character used in the account holder\'s name',
+          details: 'Invalid character used in the account holder\'s name',
         };
       }
     }
