@@ -51,6 +51,172 @@
     {% set thirdPartyDetailsError = { text: errors.items["otherDetails"][0].details } %}
   {% endif %}
 
+  {% set thirdPartyFNameError = undefined %}
+  {% if errors.items["thirdPartyFName"] %}
+    {% set thirdPartyFNameError = { text: errors.items["thirdPartyFName"][0].details } %}
+  {% endif %}
+
+  {% set thirdPartyLNameError = undefined %}
+  {% if errors.items["thirdPartyLName"] %}
+    {% set thirdPartyLNameError = { text: errors.items["thirdPartyLName"][0].details } %}
+  {% endif %}
+
+  {% set thirdPartyMainPhoneError = undefined %}
+  {% if errors.items["thirdPartyMainPhone"] %}
+    {% set thirdPartyMainPhoneError = { text: errors.items["thirdPartyMainPhone"][0].details } %}
+  {% endif %}
+
+  {% set thirdPartyOtherPhoneError = undefined %}
+  {% if errors.items["thirdPartyOtherPhone"] %}
+    {% set thirdPartyOtherPhoneError = { text: errors.items["thirdPartyOtherPhone"][0].details } %}
+  {% endif %}
+
+  {% set thirdPartyEmailAddressError = undefined %}
+  {% if errors.items["thirdPartyEmailAddress"] %}
+    {% set thirdPartyEmailAddressError = { text: errors.items["thirdPartyEmailAddress"][0].details } %}
+  {% endif %}
+
+  {% set otherDetailsHTML %}
+    {{ govukCharacterCount({
+      name: "otherDetails",
+      id: "otherDetails",
+      maxlength: 2000,
+      label: {
+        text: "Provide details"
+      },
+      value: details.thirdParty.thirdPartyReason,
+      errorMessage: thirdPartyDetailsError
+    }) }}
+  {% endset %}
+
+  {% set thirdPartyHtml %}
+    {{ govukInput({
+      id: "thirdPartyFName",
+      name: "thirdPartyFName",
+      value: details.thirdParty.thirdPartyFName,
+      classes: "govuk-!-width-one-half",
+      errorMessage: thirdPartyFNameError,
+      label: {
+        text: "First Name (optional)"
+      }
+    }) }}
+    {{ govukInput({
+      id: "thirdPartyLName",
+      name: "thirdPartyLName",
+      value: details.thirdParty.thirdPartyLName,
+      classes: "govuk-!-width-one-half",
+      errorMessage: thirdPartyLNameError,
+      label: {
+        text: "Last Name (optional)"
+      }
+    }) }}
+    {{ govukInput({
+        id: "relationship",
+        name: "relationship",
+        type: "text",
+        label: {
+        text: "Relationship to juror",
+          attributes: {
+          "aria-label": "Enter the third party’s relationship with the juror"
+          }
+        },
+        value: details.thirdParty.relationship,
+        errorMessage: relationshipError
+      }) }}
+    {{ govukInput({
+      id: "thirdPartyMainPhone",
+      name: "thirdPartyMainPhone",
+      classes: "govuk-!-width-one-third",
+      value: details.thirdParty.thirdPartyPhone,
+      errorMessage: thirdPartyMainPhoneError,
+      label: {
+        text: "Main phone (optional)"
+      }
+    }) }}
+    {{ govukInput({
+      id: "thirdPartyOtherPhone",
+      name: "thirdPartyOtherPhone",
+      classes: "govuk-!-width-one-third",
+      value: details.thirdParty.otherPhone,
+      errorMessage: thirdPartyOtherPhoneError,
+      label: {
+        text: "Another phone (optional)"
+      }
+    }) }}
+    {{ govukInput({
+      id: "thirdPartyEmailAddress",
+      name: "thirdPartyEmailAddress",
+      type: "email",
+      attributes: {
+        maxlength: "254",
+        spellcheck: "false"
+      },
+      autocomplete: "off",
+      classes: "govuk-!-width-one-half",
+      value: details.thirdParty.thirdPartyEmail,
+      errorMessage: thirdPartyEmailAddressError,
+      label: {
+        text: "Email (optional)"
+      }
+    }) }}
+    {{ govukRadios({
+      name: "thirdPartyReason",
+      fieldset: {
+        legend: {
+          text: "Select reason why this person completed the summons reply on behalf of the juror",
+          isPageHeading: false,
+          classes: "govuk-fieldset__legend--s"
+        }
+      },
+      items: [
+        {
+          value: "Juror is not there",
+          text: "Juror is not there",
+          checked: details.thirdParty.thirdPartyReason === "Juror is not there"
+        },
+        {
+          value: "Juror is unable to reply by themselves",
+          text: "Juror is unable to reply by themselves",
+          checked: details.thirdParty.thirdPartyReason === "Juror is unable to reply by themselves"
+        },
+        {
+          value: "Deceased",
+          text: "Juror is deceased",
+          checked: details.thirdParty.thirdPartyReason === "Deceased"
+        },
+        {
+          value: "other",
+          text: "Other",
+          conditional: {
+            html: otherDetailsHTML
+          },
+          checked: details.otherThirdPartyReason
+        }
+      ]
+    }) }}
+    {{ govukCheckboxes({
+      name: "thirdPartyContactPreferences",
+      fieldset: {
+        legend: {
+          text: "Third party contact preferences",
+          classes: "govuk-fieldset__legend--m"
+        }
+      },
+      items: [
+        {
+          value: "useJurorEmailDetails",
+          text: "Contact juror instead of third party for email communications",
+          checked: details.thirdParty.useJurorEmailDetails
+        },
+        {
+          value: "useJurorPhoneDetails",
+          text: "Contact juror instead of third party for phone communications",
+          checked: details.thirdParty.useJurorPhoneDetails
+        }
+      ]
+    }) }}
+  {% endset %}
+
   <form method="post" action="{{ postUrl }}" id="jurorDetailsForm" >
 
     <!-- Add or fix juror name -->
@@ -187,69 +353,31 @@
 
         <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
-        <h2 class="govuk-heading-m">If a third party replied on behalf of the juror, enter details</h2>
-        {{ govukInput({
-          id: "relationship",
-          name: "relationship",
-          type: "text",
-          label: {
-          text: "Relationship to juror",
-            attributes: {
-            "aria-label": "Enter the third party’s relationship with the juror"
-            }
-          },
-          value: details.thirdParty.relationship,
-          errorMessage: relationshipError
-        }) }}
-
-        {% set otherDetailsHTML %}
-          {{ govukCharacterCount({
-            name: "otherDetails",
-            id: "otherDetails",
-            maxlength: 2000,
-            label: {
-              text: "Provide details"
-            },
-            value: details.thirdParty.thirdPartyReason,
-            errorMessage: thirdPartyDetailsError
-          }) }}
-        {% endset %}
-
         {{ govukRadios({
-          name: "thirdPartyReason",
+          name: "thirdPartyEnabled",
+          id: "thirdPartyEnabled",
           fieldset: {
             legend: {
-              text: "Select reason why this person completed the summons reply on behalf of the juror",
-              isPageHeading: false,
-              classes: "govuk-fieldset__legend--s"
+              text: "Did a third party reply on behalf of the juror?",
+              classes: "govuk-fieldset__legend--m"
             }
           },
           items: [
             {
-              value: "Juror is not there",
-              text: "Juror is not there",
-              checked: details.thirdParty.thirdPartyReason === "Juror is not there"
-            },
-            {
-              value: "Juror is unable to reply by themselves",
-              text: "Juror is unable to reply by themselves",
-              checked: details.thirdParty.thirdPartyReason === "Juror is unable to reply by themselves"
-            },
-            {
-              value: "Deceased",
-              text: "Juror is deceased",
-              checked: details.thirdParty.thirdPartyReason === "Deceased"
-            },
-            {
-              value: "other",
-              text: "Other",
+              value: "yes",
+              text: "Yes",
+              checked: isThirdPartyResponse === true,
               conditional: {
-                html: otherDetailsHTML
-              },
-              checked: details.otherThirdPartyReason
+                html: thirdPartyHtml
+              }
+            },
+            {
+              value: "no",
+              text: "No",
+              checked: isThirdPartyResponse === false
             }
           ]
-        }) }}
+          }) }}
 
         <div class="govuk-button-group">
           {{ govukButton({

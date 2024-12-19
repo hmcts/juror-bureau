@@ -16,9 +16,9 @@
         {% set canProcessReply = true %}
       {% endif %}
 
-      {% if hasModAccess and (response.processingStatus | capitalise !== 'CLOSED') %}
+      {% if response.processingStatus | capitalise !== 'CLOSED' %}
 
-        {% if (method === "paper" and response.jurorDetailsComplete and response.eligibilityComplete and response.signed === true) or method !== "paper" or thirdPartyDetails.reason === "Deceased" %}
+        {% if (method === "paper" and response.jurorDetailsComplete and response.eligibilityComplete and response.thirdPartyComplete and response.signed === true) or method !== "paper" or thirdPartyDetails.reason === "Deceased" %}
           {% if method === "paper" %}
             {% set processUrl = url('process-reply.get', { id: response.jurorNumber, type: "paper" }) %}
           {% else %}
@@ -40,16 +40,15 @@
 
       {% if response.replyMethod === "DIGITAL" or (method === "paper" and response.processingStatus | capitalise !== "CLOSED") %}
         <div id="moj-actions-button-menu" class="moj-button-menu">
-          <div class="moj-button-menu__wrapper more-actions-menu {% if hasModAccess %}reply-view-align_right{% endif %}" name="moreActionsMenu" id="moreActionsMenu">
+          <div class="moj-button-menu__wrapper more-actions-menu reply-view-align_right" name="moreActionsMenu" id="moreActionsMenu">
 
             {% if response.processingStatus | capitalise !== 'CLOSED' %}
-              {% if response.superUrgent == false or hasModAccess %}{# in the future any response will have this functionality... any user with ld access will have it #}
                 {#<a id="processAwaitingInformation" href="#" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " value="awaiting_information" data-module="govuk-button">#}
                 <a id="processAwaitingInformation"
                   href="{{ url('response.detail.awaiting.information.get', { id: response.jurorNumber }) }}{{ "/paper" if method === 'paper' else null }}"
                   role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary "
                   value="awaiting_information" data-module="govuk-button">
-                  {{ "Mark as awaiting information" if hasModAccess else "Mark as 'Awaiting information'" }}
+                  {{ "Mark as awaiting information" }}
                 </a>
 
                 {% if isBureauUser %}
@@ -66,10 +65,9 @@
                   {% endif %}
                 {% endif %}
 
-              {% endif %}
             {% endif %}
 
-            {% if hasModAccess and (method !== "paper") %}
+            {% if method !== "paper" %}
               <a  href="{{ url('response.detail.download-pdf.get', { id: response.jurorNumber }) }}" target="_blank" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " value="download_pdf" data-module="govuk-button">
                 Download as a PDF
               </a>
