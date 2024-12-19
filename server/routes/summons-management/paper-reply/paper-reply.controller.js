@@ -165,6 +165,15 @@
 
       req.session.startedPaperResponse = true;
 
+      if (typeof validatorResult !== 'undefined') {
+        req.session.errors = validatorResult;
+        req.session.formFields = req.body;
+
+        return res.redirect(app.namedRoutes.build('paper-reply.index.get', {
+          id: req.params['id'],
+        }));
+      }
+
       // build thirdParty Object if any detail in the relationship field
       const isThirdParty = !(req.body.relationship === '' || req.body.relationship === null)
         || !(req.body.thirdPartyReason === '' || req.body.thirdPartyReason === null || !req.body.thirdPartyReason)
@@ -178,6 +187,7 @@
       console.log('\n\nIS THIRD PARTY ENTRY\n', isThirdParty, '\n\n');
 
       if (req.body.thirdPartyEnabled === 'yes' && isThirdParty) {
+        validatorResult = validate(req.body, paperReplyValidator.thirdParty());
         // build thirdParty Object if any detail in the relationship field
         tempThirdParty.relationship = req.body.relationship;
         if (req.body.thirdPartyReason === 'other') {

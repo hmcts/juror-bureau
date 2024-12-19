@@ -351,6 +351,16 @@
       payload.thirdParty = {};
       // build thirdParty Object if any detail in the relationship field
       if (req.body.thirdPartyEnabled === 'yes') {
+        const validatorResult = validate(req.body, validator.thirdParty());
+
+        if (typeof validatorResult !== 'undefined') {
+          req.session.errors = validatorResult;
+
+          return res.redirect(app.namedRoutes.build('summons.update-details.get', {
+            id: req.params['id'],
+            type: req.params['type'],
+          }));
+        }
         // build thirdParty Object if any detail in the relationship field
         payload.thirdParty.relationship = req.body.relationship;
         payload.thirdParty.thirdPartyReason = getReason();
