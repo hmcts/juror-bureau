@@ -1,4 +1,4 @@
-<section class="detail-section {% if hasModAccess %}mod-reply-section{% endif %}" id="juror-details-section">
+<section class="detail-section mod-reply-section" id="juror-details-section">
 
 {% set replyType = (method or "digital") %}
 {% if method %}
@@ -10,7 +10,6 @@
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-full">
 
-      {% if hasModAccess %}
         <div class="mod-reply-section__title">
           <h2 class="govuk-heading-m">Juror details {{ replyMethod }}
             {% if method === "paper" %}
@@ -22,9 +21,9 @@
           </h2>
           {% if isAddChangeVisible %}
             <div class="govuk-body">
-              <a id="jurorDetailsEdit" 
+              <a id="jurorDetailsEditTP" 
                  class="govuk-link"
-                 aria-label="Add or change juror details" 
+                 aria-label="Add or change third party details" 
                  href="{{ url( updateUrl, { id: response.jurorNumber, type: replyType }) }}"
               >
                 Add or change
@@ -32,24 +31,6 @@
             </div>
           {% endif %}
         </div>
-      {% else %}
-        <div class="jd-panel-title">
-          <h2 class="govuk-heading-m">Juror details
-            {% if canEdit and responseEditEnabled %}
-            <div class="edit-actions govuk-body jd-right-align">
-              <a id="jurorDetailsEdit" 
-                 class="govuk-link edit-action edit-trigger" 
-                 data-target="juror-details" 
-                 href="#"
-                 aria-label="Change juror details"
-              >
-                Change
-              </a>
-            </div>
-            {% endif %}
-          </h2>
-        </div>
-      {% endif %}
 
     </div>
   </div>
@@ -60,37 +41,22 @@
         <dt class="govuk-summary-list__key">
           Name
         </dt>
-        {% if hasModAccess %}
-          {% if nameDetails.oldName %}
-            <dd class="govuk-summary-list__value" id="jurorName">
-              {% if (nameDetails.changed) or (title.changed) %}
-                <div class="jd-label-black">Current</div>
-              {% endif %}
-              {{ nameDetails.oldName }}
-            </dd>
-          {% endif %}
+        {% if nameDetails.oldName %}
           <dd class="govuk-summary-list__value" id="jurorName">
             {% if (nameDetails.changed) or (title.changed) %}
-              <div class="jd-label-blue">Pending</div>
-            {% endif %}
-            {{ nameDetails.currentName }}
-          </dd>
-          {% if not nameDetails.oldName %}
-            <dd class="govuk-summary-list__value"></dd>
-          {% endif %}
-        {% else %}
-          <dd class="govuk-summary-list__value" id="jurorName">
-            {% if (nameDetails.changed) or (title.changed) %}
-              <div class="jd-label-blue">New</div>
-            {% endif %}
-            {{ nameDetails.currentName }}
-          </dd>
-          <dd class="govuk-summary-list__value" id="oldJurorName">
-            {% if (nameDetails.changed) or (title.changed) %}
-              <div class="jd-label-black">Previous</div>
+              <div class="jd-label-black">Current</div>
             {% endif %}
             {{ nameDetails.oldName }}
           </dd>
+        {% endif %}
+        <dd class="govuk-summary-list__value" id="jurorName">
+          {% if (nameDetails.changed) or (title.changed) %}
+            <div class="jd-label-blue">Pending</div>
+          {% endif %}
+          {{ nameDetails.currentName }}
+        </dd>
+        {% if not nameDetails.oldName %}
+          <dd class="govuk-summary-list__value"></dd>
         {% endif %}
       </div>
       <div class="govuk-summary-list__row {% if addressDetails.changed %}info{% endif %}" id="address">
@@ -135,7 +101,7 @@
               {% if jurorDetails.dateOfBirth.changed %}
                 <div class="jd-label-black">Previous</div>
               {% endif %}
-              {{ jurorDetails.dateOfBirth.old | dateFilter("DD/MM/YYYY", "DD MMM YYYY") if hasModAccess and jurorDetails.dateOfBirth.old else jurorDetails.dateOfBirth.old }}
+              {{ jurorDetails.dateOfBirth.old | dateFilter("DD/MM/YYYY", "DD MMM YYYY") }}
             </dd>
           {% endif %}
         {% else %}
@@ -146,7 +112,7 @@
             {% if jurorDetails.dateOfBirth.changed %}
               <div class="jd-label-black">Previous</div>
             {% endif %}
-            {{ jurorDetails.dateOfBirth.old | dateFilter("DD/MM/YYYY", "DD MMM YYYY") if hasModAccess and jurorDetails.dateOfBirth.old else jurorDetails.dateOfBirth.old }}
+            {{ jurorDetails.dateOfBirth.old | dateFilter("DD/MM/YYYY", "DD MMM YYYY") }}
           </dd>
         {% endif %}
       </div>
@@ -178,7 +144,7 @@
       </div>
       <div class="govuk-summary-list__row {% if jurorDetails.altPhone.changed %}info{% endif %}"  id="altPhone">
         <dt class="govuk-summary-list__key">
-          {{ "Alternative phone" if hasModAccess else "Another Phone" }}
+          Alternative phone
         </dt>
         {% if thirdPartyDetails.isThirdParty and not thirdPartyDetails.useJurorPhoneDetails %}
           <dd class="govuk-summary-list__value mod-contact-third-party" id="jurorSecondaryPhone">
