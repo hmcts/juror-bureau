@@ -21,9 +21,9 @@
           </h2>
           {% if isAddChangeVisible %}
             <div class="govuk-body">
-              <a id="jurorDetailsEditTP" 
+              <a id="jurorDetailsEdit" 
                  class="govuk-link"
-                 aria-label="Add or change third party details" 
+                 aria-label="Add or change juror details" 
                  href="{{ url( updateUrl, { id: response.jurorNumber, type: replyType }) }}"
               >
                 Add or change
@@ -207,9 +207,9 @@
         </h2>
         {% if isAddChangeVisible %}
           <div class="govuk-body">
-            <a id="jurorDetailsEdit" 
+            <a id="jurorDetailsEditTP" 
                 class="govuk-link"
-                aria-label="Add or change juror details" 
+                aria-label="Add or change third party details" 
                 href="{{ url( updateUrl, { id: response.jurorNumber, type: replyType }) }}"
             >
               Add or change
