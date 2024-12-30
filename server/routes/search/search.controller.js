@@ -40,7 +40,7 @@
 
         if (tmpFields && tmpFields['officer_assigned']){
           tmpFields['officer_assigned'] = tmpFields && tmpFields['officer_assigned'] 
-            ? staffList?.find((staff) => staff.login.toLowerCase() === tmpFields['officer_assigned'].toLowerCase()).name 
+            ? staffList?.find((staff) => staff.name.toLowerCase() === tmpFields['officer_assigned'].toLowerCase()).name 
             : null;
         }
 
