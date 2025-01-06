@@ -442,6 +442,7 @@
         'pageLimit': modUtils.constants.PAGE_SIZE,
         'sortMethod': sortOrder === 'ascending' ? 'ASC' : (sortOrder === 'descending' ? 'DESC' : null),
         'sortField': capitalise(_.snakeCase(sortBy)) || null,
+        'includeAllJurorsOnTrial': message === 'sentencing-date',
       };
 
       try {
@@ -470,6 +471,7 @@
         const checkedJurors = _.clone(req.session.messaging.checkedJurors);
 
         return res.render('messaging/select-jurors.njk', {
+          message,
           messageTitle: messagingTitles[message],
           submitUrl: app.namedRoutes.build('messaging.send.select-jurors.post', { message }),
           backLinkUrl: {
@@ -697,6 +699,7 @@
 
   module.exports.postCheckJuror = function(app) {
     return async function(req, res) {
+      const { message } = req.params;
       const { jurorNumber, action } = req.query;
 
       if (!req.session.messaging.checkedJurors) {
@@ -716,6 +719,7 @@
               // 500 is the max results we will every show
               // May need to split this down into seperate calls dependant on performance
               'pageLimit': '500',
+              'includeAllJurorsOnTrial': message === 'sentencing-date',
             };
 
             let jurorsData = await jurorSearchDAO.post(
