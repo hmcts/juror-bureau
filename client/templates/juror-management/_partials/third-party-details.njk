@@ -10,8 +10,8 @@
     {% set thirdPartyReason = "Assistance" %}
 {% elif juror.thirdParty.thirdPartyReason === "deceased"%}
     {% set thirdPartyReason = "Deceased" %}
-{% elif juror.thirdParty.thirdPartyOtherReason %}
-    {% set thirdPartyReason = juror.thirdParty.thirdPartyOtherReason %}
+{% elif juror.thirdParty.thirdPartyOtherReason or juror.thirdParty.thirdPartyReason %}
+    {% set thirdPartyReason = juror.thirdParty.thirdPartyOtherReason or juror.thirdParty.thirdPartyReason %}
 {% endif %}
 
 
