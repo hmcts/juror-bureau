@@ -135,7 +135,7 @@
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
-        if (err.statusCode === '422' && err.error.code === 'WRONG_COURT_LOC') {
+        if (err.statusCode === '422' && err.error.code === 'INVALID_JUROR_POOL_LOCATION') {
           req.session.errors = makeManualError(
             'invalidData', 
             'This juror belongs to either the primary or satellite court in your area.'

@@ -125,7 +125,7 @@ const { makeManualError } = require('../../../../lib/mod-utils');
               'nonAttendanceDay',
               'Non-attendance date cannot be before the juror\'s service start date.'
             );
-          } else if (err.error.code === 'WRONG_COURT_LOC') {
+          } else if (err.error.code === 'INVALID_JUROR_POOL_LOCATION') {
             req.session.errors = makeManualError(
               'nonAttendanceDay',
               'This juror belongs to either the primary or satellite court in your area.'
