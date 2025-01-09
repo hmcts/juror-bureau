@@ -7,7 +7,7 @@
     approveExpensesFilterValidation = require('../../../config/validation/approve-expenses'),
     { approveExpensesDAO } = require('../../../objects/expenses'),
     { dateFilter } = require('../../../components/filters'),
-    { replaceAllObjKeys } = require('../../../lib/mod-utils');
+    { replaceAllObjKeys, makeManualError } = require('../../../lib/mod-utils');
 
   module.exports.getApproveExpenses = function(app) {
     return async function(req, res) {
@@ -94,6 +94,30 @@
           token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
+
+        if (err.statusCode === 422 && err.error.code === 'INVALID_JUROR_ATTENDANCE_RECORD') {
+          const tmpErrors = makeManualError('jurors', err.error.message);
+
+          return res.render('juror-management/approve-expenses/approve-expenses.njk', {
+            processDateFilterUrl,
+            dateFilters,
+            tabsUrls,
+            currentTab,
+            jurors: [],
+            tabHeaders: {
+              totalPendingBacs: 0,
+              totalPendingCash: 0,
+            },
+            clearFilter: app.namedRoutes.build('juror-management.approve-expenses.get'),
+            nav: 'approve-expenses',
+            locCode,
+            errors: {
+              title: 'Please check the form',
+              count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+              items: tmpErrors,
+            },
+          });
+        }
 
         return res.render('_errors/generic.njk');
       };
@@ -294,6 +318,7 @@
           'DATA_OUT_OF_DATE': 'Some of the expenses were updated. Review your selection and try again.',
           'CAN_NOT_APPROVE_OWN_EDIT': 'You cannot approve your own submitted expenses.',
           'CAN_NOT_APPROVE_MORE_THAN_LIMIT': 'You cannot approve more than your allowed limit.',
+          'INVALID_JUROR_ATTENDANCE_RECORD': err.error.message,
         };
 
         req.session.errors = {

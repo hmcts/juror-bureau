@@ -4,7 +4,7 @@
   const _ = require('lodash')
     , { dateFilter } = require('../../../../components/filters')
     , validate = require('validate.js')
-    , { convertTimeToHHMM } = require('../../../../lib/mod-utils')
+    , { convertTimeToHHMM, makeManualError } = require('../../../../lib/mod-utils')
     , attendanceDateValidator = require('../../../../config/validation/add-attendance')
     , { jurorAddAttendanceDao } = require('../../../../objects/juror-attendance');
 
@@ -135,12 +135,16 @@
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
-        req.session.errors = {
-          invalidData: [{
-            details: err.error.message ? err.error.message : 'Could not add attendance date',
-            summary: err.error.message ? err.error.message : 'Could not add attendance date',
-          }],
-        };
+        if (err.statusCode === '422' && err.error.code === 'WRONG_COURT_LOC') {
+          req.session.errors = makeManualError(
+            'invalidData', 
+            'This juror belongs to either the primary or satellite court in your area.'
+            + ' You must add the attendance for the court location.'
+            + ' Please log back in as the correct court to add this attendance'
+          )
+        } else {
+          req.session.errors = makeManualError('invalidData', err.error.message ? err.error.message : 'Could not add attendance date');
+        }
 
         req.session.formFields = req.body;
 
