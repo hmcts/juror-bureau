@@ -101,7 +101,7 @@
               {% if jurorDetails.dateOfBirth.changed %}
                 <div class="jd-label-black">Previous</div>
               {% endif %}
-              {{ jurorDetails.dateOfBirth.old | dateFilter("DD/MM/YYYY", "DD MMM YYYY") if jurorDetails.dateOfBirth.old else jurorDetails.dateOfBirth.old }}
+              {{ jurorDetails.dateOfBirth.old | dateFilter("DD/MM/YYYY", "DD MMM YYYY") if jurorDetails.dateOfBirth.old }}
             </dd>
           {% endif %}
         {% else %}
