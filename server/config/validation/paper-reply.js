@@ -9,7 +9,10 @@
     , messageMap = {
       primaryPhone: 'Telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
       secondaryPhone: 'Telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
+      thirdPartyMainPhone: 'Third party telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
+      thirdPartyOtherPhone: 'Third party telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
       emailAddress: 'Enter a valid email address',
+      thirdPartyEmailAddress: 'Enter a valid third party email address',
     };
 
   require('./common-email-address');

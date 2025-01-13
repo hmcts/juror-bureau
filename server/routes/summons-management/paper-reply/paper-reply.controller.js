@@ -147,11 +147,10 @@
 
   module.exports.postIndex = function(app) {
     return function(req, res) {
-      var validatorResult
-        , tempThirdParty = {}
-        , tmpAge
-        , otherThirdPartyReason = false
-        , momentSst = moment();
+      let tempThirdParty = {};
+      let tmpAge;
+      let otherThirdPartyReason = false;
+      let momentSst = moment();
 
       app.logger.debug('Adding a new paper summons: POST step-01 - juror details', {
         data: req.body,
@@ -159,18 +158,10 @@
       });
 
       // Validate form submission
-      validatorResult = validate(req.body, paperReplyValidator.jurorDetails());
+      let detailsValidatorResult;
+      detailsValidatorResult = validate(req.body, paperReplyValidator.jurorDetails());
 
       req.session.startedPaperResponse = true;
-
-      if (typeof validatorResult !== 'undefined') {
-        req.session.errors = validatorResult;
-        req.session.formFields = req.body;
-
-        return res.redirect(app.namedRoutes.build('paper-reply.index.get', {
-          id: req.params['id'],
-        }));
-      }
 
       // build thirdParty Object if any detail in the relationship field
       const isThirdParty = !(req.body.relationship === '' || req.body.relationship === null)
@@ -181,8 +172,9 @@
         || !(req.body.thirdPartyEmailAddress === '' || req.body.thirdPartyEmailAddress === null)
         || !(req.body.thirdPartyOtherPhone === '' || req.body.thirdPartyOtherPhone === null);
 
+      let thirdPartyValidatorResult;
       if (req.body.thirdPartyEnabled === 'yes' && isThirdParty) {
-        validatorResult = validate(req.body, paperReplyValidator.thirdParty());
+        thirdPartyValidatorResult = validate(req.body, paperReplyValidator.thirdParty());
         // build thirdParty Object if any detail in the relationship field
         tempThirdParty.relationship = req.body.relationship;
         if (req.body.thirdPartyReason === 'other') {
@@ -211,7 +203,8 @@
 
       req.session.paperResponseDetails.dateOfBirth = req.body.dateOfBirth;
 
-      if (typeof validatorResult !== 'undefined') {
+      if (typeof detailsValidatorResult !== 'undefined' || typeof thirdPartyValidatorResult !== 'undefined') {
+        const validatorResult = { ...detailsValidatorResult, ...thirdPartyValidatorResult };
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
 
