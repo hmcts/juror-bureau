@@ -4,7 +4,7 @@
   var validate = require('validate.js')
     , moment = require('moment')
 
-    , phoneRegex = /^[01247(+][0-9\s()—-]{9,19}$/
+    , phoneRegex = /^[01247(+][0-9\s-()]{9,19}$/
     , areaCodeRegex = /^0[127]{1}$/
     , messageMap = {
       primaryPhone: 'Telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
