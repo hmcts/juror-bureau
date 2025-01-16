@@ -10,7 +10,8 @@
   var checkAllJurors = $('#check-all-jurors')
     , jurorRows = $('input[aria-label^=check-juror]')
     , totalCheckedJurors = $('#checkedJurors')
-    , totalJurors = $('#totalJurors');
+    , totalJurors = $('#totalJurors')
+    , messageKey = $('#messageKey');
 
   var jurorMethods = $('select[id^=selectMethod-]');
 
@@ -94,7 +95,7 @@
     var action = isChecking ? 'check' : 'uncheck';
 
     return $.ajax({
-      url: '/messaging/send/select-jurors/check?jurorNumber=' + jurorNumber + '&action=' + action,
+      url: '/messaging/send/' + messageKey.text() + '/select-jurors/check?jurorNumber=' + jurorNumber + '&action=' + action,
       method: 'POST',
       data: {
         _csrf: csrfToken.val(),
