@@ -246,8 +246,7 @@
             , fieldErrorMessages = {}
             , maxExceededError = {};
 
-          if (typeof response !== 'undefined' && response.CourtCatchmentItems) {
-
+          if (typeof response !== 'undefined') {
             postcodes = modUtils.transformPostcodes(response.CourtCatchmentItems)[0];
 
             delete req.session.errors;
