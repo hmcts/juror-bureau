@@ -1,31 +1,31 @@
 (function() {
   'use strict';
 
+  const _ = require('lodash');
   const { dateFilter } = require('../../../components/filters');
 
   function tableGenerator(isBureauUser) {
-    return tableBuilder(this.response, this.checkedJurors, isBureauUser, this.allChecked);
+    return tableBuilder(this.response, this.checkedJurors, isBureauUser, this.allChecked, this.sortBy, this.sortOrder);
   }
 
-  function tableBuilder({ headings, data_types: dataTypes, data }, checkedJurors, isBureauUser, allChecked) {
-    const _thead = headings.reduce(headingsReducer.bind({ headings, dataTypes }), '');
+  function tableBuilder({ headings, data_types: dataTypes, data }, checkedJurors, isBureauUser, allChecked, sortBy, sortOrder) {
+    const _thead = headings.reduce(headingsReducer.bind({ headings, dataTypes, sortBy, sortOrder }), '');
 
     const selectAllCheck = allChecked ? 'checked' : '';
 
-    const tableHeader = `
-      <tr class="govuk-table__row">
-        <th class="govuk-table__header">
-          ${isBureauUser ? `<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
-            <input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check"
-            id="check-all-jurors" ${selectAllCheck} name="selectAllCheckbox"/>
-            <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="check-all-jurors">
-              <span class="govuk-visually-hidden">Select All</span>
-            </label>
-          </div>
-        </th>` : ''}
-        ${_thead}
-      </tr>
-    `;
+    const tableHeader = [{
+      id: 'check-all-juror',
+      html: `${isBureauUser ? `<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
+                <input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check"
+                id="check-all-jurors" ${selectAllCheck} name="selectAllCheckbox"/>
+                <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="check-all-jurors">
+                  <span class="govuk-visually-hidden">Select All</span>
+                </label>
+              </div>
+            ` : ''}`,
+      sortable: false,
+    },
+    ..._thead];
 
     const tableRows = isBureauUser
       ? data.reduce(rowsReducerBureau.bind({ headings, dataTypes, checkedJurors }), '')
@@ -35,27 +35,23 @@
   }
 
   function headingsReducer(prev, curr, i) {
-    const sortDirection = i === this.headings.length - 2 ? 'descending' : 'none';
+    const sortDirection = this.sortBy === _.camelCase(curr) ? this.sortOrder : 'none';
     const numberTypeClass = this.dataTypes[i] === 'number'
       ? 'govuk-table__header--numeric' : '';
     const isHidden = curr.includes('hidden_') || this.dataTypes[i] === 'hidden';
 
-    let row = '';
+    let row = [];
 
     if (!isHidden) {
-      row = `
-        <th
-          scope="col"
-          class="govuk-table__header ${numberTypeClass}"
-          aria-sort="${sortDirection}"
-          aria-label="${curr}"
-        >
-          ${curr}
-        </th>
-      `;
+      row = [{
+        id: _.camelCase(curr),
+        value: curr,
+        classes: numberTypeClass,
+        sort: sortDirection
+      }]
     }
 
-    row = prev + row;
+    row = [...prev, ...row];
 
     return row;
   }
@@ -76,22 +72,22 @@
 
     const isChecked = (checkedJuror && checkedJuror.length) ? 'checked' : '';
 
-    let row = `
-        <td class="govuk-table__cell mod-padding-block--0">
-          <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
-            <input type="checkbox" class="govuk-checkboxes__input"
-              id="juror-${jurorInfo[0]}" ${isChecked}
-              aria-label="check-juror-${jurorInfo[0]}"
-              data-version="${curr.id}"
-              data-printed="${curr.date_printed}"
-              name="checked-jurors"
-            />
-            <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="juror-${jurorInfo[0]}">
-              <span class="govuk-visually-hidden">Select juror ${jurorInfo[0]}</span>
-            </label>
-          </div>
-        </td>
-      `;
+    let row = [{
+      html:
+        `<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
+          <input type="checkbox" class="govuk-checkboxes__input"
+            id="juror-${jurorInfo[0]}" ${isChecked}
+            aria-label="check-juror-${jurorInfo[0]}"
+            data-version="${curr.id}"
+            data-printed="${curr.date_printed}"
+            name="checked-jurors"
+          />
+          <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="juror-${jurorInfo[0]}">
+            <span class="govuk-visually-hidden">Select juror ${jurorInfo[0]}</span>
+          </label>
+        </div>`,
+      classes: `mod-padding-block--0 ${isPrintedHighlight}`
+    }];
 
     // eslint-disable-next-line guard-for-in
     for (let index in jurorInfo) {
@@ -109,18 +105,14 @@
       };
 
       if (!isHidden) {
-        row += `
-          <td
-            class="govuk-table__cell jd-middle-align mod-padding-block--0"
-            ${sortValue(isDate, isNumber, value)}
-          >
-            ${formatValue(_formatValue)}
-          </td>
-        `;
+        row.push({
+          html: formatValue(_formatValue),
+          classes: `jd-middle-align mod-padding-block--0 ${isPrintedHighlight}`,
+        })
       }
     }
 
-    row = prev + `<tr id="row-${jurorInfo[0]}" class="govuk-table__row ${isPrintedHighlight}">${row}</tr>`;
+    row = [...prev, row];
 
     return row;
   }
@@ -146,23 +138,24 @@
     const isChecked = (checkedJuror && checkedJuror.length) ? 'checked' : '';
 
     let row = isPending(jurorInfo[jurorInfo.length - 2]) && !_neverPrinted
-      ? '<td class="govuk-table__cell"></td>'
-      : `
-        <td class="govuk-table__cell mod-padding-block--0">
-          <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
-            <input type="checkbox" class="govuk-checkboxes__input"
-              id="juror-${jurorInfo[0]}" ${isChecked}
-              aria-label="check-juror-${jurorInfo[0]}"
-              data-version="${jurorInfo[formCodeIdx]}"
-              data-printed="${jurorInfo[datePrintedIdx]}"
-              name="checked-jurors"
-            />
-            <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="juror-${jurorInfo[0]}">
-              <span class="govuk-visually-hidden">Select juror ${jurorInfo[0]}</span>
-            </label>
-          </div>
-        </td>
-      `;
+      ? [{}]
+      : [{
+        html:
+          `<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
+              <input type="checkbox" class="govuk-checkboxes__input"
+                id="juror-${jurorInfo[0]}" ${isChecked}
+                aria-label="check-juror-${jurorInfo[0]}"
+                data-version="${jurorInfo[formCodeIdx]}"
+                data-printed="${jurorInfo[datePrintedIdx]}"
+                name="checked-jurors"
+              />
+              <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="juror-${jurorInfo[0]}">
+                <span class="govuk-visually-hidden">Select juror ${jurorInfo[0]}</span>
+              </label>
+            </div>
+          `,
+        classes: `mod-padding-block--0 ${isPrintedHighlight}`
+      }];
 
     const paddingClass = _isPrinted ? 'mod-padding-block--0' : '';
 
@@ -183,18 +176,17 @@
       };
 
       if (!isHidden) {
-        row += `
-          <td
-            class="govuk-table__cell jd-middle-align ${paddingClass}"
-            ${sortValue(isDate, isNumber, value)}
-          >
-            ${formatValue(_formatValue)}
-          </td>
-        `;
+        row.push({
+          html: formatValue(_formatValue),
+          classes: `jd-middle-align ${paddingClass} ${isPrintedHighlight}`,
+          attributes: {
+            id: `${jurorInfo[0]}_${jurorInfo[datePrintedIdx]}_${_.camelCase(this.headings[index])}`,
+          },
+        })
       }
     }
 
-    row = prev + `<tr id="row-${jurorInfo[0]}" class="govuk-table__row ${isPrintedHighlight}">${row}</tr>`;
+    row = [...prev, row];
 
     return row;
   }
@@ -205,14 +197,6 @@
 
   function isPending(value) {
     return !value;
-  }
-
-  function sortValue(isDate, isNumber, value) {
-    if (isDate || isNumber) {
-      return `data-sort-value="${value === '-' ? 'top' : value}"`;
-    }
-
-    return '';
   }
 
   function formatValue({ isDate, value, version, jurorNumber, showPending, isCourtPending }) {

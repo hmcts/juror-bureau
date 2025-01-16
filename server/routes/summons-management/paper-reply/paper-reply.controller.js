@@ -79,6 +79,17 @@
           delete req.session.errors;
           delete req.session.formFields;
 
+          let isThirdPartyResponse = false;
+          if (req.session.paperResponseDetails.thirdParty) {
+            isThirdPartyResponse = typeof req.session.paperResponseDetails.thirdParty.thirdPartyFName !== 'undefined'
+              || typeof req.session.paperResponseDetails.thirdParty.thirdPartyLName !== 'undefined'
+              || typeof req.session.paperResponseDetails.thirdParty.thirdPartyPhone !== 'undefined'
+              || typeof req.session.paperResponseDetails.thirdParty.otherPhone !== 'undefined'
+              || typeof req.session.paperResponseDetails.thirdParty.thirdPartyEmail !== 'undefined'
+              || typeof req.session.paperResponseDetails.thirdParty.relationship !== 'undefined'
+              || typeof req.session.paperResponseDetails.thirdParty.thirdPartyReason !== 'undefined';
+          }
+
           return res.render('summons-management/paper-reply/index', {
             details: req.session.paperResponseDetails,
             cancelUrl: app.namedRoutes.build('juror-record.overview.get', {
@@ -96,6 +107,7 @@
             isCourtUser: isCourtUser(req),
             isTeamLeader: isTeamLeader(req),
             noWelsh: !req.session.paperResponseDetails.isWelshCourt,
+            isThirdPartyResponse,
           });
         }
         , errorCB = function(err) {
@@ -135,11 +147,10 @@
 
   module.exports.postIndex = function(app) {
     return function(req, res) {
-      var validatorResult
-        , tempThirdParty = {}
-        , tmpAge
-        , otherThirdPartyReason = false
-        , momentSst = moment();
+      let tempThirdParty = {};
+      let tmpAge;
+      let otherThirdPartyReason = false;
+      let momentSst = moment();
 
       app.logger.debug('Adding a new paper summons: POST step-01 - juror details', {
         data: req.body,
@@ -147,17 +158,40 @@
       });
 
       // Validate form submission
-      validatorResult = validate(req.body, paperReplyValidator.jurorDetails());
+      let detailsValidatorResult;
+      detailsValidatorResult = validate(req.body, paperReplyValidator.jurorDetails());
 
       req.session.startedPaperResponse = true;
 
       // build thirdParty Object if any detail in the relationship field
-      tempThirdParty.relationship = req.body.relationship;
-      if (req.body.thirdPartyReason === 'other') {
-        tempThirdParty.thirdPartyReason = req.body.otherDetails;
-        otherThirdPartyReason = true;
-      } else {
-        tempThirdParty.thirdPartyReason = req.body.thirdPartyReason;
+      const isThirdParty = !(req.body.relationship === '' || req.body.relationship === null)
+        || !(req.body.thirdPartyReason === '' || req.body.thirdPartyReason === null || !req.body.thirdPartyReason)
+        || !(req.body.thirdPartyFName === '' || req.body.thirdPartyFName === null)
+        || !(req.body.thirdPartyLName === '' || req.body.thirdPartyLName === null)
+        || !(req.body.thirdPartyMainPhone === '' || req.body.thirdPartyMainPhone === null)
+        || !(req.body.thirdPartyEmailAddress === '' || req.body.thirdPartyEmailAddress === null)
+        || !(req.body.thirdPartyOtherPhone === '' || req.body.thirdPartyOtherPhone === null);
+
+      let thirdPartyValidatorResult;
+      if (req.body.thirdPartyEnabled === 'yes' && isThirdParty) {
+        thirdPartyValidatorResult = validate(req.body, paperReplyValidator.thirdParty());
+        // build thirdParty Object if any detail in the relationship field
+        tempThirdParty.relationship = req.body.relationship;
+        if (req.body.thirdPartyReason === 'other') {
+          tempThirdParty.thirdPartyReason = req.body.otherDetails;
+          otherThirdPartyReason = true;
+        } else {
+          tempThirdParty.thirdPartyReason = req.body.thirdPartyReason;
+        }
+        tempThirdParty.thirdPartyFName = req.body.thirdPartyFName;
+        tempThirdParty.thirdPartyLName = req.body.thirdPartyLName;
+        tempThirdParty.thirdPartyPhone = req.body.thirdPartyMainPhone;
+        tempThirdParty.otherPhone = req.body.thirdPartyOtherPhone;
+        tempThirdParty.thirdPartyEmail = req.body.thirdPartyEmailAddress;
+        tempThirdParty.useJurorEmailDetails = req.body.thirdPartyContactPreferences?.includes('useJurorEmailDetails') ? true : false;
+        tempThirdParty.useJurorPhoneDetails = req.body.thirdPartyContactPreferences?.includes('useJurorPhoneDetails') ? true : false;
+      } else  {
+        tempThirdParty = {};
       }
 
       req.session.paperResponseDetails.thirdParty = tempThirdParty;
@@ -169,7 +203,8 @@
 
       req.session.paperResponseDetails.dateOfBirth = req.body.dateOfBirth;
 
-      if (typeof validatorResult !== 'undefined') {
+      if (typeof detailsValidatorResult !== 'undefined' || typeof thirdPartyValidatorResult !== 'undefined') {
+        const validatorResult = { ...detailsValidatorResult, ...thirdPartyValidatorResult };
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
 

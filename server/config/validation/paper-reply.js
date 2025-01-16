@@ -9,7 +9,10 @@
     , messageMap = {
       primaryPhone: 'Telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
       secondaryPhone: 'Telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
+      thirdPartyMainPhone: 'Third party telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
+      thirdPartyOtherPhone: 'Third party telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
       emailAddress: 'Enter a valid email address',
+      thirdPartyEmailAddress: 'Enter a valid third party email address',
     };
 
   require('./common-email-address');
@@ -251,6 +254,62 @@
       },
     };
   };
+
+  // Validates the 'third party' conditional
+  module.exports.thirdParty = () => ({
+    relationship: {
+      length: {
+        maximum: 50,
+        message: {
+          summary: 'Please check the third party relationship',
+          details: 'Please check the third party relationship',
+        },
+      }
+    },
+    thirdPartyFName: {
+      length: {
+        maximum: 50,
+        message: {
+          summary: 'Please check the third party first name',
+          details: 'Please check the third party first name',
+        },
+      }
+    },
+    thirdPartyLName: {
+      length: {
+        maximum: 50,
+        message: {
+          summary: 'Please check the third party last name',
+          details: 'Please check the third party last name',
+        },
+      }
+    },
+    thirdPartyMainPhone: {
+      phoneNumber: {
+        messageMap: messageMap,
+      },
+    },
+    thirdPartyOtherPhone: {
+      phoneNumber: {
+        messageMap: messageMap,
+      },
+    },
+    thirdPartyEmailAddress: {
+      commonEmailAddress: {
+        required: false,
+        messageMap: messageMap,
+      },
+    },
+    otherDetails: {
+      length: {
+        maximum: 1000,
+        message: {
+          summary: 'Please check the third party other reason',
+          details: 'Please check the third party other reason',
+        },
+      }
+    },
+  });
 
   module.exports.cjsEmployment = function() {
     var messageMapping = (field) => {

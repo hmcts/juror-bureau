@@ -45,7 +45,7 @@
   {% endif %}
 
   {% if method === "paper"
-    and (response.jurorDetailsComplete === false or response.eligibilityComplete === false or response.signed !== true)
+    and (response.jurorDetailsComplete === false or response.eligibilityComplete === false or response.thirdPartyComplete === false or response.signed !== true)
     and not (response.processingStatus === 'Closed' or thirdPartyDetails.reason === 'Deceased') %}
     {{ mojBanner({
       type: 'information',
@@ -82,54 +82,50 @@
 
 
   {# catchment warning banner #}
-  {% if hasModAccess %}
-    {% if catchmentWarning.isOutwithCatchment %}
-      {% if catchmentWarning.courts | length %}
-        {% set newCourts = [] %}
-        {% for court in catchmentWarning.courts %}
-          {% set newCourts = (newCourts.push(court.formattedName), newCourts) %}
-        {% endfor %}
-        {% set catchmentWarningHtml %}
-          <p class="govuk-notification-banner__heading">
-            Juror's address is outside the catchment area of the court they were summoned to
-          </p>
-          <p>
-            Their new address is in the catchment area for {{newCourts | prettyList}}.
-          <p>
-          <p>
-            You can change the juror's court when you process the reply.
-          </p>
-        {% endset %}
-      {% else %}
-        {% set catchmentWarningHtml %}
-          <p class="govuk-notification-banner__heading">
-            Juror's postcode is not recognised as belonging to any court catchment area
-          </p>
-          <p>
-            Check the juror's postcode is correct.
-          <p>
-        {% endset %}
-      {% endif %}
-      <div class="govuk-grid-row govuk-body">
-        {{ govukNotificationBanner({
-          html: catchmentWarningHtml
-        }) }}
-      </div>
+  {% if catchmentWarning.isOutwithCatchment %}
+    {% if catchmentWarning.courts | length %}
+      {% set newCourts = [] %}
+      {% for court in catchmentWarning.courts %}
+        {% set newCourts = (newCourts.push(court.formattedName), newCourts) %}
+      {% endfor %}
+      {% set catchmentWarningHtml %}
+        <p class="govuk-notification-banner__heading">
+          Juror's address is outside the catchment area of the court they were summoned to
+        </p>
+        <p>
+          Their new address is in the catchment area for {{newCourts | prettyList}}.
+        <p>
+        <p>
+          You can change the juror's court when you process the reply.
+        </p>
+      {% endset %}
+    {% else %}
+      {% set catchmentWarningHtml %}
+        <p class="govuk-notification-banner__heading">
+          Juror's postcode is not recognised as belonging to any court catchment area
+        </p>
+        <p>
+          Check the juror's postcode is correct.
+        <p>
+      {% endset %}
     {% endif %}
+    <div class="govuk-grid-row govuk-body">
+      {{ govukNotificationBanner({
+        html: catchmentWarningHtml
+      }) }}
+    </div>
   {% endif %}
 
   {# details header #}
   <div class="govuk-grid-row govuk-body">
-    {% if hasModAccess %}
-      <div class="govuk-grid-column-full govuk-!-margin-bottom-2">
-        <div class="govuk-grid-column-one-third">
-            {{ govukTag({
-              text: "Summons reply",
-              classes: "govuk-tag--purple"
-            }) }}
-        </div>
+    <div class="govuk-grid-column-full govuk-!-margin-bottom-2">
+      <div class="govuk-grid-column-one-third">
+          {{ govukTag({
+            text: "Summons reply",
+            classes: "govuk-tag--purple"
+          }) }}
       </div>
-    {% endif %}
+    </div>
 
     <div class="govuk-grid-column-full">
       <div class="govuk-grid-column-two-thirds">
@@ -153,9 +149,7 @@
 
     <div class="govuk-grid-column-full">
       <div class="govuk-grid-column-one-third">
-        {% if hasModAccess %}
-          <a href="{{ url('response.view-juror-record.get', { id: response.jurorNumber }) }}" class="govuk-link">View juror's record</a>
-        {% endif %}
+        <a href="{{ url('response.view-juror-record.get', { id: response.jurorNumber }) }}" class="govuk-link">View juror's record</a>
       </div>
     </div>
 
@@ -173,12 +167,13 @@
         <a id="menuItemReply" class="moj-sub-navigation__link"  href="#replyContent" >Juror's reply</a>
       </li>
       <li class="moj-sub-navigation__item" data-target="logContent" data-tabs="responseTabs">
-        <a id="menuItemLogs"  class="moj-sub-navigation__link"  href="#logContent">{{ "Notes and logs" if hasModAccess else "Logs" }}
-        {% if (response.notes.length > 1) or (response.phoneLogs.length > 0) or (response.changeLog.length > 0) %}
-          <span id="logsMenuIndicator" class="jd-logs-menu-indicator  jd-right-align">
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="5" r="5" fill="#1D70B8"/></svg>
-          </span>
-        {% endif %}
+        <a id="menuItemLogs"  class="moj-sub-navigation__link"  href="#logContent">
+          Notes and logs
+          {% if (response.notes.length > 1) or (response.phoneLogs.length > 0) or (response.changeLog.length > 0) %}
+            <span id="logsMenuIndicator" class="jd-logs-menu-indicator  jd-right-align">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="5" r="5" fill="#1D70B8"/></svg>
+            </span>
+          {% endif %}
         </a>
       </li>
     </ul>
