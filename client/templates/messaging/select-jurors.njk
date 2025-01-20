@@ -21,6 +21,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <span class="govuk-caption-xl">{{ messageTitle | capitalize }}</span>
+      <span id="messageKey" class="govuk-visually-hidden">{{ message }}</span>
       <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Select jurors to send message to</h1>
       
       {% if sendType === "EMAIL" %}

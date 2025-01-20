@@ -100,7 +100,7 @@
     );
 
     // ajax route to check / uncheck jurors
-    app.post('/messaging/send/select-jurors/check',
+    app.post('/messaging/send/:message/select-jurors/check',
       'messaging.send.select-jurors.check.post',
       auth.verify,
       isCourtUser,

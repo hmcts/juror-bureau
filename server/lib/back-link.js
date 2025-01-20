@@ -23,6 +23,7 @@ const bypassUrls = [
   '/details/edit',
   '/details/ineligible-age',
   '/multiple-tabs',
+  '/delete-juror-attendance',
 ];
 
 function resolveBackLink(req) {

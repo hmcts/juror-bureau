@@ -1,3 +1,5 @@
+const { makeManualError } = require('../../../../lib/mod-utils');
+
 (function() {
   'use strict';
 
@@ -105,36 +107,39 @@
 
         return res.redirect(successUrl);
       } catch (err) {
-        if (err.statusCode === 422 && err.error.code === 'ATTENDANCE_RECORD_ALREADY_EXISTS'){
-          req.session.errors = {
-            nonAttendanceDay: [{
-              summary: 'You cannot mark this date as a non-attendance day'
-                  + ' because it\'s already been recorded as an attendance day.',
-              details: 'You cannot mark this date as a non-attendance day'
-                  + ' because it\'s already been recorded as an attendance day.',
-            }],
-          };
-          req.session.formFields = req.body;
-
-          return res.redirect(errorUrl);
-        }
-        if (err.statusCode === 422 && err.error.code === 'APPEARANCE_RECORD_BEFORE_SERVICE_START_DATE'){
-          req.session.errors = {
-            nonAttendanceDay: [{
-              summary: 'Non-attendance date cannot be before the juror’s service start date.',
-              details: 'Non-attendance date cannot be before the juror’s service start date.',
-            }],
-          };
-          req.session.formFields = req.body;
-
-          return res.redirect(errorUrl);
-        }
-
         app.logger.crit('Failed to add a non-attendance day for juror', {
           auth: req.session.authentication,
           token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
+
+        if (err.statusCode === 422) {
+          if (err.error.code === 'ATTENDANCE_RECORD_ALREADY_EXISTS') {
+            req.session.errors = makeManualError(
+              'nonAttendanceDay',
+              'You cannot mark this date as a non-attendance day' 
+              + ' because it\'s already been recorded as an attendance day.'
+            );
+          } else if (err.error.code === 'APPEARANCE_RECORD_BEFORE_SERVICE_START_DATE') {
+            req.session.errors = makeManualError(
+              'nonAttendanceDay',
+              'Non-attendance date cannot be before the juror\'s service start date.'
+            );
+          } else if (err.error.code === 'INVALID_JUROR_POOL_LOCATION') {
+            req.session.errors = makeManualError(
+              'nonAttendanceDay',
+              'This juror belongs to either the primary or satellite court in your area.'
+              + ' You must add the attendance for the court location.'
+              + ' Please log back in as the correct court to add this attendance'
+            );
+          } else {
+            req.session.errors = makeManualError('nonAttendanceDay', err.error.message ? err.error.message : 'Could not add non-attendance date');
+          }
+
+          req.session.formFields = req.body;
+
+          return res.redirect(errorUrl);
+        }
 
         return res.render('_errors/generic.njk');
       };

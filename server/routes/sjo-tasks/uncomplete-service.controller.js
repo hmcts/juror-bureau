@@ -30,14 +30,22 @@ module.exports.postSelectUncomplete = function(app) {
 
 module.exports.getConfirmUncomplete = function(app) {
   return function(req, res) {
+    const tmpErrors = _.clone(req.session.errors);
     const backLinkUrl = urljoin(app.namedRoutes.build('sjo-tasks.uncomplete-service.select.get'),
       '?' + urlBuilder(req.session.uncompleteService.searchKey, req.session.uncompleteService.searchTerm));
+
+    delete req.session.errors;
 
     return res.render('sjo-tasks/uncomplete-service/confirm-uncomplete.njk', {
       backLinkUrl,
       postUrl: app.namedRoutes.build('sjo-tasks.uncomplete-service.confirm.post'),
       cancelUrl: app.namedRoutes.build('sjo-tasks.uncomplete-service.get'),
       jurorsAmount: req.session.uncompleteService.selectedJurors.length,
+      errors: {
+        message: '',
+        count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+        items: tmpErrors,
+      },
     });
   };
 };
@@ -66,6 +74,11 @@ module.exports.postConfirmUncomplete = function(app) {
         auth: req.session.authentication,
         error: typeof err.error !== 'undefined' ? err.error : err.toString(),
       });
+
+      if (err.statusCode === 400 && err.error.message.includes('size must be between 1 and')){
+        req.session.errors = makeManualError('jurors', `You cannot select more than ${err.error.message.split(" ").splice(-1)} jurors to uncomplete service for`);
+        return res.redirect(app.namedRoutes.build('sjo-tasks.uncomplete-service.confirm.get'));
+      }
 
       return res.render('_errors/generic.njk');
     };
