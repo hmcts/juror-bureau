@@ -2,6 +2,7 @@
   "name": "juror-bureau",
   "version": "5.2.0",
   "private": true,
+  "description": "Juror Bureau frontend application",
   "engines": {
     "node": ">=20"
   },
