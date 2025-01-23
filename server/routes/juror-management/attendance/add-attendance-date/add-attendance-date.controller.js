@@ -35,11 +35,6 @@
       delete req.session.errors;
       delete req.session.formFields;
 
-      const juror = {
-        jurorNumber: jurorNumber,
-        onCall: req.session.jurorCommonDetails.onCall,
-      };
-
       if (jurorNumber !== req.session.jurorCommonDetails.jurorNumber) {
 
         app.logger.crit('Juror number does not match cached data', {
@@ -57,7 +52,6 @@
       }
 
       return res.render('juror-management/attendance/add-attendance', {
-        juror,
         cancelUrl,
         postUrl,
         tmpFields,
@@ -135,7 +129,7 @@
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
-        if (err.statusCode === '422' && err.error.code === 'INVALID_JUROR_POOL_LOCATION') {
+        if (err.statusCode === 422 && err.error.code === 'INVALID_JUROR_POOL_LOCATION') {
           req.session.errors = makeManualError(
             'invalidData', 
             'This juror belongs to either the primary or satellite court in your area.'
