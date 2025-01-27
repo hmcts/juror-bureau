@@ -52,8 +52,19 @@
         delete req.session.errors;
         delete req.session.submitExpensesBanner;
 
+        let backLinkUrl;
+
+        if (req.session.historyStack.length > 1) {
+          backLinkUrl = req.session.historyStack[req.session.historyStack.length - 2]
+        } else {
+          backLinkUrl = app.namedRoutes.build('juror-management.approve-expenses.get');
+          if (req.session.approveExpensesTab){
+            backLinkUrl += `?tab=${req.session.approveExpensesTab}`;
+          }
+        }
+        
         return res.render('juror-management/expense-record/expense-record.njk', {
-          backLinkUrl: app.namedRoutes.build('juror-management.unpaid-attendance.get'),
+          backLinkUrl: backLinkUrl,
           submitUrl,
           setExpensesUrl,
           bankDetailsUrl,
