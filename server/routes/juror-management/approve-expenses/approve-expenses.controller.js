@@ -68,6 +68,7 @@
         };
 
         req.session.approveExpenses = { jurors, tabHeaders };
+        req.session.approveExpensesTab = currentTab;
 
         return res.render('juror-management/approve-expenses/approve-expenses.njk', {
           processUrl,
