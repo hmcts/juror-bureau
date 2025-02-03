@@ -1,6 +1,8 @@
 /* eslint-disable strict */
 
+const _ = require('lodash');
 const axios = require('axios');
+const { replaceAllObjKeys } = require('../lib/mod-utils');
 const config = require('../config/environment')();
 
 const client = axios.create({
@@ -39,6 +41,8 @@ client.interceptors.request.use(function(request) {
 client.interceptors.response.use(
   (response) => {
     const data = isResponseDataPlain(response.data) ? { data: response.data } : response.data;
+
+    replaceAllObjKeys(data, _.camelCase);
 
     return { ...data, _headers: response.headers };
   },
