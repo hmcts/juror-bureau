@@ -16,6 +16,9 @@ const client = axios.create({
 
 client.interceptors.request.use(function(request) {
   const { Logger } = require('../components/logger');
+
+  replaceAllObjKeys(request.data, _.snakeCase);
+  
   const logBody = request.data ? { body: { ...request.data } } : {};
 
   if (logBody && logBody.body && logBody.body.password) {
