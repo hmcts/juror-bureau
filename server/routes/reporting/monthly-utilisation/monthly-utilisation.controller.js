@@ -44,7 +44,7 @@
 
     try {
       const {response} = await courtDetailsDAO.get(req, req.session.authentication.locCode);
-      const courtName = capitalizeFully(response.english_court_name);
+      const courtName = capitalizeFully(response.englishCourtName);
 
       return res.render('reporting/monthly-utilisation/confirm-prepare', {
         courtName,

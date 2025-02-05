@@ -44,7 +44,7 @@
 
         courts = courtsData
           .filter((c) => c.courtType === 'MAIN')
-          .filter((c) => !assignedPrimaryCourts.find((pc) => pc.primary_court.loc_code === c.locCode));
+          .filter((c) => !assignedPrimaryCourts.find((pc) => pc.primaryCourt.locCode === c.locCode));
 
           if (filter) {
             courts = courtsData

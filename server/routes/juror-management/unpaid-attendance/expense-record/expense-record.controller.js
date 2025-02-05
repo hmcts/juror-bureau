@@ -11,8 +11,8 @@
 
       try {
         const jurorDetails = await jurorRecordDetailsDAO.post(req, [{
-          'juror_number': jurorNumber,
-          'juror_version': null,
+          'jurorNumber': jurorNumber,
+          'jurorVersion': null,
           'include': ['NAME_DETAILS', 'ACTIVE_POOL'],
         }]);
 

@@ -64,7 +64,7 @@
 
       const body = {
         dates: attendanceDates.split(','),
-        'smart_card_amount': smartcardAmount,
+        'smartCardAmount': smartcardAmount,
       };
 
       try {

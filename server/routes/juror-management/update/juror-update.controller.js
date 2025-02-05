@@ -89,9 +89,9 @@
         jurorNumber: req.params.jurorNumber,
         owner: jurorDetails.commonDetails.owner,
         excusalCode: jurorDetails.commonDetails.excusalCode,
-        hasAppearances: attendanceData.has_appearances,
+        hasAppearances: attendanceData.hasAppearances,
         attendances: attendanceData.attendances,
-        onCall: attendanceData.on_call,
+        onCall: attendanceData.onCall,
         processUrl,
         cancelUrl,
         radioChecked: radioChecked,
@@ -655,7 +655,7 @@
   }
 
   function postUndeliverable(req, res, app) {
-    markAsUndeliverableDAO.patch(req, { 'juror_numbers': [req.params.jurorNumber] })
+    markAsUndeliverableDAO.patch(req, { 'jurorNumbers': [req.params.jurorNumber] })
       .then((data) => {
         app.logger.info('Juror processed as undeliverable: ', {
           auth: req.session.authentication,

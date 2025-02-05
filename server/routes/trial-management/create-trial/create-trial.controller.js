@@ -37,9 +37,9 @@
           const judges = data[1];
           const courtroomsToDisplay = courtrooms.map((court) => {
             return {
-                displayName: court.court_location,
-                courtLocationName: court.court_location.replace(/[ .]/g, '_'),
-                courtrooms: court.court_rooms.map(room => room.description),
+                displayName: court.courtLocation,
+                courtLocationName: court.courtLocation.replace(/[ .]/g, '_'),
+                courtrooms: court.courtRooms.map(room => room.description),
               }
           });
 
@@ -94,8 +94,8 @@
       let courtrooms;
       try {
         courtrooms = (await courtroomsObject.get(req)).map((court) => {
-          court.display_name = court.court_location;
-          court.court_location = court.court_location.replace(/[ .]/g, '_');
+          court.displayName = court.courtLocation;
+          court.courtLocation = court.courtLocation.replace(/[ .]/g, '_');
           return court
         })
       } catch (err) {
@@ -156,30 +156,30 @@
     let courtroom
       , courtroomsDetails;
 
-    payload.case_number = body.trialNumber;
-    payload.trial_type = body.trialType;
+    payload.caseNumber = body.trialNumber;
+    payload.trialType = body.trialType;
     payload.defendant = body.trialType === 'CRI' ? body.defendants : body.respondents;
-    payload.start_date = dateFilter(body.startDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
-    payload.judge_id = judges.find(j => {
+    payload.startDate = dateFilter(body.startDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
+    payload.judgeId = judges.find(j => {
       return j.description === body.judge;
     }).id;
 
     if (body.court) {
       courtroomsDetails = courtrooms.find(c => {
-        return c.court_location === body.court;
-      }).court_rooms;
+        return c.courtLocation === body.court;
+      }).courtRooms;
     } else {
-      courtroomsDetails = courtrooms[0].court_rooms;
+      courtroomsDetails = courtrooms[0].courtRooms;
     }
 
     courtroom = courtroomsDetails.find(cr => {
       return cr.description === body.courtroom;
     });
 
-    payload.court_location = courtroom.loc_code;
-    payload.courtroom_id = courtroom.id;
+    payload.courtLocation = courtroom.locCode;
+    payload.courtroomId = courtroom.id;
 
-    payload.protected_trial = body.protected ? true : false;
+    payload.protectedTrial = body.protected ? true : false;
 
     return payload;
   }
@@ -199,8 +199,8 @@
 
         return res.redirect(
           app.namedRoutes.build('trial-management.trials.detail.get', {
-            trialNumber: resp.trial_number,
-            locationCode: payload.court_location,
+            trialNumber: resp.trialNumber,
+            locationCode: payload.courtLocation,
           })
         );
       })

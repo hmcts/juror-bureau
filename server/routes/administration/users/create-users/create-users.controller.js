@@ -257,10 +257,10 @@
       const { userType } = req.params;
       const user = _.clone(req.session.createUser.details);
       const payload = {
-        'user_type': capitalise(user.userType),
+        'userType': capitalise(user.userType),
         email: user.email,
         name: user.name,
-        'approval_limit': user.userType.toUpperCase() === 'COURT' ? user.approvalLimit : null,
+        'approvalLimit': user.userType.toUpperCase() === 'COURT' ? user.approvalLimit : null,
       };
 
       if (user.roles) {

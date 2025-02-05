@@ -19,7 +19,7 @@
       try {
         const response = await certificateOfExemptionDAO.getJurorsForExemptionList(req, caseNumber, locCode);
 
-        req.session.exemptionLetter.jurors = response.map(j => j.juror_number);
+        req.session.exemptionLetter.jurors = response.map(j => j.jurorNumber);
 
         app.logger.info('Fetched the list of juror exemption candidates: ', {
           auth: req.session.authentication,
@@ -72,11 +72,11 @@
       delete req.session.errors;
 
       const payload = {
-        'letter_type': 'CERTIFICATE_OF_EXEMPTION',
-        'juror_numbers': checkedJurors,
-        'trial_number': caseNumber,
+        'letterType': 'CERTIFICATE_OF_EXEMPTION',
+        'jurorNumbers': checkedJurors,
+        'trialNumber': caseNumber,
         'judge': req.session.exemptionLetter.judge,
-        'exemption_period': durationType === 'indefinitely' ? 'indefinite' : durationYears,
+        'exemptionPeriod': durationType === 'indefinitely' ? 'indefinite' : durationYears,
       };
 
       try {
@@ -147,10 +147,10 @@
 
       juror.content = letterTemplates('certificate-of-exemption', {
         welsh: isWelsh,
-        firstName: juror.juror_first_name,
-        lastName: juror.juror_last_name,
-        judge: juror.judge_name,
-        exemptionPeriod: juror.period_of_exemption,
+        firstName: juror.jurorFirstName,
+        lastName: juror.jurorLastName,
+        judge: juror.judgeName,
+        exemptionPeriod: juror.periodOfExemption,
         signature: juror.signature,
       });
       juror.title = isWelsh ? 'GWASANAETH RHEITHGOR TYSTYSGRIF ESGUSODI' : 'JURY SERVICE CERTIFICATE OF EXEMPTION';

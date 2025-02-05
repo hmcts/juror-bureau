@@ -72,9 +72,9 @@
       data: {
         _csrf: csrfToken.val(),
         isChecking,
-        'juror_number': jurorNumber,
-        'form_code': documentVersion,
-        'date_printed': datePrinted,
+        'jurorNumber': jurorNumber,
+        'formCode': documentVersion,
+        'datePrinted': datePrinted,
         isCheckAll,
       },
     });

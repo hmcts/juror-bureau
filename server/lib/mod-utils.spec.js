@@ -223,11 +223,11 @@ const { capitalise, toSentenceCase } = require('../components/filters');
     it('should transform the unpaid attendance list before rendering', function() {
       var unpaidAttendanceList = [
         {
-          'juror_number': '123456',
-          'pool_number': '12345',
-          'first_name': 'First',
-          'last_name': 'Last',
-          'total_unapproved': '80',
+          'jurorNumber': '123456',
+          'poolNumber': '12345',
+          'firstName': 'First',
+          'lastName': 'Last',
+          'totalUnapproved': '80',
         },
       ];
 

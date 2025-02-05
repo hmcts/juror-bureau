@@ -6,7 +6,7 @@
 
   module.exports.trialDetailsObject = new DAO('moj/trial/summary', {
     get: function(trialNumber, locationCode) {
-      const params = new URLSearchParams({ 'trial_number': trialNumber, 'location_code': locationCode });
+      const params = new URLSearchParams({ 'trialNumber': trialNumber, 'locationCode': locationCode });
 
       return {
         uri: urljoin(this.resource, `?${params.toString()}`),

@@ -94,7 +94,7 @@
       }
 
       const payload = {
-        "juror_number": jurorNumber,
+        "jurorNumber": jurorNumber,
         "attendanceDate": date,
         "locationCode": req.session.authentication.locCode,
         "checkInTime": convert12to24(checkInTimeHour + ':' + checkInTimeMinute + checkInTimePeriod),

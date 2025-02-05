@@ -17,11 +17,11 @@
       const { jurorNumber } = req.body;
 
       const payload = {
-        'juror_number': jurorNumber,
-        'location_code': req.session.authentication.locCode,
-        'attendance_date': req.session.attendanceListDate,
-        'check_in_time': padTimeForApi(convert12to24(req.body.time)),
-        'appearance_stage': 'CHECKED_IN',
+        'jurorNumber': jurorNumber,
+        'locationCode': req.session.authentication.locCode,
+        'attendanceDate': req.session.attendanceListDate,
+        'checkInTime': padTimeForApi(convert12to24(req.body.time)),
+        'appearanceStage': 'CHECKED_IN',
       };
 
       try {
@@ -97,12 +97,12 @@
       }
 
       const payload = {
-        'juror_number': jurorNumber,
-        'location_code': req.session.authentication.locCode,
-        'attendance_date': req.session.attendanceListDate,
-        'check_out_time': padTimeForApi(convert12to24(req.body.time)),
-        'appearance_stage': 'CHECKED_OUT',
-        'juror_in_waiting': true
+        'jurorNumber': jurorNumber,
+        'locationCode': req.session.authentication.locCode,
+        'attendanceDate': req.session.attendanceListDate,
+        'checkOutTime': padTimeForApi(convert12to24(req.body.time)),
+        'appearanceStage': 'CHECKED_OUT',
+        'jurorInWaiting': true
       };
 
       try {

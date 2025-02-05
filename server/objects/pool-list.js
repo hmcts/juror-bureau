@@ -22,7 +22,7 @@ const STATUS = {
 
 module.exports.poolRequestsDAO = new DAO('moj/pool-request/pools-', {
   get: function(options) {
-    const defaultSortBy = options.status === 'requested' ? 'RETURN_DATE' : 'SERVICE_START_DATE';
+    const defaultSortBy = options.status === 'requested' ? 'RETURN_DATE': 'SERVICE_START_DATE';
     const query = {
       status: options.status,
       tab: options.tab,

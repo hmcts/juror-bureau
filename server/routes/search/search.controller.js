@@ -82,7 +82,7 @@
       delete req.session.errors;
       delete req.session.formFields;
 
-      if (req.body.juror_number.trim().length !== 0 && req.body.juror_number.trim().length !== 9) {
+      if (req.body.jurorNumber.trim().length !== 0 && req.body.jurorNumber.trim().length !== 9) {
         validatorResult = {
           jurorNumber: [
             {
@@ -94,7 +94,7 @@
         };
       }
 
-      if (req.body.pool_number.trim().length !== 0 && req.body.pool_number.trim().length !== 9) {
+      if (req.body.poolNumber.trim().length !== 0 && req.body.poolNumber.trim().length !== 9) {
         validatorResult = {
           ...validatorResult,
           poolNumber: [
@@ -162,19 +162,19 @@
         searchParams['officer_assigned'] = staffToSearch.name;
       }
 
-      if (payload.last_name) {
-        payload['last_name_display'] = payload.last_name;
-        payload['last_name'] = payload.last_name.toUpperCase();
+      if (payload.lastName) {
+        payload['last_name_display'] = payload.lastName;
+        payload['last_name'] = payload.lastName.toUpperCase();
       }
 
-      if (payload.processing_status) {
-        if (!Array.isArray(payload.processing_status)){
-          payload['processing_status'] = [payload.processing_status];
+      if (payload.processingStatus) {
+        if (!Array.isArray(payload.processingStatus)){
+          payload['processing_status'] = [payload.processingStatus];
         }
 
-        for (const status in payload.processing_status){
+        for (const status in payload.processingStatus){
           if (typeof status !== 'undefined') {
-            switch (payload.processing_status[status]) {
+            switch (payload.processingStatus[status]) {
             case 'TODO':
               searchParams['is_todo'] = true;
               break;
@@ -197,7 +197,7 @@
 
       let staff;
       let responses = {
-        'juror_response': [],
+        'jurorResponse': [],
       };
       let resultsStr;
 
@@ -214,7 +214,7 @@
           login: "AUTO",
           name: "AUTO"
         });
-        responses.juror_response.forEach(responsesListIterator(staff));
+        responses.jurorResponse.forEach(responsesListIterator(staff));
         resultsStr = buildSearchString(payload);
 
         req.session.searchResponse = {
@@ -275,20 +275,20 @@
   function buildSearchString(payload) {
     const str = [];
 
-    if (payload.juror_number) {
-      str.push(`"${payload.juror_number}"`);
+    if (payload.jurorNumber) {
+      str.push(`"${payload.jurorNumber}"`);
     }
-    if (payload.last_name_display) {
-      str.push(`"${payload.last_name_display}"`);
+    if (payload.lastNameDisplay) {
+      str.push(`"${payload.lastNameDisplay}"`);
     }
-    if (payload.pool_number) {
-      str.push(`"${payload.pool_number}"`);
+    if (payload.poolNumber) {
+      str.push(`"${payload.poolNumber}"`);
     }
-    if (payload.is_urgent) {
+    if (payload.isUrgent) {
       str.push('"is urgent"');
     }
-    if (payload.processing_status) {
-      for (const status of payload.processing_status) {
+    if (payload.processingStatus) {
+      for (const status of payload.processingStatus) {
         str.push(`"${resolveProcessingStatus(status)}"`);
       }
     }
@@ -298,10 +298,10 @@
 
   function responsesListIterator(staff) {
     return function(r) {
-      r['juror_name'] = r.first_name + ' ' + r.last_name;
-      r['date_received'] = dateFilter(r.date_received, null, 'YYYY-MM-DD');
+      r['juror_name'] = r.firstName + ' ' + r.lastName;
+      r['date_received'] = dateFilter(r.dateReceived, null, 'YYYY-MM-DD');
 
-      const staffAssigned = staff.find((s) => s.login === r.officer_assigned);
+      const staffAssigned = staff.find((s) => s.login === r.officerAssigned);
 
       if (staffAssigned) {
         r['officer_assigned'] = staffAssigned.name;
@@ -309,7 +309,7 @@
         r['officer_assigned'] = '-';
       }
 
-      r['reply_status'] = resolveProcessingStatus(r.reply_status);
+      r['reply_status'] = resolveProcessingStatus(r.replyStatus);
     };
   }
 

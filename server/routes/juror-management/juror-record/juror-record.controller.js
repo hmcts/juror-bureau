@@ -142,7 +142,7 @@
             currentTab: 'overview',
             jurorStatus,
             canRunPoliceCheck,
-            policeCheck: resolvePoliceCheckStatus(req, overview.data.commonDetails.police_check),
+            policeCheck: resolvePoliceCheckStatus(req, overview.data.commonDetails.policeCheck),
             bannerMessage: bannerMessage,
             availableMessage: availableMessage,
             poolDetails,
@@ -175,8 +175,8 @@
       const promiseArr = [];
 
 
-      if (req.query.loc_code) {
-        req.session.locCode = req.query.loc_code;
+      if (req.query.locCode) {
+        req.session.locCode = req.query.locCode;
       }
 
       promiseArr.push(jurorRecordObject.record.get(
@@ -310,9 +310,9 @@
           });
 
           const dailyExpenses = {
-            totalDraft: expensesSummary.total_draft,
-            totalForApproval: expensesSummary.total_for_approval,
-            totalApproved: expensesSummary.total_approved,
+            totalDraft: expensesSummary.totalDraft,
+            totalForApproval: expensesSummary.totalForApproval,
+            totalApproved: expensesSummary.totalApproved,
           };
 
           return res.render('juror-management/juror-record/expenses', {
@@ -430,8 +430,8 @@
           );
         }
 
-        const dates = attendance.juror_attendance_response_data?.map(attendances => {
-          const [year, month, day] = attendances.attendance_date;
+        const dates = attendance.jurorAttendanceResponseData?.map(attendances => {
+          const [year, month, day] = attendances.attendanceDate;
 
           return new Date(year, month - 1, day);
         }) || [];
@@ -1159,7 +1159,7 @@
       if (commonDetails.excusalCode) {
         title = 'Excusal refused';
       }
-      if (commonDetails.deferral_code) {
+      if (commonDetails.deferralCode) {
         title = 'Deferral refused';
       }
 
@@ -1297,7 +1297,7 @@
       return false;
     }
 
-    return !commonDetails.response_entered;
+    return !commonDetails.responseEntered;
   }
 
   const hasJurorNotes = (app) => async(req, res) => {

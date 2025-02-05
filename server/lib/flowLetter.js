@@ -47,7 +47,7 @@
     }
 
     if (req.body.printLetters === 'yes') {
-      req.session.documentsJurorsList = {checkedJurors: [{'juror_number': req.params.jurorNumber || req.params.id}]};
+      req.session.documentsJurorsList = {checkedJurors: [{'jurorNumber': req.params.jurorNumber || req.params.id}]};
 
       return res.render('custom-components/letter-flow/redirect', {
         letterType: req.body.letterType,

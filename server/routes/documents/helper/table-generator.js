@@ -65,9 +65,9 @@
     const isPrintedHighlight = _isPrinted ? 'mod-highlight-table-row__grey' : '';
 
     const checkedJuror = this.checkedJurors.filter((juror) => (
-      juror.juror_number === jurorInfo[0]
-      && parseInt(juror.form_code) === curr.id
-      && juror.date_printed === (curr.date_printed || 'null')
+      juror.jurorNumber === jurorInfo[0]
+      && parseInt(juror.formCode) === curr.id
+      && juror.datePrinted === (curr.datePrinted || 'null')
     ));
 
     const isChecked = (checkedJuror && checkedJuror.length) ? 'checked' : '';
@@ -79,7 +79,7 @@
             id="juror-${jurorInfo[0]}" ${isChecked}
             aria-label="check-juror-${jurorInfo[0]}"
             data-version="${curr.id}"
-            data-printed="${curr.date_printed}"
+            data-printed="${curr.datePrinted}"
             name="checked-jurors"
           />
           <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="juror-${jurorInfo[0]}">
@@ -130,9 +130,9 @@
     const _neverPrinted = !_isPrinted && jurorInfo[datePrintedIdx] === null;
 
     const checkedJuror = this.checkedJurors.filter((juror) => (
-      juror.juror_number === jurorInfo[0]
-      && juror.form_code === jurorInfo[formCodeIdx]
-      && juror.date_printed === jurorInfo[datePrintedIdx]
+      juror.jurorNumber === jurorInfo[0]
+      && juror.formCode === jurorInfo[formCodeIdx]
+      && juror.datePrinted === jurorInfo[datePrintedIdx]
     ));
 
     const isChecked = (checkedJuror && checkedJuror.length) ? 'checked' : '';

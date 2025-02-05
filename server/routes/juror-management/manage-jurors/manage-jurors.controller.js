@@ -50,10 +50,10 @@
 
           return res.render('juror-management/manage-jurors.njk', {
             nav: 'jurors',
-            pendingApprovalCount: forApproval.pending_jurors_response_data.length,
+            pendingApprovalCount: forApproval.pendingJurorsResponseData.length,
             currentTab: 'pools',
             bannerMessage,
-            pools: pools.pools_at_court_location,
+            pools: pools.poolsAtCourtLocation,
           });
 
         } catch (error) {
@@ -103,7 +103,7 @@
         'QUEUED'
       )
         .then((data) => {
-          const jurors = data.pending_jurors_response_data;
+          const jurors = data.pendingJurorsResponseData;
 
           return res.render('juror-management/manage-jurors.njk', {
             nav: 'jurors',
@@ -146,10 +146,10 @@
         status === 'pending' ? 'QUEUED' : ''
       )
         .then((data) => {
-          const jurors = data.pending_jurors_response_data;
+          const jurors = data.pendingJurorsResponseData;
 
           req.session.jurorApprovalCount = jurors.filter(
-            (juror) => juror.pending_juror_status.description === 'Queued'
+            (juror) => juror.pendingJurorStatus.description === 'Queued'
           ).length;
 
           return res.render('juror-management/manage-jurors/approve-jurors.njk', {

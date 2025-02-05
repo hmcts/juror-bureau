@@ -51,7 +51,7 @@
         expect(testObj.headers.hasOwnProperty('If-None-Match')).to.be.true;
 
         expect(testObj.body.hasOwnProperty('some_details')).to.equal(true);
-        expect(testObj.body.some_details).to.equal(bodyStub.someDetails);
+        expect(testObj.body.someDetails).to.equal(bodyStub.someDetails);
       }
     );
 
@@ -95,8 +95,8 @@
 
     it('should call the correct endpoint to patch the updated juror attendance date', function() {
       var bodyStub = {
-          'next_date': '2023-12-21',
-          'on_call': false,
+          'nextDate': '2023-12-21',
+          'onCall': false,
           jurorNumber: '111111111',
         }
 
@@ -107,14 +107,14 @@
       expect(testObj.body.hasOwnProperty('next_date')).to.be.true;
       expect(testObj.body.hasOwnProperty('jurorNumber')).to.be.true;
       expect(testObj.body.jurorNumber).to.equal('111111111');
-      expect(testObj.body.next_date).to.equal('2023-12-21');
-      expect(testObj.body.on_call).to.be.false;
+      expect(testObj.body.nextDate).to.equal('2023-12-21');
+      expect(testObj.body.onCall).to.be.false;
     });
 
     it('should call the correct endpoint to patch juror on call', function() {
       var bodyStub = {
-          'next_date': '',
-          'on_call': true,
+          'nextDate': '',
+          'onCall': true,
           jurorNumber: '111111111',
         }
 
@@ -124,8 +124,8 @@
       expect(testObj.body.hasOwnProperty('on_call')).to.be.true;
       expect(testObj.body.hasOwnProperty('next_date')).to.be.true;
       expect(testObj.body.hasOwnProperty('jurorNumber')).to.be.true;
-      expect(testObj.body.on_call).to.be.true;
-      expect(testObj.body.next_date).to.equal('');
+      expect(testObj.body.onCall).to.be.true;
+      expect(testObj.body.nextDate).to.equal('');
       expect(testObj.body.jurorNumber).to.equal('111111111');
     });
 

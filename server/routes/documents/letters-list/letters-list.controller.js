@@ -54,7 +54,7 @@
 
         const slicedJurorList = {
           headings: req.session.documentsJurorsList.headings,
-          'data_types': req.session.documentsJurorsList.data_types,
+          'dataTypes': req.session.documentsJurorsList.dataTypes,
           data: paginateJurorsList(req.session.documentsJurorsList.data, page || 1),
         };
 
@@ -155,7 +155,7 @@
       });
 
       const payload = {
-        'letters_list': checkedJurors,
+        'lettersList': checkedJurors,
       };
 
       delete req.session.statusChangedList;
@@ -206,10 +206,10 @@
   module.exports.deletePendingLetter = function(app) {
     return async function(req, res) {
       const payload = {
-        'letters_list': [{
-          'juror_number': req.body.juror_number,
-          'form_code': req.body.form_code,
-          'date_printed': req.body.date_printed,
+        'lettersList': [{
+          'jurorNumber': req.body.jurorNumber,
+          'formCode': req.body.formCode,
+          'datePrinted': req.body.datePrinted,
         }],
       };
 
@@ -218,8 +218,8 @@
 
         const index = req.session.documentsJurorsList.data
           .findIndex((juror) => (
-            juror[0] === req.body.juror_number
-            && juror[juror.length - 1] === req.body.form_code
+            juror[0] === req.body.jurorNumber
+            && juror[juror.length - 1] === req.body.formCode
             && juror[juror.length - 2] === false
           ));
 
@@ -257,12 +257,12 @@
 
   function removeStatusChangedJurors(req) {
     const statusChangedList = req.session.statusChangedList.reduce((acc, juror) => {
-      acc.push(juror.juror_number);
+      acc.push(juror.jurorNumber);
       return acc;
     }, []);
 
     req.session.documentsJurorsList.checkedJurors = req.session.documentsJurorsList.checkedJurors.filter((juror) => (
-      !statusChangedList.includes(juror.juror_number)
+      !statusChangedList.includes(juror.jurorNumber)
     ));
 
     delete req.session.statusChangedList;
@@ -294,9 +294,9 @@
           req.session.documentsJurorsList.data.forEach(juror => {
             if (!isPending(juror[dateIndex], juror[extractedIndex])) {
               req.session.documentsJurorsList.checkedJurors.push({
-                'juror_number': juror[numberIndex],
-                'form_code': juror[formCodeIndex],
-                'date_printed': juror[dateIndex],
+                'jurorNumber': juror[numberIndex],
+                'formCode': juror[formCodeIndex],
+                'datePrinted': juror[dateIndex],
               });
             }
           });
@@ -320,9 +320,9 @@
 
       const index = req.session.documentsJurorsList.checkedJurors
         .findIndex((juror) => (
-          juror.juror_number === req.body.juror_number
-          && juror.form_code === req.body.form_code
-          && juror.date_printed === req.body.date_printed
+          juror.jurorNumber === req.body.jurorNumber
+          && juror.formCode === req.body.formCode
+          && juror.datePrinted === req.body.datePrinted
         ));
 
       if (isChecking && index === -1) {

@@ -31,7 +31,7 @@
         let time = convert12to24(
           req.body.hearingTimeHour + ':' + req.body.hearingTimeMinute + req.body.hearingTimePeriod);
 
-        req.session.documentsJurorsList = { checkedJurors: [{ 'juror_number': jurorNumber }] };
+        req.session.documentsJurorsList = { checkedJurors: [{ 'jurorNumber': jurorNumber }] };
         req.session.bannerMessage = 'Document sent for printing';
 
         return res.render('custom-components/letter-flow/redirect.njk', {
@@ -51,7 +51,7 @@
         response.data.forEach((item) => {
           delete item.status;
           delete item.postcode;
-          delete item.pool_number;
+          delete item.poolNumber;
         });
 
         req.session.documentsJurorsList = response;
@@ -69,7 +69,7 @@
         if (err.statusCode === 404) {
           req.session.documentsJurorsList = {
             headings: [],
-            'data_types': [],
+            'dataTypes': [],
             data: [],
           };
 

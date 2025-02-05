@@ -19,7 +19,7 @@ module.exports.checkOwner = function(app) {
       );
 
       const currentOwner = req.params['type'] === 'paper' ?
-        response.data.current_owner : response.current_owner;
+        response.data.currentOwner : response.currentOwner;
 
       if (currentOwner !== req.session.authentication.locCode) {
         app.logger.crit('Current user does not have sufficient permission to process this summons reply: ', {

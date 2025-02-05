@@ -18,15 +18,15 @@
       [
         {
           html: '<a href="'
-            + url('juror-record.overview.get', { jurorNumber: juror.juror_number })
+            + url('juror-record.overview.get', { jurorNumber: juror.jurorNumber })
             + '" class="govuk-body govuk-link">'
-            + juror.juror_number
+            + juror.jurorNumber
             + '</a>'
         },
-        { text: juror.first_name },
-        { text: juror.last_name },
-        { text: juror.check_in_time | timeArrayToString | convert24to12 },
-        { text: juror.juror_status | jurorStatusToString }
+        { text: juror.firstName },
+        { text: juror.lastName },
+        { text: juror.checkInTime | timeArrayToString | convert24to12 },
+        { text: juror.jurorStatus | jurorStatusToString }
       ]
     ), jurorsNotCheckedOut) %}
   {% endfor %}

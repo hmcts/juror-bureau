@@ -707,17 +707,17 @@
     if (isTeamLeader(req)){
       // Team leads
       strMessage = 'Enter a juror number, a juror\'s last name, a juror\'s pool number or advanced criteria to search';
-      searchParams = attributes.juror_number.trim()
-        || attributes.last_name.trim()
-        || attributes.pool_number.trim()
-        || attributes.officer_assigned.trim()
-        || attributes.processing_status
-        || attributes.is_urgent;
+      searchParams = attributes.jurorNumber.trim()
+        || attributes.lastName.trim()
+        || attributes.poolNumber.trim()
+        || attributes.officerAssigned.trim()
+        || attributes.processingStatus
+        || attributes.isUrgent;
     } else {
       strMessage = 'Enter a juror number, a juror\'s last name or a juror\'s pool number to search';
-      searchParams = attributes.juror_number.trim()
-        || attributes.last_name.trim()
-        || attributes.pool_number.trim();
+      searchParams = attributes.jurorNumber.trim()
+        || attributes.lastName.trim()
+        || attributes.poolNumber.trim();
     }
 
     if (!searchParams){

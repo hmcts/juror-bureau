@@ -108,13 +108,13 @@
 
       try {
         const payload = {
-          'juror_number': jurorNumber,
-          'pool_number': req.session.jurorCommonDetails.poolNumber,
-          'location_code': req.session.authentication.locCode,
-          'attendance_date': dateFilter(req.body.attendanceDay, 'DD/MM/YYYY', 'YYYY-MM-DD'),
-          'check_in_time': convertTimeToHHMM(req.body.checkInTimeHour,
+          'jurorNumber': jurorNumber,
+          'poolNumber': req.session.jurorCommonDetails.poolNumber,
+          'locationCode': req.session.authentication.locCode,
+          'attendanceDate': dateFilter(req.body.attendanceDay, 'DD/MM/YYYY', 'YYYY-MM-DD'),
+          'checkInTime': convertTimeToHHMM(req.body.checkInTimeHour,
             req.body.checkInTimeMinute, req.body.checkInTimePeriod),
-          'check_out_time': convertTimeToHHMM(req.body.checkOutTimeHour,
+          'checkOutTime': convertTimeToHHMM(req.body.checkOutTimeHour,
             req.body.checkOutTimeMinute, req.body.checkOutTimePeriod),
         };
 

@@ -14,7 +14,7 @@
 
   async function getAppearances(app, req, locCode, attendanceDate) {
     const group = 'IN_WAITING';
-    let { 'juror_appearance_response_data': attendees } = await jurorsAttending.get(
+    let { 'jurorAppearanceResponseData': attendees } = await jurorsAttending.get(
       req,
       locCode,
       attendanceDate,

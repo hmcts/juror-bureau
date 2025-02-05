@@ -44,7 +44,7 @@ module.exports.getCourtsList = function(app) {
       courtsList = Object.values(courtsResponse);
 
       if (req.session?.authentication && courtsList.length > 1) {
-        courtsList = courtsList.filter(court => req.session.authentication.staff.courts.includes(court.loc_code));
+        courtsList = courtsList.filter(court => req.session.authentication.staff.courts.includes(court.locCode));
       }
 
       // keep it only during this request lifetime
@@ -153,11 +153,11 @@ function doLogin(req) {
       const courtsResponse = await axiosClient('get', `/moj/administration/courts/${locCode}`, req.session.authToken);
 
       req.session.selectedCourt = {
-        name: courtsResponse.english_court_name,
-        'loc_code': courtsResponse.court_code,
+        name: courtsResponse.englishCourtName,
+        'locCode': courtsResponse.courtCode,
       };
     } else {
-      req.session.selectedCourt = req.session.courtsList.find(court => court.loc_code === locCode);
+      req.session.selectedCourt = req.session.courtsList.find(court => court.locCode === locCode);
     }
 
     req.session.authentication = jwt.decode(req.session.authToken);
@@ -175,7 +175,7 @@ function doLogin(req) {
 };
 
 async function loginSingleCourt(req, res, { app, courtsList, body }) {
-  const locCode = courtsList[0].loc_code;
+  const locCode = courtsList[0].locCode;
 
   try {
     await doLogin(req)(app, locCode, body);
@@ -189,7 +189,7 @@ async function loginSingleCourt(req, res, { app, courtsList, body }) {
   }
 
   if (req.session.authentication.userType === 'ADMINISTRATOR') {
-    if (req.query.redirect_to && req.query.redirect_to === 'courts-and-bureau') {
+    if (req.query.redirectTo && req.query.redirectTo === 'courts-and-bureau') {
       return res.redirect(app.namedRoutes.build('administration.courts-and-bureau.get'));
     }
 

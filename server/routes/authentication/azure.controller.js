@@ -46,7 +46,7 @@ module.exports.getAzureCallback = function(app) {
     try {
       response = await axios.get(graphUrl, {
         headers: {
-          Authorization: 'Bearer ' + authResponse.data.access_token,
+          Authorization: 'Bearer ' + authResponse.data.accessToken,
         },
       });
     } catch (err) {

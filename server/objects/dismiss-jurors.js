@@ -20,13 +20,13 @@ module.exports.getJurorsObject = new DAO('moj/juror-management/jurors-to-dismiss
       : [params['jurors-to-include']];
 
     const body = {
-      'pool_numbers': params['checked-pools'] instanceof Array
+      'poolNumbers': params['checked-pools'] instanceof Array
         ? params['checked-pools']
         : [params['checked-pools']],
-      'location_code': locCode,
-      'number_of_jurors_to_dismiss': params['jurorsToDismiss'],
-      'include_jurors_on_call': jurorsToInclude.includes('on-call') ? true : false,
-      'include_jurors_not_in_attendance': jurorsToInclude.includes('not-in-attendance') ? true : false,
+      'locationCode': locCode,
+      'numberOfJurorsToDismiss': params['jurorsToDismiss'],
+      'includeJurorsOnCall': jurorsToInclude.includes('on-call') ? true : false,
+      'includeJurorsNotInAttendance': jurorsToInclude.includes('not-in-attendance') ? true : false,
     }
 
     return {

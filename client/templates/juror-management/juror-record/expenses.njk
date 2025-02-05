@@ -100,7 +100,7 @@
                   text: "Loss of earnings or benefits per day"
                 },
                 value: {
-                  text: ("£" + defaultExpenses.financial_loss | toFixed(2)) if defaultExpenses.financial_loss else "-"
+                  text: ("£" + defaultExpenses.financialLoss | toFixed(2)) if defaultExpenses.financialLoss else "-"
                 }
               },
               {
@@ -108,7 +108,7 @@
                   text: "Travel time"
                 },
                 value: {
-                  text: defaultExpenses.travel_time | hoursStringToHoursAndMinutes if defaultExpenses.travel_time else "-"
+                  text: defaultExpenses.travelTime | hoursStringToHoursAndMinutes if defaultExpenses.travelTime else "-"
                 }
               },
               {
@@ -124,7 +124,7 @@
                   text: "Smartcard number"
                 },
                 value: {
-                  text: defaultExpenses.smart_card if defaultExpenses.smart_card else "-"
+                  text: defaultExpenses.smartCard if defaultExpenses.smartCard else "-"
                 }
               }
             ]
@@ -158,7 +158,7 @@
                   text: "Account number"
                 },
                 value: {
-                  text: bankDetails.bank_account_number if bankDetails.bank_account_number else "-"
+                  text: bankDetails.bankAccountNumber if bankDetails.bankAccountNumber else "-"
                 }
               },
               {
@@ -166,7 +166,7 @@
                   text: "Sort code"
                 },
                 value: {
-                  text: bankDetails.sort_code | sortCode if bankDetails.sort_code else "-"
+                  text: bankDetails.sortCode | sortCode if bankDetails.sortCode else "-"
                 }
               },
               {
@@ -174,7 +174,7 @@
                   text: "Account holder's name"
                 },
                 value: {
-                  text: bankDetails.account_holder_name if bankDetails.account_holder_name else "-"
+                  text: bankDetails.accountHolderName if bankDetails.accountHolderName else "-"
                 }
               }
             ]

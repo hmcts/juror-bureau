@@ -1584,13 +1584,13 @@
           } 
 
           switch (data.id) {
-            case 'total_requested':
+            case 'totalRequested':
               return template(data.name, '(1)');
-            case 'total_deferred':
+            case 'totalDeferred':
               return template(data.name, '(2)');
-            case 'total_summoned':
+            case 'totalSummoned':
               return template(data.name, '(3)');
-            case 'total_supplied':
+            case 'totalSupplied':
               return template(data.name, '(4)');
             case 'ratio_1':
               return template(data.name, '(3-2)/(1-2)');
@@ -1710,10 +1710,10 @@
           dao: (req, config) => yieldPerformanceDAO.post(
             req,
             {
-              'court_loc_codes': config.courts,
-              'all_courts': false,
-              'from_date': config.fromDate,
-              'to_date': config.toDate,
+              'courtLocCodes': config.courts,
+              'allCourts': false,
+              'fromDate': config.fromDate,
+              'toDate': config.toDate,
             },
           ),
           printWidths: ['*', '*', '*', '*', '*', '25%'],

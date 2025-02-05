@@ -92,8 +92,8 @@
     return async (req, res) => {
       const jurors = _.clone(req.session.poolJurorsOnCall).availableJurors;
       const payload = {
-        'juror_numbers': jurors,
-        'on_call': true,
+        'jurorNumbers': jurors,
+        'onCall': true,
       };
 
       delete req.session.poolJurorsOnCall;

@@ -38,9 +38,9 @@
 
           const courtroomsToDisplay = courtrooms.map((court) => {
             return {
-              displayName: court.court_location,
-              courtLocationName: court.court_location.replace(/[ .]/g, '_'),
-              courtrooms: court.court_rooms.map(room => room.description),
+              displayName: court.courtLocation,
+              courtLocationName: court.courtLocation.replace(/[ .]/g, '_'),
+              courtrooms: court.courtRooms.map(room => room.description),
             };
           });
 
@@ -48,14 +48,14 @@
 
           const originalTrial = {
             trialNumber,
-            trialType: trial.trial_type === 'Criminal' ? 'CRI' : 'CIV',
-            defendants: trial.trial_type === 'Criminal' ? trial.defendants : '',
-            respondents: trial.trial_type === 'Civil' ? trial.defendants : '',
-            startDate: dateFilter(trial.start_date, 'yyyy-MM-dd', 'DD/MM/YYYY'),
+            trialType: trial.trialType === 'Criminal' ? 'CRI' : 'CIV',
+            defendants: trial.trialType === 'Criminal' ? trial.defendants : '',
+            respondents: trial.trialType === 'Civil' ? trial.defendants : '',
+            startDate: dateFilter(trial.startDate, 'yyyy-MM-dd', 'DD/MM/YYYY'),
             judge: trial.judge.description,
             courtroom: trial.courtroom.description,
             protected: trial.protected ? 'true' : 'false',
-            courtLocationName: trial.court_room_location_name,
+            courtLocationName: trial.courtRoomLocationName,
           };
 
           tmpErrors = _.clone(req.session.errors);
@@ -114,8 +114,8 @@
       let courtrooms;
       try {
         courtrooms = (await courtroomsObject.get(req)).map((court) => {
-          court.display_name = court.court_location;
-          court.court_location = court.court_location.replace(/[ .]/g, '_');
+          court.displayName = court.courtLocation;
+          court.courtLocation = court.courtLocation.replace(/[ .]/g, '_');
           return court
         })
       } catch (err) {
@@ -216,8 +216,8 @@
 
       return res.redirect(
         app.namedRoutes.build('trial-management.trials.detail.get', {
-          trialNumber: resp.trial_number,
-          locationCode: payload.court_location,
+          trialNumber: resp.trialNumber,
+          locationCode: payload.courtLocation,
         })
       );
     } catch (err) {

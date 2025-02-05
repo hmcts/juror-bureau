@@ -103,7 +103,7 @@
           poolNumber: req.params.poolNumber,
         });
       } else {
-        processUrl = app.namedRoutes.build('juror.update.transfer_confirm.post', {
+        processUrl = app.namedRoutes.build('juror.update.transferConfirm.post', {
           jurorNumber: req.params['jurorNumber'],
         });
         cancelUrl = app.namedRoutes.build('juror-record.overview.get', {
@@ -127,7 +127,7 @@
       var validatorResult, successUrl, failUrl, continueUrl, movementValidateRoute;
 
       if (typeof req.params.poolNumber === 'undefined') {
-        successUrl = app.namedRoutes.build('juror.update.transfer_confirm.get', {
+        successUrl = app.namedRoutes.build('juror.update.transferConfirm.get', {
           jurorNumber: req.params.jurorNumber,
         });
         failUrl = app.namedRoutes.build('juror.update.transfer.get', {

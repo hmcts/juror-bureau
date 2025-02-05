@@ -12,7 +12,7 @@
         {% set assignedStaffMember = response.assignedStaffMember.username %}
       {% endif %}
       
-      {% if response.current_owner === authentication.owner %}
+      {% if response.currentOwner === authentication.owner %}
         {% set canProcessReply = true %}
       {% endif %}
 

@@ -92,7 +92,7 @@
 
         if (isCourtUser(req, res)) {
           response = await reissueLetterDAO.getListCourt(req, payload);
-          response.data_types.push('hidden');
+          response.dataTypes.push('hidden');
           response.headings.push('Row Id');
           response.data.forEach((juror, i) => {
             juror.id = i;
@@ -118,7 +118,7 @@
         if (err.statusCode === 404) {
           req.session.documentsJurorsList = {
             headings: [],
-            'data_types': [],
+            'dataTypes': [],
             data: [],
           };
 

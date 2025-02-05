@@ -13,7 +13,7 @@
 {% set trialDetails = [
   {
     key: {
-      text: "Defendants" if trial.trial_type === "Criminal" else "Respondents"
+      text: "Defendants" if trial.trialType === "Criminal" else "Respondents"
     },
     value: {
       text: trial.defendants
@@ -24,7 +24,7 @@
       text: "Trial type"
     },
     value: {
-      text: trial.trial_type | capitalizeFully
+      text: trial.trialType | capitalizeFully
     }
   },
   {
@@ -32,7 +32,7 @@
       text: "Trial start date"
     },
     value: {
-      text: trial.start_date | makeDate | dateFilter("YYYY,MM,DD", "dddd D MMMM YYYY")
+      text: trial.startDate | makeDate | dateFilter("YYYY,MM,DD", "dddd D MMMM YYYY")
     }
   },
   {
@@ -67,7 +67,7 @@
       text: "Trial end date"
     },
     value: {
-      text: trial.trial_end_date | makeDate | dateFilter("YYYY,MM,DD", "dddd D MMMM YYYY")
+      text: trial.trialEndDate | makeDate | dateFilter("YYYY,MM,DD", "dddd D MMMM YYYY")
     }
   }
 %}
@@ -75,7 +75,7 @@
 {% set standardPrintMenuItems = [
   {
     text: "Ballot cards",
-    href: url("reports.ballot-cards.report.print", { ballotType: "trial", filter: trial.trial_number }),
+    href: url("reports.ballot-cards.report.print", { ballotType: "trial", filter: trial.trialNumber }),
     classes: "govuk-button--secondary",
     attributes: {
       target: "_blank"
@@ -83,28 +83,28 @@
   },
   {
     text: "Panel list (summary)",
-    href: url("reports.panel-summary.report.get", { "filter": trial.trial_number }),
+    href: url("reports.panel-summary.report.get", { "filter": trial.trialNumber }),
     classes: "govuk-button--secondary"
   },
   {
     text: "Panel list (detailed)",
-    href: url("reports.panel-detail.report.get", { "filter": trial.trial_number }),
+    href: url("reports.panel-detail.report.get", { "filter": trial.trialNumber }),
     classes: "govuk-button--secondary"
   },
   {
     text: "Panel member status report",
-    href: url("reports.panel-members-status.report.get", { "filter": trial.trial_number }),
+    href: url("reports.panel-members-status.report.get", { "filter": trial.trialNumber }),
     classes: "govuk-button--secondary"
   },
   {
     text: "Trial attendance report",
-    href: url("reports.trial-attendance.report.get", { "filter": trial.trial_number }),
+    href: url("reports.trial-attendance.report.get", { "filter": trial.trialNumber }),
     classes: "govuk-button--secondary"
   }
 ]%}
 
 
-{% if not trial.is_active %}
+{% if not trial.isActive %}
   {% set trialDetails = (trialDetails.splice(3, 0, endDateRow), trialDetails)%}
 {% endif %}
 
@@ -124,10 +124,10 @@
     <div class="govuk-grid-column-one-half trial-detail__header">
       <span class="trial-detail__header-label">Trial</span>
       <div class="trial-detail__header-number">
-        <h1 class="govuk-heading-l govuk-!-margin-bottom-0">{{ trial.trial_number }}</h1>
+        <h1 class="govuk-heading-l govuk-!-margin-bottom-0">{{ trial.trialNumber }}</h1>
           {{ govukTag({
-            text: "Active" if trial.is_active else "Inactive",
-            classes: "govuk-tag--blue" if trial.is_active else "govuk-tag--grey"
+            text: "Active" if trial.isActive else "Inactive",
+            classes: "govuk-tag--blue" if trial.isActive else "govuk-tag--grey"
           }) }}
       </div>
     </div>
@@ -135,12 +135,12 @@
       <div class="govuk-button-group mod-flex mod-justify-end">
         <div class="moj-button-menu">
           <div class="moj-button-menu__wrapper">
-            {% if trial.is_active %}
+            {% if trial.isActive %}
               {% if addPanelStatus %}
                 {{ govukButton({
                   text: "Add panel members",
                   classes: "govuk-button--secondary",
-                  href: url('trial-management.add-panel-members.get', {trialNumber: trial.trial_number, locationCode: locationCode})
+                  href: url('trial-management.add-panel-members.get', {trialNumber: trial.trialNumber, locationCode: locationCode})
                 }) }}
               {% endif %}
 
@@ -148,31 +148,31 @@
                 {{ govukButton({
                   text: "Empanel jury",
                   classes: "govuk-button--secondary",
-                  href: url('trial-management.empanel.get', {trialNumber: trial.trial_number, locationCode: locationCode})
+                  href: url('trial-management.empanel.get', {trialNumber: trial.trialNumber, locationCode: locationCode})
                 }) if canEmpanel }}
 
                 {{ govukButton({
                   text: "End trial",
                   classes: "govuk-button--secondary",
-                  href: url('trial-management.trials.end-trial.get', {trialNumber: trial.trial_number, locationCode: locationCode})
+                  href: url('trial-management.trials.end-trial.get', {trialNumber: trial.trialNumber, locationCode: locationCode})
                 }) }}
               {% else %}
                 {% if addPanelStatus === false %}
                   {{ govukButton({
                     text: "Generate panel",
                     classes: "govuk-button--secondary",
-                    href: url('trial-management.generate-panel.get', {trialNumber: trial.trial_number, locationCode: locationCode})
+                    href: url('trial-management.generate-panel.get', {trialNumber: trial.trialNumber, locationCode: locationCode})
                   }) }}
                 {% endif %}
                 {{ govukButton({
                   text: "Edit trial",
                   classes: "govuk-button--secondary",
-                  href: url("trial-management.edit-trial.get", { trialNumber: trial.trial_number, locationCode: locationCode })
+                  href: url("trial-management.edit-trial.get", { trialNumber: trial.trialNumber, locationCode: locationCode })
                 }) }}
                 {{ govukButton({
                   text: "End trial",
                   classes: "govuk-button--secondary",
-                  href: url('trial-management.trials.end-trial.get', {trialNumber: trial.trial_number, locationCode: locationCode})
+                  href: url('trial-management.trials.end-trial.get', {trialNumber: trial.trialNumber, locationCode: locationCode})
                 }) }}
               {% endif %}
               
@@ -181,10 +181,10 @@
               items: [
                 {
                   text: "Jury list",
-                  href: url("reports.jury-list.report.get", {'filter': trial.trial_number}),
+                  href: url("reports.jury-list.report.get", {'filter': trial.trialNumber}),
                   classes: "govuk-button--secondary"
                 }
-              ].concat(standardPrintMenuItems) if trial.is_jury_empanelled else standardPrintMenuItems,
+              ].concat(standardPrintMenuItems) if trial.isJuryEmpanelled else standardPrintMenuItems,
               attributes: {
                 id: 'printButtonMenu'
               }

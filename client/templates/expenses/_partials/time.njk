@@ -34,13 +34,13 @@
           text: "Time spent at court"
         },
         value: {
-          text: (timeSpentAtCourt.hour + " hours " + timeSpentAtCourt.minute + " minutes") if not expensesData.none_attendance_day else "Non-attendance day"
+          text: (timeSpentAtCourt.hour + " hours " + timeSpentAtCourt.minute + " minutes") if not expensesData.noneAttendanceDay else "Non-attendance day"
         }
       }
     ]
   }) }}
 
-  {% if not expensesData.none_attendance_day %}
+  {% if not expensesData.noneAttendanceDay %}
     {{ timeInput({
       id: "totalTravelTime",
       name: "totalTravelTime",
@@ -76,11 +76,11 @@
     {% set isDraftType = status === "draft" or status === "for-approval" %}
 
     {% set payAttendanceItems = [] %}
-    {% if (expensesData.time.pay_attendance === "HALF_DAY" or isNotApprovedForReappoval) or isDraftType %}
+    {% if (expensesData.time.payAttendance === "HALF_DAY" or isNotApprovedForReappoval) or isDraftType %}
       {% set payAttendanceItems = (payAttendanceItems.push({
           value: "HALF_DAY",
           text: "Half day",
-          checked: expensesData.time.pay_attendance === "HALF_DAY",
+          checked: expensesData.time.payAttendance === "HALF_DAY",
           attributes: {
             "data-summary-detectable": ""
           }
@@ -90,7 +90,7 @@
     {% set payAttendanceItems = (payAttendanceItems.push({
         value: "FULL_DAY",
         text: "Full day",
-        checked: expensesData.time.pay_attendance === "FULL_DAY",
+        checked: expensesData.time.payAttendance === "FULL_DAY",
         attributes: {
           "data-summary-detectable": ""
         }

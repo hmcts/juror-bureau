@@ -20,9 +20,9 @@
     it('should call the correct endpoint to end a trial', function() {
       const endTrialDate = '29/01/2024'
         , payload = {
-          'trial_end_date': dateFilter(endTrialDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
-          'trial_number': 'T10000000',
-          'location_code': '415',
+          'trialEndDate': dateFilter(endTrialDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
+          'trialNumber': 'T10000000',
+          'locationCode': '415',
         }
         , testObj = endTrialObject.patch(rpStub, appStub, 'test-token', payload)
         , realUri = urljoin(

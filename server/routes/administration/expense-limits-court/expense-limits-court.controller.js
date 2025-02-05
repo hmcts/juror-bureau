@@ -95,8 +95,8 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
 
       try {
         const body = {
-          'public_transport_soft_limit': req.body.publicTransportDailyLimit,
-          'taxi_soft_limit': req.body.taxiDailyLimit,
+          'publicTransportSoftLimit': req.body.publicTransportDailyLimit,
+          'taxiSoftLimit': req.body.taxiDailyLimit,
         };
 
         await transportRatesDAO.put(req, req.session.authentication.locCode, body);

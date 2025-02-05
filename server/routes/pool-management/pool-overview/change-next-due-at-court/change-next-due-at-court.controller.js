@@ -166,9 +166,9 @@
       delete req.session.newAttendanceDate;
 
       const payload = {
-        'juror_numbers': jurors,
-        'pool_number': poolNumber,
-        'attendance_date': dateFilter(attendanceDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
+        'jurorNumbers': jurors,
+        'poolNumber': poolNumber,
+        'attendanceDate': dateFilter(attendanceDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
       };
 
       try {

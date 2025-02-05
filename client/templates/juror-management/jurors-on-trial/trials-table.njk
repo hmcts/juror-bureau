@@ -26,15 +26,15 @@
   {% set rows = (rows.push([
     {
       html: "<a href="+ url('trial-management.trials.detail.get', {
-        trialNumber: trial.trial_number,
+        trialNumber: trial.trialNumber,
         locationCode: locCode
-      }) +' class="govuk-link govuk-link--no-visited-state">' + trial.trial_number + "</a>"
+      }) +' class="govuk-link govuk-link--no-visited-state">' + trial.trialNumber + "</a>"
     },
     {
       text: trial.parties
     },
     {
-      text: trial.trial_type
+      text: trial.trialType
     },
     {
       text: trial.courtroom
@@ -44,14 +44,14 @@
     },
     {
       html: jurorsAttendedCell({
-        totalAttended: trial.jurors_attended,
-        totalJurors: trial.total_jurors,
-        trialNumber: trial.trial_number
+        totalAttended: trial.jurorsAttended,
+        totalJurors: trial.totalJurors,
+        trialNumber: trial.trialNumber
       }) | safe
     },
     {
       html: auditNumberCell({
-        auditNumber: trial.attendance_audit
+        auditNumber: trial.attendanceAudit
       })
     }
   ]), rows) %}

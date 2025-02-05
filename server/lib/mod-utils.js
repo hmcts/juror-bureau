@@ -210,13 +210,13 @@
             html:
               '<div class="govuk-radios govuk-radios--small" data-module="govuk-radios">' +
                 '<div class="govuk-radios__item">' +
-                  '<input class="govuk-radios__input" id="' + trial.case_number + '" name="exemptionCaseNumber" ' +
-                    'type="radio" value="' + trial.case_number + '">' +
-                  '<label class="govuk-label govuk-radios__label" for="' + trial.case_number + '">' + trial.case_number + '</label>' +
+                  '<input class="govuk-radios__input" id="' + trial.caseNumber + '" name="exemptionCaseNumber" ' +
+                    'type="radio" value="' + trial.caseNumber + '">' +
+                  '<label class="govuk-label govuk-radios__label" for="' + trial.caseNumber + '">' + trial.caseNumber + '</label>' +
                 '</div>' +
               '</div>',
             attributes: {
-              'data-sort-value': trial.case_number,
+              'data-sort-value': trial.caseNumber,
             },
           },
           {
@@ -234,16 +234,16 @@
             classes: 'jd-middle-align',
           },
           {
-            text: dateFilter(trial.start_date, 'YYYY,MM,DD', 'ddd DD MMM YYYY'),
+            text: dateFilter(trial.startDate, 'YYYY,MM,DD', 'ddd DD MMM YYYY'),
             attributes: {
-              'data-sort-value': makeDate(trial.start_date),
+              'data-sort-value': makeDate(trial.startDate),
             },
             classes: 'jd-middle-align',
           },
           {
-            text: trial.end_date ? dateFilter(trial.end_date, 'YYYY,MM,DD', 'ddd DD MMM YYYY') : '-',
+            text: trial.endDate ? dateFilter(trial.endDate, 'YYYY,MM,DD', 'ddd DD MMM YYYY') : '-',
             attributes: {
-              'data-sort-value': trial.end_date ? trial.end_date : '-',
+              'data-sort-value': trial.endDate ? trial.endDate : '-',
             },
             classes: 'jd-middle-align',
           },
@@ -345,40 +345,40 @@
       item.push(
         {
           html: '<a href="/juror-management/record/' +
-            unpaid.juror_number + '/expenses" class="govuk-link">' + unpaid.juror_number + '</a>',
+            unpaid.jurorNumber + '/expenses" class="govuk-link">' + unpaid.jurorNumber + '</a>',
           attributes: {
-            'data-sort-value': unpaid.juror_number,
+            'data-sort-value': unpaid.jurorNumber,
           },
         },
         {
-          text: unpaid.pool_number,
+          text: unpaid.poolNumber,
           attributes: {
-            'data-sort-value': unpaid.pool_number,
+            'data-sort-value': unpaid.poolNumber,
           },
         },
         {
-          text: unpaid.first_name,
+          text: unpaid.firstName,
           attributes: {
-            'data-sort-value': unpaid.first_name,
+            'data-sort-value': unpaid.firstName,
           },
         },
         {
-          text: unpaid.last_name,
+          text: unpaid.lastName,
           attributes: {
-            'data-sort-value': unpaid.last_name,
+            'data-sort-value': unpaid.lastName,
           },
         },
         {
-          text: '£' + parseFloat(unpaid.total_unapproved).toFixed(2),
+          text: '£' + parseFloat(unpaid.totalUnapproved).toFixed(2),
           attributes: {
-            'data-sort-value': unpaid.total_unapproved,
+            'data-sort-value': unpaid.totalUnapproved,
           },
         },
         {
           html: '<a href="/juror-management/unpaid-attendance/expense-record/' +
-            unpaid.juror_number + '/' + locCode + '/draft" class="govuk-link">' + 'View expenses' + '</a>',
+            unpaid.jurorNumber + '/' + locCode + '/draft" class="govuk-link">' + 'View expenses' + '</a>',
           attributes: {
-            'data-sort-value': unpaid.total_unapproved,
+            'data-sort-value': unpaid.totalUnapproved,
           },
         }
       );
@@ -433,39 +433,39 @@
 
     completedJurors.forEach((juror) => {
       let item = [];
-      let checked = checkedJurors.some(j => j.juror_number === juror.juror_number) ? 'checked' : '';
+      let checked = checkedJurors.some(j => j.jurorNumber === juror.jurorNumber) ? 'checked' : '';
 
       item.push(
         {
           html: '<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">'
             + '<input type="checkbox" class="govuk-checkboxes__input select-check juror-select-check" id="select-'
-            + juror.juror_number +'" '
-            + 'name="selectedJurors"' + checked + ' value="' + juror.juror_number + '">'
-            + '<label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="select-'+ juror.juror_number +'">'
-            + '<span class="govuk-visually-hidden">Select '+ juror.juror_number +'</span> </label> </div>',
+            + juror.jurorNumber +'" '
+            + 'name="selectedJurors"' + checked + ' value="' + juror.jurorNumber + '">'
+            + '<label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="select-'+ juror.jurorNumber +'">'
+            + '<span class="govuk-visually-hidden">Select '+ juror.jurorNumber +'</span> </label> </div>',
           attributes: {
-            'data-sort-value': juror.juror_number,
+            'data-sort-value': juror.jurorNumber,
           },
           classes: 'jd-middle-align',
         },
         {
-          html: `<a href="${getJurorUrl(juror.juror_number)}" class="govuk-link jd-middle-align">${juror.juror_number}</a>`,
+          html: `<a href="${getJurorUrl(juror.jurorNumber)}" class="govuk-link jd-middle-align">${juror.jurorNumber}</a>`,
           attributes: {
-            'data-sort-value': juror.juror_number,
+            'data-sort-value': juror.jurorNumber,
           },
           classes: 'jd-middle-align',
         },
         {
-          text: capitalizeFully(juror.first_name),
+          text: capitalizeFully(juror.firstName),
           attributes: {
-            'data-sort-value': juror.first_name,
+            'data-sort-value': juror.firstName,
           },
           classes: 'jd-middle-align',
         },
         {
-          text: capitalizeFully(juror.last_name),
+          text: capitalizeFully(juror.lastName),
           attributes: {
-            'data-sort-value': juror.last_name,
+            'data-sort-value': juror.lastName,
           },
           classes: 'jd-middle-align',
         },
@@ -480,9 +480,9 @@
 
       if (task === 'uncomplete-service') {
         item.push({
-          text: dateFilter(juror.completion_date, null, 'ddd DD MMM YYYY'),
+          text: dateFilter(juror.completionDate, null, 'ddd DD MMM YYYY'),
           attributes: {
-            'data-sort-value': juror.completion_date,
+            'data-sort-value': juror.completionDate,
           },
           classes: 'jd-middle-align',
         });

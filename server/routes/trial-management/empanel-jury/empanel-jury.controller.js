@@ -97,7 +97,7 @@
     return function(req, res) {
       const { trialNumber, locationCode } = req.params;
       const requiredNumberOfJurors = req.session[`${trialNumber}-${locationCode}-trial`].requiredNumberOfJurors;
-      const availableJurors = req.session[`${trialNumber}-${locationCode}-trial`].panelledJurors.filter((juror) => juror.juror_status === 'Panel');
+      const availableJurors = req.session[`${trialNumber}-${locationCode}-trial`].panelledJurors.filter((juror) => juror.jurorStatus === 'Panel');
       let tmpErrors = _.clone(req.session[`${trialNumber}-${locationCode}-empanelJuryError`]);
       let tmpBody = _.clone(req.session.formFields);
 
@@ -155,7 +155,7 @@
       };
 
       req.session[`${trialNumber}-${locationCode}-trial`].panelledJurors.forEach(member => {
-        panel[member.juror_number] = member;
+        panel[member.jurorNumber] = member;
       });
 
       for (const [key, value] of Object.entries(tmpBody)) {
