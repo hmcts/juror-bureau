@@ -43,8 +43,8 @@ const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../object
 
   const makePreviewAudit = async(app, req, res, expenseDetails) => {
     const jurorDetails = mapSnakeToCamel(await jurorRecordDetailsDAO.post(req, [{
-      'juror_number': req.params.jurorNumber,
-      'juror_version': null,
+      'jurorNumber': req.params.jurorNumber,
+      'jurorVersion': null,
       'include': ['NAME_DETAILS'],
     }]))['0'];
     const jurorBank = mapSnakeToCamel(await jurorBankDetailsDAO.get(

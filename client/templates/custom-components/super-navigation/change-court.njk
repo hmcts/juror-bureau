@@ -2,7 +2,7 @@
 {% if authentication.activeUserType === "ADMINISTRATOR" %}
   {% set changeUrl = url('administration.courts-and-bureau.get') %}
 {% elif authentication.activeUserType !== "ADMINISTRATOR" and authentication.userType === "ADMINISTRATOR" %}
-  {% set changeUrl = url('authentication.courts-list.get') + "?redirect_to=courts-and-bureau" %}
+  {% set changeUrl = url('authentication.courts-list.get') + "?redirectTo=courts-and-bureau" %}
 {% elif authentication.activeUserType === "COURT" and authentication.userType === "COURT" and authentication.staff.courts.length > 1 %}
   {% set changeUrl = url('authentication.courts-list.get') %}
 {% endif %}

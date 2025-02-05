@@ -40,7 +40,7 @@
             },
           });
 
-          const queryTotal = data.total_items;
+          const queryTotal = data.totalItems;
 
           if (queryTotal > modUtils.constants.PAGE_SIZE) {
             pagination = modUtils.paginationBuilder(queryTotal, currentPage, req.url);
@@ -112,8 +112,8 @@
 
           if (typeof tmpFields === 'undefined') {
             tmpFields = _.clone(trialData);
-            tmpFields.defendants = trialData.trial_type === 'criminal' ? trialData.defendants : '';
-            tmpFields.respondents = trialData.trial_type === 'civil' ? trialData.defendants : '';
+            tmpFields.defendants = trialData.trialType === 'criminal' ? trialData.defendants : '';
+            tmpFields.respondents = trialData.trialType === 'civil' ? trialData.defendants : '';
           }
 
           if (req.session.bannerMessage) {
@@ -123,7 +123,7 @@
 
           if (panelData) {
             trialData.panelledJurors = panelData;
-            canEmpanel = panelData.filter((juror) => juror.juror_status === 'Panel').length > 0;
+            canEmpanel = panelData.filter((juror) => juror.jurorStatus === 'Panel').length > 0;
           }
 
           return res.render('trial-management/trial-detail.njk', {
@@ -263,7 +263,7 @@
           req.params.trialNumber,
           req.params.locationCode,
         );
-        const validateEndTrialDate = validate(req.body, endTrialDateValidator(makeDate(trialDetails.start_date)));
+        const validateEndTrialDate = validate(req.body, endTrialDateValidator(makeDate(trialDetails.startDate)));
 
         if (typeof validateEndTrialDate !== 'undefined') {
           req.session.errors = validateEndTrialDate;
@@ -278,9 +278,9 @@
         if (req.body.endTrial === 'true') {
 
           let payload = {
-            'trial_end_date': dateFilter(req.body.endTrialDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
-            'trial_number': req.params.trialNumber,
-            'location_code': req.params.locationCode,
+            'trialEndDate': dateFilter(req.body.endTrialDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
+            'trialNumber': req.params.trialNumber,
+            'locationCode': req.params.locationCode,
           };
 
           await endTrialObject.patch(req, payload);
@@ -360,10 +360,10 @@
       item.push(
         {
           html: '<a href="/trial-management/trials/' +
-          encodeURIComponent(trial.trial_number) + '/' +
-              trial.court_location + '/detail" class="govuk-link">' + trial.trial_number + '</a>',
+          encodeURIComponent(trial.trialNumber) + '/' +
+              trial.courtLocation + '/detail" class="govuk-link">' + trial.trialNumber + '</a>',
           attributes: {
-            'data-sort-value': trial.trial_number,
+            'data-sort-value': trial.trialNumber,
           },
         },
         {
@@ -373,9 +373,9 @@
           },
         },
         {
-          text: capitalizeFully(trial.trial_type),
+          text: capitalizeFully(trial.trialType),
           attributes: {
-            'data-sort-value': trial.trial_type,
+            'data-sort-value': trial.trialType,
           },
         },
         {
@@ -397,9 +397,9 @@
           },
         },
         {
-          text: dateFilter(makeDate(trial.start_date), 'YYYY,MM,DD', 'ddd DD MMM YYYY'),
+          text: dateFilter(makeDate(trial.startDate), 'YYYY,MM,DD', 'ddd DD MMM YYYY'),
           attributes: {
-            'data-sort-value': makeDate(trial.start_date),
+            'data-sort-value': makeDate(trial.startDate),
           },
         },
       );

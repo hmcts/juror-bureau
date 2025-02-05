@@ -24,8 +24,8 @@
     post: function(locCode, _body, simpleResponse) {
       let _locCode = locCode;
 
-      if (_body.court_name) {
-        _locCode = _body.court_name.match(/\d+/g)[0];
+      if (_body.courtName) {
+        _locCode = _body.courtName.match(/\d+/g)[0];
       }
 
       let uri = urljoin(this.resource, _locCode);

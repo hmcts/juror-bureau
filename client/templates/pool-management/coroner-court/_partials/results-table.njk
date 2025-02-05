@@ -27,16 +27,16 @@
 {% for pool in results.data %}
   {% set row = (rows.push([
     {
-      html: ('<a href="' + url('pool-overview.get', { poolNumber: pool.pool_number }) + '" class="govuk-link">' + pool.pool_number + "</a>") | safe
+      html: ('<a href="' + url('pool-overview.get', { poolNumber: pool.poolNumber }) + '" class="govuk-link">' + pool.poolNumber + "</a>") | safe
     },
     {
-      text: pool.court_name | capitalizeFully
+      text: pool.courtName | capitalizeFully
     },
     {
-      text: pool.requested_date | dateFilter("YYYY-MM-DD", "ddd D MMM yyyy")
+      text: pool.requestedDate | dateFilter("YYYY-MM-DD", "ddd D MMM yyyy")
     },
     {
-      text: pool.requested_by
+      text: pool.requestedBy
     }
   ]), rows) %}
 {% endfor %}

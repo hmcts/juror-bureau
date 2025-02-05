@@ -52,16 +52,16 @@
             <tr class="govuk-table__row govuk-table__row--selected">
               <td class="govuk-table__cell">
                 <div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">
-                  <input type="checkbox" class="govuk-checkboxes__input" id="select-{{pool.pool_number}}" name="selectedPools" value="{{pool.pool_number}}">
-                  <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="select-{{pool.pool_number}}">
-                    <span class="govuk-visually-hidden">Select {{pool.pool_number}}</span>
+                  <input type="checkbox" class="govuk-checkboxes__input" id="select-{{pool.poolNumber}}" name="selectedPools" value="{{pool.poolNumber}}">
+                  <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="select-{{pool.poolNumber}}">
+                    <span class="govuk-visually-hidden">Select {{pool.poolNumber}}</span>
                   </label>
                 </div>
               </td>
-              <td class="govuk-table__cell jd-middle-align"><a href={{url('pool-overview.get', { poolNumber: pool.pool_number })}}>{{pool.pool_number}}</a></td>
-              <td class="govuk-table__cell jd-middle-align">{{pool.available_jurors}}</td>
-              <td class="govuk-table__cell jd-middle-align">{{pool.service_start_date | makeDate | dateFilter(null, "ddd D MMM YYYY")}}</td>
-              <td class="govuk-table__cell jd-middle-align">{{pool.court_location | capitalizeFully}} ({{ pool.court_location_code }})</td>
+              <td class="govuk-table__cell jd-middle-align"><a href={{url('pool-overview.get', { poolNumber: pool.poolNumber })}}>{{pool.poolNumber}}</a></td>
+              <td class="govuk-table__cell jd-middle-align">{{pool.availableJurors}}</td>
+              <td class="govuk-table__cell jd-middle-align">{{pool.serviceStartDate | makeDate | dateFilter(null, "ddd D MMM YYYY")}}</td>
+              <td class="govuk-table__cell jd-middle-align">{{pool.courtLocation | capitalizeFully}} ({{ pool.courtLocationCode }})</td>
             </tr>
             {% endfor %}
           </tbody>

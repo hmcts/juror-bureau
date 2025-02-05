@@ -163,7 +163,7 @@ function buildPayload (req, { courts, totalCourts }) {
   const { fromDate, toDate } = req.query;
 
   const body = {
-    'search_by': type.toUpperCase(),
+    'searchBy': type.toUpperCase(),
   };
 
   if (type === 'pool') {

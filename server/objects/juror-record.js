@@ -46,7 +46,7 @@
       }
 
       body = mapCamelToSnake(body);
-      delete Object.assign(body, {'welsh_language_required': body.welsh || false }).welsh;
+      delete Object.assign(body, {'welshLanguageRequired': body.welsh || false }).welsh;
 
       return {
         uri: urljoin(this.resource, jurorNumber),
@@ -101,8 +101,8 @@
   module.exports.failedToAttendObject = new DAO('moj/juror-record/failed-to-attend', {
     patch: function(jurorNumber, poolNumber, undo) {
       const body = {
-        'juror_number': jurorNumber,
-        'pool_number': poolNumber,
+        'jurorNumber': jurorNumber,
+        'poolNumber': poolNumber,
       };
       const uri = this.resource;
 
@@ -142,7 +142,7 @@
           juror_numbers: jurorNumbers,
           court_code: locCode,
         },
-        transform: (data) => { delete data['_headers']; return replaceAllObjKeys(data.juror_details, _.camelCase) }
+        transform: (data) => { delete data['_headers']; return replaceAllObjKeys(data.jurorDetails, _.camelCase) }
       }
     }
   })

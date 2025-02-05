@@ -7,12 +7,12 @@
     , validatorResult = null
     , courtsList = [
       {
-        "court_location": "CHESTER",
-        "court_rooms": [
+        "courtLocation": "CHESTER",
+        "courtRooms": [
           {
             "id": 1,
             "owner": "415",
-            "room_number": "1",
+            "roomNumber": "1",
             "description": "Courtroom 1"
           }
         ]

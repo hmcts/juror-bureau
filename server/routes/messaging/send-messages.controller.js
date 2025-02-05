@@ -524,8 +524,8 @@
               ? app.namedRoutes.build('messaging.send.select-trial.get', { message })
               : app.namedRoutes.build('messaging.send.find-jurors.get', { message }),
             searchUrl: app.namedRoutes.build('messaging.send.find-jurors.post', { message }) + '?searchAgain=true',
-            totalJurors: err.error?.code === 'MAX_ITEMS_EXCEEDED' ? 'MAX_ITEMS_EXCEEDED' : 0,
-            errorMetadata: err.error?.meta_data,
+            totalJurors: err.error?.code === 'MAX_ITEMS_EXCEEDED' ? 'MAX_ITEMS_EXCEEDED': 0,
+            errorMetadata: err.error?.metaData,
             searchBy: req.session.messaging.searchBy,
             searchOptions,
             tmpBody,

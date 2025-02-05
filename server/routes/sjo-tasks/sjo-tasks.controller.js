@@ -158,17 +158,17 @@ module.exports.getSearchResults = function(app, { task, backLinkRoute, title, po
       }
 
       req.session.searchOptions = {
-        'juror_number': Object.keys(req.query)[0] === 'juror' ? Object.values(req.query)[0] : '',
-        'juror_name': Object.keys(req.query)[0] === 'name' ? Object.values(req.query)[0] : '',
-        'pool_number': Object.keys(req.query)[0] === 'pool' ? Object.values(req.query)[0] : '',
+        'jurorNumber': Object.keys(req.query)[0] === 'juror' ? Object.values(req.query)[0] : '',
+        'jurorName': Object.keys(req.query)[0] === 'name' ? Object.values(req.query)[0] : '',
+        'poolNumber': Object.keys(req.query)[0] === 'pool' ? Object.values(req.query)[0] : '',
       };
 
       let payload = {
         ...req.session.searchOptions,
-        'page_number': page,
-        'page_limit': modUtils.constants.PAGE_SIZE,
-        'sort_method': req.query['sortOrder'] === 'descending' ? 'DESC' : 'ASC',
-        'sort_field': sortField,
+        'pageNumber': page,
+        'pageLimit': modUtils.constants.PAGE_SIZE,
+        'sortMethod': req.query['sortOrder'] === 'descending' ? 'DESC' : 'ASC',
+        'sortField': sortField,
       };
 
       if (task === 'uncomplete-service') {
@@ -182,7 +182,7 @@ module.exports.getSearchResults = function(app, { task, backLinkRoute, title, po
       const completedJurorsData = await sjoTasksSearchDAO.post(req, payload);
 
       req.session.membersList = completedJurorsData.data;
-      let totalItems = completedJurorsData.total_items;
+      let totalItems = completedJurorsData.totalItems;
 
       app.logger.info('Fetched the the list of jurors to uncomplete: ', {
         auth: req.session.authentication,
@@ -278,10 +278,10 @@ module.exports.postCheckJuror = function(app) {
         try {
           let payload = {
             ...req.session.searchOptions,
-            'page_number': '1',
-            'page_limit': '500',
-            'sort_method': 'ASC',
-            'sort_field': 'JUROR_NUMBER',
+            'pageNumber': '1',
+            'pageLimit': '500',
+            'sortMethod': 'ASC',
+            'sortField': 'JUROR_NUMBER',
           };
 
           if (task === 'uncomplete-service') {
@@ -301,8 +301,8 @@ module.exports.postCheckJuror = function(app) {
 
           req.session.checkedJurors = completedJurorsData.data.map((j) => {
             return {
-              'juror_number': j['juror_number'],
-              'pool_number': j['pool_number'],
+              'jurorNumber': j['juror_number'],
+              'poolNumber': j['pool_number'],
             };
           });
 
@@ -325,8 +325,8 @@ module.exports.postCheckJuror = function(app) {
 
       req.session.checkedJurors.push(
         {
-          'juror_number': juror['juror_number'],
-          'pool_number': juror['pool_number'],
+          'jurorNumber': juror['juror_number'],
+          'poolNumber': juror['pool_number'],
         }
       );
     }

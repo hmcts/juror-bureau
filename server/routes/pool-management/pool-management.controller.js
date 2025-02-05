@@ -40,8 +40,8 @@
           // for the moment we only paginate through the active pools list
           // the status === created is just because we haven't still
           // ... implemented pagination on the 'requested' endpoint
-          if (data[0].total_items > modUtils.constants.PAGE_SIZE) {
-            pageItems = modUtils.paginationBuilder(data[0].total_items, page, req.url);
+          if (data[0].totalItems > modUtils.constants.PAGE_SIZE) {
+            pageItems = modUtils.paginationBuilder(data[0].totalItems, page, req.url);
           }
 
           pageUrls = {

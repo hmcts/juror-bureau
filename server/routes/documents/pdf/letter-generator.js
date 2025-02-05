@@ -29,24 +29,24 @@
 
   function courtAddress(data) {
     return [
-      data.court_address_line1,
-      data.court_address_line2,
-      data.court_address_line3,
-      data.court_address_line4,
-      data.court_address_line5,
-      data.court_address_line6,
-      data.court_post_code,
+      data.courtAddressLine1,
+      data.courtAddressLine2,
+      data.courtAddressLine3,
+      data.courtAddressLine4,
+      data.courtAddressLine5,
+      data.courtAddressLine6,
+      data.courtPostCode,
     ];
   }
 
   function jurorAddress(data) {
     return [
-      data.juror_address_line1,
-      data.juror_address_line2,
-      data.juror_address_line3,
-      data.juror_address_line4,
-      data.juror_address_line5,
-      data.juror_postcode,
+      data.jurorAddressLine1,
+      data.jurorAddressLine2,
+      data.jurorAddressLine3,
+      data.jurorAddressLine4,
+      data.jurorAddressLine5,
+      data.jurorPostcode,
     ];
   }
 
@@ -62,7 +62,7 @@
             {
               text: [
                 {
-                  text: content.juror_first_name + ' ' + content.juror_last_name + '\n',
+                  text: content.jurorFirstName + ' ' + content.jurorLastName + '\n',
                 },
                 buildAddress(jurorAddress(content)),
               ],
@@ -76,7 +76,7 @@
             {
               text: [
                 {
-                  text: `${content.court_name}\n\n`,
+                  text: `${content.courtName}\n\n`,
                   style: {
                     bold: true,
                   },
@@ -86,8 +86,8 @@
                 },
                 {
                   text: [
-                    `\n${content.welsh ? 'Rhif Ffôn.' : 'Telephone No.'} ${content.court_phone_number}`,
-                    // `\n${content.welsh ? 'Rhif Ffacs.' : 'Fax No.'} ${content.court_fax_number || 'N/A'}`,
+                    `\n${content.welsh ? 'Rhif Ffôn.' : 'Telephone No.'} ${content.courtPhoneNumber}`,
+                    // `\n${content.welsh ? 'Rhif Ffacs.' : 'Fax No.'} ${content.courtFaxNumber || 'N/A'}`,
                   ],
                 },
               ],
@@ -119,7 +119,7 @@
                 marginBottom: 5,
               },
               {
-                text: `${content.welsh ? 'Eich rhif fel rheithiwr:' : 'Your Ref:'} ${content.juror_number}`,
+                text: `${content.welsh ? 'Eich rhif fel rheithiwr:' : 'Your Ref:'} ${content.jurorNumber}`,
               },
             ],
             alignment: 'right',
@@ -129,7 +129,7 @@
       {
         text: (typeof jurorData.documentType !== 'undefined' && jurorData.documentType === 'certificate-attendance')
           ? '' : `${content.welsh
-            ? 'Annwyl' : 'Dear'} ${content.juror_first_name} ${content.juror_last_name},`,
+            ? 'Annwyl' : 'Dear'} ${content.jurorFirstName} ${content.jurorLastName},`,
         marginTop: 15,
       },
       {

@@ -17,7 +17,7 @@
   describe('Pool Members API object:', function() {
 
     it.skip('Should call the correct endpoints to display the members of a pool', function() {
-      var testUri = poolMemebersObject.post(rpStub, appStub, 'test-token', {'pool_number': '416221101'})
+      var testUri = poolMemebersObject.post(rpStub, appStub, 'test-token', {'poolNumber': '416221101'})
         , realUri = urljoin(
           'http://localhost:8080/api/v1',
           '/moj/pool-create/members?poolNumber=416221101'

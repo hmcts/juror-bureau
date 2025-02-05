@@ -81,7 +81,7 @@
 
       if (!req.session.hasOwnProperty('poolDetails') ||
         !req.session.poolDetails.poolDetails.hasOwnProperty('is_nil_pool') ||
-        !req.session.poolDetails.poolDetails.is_nil_pool) {
+        !req.session.poolDetails.poolDetails.isNilPool) {
         app.logger.crit('Failed to convert pool to active pool as the pool is not a nil pool: ', {
           auth: req.session.authentication,
           jwt: req.session.authToken,

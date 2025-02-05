@@ -82,18 +82,18 @@ module.exports.getJurors = function(app) {
     let queryStatus = !req.query.status || req.query.status === 'all' ? null : req.query.status;
 
     const payload = {
-      'pool_number': poolNumber,
-      'juror_number': req.query.jurorNumber || null,
-      'first_name': req.query.firstName || null,
-      'last_name': req.query.lastName || null,
+      'poolNumber': poolNumber,
+      'jurorNumber': req.query.jurorNumber || null,
+      'firstName': req.query.firstName || null,
+      'lastName': req.query.lastName || null,
       'attendance': req.query.attendance?.toUpperCase()
         .replace(/ /g, '_').split(',') || null,
-      'checked_in': req.query.checkedIn || null,
-      'next_due': req.query.nextDue?.split(',') || null,
+      'checkedIn': req.query.checkedIn || null,
+      'nextDue': req.query.nextDue?.split(',') || null,
       'status': queryStatus?.split(',').map(status => status[0].toUpperCase() + status.slice(1)) || null,
-      'page_number': req.query.page || 1,
-      'sort_field': req.query.sortBy || 'juror_number',
-      'sort_method': req.query.sortOrder || 'ascending',
+      'pageNumber': req.query.page || 1,
+      'sortField': req.query.sortBy || 'juror_number',
+      'sortMethod': req.query.sortOrder || 'ascending',
     };
 
     poolMembersDAO.post(req, payload)
@@ -433,8 +433,8 @@ function renderHistoryItems(app, req, res, data){
         bureauSummoning: data.bureauSummoning,
         poolSummary: data.poolSummary,
         additionalStatistics: data.additionalStatistics,
-        isNil: data.poolDetails.is_nil_pool,
-        currentOwner: data.poolDetails.current_owner,
+        isNil: data.poolDetails.isNilPool,
+        currentOwner: data.poolDetails.currentOwner,
         currentTab: 'history',
         navData: _.clone(req.session.poolManagementNav),
       });
@@ -632,9 +632,9 @@ function courtView(app, req, res, pool, membersList, _errors, selectedJurors, se
       availableSuccessMessage: availableSuccessMessage,
       successBanner: successBanner,
       poolDetails: pool.poolDetails,
-      isNil: pool.poolDetails.is_nil_pool,
+      isNil: pool.poolDetails.isNilPool,
       isActive: pool.poolDetails.isActive,
-      currentOwner: pool.poolDetails.current_owner,
+      currentOwner: pool.poolDetails.currentOwner,
       currentTab: 'jurors',
       postUrls: { assignUrl, transferUrl, completeServiceUrl, changeServiceDateUrl, postponeUrl, onCallUrl },
       navData: _.clone(req.session.poolManagementNav),
@@ -791,19 +791,19 @@ function filtersHelper(req, poolNumber) {
   const queryStatus = !req.query.status || req.query.status === 'all' ? null : req.query.status;
 
   const payload = {
-    'pool_number': poolNumber,
-    'juror_number': req.query.jurorNumber || null,
-    'first_name': req.query.firstName || null,
-    'last_name': req.query.lastName || null,
+    'poolNumber': poolNumber,
+    'jurorNumber': req.query.jurorNumber || null,
+    'firstName': req.query.firstName || null,
+    'lastName': req.query.lastName || null,
     'attendance': req.query.attendance?.toUpperCase()
       .replace(/ /g, '_').split(',') || null,
-    'checked_in': req.query.checkedIn || null,
-    'next_due': req.query.nextDue?.split(',') || null,
+    'checkedIn': req.query.checkedIn || null,
+    'nextDue': req.query.nextDue?.split(',') || null,
     'status': queryStatus?.split(',').map(status => status[0].toUpperCase() + status.slice(1)) || null,
-    'page_number': req.query.page || 1,
-    'sort_field': 'juror_number',
-    'sort_method': 'ascending',
-    'page_limit': 500,
+    'pageNumber': req.query.page || 1,
+    'sortField': 'juror_number',
+    'sortMethod': 'ascending',
+    'pageLimit': 500,
   };
 
   return payload;

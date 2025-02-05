@@ -26,7 +26,7 @@
           'QUEUED'
         );
 
-        const noApprovals = approvals.pending_jurors_response_data.length;
+        const noApprovals = approvals.pendingJurorsResponseData.length;
 
         if (noApprovals !== 0) {
           req.session.jurorApprovalCount = noApprovals;

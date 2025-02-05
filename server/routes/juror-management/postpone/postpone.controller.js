@@ -422,7 +422,7 @@
 
           if (data.unavailableForMove !== null) {
             //eslint-disable-next-line
-            payload.juror_numbers = data.availableForMove;
+            payload.jurorNumbers = data.availableForMove;
             req.session.movementData = data;
             return res.redirect(app.namedRoutes.build('juror.update-bulk-postpone.movement-check.get', {
               poolNumber: typeof req.session.poolJurorsPostpone !== 'undefined' ?
@@ -489,7 +489,7 @@
 
                 return prev;
               }, []),
-              'deferral_maintenance': true,
+              'deferralMaintenance': true,
             }
           );
         })
@@ -542,8 +542,8 @@
 
         }),
         eligibleJurorLength: typeof req.session.poolJurorsPostpone !== 'undefined' ?
-          req.session.poolJurorsPostpone.payload.juror_numbers.length :
-          req.session.jurorCommonDetails.payload.juror_numbers.length,
+          req.session.poolJurorsPostpone.payload.jurorNumbers.length :
+          req.session.jurorCommonDetails.payload.jurorNumbers.length,
         continueUrl: app.namedRoutes.build('juror.update-bulk-postpone.continue.post', {
           poolNumber: req.params['poolNumber']}),
         problems: modUtils.buildMovementProblems(req.session.movementData),
@@ -557,7 +557,7 @@
         cancelUrl: app.namedRoutes.build('pool-management.deferral-maintenance.filter.get', {
           locationCode: req.params.locationCode,
         }),
-        eligibleJurorLength: req.session.postponeDeferralMaintenancePayload.juror_numbers.length,
+        eligibleJurorLength: req.session.postponeDeferralMaintenancePayload.jurorNumbers.length,
         continueUrl: app.namedRoutes.build('pool-management.deferral-maintenance.postpone.movement.post', {
           locationCode: req.params.locationCode,
         }),
@@ -622,7 +622,7 @@
           req.session.poolJurorsPostpone.deferralDateAndPool : req.session.jurorCommonDetails.deferralDateAndPool;
         let jurorNumber;
         let deferralUrl = app.namedRoutes.build('pool-management.deferral-maintenance.get');
-        let selectedJurors = payload.juror_numbers;
+        let selectedJurors = payload.jurorNumbers;
         let jurorString = selectedJurors.length > 1 ? selectedJurors.length + ' jurors' : '1 juror';
 
         if (receivingPoolNumberDate.length === 10 && typeof req.session.poolJurorsPostpone !== 'undefined') {
@@ -732,7 +732,7 @@
       payload)
       .then((resp) => {
         let receivingPoolNumberDate = req.body.deferralDateAndPool;
-        let selectedJurors = payload.juror_numbers;
+        let selectedJurors = payload.jurorNumbers;
         let jurorString = selectedJurors.length > 1 ? selectedJurors.length + ' jurors' : '1 juror';
 
         if (!payload.poolNumber) {
@@ -780,7 +780,7 @@
     const payload = _.clone(body);
 
     //eslint-disable-next-line
-    payload.juror_numbers = jurorNumbers;
+    payload.jurorNumbers = jurorNumbers;
     if (payload.deferralDateAndPool) {
       const [dd, pn] = payload.deferralDateAndPool.split('_');
 

@@ -29,7 +29,7 @@ module.exports.getPrintTrials = (app) => {
       return res.render('_errors/generic');
     }
 
-    const documentContent = buildPdfTable(response.data, response.total_items, isActive === 'false');
+    const documentContent = buildPdfTable(response.data, response.totalItems, isActive === 'false');
 
     let document;
     try {
@@ -51,13 +51,13 @@ module.exports.getPrintTrials = (app) => {
 function buildPdfTable(data, amount, includeInactive) {
   const body = data.map((trial) => {
     return [
-      { text: trial.trial_number },
+      { text: trial.trialNumber },
       { text: trial.parties },
-      { text: trial.trial_type },
+      { text: trial.trialType },
       { text: trial.court },
       { text: trial.courtroom },
       { text: trial.judge },
-      { text: dateFilter(makeDate(trial.start_date), 'YYYY,MM,DD', 'ddd DD MMM YYYY') },
+      { text: dateFilter(makeDate(trial.startDate), 'YYYY,MM,DD', 'ddd DD MMM YYYY') },
     ];
   });
 

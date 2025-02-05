@@ -25,8 +25,8 @@
 
   const getCountTransform = function(body) {
     return {
-      todoCount: body.todo_count,
-      workCount: body.work_count
+      todoCount: body.todoCount,
+      workCount: body.workCount
     }
   };
 

@@ -39,7 +39,7 @@ module.exports.getDismissJurorsPools = function(app) {
         req.session.authentication.owner
       );
 
-      let poolsAtCourt = sortPools(req,  pools.pools_at_court_location.filter(pool => pool.total_jurors !== 0));
+      let poolsAtCourt = sortPools(req,  pools.poolsAtCourtLocation.filter(pool => pool.totalJurors !== 0));
 
       let pageItems;
       if (poolsAtCourt.length > modUtils.constants.PAGE_SIZE) {
@@ -58,7 +58,7 @@ module.exports.getDismissJurorsPools = function(app) {
       return res.render('pool-management/dismiss-jurors/pools-list.njk', {
         pools: poolsAtCourt,
         totalCheckedPools: req.session.selectedDismissalPools?.length || 0,
-        totalPools: pools.pools_at_court_location.filter(pool => pool.total_jurors !== 0).length,
+        totalPools: pools.poolsAtCourtLocation.filter(pool => pool.totalJurors !== 0).length,
         poolsTable: transformPoolsList(app, poolsAtCourt, sortBy, sortOrder, req.session.selectedDismissalPools || [], poolsAtCourt.length),
         pageItems,
         tmpForm,
@@ -134,7 +134,7 @@ module.exports.getJurorsList = function(app) {
             req.session.authentication.owner
           );
 
-        req.session.dismissJurors.jurors = jurorList.jurors_to_dismiss_request_data;
+        req.session.dismissJurors.jurors = jurorList.jurorsToDismissRequestData;
 
         app.logger.info('Fetched the the list of jurors to dismiss: ', {
           auth: req.session.authentication,
@@ -202,7 +202,7 @@ module.exports.postJurorsList = function(app) {
       return res.redirect(app.namedRoutes.build(urls.jurors));
     }
 
-    const selectedJurorNo = checkedJurors.map((juror) => juror.juror_number);
+    const selectedJurorNo = checkedJurors.map((juror) => juror.jurorNumber);
 
     const payload = {
       commonData: {
@@ -213,7 +213,7 @@ module.exports.postJurorsList = function(app) {
       juror: selectedJurorNo,
     };
     const response = await jurorAttendanceDao.post(req, payload);
-    const notCheckedOut = response.details.filter((juror) => selectedJurorNo.includes(juror.juror_number));
+    const notCheckedOut = response.details.filter((juror) => selectedJurorNo.includes(juror.jurorNumber));
 
     if (notCheckedOut.length) {
       req.session.dismissJurors.notCheckedOut = notCheckedOut;
@@ -234,13 +234,13 @@ module.exports.getCompleteService = function() {
 
     delete req.session.errors;
 
-    let latestServiceStartDate = checkedJurors[0].service_start_date;
+    let latestServiceStartDate = checkedJurors[0].serviceStartDate;
 
     checkedJurors.forEach((juror) => {
-      const ssDate = moment(juror.service_start_date, 'yyyy-MM-DD');
+      const ssDate = moment(juror.serviceStartDate, 'yyyy-MM-DD');
 
       latestServiceStartDate = ssDate.isBefore(moment(latestServiceStartDate, 'yyyy-MM-DD'))
-        ? juror.service_start_date
+        ? juror.serviceStartDate
         : latestServiceStartDate;
     });
 
@@ -292,8 +292,8 @@ module.exports.postCompleteService = function(app) {
       const checkedJurors = req.session.dismissJurors.jurors.filter(juror => juror.checked);
 
       const payload = {
-        'juror_numbers': checkedJurors.map((juror) => juror.juror_number),
-        'completion_date': dateFilter(req.body.completionDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
+        'jurorNumbers': checkedJurors.map((juror) => juror.jurorNumber),
+        'completionDate': dateFilter(req.body.completionDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
       };
 
       await dismissJurorsObject.patch(req, payload);
@@ -386,7 +386,7 @@ module.exports.postCheckOutJurors = function(app) {
           ),
           singleJuror: false,
         },
-        juror: req.session.dismissJurors.notCheckedOut.map((j) => j.juror_number),
+        juror: req.session.dismissJurors.notCheckedOut.map((j) => j.jurorNumber),
       };
 
       await updateJurorAttendanceDAO.patch(req, payload);
@@ -425,7 +425,7 @@ module.exports.postCheckJuror = function(app) {
         j.checked = action === 'check';
       });
     } else {
-      const juror = req.session.dismissJurors.jurors.find(j => j.juror_number === jurorNumber);
+      const juror = req.session.dismissJurors.jurors.find(j => j.jurorNumber === jurorNumber);
 
       juror.checked = !juror.checked;
     }
@@ -452,7 +452,7 @@ module.exports.postCheckPool = function(app) {
         pools = (await getDismissablePools.get(
           req,
           req.session.authentication.owner
-        )).pools_at_court_location.filter(pool => pool.total_jurors !== 0).map(p => p.pool_number);
+        )).poolsAtCourtLocation.filter(pool => pool.totalJurors !== 0).map(p => p.poolNumber);
 
       } catch (err) {
         app.logger.crit('Failed to fetch pools to dismiss jurors when checking all pools: ', {
@@ -493,7 +493,7 @@ async function calculateTotalJurorsAvailable(app, req, res, selections, selected
       pools = (await getDismissablePools.get(
         req,
         req.session.authentication.owner
-      )).pools_at_court_location;
+      )).poolsAtCourtLocation;
     } catch (err) { 
       app.logger.crit('Failed to fetch pools to calculate available jurors to dismiss ', {
         auth: req.session.authentication,
@@ -507,14 +507,14 @@ async function calculateTotalJurorsAvailable(app, req, res, selections, selected
     let totalAvailable = 0;
 
     selectedPools.forEach((poolNo) => {
-      const pool = pools.find(pool => pool.pool_number === poolNo);
-      totalAvailable = totalAvailable + pool.jurors_in_attendance;
+      const pool = pools.find(pool => pool.poolNumber === poolNo);
+      totalAvailable = totalAvailable + pool.jurorsInAttendance;
       if (selections['jurors-to-include']) {
         if (selections['jurors-to-include'].includes('on-call')) {
-          totalAvailable = totalAvailable + pool.jurors_on_call;
+          totalAvailable = totalAvailable + pool.jurorsOnCall;
         }
         if (selections['jurors-to-include'].includes('not-in-attendance')) {
-          totalAvailable = totalAvailable + pool.other_jurors;
+          totalAvailable = totalAvailable + pool.otherJurors;
         }
       }
     });
@@ -582,7 +582,7 @@ function compareCheckInAndCheckOutTimes({ notCheckedOut, checkOutTime: time }) {
   const _checkOutTime = convertAmPmToLong(`${time.hour}:${time.minute}${time.period}`);
 
   return notCheckedOut
-    .filter(juror => _checkOutTime < convertAmPmToLong(timeArrayToString(juror.check_in_time)));
+    .filter(juror => _checkOutTime < convertAmPmToLong(timeArrayToString(juror.checkInTime)));
 }
 
 function transformPoolsList(app, pools, sortBy, sortOrder, checkedPools, totalPools) {  
@@ -651,69 +651,69 @@ function transformPoolsList(app, pools, sortBy, sortOrder, checkedPools, totalPo
   };
 
   pools.forEach((pool) => {
-    const checked = checkedPools.some(p => p === pool.pool_number) ? 'checked' : '';
+    const checked = checkedPools.some(p => p === pool.poolNumber) ? 'checked' : '';
     table.rows.push([
       {
         html: '<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">'
           + '<input type="checkbox" class="govuk-checkboxes__input"'
-          + 'id="pool-' + pool.pool_number + '" aria-label="check-pool-' + pool.pool_number + '"'
-          + 'name="checked-pools" value="' + pool.pool_number + '" '
+          + 'id="pool-' + pool.poolNumber + '" aria-label="check-pool-' + pool.poolNumber + '"'
+          + 'name="checked-pools" value="' + pool.poolNumber + '" '
           + checked + '/>'
-          + '<label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="pool-' + pool.pool_number + '">'
-          + '<span class="govuk-visually-hidden">Select pool ' + pool.pool_number + '</span>'
+          + '<label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="pool-' + pool.poolNumber + '">'
+          + '<span class="govuk-visually-hidden">Select pool ' + pool.poolNumber + '</span>'
           + '</label>'
           + '</div>',
         attributes: {
-          'data-sort-value': pool.pool_number,
+          'data-sort-value': pool.poolNumber,
         },
         classes: 'mod-padding-block--0',
       },
       {
-        html: `<a href="${app.namedRoutes.build('pool-overview.get', {poolNumber: pool.pool_number})}" class="govuk-link">${pool.pool_number}</a>`,
+        html: `<a href="${app.namedRoutes.build('pool-overview.get', {poolNumber: pool.poolNumber})}" class="govuk-link">${pool.poolNumber}</a>`,
         attributes: {
-          'data-sort-value': pool.pool_number,
+          'data-sort-value': pool.poolNumber,
         },
         classes: 'jd-middle-align mod-padding-block--0',
       },
       {
-        text: pool.jurors_in_attendance ,
+        text: pool.jurorsInAttendance ,
         attributes: {
-          'data-sort-value': pool.jurors_in_attendance ,
+          'data-sort-value': pool.jurorsInAttendance ,
         },
         classes: 'jd-middle-align mod-padding-block--0',
       },
       {
-        text: pool.jurors_on_call,
+        text: pool.jurorsOnCall,
         attributes: {
-          'data-sort-value': pool.jurors_on_call,
+          'data-sort-value': pool.jurorsOnCall,
         },
         classes: 'jd-middle-align mod-padding-block--0',
       },
       {
-        text: pool.other_jurors,
+        text: pool.otherJurors,
         attributes: {
-          'data-sort-value': pool.other_jurors,
+          'data-sort-value': pool.otherJurors,
         },
         classes: 'jd-middle-align mod-padding-block--0',
       },
       {
-        text: pool.total_jurors,
+        text: pool.totalJurors,
         attributes: {
-          'data-sort-value': pool.total_jurors,
+          'data-sort-value': pool.totalJurors,
         },
         classes: 'jd-middle-align mod-padding-block--0',
       },
       {
-        text: fullCourtType(pool.pool_type),
+        text: fullCourtType(pool.poolType),
         attributes: {
-          'data-sort-value': pool.pool_type,
+          'data-sort-value': pool.poolType,
         },
         classes: 'jd-middle-align mod-padding-block--0',
       },
       {
-        text: dateFilter(pool.service_start_date, 'YYYY-MM-DD', 'ddd D MMM YYYY'),
+        text: dateFilter(pool.serviceStartDate, 'YYYY-MM-DD', 'ddd D MMM YYYY'),
         attributes: {
-          'data-sort-value': pool.service_start_date,
+          'data-sort-value': pool.serviceStartDate,
         },
         classes: 'jd-middle-align mod-padding-block--0',
       }

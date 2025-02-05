@@ -871,23 +871,23 @@
   function buildCreationPayload(jurorDetails) {
     const payload = {
       'title': jurorDetails.jurorName.title,
-      'first_name': jurorDetails.jurorName.firstName,
-      'last_name': jurorDetails.jurorName.lastName,
+      'firstName': jurorDetails.jurorName.firstName,
+      'lastName': jurorDetails.jurorName.lastName,
       'address': {
-        'line_one': jurorDetails.jurorAddress.addressLineOne,
-        'line_two': jurorDetails.jurorAddress.addressLineTwo,
-        'line_three': jurorDetails.jurorAddress.addressLineThree,
+        'lineOne': jurorDetails.jurorAddress.addressLineOne,
+        'lineTwo': jurorDetails.jurorAddress.addressLineTwo,
+        'lineThree': jurorDetails.jurorAddress.addressLineThree,
         'town': jurorDetails.jurorAddress.addressTown,
         'county': jurorDetails.jurorAddress.addressCounty,
         'postcode': jurorDetails.jurorAddress.addressPostcode,
       },
-      ...(jurorDetails.jurorDob && {'date_of_birth': dateFilter(jurorDetails.jurorDob, 'DD/MM/YYYY', 'YYYY-MM-DD')}),
-      ...(jurorDetails.jurorContact.mainPhone && {'primary_phone': jurorDetails.jurorContact.mainPhone}),
-      ...(jurorDetails.jurorContact.alternativePhone && {'alternative_phone': jurorDetails.jurorContact.alternativePhone}),
-      ...(jurorDetails.jurorContact.emailAddress && {'email_address': jurorDetails.jurorContact.emailAddress}),
+      ...(jurorDetails.jurorDob && {'dateOfBirth': dateFilter(jurorDetails.jurorDob, 'DD/MM/YYYY', 'YYYY-MM-DD')}),
+      ...(jurorDetails.jurorContact.mainPhone && {'primaryPhone': jurorDetails.jurorContact.mainPhone}),
+      ...(jurorDetails.jurorContact.alternativePhone && {'alternativePhone': jurorDetails.jurorContact.alternativePhone}),
+      ...(jurorDetails.jurorContact.emailAddress && {'emailAddress': jurorDetails.jurorContact.emailAddress}),
       'notes': jurorDetails.notes,
-      'pool_number': jurorDetails.poolNumber,
-      'court_code' : jurorDetails.courtLocCode,
+      'poolNumber': jurorDetails.poolNumber,
+      'courtCode': jurorDetails.courtLocCode,
     }
     if (jurorDetails.hasOwnProperty('createPool')) {
       payload['service_start_date'] = dateFilter(jurorDetails.createPool.attendanceDate, 'DD/MM/YYYY', 'YYYY-MM-DD');

@@ -35,7 +35,7 @@
       expect(testObj.method).to.equal('POST');
 
       expect(testObj.body.hasOwnProperty('juror_numbers')).to.equal(true);
-      expect(testObj.body.juror_numbers[0]).to.equal('641500001');
+      expect(testObj.body.jurorNumbers[0]).to.equal('641500001');
 
       expect(testObj.body.hasOwnProperty('deferralDate')).to.equal(true);
       expect(testObj.body.deferralDate).to.equal('2024-04-02');

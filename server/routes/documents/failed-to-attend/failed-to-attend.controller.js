@@ -13,7 +13,7 @@
 
       try {
         const payload = {
-          'letter_type': modUtils.LetterType[document],
+          'letterType': modUtils.LetterType[document],
         };
 
         let response;
@@ -23,9 +23,9 @@
           response.data.forEach((item) => {
             delete item.status;
             delete item.postcode;
-            delete item.pool_number;
+            delete item.poolNumber;
           });
-          response.data_types.push('hidden');
+          response.dataTypes.push('hidden');
           response.headings.push('Row Id');
           response.data.forEach((juror, i) => {
             juror.id = i;
@@ -46,7 +46,7 @@
         if (err.statusCode === 404) {
           req.session.documentsJurorsList = {
             headings: [],
-            'data_types': [],
+            'dataTypes': [],
             data: [],
           };
 
@@ -77,8 +77,8 @@
       if (jurorNumber) {
 
         req.session.documentsJurorsList ={
-          checkedJurors: [{ 'juror_number': jurorNumber }],
-          data : [{'juror_number': jurorNumber, 'absent_date': singleFTAdate}],
+          checkedJurors: [{ 'jurorNumber': jurorNumber }],
+          data : [{'jurorNumber': jurorNumber, 'absentDate': singleFTAdate}],
         };
         req.session.bannerMessage = 'Document sent for printing';
 

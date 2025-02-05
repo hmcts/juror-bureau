@@ -46,7 +46,7 @@
           <a href="{{ pagination.nextLink }}">{{ rightArrowSVG({ colour: "blue" }) }}</a>
         {% endif %}
       </span>
-      <h2 class="govuk-heading-m">{{ expensesData.date_of_expense | dateFilter("YYYY-MM-DD", "dddd DD MMMM YYYY") }}</h2>
+      <h2 class="govuk-heading-m">{{ expensesData.dateOfExpense | dateFilter("YYYY-MM-DD", "dddd DD MMMM YYYY") }}</h2>
 
       {% if status === "draft" %}
         {{ govukTag({
@@ -109,12 +109,12 @@
           {# Here will go the totals summary... and the refresh warnings #}
         </div>
 
-        <input type="hidden" name="payAttendance" id="payAttendance" value="{{ expensesData.time.pay_attendance }}"/>
+        <input type="hidden" name="payAttendance" id="payAttendance" value="{{ expensesData.time.payAttendance }}"/>
         <input type="hidden" name="jurorNumber" id="jurorNumber" value="{{ jurorNumber }}"/>
         <input type="hidden" name="locCode" id="locCode" value="{{ locCode }}"/>
 
         {% if status !== "draft" %}
-          <input type="hidden" name="nonAttendance" id="nonAttendance" value="{{ expensesData.none_attendance_day }}"/>
+          <input type="hidden" name="nonAttendance" id="nonAttendance" value="{{ expensesData.noneAttendanceDay }}"/>
         {% endif %}
 
         <input type="hidden" name="total" value="">

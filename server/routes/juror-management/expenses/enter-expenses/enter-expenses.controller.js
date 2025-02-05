@@ -52,12 +52,12 @@
 
       try {
         const _expensesData = getEnteredExpensesDAO.post(req, locCode, jurorNumber, {
-          'expense_dates': [date],
+          'expenseDates': [date],
         });
 
         const _jurorDetails = jurorRecordDetailsDAO.post(req, [{
-          'juror_number': jurorNumber,
-          'juror_version': null,
+          'jurorNumber': jurorNumber,
+          'jurorVersion': null,
           'include': ['NAME_DETAILS'],
         }]);
 
@@ -93,11 +93,11 @@
       // Mimicing paginating the list, returning same header data but expenses list will be filtered to 1
       const pagination = buildExpensesPagination(app, req, res, page);
 
-      const renderTemplate = expensesData.none_attendance_day
+      const renderTemplate = expensesData.noneAttendanceDay
         ? 'expenses/enter-expenses-non-attendance.njk'
         : 'expenses/enter-expenses.njk';
 
-      req.session.nonAttendanceDay = expensesData.none_attendance_day;
+      req.session.nonAttendanceDay = expensesData.noneAttendanceDay;
 
       if (!req.session.tmpBody) {
         tmpBody = manipulateExpensesApiData(expensesData);
@@ -109,7 +109,7 @@
       delete req.session.tmpBody;
       delete req.session.lowerLossCap;
 
-      const [timeSpentAtCourtHour, timeSpentAtCourtMinute] = expensesData.time.time_spent_at_court.split(':');
+      const [timeSpentAtCourtHour, timeSpentAtCourtMinute] = expensesData.time.timeSpentAtCourt.split(':');
 
       if (req.session.editExpenseTravelOverLimit && req.session.editExpenseTravelOverLimit[date] && req.session.editExpenseTravelOverLimit[date].body) {
         tmpBody = req.session.editExpenseTravelOverLimit[date].body;
@@ -240,7 +240,7 @@
 
       try {
         const payload = {
-          'expense_list': [{ ...data }],
+          'expenseList': [{ ...data }],
         };
 
         await postRecalculateSummaryTotalsDAO.post(req, locCode, jurorNumber, payload);
@@ -262,8 +262,8 @@
       try {
         const { '0': response } = await postEditedExpensesDAO.put(req, locCode, jurorNumber, 'DRAFT', [data]);
 
-        if (response.financial_loss_warning) {
-          req.session.financialLossWarning = response.financial_loss_warning;
+        if (response.financialLossWarning) {
+          req.session.financialLossWarning = response.financialLossWarning;
 
           req.session.nextExpensePage = action === 'next' ? nextPage : false;
           req.session.nextExpenseDate = action === 'next' ? nextDate : false;
@@ -400,19 +400,19 @@
       data['apply_to_days'] = [];
 
       if (req.body.applyToAllDays.includes('lossOfEarnings')) {
-        data.apply_to_days.push('LOSS_OF_EARNINGS');
+        data.applyToDays.push('LOSS_OF_EARNINGS');
       }
       if (req.body.applyToAllDays.includes('extraCareCosts')) {
-        data.apply_to_days.push('EXTRA_CARE_COSTS');
+        data.applyToDays.push('EXTRA_CARE_COSTS');
       }
       if (req.body.applyToAllDays.includes('otherCosts')) {
-        data.apply_to_days.push('OTHER_COSTS');
+        data.applyToDays.push('OTHER_COSTS');
       }
       if (req.body.applyToAllDays.includes('travel')) {
-        data.apply_to_days.push('TRAVEL_COSTS');
+        data.applyToDays.push('TRAVEL_COSTS');
       }
       if (req.body.applyToAllDays.includes('paymentMethod')) {
-        data.apply_to_days.push('PAY_CASH');
+        data.applyToDays.push('PAY_CASH');
       }
 
       try {
@@ -461,7 +461,7 @@
       delete req.body._csrf;
 
       const data = {
-        'expense_list': [
+        'expenseList': [
           req.body,
         ],
       };
@@ -479,7 +479,7 @@
         });
 
         return res.render('expenses/_partials/summary.njk', {
-          expenseData: response.expense_details[0],
+          expenseData: response.expenseDetails[0],
           expenseTotals: response.totals,
           status,
         });
@@ -535,45 +535,45 @@
 
     if (nonAttendanceDay) {
       data = {
-        'payment_method': body.paymentMethod,
+        'paymentMethod': body.paymentMethod,
         'time': {
-          'pay_attendance': body.payAttendance,
+          'payAttendance': body.payAttendance,
         },
-        'financial_loss': {
-          'loss_of_earnings': body.lossOfEarnings,
-          'extra_care_cost': body.extraCareCosts,
-          'other_cost': body.otherCosts,
-          'other_cost_description': body.otherCostsDescription,
+        'financialLoss': {
+          'lossOfEarnings': body.lossOfEarnings,
+          'extraCareCost': body.extraCareCosts,
+          'otherCost': body.otherCosts,
+          'otherCostDescription': body.otherCostsDescription,
         },
       };
     } else {
       data = {
-        'payment_method': body.paymentMethod,
+        'paymentMethod': body.paymentMethod,
         time: {
-          'pay_attendance': body.payAttendance,
-          'travel_time': body['totalTravelTime-hour'].padStart(2, '0')
+          'payAttendance': body.payAttendance,
+          'travelTime': body['totalTravelTime-hour'].padStart(2, '0')
             + ':' + body['totalTravelTime-minute'].padStart(2, '0'),
         },
         travel: {
-          'traveled_by_car': false,
-          'traveled_by_motorcycle': false,
-          'traveled_by_bicycle': false,
-          'jurors_taken_by_car': body.carPassengers,
-          'jurors_taken_by_motorcycle': body.motoPassengers,
-          'miles_traveled': body.milesTravelled,
+          'traveledByCar': false,
+          'traveledByMotorcycle': false,
+          'traveledByBicycle': false,
+          'jurorsTakenByCar': body.carPassengers,
+          'jurorsTakenByMotorcycle': body.motoPassengers,
+          'milesTraveled': body.milesTravelled,
           parking: body.parking,
-          'public_transport': body.publicTransport,
+          'publicTransport': body.publicTransport,
           taxi: body.taxi,
         },
-        'food_and_drink': {
-          'food_and_drink_claim_type': body.foodAndDrink,
-          'smart_card_amount': body.smartcardSpend,
+        'foodAndDrink': {
+          'foodAndDrinkClaimType': body.foodAndDrink,
+          'smartCardAmount': body.smartcardSpend,
         },
-        'financial_loss': {
-          'loss_of_earnings': body.lossOfEarnings,
-          'extra_care_cost': body.extraCareCosts,
-          'other_cost': body.otherCosts,
-          'other_cost_description': body.otherCostsDescription,
+        'financialLoss': {
+          'lossOfEarnings': body.lossOfEarnings,
+          'extraCareCost': body.extraCareCosts,
+          'otherCost': body.otherCosts,
+          'otherCostDescription': body.otherCostsDescription,
         },
       };
 
@@ -590,33 +590,33 @@
   function manipulateExpensesApiData(data) {
     let formData;
 
-    if (data.attendance_type === 'NON_ATTENDANCE') {
+    if (data.attendanceType === 'NON_ATTENDANCE') {
       formData = {
-        payAttendance: data.time.pay_attendance,
-        lossOfEarnings: data.financial_loss.loss_of_earnings,
-        extraCareCosts: data.financial_loss.extra_care_cost,
-        otherCosts: data.financial_loss.other_cost,
-        otherCostsDescription: data.financial_loss.other_cost_description,
+        payAttendance: data.time.payAttendance,
+        lossOfEarnings: data.financialLoss.lossOfEarnings,
+        extraCareCosts: data.financialLoss.extraCareCost,
+        otherCosts: data.financialLoss.otherCost,
+        otherCostsDescription: data.financialLoss.otherCostDescription,
       };
     } else {
-      const [totalTravelTimeHour, totalTravelTimeMinute] = data.time.travel_time.split(':');
+      const [totalTravelTimeHour, totalTravelTimeMinute] = data.time.travelTime.split(':');
 
       formData = {
         'totalTravelTime-hour': totalTravelTimeHour,
         'totalTravelTime-minute': totalTravelTimeMinute,
-        payAttendance: data.time.pay_attendance,
+        payAttendance: data.time.payAttendance,
         travelType: data.travelType,
-        carPassengers: data.travel.jurors_taken_by_car,
-        motoPassengers: data.travel.jurors_taken_by_motorcycle,
-        milesTravelled: data.travel.miles_traveled,
+        carPassengers: data.travel.jurorsTakenByCar,
+        motoPassengers: data.travel.jurorsTakenByMotorcycle,
+        milesTravelled: data.travel.milesTraveled,
         parking: data.travel.parking,
-        publicTransport: data.travel.public_transport,
+        publicTransport: data.travel.publicTransport,
         taxi: data.travel.taxi,
-        lossOfEarnings: data.financial_loss.loss_of_earnings,
-        extraCareCosts: data.financial_loss.extra_care_cost,
-        otherCosts: data.financial_loss.other_cost,
-        otherCostsDescription: data.financial_loss.other_cost_description,
-        smartcardSpend: data.food_and_drink.smart_card_amount,
+        lossOfEarnings: data.financialLoss.lossOfEarnings,
+        extraCareCosts: data.financialLoss.extraCareCost,
+        otherCosts: data.financialLoss.otherCost,
+        otherCostsDescription: data.financialLoss.otherCostDescription,
+        smartcardSpend: data.foodAndDrink.smartCardAmount,
       };
     }
 
@@ -630,8 +630,8 @@
       const { publicTransport, taxi } = req.body;
       const response = await getCourtLocationRates.get(req, req.session.authentication.owner);
 
-      const publicTransportLimit = response.public_transport_soft_limit;
-      const taxiLimit = response.taxi_soft_limit;
+      const publicTransportLimit = response.publicTransportSoftLimit;
+      const taxiLimit = response.taxiSoftLimit;
 
       if (!publicTransportLimit && !taxiLimit) {
         return { showTravelOverLimit, error: false };
@@ -642,8 +642,8 @@
         || (taxiLimit && (Number(taxiLimit) < Number(taxi)))
       ) {
         showTravelOverLimit = {
-          publicTransportLimit: response.public_transport_soft_limit,
-          taxiLimit: response.taxi_soft_limit,
+          publicTransportLimit: response.publicTransportSoftLimit,
+          taxiLimit: response.taxiSoftLimit,
         };
       }
 

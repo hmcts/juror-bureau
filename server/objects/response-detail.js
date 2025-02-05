@@ -45,7 +45,7 @@
     const { dateFilter } = require('../components/filters');
     var newObj = body;
 
-    newObj.currentOwner = body.current_owner;
+    newObj.currentOwner = body.currentOwner;
     newObj.read = (newObj.processingStatus !== 'unread');
     newObj.dateReceived = moment(newObj.dateReceived).format('DD/MM/YYYY');
     newObj.hearingDate = newObj.hearingDate !== null

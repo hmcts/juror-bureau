@@ -9,8 +9,8 @@
       return {
         uri: `${this.resource}/${pool}/complete`,
         body: {
-          'completion_date': dateFilter(completionDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
-          'juror_numbers': selectedJurors,
+          'completionDate': dateFilter(completionDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
+          'jurorNumbers': selectedJurors,
         },
       }
     }

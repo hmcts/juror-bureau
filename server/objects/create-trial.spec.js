@@ -83,28 +83,28 @@
       expect(testObj.method).to.equal('POST');
 
       expect(testObj.body.hasOwnProperty('case_number')).to.equal(true);
-      expect(testObj.body.case_number).to.equal('TESTCASE');
+      expect(testObj.body.caseNumber).to.equal('TESTCASE');
 
       expect(testObj.body.hasOwnProperty('trial_type')).to.equal(true);
-      expect(testObj.body.trial_type).to.equal('CRI');
+      expect(testObj.body.trialType).to.equal('CRI');
 
       expect(testObj.body.hasOwnProperty('defendant')).to.equal(true);
       expect(testObj.body.defendant).to.equal('Test Defendant');
 
       expect(testObj.body.hasOwnProperty('start_date')).to.equal(true);
-      expect(testObj.body.start_date).to.equal('2023-11-20');
+      expect(testObj.body.startDate).to.equal('2023-11-20');
 
       expect(testObj.body.hasOwnProperty('judge_id')).to.equal(true);
-      expect(testObj.body.judge_id).to.equal(1);
+      expect(testObj.body.judgeId).to.equal(1);
 
       expect(testObj.body.hasOwnProperty('court_location')).to.equal(true);
-      expect(testObj.body.court_location).to.equal('415');
+      expect(testObj.body.courtLocation).to.equal('415');
 
       expect(testObj.body.hasOwnProperty('courtroom_id')).to.equal(true);
-      expect(testObj.body.courtroom_id).to.equal(1);
+      expect(testObj.body.courtroomId).to.equal(1);
 
       expect(testObj.body.hasOwnProperty('protected_trial')).to.equal(true);
-      expect(testObj.body.protected_trial).to.equal(false);
+      expect(testObj.body.protectedTrial).to.equal(false);
     });
 
   });

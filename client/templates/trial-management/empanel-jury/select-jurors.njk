@@ -56,18 +56,18 @@
 
           {% set optionSelected = 'juror' %}
           
-          {% if tmpBody[juror.juror_number] === 'unused' %}
+          {% if tmpBody[juror.jurorNumber] === 'unused' %}
             {% set optionSelected = 'unused' %}
-          {% elif tmpBody[juror.juror_number] === 'challenged' %}
+          {% elif tmpBody[juror.jurorNumber] === 'challenged' %}
             {% set optionSelected = 'challenged' %}
           {% endif %}
 
           <div class="trial-managment juror-option">
-            <h2 class="govuk-heading-m govuk-!-margin-bottom-2">{{ juror.first_name }} {{ juror.last_name }}</h2>
-            <p class="govuk-body"><a href="{{ url('juror-record.overview.get', { jurorNumber: juror.juror_number }) }}" class="govuk-link">{{ juror.juror_number }}</a></p>
+            <h2 class="govuk-heading-m govuk-!-margin-bottom-2">{{ juror.firstName }} {{ juror.lastName }}</h2>
+            <p class="govuk-body"><a href="{{ url('juror-record.overview.get', { jurorNumber: juror.jurorNumber }) }}" class="govuk-link">{{ juror.jurorNumber }}</a></p>
             {{ govukRadios({
               classes: "govuk-radios--small",
-              name: juror.juror_number,
+              name: juror.jurorNumber,
               items: [
                 {
                   value: "juror",

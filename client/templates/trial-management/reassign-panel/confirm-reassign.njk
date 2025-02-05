@@ -26,7 +26,7 @@
     <div class="govuk-grid-row govuk-!-margin-bottom-5">
       <div class="govuk-grid-column-two-thirds">
         {% for juror in jurors %}
-          <p>{{juror.juror_number}} - {{juror.first_name}} {{juror.last_name}}</p>
+          <p>{{juror.jurorNumber}} - {{juror.firstName}} {{juror.lastName}}</p>
         {% endfor %}
       </div>
     </div>
@@ -41,13 +41,13 @@
               text: "Trial number"
             },
             {
-              text: "Defendants" if trial.trial_type === "Criminal" else "Respondents"
+              text: "Defendants" if trial.trialType === "Criminal" else "Respondents"
             }
           ],
           rows: [
             [
               {
-                text: trial.trial_number
+                text: trial.trialNumber
               },
               {
                 text: trial.defendants

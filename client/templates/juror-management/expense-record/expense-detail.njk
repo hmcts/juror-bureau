@@ -23,12 +23,12 @@
     {% set jurorName = jurorDetails.name.title + ' ' + jurorDetails.name.firstName + ' ' + jurorDetails.name.lastName %}
   {% endif %}
 
-  {% set jurorAddressHTML = jurorDetails.address.line_one + '<br>' + jurorDetails.address.town + '<br>' + jurorDetails.address.postcode %}
+  {% set jurorAddressHTML = jurorDetails.address.lineOne + '<br>' + jurorDetails.address.town + '<br>' + jurorDetails.address.postcode %}
 
   <div class="after-header">
     <div>
       <span class="govuk-caption-l">Expenses audit number</span>
-      <h1 class="govuk-heading-l govuk-!-margin-bottom-3">{{expenseData.audit_number}}</h1>
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-3">{{expenseData.auditNumber}}</h1>
         {{ govukTag({
           text: "For approval" if status === 'forApproval' else "Approved",
           classes: "govuk-tag--blue" if status === 'forApproval' else "govuk-tag"
@@ -77,7 +77,7 @@
               text: "Juror number"
             },
             value: {
-              html: '<a href=' + url("juror-record.overview.get", { jurorNumber: jurorDetails.juror_number }) + ' class="govuk-link">' + jurorDetails.juror_number + '</a>'
+              html: '<a href=' + url("juror-record.overview.get", { jurorNumber: jurorDetails.jurorNumber }) + ' class="govuk-link">' + jurorDetails.jurorNumber + '</a>'
             }
           },
           {
@@ -101,7 +101,7 @@
               text: "Sort code"
             },
             value: {
-              text: jurorDetails.payment_details.sortCode
+              text: jurorDetails.paymentDetails.sortCode
             }
           },
           {
@@ -109,7 +109,7 @@
               text: "Account number"
             },
             value: {
-              text: jurorDetails.payment_details.bankAccountNumber
+              text: jurorDetails.paymentDetails.bankAccountNumber
             }
           },
           {
@@ -117,7 +117,7 @@
               text: "Account holder's name"
             },
             value: {
-              text: jurorDetails.payment_details.bankAccountName
+              text: jurorDetails.paymentDetails.bankAccountName
             }
           },
           {
@@ -125,7 +125,7 @@
               text: "Method of payment"
             },
             value: {
-              text: jurorDetails.payment_details.paymentMethod
+              text: jurorDetails.paymentDetails.paymentMethod
             }
           } if status === "approved"
         ]
@@ -147,7 +147,7 @@
               text: "Submitted by"
             },
             value: {
-              text: expenseData.submitted_by
+              text: expenseData.submittedBy
             }
           },
           {
@@ -155,7 +155,7 @@
               text: "Date submitted"
             },
             value: {
-              text: expenseData.submitted_on | dateFilter(null, "ddd D MMM YYYY")
+              text: expenseData.submittedOn | dateFilter(null, "ddd D MMM YYYY")
             }
           },
           {
@@ -163,7 +163,7 @@
               text: "Approved by"
             },
             value: {
-              text: expenseData.approved_by
+              text: expenseData.approvedBy
             }
           } if status === "approved",
           {
@@ -171,7 +171,7 @@
               text: "Date approved"
             },
             value: {
-              text: expenseData.approved_on | dateFilter(null, "ddd D MMM YYYY")
+              text: expenseData.approvedOn | dateFilter(null, "ddd D MMM YYYY")
             }
           } if status === "approved",
           {
@@ -179,7 +179,7 @@
               text: "Time approved"
             },
             value: {
-              text: expenseData.approved_on | dateFilter(null, "hh:mm") | convert24to12
+              text: expenseData.approvedOn | dateFilter(null, "hh:mm") | convert24to12
             }
           } if status === "approved"
         ]
@@ -192,7 +192,7 @@
     colour: "blue" if status === "forApproval",
     layout: "inline",
     label: "Total for approval" if status === "forApproval" else "Total approved",
-    value: "£" + expenseData.totals.total_amount
+    value: "£" + expenseData.totals.totalAmount
   })}}
 
   <div class="govuk-grid-row">
@@ -224,7 +224,7 @@
                 text: "Total amount"
               },
               value: {
-                text: "£" + expenseData.totals.total_amount,
+                text: "£" + expenseData.totals.totalAmount,
                 classes: "mod-summary-list-align__right"
               }
             },
@@ -233,7 +233,7 @@
                 text: "Balance to pay"
               },
               value: {
-                text: "£" + expenseData.totals.balance_to_pay,
+                text: "£" + expenseData.totals.balanceToPay,
                 classes: "mod-summary-list-align__right"
               }
             }

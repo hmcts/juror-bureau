@@ -171,8 +171,8 @@
 
         formatedList = modUtils.replaceAllObjKeys(jurorsList.data, _.camelCase);
 
-        if (jurorsList.total_items > modUtils.constants.PAGE_SIZE) {
-          pagination = modUtils.paginationBuilder(jurorsList.total_items, currentPage, req.url);
+        if (jurorsList.totalItems > modUtils.constants.PAGE_SIZE) {
+          pagination = modUtils.paginationBuilder(jurorsList.totalItems, currentPage, req.url);
         }
       } catch (err) {
         app.logger.crit('Something went wrong searching for jurors to export contact details for', {
@@ -188,10 +188,10 @@
           _totalJurors = 'MAX_ITEMS_EXCEEDED';
         }
 
-        return renderView(_totalJurors, [], null, err.error?.meta_data);
+        return renderView(_totalJurors, [], null, err.error?.metaData);
       }
 
-      return renderView(jurorsList.total_items, formatedList, pagination);
+      return renderView(jurorsList.totalItems, formatedList, pagination);
     };
   };
 
@@ -276,8 +276,8 @@
       const payload = {
         jurors: req.session.messaging.checkedJurors.reduce((jurors, juror) => {
           jurors.push({
-            'juror_number': juror.jurorNumber,
-            'pool_number': juror.poolNumber,
+            'jurorNumber': juror.jurorNumber,
+            'poolNumber': juror.poolNumber,
           });
 
           return jurors;
@@ -341,8 +341,8 @@
 
             jurorsData.data.forEach(juror => {
               req.session.messaging.checkedJurors.push({
-                jurorNumber: juror.juror_number,
-                poolNumber: juror.pool_number,
+                jurorNumber: juror.jurorNumber,
+                poolNumber: juror.poolNumber,
               });
             });
 
@@ -486,13 +486,13 @@
     payload['export_items'] = body.detailsToExport;
 
     if (body.detailsToExport.includes('ADDRESS')) {
-      payload.export_items.push('ADDRESS_LINE_1');
-      payload.export_items.push('ADDRESS_LINE_2');
-      payload.export_items.push('ADDRESS_LINE_3');
-      payload.export_items.push('ADDRESS_LINE_4');
-      payload.export_items.push('ADDRESS_LINE_5');
+      payload.exportItems.push('ADDRESS_LINE_1');
+      payload.exportItems.push('ADDRESS_LINE_2');
+      payload.exportItems.push('ADDRESS_LINE_3');
+      payload.exportItems.push('ADDRESS_LINE_4');
+      payload.exportItems.push('ADDRESS_LINE_5');
 
-      payload['export_items'] = payload.export_items.filter(item => item !== 'ADDRESS');
+      payload['export_items'] = payload.exportItems.filter(item => item !== 'ADDRESS');
     }
   }
 

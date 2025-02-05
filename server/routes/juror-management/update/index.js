@@ -55,11 +55,11 @@ module.exports = function(app) {
     , transferController.postCourtTransfer(app));
   // -Step 2 - confirm court transfer details
   app.get('/juror-management/juror/:jurorNumber/update/transfer/confirm'
-    , 'juror.update.transfer_confirm.get'
+    , 'juror.update.transferConfirm.get'
     , auth.verify
     , transferController.getCourtTransferConfirm(app));
   app.post('/juror-management/juror/:jurorNumber/update/transfer/confirm'
-    , 'juror.update.transfer_confirm.post'
+    , 'juror.update.transferConfirm.post'
     , auth.verify
     , controller.postCourtTransferConfirm(app));
 

@@ -410,7 +410,7 @@
           delete req.session.formFields;
           delete req.session.errors;
 
-          const replyMethod = req.query.reply_method || 'digital';
+          const replyMethod = req.query.replyMethod || 'digital';
 
           //return res.render('includes/send-to', {
           return res.render('response/process/send-to.njk', {

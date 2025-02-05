@@ -116,7 +116,7 @@
           const data = await searchJurorRecordDAO.post(req, payload);
           
           jurorList = data.data;
-          _resultsCount = data.total_items;
+          _resultsCount = data.totalItems;
         }
 
         _errors = { ..._errors, ...submitError };

@@ -8,7 +8,7 @@
 
   module.exports.panelMemberStatusDAO = new DAO('moj/trial/panel/status', {
     get: function(trialNumber, courtLocationCode) {
-      const params = new URLSearchParams({ 'trial_number': trialNumber, 'court_location_code': courtLocationCode });
+      const params = new URLSearchParams({ 'trialNumber': trialNumber, 'courtLocationCode': courtLocationCode });
       const uri = urljoin(this.resource, `?${params.toString()}`);
 
       return { uri };
@@ -23,7 +23,7 @@
 
   module.exports.panelListDAO = new DAO('moj/trial/panel/list', {
     get: function(trialNumber, courtLocationCode, date) {
-      const params = new URLSearchParams({ 'trial_number': trialNumber, 'court_location_code': courtLocationCode});
+      const params = new URLSearchParams({ 'trialNumber': trialNumber, 'courtLocationCode': courtLocationCode});
       const uri = urljoin(this.resource, `?${params.toString()}${date ? `&date=${date}` : ''}`);
 
       return { 
@@ -36,9 +36,9 @@
   module.exports.requestPanelDAO = new DAO('moj/trial/panel/list', {
     get: function(trialNumber, courtLocationCode, numberRequested) {
       const params = new URLSearchParams({
-        'trial_number': trialNumber,
-        'court_location_code': courtLocationCode,
-        'number_requested': numberRequested,
+        'trialNumber': trialNumber,
+        'courtLocationCode': courtLocationCode,
+        'numberRequested': numberRequested,
       });
       const uri = urljoin(this.resource, `?${params.toString()}`);
 

@@ -48,7 +48,7 @@
             name: "officer_assigned",
             id: "officerAssigned",
             data: staffList,
-            value: searchParams.officer_assigned,
+            value: searchParams.officerAssigned,
             nonce: nonce
           }) }}
         </div>
@@ -63,7 +63,7 @@
               name="is_urgent"
               type="checkbox"
               value="true"
-              {% if searchParams.is_urgent %}checked{% endif %}
+              {% if searchParams.isUrgent %}checked{% endif %}
             >
             <label class="govuk-label govuk-checkboxes__label" for="isUrgent">
               Urgent
@@ -77,7 +77,7 @@
               name="processing_status"
               type="checkbox"
               value="TODO"
-              {% if searchParams.is_todo === true %} checked {% endif %}
+              {% if searchParams.isTodo === true %} checked {% endif %}
             >
             <label class="govuk-label govuk-checkboxes__label" for="todo">
               To do
@@ -90,7 +90,7 @@
               name="processing_status"
               type="checkbox"
               value="AWAITING_COURT_REPLY"
-              {% if searchParams.is_awaiting_court_reply === true %} checked {% endif %}
+              {% if searchParams.isAwaitingCourtReply === true %} checked {% endif %}
             >
             <label class="govuk-label govuk-checkboxes__label" for="awaitingReply">
               Awaiting court reply
@@ -104,7 +104,7 @@
               name="processing_status"
               type="checkbox"
               value="AWAITING_CONTACT"
-              {% if searchParams.is_awaiting_contact === true %} checked {% endif %}
+              {% if searchParams.isAwaitingContact === true %} checked {% endif %}
             >
             <label class="govuk-label govuk-checkboxes__label" for="awaitingContact">
               Awaiting juror reply
@@ -118,7 +118,7 @@
               name="processing_status"
               type="checkbox"
               value="AWAITING_TRANSLATION"
-              {% if searchParams.is_awaiting_translation === true %} checked {% endif %}
+              {% if searchParams.isAwaitingTranslation === true %} checked {% endif %}
             >
             <label class="govuk-label govuk-checkboxes__label" for="awaitingTranslation">
               Awaiting translation
@@ -132,7 +132,7 @@
               name="processing_status" 
               type="checkbox" 
               value="CLOSED" 
-              {% if searchParams.is_completed === true %} checked {% endif %}
+              {% if searchParams.isCompleted === true %} checked {% endif %}
             >
             <label class="govuk-label govuk-checkboxes__label" for="closed">
               Completed
@@ -171,7 +171,7 @@
                 classes: "govuk-input--width-10",
                 id: "jurorNumber",
                 name: "juror_number",
-                value: searchParams.juror_number,
+                value: searchParams.jurorNumber,
                 attributes: {
                   maxlength: "9"
                 },
@@ -190,7 +190,7 @@
                 classes: "govuk-input--width-20",
                 id: "lastName",
                 name: "last_name",
-                value: searchParams.last_name,
+                value: searchParams.lastName,
                 attributes: {
                   maxlength: "20"
                 }
@@ -208,7 +208,7 @@
                 classes: "govuk-input--width-10",
                 id: "poolNumber",
                 name: "pool_number",
-                value: searchParams.pool_number,
+                value: searchParams.poolNumber,
                 attributes: {
                   maxlength: "10"
                 },
@@ -262,8 +262,8 @@
 
     <div class="govuk-grid-column-full search-content govuk-body">
 
-      {% if responses.juror_response %}
-        {% if responses.juror_response.length === 0 %}
+      {% if responses.jurorResponse %}
+        {% if responses.jurorResponse.length === 0 %}
 
           <div id="noResultsMsg">
             <h2 class="govuk-heading-m">There are no matching results.</h2>
@@ -275,7 +275,7 @@
             </ul>
           </div>
 
-        {% elif responses.limit_exceeded %}
+        {% elif responses.limitExceeded %}
 
           <h2
             id="maxExceeded"
@@ -290,7 +290,7 @@
             id="searchSummaryMsg"
             class="govuk-heading-m"
           >
-            <span id="resultCount">{{ responses.juror_response.length }}</span> results for <span id="resultsStr">{{ resultsStr | safe }}</span>
+            <span id="resultCount">{{ responses.jurorResponse.length }}</span> results for <span id="resultsStr">{{ resultsStr | safe }}</span>
           </h2>
 
         {% endif %}
@@ -310,7 +310,7 @@
         {% endif %}
 
         {% if isTeamLeader %}
-          <div class="response-assignment {% if not responses.juror_response or responses.juror_response.length === 0 %} u-hide{% endif %}">
+          <div class="response-assignment {% if not responses.jurorResponse or responses.jurorResponse.length === 0 %} u-hide{% endif %}">
             {# Select all #}
             <button id="selectAllLink" class="govuk-button govuk-button--secondary" data-module="govuk-button" />
               Select all
@@ -326,7 +326,7 @@
           </div>
         {% endif %}
 
-        {% if responses.juror_response.length > 0 %}
+        {% if responses.jurorResponse.length > 0 %}
           <table id="searchResultTable" class="govuk-table" data-module="moj-sortable-table">
             <caption class="govuk-table__caption govuk-visually-hidden">Juror response list</caption>
 
@@ -347,11 +347,11 @@
 
             <tbody class="govuk-table__body">
 
-              {% for item in responses.juror_response %}
+              {% for item in responses.jurorResponse %}
 
                 <tr class="govuk-table__row search-results-row">
 
-                  <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="{{item.juror_number}}">
+                  <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="{{item.jurorNumber}}">
                     <div class="mod-flex mod-items-center">
                       
                       {% if isBureauManager %}
@@ -361,46 +361,46 @@
                             type="checkbox"
                             data-behaviour="exclusive"
                             name="selectedResponses"
-                            id="selectedResponse_{{item.juror_number}}"
-                            data-value="{{ item.juror_number }}"
-                            value="{{ item.juror_number }}"
-                            {% if item.reply_status === "Completed" %}disabled{% endif %}
+                            id="selectedResponse_{{item.jurorNumber}}"
+                            data-value="{{ item.jurorNumber }}"
+                            value="{{ item.jurorNumber }}"
+                            {% if item.replyStatus === "Completed" %}disabled{% endif %}
                           >
-                          <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="selectedResponse_{{item.juror_number}}"></label>
+                          <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="selectedResponse_{{item.jurorNumber}}"></label>
                         </div>
                       {% endif %}
 
                       {% set responseUrl = undefined %}
-                      {% if item.reply_type === "Paper" %}
+                      {% if item.replyType === "Paper" %}
                         {% set responseUrl = url("response.paper.details.get", {
-                          id: item.juror_number,
+                          id: item.jurorNumber,
                           type: "paper"
                         }) %}
                       {% else %}
                         {% set responseUrl = url("response.detail.get", {
-                          id: item.juror_number
+                          id: item.jurorNumber
                         }) %}
                       {% endif %}
 
-                      <a class="govuk-link jd-block-align" href="{{ responseUrl }}"><span class="govuk-visually-hidden">view response </span>{{ item.juror_number }}</a>
+                      <a class="govuk-link jd-block-align" href="{{ responseUrl }}"><span class="govuk-visually-hidden">view response </span>{{ item.jurorNumber }}</a>
                     </div>
                   </td>
 
-                  <td class="govuk-table__cell jd-middle-align juror-name-col">{{ item.juror_name | capitalizeFully }}</td>
+                  <td class="govuk-table__cell jd-middle-align juror-name-col">{{ item.jurorName | capitalizeFully }}</td>
                   <td class="govuk-table__cell jd-middle-align juror-postcode-col">{{ item.postcode }}</td>
-                  <td class="govuk-table__cell jd-middle-align juror-pool-col" data-sort-value="{{ item.pool_number }}">{{ item.pool_number }}</td>
-                  <td class="govuk-table__cell jd-middle-align juror-court-name-col">{{ item.court_name }}</td>
-                  <td class="govuk-table__cell jd-middle-align juror-officer-col">{{ item.officer_assigned }}</td>
+                  <td class="govuk-table__cell jd-middle-align juror-pool-col" data-sort-value="{{ item.poolNumber }}">{{ item.poolNumber }}</td>
+                  <td class="govuk-table__cell jd-middle-align juror-court-name-col">{{ item.courtName }}</td>
+                  <td class="govuk-table__cell jd-middle-align juror-officer-col">{{ item.officerAssigned }}</td>
                   
                   <td class="govuk-table__cell jd-middle-align juror-status-col">
-                    <span class="govuk-tag govuk-tag--blue">{{ item.reply_status }}</span>
+                    <span class="govuk-tag govuk-tag--blue">{{ item.replyStatus }}</span>
                   </td>
 
                   <td
                     class="govuk-table__cell jd-middle-align date-col {% if item.slaOverdue %}jd-response-overdue{% endif %}"
-                    data-sort-value="{{item.date_received | dateFilter('yyyy-MM-dd HH:mm:ss', 'YYYYMMDD')}}"
+                    data-sort-value="{{item.dateReceived | dateFilter('yyyy-MM-dd HH:mm:ss', 'YYYYMMDD')}}"
                   > 
-                    {{ item.date_received | dateFilter("yyyy-MM-dd HH:mm:ss", "D MMM YYYY") }}
+                    {{ item.dateReceived | dateFilter("yyyy-MM-dd HH:mm:ss", "D MMM YYYY") }}
                   </td>
                               
                 </tr>

@@ -81,10 +81,10 @@
 
       try {
         const payload = {
-          'juror_number': jurorNumber,
-          'location_code': locCode,
-          'pool_number': poolNumber,
-          'non_attendance_date': dateFilter(
+          'jurorNumber': jurorNumber,
+          'locationCode': locCode,
+          'poolNumber': poolNumber,
+          'nonAttendanceDate': dateFilter(
             req.body.nonAttendanceDay.split('/').map(d => d.padStart(2, '0')).join('/'), 'DD/MM/YYYY', 'YYYY-MM-DD',
           ),
         };
@@ -94,7 +94,7 @@
         if (status && status !== 'draft') {
           // We do not need to add the non-attendance date to the dates list
           // because it will always be draft to start with
-          // req.session.editApprovalDates.push(payload.non_attendance_date);
+          // req.session.editApprovalDates.push(payload.nonAttendanceDate);
 
           return res.redirect(app.namedRoutes.build('juror-management.edit-expense.get', {
             jurorNumber,

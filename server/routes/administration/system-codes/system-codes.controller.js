@@ -53,7 +53,7 @@
           },
           title: systemCodes[codeType].title,
           codes,
-          showActiveColumn:  codes.some((code) => code.is_active !== null),
+          showActiveColumn:  codes.some((code) => code.isActive !== null),
         });
 
       } catch (err) {

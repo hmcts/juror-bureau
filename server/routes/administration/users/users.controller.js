@@ -75,11 +75,11 @@
       try {
         let pagination;
         const payload = {
-          'only_active': isActive === 'active',
-          'sort_field': _.snakeCase(sortBy).toUpperCase(),
-          'sort_method': sortOrder === 'ascending' ? 'ASC' : 'DESC',
-          'page_number': currentPage,
-          'page_limit': modUtils.constants.PAGE_SIZE,
+          'onlyActive': isActive === 'active',
+          'sortField': _.snakeCase(sortBy).toUpperCase(),
+          'sortMethod': sortOrder === 'ascending' ? 'ASC' : 'DESC',
+          'pageNumber': currentPage,
+          'pageLimit': modUtils.constants.PAGE_SIZE,
         };
         let sortUrlPrefix = `?isActive=${isActive}`;
 
@@ -213,11 +213,11 @@
       try {
         let pagination;
         const payload = {
-          'only_active': isActive === 'active',
-          'sort_field': _.snakeCase(sortBy).toUpperCase(),
-          'sort_method': sortOrder === 'ascending' ? 'ASC' : 'DESC',
-          'page_number': currentPage,
-          'page_limit': modUtils.constants.PAGE_SIZE,
+          'onlyActive': isActive === 'active',
+          'sortField': _.snakeCase(sortBy).toUpperCase(),
+          'sortMethod': sortOrder === 'ascending' ? 'ASC' : 'DESC',
+          'pageNumber': currentPage,
+          'pageLimit': modUtils.constants.PAGE_SIZE,
         };
 
         const users = await usersDAO.post(req, payload);

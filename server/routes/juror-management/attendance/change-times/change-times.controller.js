@@ -204,7 +204,7 @@
       if (checkOutTimeHour && checkOutTimeMinute && checkOutTimePeriod) {
         checkOutTime = convert12to24(checkOutTimeHour + ':' + checkOutTimeMinute + checkOutTimePeriod);
         payload.commonData.checkOutTime = checkOutTime;
-        status = status === 'CHECK_IN' ? 'CHECK_IN_AND_OUT' : 'CHECK_OUT';
+        status = status === 'CHECK_IN' ? 'CHECK_IN_AND_OUT': 'CHECK_OUT';
       }
       payload.commonData.status = status;
 

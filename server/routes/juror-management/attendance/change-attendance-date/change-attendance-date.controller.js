@@ -51,7 +51,7 @@
           ),
           cancelUrl: app.namedRoutes.build('juror-record.attendance.get', { jurorNumber: juror.jurorNumber }),
           juror,
-          minDate: dateFilter(attendance.next_date ?? new Date(), null, 'DD/MM/YYYY'),
+          minDate: dateFilter(attendance.nextDate ?? new Date(), null, 'DD/MM/YYYY'),
           errors: {
             title: 'Please check the form',
             count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -135,9 +135,9 @@
       }
 
       const payload = {
-        'juror_numbers': [jurorNumber],
-        'next_date': req.body.attendanceDate !== '' ? dateFilter(req.body.attendanceDate, null, 'YYYY-MM-DD') : '',
-        'on_call': req.body.onCall || false,
+        'jurorNumbers': [jurorNumber],
+        'nextDate': req.body.attendanceDate !== '' ? dateFilter(req.body.attendanceDate, null, 'YYYY-MM-DD') : '',
+        'onCall': req.body.onCall || false,
       };
 
       return jurorRecordObject.changeDate.patch(

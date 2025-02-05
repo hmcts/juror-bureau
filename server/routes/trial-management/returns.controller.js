@@ -398,8 +398,8 @@
       payload = selectedJurors;
     } else {
       payload = {
-        'check_in': checkInTime,
-        'check_out': checkOutTime,
+        'checkIn': checkInTime,
+        'checkOut': checkOutTime,
         completed: completeService,
         jurors: selectedJurors,
       };

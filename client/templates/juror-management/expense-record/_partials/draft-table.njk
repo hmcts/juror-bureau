@@ -3,7 +3,7 @@
 {% from "./expenses-table-macros.njk" import rowCheckbox %}
 
 <div class="govuk-grid-row">
-  {% if expenseData.expense_details.length === 0 %}
+  {% if expenseData.expenseDetails.length === 0 %}
 
     <div class="govuk-grid-column-full govuk-body">
       There are no draft expenses.
@@ -30,69 +30,69 @@
     {% endset %}
 
     {% set rowsHtml %}
-      {% for expense in expenseData.expense_details %}
+      {% for expense in expenseData.expenseDetails %}
 
         <tr class="govuk-table__row">
-          {{ rowCheckbox({ attendanceDate: expense.attendance_date }) }}
+          {{ rowCheckbox({ attendanceDate: expense.attendanceDate }) }}
           <td class="govuk-table__cell">
-            <a href="{{ enterExpensesUrl }}?date={{ expense.attendance_date }}&page={{ loop.index }}" class="govuk-body govuk-link" id="expenseDateLink">
-              {{ expense.attendance_date | dateFilter("YYYY-MM-DD", "ddd DD MMM YYYY") }}
+            <a href="{{ enterExpensesUrl }}?date={{ expense.attendanceDate }}&page={{ loop.index }}" class="govuk-body govuk-link" id="expenseDateLink">
+              {{ expense.attendanceDate | dateFilter("YYYY-MM-DD", "ddd DD MMM YYYY") }}
             </a>
           </td>
-          <td class="govuk-table__cell">{{ attendanceType({ attendance: expense.attendance_type }) }}</td>
-          <td class="govuk-table__cell">£{{ expense.loss_of_earnings | toFixed(2) }}</td>
-          <td class="govuk-table__cell">£{{ expense.extra_care | toFixed(2) }}</td>
+          <td class="govuk-table__cell">{{ attendanceType({ attendance: expense.attendanceType }) }}</td>
+          <td class="govuk-table__cell">£{{ expense.lossOfEarnings | toFixed(2) }}</td>
+          <td class="govuk-table__cell">£{{ expense.extraCare | toFixed(2) }}</td>
           <td class="govuk-table__cell">£{{ expense.other | toFixed(2) }}</td>
           <td class="govuk-table__cell">
-            {% if expense.attendance_type === "NON_ATTENDANCE" or expense.attendance_type === "NON_ATTENDANCE_LONG_TRIAL" %}
+            {% if expense.attendanceType === "NON_ATTENDANCE" or expense.attendanceType === "NON_ATTENDANCE_LONG_TRIAL" %}
               -
             {% else %}
-              £{{ expense.public_transport | toFixed(2) }}
+              £{{ expense.publicTransport | toFixed(2) }}
             {% endif %}
           </td>
           <td class="govuk-table__cell">
-            {% if expense.attendance_type === "NON_ATTENDANCE" or expense.attendance_type === "NON_ATTENDANCE_LONG_TRIAL" %}
+            {% if expense.attendanceType === "NON_ATTENDANCE" or expense.attendanceType === "NON_ATTENDANCE_LONG_TRIAL" %}
               -
             {% else %}
               £{{ expense.taxi | toFixed(2) }}</td>
             {% endif %}
           <td class="govuk-table__cell">
-            {% if expense.attendance_type === "NON_ATTENDANCE" or expense.attendance_type === "NON_ATTENDANCE_LONG_TRIAL" %}
+            {% if expense.attendanceType === "NON_ATTENDANCE" or expense.attendanceType === "NON_ATTENDANCE_LONG_TRIAL" %}
               -
             {% else %}
               £{{ expense.motorcycle | toFixed(2) }}</td>
             {% endif %}
           <td class="govuk-table__cell">
-            {% if expense.attendance_type === "NON_ATTENDANCE" or expense.attendance_type === "NON_ATTENDANCE_LONG_TRIAL" %}
+            {% if expense.attendanceType === "NON_ATTENDANCE" or expense.attendanceType === "NON_ATTENDANCE_LONG_TRIAL" %}
               -
             {% else %}
               £{{ expense.car | toFixed(2) }}</td>
             {% endif %}
           <td class="govuk-table__cell">
-            {% if expense.attendance_type === "NON_ATTENDANCE" or expense.attendance_type === "NON_ATTENDANCE_LONG_TRIAL" %}
+            {% if expense.attendanceType === "NON_ATTENDANCE" or expense.attendanceType === "NON_ATTENDANCE_LONG_TRIAL" %}
               -
             {% else %}
               £{{ expense.bicycle | toFixed(2) }}</td>
             {% endif %}
           <td class="govuk-table__cell">
-            {% if expense.attendance_type === "NON_ATTENDANCE" or expense.attendance_type === "NON_ATTENDANCE_LONG_TRIAL" %}
+            {% if expense.attendanceType === "NON_ATTENDANCE" or expense.attendanceType === "NON_ATTENDANCE_LONG_TRIAL" %}
               -
             {% else %}
               £{{ expense.parking | toFixed(2) }}</td>
             {% endif %}
           <td class="govuk-table__cell">
-            {% if expense.attendance_type === "NON_ATTENDANCE" or expense.attendance_type === "NON_ATTENDANCE_LONG_TRIAL" %}
+            {% if expense.attendanceType === "NON_ATTENDANCE" or expense.attendanceType === "NON_ATTENDANCE_LONG_TRIAL" %}
               -
             {% else %}
-              £{{ expense.food_and_drink | toFixed(2) }}</td>
+              £{{ expense.foodAndDrink | toFixed(2) }}</td>
             {% endif %}
           <td class="govuk-table__cell">
-            {% if expense.attendance_type === "NON_ATTENDANCE" or expense.attendance_type === "NON_ATTENDANCE_LONG_TRIAL" %}
+            {% if expense.attendanceType === "NON_ATTENDANCE" or expense.attendanceType === "NON_ATTENDANCE_LONG_TRIAL" %}
               -
             {% else %}
-              (£{{ expense.smart_card | toFixed(2) }})</td>
+              (£{{ expense.smartCard | toFixed(2) }})</td>
             {% endif %}
-          <td class="govuk-table__cell">{{ expense.payment_method }}</td>
+          <td class="govuk-table__cell">{{ expense.paymentMethod }}</td>
           <td class="govuk-table__cell mod-highlight-table-data__grey mod-center-table-data"><b>£{{ expense.total | toFixed(2) }}</b></td>
         </tr>
 
@@ -101,18 +101,18 @@
       <tr class="govuk-table__row mod-highlight-table-row__grey">
         <td class="govuk-table__cell"></td>
         <td class="govuk-table__cell"><b>Totals</b></td>
-        <td class="govuk-table__cell"><b>{{ expenseData.total.total_days }}</b></td>
-        <td class="govuk-table__cell"><b>£{{ expenseData.total.loss_of_earnings | toFixed(2) }}</b></td>
-        <td class="govuk-table__cell"><b>£{{ expenseData.total.extra_care | toFixed(2) }}</b></td>
+        <td class="govuk-table__cell"><b>{{ expenseData.total.totalDays }}</b></td>
+        <td class="govuk-table__cell"><b>£{{ expenseData.total.lossOfEarnings | toFixed(2) }}</b></td>
+        <td class="govuk-table__cell"><b>£{{ expenseData.total.extraCare | toFixed(2) }}</b></td>
         <td class="govuk-table__cell"><b>£{{ expenseData.total.other | toFixed(2) }}</b></td>
-        <td class="govuk-table__cell"><b>£{{ expenseData.total.public_transport | toFixed(2) }}</b></td>
+        <td class="govuk-table__cell"><b>£{{ expenseData.total.publicTransport | toFixed(2) }}</b></td>
         <td class="govuk-table__cell"><b>£{{ expenseData.total.taxi | toFixed(2) }}</b></td>
         <td class="govuk-table__cell"><b>£{{ expenseData.total.motorcycle | toFixed(2) }}</b></td>
         <td class="govuk-table__cell"><b>£{{ expenseData.total.car | toFixed(2) }}</b></td>
         <td class="govuk-table__cell"><b>£{{ expenseData.total.bicycle | toFixed(2) }}</b></td>
         <td class="govuk-table__cell"><b>£{{ expenseData.total.parking | toFixed(2) }}</b></td>
-        <td class="govuk-table__cell"><b>£{{ expenseData.total.food_and_drink | toFixed(2) }}</b></td>
-        <td class="govuk-table__cell"><b>(£{{ expenseData.total.smart_card | toFixed(2) }})</b></td>
+        <td class="govuk-table__cell"><b>£{{ expenseData.total.foodAndDrink | toFixed(2) }}</b></td>
+        <td class="govuk-table__cell"><b>(£{{ expenseData.total.smartCard | toFixed(2) }})</b></td>
         <td class="govuk-table__cell"></td>
         <td class="govuk-table__cell mod-center-table-data"><b>£{{ expenseData.total.total | toFixed(2) }}</b></td>
       </tr>

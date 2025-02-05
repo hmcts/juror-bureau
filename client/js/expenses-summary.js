@@ -65,8 +65,8 @@
     var paymentMethod = $('input[name="paymentMethod"]:checked').val();
 
     var data = {
-      'date_of_expense': urlSearchParams.get('date'),
-      'payment_method': paymentMethod,
+      'dateOfExpense': urlSearchParams.get('date'),
+      'paymentMethod': paymentMethod,
     };
 
     if (!nonAttendanceDay) {
@@ -85,8 +85,8 @@
     var attendanceType = $('input[name="payAttendance"]:checked').val();
 
     data.time = {
-      'pay_attendance': attendanceType,
-      'travel_time': `${totalTravelTimeHour}:${totalTravelTimeMinute}`,
+      'payAttendance': attendanceType,
+      'travelTime': `${totalTravelTimeHour}:${totalTravelTimeMinute}`,
     };
   }
 
@@ -102,14 +102,14 @@
     var taxi = $('#taxi').val();
 
     data.travel = {
-      'traveled_by_car': isCarChecked,
-      'traveled_by_motorcycle': isMotorcycleChecked,
-      'traveled_by_bicycle': isBicycleChecked,
-      'jurors_taken_by_car': parseFloatOrZero(carPassengers),
-      'jurors_taken_by_motorcycle': parseFloatOrZero(motoPassengers),
-      'miles_traveled': parseFloatOrZero(milesTravelled),
+      'traveledByCar': isCarChecked,
+      'traveledByMotorcycle': isMotorcycleChecked,
+      'traveledByBicycle': isBicycleChecked,
+      'jurorsTakenByCar': parseFloatOrZero(carPassengers),
+      'jurorsTakenByMotorcycle': parseFloatOrZero(motoPassengers),
+      'milesTraveled': parseFloatOrZero(milesTravelled),
       parking: parseFloatOrZero(parking),
-      'public_transport': parseFloatOrZero(publicTransport),
+      'publicTransport': parseFloatOrZero(publicTransport),
       taxi: parseFloatOrZero(taxi),
     };
   }
@@ -119,8 +119,8 @@
     var smartcardSpend = $('#smartcardSpend').val();
 
     data['food_and_drink'] = {
-      'food_and_drink_claim_type': foodAndDrinkClaimType,
-      'smart_card_amount': parseFloatOrZero(smartcardSpend),
+      'foodAndDrinkClaimType': foodAndDrinkClaimType,
+      'smartCardAmount': parseFloatOrZero(smartcardSpend),
     };
   }
 
@@ -130,9 +130,9 @@
     var otherCosts = $('#otherCosts').val();
 
     data['financial_loss'] = {
-      'loss_of_earnings': parseFloatOrZero(lossOfEarnings),
-      'extra_care_cost': parseFloatOrZero(extraCareCosts),
-      'other_cost': parseFloatOrZero(otherCosts),
+      'lossOfEarnings': parseFloatOrZero(lossOfEarnings),
+      'extraCareCost': parseFloatOrZero(extraCareCosts),
+      'otherCost': parseFloatOrZero(otherCosts),
     };
   }
 

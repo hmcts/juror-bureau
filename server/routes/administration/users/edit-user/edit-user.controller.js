@@ -103,10 +103,10 @@
       }
 
       const payload = {
-        'is_active': req.body.isActive,
+        'isActive': req.body.isActive,
         'email': req.body.email,
         'name': req.body.name,
-        'approval_limit': userType.toUpperCase() === 'COURT' ? req.body.approvalLimit : null,
+        'approvalLimit': userType.toUpperCase() === 'COURT' ? req.body.approvalLimit : null,
       };
 
       if (req.body.roles) {
@@ -157,7 +157,7 @@
       const { username } = req.params;
       const user = _.clone(req.session[`editUser-${username}`].details);
       const editPayload = {
-        'is_active': true,
+        'isActive': true,
         'email': user.email,
         'name': user.name,
       };

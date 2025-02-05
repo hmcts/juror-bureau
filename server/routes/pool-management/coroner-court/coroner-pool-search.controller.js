@@ -42,7 +42,7 @@ module.exports.getSearchPools = function(app) {
         results = await searchCoronerPoolsDAO.post(req, payload);
         urlPrefix = '?' + buildQueryParams(req.query).join('&');
 
-        pagination = paginationBuilder(results.total_items, req.query.page || 1, req.url);
+        pagination = paginationBuilder(results.totalItems, req.query.page || 1, req.url);
 
         // delete the headers
         delete results._headers;
@@ -125,10 +125,10 @@ function buildPayload({ poolNumber, requestedBy, dateRequested, court, page, sor
   };
 
   const payload = {
-    'sort_method': sortOrder === 'ascending' ? 'ASC' : 'DESC',
-    'page_limit': constants.PAGE_SIZE,
-    'page_number': page || 1,
-    'sort_field': sortByMapper(),
+    'sortMethod': sortOrder === 'ascending' ? 'ASC' : 'DESC',
+    'pageLimit': constants.PAGE_SIZE,
+    'pageNumber': page || 1,
+    'sortField': sortByMapper(),
   };
 
   if (poolNumber) {
