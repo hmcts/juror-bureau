@@ -1310,7 +1310,7 @@
       )).data.notes;
       return jurorNotes !== null && jurorNotes !== '';;
     } catch (err) {
-      app.logger.crit('Failed to fetch juror\'s notes', {
+      app.logger.crit('Failed to fetch juror\'s notes for tab highlight', {
         auth: req.session.authentication,
         data: {
           jurorNumber,
