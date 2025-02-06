@@ -1,5 +1,7 @@
 const whitelistedUrls = [
   '/juror-management/record/',
+  '/juror-management/approve-expenses',
+  '/juror-management/unpaid-attendance',
   '/juror-record/search',
   '/pool-management',
   '/summons-replies/response',
@@ -23,6 +25,14 @@ const bypassUrls = [
   '/details/edit',
   '/details/ineligible-age',
   '/multiple-tabs',
+  '/delete-juror-attendance',
+  '/juror-management/approve-expenses/view-expenses/',
+];
+
+const assetUrls = [
+  '/assets/',
+  '/js/',
+  '/css/',
 ];
 
 function resolveBackLink(req) {
@@ -71,7 +81,7 @@ function isBypassUrl(url) {
 }
 
 function isAssetUrl(url) {
-  return url.includes('/assets/', '/js/', '/css/');
+  return assetUrls.some(assetUrl => url.includes(assetUrl));
 }
 
 module.exports = { resolveBackLink };
