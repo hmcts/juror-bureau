@@ -35,7 +35,8 @@
     <div class="ds_input__wrapper">
       <input id="{{ params.id }}" name="{{ params.id }}" type="text" value="{{ params.dateValue }}"
         class="govuk-input ds_input ds_input--fixed-10 {% if params.dateError %}ds_input--error{% endif %}"
-        data-mindate="{{ params.dateMin }}" data-maxdate="{{ params.dateMax }}" data-lang="{{ lang }}" />
+        data-mindate="{{ params.dateMin }}" data-maxdate="{{ params.dateMax }}" data-lang="{{ lang }}"
+        data-showbankholidays="{{ params.showBankHolidays }}"/>
     </div>
   </div>
 </div>

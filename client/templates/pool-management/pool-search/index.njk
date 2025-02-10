@@ -263,16 +263,13 @@
 {% block body_end %}
   {{ super() }}
 
-  <script src="{{ assetPath }}js/ds-datepicker.js"></script>
+  {% include "includes/datepicker.njk" %}
   <script type="text/javascript" nonce="{{ nonce }}">
     $(document).ready(function(){
       document.getElementById("courtNameOrLocation").value = "{{ query.locCode }}";
       document.getElementById("courtNameOrLocation").focus();
       document.getElementById('courtNameOrLocation').click();
       document.getElementById("courtNameOrLocation").blur();
-
-      document.querySelectorAll('[data-module="ds-datepicker"]')
-        .forEach(datePicker => new DSDatePicker(datePicker).init());
     });
   </script>
 {% endblock %}
