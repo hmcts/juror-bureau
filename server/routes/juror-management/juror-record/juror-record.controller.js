@@ -18,7 +18,7 @@
 
   module.exports.getDetailsTab = function(app) {
     return function(req, res) {
-      var successCB = function(response) {
+      var successCB = async function(response) {
 
           app.logger.info('Fetched the juror record details: ', {
             auth: req.session.authentication,
@@ -44,7 +44,7 @@
             canEnterSummons: canEnterSummons(req, response.data.commonDetails),
             isCourtUser: isCourtUser(req),
             bureauTransferDate: response.data.commonDetails.bureauTransferDate,
-            jurorNotesFlag: hasJurorNotes(app)(req,res)
+            jurorNotesFlag: await hasJurorNotes(app)(req,res)
           });
         }
         , errorCB = function(err) {
@@ -149,7 +149,7 @@
             idCheckDescription,
             attendance,
             bureauTransferDate: overview.data.commonDetails.bureauTransferDate,
-            jurorNotesFlag: hasJurorNotes(app)(req,res)
+            jurorNotesFlag: await hasJurorNotes(app)(req,res)
           });
         }
         , errorCB = function(err) {
@@ -201,7 +201,7 @@
 
   module.exports.getSummonsTab = function(app) {
     return function(req, res) {
-      var successCB = function(response) {
+      var successCB = async function(response) {
 
           app.logger.info('Fetched the juror record summons reply info: ', {
             auth: req.session.authentication,
@@ -228,7 +228,7 @@
               response.data.commonDetails.excusalRejected, response.data.commonDetails.excusalDescription),
             canEnterSummons: canEnterSummons(req, response.data.commonDetails),
             bureauTransferDate: response.data.commonDetails.bureauTransferDate,
-            jurorNotesFlag: hasJurorNotes(app)(req,res)
+            jurorNotesFlag: await hasJurorNotes(app)(req,res)
           });
         }
         , errorCB = function(err) {
@@ -331,7 +331,7 @@
             editDefaultExpensesLink,
             editBankDetailsLink,
             bureauTransferDate: jurorOverview.data.commonDetails.bureauTransferDate,
-            jurorNotesFlag: hasJurorNotes(app)(req,res)
+            jurorNotesFlag: await hasJurorNotes(app)(req,res)
           });
 
         } catch (err){
@@ -358,7 +358,7 @@
                 viewApprovedExpensesLink,
                 editDefaultExpensesLink,
                 editBankDetailsLink,
-                jurorNotesFlag: hasJurorNotes(app)(req,res)
+                jurorNotesFlag: await hasJurorNotes(app)(req,res)
               });
             }
             return res.render('juror-management/_errors/not-found');
@@ -458,7 +458,7 @@
           formattedDate,
           failedToAttend,
           bureauTransferDate: jurorOverview.data.commonDetails.bureauTransferDate,
-          jurorNotesFlag: hasJurorNotes(app)(req,res)
+          jurorNotesFlag: await hasJurorNotes(app)(req,res)
         });
       } catch (err) {
         if (err.statusCode === 404) {
@@ -483,7 +483,7 @@
   module.exports.getNotesTab = function(app) {
     return function(req, res) {
       var promiseArr = []
-        , successCB = function(response) {
+        , successCB = async function(response) {
           var contactLogs;
 
           app.logger.info('Fetched the juror notes and contact logs: ', {
@@ -526,7 +526,8 @@
             canEnterSummons: canEnterSummons(req, response[0].data.commonDetails),
             jurorStatus: resolveJurorStatus(response[0].data.commonDetails),
             hasSummons: response[0].data.commonDetails.hasSummonsResponse,
-            bureauTransferDate: response[0].data.commonDetails.bureauTransferDate
+            bureauTransferDate: response[0].data.commonDetails.bureauTransferDate,
+            jurorNotesFlag: await hasJurorNotes(app)(req,res)
           });
         }
         , errorCB = function(err) {
@@ -1053,7 +1054,7 @@
           built: true,
         },
         bureauTransferDate: juror.commonDetails.bureauTransferDate,
-        jurorNotesFlag: hasJurorNotes(app)(req,res)
+        jurorNotesFlag: await hasJurorNotes(app)(req,res)
       });
     } catch (err) {
       app.logger.crit('Failed to fetch juror history (view): ', {
@@ -1308,6 +1309,8 @@
         'notes',
         req.params['jurorNumber'],
       )).data.notes;
+      console.log('\n\njurorNotes\n', jurorNotes, '\n', jurorNotes !== null && jurorNotes !== '', '\n\n');
+
       return jurorNotes !== null && jurorNotes !== '';;
     } catch (err) {
       app.logger.crit('Failed to fetch juror\'s notes for tab highlight', {
