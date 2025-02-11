@@ -197,6 +197,7 @@
     summoningProgressList.statsByWeek.forEach(function(week) {
 
       week.stats.forEach(function(pool) {
+        console.log('\n\n', pool, '\n\n');
         if (pool.requested !== 0) {
           pool.barChart = barChartBuilder(
             pool.summoned, // see: total jurors in 'summoned status' a.k.a not responded
@@ -213,6 +214,9 @@
 
   function barChartBuilder(summoned, unavailable, requested, confirmed) {
     let confirmedPct, requestedPct, unavailablePct, trianglePosition, surplusPct, notRespondedPct, total;
+    let confirmedValue, unavailableValue, requestedValue, nonRespondedValue;
+
+    const totalJurorsSummoned = summoned + unavailable + confirmed;
 
     total = unavailable; // this segment always included, regardless of below conditions
 
@@ -220,14 +224,19 @@
       total += confirmed + summoned; // this covers the remaining segment: blue confirmed and possible pink surplus
       requestedPct = 0;
       confirmedPct = (requested / total) * 100;
-      trianglePosition = confirmedPct;
+      trianglePosition = (requested  / totalJurorsSummoned) * 100;
       surplusPct = ((confirmed - requested) / total) * 100;
       notRespondedPct = (summoned / total) * 100;
     } else { // ∴ deficit (requested bar but no surplus)
+      confirmedValue = confirmed;
+      unavailableValue = unavailable;
+      requestedValue = requested - confirmed;
+      nonRespondedValue = summoned - requestedValue;
+
       total += requested + (Math.max(0, (summoned - (requested - confirmed)))); // this covers the remaining segments
       requestedPct = ((requested - confirmed) / total) * 100;
       confirmedPct = (confirmed / total) * 100;
-      trianglePosition = requestedPct + confirmedPct;
+      trianglePosition = (requested / totalJurorsSummoned) * 100;
       surplusPct = 0;
       notRespondedPct = (Math.max(0, (summoned - (requested - confirmed))) / total) * 100
     }
@@ -235,12 +244,16 @@
     unavailablePct = (unavailable / total) * 100;
 
     return {
+      confirmedValue,
+      unavailableValue,
+      requestedValue,
+      nonRespondedValue,
       confirmed: confirmedPct,
       requested: requestedPct,
       trianglePosition: trianglePosition,
       surplus: surplusPct,
       notResponded: notRespondedPct,
-      unavailable: unavailablePct
+      unavailable: unavailablePct,
     };
   }
 })();
