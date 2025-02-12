@@ -213,41 +213,37 @@
   }
 
   function barChartBuilder(summoned, unavailable, requested, confirmed) {
-    let confirmedPct, requestedPct, unavailablePct, trianglePosition, surplusPct, notRespondedPct, total;
-    let confirmedValue, unavailableValue, requestedValue, nonRespondedValue;
+    let confirmedValue, unavailableValue, requestedValue, nonRespondedValue, surplusValue;
 
     const totalJurorsSummoned = summoned + unavailable + confirmed;
 
-    total = unavailable; // this segment always included, regardless of below conditions
-
     if (confirmed >= requested) {  // ∴ exact or surplus (surplus bar and no requested)
-      total += confirmed + summoned; // this covers the remaining segment: blue confirmed and possible pink surplus
-      requestedPct = 0;
-      confirmedPct = (requested / total) * 100;
-      trianglePosition = (requested  / totalJurorsSummoned) * 100;
-      surplusPct = ((confirmed - requested) / total) * 100;
-      notRespondedPct = (summoned / total) * 100;
+      unavailableValue = unavailable;
+      requestedValue = 0;
+      surplusValue = confirmed + summoned >= requested ? confirmed - requested : 0
+      confirmedValue = confirmed - surplusValue;
+      nonRespondedValue = confirmed + summoned >= requested ? totalJurorsSummoned - unavailable - confirmed : 0;    
     } else { // ∴ deficit (requested bar but no surplus)
       confirmedValue = confirmed;
       unavailableValue = unavailable;
-      requestedValue = requested - confirmed;
-      nonRespondedValue = summoned - requestedValue;
-
-      total += requested + (Math.max(0, (summoned - (requested - confirmed)))); // this covers the remaining segments
-      requestedPct = ((requested - confirmed) / total) * 100;
-      confirmedPct = (confirmed / total) * 100;
-      trianglePosition = (requested / totalJurorsSummoned) * 100;
-      surplusPct = 0;
-      notRespondedPct = (Math.max(0, (summoned - (requested - confirmed))) / total) * 100
+      requestedValue = confirmed + summoned <= requested ? summoned : requested - confirmed;
+      nonRespondedValue = confirmed + summoned <= requested ? 0 : totalJurorsSummoned - unavailable - confirmed - requestedValue;
+      surplusValue = 0;
     }
 
-    unavailablePct = (unavailable / total) * 100;
+    const requestedPct = (requestedValue / totalJurorsSummoned) * 100;
+    const confirmedPct = (confirmedValue / totalJurorsSummoned) * 100;
+    const unavailablePct = (unavailableValue / totalJurorsSummoned) * 100;
+    const notRespondedPct = (nonRespondedValue / totalJurorsSummoned) * 100;
+    const surplusPct = (surplusValue / totalJurorsSummoned) * 100;
+    const trianglePosition = (requested / totalJurorsSummoned) * 100;
 
     return {
       confirmedValue,
       unavailableValue,
       requestedValue,
       nonRespondedValue,
+      surplusValue,
       confirmed: confirmedPct,
       requested: requestedPct,
       trianglePosition: trianglePosition,
