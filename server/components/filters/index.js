@@ -399,7 +399,7 @@
         return 'Non-attendance day';
       case 'NON_ATTENDANCE_LONG_TRIAL':
         return 'Non-attendance day (>10 days)';
-      case 'NON_ATTENDANCE_EXTRA_LONG_TRIAL':
+      case 'NON_ATT_EXTRA_LONG_TRIAL':
         return 'Non-attendance day (>201 days)';
       case 'ABSENT':
         return 'Absent';

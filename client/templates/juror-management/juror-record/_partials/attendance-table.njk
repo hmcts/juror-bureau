@@ -26,7 +26,7 @@
           {% set checkOutTime = "-" %}
           {% set hours = "-" %}
           {% set travelTime = "-" %}
-          {% if day["attendance_type"] !== "ABSENT" and day["attendance_type"] !== "NON_ATTENDANCE" and day["attendance_type"] !== "NON_ATTENDANCE_LONG_TRIAL" and day["attendance_type"] !== "NON_ATTENDANCE_EXTRA_LONG_TRIAL" %}
+          {% if day["attendance_type"] !== "ABSENT" and day["attendance_type"] !== "NON_ATTENDANCE" and day["attendance_type"] !== "NON_ATTENDANCE_LONG_TRIAL" and day["attendance_type"] !== "NON_ATT_EXTRA_LONG_TRIAL" %}
             {% set checkInTime = (day["check_in_time"] | timeArrayToString | convert24to12) if day["check_in_time"] else "-" %}
             {% set checkOutTime = (day["check_out_time"] | timeArrayToString | convert24to12) if day["check_out_time"] else "-" %}
             {% set hours = day["hours"] %}

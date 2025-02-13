@@ -945,7 +945,7 @@
       case 'NON_ATTENDANCE_LONG_TRIAL':
         lossLimit = response.limit_financial_loss_full_day_long_trial;
         break;
-      case 'NON_ATTENDANCE_EXTRA_LONG_TRIAL':
+      case 'NON_ATT_EXTRA_LONG_TRIAL':
         lossLimit = response.limit_financial_loss_full_day_extra_long_trial;
         break;
       }
