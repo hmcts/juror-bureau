@@ -467,6 +467,7 @@
       };
 
       try {
+        console.log('\n\n', data.expense_list, '\n\n');
         const response = await postRecalculateSummaryTotalsDAO.post(req, locCode, jurorNumber, data);
 
         app.logger.info('Recalculated summary totals for: ', {
