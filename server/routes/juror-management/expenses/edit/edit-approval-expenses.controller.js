@@ -958,7 +958,7 @@
       showLossOverLimit = {
         'juror_loss': totalFinancialLoss,
         limit: lossLimit,
-        'attendance_type': attendancType,
+        'attendance_type': attendanceType,
         'is_long_trial_day': false,
         // eslint-disable-next-line max-len
         message: `The amount you entered will automatically be recalculated to limit the juror's loss to £${lossLimit}`,
