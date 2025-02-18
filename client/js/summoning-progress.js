@@ -39,18 +39,16 @@ $(document).ready(function() {
       $(this).css("borderTop", "12px solid #1D70B8");
     } else if ($(this).hasClass("summoning-progress-barChart-value")) {
       $(this).css("right", (100 - parseFloat($(this).attr("data-position"))) + "%");
-      if ($(this).attr("data-position") && $(this).attr("data-position") !== "0") {
-        $(this).css("borderRight", `4px solid ${colours[$(this).attr("bar-type")]}`);
-        $(this).css("paddingRight", "4px");
-        let overlap = false;
-        if ($(this).prev().length) {
-          overlap = doTheyOverlap($(this), $(this).prev());
-          if (overlap) {
-            const prevHeight = parseInt($(this).prev().css("height"));
-            const prevPaddingTop = parseInt($(this).prev().css("paddingTop"));
-            $(this).css("height", prevHeight + 17 + "px");
-            $(this).css("paddingTop", prevPaddingTop + 17 + "px");
-          }
+      $(this).css("borderRight", `3px solid ${colours[$(this).attr("bar-type")]}`);
+      $(this).css("paddingRight", "3px");
+      let overlap = false;
+      if ($(this).prev().length) {
+        overlap = doTheyOverlap($(this), $(this).prev());
+        if (overlap) {
+          const prevHeight = parseInt($(this).prev().css("height"));
+          const prevPaddingTop = parseInt($(this).prev().css("paddingTop"));
+          $(this).css("height", prevHeight + 17 + "px");
+          $(this).css("paddingTop", prevPaddingTop + 17 + "px");
         }
       }
     } else if ($(this).hasClass("requested-triangle-value")) {
@@ -62,25 +60,25 @@ $(document).ready(function() {
   // Adjust parent td height after all elements are processed
   barChartChildren.each(function() {
     if ($(this).hasClass("summoning-progress-barChart-value")) {
-        var $parentTd = $(this).closest("td");
-        var maxHeight = 0;
+      const $parentTd = $(this).closest("td");
+      const maxHeight = 0;
 
-        $parentTd.find(".summoning-progress-barChart-value").each(function() {
-            var childBottom = $(this).position().top + $(this).outerHeight();
-            if (childBottom > maxHeight) {
-                maxHeight = childBottom;
-            }
-        });
+      $parentTd.find(".summoning-progress-barChart-value").each(function() {
+        const childBottom = $(this).position().top + $(this).outerHeight();
+          if (childBottom > maxHeight) {
+              maxHeight = childBottom;
+          }
+      });
 
-        // Include additional height for any overlaps
-        $parentTd.find(".summoning-progress-barChart-value").each(function() {
-            var overlapHeight = parseInt($(this).css("height")) + parseInt($(this).css("paddingTop"));
-            if (overlapHeight > maxHeight) {
-                maxHeight = overlapHeight;
-            }
-        });
+      // Include additional height for any overlaps
+      $parentTd.find(".summoning-progress-barChart-value").each(function() {
+        const overlapHeight = parseInt($(this).css("height")) + parseInt($(this).css("paddingTop"));
+          if (overlapHeight > maxHeight) {
+              maxHeight = overlapHeight;
+          }
+      });
 
-        $parentTd.height(maxHeight);
+      $parentTd.height(maxHeight);
     }
   });
 

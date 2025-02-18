@@ -197,7 +197,6 @@
     summoningProgressList.statsByWeek.forEach(function(week) {
 
       week.stats.forEach(function(pool) {
-        console.log('\n\n', pool, '\n\n');
         if (pool.requested !== 0) {
           pool.barChart = barChartBuilder(
             pool.summoned, // see: total jurors in 'summoned status' a.k.a not responded
