@@ -213,7 +213,8 @@
   }
 
   function barChartBuilder(summoned, unavailable, requested, confirmed) {
-    let confirmedValue, unavailableValue, requestedValue, nonRespondedValue, surplusValue;
+    let confirmedValue, unavailableValue, requestedValue, notRespondedValue, surplusValue;
+    let confirmedPosition, unavailablePosition, requestedPosition, notRespondedPosition, surplusPosition;
 
     const totalJurorsSummoned = summoned + unavailable + confirmed;
 
@@ -222,28 +223,42 @@
       requestedValue = 0;
       surplusValue = confirmed + summoned >= requested ? confirmed - requested : 0
       confirmedValue = confirmed - surplusValue;
-      nonRespondedValue = confirmed + summoned >= requested ? totalJurorsSummoned - unavailable - confirmed : 0;    
+      notRespondedValue = confirmed + summoned >= requested ? totalJurorsSummoned - unavailable - confirmed : 0;
+      confirmedPosition = (confirmedValue / totalJurorsSummoned) * 100;
+      surplusPosition = confirmedPosition + (surplusValue / totalJurorsSummoned) * 100;
+      notRespondedPosition = surplusPosition + (notRespondedValue / totalJurorsSummoned) * 100;
+      unavailablePosition = notRespondedPosition + (unavailableValue / totalJurorsSummoned) * 100; 
+      requestedPosition = 0; 
     } else { // ∴ deficit (requested bar but no surplus)
       confirmedValue = confirmed;
       unavailableValue = unavailable;
       requestedValue = confirmed + summoned <= requested ? summoned : requested - confirmed;
-      nonRespondedValue = confirmed + summoned <= requested ? 0 : totalJurorsSummoned - unavailable - confirmed - requestedValue;
+      notRespondedValue = confirmed + summoned <= requested ? 0 : totalJurorsSummoned - unavailable - confirmed - requestedValue;
       surplusValue = 0;
+      confirmedPosition = (confirmedValue / totalJurorsSummoned) * 100;
+      requestedPosition = confirmedPosition + (requestedValue / totalJurorsSummoned) * 100;
+      notRespondedPosition = requestedPosition + (notRespondedValue / totalJurorsSummoned) * 100;
+      unavailablePosition = notRespondedPosition + (unavailableValue / totalJurorsSummoned) * 100;
     }
 
-    const requestedPct = (requestedValue / totalJurorsSummoned) * 100;
     const confirmedPct = (confirmedValue / totalJurorsSummoned) * 100;
-    const unavailablePct = (unavailableValue / totalJurorsSummoned) * 100;
-    const notRespondedPct = (nonRespondedValue / totalJurorsSummoned) * 100;
+    const requestedPct = (requestedValue / totalJurorsSummoned) * 100;
+    const notRespondedPct = (notRespondedValue / totalJurorsSummoned) * 100;
     const surplusPct = (surplusValue / totalJurorsSummoned) * 100;
+    const unavailablePct = (unavailableValue / totalJurorsSummoned) * 100;
     const trianglePosition = (requested / totalJurorsSummoned) * 100;
 
     return {
       confirmedValue,
+      confirmedPosition,
       unavailableValue,
+      unavailablePosition,
       requestedValue,
-      nonRespondedValue,
+      requestedPosition,
+      notRespondedValue,
+      notRespondedPosition,
       surplusValue,
+      surplusPosition,
       confirmed: confirmedPct,
       requested: requestedPct,
       trianglePosition: trianglePosition,
