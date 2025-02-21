@@ -6,7 +6,7 @@
 
   module.exports = function(app) {
     app.get('/date-picker/bank-holidays',
-      'administration.bank-holidays.get',
+      'date-picker.bank-holidays.get',
       auth.verify,
       controller.getBankHolidays(app),
     );
