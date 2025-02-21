@@ -83,7 +83,7 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic.njk');
+        return res.render('_errors/generic', { err });
       }
     };
   };
@@ -147,7 +147,7 @@
           return res.redirect(app.namedRoutes.build('administration.users.edit.get', { username }));
         }
 
-        return res.render('_errors/generic.njk');
+        return res.render('_errors/generic', { err });
       }
     };
   };
@@ -209,7 +209,7 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic.njk');
+        return res.render('_errors/generic', { err });
       }
     };
   };

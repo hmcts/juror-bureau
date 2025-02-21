@@ -141,7 +141,7 @@ const { makeManualError } = require('../../../../lib/mod-utils');
           return res.redirect(errorUrl);
         }
 
-        return res.render('_errors/generic.njk');
+        return res.render('_errors/generic', { err });
       };
     };
   };

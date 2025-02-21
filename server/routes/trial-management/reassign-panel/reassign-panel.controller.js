@@ -52,7 +52,7 @@
         auth: req.session.authentication,
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
-      return res.render('_errors/generic');
+      return res.render('_errors/generic', { err });
     }
 
     const selectedJurorsData = panelData.filter(juror => selectedJurors.includes(juror['juror_number']));
@@ -141,7 +141,7 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }
 
       data = modUtils.replaceAllObjKeys(data, _.camelCase);
@@ -239,7 +239,7 @@
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }
 
       let panelMembers;
@@ -258,7 +258,7 @@
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }
 
       const jurors = panelMembers.filter(juror => selectedJurors.includes(juror['juror_number']));

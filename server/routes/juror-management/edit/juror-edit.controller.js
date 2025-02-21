@@ -98,13 +98,13 @@
             },
           });
         })
-        .catch(() => {
+        .catch((err) => {
           app.logger.crit('Failed to retrive excusal codes: ', {
             auth: req.session.authentication,
             jwt: req.session.authToken,
           });
 
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
         });
     };
   };
@@ -168,7 +168,7 @@
               error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
             });
 
-            return res.render('_errors/generic');
+            return res.render('_errors/generic', { err });
           });
       } else {
         // Change in date, possibly a change in reason, redirect to available pools display.
@@ -210,7 +210,7 @@
               error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
             });
 
-            return res.render('_errors/generic');
+            return res.render('_errors/generic', { err });
           }
         );
     };
@@ -286,7 +286,7 @@
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
 
         });
     };
@@ -354,7 +354,7 @@
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
         });
     };
   };
@@ -500,7 +500,7 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }
     };
   };
@@ -511,7 +511,7 @@
       let validatorResult = validate(req.body, overviewDetailsValidator());
 
       if (!req.session[`editJurorDetails-${jurorNumber}`]) {
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }
 
       if (req.body.thirdParty === 'yes') {
@@ -685,7 +685,7 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }
     }
 
@@ -703,7 +703,7 @@
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
-      return res.render('_errors/generic');
+      return res.render('_errors/generic', { err });
     }
 
     app.logger.info('Changed juror details: ', {
