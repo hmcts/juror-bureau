@@ -32,7 +32,7 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }
 
       const tmpErrors = _.clone(req.session.errors);
@@ -95,7 +95,7 @@
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
         };
 
       let excusalValidator = require('../../../config/validation/excusal-mod.js'),

@@ -1,5 +1,9 @@
 {% extends "../layouts/default.njk" %}
 
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+
+
 {% block page_title %}
   Something went wrong
 {% endblock %}
@@ -12,5 +16,37 @@
   <p class="govuk-body">
     You can <a class="govuk-link" href="{{ homeLink }}">go back home</a> and try again later.
   </p>
+
+  {% if err.statusCode %}
+    <p class="govuk-body">
+      <span class="govuk-!-font-weight-bold">Status code:</span> {{ err.statusCode }} - {{ err.statusCode | HttpStatusCode }}
+    </p>
+  {% endif %}
+  {% if err.error.code %}
+    <p class="govuk-body">
+      <span class="govuk-!-font-weight-bold">Error code:</span> {{ err.error.code }}
+    </p>
+  {% endif %}
+  {% if err.error.message %}
+    <p class="govuk-body">
+      <span class="govuk-!-font-weight-bold">Error message:</span> {{ err.error.message }}
+    </p>
+  {% endif %}
+  {% if err.error.trace %}
+    {% set traceHTML %}
+      {{ govukTextarea({
+        name: "stackTrace",
+        id: "stack-trace",
+        value: err.error.trace,
+        disabled: true
+      }) }}
+    {% endset %}
+    {{ govukDetails({
+      summaryText: "Stack trace",
+      open: true,
+      html: traceHTML,
+      classes: "govuk-!-width-two-thirds"
+    }) }}
+  {% endif %}
 
 {% endblock %}

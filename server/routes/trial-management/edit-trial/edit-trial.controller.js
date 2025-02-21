@@ -90,7 +90,7 @@
             auth: req.session.authentication,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
         });
 
     };
@@ -108,7 +108,7 @@
           auth: req.session.authentication,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }
 
       let courtrooms;
@@ -123,7 +123,7 @@
           auth: req.session.authentication,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }
 
       if (courtrooms.length > 1){
@@ -155,7 +155,7 @@
           auth: req.session.authentication,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }
 
       if ((!originalTrial.protected && req.body.protected === 'true')
@@ -226,7 +226,7 @@
         data: payload,
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
-      return res.render('_errors/generic');
+      return res.render('_errors/generic', { err });
     }
   }
 

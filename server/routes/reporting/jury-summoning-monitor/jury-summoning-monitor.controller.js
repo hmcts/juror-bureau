@@ -125,7 +125,7 @@ module.exports.getJurySummoningMonitorReport = (app, isPrint = false) => async (
       error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
     });
 
-    return res.render('_errors/generic');
+    return res.render('_errors/generic', { err });
   }
 
   const reportType = reportKeys(app, req)[`jury-summoning-monitor-${type}`];

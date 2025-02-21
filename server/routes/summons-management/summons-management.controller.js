@@ -103,7 +103,7 @@
             jwt: req.session.authToken,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
         }
       }
 
@@ -339,13 +339,13 @@
               });
 
             })
-            .catch(() => {
+            .catch((err) => {
               app.logger.crit('Failed to retrive excusal codes: ', {
                 auth: req.session.authentication,
                 jwt: req.session.authToken,
               });
 
-              return res.render('_errors/generic');
+              return res.render('_errors/generic', { err });
             });
 
         }
@@ -453,7 +453,7 @@
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
   
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
           
         };
 

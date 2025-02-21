@@ -80,7 +80,7 @@ module.exports.postConfirmUncomplete = function(app) {
         return res.redirect(app.namedRoutes.build('sjo-tasks.uncomplete-service.confirm.get'));
       }
 
-      return res.render('_errors/generic.njk');
+      return res.render('_errors/generic', { err });
     };
   };
 };

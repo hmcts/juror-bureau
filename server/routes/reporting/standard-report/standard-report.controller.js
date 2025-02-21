@@ -179,7 +179,7 @@
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
         }
       case 'fixedDateRange':
       case 'dateRange':
@@ -258,7 +258,7 @@
             auth: req.session.authentication,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
         }
       default:
         app.logger.info('Failed to load a search type for report type ' + reportKey);
