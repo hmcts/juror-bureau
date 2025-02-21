@@ -265,6 +265,23 @@ dt.govuk-summary-list-mod {
   }
 }
 
+.ds-calendar-bank-holiday {
+  background-color: govuk-colour("orange") !important;
+  color: govuk-colour("white") !important;
+  position: relative !important;
+
+  &:hover {
+    background-color: govuk-colour("yellow") !important;
+    color: govuk-colour("black") !important;
+  }
+
+  &:focus {
+    background-color: govuk-colour("yellow") !important;
+    color: govuk-colour("black") !important;
+    box-shadow: 0 -3px govuk-colour("black"), inset 0 -3px govuk-colour("black");
+  }
+}
+
 .mod-red-text {
   color: govuk-colour("red");
 }

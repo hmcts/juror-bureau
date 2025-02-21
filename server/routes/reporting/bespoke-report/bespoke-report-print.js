@@ -1,6 +1,6 @@
 /* eslint-disable strict */
 const moment = require('moment');
-const { dateFilter, makeDate, capitalizeFully } = require('../../../components/filters');
+const { dateFilter, makeDate, toMoney, capitalizeFully } = require('../../../components/filters');
 const { snakeToCamel } = require('../../../lib/mod-utils');
 const { tableDataMappers, sort } = require('../standard-report/utils');
 
@@ -522,7 +522,7 @@ const bespokeReportTablePrint = {
       {
         body: [[
           { text: 'Bacs and cheque', bold: true, fillColor: '#F3F2F1' },
-          { text: `£${bacsTotal}`, bold: true, alignment: 'right', fillColor: '#F3F2F1' },
+          { text: toMoney(bacsTotal), bold: true, alignment: 'right', fillColor: '#F3F2F1' },
         ]],
         widths:['50%', '50%'],
         margin: [0, 0, 0, 0],
@@ -530,7 +530,7 @@ const bespokeReportTablePrint = {
       {
         body: [[
           { text: 'Cash', bold: true, fillColor: '#F3F2F1' },
-          { text: `£${cashTotal}`, bold: true, alignment: 'right', fillColor: '#F3F2F1' },
+          { text: toMoney(cashTotal), bold: true, alignment: 'right', fillColor: '#F3F2F1' },
         ]],
         widths:['50%', '50%'],
         margin: [0, 0, 0, 0],
@@ -538,7 +538,7 @@ const bespokeReportTablePrint = {
       {
         body: [[
           { text: 'Overall total', bold: true, fillColor: '#0b0c0c', color: '#ffffff' },
-          { text: `£${overallTotal}`, bold: true, alignment: 'right', fillColor: '#0b0c0c', color: '#ffffff' },
+          { text: toMoney(overallTotal), bold: true, alignment: 'right', fillColor: '#0b0c0c', color: '#ffffff' },
         ]],
         widths:['50%', '50%'],
         margin: [0, 0, 0, 0],

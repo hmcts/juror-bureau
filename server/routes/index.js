@@ -47,6 +47,8 @@
     require('./documents')(app);
     require('./messaging')(app);
     require('./administration')(app);
+    require('./quick-links')(app);
+    require('./date-picker')(app);
 
     app.route('/multiple-tabs')
       .get(auth.verify, (req, res) => {

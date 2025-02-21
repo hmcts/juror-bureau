@@ -281,7 +281,13 @@
             id="maxExceeded"
             class="govuk-heading-m additional-info-text search-loaded"
           >
-            The specified search resulted in more than <span class="maxRecordsMsg">{{ responses.limit }}</span> results. This list only shows the oldest <span class="maxRecordsMsg">{{ responses.limit }}</span>.
+            The specified search resulted in more than <span class="maxRecordsMsg">{{ responses.limit }}</span> results. This list only shows the 
+            {% if searchParams.processing_status === "CLOSED" %}
+              newest 
+            {% else %}
+              oldest 
+            {% endif %}
+            <span class="maxRecordsMsg">{{ responses.limit }}</span>.
           </h2>
 
         {% else %}
@@ -340,7 +346,7 @@
                 <th scope="col" class="govuk-table__header" aria-sort="none" aria-label>Court name</th>
                 <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Officer assigned">Officer assigned</th>
                 <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Reply status">Reply status</th>
-                <th scope="col" class="govuk-table__header" aria-sort="ascending" aria-label="Date received">Date received</th>
+                <th scope="col" class="govuk-table__header" aria-sort="{{'descending' if searchParams.processing_status === 'CLOSED' else 'ascending'}}" aria-label="Date received">Date received</th>
 
               </tr>
             </thead>

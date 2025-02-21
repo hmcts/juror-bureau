@@ -48,7 +48,10 @@
       id: "attendanceTab"
     }
   }, {
-    text: "Notes",
+    html: 'Notes' + ('
+      <span id="notesIndicator" class="govuk-!-margin-left-1  jd-right-align">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="5" r="5" fill="#1D70B8"/></svg>
+      </span>' if jurorNotesFlag === true),
     href: url('juror-record.notes.get', {
       jurorNumber: juror.commonDetails.jurorNumber
     }),

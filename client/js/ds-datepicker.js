@@ -25,6 +25,13 @@ class DSDatePicker {
       this.lang = 'en';
     }
 
+    this.bankHolidayDates = [];
+    if (typeof(this.inputElement.dataset.showbankholidays) === 'undefined'){
+      this.showBankHolidays = true;
+    } else {
+      this.showBankHolidays = (this.inputElement.dataset.showbankholidays.toUpperCase() === 'FALSE') ? false : true;
+    }
+    
     if (this.lang === 'cy'){
       this.dayLabels = ['Dydd Sul', 'Dydd Llun', 'Dydd Mawrth', 'Dydd Mercher', 'Dydd Iau', 'Dydd Gwener', 'Dydd Sadwrn'];
       this.dayLabelsAbbr = ['Su', 'Ll', 'Ma', 'Me', 'Ia', 'Gw', 'Sa'];
@@ -79,10 +86,14 @@ class DSDatePicker {
     }
   }
 
-  init() {
+  init(bankHolidays) {
     if (!this.inputElement || this.datePickerParent.classList.contains('js-initialised')) {
       return;
     }
+   
+    if (this.showBankHolidays && bankHolidays?.length){
+      this.bankHolidayDates = JSON.parse(bankHolidays);
+    } 
 
     // insert calendar button
     const calendarButtonTempContainer = document.createElement('div');
@@ -633,6 +644,17 @@ class DSCalendarDay {
       this.button.style.display = 'none';
     } else {
       this.button.style.display = 'block';
+    }
+
+    // If no other attributes applied, check if date is a bank holiday
+    this.button.classList.remove('ds-calendar-bank-holiday');
+    this.button.removeAttribute('title');
+    if (!(disabled || hidden) && this.picker.bankHolidayDates.length > 0) {
+      let dateString = this.date.getFullYear() + ('0' + (this.date.getMonth()+1)).slice(-2) + ('0' + this.date.getDate()).slice(-2);
+      if (this.picker.bankHolidayDates.indexOf(dateString) > -1) {
+        this.button.classList.add('ds-calendar-bank-holiday');
+        this.button.setAttribute('title','Bank Holiday');
+      }
     }
   }
 

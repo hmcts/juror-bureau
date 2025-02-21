@@ -22,22 +22,21 @@
   {% endif %}
 
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-half">
-      <h2 class="govuk-heading-m">&nbsp;</h2> {# ensure juror search is on right column until placeholder links are replaced #}
-      {# <h2 class="govuk-heading-m">Quick links</h2>
-      <ul class="govuk-list govuk-list--spaced">
-        {% if isSJO %}
-          <li><a href="{{url('juror-management.manage-jurors.approve.get')}}" class="govuk-link govuk-!-font-weight-bold">Approve jurors</a></li>
-        {% else %}
-          <li><a href="#" class="govuk-link govuk-!-font-weight-bold">eg. Create a pool</a></li>
-        {% endif %}
-        <li><a href="#" class="govuk-link govuk-!-font-weight-bold">Placeholder quick link</a></li>
-        <li><a href="#" class="govuk-link govuk-!-font-weight-bold">Placeholder quick link</a></li>
-        <li><a href="#" class="govuk-link govuk-!-font-weight-bold">Placeholder quick link</a></li>
-        <li><a href="#" class="govuk-link govuk-!-font-weight-bold">Placeholder quick link</a></li>
-        <li><a href="#" class="govuk-link govuk-!-font-weight-bold">Placeholder quick link</a></li>
-      </ul> #}
+    <div class="govuk-grid-column-one-half"> 
+      {% if isBureauUser %}
+          <h2 class="govuk-heading-m">Quick links</h2>
+          <ul class="govuk-list govuk-list--spaced">
+            <li><a href="/inbox" class="govuk-link govuk-!-font-weight-bold">Your Work</a></li>
+            <li><a href="/quick-link/summoning-progress" class="govuk-link govuk-!-font-weight-bold">Summoning progress</a></li>
+            <li><a href="/quick-link/deferral-maintenance" class="govuk-link govuk-!-font-weight-bold">Deferral maintenance</a></li>
+            <li><a href="/pool-management?status=created&tab=bureau" class="govuk-link govuk-!-font-weight-bold">Active pools</a></li>
+            <li><a href="/reporting/yield-performance/dates" class="govuk-link govuk-!-font-weight-bold">Yield performance</a></li>
+          </ul>
+      {% elif isCourtUser %}
+        {# ToDo: Add court user quick links #}
+      {% endif %}
     </div>
+    
     <div class="govuk-grid-column-one-half homepage-search-column">
       {{ modSearch({
         action: url("juror-record.search.post"),
