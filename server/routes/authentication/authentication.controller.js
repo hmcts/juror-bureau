@@ -108,7 +108,7 @@ module.exports.postCourtsList = function(app) {
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
-      return res.render('_errors/generic.njk');
+      return res.render('_errors/generic', { err });
     }
   };
 };
@@ -185,7 +185,7 @@ async function loginSingleCourt(req, res, { app, courtsList, body }) {
       error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
     });
 
-    return res.render('_errors/generic.njk');
+    return res.render('_errors/generic', { err });
   }
 
   if (req.session.authentication.userType === 'ADMINISTRATOR') {

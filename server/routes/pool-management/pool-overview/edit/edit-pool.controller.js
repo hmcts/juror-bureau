@@ -71,11 +71,7 @@ const { SessionConfig } = require('../../../../lib/session-config');
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
-          return res.render('_errors/generic', {
-            currentApp: 'Pool management',
-            title: 'Pool not found',
-            message: 'The pool you are trying to edit does not exist',
-          });
+          return res.render('_errors/generic', { err });
         };
 
       tmpErrors = _.clone(req.session.errors);

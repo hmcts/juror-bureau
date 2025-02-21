@@ -309,7 +309,7 @@
           }));
         }
 
-        return res.render('_errors/generic.njk');
+        return res.render('_errors/generic', { err });
       }
     };
   };

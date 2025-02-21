@@ -72,7 +72,7 @@
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
         });
 
     };
@@ -88,7 +88,7 @@
           auth: req.session.authentication,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }
 
       let courtrooms;
@@ -103,7 +103,7 @@
           auth: req.session.authentication,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }
 
       if (courtrooms.length > 1){
@@ -218,7 +218,7 @@
           return res.redirect(app.namedRoutes.build('trial-management.create-trial.get'));
         }
 
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       });
   }
 

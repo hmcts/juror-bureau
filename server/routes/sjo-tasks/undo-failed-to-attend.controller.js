@@ -56,7 +56,7 @@ module.exports.postConfirmUndoFailedToAttend = (app) => {
         error: typeof err.error !== 'undefined' ? err.error : err.toString(),
       });
 
-      return res.render('_errors/generic');
+      return res.render('_errors/generic', { err });
     }
 
     req.session.undoFailedToAttend = req.session.undoFailedToAttend.selectedJurors.length;

@@ -41,7 +41,7 @@
               jwt: req.session.authToken,
               error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
             });
-            return res.render('_errors/generic');
+            return res.render('_errors/generic', { err });
           }
 
         }
@@ -83,7 +83,7 @@
           }
         );
       } catch (err) {
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }
     };
   };
@@ -181,7 +181,7 @@
               error: typeof err.error !== 'undefined' ? err.error : err.toString(),
             });
     
-            return res.render('_errors/generic.njk');
+            return res.render('_errors/generic', { err });
           }
 
           const filteredPools = response.availablePools
@@ -238,7 +238,7 @@
             },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
         }
         );
     };
@@ -296,7 +296,7 @@
               },
               error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
             });
-            return res.render('_errors/generic');
+            return res.render('_errors/generic', { err });
           }
         );
     };
@@ -451,7 +451,7 @@
           type: req.params['type'],
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }
     };
   };
@@ -537,7 +537,7 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }
     }
   }

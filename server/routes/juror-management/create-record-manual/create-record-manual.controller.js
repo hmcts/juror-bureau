@@ -90,7 +90,7 @@
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic.njk');
+        return res.render('_errors/generic', { err });
       };
     };
   };
@@ -361,7 +361,7 @@
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic.njk');
+        return res.render('_errors/generic', { err });
       };
     };
   };
@@ -530,7 +530,7 @@
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
           data: { postcode: tmpBody.addressPostcode },
         });
-        return res.render('_errors/generic.njk');
+        return res.render('_errors/generic', { err });
 
       };
     };
@@ -814,7 +814,7 @@
           data: buildCreationPayload(req.session.newJuror),
         });
 
-        return res.render('_errors/generic.njk');
+        return res.render('_errors/generic', { err });
       };
     };
   };
