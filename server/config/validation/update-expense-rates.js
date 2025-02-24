@@ -69,6 +69,38 @@
           },
         },
       },
+      limitFinancialLossHalfDayExtraLongTrial: {
+        presence: {
+          allowEmpty: false,
+          message: {
+            summary: 'Enter the half day limit (over 201 days) for loss of earning or benefits',
+            details: 'Enter the half day limit (over 201 days) for loss of earning or benefits',
+          },
+        },
+        format: {
+          pattern: priceRegex,
+          message: {
+            summary: 'Half day limit (over 201 days) can only include numbers and a decimal point',
+            details: 'Half day limit (over 201 days) can only include numbers and a decimal point',
+          },
+        },
+      },
+      limitFinancialLossFullDayExtraLongTrial: {
+        presence: {
+          allowEmpty: false,
+          message: {
+            summary: 'Enter the full day limit (over 201 days) for loss of earning or benefits',
+            details: 'Enter the full day limit (over 201 days) for loss of earning or benefits',
+          },
+        },
+        format: {
+          pattern: priceRegex,
+          message: {
+            summary: 'Full day limit (over 201 days) can only include numbers and a decimal point',
+            details: 'Full day limit (over 201 days) can only include numbers and a decimal point',
+          },
+        },
+      },
       carMileageRatePerMile0Passengers: {
         presence: {
           allowEmpty: false,
