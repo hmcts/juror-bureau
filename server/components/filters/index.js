@@ -387,14 +387,20 @@
         return 'Full day';
       case 'FULL_DAY_LONG_TRIAL':
         return 'Full day (>10 days)';
+      case 'FULL_DAY_EXTRA_LONG_TRIAL':
+        return 'Full day (>201 days)';
       case 'HALF_DAY':
         return 'Half day';
       case 'HALF_DAY_LONG_TRIAL':
         return 'Half day (>10 days)';
+      case 'HALF_DAY_EXTRA_LONG_TRIAL':
+        return 'Half day (>201 days)';
       case 'NON_ATTENDANCE':
         return 'Non-attendance day';
       case 'NON_ATTENDANCE_LONG_TRIAL':
         return 'Non-attendance day (>10 days)';
+      case 'NON_ATT_EXTRA_LONG_TRIAL':
+        return 'Non-attendance day (>201 days)';
       case 'ABSENT':
         return 'Absent';
       };
