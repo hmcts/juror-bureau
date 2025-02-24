@@ -911,7 +911,7 @@
     return formData;
   }
 
-  async function isLossOverLimit(app, req, attendancType, date) {
+  async function isLossOverLimit(app, req, attendanceType, date) {
     let showLossOverLimit;
     const totalFinancialLoss = Number(req.body.lossOfEarnings)
     + Number(req.body.extraCareCosts) + Number(req.body.otherCosts);
@@ -920,12 +920,15 @@
     try {
       const { response } = await expenseRatesAndLimitsDAO.get(req);
 
-      switch (attendancType) {
+      switch (attendanceType) {
       case 'FULL_DAY':
         lossLimit = response.limit_financial_loss_full_day;
         break;
       case 'FULL_DAY_LONG_TRIAL':
         lossLimit = response.limit_financial_loss_full_day_long_trial;
+        break;
+      case 'FULL_DAY_EXTRA_LONG_TRIAL':
+        lossLimit = response.limit_financial_loss_full_day_extra_long_trial;
         break;
       case 'HALF_DAY':
         lossLimit = response.limit_financial_loss_half_day;
@@ -933,11 +936,17 @@
       case 'HALF_DAY_LONG_TRIAL':
         lossLimit = response.limit_financial_loss_half_day_long_trial;
         break;
+      case 'HALF_DAY_EXTRA_LONG_TRIAL':
+        lossLimit = response.limit_financial_loss_half_day_extra_long_trial;
+        break;
       case 'NON_ATTENDANCE':
         lossLimit = response.limit_financial_loss_full_day;
         break;
       case 'NON_ATTENDANCE_LONG_TRIAL':
         lossLimit = response.limit_financial_loss_full_day_long_trial;
+        break;
+      case 'NON_ATT_EXTRA_LONG_TRIAL':
+        lossLimit = response.limit_financial_loss_full_day_extra_long_trial;
         break;
       }
 
@@ -949,7 +958,7 @@
       showLossOverLimit = {
         'juror_loss': totalFinancialLoss,
         limit: lossLimit,
-        'attendance_type': attendancType,
+        'attendance_type': attendanceType,
         'is_long_trial_day': false,
         // eslint-disable-next-line max-len
         message: `The amount you entered will automatically be recalculated to limit the juror's loss to £${lossLimit}`,
