@@ -6,6 +6,7 @@
 {% from "./_partials/attendance-sub-nav.njk" import attendanceSubNav %}
 {% from "moj/components/button-menu/macro.njk" import mojButtonMenu %}
 {% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
 
 {% block page_title %}{{ serviceName }} - Juror management - Attendance{% endblock %}
 {% block page_identifier %}Juror management - Attendance{% endblock %}
@@ -42,9 +43,20 @@
     </div>
   </div>
 
-  <a href="?date={{ yesterdayRaw }}" class="govuk-body govuk-link govuk-!-font-weight-bold govuk-link--no-visited-state govuk-link--no-underline">
-    {{ leftArrowSVG() }} {{ yesterday }}
-  </a>
+  <div class="govuk-grid-row mod-flex mod-items-center">
+    <a href="?date={{ yesterdayRaw }}" class="govuk-body govuk-link govuk-!-font-weight-bold govuk-link--no-visited-state govuk-link--no-underline govuk-!-margin-right-2 govuk-!-marging-bottom-0">
+      {{ leftArrowSVG() }} {{ yesterday }}
+    </a>
+    {{ datePicker({
+      id: "attendanceDateSelection",
+      dateValue: datePickerValue,
+      dateMax: datePickerMax,
+      hideInput: true,
+      classes: "govuk-!-margin-bottom-0",
+      dateFormat: "YMD"
+    }) }}
+  </div>
+  
 {% endblock %}
 
 {% block content %}
@@ -138,6 +150,16 @@
       mq: '(min-width: 200em)',
       buttonText: 'Print attendance audit',
       buttonClasses: 'govuk-!-margin-bottom-1 govuk-button--secondary moj-button-menu__toggle-button--secondary',
+    });
+  </script>
+  {% include "includes/datepicker.njk" %}
+  <script nonce="{{ nonce }}">
+    $("#attendanceDateSelection").change(function() {
+      if ('URLSearchParams' in window) {
+        const searchParams = new URLSearchParams(window.location.search);
+        searchParams.set("date", ($(this).val()).replace('/', '-'));
+        window.location.search = searchParams.toString();
+      }
     });
   </script>
 {% endblock %}
