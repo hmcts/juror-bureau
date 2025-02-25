@@ -154,8 +154,8 @@
             ? app.namedRoutes.build('juror-management.attendance.unconfirmed-attendances.get') + `?date=${selectedDateString}`
             : null,
           canRecordAttendance,
-          datePickerMax: dateFilter(new Date(), null, 'yyyy/MM/DD'),
-          datePickerValue: dateFilter(selectedDate, null, 'yyyy/MM/DD'),
+          attendanceDatePickerMax: dateFilter(new Date(), null, 'DD/MM/YYYY'),
+          attendanceDatePickerValue: dateFilter(selectedDate, null, 'DD/MM/YYYY'),
         });
       } catch (err) {
         app.logger.crit('Failed to fetch jurors attendance list: ', {
