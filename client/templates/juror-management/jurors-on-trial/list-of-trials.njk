@@ -2,6 +2,7 @@
 
 {% from "custom-components/macros/arrows.njk" import leftArrowSVG %}
 {% from "../_partials/attendance-sub-nav.njk" import attendanceSubNav %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
 
 {% block page_title %}{{ serviceName }} - Juror management - Jurors on trial - Trial list{% endblock %}
 {% block page_identifier %}Juror management - Jurors on trial - Trial list{% endblock %}
@@ -16,10 +17,19 @@
     currentView: "on-trial"
   }) }}
 
-  <a href="?attendance_date={{ previousDayISO }}" class="govuk-body govuk-link govuk-!-font-weight-bold govuk-link--no-visited-state govuk-link--no-underline">
-    {{ leftArrowSVG() }}
-    {{ previousDay }}
-  </a>
+  <div class="govuk-grid-row mod-flex mod-items-center">
+    <a href="?attendance_date={{ previousDayISO }}" class="govuk-body govuk-link govuk-!-font-weight-bold govuk-link--no-visited-state govuk-link--no-underline govuk-!-margin-bottom-0 govuk-!-margin-right-2">
+      {{ leftArrowSVG() }}
+      {{ previousDay }}
+    </a>
+    {{ datePicker({
+      id: "attendanceDateSelection",
+      dateValue: attendanceDatePickerValue,
+      dateMax: attendanceDatePickerMax,
+      hideInput: true,
+      classes: "govuk-!-margin-bottom-0"
+    }) }}
+  </div>
 {% endblock %}
 
 {% block content %}
@@ -37,4 +47,23 @@
     <p class="govuk-body">There are no trials happening for this date.</p>
   {% endif %}
   
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  {% include "includes/datepicker.njk" %}
+  <script nonce="{{ nonce }}">
+    $("#attendanceDateSelection").change(function() {
+      if ('URLSearchParams' in window) {
+        // Trying to find a neater way to do this
+        const datePickerValue = $(this).val();
+        const dateParts = datePickerValue.split('/');
+        const date = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
+        const searchParams = new URLSearchParams(window.location.search);
+        searchParams.set("attendance_date", date);
+        window.location.search = searchParams.toString();
+      }
+    });
+  </script>
 {% endblock %}

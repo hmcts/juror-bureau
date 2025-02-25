@@ -53,6 +53,8 @@ module.exports.getJurorsOnTrial = function() {
       previousDayISO: dateFilter(_previousDay, null, 'YYYY-MM-DD'),
       previousDay: dateFilter(_previousDay, null, 'dddd D MMMM YYYY'),
       trialsList,
+      attendanceDatePickerMax: dateFilter(new Date(), null, 'DD/MM/YYYY'),
+      attendanceDatePickerValue: dateFilter(currentDay, 'dddd D MMMM YYYY', 'DD/MM/YYYY'),
     });
   };
 };

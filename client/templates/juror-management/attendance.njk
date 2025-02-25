@@ -44,16 +44,15 @@
   </div>
 
   <div class="govuk-grid-row mod-flex mod-items-center">
-    <a href="?date={{ yesterdayRaw }}" class="govuk-body govuk-link govuk-!-font-weight-bold govuk-link--no-visited-state govuk-link--no-underline govuk-!-margin-right-2 govuk-!-marging-bottom-0">
+    <a href="?date={{ yesterdayRaw }}" class="govuk-body govuk-link govuk-!-font-weight-bold govuk-link--no-visited-state govuk-link--no-underline govuk-!-margin-right-2 govuk-!-margin-bottom-0">
       {{ leftArrowSVG() }} {{ yesterday }}
     </a>
     {{ datePicker({
       id: "attendanceDateSelection",
-      dateValue: datePickerValue,
-      dateMax: datePickerMax,
+      dateValue: attendanceDatePickerValue,
+      dateMax: attendanceDatePickerMax,
       hideInput: true,
-      classes: "govuk-!-margin-bottom-0",
-      dateFormat: "YMD"
+      classes: "govuk-!-margin-bottom-0"
     }) }}
   </div>
   
@@ -156,8 +155,12 @@
   <script nonce="{{ nonce }}">
     $("#attendanceDateSelection").change(function() {
       if ('URLSearchParams' in window) {
+        // Trying to find a neater way to do this
+        const datePickerValue = $(this).val();
+        const dateParts = datePickerValue.split('/');
+        const date = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
         const searchParams = new URLSearchParams(window.location.search);
-        searchParams.set("date", ($(this).val()).replace('/', '-'));
+        searchParams.set("date", date);
         window.location.search = searchParams.toString();
       }
     });
