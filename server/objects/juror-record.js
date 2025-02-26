@@ -45,7 +45,7 @@
         headers['If-None-Match'] = etag;
       }
 
-      body = mapCamelToSnake(body);
+      body = mapCamelToSnake(_.clone(body));
       delete Object.assign(body, {'welsh_language_required': body.welsh || false }).welsh;
 
       return {

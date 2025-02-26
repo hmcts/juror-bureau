@@ -9,7 +9,9 @@
 {% block page_identifier %}Reassign before processing{% endblock %}ß
 
 {% block beforeContent %}
-  {% include "../../includes/back-link.njk" %}
+  {% if backLinkUrl %}
+    {% include "../../includes/back-link.njk" %}
+  {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -81,8 +83,13 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l">You may need to reassign this juror to a different court before you can finish processing this reply</h1>
-    <p class="govuk-body">This is because their address is outside the catchment for the court they were originally summoned to.</p>
+    {% if jurorDetailsEdit %}
+      <h1 class="govuk-heading-l">You may need to reassign this juror to a different court</h1>
+      <p class="govuk-body">This is because the juror has moved catchment area.</p>
+    {% else %}
+      <h1 class="govuk-heading-l">You may need to reassign this juror to a different court before you can finish processing this reply</h1>
+      <p class="govuk-body">This is because their address is outside the catchment for the court they were originally summoned to.</p>
+    {% endif %}
   </div>
 </div>
 <form method="post" action="{{ processUrl }}" id="editDeferralForm">

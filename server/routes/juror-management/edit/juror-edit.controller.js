@@ -1,26 +1,25 @@
 (function() {
   'use strict';
 
-  var _ = require('lodash')
-    , moment = require('moment')
-    , validate = require('validate.js')
-    , modUtils = require('../../../lib/mod-utils')
-    , dateFilter = require('../../../components/filters').dateFilter
-    , makeDate = require('../../../components/filters').makeDate
-    , { isCourtUser, isTeamLeader } = require('../../../components/auth/user-type')
-    , activePoolsObj = require('../../../objects/deferral-mod').deferralPoolsObject
-    , changeDeferralObject = require('../../../objects/deferral-mod').changeDeferralObject
-    , changeDeferralValidator = require('../../../config/validation/deferral-mod').deferralDateAndReason
-    , deferralPoolValidator = require('../../../config/validation/deferral-mod').deferralDateAndPool
-    , jurorRecordObject = require('../../../objects/juror-record').record
-    , overviewDetailsValidator = require('../../../config/validation/edit-juror-details-mod').overviewDetails
-    , extraSupportValidator = require('../../../config/validation/edit-juror-details-mod').extraSupport
-    , thirdPartyValidator = require('../../../config/validation/edit-juror-details-mod').thirdParty
-    , editJurorDetailsObject = require('../../../objects/juror-record').editDetails
-    , deleteDeferralObject = require('../../../objects/deferral-mod').deleteDeferralObject
-    , paperReplyValidator = require('../../../config/validation/paper-reply')
-    , { systemCodesDAO } = require('../../../objects/administration')
-    , { changeName: fixNameObj, disqualifyAgeDAO } = require('../../../objects/juror-record');
+  const _ = require('lodash');
+  const moment = require('moment');
+  const validate = require('validate.js');
+  const modUtils = require('../../../lib/mod-utils');
+  const { dateFilter, makeDate } = require('../../../components/filters');
+  const { isCourtUser, isTeamLeader, isBureauUser } = require('../../../components/auth/user-type');
+  const { deferralPoolsObject: activePoolsObj, changeDeferralObject, deleteDeferralObject } = require('../../../objects/deferral-mod');
+  const { deferralDateAndReason: changeDeferralValidator, deferralDateAndPool: deferralPoolValidator } = require('../../../config/validation/deferral-mod');
+  const { record: jurorRecordObject, editDetails: editJurorDetailsObject } = require('../../../objects/juror-record');
+  const { overviewDetails: overviewDetailsValidator, extraSupport: extraSupportValidator, thirdParty: thirdPartyValidator } = require('../../../config/validation/edit-juror-details-mod');
+  const paperReplyValidator = require('../../../config/validation/paper-reply');
+  const { systemCodesDAO } = require('../../../objects/administration');
+  const { changeName: fixNameObj, disqualifyAgeDAO } = require('../../../objects/juror-record');
+  const { fetchCourts } = require('../../../objects/request-pool');
+  const { reassignBeforeProcess } = require('../../../config/validation/reassign-before-process');
+  const { courtLocationsFromPostcodeObj } = require('../../../objects/court-location');
+  const { fetchCourts } = require('../../../objects/request-pool');
+  const { resolveCatchmentResponse } = require('../../summons-management/summons-management.controller');
+  const courtNameOrLocationValidator = require('../../../config/validation/request-pool').courtNameOrLocation;
 
   module.exports.getEditDeferral = (app) => {
     return (req, res) => {
@@ -751,6 +750,41 @@
       }
     }
 
+    if (isBureauUser(req, res)) {
+      const postcode = modUtils.splitPostCode(requestBody.addressPostcode);
+      try {
+        const catchmentResponse = await courtLocationsFromPostcodeObj.get(req, postcode);
+
+        const catchmentAreas = resolveCatchmentResponse(catchmentResponse, req.session.locCode);
+
+        if (catchmentAreas.isOutwithCatchment) {
+          req.session[`editJurorDetails-${jurorNumber}-reassign`] = {
+            catchmentAreas: catchmentAreas,
+          };
+
+          return res.redirect(app.namedRoutes.build('juror-record.details-edit.reassign.select-court.get', { jurorNumber }));
+        }
+      } catch (err) {
+        // NO CATCHEMENT AREA FOR NEW POSTCODE
+        if (err.statusCode === 404) {
+          req.session[`editJurorDetails-${jurorNumber}-reassign`] = {
+            catchmentAreas: resolveCatchmentResponse([], req.session.locCode),
+          };
+
+          return res.redirect(app.namedRoutes.build('juror-record.details-edit.reassign.select-court.get', { jurorNumber }));
+        }
+        app.logger.crit('Failed to retrieve court location from postcode: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            postcode: postcode,
+          },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+        return res.render('_errors/generic');
+      }
+    }
+
     return res.redirect(successUrl);
   };
 
@@ -1002,6 +1036,124 @@
       return res.redirect(app.namedRoutes.build('juror-record.details-edit.get', {
         jurorNumber,
       }));
+    };
+  };
+
+  module.exports.getReassignCatchmentSelectCourt = (app) => {
+    return async(req, res) => {
+      const { jurorNumber } = req.params;
+      const catchmentAreas = req.session[`editJurorDetails-${jurorNumber}-reassign`].catchmentAreas;
+      delete req.session.receivingCourtLocCode;
+
+      try {
+        // Only fetch courts list if not known.
+        if (!req.session.courtsList || !req.session.transformedCourtsList) {
+          try {
+            const { courts } = await fetchCourts.get(req);
+
+            req.session.courtsList = courts;
+            req.session.transformedCourtsList = modUtils.transformCourtNames(courts);
+          } catch (err) {
+            app.logger.crit('Failed to retrieve courts list: ', {
+              auth: req.session.authentication,
+              jwt: req.session.authToken,
+              error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+            });
+            return res.render('_errors/generic');
+          }
+
+        }
+        const currentCourt = req.session.courtsList.find(elem => elem.locationCode === catchmentAreas.currentLocationCode);
+
+        currentCourt.formattedName = modUtils.transformCourtName(currentCourt);
+
+        const tmpErrors = _.clone(req.session.errors),
+          tmpFields = req.session.formFields;
+
+        delete req.session.errors;
+        delete req.session.formFields;
+
+        return res.render('summons-management/process-reply/reassign-before-process',
+          {
+            jurorNumber,
+            processUrl: app.namedRoutes.build('juror-record.details-edit.reassign.select-court.post', {
+              jurorNumber,
+            }),
+            jurorDetailsEdit: true,
+            catchmentWarning: catchmentAreas,
+            currentCourt: currentCourt,
+            courts: req.session.transformedCourtsList,
+            userInput: tmpFields,
+            errors: {
+              title: 'Please check the form',
+              count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+              items: tmpErrors,
+            },
+          }
+        );
+      } catch (err) {
+        return res.render('_errors/generic');
+      }
+    };
+  };
+
+  module.exports.postReassignCatchmentSelectCourt = (app) => {
+    return (req, res) => {
+      const { jurorNumber } = req.params;
+      let validatorResult = validate(req.body, reassignBeforeProcess());
+
+      if (typeof validatorResult === 'undefined' && req.body.selectCourt === 'differentCourt') {
+        validatorResult = validate(req.body, courtNameOrLocationValidator());
+      }
+
+      if (typeof validatorResult !== 'undefined') {
+        req.session.errors = validatorResult;
+        req.session.formFields = req.body;
+
+        return res.redirect(app.namedRoutes.build('juror-record.details-edit.reassign.select-court.get', {
+          jurorNumber
+        }));
+      }
+
+      // Retrieve court name or location from autocomplete or radio button
+      const courtNameOrLocation = req.body.selectCourt === 'differentCourt'
+        ? req.body.courtNameOrLocation
+        : req.body.selectCourt;
+
+      modUtils.matchUserCourt(req.session.courtsList, {
+        courtNameOrLocation: courtNameOrLocation,
+      }).then(
+        (court) => {
+
+          if (court.locationCode === req.session[`editJurorDetails-${jurorNumber}-reassign`].catchmentAreas.currentLocationCode) {
+            delete req.session[`editJurorDetails-${jurorNumber}-reassign`];
+            return res.redirect(app.namedRoutes.build('juror-record.details.get', {
+              jurorNumber
+            }));
+          }
+
+          req.session.receivingCourtLocCode = court.locationCode;
+
+          res.redirect(app.namedRoutes.build('juror-record.details-edit.reassign.select-pool.get', {
+            jurorNumber,
+          }));
+        }
+      ).catch(
+        () => {
+          req.session.formFields = req.body;
+          req.session.errors = {
+            courtNameOrLocation: [
+              {
+                summary: 'Please check the court name or location',
+                details: 'This court does not exist. Please enter a name or code of an existing court',
+              },
+            ],
+          };
+          return res.redirect(app.namedRoutes.build('juror-record.details-edit.reassign.select-court.get', {
+            jurorNumber,
+          }));
+        }
+      );
     };
   };
 
