@@ -17,7 +17,6 @@
   const { fetchCourts } = require('../../../objects/request-pool');
   const { reassignBeforeProcess } = require('../../../config/validation/reassign-before-process');
   const { courtLocationsFromPostcodeObj } = require('../../../objects/court-location');
-  const { fetchCourts } = require('../../../objects/request-pool');
   const { resolveCatchmentResponse } = require('../../summons-management/summons-management.controller');
   const courtNameOrLocationValidator = require('../../../config/validation/request-pool').courtNameOrLocation;
 
@@ -1115,31 +1114,23 @@
         }));
       }
 
-      // Retrieve court name or location from autocomplete or radio button
-      const courtNameOrLocation = req.body.selectCourt === 'differentCourt'
-        ? req.body.courtNameOrLocation
-        : req.body.selectCourt;
+      let court = {};
+      if (req.body.selectCourt !== 'differentCourt') {
+        if (req.body.selectCourt === req.session[`editJurorDetails-${jurorNumber}-reassign`].catchmentAreas.currentLocationCode) {
+          delete req.session[`editJurorDetails-${jurorNumber}-reassign`];
 
-      modUtils.matchUserCourt(req.session.courtsList, {
-        courtNameOrLocation: courtNameOrLocation,
-      }).then(
-        (court) => {
-
-          if (court.locationCode === req.session[`editJurorDetails-${jurorNumber}-reassign`].catchmentAreas.currentLocationCode) {
-            delete req.session[`editJurorDetails-${jurorNumber}-reassign`];
-            return res.redirect(app.namedRoutes.build('juror-record.details.get', {
-              jurorNumber
-            }));
-          }
-
-          req.session.receivingCourtLocCode = court.locationCode;
-
-          res.redirect(app.namedRoutes.build('juror-record.details-edit.reassign.select-pool.get', {
-            jurorNumber,
+          return res.redirect(app.namedRoutes.build('juror-record.details.get', {
+            jurorNumber
           }));
+        } else {
+          court.locationCode = req.body.selectCourt;
         }
-      ).catch(
-        () => {
+      } else {
+        try {
+          court = modUtils.matchUserCourt(req.session.courtsList, {
+            courtNameOrLocation: req.body.courtNameOrLocation,
+          });
+        } catch (err) {
           req.session.formFields = req.body;
           req.session.errors = {
             courtNameOrLocation: [
@@ -1149,11 +1140,18 @@
               },
             ],
           };
+          
           return res.redirect(app.namedRoutes.build('juror-record.details-edit.reassign.select-court.get', {
             jurorNumber,
           }));
         }
-      );
+      }
+
+      req.session.receivingCourtLocCode = court.locationCode;
+  
+      return res.redirect(app.namedRoutes.build('juror-record.details-edit.reassign.select-pool.get', {
+        jurorNumber,
+      }));
     };
   };
 
