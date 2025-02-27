@@ -82,6 +82,12 @@
     {% set attendanceType = "Half day (>10 days)" %}
   {% elif params.attendance === "NON_ATTENDANCE_LONG_TRIAL" %}
     {% set attendanceType = "Non-attendance day (>10 days)" %}
+  {% elif params.attendance === "FULL_DAY_EXTRA_LONG_TRIAL" %}
+    {% set attendanceType = "Full day (>201 days)" %}
+  {% elif params.attendance === "HALF_DAY_EXTRA_LONG_TRIAL" %}
+    {% set attendanceType = "Half day (>201 days)" %}
+  {% elif params.attendance === "NON_ATT_EXTRA_LONG_TRIAL" %}
+    {% set attendanceType = "Non-attendance day (>201 days)" %}
   {% endif %}
 
   <span>{{ attendanceType }}</span>
