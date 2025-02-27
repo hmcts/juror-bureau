@@ -92,25 +92,7 @@
       }
       delete req.session.bannerMessage;
 
-      // clear session data
-      delete req.session.deletedRecord;
-      delete req.session.newPoolCreated;
-      delete req.session.poolDetails;
-      delete req.session.errors;
-      delete req.session.formFields;
-      delete req.session.hasStartedNilPool;
-      delete req.session.searchPoolList;
-      // clear the session.newPoolNumber data to be clean for the next pool request
-      delete req.session.newPoolNumber;
-      delete req.session.coronerCourt;
-      delete req.session.poolCreateFormFields;
-      delete req.session.courtChange;
-      delete req.session.selectedDismissalPools;
-      delete req.session.dismissJurors;
-      
-      // for backward compatibility
-      delete req.session.selectedJurors;
-      delete req.session.selectAll;
+      exports.clearPoolManagementSessionData(app, req);
 
       if (status !== 'requested') {
         if (!tab && isCourtUser(req)) {
@@ -208,6 +190,30 @@
 
       return res.redirect(app.namedRoutes.build(postPaths[req.body.poolCreateSelect]));
     };
+  };
+
+  module.exports.clearPoolManagementSessionData = function(app, req) {
+
+      // clear session data
+      delete req.session.deletedRecord;
+      delete req.session.newPoolCreated;
+      delete req.session.poolDetails;
+      delete req.session.errors;
+      delete req.session.formFields;
+      delete req.session.hasStartedNilPool;
+      delete req.session.searchPoolList;
+      // clear the session.newPoolNumber data to be clean for the next pool request
+      delete req.session.newPoolNumber;
+      delete req.session.coronerCourt;
+      delete req.session.poolCreateFormFields;
+      delete req.session.courtChange;
+      delete req.session.selectedDismissalPools;
+      delete req.session.dismissJurors;
+      
+      // for backward compatibility
+      delete req.session.selectedJurors;
+      delete req.session.selectAll;
+
   };
 
   function urlBuilder(app, params, options) {
