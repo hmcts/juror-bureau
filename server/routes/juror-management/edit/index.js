@@ -1,8 +1,10 @@
 (function() {
   'use strict';
 
-  var controller = require('./juror-edit.controller')
-    , auth = require('../../../components/auth/');
+  const controller = require('./juror-edit.controller');
+  const reassignController = require('../reassign/reassign.controller');
+  const auth = require('../../../components/auth/');
+  const { isBureauUser } = require('../../../components/auth/user-type');
 
   module.exports = function(app) {
 
@@ -63,5 +65,31 @@
       'juror-record.details-edit.ineligible-age.post',
       auth.verify,
       controller.postIneligibleAge(app));
+
+    app.get('/juror-management/record/:jurorNumber/details/edit/reassign/select-court',
+      'juror-record.details-edit.reassign.select-court.get',
+      auth.verify,
+      isBureauUser,
+      controller.getReassignCatchmentSelectCourt(app));
+    app.post('/juror-management/record/:jurorNumber/details/edit/reassign/select-court',
+      'juror-record.details-edit.reassign.select-court.post',
+      auth.verify,
+      isBureauUser,
+      controller.postReassignCatchmentSelectCourt(app));
+    app.get('/juror-management/record/:jurorNumber/details/edit/reassign/select-pool',
+      'juror-record.details-edit.reassign.select-pool.get',
+      auth.verify,
+      isBureauUser,
+      reassignController.getReassignJuror(app));
+    app.post('/juror-management/record/:jurorNumber/details/edit/reassign/select-pool',
+      'juror-record.details-edit.reassign.select-pool.post',
+      auth.verify,
+      isBureauUser,
+      reassignController.postReassignJuror(app));
+    app.post('/juror-management/record/:jurorNumber/details/edit/reassign/select-pool/confirm',
+      'juror-record.details-edit.reassign.confirm.post',
+      auth.verify,
+      isBureauUser,
+      reassignController.postConfirmReassignJuror(app));
   };
 })();
