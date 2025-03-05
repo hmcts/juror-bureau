@@ -700,7 +700,6 @@
             req.session.formFields = req.body;
           }
           if (err.statusCode === 422 && err.error?.code === 'JUROR_DATE_OF_BIRTH_REQUIRED') {
-            console.log('\n\nIN HERE2\n\n');
             errorRedirect = app.namedRoutes.build('juror.update.available-pools.get', {
               jurorNumber: req.params.jurorNumber,
             });

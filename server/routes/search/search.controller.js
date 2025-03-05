@@ -209,7 +209,6 @@
 
         staff = response[0];
         responses = response[1];
-        console.log('\n\n',response);
         staff.push({
           login: "AUTO",
           name: "AUTO"

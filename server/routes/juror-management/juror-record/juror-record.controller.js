@@ -1309,7 +1309,6 @@
         'notes',
         req.params['jurorNumber'],
       )).data.notes;
-      console.log('\n\njurorNotes\n', jurorNotes, '\n', jurorNotes !== null && jurorNotes !== '', '\n\n');
 
       return jurorNotes !== null && jurorNotes !== '';;
     } catch (err) {
