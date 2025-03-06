@@ -5,7 +5,7 @@ const { generateDocument } = require('../../lib/reports/single-generator');
 
 module.exports.getPrintTrials = (app) => {
   return async (req, res) => {
-    const { isActive, sortBy, sortOrder } = req.query;
+    const { isActive, sortBy, sortOrder, trialNumber } = req.query;
 
     const opts = {
       active: isActive || 'true',
@@ -13,6 +13,7 @@ module.exports.getPrintTrials = (app) => {
       pageLimit: 500,
       sortField: capitalise(camelToSnake(sortBy || 'startDate')),
       sortMethod: sortOrder === 'descending' ? 'DESC' : 'ASC',
+      trialNumber
     };
 
     let response;

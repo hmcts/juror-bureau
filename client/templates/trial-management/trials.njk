@@ -4,16 +4,47 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 {% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
 
 {% block page_title %}{{ serviceName }} - Trial management - Trials{% endblock %}
 {% block page_identifier %}Trial management - Trials{% endblock %}
 
 {% set currentApp = "Trials" %}
 
+{% set searchTrialNumberError = undefined %}
+{% if errors.items["searchTrialNumber"] %}
+  {% set searchTrialNumberError = {"text": errors.items['searchTrialNumber'][0].details} %}
+{% endif %}
+
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
       <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Trials</h1>
+      <form action="{{ searchUrl }}" method="POST" class="mod-flex mod-items-end mod-gap-x-2">
+
+        {{ govukInput({
+          label: {
+            text: "Search by trial number"
+          },
+          classes: "govuk-input--width-20",
+          id: "searchTrialNumber",
+          name: "searchTrialNumber",
+          errorMessage: searchTrialNumberError,
+          value: tmpBody.searchTrialNumber if tmpBody.searchTrialNumber else trialNumber
+        }) }}
+
+        {{ govukButton({
+          text: "Search",
+          classes: "govuk-button--secondary",
+          attributes: {
+            id: "search-trials-button"
+          }
+        }) }}
+
+        <a class="govuk-body govuk-link govuk-link--no-visited-state govuk-!-margin-bottom-7" id="clearSearchAnchor" href="{{ clearSearchUrl }}">Clear search</a>
+
+        <input type="hidden" id="csrfToken" name="_csrf" value="{{ csrftoken }}"/>
+      </form>
     </div>
     <div class="govuk-grid-column-one-half">
       <div class="govuk-button-group mod-flex mod-justify-end">
@@ -73,8 +104,10 @@
     </div>
   </div>
 
-  {% if isActive === "false" %}
-    {% set urlPrefix =  "?isActive=false" %}
+  {% set urlPrefix =  "?isActive=" + ("true" if isActive else "false") %}
+
+  {% if trialNumber %}
+    {% set urlPrefix = urlPrefix ~ "&trialNumber=" ~ trialNumber %}
   {% endif %}
 
   <div class="govuk-grid-row">
@@ -110,16 +143,19 @@
 
   <script type="application/javascript" nonce="{{ nonce }}">
     $(document).ready(() => {
+
+      const params = new URLSearchParams(window.location.search);
+      const trialNumberQuery = params.get('trialNumber') ? `&trialNumber=${params.get('trialNumber')}` : '';
+
       $('#activeTrialsRadio').on('click', function() {
-        window.location.href = '{{url('trial-management.trials.get')}}';
+        window.location.href = `{{url('trial-management.trials.get')}}?isActive=true${trialNumberQuery}`;
       });
 
       $('#allTrialsRadio').on('click', function() {
-        window.location.href = '{{url('trial-management.trials.get')}}?isActive=false';
+        window.location.href = `{{url('trial-management.trials.get')}}?isActive=false${trialNumberQuery}`;
       });
 
       $('#printListButton').on('click', function() {
-        const params = new URLSearchParams(window.location.search);
         window.open('{{url('trial-management.trials.print.get')}}' + '?' + params.toString(), '_blank');
       });
     });
