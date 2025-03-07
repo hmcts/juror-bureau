@@ -39,7 +39,7 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
   
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }
 
       let processUrl;
@@ -81,7 +81,7 @@
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
         }
       }
 
@@ -280,7 +280,7 @@
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
         }
         
         if (pools.deferralPoolsSummary[0].deferralOptions[0].poolNumber) {
@@ -303,7 +303,7 @@
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
         }
       }
 
@@ -482,7 +482,7 @@
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
-      return res.render('_errors/generic');
+      return res.render('_errors/generic', { err });
     }
 }
 
@@ -599,7 +599,7 @@
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
         });
     };
   };

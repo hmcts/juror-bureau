@@ -217,7 +217,7 @@ module.exports.postReassign = function(app) {
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic.njk');
+        return res.render('_errors/generic', { err });
       };
     } else {
       const validatorResult = validate(req.body, jurorSelectValidator());
@@ -261,7 +261,7 @@ module.exports.postTransfer = function(app) {
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic.njk');
+        return res.render('_errors/generic', { err });
       };
     } else {
       const validatorResult = validate(req.body, jurorSelectValidator());
@@ -456,7 +456,7 @@ module.exports.postCompleteService = function(app) {
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic.njk');
+        return res.render('_errors/generic', { err });
       };
     } else {
 
@@ -677,7 +677,7 @@ module.exports.postBulkPostpone = function(app) {
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic.njk');
+        return res.render('_errors/generic', { err });
       };
     } else {
       const validatorResult = validate(req.body, jurorSelectValidator());
@@ -718,7 +718,7 @@ module.exports.postBulkOnCall = function(app) {
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic.njk');
+        return res.render('_errors/generic', { err });
       };
     } else {
       const validatorResult = validate(req.body, jurorSelectValidator());

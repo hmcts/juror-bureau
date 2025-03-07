@@ -721,7 +721,7 @@
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       };
     };
   };
@@ -899,7 +899,7 @@
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
         }
       }
 
@@ -944,7 +944,11 @@
           error: 'The url id parameter does not match the response id that was submitted with the form',
         });
 
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { 
+          err: {
+            message: 'The url id parameter does not match the response id that was submitted with the form',
+          } 
+        });
       }
 
       return updateStatus.put(
@@ -983,7 +987,7 @@
             error: parseError(err),
           });
 
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
         });
     };
   };

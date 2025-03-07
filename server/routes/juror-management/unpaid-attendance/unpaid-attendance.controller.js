@@ -84,7 +84,7 @@
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
         });
     };
   };

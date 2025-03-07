@@ -62,7 +62,7 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }
     };
   };
@@ -209,7 +209,6 @@
 
         staff = response[0];
         responses = response[1];
-        console.log('\n\n',response);
         staff.push({
           login: "AUTO",
           name: "AUTO"

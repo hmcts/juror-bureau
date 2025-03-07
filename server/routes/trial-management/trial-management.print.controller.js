@@ -26,7 +26,7 @@ module.exports.getPrintTrials = (app) => {
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
-      return res.render('_errors/generic');
+      return res.render('_errors/generic', { err });
     }
 
     const documentContent = buildPdfTable(response.data, response.total_items, isActive === 'false');
@@ -40,7 +40,7 @@ module.exports.getPrintTrials = (app) => {
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
-      return res.render('_errors/generic');
+      return res.render('_errors/generic', { err });
     }
 
     res.contentType('application/pdf');

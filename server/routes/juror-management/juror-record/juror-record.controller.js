@@ -62,7 +62,7 @@
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
         };
 
       clearInvalidSessionData(req);
@@ -167,7 +167,7 @@
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
         };
 
       clearInvalidSessionData(req);
@@ -246,7 +246,7 @@
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
         };
 
       clearInvalidSessionData(req);
@@ -372,7 +372,7 @@
             },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
         }
 
       } catch (err) {
@@ -390,7 +390,7 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }
     };
   };
@@ -475,7 +475,7 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }
     };
   };
@@ -544,7 +544,7 @@
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
         };
 
       clearInvalidSessionData(req);
@@ -649,7 +649,7 @@
           });
 
           if (req.url.includes('bank-details')) {
-            return res.render('_errors/generic');
+            return res.render('_errors/generic', { err });
           }
 
           return res.redirect(app.namedRoutes.build('juror-record.notes.get', {
@@ -800,7 +800,7 @@
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
         };
 
       if (req.body.notes.length > 2000) {
@@ -859,7 +859,7 @@
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
         }
 
         backLinkUrl = {
@@ -931,7 +931,7 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       };
 
       // on this case we can use the same request object but without the juror-number
@@ -1065,7 +1065,7 @@
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
-      return res.render('_errors/generic');
+      return res.render('_errors/generic', { err });
     }
   };
 
@@ -1126,7 +1126,7 @@
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
-      return res.render('_errors/generic');
+      return res.render('_errors/generic', { err });
     }
   }
 
@@ -1309,7 +1309,6 @@
         'notes',
         req.params['jurorNumber'],
       )).data.notes;
-      console.log('\n\njurorNotes\n', jurorNotes, '\n', jurorNotes !== null && jurorNotes !== '', '\n\n');
 
       return jurorNotes !== null && jurorNotes !== '';;
     } catch (err) {

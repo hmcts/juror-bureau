@@ -75,7 +75,7 @@ module.exports.getDismissJurorsPools = function(app) {
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
-      return res.render('_errors/generic.njk');
+      return res.render('_errors/generic', { err });
     }
   };
 };
@@ -176,7 +176,7 @@ module.exports.getJurorsList = function(app) {
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
-      return res.render('_errors/generic.njk');
+      return res.render('_errors/generic', { err });
     }
   };
 };
@@ -461,7 +461,7 @@ module.exports.postCheckPool = function(app) {
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
   
-        return res.render('_errors/generic.njk');
+        return res.render('_errors/generic', { err });
       }
       req.session.selectedDismissalPools = action === 'check' ? pools : [];
     } else {
@@ -501,7 +501,7 @@ async function calculateTotalJurorsAvailable(app, req, res, selections, selected
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
-      return res.render('_errors/generic.njk');
+      return res.render('_errors/generic', { err });
     }
 
     let totalAvailable = 0;
