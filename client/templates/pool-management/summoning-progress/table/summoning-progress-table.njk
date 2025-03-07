@@ -71,11 +71,30 @@
                         {% else %}
                             <span class="barChart-component summoning-progress-barChart-bar confirmed" data-percentage="{{pool.barChart.confirmed}}"></span>
                             <span class="barChart-component summoning-progress-barChart-bar requested" data-percentage="{{pool.barChart.requested}}"></span>
-                            <span class="barChart-component requested-triangle" data-position="{{pool.barChart.trianglePosition}}"></span>
+                            <span class="barChart-component requested-triangle" data-position="{{pool.barChart.trianglePosition}}">
+                                <span class="barChart-component requested-triangle-value govuk-!-font-weight-bold" data-position="{{pool.barChart.trianglePosition}}">{{pool.requested}}</span>
+                            </span>
                             <span class="barChart-component summoning-progress-barChart-bar surplus" data-percentage="{{pool.barChart.surplus}}"></span>
                             <span class="barChart-component summoning-progress-barChart-bar notResponded" data-percentage="{{pool.barChart.notResponded}}"></span>
                             <span class="barChart-component summoning-progress-barChart-bar unavailable" data-percentage="{{pool.barChart.unavailable}}"></span>
                         {% endif %}
+                        </div>
+                        <div class="summoning-progress-barChart">
+                            {% if pool.barChart.confirmed %}
+                                <span class="barChart-component summoning-progress-barChart-value" data-position="{{pool.barChart.confirmedPosition}}" bar-type="confirmed">{{pool.barChart.confirmedValue}}</span>
+                            {% endif %}
+                            {% if pool.barChart.requested %}
+                                <span class="barChart-component summoning-progress-barChart-value" data-position="{{pool.barChart.requestedPosition}}" bar-type="requested">{{pool.barChart.requestedValue}}</span>
+                            {% endif %}
+                            {% if pool.barChart.surplus %}
+                                <span class="barChart-component summoning-progress-barChart-value" data-position="{{pool.barChart.surplusPosition}}" bar-type="surplus">{{pool.barChart.surplusValue}}</span>
+                            {% endif %}
+                            {% if pool.barChart.notResponded %}
+                                <span class="barChart-component summoning-progress-barChart-value" data-position="{{pool.barChart.notRespondedPosition}}" bar-type="notResponded">{{pool.barChart.notRespondedValue}}</span>
+                            {% endif %}
+                            {% if pool.barChart.unavailable %}
+                                <span class="barChart-component summoning-progress-barChart-value" data-position="{{pool.barChart.unavailablePosition}}" bar-type="unavailable">{{pool.barChart.unavailableValue}}</span>
+                            {% endif %}
                         </div>
                     </td>
                 </tr>

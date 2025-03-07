@@ -34,7 +34,7 @@ module.exports.getJurorsOnTrial = function() {
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
-      return res.render('_errors/generic');
+      return res.render('_errors/generic', { err });
     }
 
     const currentDay = dateFilter(attendanceDate, null, 'dddd D MMMM YYYY');
@@ -80,7 +80,7 @@ module.exports.getConfirmAttendance = function(app) {
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
-      return res.render('_errors/generic');
+      return res.render('_errors/generic', { err });
     }
 
     const tmpErrors = _.clone(req.session.errors);
@@ -155,7 +155,7 @@ module.exports.postConfirmAttendance = function(app) {
         }) + '?attendance_date=' + attendanceDate);
       }
 
-      return res.render('_errors/generic');
+      return res.render('_errors/generic', { err });
     }
 
     return res.redirect(app.namedRoutes.build('juror-management.jurors-on-trial.get'));

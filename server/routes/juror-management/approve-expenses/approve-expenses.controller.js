@@ -120,7 +120,7 @@
           });
         }
 
-        return res.render('_errors/generic.njk');
+        return res.render('_errors/generic', { err });
       };
     };
   };
@@ -331,7 +331,7 @@
         return res.redirect(redirectUrl);
       }
 
-      return res.render('_errors/generic.njk');
+      return res.render('_errors/generic', { err });
     }
   }
 

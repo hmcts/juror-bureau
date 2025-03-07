@@ -27,7 +27,7 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic.njk');
+        return res.render('_errors/generic', { err });
       };
 
       const unavailableJurors = selectedJurorDetails.filter(juror => !['RESPONDED', 'PANEL', 'JUROR'].includes(juror.status)).map((juror) => {

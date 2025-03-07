@@ -54,7 +54,7 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }   
 
       const { startDate } = req.session.jurorCommonDetails;
@@ -200,7 +200,7 @@
         return res.redirect(errorUrl);
       }
 
-      return res.render('_errors/generic');
+      return res.render('_errors/generic', { err });
     });
   };
 

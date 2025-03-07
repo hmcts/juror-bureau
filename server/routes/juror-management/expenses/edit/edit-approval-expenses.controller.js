@@ -156,7 +156,7 @@
           }));
         }
 
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }
     };
   };
@@ -219,7 +219,7 @@
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }
     };
   };
@@ -355,7 +355,7 @@
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }
     };
   };
@@ -419,7 +419,7 @@
             error: typeof error.error !== 'undefined' ? error.error : error.toString(),
           });
 
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err: error });
         }
 
         if (showTravelOverLimit) {
@@ -524,7 +524,7 @@
           error: typeof error.error !== 'undefined' ? error.error : error.toString(),
         });
 
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err: error });
       }
 
       // handle next url logic in the end
@@ -813,7 +813,7 @@
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }
     };
   };

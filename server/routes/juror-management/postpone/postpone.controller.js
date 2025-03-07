@@ -278,7 +278,7 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       });
     };
   };
@@ -351,7 +351,7 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       });
     };
   };
@@ -440,7 +440,7 @@
             error:
               typeof err.error !== 'undefined' ? err.error : err.toString(),
           });
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
         });
 
     };
@@ -529,7 +529,7 @@
             typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       });
     };
   };
@@ -700,7 +700,6 @@
             req.session.formFields = req.body;
           }
           if (err.statusCode === 422 && err.error?.code === 'JUROR_DATE_OF_BIRTH_REQUIRED') {
-            console.log('\n\nIN HERE2\n\n');
             errorRedirect = app.namedRoutes.build('juror.update.available-pools.get', {
               jurorNumber: req.params.jurorNumber,
             });
@@ -772,7 +771,7 @@
           }));
         }
 
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       });
   }
 

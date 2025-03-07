@@ -108,6 +108,16 @@
     height: 17px;
 }
 
+.summoning-progress-barChart-value {
+    position: absolute;
+    height: 17px;
+    text-align: right;
+    box-sizing: border-box;
+    overflow:visible;
+    margin-left: auto;
+    margin-right: 0;
+}
+
 .summoning-progress-barChart {
     position: relative;
     width: 95%;
@@ -126,7 +136,13 @@
         height: 0;
         border-left: 6px solid transparent;
         border-right: 6px solid transparent;
-        border-top: 12px solid transparent;       
+        border-top: 12px solid transparent;   
+        display: flex;
+        justify-content: center;    
+    }
+    .requested-triangle-value {
+        position: relative;
+        bottom: 30px;       
     }
 
     .confirmed {
