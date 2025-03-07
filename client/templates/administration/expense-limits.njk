@@ -30,6 +30,14 @@
   {% if errors.items["limitFinancialLossFullDayLongTrial"] %}
     {% set limitFinancialLossFullDayLongTrialError = { text: errors.items["limitFinancialLossFullDayLongTrial"][0].details } %}
   {% endif %}
+  {% set limitFinancialLossHalfDayExtraLongTrialError = undefined %}
+  {% if errors.items["limitFinancialLossHalfDayExtraLongTrial"] %}
+    {% set limitFinancialLossHalfDayExtraLongTrialError = { text: errors.items["limitFinancialLossHalfDayExtraLongTrial"][0].details } %}
+  {% endif %}
+  {% set limitFinancialLossFullDayExtraLongTrialError = undefined %}
+  {% if errors.items["limitFinancialLossFullDayExtraLongTrial"] %}
+    {% set limitFinancialLossFullDayExtraLongTrialError = { text: errors.items["limitFinancialLossFullDayExtraLongTrial"][0].details } %}
+  {% endif %}
   {% set carMileageRatePerMile0PassengersError = undefined %}
   {% if errors.items["carMileageRatePerMile0Passengers"] %}
     {% set carMileageRatePerMile0PassengersError = { text: errors.items["carMileageRatePerMile0Passengers"][0].details } %}
@@ -132,6 +140,38 @@
           },
           value: tmpBody.limitFinancialLossFullDayLongTrial if tmpBody else expenseLimits.limitFinancialLossFullDayLongTrial,
           errorMessage: limitFinancialLossFullDayLongTrialError,
+          classes: "govuk-input--width-5",
+          prefix: {
+            text: "£"
+          },
+          spellcheck: false
+        }) }}
+
+        {{ govukInput({
+          id: "limitFinancialLossHalfDayExtraLongTrial",
+          name: "limitFinancialLossHalfDayExtraLongTrial",
+          label: {
+            text: "Half day (over 201 days)",
+            classes: "govuk-!-font-weight-bold"
+          },
+          value: tmpBody.limitFinancialLossHalfDayExtraLongTrial if tmpBody else expenseLimits.limitFinancialLossHalfDayExtraLongTrial,
+          errorMessage: limitFinancialLossHalfDayExtraLongTrialError,
+          classes: "govuk-input--width-5",
+          prefix: {
+            text: "£"
+          },
+          spellcheck: false
+        }) }}
+
+        {{ govukInput({
+          id: "limitFinancialLossFullDayExtraLongTrial",
+          name: "limitFinancialLossFullDayExtraLongTrial",
+          label: {
+            text: "Full day (over 201 days)",
+            classes: "govuk-!-font-weight-bold"
+          },
+          value: tmpBody.limitFinancialLossFullDayExtraLongTrial if tmpBody else expenseLimits.limitFinancialLossFullDayExtraLongTrial,
+          errorMessage: limitFinancialLossFullDayExtraLongTrialError,
           classes: "govuk-input--width-5",
           prefix: {
             text: "£"
