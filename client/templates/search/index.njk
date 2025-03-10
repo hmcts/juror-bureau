@@ -282,7 +282,7 @@
             class="govuk-heading-m additional-info-text search-loaded"
           >
             The specified search resulted in more than <span class="maxRecordsMsg">{{ responses.limit }}</span> results. This list only shows the 
-            {% if searchParams.processing_status === "CLOSED" %}
+            {% if searchParams.processingStatus === "CLOSED" %}
               newest 
             {% else %}
               oldest 
@@ -346,7 +346,7 @@
                 <th scope="col" class="govuk-table__header" aria-sort="none" aria-label>Court name</th>
                 <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Officer assigned">Officer assigned</th>
                 <th scope="col" class="govuk-table__header" aria-sort="none" aria-label="Reply status">Reply status</th>
-                <th scope="col" class="govuk-table__header" aria-sort="{{'descending' if searchParams.processing_status === 'CLOSED' else 'ascending'}}" aria-label="Date received">Date received</th>
+                <th scope="col" class="govuk-table__header" aria-sort="{{'descending' if searchParams.processingStatus === 'CLOSED' else 'ascending'}}" aria-label="Date received">Date received</th>
 
               </tr>
             </thead>

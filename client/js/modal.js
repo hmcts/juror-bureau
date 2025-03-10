@@ -22,13 +22,13 @@
     case 'disqualified':
       triggerDisqualified(e);
       break;
-    case 'send_to':
+    case 'sendTo':
       triggerSingleSendTo(e);
       break;
-    case 'awaiting_information':
+    case 'awaitingInformation':
       triggerAwaitingInformation(e);
       break;
-    case 'send_to_court':
+    case 'sendToCourt':
       triggerSendToCourt(e);
       break;
     default:
@@ -57,12 +57,12 @@
       break;
     case 'disqualified':
       break;
-    case 'send_to':
+    case 'sendTo':
       //triggerSingleSendTo(e);
       break;
-    case 'awaiting_information':
+    case 'awaitingInformation':
       break;
-    case 'send_to_court':
+    case 'sendToCourt':
       triggerSendToCourt(e);
       break;
     default:
@@ -81,15 +81,15 @@
     //e.preventDefault();
 
     switch ($(this).attr('value')) {
-    case 'download_pdf':
+    case 'downloadPdf':
       break;
-    case 'send_to':
+    case 'sendTo':
       //triggerSingleSendTo(e);
       break;
-    case 'awaiting_information':
+    case 'awaitingInformation':
       //triggerAwaitingInformation(e);
       break;
-    case 'request_information_by_post':
+    case 'requestInformationByPost':
       break;
     default:
       alert('Functionality not yet available');

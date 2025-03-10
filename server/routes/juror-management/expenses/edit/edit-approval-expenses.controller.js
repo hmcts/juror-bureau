@@ -928,7 +928,7 @@
         lossLimit = response.limitFinancialLossFullDayLongTrial;
         break;
       case 'FULL_DAY_EXTRA_LONG_TRIAL':
-        lossLimit = response.limit_financial_loss_full_day_extra_long_trial;
+        lossLimit = response.limitFinancialLossFullDayExtraLongTrial;
         break;
       case 'HALF_DAY':
         lossLimit = response.limitFinancialLossHalfDay;
@@ -937,7 +937,7 @@
         lossLimit = response.limitFinancialLossHalfDayLongTrial;
         break;
       case 'HALF_DAY_EXTRA_LONG_TRIAL':
-        lossLimit = response.limit_financial_loss_half_day_extra_long_trial;
+        lossLimit = response.limitFinancialLossHalfDayExtraLongTrial;
         break;
       case 'NON_ATTENDANCE':
         lossLimit = response.limitFinancialLossFullDay;
@@ -946,7 +946,7 @@
         lossLimit = response.limitFinancialLossFullDayLongTrial;
         break;
       case 'NON_ATT_EXTRA_LONG_TRIAL':
-        lossLimit = response.limit_financial_loss_full_day_extra_long_trial;
+        lossLimit = response.limitFinancialLossFullDayExtraLongTrial;
         break;
       }
 
@@ -958,8 +958,8 @@
       showLossOverLimit = {
         'jurorLoss': totalFinancialLoss,
         limit: lossLimit,
-        'attendance_type': attendanceType,
-        'is_long_trial_day': false,
+        'attendanceType': attendanceType,
+        'isLongTrialDay': false,
         // eslint-disable-next-line max-len
         message: `The amount you entered will automatically be recalculated to limit the juror's loss to £${lossLimit}`,
       };
