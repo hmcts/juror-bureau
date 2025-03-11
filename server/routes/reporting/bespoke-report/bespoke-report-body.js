@@ -97,9 +97,9 @@ const bespokeReportBodys = (app, req) => {
           value.sort(sort(sortBy, sortDirection));
           value.forEach((juror) => {
             let auditNumber = '-'
-            if (juror.auditNumber.charAt(0) === 'J') {
+            if (juror.auditNumber?.charAt(0) === 'J') {
               auditNumber = `<a class="govuk-link" href="${app.namedRoutes.build('reports.jury-attendance-audit.report.print', {filter: juror.auditNumber})}" target="_blank">${juror.auditNumber}</a>`
-            } else if (juror.auditNumber.charAt(0) === 'P') {
+            } else if (juror.auditNumber?.charAt(0) === 'P') {
               auditNumber = `<a class="govuk-link" href="${app.namedRoutes.build('reports.pool-attendance-audit.report.print', {filter: juror.auditNumber})}" target="_blank">${juror.auditNumber}</a>`
             }
             rows.push([
