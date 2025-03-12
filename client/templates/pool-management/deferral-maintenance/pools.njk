@@ -8,6 +8,12 @@
 {% block page_title %}{{ serviceName }} - Deferral maintenance - Active pools{% endblock %}
 {% block page_identifier %}Deferral maintenance - Active pools{% endblock %}
 
+{% block beforeContent %}
+  {% if backLinkUrl %}
+    {% include "includes/back-link.njk" %}
+  {% endif %}
+{% endblock %}
+
 {% block content %}
 
   {% include "includes/errors.njk" %}
@@ -15,7 +21,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
 
-      <form id="poolNumber" action="{{ url('pool-management.deferral-maintenance.process.post', { locationCode: locationCode }) }}" method="POST">
+      <form id="poolNumber" action="{{ submitUrl or url('pool-management.deferral-maintenance.process.post', { locationCode: locationCode }) }}" method="POST">
 
         <div class="{% if errors.count > 0%}govuk-form-group--error{% endif %}">
           <h1 class="govuk-heading-l">Choose an active pool to add selected jurors to</h1>
