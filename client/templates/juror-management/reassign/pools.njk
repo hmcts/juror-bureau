@@ -7,7 +7,7 @@
 {% block page_identifier %}Juror record - Reassign - Pools available{% endblock %}
 
 {% block beforeContent %}
-  {% if backLinkUrl %}
+  {% if backLinkUrl and backLinkUrl.url %}
       {% include "../../includes/back-link.njk" %}
   {% endif %}
 {% endblock %}
