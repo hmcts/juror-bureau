@@ -47,8 +47,7 @@
             },
           },
         });
-
-        return res.render('_errors/generic');
+        return res.render('_errors/data-mismatch');
       }
 
       return res.render('juror-management/attendance/add-attendance', {

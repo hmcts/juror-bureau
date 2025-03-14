@@ -13,6 +13,22 @@
       const { jurorNumber, locCode } = req.params;
       let { status } = req.query;
 
+      if (req.session.jurorCommonDetails) {
+        if (jurorNumber != req.session.jurorCommonDetails?.jurorNumber) {
+          app.logger.crit('Juror number does not match cached data', {
+            auth: req.session.authentication,
+            jwt: req.session.authToken,
+            data: {
+              jurorNumber: {
+                url: jurorNumber,
+                cached: req.session.jurorCommonDetails.jurorNumber,
+              },
+            },
+          });
+          return res.render('_errors/data-mismatch');
+        }
+      }
+
       if (status !== 'for-approval' && status !== 'approved' && status !== 'for-reapproval') {
         status = 'draft';
       }
