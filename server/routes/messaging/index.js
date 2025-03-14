@@ -99,6 +99,20 @@
       sendController.postMessageConfirmation(app),
     );
 
+    app.get('/messaging/send/:message/select-pool',
+      'messaging.send.select-pool.get',
+      auth.verify,
+      isCourtUser,
+      sendController.getSelectPool(app),
+    );
+
+    app.post('/messaging/send/:message/select-pool',
+      'messaging.send.select-pool.post',
+      auth.verify,
+      isCourtUser,
+      sendController.postSelectPool(app),
+    );
+
     // ajax route to check / uncheck jurors
     app.post('/messaging/send/:message/select-jurors/check',
       'messaging.send.select-jurors.check.post',
