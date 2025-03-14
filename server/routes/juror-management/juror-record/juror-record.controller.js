@@ -657,8 +657,7 @@
           }));
         };
 
-      let jurorNumber = '';
-
+      let jurorNumber;
 
       if (req.params['jurorNumber']){
         jurorNumber = req.params['jurorNumber']; //juror details
