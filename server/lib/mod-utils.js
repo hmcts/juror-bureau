@@ -71,7 +71,7 @@
     return matches ? matches[0] : null;
   };
 
-  module.exports.transformPoolList = function(pools, status, tab, sortBy, sortOrder) {
+  module.exports.transformPoolList = function(pools, status, tab, sortBy, sortOrder, includeRadioButtons = false) {
     const table = {
         head: [],
         rows: [],
@@ -83,6 +83,7 @@
         id: 'poolNumber',
         value: 'Pool number',
         sort: sortBy === 'poolNumber' ? order : 'none',
+        classes: includeRadioButtons ? 'govuk-!-padding-left-6': '',
       },
       {
         ...(status === 'created') ?
@@ -151,11 +152,31 @@
 
       // build a row object (each row needs to be its own array)
       item.push(
-        {
-          html: '<a href="/pool-management/pool-overview/' +
-              pool.poolNumber + '" class="govuk-link">' + pool.poolNumber + '</a>',
-          attributes: {
-            'data-sort-value': pool.poolNumber,
+        { ...includeRadioButtons ? 
+          {
+            html:
+              '<div class="govuk-radios govuk-radios--small" data-module="govuk-radios">' +
+                '<div class="govuk-radios__item">' +
+                  '<input class="govuk-radios__input" id="' + pool.poolNumber + '" name="selectedPool" ' +
+                    'type="radio" value="' + pool.poolNumber + '">' +
+                  '<label class="govuk-label govuk-radios__label" for="' + pool.poolNumber + '">' +
+                    '<a href="/pool-management/pool-overview/' + pool.poolNumber + '" class="govuk-link">' +
+                      pool.poolNumber +
+                    '</a>' +
+                  '</label>' +
+                '</div>' +
+              '</div>',
+            attributes: {
+              'data-sort-value': pool.poolNumber,
+            },
+          } :
+          {
+            html: '<a href="/pool-management/pool-overview/' +
+                pool.poolNumber + '" class="govuk-link">' + pool.poolNumber + '</a>',
+            attributes: {
+              'data-sort-value': pool.poolNumber,
+            },
+            classes: 'jd-middle-align',
           },
         },
         {
@@ -163,25 +184,28 @@
           attributes: {
             'data-sort-value': getNumberRequested(),
           },
+          classes: 'jd-middle-align',
         },
         {
           text: capitalizeFully(pool.courtName),
           attributes: {
             'data-sort-value': pool.courtName,
           },
+          classes: 'jd-middle-align',
         },
         {
           text: (pool.poolType.length === 3) ? transformPoolType(pool.poolType) : capitalizeFully(pool.poolType),
           attributes: {
             'data-sort-value': pool.poolType,
           },
+          classes: 'jd-middle-align',
         },
         {
           text: dateFilter(pool.attendanceDate, null, 'ddd DD MMM YYYY'),
           attributes: {
             'data-sort-value': pool.attendanceDate,
           },
-          classes: 'govuk-!-text-align-right',
+          classes: 'govuk-!-text-align-right jd-middle-align',
         }
       );
 
@@ -191,6 +215,7 @@
           attributes: {
             'data-sort-value': getNumberConfirmed(),
           },
+          classes: 'jd-middle-align',
         });
       }
 
