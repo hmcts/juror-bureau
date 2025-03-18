@@ -21,7 +21,6 @@ const clientJs = [
   'bulk-undeliverable.js',
   'multiple-tabs.js',
   'print-sortable.js',
-  'summoning-progress.js',
 ];
 
 const copyClientCode = new CopyWebpackPlugin({
