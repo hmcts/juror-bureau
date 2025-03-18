@@ -12,7 +12,7 @@ We require NodeJS (>=18) and Yarn (corepack is included in recent node).
 
 We recommend using `nvm` to manage your node versions locally, but if you prefer to manage them any other way feel free.
 
-#### Using nvm and yarn
+#### Using nvm and yarn 
 
 [Use nvm's Github to install](https://github.com/nvm-sh/nvm) if you dont have it already.
 
