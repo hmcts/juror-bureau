@@ -1,0 +1,25 @@
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
+{%- from "govuk/components/table/macro.njk" import govukTable -%}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full govuk-body">
+    {{ modSortableTable({
+      id: "poolsTable",
+      caption: "Pools",
+      captionClasses: "govuk-visually-hidden",
+      head: pools.head,
+      rows: pools.rows
+    }) }}
+
+    {{ govukPagination({
+      previous: {
+        href: pagination.prev
+      },
+      next: {
+        href: pagination.next
+      },
+      items: pagination.items
+    }) }}
+  </div>
+</div>

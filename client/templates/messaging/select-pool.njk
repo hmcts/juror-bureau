@@ -1,0 +1,51 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "custom-components/time-input-12-hour/macro.njk" import timeInput12Hour %}
+
+{% set currentApp = "Messaging" %}
+
+{% block page_title %}{{ serviceName }} - Messaging - {{ messageTitle }}{% endblock %}
+{% block page_identifier %}Messaging{% endblock %}
+
+{% block beforeContent %}
+  {% if backLinkUrl %}
+    {% include "includes/back-link.njk" %}
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-xl">{{ messageTitle | capitalize }}</span>
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Select an active pool</h1>
+    </div>
+  </div>
+
+  <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible govuk-!-margin-top-0 govuk-!-margin-bottom-6">
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {% if pools.rows | length > 0 %}
+        <form action="{{ submitUrl }}" method="post" id="selectPoolForm">
+          {{ govukButton({
+            text: "Continue with selected",
+            type: "submit"
+          }) }}
+
+          {% include "./_partials/pools-table.njk" %}
+        
+          <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+      {% else %}
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-6">No matching results</h2>
+      {% endif %}
+    </div>
+  </div>
+
+{% endblock %}

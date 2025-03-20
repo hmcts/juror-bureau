@@ -1,3 +1,5 @@
+const { poolRequestsDAO } = require('../../objects/pool-list');
+
 (function() {
   'use strict';
 
@@ -163,10 +165,12 @@
       delete req.session.formField;
       delete req.session.messaging.filters;
       delete req.session.messaging.checkedJurors;
+      delete req.session.messaging.activePoolSearch;
 
       return res.render('messaging/find-jurors.njk', {
         messageTitle: messagingTitles[message],
         submitUrl: app.namedRoutes.build('messaging.send.find-jurors.post', { message }),
+        activePoolsUrl: app.namedRoutes.build('messaging.send.select-pool.get', { message }),
         backLinkUrl: {
           built: true,
           url: app.namedRoutes.build('messaging.send.template.get', { message }),
@@ -431,6 +435,13 @@
         return res.redirect(app.namedRoutes.build('messaging.send.select-jurors.get', { message }));
       }
 
+      let backLinkUrl = app.namedRoutes.build('messaging.send.find-jurors.get', { message });
+      if (req.session.messaging.searchBy === 'trial') {
+        backLinkUrl = app.namedRoutes.build('messaging.send.select-trial.get', { message });
+      } else if (req.session.messaging.searchBy === 'pool' && req.session.messaging.activePoolSearch) {
+        backLinkUrl = app.namedRoutes.build('messaging.send.select-pool.get', { message });
+      }
+
       const filters = _.clone(req.session.messaging.filters) || {};
       const sendType = _.clone(req.session.messaging.sendType);
       const searchOptions = _.clone(req.session.messaging.searchOptions);
@@ -476,9 +487,7 @@
           submitUrl: app.namedRoutes.build('messaging.send.select-jurors.post', { message }),
           backLinkUrl: {
             built: true,
-            url: req.session.messaging.searchBy === 'trial'
-              ? app.namedRoutes.build('messaging.send.select-trial.get', { message })
-              : app.namedRoutes.build('messaging.send.find-jurors.get', { message }),
+            url: backLinkUrl,
           },
           changeSearchUrl: req.session.messaging.searchBy === 'trial'
             ? app.namedRoutes.build('messaging.send.select-trial.get', { message })
@@ -829,6 +838,117 @@
       });
 
       return res.send();
+    };
+  };
+
+  module.exports.getSelectPool = function(app) {
+    return async function(req, res) {
+      const { message } = req.params
+        , tmpErrors = _.clone(req.session.errors)
+        , tmpBody = _.clone(req.session.formFields);
+      const currentPage = req.query['page'] || 1
+        , sortBy = req.query['sortBy'] || 'serviceStartDate'
+        , sortOrder = req.query['sortOrder'] || 'ascending';
+      let pagination;
+
+      if (!req.session.messaging) {
+        return res.redirect(buildUrl(app, message, ['messaging.send.get', 'messaging.export-contacts.get']));
+      }
+
+      delete req.session.errors;
+      delete req.session.formFields;
+      delete req.session.messaging.filters;
+      delete req.session.messaging.jurorsOnPage;
+      delete req.session.messaging.checkedJurors;
+
+      try {
+        const data = await poolRequestsDAO.get(req, {
+          status: 'created',
+          tab: 'court',
+          page: currentPage,
+          locCode: req.session.authentication.locCode,
+          sortBy,
+          sortOrder,
+        });
+
+        app.logger.info('Fetched list of active pools', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            pools: data,
+          },
+        });
+
+        modUtils.replaceAllObjKeys(data, _.camelCase);
+
+        const queryTotal = data.totalItems;
+
+        if (queryTotal > modUtils.constants.PAGE_SIZE) {
+          pagination = modUtils.paginationBuilder(queryTotal, currentPage, req.url);
+        }
+
+        const pools = modUtils.transformPoolList(data.data, 'created', 'court', sortBy, sortOrder, true);
+
+        return res.render('messaging/select-pool.njk', {
+          messageTitle: messagingTitles[message],
+          submitUrl: app.namedRoutes.build('messaging.send.select-pool.post', { message }),
+          backLinkUrl: {
+            built: true,
+            url: buildUrl(app, message, [
+              'messaging.send.find-jurors.get',
+              'messaging.export-contacts.get',
+            ]),
+          },
+          tmpBody,
+          pagination,
+          pools,
+          errors: {
+            title: 'Please check the form',
+            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+            items: tmpErrors,
+          },
+        });
+      } catch (err) {
+        app.logger.crit('Failed to fetch pools: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic');
+      }
+    };
+  };
+
+  module.exports.postSelectPool = function(app) {
+    return function(req, res) {
+      const { message } = req.params;
+
+      if (typeof req.body.selectedPool === 'undefined') {
+        req.session.errors = {
+          selectedTrial: [{
+            summary: 'Select a pool',
+            details: 'Select a pool',
+          }],
+        };
+        req.session.formFields = req.body;
+        return res.redirect(app.namedRoutes.build('messaging.send.select-pool.get', { message }));
+      };
+
+
+      const searchOptions = {
+        'jurorSearch': null,
+        'poolNumber': req.body.selectedPool,
+        'nextDueAtCourtDate': null,
+        'dateDeferredTo': null,
+        'trialNumber': null,
+      };
+
+      req.session.messaging.searchOptions = searchOptions;
+      req.session.messaging.searchBy = 'pool';
+      req.session.messaging.activePoolSearch = true;
+
+      return res.redirect(app.namedRoutes.build('messaging.send.select-jurors.get', { message }));
     };
   };
 
