@@ -10,6 +10,7 @@
   const { dateFilter, capitalizeFully, makeDate, capitalise } = require('../../components/filters');
   const endTrialDateValidator = require('../../config/validation/end-trial');
   const moment = require('moment');
+  const messagingValidator = require('../../config/validation/messaging');
 
 
   module.exports.getTrials = function(app) {
@@ -18,7 +19,13 @@
       const isActive = req.query['isActive'] || 'true'
       const sortBy = req.query['sortBy'] || 'startDate'
       const sortOrder = req.query['sortOrder'] || 'ascending';
+      const trialNumber = req.query['trialNumber'];
       let pagination;
+
+      const tmpBody = _.clone(req.session.formFields);
+      delete req.session.formFields;
+      const tmpErrors = _.clone(req.session.errors);
+      delete req.session.errors;
 
       const opts = {
         active: isActive,
@@ -26,6 +33,7 @@
         pageLimit: modUtils.constants.PAGE_SIZE,
         sortField: capitalise(modUtils.camelToSnake(sortBy)),
         sortMethod: sortOrder === 'ascending' ? 'ASC' : 'DESC',
+        trialNumber,
       };
 
       trialsListDAO.post(req, modUtils.mapCamelToSnake(opts))
@@ -46,11 +54,31 @@
             pagination = modUtils.paginationBuilder(queryTotal, currentPage, req.url);
           }
 
+          if (queryTotal === 1 && trialNumber) {
+            console.log('\N\NONLY ONE SEARCH REULT!!!!\n\n');
+            console.log(data.data[0]);
+            if (data.data[0].trial_number === trialNumber) {
+              return res.redirect(app.namedRoutes.build('trial-management.trials.detail.get', {
+                trialNumber: data.data[0].trial_number,
+                locationCode: data.data[0].court_location,
+              }));
+            }
+          }
+
           return res.render('trial-management/trials.njk', {
             nav: 'trials',
             isActive,
             trials: transformTrialsList(data.data, sortBy, sortOrder),
             pagination,
+            searchUrl: app.namedRoutes.build('trial-management.trials.filter.post') + `?isActive=${isActive}`,
+            clearSearchUrl: app.namedRoutes.build('trial-management.trials.get') + `?isActive=${isActive}`,
+            trialNumber,
+            tmpBody,
+            errors: {
+              title: 'Please check the form',
+              count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+              items: tmpErrors,
+            }
           });
 
         })
@@ -65,6 +93,23 @@
           return res.render('_errors/generic', { err });
         });
 
+    };
+  };
+
+  module.exports.postFilterTrial = function(app) {
+    return function(req, res) {
+      const { isActive } = req.query;
+      const validatorResult = validate(req.body, messagingValidator.trialSearch());
+      
+      console.log('\n\n', isActive, '\n\n');
+      
+      if (typeof validatorResult !== 'undefined') {
+        req.session.errors = validatorResult;
+        req.session.formFields = req.body;
+        return res.redirect(app.namedRoutes.build('trial-management.trials.get') + `?isActive=${isActive}`);
+      }
+
+      return res.redirect(app.namedRoutes.build('trial-management.trials.get') + `?isActive=${isActive}&trialNumber=${encodeURIComponent(req.body.searchTrialNumber)}`);
     };
   };
 
