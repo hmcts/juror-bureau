@@ -1,6 +1,6 @@
 {
   "name": "juror-bureau",
-  "version": "5.3.0",
+  "version": "5.4.0",
   "private": true,
   "description": "Juror Bureau frontend application",
   "engines": {
@@ -30,7 +30,7 @@
     "@ministryofjustice/frontend": "^2.2.4",
     "accessible-autocomplete": "^3.0.0",
     "applicationinsights": "^2.9.4",
-    "axios": "^1.7.4",
+    "axios": "^1.8.3",
     "basic-auth": "^2.0.0",
     "body-parser": "^1.15.2",
     "chart.js": "^2.9.3",
@@ -44,7 +44,7 @@
     "express-rate-limit": "^7.3.1",
     "express-session": "^1.18.1",
     "fs-extra": "^11.0.0",
-    "govuk-frontend": "^5.7.1",
+    "govuk-frontend": "^5.8.0",
     "helmet": "^7.0.0",
     "jsonwebtoken": "^9.0.0",
     "launchdarkly-node-server-sdk": "^7.0.1",

@@ -98,13 +98,13 @@
             },
           });
         })
-        .catch(() => {
+        .catch((err) => {
           app.logger.crit('Failed to retrive excusal codes: ', {
             auth: req.session.authentication,
             jwt: req.session.authToken,
           });
 
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
         });
     };
   };
@@ -168,7 +168,7 @@
               error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
             });
 
-            return res.render('_errors/generic');
+            return res.render('_errors/generic', { err });
           });
       } else {
         // Change in date, possibly a change in reason, redirect to available pools display.
@@ -210,7 +210,7 @@
               error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
             });
 
-            return res.render('_errors/generic');
+            return res.render('_errors/generic', { err });
           }
         );
     };
@@ -286,7 +286,7 @@
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
 
         });
     };
@@ -354,7 +354,7 @@
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
-          return res.render('_errors/generic');
+          return res.render('_errors/generic', { err });
         });
     };
   };
@@ -362,6 +362,22 @@
   module.exports.getEditDetails = (app) => {
     return async(req, res) => {
       const { jurorNumber } = req.params;
+
+      if (req.session.jurorCommonDetails) {
+        if (jurorNumber != req.session.jurorCommonDetails?.jurorNumber) {
+          app.logger.crit('Juror number does not match cached data', {
+            auth: req.session.authentication,
+            jwt: req.session.authToken,
+            data: {
+              jurorNumber: {
+                url: jurorNumber,
+                cached: req.session.jurorCommonDetails.jurorNumber,
+              },
+            },
+          });
+          return res.render('_errors/data-mismatch');
+        }
+      }
 
       req.session.dateMax = moment().subtract(1, 'days');
 
@@ -500,7 +516,7 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }
     };
   };
@@ -511,7 +527,7 @@
       let validatorResult = validate(req.body, overviewDetailsValidator());
 
       if (!req.session[`editJurorDetails-${jurorNumber}`]) {
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }
 
       if (req.body.thirdParty === 'yes') {
@@ -685,7 +701,7 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic');
+        return res.render('_errors/generic', { err });
       }
     }
 
@@ -703,7 +719,7 @@
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
-      return res.render('_errors/generic');
+      return res.render('_errors/generic', { err });
     }
 
     app.logger.info('Changed juror details: ', {
@@ -743,6 +759,22 @@
       const { jurorNumber } = req.params;
       let postUrl, cancelUrl,
         tmpErrors = _.clone(req.session.errors);
+  
+      if (req.session.jurorCommonDetails) {
+        if (jurorNumber != req.session.jurorCommonDetails?.jurorNumber) {
+          app.logger.crit('Juror number does not match cached data', {
+            auth: req.session.authentication,
+            jwt: req.session.authToken,
+            data: {
+              jurorNumber: {
+                url: jurorNumber,
+                cached: req.session.jurorCommonDetails.jurorNumber,
+              },
+            },
+          });
+          return res.render('_errors/data-mismatch');
+        }
+      }
 
       const address = {
         part1: req.session[`editJurorDetails-${jurorNumber}`].addressLineOne,
@@ -877,6 +909,22 @@
       delete req.session.errors;
 
       let jurorDetails;
+
+      if (req.session.jurorCommonDetails) {
+        if (jurorNumber != req.session.jurorCommonDetails?.jurorNumber) {
+          app.logger.crit('Juror number does not match cached data', {
+            auth: req.session.authentication,
+            jwt: req.session.authToken,
+            data: {
+              jurorNumber: {
+                url: jurorNumber,
+                cached: req.session.jurorCommonDetails.jurorNumber,
+              },
+            },
+          });
+          return res.render('_errors/data-mismatch');
+        }
+      }
 
       if (action === 'fix') {
         jurorDetails = {

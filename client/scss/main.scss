@@ -7,7 +7,7 @@ $govuk-page-width: 1500px;
 // override moj toolkit page width
 $moj-page-width: 1500px !default;
 
-@import "node_modules/govuk-frontend/dist/govuk/all.scss";
+@import "node_modules/govuk-frontend/dist/govuk/index.scss";
 @import "node_modules/@ministryofjustice/frontend/moj/all.scss";
 
 @import "dashboard.scss";

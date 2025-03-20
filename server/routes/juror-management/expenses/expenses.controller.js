@@ -16,6 +16,21 @@
       let processUrl = app.namedRoutes.build('juror-record.default-expenses.post', { jurorNumber });
       let cancelUrl = app.namedRoutes.build('juror-record.expenses.get', { jurorNumber });
 
+      if (req.session.jurorCommonDetails) {
+        if (jurorNumber != req.session.jurorCommonDetails?.jurorNumber) {
+          app.logger.crit('Juror number does not match cached data', {
+            auth: req.session.authentication,
+            jwt: req.session.authToken,
+            data: {
+              jurorNumber: {
+                url: jurorNumber,
+              },
+            },
+          });
+          return res.render('_errors/data-mismatch');
+        }
+      }
+
       if (req.url.includes('expense-record')) {
         const { locCode } = req.params;
 
@@ -69,7 +84,7 @@
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic.njk');
+        return res.render('_errors/generic', { err });
       }
     };
   };
@@ -128,7 +143,7 @@
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic.njk');
+        return res.render('_errors/generic', { err });
       };
     };
 

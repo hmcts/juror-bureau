@@ -45,7 +45,7 @@
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic.njk');
+        return res.render('_errors/generic', { err });
       }
     };
   };
@@ -121,7 +121,7 @@
           return res.redirect(app.namedRoutes.build('juror-management.attendance.unconfirmed-attendances.update.get', { jurorNumber }) + `${date ? `?date=${date}` : ''}`);
         }
 
-        return res.render('_errors/generic.njk');
+        return res.render('_errors/generic', { err });
       }
     };
   };
