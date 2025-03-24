@@ -245,7 +245,7 @@
     const notRespondedPct = (notRespondedValue / totalJurorsSummoned) * 100;
     const surplusPct = (surplusValue / totalJurorsSummoned) * 100;
     const unavailablePct = (unavailableValue / totalJurorsSummoned) * 100;
-    const trianglePosition = (requested / totalJurorsSummoned) * 100;
+    const trianglePosition = Math.min((requested / totalJurorsSummoned) * 100, 100);
 
     return {
       confirmedValue,
