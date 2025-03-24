@@ -22,6 +22,13 @@
       controller.getTrials(app),
     );
 
+    app.post('/trial-management/trials/filter',
+      'trial-management.trials.filter.post',
+      auth.verify,
+      isCourtUser,
+      controller.postFilterTrial(app),
+    );
+
     app.get('/trial-management/trials/print',
       'trial-management.trials.print.get',
       auth.verify,
