@@ -646,8 +646,6 @@
         ? reportType.bespokeReport.dao(req, config)
         : standardReportDAO.post(req, config));
 
-      console.log(tableData);
-
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
       if (isExport) return reportExport(app, req, res, reportKey, { headings, tableData }) ;
       let tables = [];
