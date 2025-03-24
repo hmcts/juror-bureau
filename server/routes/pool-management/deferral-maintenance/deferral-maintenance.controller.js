@@ -674,6 +674,20 @@
         }));
       }
 
+      if (!req.body.poolNumber) {
+        req.session.errors = {
+          poolNumber: [{
+            summary: 'Select a pool to move the jurors to',
+            details: 'Select a pool to move the jurors to',
+          }],
+        };
+
+        return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.move-court.select-pool.get', {
+          locationCode,
+          newLocationCode,
+        }));
+      }
+
       const jurors = extractDeferralsToProcess(req.session.deferralMaintenance.deferrals, true);
 
       // TODO: Update payload once API is available
