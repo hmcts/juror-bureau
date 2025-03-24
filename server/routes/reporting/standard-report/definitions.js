@@ -368,6 +368,18 @@
           'courtName',
         ],
         defaultSortColumn: 'lastName',
+        grouped: {
+          headings: {
+            transformer: (data, isPrint) => {
+              if (isPrint) {
+                return `Pool ${data}`;
+              }
+              return makeLink(app)['poolNumber'](data);
+            },
+          },
+          groupHeader: true,
+          totals: true,
+        },
       },
       'persons-attending-detail': {
         title: 'Persons attending (detailed)',
