@@ -55,8 +55,6 @@
           }
 
           if (queryTotal === 1 && trialNumber) {
-            console.log('\N\NONLY ONE SEARCH REULT!!!!\n\n');
-            console.log(data.data[0]);
             if (data.data[0].trial_number === trialNumber) {
               return res.redirect(app.namedRoutes.build('trial-management.trials.detail.get', {
                 trialNumber: data.data[0].trial_number,
@@ -100,9 +98,7 @@
     return function(req, res) {
       const { isActive } = req.query;
       const validatorResult = validate(req.body, messagingValidator.trialSearch());
-      
-      console.log('\n\n', isActive, '\n\n');
-      
+            
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
