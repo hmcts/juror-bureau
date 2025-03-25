@@ -436,8 +436,6 @@
           jurorNumber: req.params['jurorNumber'],
         }) + '?loc_code=' + tmpLocCode;
 
-        console.log('\n\nPAYLOAD\n', payload, '\n\n');
-
         req.session.bannerMessage = `Reassigned to pool <a class="govuk-link" href="${poolUrl}">${data.newPoolNumber}</a>`;
         if (req.session.poolJurorsReassign) {
           req.session.bannerMessage = `${data.numberReassigned} jurors reassigned to pool <a class="govuk-link" href="${poolUrl}">${data.newPoolNumber}</a>`;
