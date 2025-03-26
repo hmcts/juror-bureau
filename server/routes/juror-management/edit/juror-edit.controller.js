@@ -1097,7 +1097,7 @@
   };
 
   module.exports.postReassignCatchmentSelectCourt = (app) => {
-    return (req, res) => {
+    return async (req, res) => {
       const { jurorNumber } = req.params;
       let validatorResult = validate(req.body, reassignBeforeProcess());
 
@@ -1127,7 +1127,7 @@
         }
       } else {
         try {
-          court = modUtils.matchUserCourt(req.session.courtsList, {
+          court = await modUtils.matchUserCourt(req.session.courtsList, {
             courtNameOrLocation: req.body.courtNameOrLocation,
           });
         } catch (err) {

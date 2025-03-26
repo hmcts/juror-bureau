@@ -276,23 +276,24 @@
 
   module.exports.postReassignJuror = function(app) {
     return function(req, res) {
-      let validatorResult
-        , validationPayload;
+      let validatorResult;
+      let validationPayload;
 
       validatorResult = validate(req.body, validator.selectedActivePool());
+
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
 
         if (req.session.poolJurorsReassign) {
-          res.redirect(app.namedRoutes.build('pool-management.reassign.get', {
+          return res.redirect(app.namedRoutes.build('pool-management.reassign.get', {
             poolNumber: req.params['poolNumber'],
           }));
         } else if (req.url.includes('details/edit/reassign/select-pool')) {
-          res.redirect(app.namedRoutes.build('juror-record.details-edit.reassign.select-pool.get', {
+          return res.redirect(app.namedRoutes.build('juror-record.details-edit.reassign.select-pool.get', {
             jurorNumber: req.params['jurorNumber'],
           }));
         } else {
-          res.redirect(app.namedRoutes.build('juror-management.reassign.get', {
+          return res.redirect(app.namedRoutes.build('juror-management.reassign.get', {
             jurorNumber: req.params['jurorNumber'],
           }));
         }
