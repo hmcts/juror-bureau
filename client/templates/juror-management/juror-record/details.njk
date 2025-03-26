@@ -1,6 +1,7 @@
 {% extends "layouts/default.njk" %}
 
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
 
 {% block page_title %}{{ serviceName }} - Juror record - Details{% endblock %}
 {% block page_identifier %}Juror record - Details{% endblock %}
@@ -12,6 +13,14 @@
 {% endblock %}
 
 {% block content %}
+
+  {% if bannerMessage %}
+    {{ mojBanner({
+      type: "success",
+      html: bannerMessage,
+      iconFallbackText: "Success"
+    }) }}
+  {% endif %}
 
   {# TODO: maybe these builders can be moved somewhere else.... the address might not be the best way like this #}
   {% set currentName = [juror.commonDetails.title, juror.commonDetails.firstName, juror.commonDetails.lastName] %}
