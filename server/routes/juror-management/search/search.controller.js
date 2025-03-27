@@ -5,6 +5,7 @@ const urljoin = require('url-join');
 const { searchJurorRecordDAO } = require('../../../objects');
 const { constants, paginationBuilder, makeManualError } = require('../../../lib/mod-utils');
 const { capitalizeFully } = require('../../../components/filters');
+const { isBureauUser } = require('../../../components/auth/user-type');
 
 module.exports.getSearch = function(app) {
   return async function(req, res) {
@@ -34,7 +35,7 @@ module.exports.getSearch = function(app) {
         }
 
         totalResults = response.total_items;
-        jurorRecords = transformResults(response.data, app.namedRoutes);
+        jurorRecords = transformResults(response.data, app.namedRoutes, isBureauUser(req));
 
         pagination = paginationBuilder(totalResults, req.query.page || 1, req.url);
 
@@ -124,11 +125,13 @@ function buildSearchPayload({ jurorNumber, jurorName, postcode, poolNumber, page
       return 'JUROR_NUMBER';
     case 'jurorName':
       return 'JUROR_NAME';
-    case 'POSTCODE':
-      return 'postcode';
+    case 'jurorEmail':
+      return 'EMAIL';
+    case 'postcode':
+      return 'POSTCODE';
     case 'poolNumber':
       return 'POOL_NUMBER';
-    case 'court':
+    case 'courtName':
       return 'COURT_NAME';
     case 'status':
       return 'STATUS';
@@ -183,8 +186,9 @@ function buildQueryParams(data) {
   return queryParams;
 }
 
-function transformResults(jurorRecords, namedRoutes) {
+function transformResults(jurorRecords, namedRoutes, bureauUser) {
   const list = [];
+  let listItem = [];
 
   if (!jurorRecords.length) return list;
 
@@ -193,27 +197,44 @@ function transformResults(jurorRecords, namedRoutes) {
       '?jurorNumber=' + jurorRecord.juror_number,
       '&locCode=' + jurorRecord.loc_code);
 
-    list.push([
-      {
-        html: '<a href="'+ url +'" class="govuk-link">' + jurorRecord.juror_number + '</a>',
-      },
-      {
-        text: capitalizeFully(jurorRecord.juror_name),
-      },
-      {
-        text: jurorRecord.postcode,
-      },
-      {
-        text: jurorRecord.pool_number,
-      },
-      {
-        text: capitalizeFully(jurorRecord.court_name),
-      },
-      {
-        text: jurorRecord.status,
-      },
-    ]);
+      listItem = [];
+
+      listItem.push(
+        {
+          html: '<a href="'+ url +'" class="govuk-link">' + jurorRecord.juror_number + '</a>',
+        },
+        {
+          text: capitalizeFully(jurorRecord.juror_name),
+        }
+      );
+
+      if (bureauUser) {
+        listItem.push(
+          {
+            text: (jurorRecord.h_email || '-')
+          }
+        );
+      }
+
+      listItem.push(
+        {
+          text: jurorRecord.postcode,
+        },
+        {
+          text: jurorRecord.pool_number,
+        },
+        {
+          text: capitalizeFully(jurorRecord.court_name),
+        },
+        {
+          text: jurorRecord.status,
+        },
+      );
+
+    list.push(listItem);
+
   });
 
   return list;
+
 }
