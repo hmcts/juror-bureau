@@ -10,28 +10,45 @@
     id: "jurorName",
     value: "Juror name",
     sort: sortOrder if sortBy === "jurorName" else "none"
-  },
-  {
-    id: "postcode",
-    value: "Juror's postcode",
-    sort: sortOrder if sortBy === "postcode" else "none"
-  },
-  {
-    id: "poolNumber",
-    value: "Pool number",
-    sort: sortOrder if sortBy === "poolNumber" else "none"
-  },
-  {
-    id: "courtName",
-    value: "Court name",
-    sort: sortOrder if sortBy === "courtName" else "none"
-  },
-  {
-    id: "status",
-    value: "Juror status",
-    sort: sortOrder if sortBy === "status" else "none"
-  }
-] %}
+  }] 
+%}
+
+{% if isBureauUser %}
+  {% set headings = (
+    headings.push(
+      {
+        id: "jurorEmail",
+        value: "Juror email",
+        sort: sortOrder if sortBy === "jurorEmail" else "none"
+      }
+    ), headings
+  ) %}
+{% endif %}
+ 
+{% set headings = (
+  headings.push(
+    {
+      id: "postcode",
+      value: "Juror's postcode",
+      sort: sortOrder if sortBy === "postcode" else "none"
+    },
+    {
+      id: "poolNumber",
+      value: "Pool number",
+      sort: sortOrder if sortBy === "poolNumber" else "none"
+    },
+    {
+      id: "courtName",
+      value: "Court name",
+      sort: sortOrder if sortBy === "courtName" else "none"
+    },
+    {
+      id: "status",
+      value: "Juror status",
+      sort: sortOrder if sortBy === "status" else "none"
+    }
+  ), headings
+) %}
 
 {{ modSortableTable({
   id: "jurorRecordsTable",
