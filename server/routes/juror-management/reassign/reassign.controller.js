@@ -315,18 +315,22 @@
         validationPayload.receivingCourtLocCode = req.body.poolNumber.substring(0, 3);
       }
 
-      let cancelUrl =  app.namedRoutes.build('juror-record.overview.get', {jurorNumber: req.params['jurorNumber']});
+      let cancelUrl;
       if (req.session.poolJurorsReassign) {
         cancelUrl = app.namedRoutes.build('pool-overview.get', {poolNumber: req.params['poolNumber']});
       } else if (req.url.includes('details/edit/reassign/select-pool')) {
         cancelUrl = app.namedRoutes.build('juror-record.details.get', {jurorNumber: req.params['jurorNumber']});
+      } else {
+        cancelUrl =  app.namedRoutes.build('juror-record.overview.get', {jurorNumber: req.params['jurorNumber']});
       }
 
-      let continueUrl = app.namedRoutes.build('juror-management.reassign.confirm.post', {jurorNumber: req.params['jurorNumber']});
+      let continueUrl;
       if (req.session.poolJurorsReassign) {
         continueUrl = app.namedRoutes.build('pool-management.reassign.confirm.post', {poolNumber: req.params['poolNumber']});
       } else if (req.url.includes('details/edit/reassign/select-pool')) {
         continueUrl = app.namedRoutes.build('juror-record.details-edit.reassign.confirm.post', {jurorNumber: req.params['jurorNumber']});
+      } else {
+        continueUrl = app.namedRoutes.build('juror-management.reassign.confirm.post', {jurorNumber: req.params['jurorNumber']});
       }
         
       if (typeof req.session.processLateSummons !== 'undefined') {
@@ -433,14 +437,14 @@
         const poolUrl = app.namedRoutes.build('pool-overview.get', {
           poolNumber: data.newPoolNumber,
         });
-        const jurorUrl = app.namedRoutes.build('juror-record.overview.get', {
-          jurorNumber: req.params['jurorNumber'],
-        }) + '?loc_code=' + tmpLocCode;
 
         req.session.bannerMessage = `Reassigned to pool <a class="govuk-link" href="${poolUrl}">${data.newPoolNumber}</a>`;
         if (req.session.poolJurorsReassign) {
           req.session.bannerMessage = `${data.numberReassigned} jurors reassigned to pool <a class="govuk-link" href="${poolUrl}">${data.newPoolNumber}</a>`;
         } else if (req.url.includes('details/edit/reassign/select-pool')) {
+          const jurorUrl = app.namedRoutes.build('juror-record.overview.get', {
+            jurorNumber: req.params['jurorNumber'],
+          }) + '?loc_code=' + tmpLocCode;
           const newCourt = req.session.courtsList.find(elem => elem.locationCode === payload.receivingCourtLocCode);
           newCourt.formattedName = modUtils.transformCourtName(newCourt);
           req.session.bannerMessage = `Juror <a class="govuk-link" href="${jurorUrl}">${req.params['jurorNumber']}</a> 
