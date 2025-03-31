@@ -209,32 +209,7 @@
     <div class="govuk-!-width-one-half">
       <div>
         <p class="govuk-body">{{(addressParts | buildRecordAddress | capitalizeFully + '<br>' + juror.addressPostcode) | safe}}</p>
-      </div>
-      <div>
-        {{ govukRadios({
-            name: "livingOverseas",
-            id: "livingOverseas",
-            classes: "govuk-radios--inline",
-            fieldset: {
-              legend: {
-                text: "Does the juror live overseas?",
-                classes: "govuk-fieldset__legend--s"
-              }
-            },
-            items: [
-              {
-                value: "yes",
-                text: "Yes",
-                checked: juror.livingOverseas
-              },
-              {
-                value: "no",
-                text: "No",
-                checked: not juror.livingOverseas
-              }
-            ]
-          }) }}
-          <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
       </div>
     </div>
 
