@@ -48,6 +48,8 @@
       body = mapCamelToSnake(_.clone(body));
       delete Object.assign(body, {'welsh_language_required': body.welsh || false }).welsh;
 
+      console.log('\n\n', body, '\n\n');
+
       return {
         uri: urljoin(this.resource, jurorNumber),
         body,

@@ -683,6 +683,8 @@
       : req.session.formFields.opticReference;
     requestBody.livingOverseas = req.session.formFields.livingOverseas === 'yes';
 
+    requestBody.livingOverseas = req.session.formFields.livingOverseas === 'yes';
+
     const promiseArr = [];
 
     if (req.session[`editJurorDetails-${jurorNumber}`].fixedName) {
