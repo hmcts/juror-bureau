@@ -361,15 +361,15 @@
     return async(req, res) => {
       const { jurorNumber } = req.params;
 
-      if (req.session.jurorCommonDetails) {
-        if (jurorNumber != req.session.jurorCommonDetails?.jurorNumber) {
+      if (req.session[`editJurorDetails-${jurorNumber}`]?.commonDetails) {
+        if (jurorNumber != req.session[`editJurorDetails-${jurorNumber}`]?.commonDetails?.jurorNumber) {
           app.logger.crit('Juror number does not match cached data', {
             auth: req.session.authentication,
             jwt: req.session.authToken,
             data: {
               jurorNumber: {
                 url: jurorNumber,
-                cached: req.session.jurorCommonDetails.jurorNumber,
+                cached: req.session[`editJurorDetails-${jurorNumber}`]?.commonDetails?.jurorNumber,
               },
             },
           });
@@ -793,15 +793,15 @@
       let postUrl, cancelUrl,
         tmpErrors = _.clone(req.session.errors);
   
-      if (req.session.jurorCommonDetails) {
-        if (jurorNumber != req.session.jurorCommonDetails?.jurorNumber) {
+      if (req.session[`editJurorDetails-${jurorNumber}`]?.commonDetails) {
+        if (jurorNumber != req.session[`editJurorDetails-${jurorNumber}`]?.commonDetails?.jurorNumber) {
           app.logger.crit('Juror number does not match cached data', {
             auth: req.session.authentication,
             jwt: req.session.authToken,
             data: {
               jurorNumber: {
                 url: jurorNumber,
-                cached: req.session.jurorCommonDetails.jurorNumber,
+                cached: req.session[`editJurorDetails-${jurorNumber}`]?.commonDetails?.jurorNumber,
               },
             },
           });
@@ -943,15 +943,15 @@
 
       let jurorDetails;
 
-      if (req.session.jurorCommonDetails) {
-        if (jurorNumber != req.session.jurorCommonDetails?.jurorNumber) {
+      if (req.session[`editJurorDetails-${jurorNumber}`]?.commonDetails) {
+        if (jurorNumber != req.session[`editJurorDetails-${jurorNumber}`]?.commonDetails?.jurorNumber) {
           app.logger.crit('Juror number does not match cached data', {
             auth: req.session.authentication,
             jwt: req.session.authToken,
             data: {
               jurorNumber: {
                 url: jurorNumber,
-                cached: req.session.jurorCommonDetails.jurorNumber,
+                cached: req.session[`editJurorDetails-${jurorNumber}`]?.commonDetails?.jurorNumber,
               },
             },
           });

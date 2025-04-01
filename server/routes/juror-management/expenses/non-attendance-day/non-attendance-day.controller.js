@@ -17,22 +17,6 @@ const { makeManualError } = require('../../../../lib/mod-utils');
       const { status } = req.query;
       const locCode = req.session.authentication.locCode;
 
-      if (req.session.jurorCommonDetails) {
-        if (jurorNumber != req.session.jurorCommonDetails?.jurorNumber) {
-          app.logger.crit('Juror number does not match cached data', {
-            auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: {
-              jurorNumber: {
-                url: jurorNumber,
-                cached: req.session.jurorCommonDetails.jurorNumber,
-              },
-            },
-          });
-          return res.render('_errors/data-mismatch');
-        }
-      }
-
       let cancelUrl = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
         jurorNumber,
         locCode,
@@ -49,6 +33,21 @@ const { makeManualError } = require('../../../../lib/mod-utils');
           poolNumber,
         });
         cancelUrl = app.namedRoutes.build('juror-record.attendance.get', { jurorNumber });
+        if (req.session.jurorCommonDetails) {
+          if (jurorNumber != req.session.jurorCommonDetails?.jurorNumber) {
+            app.logger.crit('Juror number does not match cached data', {
+              auth: req.session.authentication,
+              jwt: req.session.authToken,
+              data: {
+                jurorNumber: {
+                  url: jurorNumber,
+                  cached: req.session.jurorCommonDetails.jurorNumber,
+                },
+              },
+            });
+            return res.render('_errors/data-mismatch');
+          }
+        }
       }
 
       delete req.session.errors;
