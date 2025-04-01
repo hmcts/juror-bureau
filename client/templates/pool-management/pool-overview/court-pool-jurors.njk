@@ -70,6 +70,15 @@
           formAction: postUrls.onCallUrl
         }
       }) }}
+      {{ govukButton({
+        text: "Add non-attendance day",
+        classes: "govuk-button--secondary govuk-!-margin-bottom-0",
+        type: "submit",
+        attributes: {
+          id: "addNonAttendanceDayButton",
+          formAction: postUrls.addNonAttendanceDayUrl
+        }
+      }) }}
     </div>
 
   <div class="govuk-grid-row">

@@ -16,16 +16,8 @@ const { makeManualError } = require('../../../../lib/mod-utils');
       const { jurorNumber, poolNumber } = req.params;
       const { status } = req.query;
       const locCode = req.session.authentication.locCode;
-
-      let cancelUrl = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
-        jurorNumber,
-        locCode,
-        status: status || 'draft',
-      });
-      let postUrl = app.namedRoutes.build('juror-management.non-attendance-day.post', {
-        jurorNumber,
-        poolNumber,
-      }) + `?status=${status || 'draft'}`;
+      let cancelUrl;
+      let postUrl;
 
       if (req.url.includes('record')) {
         postUrl = app.namedRoutes.build('juror-record.attendance.non-attendance-day.post', {
@@ -48,14 +40,31 @@ const { makeManualError } = require('../../../../lib/mod-utils');
             return res.render('_errors/data-mismatch');
           }
         }
+      } else if (req.url.includes('trial-management')) {
+        postUrl = app.namedRoutes.build('trial-management.trials.add-non-attendance-day.post', {
+          trialNumber: req.params.trialNumber,
+          locationCode: req.params.locationCode,
+        });
+        cancelUrl = app.namedRoutes.build('trial-management.trials.detail.get', {
+          trialNumber: req.params.trialNumber,
+          locationCode: req.params.locationCode,
+        });
+      } else {
+        cancelUrl = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
+          jurorNumber,
+          locCode,
+          status: status || 'draft',
+        });
+        postUrl = app.namedRoutes.build('juror-management.non-attendance-day.post', {
+          jurorNumber,
+          poolNumber,
+        }) + `?status=${status || 'draft'}`;
       }
 
       delete req.session.errors;
       delete req.session.formFields;
 
       return res.render('juror-management/non-attendance-day.njk', {
-        jurorNumber,
-        poolNumber,
         postUrl,
         cancelUrl,
         errors: {
@@ -70,23 +79,35 @@ const { makeManualError } = require('../../../../lib/mod-utils');
 
   module.exports.postNonAttendanceDay = (app) => {
     return async function(req, res) {
-      const { jurorNumber, poolNumber } = req.params;
+      const { jurorNumber, poolNumber, trialNumber } = req.params;
       const { status } = req.query;
-      const locCode = req.session.authentication.locCode;
+      const locCode = req.params.locationCode || req.session.authentication.locCode;
+      let errorUrl;
+      let successUrl;
 
       const validatorResult = validate(req.body, nonAttendanceDayValidator());
-      let errorUrl = app.namedRoutes.build('juror-management.non-attendance-day.get', {
-        jurorNumber, poolNumber,
-      });
-      let successUrl = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
-        jurorNumber, locCode, status: 'draft',
-      });
 
       if (req.url.includes('record')) {
         errorUrl = app.namedRoutes.build('juror-record.attendance.non-attendance-day.get', {
           jurorNumber, poolNumber,
         });
         successUrl = app.namedRoutes.build('juror-record.attendance.get', { jurorNumber });
+      } else if (req.url.includes('trial-management')) {
+        errorUrl = app.namedRoutes.build('trial-management.trials.add-non-attendance-day.get', {
+          trialNumber,
+          locationCode: locCode,
+        });
+        successUrl = app.namedRoutes.build('trial-management.trials.detail.get', {
+          trialNumber,
+          locationCode: locCode,
+        });
+      } else {
+        errorUrl = app.namedRoutes.build('juror-management.non-attendance-day.get', {
+          jurorNumber, poolNumber,
+        });
+        successUrl = app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
+          jurorNumber, locCode, status: 'draft',
+        });
       }
 
       if (typeof validatorResult !== 'undefined') {
@@ -97,16 +118,23 @@ const { makeManualError } = require('../../../../lib/mod-utils');
       }
 
       try {
+
         const payload = {
-          'juror_number': jurorNumber,
           'location_code': locCode,
-          'pool_number': poolNumber,
           'non_attendance_date': dateFilter(
             req.body.nonAttendanceDay.split('/').map(d => d.padStart(2, '0')).join('/'), 'DD/MM/YYYY', 'YYYY-MM-DD',
           ),
         };
 
-        await jurorNonAttendanceDao.post(req, payload);
+        if (req.url.includes('trial-management')) {
+          payload.juror_numbers = req.session[`${trialNumber}-${locCode}-nonAttendanceDay`]?.selectedJurors;
+          payload.trial_number = trialNumber;
+        } else {
+          payload.juror_number = jurorNumber;
+          payload.pool_number = poolNumber;
+        }
+
+        // await jurorNonAttendanceDao.post(req, payload);
 
         if (status && status !== 'draft') {
           // We do not need to add the non-attendance date to the dates list
@@ -118,6 +146,11 @@ const { makeManualError } = require('../../../../lib/mod-utils');
             locCode,
             status,
           }));
+        }
+
+        if (req.url.includes('trial-management')) {
+          req.session.bannerMessage = 'Non-attendance day added';
+          delete req.session[`${trialNumber}-${locCode}-nonAttendanceDay`];
         }
 
         return res.redirect(successUrl);

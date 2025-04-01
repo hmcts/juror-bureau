@@ -525,6 +525,9 @@ function courtView(app, req, res, pool, membersList, _errors, selectedJurors, se
   let onCallUrl = app.namedRoutes.build('pool-overview.on-call.post', {
     poolNumber: req.params.poolNumber,
   });
+  let nonAttendanceDayUrl = app.namedRoutes.build('pool-overview.non-attendance-day.post', {
+    poolNumber: req.params.poolNumber,
+  });
 
   let availableSuccessMessage = false
     , successBanner
