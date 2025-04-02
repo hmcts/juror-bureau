@@ -186,6 +186,28 @@
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
+        if (err.statusCode === 422) {
+          app.logger.warn('Failed to generate a panel from with a BVR', {
+            auth: req.session.authentication,
+            token: req.session.authToken,
+            error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+          });
+
+          req.session.errors = {
+            generatePanelError: [{
+              details: err.error.message,
+              summary: err.error.message,
+            }],
+          };
+
+          req.session.formFields = req.body;
+          req.session.errors = validatorResult;
+          return res.redirect(app.namedRoutes.build('trial-management.add-panel-members.select-pools.get', {
+            trialNumber,
+            locationCode,
+          }));
+        }
+
         return res.render('_errors/generic', { err });
 
       });

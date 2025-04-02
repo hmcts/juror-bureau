@@ -136,6 +136,12 @@
           data: payload,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
+
+        if (err.statusCode === 422 && err.error?.code === 'DAY_ALREADY_EXISTS') {
+          req.session.errors = makeManualError('nonSittingDay', err.error.message);
+            req.session.formFields = req.body;
+            return res.redirect(app.namedRoutes.build('administration.add-non-sitting-days.get',));
+        }
       }
 
     };

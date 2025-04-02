@@ -226,6 +226,14 @@
         data: payload,
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
+
+      if (err.statusCode === 422) {
+        req.session.errors = makeManualError('trial', err.error.message);
+        req.session.formFields = req.body;
+        
+        return res.redirect(app.namedRoutes.build('trial-management.edit-trial.get', { trialNumber, locationCode }));
+      }
+
       return res.render('_errors/generic', { err });
     }
   }

@@ -232,6 +232,11 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
+        if (err.statusCode === 422 && err.error?.code === 'CANNOT_DELETE_USED_JUDGE') {
+          req.session.errors = makeManualError('judge', 'Judge has been used and cannot be deleted');
+            return res.redirect(app.namedRoutes.build('administration.judges.delete.get', { judgeId }));
+        }
+
         return res.render('_errors/generic', { err });
       }
     };

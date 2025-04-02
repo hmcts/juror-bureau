@@ -356,7 +356,7 @@
           if (err.error?.code === 'TRIAL_HAS_MEMBERS') {
             req.session.bannerError = 'Cannot end trial, trial still has members';
           }
-          return res.redirect(app.namedRoutes.build('trial-managemeånt.trials.detail.get', {
+          return res.redirect(app.namedRoutes.build('trial-management.trials.detail.get', {
             trialNumber: req.params.trialNumber,
             locationCode: req.params.locationCode,
           }));
