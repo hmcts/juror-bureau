@@ -681,6 +681,7 @@
     requestBody.opticReference = req.session.formFields.opticReference === ''
       ? null
       : req.session.formFields.opticReference;
+    requestBody.livingOverseas = req.session.formFields.livingOverseas === 'yes';
 
     const promiseArr = [];
 
