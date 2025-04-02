@@ -146,11 +146,20 @@ function jurorStatusUpdateFailed(app, req, res, err, action) {
     'undo-failed-to-attend': 'Responded',
   };
 
-  req.session.errors = {
-    'failed-to-attend': [{
-      details: `Unable to change this juror’s status to ‘${status[action]}’`,
-    }],
-  };
+  //handle 422 errors: FAILED_TO_ATTEND_HAS_COMPLETION_DATE,  FAILED_TO_ATTEND_HAS_ATTENDANCE_RECORD,   JUROR_STATUS_MUST_BE_FAILED_TO_ATTEND
+  if (err.statusCode === 422) {
+    req.session.errors = {
+      'failed-to-attend': [{
+        details: `Unable to change this juror’s status to ‘${status[action]}’. ` + err.error.message,
+      }],
+    };
+  } else {
+    req.session.errors = {
+      'failed-to-attend': [{
+        details: `Unable to change this juror’s status to ‘${status[action]}’`,
+      }],
+    };
+  }
 
   app.logger.crit(`Failed to change the juror status to ‘${status[action]}’: `, {
     auth: req.session.authentication,

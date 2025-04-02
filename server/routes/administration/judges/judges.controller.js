@@ -4,6 +4,7 @@
   const _ = require('lodash');
   const { judgesDAO, judgeDetailsDAO } = require('../../../objects/administration');
   const { replaceAllObjKeys } = require('../../../lib/mod-utils');
+  const { makeManualError } = require('../../../lib/mod-utils');
   const { validate } = require('validate.js');
   const editJudgeValidator = require('../../../config/validation/edit-judge');
 
@@ -113,6 +114,7 @@
     return async function(req, res) {
       const { judgeId } = req.params;
 
+      const formData = _.clone(req.body);
       const validatorResult = validate(req.body, editJudgeValidator());
 
       if (typeof validatorResult !== 'undefined') {
@@ -150,6 +152,12 @@
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
+
+        if (err.statusCode === 422 && err.error?.code === 'CODE_ALREADY_IN_USE') {
+          req.session.errors = makeManualError('judgeCode', 'A judge with this code already exists');
+            req.session.formFields = formData;
+            return res.redirect(app.namedRoutes.build('administration.judges.edit.get', { judgeId }));
+        }
 
         return res.render('_errors/generic', { err });
       }
@@ -257,6 +265,7 @@
   module.exports.postAddJudge = function(app) {
     return async function(req, res) {
 
+      const formData = _.clone(req.body);
       const validatorResult = validate(req.body, editJudgeValidator());
 
       if (typeof validatorResult !== 'undefined') {
@@ -294,7 +303,13 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic', { err });
+        if (err.statusCode === 422 && err.error?.code === 'CODE_ALREADY_IN_USE') {
+          req.session.errors = makeManualError('judgeCode', 'A judge with this code already exists');
+          req.session.formFields = formData;
+          return res.redirect(app.namedRoutes.build('administration.judges.add.get' ));
+        }
+
+        return res.render('_errors/generic.njk');
       }
     };
   };

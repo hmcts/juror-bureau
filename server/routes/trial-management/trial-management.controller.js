@@ -114,6 +114,7 @@
       let tmpErrors
       let tmpFields
       let successBanner;
+      let errorBanner;
 
       const { trialNumber, locationCode } = req.params;
 
@@ -162,6 +163,11 @@
             delete req.session.bannerMessage;
           }
 
+          if (req.session.bannerError) {
+            errorBanner = req.session.bannerError;
+            delete req.session.bannerError;
+          }
+
           if (panelData) {
             trialData.panelledJurors = panelData;
             canEmpanel = panelData.filter((juror) => juror.juror_status === 'Panel').length > 0;
@@ -172,6 +178,7 @@
             canEmpanel,
             locationCode,
             successBanner,
+            errorBanner,
             addPanelStatus: addPanelStatus.data,
             formActions: {
               returnUrl: app.namedRoutes.build('trial-management.trials.return.post', {
@@ -344,6 +351,16 @@
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
+
+        if (err.statusCode === 422) {
+          if (err.error?.code === 'TRIAL_HAS_MEMBERS') {
+            req.session.bannerError = 'Cannot end trial, trial still has members';
+          }
+          return res.redirect(app.namedRoutes.build('trial-managemeånt.trials.detail.get', {
+            trialNumber: req.params.trialNumber,
+            locationCode: req.params.locationCode,
+          }));
+        };
 
         return res.render('_errors/generic', { err });
       };
