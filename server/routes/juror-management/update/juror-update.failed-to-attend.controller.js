@@ -146,7 +146,6 @@ function jurorStatusUpdateFailed(app, req, res, err, action) {
     'undo-failed-to-attend': 'Responded',
   };
 
-  //handle 422 errors: FAILED_TO_ATTEND_HAS_COMPLETION_DATE,  FAILED_TO_ATTEND_HAS_ATTENDANCE_RECORD,   JUROR_STATUS_MUST_BE_FAILED_TO_ATTEND
   if (err.statusCode === 422) {
     req.session.errors = {
       'failed-to-attend': [{
