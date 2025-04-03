@@ -1,5 +1,3 @@
-
-
 (function() {
   'use strict';
 
@@ -8,7 +6,8 @@
     , validator = require('../../../config/validation/add-non-sitting-day')
     , { bankHolidaysDAO, nonSittingDayDAO } = require('../../../objects/administration')
     , fetchAllCourts = require('../../../objects/request-pool').fetchAllCourts
-    , { dateFilter } = require('../../../components/filters');
+    , { dateFilter } = require('../../../components/filters')
+    , { makeManualError } = require('../../../lib/mod-utils');
 
   module.exports.getNonSittingDays = function(app) {
     return async function(req, res) {
@@ -138,7 +137,7 @@
         });
 
         if (err.statusCode === 422 && err.error?.code === 'DAY_ALREADY_EXISTS') {
-          req.session.errors = makeManualError('nonSittingDay', err.error.message);
+          req.session.errors = makeManualError('nonSittingDay', `Non-sitting day already exists for ${req.session.authentication.locCode} on ${req.body.nonSittingDate}`);
             req.session.formFields = req.body;
             return res.redirect(app.namedRoutes.build('administration.add-non-sitting-days.get',));
         }

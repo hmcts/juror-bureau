@@ -149,7 +149,7 @@ function jurorStatusUpdateFailed(app, req, res, err, action) {
   if (err.statusCode === 422) {
     req.session.errors = {
       'failed-to-attend': [{
-        details: `Unable to change this juror’s status to ‘${status[action]}’. ` + err.error.message,
+        details: err.error.message,
       }],
     };
   } else {

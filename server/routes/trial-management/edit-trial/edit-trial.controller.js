@@ -8,6 +8,7 @@
   const { courtroomsObject, judgesObject, trialDetailsObject, editTrialDAO } = require('../../../objects/create-trial');
   const { dateFilter } = require('../../../components/filters');
   const { trialPayloadBuilder } = require('../create-trial/create-trial.controller');
+  const { makeManualError } = require('../../../lib/mod-utils');
 
   const countErrors = (tmpErrors) => typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0;
 

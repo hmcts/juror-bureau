@@ -168,6 +168,9 @@
     return async function(req, res) {
       const { judgeId } = req.params;
 
+      const tmpErrors = _.clone(req.session.errors);
+      delete req.session.errors;
+
       try {
         const judge = await judgeDetailsDAO.get(req, judgeId);
 
@@ -187,6 +190,11 @@
             judgeId,
           }),
           cancelUrl: app.namedRoutes.build('administration.judges.get'),
+          errors: {
+            title: 'Please check the form',
+            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+            items: tmpErrors,
+          },
         });
       } catch (err) {
         app.logger.crit('Failed to fetch judge\'s details: ', {

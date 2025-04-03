@@ -6,6 +6,7 @@
   const { addPanelMembersDAO, availableJurorsDAO } = require('../../../objects');
   const poolsValidator = require('../../../config/validation/generate-panel-pools');
   const validate = require('validate.js');
+  const { makeManualError } = require('../../../lib/mod-utils');
   const countErrors = (tmpErrors) => typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0;
 
   module.exports.getAddPanelMember = function(app) {
@@ -193,15 +194,8 @@
             error: typeof err.error !== 'undefined' ? err.error : err.toString(),
           });
 
-          req.session.errors = {
-            generatePanelError: [{
-              details: err.error.message,
-              summary: err.error.message,
-            }],
-          };
-
+          req.session.errors = makeManualError('generatePanelError', err.error.message);
           req.session.formFields = req.body;
-          req.session.errors = validatorResult;
           return res.redirect(app.namedRoutes.build('trial-management.add-panel-members.select-pools.get', {
             trialNumber,
             locationCode,
