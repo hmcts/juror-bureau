@@ -335,7 +335,7 @@
               error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
             });
     
-            req.session.errors = makeManualError('deferralDateAndPool', 'You cannot defer into the juror\'s existing pool - please select a different pool or date');
+            req.session.errors = modUtils.makeManualError('deferralDateAndPool', 'You cannot defer into the juror\'s existing pool - please select a different pool or date');
             req.session.formFields = req.body;
             return res.redirect(app.namedRoutes.build('juror-record.deferral-edit-confirm.get', {
               jurorNumber: req.params['jurorNumber'],

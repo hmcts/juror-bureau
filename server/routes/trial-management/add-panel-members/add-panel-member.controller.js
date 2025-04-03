@@ -6,6 +6,7 @@
   const { addPanelMembersDAO, availableJurorsDAO } = require('../../../objects');
   const poolsValidator = require('../../../config/validation/generate-panel-pools');
   const validate = require('validate.js');
+  const { makeManualError } = require('../../../lib/mod-utils');
   const countErrors = (tmpErrors) => typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0;
 
   module.exports.getAddPanelMember = function(app) {
@@ -185,6 +186,21 @@
           token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
+
+        if (err.statusCode === 422) {
+          app.logger.warn('Failed to generate a panel from with a BVR', {
+            auth: req.session.authentication,
+            token: req.session.authToken,
+            error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+          });
+
+          req.session.errors = makeManualError('generatePanelError', err.error.message);
+          req.session.formFields = req.body;
+          return res.redirect(app.namedRoutes.build('trial-management.add-panel-members.select-pools.get', {
+            trialNumber,
+            locationCode,
+          }));
+        }
 
         return res.render('_errors/generic', { err });
 
