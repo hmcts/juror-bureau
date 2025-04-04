@@ -1361,4 +1361,6 @@
     };
   };
 
+  module.exports.resolveJurorStatus = resolveJurorStatus;
+
 })();

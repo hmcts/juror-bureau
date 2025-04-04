@@ -19,11 +19,12 @@
   const { courtLocationsFromPostcodeObj } = require('../../../objects/court-location');
   const { resolveCatchmentResponse } = require('../../summons-management/summons-management.controller');
   const courtNameOrLocationValidator = require('../../../config/validation/request-pool').courtNameOrLocation;
+  const { resolveJurorStatus } = require('../juror-record/juror-record.controller');
 
   module.exports.getEditDeferral = (app) => {
     return (req, res) => {
       systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL')
-        .then((data) => {
+        .then(async (data) => {
           app.logger.info('Retrieved excusal codes: ', {
             auth: req.session.authentication,
             jwt: req.session.authToken,
@@ -70,6 +71,20 @@
           req.session.minDate = minDate;
           req.session.maxDate = maxDate;
 
+          let jurorOverview;
+          try {
+            jurorOverview = await jurorRecordObject.get(
+              req,
+              'overview',
+              req.params['jurorNumber'],
+              req.session.locCode || req.session.authentication.locCode,
+            )
+          } catch (err) {
+
+          }
+
+          const jurorStatus = resolveJurorStatus(jurorOverview?.data.commonDetails);
+
           return res.render('juror-management/edit/juror-edit-deferral', {
             jurorNumber: req.params['jurorNumber'],
             backLinkUrl: {
@@ -94,6 +109,8 @@
               count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
               items: tmpErrors,
             },
+            juror: jurorOverview?.data,
+            jurorStatus,
           });
         })
         .catch((err) => {
