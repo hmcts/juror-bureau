@@ -688,24 +688,15 @@
         }));
       }
 
-      const jurors = extractDeferralsToProcess(req.session.deferralMaintenance.deferrals, true);
+      const jurorNumbers = extractDeferralsToProcess(req.session.deferralMaintenance.deferrals);
 
-      // TODO: Update payload once API is available
-      // This is a placeholder - contains more information than probably needed
       const payload = {
-        receivingCourtLocationCode: courtData.locationCode,
-        receivingPoolNumber: req.body.poolNumber,
-        jurors: jurors.map(juror => ({
-          jurorNumber: juror.jurorNumber,
-          sourcePoolNumber: juror.poolNumber,
-          sendingCourtLocationCode: locationCode,
-          deferredTo: juror.deferredTo,
-        })),
+        poolNumber: req.body.poolNumber,
+        jurorNumbers,
       }
 
       try {
-        // TODO: Implement API call once it's available
-        // await requestObj.moveCourt.post(req, payload);
+        await requestObj.moveCourt.post(req, payload);
       } catch(err) {
         app.logger.crit('Failed to move the selected deferrals to another court: ', {
           auth: req.session.authentication,
@@ -719,13 +710,16 @@
 
       // TODO: Validate if message is still relevant after API implementation
       req.session.bannerMessage
-          = `${jurors.length} Juror${jurors.length > 1 ? '\'s' : ''} successfully moved to
+          = `${jurorNumbers.length} Juror${jurorNumbers.length > 1 ? '\'s' : ''} successfully moved to
            <span class="govuk-!-font-weight-bold">${transformCourtName(courtData)}</span>
            and remain deferred`;
 
-      return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.filter.get', {
-        locationCode,
-      }))
+      delete req.session.deferralMaintenance
+
+      return requestObj
+          .deferrals.get(req, locationCode)
+          .then((data) => successCB(data, locationCode)(app, req, res))
+          .catch((err) => errorCB(err)(app, req, res));
     };
   };
 
