@@ -1362,5 +1362,6 @@
   };
 
   module.exports.resolveJurorStatus = resolveJurorStatus;
+  module.exports.cacheJurorCommonDetails = cacheJurorCommonDetails;
 
 })();

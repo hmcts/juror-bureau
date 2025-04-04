@@ -19,7 +19,7 @@
   const { courtLocationsFromPostcodeObj } = require('../../../objects/court-location');
   const { resolveCatchmentResponse } = require('../../summons-management/summons-management.controller');
   const courtNameOrLocationValidator = require('../../../config/validation/request-pool').courtNameOrLocation;
-  const { resolveJurorStatus } = require('../juror-record/juror-record.controller');
+  const { resolveJurorStatus, cacheJurorCommonDetails } = require('../juror-record/juror-record.controller');
 
   module.exports.getEditDeferral = (app) => {
     return (req, res) => {
@@ -39,9 +39,26 @@
 
           delete req.session.errors;
 
-          let selectedDeferralReason = req.session.jurorCommonDetails.excusalCode,
-            selectedDeferralDate = dateFilter(
-              makeDate(req.session.jurorCommonDetails.deferralDate), null, 'DD/MM/YYYY'
+          let jurorOverview;
+          try {
+            jurorOverview = await jurorRecordObject.get(
+              req,
+              'overview',
+              req.params['jurorNumber'],
+              req.session.locCode || req.session.authentication.locCode,
+            )
+          } catch (err) {
+
+          }
+
+          cacheJurorCommonDetails(req, jurorOverview.data.commonDetails);
+
+          const jurorStatus = resolveJurorStatus(jurorOverview.data.commonDetails);
+
+          let selectedDeferralReason = jurorOverview.data.commonDetails.deferral_code;
+
+          let selectedDeferralDate = dateFilter(
+              makeDate(jurorOverview.data.commonDetails.deferralDate), null, 'DD/MM/YYYY'
             );
 
           if (req.session.formFields) {
@@ -65,25 +82,11 @@
 
           delete req.session.formFields;
 
-          let minDate = new Date(makeDate(req.session.jurorCommonDetails.startDate)),
+          let minDate = new Date(makeDate(jurorOverview.data.commonDetails.startDate)),
             maxDate = moment(minDate).add(12, 'M');
 
           req.session.minDate = minDate;
           req.session.maxDate = maxDate;
-
-          let jurorOverview;
-          try {
-            jurorOverview = await jurorRecordObject.get(
-              req,
-              'overview',
-              req.params['jurorNumber'],
-              req.session.locCode || req.session.authentication.locCode,
-            )
-          } catch (err) {
-
-          }
-
-          const jurorStatus = resolveJurorStatus(jurorOverview?.data.commonDetails);
 
           return res.render('juror-management/edit/juror-edit-deferral', {
             jurorNumber: req.params['jurorNumber'],
@@ -337,7 +340,7 @@
             deferralReason: req.session.newDeferralReason,
           });
 
-          req.session.bannerMessage = 'Responded';
+          req.session.bannerMessage = newPoolNumber ? 'Responded' : {showUpdateOnly: true};
 
           return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
             jurorNumber: req.params['jurorNumber'],
