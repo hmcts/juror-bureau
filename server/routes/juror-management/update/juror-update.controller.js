@@ -10,7 +10,7 @@
   const { jurorDeceasedObject } = require('../../../objects/juror-deceased');
   const jurorTransfer = require('../../../objects/juror-transfer').jurorTransfer;
   const { dateFilter } = require('../../../components/filters');
-  const { systemCodesDAO, markAsUndeliverableDAO } = require('../../../objects');
+  const { systemCodesDAO, markAsUndeliverableDAO, markAsSummonedDAO } = require('../../../objects');
   const moment = require('moment');
   const { deferralPoolsObject, changeDeferralObject } = require('../../../objects/deferral-mod');
   const { deferralReasonAndDecision, deferralDateAndPool } = require('../../../config/validation/deferral-mod');
@@ -138,6 +138,8 @@
         return postDeceased(req, res, app);
       } else if (req.body.jurorRecordUpdate === 'undeliverable') {
         return postUndeliverable(req, res, app);
+      } else if (req.body.jurorRecordUpdate === 'summoned') {
+        return postSummoned(req, res, app);
       }
 
       if (req.body.jurorRecordUpdate === 'disqualify') {
@@ -690,6 +692,44 @@
           jurorNumber: req.params.jurorNumber,
         }));
       });
+  }
+
+  async function postSummoned(req, res, app) {
+    try {
+      await markAsSummonedDAO.patch(req);
+
+      app.logger.info('Juror marked as summoned: ', {
+        auth: req.session.authentication,
+        data: {
+          responseId: req.params.jurorNumber,
+        },
+      });
+
+      req.session.bannerMessage = 'Summoned';
+
+      return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
+        jurorNumber: req.params.jurorNumber,
+      }));
+
+    } catch (err) {
+      app.logger.crit('Failed to mark juror as summoned: ', {
+        auth: req.session.authentication,
+        data: {
+          responseId: req.params.jurorNumber,
+        },
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+
+      req.session.errors = {
+        undeliverable: [{
+          summary: 'Failed to mark juror as summoned',
+          details: 'Failed to mark juror as summoned',
+        }],
+      };
+      return res.redirect(app.namedRoutes.build('juror.update.get', {
+        jurorNumber: req.params.jurorNumber,
+      }));
+    }
   }
 
 })();
