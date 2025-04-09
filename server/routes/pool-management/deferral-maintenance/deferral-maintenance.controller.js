@@ -725,7 +725,7 @@
   /**
    *
    * @param {object} deferrals Full loaded list of deferrals
-   * @returns {string[]} An array of deferral numbers
+   * @returns {string[]} An array of deferral numbers or full deferral objects
    */
   function extractDeferralsToProcess(deferrals, allJurorDetails = false) {
     return deferrals.reduce((deferralNumbers, deferral) => {
