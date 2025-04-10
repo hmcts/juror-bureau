@@ -1062,7 +1062,7 @@
         req,
         'overview',
         jurorNumber,
-        req.session.locCode,
+        req.session.locCode || req.session.authentication.locCode,
       );
 
       if (historyTab === 'history') {
@@ -1113,7 +1113,7 @@
         req,
         'detail',
         req.params.jurorNumber,
-        req.session.locCode,
+        req.session.locCode || req.session.authentication.locCode,
       );
 
       const address = [
