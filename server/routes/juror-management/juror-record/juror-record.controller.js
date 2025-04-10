@@ -29,6 +29,12 @@
             },
           });
 
+          let bannerMessage;
+          if (req.session.bannerMessage) {
+            bannerMessage = req.session.bannerMessage;
+            delete req.session.bannerMessage;
+          };
+
           if (typeof response.data === 'undefined') {
             return res.render('_errors/not-found');
           }
@@ -44,7 +50,8 @@
             canEnterSummons: canEnterSummons(req, response.data.commonDetails),
             isCourtUser: isCourtUser(req),
             bureauTransferDate: response.data.commonDetails.bureauTransferDate,
-            jurorNotesFlag: await hasJurorNotes(app)(req,res)
+            jurorNotesFlag: await hasJurorNotes(app)(req,res),
+            bannerMessage,
           });
         }
         , errorCB = function(err) {
@@ -64,6 +71,10 @@
 
           return res.render('_errors/generic', { err });
         };
+
+      if (req.query.loc_code) {
+        req.session.locCode = req.query.loc_code;
+      }
 
       clearInvalidSessionData(req);
 
@@ -1167,6 +1178,7 @@
     delete req.session.changeName;
     delete req.session[`editJurorDetails-${jurorNumber}`];
     delete req.session[`catchmentWarning-${jurorNumber}`];
+    delete req.session[`editJurorDetails-${jurorNumber}-reassign`];
   }
 
   function cacheJurorCommonDetails(req, commonDetails) {

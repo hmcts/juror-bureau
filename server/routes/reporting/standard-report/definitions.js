@@ -348,7 +348,7 @@
           groupHeader: !courtUser,
           totals: !courtUser,
         },
-        columnWidths: [70, 100, 100, 70, '*', 120, '*'],
+        columnWidths: [70, 100, 100, 70, '*', 120, 90, '*'],
         printLandscape: true,
       },
       'persons-attending-summary': {
@@ -368,6 +368,18 @@
           'courtName',
         ],
         defaultSortColumn: 'lastName',
+        grouped: {
+          headings: {
+            transformer: (data, isPrint) => {
+              if (isPrint) {
+                return `Pool ${data}`;
+              }
+              return makeLink(app)['poolNumber'](data);
+            },
+          },
+          groupHeader: true,
+          totals: true,
+        },
       },
       'persons-attending-detail': {
         title: 'Persons attending (detailed)',

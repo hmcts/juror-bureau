@@ -120,6 +120,14 @@
     }) }}
   {% endif %}
 
+  {% if errorBanner %}
+    {{ mojBanner({
+      type: "warning",
+      html: errorBanner,
+      iconFallbackText: "Warning"
+    }) }}
+  {% endif %}
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half trial-detail__header">
       <span class="trial-detail__header-label">Trial</span>

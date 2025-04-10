@@ -7,6 +7,7 @@
   const validator = require('../../../config/validation/report-search-by');
   const { dateFilter } = require('../../../components/filters');
   const moment = require('moment');
+  const { makeManualError } = require('../../../lib/mod-utils');
 
   module.exports.getAttendanceDates = function(app) {
     return function(req, res) {

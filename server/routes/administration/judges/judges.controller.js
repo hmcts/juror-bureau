@@ -4,6 +4,7 @@
   const _ = require('lodash');
   const { judgesDAO, judgeDetailsDAO } = require('../../../objects/administration');
   const { replaceAllObjKeys } = require('../../../lib/mod-utils');
+  const { makeManualError } = require('../../../lib/mod-utils');
   const { validate } = require('validate.js');
   const editJudgeValidator = require('../../../config/validation/edit-judge');
 
@@ -113,6 +114,7 @@
     return async function(req, res) {
       const { judgeId } = req.params;
 
+      const formData = _.clone(req.body);
       const validatorResult = validate(req.body, editJudgeValidator());
 
       if (typeof validatorResult !== 'undefined') {
@@ -151,6 +153,12 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
+        if (err.statusCode === 422 && err.error?.code === 'CODE_ALREADY_IN_USE') {
+          req.session.errors = makeManualError('judgeCode', 'A judge with this code already exists');
+            req.session.formFields = formData;
+            return res.redirect(app.namedRoutes.build('administration.judges.edit.get', { judgeId }));
+        }
+
         return res.render('_errors/generic', { err });
       }
     };
@@ -159,6 +167,9 @@
   module.exports.getDeleteJudge = function(app) {
     return async function(req, res) {
       const { judgeId } = req.params;
+
+      const tmpErrors = _.clone(req.session.errors);
+      delete req.session.errors;
 
       try {
         const judge = await judgeDetailsDAO.get(req, judgeId);
@@ -179,6 +190,11 @@
             judgeId,
           }),
           cancelUrl: app.namedRoutes.build('administration.judges.get'),
+          errors: {
+            title: 'Please check the form',
+            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+            items: tmpErrors,
+          },
         });
       } catch (err) {
         app.logger.crit('Failed to fetch judge\'s details: ', {
@@ -224,6 +240,11 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
+        if (err.statusCode === 422 && err.error?.code === 'CANNOT_DELETE_USED_JUDGE') {
+          req.session.errors = makeManualError('judge', 'Judge has been used and cannot be deleted');
+            return res.redirect(app.namedRoutes.build('administration.judges.delete.get', { judgeId }));
+        }
+
         return res.render('_errors/generic', { err });
       }
     };
@@ -257,6 +278,7 @@
   module.exports.postAddJudge = function(app) {
     return async function(req, res) {
 
+      const formData = _.clone(req.body);
       const validatorResult = validate(req.body, editJudgeValidator());
 
       if (typeof validatorResult !== 'undefined') {
@@ -294,7 +316,13 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        return res.render('_errors/generic', { err });
+        if (err.statusCode === 422 && err.error?.code === 'CODE_ALREADY_IN_USE') {
+          req.session.errors = makeManualError('judgeCode', 'A judge with this code already exists');
+          req.session.formFields = formData;
+          return res.redirect(app.namedRoutes.build('administration.judges.add.get' ));
+        }
+
+        return res.render('_errors/generic.njk');
       }
     };
   };

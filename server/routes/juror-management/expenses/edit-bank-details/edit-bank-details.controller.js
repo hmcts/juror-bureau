@@ -13,7 +13,7 @@
       const { jurorNumber, locCode } = req.params;
       let { status } = req.query;
 
-      if (req.session.jurorCommonDetails) {
+      if (req.session.jurorCommonDetails && req.url.includes('record')) {
         if (jurorNumber != req.session.jurorCommonDetails?.jurorNumber) {
           app.logger.crit('Juror number does not match cached data', {
             auth: req.session.authentication,

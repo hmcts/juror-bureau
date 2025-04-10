@@ -14,84 +14,6 @@
 
   module.exports.getReassignJuror = function(app) {
     return async function(req, res) {
-      var successCB = function(response) {
-          var tmpErrors = _.clone(req.session.errors)
-            , court = req.session.courtsList.find(c => c.locationCode === req.session.receivingCourtLocCode)
-            , postUrl
-            , cancelUrl
-            , changeCourtUrl
-            , backUrl
-            , filteredPools = response.availablePools
-              .filter(pool => pool.poolNumber !==
-                (req.params['poolNumber'] ? req.params['poolNumber'] : req.session.jurorCommonDetails.poolNumber));
-
-          delete req.session.errors;
-          delete req.session.fields;
-
-          app.logger.info('Fetched available pools for reassigning a juror', {
-            auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: {
-              response,
-              court,
-            },
-          });
-
-          if (typeof req.session.poolJurorsReassign !== 'undefined') {
-            postUrl = app.namedRoutes.build('pool-management.reassign.post', {
-              poolNumber: req.params['poolNumber']});
-            cancelUrl = app.namedRoutes.build('pool-overview.get', {
-              poolNumber: req.params['poolNumber']});
-            changeCourtUrl = app.namedRoutes.build('pool-management.reassign.select-court.get', {
-              poolNumber: req.params['poolNumber']});
-            backUrl = app.namedRoutes.build('pool-overview.get', {
-              poolNumber: req.params['poolNumber']});
-          } else {
-            postUrl = app.namedRoutes.build('juror-management.reassign.post', {
-              jurorNumber: req.params['jurorNumber']});
-            cancelUrl = app.namedRoutes.build('juror-record.overview.get', {
-              jurorNumber: req.params['jurorNumber']});
-            changeCourtUrl = app.namedRoutes.build('juror-management.reassign.select-court.get', {
-              jurorNumber: req.params['jurorNumber']});
-            backUrl = app.namedRoutes.build('juror.update.get', {
-              jurorNumber: req.params['jurorNumber']});
-          }
-
-          if (typeof req.session.processLateSummons !== 'undefined') {
-            cancelUrl = req.session.processLateSummons.cancelUrl;
-            backUrl = req.session.processLateSummons.backUrl;
-          }
-
-          return res.render('juror-management/reassign/pools', {
-            jurorNumber: req.session.poolJurorsReassign ?
-              req.session.poolJurorsReassign.selectedJurors : req.params['jurorNumber'],
-            pools: filteredPools,
-            postUrl: postUrl,
-            cancelUrl: cancelUrl,
-            changeCourtUrl: changeCourtUrl,
-            court,
-            backLinkUrl : {
-              built: true,
-              url: backUrl,
-            },
-            errors: {
-              title: 'Please check the form',
-              count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-              items: tmpErrors,
-            },
-          });
-        }
-        , errorCB = function(err) {
-          app.logger.crit('Failed to fetch available pools for reassigning a juror', {
-            auth: req.session.authentication,
-            jwt: req.session.authToken,
-            locationCode: req.session.locCode,
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
-
-          return res.render('_errors/generic', { err });
-        };
-
       req.session.receivingCourtLocCode =
         typeof req.session.receivingCourtLocCode === 'undefined'
           ? req.session.locCode : req.session.receivingCourtLocCode;
@@ -102,12 +24,106 @@
         req.session.courtsList = courts;
       }
 
-      return requestObj
-        .availablePools
-        .get(req, req.session.receivingCourtLocCode)
-        .then(successCB)
-        .catch(errorCB);
-    };
+      let response;
+
+      try {
+        response = await requestObj.availablePools.get(req, req.session.receivingCourtLocCode);
+      } catch (err) {
+        app.logger.crit('Failed to fetch available pools for reassigning a juror', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          locationCode: req.session.locCode,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic');
+      };
+
+      const { poolNumber, jurorNumber } = req.params;
+      const tmpErrors = _.clone(req.session.errors);
+      const court = req.session.courtsList.find(c => c.locationCode === req.session.receivingCourtLocCode);
+      let postUrl;
+      let cancelUrl;
+      let changeCourtUrl;
+      let backUrl;
+      const filteredPools = response.availablePools
+        .filter(pool => pool.poolNumber !==
+          (poolNumber ? poolNumber : req.session.jurorCommonDetails.poolNumber));
+
+      delete req.session.errors;
+      delete req.session.fields;
+
+      app.logger.info('Fetched available pools for reassigning a juror', {
+        auth: req.session.authentication,
+        jwt: req.session.authToken,
+        data: {
+          response,
+          court,
+        },
+      });
+
+      if (typeof req.session.poolJurorsReassign !== 'undefined') {
+        postUrl = app.namedRoutes.build('pool-management.reassign.post', {
+          poolNumber
+        });
+        cancelUrl = app.namedRoutes.build('pool-overview.get', {
+          poolNumber
+        });
+        changeCourtUrl = app.namedRoutes.build('pool-management.reassign.select-court.get', {
+          poolNumber
+        });
+        backUrl = app.namedRoutes.build('pool-overview.get', {
+          poolNumber
+        });
+      } else if (req.url.includes('details/edit/reassign/select-pool')) {
+        postUrl = app.namedRoutes.build('juror-record.details-edit.reassign.select-pool.post', {
+          jurorNumber
+        });
+        cancelUrl = app.namedRoutes.build('juror-record.details.get', {
+          jurorNumber
+        });
+        changeCourtUrl = app.namedRoutes.build('juror-record.details-edit.reassign.select-court.get', {
+          jurorNumber
+        });
+      } else {
+        postUrl = app.namedRoutes.build('juror-management.reassign.post', {
+          jurorNumber
+        });
+        cancelUrl = app.namedRoutes.build('juror-record.overview.get', {
+          jurorNumber
+        });
+        changeCourtUrl = app.namedRoutes.build('juror-management.reassign.select-court.get', {
+          jurorNumber
+        });
+        backUrl = app.namedRoutes.build('juror.update.get', {
+          jurorNumber
+        });
+      }
+
+      if (typeof req.session.processLateSummons !== 'undefined') {
+        cancelUrl = req.session.processLateSummons.cancelUrl;
+        backUrl = req.session.processLateSummons.backUrl;
+      }
+
+      return res.render('juror-management/reassign/pools', {
+        jurorNumber: req.session.poolJurorsReassign ?
+          req.session.poolJurorsReassign.selectedJurors : jurorNumber,
+        pools: filteredPools,
+        postUrl: postUrl,
+        cancelUrl: cancelUrl,
+        changeCourtUrl: changeCourtUrl,
+        court,
+        backLinkUrl : {
+          built: true,
+          url: backUrl,
+        },
+        errors: {
+          title: 'Please check the form',
+          count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+          items: tmpErrors,
+        },
+      });
+    }
   };
 
   module.exports.getChangeCourt = function(app) {
@@ -260,30 +276,35 @@
 
   module.exports.postReassignJuror = function(app) {
     return function(req, res) {
-      let validatorResult
-        , validationPayload;
+      let validatorResult;
+      let validationPayload;
 
       validatorResult = validate(req.body, validator.selectedActivePool());
+
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
 
-        return req.session.poolJurorsReassign ?
-          res.redirect(app.namedRoutes.build('pool-management.reassign.get', {
+        if (req.session.poolJurorsReassign) {
+          return res.redirect(app.namedRoutes.build('pool-management.reassign.get', {
             poolNumber: req.params['poolNumber'],
-          })) :
-          res.redirect(app.namedRoutes.build('juror-management.reassign.get', {
-            jurorNumber: req.session.jurorCommonDetails.jurorNumber,
           }));
+        } else if (req.url.includes('details/edit/reassign/select-pool')) {
+          return res.redirect(app.namedRoutes.build('juror-record.details-edit.reassign.select-pool.get', {
+            jurorNumber: req.params['jurorNumber'],
+          }));
+        } else {
+          return res.redirect(app.namedRoutes.build('juror-management.reassign.get', {
+            jurorNumber: req.params['jurorNumber'],
+          }));
+        }
       }
 
       validationPayload = {
         sourcePoolNumber: req.session.poolJurorsReassign ?
           req.session.poolJurorsReassign.poolNumber : req.session.jurorCommonDetails.poolNumber,
-
         sendingCourtLocCode: req.session.locCode,
         receivingCourtLocCode: req.session.receivingCourtLocCode || req.session.authentication.locCode,
         targetServiceStartDate: dateFilter(new Date(), null, 'YYYY-MM-DD'),
-
         jurorNumbers: req.session.poolJurorsReassign ?
           req.session.poolJurorsReassign.selectedJurors : [req.params['jurorNumber']],
       };
@@ -294,13 +315,24 @@
         validationPayload.receivingCourtLocCode = req.body.poolNumber.substring(0, 3);
       }
 
-      let cancelUrl = req.session.poolJurorsReassign
-        ? app.namedRoutes.build('pool-overview.get', {poolNumber: req.params['poolNumber']})
-        : app.namedRoutes.build('juror-record.overview.get', {jurorNumber: req.params['jurorNumber']});
-      const continueUrl = req.session.poolJurorsReassign
-        ? app.namedRoutes.build('pool-management.reassign.confirm.post', {poolNumber: req.params['poolNumber']})
-        : app.namedRoutes.build('juror-management.reassign.confirm.post', {jurorNumber: req.params['jurorNumber']});
+      let cancelUrl;
+      if (req.session.poolJurorsReassign) {
+        cancelUrl = app.namedRoutes.build('pool-overview.get', {poolNumber: req.params['poolNumber']});
+      } else if (req.url.includes('details/edit/reassign/select-pool')) {
+        cancelUrl = app.namedRoutes.build('juror-record.details.get', {jurorNumber: req.params['jurorNumber']});
+      } else {
+        cancelUrl =  app.namedRoutes.build('juror-record.overview.get', {jurorNumber: req.params['jurorNumber']});
+      }
 
+      let continueUrl;
+      if (req.session.poolJurorsReassign) {
+        continueUrl = app.namedRoutes.build('pool-management.reassign.confirm.post', {poolNumber: req.params['poolNumber']});
+      } else if (req.url.includes('details/edit/reassign/select-pool')) {
+        continueUrl = app.namedRoutes.build('juror-record.details-edit.reassign.confirm.post', {jurorNumber: req.params['jurorNumber']});
+      } else {
+        continueUrl = app.namedRoutes.build('juror-management.reassign.confirm.post', {jurorNumber: req.params['jurorNumber']});
+      }
+        
       if (typeof req.session.processLateSummons !== 'undefined') {
         cancelUrl = req.session.processLateSummons.cancelUrl;
       }
@@ -353,7 +385,6 @@
 
   module.exports.postConfirmReassignJuror = function(app) {
     return function(req, res) {
-
       const validationPayload = _.clone(req.session.reassignValidationPayload);
 
       delete req.session.reassignValidationPayload;
@@ -379,9 +410,12 @@
       // TODO: handle better
       // if continuing after validation would leave with no jurors to reassign, redirect without reassigning
       if (jurorNumbers.length <= 0) {
-        const redirectUrl = req.session.poolJurorsReassign
-          ? app.namedRoutes.build('pool-overview.get', {poolNumber: req.params['poolNumber']})
-          : app.namedRoutes.build('juror-record.overview.get', {jurorNumber: req.params['jurorNumber']});
+        let redirectUrl = app.namedRoutes.build('juror-record.overview.get', {jurorNumber: req.params['jurorNumber']});
+        if (req.session.poolJurorsReassign) {
+          redirectUrl = app.namedRoutes.build('pool-overview.get', {poolNumber: req.params['poolNumber']});
+        } else if (req.url.includes('details/edit/reassign/select-pool')) {
+          redirectUrl = app.namedRoutes.build('juror-record.details.get', {jurorNumber: req.params['jurorNumber']});
+        }
 
         return res.redirect(redirectUrl);
       }
@@ -400,23 +434,37 @@
         delete req.session.receivingCourtLocCode;
         delete req.session.processLateSummons;
 
-        let poolUrl = app.namedRoutes.build('pool-overview.get', {
+        const poolUrl = app.namedRoutes.build('pool-overview.get', {
           poolNumber: data.newPoolNumber,
         });
 
-        req.session.bannerMessage = req.session.poolJurorsReassign ?
-        // eslint-disable-next-line
-          `${data.numberReassigned} jurors reassigned to pool <a class="govuk-link" href="${poolUrl}">${data.newPoolNumber}</a>` :
-          `Reassigned to pool <a class="govuk-link" href="${poolUrl}">${data.newPoolNumber}</a>`;
-
+        req.session.bannerMessage = `Reassigned to pool <a class="govuk-link" href="${poolUrl}">${data.newPoolNumber}</a>`;
+        if (req.session.poolJurorsReassign) {
+          req.session.bannerMessage = `${data.numberReassigned} jurors reassigned to pool <a class="govuk-link" href="${poolUrl}">${data.newPoolNumber}</a>`;
+        } else if (req.url.includes('details/edit/reassign/select-pool')) {
+          const jurorUrl = app.namedRoutes.build('juror-record.overview.get', {
+            jurorNumber: req.params['jurorNumber'],
+          }) + '?loc_code=' + tmpLocCode;
+          const newCourt = req.session.courtsList.find(elem => elem.locationCode === payload.receivingCourtLocCode);
+          newCourt.formattedName = modUtils.transformCourtName(newCourt);
+          req.session.bannerMessage = `Juror <a class="govuk-link" href="${jurorUrl}">${req.params['jurorNumber']}</a> 
+            has been reassigned to <a class="govuk-link" href="${poolUrl}">${data.newPoolNumber}</a> 
+            at ${newCourt.formattedName}
+          `;
+        }
+        
         if (req.session.poolJurorsReassign) {
           delete req.session.poolJurorsReassign;
           return res.redirect(app.namedRoutes.build('pool-overview.get', {
             poolNumber: payload.sourcePoolNumber,
           }));
-        };
+        } else if (req.url.includes('details/edit/reassign/select-pool')) {
+          return res.redirect(app.namedRoutes.build('juror-record.details.get', {
+            jurorNumber: req.params['jurorNumber'],
+          }) + '?loc_code=' + tmpLocCode);
+        }
         return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
-          jurorNumber: req.session.jurorCommonDetails.jurorNumber,
+          jurorNumber: req.params['jurorNumber'],
         }) + '?loc_code=' + tmpLocCode);
       })
       .catch((err) => {

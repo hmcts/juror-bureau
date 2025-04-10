@@ -8,6 +8,7 @@
   const { courtroomsObject, judgesObject, trialDetailsObject, editTrialDAO } = require('../../../objects/create-trial');
   const { dateFilter } = require('../../../components/filters');
   const { trialPayloadBuilder } = require('../create-trial/create-trial.controller');
+  const { makeManualError } = require('../../../lib/mod-utils');
 
   const countErrors = (tmpErrors) => typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0;
 
@@ -226,6 +227,14 @@
         data: payload,
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
+
+      if (err.statusCode === 422) {
+        req.session.errors = makeManualError('trial', err.error.message);
+        req.session.formFields = req.body;
+        
+        return res.redirect(app.namedRoutes.build('trial-management.edit-trial.get', { trialNumber, locationCode }));
+      }
+
       return res.render('_errors/generic', { err });
     }
   }
