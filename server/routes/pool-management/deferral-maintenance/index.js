@@ -1,9 +1,10 @@
 (function() {
   'use strict';
 
-  var controller = require('./deferral-maintenance.controller')
-    , postponeController = require('../../juror-management/postpone/postpone.controller')
-    , auth = require('../../../components/auth');
+  const controller = require('./deferral-maintenance.controller');
+  const postponeController = require('../../juror-management/postpone/postpone.controller');
+  const auth = require('../../../components/auth');
+  const { isBureauUser } = require('../../../components/auth/user-type');
 
   module.exports = function(app) {
     app.get('/pool-management/deferral-maintenance',
@@ -73,5 +74,27 @@
       'pool-management.deferral-maintenance.postpone.movement.post',
       auth.verify,
       postponeController.postPostponeMovementDeferralMaintenance(app));
+
+    // bulk move court
+    app.get('/pool-management/deferral-maintenance/location/:locationCode/move-court',
+      'pool-management.deferral-maintenance.move-court.select-court.get',
+      auth.verify,
+      isBureauUser,
+      controller.getMoveCourt(app));
+    app.post('/pool-management/deferral-maintenance/location/:locationCode/move-court',
+      'pool-management.deferral-maintenance.move-court.select-court.post',
+      auth.verify,
+      isBureauUser,
+      controller.postMoveCourt(app));
+    app.get('/pool-management/deferral-maintenance/location/:locationCode/move-court/:newLocationCode/select-pool',
+      'pool-management.deferral-maintenance.move-court.select-pool.get',
+      auth.verify,
+      isBureauUser,
+      controller.getMoveCourtPools(app));
+    app.post('/pool-management/deferral-maintenance/location/:locationCode/move-court/:newLocationCode/select-pool',
+      'pool-management.deferral-maintenance.move-court.select-pool.post',
+      auth.verify,
+      isBureauUser,
+      controller.postMoveCourtPools(app));
   };
 })();

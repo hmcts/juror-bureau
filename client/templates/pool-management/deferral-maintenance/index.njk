@@ -99,6 +99,13 @@
                   },
                   classes: "govuk-button--secondary"
                 }) }}
+                {% if isBureauUser %}
+                  {{ govukButton({
+                    text: "Move to another court",
+                    href: url('pool-management.deferral-maintenance.move-court.select-court.get', { locationCode: data.court.locationCode }),
+                    classes: "govuk-button--secondary"
+                  }) }}
+                {% endif %}
               </div>
 
               <div id="deferral-maintenance-table-wrapper" class="govuk-grid-column-full">
