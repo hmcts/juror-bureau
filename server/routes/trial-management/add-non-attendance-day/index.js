@@ -26,7 +26,7 @@
       'trial-management.trials.add-non-attendance-day.post',
       auth.verify,
       isCourtUser,
-      nonAttendanceController.postNonAttendanceDay(app),
+      nonAttendanceController.postBulkNonAttendanceDay(app),
     );
   };
 

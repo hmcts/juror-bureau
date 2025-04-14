@@ -63,6 +63,7 @@ module.exports.getJurors = function(app) {
     delete req.session.processLateSummons;
     delete req.session[`editPool-${poolNumber}`];
     delete req.session[`summonJurors-${poolNumber}`];
+    delete req.session[`${poolNumber}-nonAttendanceDay`];
 
     let pool;
 
@@ -525,7 +526,7 @@ function courtView(app, req, res, pool, membersList, _errors, selectedJurors, se
   let onCallUrl = app.namedRoutes.build('pool-overview.on-call.post', {
     poolNumber: req.params.poolNumber,
   });
-  let nonAttendanceDayUrl = app.namedRoutes.build('pool-overview.non-attendance-day.post', {
+  let nonAttendanceDayUrl = app.namedRoutes.build('pool-overview.add-non-attendance-day.jurors.post', {
     poolNumber: req.params.poolNumber,
   });
 
@@ -568,6 +569,7 @@ function courtView(app, req, res, pool, membersList, _errors, selectedJurors, se
     transferUrl += `?${searchParams}`;
     assignUrl += `?${searchParams}`;
     onCallUrl += `?${searchParams}`;
+    nonAttendanceDayUrl += `?${searchParams}`;
   }
 
   let pagination;
@@ -639,7 +641,7 @@ function courtView(app, req, res, pool, membersList, _errors, selectedJurors, se
       isActive: pool.poolDetails.isActive,
       currentOwner: pool.poolDetails.current_owner,
       currentTab: 'jurors',
-      postUrls: { assignUrl, transferUrl, completeServiceUrl, changeServiceDateUrl, postponeUrl, onCallUrl },
+      postUrls: { assignUrl, transferUrl, completeServiceUrl, changeServiceDateUrl, postponeUrl, onCallUrl, nonAttendanceDayUrl },
       navData: _.clone(req.session.poolManagementNav),
       errors: {
         title: 'Please check the form',
@@ -744,6 +746,48 @@ module.exports.postBulkOnCall = function(app) {
 
     return res.redirect(app.namedRoutes.build('pool-management.on-call.validate.get', {
       poolNumber: req.params.poolNumber,
+    }));
+  };
+};
+
+module.exports.postBulkNonAttendance = function(app) {
+  return async function(req, res) {
+    const { poolNumber } = req.params;
+
+    if (req.body['check-all-jurors']) {
+      try {
+        const poolMembers = await poolMembersDAO.post(req, filtersHelper(req, req.params.poolNumber), true);
+
+        req.body.selectedJurors = poolMembers.data.map(juror => juror.jurorNumber);
+      } catch (err) {
+        app.logger.crit('Failed to fetch pool members to bulk add non-attendance day: ', {
+          auth: req.session.authentication,
+          poolNumber,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic', { err });
+      };
+    } else {
+
+      if (!req.body.selectedJurors) {
+        req.session.errors = modUtils.makeManualError('selectedJurors', 'Please select at least one juror to add a non-attendance day');
+        return res.redirect(app.namedRoutes.build('pool-overview.get', {
+          poolNumber,
+        }));
+      }
+    }
+
+    req.session[`${poolNumber}-nonAttendanceDay`] = req.body;
+    delete req.session[`${poolNumber}-nonAttendanceDay`]._csrf;
+    delete req.session.errors;
+
+    if (!Array.isArray(req.body.selectedJurors)) {
+      req.session[`${poolNumber}-nonAttendanceDay`].selectedJurors = [req.body.selectedJurors];
+    }
+
+    return res.redirect(app.namedRoutes.build('pool-management.add-non-attendance-day.get', {
+      poolNumber,
     }));
   };
 };

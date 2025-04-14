@@ -1,12 +1,14 @@
 ;(function(){
   'use strict';
 
-  var controller = require('./pool-overview.controller')
-    , completeServiceController = require('../../shared/complete-service/complete-service.controller')
-    , transferController = require('../../juror-management/update/juror-update.transfer.controller')
-    , reassignController = require('../../juror-management/reassign/reassign.controller')
-    , postponeController = require('../../juror-management/postpone/postpone.controller')
-    , auth = require('../../../components/auth');
+  const controller = require('./pool-overview.controller');
+  const completeServiceController = require('../../shared/complete-service/complete-service.controller');
+  const transferController = require('../../juror-management/update/juror-update.transfer.controller');
+  const reassignController = require('../../juror-management/reassign/reassign.controller');
+  const postponeController = require('../../juror-management/postpone/postpone.controller');
+  const nonAttendanceController = require('../../juror-management/expenses/non-attendance-day/non-attendance-day.controller');
+  const auth = require('../../../components/auth');
+  const { isCourtUser } = require('../../../components/auth/user-type');
 
   module.exports = function(app) {
 
@@ -113,6 +115,26 @@
       'pool-overview.on-call.post',
       auth.verify,
       controller.postBulkOnCall(app));
+
+    // Bulk non-attendance
+    app.post('/pool-management/:poolNumber/add-non-attendance-day/jurors',
+      'pool-overview.add-non-attendance-day.jurors.post',
+      auth.verify,
+      isCourtUser,
+      controller.postBulkNonAttendance(app));
+    app.get('/pool-management/:poolNumber/add-non-attendance-day',
+      'pool-management.add-non-attendance-day.get',
+      auth.verify,
+      isCourtUser,
+      nonAttendanceController.getNonAttendanceDay(app),
+    );
+
+    app.post('/pool-management/:poolNumber/add-non-attendance-day',
+      'pool-management.add-non-attendance-day.post',
+      auth.verify,
+      isCourtUser,
+      nonAttendanceController.postBulkNonAttendanceDay(app),
+    );
   };
 
 })();

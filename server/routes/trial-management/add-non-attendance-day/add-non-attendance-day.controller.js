@@ -1,8 +1,6 @@
 (() => {
   'use strict';
 
-  const _ = require('lodash');
-  const validate = require('validate.js');
   const { makeManualError } = require('../../../lib/mod-utils');
 
   module.exports.postAddNonAttendance = (app) => async (req, res) => {
