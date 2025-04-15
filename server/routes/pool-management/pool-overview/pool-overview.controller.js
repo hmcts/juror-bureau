@@ -204,142 +204,6 @@ module.exports.getHistory = function(app) {
   };
 };
 
-module.exports.postReassign = function(app) {
-  return async function(req, res) {
-    if (req.body['check-all-jurors']) {
-      try {
-        const poolMembers = await poolMembersDAO.post(req, filtersHelper(req, req.params.poolNumber), true);
-
-        req.body.selectedJurors = poolMembers.data.map(juror => juror.jurorNumber);
-      } catch (err) {
-        app.logger.crit('Failed to fetch pool members to reassign: ', {
-          auth: req.session.authentication,
-          poolNumber: req.params.poolNumber,
-          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-        });
-
-        return res.render('_errors/generic', { err });
-      };
-    } else {
-      const validatorResult = validate(req.body, jurorSelectValidator());
-
-      if (typeof validatorResult !== 'undefined') {
-
-        req.session.errors = validatorResult;
-        req.session.noJurorSelect = true;
-        return res.redirect(app.namedRoutes.build('pool-overview.get', {
-          poolNumber: req.body.poolNumber}));
-      }
-    }
-
-    req.session.poolJurorsReassign = req.body;
-    delete req.session.poolJurorsReassign._csrf;
-    delete req.session.errors;
-
-    if (!Array.isArray(req.body.selectedJurors)) {
-      req.session.poolJurorsReassign.selectedJurors = [req.body.selectedJurors];
-    }
-
-    req.session.receivingCourtLocCode = req.body.poolNumber.slice(0, 3);
-
-    return res.redirect(app.namedRoutes.build('pool-management.reassign.get', {
-      poolNumber: req.body.poolNumber,
-    }));
-  };
-};
-
-module.exports.postTransfer = function(app) {
-  return async function(req, res) {
-    if (req.body['check-all-jurors']) {
-      try {
-        const poolMembers = await poolMembersDAO.post(req, filtersHelper(req, req.params.poolNumber), true);
-
-        req.session.selectedJurors = poolMembers.data.map(juror => juror.jurorNumber);
-      } catch (err) {
-        app.logger.crit('Failed to fetch pool members to tranfer: ', {
-          auth: req.session.authentication,
-          poolNumber: req.params.poolNumber,
-          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-        });
-
-        return res.render('_errors/generic', { err });
-      };
-    } else {
-      const validatorResult = validate(req.body, jurorSelectValidator());
-
-      if (typeof validatorResult !== 'undefined') {
-        req.session.errors = validatorResult;
-        req.session.noJurorSelect = true;
-        return res.redirect(app.namedRoutes.build('pool-overview.get', {
-          poolNumber: req.body.poolNumber}));
-      }
-
-      req.session.selectedJurors = Array.isArray(req.body.selectedJurors)
-        ? req.body.selectedJurors : [req.body.selectedJurors];
-    }
-
-    delete req.session.errors;
-
-    return res.redirect(app.namedRoutes.build('pool-overview.transfer.select-court.get', {
-      poolNumber: req.params.poolNumber,
-    }));
-  };
-};
-
-// Bulk transfer court selection is handled at ../../juror-management/update/juror-update.transfer.controller
-
-module.exports.postTransferConfirm = function(app) {
-  return function(req, res) {
-    executeTransfer(app, req, res, req.session.selectedJurors);
-  };
-};
-
-module.exports.postTransferContinue = function(app) {
-  return (req, res) => {
-    executeTransfer(app, req, res, req.session.availableForMove);
-  };
-};
-
-function executeTransfer(app, req, res, transferedJurors) {
-  var newServiceStartDate, receivingCourtLocCode;
-  const poolNumber = req.params.poolNumber;
-
-  const successCB = function(data) {
-    const courtName = req.session.formField.courtNameOrLocation;
-
-    app.logger.info(`${transferedJurors.length} juror(s) succesfully transferred from ${poolNumber}:`, {
-      auth: req.session.authentication,
-      data: {
-        poolNumber,
-        receivingCourt: receivingCourtLocCode,
-        data: data,
-      },
-    });
-
-    /* eslint-disable-next-line */
-    req.session.bannerMessage = `${transferedJurors.length} juror${transferedJurors.length > 1 ? 's' : ''} transferred to ${courtName}`;
-
-    delete req.session.formField;
-
-    return res.redirect(app.namedRoutes.build('pool-overview.get', {
-      poolNumber: req.params.poolNumber,
-    }));
-  };
-
-  receivingCourtLocCode = req.session.formField.courtNameOrLocation.match(/\d+/g)[0];
-
-  newServiceStartDate = dateFilter(req.session.formField.attendanceDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
-
-  jurorTransfer.put(
-    req,
-    transferedJurors,
-    receivingCourtLocCode,
-    newServiceStartDate,
-    poolNumber)
-    .then(successCB)
-    .catch(errorCB(app, req, res, poolNumber, 'Failed to bulk transfer jurors:'));
-};
-
 function coronerCourtPool(app) {
   return function(req, res) {
     let pagination;
@@ -442,70 +306,6 @@ function renderHistoryItems(app, req, res, data){
     })
     .catch(errorCB(app, req, res, data.poolDetails.poolNumber, 'Failed to fetch pool history:'));
 }
-
-module.exports.postCompleteService = function(app) {
-  return async function(req, res) {
-    if (req.body['check-all-jurors']) {
-      try {
-        const poolMembers = await poolMembersDAO.post(req, filtersHelper(req, req.params.poolNumber), true);
-
-        req.body.selectedJurors = poolMembers.data.map(juror => juror.jurorNumber);
-      } catch (err) {
-        app.logger.crit('Failed to fetch pool members to complete service: ', {
-          auth: req.session.authentication,
-          poolNumber: req.params.poolNumber,
-          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-        });
-
-        return res.render('_errors/generic', { err });
-      };
-    } else {
-
-      const validatorResult = validate(req.body, jurorSelectValidator());
-
-      if (typeof validatorResult !== 'undefined') {
-        req.session.errors = validatorResult;
-
-        return res.redirect(app.namedRoutes.build('pool-overview.get', { poolNumber: req.params['poolNumber'] }));
-      }
-    }
-
-    if (!Array.isArray(req.body.selectedJurors)) {
-      req.body.selectedJurors = [req.body.selectedJurors];
-    }
-
-    req.session.selectedJurors = req.body.selectedJurors;
-    delete req.session.selectedJurors._csrf;
-    delete req.session.errors;
-
-    return res.redirect(app.namedRoutes.build('pool-overview.complete-service.confirm.get',{
-      poolNumber: req.params.poolNumber,
-    }));
-  };
-};
-
-module.exports.getCompleteServiceContinue = function(app) {
-  return function(req, res) {
-    const notResponded = req.session.notResponded;
-    const selectedJurors = req.session.selectedJurors;
-
-    if (selectedJurors.length > 0) {
-      return res.render('shared/complete-service/some-responded.njk', {
-        notResponded,
-        selectedJurors,
-        confirmUrl: app.namedRoutes.build('pool-overview.complete-service.post',
-          { poolNumber: req.params.poolNumber }),
-        cancelUrl: app.namedRoutes.build('pool-overview.get',
-          { poolNumber: req.params.poolNumber }),
-      });
-    }
-
-    return res.render('shared/complete-service/none-responded.njk', {
-      cancelUrl: app.namedRoutes.build('pool-overview.get',
-        { poolNumber: req.params.poolNumber }),
-    });
-  };
-};
 
 function courtView(app, req, res, pool, membersList, _errors, selectedJurors, selectAll) {
   let assignUrl = app.namedRoutes.build('pool-overview.reassign.post', {
@@ -668,127 +468,212 @@ function courtView(app, req, res, pool, membersList, _errors, selectedJurors, se
   }
 }
 
-module.exports.postBulkPostpone = function(app) {
-  return async function(req, res) {
-    if (req.body['check-all-jurors']) {
-      try {
-        const poolMembers = await poolMembersDAO.post(req, filtersHelper(req, req.params.poolNumber), true);
-
-        req.body.selectedJurors = poolMembers.data.map(juror => juror.jurorNumber);
-      } catch (err) {
-        app.logger.crit('Failed to fetch pool members to postpone: ', {
-          auth: req.session.authentication,
-          poolNumber: req.params.poolNumber,
-          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-        });
-
-        return res.render('_errors/generic', { err });
-      };
-    } else {
-      const validatorResult = validate(req.body, jurorSelectValidator());
-
-      if (typeof validatorResult !== 'undefined') {
-        req.session.errors = validatorResult;
-        req.session.noJurorSelect = true;
-        return res.redirect(app.namedRoutes.build('pool-overview.get', {
-          poolNumber: req.body.poolNumber}));
-      }
-    }
-
-    req.session.poolJurorsPostpone = req.body;
-    delete req.session.poolJurorsPostpone._csrf;
-    delete req.session.errors;
-
-    if (!Array.isArray(req.body.selectedJurors)) {
-      req.session.poolJurorsPostpone.selectedJurors = [req.body.selectedJurors];
-    }
-    return res.redirect(app.namedRoutes.build('pool-management.postpone.get', {
-      poolNumber: req.body.poolNumber,
-    }));
-  };
-};
-
-module.exports.postBulkOnCall = function(app) {
-  return async function(req, res) {
-
-    if (req.body['check-all-jurors']) {
-      try {
-        const poolMembers = await poolMembersDAO.post(req, filtersHelper(req, req.params.poolNumber), true);
-
-        req.body.selectedJurors = poolMembers.data.map(juror => juror.jurorNumber);
-      } catch (err) {
-        app.logger.crit('Failed to fetch pool members to bulk place on call: ', {
-          auth: req.session.authentication,
-          poolNumber: req.params.poolNumber,
-          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-        });
-
-        return res.render('_errors/generic', { err });
-      };
-    } else {
-      const validatorResult = validate(req.body, jurorSelectValidator());
-
-      if (typeof validatorResult !== 'undefined') {
-        req.session.errors = validatorResult;
-        req.session.noJurorSelect = true;
-        return res.redirect(app.namedRoutes.build('pool-overview.get', {
-          poolNumber: req.body.poolNumber}));
-      }
-    }
-
-    req.session.poolJurorsOnCall = req.body;
-    delete req.session.poolJurorsOnCall._csrf;
-    delete req.session.errors;
-
-    if (!Array.isArray(req.body.selectedJurors)) {
-      req.session.poolJurorsOnCall.selectedJurors = [req.body.selectedJurors];
-    }
-
-    return res.redirect(app.namedRoutes.build('pool-management.on-call.validate.get', {
-      poolNumber: req.params.poolNumber,
-    }));
-  };
-};
-
-module.exports.postBulkNonAttendance = function(app) {
-  return async function(req, res) {
+/**
+ * Handles bulk actions for pool management processing.
+ * 
+ * @param {Object} options - Configuration options for the bulk action.
+ * @param {string} options.actionDescription - A description of the action being performed (used for logging).
+ * @param {string} options.sessionKey - The session key to store the selected jurors or related data.
+ * @param {string} options.redirectRoute - The route to redirect to after successful processing.
+ * @param {boolean} [options.noJurorSelectFlag=false] - Whether to set a session flag in the session if no jurors are selected.
+ * @param {string} [options.validationMessage='Select at least one juror'] - Custom validation message for missing juror selection.
+ * @param {Function} [options.additionalProcessing] - Optional callback for additional processing specific to the action.
+ * @param {Function} [options.onlyCacheSelectedJurors] - Whether to only cache the selected jurors - Defaults to all form body.
+ * 
+ * @returns {Promise} - Resolves with a redirect response or renders an error page.
+ */
+const handleBulkProcessingAction = (app) => {
+  return async function(req, res, options) {
     const { poolNumber } = req.params;
 
     if (req.body['check-all-jurors']) {
       try {
-        const poolMembers = await poolMembersDAO.post(req, filtersHelper(req, req.params.poolNumber), true);
-
+        const poolMembers = await poolMembersDAO.post(req, filtersHelper(req, poolNumber), true);
         req.body.selectedJurors = poolMembers.data.map(juror => juror.jurorNumber);
       } catch (err) {
-        app.logger.crit('Failed to fetch pool members to bulk add non-attendance day: ', {
+        app.logger.crit(`Failed to fetch pool members for ${options.actionDescription}: `, {
           auth: req.session.authentication,
           poolNumber,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
-
         return res.render('_errors/generic', { err });
-      };
+      }
     } else {
-
-      if (!req.body.selectedJurors) {
-        req.session.errors = modUtils.makeManualError('selectedJurors', 'Please select at least one juror to add a non-attendance day');
-        return res.redirect(app.namedRoutes.build('pool-overview.get', {
-          poolNumber,
-        }));
+      if (!req.body.selectedJurors || req.body.selectedJurors.length === 0) {
+        req.session.errors = modUtils.makeManualError('selectedJurors', options.validationMessage || 'Select at least one juror');
+        if (options.noJurorSelectFlag) req.session.noJurorSelect = true;
+        return res.redirect(app.namedRoutes.build('pool-overview.get', { poolNumber }));
       }
     }
 
-    req.session[`${poolNumber}-nonAttendanceDay`] = req.body;
-    delete req.session[`${poolNumber}-nonAttendanceDay`]._csrf;
-    delete req.session.errors;
-
     if (!Array.isArray(req.body.selectedJurors)) {
-      req.session[`${poolNumber}-nonAttendanceDay`].selectedJurors = [req.body.selectedJurors];
+      req.body.selectedJurors = [req.body.selectedJurors];
     }
 
-    return res.redirect(app.namedRoutes.build('pool-management.add-non-attendance-day.get', {
-      poolNumber,
+    req.session[options.sessionKey] = options.onlyCacheSelectedJurors ? req.body.selectedJurors : req.body;
+    delete req.session[options.sessionKey]._csrf;
+    delete req.session.errors;
+
+    console.log('\n\n', `req.session[${options.sessionKey}]\n`, req.session[options.sessionKey], '\n\n');
+
+    if (options.additionalProcessing) {
+      options.additionalProcessing();
+    }
+
+    return res.redirect(app.namedRoutes.build(options.redirectRoute, { poolNumber }));
+  }
+};
+
+module.exports.postReassign = function (app) {
+  return async function (req, res) {
+    const { poolNumber } = req.params;
+    return handleBulkProcessingAction(app)(req, res, {
+      actionDescription: 'reassign',
+      sessionKey: 'poolJurorsReassign',
+      redirectUrl: app.namedRoutes.build('pool-management.reassign.get', { poolNumber }),
+      noJurorSelectFlag: true,
+      additionalProcessing: () => {
+        req.session.receivingCourtLocCode = req.body.poolNumber.slice(0, 3);
+      },
+    });
+  };
+};
+
+module.exports.postTransfer = function (app) {
+  return async function (req, res) {
+    const { poolNumber } = req.params;
+    return handleBulkProcessingAction(app)(req, res, {
+      actionDescription: 'transfer',
+      sessionKey: 'selectedJurors',
+      redirectUrl: app.namedRoutes.build('pool-overview.transfer.select-court.get', { poolNumber }),
+      noJurorSelectFlag: true,
+      onlyCacheSelectedJurors: true,
+    });
+  };
+};
+
+// Bulk transfer court selection is handled at ../../juror-management/update/juror-update.transfer.controller
+
+module.exports.postTransferConfirm = function(app) {
+  return function(req, res) {
+    executeTransfer(app, req, res, req.session.selectedJurors);
+  };
+};
+
+module.exports.postTransferContinue = function(app) {
+  return (req, res) => {
+    executeTransfer(app, req, res, req.session.availableForMove);
+  };
+};
+
+function executeTransfer(app, req, res, transferedJurors) {
+  var newServiceStartDate, receivingCourtLocCode;
+  const poolNumber = req.params.poolNumber;
+
+  const successCB = function(data) {
+    const courtName = req.session.formField.courtNameOrLocation;
+
+    app.logger.info(`${transferedJurors.length} juror(s) succesfully transferred from ${poolNumber}:`, {
+      auth: req.session.authentication,
+      data: {
+        poolNumber,
+        receivingCourt: receivingCourtLocCode,
+        data: data,
+      },
+    });
+
+    /* eslint-disable-next-line */
+    req.session.bannerMessage = `${transferedJurors.length} juror${transferedJurors.length > 1 ? 's' : ''} transferred to ${courtName}`;
+
+    delete req.session.formField;
+
+    return res.redirect(app.namedRoutes.build('pool-overview.get', {
+      poolNumber: req.params.poolNumber,
     }));
+  };
+
+  receivingCourtLocCode = req.session.formField.courtNameOrLocation.match(/\d+/g)[0];
+
+  newServiceStartDate = dateFilter(req.session.formField.attendanceDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
+
+  jurorTransfer.put(
+    req,
+    transferedJurors,
+    receivingCourtLocCode,
+    newServiceStartDate,
+    poolNumber)
+    .then(successCB)
+    .catch(errorCB(app, req, res, poolNumber, 'Failed to bulk transfer jurors:'));
+};
+
+module.exports.postCompleteService = function (app) {
+  return async function (req, res) {
+    const { poolNumber } = req.params;
+    return handleBulkProcessingAction(app)(req, res, {
+      actionDescription: 'complete service',
+      sessionKey: 'selectedJurors',
+      redirectUrl: app.namedRoutes.build('pool-overview.complete-service.confirm.get', { poolNumber }),
+      onlyCacheSelectedJurors: true,
+    });
+  };
+};
+
+module.exports.getCompleteServiceContinue = function(app) {
+  return function(req, res) {
+    const notResponded = req.session.notResponded;
+    const selectedJurors = req.session.selectedJurors;
+
+    if (selectedJurors.length > 0) {
+      return res.render('shared/complete-service/some-responded.njk', {
+        notResponded,
+        selectedJurors,
+        confirmUrl: app.namedRoutes.build('pool-overview.complete-service.post',
+          { poolNumber: req.params.poolNumber }),
+        cancelUrl: app.namedRoutes.build('pool-overview.get',
+          { poolNumber: req.params.poolNumber }),
+      });
+    }
+
+    return res.render('shared/complete-service/none-responded.njk', {
+      cancelUrl: app.namedRoutes.build('pool-overview.get',
+        { poolNumber: req.params.poolNumber }),
+    });
+  };
+};
+
+module.exports.postBulkPostpone = function (app) {
+  return async function (req, res) {
+    const { poolNumber } = req.params;
+    return handleBulkProcessingAction(app)(req, res, {
+      actionDescription: 'postpone',
+      sessionKey: 'poolJurorsPostpone',
+      redirectUrl: app.namedRoutes.build('pool-management.postpone.get', { poolNumber }),
+      noJurorSelectFlag: true,
+    });
+  };
+};
+
+module.exports.postBulkOnCall = function (app) {
+  return async function (req, res) {
+    const { poolNumber } = req.params;
+    return handleBulkProcessingAction(app)(req, res, {
+      actionDescription: 'bulk place on call',
+      sessionKey: 'poolJurorsOnCall',
+      redirectUrl: app.namedRoutes.build('pool-management.on-call.validate.get', { poolNumber }),
+      noJurorSelectFlag: true,
+    });
+  };
+};
+
+module.exports.postBulkNonAttendance = function (app) {
+  return async function (req, res) {
+    const { poolNumber } = req.params;
+    return handleBulkProcessingAction(app)(req, res, {
+      actionDescription: 'bulk add non-attendance day',
+      sessionKey: `${req.params.poolNumber}-nonAttendanceDay`,
+      redirectUrl: app.namedRoutes.build('pool-management.add-non-attendance-day.get', { poolNumber }),
+      validationMessage: 'Select at least one juror to add a non-attendance day',
+    });
   };
 };
 

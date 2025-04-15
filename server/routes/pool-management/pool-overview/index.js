@@ -128,7 +128,6 @@
       isCourtUser,
       nonAttendanceController.getNonAttendanceDay(app),
     );
-
     app.post('/pool-management/:poolNumber/add-non-attendance-day',
       'pool-management.add-non-attendance-day.post',
       auth.verify,
