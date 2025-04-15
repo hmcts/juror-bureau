@@ -19,6 +19,22 @@
 
       const { postUrl, cancelUrl } = buildUrls(app, req, { jurorNumber, poolNumber, trialNumber, locCode, status });
 
+      if (req.url.includes('record') && req.session.jurorCommonDetails) {
+        if (jurorNumber != req.session.jurorCommonDetails?.jurorNumber) {
+          app.logger.crit('Juror number does not match cached data', {
+            auth: req.session.authentication,
+            jwt: req.session.authToken,
+            data: {
+              jurorNumber: {
+                url: jurorNumber,
+                cached: req.session.jurorCommonDetails.jurorNumber,
+              },
+            },
+          });
+          return res.render('_errors/data-mismatch');
+        }
+      }
+
       delete req.session.errors;
       delete req.session.formFields;
 
