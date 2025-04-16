@@ -125,29 +125,42 @@
       delete req.session[`${trialNumber}-${locationCode}-trial`];
       delete req.session[`${trialNumber}-${locationCode}-continueToEndTrial`];
       delete req.session[`${trialNumber}-${locationCode}-reassignPanel`];
+      delete req.session[`${trialNumber}-${locationCode}-nonAttendanceDay`];
 
       // Clear returns flow
       delete req.session[`${trialNumber}-${locationCode}-handleAttendance`];
       delete req.session[`${trialNumber}-${locationCode}-checkInTime`];
       delete req.session[`${trialNumber}-${locationCode}-checkOutTime`];
 
-      Promise.all([trialDetailsObject.get(
-        req,
-        trialNumber,
-        locationCode
-      ), panelListDAO.get(
-        req, req.params.trialNumber, req.params.locationCode
-      ), panelMemberStatusDAO.get(
-        req, req.params.trialNumber, req.params.locationCode
-      ).catch(err => {
-        app.logger.crit('Unable to fetch panel details, continuing to trial details', {
-          auth: req.session.authentication,
-          token: req.session.authToken,
-          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
-        });
+      Promise.all([
+        trialDetailsObject.get(
+          req,
+          trialNumber,
+          locationCode
+        ), 
+        panelListDAO.get(
+          req,
+          trialNumber,
+          locationCode
+        ), 
+        panelMemberStatusDAO.get(
+          req,
+          trialNumber,
+          locationCode
+        ).catch(err => {
+          app.logger.crit('Unable to fetch panel details, continuing to trial details', {
+            auth: req.session.authentication,
+            token: req.session.authToken,
+            error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+            data: {
+              trialNumber,
+              locationCode
+            }
+          });
 
-        return {};
-      })])
+          return {};
+        })
+      ])
         .then(([trialData, panelData, addPanelStatus ]) => {
 
           let canEmpanel = true;
@@ -186,6 +199,10 @@
                 locationCode: req.params.locationCode,
               }),
               reassignUrl: app.namedRoutes.build('trial-management.trials.reassign.post', {
+                trialNumber: req.params.trialNumber,
+                locationCode: req.params.locationCode,
+              }),
+              addNonAttendanceDayUrl: app.namedRoutes.build('trial-management.trials.add-non-attendance-day.jurors.post', {
                 trialNumber: req.params.trialNumber,
                 locationCode: req.params.locationCode,
               }),
