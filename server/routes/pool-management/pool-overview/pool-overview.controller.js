@@ -474,7 +474,7 @@ function courtView(app, req, res, pool, membersList, _errors, selectedJurors, se
  * @param {Object} options - Configuration options for the bulk action.
  * @param {string} options.actionDescription - A description of the action being performed (used for logging).
  * @param {string} options.sessionKey - The session key to store the selected jurors or related data.
- * @param {string} options.redirectRoute - The route to redirect to after successful processing.
+ * @param {string} options.redirectUrl - The url to redirect to after successful processing.
  * @param {boolean} [options.noJurorSelectFlag=false] - Whether to set a session flag in the session if no jurors are selected.
  * @param {string} [options.validationMessage='Select at least one juror'] - Custom validation message for missing juror selection.
  * @param {Function} [options.additionalProcessing] - Optional callback for additional processing specific to the action.
@@ -520,7 +520,7 @@ const handleBulkProcessingAction = (app) => {
       options.additionalProcessing();
     }
 
-    return res.redirect(app.namedRoutes.build(options.redirectRoute, { poolNumber }));
+    return res.redirect(options.redirectUrl);
   }
 };
 
