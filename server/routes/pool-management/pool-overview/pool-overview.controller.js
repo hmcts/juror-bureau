@@ -514,8 +514,6 @@ const handleBulkProcessingAction = (app) => {
     delete req.session[options.sessionKey]._csrf;
     delete req.session.errors;
 
-    console.log('\n\n', `req.session[${options.sessionKey}]\n`, req.session[options.sessionKey], '\n\n');
-
     if (options.additionalProcessing) {
       options.additionalProcessing();
     }
