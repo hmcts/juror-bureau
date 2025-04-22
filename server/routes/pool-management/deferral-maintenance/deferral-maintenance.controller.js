@@ -709,7 +709,7 @@
       }
 
       req.session.bannerMessage
-          = `${jurorNumbers.length} Juror${jurorNumbers.length > 1 ? '\'s' : ''} successfully moved to
+          = `${jurorNumbers.length} Juror${jurorNumbers.length > 1 ? 's' : ''} successfully moved to
            <span class="govuk-!-font-weight-bold">${transformCourtName(courtData)}</span>
            and remain deferred`;
 
