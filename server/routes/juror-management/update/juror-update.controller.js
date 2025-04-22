@@ -134,24 +134,21 @@
         }));
       }
 
-      if (req.body.jurorRecordUpdate === 'deceased') {
-        return postDeceased(req, res, app);
-      } else if (req.body.jurorRecordUpdate === 'undeliverable') {
-        return postUndeliverable(req, res, app);
-      } else if (req.body.jurorRecordUpdate === 'summoned') {
-        return postSummoned(req, res, app);
-      }
-
-      if (req.body.jurorRecordUpdate === 'disqualify') {
-        return res.redirect(app.namedRoutes.build('juror.update.disqualify.get', {
-          jurorNumber: req.params.jurorNumber,
-        }));
-      }
-
-      if (req.body.jurorRecordUpdate === 'responded') {
-        return res.redirect(app.namedRoutes.build('juror.update.responded.get', {
-          jurorNumber: req.params.jurorNumber,
-        }));
+      switch (req.body.jurorRecordUpdate) {
+        case 'deceased':
+          return postDeceased(req, res, app);     
+        case 'undeliverable':
+          return postUndeliverable(req, res, app);      
+        case 'summoned':
+          return postSummoned(req, res, app);      
+        case 'disqualify':
+          return res.redirect(app.namedRoutes.build('juror.update.disqualify.get', {
+            jurorNumber: req.params.jurorNumber,
+          }));
+        case 'responded':
+          return res.redirect(app.namedRoutes.build('juror.update.responded.get', {
+            jurorNumber: req.params.jurorNumber,
+          }));      
       }
 
       // Just a small fallback error message to avoid displaying stack traces when the option is not available yet
