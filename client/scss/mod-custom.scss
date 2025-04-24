@@ -139,7 +139,7 @@
 
 /// Used in banners for inverted label
 .mod-tag-grey {
-  color: #ffffff;
+  color: govuk-colour("white");
   background-color: govuk-colour("dark-grey");
 }
 
@@ -334,7 +334,7 @@ dt.govuk-summary-list-mod {
 .mod-arrow-svg {
   width: .9375rem;
   height: .8125rem;
-  color: #505a5f;
+  color: govuk-colour("dark-grey");
   fill: currentcolor;
   forced-color-adjust: auto;
 
@@ -421,7 +421,7 @@ dt.govuk-summary-list-mod {
 .mod-expense-entry-group {
   padding: 10px;
   margin: 30px 10px 0px 10px;
-  background: #F3F2F1;
+  background: govuk-colour("light-grey");
 
   .govuk-form-group {
     margin-bottom: 15px;
@@ -735,5 +735,11 @@ dt.govuk-summary-list-mod {
         white-space: nowrap;
       }
     }
+  }
+}
+
+.mod-background {
+  &--blue {
+    background-color: govuk-colour("blue");
   }
 }
