@@ -65,23 +65,24 @@
     }
 
     .requested {
-        background-color: #B1B4B6;
+        background-color: govuk-colour("mid-grey");
     }
 
     .confirmed {
-        background-color: #1D70B8;
+        background-color: govuk-colour("blue");
     }
 
     .unavailable {
-        background-color: #B58840;
+        background-color: govuk-colour("brown")
+        ;
     }
 
     .surplus {
-        background-color: #D53880;
+        background-color: govuk-colour("pink");
     }
 
     .notResponded {
-        background: linear-gradient(-45deg,  #B1B4B6 0%,#B1B4B6 50%,#F3F2F1 50%,#F3F2F1 100%);
+        background: linear-gradient(-45deg,  govuk-colour("mid-grey") 0%,govuk-colour("mid-grey") 50%, govuk-colour("light-grey") 50%,govuk-colour("light-grey") 100%);
     }
 }
 
@@ -99,7 +100,7 @@
     height: 0;
     border-left: 6px solid transparent;
     border-right: 6px solid transparent;
-    border-top: 12px solid #1D70B8;
+    border-top: 12px solid govuk-colour("blue");
     margin-left: 3px;
 }
 
@@ -146,23 +147,24 @@
     }
 
     .confirmed {
-        background-color: #1D70B8;
+        background-color: govuk-colour("blue");
     }
 
     .requested {
-        background-color: #B1B4B6;
+        background-color: govuk-colour("mid-grey");
     }
 
     .surplus {
-        background-color: #D53880;
+        background-color: govuk-colour("pink");
     }
 
     .notResponded {
-        background-color: #F3F2F1
+        background-color: govuk-colour("light-grey")
     }
 
     .unavailable {
-        background-color: #B58840;
+        background-color: govuk-colour("brown")
+        ;
     }
 }
 

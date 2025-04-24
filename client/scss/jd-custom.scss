@@ -4,7 +4,7 @@
 
 // blue background for badge
 .jd-badge-blue {
-  background-color:#1D70B8;
+  background-color:govuk-colour("blue");
 }
 
 .jd-label-blue {
@@ -19,14 +19,14 @@
 
 // red highlight for Date Received
 .jd-response-overdue {
-  color: #d4351c;
+  color: govuk-colour("red");
   font-weight: bold
 }
 
 // blue info banner
 .jd-banner-info {
-  border-color: lighten(#1D70B8, 50%);
-  background-color: lighten(#1D70B8, 50%);
+  border-color: lighten(govuk-colour("blue"), 50%);
+  background-color: lighten(govuk-colour("blue"), 50%);
 }
 
 // Seach - align Juror number with checkbox in search results
@@ -55,7 +55,7 @@
 // Assign replies page
 .jd-assign-replies-total {
   display: inline-block;
-  color: #1d70b8;
+  color: govuk-colour("blue");
   border-right: solid 5px black;
   padding-right: 20px;
   margin-right: 10px;
@@ -64,14 +64,14 @@
 
 .jd-assign-replies-send {
   display: inline-block;
-  color: #d4351c;
+  color: govuk-colour("red");
   margin-right: 30px;
   min-width: 150px;
 }
 
 .jd-assign-replies-urgent {
   display: inline-block;
-  color: #912b88;
+  color: govuk-colour("bright-purple");
   margin-right: 30px;
   min-width: 150px;
 }
@@ -86,7 +86,7 @@
   width: 175px;
   min-width: 120px;
   margin-right: 20px;
-  background-color: #f3f2f1;
+  background-color: govuk-colour("light-grey");
   vertical-align: middle;
   padding-top: 9px;
   padding-left: 10px;
@@ -95,11 +95,11 @@
 }
 
 .jd-assign-replies-border-send {
-  border-left: 7px solid #d4351c;
+  border-left: 7px solid govuk-colour("red");
 }
 
 .jd-assign-replies-border-urgent {
-  border-left: 7px solid #912b88;
+  border-left: 7px solid govuk-colour("bright-purple");
 }
 
 .jd-assign-replies-border-standard {
@@ -112,7 +112,7 @@
 
 // response details page - header banner background
 .jd-response-details-banner-blue {
-  background-color:#1D70B8;
+  background-color:govuk-colour("blue");
   color: white;
   @include govuk-font($size: 16);
 }
@@ -317,7 +317,7 @@ textarea.modal-textarea {
   float: right;
   margin-top: 10px; }
 .modal .modal-title-aside .close-modal {
-  color: #0b0c0c; }
+  color: govuk-colour("black"); }
 .modal .modal-title-aside .close-modal:hover, .modal .modal-title-aside .close-modal:active, .modal .modal-title-aside .close-modal:visited {
   color: inherit; }
 .modal hr {
@@ -357,7 +357,7 @@ textarea.modal-textarea {
   padding: 10px 20px; 
   border: 0;}
 .edit-section .edit-form fieldset.info {
-  border-left: 5px solid #28a197; }
+  border-left: 5px solid govuk-colour("turquoise"); }
 .edit-section .edit-form hr {
   margin: 1px 20px 1px; }
 .edit-section--readonly {
@@ -405,7 +405,7 @@ textarea.modal-textarea {
 .reply-view-dropdown-menus {
   padding-right: 120px;
   //float: right;
-  //background-color: #28a197;
+  //background-color: govuk-colour("turquoise");
 }
 
 .reply-view-header-menus {
@@ -495,13 +495,13 @@ textarea.modal-textarea {
   }
   
 .datepicker-select {
-  background-color: #1d70b8;
+  background-color: govuk-colour("blue");
   color: white;
 }
 
 .datepicker-noselect {
   background-color: white;
-  color: #b1b4b6;
+  color: govuk-colour("mid-grey");
 }
 
 div#bn_prev {
