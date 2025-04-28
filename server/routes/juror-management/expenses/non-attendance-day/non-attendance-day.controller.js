@@ -205,13 +205,14 @@
 
       if (err.statusCode === 422) {
         const errorMessages = {
-          'ATTENDANCE_RECORD_ALREADY_EXISTS': 'You cannot mark this date as a non-attendance day because it\'s already been recorded as an attendance day',
-          'APPEARANCE_RECORD_BEFORE_SERVICE_START_DATE': 'Non-attendance date cannot be before the juror\'s service start date',
-          'INVALID_JUROR_POOL_LOCATION': 'This juror belongs to either the primary or satellite court in your area. You must add the attendance for the court location. Please log back in as the correct court to add this attendance',
+          'ATTENDANCE_RECORD_ALREADY_EXISTS': `You cannot mark this date as a non-attendance day because it\'s already been recorded as an attendance day ${bulkRequest ? 'for one or more selected jurors' : ''}.`,
+          'APPEARANCE_RECORD_BEFORE_SERVICE_START_DATE': `Non-attendance date cannot be before ${bulkRequest ? 'one or more' : 'the'} juror\'s service start date.`,
+          'INVALID_JUROR_POOL_LOCATION': `${bulkRequest ? 'One or more jurors belong' : 'This juror belongs'} to either the primary or satellite court in your area. You must add the attendance for the court location. Please log back in as the correct court to add this attendance.`,
+          'INVALID_JUROR_STATUS': `You cannot mark this date as a non-attendance day because ${bulkRequest ? 'one or more jurors are' : 'the juror is'} in summoned status.`,
         };
 
         const errorMessage = errorMessages[err.error.code] || err.error.message || 'Could not add non-attendance date';
-        req.session.errors = makeManualError('nonAttendanceDay', errorMessage + (bulkRequest ? ' for one or more of the selected jurors.' : '.'));
+        req.session.errors = makeManualError('nonAttendanceDay', errorMessage);
         req.session.formFields = req.body;
 
         return res.redirect(errorUrl);
