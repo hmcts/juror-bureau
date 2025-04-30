@@ -34,14 +34,19 @@ const { makeManualError } = require('../../../../lib/mod-utils');
         });
         cancelUrl = app.namedRoutes.build('juror-record.attendance.get', { jurorNumber });
         if (req.session.jurorCommonDetails) {
-          if (jurorNumber != req.session.jurorCommonDetails?.jurorNumber) {
-            app.logger.crit('Juror number does not match cached data', {
+          if ((jurorNumber != req.session.jurorCommonDetails?.jurorNumber) ||
+              (poolNumber != req.session.jurorCommonDetails?.poolNumber)) {
+            app.logger.crit('The juror number / pool number does not match cached data', {
               auth: req.session.authentication,
               jwt: req.session.authToken,
               data: {
                 jurorNumber: {
                   url: jurorNumber,
                   cached: req.session.jurorCommonDetails.jurorNumber,
+                },
+                poolNumber: {
+                  url: poolNumber,
+                  cached: req.session.jurorCommonDetails.poolNumber,
                 },
               },
             });
