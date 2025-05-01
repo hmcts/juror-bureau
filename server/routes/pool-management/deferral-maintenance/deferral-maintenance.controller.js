@@ -8,6 +8,8 @@
   const validate = require('validate.js');
   const requestObj = require('../../../objects/pool-management').deferralMaintenance;
   const dateFilter = require('../../../components/filters').dateFilter;
+  const courtNameOrLocationValidator = require('../../../config/validation/request-pool.js').courtNameOrLocation;
+  const { transformCourtName } = require('../../../components/filters');
 
   function successCB(data, courtCode) {
     return function(app, req, res) {
@@ -498,15 +500,241 @@
     };
   };
 
+  module.exports.getMoveCourt = function(app) {
+    return async function(req, res) {
+      const deferralsToProcess = extractDeferralsToProcess(req.session.deferralMaintenance.deferrals);
+
+      if (!deferralsToProcess || !deferralsToProcess.length) {
+        req.session.errors = {
+          deferrals: [{
+            summary: 'Select the deferrals you want to move court',
+            details: 'Select the deferrals you want to move court',
+          }],
+        };
+
+        return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.filter.get', {
+          locationCode: req.params['locationCode'],
+        }));
+      }
+
+      const tmpErrors = _.clone(req.session.errors);
+      const tmpBody = _.clone(req.session.formFields);
+      delete req.session.errors;
+      delete req.session.formFields;
+
+      if (!req.session.courtsList?.length) { 
+        try {
+          const courtsData = await fetchCourtsDAO.get(req);
+          req.session.courtsList = courtsData.courts;
+        } catch (err) {
+          app.logger.crit('Failed to fetch courts list', {
+            auth: req.session.authentication,
+            token: req.session.authToken,
+            error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+          });
+        }
+      }
+
+      const transformedCourtNames = modUtils.transformCourtNames(_.clone(req.session.courtsList));
+
+      return res.render('pool-management/_common/select-court', {
+        pageTitle: 'Select a court to move the selected jurors to',
+        courts: transformedCourtNames,
+        submitUrl: app.namedRoutes.build('pool-management.deferral-maintenance.move-court.select-court.post', {
+          locationCode: req.params['locationCode'],
+        }),
+        cancelUrl: app.namedRoutes.build('pool-management.deferral-maintenance.filter.get', {
+          locationCode: req.params['locationCode'],
+        }),
+        pageIdentifier: 'Deferral maintenance - Move court',
+        errors: {
+          title: 'Please check the form',
+          count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+          items: tmpErrors,
+        },
+        tmpBody,
+      });
+    }
+  };
+
+  module.exports.postMoveCourt = function(app) {
+    return async function(req, res) {
+      const { locationCode } = req.params;
+
+      const validatorResult = validate(req.body, courtNameOrLocationValidator(req));
+      if (typeof validatorResult !== 'undefined') {
+        req.session.errors = validatorResult;
+        req.session.formFields = req.body;
+
+        return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.move-court.select-court.get', {
+          locationCode,
+        }));
+      }
+
+      let courtData;
+      try {
+        courtData = await modUtils.matchUserCourt(req.session.courtsList, req.body);
+      } catch (err) {
+        req.session.errors = {
+          courtNameOrLocation: [{
+            summary: 'Please check the court name or location',
+            details: 'We could not find that court. Select another one or go back',
+          }],
+        };
+
+        return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.move-court.select-court.get', {
+          locationCode,
+        }));
+      }
+
+      return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.move-court.select-pool.get', {
+        locationCode,
+        newLocationCode: courtData.locationCode,
+      }))
+
+    };
+  };
+
+  module.exports.getMoveCourtPools = function(app) {
+    return async function(req, res) {
+      const { locationCode, newLocationCode } = req.params;
+      try {
+        const data = await requestObj.availablePools.get(req, newLocationCode)
+
+        const tmpErrors = _.clone(req.session.errors);
+
+        delete req.session.errors;
+
+        app.logger.info('Fetched available pools to move court: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            pools: data.deferralPoolsSummary[0].deferralOptions,
+            courtCode: newLocationCode,
+          },
+        });
+
+        const sortedPools = data.deferralPoolsSummary[0].deferralOptions.sort(function(a, b){
+          return new Date(a.serviceStartDate) - new Date(b.serviceStartDate);
+        });
+
+        return res.render('pool-management/deferral-maintenance/pools.njk', {
+          locationCode: newLocationCode,
+          pools: sortedPools,
+          submitUrl: app.namedRoutes.build('pool-management.deferral-maintenance.move-court.select-pool.post', {
+            locationCode,
+            newLocationCode,
+          }),
+          backLinkUrl: {
+            built: true,
+            url: app.namedRoutes.build('pool-management.deferral-maintenance.move-court.select-court.get', {
+              locationCode,
+            }),
+          },
+          errors: {
+            title: 'There is a problem',
+            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+            items: tmpErrors,
+          },
+        });
+      } catch (err) {
+        app.logger.crit('Failed to fetch available pools: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            courtCode: newLocationCode,
+          },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic', { err });
+      }
+    };
+  };
+
+  module.exports.postMoveCourtPools = function(app) {
+    return async function(req, res) {
+      const { locationCode, newLocationCode } = req.params;
+
+      let courtData;
+      try {
+        courtData = await modUtils.matchUserCourt(req.session.courtsList, {
+          courtNameOrLocation: newLocationCode,
+        });
+      } catch (err) {
+        req.session.errors = {
+          courtNameOrLocation: [{
+            summary: 'Please check the court name or location',
+            details: 'We could not find that court. Select another one or go back',
+          }],
+        };
+
+        return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.move-court.select-court.get', {
+          locationCode,
+        }));
+      }
+
+      if (!req.body.poolNumber) {
+        req.session.errors = {
+          poolNumber: [{
+            summary: 'Select a pool to move the jurors to',
+            details: 'Select a pool to move the jurors to',
+          }],
+        };
+
+        return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.move-court.select-pool.get', {
+          locationCode,
+          newLocationCode,
+        }));
+      }
+
+      const jurorNumbers = extractDeferralsToProcess(req.session.deferralMaintenance.deferrals);
+
+      const payload = {
+        poolNumber: req.body.poolNumber,
+        jurorNumbers,
+      }
+
+      try {
+        await requestObj.moveCourt.post(req, payload);
+      } catch(err) {
+        app.logger.crit('Failed to move the selected deferrals to another court: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: payload,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic', { err });
+      }
+
+      req.session.bannerMessage
+          = `${jurorNumbers.length} Juror${jurorNumbers.length > 1 ? 's' : ''} successfully moved to
+           <span class="govuk-!-font-weight-bold">${transformCourtName(courtData)}</span>
+           and remain deferred`;
+
+      delete req.session.deferralMaintenance
+
+      return requestObj
+          .deferrals.get(req, locationCode)
+          .then((data) => successCB(data, locationCode)(app, req, res))
+          .catch((err) => errorCB(err)(app, req, res));
+    };
+  };
+
   /**
    *
    * @param {object} deferrals Full loaded list of deferrals
-   * @returns {string[]} An array of deferral numbers
+   * @returns {string[]} An array of deferral numbers or full deferral objects
    */
-  function extractDeferralsToProcess(deferrals) {
+  function extractDeferralsToProcess(deferrals, allJurorDetails = false) {
     return deferrals.reduce((deferralNumbers, deferral) => {
       if (deferral.isChecked) {
-        deferralNumbers.push(deferral.jurorNumber);
+        if (allJurorDetails) {
+          deferralNumbers.push(deferral);
+        } else {
+          deferralNumbers.push(deferral.jurorNumber);
+        }
       }
       return deferralNumbers;
     }, []);

@@ -46,6 +46,13 @@
             details: 'Enter a cost centre',
           },
         },
+        length: {
+          maximum: 5,
+          message: {
+            summary: 'Cost centre must be 5 characters or fewer',
+            details: 'Cost centre must be 5 characters or fewer',
+          },
+        },
       },
       signature: {
         presence: {

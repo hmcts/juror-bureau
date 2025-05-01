@@ -21,6 +21,8 @@
 
   module.exports.jurorNonAttendanceDao = new DAO('moj/juror-management/non-attendance');
 
+  module.exports.bulkJurorNonAttendanceDao = new DAO('moj/trial/non-attendance');
+
   module.exports.jurorAddAttendanceDao = new DAO('moj/juror-management/add-attendance-day');
 
   module.exports.modifyJurorAttendance = new DAO('moj/juror-management/attendance/modify-attendance');
