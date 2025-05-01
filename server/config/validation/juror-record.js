@@ -20,6 +20,13 @@
             summary: 'Please select the enquiry type',
           },
         },
+        exclusion: {
+          within: ['select'],
+          message: {
+            details: 'Enquiry type is missing',
+            summary: 'Please select the enquiry type',
+          },
+        },
       },
       notes: {
         presence: {

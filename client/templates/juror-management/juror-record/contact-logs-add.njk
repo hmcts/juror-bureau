@@ -60,7 +60,8 @@
             classes: "govuk-!-font-weight-bold"
           },
           items: enquiryTypes,
-          errorMessage: enquiryTypeError
+          errorMessage: enquiryTypeError,
+          value: tmpBody.enquiryType or "select"
         }) }}
 
         {{ govukRadios({
@@ -85,7 +86,8 @@
               id: "no"
             }
           ],
-          errorMessage: repeatEnquiryError
+          errorMessage: repeatEnquiryError,
+          value: tmpBody.repeatEnquiry
         }) }}
 
         {{ govukCharacterCount({
@@ -96,7 +98,8 @@
           label: {
             text: "Add notes"
           },
-          errorMessage: notesError
+          errorMessage: notesError,
+          value: tmpBody.notes
         }) }}
 
         <div class="govuk-button-group">
