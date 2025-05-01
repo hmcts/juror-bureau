@@ -680,7 +680,7 @@
         jurorNumber = req.params['id']; //response details
       }
 
-      if (jurorNumber && req.session.jurorCommonDetails) {
+      if (jurorNumber && req.session.jurorCommonDetails && req.url.includes('juror-management/record')) {
         if (jurorNumber != req.session.jurorCommonDetails?.jurorNumber) {
           app.logger.crit('Juror number does not match cached data', {
             auth: req.session.authentication,
