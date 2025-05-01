@@ -84,7 +84,7 @@
           {
             value: "CRO",
             text: "Crown court",
-            checked: query.poolType === "CRO"
+            checked: not query.poolType or query.poolType === "CRO"
           },
           {
             value: "CIV",
