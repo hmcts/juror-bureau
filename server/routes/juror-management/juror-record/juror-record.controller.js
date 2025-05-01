@@ -588,7 +588,8 @@
           req.session.etag = response.headers.etag;
           const jurorNotes = typeof req.session.jurorNotes !== 'undefined'
               ? { notes: req.session.jurorNotes } : response.data
-            , tmpErrors = _.clone(req.session.errors);
+          const tmpErrors = _.clone(req.session.errors);
+          const jurorStatus = resolveJurorStatus(response.data.commonDetails);
 
           delete req.session.errors;
           delete req.session.jurorNotes;
@@ -638,6 +639,7 @@
             },
             juror: jurorNotes,
             actionUrl,
+            jurorStatus,
             errors: {
               title: 'Please check the form',
               count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -1360,5 +1362,8 @@
       return res.render('_errors/generic');
     };
   };
+
+  module.exports.resolveJurorStatus = resolveJurorStatus;
+  module.exports.cacheJurorCommonDetails = cacheJurorCommonDetails;
 
 })();
