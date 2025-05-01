@@ -985,8 +985,6 @@
         const responseRouteName = type === 'paper' ? 'response.paper.details.get' : 'response.detail.get';
         successUrl = app.namedRoutes.build(responseRouteName, { id, type }) + '#callLog';
 
-        console.log('\n\n',successUrl,'\n\n');
-
         errorUrl = app.namedRoutes.build('response.contact-logs.add.get', { id, type });
       } else {
         successUrl = app.namedRoutes.build('juror-record.notes.get', {
@@ -996,8 +994,6 @@
           jurorNumber,
         });
       }
-
-      console.log('\n\nHELLO\n\n', isSummons, '\n\n');
 
       const validatorResult = validate(req.body, validator.contactLog());
 
