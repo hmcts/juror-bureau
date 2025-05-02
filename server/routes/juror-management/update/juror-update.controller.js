@@ -692,27 +692,28 @@
   }
 
   async function postSummoned(req, res, app) {
+    const { jurorNumber } = req.params;
     try {
-      await markAsSummonedDAO.patch(req);
+      await markAsSummonedDAO.patch(req, jurorNumber);
 
       app.logger.info('Juror marked as summoned: ', {
         auth: req.session.authentication,
         data: {
-          responseId: req.params.jurorNumber,
+          jurorNumber,
         },
       });
 
       req.session.bannerMessage = 'Summoned';
 
       return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
-        jurorNumber: req.params.jurorNumber,
+        jurorNumber,
       }));
 
     } catch (err) {
       app.logger.crit('Failed to mark juror as summoned: ', {
         auth: req.session.authentication,
         data: {
-          responseId: req.params.jurorNumber,
+          jurorNumber,
         },
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
@@ -724,7 +725,7 @@
         }],
       };
       return res.redirect(app.namedRoutes.build('juror.update.get', {
-        jurorNumber: req.params.jurorNumber,
+        jurorNumber,
       }));
     }
   }
