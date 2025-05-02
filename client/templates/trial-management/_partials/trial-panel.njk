@@ -25,6 +25,17 @@
       }
     }) if canEmpanel }}
 
+    {% if trial['is_jury_empanelled'] %}
+      {{ govukButton({
+        text: "Add non-attendance day",
+        classes: "govuk-button--secondary govuk-!-margin-bottom-4",
+        attributes: {
+          id: "addNonAtendanceDayButton",
+          formAction: formActions.addNonAttendanceDayUrl
+        }
+      }) }}
+    {% endif %}
+
     {% if errors.items["selectedJurors"] %}<div class="error-allocation">
       <p class="govuk-error-message">{{ errors.items['selectedJurors'][0].details }}</p>
       </div>

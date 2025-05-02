@@ -28,7 +28,9 @@
       get: availablePools.bind({ resource: 'moj/deferral-maintenance/available-pools/{}' }),
       post: availablePools.bind({ resource: 'moj/deferral-maintenance/available-pools/{}', method: 'POST' }),
     },
+    moveCourt: new DAO('moj/deferral-maintenance/juror/move-deferred'),
   };
+
 
   module.exports.reassignJurors = {
     availablePools: {

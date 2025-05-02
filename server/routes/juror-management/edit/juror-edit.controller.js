@@ -19,11 +19,14 @@
   const { courtLocationsFromPostcodeObj } = require('../../../objects/court-location');
   const { resolveCatchmentResponse } = require('../../summons-management/summons-management.controller');
   const courtNameOrLocationValidator = require('../../../config/validation/request-pool').courtNameOrLocation;
+  const { resolveJurorStatus, cacheJurorCommonDetails } = require('../juror-record/juror-record.controller');
 
   module.exports.getEditDeferral = (app) => {
     return (req, res) => {
+      const { jurorNumber } = req.params;
+
       systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL')
-        .then((data) => {
+        .then(async (data) => {
           app.logger.info('Retrieved excusal codes: ', {
             auth: req.session.authentication,
             jwt: req.session.authToken,
@@ -38,9 +41,34 @@
 
           delete req.session.errors;
 
-          let selectedDeferralReason = req.session.jurorCommonDetails.excusalCode,
-            selectedDeferralDate = dateFilter(
-              makeDate(req.session.jurorCommonDetails.deferralDate), null, 'DD/MM/YYYY'
+          let jurorOverview;
+          try {
+            jurorOverview = await jurorRecordObject.get(
+              req,
+              'overview',
+              jurorNumber,
+              req.session.locCode || req.session.authentication.locCode,
+            )
+          } catch (err) {
+            app.logger.crit('Failed to retrive juror details when changing deferral: ', {
+              auth: req.session.authentication,
+              jwt: req.session.authToken,
+              data: {
+                jurorNumber,
+              }
+            });
+  
+            return res.render('_errors/generic', { err });
+          }
+
+          cacheJurorCommonDetails(req, jurorOverview.data.commonDetails);
+
+          const jurorStatus = resolveJurorStatus(jurorOverview.data.commonDetails);
+
+          let selectedDeferralReason = jurorOverview.data.commonDetails.deferral_code;
+
+          let selectedDeferralDate = dateFilter(
+              makeDate(jurorOverview.data.commonDetails.deferralDate), null, 'DD/MM/YYYY'
             );
 
           if (req.session.formFields) {
@@ -64,25 +92,25 @@
 
           delete req.session.formFields;
 
-          let minDate = new Date(makeDate(req.session.jurorCommonDetails.startDate)),
+          let minDate = new Date(makeDate(jurorOverview.data.commonDetails.startDate)),
             maxDate = moment(minDate).add(12, 'M');
 
           req.session.minDate = minDate;
           req.session.maxDate = maxDate;
 
           return res.render('juror-management/edit/juror-edit-deferral', {
-            jurorNumber: req.params['jurorNumber'],
+            jurorNumber,
             backLinkUrl: {
               built: true,
               url: app.namedRoutes.build('juror-record.overview.get', {
-                jurorNumber: req.params['jurorNumber'],
+                jurorNumber,
               }),
             },
             processUrl: app.namedRoutes.build('juror-record.deferral-edit.post', {
-              jurorNumber: req.params['jurorNumber'],
+              jurorNumber,
             }),
             deleteUrl: app.namedRoutes.build('juror-record.deferral-edit-delete.post', {
-              jurorNumber: req.params['jurorNumber'],
+              jurorNumber,
             }),
             excusalReasons: trimmedData,
             selectedDeferralReason: selectedDeferralReason,
@@ -94,6 +122,8 @@
               count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
               items: tmpErrors,
             },
+            juror: jurorOverview?.data,
+            jurorStatus,
           });
         })
         .catch((err) => {
@@ -109,6 +139,7 @@
 
   module.exports.postEditDeferral = (app) => {
     return (req, res) => {
+      const { jurorNumber } = req.params;
       let validatorResult = validate(req.body, changeDeferralValidator(req.session.minDate, req.session.maxDate));
 
       if (typeof validatorResult !== 'undefined') {
@@ -116,7 +147,7 @@
         req.session.formFields = req.body;
 
         return res.redirect(app.namedRoutes.build('juror-record.deferral-edit.get', {
-          jurorNumber: req.params['jurorNumber'],
+          jurorNumber,
         }));
       }
 
@@ -128,7 +159,7 @@
       if (currentDeferralReason === deferralReason && currentDeferralDate === deferralDate) {
         // No change in reason or date, return to juror record overview.
         return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
-          jurorNumber: req.params['jurorNumber'],
+          jurorNumber,
         }));
       };
 
@@ -136,12 +167,12 @@
         // No change in date, change reason and return to juror record overview.
         deferralDate = dateFilter(deferralDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
 
-        changeDeferralObject.post(req, req.params['jurorNumber'], deferralDate, null, deferralReason)
+        changeDeferralObject.post(req, jurorNumber, deferralDate, null, deferralReason)
           .then((data) => {
             app.logger.info('Changed deferral details: ', {
               auth: req.session.authentication,
               jwt: req.session.authToken,
-              jurorNumber: req.params['jurorNumber'],
+              jurorNumber,
               deferralDate: deferralDate,
               poolNumber: null,
               deferralReason: deferralReason,
@@ -151,7 +182,7 @@
             req.session.bannerMessage = {showUpdateOnly: true};
 
             return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
-              jurorNumber: req.params['jurorNumber'],
+              jurorNumber,
             }));
           })
           .catch((err) => {
@@ -159,7 +190,7 @@
               auth: req.session.authentication,
               jwt: req.session.authToken,
               data: {
-                jurorNumber: req.params['jurorNumber'],
+                jurorNumber,
                 deferralDate: deferralDate,
                 excusalReasonCode: deferralReason,
               },
@@ -174,7 +205,7 @@
         req.session.newDeferralReason = deferralReason;
 
         return res.redirect(app.namedRoutes.build('juror-record.deferral-edit-confirm.get', {
-          jurorNumber: req.params.jurorNumber,
+          jurorNumber,
         }));
       };
     };
@@ -182,19 +213,21 @@
 
   module.exports.postDeleteDeferral = (app) => {
     return (req, res) => {
+      const { jurorNumber } = req.params;
+
       deleteDeferralObject.delete(req, req.body.jurorNumber)
         .then(
           () => {
             app.logger.info('Deleted deferral: ', {
               auth: req.session.authentication,
               jwt: req.session.authToken,
-              jurorNumber: req.params['jurorNumber'],
+              jurorNumber,
             });
 
             req.session.bannerMessage = 'Responded';
 
             return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
-              jurorNumber: req.params['jurorNumber'],
+              jurorNumber,
             }));
           }
         ).catch(
@@ -203,7 +236,7 @@
               auth: req.session.authentication,
               jwt: req.session.authToken,
               data: {
-                jurorNumber: req.body.jurorNumber,
+                jurorNumber,
               },
               error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
             });
@@ -216,13 +249,15 @@
 
   module.exports.getEditDeferralConfirm = (app) => {
     return (req, res) => {
-      activePoolsObj.post(req, req.session.deferralDates, req.params['jurorNumber'])
+      const { jurorNumber } = req.params;
+
+      activePoolsObj.post(req, req.session.deferralDates, jurorNumber)
         .then((data) => {
           app.logger.info('Retrieved active pools: ', {
             auth: req.session.authentication,
             jwt: req.session.authToken,
             deferralDate: req.session.deferralDates,
-            jurorNumber: req.params['id'],
+            jurorNumber,
             data: data,
           });
 
@@ -253,15 +288,18 @@
           }
 
           return res.render('juror-management/edit/deferral-available-pools', {
-            jurorNumber: req.params['jurorNumber'],
+            jurorNumber,
             backLinkUrl: {
               built: true,
               url: app.namedRoutes.build('juror-record.deferral-edit.get', {
-                jurorNumber: req.params['jurorNumber'],
+                jurorNumber,
               }),
             },
             processUrl: app.namedRoutes.build('juror-record.deferral-edit-confirm.post', {
-              jurorNumber: req.params['jurorNumber'],
+              jurorNumber,
+            }),
+            cancelUrl: app.namedRoutes.build('juror-record.overview.get', {
+              jurorNumber,
             }),
             hasActivePools: hasActivePools,
             deferralPoolWeek: deferralPoolSummary,
@@ -278,7 +316,7 @@
             auth: req.session.authentication,
             jwt: req.session.authToken,
             data: {
-              jurorNumber: req.params['jurorNumber'],
+              jurorNumber,
               deferralDates: req.session.deferralDates,
             },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
@@ -292,13 +330,15 @@
 
   module.exports.postEditDeferralConfirm = (app) => {
     return (req, res) => {
+      const { jurorNumber } = req.params;
+
       let validatorResult = validate(req.body, deferralPoolValidator());
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
 
         return res.redirect(app.namedRoutes.build('juror-record.deferral-edit-confirm.get', {
-          jurorNumber: req.params['jurorNumber'],
+          jurorNumber,
         }));
       }
 
@@ -309,21 +349,21 @@
           ? deferralSelection[1]
           : null;
 
-      changeDeferralObject.post(req, req.params['jurorNumber'], newDeferralDate, newPoolNumber, req.session.newDeferralReason)
+      changeDeferralObject.post(req, jurorNumber, newDeferralDate, newPoolNumber, req.session.newDeferralReason)
         .then(() => {
           app.logger.info('Changed deferral details: ', {
             auth: req.session.authentication,
             jwt: req.session.authToken,
-            jurorNumber: req.params['jurorNumber'],
+            jurorNumber,
             deferralDate: newDeferralDate,
             poolNumber: newPoolNumber,
             deferralReason: req.session.newDeferralReason,
           });
 
-          req.session.bannerMessage = 'Responded';
+          req.session.bannerMessage = newPoolNumber ? 'Responded' : {showUpdateOnly: true};
 
           return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
-            jurorNumber: req.params['jurorNumber'],
+            jurorNumber,
           }));
         })
         .catch((err) => {
@@ -338,14 +378,14 @@
             req.session.errors = modUtils.makeManualError('deferralDateAndPool', 'You cannot defer into the juror\'s existing pool - please select a different pool or date');
             req.session.formFields = req.body;
             return res.redirect(app.namedRoutes.build('juror-record.deferral-edit-confirm.get', {
-              jurorNumber: req.params['jurorNumber'],
+              jurorNumber,
             }));
           }
           app.logger.crit('Failed to change deferral details: ', {
             auth: req.session.authentication,
             jwt: req.session.authToken,
             data: {
-              jurorNumber: req.params['jurorNumber'],
+              jurorNumber,
               deferralDate: req.body.deferralDate,
               excusalReasonCode: req.session.newDeferralReason,
             },
