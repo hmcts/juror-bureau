@@ -48,6 +48,7 @@
       {{ modSearch({
         action: url("juror-record.search.post"),
         method: "post",
+        classes: "govuk-!-margin-bottom-4",
         input: {
           id: "globalSearch",
           name: "globalSearch"
@@ -64,6 +65,13 @@
         },
         csrf: csrftoken
       }) }}
+
+      <p class="govuk-body">
+        <a class="govuk-link" href="{{ url('juror-record.search.get') }}" aria-label="Advanced juror search">
+          Advanced juror search
+        </a>
+      </p>
+
     </div>
   </div>
 
