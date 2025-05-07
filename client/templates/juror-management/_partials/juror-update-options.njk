@@ -11,6 +11,7 @@
 {% set failedToAttend = { value: "failed-to-attend", text: "Change juror status to ‘Failed to attend’" } %}
 {% set undoFailedToAttend = { value: "undo-failed-to-attend", text: "Undo ‘Failed to attend' juror status" } %}
 {% set deceased = { value: "deceased", text: "Mark as deceased", checked: radioChecked === "deceased", conditional: { html: deceasedHtml } } %}
+{% set summoned = { value: "summoned", text: "Mark as summoned" } %}
 
 {% set updateOptions = [] %}
 
@@ -98,7 +99,7 @@
 
   {# user type agnostic options #}
   {% if jurorStatus === "Undeliverable" %}
-    {% set updateOptions = [responded, deferral, excusal, postpone, disqualify] %}
+    {% set updateOptions = [summoned] %}
   {% endif %}
 
 {% endif %}
