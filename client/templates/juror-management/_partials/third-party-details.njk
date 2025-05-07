@@ -15,63 +15,73 @@
 {% endif %}
 
 
-<div class="mod-juror-record__title govuk-body">
-  <h2 id="jurorDetailsLabel" class="govuk-heading-m">Third party details</h2>
-</div>
+{% if (thirdPartyNameParts and thirdPartyNameParts !== " ") 
+  or juror.thirdParty.relationship
+  or (thirdPartyReason and thirdPartyReason !== "-")
+  or juror.thirdParty.mainPhone
+  or juror.thirdParty.otherPhone
+  or juror.thirdParty.emailAddress
+%}
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    {{ govukSummaryList({
-      rows: [
-        {
-          key: {
-            text: "Name"
-          },
-          value: {
-            text: thirdPartyNameParts if (thirdPartyNameParts and thirdPartyNameParts !== " ") else "-"
-          }
-        },
-        {
-          key: {
-            text: "Relationship to juror"
-          },
-          value: {
-            text: juror.thirdParty.relationship or "-"
-          }
-        },
-        {
-          key: {
-            text: "Reason for completing"
-          },
-          value: {
-            text: thirdPartyReason
-          }
-        },
-        {
-          key: {
-            text: "Main phone"
-          },
-          value: {
-            text: (juror.thirdParty.mainPhone | replace(' ', '')) or "-"
-          }
-        },
-        {
-          key: {
-            text: "Other phone"
-          },
-          value: {
-            text: (juror.thirdParty.otherPhone | replace(' ', '')) or "-"
-          }
-        },
-        {
-          key: {
-            text: "Email"
-          },
-          value: {
-            text: (juror.thirdParty.emailAddress | lower) or "-"
-          }
-        }
-      ]
-    }) }}
+  <div class="mod-juror-record__title govuk-body">
+    <h2 id="jurorDetailsLabel" class="govuk-heading-m">Third party details</h2>
   </div>
-</div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              text: "Name"
+            },
+            value: {
+              text: thirdPartyNameParts if (thirdPartyNameParts and thirdPartyNameParts !== " ") else "-"
+            }
+          },
+          {
+            key: {
+              text: "Relationship to juror"
+            },
+            value: {
+              text: juror.thirdParty.relationship or "-"
+            }
+          },
+          {
+            key: {
+              text: "Reason for completing"
+            },
+            value: {
+              text: thirdPartyReason
+            }
+          },
+          {
+            key: {
+              text: "Main phone"
+            },
+            value: {
+              text: (juror.thirdParty.mainPhone | replace(' ', '')) or "-"
+            }
+          },
+          {
+            key: {
+              text: "Other phone"
+            },
+            value: {
+              text: (juror.thirdParty.otherPhone | replace(' ', '')) or "-"
+            }
+          },
+          {
+            key: {
+              text: "Email"
+            },
+            value: {
+              text: (juror.thirdParty.emailAddress | lower) or "-"
+            }
+          }
+        ]
+      }) }}
+    </div>
+  </div>
+
+{% endif %}
