@@ -1,0 +1,50 @@
+@startuml reports.monthly-utilisation
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant "Monthly utilisation form page" as MonthlyUtilisationPage <</reporting/monthly-utilisation>>
+participant "Confirm monthly utilisation" as ConfirmMonthlyUtilisation <</reporting/monthly-utilisation/confirm>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant "Monthly utilisation controller" as MonthlyUtilisationController <<monthly-utilisation.controller.js>> #LightYellow
+participant "Standard report controller" as StandardReportController <<standard-report.controller.js>> #LightYellow
+
+''' TEMPLATES
+participant "Standard report" as StandardReport <<reporting/standard-reports/standard-report.njk>> #lavender
+
+''' VALIDATORS
+participant "'Monthly utilisation' validator" as Validator
+
+''' SELECT PAGE
+Actor -> MonthlyUtilisationPage : fill form and submit
+MonthlyUtilisationPage -> MonthlyUtilisationController : call page controller
+MonthlyUtilisationController -> Validator : validate form data
+
+alt Invalid form data
+
+  MonthlyUtilisationController <- Validator : invalid form data
+  MonthlyUtilisationController -> MonthlyUtilisationPage : request and build template
+  MonthlyUtilisationController <- MonthlyUtilisationPage : return HTML
+  Actor <- MonthlyUtilisationController : return and render HTML with error messages
+
+end
+|||
+
+MonthlyUtilisationController <- Validator : valid form data
+
+MonthlyUtilisationController -> ConfirmMonthlyUtilisation : request and build template
+MonthlyUtilisationController <- ConfirmMonthlyUtilisation : return HTML
+Actor <- MonthlyUtilisationController : return and render HTML
+|||
+
+Actor -> ConfirmMonthlyUtilisation : confirm monthly utilisation
+ConfirmMonthlyUtilisation -> MonthlyUtilisationController : call page controller
+MonthlyUtilisationController -> StandardReportController : redirect to standard report controller
+
+StandardReportController -> StandardReport : request and build template
+StandardReportController <- StandardReport : return HTML
+Actor <- StandardReportController : report displayed by standard renderer
