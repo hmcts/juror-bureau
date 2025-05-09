@@ -10,7 +10,7 @@
   const { jurorDeceasedObject } = require('../../../objects/juror-deceased');
   const jurorTransfer = require('../../../objects/juror-transfer').jurorTransfer;
   const { dateFilter } = require('../../../components/filters');
-  const { systemCodesDAO, markAsUndeliverableDAO } = require('../../../objects');
+  const { systemCodesDAO, markAsUndeliverableDAO, markAsSummonedDAO } = require('../../../objects');
   const moment = require('moment');
   const { deferralPoolsObject, changeDeferralObject } = require('../../../objects/deferral-mod');
   const { deferralReasonAndDecision, deferralDateAndPool } = require('../../../config/validation/deferral-mod');
@@ -134,22 +134,21 @@
         }));
       }
 
-      if (req.body.jurorRecordUpdate === 'deceased') {
-        return postDeceased(req, res, app);
-      } else if (req.body.jurorRecordUpdate === 'undeliverable') {
-        return postUndeliverable(req, res, app);
-      }
-
-      if (req.body.jurorRecordUpdate === 'disqualify') {
-        return res.redirect(app.namedRoutes.build('juror.update.disqualify.get', {
-          jurorNumber: req.params.jurorNumber,
-        }));
-      }
-
-      if (req.body.jurorRecordUpdate === 'responded') {
-        return res.redirect(app.namedRoutes.build('juror.update.responded.get', {
-          jurorNumber: req.params.jurorNumber,
-        }));
+      switch (req.body.jurorRecordUpdate) {
+        case 'deceased':
+          return postDeceased(req, res, app);     
+        case 'undeliverable':
+          return postUndeliverable(req, res, app);      
+        case 'summoned':
+          return postSummoned(req, res, app);      
+        case 'disqualify':
+          return res.redirect(app.namedRoutes.build('juror.update.disqualify.get', {
+            jurorNumber: req.params.jurorNumber,
+          }));
+        case 'responded':
+          return res.redirect(app.namedRoutes.build('juror.update.responded.get', {
+            jurorNumber: req.params.jurorNumber,
+          }));      
       }
 
       // Just a small fallback error message to avoid displaying stack traces when the option is not available yet
@@ -690,6 +689,45 @@
           jurorNumber: req.params.jurorNumber,
         }));
       });
+  }
+
+  async function postSummoned(req, res, app) {
+    const { jurorNumber } = req.params;
+    try {
+      await markAsSummonedDAO.patch(req, jurorNumber);
+
+      app.logger.info('Juror marked as summoned: ', {
+        auth: req.session.authentication,
+        data: {
+          jurorNumber,
+        },
+      });
+
+      req.session.bannerMessage = 'Summoned';
+
+      return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
+        jurorNumber,
+      }));
+
+    } catch (err) {
+      app.logger.crit('Failed to mark juror as summoned: ', {
+        auth: req.session.authentication,
+        data: {
+          jurorNumber,
+        },
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+
+      req.session.errors = {
+        undeliverable: [{
+          summary: 'Failed to mark juror as summoned',
+          details: 'Failed to mark juror as summoned',
+        }],
+      };
+      return res.redirect(app.namedRoutes.build('juror.update.get', {
+        jurorNumber,
+      }));
+    }
   }
 
 })();
