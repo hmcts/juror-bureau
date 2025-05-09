@@ -357,6 +357,12 @@
         sortable: true,
       },
       {
+        id: 'lastAttendanceDate',
+        value: 'Last attendance date',
+        sort: sortBy === 'lastAttendanceDate' ? order : 'none',
+        sortable: true,
+      },
+      {
         id: 'viewExpenses',
         value: '',
         sortable: false,
@@ -397,6 +403,12 @@
           text: '£' + parseFloat(unpaid.total_unapproved).toFixed(2),
           attributes: {
             'data-sort-value': unpaid.total_unapproved,
+          },
+        },
+        {
+          text: dateFilter(makeDate(unpaid.last_attendance_date), 'YYYY,MM,DD', 'ddd DD MMM YYYY'),
+          attributes: {
+            'data-sort-value': makeDate(unpaid.last_attendance_date),
           },
         },
         {
