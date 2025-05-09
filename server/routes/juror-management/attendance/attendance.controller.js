@@ -11,6 +11,9 @@
   const { runPoliceCheckDAO } = require('../../../objects');
   const { Logger } = require('../../../components/logger');
   const { modifyJurorAttendance } = require('../../../objects');
+  const { isCourtUser, isSJOUser, isCourtManager } = require('../../../components/auth/user-type');
+  
+  const canRecordAttendance = (req) => isCourtUser(req) && !(isSJOUser(req) && !isCourtManager(req));
 
   module.exports.postCheckIn = function(app) {
     return async function(req, res) {
@@ -43,6 +46,7 @@
 
         return res.render('juror-management/attendance/unconfirmed/table-row.njk', {
           row: attendee,
+          canRecordAttendance: canRecordAttendance(req),
         });
       } catch (err) {
         if (err.statusCode === 404) {
@@ -67,6 +71,7 @@
 
         return res.render('juror-management/attendance/unconfirmed/table-row.njk', {
           row: attendee,
+          canRecordAttendance: canRecordAttendance(req),
           error: true,
         });
       }
@@ -127,6 +132,7 @@
 
         return res.render('juror-management/attendance/unconfirmed/table-row.njk', {
           row: attendee,
+          canRecordAttendance: canRecordAttendance(req),
         });
       } catch (err) {
         if (err.statusCode === 404) {
