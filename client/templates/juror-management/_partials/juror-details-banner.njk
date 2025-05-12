@@ -1,0 +1,53 @@
+{% set startDate = "-" %}
+{% if juror.commonDetails.startDate %}
+  {% set startDate = juror.commonDetails.startDate | dateFilter('yyyy-MM-DD', "ddd D MMM YYYY") %}
+{% endif %}
+
+<div class="mod-details-banner-juror-record">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <div class="govuk-grid-column-one-half govuk-!-padding-2">
+        <div class="govuk-grid-column-one-third">
+          <div id="jurorNumberLabel" class="label info">Juror number</div>
+          <span id="jurorNumber" class="info">{{ juror.commonDetails.jurorNumber }}</span>
+        </div>
+        <div class="govuk-grid-column-one-third">
+          <div id="jurorStatusLabel" class="label info">Juror status</div>
+          {% set _jurorStatus = jurorStatus %}
+          {% if jurorStatus === "FailedToAttend" %}
+            {% set _jurorStatus = "Failed to attend" %}
+          {% endif %}
+          <div id="jurorStatus" class="info with-icon">{{ _jurorStatus | safe }}</div>
+        </div>
+        {% if jurorStatus === "Postponed" %}
+          <div class="govuk-grid-column-one-third">
+            <div id="poolNumberLabel" class="label info">Deferred to</div>
+            <span id="poolNumber" class="info">{{ juror.commonDetails.deferredTo | makeDate | dateFilter(null, "ddd D MMM YYYY") }}</span>
+          </div>
+        {% else %}
+          <div class="govuk-grid-column-one-third">
+            <div id="poolNumberLabel" class="label info">Pool number</div>
+            <span id="poolNumber" class="info">{{ juror.commonDetails.poolNumber }}</span>
+          </div>
+        {% endif %}
+      </div>
+      <div class="govuk-grid-column-one-half govuk-!-padding-2">
+        {% if jurorStatus === "Deferred" %}
+            <div class="govuk-grid-column-one-third">
+                <div id="courtDeferredDateLabel" class="label info">Deferred to</div>
+                <span id="courtDeferredDate" class="info">{{ juror.commonDetails.deferredTo | dateFilter('yyyy-MM-DD', "ddd D MMM YYYY") }}</span>
+            </div>
+        {% elif jurorStatus !== "Postponed" %}
+          <div class="govuk-grid-column-one-third">
+            <div id="courtStartDateLabel" class="label info">Service start date</div>
+            <span id="courtStartDate" class="info">{{ startDate }}</span>
+          </div>
+        {% endif %}
+        <div class="govuk-grid-column-two-thirds">
+          <div id="courtNameLabel" class="label info">Court name</div>
+          <span id="courtName" class="info">{{ juror.commonDetails.courtName | capitalizeFully }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
