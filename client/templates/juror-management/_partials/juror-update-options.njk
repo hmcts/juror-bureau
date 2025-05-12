@@ -15,7 +15,11 @@
 
 {% set updateOptions = [] %}
 
-{% if not jurorDOB %}
+{% if jurorStatus === "Undeliverable" %}
+
+  {% set updateOptions = [summoned] %}
+
+{% elif not jurorDOB %}
 
   {% set updateOptions = [excusal, disqualify, deceased, undeliverable, reassign] %}
 
@@ -95,11 +99,6 @@
 
   {% if jurorStatus === "FailedToAttend" and owner !== "400" and isSJO %}
     {% set updateOptions = [undoFailedToAttend] %}
-  {% endif %}
-
-  {# user type agnostic options #}
-  {% if jurorStatus === "Undeliverable" %}
-    {% set updateOptions = [summoned] %}
   {% endif %}
 
 {% endif %}
