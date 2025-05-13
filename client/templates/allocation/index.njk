@@ -134,6 +134,7 @@
                 <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="ascending" aria-label="Staff name">Staff name</th>
                 <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none" aria-label="Urgent">Urgent</th>
                 <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none" aria-label="Standard">Standard</th>
+                <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none" aria-label="Awaiting information">Awaiting information</th>
                 <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none" aria-label="Total">Total</th>
               </tr>
 
@@ -144,6 +145,7 @@
                 </td>
                 <td id="total-urgent" class="govuk-table__cell govuk-!-font-weight-bold" data-sort-value="{{ totals.urgent }}">{{ staffData.totalUrgent }}</td>
                 <td id="total-standard" class="govuk-table__cell govuk-!-font-weight-bold" data-sort-value="{{ totals.nonUrgent }}">{{ staffData.totalNonUrgent }}</td>
+                <td id="total-awaiting-info" class="govuk-table__cell govuk-!-font-weight-bold" data-sort-value="{{ totals.awaitingInfo }}">{{ staffData.totalAwaitingInfo }}</td>
                 <td id="total-all" class="govuk-table__cell govuk-!-font-weight-bold" data-sort-value="{{ totals.allReplies }}">{{ staffData.totalAll }}</td>
               </tr>
 
@@ -169,6 +171,7 @@
                   <td id="{{officer.login}}" class="govuk-table__cell jd-middle-align">{{ officer.name }}</td>
                   <td id="{{officer.login}}-urgent" class="govuk-table__cell jd-middle-align">{{ officer.countUrgent }}</td>
                   <td id="{{officer.login}}-standard" class="govuk-table__cell jd-middle-align">{{ officer.countNonUrgent }}</td>
+                  <td id="{{officer.login}}-awaitingInfo" class="govuk-table__cell jd-middle-align">{{ officer.countAwaitingInfo }}</td>
                   <td id="{{officer.login}}-total" class="govuk-table__cell jd-middle-align">{{ officer.countTotal }}</td>
                 </tr>
 
