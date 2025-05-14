@@ -155,7 +155,7 @@
             value: {
               text: "Yes" if juror.welsh else "No"
             }
-          }
+          } if juror.commonDetails.is_welsh_court
         ]
       }) }}
     </div>
