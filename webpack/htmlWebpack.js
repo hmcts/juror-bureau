@@ -71,6 +71,12 @@ const copyClientCode = new CopyWebpackPlugin({
       from: '*.*',
       to: '../client/assets/images',
     },
+    // Copy rebranded asssets
+    {
+      context: 'node_modules/govuk-frontend/dist/govuk/assets/rebrand/',
+      from: '*.*',
+      to: '../client/assets/rebrand',
+    },
     {
       context: 'node_modules/@ministryofjustice/frontend/moj/assets/images/',
       from: 'icon-arrow*.*',
