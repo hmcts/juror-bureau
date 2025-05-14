@@ -66,55 +66,59 @@
     </div>
 
     <div class="govuk-grid-column-one-half">
-      <div class="govuk-button-group mod-flex mod-justify-end">
-        <div class="moj-button-menu">
-          <div class="moj-button-menu__wrapper">
-            {% if attendanceStatus === "Unconfirmed" and canRecordAttendance%}
-              {{ govukButton({
-                text: "Confirm attendance",
-                classes: "govuk-button--secondary",
-                href: url('juror-management.attendance.confirm-attendance.get')
-              }) }}
-            {% endif %}
-            {{ mojButtonMenu({
-              items: [
-                {
-                  text: "Persons attending (summary)",
-                  href: reportUrls.personsAttendingSummary,
-                  classes: "govuk-button--secondary"
-                },
-                {
-                  text: "Persons attending (detailed)",
-                  href: reportUrls.personsAttendingDetail,
-                  classes: "govuk-button--secondary"
-                }
-              ],
-              attributes: {
-                id: 'printButtonMenu'
-              }
-            }) }}
+      <div class="govuk-button-group moj-button-group--inline mod-flex mod-justify-end">
+        {% if attendanceStatus === "Unconfirmed" and canRecordAttendance%}
+          {{ govukButton({
+            text: "Confirm attendance",
+            classes: "govuk-button--secondary",
+            href: url('juror-management.attendance.confirm-attendance.get')
+          }) }}
+        {% endif %}
+        {{ mojButtonMenu({
+          button: {
+            text: "Print",
+            classes: "govuk-button--secondary"
+          },
+          items: [
+            {
+              text: "Persons attending (summary)",
+              href: reportUrls.personsAttendingSummary,
+              classes: "govuk-button--secondary"
+            },
+            {
+              text: "Persons attending (detailed)",
+              href: reportUrls.personsAttendingDetail,
+              classes: "govuk-button--secondary"
+            }
+          ],
+          attributes: {
+            id: 'printButtonMenu'
+          }
+        }) }}
 
-              {% set auditNumbers = [] %}
-              {% for auditNumber in poolAttendaceAuditNumbers %}
-                {% set auditNumbers = (auditNumbers.push(
-                  {
-                    text: auditNumber,
-                    href: url('reports.pool-attendance-audit.report.get', {'filter': auditNumber}),
-                    classes: "govuk-button--secondary"
-                  }
-                ), auditNumbers) %}
-              {% endfor %}
+        {% set auditNumbers = [] %}
+        {% for auditNumber in poolAttendaceAuditNumbers %}
+          {% set auditNumbers = (auditNumbers.push(
+            {
+              text: auditNumber,
+              href: url('reports.pool-attendance-audit.report.get', {'filter': auditNumber}),
+              classes: "govuk-button--secondary"
+            }
+          ), auditNumbers) %}
+        {% endfor %}
 
-              {% if auditNumbers | length %}
-                {{ mojButtonMenu({
-                  items: auditNumbers,
-                  attributes: {
-                    id: 'printAttendanceButtonMenu'
-                  }
-                }) }}
-              {% endif %}
-          </div>
-        </div>
+        {% if auditNumbers | length %}
+          {{ mojButtonMenu({
+            button: {
+              text: "Print attendance audit",
+              classes: "govuk-button--secondary"
+            },
+            items: auditNumbers,
+            attributes: {
+              id: 'printAttendanceButtonMenu'
+            }
+          }) }}
+        {% endif %}
       </div>
     </div>
     {% if attendanceStatus === "Confirmed" %}
@@ -137,20 +141,6 @@
   {{ super() }}
 
   <script src="{{ assetPath }}js/attendance.js"></script>
-  <script nonce="{{ nonce }}">
-    new MOJFrontend.ButtonMenu({
-      container: $('#printButtonMenu'),
-      mq: '(min-width: 200em)',
-      buttonText: 'Print',
-      buttonClasses: 'govuk-!-margin-bottom-1 govuk-button--secondary moj-button-menu__toggle-button--secondary',
-    });
-    new MOJFrontend.ButtonMenu({
-      container: $('#printAttendanceButtonMenu'),
-      mq: '(min-width: 200em)',
-      buttonText: 'Print attendance audit',
-      buttonClasses: 'govuk-!-margin-bottom-1 govuk-button--secondary moj-button-menu__toggle-button--secondary',
-    });
-  </script>
   {% include "includes/datepicker.njk" %}
   <script nonce="{{ nonce }}">
     $("#attendanceDateSelection").change(function() {
