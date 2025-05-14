@@ -104,9 +104,10 @@
 
           </svg>
 
-          <a class="moj-header__link moj-header__link--organisation-name" {% if not isSystemAdministrator %} href="{{ url('homepage.get') }}" {% endif %}>HMCTS</a>
-
-          <a class="moj-header__link moj-header__link--service-name" {% if not isSystemAdministrator %} href="{{ url('homepage.get') }}" {% endif %}>Juror</a>
+          <a class="moj-header__link" {% if not isSystemAdministrator %} href="{{ url('homepage.get') }}" {% endif %}>
+            <span class="moj-header__link--organisation-name">HMCTS</span>
+            <span class="moj-header__link--service-name">Juror</span>
+          </a>
         </div>
         <div class="moj-header__content">
 
