@@ -2719,15 +2719,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fdir@npm:^6.4.3":
-  version: 6.4.3
-  resolution: "fdir@npm:6.4.3"
+"fdir@npm:^6.4.4":
+  version: 6.4.4
+  resolution: "fdir@npm:6.4.4"
   peerDependencies:
     picomatch: ^3 || ^4
   peerDependenciesMeta:
     picomatch:
       optional: true
-  checksum: fa53e13c63e8c14add5b70fd47e28267dd5481ebbba4b47720ec25aae7d10a800ef0f2e33de350faaf63c10b3d7b64138925718832220d593f75e724846c736d
+  checksum: 79043610236579ffbd0647c508b43bd030a2d034a17c43cf96813a00e8e92e51acdb115c6ddecef3b5812cc2692b976155b4f6413e51e3761f1e772fa019a321
   languageName: node
   linkType: hard
 
@@ -3038,17 +3038,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"govuk-frontend@npm:^5.0.0":
-  version: 5.9.0
-  resolution: "govuk-frontend@npm:5.9.0"
-  checksum: cfff85041038bd2161b6e718589239205ac020e6bc867dbf77ccbc7615b4af3c64ad6eb883f9c2f2f12bf4808c3f7bbccdc7c5d3210adc1b428863fab1cdbc08
-  languageName: node
-  linkType: hard
-
-"govuk-frontend@npm:^5.10.0-internal.1":
-  version: 5.10.0-internal.1
-  resolution: "govuk-frontend@npm:5.10.0-internal.1"
-  checksum: 818248260b86e7ecb031a21fc29bc4d0e5c1eb35110699f16d33c4afa4f5d0588743ebd9a2e5df0a5cb0165d0bbc52cb27d94f68aac82f336667650806c032dc
+"govuk-frontend@npm:^5.0.0, govuk-frontend@npm:^5.10.0":
+  version: 5.10.0
+  resolution: "govuk-frontend@npm:5.10.0"
+  checksum: 49f4abde3bdc9a558d1a71ef6c665afe1ff41b7c2b62e5e64a55d72e26f414c45964ff8350c2730c5c072c39e9b1fd6b8b18ce55b4017167a676c99dc19216f6
   languageName: node
   linkType: hard
 
@@ -3749,7 +3742,7 @@ __metadata:
     express-rate-limit: ^7.3.1
     express-session: ^1.18.1
     fs-extra: ^11.0.0
-    govuk-frontend: ^5.10.0-internal.1
+    govuk-frontend: ^5.10.0
     helmet: ^7.0.0
     html-webpack-plugin: ^5.6.0
     istanbul: ^0.4.4
@@ -5760,12 +5753,12 @@ __metadata:
   linkType: hard
 
 "tinyglobby@npm:^0.2.12":
-  version: 0.2.12
-  resolution: "tinyglobby@npm:0.2.12"
+  version: 0.2.13
+  resolution: "tinyglobby@npm:0.2.13"
   dependencies:
-    fdir: ^6.4.3
+    fdir: ^6.4.4
     picomatch: ^4.0.2
-  checksum: ef9357fa1b2b661afdccd315cb4995f5f36bce948faaace68aae85fe57bdd8f837883045c88efc50d3186bac6586e4ae2f31026b9a3aac061b884217e6092e23
+  checksum: 3a2e87a2518cb3616057b0aa58be4f17771ae78c6890556516ae1e631f8ce4cfee1ba1dcb62fcc54a64e2bdd6c3104f4f3d021e1a3e3f8fb0875bca380b913e5
   languageName: node
   linkType: hard
 
