@@ -21,43 +21,5 @@
     window.MOJFrontend.initAll();
   });
 </script>
-  
-<!-- scripts to run after GDS/MOJ inits only on reply details page -->
 
-{% if displayProcessButtonMenu %}
-  <script nonce="{{ nonce }}">
-    // button menu in reply details page header
-    new MOJFrontend.ButtonMenu({
-      container: $('#moj-process-button-menu'),
-      mq: '(min-width: 200em)',
-      buttonText: 'Process reply',
-      buttonClasses: 'moj-button-menu__wrapper--right',
-    });
-  </script>
-{% endif %}
-
-{% if displayActionsButtonMenu %}
-  <script nonce="{{ nonce }}">
-    // button menu in reply details page header
-    new MOJFrontend.ButtonMenu({
-      container: $('#moj-actions-button-menu'),
-      mq: '(min-width: 200em)',
-      buttonText: 'More actions',
-      buttonClasses: 'govuk-button--secondary moj-button-menu__toggle-button--secondary',
-    });
-  </script>
-{% endif %}
-
-{% if displayPoolManagementActionsButtonMenu %}
-  <script nonce="{{ nonce }}">
-    // button menu for the pool-management page
-    new MOJFrontend.ButtonMenu({
-      container: $("#moj-pool-management-button-menu"),
-      mq: "(min-width: 200em)",
-      buttonText: "Create a pool",
-      buttonClasses:
-        "govuk-button--secondary moj-button-menu__toggle-button--secondary",
-    });
-  </script>
-{% endif %}
 

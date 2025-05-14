@@ -73,6 +73,10 @@
 
       {% if currentOwner !== "400" and isCourtUser %}
         {{ mojButtonMenu({
+          button: {
+            text: "Print",
+            classes: "govuk-button--secondary govuk-!-margin-bottom-1"
+          },
           items: [
             {
               text: "Ballot cards",
@@ -84,7 +88,8 @@
               attributes: {
                 target: "_blank"
               }
-            }
+            },
+            {}
           ],
           attributes: {
             id: "printButtonMenu"
@@ -185,13 +190,6 @@
         document.getElementById('poolDetailsForm').submit();
       }
     }
-
-    new MOJFrontend.ButtonMenu({
-      container: $('#printButtonMenu'),
-      mq: '(min-width: 200em)',
-      buttonText: 'Print',
-      buttonClasses: 'govuk-!-margin-bottom-1 govuk-button--secondary moj-button-menu__toggle-button--secondary',
-    });
 
     $('#changeServiceDateButton').click(function(event) {
       $('#poolDetailsForm').attr('action', '{{ postUrls.changeServiceDateUrl }}').submit();

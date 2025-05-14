@@ -140,65 +140,65 @@
       </div>
     </div>
     <div class="govuk-grid-column-one-half">
-      <div class="govuk-button-group mod-flex mod-justify-end">
-        <div class="moj-button-menu">
-          <div class="moj-button-menu__wrapper">
-            {% if trial.is_active %}
-              {% if addPanelStatus %}
-                {{ govukButton({
-                  text: "Add panel members",
-                  classes: "govuk-button--secondary",
-                  href: url('trial-management.add-panel-members.get', {trialNumber: trial.trial_number, locationCode: locationCode})
-                }) }}
-              {% endif %}
-
-              {% if trial.panelledJurors | length > 0 %}
-                {{ govukButton({
-                  text: "Empanel jury",
-                  classes: "govuk-button--secondary",
-                  href: url('trial-management.empanel.get', {trialNumber: trial.trial_number, locationCode: locationCode})
-                }) if canEmpanel }}
-
-                {{ govukButton({
-                  text: "End trial",
-                  classes: "govuk-button--secondary",
-                  href: url('trial-management.trials.end-trial.get', {trialNumber: trial.trial_number, locationCode: locationCode})
-                }) }}
-              {% else %}
-                {% if addPanelStatus === false %}
-                  {{ govukButton({
-                    text: "Generate panel",
-                    classes: "govuk-button--secondary",
-                    href: url('trial-management.generate-panel.get', {trialNumber: trial.trial_number, locationCode: locationCode})
-                  }) }}
-                {% endif %}
-                {{ govukButton({
-                  text: "Edit trial",
-                  classes: "govuk-button--secondary",
-                  href: url("trial-management.edit-trial.get", { trialNumber: trial.trial_number, locationCode: locationCode })
-                }) }}
-                {{ govukButton({
-                  text: "End trial",
-                  classes: "govuk-button--secondary",
-                  href: url('trial-management.trials.end-trial.get', {trialNumber: trial.trial_number, locationCode: locationCode})
-                }) }}
-              {% endif %}
-              
-            {% endif %}
-            {{ mojButtonMenu({
-              items: [
-                {
-                  text: "Jury list",
-                  href: url("reports.jury-list.report.get", {'filter': trial.trial_number}),
-                  classes: "govuk-button--secondary"
-                }
-              ].concat(standardPrintMenuItems) if trial.is_jury_empanelled else standardPrintMenuItems,
-              attributes: {
-                id: 'printButtonMenu'
-              }
+      <div class="govuk-button-group moj-button-group--inline mod-flex mod-justify-end">
+        {% if trial.is_active %}
+          {% if addPanelStatus %}
+            {{ govukButton({
+              text: "Add panel members",
+              classes: "govuk-button--secondary",
+              href: url('trial-management.add-panel-members.get', {trialNumber: trial.trial_number, locationCode: locationCode})
             }) }}
-          </div>
-        </div>  
+          {% endif %}
+
+          {% if trial.panelledJurors | length > 0 %}
+            {{ govukButton({
+              text: "Empanel jury",
+              classes: "govuk-button--secondary",
+              href: url('trial-management.empanel.get', {trialNumber: trial.trial_number, locationCode: locationCode})
+            }) if canEmpanel }}
+
+            {{ govukButton({
+              text: "End trial",
+              classes: "govuk-button--secondary",
+              href: url('trial-management.trials.end-trial.get', {trialNumber: trial.trial_number, locationCode: locationCode})
+            }) }}
+          {% else %}
+            {% if addPanelStatus === false %}
+              {{ govukButton({
+                text: "Generate panel",
+                classes: "govuk-button--secondary",
+                href: url('trial-management.generate-panel.get', {trialNumber: trial.trial_number, locationCode: locationCode})
+              }) }}
+            {% endif %}
+            {{ govukButton({
+              text: "Edit trial",
+              classes: "govuk-button--secondary",
+              href: url("trial-management.edit-trial.get", { trialNumber: trial.trial_number, locationCode: locationCode })
+            }) }}
+            {{ govukButton({
+              text: "End trial",
+              classes: "govuk-button--secondary",
+              href: url('trial-management.trials.end-trial.get', {trialNumber: trial.trial_number, locationCode: locationCode})
+            }) }}
+          {% endif %}
+          
+        {% endif %}
+        {{ mojButtonMenu({
+          button: {
+            text: "Print",
+            classes: "govuk-button--secondary"
+          },
+          items: [
+            {
+              text: "Jury list",
+              href: url("reports.jury-list.report.get", {'filter': trial.trial_number}),
+              classes: "govuk-button--secondary"
+            }
+          ].concat(standardPrintMenuItems) if trial.is_jury_empanelled else standardPrintMenuItems,
+          attributes: {
+            id: 'printButtonMenu'
+          }
+        }) }}
       </div>
     </div>
   </div>
@@ -219,17 +219,4 @@
     </div>
   </div>
 
-{% endblock %}
-
-{% block body_end %}
-  {{ super() }}  
-  <script nonce="{{ nonce }}">
-    // button menu in reply details page header
-    new MOJFrontend.ButtonMenu({
-      container: $('#printButtonMenu'),
-      mq: '(min-width: 200em)',
-      buttonText: 'Print',
-      buttonClasses: 'govuk-!-margin-bottom-1 govuk-button--secondary moj-button-menu__toggle-button--secondary',
-    });
-  </script>
 {% endblock %}
