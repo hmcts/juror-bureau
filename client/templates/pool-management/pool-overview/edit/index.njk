@@ -3,7 +3,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
-{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 
 {% set currentApp = "Pool management" %}
 
@@ -22,8 +22,8 @@
   {% endif %}
 
   {% if postError %}
-    {{ mojBanner({
-      type: 'warning',
+    {{ mojAlert({
+      variant: 'warning',
       text: postError,
       iconFallbackText: 'Warning'
     }) }}

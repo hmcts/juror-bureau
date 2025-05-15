@@ -1,6 +1,6 @@
 {% extends "../layouts/default.njk" %}
 
-{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "../includes/reply-type-tag-macro.njk" import replyTypeTag %}
 {% from "govuk/components/tag/macro.njk" import govukTag %}
@@ -22,8 +22,8 @@
         Summons reply processed on {{ response.completedAt | dateFilter('DD/MM/YYYY', 'D MMMM YYYY') }} by {{ response.assignedStaffMember.name | isAutoProcessed }}: <b>{{ processedBannerMessage }}</b>
       {% endset %}
 
-      {{ mojBanner({
-        type: 'success',
+      {{ mojAlert({
+        variant: 'success',
         html: bannerMessageHtml,
         iconFallbackText: 'Success'
       }) }}
@@ -36,8 +36,8 @@
         {{responseCompletedMesssage}}
       {% endset %}
 
-      {{ mojBanner({
-        type: 'information',
+      {{ mojAlert({
+        variant: 'information',
         html: bannerMessageHtml,
         iconFallbackText: 'Information'
       }) }}
@@ -47,8 +47,8 @@
   {% if method === "paper"
     and (response.jurorDetailsComplete === false or response.eligibilityComplete === false or response.thirdPartyComplete === false or response.signed !== true)
     and not (response.processingStatus === 'Closed' or thirdPartyDetails.reason === 'Deceased') %}
-    {{ mojBanner({
-      type: 'information',
+    {{ mojAlert({
+      variant: 'information',
       text: 'Summons reply is missing essential information - reply cannot be processed until this information is entered.',
       iconFallbackText: 'Information',
       classes: 'govuk-!-margin-top-3'
@@ -58,8 +58,8 @@
   {# Late summons banner #}
   {% if response.isLateSummons %}
     <div class="govuk-!-margin-top-3">
-      {{ mojBanner({
-        type: "warning",
+      {{ mojAlert({
+        variant: "warning",
         text: "Juror’s service start date has passed - process as a priority.",
         iconFallbackText: "Warning"
       }) }}

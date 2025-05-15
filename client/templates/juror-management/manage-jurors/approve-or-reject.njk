@@ -1,6 +1,6 @@
 {% extends "layouts/default.njk" %}
 
-{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
@@ -23,8 +23,8 @@
   {% endif %}
 
   {% if bannerMessage %}
-    {{ mojBanner({
-      type: "success",
+    {{ mojAlert({
+      variant: "success",
       text: bannerMessage,
       iconFallbackText: "Success"
     }) }}

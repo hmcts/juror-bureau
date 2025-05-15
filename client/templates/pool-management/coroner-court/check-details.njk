@@ -2,7 +2,7 @@
 
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 
 {% set currentApp = "Pool management" %}
 
@@ -10,8 +10,8 @@
 
   {% if coronerCourtPoolFailed %}
     <div class="govuk-!-margin-top-4">
-      {{ mojBanner({
-        type: "warning",
+      {{ mojAlert({
+        variant: "warning",
         text: "Something went wrong when trying to create the pool. Please try again or contact an administrator.",
         iconFallbackText: "Warning"
       }) }}

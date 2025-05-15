@@ -34,20 +34,35 @@
   function addBanner(type) {
     if (type === 'success') {
       bannerWrapper.html(
-        '<div class="moj-banner moj-banner--success" id="successBanner" role="region" aria-label="Success">' +
-        '<svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25"><path d="M25,6.2L8.7,23.2L0,14.1l4-4.2l4.7,4.9L21,2L25,6.2z"></path></svg>' +
-        '<div class="moj-banner__message">Pool <b>' + poolNumber.text() + '</b> successfully exported.</div>' +
-        '</div>'
-      );
+        `<div role="region" class="moj-alert moj-alert--success" aria-label="success" data-module="moj-alert">
+          <div>
+            <svg class="moj-alert__icon" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" height="30" width="30">
+              <path d="M11.2869 24.6726L2.00415 15.3899L4.62189 12.7722L11.2869 19.4186L25.3781 5.32739L27.9958 7.96369L11.2869 24.6726Z" fill="currentColor" />
+            </svg>
+          </div>
+          <div class="moj-alert__content">Pool <b>${poolNumber.text()}</b> successfully exported.</div>
+          <div class="moj-alert__action">
+            <button class="moj-alert__dismiss" hidden>Dismiss</button>
+          </div>
+        </div>`
+      )
     }
 
     if (type === 'error') {
       bannerWrapper.html(
-        '<div class="moj-banner moj-banner--warning" id="errorBanner" role="region" aria-label="Warning">' +
-        '<svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25"><path d="M13.6,15.4h-2.3v-4.5h2.3V15.4z M13.6,19.8h-2.3v-2.2h2.3V19.8z M0,23.2h25L12.5,2L0,23.2z"></path></svg>' +
-        '<div class="moj-banner__message">There was a problem exporting pool <b>' + poolNumber.text() + '</b> Try again. If the problem persists contact support.</div>' +
-        '</div>'
-      );
+        `<div id="errorBanner" role="region" class="moj-alert moj-alert--error" aria-label="error" data-module="moj-alert">
+          <div>
+            <svg class="moj-alert__icon" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" height="30" width="30">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M20.1777 2.5H9.82233L2.5 9.82233V20.1777L9.82233 27.5H20.1777L27.5 20.1777V9.82233L20.1777 2.5ZM10.9155 8.87769L15.0001 12.9623L19.0847 8.87771L21.1224 10.9154L17.0378 15L21.1224 19.0846L19.0847 21.1222L15.0001 17.0376L10.9155 21.1223L8.87782 19.0846L12.9624 15L8.87783 10.9153L10.9155 8.87769Z" fill="currentColor" />
+            </svg>
+          </div>
+          <div class="moj-alert__content">There was a problem exporting pool <b>${poolNumber.text()}</b> Try again. If the problem persists contact support..</div>
+
+          <div class="moj-alert__action">
+            <button class="moj-alert__dismiss" hidden>Dismiss</button>
+          </div>
+        </div>`
+      )
     }
   }
 

@@ -1,6 +1,6 @@
 {% extends "layouts/default-no-nav.njk" %}
 
-{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 
 {% set currentApp = "Documents" %}
 
@@ -16,8 +16,8 @@
 {% block content %}
 
   {% if printingMessage %}
-    {{ mojBanner({
-      type: "success",
+    {{ mojAlert({
+      variant: "success",
       text: printingMessage,
       iconFallbackText: "Success"
     }) }}
