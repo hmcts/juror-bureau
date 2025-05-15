@@ -1,6 +1,6 @@
 {% extends "layouts/default.njk" %}
 
-{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/tag/macro.njk" import govukTag %}
@@ -113,16 +113,16 @@
   {% include "includes/errors.njk" %}
 
   {% if successBanner %}
-    {{ mojBanner({
-      type: "success",
+    {{ mojAlert({
+      variant: "success",
       html: successBanner,
       iconFallbackText: "Success"
     }) }}
   {% endif %}
 
   {% if errorBanner %}
-    {{ mojBanner({
-      type: "warning",
+    {{ mojAlert({
+      variant: "warning",
       html: errorBanner,
       iconFallbackText: "Warning"
     }) }}

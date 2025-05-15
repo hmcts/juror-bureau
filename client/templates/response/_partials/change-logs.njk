@@ -16,8 +16,8 @@
           <div data-row="note">{{ log.notes }}</div>
         {% endset %}
 
-        {{ mojBanner({
-          type: 'information',
+        {{ mojAlert({
+          variant: 'information',
           html: noteHTML,
           iconFallbackText: 'information',
           id: 'changeLogNote',

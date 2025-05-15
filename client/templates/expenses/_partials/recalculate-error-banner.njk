@@ -1,4 +1,4 @@
-{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 
 {% set messageHtml %}
   Failed to recalculate totals. <a href="#" id="recalculate-totals">Try again</a>
@@ -22,8 +22,8 @@
   {% endset %}
 {% endif %}
 
-{{ mojBanner({
-  type: "warning",
+{{ mojAlert({
+  variant: "warning",
   html: messageHtml,
   iconFallbackText: "Warning"
 }) }}

@@ -5,7 +5,7 @@
 {% from "custom-components/macros/arrows.njk" import leftArrowSVG %}
 {% from "./_partials/attendance-sub-nav.njk" import attendanceSubNav %}
 {% from "moj/components/button-menu/macro.njk" import mojButtonMenu %}
-{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 {% from "custom-components/date-picker/macro.njk" import datePicker %}
 
 {% block page_title %}{{ serviceName }} - Juror management - Attendance{% endblock %}
@@ -26,12 +26,13 @@
   {% endif %}
  {% if previousWorkingDayIsConfirmed == false and attendanceStatus !== "Confirmed" %}
      <div class="govuk-grid-column-full">
-      {{ mojBanner({
-        type: "information",
+      {{ mojAlert({
+        variant: "information",
         text: previousWorkingDay + " has not been confirmed yet, confirm that days attendance before checking in jurors for today",
+        dismissible: true,
         iconFallbackText: "information"
       }) }}
-      </div>
+    </div>
  {% endif %}
   <div class="govuk-error-summary js-hidden" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
     <p class="govuk-error-summary__title" id="error-summary-title">

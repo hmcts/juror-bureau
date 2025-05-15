@@ -4,7 +4,7 @@
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
-{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 
 {% set currentApp = "Pool management" %}
 
@@ -12,8 +12,8 @@
 
   {% if addCitizensError !== undefined %}
     <div class="govuk-!-margin-top-4">
-      {{ mojBanner({
-        type: "warning",
+      {{ mojAlert({
+        variant: "warning",
         text: "Something went wrong when trying to add voters to this pool. Please try again or contact an administrator.",
         iconFallbackText: "Warning"
       }) }}

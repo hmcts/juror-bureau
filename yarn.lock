@@ -471,15 +471,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ministryofjustice/frontend@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@ministryofjustice/frontend@npm:3.0.0"
+"@ministryofjustice/frontend@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "@ministryofjustice/frontend@npm:3.4.0"
   dependencies:
     govuk-frontend: ^5.0.0
     moment: ^2.27.0
   peerDependencies:
     jquery: ^3.6.0
-  checksum: e1a10579321a19b34799e69ad0b7ec12931704bb397334c442adc410abfef718cdb67abd543498f785901465d15864ee266134444b411c5aa8be8c0a9ae66e5d
+  checksum: 3f0e11620a8694719ed0d026300d7a474a0bec7b8dba36caa1a2cee802f01d4e6fd245dd31f2d432a26293b23ebfb7082ba1da6888c51749a1f8f8368bf138af
   languageName: node
   linkType: hard
 
@@ -3718,7 +3718,7 @@ __metadata:
     "@azure/identity": ^4.2.1
     "@fengyuanchen/datepicker": ^0.6.4
     "@hmcts/properties-volume": 1.1.0
-    "@ministryofjustice/frontend": ^3.0.0
+    "@ministryofjustice/frontend": ^3.4.0
     "@scottish-government/pattern-library": 0.0.381
     accessible-autocomplete: ^3.0.0
     applicationinsights: ^2.9.4
