@@ -8,7 +8,11 @@
   module.exports.homepage = function(app) {
     return async function(req, res) {
 
-      res.render('homepage/index.njk', {
+      // res.render('homepage/index.njk', {
+      //   notifications: await getNotificationsHTML(app, req, res),
+      // });
+      res.render('homepage/court-dashboard/dashboard.njk', {
+        courtName: 'Chester Crown Court',
         notifications: await getNotificationsHTML(app, req, res),
       });
     };

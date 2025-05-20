@@ -1,12 +1,12 @@
 .homepage-inverse-header {
     background-color: govuk-colour("blue");
     padding-top: 50px;
-    padding-bottom: 50px;
+    padding-bottom: govuk-spacing(4);
 }
 @media (min-width: 48.0625em) {
     .homepage-inverse-header {
         padding-top: 75px;
-        padding-bottom: 75px;
+        padding-bottom: govuk-spacing(6);
     }
 }
 

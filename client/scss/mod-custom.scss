@@ -737,3 +737,22 @@ dt.govuk-summary-list-mod {
     }
   }
 }
+
+.mod-dashboard {
+  &__notification {
+    border: none;
+    margin-bottom: 0;
+  }
+
+  &__title {
+    // display: flex;
+    // justify-content: space-between;
+    // align-items: baseline;
+    border-bottom: 4px solid govuk-colour("blue");
+  }
+
+  &__subtitle {
+    margin-top: govuk-spacing(2);
+    color: govuk-colour("blue");
+  }
+}
