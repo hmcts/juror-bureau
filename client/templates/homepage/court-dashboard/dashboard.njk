@@ -1,0 +1,85 @@
+{% extends "layouts/default.njk" %}
+
+{% from "./attendance-doughnut.njk" import attendanceDoughnut %}
+
+{% set currentPage = "homepage" %}
+
+{% block page_title %}Juror homepage{% endblock %}
+{% block page_identifier %}Homepage{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h2 class="govuk-heading-m">Notifications</h2>
+      {{ mojBanner({
+        type: "information",
+        classes: 'mod-dashboard__notification',
+        html: 'You have <b>2</b> <a href="#" class="govuk-link">summons replies</a> with less than a week until service start date to process.'
+      }) }}
+      {{ mojBanner({
+        type: "information",
+        classes: 'mod-dashboard__notification',
+        html: 'Another notifcation here'
+      }) }}
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="mod-dashboard__title">
+        <h2 class="govuk-heading-m">Attendance</h2>
+      </div>
+      <div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-one-half">
+          <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+              <h3 class="govuk-heading-s mod-dashboard__subtitle">Today</h3>
+              <div class="pool-values">
+                <div class="pool-values__chart">
+                  {{ attendanceDoughnut({
+                    id: "todayStats",
+                    values: {
+                      expected: 162,
+                      checkedIn: 68,
+                      onTrials: 23,
+                      notCheckedIn: 71
+                    },
+                    nonce: nonce
+                  }) }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+              <h3 class="govuk-heading-s mod-dashboard__subtitle">Last 7 days</h3>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="govuk-grid-column-one-half">
+          
+          <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+              <h3 class="govuk-heading-s mod-dashboard__subtitle">Next 7 days</h3>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <div class="govuk-grid-column-one-third">
+      <div class="mod-dashboard__title">
+        <h2 class="govuk-heading-m">Admin</h2>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
