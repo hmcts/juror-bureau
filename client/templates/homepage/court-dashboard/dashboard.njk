@@ -1,6 +1,5 @@
 {% extends "layouts/default.njk" %}
 
-{% from "./attendance-doughnut.njk" import attendanceDoughnut %}
 
 {% set currentPage = "homepage" %}
 
@@ -9,77 +8,48 @@
 
 {% block content %}
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <h2 class="govuk-heading-m">Notifications</h2>
-      {{ mojBanner({
-        type: "information",
-        classes: 'mod-dashboard__notification',
-        html: 'You have <b>2</b> <a href="#" class="govuk-link">summons replies</a> with less than a week until service start date to process.'
-      }) }}
-      {{ mojBanner({
-        type: "information",
-        classes: 'mod-dashboard__notification',
-        html: 'Another notifcation here'
-      }) }}
-      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
-    </div>
-  </div>
+  {% include "./sections/notifications.njk" %}
+
+  <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible govuk-!-margin-bottom-0">
+
+  {% set dashboardSectionWidths = {
+      "1": "govuk-grid-column-one-third",
+      "2": "govuk-grid-column-two-thirds",
+      "3": "govuk-grid-column-full"
+    }
+  %}
+
+  {% set widgetWidths = {
+      "1": "govuk-grid-column-full",
+      "2": "govuk-grid-column-one-half",
+      "3": "govuk-grid-column-one-third"
+    }
+  %}
 
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <div class="mod-dashboard__title">
-        <h2 class="govuk-heading-m">Attendance</h2>
-      </div>
-      <div class="govuk-grid-row">
+    {% for section, item in widgets %}
+      <div id="dashboard-section--{{ section }}" class="{{ dashboardSectionWidths[item.columns] }} govuk-!-margin-top-5">
+        <div class="mod-dashboard__title">
+          <h2 class="govuk-heading-m">{{ item.title }}</h2>
+        </div>
+        <div class="govuk-grid-row">
 
-        <div class="govuk-grid-column-one-half">
-          <div class="govuk-grid-row">
-            <div class="govuk-grid-column-full">
-              <h3 class="govuk-heading-s mod-dashboard__subtitle">Today</h3>
-              <div class="pool-values">
-                <div class="pool-values__chart">
-                  {{ attendanceDoughnut({
-                    id: "todayStats",
-                    values: {
-                      expected: 162,
-                      checkedIn: 68,
-                      onTrials: 23,
-                      notCheckedIn: 71
-                    },
-                    nonce: nonce
-                  }) }}
-                </div>
-              </div>
+          {% for column in range(0, item.columns) %}
+            <div class="{{ widgetWidths[item.columns] }}">
+              {% for widget in item.widgets %}
+                {% if widget.column == column + 1 or (item.columns == 1 and not widget.column) %}
+                  {% include widget.template %}
+                  {% if widget.lineBreak %}
+                    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
             </div>
-          </div>
-
-          <div class="govuk-grid-row">
-            <div class="govuk-grid-column-full">
-              <h3 class="govuk-heading-s mod-dashboard__subtitle">Last 7 days</h3>
-            </div>
-          </div>
+          {% endfor %}
 
         </div>
-
-        <div class="govuk-grid-column-one-half">
-          
-          <div class="govuk-grid-row">
-            <div class="govuk-grid-column-full">
-              <h3 class="govuk-heading-s mod-dashboard__subtitle">Next 7 days</h3>
-            </div>
-          </div>
-
-        </div>
-
       </div>
-    </div>
-
-    <div class="govuk-grid-column-one-third">
-      <div class="mod-dashboard__title">
-        <h2 class="govuk-heading-m">Admin</h2>
-      </div>
-    </div>
+    {% endfor %}
   </div>
 
 {% endblock %}

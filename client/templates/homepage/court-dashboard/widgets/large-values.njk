@@ -1,0 +1,30 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <div class="mod-dashboard__large-values">
+      {% for data in widget.values %}
+        <div class="mod-dashboard__large-values__value">
+          {% if data.suffix %}
+            <span class="mod-dashboard__large-values__value--inline">
+              <span class="govuk-!-font-size-80 govuk-!-font-weight-bold">
+                {{ data.value }}
+              </span>
+              <span class="govuk-heading-m govuk-!-margin-bottom-1"> {{ data.suffix }}</span>
+            </span>
+          {% else %}
+            <span class="govuk-!-font-size-80 govuk-!-font-weight-bold">
+              {{ data.value }}
+            </span>
+          {% endif %}
+          <span class="label">
+            {% if data.label %}
+              <span class="govuk-body govuk-link" href="#">{{ data.label }}</span>
+            {% endif %}
+            {% for link in data.links %}
+              <a class="govuk-body govuk-link" href="{{ link.href }}">{{ link.text }}</a>
+            {% endfor  %}
+          </span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>

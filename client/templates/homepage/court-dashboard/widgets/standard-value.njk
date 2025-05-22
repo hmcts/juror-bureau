@@ -1,0 +1,26 @@
+{% from "moj/components/badge/macro.njk" import mojBadge %}
+
+{% if widget.templateOptions.title %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h3 class="govuk-heading-s mod-dashboard__subtitle govuk-!-margin-bottom-0"> {{ widget.templateOptions.title }} </h3>
+    </div>
+  </div>
+{% endif %}
+{% for data in widget.values %}
+  <div class="govuk-grid-row govuk-!-margin-top-4">
+    <div class="govuk-grid-column-full">
+      <h3 class="govuk-heading-s govuk-!-margin-bottom-1">{{ data.heading }}</h3>
+      <p class="govuk-body govuk-!-margin-bottom-1">{{ data.value or 'No data available' }}</p>
+      {% if data.badge %}
+        {{ mojBadge({
+          text: data.badge.text,
+          classes: "moj-badge--" + (data.badge.colour or "blue") + " govuk-!-margin-bottom-1"
+        }) }}
+      {% endif %}
+      {% for link in data.links %}
+        <p class=" govuk-body govuk-!-margin-bottom-1"><a href="{{ link.href }}" class="govuk-link">{{ link.text }}</a></p>
+      {% endfor %}
+    </div>
+  </div>
+{% endfor %}
