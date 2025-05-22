@@ -21,7 +21,6 @@
         'dateOfBirth': pr.dateOfBirth !== '' ? pr.dateOfBirth.split('/').map(num => num.padStart(2, '0')).reverse().join('-') : null,
         'deferral': pr.deferral,
         'eligibility': pr.eligibility,
-        'emailAddress': pr.emailAddress,
         'excusal': pr.excusal,
         'firstName': pr.firstName,
         'jurorNumber': pr.jurorNumber,
@@ -39,6 +38,9 @@
       }
       if (pr.secondaryPhone !== '') {
         body.secondaryPhone = pr.secondaryPhone;
+      }
+      if (pr.emailAddress !== '') {
+        body.emailAddress = pr.emailAddress;
       }
 
       if (pr.pendingFirstName) {

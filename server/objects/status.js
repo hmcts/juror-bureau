@@ -19,3 +19,12 @@ module.exports.markAsRespondedDAO = new DAO('moj/juror-record/mark-responded', {
     return { uri, body: {} };
   },
 });
+
+// TODO: Update with correct endpoint when available
+module.exports.markAsSummonedDAO = new DAO('moj/juror-record/mark-summoned', {
+  patch: function(jurorNumber) {
+    const uri = urljoin(this.resource, jurorNumber);
+
+    return { uri, body: {} };
+  },
+});
