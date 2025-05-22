@@ -3,16 +3,13 @@
 
   const jurorsForApproval = require('../../objects/approve-jurors').jurorList;
   const { isSJOUser } = require('../../components/auth/user-type');
+  const { widgetDefinitions } = require('./dashboard/definitions');
 
 
   module.exports.homepage = function(app) {
     return async function(req, res) {
 
-      // res.render('homepage/index.njk', {
-      //   notifications: await getNotificationsHTML(app, req, res),
-      // });
-      res.render('homepage/court-dashboard/dashboard.njk', {
-        courtName: 'Chester Crown Court',
+      res.render('homepage/index.njk', {
         notifications: await getNotificationsHTML(app, req, res),
       });
     };
@@ -55,5 +52,26 @@
     }
     return notifications;
   }
+
+  module.exports.dashboard = function(app) {
+    return async function(req, res) {
+      let widgets = [];
+      try {
+        widgets = await widgetDefinitions(app)(req, res)([]);
+      } catch (err) {
+        app.logger.crit('Unable to fetch widget keys', {
+          auth: req.session.authentication,
+          token: req.session.authToken,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+      }
+      console.log('\n\widgets\n', JSON.stringify(widgets, null, 2), '\n\n');
+
+      res.render('homepage/court-dashboard/dashboard.njk', {
+        widgets,
+        courtName: 'Chester Crown Court',
+      });
+    };
+  };
 
 })();
