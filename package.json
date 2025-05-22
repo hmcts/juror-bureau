@@ -1,6 +1,6 @@
 {
   "name": "juror-bureau",
-  "version": "5.6.0",
+  "version": "5.8.0",
   "private": true,
   "description": "Juror Bureau frontend application",
   "engines": {
