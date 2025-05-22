@@ -1,0 +1,22 @@
+{% from "./_partials/attendance-doughnut.njk" import attendanceDoughnut %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h3 class="govuk-heading-s mod-dashboard__subtitle">{{ widget.templateOptions.title }}</h3>
+    {% if widget.rawData | length %}
+      <div class="mod-dashboard__chart">
+        <div class="doughnut-values">
+          <div class="doughnut-values__chart">
+            {{ attendanceDoughnut({
+              id: widget.templateOptions.doughnutId,
+              values: widget.rawData,
+              nonce: nonce
+            }) }}
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <p class="govuk-body">No data available</p>
+    {% endif %}
+  </div>
+</div>
