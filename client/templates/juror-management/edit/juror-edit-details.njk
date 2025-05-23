@@ -500,22 +500,24 @@
               }
             ]
           }) }}
-          {{ govukCheckboxes({
-            name: "welsh",
-            fieldset: {
-              legend: {
-                text: "Tick box if juror should get communications in Welsh (optional)",
-                classes: "govuk-fieldset__legend--m"
-              }
-            },
-            items: [
-              {
-                value: "true",
-                text: "Yes, send Welsh language communications",
-                checked: juror.welsh
-              }
-            ]
-          }) }}
+          {% if juror.commonDetails.is_welsh_court %}
+            {{ govukCheckboxes({
+              name: "welsh",
+              fieldset: {
+                legend: {
+                  text: "Tick box if juror should get communications in Welsh (optional)",
+                  classes: "govuk-fieldset__legend--m"
+                }
+              },
+              items: [
+                {
+                  value: "true",
+                  text: "Yes, send Welsh language communications",
+                  checked: juror.welsh
+                }
+              ]
+            }) }}
+          {% endif %}
         </div>
       </div>
 
