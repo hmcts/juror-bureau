@@ -1,6 +1,6 @@
 {% from "./_partials/attendance-doughnut.njk" import attendanceDoughnut %}
 
-<div class="govuk-grid-row">
+<div id="widget_{{ widgetId }}" class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <h3 class="govuk-heading-s mod-dashboard__subtitle">{{ widget.templateOptions.title }}</h3>
     {% if widget.rawData | length %}

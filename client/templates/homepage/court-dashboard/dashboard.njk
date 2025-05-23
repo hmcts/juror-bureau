@@ -8,48 +8,54 @@
 
 {% block content %}
 
-  {% include "./sections/notifications.njk" %}
+  <div id="court-dashboard-home" class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
 
-  <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible govuk-!-margin-bottom-0">
+      {% include "./widgets/notifications.njk" %}
 
-  {% set dashboardSectionWidths = {
-      "1": "govuk-grid-column-one-third",
-      "2": "govuk-grid-column-two-thirds",
-      "3": "govuk-grid-column-full"
-    }
-  %}
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible govuk-!-margin-bottom-0">
 
-  {% set widgetWidths = {
-      "1": "govuk-grid-column-full",
-      "2": "govuk-grid-column-one-half",
-      "3": "govuk-grid-column-one-third"
-    }
-  %}
+      {% set dashboardSectionWidths = {
+          "1": "govuk-grid-column-one-third",
+          "2": "govuk-grid-column-two-thirds",
+          "3": "govuk-grid-column-full"
+        }
+      %}
 
-  <div class="govuk-grid-row">
-    {% for section, item in widgets %}
-      <div id="dashboard-section--{{ section }}" class="{{ dashboardSectionWidths[item.columns] }} govuk-!-margin-top-5">
-        <div class="mod-dashboard__title">
-          <h2 class="govuk-heading-m">{{ item.title }}</h2>
-        </div>
-        <div class="govuk-grid-row">
+      {% set widgetWidths = {
+          "1": "govuk-grid-column-full",
+          "2": "govuk-grid-column-one-half",
+          "3": "govuk-grid-column-one-third"
+        }
+      %}
 
-          {% for column in range(0, item.columns) %}
-            <div class="{{ widgetWidths[item.columns] }}">
-              {% for widget in item.widgets %}
-                {% if widget.column == column + 1 or (item.columns == 1 and not widget.column) %}
-                  {% include widget.template %}
-                  {% if widget.lineBreak %}
-                    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-                  {% endif %}
-                {% endif %}
-              {% endfor %}
+      <div class="govuk-grid-row">
+        {% for section, item in widgets %}
+          <div id="dashboard-section--{{ section }}" class="{{ dashboardSectionWidths[item.columns] }} govuk-!-margin-top-5">
+            <div class="mod-dashboard__title">
+              <h2 class="govuk-heading-m">{{ item.title }}</h2>
             </div>
-          {% endfor %}
+            <div class="govuk-grid-row">
 
-        </div>
+              {% for column in range(0, item.columns) %}
+                <div class="{{ widgetWidths[item.columns] }}">
+                  {% for widgetId, widget in item.widgets %}
+                    {% if widget.column == column + 1 or (item.columns == 1 and not widget.column) %}
+                      {% include widget.template %}
+                      {% if widget.lineBreak %}
+                        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+                      {% endif %}
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              {% endfor %}
+
+            </div>
+          </div>
+        {% endfor %}
       </div>
-    {% endfor %}
+      
+    </div>
   </div>
 
 {% endblock %}

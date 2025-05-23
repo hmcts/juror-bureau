@@ -7,6 +7,12 @@ const dataStore = require('../stores/court-dashboard');
   const urljoin = require('url-join');
   const { extractDataAndHeadersFromResponse } = require('../lib/mod-utils');
 
+  module.exports.dashboardNotifications = {
+    get: function(req, locCode) {
+      return dataStore.notifications;
+    },
+  }
+
   module.exports.attendanceStats = {
     get: function(req, locCode, period) {
       if (period === 'today') {
