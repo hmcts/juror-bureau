@@ -1,7 +1,7 @@
 {% from "moj/components/badge/macro.njk" import mojBadge %}
 
 {% if widget.templateOptions.title %}
-  <div class="govuk-grid-row">
+  <div id="widget_{{ widgetId }}" class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <h3 class="govuk-heading-s mod-dashboard__subtitle govuk-!-margin-bottom-0"> {{ widget.templateOptions.title }} </h3>
     </div>

@@ -1,5 +1,8 @@
 
 module.exports = {
+  notifications: {
+    urgentReplies: 4,
+  },
   attendanceStatsToday: {
     expected: 162,
     checkedIn: 68,

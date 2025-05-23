@@ -104,7 +104,7 @@
                 rawDataValueId: 'totalDueToAttend',
                 links: [
                   {
-                    href: '#',
+                    href: app.namedRoutes.build('reports.persons-attending-detail.filter.get'),
                     text: 'Persons attending - Summary',
                   },
                 ]
@@ -114,7 +114,7 @@
                 rawDataValueId: 'totalReasonableAdjustments',
                 links: [
                   {
-                    href: '#',
+                    href:  app.namedRoutes.build('reports.reasonable-adjustments.filter.get'),
                     text: 'Reasonable adjustments report',
                   },
                 ]
@@ -149,11 +149,11 @@
                 rawDataValueId: 'totalUnconfirmed',
                 links: [
                   {
-                    href: '#',
+                    href: app.namedRoutes.build('reports.unconfirmed-attendance.filter.get'),
                     text: 'Unconfirmed attendance report',
                   },
                   {
-                    href: '#',
+                    href: app.namedRoutes.build('juror-management.attendance.get'),
                     text: 'Record attendance',
                   }
                 ]
@@ -192,7 +192,7 @@
                rawDataValueId: 'unpaidAttendances',
                links: [
                   {
-                    href: '#',
+                    href: app.namedRoutes.build('juror-management.unpaid-attendance.get'),
                     text: 'Unpaid attendances',
                   }
                 ],
@@ -205,7 +205,7 @@
                 suffix: 'days',
                 links: [
                    {
-                     href: '#',
+                     href: app.namedRoutes.build('juror-management.unpaid-attendance.get'),
                      text: 'Oldest unpaid attendance',
                    }
                  ],
@@ -252,8 +252,8 @@
                 },
                 links: [
                   {
-                    href: '#',
-                    text: 'Unconfirmed attendance report',
+                    href: app.namedRoutes.build('reports.prepare-monthly-utilisation.filter.get'),
+                    text: 'Prepare monthly utilisation report',
                   }
                 ]
               },
@@ -270,43 +270,46 @@
 
     for (const section in widgetDefinitions) {
       const sectionData = widgetDefinitions[section];
-      const widgets = await Promise.all(
-        Object.entries(sectionData.widgets)
-          .filter(([key, value]) => value.required || list.includes(key))
-          .map(async ([key, value]) => {
-            // Exclude the `required` key from the returned object
-            const { rawData, values, ...rest } = value;
+      const widgets = {};
 
-            // If `rawData` is a function, execute it and assign the result
-            const resolvedData = typeof rawData === 'function' ? await rawData(req) : rawData;
+      for (const [key, value] of Object.entries(sectionData.widgets)) {
+        if (!value.required && !list.includes(key)) {
+          continue; // Skip widgets that are not required and not in the list
+        }
 
-            // Populate `values` with the resolved data and apply `valueTransform` if it exists
-            const resolvedValues = values?.map((item) => {
-              let value = resolvedData?.[item.rawDataValueId] || item.value || null;
+        // Exclude the `required` key from the returned object
+        const { rawData, values, ...rest } = value;
 
-              // Check badge requirments before including the badge
-              const badge =
-                item.badge &&
-                ( // Include the badge if:
-                  !item.badge.requirments || // No requirements defined
-                  (typeof item.badge.requirments === 'function' && item.badge.requirments(value)) // Requirements return true
-                )
-                  ? item.badge
-                  : undefined;
+        // If `rawData` is a function, execute it and assign the result
+        const resolvedData = typeof rawData === 'function' ? await rawData(req) : rawData;
 
-              if (item.valueTransform && typeof item.valueTransform === 'function') {
-                value = item.valueTransform(value);
-              }
+        // Populate `values` with the resolved data and apply `valueTransform` if it exists
+        const resolvedValues = values?.map((item) => {
+          let value = resolvedData?.[item.rawDataValueId] || item.value || null;
 
-              return { ...item, value, badge };
-            });
+          // Check badge requirments before including the badge
+          const badge =
+            item.badge &&
+            ( // Include the badge if:
+              !item.badge.requirments || // No requirements defined
+              (typeof item.badge.requirments === 'function' && item.badge.requirments(value)) // Requirements return true
+            )
+              ? item.badge
+              : undefined;
 
-            return { ...rest, rawData: resolvedData, values: resolvedValues };
-          })
-      );
+          if (item.valueTransform && typeof item.valueTransform === 'function') {
+            value = item.valueTransform(value);
+          }
+
+          return { ...item, value, badge };
+        });
+
+        // Add the processed widget back to the widgets object
+        widgets[key] = { ...rest, rawData: resolvedData, values: resolvedValues };
+      }
 
       // Calculate the maximum column value for this section
-      const sectionColumns = widgets.reduce((max, widget) => Math.max(max, widget.column || 1), 1);
+      const sectionColumns = Object.values(widgets).reduce((max, widget) => Math.max(max, widget.column || 1), 1);
 
       // If adding this section exceeds the row limit, move to the next row
       if (currentRowWidth + sectionColumns > 3) {
@@ -319,7 +322,7 @@
         ...sectionData,
         columns: sectionColumns, // Maximum column value for this section
         row: currentRow, // Assign the row number
-        widgets, // Include the transformed widgets
+        widgets, // Include the transformed widgets as an object
       };
 
       // Update the current row width

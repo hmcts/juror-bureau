@@ -1,15 +1,16 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <h2 class="govuk-heading-m">Notifications</h2>
-    {{ mojBanner({
-      type: "information",
-      classes: 'mod-dashboard__notification',
-      html: 'You have <b>2</b> <a href="#" class="govuk-link">summons replies</a> with less than a week until service start date to process.'
-    }) }}
-    {{ mojBanner({
-      type: "information",
-      classes: 'mod-dashboard__notification',
-      html: 'Another notifcation here'
-    }) }}
+    {% if notifications | length %}
+      {% for notificationHTML in notifications %}
+        {{ mojBanner({
+          type: "information",
+          classes: 'mod-dashboard__notification',
+          html: notificationHTML
+        }) }}
+      {% endfor %}
+    {% else %}
+      <p class="govuk-body">You have no notifications.</p>
+    {% endif %}
   </div>
 </div>
