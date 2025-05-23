@@ -135,6 +135,7 @@
                 <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none" aria-label="Urgent">Urgent</th>
                 <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none" aria-label="Standard">Standard</th>
                 <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none" aria-label="Total">Total</th>
+                <th scope="col" class="govuk-table__header jd-assign-replies-table-head" aria-sort="none" aria-label="Awaiting information">Awaiting information</th>
               </tr>
 
               <tr class="govuk-table__row">
@@ -145,6 +146,7 @@
                 <td id="total-urgent" class="govuk-table__cell govuk-!-font-weight-bold" data-sort-value="{{ totals.urgent }}">{{ staffData.totalUrgent }}</td>
                 <td id="total-standard" class="govuk-table__cell govuk-!-font-weight-bold" data-sort-value="{{ totals.nonUrgent }}">{{ staffData.totalNonUrgent }}</td>
                 <td id="total-all" class="govuk-table__cell govuk-!-font-weight-bold" data-sort-value="{{ totals.allReplies }}">{{ staffData.totalAll }}</td>
+                <td id="total-awaiting-info" class="govuk-table__cell govuk-!-font-weight-bold" data-sort-value="{{ totals.awaitingInfo }}">{{ staffData.totalAwaitingInfo }}</td>
               </tr>
 
             </thead>
@@ -170,6 +172,7 @@
                   <td id="{{officer.login}}-urgent" class="govuk-table__cell jd-middle-align">{{ officer.countUrgent }}</td>
                   <td id="{{officer.login}}-standard" class="govuk-table__cell jd-middle-align">{{ officer.countNonUrgent }}</td>
                   <td id="{{officer.login}}-total" class="govuk-table__cell jd-middle-align">{{ officer.countTotal }}</td>
+                  <td id="{{officer.login}}-awaitingInfo" class="govuk-table__cell jd-middle-align">{{ officer.countAwaitingInfo }}</td>
                 </tr>
 
               {% endfor %}
