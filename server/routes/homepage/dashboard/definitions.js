@@ -8,12 +8,83 @@
 
   module.exports.widgetDefinitions = (app) => (req, res) => async (list) => {
 
+  /**
+   * This file defines the structure and types for the widget definitions used in the dashboard.
+   * 
+   * The `widgetDefinitions` object organises widgets into sections, where:
+   * - The top-level keys represent sections of the dashboard (e.g., "attendance", "admin").
+   * - Each section contains a `title` and a `widgets` object.
+   * - The `widgets` object contains individual widgets, keyed by their unique widget IDs.
+   * 
+   * Example:
+   * {
+   *   attendance: {
+   *     title: "Attendance",
+   *     widgets: {
+   *       "today-stats": { ...widget definition... },
+   *       "last-7-days-stats": { ...widget definition... }
+   *     }
+   *   },
+   *   admin: {
+   *     title: "Admin",
+   *     widgets: {
+   *       "unpaid-attendance": { ...widget definition... },
+   *       "monthly-utilisation-report": { ...widget definition... }
+   *     }
+   *   }
+   * }
+   * 
+   * Type Definitions:
+   * 
+   * @typedef {Object} Widget
+   * Represents a single widget in the dashboard.
+   * 
+   * @property {boolean} required - Indicates whether the widget is mandatory.
+   * @property {string} template - Path to the widget's template file.
+   * @property {number} column - The column width of the widget (e.g., 1 or 2).
+   * @property {Object} [templateOptions] - Additional options for rendering the widget's template.
+   * @property {Function} [rawData] - An async function to fetch raw data for the widget.
+   * @property {Array<Value>} [values] - A list of value objects associated with the widget.
+   * 
+   * @typedef {Object} Value
+   * Represents a single value displayed within a widget.
+   * 
+   * @property {string} heading - The heading or label for the value.
+   * @property {string} rawDataValueId - The key used to fetch the value from the widget's raw data.
+   * @property {Function} [valueTransform] - A function to transform the raw value before display.
+   * @property {string} [suffix] - A suffix to append to the value (e.g., "days").
+   * @property {Array<Link>} [links] - A list of links associated with the value.
+   * @property {Badge} [badge] - Configuration for a badge displayed alongside the value.
+   * 
+   * @typedef {Object} Link
+   * Represents a hyperlink associated with a value.
+   * 
+   * @property {string} href - The URL or route for the link.
+   * @property {string} text - The display text for the link.
+   * 
+   * @typedef {Object} Badge
+   * Represents a badge displayed alongside a value.
+   * 
+   * @property {Function} [requirments] - A function that returns a boolean determining whether the badge should be displayed.
+   * @property {string} text - The text displayed on the badge (e.g., "overdue").
+   * @property {string} colour - The colour of the badge (e.g., "red").
+   * 
+   * @typedef {Object} WidgetSection
+   * Represents a section of widgets in the dashboard.
+   * 
+   * @property {string} title - The title of the section (e.g., "Attendance").
+   * @property {Object<string, Widget>} widgets - A collection of widgets in the section, keyed by widget ID.
+   * 
+   * @type {Object<string, WidgetSection>}
+   * Defines the structure of the widget definitions for the dashboard.
+   */
+
     const widgetDefinitions = {
       'attendance': {
         title: 'Attendance',
         widgets: {
           'today-stats': {
-            required: true,
+            mandatory: true,
             template: 'homepage/court-dashboard/widgets/attendance/attendance-doughnut.njk',
             column: 1,
             templateOptions: {
@@ -42,7 +113,7 @@
             }
           },
           'last-7-days-stats': {
-            required: true,
+            mandatory: true,
             template: 'homepage/court-dashboard/widgets/attendance/attendance-doughnut.njk',
             column: 1,
             templateOptions: {
@@ -71,7 +142,7 @@
             }
           },
           'next-7-days-stats': {
-            required: true,
+            mandatory: true,
             template: 'homepage/court-dashboard/widgets/standard-value.njk',
             lineBreak: true,
             column: 2,
@@ -122,7 +193,7 @@
             ]
           },
           'unconfirmed-attendance': {
-            required: true,
+            mandatory: true,
             template: 'homepage/court-dashboard/widgets/standard-value.njk',
             column: 2,
             rawData: async (req) => {
@@ -166,9 +237,10 @@
         title: 'Admin',
         widgets: {
           'unpaid-attendance': {
-            required: true,
+            mandatory: true,
             template: 'homepage/court-dashboard/widgets/large-values.njk',
             lineBreak: true,
+            column: 1,
             rawData: async (req) => {
               try {
                 return await unpaidAttendances.get(
@@ -213,8 +285,9 @@
             ],
           },
           'monthly-utilisation-report': {
-            required: true,
+            mandatory: true,
             template: 'homepage/court-dashboard/widgets/standard-value.njk',
+            column: 1,
             rawData: async (req) => {
               try {
                 return await monthlyUtilisationStats.get(
@@ -273,8 +346,8 @@
       const widgets = {};
 
       for (const [key, value] of Object.entries(sectionData.widgets)) {
-        if (!value.required && !list.includes(key)) {
-          continue; // Skip widgets that are not required and not in the list
+        if (!value.mandatory && !list.includes(key)) {
+          continue; // Skip widgets that are not mandatory and not in the list
         }
 
         // Exclude the `required` key from the returned object
