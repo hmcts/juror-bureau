@@ -44,6 +44,37 @@ async function standardReportPrint(app, req, res, reportKey, data) {
     return { text: heading.name, style: 'label' };
   });
 
+  const breakLongCellText = (tableRows, columnIndexes, maxCharsPerLine = 15) =>{
+    tableRows.forEach((row) => {
+      for (const index of columnIndexes) {
+        if (row[index] && row[index].text 
+          && row[index].text.length >= maxCharsPerLine && !row[index].text.includes(' ')
+        ) {
+          let currentText = row[index].text;
+  
+          const segments = currentText.split('-');
+          let result = [];
+          let currentLine = segments[0];
+  
+          for (let i = 1; i < segments.length; i++) {
+            const segment = '-' + segments[i];
+            if ((currentLine + segment).length > maxCharsPerLine) {
+              result.push(currentLine);
+              currentLine = segment;
+            } else {
+              currentLine += segment;
+            }
+          }
+  
+          result.push(currentLine);
+        
+          row[index].text = addNewlineEveryNChars(result.join('\n'), maxCharsPerLine);
+        }
+      }
+    });
+    return tableRows;
+  }
+
   const buildStandardTableRows = function(rows, tableHeadings) {
     const tableRows = rows.map(rowData => {
       let row = tableHeadings.map(header => {
@@ -202,19 +233,32 @@ async function standardReportPrint(app, req, res, reportKey, data) {
       });
     }
 
-    // Split long names in the table body
-    const nameIndexes = tableHeaders
+    let defaultColumnWidths = Array(tableHeaders.length).fill('*');
+
+    const nameColumnIndexes = tableHeaders
       .map((item, index) => (item.text.includes('Name') ? index : -1))
       .filter(index => index !== -1);
+    
+    // Split long names in the table body
+    if (nameColumnIndexes.length) {
+      tableRows = breakLongCellText(tableRows, nameColumnIndexes, 15);
+      defaultColumnWidths = defaultColumnWidths.map((width, index) => {
+        if (nameColumnIndexes.includes(index)) {
+          return 'auto';
+        }
+        return width;
+      });
+    } 
 
-    tableRows = breakLongCellText(tableRows, nameIndexes, 15);
+    const widths = reportData.bespokeReport && reportData.bespokeReport.printWidths
+        ? reportData.bespokeReport.printWidths : (reportData.columnWidths || defaultColumnWidths)
 
     const tables = [{
       head: [...tableHeaders],
       body: [...tableRows],
       footer: [],
-      widths: reportData.bespokeReport && reportData.bespokeReport.printWidths
-        ? reportData.bespokeReport.printWidths : (reportData.columnWidths || Array(tableHeaders.length).fill('*')),
+      widths,
+      layout: widths.includes('auto') ? {paddingRight: () => 5} : {},
       margin: [0, 10, 0, 0],
     }];
 
@@ -349,38 +393,6 @@ function resolveSortBy(sortBy, reportData) {
   }
 
   return reportData.defaultSortColumn;
-}
-
-function breakLongCellText(tableRows, columnIndexes, maxCharsPerLine = 15) {
-  console.log(tableRows);
-  tableRows.forEach((row) => {
-    for (const index of columnIndexes) {
-      if (row[index] && row[index].text 
-        && row[index].text.length >= maxCharsPerLine && !row[index].text.includes(' ')
-      ) {
-        let currentText = row[index].text;
-
-        const segments = currentText.split('-');
-        let result = [];
-        let currentLine = segments[0];
-
-        for (let i = 1; i < segments.length; i++) {
-          const segment = '-' + segments[i];
-          if ((currentLine + segment).length > maxCharsPerLine) {
-            result.push(currentLine);
-            currentLine = segment;
-          } else {
-            currentLine += segment;
-          }
-        }
-
-        result.push(currentLine);
-      
-        row[index].text = addNewlineEveryNChars(result.join('\n'), maxCharsPerLine);
-      }
-    }
-  });
-  return tableRows;
 }
 
 module.exports = {
