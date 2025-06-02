@@ -5,7 +5,9 @@ const { tableDataMappers, constructPageHeading, sort } = require('./utils');
 const { bespokeReportTablePrint } = require('../bespoke-report/bespoke-report-print');
 const { snakeToCamel, checkIfArrayEmpty } = require('../../../lib/mod-utils');
 const { reportKeys } = require('./definitions');
-const { capitalizeFully, capitalise, timeToDuration, toSentenceCase, dateFilter } = require('../../../components/filters');
+const { capitalizeFully, capitalise, timeToDuration, toSentenceCase, dateFilter, addNewlineEveryNChars } = require('../../../components/filters');
+const _ = require('lodash');
+
 
 async function standardReportPrint(app, req, res, reportKey, data) {
   const reportData = reportKeys(app, req)[reportKey];
@@ -200,12 +202,19 @@ async function standardReportPrint(app, req, res, reportKey, data) {
       });
     }
 
+    // Split long names in the table body
+    const nameIndexes = tableHeaders
+      .map((item, index) => (item.text.includes('Name') ? index : -1))
+      .filter(index => index !== -1);
+
+    tableRows = breakLongCellText(tableRows, nameIndexes, 15);
+
     const tables = [{
       head: [...tableHeaders],
       body: [...tableRows],
       footer: [],
       widths: reportData.bespokeReport && reportData.bespokeReport.printWidths
-        ? reportData.bespokeReport.printWidths : (reportData.columnWidths || null),
+        ? reportData.bespokeReport.printWidths : (reportData.columnWidths || Array(tableHeaders.length).fill('*')),
       margin: [0, 10, 0, 0],
     }];
 
@@ -340,6 +349,38 @@ function resolveSortBy(sortBy, reportData) {
   }
 
   return reportData.defaultSortColumn;
+}
+
+function breakLongCellText(tableRows, columnIndexes, maxCharsPerLine = 15) {
+  console.log(tableRows);
+  tableRows.forEach((row) => {
+    for (const index of columnIndexes) {
+      if (row[index] && row[index].text 
+        && row[index].text.length >= maxCharsPerLine && !row[index].text.includes(' ')
+      ) {
+        let currentText = row[index].text;
+
+        const segments = currentText.split('-');
+        let result = [];
+        let currentLine = segments[0];
+
+        for (let i = 1; i < segments.length; i++) {
+          const segment = '-' + segments[i];
+          if ((currentLine + segment).length > maxCharsPerLine) {
+            result.push(currentLine);
+            currentLine = segment;
+          } else {
+            currentLine += segment;
+          }
+        }
+
+        result.push(currentLine);
+      
+        row[index].text = addNewlineEveryNChars(result.join('\n'), maxCharsPerLine);
+      }
+    }
+  });
+  return tableRows;
 }
 
 module.exports = {
