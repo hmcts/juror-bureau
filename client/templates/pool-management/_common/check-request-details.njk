@@ -2,6 +2,8 @@
 
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "custom-components/loading-spinner/macro.njk" import modLoadingSpinner %}
+
 
 {% set currentApp = "Pool management" %}
 
@@ -9,6 +11,28 @@
 {% block page_identifier %}{{ pageIdentifier }}{% endblock %}
 
 {% block content %}
+
+  {% set loadingSpinner %}
+    {{ modLoadingSpinner({
+      id: "loadingSpinner",
+      label: {
+        text: "Submitting request"
+      }
+    }) }}
+    {# <div class="hods-loading-spinner">
+      <div
+        class="hods-loading-spinner__spinner"
+        aria-live="polite"
+        role="status"
+      ></div>
+      <div class="hods-loading-spinner__content">
+        <h1 class="govuk-heading-m">
+          LOADING DUH...
+        </h1>
+      </div>
+    </div> #}
+    {# HEY THERE #}
+  {% endset %}
 
   {% include "includes/errors.njk" %}
 
@@ -22,7 +46,7 @@
   {% set timeString = timeString + ('am' if (+poolDetails.attendanceTime.hour) < 12 else 'pm') %}
 
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
+    <div class="govuk-grid-column-full" id="container">
 
       <form action="{{ _submitUrl }}" method="post" id="checkDetailsForm">
 
@@ -151,7 +175,8 @@
             type: "submit",
             attributes: {
               id: "confirmButton"
-            }
+            },
+            preventDoubleClick: true
           }) }}
 
           <a class="govuk-link" href="{{ _cancelUrl }}" id="cancelAnchor">Cancel</a>
@@ -169,5 +194,18 @@
 
     </div>
   </div>
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+   <script nonce="{{ nonce }}">
+    $('#confirmButton').click(function(event) {
+      $(event.target).attr('disabled', true);
+      $('#container').html("{{ modLoadingSpinner({ id: 'loadingSpinner', label: { text: 'Submitting request' } }) }}");
+      //$('#checkDetailsForm').submit();
+    });
+  </script>
 
 {% endblock %}

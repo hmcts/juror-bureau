@@ -537,6 +537,8 @@
           return res.redirect(app.namedRoutes.build('request-pool.check-details.get'));
         };
 
+      // res.render('pool-management/_common/request-pool-loading.njk');
+
       tmpBody.attendanceTime = req.session.poolDetails.attendanceTime;
 
       // clear error session data
