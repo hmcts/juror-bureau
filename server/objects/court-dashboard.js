@@ -5,13 +5,17 @@ const dataStore = require('../stores/court-dashboard');
 
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
-  const { extractDataAndHeadersFromResponse } = require('../lib/mod-utils');
+  const { replaceAllObjKeys } = require('../lib/mod-utils');
+  const _ = require('lodash');
 
-  module.exports.dashboardNotifications = {
-    get: function(req, locCode) {
-      return dataStore.notifications;
-    },
-  }
+  module.exports.dashboardNotifications = new DAO('moj/court-dashboard/notifications', {
+    get: function(locCode) {
+      return {
+        uri: urljoin(this.resource, locCode),
+        transform: (data) => { delete data['_headers']; return replaceAllObjKeys(data, _.camelCase) },
+      };
+    }
+  })
 
   module.exports.attendanceStats = {
     get: function(req, locCode, period) {
