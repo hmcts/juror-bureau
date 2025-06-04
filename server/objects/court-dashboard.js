@@ -17,35 +17,24 @@ const dataStore = require('../stores/court-dashboard');
     }
   })
 
-  module.exports.attendanceStats = {
-    get: function(req, locCode, period) {
-      if (period === 'today') {
-        return dataStore.attendanceStatsToday;
-      } else if (period === 'last7days') {
-        return dataStore.attendanceStatsLast7Days;
-      } else if (period === 'next7days') {
-        return dataStore.attendanceStatsNext7Days;
-      } else {
-        throw new Error('Invalid period specified');
-      }
-    },
-  }
+  module.exports.dashboardAdminStats = new DAO('moj/court-dashboard/admin', {
+    get: function(locCode) {
+      return {
+        uri: urljoin(this.resource, locCode),
+        transform: (data) => { delete data['_headers']; return { ...replaceAllObjKeys(data, _.camelCase), ...dataStore.adminStats} },
+      };
+    }
+  })
 
-  module.exports.unconfirmedAttendances = {
+  module.exports.dashboardAttendanceStats = {
     get: function(req, locCode) {
-      return dataStore.unconfirmedAttendances;
-    },
+      return dataStore.attendanceStats;
+    }
   }
 
   module.exports.monthlyUtilisationStats = {
     get: function(req, locCode) {
       return dataStore.monthlyUtilisationStats;
-    },
-  }
-
-  module.exports.unpaidAttendances = {
-    get: function(req, locCode) {
-      return dataStore.unpaidAttendances;
     },
   }
   
