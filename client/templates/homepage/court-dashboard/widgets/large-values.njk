@@ -2,7 +2,7 @@
   <div class="govuk-grid-column-full">
     <div class="mod-dashboard__large-values">
       {% for data in widget.values %}
-        <div class="mod-dashboard__large-values__value">
+        <div class="mod-dashboard__large-values__value {{ data.classes }}">
           {% if data.suffix %}
             <span class="mod-dashboard__large-values__value--inline">
               <span class="govuk-!-font-size-80 govuk-!-font-weight-bold">
@@ -17,10 +17,10 @@
           {% endif %}
           <span class="label">
             {% if data.label %}
-              <span class="govuk-body govuk-link" href="#">{{ data.label }}</span>
+              <span class="govuk-body govuk-!-font-weight-bold">{{ data.label }}</span>
             {% endif %}
             {% for link in data.links %}
-              <a class="govuk-body govuk-link" href="{{ link.href }}">{{ link.text }}</a>
+              <a class="govuk-body govuk-link govuk-link--no-visited-state" href="{{ link.href }}">{{ link.text }}</a>
             {% endfor  %}
           </span>
         </div>

@@ -1,4 +1,4 @@
-const { dashboardNotifications } = require('../../objects/court-dashboard');
+const { dashboardNotifications, dashboardAdminStats, dashboardAttendanceStats } = require('../../objects/court-dashboard');
 const { notifications } = require('../../stores/court-dashboard');
 
 (function(){
@@ -28,7 +28,6 @@ const { notifications } = require('../../stores/court-dashboard');
       let notifcations;
       try {
         notifcations = await dashboardNotifications.get(req, req.session.authentication.locCode);
-        console.log('\n\nnotifications', JSON.stringify(notifcations, null, 2), '\n\n');
       } catch (err) {
         app.logger.crit('Unable to fetch notifications', {
           auth: req.session.authentication,
@@ -37,15 +36,43 @@ const { notifications } = require('../../stores/court-dashboard');
         });
       }
 
+      let adminStats;
+      try {
+        adminStats = await dashboardAdminStats.get(req, req.session.authentication.locCode);
+      } catch (err) {
+        app.logger.crit('Unable to fetch admin stats', {
+          auth: req.session.authentication,
+          token: req.session.authToken,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+      }
+
+      let attendanceStats;
+      try {
+        attendanceStats = await dashboardAttendanceStats.get(req, req.session.authentication.locCode);
+      } catch (err) {
+        app.logger.crit('Unable to fetch attendance stats', {
+          auth: req.session.authentication,
+          token: req.session.authToken,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+      } 
+
       let widgets = [];
       try {
-        widgets = await widgetDefinitions(app)(req, res)([]);
+        widgets = await widgetDefinitions(app)(req, res)([], {
+          admin: adminStats,
+          attendance: attendanceStats
+        });
       } catch (err) {
         app.logger.crit('Unable to fetch widget keys', {
           auth: req.session.authentication,
           token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
+
+        console.log('\n\n', err, '\n\n');
+        return res.render('_errors/generic', { err });
       }
       console.log('\n\widgets\n', JSON.stringify(widgets, null, 2), '\n\n');
 

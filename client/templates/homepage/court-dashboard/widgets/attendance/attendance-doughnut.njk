@@ -3,13 +3,13 @@
 <div id="widget_{{ widgetId }}" class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <h3 class="govuk-heading-s mod-dashboard__subtitle">{{ widget.templateOptions.title }}</h3>
-    {% if widget.rawData | length %}
+    {% if widget.data | length %}
       <div class="mod-dashboard__chart">
         <div class="doughnut-values">
           <div class="doughnut-values__chart">
             {{ attendanceDoughnut({
               id: widget.templateOptions.doughnutId,
-              values: widget.rawData,
+              values: widget.data,
               nonce: nonce
             }) }}
           </div>
