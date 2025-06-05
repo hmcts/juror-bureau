@@ -44,37 +44,6 @@ async function standardReportPrint(app, req, res, reportKey, data) {
     return { text: heading.name, style: 'label' };
   });
 
-  const breakLongCellText = (tableRows, columnIndexes, maxCharsPerLine = 15) =>{
-    tableRows.forEach((row) => {
-      for (const index of columnIndexes) {
-        if (row[index] && row[index].text 
-          && row[index].text.length >= maxCharsPerLine && !row[index].text.includes(' ')
-        ) {
-          let currentText = row[index].text;
-  
-          const segments = currentText.split('-');
-          let result = [];
-          let currentLine = segments[0];
-  
-          for (let i = 1; i < segments.length; i++) {
-            const segment = '-' + segments[i];
-            if ((currentLine + segment).length > maxCharsPerLine) {
-              result.push(currentLine);
-              currentLine = segment;
-            } else {
-              currentLine += segment;
-            }
-          }
-  
-          result.push(currentLine);
-        
-          row[index].text = addNewlineEveryNChars(result.join('\n'), maxCharsPerLine);
-        }
-      }
-    });
-    return tableRows;
-  }
-
   const buildStandardTableRows = function(rows, tableHeadings) {
     const tableRows = rows.map(rowData => {
       let row = tableHeadings.map(header => {
@@ -233,32 +202,18 @@ async function standardReportPrint(app, req, res, reportKey, data) {
       });
     }
 
-    let defaultColumnWidths = Array(tableHeaders.length).fill('*');
-
-    const nameColumnIndexes = tableHeaders
-      .map((item, index) => (item.text.includes('Name') ? index : -1))
-      .filter(index => index !== -1);
-    
-    // Split long names in the table body
-    if (nameColumnIndexes.length) {
-      tableRows = breakLongCellText(tableRows, nameColumnIndexes, 15);
-      defaultColumnWidths = defaultColumnWidths.map((width, index) => {
-        if (nameColumnIndexes.includes(index)) {
-          return 'auto';
-        }
-        return width;
-      });
-    } 
-
-    const widths = reportData.bespokeReport && reportData.bespokeReport.printWidths
-        ? reportData.bespokeReport.printWidths : (reportData.columnWidths || defaultColumnWidths)
+    // Dynamically set column widths: fixed width for "Name" columns, '*' for others
+    let defaultColumnWidths = tableHeaders.map((header) =>
+      header.text.includes('Name') ? `${(100 / tableHeaders.length)}%` : '*'
+    );
 
     const tables = [{
       head: [...tableHeaders],
       body: [...tableRows],
       footer: [],
-      widths,
-      layout: widths.includes('auto') ? {paddingRight: () => 5} : {},
+      widths: reportData.bespokeReport && reportData.bespokeReport.printWidths
+        ? reportData.bespokeReport.printWidths : (reportData.columnWidths || defaultColumnWidths),
+      // layout: widths.includes('auto') ? {paddingRight: () => 5} : {},
       margin: [0, 10, 0, 0],
     }];
 
