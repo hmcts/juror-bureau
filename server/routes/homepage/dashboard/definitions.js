@@ -2,7 +2,6 @@
   'use strict';
 
   const _ = require('lodash');
-  const { monthlyUtilisationStats } = require('../../../objects/court-dashboard');
   const { dateFilter } = require('../../../components/filters');
   const { dateDifference } = require('../../../lib/mod-utils');
 
@@ -92,13 +91,13 @@
         widgets: {
           'today-stats': {
             mandatory: true,
-            widgetType: 'attendanceDoughnust',
+            widgetType: 'attendanceDoughnut',
             column: 1,
             templateOptions: {
               title: 'Today',
               doughnutId: 'todayStats'
             },
-            data: stats.attendance.today
+            data: stats.attendance.attendanceStatsToday || {},
           },
           'last-7-days-stats': {
             mandatory: true,
@@ -108,7 +107,7 @@
               title: 'Last 7 days',
               doughnutId: 'last7DaysStats'
             },
-            data: stats.attendance.last7Days,
+            data: stats.attendance.attendanceStatsLastSevenDays || {},
           },
           'next-7-days-stats': {
             mandatory: true,
@@ -121,7 +120,7 @@
             values: [
               {
                 heading: 'Total due to attend',
-                value: stats.attendance.next7Days.totalDueToAttend,
+                value: stats.attendance.totalDueToAttend,
                 links: [
                   {
                     href: app.namedRoutes.build('reports.persons-attending-detail.filter.get'),
@@ -131,7 +130,7 @@
               },
               {
                 heading: 'Jurors with reasonable adjustments',
-                value: stats.attendance.next7Days.totalReasonableAdjustments,
+                value: stats.attendance.reasonableAdjustments,
                 links: [
                   {
                     href:  app.namedRoutes.build('reports.reasonable-adjustments.filter.get'),
@@ -189,7 +188,11 @@
                 classes: Math.abs(dateDifference(new Date(stats.admin.oldestUnpaidAttendanceDate), new Date(), 'days')) > 30 ? 'mod-red-text' : '',
                 links: [
                    {
-                     href: app.namedRoutes.build('juror-management.unpaid-attendance.get'),
+                     href: app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
+                        jurorNumber: stats.admin.oldestUnpaidJuror,
+                        locCode: req.session.authentication.locCode,
+                        status: 'draft',
+                     }),
                      text: 'Oldest unpaid attendance',
                    }
                  ],
@@ -203,13 +206,9 @@
             values: [
               {
                 heading: 'Date monthly utilisation report last run',
-                value: dateFilter(stats.admin.lastMonthlyUtilisationDate, 'yyyy-MM-DD', 'DD MMMM YYYY'),
+                value: dateFilter(stats.admin.utilisationReportDate, null, 'DD MMMM YYYY [at] h:mm a'),
                 badge: {
-                  requirments: (date) => {
-                    const today = new Date();
-                    const lastDate = new Date(date);
-                    return Math.abs(dateDifference(today, lastDate, 'days')) > 30;
-                  },
+                  showBadge: Math.abs(dateDifference(new Date(), stats.admin.utilisationReportDate, 'days')) > 30,
                   text: 'overdue',
                   colour: 'red',
                 },
@@ -219,6 +218,10 @@
                     text: 'Prepare monthly utilisation report',
                   }
                 ]
+              },
+              {
+                heading: 'Last run monthly utilisation percentage',
+                value: (Math.round(stats.admin.utilisationPercentage * 100) / 100) + '%',
               },
             ]
           },
@@ -246,7 +249,7 @@
           throw {
             error: {
               code: 'WIDGET_TEMPLATE_NOT_FOUND',
-              message: `No template defined for '${key}' widget in section '${section}'`,
+              message: `No template defined for '${key}' widget in section '${section}'.`,
             }
           };
         }
