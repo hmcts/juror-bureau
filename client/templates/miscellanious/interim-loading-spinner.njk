@@ -1,0 +1,27 @@
+{% extends "../layouts/default-no-nav.njk" %}
+
+{% from "custom-components/loading-spinner/macro.njk" import modLoadingSpinner %}
+
+{% set currentApp = currentApp %}
+
+{% block page_title %}{{ pageTitle }}{% endblock %}
+{% block page_identifier %}{{ pageIdentifier }}{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      {{ modLoadingSpinner({
+        id: spinnerId,
+        class: spinnerClass,
+        label: {
+          text: spinnerLabel,
+          class: spinnerLabelClass
+        }
+      })}}
+
+    </div>
+  </div>
+
+{% endblock %}

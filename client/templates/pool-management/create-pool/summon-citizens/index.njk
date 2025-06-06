@@ -35,7 +35,7 @@
 
       <form method="post" action="{{ url('summon-citizens.post', {
             poolNumber: poolDetails.poolDetails.poolNumber
-          }) }}" id="citizenSummonform">
+          }) }}" id="citizenSummonForm" loading-spinner-message="Summoning citizens, please wait...">
         
         <div class="not-editable-field govuk-!-width-one-half">
           <p class="govuk-label--s">Jurors requested</p>
@@ -112,6 +112,7 @@
       
         <div class="govuk-button-group">
           {{ govukButton({
+            id: "summonCitizenButton",
             text: "Create pool and summon citizens",
             type: "submit",
             class: "govuk-!-width-one-half"
@@ -136,4 +137,11 @@
 
     </div>
   </div>
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script src="{{ assetPath }}js/loading-spinner.js"></script>
+
 {% endblock %}
