@@ -21,16 +21,19 @@ const dataStore = require('../stores/court-dashboard');
     get: function(locCode) {
       return {
         uri: urljoin(this.resource, locCode),
-        transform: (data) => { delete data['_headers']; return { ...replaceAllObjKeys(data, _.camelCase), ...dataStore.adminStats} },
+        transform: (data) => { delete data['_headers']; return replaceAllObjKeys(data, _.camelCase) },
       };
     }
   })
 
-  module.exports.dashboardAttendanceStats = {
-    get: function(req, locCode) {
-      return dataStore.attendanceStats;
+  module.exports.dashboardAttendanceStats = new DAO('moj/court-dashboard/attendance', {
+     get: function(locCode) {
+      return {
+        uri: urljoin(this.resource, locCode),
+        transform: (data) => { delete data['_headers']; return replaceAllObjKeys(data, _.camelCase) },
+      };
     }
-  }
+  })
 
   module.exports.monthlyUtilisationStats = {
     get: function(req, locCode) {
