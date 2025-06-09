@@ -1,3 +1,5 @@
+const { attendanceStatsToday } = require('../../../stores/court-dashboard');
+
 (() => {
   'use strict';
 
@@ -92,6 +94,7 @@
           'today-stats': {
             mandatory: true,
             widgetType: 'attendanceDoughnut',
+            // template: 'homepage/court-dashboard/widgets/attendance/today-doughnut.njk',
             column: 1,
             templateOptions: {
               title: 'Today',
@@ -102,6 +105,7 @@
           'last-7-days-stats': {
             mandatory: true,
             widgetType: 'attendanceDoughnut',
+            // template: 'homepage/court-dashboard/widgets/attendance/today-doughnut.njk',
             column: 1,
             templateOptions: {
               title: 'Last 7 days',
@@ -245,7 +249,7 @@
         let template = widgetDef.template;
         if (!template && widgetDef.widgetType && widgetTemplates[widgetDef.widgetType]) {
           template = widgetTemplates[widgetDef.widgetType];
-        } else {
+        } else if (!template && (!widgetDef.widgetType || !widgetTemplates[widgetDef.widgetType])) {
           throw {
             error: {
               code: 'WIDGET_TEMPLATE_NOT_FOUND',
