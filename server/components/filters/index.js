@@ -629,6 +629,10 @@
       };
       return codeTitles[code] || 'Unknown';
     },
+
+    largestNumber: function(arr) {
+      return Math.max.apply(null, arr);
+    }
   
   };
 
