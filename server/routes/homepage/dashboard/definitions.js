@@ -183,9 +183,9 @@
                 ],
               },
               {
-                value: Math.abs(dateDifference(new Date(stats.admin.oldestUnpaidAttendanceDate), new Date(), 'days')),
-                suffix: 'days',
-                classes: Math.abs(dateDifference(new Date(stats.admin.oldestUnpaidAttendanceDate), new Date(), 'days')) > 30 ? 'mod-red-text' : '',
+                value: stats.admin.oldestUnpaidAttendanceDays,
+                suffix: stats.admin.oldestUnpaidAttendanceDays === 1 ? 'day' : 'days',
+                classes: stats.admin.oldestUnpaidAttendanceDays > 30 ? 'mod-red-text' : '',
                 links: [
                    {
                      href: app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
@@ -206,9 +206,9 @@
             values: [
               {
                 heading: 'Date monthly utilisation report last run',
-                value: dateFilter(stats.admin.utilisationReportDate, null, 'DD MMMM YYYY [at] h:mm a'),
+                value: stats.admin.utilisationReportDate ? dateFilter(stats.admin.utilisationReportDate, null, 'DD MMMM YYYY [at] h:mm a') : null,
                 badge: {
-                  showBadge: Math.abs(dateDifference(new Date(), stats.admin.utilisationReportDate, 'days')) > 30,
+                  showBadge: stats.admin.utilisationReportDate ? Math.abs(dateDifference(new Date(), stats.admin.utilisationReportDate, 'days')) > 30 : false,
                   text: 'overdue',
                   colour: 'red',
                 },
@@ -221,7 +221,7 @@
               },
               {
                 heading: 'Last run monthly utilisation percentage',
-                value: (Math.round(stats.admin.utilisationPercentage * 100) / 100) + '%',
+                value: stats.admin.utilisationReportDate ? (Math.round(stats.admin.utilisationPercentage * 100) / 100) + '%' : null,
               },
             ]
           },

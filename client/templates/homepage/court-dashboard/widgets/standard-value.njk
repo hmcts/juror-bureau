@@ -11,7 +11,7 @@
   <div class="govuk-grid-row govuk-!-margin-top-4">
     <div class="govuk-grid-column-full">
       <h3 class="govuk-heading-s govuk-!-margin-bottom-1">{{ data.heading }}</h3>
-      <p class="govuk-body govuk-!-margin-bottom-1">{{ data.value if data.value is defined else "No data available" }}</p>
+      <p class="govuk-body govuk-!-margin-bottom-1">{{ data.value if data.value !== null else "No data available" }}</p>
       {% if data.badge and data.badge.showBadge %}
         {{ mojBadge({
           text: data.badge.text,
