@@ -94,7 +94,6 @@ const { attendanceStatsToday } = require('../../../stores/court-dashboard');
           'today-stats': {
             mandatory: true,
             widgetType: 'attendanceDoughnut',
-            // template: 'homepage/court-dashboard/widgets/attendance/today-doughnut.njk',
             column: 1,
             templateOptions: {
               title: 'Today',
@@ -105,7 +104,6 @@ const { attendanceStatsToday } = require('../../../stores/court-dashboard');
           'last-7-days-stats': {
             mandatory: true,
             widgetType: 'attendanceDoughnut',
-            // template: 'homepage/court-dashboard/widgets/attendance/today-doughnut.njk',
             column: 1,
             templateOptions: {
               title: 'Last 7 days',
