@@ -737,3 +737,7 @@ dt.govuk-summary-list-mod {
     }
   }
 }
+
+.moj-alert {
+  grid-template-columns: min-content fit-content(1000px) auto !important;
+}

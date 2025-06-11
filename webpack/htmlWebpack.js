@@ -42,7 +42,7 @@ const copyClientCode = new CopyWebpackPlugin({
     { from: 'node_modules/chart.js/dist/Chart.bundle.js', to: '../client/js/chart.js' },
     { from: 'node_modules/chart.js/dist/Chart.min.css', to: '../client/css/chart.css' },
     { from: 'node_modules/govuk-frontend/dist/govuk/govuk-frontend.min.js', to: '../client/js/govuk' },
-    { from: 'node_modules/@ministryofjustice/frontend/moj/all.js', to: '../client/js/moj' },
+    { from: 'node_modules/@ministryofjustice/frontend/moj/moj-frontend.min.js', to: '../client/js/moj' },
     {
       from: 'node_modules/accessible-autocomplete/dist/accessible-autocomplete.min.js',
       to: '../client/js',

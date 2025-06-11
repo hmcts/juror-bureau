@@ -5,9 +5,9 @@
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 {% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
-{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 
 {% set currentApp = "Pool management" %}
 
@@ -27,24 +27,24 @@
 
   <!-- this can be moved to an /includes file -->
   {% if deletedRecord %}
-    {{ mojBanner({
-      type: "success",
+    {{ mojAlert({
+      variant: "success",
       html: "Pool <b>" + deletedRecord.number + "</b> successfully deleted",
       iconFallbackText: "Success"
     }) }}
   {% endif %}
 
   {% if newPoolCreated %}
-    {{ mojBanner({
-      type: "success",
+    {{ mojAlert({
+      variant: "success",
       html: newPoolCreated.html,
       iconFallbackText: "Success"
     }) }}
   {% endif %}
 
   {% if bannerMessage %}
-    {{ mojBanner({
-      type: "success",
+    {{ mojAlert({
+      variant: "success",
       text: bannerMessage,
       iconFallbackText: "Success"
     }) }}
