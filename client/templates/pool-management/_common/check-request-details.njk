@@ -26,7 +26,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
 
-      <form action="{{ _submitUrl }}" method="post" id="checkDetailsForm" loading-spinner-message="Requesting a new pool, please wait...">
+      <form action="{{ _submitUrl }}" method="post" id="checkDetailsForm">
 
         <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 
@@ -172,12 +172,5 @@
 
     </div>
   </div>
-
-{% endblock %}
-
-{% block body_end %}
-  {{ super() }}
-
-  <script src="{{ assetPath }}js/loading-spinner.js"></script>
 
 {% endblock %}
