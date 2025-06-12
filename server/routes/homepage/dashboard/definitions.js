@@ -1,5 +1,3 @@
-const { attendanceStatsToday } = require('../../../stores/court-dashboard');
-
 (() => {
   'use strict';
 
@@ -177,6 +175,7 @@ const { attendanceStatsToday } = require('../../../stores/court-dashboard');
               {
                value: stats.admin.unpaidAttendances,
                classes: stats.admin.unpaidAttendances > 50 ? 'mod-red-text' : '',
+               ariaLabel: 'Unpaid attendances',
                links: [
                   {
                     href: app.namedRoutes.build('juror-management.unpaid-attendance.get'),
@@ -188,6 +187,7 @@ const { attendanceStatsToday } = require('../../../stores/court-dashboard');
                 value: stats.admin.oldestUnpaidAttendanceDays,
                 suffix: stats.admin.oldestUnpaidAttendanceDays === 1 ? 'day' : 'days',
                 classes: stats.admin.oldestUnpaidAttendanceDays > 30 ? 'mod-red-text' : '',
+                ariaLabel: 'Oldest unpaid attendance',
                 links: [
                    {
                      href: app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
