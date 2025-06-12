@@ -1,7 +1,7 @@
 {% extends "../../layouts/default.njk" %}
 
 {% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
-{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
@@ -73,8 +73,8 @@
       {% set jurorText = " jurors." %}
     {% endif %}
 
-    {{ mojBanner({
-      type: "success",
+    {{ mojAlert({
+      variant: "success",
       html: "Service uncompleted for " + uncompleteConfirmed + jurorText,
       iconFallbackText: "Success"
     }) }}
@@ -86,8 +86,8 @@
       {% set jurorText = " jurors." %}
     {% endif %}
 
-    {{ mojBanner({
-      type: "success",
+    {{ mojAlert({
+      variant: "success",
       html: "Undo failed to attend for " + undoFailedToAttend + jurorText,
       iconFallbackText: "Success"
     }) }}

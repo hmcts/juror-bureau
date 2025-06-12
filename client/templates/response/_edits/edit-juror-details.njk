@@ -253,8 +253,8 @@
           <div class="jd-label-blue govuk-!-font-weight-bold">A third party completed the summons on behalf of the juror</div>
         {% endset %}
 
-        {{ mojBanner({
-          type: 'information',
+        {{ mojAlert({
+          variant: 'information',
           html: thirdPartyBannerHTML,
           iconFallbackText: 'information',
           id: 'thirdPartyCompletedBanner'

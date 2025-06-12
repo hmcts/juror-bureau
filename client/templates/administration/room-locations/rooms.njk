@@ -1,7 +1,7 @@
 {% extends "layouts/default.njk" %}
 
 {% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
 
 {% block page_title %}{{ serviceName }} - Administration - Room locations{% endblock %}
@@ -38,8 +38,8 @@
   {% endfor %}
 
   {% if successBanner %}
-    {{ mojBanner({
-      type: "success",
+    {{ mojAlert({
+      variant: "success",
       html: successBanner,
       iconFallbackText: "Success"
     }) }}

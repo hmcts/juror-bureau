@@ -16,8 +16,8 @@
   {% include "includes/errors.njk" %}
 
   {% if bannerMessage %}
-    {{ mojBanner({
-      type: "success",
+    {{ mojAlert({
+      variant: "success",
       text: bannerMessage,
       iconFallbackText: "Success"
     }) }}

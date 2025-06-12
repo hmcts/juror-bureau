@@ -1,3 +1,5 @@
+{% from "moj/components/button-menu/macro.njk" import mojButtonMenu %}
+
 <form action="{{ url('response.detail.post', { id: response.jurorNumber }) }}" method="post" id="updateSectionForm" class="response-update-form">
 
   <div class="govuk-!-display-inline">
@@ -39,42 +41,51 @@
       {% endif %}
 
       {% if response.replyMethod === "DIGITAL" or (method === "paper" and response.processingStatus | capitalise !== "CLOSED") %}
-        <div id="moj-actions-button-menu" class="moj-button-menu">
-          <div class="moj-button-menu__wrapper more-actions-menu reply-view-align_right" name="moreActionsMenu" id="moreActionsMenu">
+        {% set buttonMenuItems = [] %}
+        
+        {% if method === "paper" %}
+          {% set buttonMenuItems = buttonMenuItems.concat({
+            text: "Mark as awaiting information",
+            href: url('response.detail.awaiting.information.get', { id: response.jurorNumber }) + ('/paper' if method === 'paper' else null),
+            classes: "govuk-button--secondary"
+          }) %}
+        {% endif %}
 
-            {% if response.processingStatus | capitalise !== 'CLOSED' %}
-                {#<a id="processAwaitingInformation" href="#" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " value="awaiting_information" data-module="govuk-button">#}
-                <a id="processAwaitingInformation"
-                  href="{{ url('response.detail.awaiting.information.get', { id: response.jurorNumber }) }}{{ "/paper" if method === 'paper' else null }}"
-                  role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary "
-                  value="awaiting_information" data-module="govuk-button">
-                  {{ "Mark as awaiting information" }}
-                </a>
+        {% if isBureauUser %}
+          {% set buttonMenuItems = buttonMenuItems.concat({
+            text: "Request juror info by post",
+            href: url('request-info.by-post.get', { id: response.jurorNumber, type: 'paper' if method === 'paper' else 'digital'}),
+            classes: "govuk-button--secondary"
+          }) %}
+          {% if assignedStaffMember === authentication.login or isManager %}
+            {% set buttonMenuItems = buttonMenuItems.concat({
+              text: "Send to a colleague...",
+              href: url('response.assign.get', { id: response.jurorNumber }) + "?reply_method=" + method,
+              classes: "govuk-button--secondary"
+            }) %}
+          {% endif %}
+        {% endif %}
 
-                {% if isBureauUser %}
-                  <a id="requestInfoByPost" href="{{ url('request-info.by-post.get', { id: response.jurorNumber, type: 'paper' if method === 'paper' else 'digital'}) }}"
-                  role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " value="request_information_by_post" data-module="govuk-button">
-                    Request juror info by post
-                  </a>
+        {% if method !== "paper" %}
+          {% set buttonMenuItems = buttonMenuItems.concat({
+            text: "Download as a PDF",
+            href: url('response.detail.download-pdf.get', { id: response.jurorNumber }),
+            target: "_blank",
+            classes: "govuk-button--secondary"
+          }) %}
+        {% endif %}
 
-                  {% if assignedStaffMember === authentication.login or isManager %}
-                    {% set sendToUrl = url('response.assign.get', { id: response.jurorNumber }) + "?reply_method=" + method %}
-                    <a id="processSendTo" href="{{ sendToUrl }}" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " value="send_to" data-module="govuk-button">
-                      Send to a colleague...
-                    </a>
-                  {% endif %}
-                {% endif %}
+        {{ mojButtonMenu({
+          button: {
+            text: "More actions",
+            classes: "govuk-button--secondary"
+          },
+          items: buttonMenuItems,
+          attributes: {
+            id: 'moj-actions-button-menu'
+          }
+        }) }}
 
-            {% endif %}
-
-            {% if method !== "paper" %}
-              <a  href="{{ url('response.detail.download-pdf.get', { id: response.jurorNumber }) }}" target="_blank" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " value="download_pdf" data-module="govuk-button">
-                Download as a PDF
-              </a>
-            {% endif %}
-
-          </div>
-        </div>
       {% endif %}
 
     </div>

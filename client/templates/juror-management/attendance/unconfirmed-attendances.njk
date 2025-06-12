@@ -14,8 +14,8 @@
 {% block content %}
 
   {% if bannerMessage %}
-    {{ mojBanner({
-      type: "success",
+    {{ mojAlert({
+      variant: "success",
       html: bannerMessage,
       iconFallbackText: "Success"
     }) }}
