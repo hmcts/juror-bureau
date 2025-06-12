@@ -16,9 +16,7 @@ const { toSentenceCase } = require('../../components/filters');
         return res.redirect(app.namedRoutes.build('homepage.dashboard.get'));
       }
 
-      res.render('homepage/index.njk', {
-        notifications: await getNotificationsHTML(app, req, res),
-      });
+      res.render('homepage/index.njk');
     };
   };
 
