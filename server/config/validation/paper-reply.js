@@ -57,7 +57,7 @@
           },
         },
         length: {
-          maximum: 20,
+          maximum: 25,
           message: {
             summary: 'Please check the last name',
             details: 'Please check the last name',
