@@ -22,7 +22,7 @@ nvm use 20 # set the current shell to use version 20 of node
 nvm alias default 20 # set the node version 20 to be the default version
 ```
 
-After setting node 20 to be the version of node to use, we need to enable yarn
+After setting node 20 to be the version of node to use, we need to enable yarn 
 
 ```sh
 corepack enable yarn
