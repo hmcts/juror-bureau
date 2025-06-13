@@ -5,7 +5,9 @@ const { tableDataMappers, constructPageHeading, sort } = require('./utils');
 const { bespokeReportTablePrint } = require('../bespoke-report/bespoke-report-print');
 const { snakeToCamel, checkIfArrayEmpty } = require('../../../lib/mod-utils');
 const { reportKeys } = require('./definitions');
-const { capitalizeFully, capitalise, timeToDuration, toSentenceCase, dateFilter } = require('../../../components/filters');
+const { capitalizeFully, capitalise, timeToDuration, toSentenceCase, dateFilter, addNewlineEveryNChars } = require('../../../components/filters');
+const _ = require('lodash');
+
 
 async function standardReportPrint(app, req, res, reportKey, data) {
   const reportData = reportKeys(app, req)[reportKey];
@@ -200,12 +202,18 @@ async function standardReportPrint(app, req, res, reportKey, data) {
       });
     }
 
+    // Dynamically set column widths: fixed width for "Name" columns, '*' for others
+    let defaultColumnWidths = tableHeaders.map((header) =>
+      header.text.includes('Name') ? `${(100 / tableHeaders.length)}%` : '*'
+    );
+
     const tables = [{
       head: [...tableHeaders],
       body: [...tableRows],
       footer: [],
       widths: reportData.bespokeReport && reportData.bespokeReport.printWidths
-        ? reportData.bespokeReport.printWidths : (reportData.columnWidths || null),
+        ? reportData.bespokeReport.printWidths : (reportData.columnWidths || defaultColumnWidths),
+      // layout: widths.includes('auto') ? {paddingRight: () => 5} : {},
       margin: [0, 10, 0, 0],
     }];
 

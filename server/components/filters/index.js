@@ -629,6 +629,28 @@
       };
       return codeTitles[code] || 'Unknown';
     },
+
+    addNewlineEveryNChars: function(inputString, limit = 15) {
+      let result = '';
+      let countSinceLastNewline = 0;
+  
+      for (let i = 0; i < inputString.length; i++) {
+          const char = inputString[i];
+          result += char;
+          countSinceLastNewline++;
+  
+          if (char === '\n') {
+              countSinceLastNewline = 0; // Reset the counter if a newline is encountered
+          }
+  
+          if (countSinceLastNewline === limit) {
+              result += '\n'; // Add a newline if nth characters have passed
+              countSinceLastNewline = 0;
+          }
+      }
+  
+      return result;
+    }
   
   };
 
