@@ -127,7 +127,7 @@
         }
       }
 
-      if (date && date.length === 3) {
+      if (Array.isArray(date) && date.length >= 3) {
         date[1] = date[1] - 1;
       }
 

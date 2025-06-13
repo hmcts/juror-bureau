@@ -1,12 +1,9 @@
-const { toSentenceCase } = require('../../components/filters');
-
 (function(){
   'use strict';
 
-  const jurorsForApproval = require('../../objects/approve-jurors').jurorList;
-  const { isSJOUser, isCourtUser } = require('../../components/auth/user-type');
-  const { widgetDefinitions } = require('./dashboard/definitions');
-  const courtDashboardDAOs = require('../../objects/court-dashboard');
+  const { isCourtUser } = require('../../components/auth/user-type');
+  const { courtWidgetDefinitions, widgetTemplates } = require('./dashboard/definitions');
+  const { courtDashboardDAO } = require('../../objects/court-dashboard');
 
 
   module.exports.homepage = function(app) {
@@ -16,16 +13,15 @@ const { toSentenceCase } = require('../../components/filters');
         return res.redirect(app.namedRoutes.build('homepage.dashboard.get'));
       }
 
-      res.render('homepage/index.njk');
+      return res.render('homepage/index.njk');
     };
   };
 
   module.exports.dashboard = function(app) {
     return async function(req, res) {
-
       let notifcations;
       try {
-        notifcations = await courtDashboardDAOs.dashboardNotifications.get(req, req.session.authentication.locCode);
+        notifcations = await courtDashboardDAO.get(req, 'notifications', req.session.authentication.locCode);
       } catch (err) {
         app.logger.crit('Unable to fetch notifications', {
           auth: req.session.authentication,
@@ -34,38 +30,17 @@ const { toSentenceCase } = require('../../components/filters');
         });
       }
 
-      // In future can be supplied from the API
-      let requiredSections = ['admin', 'attendance'];
-
-      let stats = {}
-      for (const section of requiredSections) {
-        try {
-          stats[section] = await courtDashboardDAOs[`dashboard${toSentenceCase(section)}Stats`].get(req, req.session.authentication.locCode);
-        } catch (err) {
-          app.logger.crit(`Unable to fetch ${section} dashboard stats`, {
-            auth: req.session.authentication,
-            token: req.session.authToken,
-            error: typeof err.error !== 'undefined' ? err.error : err.toString(),
-          });
-        }
-      }
-
-      console.log('\n\nstats\n', JSON.stringify(stats, null, 2), '\n\n');
-
       let widgets = [];
       try {
-        widgets = await widgetDefinitions(app)(req, res)([], stats);
+        widgets = await buildDashboardWidgets(app)(req, res)({});
       } catch (err) {
-        app.logger.crit('Unable to fetch widget keys', {
+        app.logger.crit('Unable to fetch widget definitions', {
           auth: req.session.authentication,
           token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
-
-        console.log('\n\n', err, '\n\n');
         return res.render('_errors/generic', { err });
       }
-      // console.log('\n\widgets\n', JSON.stringify(widgets, null, 2), '\n\n');
 
       res.render('homepage/court-dashboard/dashboard.njk', {
         notifications: buildDashboardNotifications(app)(req, res)(notifcations),
@@ -73,6 +48,87 @@ const { toSentenceCase } = require('../../components/filters');
         courtName: 'Chester Crown Court',
       });
     };
+  };
+
+  const buildDashboardWidgets = (app) => (req, res) => async (requiredWidgets) => {
+    function getSectionsWithMandatoryWidgets(obj) {
+      return Object.keys(obj).filter(sectionKey => {
+        const widgets = obj[sectionKey]?.widgets;
+        if (!widgets) return false;
+        return Object.values(widgets).some(widget => widget.mandatory === true);
+      });
+    }
+
+    const requiredSections = [...new Set([
+      ...Object.keys(requiredWidgets), 
+      ...getSectionsWithMandatoryWidgets(courtWidgetDefinitions(app)(req, res)())
+    ])];
+
+    let stats = {}
+    for (const section of requiredSections) {
+      try {
+        stats[section] = await courtDashboardDAO.get(req, section, req.session.authentication.locCode);
+      } catch (err) {
+        app.logger.crit(`Unable to fetch ${section} dashboard stats`, {
+          auth: req.session.authentication,
+          token: req.session.authToken,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+
+
+      }
+    }
+
+    const widgetDefinitions = courtWidgetDefinitions(app)(req,res)(stats);
+
+    const result = {};
+    let currentRow = 0;
+    let currentRowWidth = 0;
+
+    for (const section in widgetDefinitions) {
+      const sectionData = widgetDefinitions[section];
+      const widgets = {};
+
+      // Get required widgets for this section
+      const requiredWidgetList = requiredWidgets && requiredWidgets[section] ? requiredWidgets[section] : [];
+
+      for (const [key, widgetDef] of Object.entries(sectionData.widgets)) {
+        if (!widgetDef.mandatory && !requiredWidgetList.includes(key)) {
+          continue;
+        }
+        // Set the template based on widgetType and widgetTemplates
+        let template = widgetDef.template;
+        if (!template && widgetDef.widgetType && widgetTemplates[widgetDef.widgetType]) {
+          template = widgetTemplates[widgetDef.widgetType];
+        } else if (!template && (!widgetDef.widgetType || !widgetTemplates[widgetDef.widgetType])) {
+          throw {
+            error: {
+              code: 'WIDGET_TEMPLATE_NOT_FOUND',
+              message: `No template defined for '${key}' widget in section '${section}'.`,
+            }
+          };
+        }
+        widgets[key] = { ...widgetDef, template };
+      }
+
+      const sectionColumns = Object.values(widgets).reduce((max, widget) => Math.max(max, widget.column || 1), 1);
+
+      if (currentRowWidth + sectionColumns > 3) {
+        currentRow++;
+        currentRowWidth = 0;
+      }
+
+      result[section] = {
+        ...sectionData,
+        columns: sectionColumns,
+        row: currentRow,
+        widgets,
+      };
+
+      currentRowWidth += sectionColumns;
+    }
+
+  return result;
   };
 
   const buildDashboardNotifications = (app) => (req, res) => (notifcations) => {
@@ -85,7 +141,7 @@ const { toSentenceCase } = require('../../components/filters');
             notificationHTML = `You have <b>${value}</b> <a href="#" class="govuk-link">summons replies</a> with less than a week until service start date to process.`;
             break;
           case 'pendingJurors':
-            notificationHTML = `You have <b>${value}</b> <a href="/juror-management/manage-jurors/approve"> juror${value > 1 ? 's' : ''} to approve</a>`
+            notificationHTML = `You have <b>${value}</b> <a href="${app.namedRoutes.build('juror-management.manage-jurors.approve.get')}"> juror${value > 1 ? 's' : ''} to approve</a>`
             break;
         }
         notifcationList.push(notificationHTML);

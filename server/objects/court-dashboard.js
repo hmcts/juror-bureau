@@ -8,10 +8,10 @@ const dataStore = require('../stores/court-dashboard');
   const { replaceAllObjKeys } = require('../lib/mod-utils');
   const _ = require('lodash');
 
-  module.exports.dashboardNotifications = new DAO('moj/court-dashboard/notifications', {
-    get: function(locCode) {
+  module.exports.courtDashboardDAO = new DAO('moj/court-dashboard', {
+    get: function(section, locCode) {
       return {
-        uri: urljoin(this.resource, locCode),
+        uri: urljoin(this.resource, section, locCode),
         transform: (data) => { delete data['_headers']; return replaceAllObjKeys(data, _.camelCase) },
       };
     }
