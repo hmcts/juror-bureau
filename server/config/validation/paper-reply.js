@@ -1,19 +1,18 @@
 ; (function() {
   'use strict';
 
-  var validate = require('validate.js')
-    , moment = require('moment')
-
-    , phoneRegex = /^[01247(+][0-9\s-()]{9,19}$/
-    , areaCodeRegex = /^0[127]{1}$/
-    , messageMap = {
-      primaryPhone: 'Telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
-      secondaryPhone: 'Telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
-      thirdPartyMainPhone: 'Third party telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
-      thirdPartyOtherPhone: 'Third party telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
-      emailAddress: 'Enter a valid email address',
-      thirdPartyEmailAddress: 'Enter a valid third party email address',
-    };
+  const validate = require('validate.js');
+  const moment = require('moment');
+  const phoneRegex = /^[01247(+][0-9\s-()]{9,19}$/;
+  const areaCodeRegex = /^0[127]{1}$/;
+  const messageMap = {
+    primaryPhone: 'Telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
+    secondaryPhone: 'Telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
+    thirdPartyMainPhone: 'Third party telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
+    thirdPartyOtherPhone: 'Third party telephone number cannot contain letters or special characters apart from hyphens, dashes, brackets or a plus sign.',
+    emailAddress: 'Enter a valid email address',
+    thirdPartyEmailAddress: 'Enter a valid third party email address',
+  };
 
   require('./common-email-address');
   require('./date-picker');
@@ -23,13 +22,7 @@
   module.exports.jurorName = function() {
     return {
       title: {
-        format: {
-          pattern: '^$|^[^|"]+$',
-          message: {
-            summary: 'Please check the title',
-            details: 'Please check the title',
-          },
-        },
+        nameFieldValidator: {},
         length: {
           maximum: 10,
           message: {
@@ -53,13 +46,7 @@
             details: 'Please check the first name',
           },
         },
-        format: {
-          pattern: '^$|^[^|"]+$',
-          message: {
-            summary: 'Please check the first name',
-            details: 'Please check the first name',
-          },
-        },
+        nameFieldValidator: {},
       },
       lastName: {
         presence: {
@@ -76,13 +63,7 @@
             details: 'Please check the last name',
           },
         },
-        format: {
-          pattern: '^$|^[^|"]+$',
-          message: {
-            summary: 'Please check the last name',
-            details: 'Please check the last name',
-          },
-        },
+        nameFieldValidator: {},
       },
     };
   };
@@ -395,7 +376,7 @@
   };
 
   validate.validators.phoneNumber = function(value, options, key) {
-    var message = {
+    let message = {
       summary: '',
       fields: [],
       details: [],
@@ -428,17 +409,17 @@
   };
 
   validate.validators.submitPaperDateOfBirth = function(value, options, key, attributes) {
-    var message = {
+    let message = {
         summary: '',
         fields: [],
         details: [],
         summaryLink: '',
-      }
-      , dayValididty = true
-      , monthValididty = true
-      , yearValididty = true
-      , formattedDateOfBirth
-      , today = new Date();
+      };
+    let dayValididty = true;
+    let monthValididty = true;
+    let yearValididty = true;
+    let formattedDateOfBirth;
+    let today = new Date();
 
     if (attributes.dateOfBirthDay < 1 ||
       attributes.dateOfBirthDay > 31 ||
@@ -528,6 +509,49 @@
 
     return strippedPhoneNumber;
 
+  };
+
+  validate.validators.nameFieldValidator = function(value, options, key, attributes) {
+    const messageMap = {
+      overall: {
+        firstName: 'Please check the first name',
+        lastName: 'Please check the last name',
+        title: 'Please check the title',
+      },
+      leadingSpaces: {
+        firstName: 'There is a leading space before the first name, remove before saving',
+        lastName: 'There is a leading space before the last name, remove before saving',
+        title: 'There is a leading space before the title, remove before saving',
+      },
+      trailingSpaces: {
+        firstName: 'There is a trailing space after the first name, remove before saving',
+        lastName: 'There is a trailing space after the last name, remove before saving',
+        title: 'There is a trailing space after the title, remove before saving',
+      }, 
+    };
+
+    if (!/^$|^[^|"]+$/.test(value)) {
+      return {
+        summary: messageMap.overall[key],
+        details: messageMap.overall[key],
+      };
+    }
+  
+    if (/^\s/.test(value)) {
+      return {
+        summary: messageMap.leadingSpaces[key],
+        details: messageMap.leadingSpaces[key],
+      };
+    }
+  
+    if (/\s$/.test(value)) {
+      return {
+        summary: messageMap.trailingSpaces[key],
+        details: messageMap.trailingSpaces[key],
+      };
+    }
+  
+    return null;
   };
 
 })();
