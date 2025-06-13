@@ -6,7 +6,7 @@
   const { dateDifference } = require('../../../lib/mod-utils');
 
   module.exports.widgetTemplates = {
-    attendanceDoughnuts: 'homepage/court-dashboard/widgets/attendance/attendance-doughnut.njk',
+    attendanceDoughnut: 'homepage/court-dashboard/widgets/attendance/attendance-doughnut.njk',
     standardValue: 'homepage/court-dashboard/widgets/standard-value.njk',
     largeValues: 'homepage/court-dashboard/widgets/large-values.njk',
   }
@@ -208,5 +208,5 @@
       }
     };
   };
-  
+
 })();
