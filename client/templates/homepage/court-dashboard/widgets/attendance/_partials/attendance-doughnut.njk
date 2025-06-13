@@ -83,6 +83,18 @@
       {% endif %}
     }
 
+    // Ensure that the total of doughnut wheel is at least the expected value
+    var sumValues = Object.values(statsObject).reduce((a, b) => a + b, 0);
+    var expectedValue = {{ params.values.expected }};
+    if (sumValues < expectedValue) {
+      {% if params.id == "todayStats" %}
+        statsObject.notCheckedIn = expectedValue - sumValues; // Ensure at least one value is present for the chart
+      {% elif params.id == "last7DaysStats" %}
+        statsObject.absent = expectedValue - sumValues; // Ensure at least one value is present for the chart
+      {% endif %}
+    }
+    
+
     var valueArr = Object.values(statsObject);
     var ctx = document
       .getElementById('{{params.id}}Chart')
