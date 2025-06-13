@@ -74,8 +74,6 @@
           token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
-
-
       }
     }
 
@@ -128,7 +126,7 @@
       currentRowWidth += sectionColumns;
     }
 
-  return result;
+    return result;
   };
 
   const buildDashboardNotifications = (app) => (req, res) => (notifcations) => {
