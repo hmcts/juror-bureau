@@ -2,8 +2,6 @@
 
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "custom-components/loading-spinner/macro.njk" import modLoadingSpinner %}
-
 
 {% set currentApp = "Pool management" %}
 
@@ -153,8 +151,7 @@
             type: "submit",
             attributes: {
               id: "confirmButton"
-            },
-            preventDoubleClick: true
+            }
           }) }}
 
           <a class="govuk-link" href="{{ _cancelUrl }}" id="cancelAnchor">Cancel</a>

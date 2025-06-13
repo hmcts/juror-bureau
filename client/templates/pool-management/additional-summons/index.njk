@@ -147,6 +147,6 @@
 {% block body_end %}
   {{ super() }}
 
-  <script src="{{ assetPath }}js/loading-spinner.js"></script>
+  <script nonce="{{ nonce }}" src="{{ assetPath }}js/loading-spinner.js"></script>
 
 {% endblock %}
