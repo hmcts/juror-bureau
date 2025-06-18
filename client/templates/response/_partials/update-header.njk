@@ -42,28 +42,30 @@
 
       {% if response.replyMethod === "DIGITAL" or (method === "paper" and response.processingStatus | capitalise !== "CLOSED") %}
         {% set buttonMenuItems = [] %}
-        
-        {% if method === "paper" %}
+
+        {% if response.processingStatus | capitalise !== 'CLOSED' %}
+
           {% set buttonMenuItems = buttonMenuItems.concat({
             text: "Mark as awaiting information",
             href: url('response.detail.awaiting.information.get', { id: response.jurorNumber }) + ('/paper' if method === 'paper' else null),
             classes: "govuk-button--secondary"
           }) %}
-        {% endif %}
-
-        {% if isBureauUser %}
-          {% set buttonMenuItems = buttonMenuItems.concat({
-            text: "Request juror info by post",
-            href: url('request-info.by-post.get', { id: response.jurorNumber, type: 'paper' if method === 'paper' else 'digital'}),
-            classes: "govuk-button--secondary"
-          }) %}
-          {% if assignedStaffMember === authentication.login or isManager %}
+          
+          {% if isBureauUser %}
             {% set buttonMenuItems = buttonMenuItems.concat({
-              text: "Send to a colleague...",
-              href: url('response.assign.get', { id: response.jurorNumber }) + "?reply_method=" + method,
+              text: "Request juror info by post",
+              href: url('request-info.by-post.get', { id: response.jurorNumber, type: 'paper' if method === 'paper' else 'digital'}),
               classes: "govuk-button--secondary"
             }) %}
+            {% if assignedStaffMember === authentication.login or isManager %}
+              {% set buttonMenuItems = buttonMenuItems.concat({
+                text: "Send to a colleague...",
+                href: url('response.assign.get', { id: response.jurorNumber }) + "?reply_method=" + method,
+                classes: "govuk-button--secondary"
+              }) %}
+            {% endif %}
           {% endif %}
+
         {% endif %}
 
         {% if method !== "paper" %}
