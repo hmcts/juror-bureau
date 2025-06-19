@@ -21,8 +21,9 @@
 
       const jurorName = req.session.jurorNameChangeAttendance;
 
-      if (jurorNumber !== req.session.jurorCommonDetails.jurorNumber) {
-        app.logger.crit('The juror number was tampered with: ', {
+      if ((jurorNumber !== req.session.jurorCommonDetails.jurorNumber) || 
+          (poolNumber !== req.session.jurorCommonDetails.poolNumber)) {
+        app.logger.crit('The juror number / pool number was tampered with: ', {
           auth: req.session.authentication,
           jwt: req.session.authToken,
           data: {
@@ -30,10 +31,14 @@
               url: jurorNumber,
               cached: req.session.jurorCommonDetails.jurorNumber,
             },
+            poolNumber: {
+              url: poolNumber,
+              cached: req.session.jurorCommonDetails.poolNumber,
+            },
           },
         });
 
-        return res.render('_errors/generic');
+        return res.render('_errors/data-mismatch');
       }
 
       return res.render('juror-management/juror-record/modify-attendance', {
