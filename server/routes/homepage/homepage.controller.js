@@ -1,14 +1,16 @@
 (function(){
   'use strict';
 
+  const _ = require('lodash');
   const { isCourtUser } = require('../../components/auth/user-type');
   const { courtWidgetDefinitions, widgetTemplates } = require('./dashboard/definitions');
   const { courtDashboardDAO } = require('../../objects/court-dashboard');
-
+  const { courtDetailsDAO } = require('../../objects/administration');
+  const { replaceAllObjKeys } = require('../../lib/mod-utils');
+  const { capitalizeFully } = require('../../components/filters');
 
   module.exports.homepage = function(app) {
     return async function(req, res) {
-
       if (isCourtUser(req)) {
         return res.redirect(app.namedRoutes.build('homepage.dashboard.get'));
       }
@@ -17,8 +19,22 @@
     };
   };
 
+  // Designed to not show any erros to user if the court dashboard could not be built
+  // This is to prevent the user from being locked out of the system if the dashboard fails to load
+  // Errors will be logged to the application logs for later investigation
   module.exports.dashboard = function(app) {
     return async function(req, res) {
+      let courtDetails;
+      try {
+        courtDetails = replaceAllObjKeys((await courtDetailsDAO.get(req, req.session.authentication.locCode)).response, _.camelCase);
+      } catch (err) {
+        app.logger.crit('Unable to fetch court details', {
+          auth: req.session.authentication,
+          token: req.session.authToken,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+      }
+
       let notifcations;
       try {
         notifcations = await courtDashboardDAO.get(req, 'notifications', req.session.authentication.locCode);
@@ -39,13 +55,12 @@
           token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
-        return res.render('_errors/generic', { err });
       }
 
       res.render('homepage/court-dashboard/dashboard.njk', {
-        notifications: buildDashboardNotifications(app)(req, res)(notifcations),
+        notifications: notifcations ? buildDashboardNotifications(app)(req, res)(notifcations) : [],
         widgets,
-        courtName: 'Chester Crown Court',
+        courtName: courtDetails ? `${capitalizeFully(courtDetails?.englishCourtName)} (${courtDetails?.courtCode})` : 'Court Dashboard',
       });
     };
   };
@@ -74,6 +89,7 @@
           token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
+        stats[section] = {};
       }
     }
 
@@ -96,17 +112,27 @@
         }
         // Set the template based on widgetType and widgetTemplates
         let template = widgetDef.template;
-        if (!template && widgetDef.widgetType && widgetTemplates[widgetDef.widgetType]) {
-          template = widgetTemplates[widgetDef.widgetType];
-        } else if (!template && (!widgetDef.widgetType || !widgetTemplates[widgetDef.widgetType])) {
-          throw {
-            error: {
-              code: 'WIDGET_TEMPLATE_NOT_FOUND',
-              message: `No template defined for '${key}' widget in section '${section}'.`,
-            }
-          };
+
+        try {
+          if (!template && widgetDef.widgetType && widgetTemplates[widgetDef.widgetType]) {
+            template = widgetTemplates[widgetDef.widgetType];
+          } else if (!template && (!widgetDef.widgetType || !widgetTemplates[widgetDef.widgetType])) {
+            throw {
+              error: {
+                code: 'WIDGET_TEMPLATE_NOT_FOUND',
+                message: `No template defined for '${key}' widget in section '${section}'.`,
+              }
+            };
+          }
+          widgets[key] = { ...widgetDef, template };
+        } catch (err) {
+          app.logger.crit(`Error building widget '${key}' in section '${section}'`, {
+            auth: req.session.authentication,
+            token: req.session.authToken,
+            error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+          });
+          delete widgets[key];
         }
-        widgets[key] = { ...widgetDef, template };
       }
 
       const sectionColumns = Object.values(widgets).reduce((max, widget) => Math.max(max, widget.column || 1), 1);

@@ -2,15 +2,21 @@
   <div class="govuk-grid-column-full">
     <div class="mod-dashboard__large-values">
       {% for data in widget.values %}
+
+        {% set value = "-" %}        
+        {% if data.value %}
+          {% set value = data.value %}
+        {% endif %}
+
         <div class="mod-dashboard__large-values__value {{ data.classes }}" aria-label="{{ data.ariaLabel }}">
           {% if data.suffix %}
-            <span class="mod-dashboard__large-values__value--inline" aria-label="{{ data.value }} {{ data.suffix }}">
-              <span class="govuk-!-font-size-80 govuk-!-font-weight-bold">{{ data.value }}</span>
-              <span class="govuk-heading-m govuk-!-margin-bottom-1"> {{ data.suffix }}</span>
+            <span class="mod-dashboard__large-values__value--inline" aria-label="{{ value if value != '-' else 'No data available' }} {{ data.suffix if value != '-' else '' }}">
+              <span class="govuk-!-font-size-80 govuk-!-font-weight-bold">{{ value }}</span>
+              <span class="govuk-heading-m govuk-!-margin-bottom-1"> {{ data.suffix if value != '-' else '' }}</span>
             </span>
           {% else %}
-            <span class="govuk-!-font-size-80 govuk-!-font-weight-bold" aria-label="{{ data.value }}">
-              {{ data.value }}
+            <span class="govuk-!-font-size-80 govuk-!-font-weight-bold" aria-label="{{ value if value != '-' else 'No data available' }}">
+              {{ value }}
             </span>
           {% endif %}
           <span class="label">
