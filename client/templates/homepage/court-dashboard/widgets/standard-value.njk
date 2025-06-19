@@ -10,10 +10,16 @@
   </div>
 {% endif %}
 {% for data in widget.values %}
+
+  {% set value = "-" %}
+  {% if data.value is not none %}
+    {% set value = data.value %}
+  {% endif %}
+
   <div class="govuk-grid-row govuk-!-margin-top-4" aria-label="{{ data.heading | default('Value') }} row">
     <div class="govuk-grid-column-full">
       <{{ dataHeadingType }} class="govuk-heading-s govuk-!-margin-bottom-1" aria-label="{{ data.heading }}">{{ data.heading }}</{{ dataHeadingType }}>
-      <p class="govuk-body govuk-!-margin-bottom-1" aria-label="{{ data.value if data.value !== null else 'No data available' }}">{{ data.value if data.value !== null else "No data available" }}</p>
+      <p class="govuk-body govuk-!-margin-bottom-1" aria-label="{{ value if value != '-' else 'No data available' }}">{{ value }}</p>
       {% if data.badge and data.badge.showBadge %}
         {{ mojBadge({
           text: data.badge.text,
