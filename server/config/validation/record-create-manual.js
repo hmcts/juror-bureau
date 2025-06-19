@@ -60,10 +60,10 @@
           },
         },
         length: {
-          maximum: 20,
+          maximum: 25,
           message: {
-            summary: 'Last name cannot contain more than 20 characters',
-            details: 'Last name cannot contain more than 20 characters',
+            summary: 'Last name cannot contain more than 25 characters',
+            details: 'Last name cannot contain more than 25 characters',
           },
         },
       },
