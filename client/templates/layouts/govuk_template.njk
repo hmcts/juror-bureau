@@ -67,12 +67,12 @@
 
     {# header #}
     {# adjusted from mojHeader component #}
-    <header class="moj-header" role="banner">
+    <header class="moj-header mod-header--blue" role="banner">
 
       <div class="moj-header__container">
 
         <div class="moj-header__logo">
-          <a class="moj-header__link" {% if not isSystemAdministrator %} href="{{ url('homepage.get') }}" {% endif %}>
+          <a class="moj-header__link" href="{{ url('homepage.get') if not isSystemAdministrator else '' }}">
             <span class="moj-header__link--organisation-name">HMCTS</span>
             <span class="moj-header__link--service-name">Juror</span>
           </a>
