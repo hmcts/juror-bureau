@@ -72,7 +72,9 @@
           {% set buttonMenuItems = buttonMenuItems.concat({
             text: "Download as a PDF",
             href: url('response.detail.download-pdf.get', { id: response.jurorNumber }),
-            target: "_blank",
+            attributes: {
+              target: "_blank"
+            },
             classes: "govuk-button--secondary"
           }) %}
         {% endif %}
