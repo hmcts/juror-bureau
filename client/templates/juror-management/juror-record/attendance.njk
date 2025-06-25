@@ -3,7 +3,7 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
-{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 
 {% block page_title %}{{ serviceName }} - Juror record - Attendance{% endblock %}
 {% block page_identifier %}Juror record - Attendance{% endblock %}
@@ -14,8 +14,8 @@
   {% include "includes/back-link.njk" %}
 
   {% if failedToAttend %}
-    {{ mojBanner({
-      type: "success",
+    {{ mojAlert({
+      variant: "success",
       html: "Juror record updated: <b>"
         + ("Failed to attend" if failedToAttend.status === "failed-to-attend" else "Responded")
         + "</b>",
@@ -24,8 +24,8 @@
   {% endif %}
 
   {% if successBanner %}
-    {{ mojBanner({
-      type: "success",
+    {{ mojAlert({
+      variant: "success",
       html: successBanner,
       iconFallbackText: "Success"
     }) }}

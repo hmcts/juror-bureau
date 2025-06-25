@@ -1,7 +1,7 @@
 {% extends "layouts/default.njk" %}
 
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
-{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 
 {% block page_title %}{{ serviceName }} - Juror record - Overview{% endblock %}
 {% block page_identifier %}Juror record - Overview{% endblock %}
@@ -17,8 +17,8 @@
 
   {% if availableMessage %}
     {% if bannerMessage.isWarning === true %}
-      {{ mojBanner({
-        type: "warning",
+      {{ mojAlert({
+        variant: "warning",
         html: bannerMessage.text,
         iconFallbackText: "Warning"
       }) }}
@@ -33,8 +33,8 @@
         {% endset %}
       {% endif %}
 
-      {{ mojBanner({
-        type: "success",
+      {{ mojAlert({
+        variant: "success",
         html: bannerHtmlMessage,
         iconFallbackText: "Success"
       }) }}

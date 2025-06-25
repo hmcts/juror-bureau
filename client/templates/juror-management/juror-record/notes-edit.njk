@@ -2,7 +2,7 @@
 
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
-{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 
 {% block page_title %}{{ serviceName }} - Juror record - Edit notes{% endblock %}
 {% block page_identifier %}Juror record - Edit notes{% endblock %}
@@ -13,8 +13,8 @@
   {% include "includes/back-link.njk" %}
 
   {% if errorMessage %}
-    {{ mojBanner({
-      type: 'warning',
+    {{ mojAlert({
+      variant: 'warning',
       text: errorMessage,
       iconFallbackText: 'Warning'
     }) }}

@@ -1,6 +1,6 @@
 {% extends "./layouts/default.njk" %}
 
-{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 {% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
 {% from "moj/components/badge/macro.njk" import mojBadge %}
 {% from "./includes/reply-type-tag-macro.njk" import replyTypeTag %}
@@ -22,8 +22,8 @@
         <b>{{ responseWasActioned.type }}</b>
       {% endset %}
 
-      {{ mojBanner({
-        type: "success",
+      {{ mojAlert({
+        variant: "success",
         html: bannerHtmlMessage,
         iconFallbackText: "Success"
       }) }}
