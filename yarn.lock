@@ -389,6 +389,34 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hods/loading-spinner@npm:^0.5.1":
+  version: 0.5.1
+  resolution: "@hods/loading-spinner@npm:0.5.1"
+  dependencies:
+    "@hods/sass-base": ^0.5.1
+    "@not-govuk/component-helpers": ^0.15.2
+  peerDependencies:
+    "@not-govuk/docs-components": ^0.15.2
+    "@storybook/addon-docs": ^6.5.16
+    react: ^18.0.0
+  peerDependenciesMeta:
+    "@not-govuk/docs-components":
+      optional: true
+    "@storybook/addon-docs":
+      optional: true
+  checksum: c12bb2f7960a3775f7f4c67a9819ef062226d4b3d928645e23b6e6ec758ebb27a69f518d823230e4193cbe414711f497cb0976ab78ac5e3c0c0942c5e726365a
+  languageName: node
+  linkType: hard
+
+"@hods/sass-base@npm:^0.5.1":
+  version: 0.5.1
+  resolution: "@hods/sass-base@npm:0.5.1"
+  dependencies:
+    "@not-govuk/sass-base": ^0.15.2
+  checksum: 8ef0941014b45d4dae930702006c40e475247326b8866bb936885572a1693f92a92b7ee7c288f148a6acc835fc6aa543ec9ea97a7e28b3da10ffc890b509c3ff
+  languageName: node
+  linkType: hard
+
 "@humanwhocodes/module-importer@npm:^1.0.1":
   version: 1.0.1
   resolution: "@humanwhocodes/module-importer@npm:1.0.1"
@@ -505,6 +533,22 @@ __metadata:
     "@nodelib/fs.scandir": 2.1.5
     fastq: ^1.6.0
   checksum: 190c643f156d8f8f277bf2a6078af1ffde1fd43f498f187c2db24d35b4b4b5785c02c7dc52e356497b9a1b65b13edc996de08de0b961c32844364da02986dc53
+  languageName: node
+  linkType: hard
+
+"@not-govuk/component-helpers@npm:^0.15.2":
+  version: 0.15.14
+  resolution: "@not-govuk/component-helpers@npm:0.15.14"
+  checksum: a8c2e67a35b1a27246402a916f9d3b596d39b8fe449ed7600d4f915eb824f9520a1d4dfe44ff2a679dcbe3f417e0c87d516e8987329c013863cc758358f8b2f8
+  languageName: node
+  linkType: hard
+
+"@not-govuk/sass-base@npm:^0.15.2":
+  version: 0.15.14
+  resolution: "@not-govuk/sass-base@npm:0.15.14"
+  dependencies:
+    govuk-frontend: 5.9.0
+  checksum: dae43c3af82d9983c0bd73a589a53e977eae9ffe7e0cf6b3c8ce4079ebbe8cb0d24eb670e66bb66bb94a837cb33cf1c8b25df87a4b3acca07b39712f636332eb
   languageName: node
   linkType: hard
 
@@ -2756,14 +2800,14 @@ __metadata:
   linkType: hard
 
 "fdir@npm:^6.4.4":
-  version: 6.4.4
-  resolution: "fdir@npm:6.4.4"
+  version: 6.4.5
+  resolution: "fdir@npm:6.4.5"
   peerDependencies:
     picomatch: ^3 || ^4
   peerDependenciesMeta:
     picomatch:
       optional: true
-  checksum: 79043610236579ffbd0647c508b43bd030a2d034a17c43cf96813a00e8e92e51acdb115c6ddecef3b5812cc2692b976155b4f6413e51e3761f1e772fa019a321
+  checksum: 14efd2d6617a6f9fb314916ccff64e00bdb96216f26542ec9dfa532ed60a7ebb45463f7009aa215c14071566bf43caeb8ba268ccb52a11e6b51e4aaa8cb58d81
   languageName: node
   linkType: hard
 
@@ -3084,6 +3128,13 @@ __metadata:
   version: 1.2.0
   resolution: "gopd@npm:1.2.0"
   checksum: cc6d8e655e360955bdccaca51a12a474268f95bb793fc3e1f2bdadb075f28bfd1fd988dab872daf77a61d78cbaf13744bc8727a17cfb1d150d76047d805375f3
+  languageName: node
+  linkType: hard
+
+"govuk-frontend@npm:5.9.0":
+  version: 5.9.0
+  resolution: "govuk-frontend@npm:5.9.0"
+  checksum: cfff85041038bd2161b6e718589239205ac020e6bc867dbf77ccbc7615b4af3c64ad6eb883f9c2f2f12bf4808c3f7bbccdc7c5d3210adc1b428863fab1cdbc08
   languageName: node
   linkType: hard
 
@@ -3760,6 +3811,7 @@ __metadata:
     "@azure/identity": ^4.2.1
     "@fengyuanchen/datepicker": ^0.6.4
     "@hmcts/properties-volume": 1.1.0
+    "@hods/loading-spinner": ^0.5.1
     "@ministryofjustice/frontend": ^5.1.3
     "@scottish-government/pattern-library": 0.0.381
     accessible-autocomplete: ^3.0.0
@@ -5838,12 +5890,12 @@ __metadata:
   linkType: hard
 
 "tinyglobby@npm:^0.2.12":
-  version: 0.2.13
-  resolution: "tinyglobby@npm:0.2.13"
+  version: 0.2.14
+  resolution: "tinyglobby@npm:0.2.14"
   dependencies:
     fdir: ^6.4.4
     picomatch: ^4.0.2
-  checksum: 3a2e87a2518cb3616057b0aa58be4f17771ae78c6890556516ae1e631f8ce4cfee1ba1dcb62fcc54a64e2bdd6c3104f4f3d021e1a3e3f8fb0875bca380b913e5
+  checksum: 261e986e3f2062dec3a582303bad2ce31b4634b9348648b46828c000d464b012cf474e38f503312367d4117c3f2f18611992738fca684040758bba44c24de522
   languageName: node
   linkType: hard
 

@@ -22,6 +22,7 @@ const clientJs = [
   'multiple-tabs.js',
   'print-sortable.js',
   'summoning-progress.js',
+  'loading-spinner.js',
 ];
 
 const copyClientCode = new CopyWebpackPlugin({
