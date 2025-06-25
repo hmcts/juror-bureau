@@ -162,10 +162,16 @@
       if (value > 0) {
         switch (notificationType) {
           case 'openSummonsReplies':
-            notificationHTML = `You have <b>${value}</b> <a href="#" class="govuk-link">summons replies</a> with less than a week until service start date to process.`;
+            // TODO: Add link to open summons replies once Chris completed the FE page
+            notificationHTML = `You have <b>${value}</b>
+              <a class="govuk-link govuk-link--no-visited-state" href="#">summons replies</a> 
+              with less than a week until service start date to process.
+            `;
             break;
           case 'pendingJurors':
-            notificationHTML = `You have <b>${value}</b> <a href="${app.namedRoutes.build('juror-management.manage-jurors.approve.get')}"> juror${value > 1 ? 's' : ''} to approve</a>`
+            notificationHTML = `You have <b>${value}</b> 
+              <a class="govuk-link govuk-link--no-visited-state" href="${app.namedRoutes.build('juror-management.manage-jurors.approve.get')}"> juror${value > 1 ? 's' : ''} to approve</a>
+            `;
             break;
         }
         notifcationList.push(notificationHTML);
