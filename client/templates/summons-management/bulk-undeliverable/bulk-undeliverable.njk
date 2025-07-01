@@ -1,7 +1,7 @@
 {% extends "layouts/default.njk" %}
 
 {% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 {% from "includes/csrf.njk" import csrfProtection %}
 
 {% block page_title %}{{ serviceName }} - Summons Management - Bulk Undeliverable{% endblock %}
@@ -13,8 +13,8 @@
 
   {% if bannerMessage %}
     <div class="govuk-!-margin-top-5">
-      {{ mojBanner({
-        type: "success",
+      {{ mojAlert({
+        variant: "success",
         text: bannerMessage,
         iconFallbackText: "Success"
       }) }}

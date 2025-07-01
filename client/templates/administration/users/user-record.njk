@@ -5,7 +5,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
-{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 
 
 {% block page_title %}{{ serviceName }} - Administration - User record{% endblock %}
@@ -27,8 +27,8 @@
 {% block content %}
 
   {% if successBanner %}
-    {{ mojBanner({
-      type: "success",
+    {{ mojAlert({
+      variant: "success",
       html: successBanner,
       iconFallbackText: "Success"
     }) }}

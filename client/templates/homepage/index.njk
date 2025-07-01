@@ -1,6 +1,6 @@
 {% extends "layouts/default.njk" %}
 
-{% from "moj/components/banner/macro.njk" import mojBanner %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 {% from "custom-components/mod-search/macro.njk" import modSearch %}
 
 {% set currentPage = "homepage" %}
@@ -14,8 +14,8 @@
     <h2 class="govuk-heading-m">Notifications</h2>
 
     {% for notification in notifications %}
-      {{ mojBanner({
-        type: "information",
+      {{ mojAlert({
+        varitant: "information",
         html: notification
       }) }}
     {% endfor %}
