@@ -32,6 +32,7 @@
         },
       },
       firstName: {
+        nameFieldValidator: {},
         presence: {
           allowEmpty: false,
           message: {
@@ -46,9 +47,9 @@
             details: 'Please check the first name',
           },
         },
-        nameFieldValidator: {},
       },
       lastName: {
+        nameFieldValidator: {},
         presence: {
           allowEmpty: false,
           message: {
@@ -63,7 +64,6 @@
             details: 'Please check the last name',
           },
         },
-        nameFieldValidator: {},
       },
     };
   };
