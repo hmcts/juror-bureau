@@ -1035,6 +1035,12 @@
       const { jurorNumber } = req.params;
       const { action } = req.query;
 
+      if (action === 'fix') {
+        req.session[`editJurorDetails-${jurorNumber}`].commonDetails.title = req.body.title;
+        req.session[`editJurorDetails-${jurorNumber}`].commonDetails.firstName = req.body.firstName;
+        req.session[`editJurorDetails-${jurorNumber}`].commonDetails.lastName = req.body.lastName;
+      }
+
       const validator = require('../../../config/validation/paper-reply').jurorName
         , validatorResult = validate(req.body, validator());
 

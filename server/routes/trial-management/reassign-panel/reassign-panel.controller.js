@@ -313,7 +313,7 @@
 
         const standardErrorMessage = `Failed to reassign ${selectedJurors.length} panel member${selectedJurors.length ? 's' : ''} to trial ${newTrialNumber}`;
 
-        if (err.error.statusCode = 422) {
+        if (err.statusCode === 422) {
           switch (err.error.code) {
             case 'CANNOT_RE_ADD_JUROR_TO_PANEL':
               req.session.errors = modUtils.makeManualError(

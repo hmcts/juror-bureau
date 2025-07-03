@@ -895,7 +895,7 @@
           app.logger.crit('Failed to fix current name: ', {
             auth: req.session.authentication,
             jwt: req.session.authToken,
-            data: req.session.editJurorDetails.fixedName,
+            data: req.session.paperResponseDetails.fixedName,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
