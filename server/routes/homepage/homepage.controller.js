@@ -1,55 +1,184 @@
 (function(){
   'use strict';
 
-  const jurorsForApproval = require('../../objects/approve-jurors').jurorList;
-  const { isSJOUser } = require('../../components/auth/user-type');
-
+  const _ = require('lodash');
+  const { isCourtUser } = require('../../components/auth/user-type');
+  const { courtWidgetDefinitions, widgetTemplates } = require('./dashboard/definitions');
+  const { courtDashboardDAO } = require('../../objects/court-dashboard');
+  const { courtDetailsDAO } = require('../../objects/administration');
+  const { replaceAllObjKeys } = require('../../lib/mod-utils');
+  const { capitalizeFully } = require('../../components/filters');
 
   module.exports.homepage = function(app) {
     return async function(req, res) {
+      if (isCourtUser(req)) {
+        return res.redirect(app.namedRoutes.build('homepage.dashboard.get'));
+      }
 
-      res.render('homepage/index.njk', {
-        notifications: await getNotificationsHTML(app, req, res),
+      return res.render('homepage/index.njk');
+    };
+  };
+
+  // Designed to not show any erros to user if the court dashboard could not be built
+  // This is to prevent the user from being locked out of the system if the dashboard fails to load
+  // Errors will be logged to the application logs for later investigation
+  module.exports.dashboard = function(app) {
+    return async function(req, res) {
+      let courtDetails;
+      try {
+        courtDetails = replaceAllObjKeys((await courtDetailsDAO.get(req, req.session.authentication.locCode)).response, _.camelCase);
+      } catch (err) {
+        app.logger.crit('Unable to fetch court details', {
+          auth: req.session.authentication,
+          token: req.session.authToken,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+      }
+
+      let notifcations;
+      try {
+        notifcations = await courtDashboardDAO.get(req, 'notifications', req.session.authentication.locCode);
+      } catch (err) {
+        app.logger.crit('Unable to fetch notifications', {
+          auth: req.session.authentication,
+          token: req.session.authToken,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+      }
+
+      let widgets = [];
+      try {
+        widgets = await buildDashboardWidgets(app)(req, res)({});
+      } catch (err) {
+        app.logger.crit('Unable to fetch widget definitions', {
+          auth: req.session.authentication,
+          token: req.session.authToken,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+      }
+
+      res.render('homepage/court-dashboard/dashboard.njk', {
+        notifications: notifcations ? buildDashboardNotifications(app)(req, res)(notifcations) : [],
+        widgets,
+        courtName: courtDetails ? `${capitalizeFully(courtDetails?.englishCourtName)} (${courtDetails?.courtCode})` : 'Court Dashboard',
       });
     };
   };
 
-  // Maybe could be replaced with dedicated notifcations api endpoint - to discuss with BE
-  async function getNotificationsHTML(app, req, res) {
-    let notifications = [];
+  const buildDashboardWidgets = (app) => (req, res) => async (requiredWidgets) => {
+    function getSectionsWithMandatoryWidgets(obj) {
+      return Object.keys(obj).filter(sectionKey => {
+        const widgets = obj[sectionKey]?.widgets;
+        if (!widgets) return false;
+        return Object.values(widgets).some(widget => widget.mandatory === true);
+      });
+    }
 
-    if (isSJOUser(req)) {
+    const requiredSections = [...new Set([
+      ...Object.keys(requiredWidgets), 
+      ...getSectionsWithMandatoryWidgets(courtWidgetDefinitions(app)(req, res)())
+    ])];
+
+    let stats = {}
+    for (const section of requiredSections) {
       try {
-        const approvals = await jurorsForApproval.get(
-          req,
-          req.session.authentication.locCode,
-          'QUEUED'
-        );
-
-        const noApprovals = approvals.pending_jurors_response_data.length;
-
-        if (noApprovals !== 0) {
-          req.session.jurorApprovalCount = noApprovals;
-          notifications.push(
-            '<p class="govuk-body">You have ' +
-            noApprovals +
-            ' <a href="/juror-management/manage-jurors/approve">' +
-            ` juror${noApprovals > 1 ? 's' : ''}` +
-            ' to approve</a></p>');
-        }
+        stats[section] = await courtDashboardDAO.get(req, section, req.session.authentication.locCode);
       } catch (err) {
-        app.logger.crit('Unable to fetch pending juror list', {
+        app.logger.crit(`Unable to fetch ${section} dashboard stats`, {
           auth: req.session.authentication,
           token: req.session.authToken,
-          data: {
-            locationCode: req.session.authentication.owner,
-            status: 'QUEUED',
-          },
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
+        stats[section] = {};
       }
     }
-    return notifications;
-  }
+
+    const widgetDefinitions = courtWidgetDefinitions(app)(req,res)(stats);
+
+    const result = {};
+    let currentRow = 0;
+    let currentRowWidth = 0;
+
+    for (const section in widgetDefinitions) {
+      const sectionData = widgetDefinitions[section];
+      const widgets = {};
+
+      // Get required widgets for this section
+      const requiredWidgetList = requiredWidgets && requiredWidgets[section] ? requiredWidgets[section] : [];
+
+      for (const [key, widgetDef] of Object.entries(sectionData.widgets)) {
+        if (!widgetDef.mandatory && !requiredWidgetList.includes(key)) {
+          continue;
+        }
+        // Set the template based on widgetType and widgetTemplates
+        let template = widgetDef.template;
+
+        try {
+          if (!template && widgetDef.widgetType && widgetTemplates[widgetDef.widgetType]) {
+            template = widgetTemplates[widgetDef.widgetType];
+          } else if (!template && (!widgetDef.widgetType || !widgetTemplates[widgetDef.widgetType])) {
+            throw {
+              error: {
+                code: 'WIDGET_TEMPLATE_NOT_FOUND',
+                message: `No template defined for '${key}' widget in section '${section}'.`,
+              }
+            };
+          }
+          widgets[key] = { ...widgetDef, template };
+        } catch (err) {
+          app.logger.crit(`Error building widget '${key}' in section '${section}'`, {
+            auth: req.session.authentication,
+            token: req.session.authToken,
+            error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+          });
+          delete widgets[key];
+        }
+      }
+
+      const sectionColumns = Object.values(widgets).reduce((max, widget) => Math.max(max, widget.column || 1), 1);
+
+      if (currentRowWidth + sectionColumns > 3) {
+        currentRow++;
+        currentRowWidth = 0;
+      }
+
+      result[section] = {
+        ...sectionData,
+        columns: sectionColumns,
+        row: currentRow,
+        widgets,
+      };
+
+      currentRowWidth += sectionColumns;
+    }
+
+    return result;
+  };
+
+  const buildDashboardNotifications = (app) => (req, res) => (notifcations) => {
+    const notifcationList = [];
+    for (const [notificationType, value] of Object.entries(notifcations)) {
+      let notificationHTML;
+      if (value > 0) {
+        switch (notificationType) {
+          case 'openSummonsReplies':
+            // TODO: Add link to open summons replies once Chris completed the FE page
+            notificationHTML = `You have <b>${value}</b>
+              <a class="govuk-link govuk-link--no-visited-state" href="#">summons replies</a> 
+              with less than a week until service start date to process.
+            `;
+            break;
+          case 'pendingJurors':
+            notificationHTML = `You have <b>${value}</b> 
+              <a class="govuk-link govuk-link--no-visited-state" href="${app.namedRoutes.build('juror-management.manage-jurors.approve.get')}"> juror${value > 1 ? 's' : ''} to approve</a>
+            `;
+            break;
+        }
+        notifcationList.push(notificationHTML);
+      }
+    }
+
+    return notifcationList;
+  };
 
 })();
