@@ -127,7 +127,7 @@
         }
       }
 
-      if (date && date.length === 3) {
+      if (Array.isArray(date) && date.length >= 3) {
         date[1] = date[1] - 1;
       }
 
@@ -650,6 +650,10 @@
       }
   
       return result;
+    },
+    
+    largestNumber: function(arr) {
+      return Math.max.apply(null, arr);
     }
   
   };

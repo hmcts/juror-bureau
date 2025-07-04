@@ -6,6 +6,8 @@
 
   module.exports = function(app) {
     app.get('/homepage', 'homepage.get', auth.verify, controller.homepage(app));
+
+    app.get('/homepage/dashboard', 'homepage.dashboard.get', auth.verify, controller.dashboard(app));
   };
 
 })();

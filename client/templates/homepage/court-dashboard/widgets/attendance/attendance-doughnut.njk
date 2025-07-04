@@ -1,0 +1,22 @@
+{% from "./_partials/attendance-doughnut.njk" import attendanceDoughnut %}
+
+<div id="widget_{{ widgetId }}" class="govuk-grid-row" aria-label="{{ widget.templateOptions.title | default('Attendance Doughnut') }} widget">
+  <div class="govuk-grid-column-full">
+    <h3 class="govuk-heading-s mod-dashboard__subtitle" aria-label="{{ widget.templateOptions.title }}">{{ widget.templateOptions.title }}</h3>
+    {% if widget.data is defined and widget.data | length %}
+      <div class="mod-dashboard__chart" aria-label="Attendance doughnut chart for {{ widget.templateOptions.title }}">
+        <div class="doughnut-values">
+          <div class="doughnut-values__chart">
+            {{ attendanceDoughnut({
+              id: widget.templateOptions.doughnutId,
+              values: widget.data,
+              nonce: nonce
+            }) }}
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <p class="govuk-body" aria-label="No data available">-</p>
+    {% endif %}
+  </div>
+</div>
