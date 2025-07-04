@@ -11,7 +11,7 @@
 {% block page_title %}{{ serviceName }} - Pool overview - Summon additional jurors{% endblock %}
 {% block page_identifier %}Pool overview - Summon additional jurors{% endblock %}
 
-{% block content%}
+{% block content %}
 
   {% include "includes/errors.njk" %}
 
@@ -28,7 +28,7 @@
         {% set postcodesError = { text: errors.items["postcodes"][0].details } %}
       {% endif %}
 
-      <form method="post" action="{{ submitUrl }}">
+      <form method="post" action="{{ submitUrl }}" loading-spinner-message="Summoning additional citizens, please wait...">
 
         <span class="govuk-caption-l">Pool {{ poolDetails.poolDetails.poolNumber }}</span>
         <h1 class="govuk-heading-l">Summon more citizens</h1>
@@ -142,4 +142,11 @@
 
     </div>
   </div>
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script nonce="{{ nonce }}" src="{{ assetPath }}js/loading-spinner.js"></script>
+
 {% endblock %}
