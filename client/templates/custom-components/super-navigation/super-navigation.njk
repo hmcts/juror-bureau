@@ -19,11 +19,9 @@
             <li>
               <a href="{{ url('pool-management.get') }}" class="govuk-link govuk-!-font-weight-bold">Pool management</a>
             </li>
-            {% if isBureauUser %}
               <li>
                 <a href="{{ url('inbox.todo.get') }}" class="govuk-link govuk-!-font-weight-bold">Summons management</a>
               </li>
-            {% endif %}
             {% if isCourtUser %}
               <li>
                 <a href="{{ url('juror-management.manage-jurors.approve.get') if isSJO else url('juror-management.manage-jurors.pools.get') }}" class="govuk-link govuk-!-font-weight-bold">Juror management</a>
