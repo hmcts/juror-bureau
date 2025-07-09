@@ -56,6 +56,6 @@ resource "azurerm_monitor_diagnostic_setting" "cache-ds" {
 }
 
 module "log_analytics_workspace" {
-  source      = "git::https://github.com/hmcts/terraform-module-log-analytics-workspace-id.git?ref=master"
+  source      = "git@github.com:hmcts/terraform-module-log-analytics-workspace-id.git?ref=master"
   environment = var.env
 }
