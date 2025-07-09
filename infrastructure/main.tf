@@ -36,7 +36,7 @@ resource "azurerm_key_vault_secret" "redis_connection_string" {
 
 data "azurerm_redis_cache" "juror" {
   name                = local.cacheName
-  resource_group_name = local.resourceName
+  resource_group_name = "${local.cacheName}-cache-stg"
 }
 
 resource "azurerm_monitor_diagnostic_setting" "cache-ds" {
