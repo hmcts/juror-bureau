@@ -19,7 +19,7 @@
     };
   };
 
-  // Designed to not show any erros to user if the court dashboard could not be built
+  // Designed to not show any errors to user if the court dashboard could not be built
   // This is to prevent the user from being locked out of the system if the dashboard fails to load
   // Errors will be logged to the application logs for later investigation
   module.exports.dashboard = function(app) {
@@ -162,9 +162,8 @@
       if (value > 0) {
         switch (notificationType) {
           case 'openSummonsReplies':
-            // TODO: Add link to open summons replies once Chris completed the FE page
             notificationHTML = `You have <b>${value}</b>
-              <a class="govuk-link govuk-link--no-visited-state" href="#">summons replies</a> 
+              <a class="govuk-link govuk-link--no-visited-state" href="${app.namedRoutes.build('inbox.todo.get')}">summons replies</a> 
               with less than a week until service start date to process.
             `;
             break;
