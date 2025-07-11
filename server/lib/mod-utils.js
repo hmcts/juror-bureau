@@ -780,9 +780,9 @@
   };
 
   module.exports.jurorDigitalPath = {
-    inbox: true,
-    pending: true,
-    completed: true,
+    inbox: false,
+    pending: false,
+    completed: false,
     search: true,
     'new-replies': true,
     staff: true,

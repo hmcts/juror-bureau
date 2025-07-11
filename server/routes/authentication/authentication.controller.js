@@ -4,6 +4,7 @@ const secretsConfig = require('config');
 const jwt = require('jsonwebtoken');
 const { axiosClient } = require('../../objects/axios-instance');
 const { makeManualError } = require('../../lib/mod-utils');
+const { isSuperUser } = require('../../components/auth/user-type');
 
 // this is dev only...
 module.exports.postDevEmailAuth = function(app) {
@@ -171,6 +172,13 @@ function doLogin(req) {
       auth: req.session.authentication,
       data: { body, locCode },
     });
+
+    if (isSuperUser(req)) {
+      app.logger.info('Logged in as super user', {
+        auth: req.session.authentication,
+        token: req.session.authToken,
+      });
+    }
   };
 };
 

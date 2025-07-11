@@ -1,8 +1,9 @@
 ;(function(){
   'use strict';
 
-  var responsesObj = require('../../objects/responses').object
-    , utils = require('../../lib/utils');
+  const responsesObj = require('../../objects/responses').object;
+  const utils = require('../../lib/utils');
+  const isCourtUser = require('../../components/auth/user-type').isCourtUser;
 
   module.exports.index = function(app) {
     return function(req, res) {
@@ -35,8 +36,13 @@
           return res.render('index.njk');
         };
 
+      let courtLocCode;
+
+      if (isCourtUser(req)){
+        courtLocCode = req.session.authentication.locCode;
+      }
       responsesObj
-        .query(req, 'completed')
+        .query(req, 'completed', courtLocCode)
         .then(successCB)
         .catch(errorCB);
     };

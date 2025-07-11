@@ -166,6 +166,24 @@
     return false;
   };
 
+  function isSuperUser(req, res, next) {
+    if (
+      req.session.hasOwnProperty('authentication') === true &&
+      req.session.authentication.hasOwnProperty('permissions') === true &&
+      req.session.authentication.permissions.includes('SUPER_USER')
+    ) {
+      if (typeof next !== 'undefined') {
+        return next();
+      }
+      return true;
+    }
+    if (typeof next !== 'undefined') {
+      return errors(req, res, 403);
+    }
+    return false;
+  }
+  
+
   module.exports.isBureauUser = isBureauUser;
   module.exports.isCourtUser = isCourtUser;
   module.exports.isSJOUser = isSJOUser;
@@ -175,5 +193,6 @@
   module.exports.isCourtManager = isCourtManager;
   module.exports.isSystemAdministrator = isSystemAdministrator;
   module.exports.canCreateBureauJuror = canCreateBureauJuror;
+  module.exports.isSuperUser = isSuperUser;
 
 })();

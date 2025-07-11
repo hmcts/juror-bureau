@@ -1,0 +1,61 @@
+{% extends "layouts/default.njk" %}
+
+
+{% set currentPage = "homepage" %}
+
+{% block page_title %}Juror homepage{% endblock %}
+{% block page_identifier %}Homepage{% endblock %}
+
+{% block content %}
+
+  <div id="court-dashboard-home" class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      {% include "./widgets/notifications.njk" %}
+
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible govuk-!-margin-bottom-0">
+
+      {% set dashboardSectionWidths = {
+          "1": "govuk-grid-column-one-third",
+          "2": "govuk-grid-column-two-thirds",
+          "3": "govuk-grid-column-full"
+        }
+      %}
+
+      {% set widgetWidths = {
+          "1": "govuk-grid-column-full",
+          "2": "govuk-grid-column-one-half",
+          "3": "govuk-grid-column-one-third"
+        }
+      %}
+
+      <div class="govuk-grid-row">
+        {% for section, item in widgets %}
+          <div id="dashboard-section--{{ section }}" class="{{ dashboardSectionWidths[item.columns] }} govuk-!-margin-top-5">
+            <div class="mod-dashboard__title">
+              <h2 class="govuk-heading-m">{{ item.title }}</h2>
+            </div>
+            <div class="govuk-grid-row">
+
+              {% for column in range(0, item.columns) %}
+                <div class="{{ widgetWidths[item.columns] }}">
+                  {% for widgetId, widget in item.widgets %}
+                    {% if widget.column == column + 1 or (item.columns == 1 and not widget.column) %}
+                      {% include widget.template %}
+                      {% if widget.lineBreak %}
+                        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+                      {% endif %}
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              {% endfor %}
+
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      
+    </div>
+  </div>
+
+{% endblock %}

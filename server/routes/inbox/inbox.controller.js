@@ -1,9 +1,10 @@
 ;(function(){
   'use strict';
 
-  var _ = require('lodash')
-    , responsesObj = require('../../objects/responses').object
-    , utils = require('../../lib/utils')
+  const _ = require('lodash')
+  const responsesObj = require('../../objects/responses').object
+  const utils = require('../../lib/utils')
+  const isCourtUser = require('../../components/auth/user-type').isCourtUser;
 
   module.exports.index = function(app) {
     return function(req, res) {
@@ -69,10 +70,16 @@
       delete req.session.errors;
       delete req.session.nav;
 
+      let courtLocCode;
+
+      if (isCourtUser(req)){
+        courtLocCode = req.session.authentication.locCode;
+      }
       responsesObj
-        .query(req, 'todo')
+        .query(req, 'todo', courtLocCode)
         .then(successCB)
         .catch(errorCB);
+      
     };
   };
 })();

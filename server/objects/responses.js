@@ -129,18 +129,33 @@
 
   module.exports.object = {
     resource: 'bureau/responses',
-    query: function(req, type) {
+    query: function(req, type, locCode) {
       let urlPart;
+      let uri;
 
-      if (type === 'todo') {
-        urlPart = 'todo';
-      } else if (type === 'pending') {
-        urlPart = 'pending';
-      } else {
-        urlPart = 'completedToday';
+      if (locCode) {
+        // request is for a court
+        if (type === 'todo') {
+            urlPart = 'courtTodo';
+            uri = urljoin(this.resource, urlPart) + `/${locCode}`;
+          } else if (type === 'pending') {
+            urlPart = 'courtPending';
+            uri = urljoin(this.resource, urlPart);
+          } else {
+            urlPart = 'courtCompletedToday';
+            uri = urljoin(this.resource, urlPart);
+          }
+       } else {
+        // request is for bureau
+        if (type === 'todo') {
+          urlPart = 'todo';
+        } else if (type === 'pending') {
+          urlPart = 'pending';
+        } else {
+          urlPart = 'completedToday';
+        }
+        uri = urljoin(this.resource, urlPart);
       }
-
-      const uri = urljoin(this.resource, urlPart);
 
       const dao = new DAO(uri, {
         get: function() {

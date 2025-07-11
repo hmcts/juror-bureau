@@ -61,10 +61,14 @@
 
               <tr class="govuk-table__row">
                 <td class="govuk-table__cell">
-                  {% if response.replyMethod === "Paper" %}
-                    <a href="/summons-replies/response/{{ response.jurorNumber }}/paper" class="govuk-link">{{ response.jurorNumber }}</a>                
+                  {% if isBureauUser %}
+                    {% if response.replyMethod === "Paper" %}
+                      <a href="/summons-replies/response/{{ response.jurorNumber }}/paper" class="govuk-link">{{ response.jurorNumber }}</a>                
+                    {% else %}
+                      <a href="/response/{{ response.jurorNumber }}" class="govuk-link">{{ response.jurorNumber }}</a>
+                    {% endif %}
                   {% else %}
-                     <a href="/response/{{ response.jurorNumber }}" class="govuk-link">{{ response.jurorNumber }}</a>
+                    <a href="/juror-management/record/{{ response.jurorNumber }}/summons" class="govuk-link">{{ response.jurorNumber }}</a>
                   {% endif %}
                 </td>
                 <td class="govuk-table__cell" data-sort-value="{{ response.firstName }} {{ response.lastName }}">{{ response.firstName }} {{ response.lastName }}</td>

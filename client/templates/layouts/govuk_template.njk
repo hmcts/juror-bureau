@@ -118,7 +118,9 @@
     {# If homepage - show blue hero section #}
     {% if currentPage === "homepage" %}
       {% from "custom-components/homepage-hero-blue/macro.njk" import heroBlue %}
-      {{ heroBlue() }}
+      {{ heroBlue({
+        courtName: courtName
+      }) }}
     {% endif %}
 
     {# main content #}
