@@ -785,7 +785,11 @@
           req.session.jurorName = nameDetails.currentName;
           req.session.specialNeeds = responseClone.specialNeeds;
 
-          responseClone.eligibilityComplete = isComplete(responseClone.eligibility);
+          const eligibilityOverviewValues = Object.fromEntries(
+            Object.entries(responseClone.eligibility).filter(([key]) => !key.endsWith('Details'))
+          );
+
+          responseClone.eligibilityComplete = isComplete(eligibilityOverviewValues);
           responseClone.cjsEmployments = response[0].data.cjsEmployment;
 
           if (responseClone.specialNeeds) {
@@ -800,11 +804,17 @@
 
           eligibilityDetails = {
             residency: responseClone.eligibility.livedConsecutive,
+            residencyDetails: responseClone.eligibility.livedConsecutiveDetails,
             mentalHealthAct: responseClone.eligibility.mentalHealthAct,
+            mentalHealthActDetails: responseClone.eligibility.mentalHealthActDetails,
             mentalHealthCapacity: responseClone.eligibility.mentalHealthCapacity,
+            mentalHealthCapacityDetails: responseClone.eligibility.mentalHealthCapacityDetails,
             bail: responseClone.eligibility.onBail,
+            bailDetails: responseClone.eligibility.onBailDetails,
             convictions: responseClone.eligibility.convicted,
+            convictionsDetails: responseClone.eligibility.convictedDetails,
           };
+
           eligibilityDetails.eligible = (
             response[0].data.eligibility.livedConsecutive &&
             (!response[0].data.eligibility.mentalHealthAct && response[0].data.eligibility.mentalHealthAct !== null) &&

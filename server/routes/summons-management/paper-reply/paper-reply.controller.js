@@ -235,7 +235,9 @@
 
   module.exports.getEligibility = function(app) {
     return function(req, res) {
-      var result = eligibilityDetails(req);
+      const tmpErrors = _.clone(req.session.errors);
+
+      delete req.session.errors;
 
       return res.render('summons-management/paper-reply/eligibility', {
         cancelUrl: app.namedRoutes.build('juror-record.overview.get', {
@@ -250,56 +252,31 @@
             id: req.params['id'],
           }),
         },
-        livedConsecutive: result.livedConsecutive,
-        mentalHealthAct: result.mentalHealthAct,
-        mentalHealthCapacity: result.mentalHealthCapacity,
-        onBail: result.onBail,
-        convicted: result.convicted,
+        eligibilityDetails: eligibilityDetails(req.session.paperResponseDetails.eligibility),
+        errors: {
+          title: 'Please check the form',
+          count: countErrors(tmpErrors),
+          items: tmpErrors,
+        },
       });
     };
   };
 
   module.exports.postEligibility = function(app) {
     return function(req, res) {
-      var tempEligibility = {};
+      req.session.paperResponseDetails.eligibility = createEligibilityObject(req.body);
 
-      if (req.body.livedConsecutive) {
-        if (req.body.livedConsecutive === 'yes') {
-          tempEligibility.livedConsecutive = true;
-        } else {
-          tempEligibility.livedConsecutive = false;
-        }
-      }
-      if (req.body.mentalHealthAct) {
-        if (req.body.mentalHealthAct === 'yes') {
-          tempEligibility.mentalHealthAct = true;
-        } else {
-          tempEligibility.mentalHealthAct = false;
-        }
-      }
-      if (req.body.mentalHealthCapacity) {
-        if (req.body.mentalHealthCapacity === 'yes') {
-          tempEligibility.mentalHealthCapacity = true;
-        } else {
-          tempEligibility.mentalHealthCapacity = false;
-        }
-      }
-      if (req.body.onBail) {
-        if (req.body.onBail === 'yes') {
-          tempEligibility.onBail = true;
-        } else {
-          tempEligibility.onBail = false;
-        }
-      }
-      if (req.body.convicted) {
-        if (req.body.convicted === 'yes') {
-          tempEligibility.convicted = true;
-        } else {
-          tempEligibility.convicted = false;
-        }
+      const validatorResult = validate(req.body, paperReplyValidator.eligibility());
+      if (typeof validatorResult !== 'undefined') {
+        req.session.errors = validatorResult;
+        req.session.formFields = req.body;
+
+        return res.redirect(app.namedRoutes.build('paper-reply.eligibility.get', {
+          id: req.params['id'],
+        }));
       }
 
-      req.session.paperResponseDetails.eligibility = tempEligibility;
+      mergeMentalHealthInfo(req.session.paperResponseDetails.eligibility);
 
       app.logger.debug('Adding a new paper summons: POST step-02 - eligibility', {
         data: req.body,
@@ -314,7 +291,7 @@
 
   module.exports.getIneligibleAge = function(app) {
     return function(req, res) {
-      var result = eligibilityDetails(req);
+      var result = eligibilityDetails(req.session.paperResponseDetails.eligibility);
 
       return res.render('summons-management/paper-reply/ineligible-age', {
         cancelUrl: app.namedRoutes.build('juror-record.overview.get', {
@@ -1140,7 +1117,7 @@
     };
   };
 
-  function eligibilityDetails(req) {
+  function eligibilityDetails(eligibilityData) {
     const eligibility = {
       livedConsecutive: '',
       mentalHealthAct : '',
@@ -1149,14 +1126,113 @@
       convicted : '',
     };
 
-    if (typeof req.session.paperResponseDetails.eligibility !== 'undefined') {
+    if (typeof eligibilityData !== 'undefined') {
       // eslint-disable-next-line guard-for-in
-      for (const element in req.session.paperResponseDetails.eligibility) {
-        eligibility[element] = req.session.paperResponseDetails.eligibility[element] ? 'yes' : 'no';
+      for (const element in eligibilityData) {
+        if (typeof eligibilityData[element] === 'boolean') {
+          eligibility[element] = eligibilityData[element] ? 'yes' : 'no';
+        } else {
+          if (element === 'mentalHealthActDetails') {
+            eligibility[element] = eligibilityData['mentalHealthActDetails'].split(" [MENTAL HEALTH Q2] ")[0];
+            if (eligibilityData['mentalHealthActDetails'].split(" [MENTAL HEALTH Q2] ")[1]) {
+              eligibility['mentalHealthCapacityDetails'] = eligibilityData['mentalHealthActDetails'].split(" [MENTAL HEALTH Q2] ")[1];
+            }
+          } else {
+            eligibility[element] = eligibilityData[element];
+          }
+        }
       }
     }
 
     return eligibility;
   }
+
+  module.exports.getEligibilityDetails = eligibilityDetails;
+
+  const createEligibilityObject = function(body) {
+    const tempEligibility = {};
+
+    if (body.livedConsecutive) {
+        if (body.livedConsecutive === 'yes') {
+          tempEligibility.livedConsecutive = true;
+        } else {
+          tempEligibility.livedConsecutive = false;
+          tempEligibility.livedConsecutiveDetails = body.livedConsecutiveDetails;
+        }
+      }
+      if (body.mentalHealthAct) {
+        if (body.mentalHealthAct === 'yes') {
+          tempEligibility.mentalHealthAct = true;
+          tempEligibility.mentalHealthActDetails = body.mentalHealthActDetails;
+        } else {
+          tempEligibility.mentalHealthAct = false;
+        }
+      }
+      if (body.mentalHealthCapacity) {
+        if (body.mentalHealthCapacity === 'yes') {
+          tempEligibility.mentalHealthCapacity = true;
+          tempEligibility.mentalHealthCapacityDetails = body.mentalHealthCapacityDetails;
+        } else {
+          tempEligibility.mentalHealthCapacity = false;
+        }
+      }
+      if (body.onBail) {
+        if (body.onBail === 'yes') {
+          tempEligibility.onBail = true;
+          tempEligibility.onBailDetails = body.onBailDetails;
+        } else {
+          tempEligibility.onBail = false;
+        }
+      }
+      if (body.convicted) {
+        if (body.convicted === 'yes') {
+          tempEligibility.convicted = true;
+          tempEligibility.convictedDetails = body.convictedDetails;
+        } else {
+          tempEligibility.convicted = false;
+        }
+      }
+
+      return tempEligibility;
+  }
+
+  module.exports.createEligibilityObject = createEligibilityObject;
+
+  const mergeMentalHealthInfo = function(eligibilityPayload) {
+    let tmpAct;
+    let tmpCapacity;
+    let tmpDetails;
+
+    // Merge mentalHealthAct and mentalHealthCapacity details into mentalHealthAct
+
+    if (typeof eligibilityPayload.mentalHealthAct != 'undefined'){
+      tmpAct = eligibilityPayload.mentalHealthAct;
+    }
+    if (typeof eligibilityPayload.mentalHealthCapacity != 'undefined'){
+      tmpCapacity = eligibilityPayload.mentalHealthCapacity;
+    }
+
+    tmpDetails = '';
+
+    if (tmpAct && typeof eligibilityPayload.mentalHealthActDetails != 'undefined'){
+      tmpDetails = eligibilityPayload.mentalHealthActDetails;
+    }
+
+    if (tmpCapacity && typeof eligibilityPayload.mentalHealthCapacityDetails != 'undefined'){
+      if (typeof tmpDetails === 'undefined' || tmpDetails === '' || tmpDetails === null) {
+        tmpDetails = eligibilityPayload.mentalHealthCapacityDetails;
+      } else {
+        tmpDetails = tmpDetails.concat(' [MENTAL HEALTH Q2] ');
+        tmpDetails = tmpDetails.concat(eligibilityPayload.mentalHealthCapacityDetails);
+      }
+    }
+
+    eligibilityPayload.mentalHealthActDetails = tmpDetails;
+
+    delete eligibilityPayload.mentalHealthCapacityDetails;
+
+  };
+
+  module.exports.mergeMentalHealthInfo = mergeMentalHealthInfo;
 
 })();

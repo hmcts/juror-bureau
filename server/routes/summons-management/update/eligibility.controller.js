@@ -5,6 +5,7 @@
   const paperReplyObj = require('../../../objects/paper-reply').paperReplyObject;
   const summonsUpdate = require('../../../objects/summons-management').summonsUpdate;
   const { hasBeenModified, generalError } = require('./summons-update-common');
+  const { getEligibilityDetails, mergeMentalHealthInfo, createEligibilityObject } = require('../paper-reply/paper-reply.controller');
 
   module.exports.get = function(app) {
     return async function(req, res) {
@@ -31,28 +32,10 @@
           etag: headers['etag'],
         };
 
-        const eligibility = Object.keys(data.eligibility)
-          .reduce((prev, entry) => {
-            const entryValue = data.eligibility[entry];
-
-            switch (entryValue) {
-            case true:
-              prev[entry] = 'yes';
-              break;
-            case false:
-              prev[entry] = 'no';
-              break;
-            default:
-              prev[entry] = null;
-            }
-
-            return prev;
-          }, {});
-
         return res.render('summons-management/paper-reply/eligibility.njk', {
           postUrl,
           cancelUrl,
-          ...eligibility,
+          eligibilityDetails: getEligibilityDetails(data.eligibility),
           errors: {
             title: 'Please check the form',
             count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -77,20 +60,10 @@
   module.exports.post = function(app) {
     return async function(req, res) {
       const { id } = req.params;
-      const eligibility = {
-        convicted: null,
-        livedConsecutive: null,
-        mentalHealthAct: null,
-        mentalHealthCapacity: null,
-        onBail: null,
-      };
-      const payload = {
-        eligibility: Object.keys(req.body).reduce((prev, eligibilityItem) => {
-          if (eligibilityItem === '_csrf') return prev;
-          prev[eligibilityItem] = req.body[eligibilityItem] === 'yes';
-          return prev;
-        }, eligibility),
-      };
+
+      const eligibility = createEligibilityObject(req.body);
+
+      mergeMentalHealthInfo(eligibility);
 
       try {
         const wasModified = await hasBeenModified(app, req);
@@ -106,7 +79,9 @@
           req,
           req.params['id'],
           'ELIGIBILITY',
-          payload,
+          {
+            eligibility,
+          },
         );
 
         delete req.session[`summonsUpdate-${id}`];
@@ -115,7 +90,7 @@
           auth: req.session.authentication,
           jwt: req.session.authToken,
           data: {
-            ...payload,
+            eligibility,
             summonsId: req.params['id'],
           },
         });
@@ -123,7 +98,7 @@
         return res.redirect(app.namedRoutes.build('response.paper.details.get', {
           id: req.params['id'],
           type: 'paper',
-        }));
+        }) + '#eligibility');
       } catch (err) {
         app.logger.crit('Could not update the summons eligibility details', {
           auth: req.session.authentication,

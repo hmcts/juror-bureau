@@ -1,49 +1,31 @@
-<section class="detail-section {% if hasModAccess %}mod-reply-section{% endif %}" id="eligibility-section">
+<section class="detail-section mod-reply-section" id="eligibility-section">
 
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-full">
 
-      {% if hasModAccess %}
-        <div class="mod-reply-section__title">
-          <h2 class="govuk-heading-m">Eligibility
-            {% if method === "paper" %}
-              {{ govukTag({
-                text: "Section complete" if response.eligibilityComplete else "incomplete",
-                classes: "mod-tag--dark-blue" if response.eligibilityComplete else "govuk-tag--grey"
-              }) }}
-            {% endif %}
-          </h2>
-
-          {% if method === "paper" and isAddChangeVisible %}
-            <div class="govuk-body">
-              <a id="eligibilityEdit" 
-                 class="govuk-link"
-                 aria-label="Add or change eligibility" 
-                 href="{{ url('summons.update-eligibility.get', { id: response.jurorNumber, type: method }) }}"
-              >
-                Add or change
-              </a>
-            </div>
+      <div class="mod-reply-section__title">
+        <h2 class="govuk-heading-m">Eligibility
+          {% if method === "paper" %}
+            {{ govukTag({
+              text: "Section complete" if response.eligibilityComplete else "incomplete",
+              classes: "mod-tag--dark-blue" if response.eligibilityComplete else "govuk-tag--grey"
+            }) }}
           {% endif %}
-        </div>
-      {% else %}
-        <div class="jd-panel-title">
-          <h2 class="govuk-heading-m">Eligibility
-            {% if canEdit and responseEditEnabled %}
-            <div class="edit-actions govuk-body jd-right-align">
-              <a id="eligibilityEdit" 
-                 href="#" 
-                 class="edit-action edit-trigger" 
-                 data-target="eligibility"
-                aria-label="Change eligibility"
-              >
-                Change
-              </a>
-            </div>
-            {% endif %}
-          </h2>
-        </div>
-      {% endif %}
+        </h2>
+
+        {% if method === "paper" and isAddChangeVisible %}
+          <div class="govuk-body">
+            <a id="eligibilityEdit" 
+                class="govuk-link"
+                aria-label="Add or change eligibility" 
+                href="{{ url('summons.update-eligibility.get', { id: response.jurorNumber, type: method }) }}"
+            >
+              Add or change
+            </a>
+          </div>
+        {% endif %}
+      </div>
+      
 
     </div>
   </div>
@@ -57,34 +39,38 @@
         <dd class="govuk-summary-list__value" id="residency">
           {% if isDeceased == true %}
             N/A
-          {% elif hasModAccess and eligibilityDetails.residency === null %}
+          {% elif eligibilityDetails.residency === null %}
             <span class="mod-reply-section__required">Required</span>
           {% elif eligibilityDetails.residency %}
             Pass
           {% else %}
             <div class="jd-label-blue">Attention</div>
-            {{ response.residencyDetail }}
+            {{ eligibilityDetails.residencyDetails }}
           {% endif %}
         </dd>
       </div>
       <div class="govuk-summary-list__row {% if eligibilityDetails.mentalHealthAct %}info{% endif %}">
         <dt class="govuk-summary-list__key">
-          Mental health {{ "act" if hasModAccess }}
+          Mental health act
         </dt>
         <dd class="govuk-summary-list__value" id="mentalHealth">
           {% if isDeceased == true %}
             N/A
-          {% elif hasModAccess and eligibilityDetails.mentalHealthAct === null %}
+          {% elif eligibilityDetails.mentalHealthAct === null %}
             <span class="mod-reply-section__required">Required</span>
           {% elif eligibilityDetails.mentalHealthAct %}
             <div class="jd-label-blue">Attention</div>
-            {{ response.mentalHealthActDetails|replace("[MENTAL HEALTH Q2]","<br/><br/>")|safe }}
+            {% if method === "paper" %}
+              {{ eligibilityDetails.mentalHealthActDetails.split('[MENTAL HEALTH Q2]')[0] }}
+            {% else %}
+              {{ eligibilityDetails.mentalHealthActDetails|replace("[MENTAL HEALTH Q2]","<br/><br/>")|safe }}
+            {% endif %}
           {% else %}
             Pass
           {% endif %}
         </dd>
       </div>
-      {% if hasModAccess and method === "paper" %}
+      {% if method === "paper" %}
         <div class="govuk-summary-list__row {% if eligibilityDetails.mentalHealthCapacity %}info{% endif %}">
           <dt class="govuk-summary-list__key">
             Mental capacity act
@@ -92,10 +78,11 @@
           <dd class="govuk-summary-list__value" id="mentalHealthCapacity">
             {% if isDeceased == true %}
               N/A
-            {% elif hasModAccess and eligibilityDetails.mentalHealthCapacity === null %}
+            {% elif eligibilityDetails.mentalHealthCapacity === null %}
               <span class="mod-reply-section__required">Required</span>
             {% elif eligibilityDetails.mentalHealthCapacity %}
               <div class="jd-label-blue">Attention</div>
+              {{ eligibilityDetails.mentalHealthActDetails.split('[MENTAL HEALTH Q2]')[1] }}
             {% else %}
               Pass
             {% endif %}
@@ -109,11 +96,11 @@
         <dd class="govuk-summary-list__value" id="bail">
           {% if isDeceased %}
             N/A
-          {% elif hasModAccess and eligibilityDetails.bail === null %}
+          {% elif eligibilityDetails.bail === null %}
             <span class="mod-reply-section__required">Required</span>
           {% elif eligibilityDetails.bail %}
             <div class="jd-label-blue">Attention</div>
-            {{ response.bailDetails }}
+            {{ eligibilityDetails.bailDetails }}
           {% else %}
             Pass
           {% endif %}
@@ -126,11 +113,11 @@
         <dd class="govuk-summary-list__value" id="convictions">
           {% if isDeceased == true %}
             N/A
-          {% elif hasModAccess and eligibilityDetails.convictions === null %}
+          {% elif eligibilityDetails.convictions === null %}
             <span class="mod-reply-section__required">Required</span>
           {% elif eligibilityDetails.convictions %}
             <div class="jd-label-blue">Attention</div>
-            {{ response.convictionsDetails }}
+            {{ eligibilityDetails.convictionsDetails }}
           {% else %}
             Pass
           {% endif %}

@@ -292,6 +292,78 @@
     },
   });
 
+  module.exports.eligibility = function() {
+    var messageMapping = (field) => {
+      return {
+        summary: field + ' must be 2000 characters or less',
+        details: field + ' must be 2000 characters or less',
+      };
+    };
+
+    return {
+      livedConsecutiveDetails: {
+        presence: {
+          allowEmpty: true,
+        },
+        length: {
+          maximum: 1250,
+          message: {
+            summary: 'Details about where the person has lived since their 13th birthday must be 1250 characters or less',
+            details: 'Details about where the person has lived since their 13th birthday must be 1250 characters or less',
+          }
+        },
+      },
+      mentalHealthActDetails: {
+        presence: {
+          allowEmpty: true,
+        },
+        length: {
+          maximum: 2000,
+          message: {
+            summary: 'Details about how they\'re being detained, looked after or treated under the Mental Health Act must be 2000 characters or less',
+            details: 'Details about how they\'re being detained, looked after or treated under the Mental Health Act must be 2000 characters or less',
+          }
+        },
+      },
+      mentalHealthCapacityDetails: {
+        presence: {
+          allowEmpty: true,
+        },
+        length: {
+          maximum: 2000,
+          message: {
+            summary: 'Details about why it was decided they lack mental capacity must be 2000 characters or less',
+            details: 'Details about why it was decided they lack mental capacity must be 2000 characters or less',
+          }
+        },
+      },
+      onBailDetails: {
+        presence: {
+          allowEmpty: true,
+        },
+        length: {
+          maximum: 1250,
+          message: {
+            summary: 'Details about their bail and criminal offence must be 1250 characters or less',
+            details: 'Details about their bail and criminal offence must be 1250 characters or less',
+          }
+        },
+      },
+      convictedDetails: {
+        presence: {
+          allowEmpty: true,
+        },
+        length: {
+          maximum: 1250,
+          message: {
+            summary: 'Details about their criminal offence must be 1250 characters or less',
+            details: 'Details about their criminal offence must be 1250 characters or less',
+          }
+        },
+      },
+    };
+  };
+
   module.exports.cjsEmployment = function() {
     var messageMapping = (field) => {
       return {

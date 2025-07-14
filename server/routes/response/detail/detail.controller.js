@@ -2229,9 +2229,13 @@
     return {
       eligible: (residency && !mentalHealth && !bail && !convictions),
       residency: residency,
+      residencyDetails: data.residencyDetail,
       mentalHealthAct: mentalHealth,
+      mentalHealthActDetails: data.mentalHealthActDetails,
       bail: bail,
+      bailDetails: data.bailDetails,
       convictions: convictions,
+      convictionsDetails: data.convictionsDetails,
     };
   }
 
