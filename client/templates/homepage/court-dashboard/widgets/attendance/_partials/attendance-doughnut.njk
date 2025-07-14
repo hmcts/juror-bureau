@@ -33,7 +33,7 @@
           <div class="bullet bullet__brown"></div>On trials <span class="amount">{{ params.values.onTrials }}</span>
         </div>
         <div class="legend">
-          <div class="bullet bullet__unresolved"></div>Not checked-in <span class="amount">{{ [params.values.notCheckedIn, 0] | largestNumber }}</span>
+          <div class="bullet bullet__unresolved"></div>Not checked-in <span class="amount">{{ params.values.notCheckedIn }}</span>
         </div>
       </div>
     {% elif params.id == "last7DaysStats" %}
@@ -61,7 +61,7 @@
       var statsObject = {
         checkedIn: {{params.values.checkedIn}},
         checkedOut: {{params.values.checkedOut}},
-        notCheckedIn: {{ [params.values.notCheckedIn, 0] | largestNumber }},
+        notCheckedIn: {{ params.values.notCheckedIn }},
         onTrials: {{params.values.onTrials}},
       }
     {% elif params.id == "last7DaysStats" %}
@@ -83,18 +83,6 @@
       {% endif %}
     }
 
-    // Ensure that the total of doughnut wheel is at least the expected value
-    var sumValues = Object.values(statsObject).reduce((a, b) => a + b, 0);
-    var expectedValue = {{ params.values.expected }};
-    if (sumValues < expectedValue) {
-      {% if params.id == "todayStats" %}
-        statsObject.notCheckedIn = expectedValue - sumValues; // Ensure at least one value is present for the chart
-      {% elif params.id == "last7DaysStats" %}
-        statsObject.absent = expectedValue - sumValues; // Ensure at least one value is present for the chart
-      {% endif %}
-    }
-    
-
     var valueArr = Object.values(statsObject);
     var ctx = document
       .getElementById('{{params.id}}Chart')
@@ -112,7 +100,7 @@
         datasets: [
           {
             data: valueArr,
-            backgroundColor: statsObject.checkedIn ? [
+            backgroundColor: "{{ params.id }}" === "todayStats" ? [
               '{{checkedInColour}}', '{{checkedOutColour}}', '{{notCheckedInColour}}', '{{onTrialsColour}}'
             ] : [
               '{{attendedColour}}', '{{onTrialsColour}}', '{{absentColour}}'
