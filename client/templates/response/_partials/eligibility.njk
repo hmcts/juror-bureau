@@ -45,7 +45,11 @@
             Pass
           {% else %}
             <div class="jd-label-blue">Attention</div>
-            {{ eligibilityDetails.residencyDetails }}
+            {% if eligibilityDetails.residencyDetails %}
+              {{ eligibilityDetails.residencyDetails }}
+            {% else %}
+              <span class="mod-reply-section__required">Required</span>
+            {% endif %}
           {% endif %}
         </dd>
       </div>
@@ -61,7 +65,11 @@
           {% elif eligibilityDetails.mentalHealthAct %}
             <div class="jd-label-blue">Attention</div>
             {% if method === "paper" %}
+            {% if eligibilityDetails.mentalHealthActDetails.split('[MENTAL HEALTH Q2]')[0] %}
               {{ eligibilityDetails.mentalHealthActDetails.split('[MENTAL HEALTH Q2]')[0] }}
+            {% else %}
+              <span class="mod-reply-section__required">Required</span>
+            {% endif %}
             {% else %}
               {{ eligibilityDetails.mentalHealthActDetails|replace("[MENTAL HEALTH Q2]","<br/><br/>")|safe }}
             {% endif %}
@@ -82,7 +90,11 @@
               <span class="mod-reply-section__required">Required</span>
             {% elif eligibilityDetails.mentalHealthCapacity %}
               <div class="jd-label-blue">Attention</div>
-              {{ eligibilityDetails.mentalHealthActDetails.split('[MENTAL HEALTH Q2]')[1] }}
+              {% if eligibilityDetails.mentalHealthActDetails.split('[MENTAL HEALTH Q2]')[1] %}
+                {{ eligibilityDetails.mentalHealthActDetails.split('[MENTAL HEALTH Q2]')[1] }}
+              {% else %}
+                <span class="mod-reply-section__required">Required</span>
+              {% endif %}
             {% else %}
               Pass
             {% endif %}
@@ -100,7 +112,11 @@
             <span class="mod-reply-section__required">Required</span>
           {% elif eligibilityDetails.bail %}
             <div class="jd-label-blue">Attention</div>
-            {{ eligibilityDetails.bailDetails }}
+            {% if eligibilityDetails.bailDetails %}
+              {{ eligibilityDetails.bailDetails }}
+            {% else %}
+              <span class="mod-reply-section__required">Required</span>
+            {% endif %}
           {% else %}
             Pass
           {% endif %}
@@ -117,7 +133,11 @@
             <span class="mod-reply-section__required">Required</span>
           {% elif eligibilityDetails.convictions %}
             <div class="jd-label-blue">Attention</div>
-            {{ eligibilityDetails.convictionsDetails }}
+            {% if eligibilityDetails.convictionsDetails %}
+              {{ eligibilityDetails.convictionsDetails }}
+            {% else %}
+              <span class="mod-reply-section__required">Required</span>
+            {% endif %}
           {% else %}
             Pass
           {% endif %}

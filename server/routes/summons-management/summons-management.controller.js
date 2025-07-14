@@ -785,11 +785,7 @@
           req.session.jurorName = nameDetails.currentName;
           req.session.specialNeeds = responseClone.specialNeeds;
 
-          const eligibilityOverviewValues = Object.fromEntries(
-            Object.entries(responseClone.eligibility).filter(([key]) => !key.endsWith('Details'))
-          );
-
-          responseClone.eligibilityComplete = isComplete(eligibilityOverviewValues);
+          responseClone.eligibilityComplete = isComplete(responseClone.eligibility);
           responseClone.cjsEmployments = response[0].data.cjsEmployment;
 
           if (responseClone.specialNeeds) {

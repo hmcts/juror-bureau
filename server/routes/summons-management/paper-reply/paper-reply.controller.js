@@ -1220,7 +1220,7 @@
 
     if (tmpCapacity && typeof eligibilityPayload.mentalHealthCapacityDetails != 'undefined'){
       if (typeof tmpDetails === 'undefined' || tmpDetails === '' || tmpDetails === null) {
-        tmpDetails = eligibilityPayload.mentalHealthCapacityDetails;
+        tmpDetails = '[MENTAL HEALTH Q2] ' +eligibilityPayload.mentalHealthCapacityDetails;
       } else {
         tmpDetails = tmpDetails.concat(' [MENTAL HEALTH Q2] ');
         tmpDetails = tmpDetails.concat(eligibilityPayload.mentalHealthCapacityDetails);

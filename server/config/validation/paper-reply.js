@@ -295,8 +295,8 @@
   module.exports.eligibility = function() {
     var messageMapping = (field) => {
       return {
-        summary: field + ' must be 2000 characters or less',
-        details: field + ' must be 2000 characters or less',
+        summary: field + ' must be 1000 characters or fewer',
+        details: field + ' must be 1000 characters or fewer',
       };
     };
 
@@ -306,11 +306,8 @@
           allowEmpty: true,
         },
         length: {
-          maximum: 1250,
-          message: {
-            summary: 'Details about where the person has lived since their 13th birthday must be 1250 characters or less',
-            details: 'Details about where the person has lived since their 13th birthday must be 1250 characters or less',
-          }
+          maximum: 1000,
+          message: messageMapping('Details about where the person has lived since their 13th birthday'),
         },
       },
       mentalHealthActDetails: {
@@ -318,11 +315,8 @@
           allowEmpty: true,
         },
         length: {
-          maximum: 2000,
-          message: {
-            summary: 'Details about how they\'re being detained, looked after or treated under the Mental Health Act must be 2000 characters or less',
-            details: 'Details about how they\'re being detained, looked after or treated under the Mental Health Act must be 2000 characters or less',
-          }
+          maximum: 1000,
+          message: messageMapping('Details about how they\'re being detained, looked after or treated under the Mental Health Act'),
         },
       },
       mentalHealthCapacityDetails: {
@@ -330,11 +324,8 @@
           allowEmpty: true,
         },
         length: {
-          maximum: 2000,
-          message: {
-            summary: 'Details about why it was decided they lack mental capacity must be 2000 characters or less',
-            details: 'Details about why it was decided they lack mental capacity must be 2000 characters or less',
-          }
+          maximum: 1000,
+          message: messageMapping('Details about why it was decided they lack mental capacity'),
         },
       },
       onBailDetails: {
@@ -342,11 +333,8 @@
           allowEmpty: true,
         },
         length: {
-          maximum: 1250,
-          message: {
-            summary: 'Details about their bail and criminal offence must be 1250 characters or less',
-            details: 'Details about their bail and criminal offence must be 1250 characters or less',
-          }
+          maximum: 1000,
+          message: messageMapping('Details about their bail and criminal offence'),
         },
       },
       convictedDetails: {
@@ -354,11 +342,8 @@
           allowEmpty: true,
         },
         length: {
-          maximum: 1250,
-          message: {
-            summary: 'Details about their criminal offence must be 1250 characters or less',
-            details: 'Details about their criminal offence must be 1250 characters or less',
-          }
+          maximum: 1000,
+          message: messageMapping('Details about their criminal offence'),
         },
       },
     };

@@ -6,6 +6,8 @@
   const summonsUpdate = require('../../../objects/summons-management').summonsUpdate;
   const { hasBeenModified, generalError } = require('./summons-update-common');
   const { getEligibilityDetails, mergeMentalHealthInfo, createEligibilityObject } = require('../paper-reply/paper-reply.controller');
+  const paperReplyValidator = require('../../../config/validation/paper-reply');
+  const { validate } = require('validate.js');
 
   module.exports.get = function(app) {
     return async function(req, res) {
@@ -19,8 +21,10 @@
         type: 'paper',
       }) + '#eligibility';
       const tmpErrors = _.clone(req.session.errors);
+      const tmpBody = _.clone(req.session.formFields);
 
       delete req.session.errors;
+      delete req.session.formFields;
 
       try {
         const { headers, data } = await paperReplyObj.get(
@@ -35,7 +39,7 @@
         return res.render('summons-management/paper-reply/eligibility.njk', {
           postUrl,
           cancelUrl,
-          eligibilityDetails: getEligibilityDetails(data.eligibility),
+          eligibilityDetails: tmpBody || getEligibilityDetails(data.eligibility),
           errors: {
             title: 'Please check the form',
             count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -62,6 +66,17 @@
       const { id } = req.params;
 
       const eligibility = createEligibilityObject(req.body);
+
+      const validatorResult = validate(req.body, paperReplyValidator.eligibility());
+      if (typeof validatorResult !== 'undefined') {
+        req.session.errors = validatorResult;
+        req.session.formFields = req.body;
+
+        return res.redirect(app.namedRoutes.build('summons.update-eligibility.get', {
+          id: req.params['id'],
+          type: 'paper',
+        }));
+      }
 
       mergeMentalHealthInfo(eligibility);
 
