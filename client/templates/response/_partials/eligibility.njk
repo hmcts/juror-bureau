@@ -65,8 +65,8 @@
           {% elif eligibilityDetails.mentalHealthAct %}
             <div class="jd-label-blue">Attention</div>
             {% if method === "paper" %}
-            {% if eligibilityDetails.mentalHealthActDetails.split('[MENTAL HEALTH Q2]')[0] %}
-              {{ eligibilityDetails.mentalHealthActDetails.split('[MENTAL HEALTH Q2]')[0] }}
+            {% if eligibilityDetails.mentalHealthActDetails and eligibilityDetails.mentalHealthActDetails.split(' [MENTAL HEALTH Q2]')[0] %}
+              {{ eligibilityDetails.mentalHealthActDetails.split(' [MENTAL HEALTH Q2]')[0] }}
             {% else %}
               <span class="mod-reply-section__required">Required</span>
             {% endif %}
@@ -90,8 +90,8 @@
               <span class="mod-reply-section__required">Required</span>
             {% elif eligibilityDetails.mentalHealthCapacity %}
               <div class="jd-label-blue">Attention</div>
-              {% if eligibilityDetails.mentalHealthActDetails.split('[MENTAL HEALTH Q2]')[1] %}
-                {{ eligibilityDetails.mentalHealthActDetails.split('[MENTAL HEALTH Q2]')[1] }}
+              {% if eligibilityDetails.mentalHealthActDetails and eligibilityDetails.mentalHealthActDetails.split('[MENTAL HEALTH Q2] ')[1] %}
+                {{ eligibilityDetails.mentalHealthActDetails.split('[MENTAL HEALTH Q2] ')[1] }}
               {% else %}
                 <span class="mod-reply-section__required">Required</span>
               {% endif %}

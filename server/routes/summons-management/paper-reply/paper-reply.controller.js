@@ -252,7 +252,7 @@
             id: req.params['id'],
           }),
         },
-        eligibilityDetails: eligibilityDetails(req.session.paperResponseDetails.eligibility),
+        eligibilityDetails: getEligibilityDetails(req.session.paperResponseDetails.eligibility),
         errors: {
           title: 'Please check the form',
           count: countErrors(tmpErrors),
@@ -291,7 +291,7 @@
 
   module.exports.getIneligibleAge = function(app) {
     return function(req, res) {
-      var result = eligibilityDetails(req.session.paperResponseDetails.eligibility);
+      var result = getEligibilityDetails(req.session.paperResponseDetails.eligibility);
 
       return res.render('summons-management/paper-reply/ineligible-age', {
         cancelUrl: app.namedRoutes.build('juror-record.overview.get', {
@@ -1117,7 +1117,7 @@
     };
   };
 
-  function eligibilityDetails(eligibilityData) {
+  function getEligibilityDetails(eligibilityData) {
     const eligibility = {
       livedConsecutive: '',
       mentalHealthAct : '',
@@ -1133,9 +1133,9 @@
           eligibility[element] = eligibilityData[element] ? 'yes' : 'no';
         } else {
           if (element === 'mentalHealthActDetails') {
-            eligibility[element] = eligibilityData['mentalHealthActDetails'].split(" [MENTAL HEALTH Q2] ")[0];
-            if (eligibilityData['mentalHealthActDetails'].split(" [MENTAL HEALTH Q2] ")[1]) {
-              eligibility['mentalHealthCapacityDetails'] = eligibilityData['mentalHealthActDetails'].split(" [MENTAL HEALTH Q2] ")[1];
+            eligibility[element] = eligibilityData['mentalHealthActDetails']?.split(" [MENTAL HEALTH Q2] ")[0] || null;
+            if (eligibilityData['mentalHealthActDetails']?.split(" [MENTAL HEALTH Q2] ")[1]) {
+              eligibility['mentalHealthCapacityDetails'] = eligibilityData['mentalHealthActDetails']?.split(" [MENTAL HEALTH Q2] ")[1] || null;
             }
           } else {
             eligibility[element] = eligibilityData[element];
@@ -1147,7 +1147,7 @@
     return eligibility;
   }
 
-  module.exports.getEligibilityDetails = eligibilityDetails;
+  module.exports.getEligibilityDetails = getEligibilityDetails;
 
   const createEligibilityObject = function(body) {
     const tempEligibility = {};
@@ -1214,20 +1214,18 @@
 
     tmpDetails = '';
 
-    if (tmpAct && typeof eligibilityPayload.mentalHealthActDetails != 'undefined'){
+    if (tmpAct && typeof eligibilityPayload.mentalHealthActDetails !== 'undefined'){
       tmpDetails = eligibilityPayload.mentalHealthActDetails;
     }
 
-    if (tmpCapacity && typeof eligibilityPayload.mentalHealthCapacityDetails != 'undefined'){
-      if (typeof tmpDetails === 'undefined' || tmpDetails === '' || tmpDetails === null) {
-        tmpDetails = '[MENTAL HEALTH Q2] ' +eligibilityPayload.mentalHealthCapacityDetails;
-      } else {
+    if (tmpCapacity && typeof eligibilityPayload.mentalHealthCapacityDetails !== 'undefined'){
         tmpDetails = tmpDetails.concat(' [MENTAL HEALTH Q2] ');
         tmpDetails = tmpDetails.concat(eligibilityPayload.mentalHealthCapacityDetails);
-      }
     }
 
-    eligibilityPayload.mentalHealthActDetails = tmpDetails;
+    if (typeof tmpDetails !== 'undefined') {
+      eligibilityPayload.mentalHealthActDetails = tmpDetails;
+    }
 
     delete eligibilityPayload.mentalHealthCapacityDetails;
 
