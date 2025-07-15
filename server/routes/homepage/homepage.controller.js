@@ -2,7 +2,7 @@
   'use strict';
 
   const _ = require('lodash');
-  const { isCourtUser } = require('../../components/auth/user-type');
+  const { isCourtUser, isSuperUser } = require('../../components/auth/user-type');
   const { courtWidgetDefinitions, widgetTemplates } = require('./dashboard/definitions');
   const { courtDashboardDAO } = require('../../objects/court-dashboard');
   const { courtDetailsDAO } = require('../../objects/administration');
@@ -11,11 +11,26 @@
 
   module.exports.homepage = function(app) {
     return async function(req, res) {
-      if (isCourtUser(req)) {
+      if (isCourtUser(req) && isSuperUser(req)) {
         return res.redirect(app.namedRoutes.build('homepage.dashboard.get'));
       }
 
-      return res.render('homepage/index.njk');
+      let notifications;
+      if (isCourtUser(req)) {
+        try {
+          notifications = await courtDashboardDAO.get(req, 'notifications', req.session.authentication.locCode);
+        } catch (err) {
+          app.logger.crit('Unable to fetch notifications', {
+            auth: req.session.authentication,
+            token: req.session.authToken,
+            error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+          });
+        }
+      }
+
+      return res.render('homepage/index.njk', {
+        notifications: notifications ? buildDashboardNotifications(app)(req, res)(notifications) : [],
+      });
     };
   };
 
@@ -35,9 +50,9 @@
         });
       }
 
-      let notifcations;
+      let notifications;
       try {
-        notifcations = await courtDashboardDAO.get(req, 'notifications', req.session.authentication.locCode);
+        notifications = await courtDashboardDAO.get(req, 'notifications', req.session.authentication.locCode);
       } catch (err) {
         app.logger.crit('Unable to fetch notifications', {
           auth: req.session.authentication,
@@ -58,7 +73,7 @@
       }
 
       res.render('homepage/court-dashboard/dashboard.njk', {
-        notifications: notifcations ? buildDashboardNotifications(app)(req, res)(notifcations) : [],
+        notifications: notifications ? buildDashboardNotifications(app)(req, res)(notifications) : [],
         widgets,
         courtName: courtDetails ? `${capitalizeFully(courtDetails?.englishCourtName)} (${courtDetails?.courtCode})` : 'Court Dashboard',
       });
@@ -155,9 +170,9 @@
     return result;
   };
 
-  const buildDashboardNotifications = (app) => (req, res) => (notifcations) => {
-    const notifcationList = [];
-    for (const [notificationType, value] of Object.entries(notifcations)) {
+  const buildDashboardNotifications = (app) => (req, res) => (notifications) => {
+    const notificationList = [];
+    for (const [notificationType, value] of Object.entries(notifications)) {
       let notificationHTML;
       if (value > 0) {
         switch (notificationType) {
@@ -173,11 +188,10 @@
             `;
             break;
         }
-        notifcationList.push(notificationHTML);
+        notificationList.push(notificationHTML);
       }
     }
-
-    return notifcationList;
+    return notificationList;
   };
 
 })();
