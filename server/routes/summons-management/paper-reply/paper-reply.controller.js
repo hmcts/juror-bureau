@@ -1151,84 +1151,43 @@
 
   const createEligibilityObject = function(body) {
     const tempEligibility = {};
+    const fields = [
+      { key: 'livedConsecutive', details: 'livedConsecutiveDetails', detailsOn: 'no' },
+      { key: 'mentalHealthAct', details: 'mentalHealthActDetails', detailsOn: 'yes' },
+      { key: 'mentalHealthCapacity', details: 'mentalHealthCapacityDetails', detailsOn: 'yes' },
+      { key: 'onBail', details: 'onBailDetails', detailsOn: 'yes' },
+      { key: 'convicted', details: 'convictedDetails', detailsOn: 'yes' }
+    ];
 
-    if (body.livedConsecutive) {
-        if (body.livedConsecutive === 'yes') {
-          tempEligibility.livedConsecutive = true;
-        } else {
-          tempEligibility.livedConsecutive = false;
-          tempEligibility.livedConsecutiveDetails = body.livedConsecutiveDetails;
+    fields.forEach(({ key, details, detailsOn }) => {
+      if (body[key]) {
+        tempEligibility[key] = body[key] === 'yes';
+        if (body[details] && body[key] === detailsOn) {
+          tempEligibility[details] = body[details];
         }
       }
-      if (body.mentalHealthAct) {
-        if (body.mentalHealthAct === 'yes') {
-          tempEligibility.mentalHealthAct = true;
-          tempEligibility.mentalHealthActDetails = body.mentalHealthActDetails;
-        } else {
-          tempEligibility.mentalHealthAct = false;
-        }
-      }
-      if (body.mentalHealthCapacity) {
-        if (body.mentalHealthCapacity === 'yes') {
-          tempEligibility.mentalHealthCapacity = true;
-          tempEligibility.mentalHealthCapacityDetails = body.mentalHealthCapacityDetails;
-        } else {
-          tempEligibility.mentalHealthCapacity = false;
-        }
-      }
-      if (body.onBail) {
-        if (body.onBail === 'yes') {
-          tempEligibility.onBail = true;
-          tempEligibility.onBailDetails = body.onBailDetails;
-        } else {
-          tempEligibility.onBail = false;
-        }
-      }
-      if (body.convicted) {
-        if (body.convicted === 'yes') {
-          tempEligibility.convicted = true;
-          tempEligibility.convictedDetails = body.convictedDetails;
-        } else {
-          tempEligibility.convicted = false;
-        }
-      }
+    });
 
-      return tempEligibility;
-  }
+    return tempEligibility;
+  };
 
   module.exports.createEligibilityObject = createEligibilityObject;
 
   const mergeMentalHealthInfo = function(eligibilityPayload) {
-    let tmpAct;
-    let tmpCapacity;
-    let tmpDetails;
+    const tmpAct = eligibilityPayload.mentalHealthAct;
+    const tmpCapacity = eligibilityPayload.mentalHealthCapacity;
+    let tmpDetails = '';
 
-    // Merge mentalHealthAct and mentalHealthCapacity details into mentalHealthAct
-
-    if (typeof eligibilityPayload.mentalHealthAct != 'undefined'){
-      tmpAct = eligibilityPayload.mentalHealthAct;
-    }
-    if (typeof eligibilityPayload.mentalHealthCapacity != 'undefined'){
-      tmpCapacity = eligibilityPayload.mentalHealthCapacity;
-    }
-
-    tmpDetails = '';
-
-    if (tmpAct && typeof eligibilityPayload.mentalHealthActDetails !== 'undefined'){
+    if (tmpAct && eligibilityPayload.mentalHealthActDetails && eligibilityPayload.mentalHealthActDetails !== '') {
       tmpDetails = eligibilityPayload.mentalHealthActDetails;
     }
-
-    if (tmpCapacity && typeof eligibilityPayload.mentalHealthCapacityDetails !== 'undefined'){
-        tmpDetails = tmpDetails.concat(' [MENTAL HEALTH Q2] ');
-        tmpDetails = tmpDetails.concat(eligibilityPayload.mentalHealthCapacityDetails);
+    if (tmpCapacity && eligibilityPayload.mentalHealthCapacityDetails && eligibilityPayload.mentalHealthCapacityDetails !== '') {
+      tmpDetails += ' [MENTAL HEALTH Q2] ' + eligibilityPayload.mentalHealthCapacityDetails;
     }
-
-    if (typeof tmpDetails !== 'undefined') {
+    if (tmpDetails !== '') {
       eligibilityPayload.mentalHealthActDetails = tmpDetails;
     }
-
     delete eligibilityPayload.mentalHealthCapacityDetails;
-
   };
 
   module.exports.mergeMentalHealthInfo = mergeMentalHealthInfo;
