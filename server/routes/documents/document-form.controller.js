@@ -176,6 +176,10 @@
       );
     }
 
+    if (params.showCauseDate) {
+      parameters.push('showCauseDate=' + params.showCauseDate);
+    }
+
     return  '?' + parameters.join('&');
   }
 
