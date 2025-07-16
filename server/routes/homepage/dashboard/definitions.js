@@ -187,7 +187,9 @@
                 heading: 'Date monthly utilisation report last run',
                 value: stats?.admin.utilisationReportDate ? dateFilter(stats?.admin.utilisationReportDate, null, 'DD MMMM YYYY [at] h:mm a') : null,
                 badge: {
-                  showBadge: stats?.admin.utilisationReportDate ? Math.abs(dateDifference(new Date(), stats?.admin.utilisationReportDate, 'days')) > 30 : false,
+                  showBadge: stats?.admin.utilisationReportDate 
+                    ? Math.abs(dateDifference(new Date(), new Date(dateFilter(stats?.admin.utilisationReportDate, null, 'YYYY-MM-DD')), 'days')) > 30 
+                    : false,
                   text: 'overdue',
                   colour: 'red',
                 },
