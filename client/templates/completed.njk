@@ -12,7 +12,11 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
 
-      <h1 class="govuk-heading-xl">Your work</h1>
+      {% if isBureauUser %}
+        <h1 class="govuk-heading-xl">Your work</h1>
+      {% else %}
+        <h1 class="govuk-heading-xl">Summons replies to be processed</h1>
+      {% endif %}
 
       {% include "includes/responses_navigation.njk" %}
 
