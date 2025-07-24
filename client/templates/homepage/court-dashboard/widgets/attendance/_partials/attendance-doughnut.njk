@@ -1,0 +1,115 @@
+{% macro attendanceDoughnut(params) %}
+
+  {% set expectedColour = '#B1B4B6' %}
+  {% set checkedInColour = '#1D70B8' %}
+  {% set attendedColour = '#1D70B8' %}
+  {% set checkedOutColour = '#d53880' %}
+  {% set onTrialsColour = '#B58840' %}
+  {% set notCheckedInColour = '#F3F2F1' %}
+  {% set absentColour = '#F3F2F1' %}
+
+  <div class="doughnut-chart">
+    <div class="doughnut-chart__chart-canvas">
+      <div class="total">
+        <span class="number">{{ params.values.expected }}</span>
+        <span class="legend">Expected</span>
+      </div>
+      <canvas id="{{params.id}}Chart" name="{{params.id}}Chart" width="170" height="170"></canvas>
+    </div>
+
+    {% if params.id == "todayStats" %}
+      <div class="doughnut-chart__legend">
+        <div class="legend">
+          <div class="bullet bullet__mid-grey"></div>Expected today <span class="amount">{{ params.values.expected }}</span>
+        </div>
+        <div class="divider"></div>
+        <div class="legend">
+          <div class="bullet bullet__blue"></div>Checked-in <span class="amount">{{ params.values.checkedIn }}</span>
+        </div>
+        <div class="legend">
+          <div class="bullet bullet__pink"></div>Checked-out <span class="amount">{{ params.values.checkedOut }}</span>
+        </div>
+        <div class="legend">
+          <div class="bullet bullet__brown"></div>On trials <span class="amount">{{ params.values.onTrials }}</span>
+        </div>
+        <div class="legend">
+          <div class="bullet bullet__unresolved"></div>Not checked-in <span class="amount">{{ params.values.notCheckedIn }}</span>
+        </div>
+      </div>
+    {% elif params.id == "last7DaysStats" %}
+      <div class="doughnut-chart__legend">
+        <div class="legend">
+          <div class="bullet bullet__mid-grey"></div>Expected <span class="amount">{{ params.values.expected }}</span>
+        </div>
+        <div class="divider"></div>
+        <div class="legend">
+          <div class="bullet bullet__blue"></div>Attended <span class="amount">{{ params.values.attended }}</span>
+        </div>
+        <div class="legend">
+          <div class="bullet bullet__brown"></div>On trials <span class="amount">{{ params.values.onTrials }}</span>
+        </div>
+        <div class="legend">
+          <div class="bullet bullet__unresolved"></div>Absent <span class="amount">{{ params.values.absent }}</span>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <script nonce="{{ params.nonce }}">
+
+    {% if params.id == "todayStats" %}
+      var statsObject = {
+        checkedIn: {{params.values.checkedIn}},
+        checkedOut: {{params.values.checkedOut}},
+        notCheckedIn: {{ params.values.notCheckedIn }},
+        onTrials: {{params.values.onTrials}},
+      }
+    {% elif params.id == "last7DaysStats" %}
+      var statsObject = {
+        attended: {{params.values.attended}},
+        onTrials: {{params.values.onTrials}},
+        absent: {{params.values.absent}},
+      }
+    {% endif %}
+
+    if (Object.values(statsObject).every((item) => {
+      return item === 0;
+    })) {
+      // Handle case where all values are 0
+      {% if params.id == "todayStats" %}
+        statsObject.notCheckedIn = 1; // Ensure at least one value is present for the chart
+      {% elif params.id == "last7DaysStats" %}
+        statsObject.absent = 1; // Ensure at least one value is present for the chart
+      {% endif %}
+    }
+
+    var valueArr = Object.values(statsObject);
+    var ctx = document
+      .getElementById('{{params.id}}Chart')
+      .getContext('2d');
+
+    var dbChart = new Chart(ctx, {
+      type: 'doughnut',
+      options: {
+        tooltips: {
+          enabled: false
+        },
+        cutoutPercentage: '70'
+      },
+      data: {
+        datasets: [
+          {
+            data: valueArr,
+            backgroundColor: "{{ params.id }}" === "todayStats" ? [
+              '{{checkedInColour}}', '{{checkedOutColour}}', '{{notCheckedInColour}}', '{{onTrialsColour}}'
+            ] : [
+              '{{attendedColour}}', '{{onTrialsColour}}', '{{absentColour}}'
+            ],
+            borderWidth: 0,
+          }
+        ]
+      }
+    });
+  </script>
+
+{% endmacro %}

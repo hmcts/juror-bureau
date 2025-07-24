@@ -113,7 +113,7 @@
       return matched;
     },
 
-    dateFilter:function(date, sourceFormat, outputFormat) {
+    dateFilter:function(dateValue, sourceFormat, outputFormat) {
       var result,
         errs = [],
         args = [],
@@ -121,13 +121,15 @@
         dateFilterDefaultFormat = 'DD/MM/YYYY';
       let inputFormat;
 
+      const date = _.cloneDeep(dateValue);
+      
       if (typeof date === 'string') {
         if (/\d\d[-/]\d\d[-/]\d\d\d\d/.exec(date)) {
           inputFormat = 'DD/MM/YYYY';
         }
       }
 
-      if (date && date.length === 3) {
+      if (Array.isArray(date) && date.length >= 3) {
         date[1] = date[1] - 1;
       }
 
@@ -650,6 +652,10 @@
       }
   
       return result;
+    },
+    
+    largestNumber: function(arr) {
+      return Math.max.apply(null, arr);
     }
   
   };

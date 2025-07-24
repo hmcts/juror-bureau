@@ -2,7 +2,7 @@
   "sharedText": {
     "lang": "en",
     "mainHeader": "Copy of your jury summons reply",
-    "logo": "./client/assets/images/pdflogo.jpg",
+    "logo": "./client/assets/images/letterlogo.png",
     "logoAlt": "Logo for HM Courts and Tribunals Service",
     "pageNumber": " of ",
     "detailsHeader": "Your jury summons details",
