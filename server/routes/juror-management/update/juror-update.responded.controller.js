@@ -86,8 +86,15 @@ module.exports.postResponded = function(app) {
       if (err.statusCode === 409) {
         req.session.errors = makeManualError('jurorNumber', 'Juror record has been updated by another user');
       } else if (err.statusCode === 422) {
-        if (err.error.code === 'JUROR_DATE_OF_BIRTH_REQUIRED') {
-          req.session.errors = makeManualError('jurorNumber', 'Juror date of birth is required to mark as responded');
+        switch (err.error.code) {
+          case 'JUROR_DATE_OF_BIRTH_REQUIRED':
+            req.session.errors = makeManualError('jurorNumber', 'Juror date of birth is required to mark as responded');
+            break;
+          case 'MISSING_ELIGIBILITY_DETAILS':
+            req.session.errors = makeManualError('jurorNumber', 'Juror eligibility details are required to mark as responded');
+            break;
+          default:
+            req.session.errors = makeManualError('jurorNumber', 'Something went wrong when trying to update the juror record');
         }
       } else {
         req.session.errors =
