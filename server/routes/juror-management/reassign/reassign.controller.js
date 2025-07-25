@@ -410,11 +410,13 @@
       // TODO: handle better
       // if continuing after validation would leave with no jurors to reassign, redirect without reassigning
       if (jurorNumbers.length <= 0) {
-        let redirectUrl = app.namedRoutes.build('juror-record.overview.get', {jurorNumber: req.params['jurorNumber']});
+        let redirectUrl;
         if (req.session.poolJurorsReassign) {
           redirectUrl = app.namedRoutes.build('pool-overview.get', {poolNumber: req.params['poolNumber']});
         } else if (req.url.includes('details/edit/reassign/select-pool')) {
           redirectUrl = app.namedRoutes.build('juror-record.details.get', {jurorNumber: req.params['jurorNumber']});
+        } else {
+          redirectUrl = app.namedRoutes.build('juror-record.overview.get', {jurorNumber: req.params['jurorNumber']});
         }
 
         return res.redirect(redirectUrl);
