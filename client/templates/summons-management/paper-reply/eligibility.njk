@@ -3,6 +3,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
 
 {% block page_title %}{{ serviceName }} - Paper response - Eligibility{% endblock %}
 {% block page_identifier %}Paper response - Eligibility{% endblock %}
@@ -19,6 +20,110 @@
   {% endif %}
 {% endblock %}
 
+{% set livedConsecutiveDetails = undefined %}
+{% if errors.items["livedConsecutiveDetails"] %}
+  {% set livedConsecutiveDetails = { text: errors.items["livedConsecutiveDetails"][0].details } %}
+{% endif %}
+{% set livedConsecutiveDetailsHTML %}
+  {{ govukCharacterCount({
+    name: "livedConsecutiveDetails",
+    id: "lived-consecutive-details",
+    maxlength: 1000,
+    label: {
+      text: "Provide details about where they have lived since their 13th birthday",
+      classes: "govuk-body"
+    },
+    value: eligibilityDetails.livedConsecutiveDetails,
+    errorMessage: livedConsecutiveDetails
+  }) }}
+{% endset %}
+
+{% set mentalHealthActDetailsError = undefined %}
+{% if errors.items["mentalHealthActDetails"] %}
+  {% set mentalHealthActDetailsError = { text: errors.items["mentalHealthActDetails"][0].details } %}
+{% endif %}
+{% set mentalHealthActDetailsHTML %}
+  {{ govukCharacterCount({
+    name: "mentalHealthActDetails",
+    id: "mental-health-act-details",
+    maxlength: 1000,
+    label: {
+      text: "Provide details about how they're being detained, looked after or treated under the Mental Health Act",
+      classes: "govuk-body"
+    },
+    value: eligibilityDetails.mentalHealthActDetails,
+    errorMessage: mentalHealthActDetailsError
+  }) }}
+{% endset %}
+
+{% set mentalHealthCapacityDetailsError = undefined %}
+{% if errors.items["mentalHealthCapacityDetails"] %}
+  {% set mentalHealthCapacityDetailsError = { text: errors.items["mentalHealthCapacityDetails"][0].details } %}
+{% endif %}
+{% set mentalHealthCapacityDetailsHTML %}
+  {{ govukCharacterCount({
+    name: "mentalHealthCapacityDetails",
+    id: "mental-health-capacity-details",
+    maxlength: 1000,
+    label: {
+      text: "Provide brief details about why it was decided they lack mental capacity",
+      classes: "govuk-body"
+    },
+    value: eligibilityDetails.mentalHealthCapacityDetails,
+    errorMessage: mentalHealthCapacityDetailsError
+  }) }}
+{% endset %}
+
+{% set onBailDetailsError = undefined %}
+{% if errors.items["onBailDetails"] %}
+  {% set onBailDetailsError = { text: errors.items["onBailDetails"][0].details } %}
+{% endif %}
+{% set onBailDetailsHTML %}
+  {{ govukCharacterCount({
+    name: "onBailDetails",
+    id: "on-bail-details",
+    maxlength: 1000,
+    label: {
+      text: "Provide details about their bail and criminal offence",
+      classes: "govuk-body"
+    },
+    value: eligibilityDetails.onBailDetails,
+    errorMessage: onBailDetailsError
+  }) }}
+{% endset %}
+
+{% set convictedDetailsHintHTML %}
+  <br/>
+  <p class="govuk-body">For each conviction, give details of:</p>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>the offence or offences they committed</li>
+    <li>when this happened</li>
+    <li>where they were convicted</li>
+    <li>length of sentence</li>
+  </ul>
+{% endset %}
+
+{% set convictedDetailsError = undefined %}
+{% if errors.items["convictedDetails"] %}
+  {% set convictedDetailsError = { text: errors.items["convictedDetails"][0].details } %}
+{% endif %}
+{% set convictedDetailsHTML %}
+  {{ govukCharacterCount({
+    name: "convictedDetails",
+    id: "convicted-details",
+    maxlength: 1000,
+    label: {
+      text: "Provide details about their criminal offence",
+      classes: "govuk-body"
+    },
+    hint: {
+      html: convictedDetailsHintHTML
+    },
+    value: eligibilityDetails.convictedDetails,
+    errorMessage: convictedDetailsError
+  }) }}
+{% endset %}
+
 {% block content %}
 
   {% include "includes/errors.njk" %}
@@ -32,7 +137,6 @@
       <form method="post" action="{{ postUrl }}" >
         {# livedConsecutive #}
         {{ govukRadios({
-          classes: "govuk-radios--inline govuk-!-width-three-quarters",
           name: "livedConsecutive",
           fieldset: {
             legend: {
@@ -44,19 +148,21 @@
             {
               value: "yes",
               text: "Yes",
-              checked: livedConsecutive === "yes"
+              checked: eligibilityDetails.livedConsecutive === "yes"
             },
             {
               value: "no",
               text: "No",
-              checked: livedConsecutive === "no"
+              checked: eligibilityDetails.livedConsecutive === "no",
+              conditional: {
+                html: livedConsecutiveDetailsHTML
+              }
             }
           ]
         }) }}
 
         {# mentalHealthAct #}
         {{ govukRadios({
-          classes: "govuk-radios--inline",
           name: "mentalHealthAct",
           fieldset: {
             legend: {
@@ -68,19 +174,21 @@
             {
               value: "yes",
               text: "Yes",
-              checked: mentalHealthAct === "yes"
+              checked: eligibilityDetails.mentalHealthAct === "yes",
+              conditional: {
+                html: mentalHealthActDetailsHTML
+              }
             },
             {
               value: "no",
               text: "No",
-              checked: mentalHealthAct === "no"
+              checked: eligibilityDetails.mentalHealthAct === "no"
             }
           ]
         }) }}
 
         {# mentalHealthCapacity #}
         {{ govukRadios({
-          classes: "govuk-radios--inline",
           name: "mentalHealthCapacity",
           fieldset: {
             legend: {
@@ -92,19 +200,21 @@
             {
               value: "yes",
               text: "Yes",
-              checked: mentalHealthCapacity === "yes"
+              checked: eligibilityDetails.mentalHealthCapacity === "yes",
+              conditional: {
+                html: mentalHealthCapacityDetailsHTML
+              }
             },
             {
               value: "no",
               text: "No",
-              checked: mentalHealthCapacity === "no"
+              checked: eligibilityDetails.mentalHealthCapacity === "no"
             }
           ]
         }) }}
 
         {# onBail #}
         {{ govukRadios({
-          classes: "govuk-radios--inline",
           name: "onBail",
           fieldset: {
             legend: {
@@ -116,19 +226,21 @@
             {
               value: "yes",
               text: "Yes",
-              checked: onBail === "yes"
+              checked: eligibilityDetails.onBail === "yes",
+              conditional: {
+                html: onBailDetailsHTML
+              }
             },
             {
               value: "no",
               text: "No",
-              checked: onBail === "no"
+              checked: eligibilityDetails.onBail === "no"
             }
           ]
         }) }}
 
         {# convicted #}
         {{ govukRadios({
-          classes: "govuk-radios--inline ",
           name: "convicted",
           fieldset: {
             legend: {
@@ -140,12 +252,15 @@
             {
               value: "yes",
               text: "Yes",
-              checked: convicted === "yes"
+              checked: eligibilityDetails.convicted === "yes",
+              conditional: {
+                html: convictedDetailsHTML
+              }
             },
             {
               value: "no",
               text: "No",
-              checked: convicted === "no"
+              checked: eligibilityDetails.convicted === "no"
             }
           ]
         }) }}
