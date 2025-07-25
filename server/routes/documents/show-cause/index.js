@@ -9,7 +9,6 @@
       'documents.show-cause.post',
       auth.verify,
       controller.postShowCause(app));
-
   };
 
 })();
