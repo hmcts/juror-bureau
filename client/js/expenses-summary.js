@@ -18,6 +18,8 @@
       var refresh = $(banner());
       var recalculateTotals;
 
+      calcTotalAttendance();
+
       expensesSummary.children().each(function(__, child) {
         child.remove();
       });
@@ -50,6 +52,8 @@
         var newSummaryTotals = $(response);
         var recalculateTotals;
 
+        calcTotalAttendance();
+
         expensesSummary.children().each(function(_, child) {
           child.remove();
         });
@@ -59,6 +63,30 @@
         recalculateTotals = $('#recalculate-totals');
         recalculateTotals.click(onRecalculateTotalsClick);
       });
+  }
+
+  function calcTotalAttendance() {
+    var timeAtCourtHours = $('input[name="timeAtCourtHours"]').val().padStart(2, '0');
+    var timeAtCourtMins = $('input[name="timeAtCourtMins"]').val().padStart(2, '0');
+    var travelHours = $('#totalTravelTime-hour').val().padStart(2, '0');
+    var travelMins = $('#totalTravelTime-minute').val().padStart(2, '0');
+    var totalAttendanceTime = 0;
+
+    $('#payAttendance').removeAttr('disabled');
+    $('#payAttendance').removeAttr('aria-disabled');
+    if (isNaN(timeAtCourtHours) || isNaN(timeAtCourtMins) || isNaN(travelHours) || isNaN(travelMins)) {
+      return true;
+    }
+
+    //Calculate total attendance time = time at court + travel time
+    totalAttendanceTime = (parseInt(timeAtCourtHours) * 60) + parseInt(timeAtCourtMins) + (parseInt(travelHours) * 60) + parseInt(travelMins);
+    if (totalAttendanceTime > 240) {
+      //Total time over 4 hours, select full day and disable half day radio button
+      $('#payAttendance-2').prop('checked', true);
+      $('#payAttendance').attr('disabled', 'disabled');
+      $('#payAttendance').attr('aria-disabled', 'true');
+    }
+    return true;
   }
 
   function payload() {
