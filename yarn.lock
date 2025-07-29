@@ -1411,7 +1411,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.8.3":
+"axios@npm:^1.11.0":
   version: 1.11.0
   resolution: "axios@npm:1.11.0"
   dependencies:
@@ -3959,7 +3959,7 @@ __metadata:
     "@scottish-government/pattern-library": 0.0.381
     accessible-autocomplete: ^3.0.1
     applicationinsights: 2.9.7
-    axios: ^1.8.3
+    axios: ^1.11.0
     basic-auth: ^2.0.0
     body-parser: ^1.15.2
     chai: ^4.1.2
