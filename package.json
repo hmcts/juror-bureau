@@ -55,7 +55,7 @@
     "moment-timezone": "^0.5.45",
     "named-routes": "^2.0.6",
     "nunjucks": "3.2.4",
-    "pdfmake": "^0.2.0",
+    "pdfmake": "^0.2.20",
     "redis": "^4.6.12",
     "referrer-policy": "^1.0.0",
     "url-join": "^4.0.1",
