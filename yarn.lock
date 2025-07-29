@@ -2773,12 +2773,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express-rate-limit@npm:^7.3.1":
-  version: 7.4.0
-  resolution: "express-rate-limit@npm:7.4.0"
+"express-rate-limit@npm:7.5.1":
+  version: 7.5.1
+  resolution: "express-rate-limit@npm:7.5.1"
   peerDependencies:
-    express: 4 || 5 || ^5.0.0-beta.1
-  checksum: 81ddba751b401ff7f04207155dd0559938b5614754f73950d86acc1463dd7ea6a458a5ba941bcf108e8913b786bca6cde94c19ba504cf61f864edf92cc1bdbae
+    express: ">= 4.11"
+  checksum: 544fdd576a846a7d3ed0203a011cec6d65ad8e5eab58dbe045a0bdefd119060c140c38b327e32713b56342cc901a3ca5c99f13cce4ceee08408e775ec4742c16
   languageName: node
   linkType: hard
 
@@ -3916,7 +3916,7 @@ __metadata:
     eslint: ^9.3.0
     express: ^4.21.2
     express-nunjucks: ^3.1.1
-    express-rate-limit: ^7.3.1
+    express-rate-limit: 7.5.1
     express-session: ^1.18.2
     fs-extra: ^11.0.0
     govuk-frontend: ^5.11.1
