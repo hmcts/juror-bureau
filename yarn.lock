@@ -3914,7 +3914,7 @@ __metadata:
     moment: ^2.19.3
     moment-timezone: ^0.5.45
     named-routes: ^2.0.6
-    nodemon: ^3.1.1
+    nodemon: ^3.1.10
     nunjucks: 3.2.4
     pdfmake: ^0.2.0
     postcss: ^8.4.38
@@ -4562,7 +4562,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemon@npm:^3.1.1":
+"nodemon@npm:^3.1.10":
   version: 3.1.10
   resolution: "nodemon@npm:3.1.10"
   dependencies:
