@@ -361,7 +361,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fengyuanchen/datepicker@npm:^0.6.4":
+"@fengyuanchen/datepicker@npm:^0.6.5":
   version: 0.6.5
   resolution: "@fengyuanchen/datepicker@npm:0.6.5"
   peerDependencies:
@@ -574,7 +574,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ministryofjustice/frontend@npm:^5.1.3":
+"@ministryofjustice/frontend@npm:^5.1.5":
   version: 5.1.5
   resolution: "@ministryofjustice/frontend@npm:5.1.5"
   peerDependencies:
@@ -1584,7 +1584,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"basic-auth@npm:^2.0.0":
+"basic-auth@npm:^2.0.1":
   version: 2.0.1
   resolution: "basic-auth@npm:2.0.1"
   dependencies:
@@ -1837,7 +1837,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chart.js@npm:^2.9.3":
+"chart.js@npm:^2.9.4":
   version: 2.9.4
   resolution: "chart.js@npm:2.9.4"
   dependencies:
@@ -2124,7 +2124,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"connect-redis@npm:^7.1.0":
+"connect-redis@npm:^7.1.1":
   version: 7.1.1
   resolution: "connect-redis@npm:7.1.1"
   peerDependencies:
@@ -2303,7 +2303,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csurf@npm:^1.9.0":
+"csurf@npm:^1.11.0":
   version: 1.11.0
   resolution: "csurf@npm:1.11.0"
   dependencies:
@@ -2667,7 +2667,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"errorhandler@npm:^1.4.3":
+"errorhandler@npm:^1.5.1":
   version: 1.5.1
   resolution: "errorhandler@npm:1.5.1"
   dependencies:
@@ -2959,7 +2959,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express-nunjucks@npm:^3.1.1":
+"express-nunjucks@npm:^3.1.2":
   version: 3.1.2
   resolution: "express-nunjucks@npm:3.1.2"
   dependencies:
@@ -3926,7 +3926,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"istanbul@npm:^0.4.4":
+"istanbul@npm:^0.4.5":
   version: 0.4.5
   resolution: "istanbul@npm:0.4.5"
   dependencies:
@@ -4068,7 +4068,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsonwebtoken@npm:^9.0.0":
+"jsonwebtoken@npm:^9.0.0, jsonwebtoken@npm:^9.0.2":
   version: 9.0.2
   resolution: "jsonwebtoken@npm:9.0.2"
   dependencies:
@@ -4091,62 +4091,62 @@ __metadata:
   resolution: "juror-bureau@workspace:."
   dependencies:
     "@azure/identity": ^4.10.2
-    "@fengyuanchen/datepicker": ^0.6.4
+    "@fengyuanchen/datepicker": ^0.6.5
     "@hmcts/properties-volume": ^1.2.0
     "@hods/loading-spinner": ^0.5.1
-    "@ministryofjustice/frontend": ^5.1.3
+    "@ministryofjustice/frontend": ^5.1.5
     "@scottish-government/pattern-library": 0.0.381
     accessible-autocomplete: ^3.0.1
     applicationinsights: 2.9.7
     axios: ^1.11.0
-    basic-auth: ^2.0.0
+    basic-auth: ^2.0.1
     body-parser: ^1.20.3
     chai: 4.5.0
     chai-as-promised: ^8.0.1
     chai-things: ^0.2.0
-    chart.js: ^2.9.3
+    chart.js: ^2.9.4
     compression: 1.8.1
     config: ^3.3.12
-    connect-redis: ^7.1.0
+    connect-redis: ^7.1.1
     copy-webpack-plugin: ^12.0.2
     css-loader: ^7.1.2
-    csurf: ^1.9.0
-    errorhandler: ^1.4.3
+    csurf: ^1.11.0
+    errorhandler: ^1.5.1
     eslint: 9.32.0
     express: ^4.21.2
-    express-nunjucks: ^3.1.1
+    express-nunjucks: ^3.1.2
     express-rate-limit: 7.5.1
     express-session: ^1.18.2
     fs-extra: 11.3.0
     govuk-frontend: ^5.11.1
     helmet: 7.2.0
     html-webpack-plugin: ^5.6.3
-    istanbul: ^0.4.4
-    jsonwebtoken: ^9.0.0
-    launchdarkly-node-server-sdk: ^7.0.1
+    istanbul: ^0.4.5
+    jsonwebtoken: ^9.0.2
+    launchdarkly-node-server-sdk: ^7.0.4
     lodash: ^4.17.21
     method-override: ^3.0.0
     mini-css-extract-plugin: ^2.9.2
-    moment: ^2.19.3
+    moment: ^2.30.1
     moment-timezone: ^0.6.0
-    named-routes: ^2.0.6
+    named-routes: ^2.0.7
     nodemon: ^3.1.10
     nunjucks: 3.2.4
     pdfmake: ^0.2.20
     postcss: ^8.5.6
     redis: ^4.7.1
-    referrer-policy: ^1.0.0
+    referrer-policy: ^1.2.0
     sass: ^1.89.2
     sass-loader: ^14.2.1
     sinon: 18.0.1
-    sinon-chai: ^3.0.0
+    sinon-chai: ^3.7.0
     style-loader: ^4.0.0
     url-join: ^4.0.1
     validate.js: ^0.13.1
     webpack: ^5.101.0
     webpack-cli: ^5.1.4
     webpack-node-externals: ^3.0.0
-    winston: ^2.4.5
+    winston: ^2.4.7
   languageName: unknown
   linkType: soft
 
@@ -4201,7 +4201,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"launchdarkly-node-server-sdk@npm:^7.0.1":
+"launchdarkly-node-server-sdk@npm:^7.0.4":
   version: 7.0.4
   resolution: "launchdarkly-node-server-sdk@npm:7.0.4"
   dependencies:
@@ -4632,7 +4632,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment@npm:^2.10.2, moment@npm:^2.19.3, moment@npm:^2.29.4":
+"moment@npm:^2.10.2, moment@npm:^2.29.4, moment@npm:^2.30.1":
   version: 2.30.1
   resolution: "moment@npm:2.30.1"
   checksum: 859236bab1e88c3e5802afcf797fc801acdbd0ee509d34ea3df6eea21eb6bcc2abd4ae4e4e64aa7c986aa6cba563c6e62806218e6412a765010712e5fa121ba6
@@ -4660,7 +4660,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"named-routes@npm:^2.0.6":
+"named-routes@npm:^2.0.7":
   version: 2.0.7
   resolution: "named-routes@npm:2.0.7"
   dependencies:
@@ -5455,7 +5455,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"referrer-policy@npm:^1.0.0":
+"referrer-policy@npm:^1.2.0":
   version: 1.2.0
   resolution: "referrer-policy@npm:1.2.0"
   checksum: 520a112f3aaee0a3a7fa892308e9e3d497b62f0a7f3fc2cc6f8058553a9d4ef4abf164efcc35bd2716a8d9bd784f127503dad924d3738d13665f9129d52be871
@@ -5914,7 +5914,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sinon-chai@npm:^3.0.0":
+"sinon-chai@npm:^3.7.0":
   version: 3.7.0
   resolution: "sinon-chai@npm:3.7.0"
   peerDependencies:
@@ -6634,7 +6634,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"winston@npm:^2.4.5":
+"winston@npm:^2.4.5, winston@npm:^2.4.7":
   version: 2.4.7
   resolution: "winston@npm:2.4.7"
   dependencies:
