@@ -24,7 +24,7 @@
     "cichecks": "echo TODO: cichecks"
   },
   "dependencies": {
-    "@azure/identity": "^4.2.1",
+    "@azure/identity": "^4.10.2",
     "@fengyuanchen/datepicker": "^0.6.4",
     "@hmcts/properties-volume": "1.1.0",
     "@hods/loading-spinner": "^0.5.1",
