@@ -1103,7 +1103,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"accessible-autocomplete@npm:^3.0.0":
+"accessible-autocomplete@npm:^3.0.1":
   version: 3.0.1
   resolution: "accessible-autocomplete@npm:3.0.1"
   peerDependencies:
@@ -3880,7 +3880,7 @@ __metadata:
     "@hods/loading-spinner": ^0.5.1
     "@ministryofjustice/frontend": ^5.1.3
     "@scottish-government/pattern-library": 0.0.381
-    accessible-autocomplete: ^3.0.0
+    accessible-autocomplete: ^3.0.1
     applicationinsights: 2.9.7
     axios: ^1.8.3
     basic-auth: ^2.0.0
