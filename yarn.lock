@@ -1602,7 +1602,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chai-as-promised@npm:^8.0.0":
+"chai-as-promised@npm:^8.0.1":
   version: 8.0.1
   resolution: "chai-as-promised@npm:8.0.1"
   dependencies:
@@ -3886,7 +3886,7 @@ __metadata:
     basic-auth: ^2.0.0
     body-parser: ^1.15.2
     chai: ^4.1.2
-    chai-as-promised: ^8.0.0
+    chai-as-promised: ^8.0.1
     chai-things: ^0.2.0
     chart.js: ^2.9.3
     compression: ^1.6.2
