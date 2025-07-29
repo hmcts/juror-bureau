@@ -3988,7 +3988,7 @@ __metadata:
     nunjucks: 3.2.4
     pdfmake: ^0.2.20
     postcss: ^8.5.6
-    redis: ^4.6.12
+    redis: ^4.7.1
     referrer-policy: ^1.0.0
     sass: ^1.77.5
     sass-loader: ^14.2.1
@@ -5278,7 +5278,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"redis@npm:^4.6.12":
+"redis@npm:^4.7.1":
   version: 4.7.1
   resolution: "redis@npm:4.7.1"
   dependencies:
