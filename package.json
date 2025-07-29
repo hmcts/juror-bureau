@@ -85,7 +85,7 @@
     "webpack-node-externals": "^3.0.0"
   },
   "resolutions": {
-    "jackspeak": "4.1.1"
+    "jackspeak": "2.1.1"
   },
   "packageManager": "yarn@3.8.7"
 }
