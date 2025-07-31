@@ -8,6 +8,7 @@
   const attendanceTimeValidator = require('../../../../config/validation/add-attendance').attendanceTime;
   const { makeManualError, padTimeForApi, mapCamelToSnake } = require('../../../../lib/mod-utils');
   const { modifyJurorAttendance } = require('../../../../objects');
+  const moment = require('moment');
 
   module.exports.getModifyAttendance = function(app) {
     return async function(req, res) {
@@ -21,8 +22,8 @@
 
       const jurorName = req.session.jurorNameChangeAttendance;
 
-      if ((jurorNumber !== req.session.jurorCommonDetails.jurorNumber) || 
-          (poolNumber !== req.session.jurorCommonDetails.poolNumber)) {
+      if (req.session.jurorCommonDetails && ((jurorNumber !== req.session.jurorCommonDetails.jurorNumber) || 
+          (poolNumber !== req.session.jurorCommonDetails.poolNumber))) {
         app.logger.crit('The juror number / pool number was tampered with: ', {
           auth: req.session.authentication,
           jwt: req.session.authToken,
@@ -109,6 +110,13 @@
 
       if (typeof validatorResult !== 'undefined') {
         return validationRedirect(validatorResult);
+      }
+
+      if (req.body.attendanceType === 'NON_ATTENDANCE') {
+        const startDate = _.cloneDeep(req.session.jurorCommonDetails.startDate);
+        if (moment(attendanceDate, 'dd-mm-yyyy').isBefore(moment(startDate, 'dd-mm-yyyy'))) {
+          return validationRedirect(makeManualError('attendanceType', 'A non-attendance date cannot be before the juror\'s service start date'));
+        }
       }
 
       const payload = {
