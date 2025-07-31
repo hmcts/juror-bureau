@@ -45,7 +45,11 @@ resource "azurerm_monitor_diagnostic_setting" "cache-ds" {
   log_analytics_workspace_id = module.log_analytics_workspace.workspace_id
 
   enabled_log {
-    category = "AuditEvent"
+    category = "ConnectedClientList"
+  }
+
+  enabled_log {
+    category = "MSEntraAuthenticationAuditLog"
   }
 
   lifecycle {
