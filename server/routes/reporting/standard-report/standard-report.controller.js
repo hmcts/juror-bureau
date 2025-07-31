@@ -17,7 +17,7 @@
   const { standardReportDAO } = require('../../../objects/reports');
   const { validate } = require('validate.js');
   const { poolSearchObject } = require('../../../objects/pool-search');
-  const { searchJurorRecordDAO } = require('../../../objects');
+  const { searchJurorRecordDAO, fetchAllCourtsDAO } = require('../../../objects');
   const { tableDataMappers, constructPageHeading, buildTableHeaders } = require('./utils');
   const { bespokeReportBodys } = require('../bespoke-report/bespoke-report-body');
   const { reportKeys } = require('./definitions');
@@ -139,7 +139,7 @@
       case 'courts':
         delete req.session.errors;
         try {
-          const courtsData = await fetchCourtsDAO.get(req);
+          const courtsData = reportType.searchAllCourts ? await fetchAllCourtsDAO.get(req) : await fetchCourtsDAO.get(req);
           let courts = transformCourtNames(courtsData.courts);
           if (filter) {
             courts = courts.filter((court) =>{
@@ -301,7 +301,8 @@
     delete req.session.bannerMessage;
     req.session.reportSearch = req.params.filter;
     const buildStandardTableRows = function(tableData, tableHeadings) {
-      tableData = Array.isArray(tableData) ? tableData : [tableData];
+      tableData = tableData ? Array.isArray(tableData) ? tableData : [tableData] : [];
+      
       const rows = tableData.map(data => {
         let row = tableHeadings.map(header => {
           if (!header.name || header.name === '') return;

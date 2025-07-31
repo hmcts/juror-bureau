@@ -1357,7 +1357,7 @@
 
   module.exports.replaceAllObjKeys = replaceAllObjKeys;
 
-  const snakeToCamel = (item) => item.split('_').reduce((prev, curr) => prev + curr[0].toUpperCase() + curr.slice(1));
+  const snakeToCamel = (item) => item.split('_').reduce((prev, curr) => prev.toLowerCase() + curr[0].toUpperCase() + curr.slice(1).toLowerCase());
 
   const mapSnakeToCamel = (object) => replaceAllObjKeys(object, snakeToCamel);
 
