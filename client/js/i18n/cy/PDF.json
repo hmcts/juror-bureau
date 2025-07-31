@@ -2,7 +2,7 @@
   "sharedText": {
     "lang": "cy",
     "mainHeader": "Copi o’ch ymateb i wŷs rheithgor",
-    "logo": "./client/assets/images/pdflogo-cy.jpg",
+    "logo": "./client/assets/images/letterlogo-cy.png",
     "logoAlt": "Logo ar gyfer Gwasanaeth Llysoedd a Thribiwnlysoedd EF",
     "pageNumber": " / ",
     "detailsHeader": "Manylion eich gwŷs rheithgor",

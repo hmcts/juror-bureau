@@ -1,11 +1,14 @@
 (function(){
   'use strict';
 
-  var controller = require('./homepage.controller')
-    , auth = require('../../components/auth');
+  const controller = require('./homepage.controller');
+  const auth = require('../../components/auth');
+  const { isSuperUser } = require('../../components/auth/user-type');
 
   module.exports = function(app) {
     app.get('/homepage', 'homepage.get', auth.verify, controller.homepage(app));
+
+    app.get('/homepage/dashboard', 'homepage.dashboard.get', auth.verify, isSuperUser, controller.dashboard(app));
   };
 
 })();
