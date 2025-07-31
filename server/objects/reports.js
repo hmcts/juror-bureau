@@ -87,4 +87,13 @@
     },
   });
 
+  module.exports.allCourtUtilisationDAO = new DAO('moj/reports/court-utilisation-stats-report', {
+    post: function(body) {
+      return {
+        body,
+        transform: mapSnakeToCamel,
+      };
+    },
+  });
+
 })();

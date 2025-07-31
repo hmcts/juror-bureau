@@ -32,6 +32,9 @@
         <li><a class="govuk-link" href="{{ url('reports.daily-utilisation.filter.get') }}">Daily wastage and utilisation report</a></li>
         <li><a class="govuk-link" href="{{ url('reports.prepare-monthly-utilisation.filter.get') }}">Prepare monthly wastage and utilisation report</a></li>
         <li><a class="govuk-link" href="{{ url('reports.view-monthly-utilisation.filter.get') }}">View monthly wastage and utilisation reports</a></li>
+        {% if isSuperUser %}
+          <li><a class="govuk-link" href="{{ url('reports.all-court-utilisation.filter.select.get') }}">All court utilisation stats report</a></li>
+        {% endif %}
       </ul>
       
     </div>

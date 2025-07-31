@@ -333,11 +333,10 @@ function sortTableData(reportKey, { sortBy, sortDirection }, tableData, reportDa
       }
     });
   } else {
-
     if (reportData.bespokeReport?.printSorting?.dataSet) {
       tableData[reportData.bespokeReport.printSorting.dataSet] = tableData[reportData.bespokeReport.printSorting.dataSet].sort(sort(_sortBy, sortDirection))
     } else {
-      tableData.data = tableData.data.sort(sort(_sortBy, sortDirection));
+      tableData.data = tableData.data ? tableData.data.sort(sort(_sortBy, sortDirection)) : [];
     }
   }
 }
