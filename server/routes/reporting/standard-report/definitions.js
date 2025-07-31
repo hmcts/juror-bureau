@@ -1772,8 +1772,8 @@
           ),
         },
         headings: [
-          'reportCreated',
-          'timeCreated',
+          'reportDate',
+          'reportTime',
           'courtName',
         ],
         defaultSortColumn: 'courtName',
