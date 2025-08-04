@@ -307,7 +307,7 @@
         let row = tableHeadings.map(header => {
           if (!header.name || header.name === '') return;
 
-          let output = tableDataMappers[header.dataType](data[snakeToCamel(header.id)]);
+          let output = tableDataMappers[header.dataType](data[_.camelCase(header.id)]);
 
           if (header.id === 'juror_number' || header.id === 'juror_number_from_trial') {
             return ({
@@ -336,9 +336,9 @@
           if (header.id.includes('trial_number') && output) {
             return ({
               html: `<a href=${
-                app.namedRoutes.build('trial-management.trials.detail.get', {trialNumber: data[snakeToCamel(header.id)], locationCode: req.session.authentication.locCode})
+                app.namedRoutes.build('trial-management.trials.detail.get', {trialNumber: data[_.camelCase(header.id)], locationCode: req.session.authentication.locCode})
               }>${
-                data[snakeToCamel(header.id)]
+                data[_.camelCase(header.id)]
               }</a>`,
             });
           }
@@ -386,15 +386,19 @@
           }
 
           if (header.id === 'hours_attended') {
-            output = timeToDuration(data[snakeToCamel(header.id)])
+            output = timeToDuration(data[_.camelCase(header.id)])
           }
 
           if (header.id === 'status') {
-            output = capitalizeFully(toSentenceCase(data[snakeToCamel(header.id)]))
+            output = capitalizeFully(toSentenceCase(data[_.camelCase(header.id)]))
           }
           
           if (header.id === 'comments') {
             output = output.replaceAll('\n','<br><br>')
+          }
+
+          if (header.id === 'UTILISATION') {
+            output = output + '%'
           }
 
           if (header.dataType === 'List') {
@@ -418,13 +422,15 @@
 
           const numericTypes = ['Integer', 'BigDecimal', 'Long', 'Double']
 
-          const sortValue = numericTypes.includes(header.dataType) ? data[snakeToCamel(header.id)] : output;
+          const sortValue = numericTypes.includes(header.dataType) ? data[_.camelCase(header.id)] : output;
+
+          console.log(header.dataType, sortValue)
 
           return ({
             html: output ? output : '-',
             attributes: {
               'data-sort-value': sortValue && sortValue !== '-' 
-                ? (header.dataType === 'LocalDate' ? data[snakeToCamel(header.id)] : sortValue) 
+                ? (header.dataType === 'LocalDate' ? data[_.camelCase(header.id)] : sortValue) 
                 : (numericTypes.includes(header.dataType) ? '0' : '-')
             },
             format: header.dataType === 'BigDecimal' ? 'numeric' : '',
