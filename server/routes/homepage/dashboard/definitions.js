@@ -224,7 +224,6 @@
               widgetType: 'summonsDoughnut',
               column: 1,
               templateOptions: {
-                title: '',
                 doughnutId: 'yourWorkStats'
             },
             data: stats?.['summons-management'] || {},
@@ -234,7 +233,6 @@
             widgetType: 'summonsDoughnut',
             column: 2,
             templateOptions: {
-              title: '',
               doughnutId: 'assignRepliesStats'
             },
             data: stats?.['summons-management'] || {},
@@ -251,7 +249,6 @@
             values: [
               {
                 value: stats?.['pool-management'].poolsNotYetSummoned,
-                classes: '',
                 ariaLabel: 'Pools not yet summoned',
                 links: [
                   {
@@ -262,7 +259,6 @@
               },
               {
                 value: stats?.['pool-management'].poolsTransferringNextWeek,
-                classes: '',
                 ariaLabel: 'Pools transferring next week',
                 links: [
                   {
@@ -280,7 +276,6 @@
             values: [
               {
                 value: stats?.['pool-management'].deferredJurorsWithStartDateNextWeek,
-                classes: '',
                 ariaLabel: 'Deferred jurors with start date next week',
                 links: [
                   {
@@ -304,7 +299,6 @@
               column: 1,
               widgetType: 'placeholder',
               templateOptions: {
-                title: '',
             },
             data: {},
           },

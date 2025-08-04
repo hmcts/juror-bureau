@@ -123,7 +123,7 @@
       // get notification data
       let notifications;
       try {
-        notifications = await bureauDashboardDAO.get(req, 'notification-management/');
+        notifications = await bureauDashboardDAO.get(req, 'notification-management');
       } catch (err) {
         app.logger.crit('Unable to fetch bureau notifications', {
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
