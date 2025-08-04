@@ -1,0 +1,75 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <form class="mod-filter-form mod-dashboard__pools-under-responded__filter" id="filterPoolsForm" method="post">
+      <!-- Label should point at the input created by accessibleAutocomplete in the javascript at the bottom -->
+      <label class="govuk-label" for="courtNameOrLocation">Filter by court name or location code</label>
+      <div class="govuk-grid-column-one-half govuk-!-padding-0 govuk-!-margin-bottom-2" id="courtsList" name="courtsList" data-courts="{{ courts }}"></div>
+
+      <div class="govuk-button-group govuk-!-margin-bottom-0">
+        {{ govukButton({
+          type: "submit",
+          text: "Filter"
+        }) }}
+
+        <a class="govuk-link" href="{{ pageUrls.clearFilter }}">Clear filter</a>
+      </div>
+
+      <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+    </form>
+  </div>
+</div>
+
+{% if poolList.rows.length === 0 %}
+  <p class="govuk-body">There are no pools under responded.</p>
+{% else %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+    {{ modSortableTable({
+      id: "poolsUnderRespondedTable",
+      caption: "Pools under responded",
+      captionClasses: "govuk-visually-hidden",
+      head: poolList.head,
+      rows: poolList.rows,
+      url: urlPrefix
+    }) }}
+    </div>
+  </div>
+{% endif %}
+
+<script src="{{ assetPath }}js/jquery.min.js"></script>
+<script src="{{ assetPath if assetPath else '/' }}js/accessible-autocomplete.min.js"></script>
+<script type="application/javascript" nonce="{{ nonce }}">
+  $(document).ready(function() {
+    const el = $('#courtsList')
+
+    if (typeof el[0] !== 'undefined') {
+      accessibleAutocomplete({
+        element: el[0],
+        id: 'courtNameOrLocation',
+        name: 'courtNameOrLocation',
+        displayMenu: 'overlay',
+        source: el.data('courts').split(','),
+      });
+    }
+
+    $('#filterPoolsForm').action = window.location.href;
+
+    const filterInput = $('#courtNameOrLocation');
+    if (filterInput.length > 0) {
+      filterInput[0].value = '{{ locCode }}';
+    }
+
+    setTimeout(() => {
+      const selectedCourt = $('#courtNameOrLocation__listbox');
+      if (selectedCourt.length > 0 && selectedCourt[0].children.length > 0) {
+        selectedCourt[0].children[0].click();
+        document.activeElement.blur();
+      }
+    }, 100);
+  });
+</script>

@@ -2,16 +2,21 @@
   'use strict';
 
   const _ = require('lodash');
-  const { isCourtUser, isSuperUser } = require('../../components/auth/user-type');
-  const { courtWidgetDefinitions, widgetTemplates } = require('./dashboard/definitions');
+  const modUtils = require('../../lib/mod-utils');
+  const { isCourtUser, isBureauUser, isSuperUser } = require('../../components/auth/user-type');
+  const { courtWidgetDefinitions, bureauWidgetDefinitions, widgetTemplates } = require('./dashboard/definitions');
   const { courtDashboardDAO } = require('../../objects/court-dashboard');
   const { courtDetailsDAO } = require('../../objects/administration');
-  const { replaceAllObjKeys } = require('../../lib/mod-utils');
+  const { fetchCourtsDAO } = require('../../objects/index')
+  const { bureauDashboardDAO, bureauDashboardPoolsUnderResponded } = require('../../objects/bureau-dashboard'); 
   const { capitalizeFully } = require('../../components/filters');
 
   module.exports.homepage = function(app) {
     return async function(req, res) {
       if (isCourtUser(req) && isSuperUser(req)) {
+        return res.redirect(app.namedRoutes.build('homepage.dashboard.get'));
+      }
+      if (isBureauUser(req) && isSuperUser(req)) {
         return res.redirect(app.namedRoutes.build('homepage.dashboard.get'));
       }
 
@@ -39,9 +44,21 @@
   // Errors will be logged to the application logs for later investigation
   module.exports.dashboard = function(app) {
     return async function(req, res) {
+      if (isCourtUser(req)) {
+        return courtDashboard(app)(req, res);
+      } else if (isBureauUser(req)) {
+        return bureauDashboard(app)(req, res);
+      } else {
+        return res.status(403).send('Forbidden');
+      }
+    };
+  };
+
+  function courtDashboard(app) {
+    return async function(req, res) {
       let courtDetails;
       try {
-        courtDetails = replaceAllObjKeys((await courtDetailsDAO.get(req, req.session.authentication.locCode)).response, _.camelCase);
+        courtDetails = modUtils.replaceAllObjKeys((await courtDetailsDAO.get(req, req.session.authentication.locCode)).response, _.camelCase);
       } catch (err) {
         app.logger.crit('Unable to fetch court details', {
           auth: req.session.authentication,
@@ -75,7 +92,82 @@
       res.render('homepage/court-dashboard/dashboard.njk', {
         notifications: notifications ? buildDashboardNotifications(app)(req, res)(notifications) : [],
         widgets,
-        courtName: courtDetails ? `${capitalizeFully(courtDetails?.englishCourtName)} (${courtDetails?.courtCode})` : 'Court Dashboard',
+        headingName: courtDetails ? `${capitalizeFully(courtDetails?.englishCourtName)} (${courtDetails?.courtCode})` : 'Court Dashboard',
+      });
+    };
+  };
+
+  function bureauDashboard(app) {
+    return async function(req, res) {
+
+      let pageUrls = {
+        homepage: app.namedRoutes.build('homepage.get'),
+        clearFilter: app.namedRoutes.build('homepage.dashboard.get'),
+      }
+
+      // cache the court list for pools under responded filter
+      if (!req.session.dashboardCourtsList) {
+        try {
+          const courtList = await fetchCourtsDAO.get(req);
+          if (courtList && courtList.courts) {
+            req.session.dashboardCourtsList = courtList.courts;
+          }
+        } catch (err) {
+          app.logger.crit('Failed to fetch courts list: ', {
+            auth: req.session.authentication,
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
+        }
+      }
+
+      // get notification data
+      let notifications;
+      try {
+        notifications = await bureauDashboardDAO.get(req, 'notification-management/');
+      } catch (err) {
+        app.logger.crit('Unable to fetch bureau notifications', {
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+      }
+      app.logger.info('Notification Management Data', {
+        notifications
+      });
+
+
+      // get pools under responded data
+      // if location_code is in query string it will filter the pools list
+      let poolsUnderResponded;
+      let locCode = req.query['location_code'];
+      let queryStringParams = '?status=created&tab=bureau&pageNumber=1&pageLimit=25&sortBy=SERVICE_START_DATE&sortOrder=ASC'
+      if (locCode) {
+        queryStringParams += `&locCode=${locCode}`;
+      }
+      try {
+        poolsUnderResponded = await bureauDashboardPoolsUnderResponded.get(req, queryStringParams);
+      } catch (err) {
+        app.logger.crit('Unable to fetch pools under responded data', {
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+      }
+
+      let widgets = [];
+      try {
+        widgets = await buildDashboardWidgets(app)(req, res)({});
+      } catch (err) {
+        app.logger.crit('Unable to fetch widget definitions', {
+          auth: req.session.authentication,
+          token: req.session.authToken,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+      }
+
+      res.render('homepage/bureau-dashboard/dashboard.njk', {
+        notifications: notifications ? buildDashboardNotifications(app)(req, res)(notifications) : [],
+        widgets,
+        headingName: 'Jury central summoning bureau',
+        pageUrls,
+        courts: req.session.dashboardCourtsList ? modUtils.transformCourtNames(req.session.dashboardCourtsList) : [],
+        poolList: poolsUnderResponded ? modUtils.transformPoolsUnderRespondedList(poolsUnderResponded.data) : []
       });
     };
   };
@@ -89,15 +181,25 @@
       });
     }
 
+    const widgetDefs = isCourtUser(req) ? courtWidgetDefinitions(app)(req, res)() : bureauWidgetDefinitions(app)(req, res)();
+   
     const requiredSections = [...new Set([
       ...Object.keys(requiredWidgets), 
-      ...getSectionsWithMandatoryWidgets(courtWidgetDefinitions(app)(req, res)())
+      ...getSectionsWithMandatoryWidgets(widgetDefs)
     ])];
 
     let stats = {}
     for (const section of requiredSections) {
       try {
-        stats[section] = await courtDashboardDAO.get(req, section, req.session.authentication.locCode);
+        if (isCourtUser(req)) {
+          stats[section] = await courtDashboardDAO.get(req, section, req.session.authentication.locCode);
+        } else {
+          if (section !== 'pools-under-responded') {
+            stats[section] = await bureauDashboardDAO.get(req, section);
+          }
+          stats['summons-management'].yourWorkLink = app.namedRoutes.build('inbox.todo.get');
+          stats['summons-management'].assignRepliesLink = app.namedRoutes.build('allocation.get');
+        }
       } catch (err) {
         app.logger.crit(`Unable to fetch ${section} dashboard stats`, {
           auth: req.session.authentication,
@@ -108,7 +210,7 @@
       }
     }
 
-    const widgetDefinitions = courtWidgetDefinitions(app)(req,res)(stats);
+    const widgetDefinitions = isCourtUser(req) ? courtWidgetDefinitions(app)(req, res)(stats) : bureauWidgetDefinitions(app)(req, res)(stats);
 
     const result = {};
     let currentRow = 0;
@@ -150,7 +252,7 @@
         }
       }
 
-      const sectionColumns = Object.values(widgets).reduce((max, widget) => Math.max(max, widget.column || 1), 1);
+      const sectionColumns = sectionData.columns || Object.values(widgets).reduce((max, widget) => Math.max(max, widget.column || 1), 1);
 
       if (currentRowWidth + sectionColumns > 3) {
         currentRow++;
@@ -183,15 +285,74 @@
             `;
             break;
           case 'pendingJurors':
-            notificationHTML = `You have <b>${value}</b> 
-              <a class="govuk-link govuk-link--no-visited-state" href="${app.namedRoutes.build('juror-management.manage-jurors.approve.get')}"> juror${value > 1 ? 's' : ''} to approve</a>
-            `;
+              notificationHTML = `You have <b>${value}</b> 
+                <a class="govuk-link govuk-link--no-visited-state" href="${app.namedRoutes.build('juror-management.manage-jurors.approve.get')}"> juror${value > 1 ? 's' : ''} to approve</a>
+              `;
             break;
+          case 'fourWeeksSummonsReplies':
+            notificationHTML = `You have <b>${value}</b> 
+              <a class="govuk-link govuk-link--no-visited-state" href="${app.namedRoutes.build('inbox.todo.get')}">summons replies</a> 
+              with less than four weeks until service start date to process.
+            `;
+            break;  
         }
         notificationList.push(notificationHTML);
       }
     }
     return notificationList;
   };
+
+  module.exports.filterPools = function(app) {
+    return function(req, res) {
+      var queryParams = _.clone(req.query);
+
+      if (req.body.courtNameOrLocation === '' || typeof req.body.courtNameOrLocation === 'undefined') {
+        // this piece will clear the filter but keep all other search params
+        delete queryParams['location_code'];
+        return res.redirect(urlBuilder(app, queryParams));
+      }
+
+      modUtils.matchUserCourt(req.session.dashboardCourtsList, req.body)
+        .then(function(court) {
+          queryParams['location_code'] = court.locationCode;
+          return res.redirect(urlBuilder(app, queryParams));
+        })
+        .catch(function() {
+          delete queryParams['location_code'];
+          return res.redirect(urlBuilder(app, queryParams));
+        });
+    };
+  };
+
+  function urlBuilder(app, params, options) {
+    var paramsClone = _.clone(params);
+
+    if (typeof options !== 'undefined') {
+      if (options.hasOwnProperty('tab')) {
+        paramsClone.tab = options.tab;
+      }
+
+      if (options.hasOwnProperty('status')) {
+        if (options.status === 'requested') {
+          delete paramsClone.tab;
+        }
+        paramsClone.status = options.status;
+
+        delete paramsClone['page'];
+      }
+
+      if (options.clearFilter) {
+        delete paramsClone['location_code'];
+      }
+
+      if (options.clearSort) {
+        delete paramsClone['sortBy'];
+        delete paramsClone['sortOrder'];
+      }
+    }
+
+    return app.namedRoutes.build('homepage.dashboard.get')
+      + '?' + new URLSearchParams(paramsClone).toString();
+  }
 
 })();
