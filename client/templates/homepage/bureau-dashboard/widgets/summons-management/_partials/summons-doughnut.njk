@@ -1,0 +1,114 @@
+{% macro summonsDoughnut(params) %}
+
+  {% set totalColour = '#B1B4B6' %}
+  {% set standardColour = '#1D70B8' %}
+  {% set overdueColour = '#912b88' %}
+  {% set fourWeeksColour = '#f47738' %}
+  {% set assignedColour = '#1D70B8' %}
+  {% set unassignedColour = '#B1B4B6' %}
+
+  
+  <div class="doughnut-chart">
+    <div class="doughnut-chart__chart-canvas">
+      <div class="total">
+        {% if params.id == "yourWorkStats" %}
+          <span class="number">{{ params.values.summonsToProcess }}</span>
+          <span class="legend">Summonses to process</span>
+        {% elif params.id == "assignRepliesStats" %}
+          <span class="number">{{ params.values.unassigned }}</span>
+          <span class="legend">Unassigned</span>
+        {% endif %}
+      </div>
+      <canvas id="{{params.id}}Chart" name="{{params.id}}Chart" width="170" height="170"></canvas>
+    </div>
+    
+    {% if params.id == "yourWorkStats" %}
+      <div class="doughnut-chart__legend">
+        <div class="legend">
+          <div class="bullet bullet__mid-grey"></div>Total <span class="amount">{{ params.values.total }}</span>
+        </div>
+        <div class="divider"></div>
+        <div class="legend">
+          <div class="bullet bullet__blue"></div>Standard <span class="amount">{{ params.values.standard }}</span>
+        </div>
+        <div class="legend">
+          <div class="bullet bullet__bright-purple"></div>Overdue <span class="amount">{{ params.values.overdue }}</span>
+        </div>
+        <div class="legend">
+          <div class="bullet bullet__orange"></div>4 Weeks <span class="amount">{{ params.values.fourWeeks }}</span>
+        </div>
+      </div>
+    {% elif params.id == "assignRepliesStats" %}
+      <div class="doughnut-chart__legend">
+        <div class="legend">
+          <div class="bullet bullet__blue"></div>Assigned <span class="amount">{{ params.values.assigned }}</span>
+        </div>
+        <div class="legend">
+          <div class="bullet bullet__mid-grey"></div>Unassigned <span class="amount">{{ params.values.unassigned }}</span>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  {% if params.id == "yourWorkStats" %} 
+    <div class="govuk-body doughnut-page-link"><a href="{{params.values.yourWorkLink}}">Your work</a></div>
+  {% elif params.id == "assignRepliesStats" %}
+    <div class="govuk-body doughnut-page-link"><a href="{{params.values.assignRepliesLink}}">Assign replies</a></div>
+  {% endif %}
+
+  <script nonce="{{ params.nonce }}">
+
+    {% if params.id == "yourWorkStats" %}
+      var statsObject = {
+        standard: {{params.values.standard}},
+        overdue: {{params.values.overdue}},
+        fourWeeks: {{ params.values.fourWeeks }},
+      }
+    {% elif params.id == "assignRepliesStats" %}
+      var statsObject = {
+        assigned: {{params.values.assigned}},
+        unasssigned: {{params.values.unassigned}},
+      }
+    {% endif %}
+
+    if (Object.values(statsObject).every((item) => {
+      return item === 0;
+    })) {
+      // Handle case where all values are 0
+      {% if params.id == "yourWorkStats" %}
+        statsObject.standard = 1; // Ensure at least one value is present for the chart
+      {% elif params.id == "assignRepliesStats" %}
+        statsObject.assigned = 1; // Ensure at least one value is present for the chart
+      {% endif %}
+    }
+
+    var valueArr = Object.values(statsObject);
+    var ctx = document
+      .getElementById('{{params.id}}Chart')
+      .getContext('2d');
+
+    var dbChart = new Chart(ctx, {
+      type: 'doughnut',
+      options: {
+        tooltips: {
+          enabled: false
+        },
+        cutoutPercentage: '70'
+      },
+      data: {
+        datasets: [
+          {
+            data: valueArr,
+            backgroundColor: "{{ params.id }}" === "yourWorkStats" ? [
+              '{{standardColour}}', '{{overdueColour}}', '{{fourWeeksColour}}'
+            ] : [
+              '{{assignedColour}}', '{{unassignedColour}}'
+            ],
+            borderWidth: 0,
+          }
+        ]
+      }
+    });
+  </script>
+
+{% endmacro %}
