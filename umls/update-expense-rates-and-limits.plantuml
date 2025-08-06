@@ -6,25 +6,37 @@ skinparam SequenceMessageAlignment center
 participant Actor
 
 ''' LOCAL ROUTING
-participant ExpenseLimitsPage <</administration/expense-limits>>
-participant GenericErrorPage <</error>>
+participant ExpenseLimitsPage <</administration/expense-limits>> #LightBlue
+participant GenericErrorPage <</error>> #LightBlue
 
-''' CONTROLLER AND REQUEST OBJECTS
-participant ExpenseLimitsController <<expense-limits.controller.js>> #lightyellow
-participant FetchExpenseLimitsObject <<expenseRatesAndLimitsDAO.get()>> #lightyellow
-participant SetExpenseLimitsObject <<expenseRatesAndLimitsDAO.post()>> #lightyellow
+''' AUTHENTICATION
+participant IsSystemAdministrator <<isSystemAdministrator>> #LightSalmon
+
+''' CONTROLLER
+participant ExpenseLimitsController <<expense-limits.controller.js>> #LightYellow
+
+''' REQUEST OBJECTS
+participant FetchExpenseLimitsObject <<expenseRatesAndLimitsDAO.get()>> #PaleGreen
+participant SetExpenseLimitsObject <<expenseRatesAndLimitsDAO.post()>> #PaleGreen
 
 ''' TEMPLATES
-participant ExpenseLimitsTemplate <<administration/expense-limits.njk>> #lavender
-participant ErrorTemplate <<_errors/generic.njk>> #lavender
+participant ExpenseLimitsTemplate <<administration/expense-limits.njk>> #Thistle
+participant ErrorTemplate <<_errors/generic.njk>> #Thistle
 
 ''' FILTERS AND VALIDATORS
-participant ExpenseLimitsValidator
+participant ExpenseLimitsValidator #Gold
 
 ''' BACKEND CONTROLLER
-participant BackendController
+participant BackendController #LightCoral
 
 Actor -> ExpenseLimitsPage : click expense rates and limits tab
+ExpenseLimitsPage -> IsSystemAdministrator : check if user is system administrator
+IsSystemAdministrator -> ExpenseLimitsPage : return true
+
+alt Not a System administrator
+  IsSystemAdministrator -> GenericErrorPage : redirect to error page
+end
+
 ExpenseLimitsPage -> ExpenseLimitsController : call expense limits controller
  
 ExpenseLimitsController -> FetchExpenseLimitsObject : build request object
@@ -104,3 +116,5 @@ ExpenseLimitsController -> ExpenseLimitsTemplate : request and build template
 ExpenseLimitsController <- ExpenseLimitsTemplate : return HTML
 ExpenseLimitsPage <- ExpenseLimitsController : return HTML
 Actor <- ExpenseLimitsPage : render HTML
+
+@enduml
