@@ -1,0 +1,59 @@
+@startuml add-room-location
+hide unlinked
+
+!include generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant RoomsPage <</administration/room-locations/rooms>>
+participant AddRoomsPage <</administration/room-locations/add-edit-room>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant RoomLocationsController <<non-sitting-days.controller.js>> #lightyellow
+participant RoomLocationsObject <<courtroomsDAO.get()>> #lightyellow
+participant AddRoomLocationsObject <<courtroomsDAO.post()>> #lightyellow
+
+''' FILTERS AND VALIDATORS
+participant CourtroomDetailsValidator #Gold
+
+''' TEMPLATES
+participant RoomsTemplate <</administration/rooms.njk>>
+participant AddEditRoomsTemplate <</administration/add-edit-room.njk>>
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> RoomsPage: click add room on room locations page
+RoomsPage -> RoomLocationsController : call rooms controller
+RoomLocationsController -> AddEditRoomsTemplate : request and build template
+RoomLocationsController <- AddEditRoomsTemplate : return HTML
+AddRoomsPage <- RoomLocationsController : return HTML
+Actor <- AddRoomsPage : render HTML
+
+Actor -> AddRoomsPage: enter details and click submit
+
+AddRoomsPage -> RoomLocationsController : POST courtroom details
+
+$validateInput(RoomLocationsController, CourtroomDetailsValidator, AddEditRoomsTemplate, AddRoomsPage)
+
+RoomLocationsController -> AddRoomLocationsObject : build request object
+AddRoomLocationsObject -> BackendController : send backend request
+
+alt Failed to add courtroom
+  AddRoomLocationsObject <-- BackendController : error response
+  RoomLocationsController <-- AddRoomLocationsObject : reject requestObject
+  $renderGenericErrorPage(RoomLocationsController, ErrorTemplate)
+end
+
+AddRoomLocationsObject <- BackendController : ok response
+RoomLocationsController <- AddRoomLocationsObject : resolve request
+
+!includesub room-locations.plantuml!renderCourtroomsPage
+
+@enduml
