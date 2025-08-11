@@ -1,0 +1,51 @@
+@startuml Users
+hide unlinked
+!include generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant UsersPage <</administration/users/users>>
+participant UserRecordPage <</administration/users/user-record>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant UsersController <<users.controller.js>> #lightyellow
+participant CourtsObject <<courtsDAO.get()>> #lightyellow
+participant UsersObject <<usersDAO.post()>> #lightyellow
+participant UserRecordObject <<userRecordDAo.get()>> #lightyellow
+
+''' TEMPLATES
+participant UsersTemplate <</administration/users/users.njk>>
+participant UserRecordTemplate <</administration/users/user-record.njk>>
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> UsersPage: click users tab
+UsersPage -> UsersController : call users controller
+
+$genericAPICall(UsersController, CourtsObject, ErrorTemplate, "Failed to fetch list of courts")
+
+$genericAPICall(UsersController, UsersObject, ErrorTemplate, "Failed to fetch list of users")
+
+$renderTemplateToPage(UsersController, UsersTemplate, UsersPage)
+
+alt Search users by username/court/user-type
+    Actor -> UsersPage : enter username/court/user-type in search field and click search
+    UsersPage -> UsersController : call users controller
+    $genericAPICall(UsersController, CourtsObject, ErrorTemplate, "Failed to fetch list of courts")
+    $renderTemplateToPage(UsersController, UsersTemplate, UsersPage)
+end
+
+alt Select a user record
+    Actor -> UsersPage: click on a user
+    UsersPage -> UsersController : call users controller
+
+    $genericAPICall(UsersController, UserRecordObject, ErrorTemplate, "Failed to fetch user record")
+    $renderTemplateToPage(UsersController, UserRecordTemplate, UserRecordPage)
+end

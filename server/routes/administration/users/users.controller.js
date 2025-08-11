@@ -143,7 +143,7 @@
           courtsToDisplay,
         });
       } catch (err) {
-        app.logger.crit('Failed to list of users: ', {
+        app.logger.crit('Failed to fetch list of users: ', {
           auth: req.session.authentication,
           jwt: req.session.authToken,
           data: {
@@ -248,7 +248,7 @@
           pagination,
         });
       } catch (err) {
-        app.logger.crit('Failed to list of users: ', {
+        app.logger.crit('Failed to fetch list of users: ', {
           auth: req.session.authentication,
           jwt: req.session.authToken,
           data: {
