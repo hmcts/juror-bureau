@@ -24,19 +24,24 @@
   $controller <- $validator : valid details entered
 !endprocedure
 
-!procedure $genericAPIErrorAlt($controller, $object, $errorTemplate, $altMessage)
+!procedure $APIErrorAlt($controller, $object, $errorTemplate, $altMessage, $template = null, $errorPage = null)
   alt $altMessage
-    $object <-- BackendController : error response
+    $object <-- BackendController : Error response
     $controller <-- $object : reject requestObject
-    $renderGenericErrorPage($controller, $errorTemplate)
+
+    !if ($template != null) && ($errorPage != null)
+      $renderErrorOnForm($controller, $template, $errorPage)
+    !else
+      $renderGenericErrorPage($controller, $errorTemplate)
+    !endif
   end
 !endprocedure
 
 !procedure $genericAPICall($controller, $object, $errorTemplate, $errorMessage)
   $controller -> $object : build request object
-  UserRecordObject -> BackendController : send backend request
+  $object -> BackendController : send backend request
 
-  $genericAPIErrorAlt($controller, $object, $errorTemplate, $errorMessage)
+  $APIErrorAlt($controller, $object, $errorTemplate, $errorMessage)
 
   $object <- BackendController : ok response
   $controller <- $object : resolve request
