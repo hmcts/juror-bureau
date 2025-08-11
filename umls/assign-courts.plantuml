@@ -1,4 +1,7 @@
-@startuml Assign courts
+@startuml assign-courts
+hide unlinked
+
+!include generic-blocks.plantuml
 
 skinparam Style strictuml 
 skinparam SequenceMessageAlignment center
@@ -13,10 +16,12 @@ participant GenericErrorPage <</error>>
 
 ''' CONTROLLER AND REQUEST OBJECTS
 participant AssignCourtsController <<assign-courts.controller.js>> #lightyellow
-participant AssignCourtsObject <<usersDAO.assignCourts()>> #lightyellow
-participant RemoveCourtsObject <<usersDAO.removeCourts	d()>> #lightyellow
-participant CourtsObject <<courtsDAO()>> #lightyellow
-participant UserRecordObject <<usersDAO.getUserRecord()>> #lightyellow
+participant AssignCourtsObject <<assignCourts.patch()>> #lightyellow
+participant RemoveCourtsObject <<userDAO.delete()>> #lightyellow
+participant UserRecordObject <<userRecordDAO.get()>> #lightyellow
+
+''' VALIDATORS
+participant AssignCourtsValidator #Gold
 
 ''' TEMPLATES
 participant UserRecordTemplate <</administration/users/user-record.njk>>
@@ -30,90 +35,35 @@ participant BackendController
 Actor -> UserRecordPage: click assign to court
 UserRecordPage -> AssignCourtsController : call assign courts controller
 
-AssignCourtsController -> CourtsObject : build request object
-CourtsObject -> BackendController : send backend request
-CourtsObject <- BackendController : ok response
-AssignCourtsController <- CourtsObject : resolve request
+$genericAPICall(AssignCourtsController, UserRecordObject, ErrorTemplate, "Failed to fetch courts")
 
-AssignCourtsController -> AssignCourtsTemplate : request and build template
-AssignCourtsController <- AssignCourtsTemplate : return HTML
-AssignCourtsPage <- AssignCourtsController : return HTML
-Actor <- AssignCourtsPage : render HTML
+$renderTemplateToPage(AssignCourtsController, AssignCourtsTemplate, AssignCourtsPage)
 
-Actor -> AssignCourtsPage: select a court to assign a user to
-AssignCourtsPage -> AssignCourtsController : call assign courts controller
 
-AssignCourtsController -> AssignCourtsObject : build request object
-AssignCourtsObject -> BackendController : send backend request
-AssignCourtsObject <- BackendController : ok response
-AssignCourtsController <- AssignCourtsObject : resolve request
 
-AssignCourtsController -> UserRecordTemplate : request and build template
-AssignCourtsController <- UserRecordTemplate : return HTML
-UserRecordPage <- AssignCourtsController : return HTML
-Actor <- UserRecordPage : render HTML
+Actor -> AssignCourtsPage: select courts to assign a user to
+AssignCourtsPage -> AssignCourtsController : POST assign courts form
+
+$validateInput(AssignCourtsController, AssignCourtsValidator, AssignCourtsTemplate, AssignCourtsPage)
+
+$genericAPICall(AssignCourtsController, AssignCourtsObject, ErrorTemplate, "Failed to assign courts to user")
+
+$renderTemplateToPage(AssignCourtsController, UserRecordTemplate, UserRecordPage)
 
 
 alt Remove a court
     Actor -> UserRecordPage: click remove a court
     UserRecordPage -> AssignCourtsController : call assign courts controller
 
-    AssignCourtsController -> UserRecordObject : build request object
-    UserRecordObject -> BackendController : send backend request
-    UserRecordObject <- BackendController : ok response
-    AssignCourtsController <- UserRecordObject : resolve request
+    $genericAPICall(AssignCourtsController, UserRecordObject, ErrorTemplate, "Failed to fetch user record details")
 
-    AssignCourtsController -> RemoveCourtsTemplate : request and build template
-    AssignCourtsController <- RemoveCourtsTemplate : return HTML
-    RemoveCourtsPage <- AssignCourtsController : return HTML
-    Actor <- RemoveCourtsPage : render HTML
+    $renderTemplateToPage(AssignCourtsController, RemoveCourtsTemplate, RemoveCourtsPage)
 
     Actor -> RemoveCourtsPage: confirm removal
     RemoveCourtsPage -> AssignCourtsController : call assign courts controller
 
-    AssignCourtsController -> RemoveCourtsObject : build request object
-    RemoveCourtsObject -> BackendController : send backend request
-    RemoveCourtsObject <- BackendController : ok response
-    AssignCourtsController <- RemoveCourtsObject : resolve request
+    $genericAPICall(AssignCourtsController, RemoveCourtsObject, ErrorTemplate, "Failed to remove courts from user")
 
-    AssignCourtsController -> UserRecordTemplate : request and build template
-    AssignCourtsController <- UserRecordTemplate : return HTML
-    UserRecordPage <- AssignCourtsController : return HTML
-    Actor <- UserRecordPage : render HTML
-end
-
-alt Failed to fetch list of courts
-    CourtsObject <-- BackendController : error response
-    AssignCourtsController <-- CourtsObject : reject requestObject
-    AssignCourtsController -> ErrorTemplate : request and build template
-    AssignCourtsController <- ErrorTemplate : return HTML
-    GenericErrorPage <- AssignCourtsController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
-
-alt Failed to assign courts to user
-    AssignCourtsObject <-- BackendController : error response
-    AssignCourtsController <-- AssignCourtsObject : reject requestObject
-    AssignCourtsController -> ErrorTemplate : request and build template
-    AssignCourtsController <- ErrorTemplate : return HTML
-    GenericErrorPage <- AssignCourtsController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
-
-alt Failed to fetch user record details
-    UserRecordObject <-- BackendController : error response
-    AssignCourtsController <-- UserRecordObject : reject requestObject
-    AssignCourtsController -> ErrorTemplate : request and build template
-    AssignCourtsController <- ErrorTemplate : return HTML
-    GenericErrorPage <- AssignCourtsController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
-
-alt Failed to remove courts from user
-    RemoveCourtsObject <-- BackendController : error response
-    AssignCourtsController <-- RemoveCourtsObject : reject requestObject
-    AssignCourtsController -> ErrorTemplate : request and build template
-    AssignCourtsController <- ErrorTemplate : return HTML
-    GenericErrorPage <- AssignCourtsController : return HTML
-    Actor <- GenericErrorPage : render error page
+    UserRecordPage <- AssignCourtsController : redirect to user record page with banner message
+    Actor <- UserRecordPage : return HTML
 end
