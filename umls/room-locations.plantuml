@@ -1,5 +1,7 @@
 @startuml room-locations
 
+!include generic-blocks.plantuml
+
 skinparam Style strictuml 
 skinparam SequenceMessageAlignment center
 
@@ -7,119 +9,40 @@ participant Actor
 
 ''' LOCAL ROUTING
 participant RoomsPage <</administration/room-locations/rooms>>
-participant AddRoomsPage <</administration/room-locations/add-edit-room>>
 participant GenericErrorPage <</error>>
 
 ''' CONTROLLER AND REQUEST OBJECTS
 participant RoomLocationsController <<non-sitting-days.controller.js>> #lightyellow
 participant RoomLocationsObject <<courtroomsDAO.get()>> #lightyellow
-participant UpdateRoomLocationsObject <<courtroomsDAO.put()>> #lightyellow
-participant AddRoomLocationsObject <<courtroomsDAO.post()>> #lightyellow
+
 
 ''' TEMPLATES
 participant RoomsTemplate <</administration/rooms.njk>>
-participant AddEditRoomsTemplate <</administration/add-edit-room.njk>>
 participant ErrorTemplate <<_errors/generic.njk>> #lavender
 
 ''' BACKEND CONTROLLER
 participant BackendController
 
 Actor -> RoomsPage: click rooms tab
-RoomsPage -> RoomLocationsController : call rooms controller
+!startsub renderCourtroomsPage
+  RoomsPage -> RoomLocationsController : call rooms controller
 
-RoomLocationsController -> RoomLocationsObject : build request object
-RoomLocationsObject -> BackendController : send backend request
-RoomLocationsObject <- BackendController : ok response
-RoomLocationsController <- RoomLocationsObject : resolve request
+  RoomLocationsController -> RoomLocationsObject : build request object
+  RoomLocationsObject -> BackendController : send backend request
 
-RoomLocationsController -> RoomsTemplate : request and build template
-RoomLocationsController <- RoomsTemplate : return HTML
-RoomsPage <- RoomLocationsController : return HTML
-Actor <- RoomsPage : render HTML
+  alt Failed to fetch courtooms
+      RoomLocationsObject <-- BackendController : error response
+      RoomLocationsController <-- RoomLocationsObject : reject requestObject
+      $renderGenericErrorPage(RoomLocationsController, ErrorTemplate)
+  end
 
-alt Add a room
-Actor -> RoomsPage: click add room
-RoomsPage -> RoomLocationsController : call rooms controller
-RoomLocationsController -> AddEditRoomsTemplate : request and build template
-RoomLocationsController <- AddEditRoomsTemplate : return HTML
-AddRoomsPage <- RoomLocationsController : return HTML
-Actor <- AddRoomsPage : render HTML
+  RoomLocationsObject <- BackendController : ok response
+  RoomLocationsController <- RoomLocationsObject : resolve request
 
-Actor -> AddRoomsPage: click submit
-RoomLocationsController -> AddRoomLocationsObject : build request object
-AddRoomLocationsObject -> BackendController : send backend request
-AddRoomLocationsObject <- BackendController : ok response
-RoomLocationsController <- AddRoomLocationsObject : resolve request
-end
+  RoomLocationsController -> RoomsTemplate : request and build template
+  RoomLocationsController <- RoomsTemplate : return HTML
+  RoomsPage <- RoomLocationsController : return HTML
+  Actor <- RoomsPage : render HTML
+!endsub
 
-alt Update a room
-Actor -> RoomsPage: edit room details
-RoomsPage -> RoomLocationsController : call rooms controller
-RoomLocationsController -> AddEditRoomsTemplate : request and build template
-RoomLocationsController <- AddEditRoomsTemplate : return HTML
-AddRoomsPage <- RoomLocationsController : return HTML
-Actor <- AddRoomsPage : render HTML
-
-Actor -> AddRoomsPage: click save
-RoomLocationsController -> UpdateRoomLocationsObject : build request object
-UpdateRoomLocationsObject -> BackendController : send backend request
-UpdateRoomLocationsObject <- BackendController : ok response
-RoomLocationsController <- UpdateRoomLocationsObject : resolve request
-end
-
-
-
-alt Failed to fetch courtooms
-    RoomLocationsObject <-- BackendController : error response
-    RoomLocationsController <-- RoomLocationsObject : reject requestObject
-    RoomLocationsController -> ErrorTemplate : request and build template
-    RoomLocationsController <- ErrorTemplate : return HTML
-    GenericErrorPage <- RoomLocationsController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
-
-alt Please check the form
-    AddRoomLocationsObject <-- BackendController : error response
-    RoomLocationsController <-- AddRoomLocationsObject : reject requestObject
-    RoomLocationsController -> ErrorTemplate : request and build template
-    RoomLocationsController <- ErrorTemplate : return HTML
-    GenericErrorPage <- RoomLocationsController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
-
-alt Failed to fetch courtroom details
-    RoomLocationsObject <-- BackendController : error response
-    RoomLocationsController <-- RoomLocationsObject : reject requestObject
-    RoomLocationsController -> ErrorTemplate : request and build template
-    RoomLocationsController <- ErrorTemplate : return HTML
-    GenericErrorPage <- RoomLocationsController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
-
-alt Room location details have been updated by another user
-    RoomLocationsObject <-- BackendController : error response
-    RoomLocationsController <-- RoomLocationsObject : reject requestObject
-    RoomLocationsController -> ErrorTemplate : request and build template
-    RoomLocationsController <- ErrorTemplate : return HTML
-    GenericErrorPage <- RoomLocationsController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
-
-alt Failed to update courtroom details
-    UpdateRoomLocationsObject <-- BackendController : error response
-    RoomLocationsController <-- UpdateRoomLocationsObject : reject requestObject
-    RoomLocationsController -> ErrorTemplate : request and build template
-    RoomLocationsController <- ErrorTemplate : return HTML
-    GenericErrorPage <- RoomLocationsController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
-
-alt Failed to add courtroom
-    AddRoomLocationsObject <-- BackendController : error response
-    RoomLocationsController <-- AddRoomLocationsObject : reject requestObject
-    RoomLocationsController -> ErrorTemplate : request and build template
-    RoomLocationsController <- ErrorTemplate : return HTML
-    GenericErrorPage <- RoomLocationsController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
-
+@enduml
