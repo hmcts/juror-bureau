@@ -7,6 +7,8 @@ hide unlinked
 skinparam Style strictuml 
 skinparam SequenceMessageAlignment center
 
+title Update Room Location Details
+
 participant Actor
 
 ''' LOCAL ROUTING

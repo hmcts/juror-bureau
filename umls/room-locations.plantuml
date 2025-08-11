@@ -5,6 +5,8 @@
 skinparam Style strictuml 
 skinparam SequenceMessageAlignment center
 
+title View Room Locations
+
 participant Actor
 
 ''' LOCAL ROUTING
