@@ -1,4 +1,5 @@
-@startuml
+@startuml generic-building-blocks
+
 !procedure $renderGenericErrorPage($controller, $errorTemplate)
   $controller -> $errorTemplate : request and build template
   $controller <- $errorTemplate : return HTML
