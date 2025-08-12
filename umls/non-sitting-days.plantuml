@@ -1,4 +1,6 @@
 @startuml non-sitting-days
+hide unlinked
+!include generic-blocks.plantuml
 
 skinparam Style strictuml 
 skinparam SequenceMessageAlignment center
@@ -29,72 +31,29 @@ participant BackendController
 Actor -> NonsittingDaysPage: click non sitting days tab
 NonsittingDaysPage -> NonsittingDaysController : call non sitting days controller
 
-NonsittingDaysController -> NonSittingDaysObject : build request object
-NonSittingDaysObject -> BackendController : send backend request
-NonSittingDaysObject <- BackendController : ok response
-NonsittingDaysController <- NonSittingDaysObject : resolve request
-
-NonsittingDaysController -> NonsittingDaysTemplate : request and build template
-NonsittingDaysController <- NonsittingDaysTemplate : return HTML
-NonsittingDaysPage <- NonsittingDaysController : return HTML
-Actor <- NonsittingDaysPage : render HTML
+$genericAPICall(NonsittingDaysController, NonSittingDaysObject, ErrorTemplate, "Failed to fetch list of holidays and non sitting days")
+$renderTemplateToPage(NonsittingDaysController, NonsittingDaysTemplate, NonsittingDaysPage)
 
 alt Add a non sitting day
-Actor -> NonsittingDaysPage: click add non sitting days
-NonsittingDaysPage -> NonsittingDaysController : call non sitting days controller
-NonsittingDaysController -> AddNonsittingDaysTemplate : request and build template
-NonsittingDaysController <- AddNonsittingDaysTemplate : return HTML
-AddNonsittingDaysPage <- NonsittingDaysController : return HTML
-Actor <- AddNonsittingDaysPage : render HTML
+  Actor -> NonsittingDaysPage: click add non sitting days
+  NonsittingDaysPage -> NonsittingDaysController : call non sitting days controller
+  $renderTemplateToPage(NonsittingDaysController, AddNonsittingDaysTemplate, AddNonsittingDaysPage)
 
-Actor -> AddNonsittingDaysPage: click submit
-NonsittingDaysController -> AddNonSittingDaysObject : build request object
-AddNonSittingDaysObject -> BackendController : send backend request
-AddNonSittingDaysObject <- BackendController : ok response
-NonsittingDaysController <- AddNonSittingDaysObject : resolve request
+  Actor -> AddNonsittingDaysPage: click submit
+  AddNonsittingDaysPage -> NonsittingDaysController : call non sitting days controller
+  $validateInput(NonsittingDaysController, validator, AddNonsittingDaysTemplate, AddNonsittingDaysPage, "Invalid non-sitting day details")
+  $genericAPICall(NonsittingDaysController, AddNonSittingDaysObject, ErrorTemplate, "Failed to add the non sitting day")
 end
 
 alt delete a non sitting day
-Actor -> NonsittingDaysPage: click delete non sitting days controller
-NonsittingDaysPage -> NonsittingDaysController : call non sitting days controller
-NonsittingDaysController -> DeleteNonsittingDaysTemplate : request and build template
-NonsittingDaysController <- DeleteNonsittingDaysTemplate : return HTML
-DeleteNonsittingDaysPage <- NonsittingDaysController : return HTML
-Actor <- DeleteNonsittingDaysPage : render HTML
+  Actor -> NonsittingDaysPage: click delete non sitting days controller
+  NonsittingDaysPage -> NonsittingDaysController : call non sitting days controller
+  $renderTemplateToPage(NonsittingDaysController, DeleteNonsittingDaysTemplate, DeleteNonsittingDaysPage)
 
-Actor -> DeleteNonsittingDaysPage: click delete
-NonsittingDaysController -> DeleteNonSittingDaysObject : build request object
-DeleteNonSittingDaysObject -> BackendController : send backend request
-DeleteNonSittingDaysObject <- BackendController : ok response
-NonsittingDaysController <- DeleteNonSittingDaysObject : resolve request
+  Actor -> DeleteNonsittingDaysPage: click delete
+  $genericAPICall(NonsittingDaysController, DeleteNonSittingDaysObject, ErrorTemplate, "Failed to delete non sitting day")
 end
 
-
-alt Failed to fetch list of holidays and non sitting days
-    NonSittingDaysObject <-- BackendController : error response
-    NonsittingDaysController <-- NonSittingDaysObject : reject requestObject
-    NonsittingDaysController -> ErrorTemplate : request and build template
-    NonsittingDaysController <- ErrorTemplate : return HTML
-    GenericErrorPage <- NonsittingDaysController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
-
-alt Failed to delete non sitting day
-    DeleteNonSittingDaysObject <-- BackendController : error response
-    NonsittingDaysController <-- DeleteNonSittingDaysObject : reject requestObject
-    NonsittingDaysController -> ErrorTemplate : request and build template
-    NonsittingDaysController <- ErrorTemplate : return HTML
-    GenericErrorPage <- NonsittingDaysController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
-
-alt Failed to add the non sitting day
-    AddNonSittingDaysObject <-- BackendController : error response
-    NonsittingDaysController <-- AddNonSittingDaysObject : reject requestObject
-    NonsittingDaysController -> ErrorTemplate : request and build template
-    NonsittingDaysController <- ErrorTemplate : return HTML
-    GenericErrorPage <- NonsittingDaysController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
+@enduml
 
 

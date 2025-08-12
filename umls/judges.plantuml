@@ -1,4 +1,6 @@
 @startuml judges
+hide unlinked
+!include generic-blocks.plantuml
 
 skinparam Style strictuml 
 skinparam SequenceMessageAlignment center
@@ -19,6 +21,9 @@ participant UpdateJudgeObject <<judgesDAO.put()>> #lightyellow
 participant DeleteJudgeObject <<judgesDAO.delete()>> #lightyellow
 participant AddJudgeObject <<judgesDAO.post()>> #lightyellow
 
+''' VALIDATORS
+participant EditJudgeValidator #gold
+
 ''' TEMPLATES
 participant JudgesListTemplate <</administration/judges/judges.njk>>
 participant AddJudgeTemplate <</administration/judges/add-judge.njk>>
@@ -32,96 +37,41 @@ participant BackendController
 Actor -> JudgesListPage: click judges tab
 JudgesListPage -> JudgesController : call judges controller
 
-JudgesController -> JudgesListObject : build request object
-JudgesListObject -> BackendController : send backend request
-JudgesListObject <- BackendController : ok response
-JudgesController <- JudgesListObject : resolve request
-
-JudgesController -> JudgesListTemplate : request and build template
-JudgesController <- JudgesListTemplate : return HTML
-JudgesListPage <- JudgesController : return HTML
-Actor <- JudgesListPage : render HTML
+$genericAPICall(JudgesController, JudgesListObject, ErrorTemplate, "Failed to fetch judges")
+$renderTemplateToPage(JudgesController, JudgesListTemplate, JudgesListPage)
 
 alt Add a judge
-Actor -> JudgesListPage: click add new judge
-JudgesListPage -> JudgesController : call judges controller
-JudgesController -> AddJudgeTemplate : request and build template
-JudgesController <- AddJudgeTemplate : return HTML
-AddJudgePage <- JudgesController : return HTML
-Actor <- AddJudgePage : render HTML
+  Actor -> JudgesListPage: click add new judge
+  JudgesListPage -> JudgesController : call judges controller
+  $renderTemplateToPage(JudgesController, AddJudgeTemplate, AddJudgePage)
 
-Actor -> AddJudgePage: click submit
-JudgesController -> AddJudgeObject : build request object
-AddJudgeObject -> BackendController : send backend request
-AddJudgeObject <- BackendController : ok response
-JudgesController <- AddJudgeObject : resolve request
+  Actor -> AddJudgePage: add details and click submit
+  AddJudgePage -> JudgesController : call judges controller
+  $validateInput(JudgesController, EditJudgeValidator, AddJudgeTemplate, AddJudgePage)
+  $genericAPICall(JudgesController, AddJudgeObject, ErrorTemplate, "Failed to add a new judge")
 end
 
 alt Update judges details
-Actor -> JudgesListPage: click update judge details
-JudgesListPage -> JudgesController : call judges controller
-JudgesController -> EditJudgeTemplate : request and build template
-JudgesController <- EditJudgeTemplate : return HTML
-EditJudgePage <- JudgesController : return HTML
-Actor <- EditJudgePage : render HTML
+  Actor -> JudgesListPage: click update judge details
+  JudgesListPage -> JudgesController : call judges controller
+  $renderTemplateToPage(JudgesController, EditJudgeTemplate, EditJudgePage)
 
-Actor -> EditJudgePage: click submit
-JudgesController -> UpdateJudgeObject : build request object
-UpdateJudgeObject -> BackendController : send backend request
-UpdateJudgeObject <- BackendController : ok response
-JudgesController <- UpdateJudgeObject : resolve request
+  Actor -> EditJudgePage: click submit
+  EditJudgePage -> JudgesController : call judges controller
+  $validateInput(JudgesController, EditJudgeValidator, EditJudgeTemplate, EditJudgePage)
+  $genericAPICall(JudgesController, UpdateJudgeObject, ErrorTemplate, "Failed to update judge's details")
 end
 
 alt delete a judge
-Actor -> JudgesListPage: click delete judge
-JudgesListPage -> JudgesController : call judges controller
-JudgesController -> DeleteJudgeTemplate : request and build template
-JudgesController <- DeleteJudgeTemplate : return HTML
-DeleteJudgePage <- JudgesController : return HTML
-Actor <- DeleteJudgePage : render HTML
+  Actor -> JudgesListPage: click delete judge
+  JudgesListPage -> JudgesController : call judges controller
+  $renderTemplateToPage(JudgesController, DeleteJudgeTemplate, DeleteJudgePage)
 
-Actor -> AddJudgePage: click delete
-JudgesController -> DeleteJudgeObject : build request object
-DeleteJudgeObject -> BackendController : send backend request
-DeleteJudgeObject <- BackendController : ok response
-JudgesController <- DeleteJudgeObject : resolve request
+  Actor -> DeleteJudgePage: click delete
+  DeleteJudgePage -> JudgesController : call judges controller
+  $genericAPICall(JudgesController, DeleteJudgeObject, ErrorTemplate, "Failed to delete a judge")
 end
 
-
-alt Failed to fetch judges
-    JudgesListObject <-- BackendController : error response
-    JudgesController <-- JudgesListObject : reject requestObject
-    JudgesController -> ErrorTemplate : request and build template
-    JudgesController <- ErrorTemplate : return HTML
-    GenericErrorPage <- JudgesController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
-
-alt Failed to update judge\'s details
-    UpdateJudgeObject <-- BackendController : error response
-    JudgesController <-- UpdateJudgeObject : reject requestObject
-    JudgesController -> ErrorTemplate : request and build template
-    JudgesController <- ErrorTemplate : return HTML
-    GenericErrorPage <- JudgesController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
-
-alt Failed to delete a judge
-    DeleteJudgeObject <-- BackendController : error response
-    JudgesController <-- DeleteJudgeObject : reject requestObject
-    JudgesController -> ErrorTemplate : request and build template
-    JudgesController <- ErrorTemplate : return HTML
-    GenericErrorPage <- JudgesController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
-
-alt Failed to add a new judge
-    AddJudgeObject <-- BackendController : error response
-    JudgesController <-- AddJudgeObject : reject requestObject
-    JudgesController -> ErrorTemplate : request and build template
-    JudgesController <- ErrorTemplate : return HTML
-    GenericErrorPage <- JudgesController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
+@enduml
 
 

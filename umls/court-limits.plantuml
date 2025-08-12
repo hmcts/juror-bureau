@@ -1,0 +1,46 @@
+@startuml court-expense-limits
+
+!include generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant ExpenseLimitsPage <</administration/expense-limits-court>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant ExpenseLimitsController <<expense-limits-court.controller.js>> #lightyellow
+participant ExpenseLimitsObject <<transportRates.get()>> #lightyellow
+participant UpdateExpenseLimitsObject <<transportRates.put()>> #lightyellow
+
+''' VALIDATORS
+participant ExpenseLimitsValidator #gold
+
+''' TEMPLATES
+participant ExpenseLimitsTemplate <</administration/expense-limits-court.njk>>
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> ExpenseLimitsPage: click expense limits tab
+ExpenseLimitsPage -> ExpenseLimitsController : call expense limits controller
+
+$genericAPICall(ExpenseLimitsController, ExpenseLimitsObject, ErrorTemplate, "Failed to fetch expense limits for transport")
+
+$renderTemplateToPage(ExpenseLimitsController, ExpenseLimitsTemplate, ExpenseLimitsPage)
+
+Actor -> ExpenseLimitsPage: edit expense limits
+ExpenseLimitsPage -> ExpenseLimitsController : call expense limit controller
+$renderTemplateToPage(ExpenseLimitsController, ExpenseLimitsTemplate, ExpenseLimitsPage)
+
+Actor -> ExpenseLimitsPage: update limits and click save
+ExpenseLimitsPage -> ExpenseLimitsController : call expense limits controller
+$validateInput(ExpenseLimitsController, ExpenseLimitsValidator, ExpenseLimitsTemplate, ExpenseLimitsPage)
+$genericAPICall(ExpenseLimitsController, UpdateExpenseLimitsObject, ErrorTemplate, "Failed to update expense limits for transport")
+
+@enduml
+
