@@ -1,0 +1,54 @@
+@startuml all-courts-utilisation-report
+hide unlinked
+
+!include generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant CourtStatisticsPage <</statistics>>
+participant SelectCourtTypePage <</reporting/all-court-utilisation/select>>
+participant SelectCourtsPage <</reporting/all-court-utilisation>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant AllCourtUtilisationController <<all-court-utilisation.controller.js>> #lightyellow
+participant StandardReportController <<standard-report.controller.js>> #lightyellow
+participant AllCourtsObject <<fetchAllCourtsDAO.get()>> #lightyellow
+
+''' TEMPLATES
+participant SelectCourtTypeTemplate <<reporting/all-court-utilisation/select-courts.njk>> #lavender
+participant SelectCourtsTemplate <<reporting/standard-reports/court-select.njk>> #lavender
+participant StandardReportTemplate <<reporting/standard-reports/standard-report.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant CourtSelectValidator #gold
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> CourtStatisticsPage : click 'All Court Utilisation Stats' link
+CourtStatisticsPage -> AllCourtUtilisationController : call all courts utilisation controller
+$renderTemplateToPage(AllCourtUtilisationController, SelectCourtTypeTemplate, SelectCourtTypePage)
+
+Actor -> SelectCourtTypePage : select a court selection option (User selects 'All Courts')
+SelectCourtTypePage -> AllCourtUtilisationController : call all courts utilisation controller
+$validateInput(AllCourtUtilisationController, CourtSelectValidator, SelectCourtTypeTemplate, SelectCourtTypePage, "No court option selected")
+AllCourtUtilisationController -> StandardReportController : call standard report controller
+
+alt User selects 'Specific Court(s)'
+  $genericAPICall(StandardReportController, AllCourtsObject, ErrorTemplate, "Failed to fetch courts list (for report generation)")
+  $renderTemplateToPage(StandardReportController, SelectCourtsTemplate, SelectCourtsPage)
+  Actor -> SelectCourtsPage : select court(s) and submit  
+  SelectCourtsPage -> StandardReportController : call standard report controller
+end
+
+StandardReportController -> StandardReportTemplate : request and build template
+StandardReportController <- StandardReportTemplate : return HTML
+Actor <- StandardReportController : report displayed by standard report renderer
+  
+@enduml

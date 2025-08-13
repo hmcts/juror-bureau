@@ -1,10 +1,7 @@
 (() => {
   'use strict';
 
-  const { makeManualError, transformCourtNames } = require('../../../lib/mod-utils');
-  const { dateFilter, capitalizeFully } = require('../../../components/filters');
-  const { courtDetailsDAO, fetchAllCourtsDAO } = require('../../../objects');
-  const { monthlyUtilisationReportsDAO } = require('../../../objects/reports');
+  const { makeManualError } = require('../../../lib/mod-utils');
 
   module.exports.getSelectCourts = (app) => async (req, res) => {
     const errors = req.session.errors || {};
@@ -13,25 +10,7 @@
     delete req.session.errors;
     delete req.session.formFields;
 
-    if (!req.session.utilisationCourtsList) {
-      try {
-        req.session.utilisationCourtsList = (await fetchAllCourtsDAO.get(req)).courts;
-      } catch (err) {
-        app.logger.crit('Failed to fetch courts list: ', {
-          auth: req.session.authentication,
-          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-        });
-
-        req.session.errors = modUtils.makeManualError('Courts list', 'Failed to fetch courts list');
-
-        return res.redirect(app.namedRoutes.build('reports.all-court-utilisation.filter.select.get'));
-      }
-    }
-
-    const transformedCourtNames = transformCourtNames(req.session.utilisationCourtsList);
-
     return res.render('reporting/all-court-utilisation/select-courts', {
-      courts: transformedCourtNames,
       processUrl: app.namedRoutes.build('reports.all-court-utilisation.filter.select.post'),
       cancelUrl: app.namedRoutes.build('reports.statistics.get'),
       tmpBody,
