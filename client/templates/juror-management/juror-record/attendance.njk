@@ -92,7 +92,7 @@
             actions: {
               items: [
                 {
-                  href: url('documents.form.get', { document: 'show-cause'}) + '?jurorNumber=' + juror.commonDetails.jurorNumber + '?showCauseDate=' + formattedDate,
+                  href: url('documents.form.get', { document: 'show-cause'}) + '?jurorNumber=' + juror.commonDetails.jurorNumber + '&showCauseDate=' + formattedDate,
                   text: "Print show cause letter"
                 } if attendance.absences > 0
               ]

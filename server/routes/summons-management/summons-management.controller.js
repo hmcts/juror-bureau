@@ -21,6 +21,7 @@
     , courtLocationsFromPostcodeObj = require('../../objects/court-location').courtLocationsFromPostcodeObj
     , { systemCodesDAO } = require('../../objects/administration');
   const { flowLetterPost, flowLetterGet } = require('../../lib/flowLetter');
+  const { getEligibilityDetails } = require('./paper-reply/paper-reply.controller.js');
 
   const dateHint = 'Use dd/mm/yyyy format. For example, 31/01/2024.';
 
@@ -785,7 +786,8 @@
           req.session.jurorName = nameDetails.currentName;
           req.session.specialNeeds = responseClone.specialNeeds;
 
-          responseClone.eligibilityComplete = isComplete(responseClone.eligibility);
+          responseClone.eligibilityComplete = isEligibilityComplete(responseClone.eligibility);
+
           responseClone.cjsEmployments = response[0].data.cjsEmployment;
 
           if (responseClone.specialNeeds) {
@@ -800,11 +802,16 @@
 
           eligibilityDetails = {
             residency: responseClone.eligibility.livedConsecutive,
+            residencyDetails: responseClone.eligibility.livedConsecutiveDetails,
             mentalHealthAct: responseClone.eligibility.mentalHealthAct,
+            mentalHealthActDetails: responseClone.eligibility.mentalHealthActDetails,
             mentalHealthCapacity: responseClone.eligibility.mentalHealthCapacity,
             bail: responseClone.eligibility.onBail,
+            bailDetails: responseClone.eligibility.onBailDetails,
             convictions: responseClone.eligibility.convicted,
+            convictionsDetails: responseClone.eligibility.convictedDetails,
           };
+
           eligibilityDetails.eligible = (
             response[0].data.eligibility.livedConsecutive &&
             (!response[0].data.eligibility.mentalHealthAct && response[0].data.eligibility.mentalHealthAct !== null) &&
@@ -1320,5 +1327,33 @@
   };
 
   module.exports.resolveCatchmentResponse = resolveCatchmentResponse;
+
+  const isEligibilityComplete = (eligibility) => {
+    const eligibilityValues = getEligibilityDetails(eligibility);
+
+    const eligibilityOverviewValues = Object.fromEntries(
+      Object.entries(eligibilityValues).filter(([key]) => !key.endsWith('Details'))
+    );
+
+    if (!isComplete(eligibilityOverviewValues)) return false;
+
+    for (const [key, value] of Object.entries(eligibilityOverviewValues)) {
+      if (key === 'livedConsecutive' && value === 'no') {
+        if (typeof eligibilityValues[`${key}Details`] === 'undefined' ||
+          eligibilityValues[`${key}Details`] === null ||
+          eligibilityValues[`${key}Details`] === '') {
+          return false;
+        }
+      } else if (key !== 'livedConsecutive' && value === 'yes') {
+        if (typeof eligibilityValues[`${key}Details`] === 'undefined' ||
+          eligibilityValues[`${key}Details`] === null ||
+          eligibilityValues[`${key}Details`] === '') {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  };
 
 })();

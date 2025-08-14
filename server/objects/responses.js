@@ -39,12 +39,12 @@
       , valNo = 'N';
 
     if (responseData.processingStatus === 'TODO'){
-      if (responseData.excusalReason){
-        isExcusal = true;
+      if ((responseData.excusal) || (responseData.excusalReason)){
+        isExcusal=true;
       }
 
-      if (responseData.deferralDate){
-        isDeferral = true;
+      if ((responseData.deferral) || (responseData.deferralDate)){
+        isDeferral=true;
       }
 
       if (responseData.bail === valYes ||

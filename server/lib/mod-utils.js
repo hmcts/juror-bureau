@@ -225,6 +225,107 @@
     return table;
   };
 
+  module.exports.transformPoolsUnderRespondedList = function(pools, status, tab, sortBy, sortOrder, includeRadioButtons = false) {
+    const table = {
+        head: [],
+        rows: [],
+      }
+      , order = sortOrder || 'ascending';
+
+    table.head.push(
+      {
+        id: 'poolNumber',
+        value: 'Pool number',
+        sort: sortBy === 'poolNumber' ? order : 'none',
+        classes: includeRadioButtons ? 'govuk-!-padding-left-6': '',
+        sortable: false,
+      },
+      {
+        id: 'courtName',
+        value: 'Court',
+        sort: sortBy === 'courtName' ? order : 'none',
+        sortable: false,
+      },
+      {
+        id: 'jurorsRequested',
+        value: 'Requested',
+        sort: sortBy === 'jurorsRequested' ? order : 'none',
+        sortable: false,
+      },
+      {
+        id: 'confirmedJurors',
+        value: 'Confirmed',
+        sort: sortBy === 'confirmedJurors' ? order : 'none',
+        sortable: false,
+      },
+      {
+        id: 'required',
+        value: 'Required',
+        sort: sortBy === 'required' ? order : 'none',
+        sortable: false,
+      }
+    );
+
+
+    // prepare the table rows
+    pools.forEach(function(pool) {
+      var item = []
+        , getNumberRequested = function() {
+          return (pool.jurorsRequested !== undefined) ? pool.jurorsRequested : 0;
+        }
+        , getNumberConfirmed = function() {
+          return (pool.confirmedJurors !== undefined) ? pool.confirmedJurors : 0;
+        }
+         , getNumberRequired = function() {
+          return (pool.required !== undefined) ? pool.required : 0;
+        };
+
+      // build a row object (each row needs to be its own array)
+      item.push(
+        {
+          html: '<a href="/pool-management/pool-overview/' +
+              pool.poolNumber + '" class="govuk-link">' + pool.poolNumber + '</a>',
+          attributes: {
+            'data-sort-value': pool.poolNumber,
+          },
+          classes: 'jd-middle-align',
+        },
+        {
+          text: capitalizeFully(pool.courtName),
+          attributes: {
+            'data-sort-value': pool.courtName,
+          },
+          classes: 'jd-middle-align',
+        },
+        {
+          text: getNumberRequested(),
+          attributes: {
+            'data-sort-value': getNumberRequested(),
+          },
+          classes: 'jd-middle-align',
+        },
+        {
+          text: getNumberConfirmed(),
+          attributes: {
+            'data-sort-value': getNumberConfirmed(),
+          },
+          classes: 'jd-middle-align',
+        },
+        {
+          text: getNumberRequired(),
+          attributes: {
+            'data-sort-value': getNumberRequired(),
+          },
+          classes: 'jd-middle-align',
+        }
+      );
+
+      table.rows.push(item);
+    });
+
+    return table;
+  };
+
   module.exports.transformCoETrialsList = function(trials) {
     const list = [];
 

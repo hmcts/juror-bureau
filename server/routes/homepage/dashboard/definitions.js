@@ -9,6 +9,9 @@
     attendanceDoughnut: 'homepage/court-dashboard/widgets/attendance/attendance-doughnut.njk',
     standardValue: 'homepage/court-dashboard/widgets/standard-value.njk',
     largeValues: 'homepage/court-dashboard/widgets/large-values.njk',
+    summonsDoughnut: 'homepage/bureau-dashboard/widgets/summons-management/summons-doughnut.njk',
+    placeholder: 'homepage/bureau-dashboard/widgets/placeholder.njk',
+    poolsUnderResponded: 'homepage/bureau-dashboard/widgets/pools-under-responded.njk',
   }
 
   /**
@@ -75,7 +78,7 @@
                 doughnutId: 'todayStats'
             },
             data: stats?.attendance.attendanceStatsToday || {},
-          },
+          },  
           'last-7-days-stats': {
             mandatory: true,
             widgetType: 'attendanceDoughnut',
@@ -208,6 +211,100 @@
           },
         },
       }
+    };
+  };
+
+  module.exports.bureauWidgetDefinitions = (app) => (req, res) => (stats) => {
+    return {
+      'summons-management': {
+        title: 'Summons management',
+        widgets: {
+            'your-work': {
+              mandatory: true,
+              widgetType: 'summonsDoughnut',
+              column: 1,
+              templateOptions: {
+                doughnutId: 'yourWorkStats'
+            },
+            data: stats?.['summons-management'] || {},
+          },
+          'assign-replies': {
+            mandatory: true,
+            widgetType: 'summonsDoughnut',
+            column: 2,
+            templateOptions: {
+              doughnutId: 'assignRepliesStats'
+            },
+            data: stats?.['summons-management'] || {},
+          },
+        }
+      },
+      'pool-management': {
+        title: 'Pool management',
+        widgets: {
+          'not-yet-summoned': {
+            mandatory: true,
+            widgetType: 'largeValues',
+            column: 1,
+            values: [
+              {
+                value: stats?.['pool-management'].poolsNotYetSummoned,
+                ariaLabel: 'Pools not yet summoned',
+                links: [
+                  {
+                    href: app.namedRoutes.build('pool-management.get'),
+                    text: 'Pools not yet summoned',
+                  }
+                ],
+              },
+              {
+                value: stats?.['pool-management'].poolsTransferringNextWeek,
+                ariaLabel: 'Pools transferring next week',
+                links: [
+                  {
+                    href: app.namedRoutes.build('pool-management.get') + '?status=created',
+                    text: 'Pools transferring next week',
+                  }
+                ],
+                },
+            ],
+          },
+          'deferred-jurors': {
+            mandatory: true,
+            widgetType: 'largeValues',
+            column: 1,
+            values: [
+              {
+                value: stats?.['pool-management'].deferredJurorsWithStartDateNextWeek,
+                ariaLabel: 'Deferred jurors with start date next week',
+                links: [
+                  {
+                    href: '/reporting/deferred-list-date/report/date?filterOwnedDeferrals=true',
+                    text: 'Deferred jurors with start date next week',
+                  }
+                ],
+              },
+            ],
+          },
+        },
+      },
+
+      'pools-under-responded': {
+        title: 'Pools under responded',
+        subTitle: 'Less than 5 weeks to go',
+        columns: 3,
+        widgets: {
+            'pools-under-responded': {
+              mandatory: true,
+              column: 1,
+              widgetType: 'placeholder',
+              templateOptions: {
+            },
+            data: {},
+          },
+        }
+      },
+
     };
   };
 

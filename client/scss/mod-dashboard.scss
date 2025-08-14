@@ -90,6 +90,12 @@
           &__brown {
             background-color: govuk-colour("brown");
           }
+          &__bright-purple {
+            background-color: govuk-colour("bright-purple");
+          }
+          &__orange {
+            background-color: govuk-colour("orange");
+          }
           &__unresolved {
             background: linear-gradient(-45deg,  govuk-colour("mid-grey") 0%,govuk-colour("mid-grey") 50%, govuk-colour("light-grey") 50%, govuk-colour("light-grey") 100%);
           }
@@ -111,6 +117,13 @@
         gap: 0;
       }
     }
+
+    .doughnut-page-link{
+      width: 170px;
+      margin-top: 10px;
+      text-align: center;
+    }
+
   }
 
   &__large-values {
@@ -136,5 +149,12 @@
       }
     }
 
+  }
+
+  &__pools-under-responded {
+    
+    &__filter {
+      margin-top: 20px;
+     }
   }
 }

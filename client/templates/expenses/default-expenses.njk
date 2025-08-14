@@ -153,17 +153,6 @@
       <h2 id="overviewLabel" class="govuk-heading-m govuk-!-margin-bottom-2">Save or apply defaults</h2>
       </div>
 
-      {{ govukCheckboxes({
-        name: "applyToAllDraft",
-        classes: "govuk-checkboxes--small",
-        items: [
-          {
-            value: "true",
-            text: "Tick to overwrite any existing draft expenses with these amounts for this juror."
-          }
-        ]
-      }) }}
-
       <div class="govuk-button-group">
         {{ govukButton({
           text: "Save default expenses",

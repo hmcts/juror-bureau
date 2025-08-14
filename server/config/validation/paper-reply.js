@@ -292,6 +292,63 @@
     },
   });
 
+  module.exports.eligibility = function() {
+    var messageMapping = (field) => {
+      return {
+        summary: field + ' must be 1000 characters or fewer',
+        details: field + ' must be 1000 characters or fewer',
+      };
+    };
+
+    return {
+      livedConsecutiveDetails: {
+        presence: {
+          allowEmpty: true,
+        },
+        length: {
+          maximum: 1000,
+          message: messageMapping('Details about where the person has lived since their 13th birthday'),
+        },
+      },
+      mentalHealthActDetails: {
+        presence: {
+          allowEmpty: true,
+        },
+        length: {
+          maximum: 1000,
+          message: messageMapping('Details about how they\'re being detained, looked after or treated under the Mental Health Act'),
+        },
+      },
+      mentalHealthCapacityDetails: {
+        presence: {
+          allowEmpty: true,
+        },
+        length: {
+          maximum: 1000,
+          message: messageMapping('Details about why it was decided they lack mental capacity'),
+        },
+      },
+      onBailDetails: {
+        presence: {
+          allowEmpty: true,
+        },
+        length: {
+          maximum: 1000,
+          message: messageMapping('Details about their bail and criminal offence'),
+        },
+      },
+      convictedDetails: {
+        presence: {
+          allowEmpty: true,
+        },
+        length: {
+          maximum: 1000,
+          message: messageMapping('Details about their criminal offence'),
+        },
+      },
+    };
+  };
+
   module.exports.cjsEmployment = function() {
     var messageMapping = (field) => {
       return {
