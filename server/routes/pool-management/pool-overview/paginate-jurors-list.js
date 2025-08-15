@@ -1,25 +1,8 @@
 /* eslint-disable strict */
 const filters = require('../../../components/filters');
 
-module.exports = function(jurors, sortBy, order, isCourt, selectedJurors, selectAll) {
-  let headers = [{
-    id: 'selectAll',
-    html: `<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">\n` +
-    `  <input\n` +
-    `    type="checkbox"\n` +
-    `    class="govuk-checkboxes__input select-check juror-select-check"\n` +
-    `    id="check-all-jurors"\n` +
-    `    name="check-all-jurors"\n` +
-    `    aria-label="check-all-jurors"\n` +
-    (selectAll ? "    checked\n" : "") +
-    `  >\n` +
-    `  <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="check-all-jurors">\n` +
-    `    <span class="govuk-visually-hidden">Select All</span>\n` +
-    `  </label>\n` +
-    `</div>`,
-    sortable: false,
-    sort: 'none',
-  },
+module.exports = function(jurors, sortBy, order, isCourt, selectedJurors, selectAll, hideSelect = false) {
+  let headers = [
   {
     id: 'juror_Number',
     value: 'Juror number',
@@ -74,23 +57,29 @@ module.exports = function(jurors, sortBy, order, isCourt, selectedJurors, select
     sortable: true,
   });
 
+  if (!hideSelect) {
+    headers.unshift({
+      id: 'selectAll',
+      html: `<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">\n` +
+      `  <input\n` +
+      `    type="checkbox"\n` +
+      `    class="govuk-checkboxes__input select-check juror-select-check"\n` +
+      `    id="check-all-jurors"\n` +
+      `    name="check-all-jurors"\n` +
+      `    aria-label="check-all-jurors"\n` +
+      (selectAll ? "    checked\n" : "") +
+      `  >\n` +
+      `  <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="check-all-jurors">\n` +
+      `    <span class="govuk-visually-hidden">Select All</span>\n` +
+      `  </label>\n` +
+      `</div>`,
+      sortable: false,
+      sort: 'none',
+    });
+  }
+
   const list = jurors.map(juror => {
     let row = [
-      {
-        html: `<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">\n` +
-        `  <input type="checkbox"\n` +
-        `    class="govuk-checkboxes__input select-check juror-select-check"\n` +
-        `    id="juror-${juror.jurorNumber}"\n` +
-        `    name="selectedJurors"\n` +
-        `    value="${juror.jurorNumber}"\n` +
-        `    aria-label="check-juror"\n` +
-        (selectAll || selectedJurors.indexOf(juror.jurorNumber) > -1 ? 'checked' : '') +
-        `  >\n` +
-        `    <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="juror-${juror.jurorNumber}">\n` +
-        `    <span class="govuk-visually-hidden">Select ${juror.jurorNumber}</span>\n` +
-        `  </label>\n`+
-        `</div>\n`,
-      },
       {
         html: '<a href="/juror-management/record/' +
           juror.jurorNumber + '/overview" class="govuk-link">' + juror.jurorNumber + '</a>',
@@ -154,6 +143,24 @@ module.exports = function(jurors, sortBy, order, isCourt, selectedJurors, select
       },
       classes: "jd-middle-align",
     });
+
+    if (!hideSelect) {
+      row.unshift({
+        html: `<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox">\n` +
+        `  <input type="checkbox"\n` +
+        `    class="govuk-checkboxes__input select-check juror-select-check"\n` +
+        `    id="juror-${juror.jurorNumber}"\n` +
+        `    name="selectedJurors"\n` +
+        `    value="${juror.jurorNumber}"\n` +
+        `    aria-label="check-juror"\n` +
+        (selectAll || selectedJurors.indexOf(juror.jurorNumber) > -1 ? 'checked' : '') +
+        `  >\n` +
+        `    <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="juror-${juror.jurorNumber}">\n` +
+        `    <span class="govuk-visually-hidden">Select ${juror.jurorNumber}</span>\n` +
+        `  </label>\n`+
+        `</div>\n`,
+      });
+    }
     
     return row;
   });

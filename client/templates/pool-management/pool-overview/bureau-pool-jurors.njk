@@ -25,9 +25,6 @@
             classes: "govuk-fieldset__legend--m"
           }
         },
-        hint: {
-          text: "Only displaying jurors managed by the Bureau"
-        },
         items: [
           {
             value: "responded",
@@ -52,48 +49,26 @@
         }
       }) }}
 
-      {{ govukButton({
-        text: "Reassign",
-        classes: "govuk-button--secondary govuk-!-margin-bottom-0",
-        type: "submit",
-        attributes: {
-          id: "reassignButton",
-          formAction: postUrls.assignUrl
-        }
-      }) }}
-
-      {{ govukButton({
-        text: "Postpone",
-        classes: "govuk-button--secondary govuk-!-margin-bottom-0",
-        type: "submit",
-        attributes: {
-          id: "postponeButton",
-          formAction: postUrls.postponeUrl
-        }
-      }) }}
-
-      {% if isCourtUser %}
-
+      {% if currentOwner === "400" %}
         {{ govukButton({
-          text: "Transfer",
+          text: "Reassign",
           classes: "govuk-button--secondary govuk-!-margin-bottom-0",
           type: "submit",
           attributes: {
-            id: "transferButton",
-            formAction: postUrls.transferUrl
+            id: "reassignButton",
+            formAction: postUrls.assignUrl
           }
         }) }}
 
         {{ govukButton({
-          text: "Complete service",
+          text: "Postpone",
           classes: "govuk-button--secondary govuk-!-margin-bottom-0",
           type: "submit",
           attributes: {
-            id: "completeServiceButton",
-            formAction: postUrls.completeServiceUrl
+            id: "postponeButton",
+            formAction: postUrls.postponeUrl
           }
         }) }}
-
       {% endif %}
     </div>
 
