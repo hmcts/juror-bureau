@@ -68,8 +68,8 @@
   function calcTotalAttendance() {
     var timeAtCourtHours = $('input[name="timeAtCourtHours"]').val().padStart(2, '0');
     var timeAtCourtMins = $('input[name="timeAtCourtMins"]').val().padStart(2, '0');
-    var travelHours = $('#totalTravelTime-hour').val().padStart(2, '0');
-    var travelMins = $('#totalTravelTime-minute').val().padStart(2, '0');
+    var travelHours = $('#totalTravelTime-hour').length ? $('#totalTravelTime-hour').val().padStart(2, '0') : '00';
+    var travelMins = $('#totalTravelTime-minute').length ? $('#totalTravelTime-minute').val().padStart(2, '0') : '00';
     var totalAttendanceTime = 0;
 
     $('#payAttendance').removeAttr('disabled');
