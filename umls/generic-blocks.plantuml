@@ -1,0 +1,58 @@
+@startuml generic-building-blocks
+
+!procedure $renderGenericErrorPage($controller, $errorTemplate)
+  $controller -> $errorTemplate : request and build template
+  $controller <- $errorTemplate : return HTML
+  GenericErrorPage <- $controller : return HTML
+  Actor <- GenericErrorPage : render error page
+!endprocedure
+
+!procedure $renderErrorOnForm($controller, $template, $errorPage)
+  $controller -> $template : request and build template
+  $controller <- $template : return HTML
+  $errorPage <- $controller : return error HTML
+  Actor <- $errorPage : render error message
+!endprocedure
+
+!procedure $validateInput($controller, $validator, $template, $errorPage, $message = "Invalid input")
+   $controller -> $validator : validate details
+
+  alt $message
+    $controller <- $validator : $message
+    $renderErrorOnForm($controller, $template, $errorPage)
+  end
+
+  $controller <- $validator : valid details entered
+!endprocedure
+
+!procedure $APIErrorAlt($controller, $object, $errorTemplate, $altMessage, $template = null, $errorPage = null)
+  alt $altMessage
+    $object <-- BackendController : Error response
+    $controller <-- $object : reject requestObject
+
+    !if ($template != null) && ($errorPage != null)
+      $renderErrorOnForm($controller, $template, $errorPage)
+    !else
+      $renderGenericErrorPage($controller, $errorTemplate)
+    !endif
+  end
+!endprocedure
+
+!procedure $genericAPICall($controller, $object, $errorTemplate, $errorMessage)
+  $controller -> $object : build request object
+  $object -> BackendController : send backend request
+
+  $APIErrorAlt($controller, $object, $errorTemplate, $errorMessage)
+
+  $object <- BackendController : ok response
+  $controller <- $object : resolve request
+!endprocedure
+
+!procedure $renderTemplateToPage($controller, $template, $page)
+  $controller -> $template : request and build template
+  $controller <- $template : return HTML
+  $page <- $controller : return HTML
+  Actor <- $page : render HTML
+!endprocedure
+
+@enduml
