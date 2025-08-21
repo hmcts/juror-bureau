@@ -2,6 +2,7 @@
 const _ = require('lodash');
 const paginateJurorsList = require('./paginate-jurors-list');
 const modUtils = require('../../../lib/mod-utils');
+const { isBureauUser } = require('../../../components/auth/user-type');
 
 module.exports = function(app, req, res, pool, membersList, _errors, selectedJurors, selectAll) {
   const { poolNumber } = req.params;
@@ -48,7 +49,7 @@ module.exports = function(app, req, res, pool, membersList, _errors, selectedJur
   const totalJurors = membersList.totalItems;
   const totalCheckedJurors = selectAll ? membersList.totalItems : selectedJurors.length || 0;
 
-  let jurors = paginateJurorsList(membersList.data, sortBy, order, false, selectedJurors, selectAll);
+  let jurors = paginateJurorsList(membersList.data, sortBy, order, false, selectedJurors, selectAll, (pool.poolDetails.current_owner !== '400'));
 
   // eslint-disable-next-line no-param-reassign
   selectedJurors = selectedJurors.filter(item => !membersList.data.find(juror => juror.jurorNumber === item));

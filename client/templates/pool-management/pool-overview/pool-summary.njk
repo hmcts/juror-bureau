@@ -1,4 +1,4 @@
-{% if isBureauUser %}
+{% if isBureauUser and currentOwner === "400" %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <div class="pool-values">
@@ -58,44 +58,11 @@
       </div>
     </div>
   </div>
-{% else %}
-  <h2 class="govuk-label--m">
-    Pool summary
-  </h2>
-
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <div class="pool-values">
-        <div class="pool-values__bureau-summoning pool-values__jurors-required">
-          <span class="govuk-!-font-size-80 govuk-!-font-weight-bold">
-            {{ poolSummary.requiredPoolSize }}
-          </span>
-          <span class="label">
-            Jurors needed
-          </span>
-        </div>
-        <div class="pool-values__jurors-breakdown">
-          <span class="govuk-!-font-size-48">
-            {{ additionalStatistics.courtSupply }}
-          </span>
-          <span class="label">
-            Court deferrals used
-          </span>
-        </div>
-        <div class="pool-values__jurors-breakdown">
-          <span class="govuk-!-font-size-48">
-            {{ bureauSummoning.required }}
-          </span>
-          <span class="label">
-            Jurors requested from Bureau
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
 {% endif %}
 
-  {% include "./_partials/sub-nav.njk" %}
+  <div class="govuk-grid-row govuk-!-margin-top-6">
+    {% include "./_partials/sub-nav.njk" %}
+  </div>
 
   {% if currentTab == 'history' %}
     {% include "./pool-history.njk" %}
