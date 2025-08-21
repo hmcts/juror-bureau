@@ -94,15 +94,17 @@
 
         <div id="pool-overview-table-wrapper" class="govuk-grid-column-full">
 
-          {% if errors.items["selectedJurors"] %}<div class="error-allocation">
-            <p class="govuk-error-message">{{ errors.items['selectedJurors'][0].details }}</p>
-          {% endif %}
-        
-          {% if errors.items["selectedJurors"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
+          {% if currentOwner === "400" %}
+            {% if errors.items["selectedJurors"] %}<div class="error-allocation">
+              <p class="govuk-error-message">{{ errors.items['selectedJurors'][0].details }}</p>
+            {% endif %}
+          
+            {% if errors.items["selectedJurors"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
 
-          <div class="govuk-caption-m">
-            <span id="total-checked-jurors">{{ totalCheckedJurors }}</span> of <span id="total-jurors-count">{{ totalJurors }}</span> selected
-          </div>
+            <div class="govuk-caption-m">
+              <span id="total-checked-jurors">{{ totalCheckedJurors }}</span> of <span id="total-jurors-count">{{ totalJurors }}</span> selected
+            </div>
+          {% endif %}
 
           {{ modSortableTable({
             id: "jurorOverview",
