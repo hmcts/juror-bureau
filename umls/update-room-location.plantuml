@@ -1,0 +1,94 @@
+@startuml update-room-location
+hide unlinked
+
+
+!include generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+title Update Room Location Details
+
+participant Actor
+
+''' LOCAL ROUTING
+participant RoomsPage <</administration/room-locations/rooms>>
+participant AddRoomsPage <</administration/room-locations/add-edit-room>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant RoomLocationsController <<non-sitting-days.controller.js>> #lightyellow
+participant RoomLocationsObject <<courtroomsDAO.get()>> #lightyellow
+participant CourtroomDetailsObject <<courtroomDetailsDAO.get()>> #lightyellow
+participant UpdateRoomLocationsObject <<courtroomsDAO.put()>> #lightyellow
+participant AddRoomLocationsObject <<courtroomsDAO.post()>> #lightyellow
+
+''' FILTERS AND VALIDATORS
+participant CourtroomDetailsValidator #Gold
+
+''' TEMPLATES
+participant RoomsTemplate <</administration/rooms.njk>>
+participant AddEditRoomsTemplate <</administration/add-edit-room.njk>>
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> RoomsPage: click edit room link
+RoomsPage -> RoomLocationsController : call rooms controller
+
+RoomLocationsController -> CourtroomDetailsObject : build request object
+CourtroomDetailsObject -> BackendController : send backend request
+
+alt Failed to fetch courtroom details
+    CourtroomDetailsObject <-- BackendController : error response
+    RoomLocationsController <-- CourtroomDetailsObject : reject requestObject
+    $renderGenericErrorPage(RoomLocationsController, ErrorTemplate)
+end
+
+CourtroomDetailsObject <- BackendController : ok response
+RoomLocationsController <- CourtroomDetailsObject : resolve request
+
+RoomLocationsController -> AddEditRoomsTemplate : request and build template
+
+RoomLocationsController -> AddEditRoomsTemplate : request and build template
+RoomLocationsController <- AddEditRoomsTemplate : return HTML
+AddRoomsPage <- RoomLocationsController : return HTML
+Actor <- AddRoomsPage : render HTML
+
+Actor -> AddRoomsPage: edit details and click save
+AddRoomsPage -> RoomLocationsController : POST courtroom details
+
+$validateInput(RoomLocationsController, CourtroomDetailsValidator, AddEditRoomsTemplate, AddRoomsPage)
+
+RoomLocationsController -> CourtroomDetailsObject : build request object
+CourtroomDetailsObject -> BackendController : send backend request
+
+alt Failed to compare etags for when updating room location details
+    CourtroomDetailsObject <-- BackendController : error response
+    RoomLocationsController <-- CourtroomDetailsObject : reject requestObject
+    $renderErrorOnForm(RoomLocationsController, AddEditRoomsTemplate, AddRoomsPage)
+end
+
+CourtroomDetailsObject <- BackendController : ok response
+RoomLocationsController <- CourtroomDetailsObject : resolve request
+
+alt Room location details have been updated by another usert
+    $renderErrorOnForm(RoomLocationsController, AddEditRoomsTemplate, AddRoomsPage)
+end
+
+RoomLocationsController -> UpdateRoomLocationsObject : build request object
+UpdateRoomLocationsObject -> BackendController : send backend request
+
+alt Failed to update courtroom details
+    UpdateRoomLocationsObject <-- BackendController : error response
+    RoomLocationsController <-- UpdateRoomLocationsObject : reject requestObject
+    $renderErrorOnForm(RoomLocationsController, AddEditRoomsTemplate, AddRoomsPage)
+end
+
+UpdateRoomLocationsObject <- BackendController : ok response
+RoomLocationsController <- UpdateRoomLocationsObject : resolve request
+
+!includesub room-locations.plantuml!renderCourtroomsPage
+
+@enduml

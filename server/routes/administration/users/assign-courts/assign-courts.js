@@ -4,7 +4,7 @@
   const _ = require('lodash');
   const { validate } = require('validate.js');
   const validator = require('../../../../config/validation/assign-courts');
-  const { usersDAO, userRecordDAO, assignCourtsDAO } = require('../../../../objects/users');
+  const { userRecordDAO, assignCourtsDAO } = require('../../../../objects/users');
   const { courtsDAO } = require('../../../../objects/administration');
   const { replaceAllObjKeys } = require('../../../../lib/mod-utils');
 
