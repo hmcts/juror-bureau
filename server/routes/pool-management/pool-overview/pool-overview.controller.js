@@ -10,6 +10,7 @@ const isCourtUser = require('../../../components/auth/user-type').isCourtUser;
 const capitalizeFully = require('../../../components/filters').capitalizeFully;
 const paginateJurorsList = require('./paginate-jurors-list');
 const { poolMembersDAO, fetchCoronerPoolDAO } = require('../../../objects');
+const { isBureauUser } = require('../../../components/auth/user-type');
 
 function errorCB(app, req, res, poolNumber, errorString) {
   return function(err) {

@@ -1,0 +1,81 @@
+@startuml reassign-panel
+hide unlinked
+
+!include generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant TrialDetailsPage <</trial-management/trials/:trialNumber/:locationCode/detail>>
+participant ValidateReassignmentPage <</trial-management/trials/:trialNumber/:locationCode/reassign/invalid-jurors>>
+participant SelectTrialPage <</trial-management/trials/:trialNumber/:locationCode/reassign/select-trial>>
+participant ReassignConfirmationPage <</trial-management/trials/:trialNumber/:locationCode/reassign/confirm/:newTrialNumber/:newLocationCode>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant ReassignPanelController <<reassign-panel.controller.js>> #lightyellow
+participant PanelListObject <<panelListDAO.get()>> #lightyellow
+participant TrialDetailsObject <<trialDetailsObject.get()>> #lightyellow
+participant TrialsListObject <<trialsListObject.post()>> #lightyellow
+participant ReassignPanelObject <<reassignPanelDAO.post()>> #lightyellow
+
+''' VALIDATORS
+participant ReassignPanelValidator #gold
+participant TrialSelectValidator #gold
+
+''' TEMPLATES
+participant TrialDetailsTemplate <<trial-management/trial-detail.njk>> #lavender
+participant ValidateReassignmentTemplate <<pool-management/movement/bulk-validate.njk>> #lavender
+participant SelectTrialTemplate <<trial-management/reassign-panel/select-trial.njk>> #lavender
+participant ReassignConfirmationTemplate <<trial-management/reassign-panel/confirm-reassign.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+Actor -> TrialDetailsPage : Select panel members and click "Reassign panel members"
+TrialDetailsPage -> ReassignPanelController : call page controller
+
+$validateInput(ReassignPanelController, ReassignPanelValidator, TrialDetailsTemplate, TrialDetailsPage, "No panel members selected")
+
+$genericAPICall(ReassignPanelController, PanelListObject, ErrorTemplate, "Failed to fetch panel data")
+
+alt some selected members are in an invalid state
+  $renderTemplateToPage(ReassignPanelController, ValidateReassignmentTemplate, ValidateReassignmentPage)
+  Actor -> ValidateReassignmentPage : Continue with valid panel members
+  ValidateReassignmentPage -> ReassignPanelController : call page controller
+end
+
+$genericAPICall(ReassignPanelController, TrialsListObject, ErrorTemplate, "Failed to fetch trials for reassigning panel")
+
+$renderTemplateToPage(ReassignPanelController, SelectTrialTemplate, SelectTrialPage)
+
+Actor -> SelectTrialPage : Select trial and click "Continue"
+SelectTrialPage -> ReassignPanelController : call page controller
+
+$validateInput(ReassignPanelController, TrialSelectValidator, SelectTrialTemplate, SelectTrialPage, "No trial selected")
+
+$genericAPICall(ReassignPanelController, TrialDetailsObject, ErrorTemplate, "Failed to fetch trial details for reassiging panel")
+$genericAPICall(ReassignPanelController, PanelListObject, ErrorTemplate, "Failed to fetch panel members for reassiging panel")
+
+$renderTemplateToPage(ReassignPanelController, ReassignConfirmationTemplate, ReassignConfirmationPage)
+
+Actor -> ReassignConfirmationPage : Confirm reassignment
+ReassignConfirmationPage -> ReassignPanelController : call page controller
+
+ReassignPanelController -> ReassignPanelObject : build request object
+ReassignPanelObject -> BackendController : send backend request
+
+$APIErrorAlt(ReassignPanelController, ReassignPanelObject, ErrorTemplate, "Failed to reassign panel members", ReassignConfirmationTemplate, ReassignConfirmationPage)
+
+ReassignPanelObject <- BackendController : ok response
+ReassignPanelController <- ReassignPanelObject : resolve request
+
+TrialDetailsPage <- ReassignPanelController : redirect to updated trial details
+Actor <- TrialDetailsPage : view updated trial details
+
+@enduml

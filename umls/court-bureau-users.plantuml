@@ -1,0 +1,41 @@
+@startuml court-bureau-users
+hide unlinked
+!include generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant UsersPage <</administration/users/users>>
+participant UserRecordPage <</administration/users/user-record>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant UsersController <<users.controller.js>> #lightyellow
+participant UsersObject <<usersDAO.post()>> #lightyellow
+participant UserRecordObject <<userRecordDAO.get()>> #lightyellow
+
+''' TEMPLATES
+participant UsersTemplate <</administration/users/court-bureau-user.njk>>
+participant UserRecordTemplate <</administration/users/user-record.njk>>
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> UsersPage: click users tab
+UsersPage -> UsersController : call users controller
+
+$genericAPICall(UsersController, UsersObject, ErrorTemplate, "Failed to fetch list of users")
+
+$renderTemplateToPage(UsersController, UsersTemplate, UsersPage)
+
+alt Select a user record
+    Actor -> UsersPage: click on a user
+    UsersPage -> UsersController : call users controller
+
+    $genericAPICall(UsersController, UserRecordObject, ErrorTemplate, "Failed to fetch user record")
+    $renderTemplateToPage(UsersController, UserRecordTemplate, UserRecordPage)
+end

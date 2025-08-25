@@ -25,9 +25,6 @@
             classes: "govuk-fieldset__legend--m"
           }
         },
-        hint: {
-          text: "Only displaying jurors managed by the Bureau"
-        },
         items: [
           {
             value: "responded",
@@ -52,48 +49,26 @@
         }
       }) }}
 
-      {{ govukButton({
-        text: "Reassign",
-        classes: "govuk-button--secondary govuk-!-margin-bottom-0",
-        type: "submit",
-        attributes: {
-          id: "reassignButton",
-          formAction: postUrls.assignUrl
-        }
-      }) }}
-
-      {{ govukButton({
-        text: "Postpone",
-        classes: "govuk-button--secondary govuk-!-margin-bottom-0",
-        type: "submit",
-        attributes: {
-          id: "postponeButton",
-          formAction: postUrls.postponeUrl
-        }
-      }) }}
-
-      {% if isCourtUser %}
-
+      {% if currentOwner === "400" %}
         {{ govukButton({
-          text: "Transfer",
+          text: "Reassign",
           classes: "govuk-button--secondary govuk-!-margin-bottom-0",
           type: "submit",
           attributes: {
-            id: "transferButton",
-            formAction: postUrls.transferUrl
+            id: "reassignButton",
+            formAction: postUrls.assignUrl
           }
         }) }}
 
         {{ govukButton({
-          text: "Complete service",
+          text: "Postpone",
           classes: "govuk-button--secondary govuk-!-margin-bottom-0",
           type: "submit",
           attributes: {
-            id: "completeServiceButton",
-            formAction: postUrls.completeServiceUrl
+            id: "postponeButton",
+            formAction: postUrls.postponeUrl
           }
         }) }}
-
       {% endif %}
     </div>
 
@@ -119,15 +94,17 @@
 
         <div id="pool-overview-table-wrapper" class="govuk-grid-column-full">
 
-          {% if errors.items["selectedJurors"] %}<div class="error-allocation">
-            <p class="govuk-error-message">{{ errors.items['selectedJurors'][0].details }}</p>
-          {% endif %}
-        
-          {% if errors.items["selectedJurors"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
+          {% if currentOwner === "400" %}
+            {% if errors.items["selectedJurors"] %}<div class="error-allocation">
+              <p class="govuk-error-message">{{ errors.items['selectedJurors'][0].details }}</p>
+            {% endif %}
+          
+            {% if errors.items["selectedJurors"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
 
-          <div class="govuk-caption-m">
-            <span id="total-checked-jurors">{{ totalCheckedJurors }}</span> of <span id="total-jurors-count">{{ totalJurors }}</span> selected
-          </div>
+            <div class="govuk-caption-m">
+              <span id="total-checked-jurors">{{ totalCheckedJurors }}</span> of <span id="total-jurors-count">{{ totalJurors }}</span> selected
+            </div>
+          {% endif %}
 
           {{ modSortableTable({
             id: "jurorOverview",
