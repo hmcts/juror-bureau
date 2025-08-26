@@ -13,29 +13,11 @@
 
   module.exports.homepage = function(app) {
     return async function(req, res) {
-      if (isCourtUser(req) && isSuperUser(req)) {
-        return res.redirect(app.namedRoutes.build('homepage.dashboard.get'));
-      }
-      if (isBureauUser(req) && isSuperUser(req)) {
+      if (isCourtUser(req) || (isBureauUser(req) && isSuperUser(req))) {
         return res.redirect(app.namedRoutes.build('homepage.dashboard.get'));
       }
 
-      let notifications;
-      if (isCourtUser(req)) {
-        try {
-          notifications = await courtDashboardDAO.get(req, 'notifications', req.session.authentication.locCode);
-        } catch (err) {
-          app.logger.crit('Unable to fetch notifications', {
-            auth: req.session.authentication,
-            token: req.session.authToken,
-            error: typeof err.error !== 'undefined' ? err.error : err.toString(),
-          });
-        }
-      }
-
-      return res.render('homepage/index.njk', {
-        notifications: notifications ? buildDashboardNotifications(app)(req, res)(notifications) : [],
-      });
+      return res.render('homepage/index.njk');
     };
   };
 
@@ -91,6 +73,7 @@
 
       res.render('homepage/court-dashboard/dashboard.njk', {
         notifications: notifications ? buildDashboardNotifications(app)(req, res)(notifications) : [],
+        alerts: buildDashboardAlerts(app)(req, res),
         widgets,
         headingName: courtDetails ? `${capitalizeFully(courtDetails?.englishCourtName)} (${courtDetails?.courtCode})` : 'Court Dashboard',
       });
@@ -300,6 +283,21 @@
       }
     }
     return notificationList;
+  };
+
+  const buildDashboardAlerts = (app) => (req, res) => {
+    const alertList = [];
+    if (isCourtUser(req)) {
+      if (modUtils.isFirstWorkingDayOfMonth()) {
+        alertList.push(
+          {
+            type: 'warning',
+            html: "Remember to run the <a href='" + app.namedRoutes.build('reports.prepare-monthly-utilisation.filter.get') + "'>monthly wastage and utilisation report</a>"
+          } 
+        );
+      }
+    }
+    return alertList;
   };
 
   module.exports.filterPools = function(app) {
