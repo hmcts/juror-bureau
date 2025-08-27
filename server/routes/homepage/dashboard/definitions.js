@@ -141,7 +141,7 @@
               },
               {
                 heading: 'Jurors on call',
-                value: stats?.attendance.jurorsOnCall || 0,
+                value: stats?.attendance.jurorsOnCall,
               }
             ]
           },
