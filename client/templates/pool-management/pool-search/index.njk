@@ -90,6 +90,22 @@
           For coroner's courts, you'll need to use a <a href="{{ url('coroner-pool.search.get') }}" class="govuk-link">different search</a>.
         </p>
       {% endif %}
+
+      {% if isBureauUser %}
+      <span class="govuk-!-font-weight-bold govuk-!-margin-bottom-4">Nil pool type</span>
+        {{ govukCheckboxes({
+        name: "isNilPool",
+        items: [
+          {
+            value: "true",
+            text: "Nil pool",
+            checked: advancedFields.afIsNilPool
+          }
+        ]
+      }) }}
+      {% endif %}
+
+
     </div>
 
   </div>

@@ -49,6 +49,9 @@
             afHigh: typeof req.query['poolType'] !== 'undefined'
               ? req.query['poolType'].split(',').includes('HGH')
               : false,
+            afIsNilPool: typeof req.query['isNilPool'] !== 'undefined'
+              ? req.query['isNilPool'] == "true"
+              : false
           };
 
           if (req.session.formFields) {
@@ -319,6 +322,10 @@
 
     if (params.poolType) {
       parameters.push('poolType=' + params.poolType);
+    }
+
+    if (params.isNilPool) {
+      parameters.push('isNilPool=' + params.isNilPool);
     }
 
     return parameters;

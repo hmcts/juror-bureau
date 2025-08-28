@@ -47,6 +47,10 @@
           }
         }
 
+        if (searchParams.isNilPool) {
+          tmpBody.isNilPool = searchParams.isNilPool
+        }
+
         tmpBody.offset = searchParams.page - 1 || 0;
         tmpBody.sortDirection = 'ASC';
         tmpBody.sortColumn = 'POOL_NO';
