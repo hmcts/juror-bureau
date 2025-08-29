@@ -69,8 +69,6 @@
   require('./components/backlog');
   require('./components/notes');
   require('./components/super-navigation');
-  require('./modal');
-  require('./status');
   require('./export-coroner');
 
 })();
