@@ -25,13 +25,18 @@
   $controller <- $validator : valid details entered
 !endprocedure
 
-!procedure $APIErrorAlt($controller, $object, $errorTemplate, $altMessage, $template = null, $errorPage = null)
+!procedure $APIErrorAlt($controller, $object, $errorTemplate, $altMessage, $template = null, $errorPage = null, $newController = null)
   alt $altMessage
     $object <-- BackendController : Error response
     $controller <-- $object : reject requestObject
 
     !if ($template != null) && ($errorPage != null)
-      $renderErrorOnForm($controller, $template, $errorPage)
+      !if ($newController != null) && ($controller != $newController)
+        $newController <- $controller : pass control to error page controller
+        $renderErrorOnForm($newController, $template, $errorPage)
+      !else
+        $renderErrorOnForm($controller, $template, $errorPage)
+      !endif
     !else
       $renderGenericErrorPage($controller, $errorTemplate)
     !endif
@@ -53,6 +58,16 @@
   $controller <- $template : return HTML
   $page <- $controller : return HTML
   Actor <- $page : render HTML
+!endprocedure
+
+!procedure $callAPIRenderErrorOnForm($controller, $object, $errorTemplate, $errorMessage, $newTemplate, $newPage, $newController = null)
+  $controller -> $object : build request object
+  $object -> BackendController : send backend request
+
+  $APIErrorAlt($controller, $object, $errorTemplate, $errorMessage, $newTemplate, $newPage, $newController)
+
+  $object <- BackendController : ok response
+  $controller <- $object : resolve request
 !endprocedure
 
 @enduml

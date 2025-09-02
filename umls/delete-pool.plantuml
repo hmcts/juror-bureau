@@ -1,4 +1,6 @@
 @startuml delete-pool
+hide unlinked
+!include generic-blocks.plantuml
 
 skinparam Style strictuml 
 skinparam SequenceMessageAlignment center
@@ -6,52 +8,53 @@ skinparam SequenceMessageAlignment center
 participant Actor
 
 ''' LOCAL ROUTING
-participant Page <</delete-pool>>
+participant PoolOverviewPage <</pool-overview>>
+participant DeletePoolPage <</delete-pool>>
+participant GenericErrorPage <</_errors/generic>>
 
 ''' CONTROLLER AND REQUEST OBJECTS
 participant DeletePoolController <<delete-pool.controller.js>>
+participant PoolSummaryObject <<poolSummaryObject.get()>>
 participant DeletePoolObject <<deletePoolObject.delete()>>
 
 ''' TEMPLATES
 participant ConfirmTemplate <<delete-pool/confirm.njk>>
 participant HasMembersTemplate <<delete-pool/has-members.njk>>
-participant PoolManagementTemplate <<pool-management/index.njk>>
-
-''' FILTERS AND VALIDATORS
+participant LockedTemplate <<delete-pool/locked.njk>>
+participant ErrorTemplate <<_errors/generic.njk>>
 
 ''' BACKEND CONTROLLER
 participant BackendController
 
 
-
 ''' JOURNEY FLOW
-Actor -> Page : request page
-
-Page -> DeletePoolController : call page controller
-
-DeletePoolController -> ConfirmTemplate : request and build template
-DeletePoolController <- ConfirmTemplate : return HTML
-
+Actor -> PoolOverviewPage : click 'delete pool' button
+PoolOverviewPage -> DeletePoolController : Call page controller
+$genericAPICall(DeletePoolController, PoolSummaryObject, ErrorTemplate, "Failed to fetch pool summary (delete pool journey)")
+$renderTemplateToPage(DeletePoolController, ConfirmTemplate, DeletePoolPage)
 alt Pool has members
-  DeletePoolController -> HasMembersTemplate : request and build template
-  DeletePoolController <- HasMembersTemplate : return HTML
+  $renderTemplateToPage(DeletePoolController, HasMembersTemplate, DeletePoolPage)
 end
 
-Actor <- DeletePoolController : render HTML
-
-Page -> DeletePoolObject : confirm deletion
+Actor -> DeletePoolPage : click 'delete pool' button
+DeletePoolPage -> DeletePoolController : Call page controller
+DeletePoolController -> DeletePoolObject : build request object
 DeletePoolObject -> BackendController : send backend request
+
+alt Failed to delete pool
+  DeletePoolObject <-- BackendController : Error response
+  DeletePoolController <-- DeletePoolObject : reject requestObject
+
+  alt Pool is locked
+    $renderTemplateToPage(DeletePoolController, LockedTemplate, DeletePoolPage)
+  end
+
+  $renderGenericErrorPage(DeletePoolController, ErrorTemplate)
+end
+
 DeletePoolObject <- BackendController : ok response
 DeletePoolController <- DeletePoolObject : resolve request
-
-alt Backend returns an error
-  DeletePoolObject <-- BackendController : error response
-  DeletePoolController <-- DeletePoolObject : reject request
-end
-
-DeletePoolController -> PoolManagementTemplate : request and build template
-DeletePoolController <- PoolManagementTemplate : return HTML
-
-Actor <- DeletePoolController : render HTML
+PoolOverviewPage <- DeletePoolController : redirect to Pool Overview
+Actor <- PoolOverviewPage : render HTML
 
 @enduml

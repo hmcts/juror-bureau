@@ -1,0 +1,127 @@
+@startuml create-coroner-pool
+hide unlinked
+!include generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant PoolManagementPage <<pool-management>>
+participant RequestPoolPage <</pool-management/request-pool>>
+participant SelectCourtPage <</pool-management/coroner-pool/select-court>>
+participant PoolDetailsPage <</pool-management/coroner-pool/pool-details>>
+participant CheckDetailsPage <</pool-management/coroner-pool/check-details>>
+participant CoronerPoolOverviewPage <</pool-management/pool-overview/:poolNumber>>
+participant CatchmentAreaPage <</pool-management/pool/:poolNumber/coroner/catchment-area>>
+participant ChangeCatchmentAreaPage <</pool-management/pool/:poolNumber/coroner/catchment-area/change>>
+participant PostcodesPage <</pool-management/pool/:poolNumber/coroner/postcodes>>
+participant ExportPoolPage <</pool-management/pool/:poolNumber/coroner/export>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant CoronerCourtController <<coroner-court.controller.js>>
+participant PoolOverviewController <<pool-overview.controller.js>>
+participant SummonCitizensController <<summon-citizens.controller.js>>
+participant FetchCourtsObject <<poolObj.fetchCourts.get()>>
+participant MatchUserCourt <<matchUserCourt()>>
+participant PostcodesObject <<postCodesObject.get()>>
+participant FetchCoronerPoolObject <<fetchCoronerPoolDAO.get()>>
+participant CreateCoronerPoolObject <<createCoronerPoolDAO.post()>>
+participant FetchCoronerPoolObject <<fetchCoronerPoolDAO.get()>>
+participant AddCoronerCitizensObject <<addCoronerCitizensDAO.post()>>
+
+''' TEMPLATES
+participant PoolManagementTemplate <<pool-management/index.njk>>
+participant SelectCourtTemplate <<pool-management/coroner-court/select-court.njk>>
+participant PoolDetailsTemplate <<pool-management/coroner-court/details.njk>>
+participant CheckDetailsTemplate <<pool-management/coroner-court/check-details.njk>>
+participant CoronerPoolOverviewTemplate <<pool-management/pool-overview/coroner.njk>>
+participant CatchmentAreaTemplate <<pool-management/coroner/catchment-area.njk>>
+participant ChangeCatchmentAreaTemplate <<pool-management/_common/select-court.njk>>
+participant PostcodesTemplate <<pool-management/coroner/postcodes.njk>>
+participant ErrorTemplate <<_errors/generic.njk>>
+
+
+''' FILTERS AND VALIDATORS
+participant SelectCourtValidator
+participant PoolDetailsValidator
+participant CourtLocationValidator
+participant CoronerPoolPostcodesValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+''' JOURNEY FLOW
+Actor -> RequestPoolPage : Select 'Coroners court pool' option
+RequestPoolPage -> CoronerCourtController : call page controller
+
+$genericAPICall(CoronerCourtController, FetchCourtsObject, ErrorTemplate, "Failed to fetch list of coroners' courts when creating a coroners court pool")
+$renderTemplateToPage(CoronerCourtController, SelectCourtTemplate, SelectCourtPage)
+
+Actor -> SelectCourtPage : select court and continue
+$validateInput(CoronerCourtController, SelectCourtValidator, SelectCourtTemplate, SelectCourtPage)
+CoronerCourtController -> MatchUserCourt : validate court selection exists
+alt Court location invalid
+  CoronerCourtController <-- MatchUserCourt : reject promise
+  $renderErrorOnForm(CoronerCourtController, SelectCourtTemplate, SelectCourtPage)
+end
+CoronerCourtController <-- MatchUserCourt : court location valid
+
+$renderTemplateToPage(CoronerCourtController, PoolDetailsTemplate, PoolDetailsPage)
+Actor -> PoolDetailsPage : enter pool details and continue
+$validateInput(CoronerCourtController, PoolDetailsValidator, PoolDetailsTemplate, PoolDetailsPage)
+
+$renderTemplateToPage(CoronerCourtController, CheckDetailsTemplate, CheckDetailsPage)
+Actor -> CheckDetailsPage : confirm details and submit
+CheckDetailsPage -> CoronerCourtController : call page controller
+$callAPIRenderErrorOnForm(CoronerCourtController, CreateCoronerPoolObject, ErrorTemplate, "Failed to create a new coroner court pool", CheckDetailsTemplate, CheckDetailsPage)
+
+PoolOverviewController <- CoronerCourtController : redirect to pool overview
+$callAPIRenderErrorOnForm(PoolOverviewController, FetchCoronerPoolObject, ErrorTemplate, "Failed to fetch coroner pool", PoolManagementTemplate, PoolManagementPage)
+$renderTemplateToPage(PoolOverviewController, CoronerPoolOverviewTemplate, CoronerPoolOverviewPage)
+
+Actor -> CoronerPoolOverviewPage : click 'add jurors' button
+PoolOverviewController -> CoronerCourtController : call coroner court controller
+$renderTemplateToPage(CoronerCourtController, CatchmentAreaTemplate, CatchmentAreaPage)
+
+alt change catchment area
+  Actor -> CatchmentAreaPage : click 'change' link
+  CoronerCourtController -> SummonCitizensController : call summon citizens controller
+  $genericAPICall(SummonCitizensController, FetchCourtsObject, ErrorTemplate, "Failed to fetch list of courts")
+  $renderTemplateToPage(SummonCitizensController, ChangeCatchmentAreaTemplate, ChangeCatchmentAreaPage)
+  Actor -> ChangeCatchmentAreaPage : select court and continue
+  $validateInput(SummonCitizensController, CourtLocationValidator, ChangeCatchmentAreaTemplate, ChangeCatchmentAreaPage)
+  SummonCitizensController -> MatchUserCourt : validate court selection exists
+  alt Court location invalid
+    SummonCitizensController <-- MatchUserCourt : reject promise
+    $renderErrorOnForm(SummonCitizensController, ChangeCatchmentAreaTemplate, ChangeCatchmentAreaPage)
+  end
+  SummonCitizensController <-- MatchUserCourt : court location valid
+  CoronerCourtController <- SummonCitizensController : pass selected court back to coroner court controller
+  $renderTemplateToPage(CoronerCourtController, CatchmentAreaTemplate, CatchmentAreaPage)
+end
+
+Actor -> CatchmentAreaPage : click 'continue' button
+CatchmentAreaPage -> CoronerCourtController : call page controller
+$callAPIRenderErrorOnForm(CoronerCourtController, PostcodesObject, ErrorTemplate, "Failed to fetch postcodes", PoolManagementTemplate, PoolManagementPage, PoolOverviewController)
+$renderTemplateToPage(CoronerCourtController, PostcodesTemplate, PostcodesPage)
+
+Actor -> PostcodesPage : Enter number of citizens and continue
+$validateInput(CoronerCourtController, CoronerPoolPostcodesValidator, PostcodesTemplate, PostcodesPage)
+$callAPIRenderErrorOnForm(CoronerCourtController, AddCoronerCitizensObject, ErrorTemplate, "Failed to add citizens in pool", PostcodesTemplate, PostcodesPage)
+PoolOverviewController <- CoronerCourtController : redirect to pool overview
+$callAPIRenderErrorOnForm(PoolOverviewController, FetchCoronerPoolObject, ErrorTemplate, "Failed to fetch coroner pool", PoolManagementTemplate, PoolManagementPage)
+$renderTemplateToPage(PoolOverviewController, CoronerPoolOverviewTemplate, CoronerPoolOverviewPage)
+
+alt export coroner pool
+  Actor -> CoronerPoolOverviewPage : click 'export pool' button
+  CoronerPoolOverviewPage -> CoronerCourtController : call page controller
+  $callAPIRenderErrorOnForm(CoronerCourtController, FetchCoronerPoolObject, ErrorTemplate, "Failed to export coroner pool", CoronerPoolOverviewTemplate, CoronerPoolOverviewPage, PoolOverviewController)
+  ExportPoolPage <- CoronerCourtController : return CSV
+  Actor <- ExportPoolPage : download CSV
+end
+
+@enduml
