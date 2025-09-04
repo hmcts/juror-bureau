@@ -1,4 +1,6 @@
 @startuml export-contact-details
+hide unlinked
+!include generic-blocks.plantuml
 
 skinparam Style strictuml 
 skinparam SequenceMessageAlignment center
@@ -6,108 +8,108 @@ skinparam SequenceMessageAlignment center
 participant Actor
 
 ''' LOCAL ROUTING
+participant MessagingPage <</messaging>>
 participant FindContactDetailsPage <</messaging/export-contact-details/details-to-export>>
+participant SelectTrialPage <</messaging/export-contact-details/trials>>
 participant JurorsListPage <</messaging/export-contact-details/find-contact-details>>
 participant DetailsToExportPage <</messaging/export-contact-details/jurors-list>>
 participant GenericErrorPage <</error>>
 
 ''' CONTROLLER AND REQUEST OBJECTS
 participant exportContactDetailsController <<export-contact-details.controller.js>> #lightyellow
+participant sendMessagesController <<send-messsages.controller.js>> #lightyellow
 participant fetchAllCourts <<fetchAllCourts.get()>> #lightyellow
+participant trialsListDAO <<trialsListDAO.post()>> #lightyellow
 participant jurorSearchDAO <<jurorSearchDAO.post()>> #lightyellow
 participant downloadCSVDAO <<downloadCSVDAO.post()>> #lightyellow
 
+
 ''' TEMPLATES
 participant FindContactDetailsTemplate <</messaging/export-contact-details/details-to-export.njk>>
+participant SelectTrialTemplate <<messaging/select-trial.njk>>
 participant JurorsListTemplate <</messaging/export-contact-details/jurors-list.njk>>
 participant DetailsToExportTemplate <</messaging/export-contact-details/details-to-export.njk>>
-participant ErrorTemplate <<_errors/generic.njk>> #lavender
+participant GenericErrorTemplate <<_errors/generic.njk>> #lavender
 
 ''' FILTERS AND VALIDATORS
 participant exportContactDetailsValidator
+participant trialSearchValidator
 participant detailsToExportValidator
 
 ''' BACKEND CONTROLLER
 participant BackendController
 
+Actor -> MessagingPage : click 'export contact details' tab
+MessagingPage -> exportContactDetailsController : call page controller
+
+exportContactDetailsController -> fetchAllCourts : build request object
+fetchAllCourts -> BackendController : send backend request
+fetchAllCourts <- BackendController : ok or error response
+exportContactDetailsController <- fetchAllCourts : resolve request
+
+$renderTemplateToPage(exportContactDetailsController, FindContactDetailsTemplate, FindContactDetailsPage)
+
 Actor -> FindContactDetailsPage : enter search criteria
 FindContactDetailsPage -> exportContactDetailsController : call controller
 
-exportContactDetailsController -> exportContactDetailsValidator : validate form
+$validateInput(exportContactDetailsController, exportContactDetailsValidator, FindContactDetailsTemplate, FindContactDetailsPage)
 
-alt Invalid/no data entered
-  exportContactDetailsController <-- exportContactDetailsValidator : data validation fails
-  exportContactDetailsController -> FindContactDetailsTemplate : request and build error message template
-  exportContactDetailsController <- FindContactDetailsTemplate : return HTML
-  FindContactDetailsPage <- exportContactDetailsValidator : return HTML
-  Actor <- FindContactDetailsPage : render error message
+alt Court user selects search by trial
+  exportContactDetailsController -> sendMessagesController : pass to send messages controller
+  $genericAPICall(sendMessagesController, trialsListDAO, GenericErrorTemplate, "Failed to fetch trials")
+  $renderTemplateToPage(sendMessagesController, SelectTrialTemplate, SelectTrialPage)
+  alt User filters on trials
+    Actor -> SelectTrialPage : filter on trials by trial number input field
+    SelectTrialPage -> sendMessagesController : call controller to filter on trials
+    $validateInput(sendMessagesController, trialSearchValidator, SelectTrialTemplate, SelectTrialPage)
+    $genericAPICall(sendMessagesController, trialsListDAO, GenericErrorTemplate, "Failed to fetch trials")
+    $renderTemplateToPage(sendMessagesController, SelectTrialTemplate, SelectTrialPage)
+  end
+  Actor -> SelectTrialPage : select trial and click 'Continue with selected'
+  SelectTrialPage -> sendMessagesController : call controller
+  exportContactDetailsController <- sendMessagesController : pass back to export contact details controller
 end
-
-exportContactDetailsController <- exportContactDetailsController : valid data entered
 
 exportContactDetailsController -> jurorSearchDAO : build request object
 jurorSearchDAO -> BackendController : send backend request
-jurorSearchDAO <- BackendController : ok response
+jurorSearchDAO <- BackendController : ok or error response
 exportContactDetailsController <- jurorSearchDAO : resolve request
+$renderTemplateToPage(exportContactDetailsController, JurorsListTemplate, JurorsListPage)
 
-exportContactDetailsController -> JurorsListTemplate : request and build template
-exportContactDetailsController <- JurorsListTemplate : return HTML
-JurorsListPage <- exportContactDetailsController : return HTML
-Actor <- JurorsListPage : render HTML
+alt User filters on jurors
+  Actor -> JurorsListPage : filter on jurors using filter panel
+  JurorsListPage -> exportContactDetailsController : call page controller
+  exportContactDetailsController -> jurorSearchDAO : build request object
+  jurorSearchDAO -> BackendController : send backend request
+  jurorSearchDAO <- BackendController : ok or error response
+  exportContactDetailsController <- jurorSearchDAO : resolve request
+  $renderTemplateToPage(exportContactDetailsController, JurorsListTemplate, JurorsListPage)
+end
 
-Actor -> JurorsListPage : select jurors to export contact details for
-
+Actor -> JurorsListPage : select juror(s)
 JurorsListPage -> exportContactDetailsController : call page controller
-exportContactDetailsController -> DetailsToExportTemplate : request and build template
-exportContactDetailsController <- DetailsToExportTemplate : return HTML
-DetailsToExportPage <- exportContactDetailsController : return HTML
-Actor <- DetailsToExportPage : render HTML
 
-exportContactDetailsController -> detailsToExportValidator : validate form
-
-alt Invalid/no data entered
-  exportContactDetailsController <-- detailsToExportValidator : data validation fails
-  exportContactDetailsController -> ApproveRejectTemplate : request and build error message template
-  exportContactDetailsController <- ApproveRejectTemplate : return HTML
-  DetailsToExportPage <- detailsToExportValidator : return HTML
-  Actor <- DetailsToExportPage : render error message
+alt User selects all jurors
+  Actor -> JurorsListPage : click 'Select all' checkbox
+  JurorsListPage -> exportContactDetailsController : call page controller
+  $genericAPICall(exportContactDetailsController, jurorSearchDAO, GenericErrorTemplate, "Failed to check the juror to export contact details for")
 end
 
-exportContactDetailsController <- exportContactDetailsController : valid data entered
+Actor -> JurorsListPage : click 'Continue'
+JurorsListPage -> exportContactDetailsController : call page controller
 
-exportContactDetailsController -> downloadCSVDAO : build request object
-downloadCSVDAO -> BackendController : send backend request
-downloadCSVDAO <- BackendController : ok response
-exportContactDetailsController <- downloadCSVDAO : resolve request
-
-alt Failed to generate and download csv file with contact details
-    downloadCSVDAO <-- BackendController : error response
-    exportContactDetailsController <-- downloadCSVDAO : reject requestObject
-    exportContactDetailsController -> ErrorTemplate : request and build template
-    exportContactDetailsController <- ErrorTemplate : return HTML
-    GenericErrorPage <- exportContactDetailsController : return HTML
-    Actor <- GenericErrorPage : render error page
+alt no jurors selected
+  $renderErrorOnForm(exportContactDetailsController, JurorsListTemplate, JurorsListPage)
 end
 
-alt Something went wrong searching for jurors to export contact details for
-    jurorSearchDAO <-- BackendController : error response
-    exportContactDetailsController <-- jurorSearchDAO : reject requestObject
-    exportContactDetailsController -> ErrorTemplate : request and build template
-    exportContactDetailsController <- ErrorTemplate : return HTML
-    GenericErrorPage <- exportContactDetailsController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
+$renderTemplateToPage(exportContactDetailsController, DetailsToExportTemplate, DetailsToExportPage)
 
-alt Failed to check the juror to export contact details for
-    jurorSearchDAO <-- BackendController : error response
-    exportContactDetailsController <-- jurorSearchDAO : reject requestObject
-    exportContactDetailsController -> ErrorTemplate : request and build template
-    exportContactDetailsController <- ErrorTemplate : return HTML
-    GenericErrorPage <- exportContactDetailsController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
+Actor -> DetailsToExportPage : confirm details to export
+DetailsToExportPage -> exportContactDetailsController : call page controller
+$validateInput(exportContactDetailsController, detailsToExportValidator, DetailsToExportTemplate, DetailsToExportPage)
 
+$callAPIRenderErrorOnForm(exportContactDetailsController, downloadCSVDAO, GenericErrorTemplate, "Failed to download CSV", DetailsToExportTemplate, DetailsToExportPage)
 
+Actor <- exportContactDetailsController : download CSV
 
-
-    
+@enduml

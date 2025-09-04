@@ -1,4 +1,6 @@
 @startuml send-messages
+hide unlinked
+!include generic-blocks.plantuml
 
 skinparam Style strictuml 
 skinparam SequenceMessageAlignment center
@@ -6,29 +8,31 @@ skinparam SequenceMessageAlignment center
 participant Actor
 
 ''' LOCAL ROUTING
-participant MessagesTemplatePage <</messaging/messages-template>>
-participant FindJurorsPage <</messaging/find-jurors>>
-participant SelectTrialPage <</messaging/select-trial>>
-participant SelectJurorsPage <</messaging/select-jurors>>
-participant MessageConfirmationPage <</messaging/message-confirmation>>
-participant MessagesListPage <</messaging/messages-list>>
+participant HomePage <</homepage>>
+participant MessagesListPage <</messaging/send>>
+participant MessagesTemplatePage <</messaging/send/:message>>
+participant FindJurorsPage <</messaging/send/:message/find-jurors>>
+participant SelectTrialPage <</messaging/send/:message/select-trial>>
+participant SelectJurorsPage <</messaging/send/:message/select-jurors>>
+participant MessageConfirmationPage <</messaging/send/:message/confirmation>>
 participant GenericErrorPage <</error>>
 
 ''' CONTROLLER AND REQUEST OBJECTS
 participant sendMessagesController <<send-messages.controller.js>> #lightyellow
-participant trialsListObject <<trialsListObject.get()>> #lightyellow
 participant messageTemplateDAO <<messageTemplateDAO.get()>> #lightyellow
+participant trialsListDAO <<trialsListDAO.post()>> #lightyellow
 participant sendMessage <<sendMessage.post()>> #lightyellow
 participant jurorSearchDAO <<jurorSearchDAO.post()>> #lightyellow
 participant populatedMessageDAO <<populatedMessageDAO.post()>> #lightyellow
 
 ''' TEMPLATES
+participant MessagesListTemplate <</messaging/messages-list.njk>>
 participant MessagesTemplate <</messaging/messages-template.njk>>
 participant FindJurorsTemplate <</messaging/find-jurors.njk>>
 participant SelectTrialTemplate <</messaging/select-trial.njk>>
 participant SelectJurorsTemplate <</messaging/select-jurors.njk>>
 participant MessageConfirmationTemplate <</messaging/message-confirmation.njk>>
-participant ErrorTemplate <<_errors/generic.njk>> #lavender
+participant GenericErrorTemplate <<_errors/generic.njk>> #lavender
 
 ''' FILTERS AND VALIDATORS
 participant messagingValidator
@@ -37,107 +41,58 @@ participant messagingValidator
 ''' BACKEND CONTROLLER
 participant BackendController
 
-Actor -> MessagesTemplatePage : select message to send
+''' JOURNEY FLOW
+
+Actor -> HomePage : click 'messages' in apps tray
+HomePage -> sendMessagesController : call controller
+$renderTemplateToPage(sendMessagesController, MessagesListTemplate, MessagesListPage)
+
+Actor -> MessagesListPage : selects message from list
+$genericAPICall(sendMessagesController, messageTemplateDAO, GenericErrorTemplate, "Unable to fetch message template")
+$renderTemplateToPage(sendMessagesController, MessagesTemplate, MessagesTemplatePage)
+Actor -> MessagesTemplatePage : enter required details and click 'continue'
 MessagesTemplatePage -> sendMessagesController : call controller
+$validateInput(sendMessagesController, messagingValidator, MessagesTemplate, MessagesTemplatePage)
 
-sendMessagesController -> jurorSearchDAO : build request object
-jurorSearchDAO -> BackendController : send backend request
-jurorSearchDAO <- BackendController : ok response
-sendMessagesController <- jurorSearchDAO : resolve request
-
-alt Search by trial
-sendMessagesController -> trialsListObject : build request object
-trialsListObject -> BackendController : send backend request
-trialsListObject <- BackendController : ok response
-sendMessagesController <- trialsListObject : resolve request
-
-sendMessagesController -> SelectTrialTemplate : request and build template
-sendMessagesController <- SelectTrialTemplate : return HTML
-SelectTrialPage <- sendMessagesController : return HTML
-Actor <- SelectTrialPage : render HTML
+alt NO trial number required for message
+  $renderTemplateToPage(sendMessagesController, FindJurorsTemplate, FindJurorsPage)
+  Actor -> FindJurorsPage : enter search criteria and click 'Continue'
+  FindJurorsPage -> sendMessagesController : call controller
+  $validateInput(sendMessagesController, messagingValidator, FindJurorsTemplate, FindJurorsPage)
+else trial number required for message
+  $genericAPICall(sendMessagesController, trialsListDAO, GenericErrorTemplate, "Failed to fetch trials")
+  $renderTemplateToPage(sendMessagesController, SelectTrialTemplate, SelectTrialPage)
+  alt User filters on trials
+    Actor -> SelectTrialPage : filter on trials by trial number input field
+    SelectTrialPage -> sendMessagesController : call controller to filter on trials
+    $validateInput(sendMessagesController, messagingValidator, SelectTrialTemplate, SelectTrialPage)
+    $genericAPICall(sendMessagesController, trialsListDAO, GenericErrorTemplate, "Failed to fetch trials")
+    $renderTemplateToPage(sendMessagesController, SelectTrialTemplate, SelectTrialPage)
+  end
+  Actor -> SelectTrialPage : select trial and click 'Continue with selected'
+  SelectTrialPage -> sendMessagesController : call controller
 end
 
-sendMessagesController -> FindJurorsTemplate : request and build template
-sendMessagesController <- FindJurorsTemplate : return HTML
-SelectJurorsPage <- sendMessagesController : return HTML
-Actor <- SelectJurorsPage : render HTML
-
-Actor -> SelectJurorsPage : select jurors to send messages to
-
-sendMessagesController -> SelectJurorsTemplate : request and build template
-sendMessagesController <- SelectJurorsTemplate : return HTML
-SelectJurorsPage <- sendMessagesController : return HTML
-Actor <- MessagesTemplatePage : render HTML
-
-Actor -> MessagesTemplatePage : fill in placeholder values
-alt Invalid/no data entered
-  sendMessagesController <-- messagingValidator : data validation fails
-  sendMessagesController -> ApproveRejectTemplate : request and build error message template
-  sendMessagesController <- ApproveRejectTemplate : return HTML
-  MessagesTemplatePage <- messagingValidator : return HTML
-  Actor <- MessagesTemplatePage : render error message
+$genericAPICall(sendMessagesController, jurorSearchDAO, GenericErrorTemplate, "Failed to fetch list of jurors")
+$renderTemplateToPage(sendMessagesController, SelectJurorsTemplate, SelectJurorsPage)
+alt User filters on jurors
+  Actor -> SelectJurorsPage : filter on jurors using filter panel
+  SelectJurorsPage -> sendMessagesController : call controller to filter on jurors
+  $validateInput(sendMessagesController, messagingValidator, SelectJurorsTemplate, SelectJurorsPage)
+  $genericAPICall(sendMessagesController, jurorSearchDAO, GenericErrorTemplate, "Failed to fetch list of jurors")
+  $renderTemplateToPage(sendMessagesController, SelectJurorsTemplate, SelectJurorsPage)
 end
 
-sendMessagesController <- messagingValidator : valid data entered
+Actor -> SelectJurorsPage : select jurors and click 'Continue with selected'
 
-sendMessagesController -> messageTemplateDAO : build request object
-messageTemplateDAO -> BackendController : send backend request
-messageTemplateDAO <- BackendController : ok response
-sendMessagesController <- messageTemplateDAO : resolve request
+$genericAPICall(sendMessagesController, populatedMessageDAO, GenericErrorTemplate, "Unable to fetch message")
+$renderTemplateToPage(sendMessagesController, MessageConfirmationTemplate, MessageConfirmationPage)
 
+Actor -> MessageConfirmationPage : click 'Send message'
+MessageConfirmationPage -> sendMessagesController : call controller
+$genericAPICall(sendMessagesController, sendMessage, GenericErrorTemplate, "Unable to send messages")
 
-sendMessagesController -> MessageConfirmationTemplate : request and build template
-sendMessagesController <- MessageConfirmationTemplate : return HTML
-MessageConfirmationPage <- sendMessagesController : return HTML
-Actor <- MessageConfirmationPage : render HTML
+MessagesListPage <- sendMessagesController : redirect to messages list page
+Actor <- MessagesListPage : render HTML with confirmation banner
 
-Actor -> MessagesTemplatePage : confirm for message to be sent
-sendMessagesController -> sendMessage : build request object
-sendMessage -> BackendController : send backend request
-sendMessage <- BackendController : ok response
-sendMessagesController <- sendMessage : resolve request
-
-alt Unable to fetch message
-    populatedMessageDAO <-- BackendController : error response
-    exportContactDetailsController <-- populatedMessageDAO : reject requestObject
-    exportContactDetailsController -> ErrorTemplate : request and build template
-    exportContactDetailsController <- ErrorTemplate : return HTML
-    GenericErrorPage <- exportContactDetailsController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
-
-alt Unable to fetch message template
-    messageTemplateDAO <-- BackendController : error response
-    exportContactDetailsController <-- messageTemplateDAO : reject requestObject
-    exportContactDetailsController -> ErrorTemplate : request and build template
-    exportContactDetailsController <- ErrorTemplate : return HTML
-    GenericErrorPage <- exportContactDetailsController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
-
-alt Failed to fetch trials
-    trialsListObject <-- BackendController : error response
-    exportContactDetailsController <-- trialsListObject : reject requestObject
-    exportContactDetailsController -> ErrorTemplate : request and build template
-    exportContactDetailsController <- ErrorTemplate : return HTML
-    GenericErrorPage <- exportContactDetailsController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
-
-alt Failed to fetch list of jurors
-    jurorSearchDAO <-- BackendController : error response
-    exportContactDetailsController <-- jurorSearchDAO : reject requestObject
-    exportContactDetailsController -> ErrorTemplate : request and build template
-    exportContactDetailsController <- ErrorTemplate : return HTML
-    GenericErrorPage <- exportContactDetailsController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
-
-alt Unable to send messages
-    sendMessage <-- BackendController : error response
-    exportContactDetailsController <-- sendMessage : reject requestObject
-    exportContactDetailsController -> ErrorTemplate : request and build template
-    exportContactDetailsController <- ErrorTemplate : return HTML
-    GenericErrorPage <- exportContactDetailsController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
+@enduml
