@@ -1,0 +1,10 @@
+{% from "moj/components/alert/macro.njk" import mojAlert %}
+
+{% if alerts | length %}
+  {% for alert in alerts %}
+    {{ mojAlert({
+      variant: alert.type,
+      html: alert.html
+    }) }}
+  {% endfor %}
+{% endif %}

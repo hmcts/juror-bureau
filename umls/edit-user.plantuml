@@ -1,0 +1,62 @@
+@startuml edit-user
+hide unlinked
+
+!include generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant UsersPage <</administration/users>>
+participant UserRecordPage <</administration/users/user-record>>
+participant EditUserPage <</administration/users/edit-user>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant EditUsersController <<edit-user.controller.js>> #lightyellow
+participant CreateUsersController <<create-users.controller.js>> #lightyellow
+participant UserRecordObject <<userRecordDAO.get()>> #lightyellow
+participant EditUserObject <<userRecordDAO.put()>> #lightyellow
+participant EditUserTypeObject <<userRecordDAO.patch()>> #lightyellow
+
+''' VALIDATORS
+participant CreateUserValidator #Gold
+
+''' TEMPLATES
+participant UserRecordTemplate <</administration/users/user-record.njk>>
+participant EditUserTemplate <</administration/users/user-record.njk>>
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> UserRecordPage: click edit user
+UserRecordPage -> EditUsersController : call edit users controller
+
+alt SJO user tries to edit details
+    UsersPage <- EditUsersController : redirect to users page
+end
+
+$genericAPICall(EditUsersController, UserRecordObject, ErrorTemplate, "Failed to fetch user details")  
+
+alt User tries to edit own details
+    UsersPage <- EditUsersController : redirect to users page
+end
+
+$renderTemplateToPage(EditUsersController, EditUserTemplate, EditUserPage)
+
+Actor -> EditUserPage: User edits details and clicks save changes
+EditUserPage -> EditUsersController : call edit users controller
+
+$validateInput(EditUsersController, CreateUserValidator, EditUserTemplate, EditUserPage, "Invalid user details")
+
+$genericAPICall(EditUsersController, EditUserObject, ErrorTemplate, "Failed to update user details")
+
+$APIErrorAlt(EditUsersController, EditUserObject, ErrorTemplate, "Email address already in use", EditUserTemplate, EditUserPage)
+
+UserRecordPage <- EditUsersController : redirect to user record page
+Actor <- UserRecordPage : render HTML
+
+@enduml

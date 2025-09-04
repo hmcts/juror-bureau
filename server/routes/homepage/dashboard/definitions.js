@@ -139,6 +139,10 @@
                   }
                 ]
               },
+              {
+                heading: 'Jurors on call',
+                value: stats?.attendance.jurorsOnCall,
+              }
             ]
           },
         }
@@ -154,7 +158,7 @@
             values: [
               {
                 value: stats?.admin.unpaidAttendances,
-                classes: stats?.admin.unpaidAttendances > 50 ? 'mod-red-text' : '',
+                classes: stats?.admin.unpaidAttendances >= 100 ? 'mod-red-text' : '',
                 ariaLabel: 'Unpaid attendances',
                 links: [
                   {

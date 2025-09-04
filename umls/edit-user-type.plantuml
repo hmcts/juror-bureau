@@ -1,0 +1,85 @@
+@startuml edit-user-type
+hide unlinked
+
+!include generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant UsersPage <</administration/users>>
+participant UserRecordPage <</administration/users/user-record>>
+participant EditUserPage <</administration/users/edit-user>>
+participant EditUserTypePage <</administration/users/edit-user/:username/type>>
+participant EditUserTypeDetailsPage <</administration/users/edit-user/:username/:userType>>
+participant EditUserTypeConfirmPage <</administration/users/edit-user/:username/:userType/confirm>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant EditUsersController <<edit-user.controller.js>> #lightyellow
+participant CreateUsersController <<create-users.controller.js>> #lightyellow
+participant UserRecordObject <<userRecordDAO.get()>> #lightyellow
+participant EditUserObject <<userRecordDAO.put()>> #lightyellow
+participant EditUserTypeObject <<userRecordDAO.patch()>> #lightyellow
+
+''' VALIDATORS
+participant CreateUsersValidator #Gold
+
+''' TEMPLATES
+participant UserRecordTemplate <</administration/users/user-record.njk>>
+participant EditUserTemplate <</administration/users/user-record.njk>>
+participant EditUserTypeTemplate <<administration/users/create-users/user-type.njk>>
+participant EditUserTypeDetailsTemplate <<administration/users/create-users/user-details.njk>>
+participant EditUserTypeConfirmTemplate <<administration/users/create-users/confirm-details.njk>>
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> UserRecordPage: click edit user
+UserRecordPage -> EditUsersController : call edit users controller
+
+alt SJO user tries to edit details
+    UsersPage <- EditUsersController : redirect to users page
+end
+
+$genericAPICall(EditUsersController, UserRecordObject, ErrorTemplate, "Failed to fetch user details")  
+
+alt User tries to edit own details
+    UsersPage <- EditUsersController : redirect to users page
+end
+
+$renderTemplateToPage(EditUsersController, EditUserTemplate, EditUserPage)
+
+Actor -> EditUserPage: Click change user type link
+UsersPage -> CreateUsersController : call create users controller
+
+$renderTemplateToPage(CreateUsersController, EditUserTypeTemplate, EditUserTypePage)
+
+Actor -> EditUserTypePage: Select user type and click continue
+EditUserTypePage -> CreateUsersController : call create users controller
+
+$validateInput(CreateUsersController, CreateUsersValidator, EditUserTypeTemplate, EditUserTypePage, "No user type selected")
+
+$renderTemplateToPage(CreateUsersController, EditUserTypeDetailsTemplate, EditUserTypeDetailsPage)
+
+Actor -> EditUserTypeDetailsPage: enter user details and click continue
+EditUserTypeDetailsPage -> CreateUsersController : call create users controller
+
+$validateInput(CreateUsersController, CreateUsersValidator, EditUserTypeDetailsTemplate, EditUserTypeDetailsPage, "Invalid user details")
+
+$renderTemplateToPage(CreateUsersController, EditUserTypeConfirmTemplate, EditUserTypeConfirmPage)
+
+Actor -> EditUserTypeConfirmPage: click confirm
+EditUserTypeConfirmPage -> CreateUsersController : call create users controller
+
+$genericAPICall(CreateUsersController, EditUserObject, ErrorTemplate, "Failed to update user details")
+
+$APIErrorAlt(CreateUsersController, EditUserObject, ErrorTemplate, "Email address already in use", EditUserTypeConfirmTemplate, EditUserTypeConfirmPage)
+
+UsersPage <- CreateUsersController : redirect to users page
+Actor <- UsersPage : render HTML
+
+@enduml

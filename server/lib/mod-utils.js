@@ -1485,4 +1485,22 @@
     }; 
   }
 
+    /**
+   * Checks if today is the first working day of the month
+   * @returns {boolean} true if today is the first working day, false otherwise
+   */
+  module.exports.isFirstWorkingDayOfMonth = () => {
+    const today = moment();
+    const firstDayOfMonth = moment().startOf('month');
+    
+    let firstWorkingDay = firstDayOfMonth.clone();
+    
+    // Skip weekends (Saturday = 6, Sunday = 0)
+    while (firstWorkingDay.day() === 0 || firstWorkingDay.day() === 6) {
+      firstWorkingDay.add(1, 'day');
+    }
+
+    return firstWorkingDay.format('YYYY-MM-DD') === today.format('YYYY-MM-DD');
+  };
+
 })();
