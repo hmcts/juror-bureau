@@ -9,7 +9,8 @@
     dailyUtilisationJurorsDAO,
     viewMonthlyUtilisationDAO,
     generateMonthlyUtilisationDAO,
-    yieldPerformanceDAO
+    yieldPerformanceDAO,
+    allCourtUtilisationDAO
   } = require('../../../objects/reports');
 
   const makeLink = (app) => {
@@ -1756,6 +1757,31 @@
         },
         filterBackLinkUrl: app.namedRoutes.build('reports.yield-performance.filter.dates.get'),
       },
+      'all-court-utilisation': {
+        title: 'All court utilisation stats report',
+        apiKey: 'AllCourtUtilisationReport',
+        search: 'courts',
+        searchAllCourts: true,
+        bespokeReport: {
+          dao: (req) => allCourtUtilisationDAO.post(
+            req,
+            {
+              "court_loc_codes": req.params.filter !== 'all-courts' ? req.session.reportCourts : [],
+              "all_courts": req.params.filter === 'all-courts',
+            },
+          ),
+        },
+        headings: [
+          'reportDate',
+          'reportTime',
+          'courtName',
+        ],
+        defaultSortColumn: 'courtName',
+        filterBackLinkUrl: app.namedRoutes.build('reports.all-court-utilisation.filter.select.get'),
+        backUrl: req?.params.filter === 'all-courts' ? 
+          app.namedRoutes.build('reports.all-court-utilisation.filter.select.get') :
+          null,
+      }
     };
   };
 })();

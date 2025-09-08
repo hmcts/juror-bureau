@@ -47,7 +47,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
   const buildStandardTableRows = function(rows, tableHeadings) {
     const tableRows = rows.map(rowData => {
       let row = tableHeadings.map(header => {
-        let text = tableDataMappers[header.dataType](rowData[snakeToCamel(header.id)]);
+        let text = tableDataMappers[header.dataType](rowData[_.camelCase(header.id)]);
 
         if (header.id === 'juror_postcode' || header.id === 'document_code') {
           text = text.toUpperCase();
@@ -65,11 +65,11 @@ async function standardReportPrint(app, req, res, reportKey, data) {
         }
 
         if (header.id === 'hours_attended') {
-          text = timeToDuration(rowData[snakeToCamel(header.id)])
+          text = timeToDuration(rowData[_.camelCase(header.id)])
         }
 
         if (header.id === 'status') {
-          text = capitalizeFully(toSentenceCase(rowData[snakeToCamel(header.id)]))
+          text = capitalizeFully(toSentenceCase(rowData[_.camelCase(header.id)]))
         }
         
         if (header.id === 'comments') {
@@ -77,7 +77,11 @@ async function standardReportPrint(app, req, res, reportKey, data) {
         }
 
         if (header.id === 'trial_number') {
-          text = rowData[snakeToCamel(header.id)];
+          text = rowData[_.camelCase(header.id)];
+        }
+
+        if (header.id === 'UTILISATION') {
+          text = text + '%'
         }
 
         if (header.dataType === 'List') {
@@ -333,11 +337,10 @@ function sortTableData(reportKey, { sortBy, sortDirection }, tableData, reportDa
       }
     });
   } else {
-
     if (reportData.bespokeReport?.printSorting?.dataSet) {
       tableData[reportData.bespokeReport.printSorting.dataSet] = tableData[reportData.bespokeReport.printSorting.dataSet].sort(sort(_sortBy, sortDirection))
     } else {
-      tableData.data = tableData.data.sort(sort(_sortBy, sortDirection));
+      tableData.data = tableData.data ? tableData.data.sort(sort(_sortBy, sortDirection)) : [];
     }
   }
 }
