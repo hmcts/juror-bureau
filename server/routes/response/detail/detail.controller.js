@@ -678,6 +678,7 @@
             count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
             items: tmpErrors,
           },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
       }
 
