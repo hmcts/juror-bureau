@@ -1,105 +1,101 @@
 {% from "moj/components/button-menu/macro.njk" import mojButtonMenu %}
 
-<form action="{{ url('response.detail.post', { id: response.jurorNumber }) }}" method="post" id="updateSectionForm" class="response-update-form">
+<div class="govuk-!-display-inline">
 
-  <div class="govuk-!-display-inline">
+  <div class="reply-view-header-menus">
 
-    <div class="reply-view-header-menus">
+    {% set canProcessReply = false %}
 
-      {% set canProcessReply = false %}
+    {% if response.replyMethod === "DIGITAL" %}
+      {% set assignedStaffMember = response.assignedStaffMember.login %}
+    {% elif method === "paper" %}
+      {% set assignedStaffMember = response.assignedStaffMember.username %}
+    {% endif %}
+    
+    {% if response.current_owner === authentication.owner %}
+      {% set canProcessReply = true %}
+    {% endif %}
 
-      {% if response.replyMethod === "DIGITAL" %}
-        {% set assignedStaffMember = response.assignedStaffMember.login %}
-      {% elif method === "paper" %}
-        {% set assignedStaffMember = response.assignedStaffMember.username %}
+    {% if response.processingStatus | capitalise !== 'CLOSED' %}
+
+      {% if (method === "paper" and response.jurorDetailsComplete and response.eligibilityComplete and response.thirdPartyComplete and response.signed === true) or method !== "paper" or thirdPartyDetails.reason === "Deceased" %}
+        {% if method === "paper" %}
+          {% set processUrl = url('process-reply.get', { id: response.jurorNumber, type: "paper" }) %}
+        {% else %}
+          {% set processUrl = url('process-reply.get', { id: response.jurorNumber, type: "digital" }) %}
+        {% endif %}
+        {% if canProcessReply %}
+          {{ govukButton({
+            text: "Process reply",
+            name: "processReply",
+            href: processUrl,
+            attributes: {
+              id: "processReply"
+            }
+          }) }}
+        {% endif %}
       {% endif %}
-      
-      {% if response.current_owner === authentication.owner %}
-        {% set canProcessReply = true %}
-      {% endif %}
+
+    {% endif %}
+
+    {% if response.replyMethod === "DIGITAL" or (method === "paper" and response.processingStatus | capitalise !== "CLOSED") %}
+      {% set buttonMenuItems = [] %}
 
       {% if response.processingStatus | capitalise !== 'CLOSED' %}
 
-        {% if (method === "paper" and response.jurorDetailsComplete and response.eligibilityComplete and response.thirdPartyComplete and response.signed === true) or method !== "paper" or thirdPartyDetails.reason === "Deceased" %}
-          {% if method === "paper" %}
-            {% set processUrl = url('process-reply.get', { id: response.jurorNumber, type: "paper" }) %}
-          {% else %}
-            {% set processUrl = url('process-reply.get', { id: response.jurorNumber, type: "digital" }) %}
-          {% endif %}
-          {% if canProcessReply %}
-            {{ govukButton({
-              text: "Process reply",
-              name: "processReply",
-              href: processUrl,
-              attributes: {
-                id: "processReply"
-              }
-            }) }}
-          {% endif %}
-        {% endif %}
-
-      {% endif %}
-
-      {% if response.replyMethod === "DIGITAL" or (method === "paper" and response.processingStatus | capitalise !== "CLOSED") %}
-        {% set buttonMenuItems = [] %}
-
-        {% if response.processingStatus | capitalise !== 'CLOSED' %}
-
+        {% set buttonMenuItems = buttonMenuItems.concat({
+          text: "Mark as awaiting information",
+          href: url('response.detail.awaiting.information.get', { id: response.jurorNumber }) + ('/paper' if method === 'paper'),
+          classes: "govuk-button--secondary"
+        }) %}
+        
+        {% if isBureauUser %}
           {% set buttonMenuItems = buttonMenuItems.concat({
-            text: "Mark as awaiting information",
-            href: url('response.detail.awaiting.information.get', { id: response.jurorNumber }) + ('/paper' if method === 'paper'),
+            text: "Request juror info by post",
+            href: url('request-info.by-post.get', { id: response.jurorNumber, type: 'paper' if method === 'paper' else 'digital'}),
             classes: "govuk-button--secondary"
           }) %}
-          
-          {% if isBureauUser %}
+          {% if assignedStaffMember === authentication.login or isManager %}
             {% set buttonMenuItems = buttonMenuItems.concat({
-              text: "Request juror info by post",
-              href: url('request-info.by-post.get', { id: response.jurorNumber, type: 'paper' if method === 'paper' else 'digital'}),
+              text: "Send to a colleague...",
+              href: url('response.assign.get', { id: response.jurorNumber }) + "?reply_method=" + method,
               classes: "govuk-button--secondary"
             }) %}
-            {% if assignedStaffMember === authentication.login or isManager %}
-              {% set buttonMenuItems = buttonMenuItems.concat({
-                text: "Send to a colleague...",
-                href: url('response.assign.get', { id: response.jurorNumber }) + "?reply_method=" + method,
-                classes: "govuk-button--secondary"
-              }) %}
-            {% endif %}
           {% endif %}
-
         {% endif %}
-
-        {% if method !== "paper" %}
-          {% set buttonMenuItems = buttonMenuItems.concat({
-            text: "Download as a PDF",
-            href: url('response.detail.download-pdf.get', { id: response.jurorNumber }),
-            attributes: {
-              target: "_blank"
-            },
-            classes: "govuk-button--secondary"
-          }) %}
-        {% endif %}
-
-        {{ mojButtonMenu({
-          button: {
-            text: "More actions",
-            classes: "govuk-button--secondary"
-          },
-          items: buttonMenuItems,
-          attributes: {
-            id: 'moj-actions-button-menu'
-          }
-        }) }}
 
       {% endif %}
 
-    </div>
+      {% if method !== "paper" %}
+        {% set buttonMenuItems = buttonMenuItems.concat({
+          text: "Download as a PDF",
+          href: url('response.detail.download-pdf.get', { id: response.jurorNumber }),
+          attributes: {
+            target: "_blank"
+          },
+          classes: "govuk-button--secondary"
+        }) %}
+      {% endif %}
 
-  </div> <!--inline-->
+      {{ mojButtonMenu({
+        button: {
+          text: "More actions",
+          classes: "govuk-button--secondary"
+        },
+        items: buttonMenuItems,
+        attributes: {
+          id: 'moj-actions-button-menu'
+        }
+      }) }}
+
+    {% endif %}
+
+  </div>
+
+</div> <!--inline-->
 
 
-  <input type="hidden" name="jurorNumber" id="jurorNumber" value="{{ response.jurorNumber }}">
-  <input type="hidden" name="_csrf" value="{{ csrftoken }}" id="_csrf">
-  <input type="hidden" name="version" value="{{ response.version }}" id="versionNumber">
-  <input type="hidden" name="courtDate" value="{{ response.hearingDate }}" id="courtDate">
-
-</form>
+<input type="hidden" name="jurorNumber" id="jurorNumber" value="{{ response.jurorNumber }}">
+<input type="hidden" name="_csrf" value="{{ csrftoken }}" id="_csrf">
+<input type="hidden" name="version" value="{{ response.version }}" id="versionNumber">
+<input type="hidden" name="courtDate" value="{{ response.hearingDate }}" id="courtDate">
