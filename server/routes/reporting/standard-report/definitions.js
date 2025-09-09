@@ -1,3 +1,5 @@
+const { date } = require('../../../config/validation/report-search-by');
+
 (() => {
   'use strict';
 
@@ -1781,6 +1783,72 @@
         backUrl: req?.params.filter === 'all-courts' ? 
           app.namedRoutes.build('reports.all-court-utilisation.filter.select.get') :
           null,
+      },
+      'digital-summons-received': {
+        title: 'Digital summons received report',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+          '',
+          'totalReplies',
+        ],
+        bespokeReport: {
+          dao: (req) => ({
+            'headings': {
+              dateFrom: {
+                displayName: 'Date from',
+                dataType: 'LocalDate',
+                value: req.params.filter || '-'
+              },
+              timeCreated: {
+                displayName: 'Time created',
+                dataType: 'LocalDateTime',
+                value: dateFilter(new Date(), 'yyyy-MM-dd HH:mm:ss')
+              },
+              reportCreated: {
+                displayName: 'Report created',
+                dataType: 'LocalDate',
+                value: dateFilter(new Date(), 'yyyy-MM-dd')
+              },
+              dateTo: {
+                displayName: 'Date to',
+                dataType: 'LocalDate',
+                value: req.params.filter || '-' 
+              },
+              totalReplies: {
+                displayName: 'Total replies',
+                dataType: 'Integer',
+                value: 15,
+              }
+            },
+            'tableData': {
+              headings: [
+                {
+                  id: 'date',
+                  name: 'Date',
+                  dataType: 'LocalDate',
+                },
+                {
+                  id: 'number_of_summons',
+                  name: 'Number of Summons',
+                  dataType: 'Integer',
+                },
+              ],
+              data: [
+                {
+                  date: '2025-09-01',
+                  'numberOfSummons': 5,
+                },
+                {
+                  date: '2025-09-02',
+                  'numberOfSummons': 10,
+                },
+              ],
+            }
+          }),
+        },
       }
     };
   };

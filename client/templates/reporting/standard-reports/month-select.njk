@@ -2,11 +2,12 @@
 
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "includes/csrf.njk" import csrfProtection %}
 
 
-{% block page_title %}{{ serviceName }} - Reports - Prepare monthly utilisation report - Select month{% endblock %}
-{% block page_identifier %}Reports - Prepare monthly utilisation report - Select month{% endblock %}
+{% block page_title %}{{ serviceName }} - Reports - {{ reportName }} report - Select month{% endblock %}
+{% block page_identifier %}Reports - {{ reportName }} report - Select month{% endblock %}
 
 {% set currentApp = "Reports" %}
 
@@ -21,7 +22,7 @@
   <form action="{{ processUrl }}" method="post" id="cutoffDateForm">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl">Prepare monthly wastage and utilisation report</h1>
+        <h1 class="govuk-heading-xl">{{ reportName }} report</h1>
       </div>
     </div>
     <div class="govuk-grid-row">
@@ -30,12 +31,25 @@
           id: "selectMonth",
           name: "selectMonth",
           label: {
-            text: "Select month to prepare report for",
+            text: selectMonthLabel,
             classes: "govuk-label--m"
           },
           errorMessage: selectMonthError,
           items: months
         }) }}
+        {% if showPreviousMonthsCheckbox %}
+          {{ govukCheckboxes({
+            name: "previousMonths",
+            classes: "govuk-checkboxes--small",
+            items: [
+              {
+                value: true,
+                text: "Also display the 2 months before this"
+              }
+            ],
+            values: tmpBody.previousMonths
+          }) }}
+        {% endif %}
         {{ csrfProtection(csrftoken) }}
         <div class="govuk-button-group">
           {{ govukButton({

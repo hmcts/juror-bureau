@@ -37,6 +37,13 @@
         <li><a class="govuk-link" href="{{ url('reports.pool-status.filter.get') }}">Pool status report</a></li>
       </ul>
 
+      {% if isBureauManager %}
+        <h2 class="govuk-heading-m">Team lead reports</h2>
+        <ul class="govuk-list">
+          <li><a class="govuk-link" href="{{ url('reports.digital-summons-received.filter.get') }}">Digital summons received report</a></li>
+        </ul>
+      {% endif %}
+
     </div>
   </div>
 {% endblock %}

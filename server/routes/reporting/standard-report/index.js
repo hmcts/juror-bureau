@@ -115,6 +115,8 @@
     require('../jury-summoning-monitor')(app);
     standardReportRoutes(app, 'yield-performance');
     standardReportRoutes(app, 'all-court-utilisation');
+    require('../digital-summons-received')(app);
+    standardReportRoutes(app, 'digital-summons-received');
   };
 
 })();

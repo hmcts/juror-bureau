@@ -13,8 +13,10 @@
     delete req.session.errors;
     delete req.session.formFields;
 
-    return res.render('reporting/monthly-utilisation/prepare-select-month', {
+    return res.render('reporting/standard-reports/month-select', {
       months: generateSelectMonths(),
+      reportName: 'Prepare monthly wastage and utilisation',
+      selectMonthLabel: 'Select month to prepare report for',
       processUrl: app.namedRoutes.build('reports.prepare-monthly-utilisation.filter.post'),
       cancelUrl: app.namedRoutes.build('reports.statistics.get'),
       tmpBody,
@@ -23,7 +25,6 @@
         count: typeof errors !== 'undefined' ? Object.keys(errors).length : 0,
         items: errors,
       },
-
     });
   };
 
@@ -83,8 +84,11 @@
         };
       });
 
-      return res.render('reporting/monthly-utilisation/view-select-month', {
+      return res.render('reporting/standard-reports/month-select', {
         months,
+        reportName: 'View monthly wastage and utilisation',
+        selectMonthLabel: 'Select a reporting month',
+        showPreviousMonthsCheckbox: true,
         processUrl: app.namedRoutes.build('reports.view-monthly-utilisation.filter.post'),
         cancelUrl: app.namedRoutes.build('reports.statistics.get'),
         tmpBody,
