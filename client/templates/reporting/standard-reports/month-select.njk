@@ -6,8 +6,8 @@
 {% from "includes/csrf.njk" import csrfProtection %}
 
 
-{% block page_title %}{{ serviceName }} - Reports - {{ reportName }} report - Select month{% endblock %}
-{% block page_identifier %}Reports - {{ reportName }} report - Select month{% endblock %}
+{% block page_title %}{{ serviceName }} - Reports - {{ reportName }} - Select month{% endblock %}
+{% block page_identifier %}Reports - {{ reportName }} - Select month{% endblock %}
 
 {% set currentApp = "Reports" %}
 
@@ -22,7 +22,7 @@
   <form action="{{ processUrl }}" method="post" id="cutoffDateForm">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl">{{ reportName }} report</h1>
+        <h1 class="govuk-heading-xl">{{ reportName }}</h1>
       </div>
     </div>
     <div class="govuk-grid-row">

@@ -13,6 +13,7 @@
     mapCamelToSnake,
     paginationBuilder,
     constants,
+    generateReportSelectMonths,
   } = require('../../../lib/mod-utils');
   const { standardReportDAO } = require('../../../objects/reports');
   const { validate } = require('validate.js');
@@ -134,8 +135,7 @@
           filter,
           filterUrl: app.namedRoutes.build(`reports.${reportKey}.filter.post`),
           reportUrl: app.namedRoutes.build(`reports.${reportKey}.report.post`),
-        });
-        
+        });   
       case 'courts':
         delete req.session.errors;
         try {
@@ -260,6 +260,23 @@
           });
           return res.render('_errors/generic', { err });
         }
+      case 'month':
+        delete req.session.errors;
+        delete req.session.formFields;
+
+        return res.render('reporting/standard-reports/month-select', {
+          months: generateReportSelectMonths(),
+          reportName: reportType.title,
+          selectMonthLabel: reportType.selectMonthLabel,
+          processUrl: addURLQueryParams(reportType,  app.namedRoutes.build(`reports.${reportKey}.report.post`)),
+          cancelUrl: app.namedRoutes.build('reports.reports.get'),
+          tmpBody,
+          errors: {
+            title: 'Please check your search',
+            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+            items: tmpErrors,
+          },
+        });
       default:
         app.logger.info('Failed to load a search type for report type ' + reportKey);
         return res.render('_errors/generic');
@@ -283,6 +300,9 @@
         break;
       case 'trial':
         filter = encodeURIComponent(req.body.filterTrialNumber);
+        break;
+      case 'month':
+        filter = req.body.selectMonth;
         break;
     }
 
@@ -835,6 +855,19 @@
         return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`));
       }
       return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, { filter: req.body.selectedTrial }))
+    }
+    if (reportType.search === 'month') {
+      if (!req.body.selectMonth) {
+        req.session.errors = makeManualError('selectMonth', 'Select a month');
+
+        return res.redirect(addURLQueryParams(reportType, app.namedRoutes.build(`reports.${reportKey}.filter.get`)+ (req.body.filter ? '?filter=' + req.body.filter : '')));
+      }
+
+      req.session.reportFilter = req.body.filter;
+
+      return res.redirect(addURLQueryParams(reportType, app.namedRoutes.build(`reports.${reportKey}.report.get`, {
+        filter: req.body.selectMonth,
+      })));
     }
   };
 

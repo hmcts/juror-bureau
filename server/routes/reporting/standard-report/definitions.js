@@ -1786,6 +1786,8 @@ const { date } = require('../../../config/validation/report-search-by');
       },
       'digital-summons-received': {
         title: 'Digital summons received report',
+        search: 'month',
+        selectMonthLabel: 'Select month to view digital summons received for',
         headings: [
           'dateFrom',
           'reportDate',
