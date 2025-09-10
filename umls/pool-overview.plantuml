@@ -1,0 +1,67 @@
+@startuml pool-overview
+hide unlinked
+!include generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant PoolManagementPage <<pool-management>>
+participant PoolOverviewPage <</pool-management/pool-overview/:poolNumber>>
+
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant PoolManagementController <<pool-management.controller.js>>
+participant PoolOverviewController <<pool-overview.controller.js>>
+participant FetchCoronerPoolObject <<fetchCoronerPoolDAO.get()>>
+participant PoolSummaryObject <<poolSummaryObj.get()>>
+participant PoolMembersObject <<poolMembersDAO.post()>>
+
+
+''' TEMPLATES
+participant PoolManagementTemplate <<pool-management/index.njk>>
+participant BureauPoolOverviewTemplate <<pool-management/pool-overview/bureau-pool-overview.njk>>
+participant CourtPoolOverviewTemplate <<pool-management/pool-overview/court-pool-overview.njk>>
+participant CoronerPoolOverviewTemplate <<pool-management/pool-overview/coroner.njk>>
+participant ErrorTemplate <<_errors/generic.njk>>
+
+''' FILTERS AND VALIDATORS
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+''' JOURNEY FLOW
+Actor -> PoolManagementPage : Select a pool from this list of requested/active pools, or search for a pool
+PoolManagementPage -> PoolOverviewController : call page controller
+
+alt Coroner pool
+  alt is court user
+    PoolManagementController <- PoolOverviewController : redirect to pool management page
+    PoolManagementPage <- PoolManagementController : redirect to pool management page
+  end
+  $callAPIRenderErrorOnForm(PoolOverviewController, FetchCoronerPoolObject, ErrorTemplate, "Failed to fetch coroner pool", PoolManagementTemplate, PoolManagementPage)
+  $renderTemplateToPage(PoolOverviewController, CoronerPoolOverviewTemplate, PoolOverviewPage)
+end
+
+!startsub renderPoolOverview
+  $callAPIRenderErrorOnForm(PoolOverviewController, PoolSummaryObject, ErrorTemplate, "Failed to fetch pool summary for court/bureau user", PoolManagementTemplate, PoolManagementPage)
+
+  $callAPIRenderErrorOnForm(PoolOverviewController, PoolMembersObject, ErrorTemplate, "Failed to fetch pool members for court/bureau user", PoolManagementTemplate, PoolManagementPage)
+
+  alt is court user
+    $renderTemplateToPage(PoolOverviewController, CourtPoolOverviewTemplate, PoolOverviewPage)
+  else is bureau user
+    $renderTemplateToPage(PoolOverviewController, BureauPoolOverviewTemplate, PoolOverviewPage)
+  end
+!endsub
+
+Actor -> PoolOverviewPage : Filter jurors using radio buttons or filter panel
+PoolOverviewPage -> PoolOverviewController : call page controller with filters in query parameters
+!includesub renderPoolOverview
+
+
+@enduml

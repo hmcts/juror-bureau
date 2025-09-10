@@ -1,4 +1,6 @@
 @startuml convert-nil-pool
+hide unlinked
+!include generic-blocks.plantuml
 
 skinparam Style strictuml 
 skinparam SequenceMessageAlignment center
@@ -11,18 +13,23 @@ participant ConvertNilPoolPage <</convert>>
 participant ChangeDeferralsPage <</change-deferrals>>
 participant CheckDetailsPage <</check-details>>
 participant PoolManagementPage <<pool-management>>
+participant GenericErrorPage <</error>>
+
 
 ''' CONTROLLER AND REQUEST OBJECTS
-participant ConvertNilPoolController <<convert-nil-pool.controller.js>>
-participant FetchCourtDeferralsObject <<FetchCourtDeferrals.get()>>
-participant PoolOverviewController <<pool-overview.controller.js>>
-participant NilPoolConvertObject <<NilPoolConvert.put()>>
 participant PoolManagementController <<pool-management.controller.js>>
+participant PoolOverviewController <<pool-overview.controller.js>>
+participant ConvertNilPoolController <<convert-nil-pool.controller.js>>
+participant PoolSummaryObject <<poolSummary.get()>>
+participant FetchCourtDeferralsObject <<FetchCourtDeferrals.get()>>
+participant NilPoolConvertObject <<NilPoolConvert.put()>>
 
 ''' TEMPLATES
+participant PoolOverviewTemplate <<pool-overview.njk>>
 participant FormTemplate <<convert-nil-pool/form.njk>>
 participant ChangeDeferralsTemplate <<change-deferrals.njk>>
 participant CheckDetailsTemplate <<check-details.njk>>
+participant ErrorTemplate <<_errors/generic.njk>>
 
 ''' FILTERS AND VALIDATORS
 participant PoolDetailsValidator
@@ -35,86 +42,40 @@ participant BackendController
 
 ''' JOURNEY FLOW
 Actor -> PoolOverviewPage : convert nil pool
-
 PoolOverviewPage -> ConvertNilPoolController : call page controller
+$genericAPICall(ConvertNilPoolController, PoolSummaryObject, GenericErrorTemplate, "Failed to fetch the pool details when converting a nil pool")
 
-ConvertNilPoolController -> FetchCourtDeferralsObject : build request object
-FetchCourtDeferralsObject -> BackendController : send backend request
-FetchCourtDeferralsObject <- BackendController : ok response
-ConvertNilPoolController <- FetchCourtDeferralsObject : resolve request
-
-ConvertNilPoolController -> FormTemplate : request and build template
-ConvertNilPoolController <- FormTemplate : return HTML
-ConvertNilPoolPage <- ConvertNilPoolController : return HTML
-Actor <- ConvertNilPoolPage : render HTML
-
-alt Failed to fetch number of court deferrals
-    FetchCourtDeferralsObject <-- BackendController : error response
-    ConvertNilPoolController <-- FetchCourtDeferralsObject : reject requestObject
-    ConvertNilPoolController --> PoolOverviewController : redirect to pool overview page
-    PoolOverviewPage <-- PoolOverviewController : redirect to pool overview page
-    Actor <-- PoolOverviewPage : redirect to pool overview page
+alt Pool is not a nil pool
+    PoolOverviewController <- ConvertNilPoolController : redirect to pool overview
+    PoolOverviewPage <- PoolOverviewController : redirect to pool overview
+    Actor <- PoolOverviewPage : render pool overview page with error banner
 end
 
-Actor -> ConvertNilPoolPage : change court deferrals
+$callAPIRenderErrorOnForm(ConvertNilPoolController, FetchCourtDeferralsObject, ErrorTemplate, "Failed to fetch court deferrals when converting a nil pool", PoolOverviewTemplate, PoolOverviewPage, PoolOverviewController)
 
+$renderTemplateToPage(ConvertNilPoolController, FormTemplate, ConvertNilPoolPage)
+
+alt change court deferrals
+    Actor -> ConvertNilPoolPage : change court deferrals
+    ConvertNilPoolPage -> ConvertNilPoolController : call page controller
+    $renderTemplateToPage(ConvertNilPoolController, ChangeDeferralsTemplate, ChangeDeferralsPage)
+    Actor -> ChangeDeferralsPage : enter no of court deferrals
+    ChangeDeferralsPage -> ConvertNilPoolController : call page controller
+    $validateInput(ConvertNilPoolController, DeferralsValidator, ChangeDeferralsTemplate, ChangeDeferralsPage)
+    $renderTemplateToPage(ConvertNilPoolController, FormTemplate, ConvertNilPoolPage)
+end
+
+Actor -> ConvertNilPoolPage : enter details and submit form
 ConvertNilPoolPage -> ConvertNilPoolController : call page controller
+$validateInput(ConvertNilPoolController, PoolDetailsValidator, FormTemplate, ConvertNilPoolPage)
 
-ConvertNilPoolController -> ChangeDeferralsTemplate : request and build template
-ConvertNilPoolController <- ChangeDeferralsTemplate : return HTML
-ChangeDeferralsPage <- ConvertNilPoolController: return HTML
-Actor <- ChangeDeferralsPage : render HTML
-
-Actor -> ChangeDeferralsPage : input number of deferred jurors required
-ChangeDeferralsPage -> ConvertNilPoolController : call page controller
-ConvertNilPoolController -> DeferralsValidator : validate number of deferred jurors
-ConvertNilPoolController <- DeferralsValidator : number of deferred jurors is valid
-
-ConvertNilPoolController -> FormTemplate : request and build template
-ConvertNilPoolController <- FormTemplate : return HTML
-ConvertNilPoolPage <- ConvertNilPoolController : return HTML
-Actor <- ConvertNilPoolPage : render HTML
-
-alt Number of deferred jurors is invalid
-    ConvertNilPoolController <- DeferralsValidator : error response
-    ChangeDeferralsPage <- ConvertNilPoolController : error response
-    Actor <- ChangeDeferralsPage : render error message
-end
-
-Actor -> ConvertNilPoolPage : confirm details for converted nil pool
-ConvertNilPoolPage -> ConvertNilPoolController : call page controller
-ConvertNilPoolController -> PoolDetailsValidator : validate pool details
-ConvertNilPoolController <- PoolDetailsValidator : pool details are valid
-
-ConvertNilPoolController -> CheckDetailsTemplate : request and build template
-ConvertNilPoolController <- CheckDetailsTemplate : return HTML
-CheckDetailsPage <- ConvertNilPoolController : return HTML
-Actor <- CheckDetailsPage : render HTML
-
-alt Pool details are invalid
-    ConvertNilPoolController <- PoolDetailsValidator : error response
-    ConvertNilPoolPage <- ConvertNilPoolController : error response
-    Actor <- ConvertNilPoolPage : render HTML
-end
-
-Actor -> CheckDetailsPage : convert nil pool
+$renderTemplateToPage(ConvertNilPoolController, CheckDetailsTemplate, CheckDetailsPage)
+Actor -> CheckDetailsPage : confirm details and submit
 CheckDetailsPage -> ConvertNilPoolController : call page controller
+$genericAPICall(ConvertNilPoolController, NilPoolConvertObject, ErrorTemplate, "Failed to convert nil pool to active pool")
 
-ConvertNilPoolController -> NilPoolConvertObject : build request object
-NilPoolConvertObject -> BackendController : send backend request
-NilPoolConvertObject <- BackendController : ok response
-ConvertNilPoolController <- NilPoolConvertObject : resolve request
-
-ConvertNilPoolController -> PoolOverviewController : redirect to pool overview page
-PoolOverviewPage <-- PoolOverviewController : redirect to pool overview page
-Actor <-- PoolOverviewPage : redirect to pool overview page
-
-alt Failed to convert nil pool to an active pool
-    NilPoolConvertObject <- BackendController : error response
-    ConvertNilPoolController <- NilPoolConvertObject : reject requestObject
-    ConvertNilPoolController -> PoolManagementController : redirect to pool management page
-    PoolManagementPage <- PoolManagementController : redirect to pool management page
-    Actor <- PoolManagementPage : redirect to pool management page
-end
+PoolOverviewController <- ConvertNilPoolController : redirect to pool overview
+PoolOverviewPage <- PoolOverviewController : redirect to pool overview
+Actor <- PoolOverviewPage : render pool overview page with success banner
 
 @enduml

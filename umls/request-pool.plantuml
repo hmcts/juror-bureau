@@ -1,4 +1,6 @@
 @startuml request-pool
+hide unlinked
+!include generic-blocks.plantuml
 
 skinparam Style strictuml 
 skinparam SequenceMessageAlignment center
@@ -7,21 +9,27 @@ participant Actor
 
 ''' LOCAL ROUTING
 participant PoolManagement <</pool-management>>
-participant Page <</pool-management/request-pool>>
-participant "Step 1" <</select-court>>
-participant "Step 2" <</pool-details>>
-participant "Step 2.1" <</select-court>>
-participant "Step 2.2" <</change-attendance-date>>
-participant "Step 2.3" <</change-attendance-time>>
-participant "Step 2.4" <</change-deferrals>>
-participant "Step 3" <</check-details>>
-participant "Step 3.1" <</change-pool-number>>
+participant RequestPoolPage <</pool-management/request-pool>>
+participant SelectCourtPage <</select-court>>
+participant PoolDetailsPage <</pool-details>>
+participant CheckDetailsPage <</check-details>>
+participant ChangeDatePage <</change-attendance-date>>
+participant ChangeTimePage <</change-attendance-time>>
+participant ChangeDeferralsPage <</change-deferrals>>
+participant ChangePoolNumberPage <</change-pool-number>>
+participant GenericErrorPage <</error>>
 
 ''' CONTROLLER AND REQUEST OBJECTS
 participant PoolManagementController <<pool-management.controller.js>>
 participant RequestPoolController <<request-pool.controller.js>>
 participant MatchCourtObject <<matchUserCourt()>>
-participant CreatePoolRequestObj <<createPoolRequest.post()>>
+participant FetchCourtsObject <<fetchCourtsDAO.get()>>
+participant FetchCourtDeferralsObject <<requestPoolObj.fetchCourtDeferrals.get()>>
+participant GeneratePoolNumberObject <<requestPoolObj.generatePoolNumber.get()>>
+participant GeneratePoolNumberObject <<requestPoolObj.generatePoolNumber.get()>>
+participant CreatePoolRequestObj <<crequestPoolObj.reatePoolRequest.post()>>
+participant FetchPoolNumbersObject <<requestPoolObj.fetchPoolNumbers.get()>>
+participant ErrorTemplate <<_errors/generic.njk>>
 
 ''' TEMPLATES
 participant SelectCourtTemplate <<select-court.njk>>
@@ -37,6 +45,7 @@ participant CourtValidator
 participant DateValidator
 participant TimeValidator
 participant DeferralsValidator
+participant PoolDetailsValidator
 participant PoolNumberValidator
 
 ''' BACKEND CONTROLLER
@@ -45,139 +54,78 @@ participant BackendController
 
 
 ''' JOURNEY FLOW
-Actor -> Page : request page
+Actor -> RequestPoolPage : Click 'Request new pool'
+RequestPoolPage -> RequestPoolController : call page controller
+$genericAPICall(RequestPoolController, FetchCourtsObject, ErrorTemplate, "Failed to fetch courts list")
+$renderTemplateToPage(RequestPoolController, SelectCourtTemplate, SelectCourtPage)
 
-Page -> RequestPoolController : call page controller
-RequestPoolController -> SelectCourtTemplate : request and build template
-"Step 1" <- SelectCourtTemplate : return html
-Actor <- "Step 1" : render html
+Actor -> SelectCourtPage : user selects court
+SelectCourtPage -> RequestPoolController : call page controller
+$validateInput(RequestPoolController, CourtValidator, SelectCourtTemplate, SelectCourtPage)
+RequestPoolController -> MatchCourtObject : validate court selection exists
+alt Court locations invalid
+  RequestPoolController <-- MatchCourtObject : reject promise
+  $renderErrorOnForm(RequestPoolController, SelectCourtTemplate, SelectCourtPage)
+end
+RequestPoolController <-- MatchCourtObject : court location valid
 
-"Step 1" -> RequestPoolController : call page controller
-RequestPoolController -> PoolDetailsTemplate : request and build template
-"Step 2" <- PoolDetailsTemplate : return html
-Actor <- "Step 2" : render html
+$genericAPICall(RequestPoolController, FetchCourtDeferralsObject, ErrorTemplate, "Failed to fetch the number of court deferrals")
+$renderTemplateToPage(RequestPoolController, PoolDetailsTemplate, PoolDetailsPage)
 
-alt Change court location
-  "Step 2" -> RequestPoolController : call page controller
-  RequestPoolController -> SelectCourtTemplate : request and build template
-  "Step 2.1" <- SelectCourtTemplate : return html
-  Actor <- "Step 2.1" : render html
-  Actor -> "Step 2.1" : select a new court
-  "Step 2.1" -> RequestPoolController : call page controller
-  RequestPoolController -> CourtValidator : validate selected court
-  RequestPoolController <- CourtValidator : selected court is valid
-  RequestPoolController -> PoolDetailsTemplate : request and build template
-  "Step 2" <- PoolDetailsTemplate : return html
-  Actor <- "Step 2" : render html
+alt change attendance date
+  Actor -> CheckDetailsPage : click 'Change attendance date'
+  CheckDetailsPage -> RequestPoolController : call page controller
+  $renderTemplateToPage(RequestPoolController, ChangeDateTemplate, ChangeDatePage)
 
-  alt Selected court is not valid
-    RequestPoolController <-- CourtValidator : error response
-    "Step 2.1" <-- RequestPoolController : error response
-    Actor <-- "Step 2.1" : render error message
-  end
+  Actor -> ChangeDatePage : user changes date
+  ChangeDatePage -> RequestPoolController : call page controller
+  $validateInput(RequestPoolController, DateValidator, ChangeDateTemplate, ChangeDatePage)
+  Actor <- RequestPoolController : redirect to Pool Details page
 end
 
-alt Change attendance date
-  "Step 2" -> RequestPoolController : call page controller
-  RequestPoolController -> ChangeDateTemplate : request and build template
-  "Step 2.2" <- ChangeDateTemplate : return html
-  Actor <- "Step 2.2" : render html
-  Actor -> "Step 2.2" : select a new attendance date
-  "Step 2.2" -> RequestPoolController : call page controller
-  RequestPoolController -> DateValidator : validate selected date
-  RequestPoolController <- DateValidator : selected date is valid
-  RequestPoolController -> PoolDetailsTemplate : request and build template
-  "Step 2" <- PoolDetailsTemplate : return html
-  Actor <- "Step 2" : render html
+alt change attendance time
+  Actor -> CheckDetailsPage : click 'Change attendance time'
+  CheckDetailsPage -> RequestPoolController : call page controller
+  $renderTemplateToPage(RequestPoolController, ChangeTimeTemplate, ChangeTimePage)
 
-  alt Selected date is not valid
-    RequestPoolController <-- DateValidator : error response
-    "Step 2.2" <-- RequestPoolController : error response
-    Actor <-- "Step 2.2" : render error message
-  end
+  Actor -> ChangeTimePage : user changes time
+  ChangeTimePage -> RequestPoolController : call page controller
+  $validateInput(RequestPoolController, TimeValidator, ChangeTimeTemplate, ChangeTimePage)
+  Actor <- RequestPoolController : redirect to Pool Details page
 end
 
-alt Change attendance time
-  "Step 2" -> RequestPoolController : call page controller
-  RequestPoolController -> ChangeTimeTemplate : request and build template
-  "Step 2.3" <- ChangeTimeTemplate : return html
-  Actor <- "Step 2.3" : render html
-  Actor -> "Step 2.3" : select a new attendance time
-  "Step 2.3" -> RequestPoolController : call page controller
-  RequestPoolController -> TimeValidator : validate selected time
-  RequestPoolController <- TimeValidator : selected time is valid
-  RequestPoolController -> PoolDetailsTemplate : request and build template
-  "Step 2" <- PoolDetailsTemplate : return html
-  Actor <- "Step 2" : render html
+alt change court deferrals
+  Actor -> CheckDetailsPage : click 'Change deferrals'
+  CheckDetailsPage -> RequestPoolController : call page controller
+  $renderTemplateToPage(RequestPoolController, ChangeDeferralsTemplate, ChangeDeferralsPage)
 
-  alt Selected time is not valid
-    RequestPoolController <-- TimeValidator : error response
-    "Step 2.3" <-- RequestPoolController : error response
-    Actor <-- "Step 2.3" : render error message
-  end
+  Actor -> ChangeDeferralsPage : user changes deferrals
+  ChangeDeferralsPage -> RequestPoolController : call page controller
+  $validateInput(RequestPoolController, DeferralsValidator, ChangeDeferralsTemplate, ChangeDeferralsPage)
+  Actor <- RequestPoolController : redirect to Pool Details page
 end
 
-alt Change deferrals
-  "Step 2" -> RequestPoolController : call page controller
-  RequestPoolController -> ChangeDeferralsTemplate : request and build template
-  "Step 2.4" <- ChangeDeferralsTemplate : return html
-  Actor <- "Step 2.4" : render html
-  Actor -> "Step 2.4" : enter number of deferrals
-  "Step 2.4" -> RequestPoolController : call page controller
-  RequestPoolController -> DeferralsValidator : validate selected time
-  RequestPoolController <- DeferralsValidator : selected number of deferrals is valid
-  RequestPoolController -> PoolDetailsTemplate : request and build template
-  "Step 2" <- PoolDetailsTemplate : return html
-  Actor <- "Step 2" : render html
+Actor -> PoolDetailsPage : enter details and click 'Continue'
+PoolDetailsPage -> RequestPoolController : call page controller
+$validateInput(RequestPoolController, PoolDetailsValidator, PoolDetailsTemplate, PoolDetailsPage)
 
-  alt Selected number of deferrals is not valid
-    RequestPoolController <-- DeferralsValidator : error response
-    "Step 2.4" <-- RequestPoolController : error response
-    Actor <-- "Step 2.4" : render error message
-  end
+$genericAPICall(RequestPoolController, GeneratePoolNumberObject, ErrorTemplate, "Failed to generate a new pool number")
+$renderTemplateToPage(RequestPoolController, CheckDetailsTemplate, CheckDetailsPage)
+
+alt change pool number
+  Actor -> CheckDetailsPage : click 'Change pool number'
+  CheckDetailsPage -> RequestPoolController : call page controller
+  $genericAPICall(RequestPoolController, FetchPoolNumbersObject, ErrorTemplate, "Failed to fetch pool numbers")
+  $renderTemplateToPage(RequestPoolController, ChangePoolNumberTemplate, ChangePoolNumberPage)
+
+  Actor -> ChangePoolNumberPage : user changes pool number
+  ChangePoolNumberPage -> RequestPoolController : call page controller
+  $validateInput(RequestPoolController, PoolNumberValidator, ChangePoolNumberTemplate, ChangePoolNumberPage)
+  Actor <- RequestPoolController : redirect to Check Details page
 end
 
-"Step 2" -> RequestPoolController : call page controller
-RequestPoolController -> CheckDetailsTemplate : request and build template
-"Step 3" <- CheckDetailsTemplate : return html
-Actor <- RequestPoolController : render html
-
-alt Change pool number
-  "Step 3" -> RequestPoolController : call page controller
-  RequestPoolController -> ChangePoolNumberTemplate : request and build template
-  "Step 3.1" <- ChangePoolNumberTemplate : return html
-  Actor <- "Step 3.1" : render html
-  Actor -> "Step 3.1" : enter a new pool number
-  "Step 3.1" -> RequestPoolController : call page controller
-  RequestPoolController -> PoolNumberValidator : validate selected time
-  RequestPoolController <- PoolNumberValidator : pool number is valid
-  RequestPoolController -> PoolDetailsTemplate : request and build template
-  "Step 3" <- PoolDetailsTemplate : return html
-  Actor <- "Step 3" : render html
-
-  alt Selected pool number is not valid
-    RequestPoolController <-- PoolNumberValidator : error response
-    "Step 3.1" <-- RequestPoolController : error response
-    Actor <-- "Step 3.1" : render error message
-  end
-end
-
-"Step 3" -> RequestPoolController : call page controller
-RequestPoolController -> CreatePoolRequestObj : call requestObject
-CreatePoolRequestObj -> BackendController : post data
-
-RequestPoolController <- CreatePoolRequestObj : resolve requestObject
-PoolManagement <- RequestPoolController
-PoolManagement -> PoolManagementController : call page controller
-PoolManagementController -> "PoolManagementTemplate" : request and build template
-PoolManagement <- "PoolManagementTemplate" : return html
-Actor <- PoolManagement : render html
-
-alt Backend returns an error
-  CreatePoolRequestObj <-- BackendController : error response
-  RequestPoolController <-- CreatePoolRequestObj : reject requestObject
-  "Step 3" <-- RequestPoolController : error response
-  Actor <-- "Step 3" : render error message
-end
+Actor -> CheckDetailsPage : click 'Request pool'
+$genericAPICall(RequestPoolController, CreatePoolRequestObj, ErrorTemplate, "Failed to create a new pool request")
+Actor <- RequestPoolController : redirect to Pool Requests page
 
 @enduml

@@ -1,0 +1,68 @@
+@startuml bulk-on-call
+hide unlinked
+!include generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant PoolOverviewPage <</pool-management/pool-overview/:poolNumber>>
+participant MovementCheckPage <<//pool-management/:poolNumber/on-call/validate>>
+participant BulkOnCallPage <</pool-management/:poolNumber/on-call/confirm>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant PoolOverviewController <<pool-overview.controller.js>>
+participant OnCallController <<on-call.controller.js>>
+participant PoolMembersObject <<poolMembersDAO.post()>>
+participant JurorRecordSimpleDetailsObject <<jurorRecordSimpleDetailsDAO.post()>>
+participant ChangeDateObject <<changeDate.patch()>>
+
+''' TEMPLATES
+participant PoolOverviewTemplate <<pool-management/pool-overview/{bureau/court}-pool-overview.njk>>
+participant MovementCheckTemplate <<pool-management/movement/bulk-validate.njk>>
+participant BulkOnCallTemplate <<pool-management/on-call/on-call-confirmation.njk>>
+participant ErrorTemplate <<_errors/generic.njk>>
+
+''' FILTERS AND VALIDATORS
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+''' JOURNEY FLOW
+Actor -> PoolOverviewPage : User selects one or more jurors and clicks 'On call'
+PoolOverviewPage -> PoolOverviewController : call page controller
+
+alt User clicks 'Check all' checkbox
+  $genericAPICall(PoolOverviewController, PoolMembersObject, ErrorTemplate, "Failed to fetch pool members for bulk place on call")
+end
+
+alt no jurors selected
+ $renderErrorOnForm(PoolOverviewController, PoolOverviewTemplate, PoolOverviewPage)
+end
+
+PoolOverviewController -> OnCallController : call page controller
+
+$genericAPICall(OnCallController, JurorRecordSimpleDetailsObject, ErrorTemplate, "Failed to fetch juror statuses to validate bulk placing on call")
+
+alt One or more jurors unable to go on call
+  $renderTemplateToPage(OnCallController, MovementCheckTemplate, MovementCheckPage)
+  Actor -> MovementCheckPage : clicks 'Continue and place remaining jurors on call'
+end
+
+$renderTemplateToPage(OnCallController, BulkOnCallTemplate, BulkOnCallPage)
+
+Actor -> BulkOnCallPage : User clicks 'Place on call'
+
+BulkOnCallPage -> OnCallController : call page controller
+
+$callAPIRenderErrorOnForm(OnCallController, ChangeDateObject, ErrorTemplate, "Failed to place jurors on call", PoolOverviewTemplate, PoolOverviewPage, PoolOverviewController)
+
+PoolOverviewController <- OnCallController : redirect to pool overview
+PoolOverviewPage <- PoolOverviewController : redirect to pool overview
+Actor <- PoolOverviewPage : render pool overview page with success banner
+
+@enduml

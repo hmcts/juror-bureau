@@ -1,0 +1,86 @@
+@startuml bulk-postpone
+hide unlinked
+!include generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant PoolOverviewPage <</pool-management/pool-overview/:poolNumber>>
+participant PostponeDatePage <</pool-management/postpone-jurors/:poolNumber>>
+participant AvailablePoolsPage <</juror-management/pool/:poolNumber/available-pools>>
+participant MovementCheckPage <</juror-management/pool/:poolNumber/postpone/movecheck>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant PoolOverviewController <<pool-overview.controller.js>>
+participant PostponeController <<postpone.controller.js>>
+
+participant PoolMembersObject <<poolMembersDAO.post()>>
+participant AvailablePoolsObject <<availablePoolsObj.post()>>
+participant ValidateMovementObject <<validateMovement.put()>>
+participant PostponementObject <<postponeObj.post()>>
+
+
+''' TEMPLATES
+participant PoolOverviewTemplate <<pool-management/pool-overview/{bureau/court}-pool-overview.njk>>
+participant PostponeDateTemplate <<juror-management/postpone/select-date.njk>>
+participant NoPoolsTemplate <<juror-management/postpone/no-pools.njk>>
+participant AvailablePoolsTemplate <<juror-management/postpone/pools.njk>>
+participant MovementCheckTemplate <<pool-management/movement/bulk-validate.njk>>
+participant ErrorTemplate <<_errors/generic.njk>>
+
+''' FILTERS AND VALIDATORS
+participant PostponeDateValidator
+participant PostponePoolValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+''' JOURNEY FLOW
+Actor -> PoolOverviewPage : User selects one or more jurors and clicks 'Postpone'
+PoolOverviewPage -> PoolOverviewController : call page controller
+
+alt User clicks 'Check all' checkbox
+  $genericAPICall(PoolOverviewController, PoolMembersObject, ErrorTemplate, "Failed to fetch pool members for postpone")
+end
+
+alt no jurors selected
+ $renderErrorOnForm(PoolOverviewController, PoolOverviewTemplate, PoolOverviewPage)
+end
+
+$renderTemplateToPage(PoolOverviewController, PostponeDateTemplate, PostponeDatePage)
+
+Actor -> PostponeDatePage : User selects a date and clicks 'Continue'
+PostponeDatePage -> PostponeController : call page controller
+$validateInput(PostponeController, PostponeDateValidator, PostponeDateTemplate, PostponeDatePage)
+
+$genericAPICall(PostponeController, AvailablePoolsObject, ErrorTemplate, "Failed to fetch pool options")
+
+alt No pools available for selected date
+  $renderTemplateToPage(PostponeController, NoPoolsTemplate, AvailablePoolsPage)
+  Actor -> AvailablePoolsPage : clicks 'Put in deferral maintenance'
+else Pools available
+  $renderTemplateToPage(PostponeController, AvailablePoolsTemplate, AvailablePoolsPage)
+  Actor -> AvailablePoolsPage : selects pool and clicks 'Continue'
+  AvailablePoolsPage -> PostponeController : call page controller
+  $validateInput(PostponeController, PostponePoolValidator, AvailablePoolsTemplate, AvailablePoolsPage)
+end
+
+$genericAPICall(PostponeController, ValidateMovementObject, ErrorTemplate, "Failed to check transfer validity")
+
+alt One or more jurors unable to postpone
+  $renderTemplateToPage(PostponeController, MovementCheckTemplate, MovementCheckPage)
+  Actor -> MovementCheckPage : clicks 'Continue and move remaining jurors'
+end
+
+$genericAPICall(PostponeController, PostponementObject, ErrorTemplate, "Failed to transfer juror")
+
+PoolOverviewController <- PostponeController : redirect to pool overview
+PoolOverviewPage <- PoolOverviewController : redirect to pool overview
+Actor <- PoolOverviewPage : render pool overview page with success banner
+
+@enduml

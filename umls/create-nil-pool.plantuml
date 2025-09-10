@@ -1,4 +1,6 @@
 @startuml create-nil-pool
+hide unlinked
+!include generic-blocks.plantuml
 
 skinparam Style strictuml 
 skinparam SequenceMessageAlignment center
@@ -6,27 +8,35 @@ skinparam SequenceMessageAlignment center
 participant Actor
 
 ''' LOCAL ROUTING
-participant PoolManagement <</pool-management>>
-participant "Step 1" <</nil-pool>>
-participant "Step 1.1" <</select-court>>
-participant "Step 1.2" <</change-attendance-date>>
-participant "Step 2" <</nil-pool/check-details>>
+participant PoolManagementPage <</pool-management>>
+participant RequestPoolPage <</pool-management/request-pool>>
+participant SelectCourtPage <</select-court?nil=true>>
+participant NilPoolDetailsPage <</nil-pool>>
+participant HasDeferralsPage <</nil-pool/has-deferrals>>
+participant CheckDetailsPage <</check-details>>
+participant ChangeDatePage <</nil-pool/change-attendance-date>>
+participant InvalidDatePage <<nil-pool/invalid-date>>
+participant GenericErrorPage <</error>>
 
 ''' CONTROLLER AND REQUEST OBJECTS
 participant PoolManagementController <<pool-management.controller.js>>
 participant NilPoolController <<nil-pool.controller.js>>
 participant MatchCourtObject <<matchUserCourt()>>
-participant CreateNilPoolObject <<createNilPool.post()>>
+participant CheckNilPoolObject <<nilPoolCheck.post()>>
+participant CreateNilPoolObject <<nilPoolCreate.post()>>
+participant ErrorTemplate <<_errors/generic.njk>>
 
 ''' TEMPLATES
-participant SelectCourtTemplate <<select-court.njk>>
-participant PoolDetailsTemplate <<pool-details/index.njk>>
-participant CheckDetailsTemplate <<check-details.njk>>
-participant ChangeDateTemplate <<change-attendance-date.njk>>
+participant PoolManagementTemplate <<pool-management/index.njk>>
+participant SelectCourtTemplate <<pool-management/_common/select-court.njk>>
+participant NilPoolDetailsTemplate <<ppool-management/nil-pool/index.njk>>
+participant HasDeferralsTemplate <<pool-management/nil-pool/has-deferrals.njk>>
+participant CheckDetailsTemplate <<pool-management/nil-pool/check-details.njk>>
+participant ChangeDateTemplate <<pool-management/_common/change-attendance-date.njk>>
+participant InvalidDateTemplate <<pool-management/_common/invalid-date.njk>>
 
 ''' FILTERS AND VALIDATORS
-participant CourtValidator
-participant DateValidator
+participant RequestPoolValidator
 
 ''' BACKEND CONTROLLER
 participant BackendController
@@ -34,78 +44,65 @@ participant BackendController
 
 
 ''' JOURNEY FLOW
-Actor -> Page : request page
+Actor -> RequestPoolPage : Select 'Nil Pool' option
+RequestPoolPage -> NilPoolController : call page controller
 
-Page -> PoolManagementController : call page controller
-PoolManagementController -> SelectCourtTemplate : request and build template
-"Step 1" <- SelectCourtTemplate : return html
-Actor <- "Step 1" : render html
+alt is bureau user
+  $renderTemplateToPage(NilPoolController, SelectCourtTemplate, SelectCourtPage)
 
-"Step 1" -> PoolManagementController : call page controller
-PoolManagementController -> PoolDetailsTemplate : request and build template
-"Step 1" <- PoolDetailsTemplate : return html
-Actor <- "Step 1" : render html
-
-alt Change court location
-  "Step 1" -> PoolManagementController : call page controller
-  PoolManagementController -> SelectCourtTemplate : request and build template
-  "Step 1.1" <- SelectCourtTemplate : return html
-  Actor <- "Step 1.1" : render html
-  Actor -> "Step 1.1" : select a new court
-  "Step 1.1" -> PoolManagementController : call page controller
-  PoolManagementController -> CourtValidator : validate selected court
-  PoolManagementController <- CourtValidator : selected court is valid
-  PoolManagementController -> PoolDetailsTemplate : request and build template
-  "Step 1" <- PoolDetailsTemplate : return html
-  Actor <- "Step 1" : render html
-
-  alt Selected court is not valid
-    PoolManagementController <-- CourtValidator : error response
-    "Step 1.1" <-- PoolManagementController : error response
-    Actor <-- "Step 1.1" : render error message
+  Actor -> SelectCourtPage : Select court and continue
+  $validateInput(NilPoolController, RequestPoolValidator, SelectCourtTemplate, SelectCourtPage)
+  NilPoolController -> MatchCourtObject : validate court selection exists
+  alt Court locations invalid
+    NilPoolController <-- MatchCourtObject : reject promise
+    $renderErrorOnForm(NilPoolController, SelectCourtTemplate, SelectCourtPage)
   end
+  NilPoolController <-- MatchCourtObject : court location valid
 end
 
-alt Change attendance date
-  "Step 1" -> PoolManagementController : call page controller
-  PoolManagementController -> ChangeDateTemplate : request and build template
-  "Step 1.2" <- ChangeDateTemplate : return html
-  Actor <- "Step 1.2" : render html
-  Actor -> "Step 1.2" : select a new attendance date
-  "Step 1.2" -> PoolManagementController : call page controller
-  PoolManagementController -> DateValidator : validate selected date
-  PoolManagementController <- DateValidator : selected date is valid
-  PoolManagementController -> PoolDetailsTemplate : request and build template
-  "Step 1" <- PoolDetailsTemplate : return html
-  Actor <- "Step 1" : render html
+$renderTemplateToPage(NilPoolController, NilPoolDetailsTemplate, NilPoolDetailsPage)
 
-  alt Selected date is not valid
-    PoolManagementController <-- DateValidator : error response
-    "Step 1.2" <-- PoolManagementController : error response
-    Actor <-- "Step 1.2" : render error message
+alt user clicks change court
+  Actor -> NilPoolDetailsPage : click 'Change court'
+  $renderTemplateToPage(NilPoolController, SelectCourtTemplate, SelectCourtPage)
+
+  Actor -> SelectCourtPage : Select court and continue
+  $validateInput(NilPoolController, RequestPoolValidator, SelectCourtTemplate, SelectCourtPage)
+  NilPoolController -> MatchCourtObject : validate court selection exists
+  alt Court locations invalid
+    NilPoolController <-- MatchCourtObject : reject promise
+    $renderErrorOnForm(NilPoolController, SelectCourtTemplate, SelectCourtPage)
   end
+  NilPoolController <-- MatchCourtObject : court location valid
+  $renderTemplateToPage(NilPoolController, NilPoolDetailsTemplate, NilPoolDetailsPage)
 end
 
-"Step 1" -> PoolManagementController : call page controller
-PoolManagementController -> CheckDetailsTemplate : request and build template
-"Step 2" <- CheckDetailsTemplate : return html
-Actor <- "Step 2" : render html
+alt user clicks change date
+  Actor -> NilPoolDetailsPage : click 'Change attendance date'
+  $renderTemplateToPage(NilPoolController, ChangeDateTemplate, ChangeDatePage)
 
-"Step 2" -> PoolManagementController : call page controller
-PoolManagementController -> CreateNilPoolObject : call requestObject
-CreateNilPoolObject -> BackendController : post data
-CreateNilPoolObject <- BackendController : response ok
+  Actor -> ChangeDatePage : enter date and continue
+  $validateInput(NilPoolController, RequestPoolValidator, ChangeDateTemplate, ChangeDatePage)
 
-PoolManagementController <- CreateNilPoolObject : resolve requestObject
-PoolManagementController -> PoolManagementTemplate : request and build template
-PoolManagement <- PoolManagementTemplate : return html
-Actor <- PoolManagement : render html
+  alt date is weekend or bank holidays
+    $renderTemplateToPage(NilPoolController, InvalidDateTemplate, InvalidDatePage)
 
-alt Backend returns an error
-  CreateNilPoolObject <-- BackendController : error response
-  PoolManagementController <-- CreateNilPoolObject : reject requestObject
-  "Step 2" <-- PoolManagementController : error response
-  Actor <-- "Step 2" : render error message
+    Actor -> InvalidDatePage : click 'continue'
+    $renderTemplateToPage(NilPoolController, NilPoolDetailsTemplate, NilPoolDetailsPage)
+  end  
 end
 
+Actor -> NilPoolDetailsPage : enter details and continue
+$validateInput(NilPoolController, RequestPoolValidator, NilPoolDetailsTemplate, NilPoolDetailsPage)
+$genericAPICall(NilPoolController, CheckNilPoolObject, ErrorTemplate, "Could not check if nil pool can be created")
+
+alt has deferrals on selected date
+  $renderTemplateToPage(NilPoolController, HasDeferralsTemplate, HasDeferralsPage)
+end
+
+$renderTemplateToPage(NilPoolController, CheckDetailsTemplate, CheckDetailsPage)
+Actor -> CheckDetailsPage : confirm details and create nil pool
+$genericAPICall(NilPoolController, CreateNilPoolObject, ErrorTemplate, "Could not create nil pool")
+PoolManagementController <- NilPoolController : redirect to pool management page
+$renderTemplateToPage(PoolManagementController, PoolManagementTemplate, PoolManagementPage)
 @enduml
