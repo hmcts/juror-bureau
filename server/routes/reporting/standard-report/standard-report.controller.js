@@ -3,7 +3,6 @@
 
   const _ = require('lodash');
   const {
-    snakeToCamel,
     transformCourtNames,
     makeManualError,
     checkIfArrayEmpty,
@@ -444,13 +443,11 @@
 
           const sortValue = numericTypes.includes(header.dataType) ? data[_.camelCase(header.id)] : output;
 
-          console.log(header.dataType, sortValue)
-
           return ({
             html: output ? output : '-',
             attributes: {
               'data-sort-value': sortValue && sortValue !== '-' 
-                ? (header.dataType === 'LocalDate' ? data[_.camelCase(header.id)] : sortValue) 
+                ? ((header.dataType === 'LocalDate' || header.dataType === 'Date') ? dateFilter(data[_.camelCase(header.id)], null, 'yyyy-MM-DD') : sortValue) 
                 : (numericTypes.includes(header.dataType) ? '0' : '-')
             },
             format: header.dataType === 'BigDecimal' ? 'numeric' : '',
@@ -672,8 +669,6 @@
       const { headings, tableData } = await (reportType.bespokeReport?.dao
         ? reportType.bespokeReport.dao(req, config)
         : standardReportDAO.post(req, config));
-
-      console.log(headings, tableData);
 
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
       if (isExport) return reportExport(app, req, res, reportKey, { headings, tableData }) ;
