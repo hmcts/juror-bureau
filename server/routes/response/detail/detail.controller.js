@@ -645,6 +645,160 @@
     };
   };
 
+  module.exports.getResponded = function(app) {
+    return function(req, res) {
+      const tmpErrors = _.cloneDeep(req.session.errors);
+      const routeParameters = {
+        id: req.params['id'],
+      };
+      let postUrl = app.namedRoutes.build('response.detail.responded.get', routeParameters);
+      let cancelUrl = app.namedRoutes.build('response.detail.get', routeParameters);
+      let backUrl;
+
+      delete req.session.formFields;
+      delete req.session.errors;
+
+      if (req.session.replyDetails.jurorNumber === req.params.id){
+
+        if (typeof req.session.hasModAccess !== 'undefined' && req.session.hasModAccess) {
+          if (req.params['type'] === 'paper') {
+            routeParameters.type = 'paper';
+          } else {
+            routeParameters.type = 'digital';
+          }
+
+          postUrl = app.namedRoutes.build('response.detail.responded.get', routeParameters);
+          backUrl = app.namedRoutes.build('process-reply.get', routeParameters);
+
+          if (req.params['type'] === 'paper') {
+            cancelUrl = app.namedRoutes.build('response.paper.details.get', routeParameters);
+          }
+        }
+
+        return res.render('response/process/responded.njk', {
+          replyDetails: req.session.replyDetails,
+          jurorNumber: req.params.id,
+          postUrl: postUrl,
+          cancelUrl: cancelUrl,
+          backUrl: backUrl,
+          errors: {
+            message: '',
+            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+            items: tmpErrors,
+          },
+        });
+      }
+
+      if (req.params['type'] === 'paper') {
+        return res.redirect(app.namedRoutes.build('response.paper.details.get', {
+          id: req.params.id,
+          type: 'paper',
+        }));
+      }
+      return res.redirect(app.namedRoutes.build('response.detail.get', {
+        id: req.params.id,
+      }));
+    };
+  };
+
+  module.exports.postResponded = function(app) {
+    return async function(req, res) {
+      let validatorResult;
+
+      const errorCB = (err) => {
+        app.logger.crit('Could not update status of response: ', {
+          auth: req.session.authentication,
+          jwt: req.session.authToken,
+          data: {
+            jurorNumber: req.params.id,
+            status: 'CLOSED',
+            version: req.body.version,
+          },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        if (err.statusCode === '409' || err.statusCode === 409) {
+          err.error.message = 'The summons reply has been updated by another user';
+        } else {
+          err.error.message = 'Could not update summons reply';
+        }
+
+        req.session.formFields = req.body;
+        req.session.errors = {
+          '': [{'details': err.error.message}],
+        };
+
+        if (req.params.type === 'paper'){
+          return res.redirect(app.namedRoutes.build('process-reply.get', { id: req.params.id, type: 'paper' }));
+        }
+        return res.redirect(app.namedRoutes.build('process-reply.get', { id: req.params.id }));
+      };
+
+      delete req.session.errors;
+      delete req.session.formFields;
+
+      validatorResult = validate(req.body, require('../../../config/validation/responded.js')(req));
+      if (typeof validatorResult !== 'undefined') {
+        req.session.errors = validatorResult;
+        req.session.formFields = req.body;
+
+        if (req.params.type === 'paper'){
+          return res.redirect(app.namedRoutes.build('response.detail.responded.get', {id: req.params.id, type:'paper'}));
+        }
+        return res.redirect(app.namedRoutes.build('response.detail.responded.get', {id: req.params.id}));
+      }
+
+      if (req.params['type'] === 'paper') {
+        try {
+          await paperUpdateStatus.put(
+            req,
+            req.params.id,
+            'CLOSED'
+          );
+
+          req.session.responseWasActioned = {
+            jurorDetails: req.session.replyDetails,
+            type: 'Responded',
+          };
+
+          return res.redirect(app.namedRoutes.build('response.paper.details.get', {id: req.params.id, type:'paper'}));
+        } catch (err) {
+          return errorCB(err);
+        }
+      }
+
+      const payload = {
+        jurorNumber: req.body.jurorNumber,
+        status: 'CLOSED',
+        version: req.body.version,
+      };
+
+      try {
+        const response = await updateStatusDAO.post(req, req.body.jurorNumber, payload);
+
+        app.logger.info('Updated status of response: ', {
+            auth: req.session.authentication,
+            jwt: req.session.authToken,
+            data: {
+              jurorNumber: req.params.id,
+              status: 'CLOSED',
+              version: req.body.version,
+            },
+            response,
+          });
+
+          req.session.responseWasActioned = {
+            jurorDetails: req.session.replyDetails,
+            type: 'Responded',
+          };
+
+          return res.redirect(app.namedRoutes.build('response.detail.get', {id: req.params.id}));
+      } catch (err) {
+        return errorCB(err);
+      }
+    };
+  };
+
   module.exports.getAwaitingInformation = function() {
     return function(req, res) {
       const tmpErrors = _.cloneDeep(req.session.errors);
