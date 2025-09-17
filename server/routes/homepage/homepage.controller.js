@@ -147,7 +147,7 @@
       res.render('homepage/bureau-dashboard/dashboard.njk', {
         notifications: notifications ? buildDashboardNotifications(app)(req, res)(notifications) : [],
         widgets,
-        headingName: 'Jury central summoning bureau',
+        headingName: 'Jury Central Summoning Bureau',
         pageUrls,
         courts: req.session.dashboardCourtsList ? modUtils.transformCourtNames(req.session.dashboardCourtsList) : [],
         poolList: poolsUnderResponded ? modUtils.transformPoolsUnderRespondedList(poolsUnderResponded.data) : []
