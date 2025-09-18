@@ -1,0 +1,45 @@
+@startuml unpaid-attendances
+hide unlinked
+
+!include generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant ManageJurorsPage <</juror-management/manage-jurors/pools>>
+participant UnpaidAttendancePage <</administration/users/create-users/user-details>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant UnpaidAttendanceController <<unpaid-attendance.controller.js>> #lightyellow
+participant FetchUnpaidExpensesObject <<fetchUnpaidExpenses.post()>> #lightyellow
+
+''' VALIDATORS
+participant UnpaidAttendanceFilterValidation #Gold
+
+''' TEMPLATES
+participant UnpaidAttendanceTemplate <</juror-management/unpaid-attendance.njk>>
+participant GenericErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> ManageJurorsPage: Click "Unpaid Attendance"
+ManageJurorsPage -> UnpaidAttendanceController : call page controller
+
+$genericAPICall(UnpaidAttendanceController, FetchUnpaidExpensesObject, GenericErrorTemplate, "Failed to fetch unpaid expenses")
+
+$renderTemplateToPage(UnpaidAttendanceController, UnpaidAttendanceTemplate, UnpaidAttendancePage)
+
+alt User applies filter on dates
+  Actor -> UnpaidAttendancePage : enter dates to filter unpaid attendances
+  UnpaidAttendancePage -> UnpaidAttendanceController : call page controller
+  $validateInput(UnpaidAttendanceController, UnpaidAttendanceFilterValidation, UnpaidAttendanceTemplate, UnpaidAttendancePage, "Invalid dates entered")
+  $genericAPICall(UnpaidAttendanceController, FetchUnpaidExpensesObject, GenericErrorTemplate, "Failed to fetch unpaid expenses")
+  $renderTemplateToPage(UnpaidAttendanceController, UnpaidAttendanceTemplate, UnpaidAttendancePage)
+end
+
+@enduml

@@ -1,0 +1,68 @@
+@startuml draft-expenses
+hide unlinked
+!include generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant UnpaidAttendancePage <</juror-management/unpaid-attendance>>
+participant ExpenseRecordPage <</juror-management/unpaid-attendance/expense-record/:jurorNumber/:poolNumber/:status>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant ExpenseRecordController <<expense-record.controller.js>> #lightyellow
+participant DraftExpenseController <<draft.controller.js>> #lightyellow
+participant JurorOverviewObject <<jurorOverviewDAO.get()>> #lightyellow
+participant GetDraftExpensesDAO <<getDraftExpensesDAO.get()>> #lightyellow
+participant SubmitDraftExpensesObject <<submitDraftExpenses.patch()>> #lightyellow
+
+''' TEMPLATES
+participant ExpenseRecordTemplate <<juror-management/expense-record/expense-record.njk>> #lavender
+participant GenericErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant ExpenseSelectionValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+''' JOURNEY FLOW
+Actor -> UnpaidAttendancePage : click record expenses link
+UnpaidAttendancePage -> ExpenseRecordController : call expense record controller
+
+$genericAPICall(ExpenseRecordController, JurorOverviewObject, GenericErrorTemplate, "Failed to fetch juror details")
+
+ExpenseRecordController -> DraftExpenseController : call draft expense controller
+
+$genericAPICall(DraftExpenseController, GetDraftExpensesDAO, GenericErrorTemplate, "Failed to fetch draft expense data")
+
+$renderTemplateToPage(ExpenseRecordController, ExpenseRecordTemplate, ExpenseRecordPage)
+
+Actor -> ExpenseRecordPage : selects expense and clicks submit button
+UnpaidAttendancePage -> ExpenseRecordController : call expense record controller
+
+$validateInput(ExpenseRecordController, ExpenseSelectionValidator, ExpenseRecordTemplate, ExpenseRecordPage, "No expenses selected")
+ExpenseRecordController -> DraftExpenseController : call draft expense controller
+
+DraftExpenseController -> GetDraftExpensesDAO : build request object
+GetDraftExpensesDAO -> BackendController : send backend request
+
+$APIErrorAlt(DraftExpenseController, GetDraftExpensesDAO, GenericErrorTemplate, "Failed to compare etags for when submitting draft expenses for approval")
+
+alt Draft expenses added/updated by another user
+  $renderErrorOnForm(DraftExpenseController, ExpenseRecordTemplate, ExpenseRecordPage)
+end
+
+GetDraftExpensesDAO <- BackendController : ok response - no other changes
+DraftExpenseController <- GetDraftExpensesDAO : resolve request
+
+$genericAPICall(DraftExpenseController, SubmitDraftExpensesObject, GenericErrorTemplate, "Failed to submit draft expenses for approval")
+
+$genericAPICall(DraftExpenseController, GetDraftExpensesDAO, GenericErrorTemplate, "Failed to fetch draft expense data")
+
+$renderTemplateToPage(ExpenseRecordController, ExpenseRecordTemplate, ExpenseRecordPage)
+
+@enduml    
