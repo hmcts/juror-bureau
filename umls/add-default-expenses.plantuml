@@ -1,4 +1,6 @@
 @startuml add-default-expenses
+hide unlinked
+!include generic-blocks.plantuml
 
 skinparam Style strictuml 
 skinparam SequenceMessageAlignment center
@@ -30,81 +32,31 @@ participant DefaultExpensesValidator
 ''' BACKEND CONTROLLER
 participant BackendController
 
-Actor -> JurorRecordExpensesPage : click add or change default expenses link
-JurorRecordExpensesPage -> DefaultExpensesController : call expenses controller
-
-alt Navigate from expense record
+group Navigate from juror record
+  Actor -> JurorRecordExpensesPage : click add or change default expenses link
+  JurorRecordExpensesPage -> DefaultExpensesController : call expenses controller
+else Navigate from expense record
   Actor -> DraftExpenseRecordPage : click add or change default expenses link
   DraftExpenseRecordPage -> DefaultExpensesController : call expenses controller
 end
+
+$genericAPICall(DefaultExpensesController, DefaultExpensesObject, ErrorTemplate, "Failed to fetch jurors default expenses")
  
-DefaultExpensesController -> DefaultExpensesObject : build request object
-DefaultExpensesObject -> BackendController : send backend request
-DefaultExpensesObject <- BackendController : ok response
-DefaultExpensesController <- DefaultExpensesObject : resolve request
-
-alt Failed to fetch jurors default expenses
-    DefaultExpensesObject <-- BackendController : error response
-    DefaultExpensesController <-- DefaultExpensesObject : reject requestObject
-    DefaultExpensesController -> ErrorTemplate : request and build template
-    DefaultExpensesController <- ErrorTemplate : return HTML
-    GenericErrorPage <- DefaultExpensesController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
-
-DefaultExpensesController -> DefaultExpensesTemplate : request and build template
-DefaultExpensesController <- DefaultExpensesTemplate : return HTML
-DefaultExpensesPage <- DefaultExpensesController : return HTML
-Actor <- DefaultExpensesPage : render HTML
+$renderTemplateToPage(DefaultExpensesController, DefaultExpensesTemplate, DefaultExpensesPage)
 
 Actor -> DefaultExpensesPage : enters a valid default expense values
-
 DefaultExpensesPage -> DefaultExpensesController : call page controller
 
-DefaultExpensesController -> DefaultExpensesValidator : validate form
+$validateInput(DefaultExpensesController, DefaultExpensesValidator, DefaultExpensesTemplate, DefaultExpensesPage, "Invalid values entered")
 
-alt Invalid values entered
-  DefaultExpensesController <-- DefaultExpensesValidator : data validation fails
-  DefaultExpensesController -> DefaultExpensesTemplate : request and build error message template
-  DefaultExpensesController <- DefaultExpensesTemplate : return HTML
-  DefaultExpensesPage <- DefaultExpensesController : return HTML
-  Actor <- DefaultExpensesPage : render error message
-end
+$genericAPICall(DefaultExpensesController, SetDefaultExpensesObject, ErrorTemplate, "Failed to set default expenses")
 
-DefaultExpensesController <- DefaultExpensesValidator : valid values entered
-
-DefaultExpensesController -> SetDefaultExpensesObject : build request object
-SetDefaultExpensesObject -> BackendController : send backend request
-SetDefaultExpensesObject <- BackendController : ok response
-DefaultExpensesController <- SetDefaultExpensesObject : resolve request
-
-alt Failed to set default expenses
-    SetDefaultExpensesObject <-- BackendController : error response
-    DefaultExpensesController <-- SetDefaultExpensesObject : reject requestObject
-    DefaultExpensesController -> ErrorTemplate : request and build template
-    DefaultExpensesController <- ErrorTemplate : return HTML
-    GenericErrorPage <- DefaultExpensesController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
-
-DefaultExpensesController -> JurorRecordController : call juror record controller controller
-JurorRecordController -> JurorRecordExpensesTemplate : request and build template
-JurorRecordController <- JurorRecordExpensesTemplate : return HTML
-JurorRecordExpensesPage <- JurorRecordController : return HTML
-Actor <- JurorRecordExpensesPage : render HTML
-
-alt Initally navigated from expense record
+group Initally navigated from juror record
+  DefaultExpensesController -> JurorRecordController : call juror record controller controller
+  $renderTemplateToPage(JurorRecordController, JurorRecordExpensesTemplate, JurorRecordExpensesPage)
+else Initally navigated from expense record
   DefaultExpensesController -> ExpenseRecordController : call juror record controller controller
-  ExpenseRecordController -> DraftExpenseRecordTemplate : request and build template
-  ExpenseRecordController <- DraftExpenseRecordTemplate : return HTML
-  DraftExpenseRecordPage <- ExpenseRecordController : return HTML
-  Actor <- DraftExpenseRecordPage : render HTML
+  $renderTemplateToPage(ExpenseRecordController, DraftExpenseRecordTemplate, DraftExpenseRecordPage)
 end
 
-
-
-
-
-
-
-    
+@enduml    

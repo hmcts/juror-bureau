@@ -1,4 +1,6 @@
 @startuml enter-expenses
+hide unlinked
+!include generic-blocks.plantuml
 
 skinparam Style strictuml 
 skinparam SequenceMessageAlignment center
@@ -17,104 +19,79 @@ participant GenericErrorPage <</error>>
 participant ExpenseRecordController <<expense-record.controller.js>> #lightyellow
 participant EnterExpensesController <<enter-expenses.controller.js>> #lightyellow
 participant ExpenseRecordObject <<getEnteredExpensesDAO.post()>> #lightyellow
-participant SetEnteredExpenseObject <<postDraftExpenseDAO.post()>> #lightyellow
-participant calculateSummaryTotalsObject <<postRecalculateSummaryTotalsDAO.post()>> #lightyellow
+participant PostEditedExpensesObject <<postEditedExpensesDAO.post()>> #lightyellow
+participant RecalculateSummaryTotalsObject <<postRecalculateSummaryTotalsDAO.post()>> #lightyellow
+participant CourtLocationRatesObject <<getCourtLocationRates.get()>> #lightyellow
+participant JurorRecordDetailsObject <<jurorRecordDetailsDAO.post()>> #lightyellow
+
 ''' TEMPLATES
 participant EnterAttendanceExpensesTemplate <<expenses/enter-expenses.njk>> #lavender
 participant EnterNonAttendanceExpensesTemplate <<expenses/enter-expenses-non-attendance.njk>> #lavender
-participant LossOverLimit <<expenses/loss-over-limit.njk>> #lavender
-participant TravelOverLimit <<expenses/travel-over-limit.njk>> #lavender
-participant TotalLessThanZero <<expenses/total-less-than-zero.njk>> #lavender
-participant ErrorTemplate <<_errors/generic.njk>> #lavender
+participant LossOverLimitTemplate <<expenses/loss-over-limit.njk>> #lavender
+participant TravelOverLimitTemplate <<expenses/travel-over-limit.njk>> #lavender
+participant TotalLessThanZeroTemplate <<expenses/total-less-than-zero.njk>> #lavender
+participant SummaryTemplate <<expenses/_partials/summary.njk>> #lavender
+participant RecalculateErrorTemplate <<expenses/_partials/recalculate-error-banner.njk>> #lavender
+participant GenericErrorTemplate <<_errors/generic.njk>> #lavender
 
 ''' FILTERS AND VALIDATORS
-participant expenseDetailsValidator
+participant ExpenseDetailsValidator
 
 ''' BACKEND CONTROLLER
 participant BackendController
 
 Actor -> ExpenseRecordPage : click expense date link
-ExpenseRecordPage -> EnterExpensesController : call expense details controller
- 
-EnterExpensesController -> ExpenseRecordObject : build request object
-ExpenseRecordObject -> BackendController : send backend request
-ExpenseRecordObject <- BackendController : ok response
-EnterExpensesController <- ExpenseRecordObject : resolve request
+ExpenseRecordPage o-> EnterExpensesController : call expense details controller
 
-alt Failed to fetch draft expense for juror
-    ExpenseRecordObject <-- BackendController : error response
-    EnterExpensesController <-- ExpenseRecordObject : reject requestObject
-    EnterExpensesController -> ErrorTemplate : request and build template
-    EnterExpensesController <- ErrorTemplate : return HTML
-    GenericErrorPage <- EnterExpensesController : return HTML
-    Actor <- GenericErrorPage : render error page
+$genericAPICall(EnterExpensesController, ExpenseRecordObject, GenericErrorTemplate, "Failed to fetch draft expense for juror")
+$genericAPICall(EnterExpensesController, JurorRecordDetailsObject, GenericErrorTemplate, "Failed to fetch draft expense for juror")
+
+$renderTemplateToPage(EnterExpensesController, EnterAttendanceExpensesTemplate, EnterExpensesPage)
+
+alt Non-Attendance Day Expense
+  $renderTemplateToPage(EnterExpensesController, EnterNonAttendanceExpensesTemplate, EnterExpensesPage)
 end
 
-EnterExpensesController -> EnterAttendanceExpensesTemplate : request and build template
-EnterExpensesController <- EnterAttendanceExpensesTemplate : return HTML
-EnterExpensesPage <- EnterExpensesController : return HTML
+Actor -> EnterExpensesPage : change any of the expense details and click 'Recalculate totals'
+EnterExpensesPage -> EnterExpensesController : call enter expenses controller
+$callAPIRenderErrorOnForm(EnterExpensesController, RecalculateSummaryTotalsObject, GenericErrorTemplate, "Failed to recalculate the summary totals", RecalculateErrorTemplate, EnterExpensesPage)
+$renderTemplateToPage(EnterExpensesController, SummaryTemplate, EnterExpensesPage)
 
-alt render non attendance form for a juror who has been absent
-    EnterExpensesController -> EnterNonAttendanceExpensesTemplate : request and build template
-    EnterExpensesController <- EnterNonAttendanceExpensesTemplate : return HTML
-    EnterExpensesPage <- EnterExpensesController : return HTML
-end
-Actor <- EnterExpensesPage : render HTML
+Actor -> EnterExpensesPage : enter expense details and click 'Save and next'
+EnterExpensesPage -> EnterExpensesController : call enter expenses controller
 
-Actor -> EnterExpensesPage : enters valid expense values
+$validateInput(EnterExpensesController, ExpenseDetailsValidator, EnterAttendanceExpensesTemplate, EnterExpensesPage)
 
-EnterExpensesPage -> EnterExpensesController : call page controller
+$genericAPICall(EnterExpensesController, CourtLocationRatesObject, GenericErrorTemplate, "Failed to check if travel is over the limit")
 
-EnterExpensesController -> expenseDetailsValidator : validate form
-
-alt Invalid values entered
-  EnterExpensesController <-- expenseDetailsValidator : data validation fails
-  EnterExpensesController -> EnterAttendanceExpensesTemplate : request and build error message template
-  EnterExpensesController <- EnterAttendanceExpensesTemplate : return HTML
-  EnterExpensesPage <- EnterExpensesController : return HTML
-  Actor <- EnterExpensesPage : render error message
+alt Travel value over limit
+  $renderTemplateToPage(EnterExpensesController, TravelOverLimitTemplate, TravelOverLimitPage)
+  Actor -> TravelOverLimitPage : click 'Pay amount entered'
+  TravelOverLimitPage -> EnterExpensesController : call enter expenses controller
 end
 
-EnterExpensesController <- expenseDetailsValidator : valid values entered
+$genericAPICall(EnterExpensesController, postRecalculateSummaryTotalsDAO, GenericErrorTemplate, "Failed to recalculate the summary totals")
 
-EnterExpensesController -> SetEnteredExpenseObject : build request object
-SetEnteredExpenseObject -> BackendController : send backend request
-SetEnteredExpenseObject <- BackendController : ok response
-EnterExpensesController <- SetEnteredExpenseObject : resolve request
-
-alt Failed to update a draft expense/Failed to update expenses for all draft days
-    SetEnteredExpenseObject <-- BackendController : error response
-    EnterExpensesController <-- SetEnteredExpenseObject : reject requestObject
-    EnterExpensesController -> ErrorTemplate : request and build template
-    EnterExpensesController <- ErrorTemplate : return HTML
-    GenericErrorPage <- EnterExpensesController : return HTML
-    Actor <- GenericErrorPage : render error page
+alt Total claim less than zero
+  $renderTemplateToPage(EnterExpensesController, TotalLessThanZeroTemplate, TotalLessThanZeroPage)
+  Actor -> TotalLessThanZeroPage : click 'Go back'
+  TotalLessThanZeroPage ->o EnterExpensesController : call enter expenses controller and return to start of enter expenses flow
 end
 
-alt Enter form with amount less than £0
-  EnterExpensesController -> calculateSummaryTotalsObject : send backend request
-  calculateSummaryTotalsObject -> EnterExpensesController : resolve request
-  EnterExpensesController -> TotalLessThanZero : return HTML
-  Actor <- TotalLessThanZeroPage : render total less than zero page
+$genericAPICall(EnterExpensesController, PostEditedExpensesObject, GenericErrorTemplate, "Failed to update a draft expense")
+
+alt Financial loss over limit
+  $renderTemplateToPage(EnterExpensesController, LossOverLimitTemplate, LossOverLimitPage)
+  Actor -> LossOverLimitPage : click 'Continue'
+  LossOverLimitPage ->o EnterExpensesController : call enter expenses controller and return to start of enter expenses flow for next available expense record
 end
 
-alt Enter form with travel amount over the limit
-  EnterExpensesController -> calculateSummaryTotalsObject : send backend request
-  calculateSummaryTotalsObject -> EnterExpensesController : resolve request
-  EnterExpensesController -> TotalLessThanZero : return HTML
-  Actor <- TravelOverLimitPage : render total less than zero page
+EnterExpensesController ->o EnterExpensesController : call enter expenses controller and return to start of enter expenses flow for next available expense record
+
+alt No more expense records or user clicks 'Save and back to all days'
+  EnterExpensesController -> ExpenseRecordController : call expense record controller
+  ExpenseRecordPage <- ExpenseRecordController : rediretct to expense record page
+  Actor <- ExpenseRecordPage : render expense record page
 end
 
-alt Enter form with juror losses over limit
-  EnterExpensesController -> calculateSummaryTotalsObject : send backend request
-  calculateSummaryTotalsObject -> EnterExpensesController : resolve request
-  EnterExpensesController -> TravelOverLimit : return HTML
-  Actor <- LossOverLimitPage : render page showing losses over the limit
-end
-
-
-
-
-
-
-    
+@enduml

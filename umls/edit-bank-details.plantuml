@@ -1,4 +1,6 @@
 @startuml edit-bank-details
+hide unlinked
+!include generic-blocks.plantuml
 
 skinparam Style strictuml 
 skinparam SequenceMessageAlignment center
@@ -30,76 +32,47 @@ participant BankDetailsValidator
 ''' BACKEND CONTROLLER
 participant BackendController
 
-Actor -> JurorRecordExpensesPage : click add or change bank details link
-JurorRecordExpensesPage -> EditBankDetailsController : call bank details controller
 
-alt Navigate from expense record
+alt Navigate from juror record
+  Actor -> JurorRecordExpensesPage : click add or change bank details link
+  JurorRecordExpensesPage -> EditBankDetailsController : call bank details controller 
+else Navigate from expense record
   Actor -> DraftExpenseRecordPage : click add or change bank details link
   DraftExpenseRecordPage -> EditBankDetailsController : call bank details controller
 end
+
+$genericAPICall(EditBankDetailsController, BankDetailsObject, ErrorTemplate, "Failed to fetch jurors bank details")
  
-EditBankDetailsController -> BankDetailsObject : build request object
-BankDetailsObject -> BackendController : send backend request
-BankDetailsObject <- BackendController : ok response
-EditBankDetailsController <- BankDetailsObject : resolve request
-
-alt Failed to fetch jurors bank details
-    BankDetailsObject <-- BackendController : error response
-    EditBankDetailsController <-- BankDetailsObject : reject requestObject
-    EditBankDetailsController -> ErrorTemplate : request and build template
-    EditBankDetailsController <- ErrorTemplate : return HTML
-    GenericErrorPage <- EditBankDetailsController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
-
-EditBankDetailsController -> BankDetailsTemplate : request and build template
-EditBankDetailsController <- BankDetailsTemplate : return HTML
-BankDetailsPage <- EditBankDetailsController : return HTML
-Actor <- BankDetailsPage : render HTML
+$renderTemplateToPage(EditBankDetailsController, BankDetailsTemplate, BankDetailsPage)
 
 Actor -> BankDetailsPage : enters valid bank details values
 
-BankDetailsPage -> EditBankDetailsController : call page controller
+$validateInput(EditBankDetailsController, BankDetailsValidator, BankDetailsTemplate, BankDetailsPage, "Invalid bank details entered")
 
-EditBankDetailsController -> BankDetailsValidator : validate form
+$genericAPICall(EditBankDetailsController, SetBankDetailsObject, ErrorTemplate, "Failed to set jurors bank details")
 
-alt Invalid values entered
-  EditBankDetailsController <-- BankDetailsValidator : data validation fails
-  EditBankDetailsController -> BankDetailsTemplate : request and build error message template
-  EditBankDetailsController <- BankDetailsTemplate : return HTML
-  BankDetailsPage <- EditBankDetailsController : return HTML
-  Actor <- BankDetailsPage : render error message
+
+EditBankDetailsController -> BankDetailsObject : build request object
+BankDetailsObject -> BackendController : send backend request
+
+$APIErrorAlt(EditBankDetailsController, BankDetailsObject, ErrorTemplate, "Failed to compare etags for when updating bank details")
+
+alt Bank details updated by another user
+  $renderErrorOnForm(EditBankDetailsController, BankDetailsTemplate, BankDetailsPage)
 end
 
-EditBankDetailsController <- BankDetailsValidator : valid values entered
+BankDetailsObject <- BackendController : ok response - no other changes
+EditBankDetailsController <- BankDetailsObject : resolve request
 
-EditBankDetailsController -> SetBankDetailsObject : build request object
-SetBankDetailsObject -> BackendController : send backend request
-SetBankDetailsObject <- BackendController : ok response
-EditBankDetailsController <- SetBankDetailsObject : resolve request
-
-alt Failed to set jurors bank details
-    SetBankDetailsObject <-- BackendController : error response
-    EditBankDetailsController <-- SetBankDetailsObject : reject requestObject
-    EditBankDetailsController -> ErrorTemplate : request and build template
-    EditBankDetailsController <- ErrorTemplate : return HTML
-    GenericErrorPage <- EditBankDetailsController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
-
-EditBankDetailsController -> JurorRecordController : call juror record controller controller
-JurorRecordController -> JurorRecordExpensesTemplate : request and build template
-JurorRecordController <- JurorRecordExpensesTemplate : return HTML
-JurorRecordExpensesPage <- JurorRecordController : return HTML
-Actor <- JurorRecordExpensesPage : render HTML
-
-alt Initally navigated from expense record
+alt Initally navigated from juror record
+  EditBankDetailsController -> JurorRecordController : call juror record controller controller
+  $renderTemplateToPage(JurorRecordController, JurorRecordExpensesTemplate, JurorRecordExpensesPage)
+else Initally navigated from expense record
   EditBankDetailsController -> ExpenseRecordController : call juror record controller controller
-  ExpenseRecordController -> DraftExpenseRecordTemplate : request and build template
-  ExpenseRecordController <- DraftExpenseRecordTemplate : return HTML
-  DraftExpenseRecordPage <- ExpenseRecordController : return HTML
-  Actor <- DraftExpenseRecordPage : render HTML
+  $renderTemplateToPage(ExpenseRecordController, DraftExpenseRecordTemplate, DraftExpenseRecordPage)
 end
+
+@enduml
 
 
 
