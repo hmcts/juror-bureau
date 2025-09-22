@@ -25,7 +25,6 @@
             auth: req.session.authentication,
             data: {
               jurorNumber: req.params['jurorNumber'],
-              response: response.data,
             },
           });
 
@@ -99,7 +98,6 @@
             auth: req.session.authentication,
             data: {
               jurorNumber: req.params['jurorNumber'],
-              response: overview.data,
             },
           });
 
