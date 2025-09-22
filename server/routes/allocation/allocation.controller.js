@@ -20,11 +20,8 @@
     try {
       let response = await backlogObj.get(req);
 
-      console.log('\nResponse: \n', response, '\n\n');
-
       app.logger.info('Fetched backlog information: ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         response,
       });
 
@@ -50,7 +47,6 @@
     } catch (err) {
       app.logger.crit('Failed to fetch backlog information: ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
@@ -92,7 +88,6 @@
   
       app.logger.info('Fetched backlog information: ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         response: apiResponse,
       });
   
@@ -129,7 +124,6 @@
   
         app.logger.info('Allocated backlog items: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           response: postResponse,
         });
   
@@ -139,13 +133,11 @@
       if (rejectUpdate) {
         app.logger.crit('Failed to read backlog: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           error: err.error || err.toString(),
         });
       } else {
         app.logger.info('Error allocating backlog items: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           response: err,
         });
   

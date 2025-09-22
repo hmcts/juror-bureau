@@ -44,10 +44,8 @@
         .catch((err) => {
           app.logger.crit('Could not fetch juror details: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: req.params.id,
-              body: req.body,
             },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });

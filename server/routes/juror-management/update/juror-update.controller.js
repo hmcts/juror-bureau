@@ -31,7 +31,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch juror record details: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber: req.params['jurorNumber'],
             locationCode: req.session.locCode || req.session.authentication.locCode,
@@ -452,7 +451,6 @@
       if (err.statusCode === 422 ) {
         app.logger.crit('Failed to process Deferral - business rule violation ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: req.body,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
@@ -622,7 +620,6 @@
           auth: req.session.authentication,
           data: {
             responseId: req.params.jurorNumber,
-            reasons: data,
           },
         });
 

@@ -33,7 +33,6 @@ const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../object
       }
       app.logger.crit('Failed to render financial audit', {
         auth: req.session.authentication,
-        token: req.session.authToken,
         error: typeof err.error !== 'undefined' ? err.error : err.toString(),
       });
 
@@ -60,11 +59,9 @@ const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../object
     if (!jurorDetails || !jurorBank || !jurorDefault) {
       app.logger.crit('Failed to build and render financial audit preview: essential data is missing', {
         auth: req.session.authentication,
-        data: {
-          jurorDetails,
-          jurorBank,
-          jurorDefault,
-        }
+        missingData: [].push(!jurorDetails ? 'jurorDetails' : null)
+          .push(!jurorBank ? 'jurorBank' : null)
+          .push(!jurorDefault ? 'jurorDefault' : null)
       });
 
       return res.render('_errors/generic');
@@ -183,7 +180,6 @@ const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../object
     } catch (err) {
       app.logger.crit('Failed to render draft financial audit', {
         auth: req.session.authentication,
-        token: req.session.authToken,
         error: typeof err.error !== 'undefined' ? err.error : err.toString(),
       });
 
@@ -237,7 +233,6 @@ const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../object
     } catch (err) {
       app.logger.crit('Failed to render draft financial audit', {
         auth: req.session.authentication,
-        token: req.session.authToken,
         error: typeof err.error !== 'undefined' ? err.error : err.toString(),
       });
 

@@ -68,7 +68,6 @@
       } catch (err) {
         app.logger.crit('Unable to fetch court list', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
@@ -264,7 +263,6 @@
       }).catch(err => {
         app.logger.crit('Unable to manually create court-only pool', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 

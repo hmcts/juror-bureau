@@ -41,7 +41,6 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
       } catch (err) {
         app.logger.crit('Failed to fetch expense limits for transport', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
@@ -80,7 +79,6 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
 
           app.logger.crit('Failed to compare etags for when expense limits for transport: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               locCode,
             },
@@ -105,7 +103,6 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
       } catch (err) {
         app.logger.crit('Failed to update expense limits for transport', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 

@@ -30,7 +30,6 @@
 
           app.logger.info('Fetched pool list', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               status: modUtils.poolStatus[status],
               pools: data[0],
@@ -69,7 +68,6 @@
         , errorCB = function(err) {
           app.logger.crit('Failed to fetch the pool list: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               poolStatus: status,
             },

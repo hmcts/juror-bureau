@@ -72,12 +72,12 @@ module.exports.postResponded = function(app) {
         break;
       };
 
-      Logger.instance.info('Successfully marked a record as responded', {
+      app.logger.info('Successfully marked a record as responded', {
         auth: req.session.authentication,
         data: { ...payload },
       });
     } catch (err) {
-      Logger.instance.crit('Failed to update', {
+      app.logger.crit('Failed to update', {
         auth: req.session.authentication,
         data: { ...payload },
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),

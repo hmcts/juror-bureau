@@ -135,7 +135,6 @@
     ).catch((err) => {
       app.logger.crit('Failed to fetch summoning progress: ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         error: (typeof err.error !== 'undefined') ? err.error : err.toString()
       });
 
@@ -166,7 +165,6 @@
 
       app.logger.info('Successfully fetched summoning progress: ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         data: data,
       });
 

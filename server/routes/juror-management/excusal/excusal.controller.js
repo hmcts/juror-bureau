@@ -28,7 +28,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch excusal codes: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
@@ -66,7 +65,6 @@
 
           app.logger.info('Juror excusal processed: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: req.params['jurorNumber'],
               ...req.body,
@@ -87,7 +85,6 @@
         errorCB = function(err) {
           app.logger.crit('Failed to process the juror excusal: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: req.params['jurorNumber'],
               ...req.body,

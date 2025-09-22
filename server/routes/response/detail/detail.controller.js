@@ -99,11 +99,9 @@
 
           app.logger.info('Fetched and parsed single response: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               responseId: req.params.id,
             },
-            response: data,
           });
 
           // clear out jurorDetails sessions and reload, this is for the check-can-accommodate page
@@ -382,7 +380,6 @@
         .catch((err) => {
           app.logger.crit('Failed to fetch and parse single response: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               responseId: req.params.id,
             },

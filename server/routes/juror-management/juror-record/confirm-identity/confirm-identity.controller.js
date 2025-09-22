@@ -29,9 +29,8 @@ module.exports.getConfirmIdentity = function(app) {
         return acc;
       }, [{ value: '', text: 'Select ID type' }]);
     } catch (err) {
-      Logger.instance.crit('Failed to fetch system codes for id check', {
+      app.logger.crit('Failed to fetch system codes for id check', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         data: { jurorNumber },
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
@@ -75,9 +74,8 @@ module.exports.postConfirmIdentity = function(app) {
 
       req.session.bannerMessage = 'Identity confirmed';
     } catch (err) {
-      Logger.instance.crit('Failed to confirm the juror\'s identity', {
+      app.logger.crit('Failed to confirm the juror\'s identity', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         data: { payload },
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });

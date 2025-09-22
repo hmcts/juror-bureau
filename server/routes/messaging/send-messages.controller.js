@@ -94,7 +94,6 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
       } catch (err) {
         app.logger.crit('Unable to fetch message template', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: {
             messageType: messagingCodes[message],
             locCode: req.session.authentication.locCode,
@@ -295,8 +294,6 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
         data = modUtils.replaceAllObjKeys(data, _.camelCase);
 
         app.logger.info('Fetched list of all trials', {
-          auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             trials: data,
           },
@@ -340,7 +337,6 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
       } catch (err) {
         app.logger.crit('Failed to fetch trials: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: opts,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
@@ -467,7 +463,6 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
 
         app.logger.info('Fetched list of jurors', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           opts: opts,
         });
 
@@ -550,7 +545,6 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
 
         app.logger.crit('Failed to fetch list of jurors: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
@@ -625,7 +619,6 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
       } catch (err) {
         app.logger.crit('Unable to fetch message', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: {
             messageType: messagingCodes[message],
             locCode: req.session.authentication.locCode,
@@ -673,7 +666,6 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
       } catch (err) {
         app.logger.crit('Unable to send messages', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: {},
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
@@ -749,7 +741,6 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
 
             app.logger.info('Fetched list of jurors', {
               auth: req.session.authentication,
-              jwt: req.session.authToken,
               opts: opts,
             });
 
@@ -769,7 +760,6 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
           } catch (err) {
             app.logger.crit('Failed to fetch list of jurors: ', {
               auth: req.session.authentication,
-              jwt: req.session.authToken,
               error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
             });
 
@@ -800,7 +790,6 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
 
       app.logger.info('Checked or unchecked one or more jurors: ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         data: {
           jurorNumber,
         },
@@ -830,7 +819,6 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
 
       app.logger.info('Changed notification method for juror', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         data: {
           jurorNumber,
           selection,
@@ -873,7 +861,6 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
 
         app.logger.info('Fetched list of active pools', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             pools: data,
           },
@@ -911,7 +898,6 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
       } catch (err) {
         app.logger.crit('Failed to fetch pools: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 

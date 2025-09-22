@@ -167,8 +167,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch user record details: ', {
           auth: req.session.authentication,
-          data: {
-          },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 

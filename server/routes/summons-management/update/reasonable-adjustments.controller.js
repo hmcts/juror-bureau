@@ -73,7 +73,6 @@
       } catch (err) {
         app.logger.crit('Unable to fetch the summons details', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: {
             id: req.params['id'],
           },
@@ -127,8 +126,7 @@
 
         app.logger.info('Updated the summons reasonable adjustments', {
           auth: req.session.authentication,
-          token: req.session.authToken,
-          data: payload,
+          jurorNumber: req.params['id'],
         });
 
         delete req.session[`summonsUpdate-${id}`];
@@ -140,8 +138,7 @@
       } catch (err) {
         app.logger.crit('Unable to update the summons reasonable adjustments', {
           auth: req.session.authentication,
-          token: req.session.authToken,
-          data: payload,
+          jurorNumber: req.params['id'],
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 

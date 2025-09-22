@@ -44,7 +44,6 @@
       } catch (err) {
         app.logger.crit('Unable to fetch court details', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
       }
@@ -55,7 +54,6 @@
       } catch (err) {
         app.logger.crit('Unable to fetch notifications', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
       }
@@ -66,10 +64,32 @@
       } catch (err) {
         app.logger.crit('Unable to fetch widget definitions', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
       }
+
+      console.log('\n\n');
+
+      app.logger.crit('Court Dashboard Data', {
+        auth: req.session.authentication,
+        data: {
+          firstName: 'fname',
+          lastName: 'lname',
+          addressOne: 'addr1',
+          addressTwo: 'addr2',
+          addressThree: 'addr3',
+          town: 'town',
+          county: 'county',
+          postcode: 'postcode',
+          'e-mail': 'email@email.com',
+          data2: {
+            phonenumber: 'phone',
+          },
+          simpleMessage: 'This is a simple message',
+        }
+      });
+
+      console.log('\n\n');
 
       res.render('homepage/court-dashboard/dashboard.njk', {
         notifications: notifications ? buildDashboardNotifications(app)(req, res)(notifications) : [],
@@ -139,7 +159,6 @@
       } catch (err) {
         app.logger.crit('Unable to fetch widget definitions', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
       }
@@ -186,7 +205,6 @@
       } catch (err) {
         app.logger.crit(`Unable to fetch ${section} dashboard stats`, {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
         stats[section] = {};
@@ -228,7 +246,6 @@
         } catch (err) {
           app.logger.crit(`Error building widget '${key}' in section '${section}'`, {
             auth: req.session.authentication,
-            token: req.session.authToken,
             error: typeof err.error !== 'undefined' ? err.error : err.toString(),
           });
           delete widgets[key];

@@ -43,7 +43,6 @@
       }, err => {
         app.logger.crit('Failed to post empanel amount', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
@@ -84,7 +83,6 @@
       }, err => {
         app.logger.crit('Failed to post empanel amount', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
@@ -196,7 +194,6 @@
 
         app.logger.crit('Failed to empanel jurors', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 

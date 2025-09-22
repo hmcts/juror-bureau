@@ -30,7 +30,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch courtooms', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: {
             locCode: locationCode,
           },
@@ -76,7 +75,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch courtroom details', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: {
             locCode: locationCode,
             id,
@@ -123,7 +121,6 @@
 
           app.logger.crit('Failed to compare etags for when updating room location details: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               locationCode,
               id,
@@ -150,7 +147,6 @@
       } catch (err) {
         app.logger.crit('Failed to update courtroom details', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: {
             locCode: locationCode,
             id,
@@ -216,7 +212,6 @@
       } catch (err) {
         app.logger.crit('Failed to add courtroom', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: {
             locCode: locationCode,
             payload,

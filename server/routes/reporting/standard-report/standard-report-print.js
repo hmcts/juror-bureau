@@ -313,7 +313,6 @@ async function standardReportPrint(app, req, res, reportKey, data) {
   } catch (err) {
     app.logger.crit('Something went wrong when generating the report', {
       auth: req.session.authentication,
-      jwt: req.session.authToken,
       error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
     });
 

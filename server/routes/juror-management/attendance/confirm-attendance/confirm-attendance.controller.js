@@ -38,7 +38,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch not checked out jurors', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: body,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
@@ -67,7 +66,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch jurors marked as not attending / not checked in', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: body,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
@@ -99,7 +97,6 @@
       } catch (err) {
         app.logger.crit('Failed to confirm the attendance for the jurors', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: payload,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
@@ -249,7 +246,6 @@
       } catch (err) {
         app.logger.crit('Failed to checkout the list of jurors', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: payload,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });

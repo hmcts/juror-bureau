@@ -48,7 +48,6 @@
       } catch (err) {
         app.logger.crit('Unable to fetch the summons details', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: {
             id: req.params['id'],
           },
@@ -98,8 +97,7 @@
 
         app.logger.info('Updated the summons cjs employments', {
           auth: req.session.authentication,
-          token: req.session.authToken,
-          data: payload,
+          jurorNumber: req.params['id'],
         });
 
         return res.redirect(app.namedRoutes.build('response.paper.details.get', {
@@ -109,8 +107,7 @@
       } catch (err) {
         app.logger.crit('Unable to save the summons cjs employment', {
           auth: req.session.authentication,
-          token: req.session.authToken,
-          data: payload,
+          jurorNumber: req.params['id'],
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 

@@ -33,7 +33,6 @@
           if (jurorNumber != req.session.jurorCommonDetails?.jurorNumber) {
             app.logger.crit('Juror number does not match cached data', {
               auth: req.session.authentication,
-              jwt: req.session.authToken,
               data: {
                 jurorNumber: {
                   url: jurorNumber,
@@ -80,7 +79,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch jurors default expenses', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
@@ -139,7 +137,6 @@
       } catch (err) {
         app.logger.crit('Failed to set default expenses', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 

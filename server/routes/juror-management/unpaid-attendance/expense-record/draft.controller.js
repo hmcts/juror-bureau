@@ -40,7 +40,6 @@
 
           app.logger.info('Fetched draft expenses for juror: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               expenseData,
             },
@@ -94,7 +93,6 @@
 
           app.logger.crit('Failed to fetch draft expense data: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber,
               locCode,
@@ -163,7 +161,6 @@
 
           app.logger.crit('Failed to compare etags for when submitting draft expenses for approval: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber,
               locCode,

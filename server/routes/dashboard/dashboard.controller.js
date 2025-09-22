@@ -161,7 +161,6 @@
 
           app.logger.info('Fetched and parsed dashboard totals: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             response: response,
           });
 
@@ -299,13 +298,11 @@
           if (typeof err !== 'undefined') {
             app.logger.crit('Failed to fetch dashboard information: ', {
               auth: req.session.authentication,
-              jwt: req.session.authToken,
               error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
             });
           } else if (typeof response !== 'undefined') {
             app.logger.crit('Failed to fetch dashboard information: ', {
               auth: req.session.authentication,
-              jwt: req.session.authToken,
               response: response.error,
             });
           }

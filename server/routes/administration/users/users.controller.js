@@ -49,7 +49,6 @@
 
         app.logger.info('Fetched list of courts', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
         });
 
         const courts = mapAdminToPoolRequestCourts(courtsData);
@@ -63,9 +62,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch list of courts: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
-          data: {
-          },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
@@ -111,10 +107,6 @@
 
         app.logger.info('Fetched list of users', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
-          data: {
-            users: users,
-          },
         });
 
         const queryTotal = users.totalItems;
@@ -145,9 +137,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch list of users: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
-          data: {
-          },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
@@ -225,11 +214,7 @@
         replaceAllObjKeys(users, _.camelCase);
 
         app.logger.info('Fetched list of users', {
-          auth: req.session.authentication,
-          jwt: req.session.authToken,
-          data: {
-            users: users,
-          },
+          auth: req.session.authentication
         });
 
         const queryTotal = users.totalItems;
@@ -250,9 +235,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch list of users: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
-          data: {
-          },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
@@ -280,9 +262,8 @@
 
         app.logger.info('Fetched user record', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
-            user: user,
+            username: username,
           },
         });
 
@@ -305,9 +286,7 @@
       } catch (err) {
         app.logger.crit('Failed to fetch user record: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
-          data: {
-          },
+
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 

@@ -65,7 +65,6 @@
 
         app.logger.info('Fetched expenses data and juror details for', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber,
             locCode,
@@ -76,7 +75,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch draft expense for: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber,
             locCode,
@@ -197,7 +195,6 @@
         if (error) {
           app.logger.crit('Failed to check if travel is over the limit', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber,
               locCode,
@@ -289,10 +286,8 @@
       } catch (err) {
         app.logger.crit('Failed to update a draft expense: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber,
-            ...data,
           },
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
@@ -422,10 +417,8 @@
       } catch (err) {
         app.logger.crit('Failed to update expenses for all draft days: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber,
-            ...data,
           },
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
@@ -471,7 +464,6 @@
 
         app.logger.info('Recalculated summary totals for: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber,
             locCode,
@@ -486,8 +478,10 @@
       } catch (err) {
         app.logger.crit('Failed to recalculate the summary totals: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
-          data,
+          data: {
+            jurorNumber,
+            locCode,
+          },
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 

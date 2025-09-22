@@ -13,7 +13,6 @@
 
           app.logger.info('Checked the type of day for a given court and attendance date: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               locationCode: req.session.poolDetails.courtCode,
               attendanceDate: req.session.tmpDate,
@@ -63,7 +62,6 @@
 
           app.logger.crit('Failed to check the type of day for a given court and attendance date: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               locationCode: req.session.poolDetails.courtCode,
               attendanceDate: req.session.tmpDate,

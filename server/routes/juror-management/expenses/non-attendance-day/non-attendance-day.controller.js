@@ -24,7 +24,6 @@
             (poolNumber != req.session.jurorCommonDetails?.poolNumber)) {
           app.logger.crit('Juror number / pool number does not match cached data', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: {
                 url: jurorNumber,
@@ -131,7 +130,7 @@
             'pool_number': juror.active_pool.pool_number,
           }));
         } catch (err) {
-          app.logger.crit('Failed to get juror details', { auth: req.session.authentication, token: req.session.authToken, error: err.toString() });
+          app.logger.crit('Failed to get juror details', { auth: req.session.authentication, error: err.toString() });
           return res.render('_errors/generic', { err });
         }
       } else {
@@ -203,7 +202,6 @@
     return function(req, res, err, errorUrl, payload, bulkRequest = false) {
       app.logger.crit('Failed to add a non-attendance day for juror(s)', {
         auth: req.session.authentication,
-        token: req.session.authToken,
         data: payload,
         error: err.error ? err.error : err.toString(),
       });

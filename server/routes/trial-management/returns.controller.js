@@ -190,7 +190,6 @@
       .catch((err) => {
         app.logger.crit('Failed to fetch attendance records for given day and juror numbers', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
@@ -408,7 +407,6 @@
       .catch((err) => {
         app.logger.crit('Failed to return the ' + panelType, {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 

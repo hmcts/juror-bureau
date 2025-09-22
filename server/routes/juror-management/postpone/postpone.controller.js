@@ -198,7 +198,6 @@
 
         app.logger.info('Fetch pool options:  ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: poolOptions,
         });
         
@@ -274,7 +273,6 @@
       .catch(err => {
         app.logger.crit('Failed to fetch pool options: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
@@ -294,7 +292,6 @@
       ).then(poolOptions => {
         app.logger.info('Fetch pool options:  ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: poolOptions,
         });
 
@@ -347,7 +344,6 @@
       }).catch(err => {
         app.logger.crit('Failed to fetch pool options: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
@@ -434,7 +430,6 @@
         .catch((err) => {
           app.logger.crit('Failed to check transfer validity: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             jurorNumber: req.session.poolJurorsReassign ?
               req.session.poolJurorsReassign.selectedJurors : req.params['jurorNumber'],
             error:
@@ -522,7 +517,6 @@
       }).catch(err => {
         app.logger.crit('Failed to check transfer validity: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           jurorNumber: req.session.poolJurorsReassign ?
             req.session.poolJurorsReassign.selectedJurors : req.params['jurorNumber'],
           error:
@@ -641,7 +635,6 @@
 
         app.logger.info('Juror succesfully transferred: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber: jurorNumber,
             ...payload,
@@ -710,7 +703,6 @@
 
         app.logger.crit('Failed to transfer juror: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           jurorNumber: jurorNumber,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
@@ -758,7 +750,6 @@
       .catch((err) => {
         app.logger.crit('Failed to postpone juror: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           payload,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });

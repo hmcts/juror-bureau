@@ -59,7 +59,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch system codes', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: {
             codeType: systemCodes[codeType],
           },

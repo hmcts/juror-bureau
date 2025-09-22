@@ -26,7 +26,6 @@
           (poolNumber !== req.session.jurorCommonDetails.poolNumber))) {
         app.logger.crit('The juror number / pool number was tampered with: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber: {
               url: jurorNumber,
@@ -85,7 +84,6 @@
         && req.body.jurorNumber !== req.session.jurorCommonDetails.jurorNumber) {
         app.logger.crit('The juror number was tampered with: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber: {
               url: jurorNumber,
@@ -173,7 +171,6 @@
 
       app.logger.info('Updated attendance date: ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         data: payload,
       });
 
@@ -183,7 +180,6 @@
     } catch (err) {
       app.logger.crit('Could not update attendance date: ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         data: req.body,
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });

@@ -110,7 +110,6 @@
           } catch (err) {
             app.logger.crit('Failed to fetch list of unconfirmed attendances', {
               auth: req.session.authentication,
-              token: req.session.authToken,
               data: {
                 locCode: req.session.authentication.locCode,
                 date: selectedDateString,
@@ -160,7 +159,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch jurors attendance list: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             locationCode: req.session.authentication.owner,
             attendanceDate: selectedDateString,

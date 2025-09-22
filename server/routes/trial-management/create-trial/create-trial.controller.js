@@ -27,10 +27,6 @@
 
           app.logger.info('Fetched courtrooms and judges list', {
             auth: req.session.authentication,
-            data: {
-              courtrooms: data[0],
-              judges: data[1],
-            },
           });
 
           const courtrooms = data[0];
@@ -189,8 +185,9 @@
       .then((resp) => {
         app.logger.info('Created a new trial', {
           auth: req.session.authentication,
-          data: payload,
-          response: resp,
+          data: {
+            trialNumber: payload.case_number
+          }
         });
 
         if (typeof req.session.createTrial !== 'undefined') {
@@ -207,7 +204,9 @@
       .catch((err) => {
         app.logger.crit('Failed to create a new trial: ', {
           auth: req.session.authentication,
-          data: payload,
+          data: {
+            trialNumber: payload.case_number
+          },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 

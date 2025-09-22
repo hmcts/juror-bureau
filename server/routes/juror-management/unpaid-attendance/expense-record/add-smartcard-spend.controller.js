@@ -72,7 +72,6 @@
 
         app.logger.info('Successfully updated the smartcard amount for all selected days', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: body,
         });
 
@@ -86,7 +85,6 @@
       } catch (err) {
         app.logger.crit('Failed to update the smart card amount for all selected days', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: body,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });

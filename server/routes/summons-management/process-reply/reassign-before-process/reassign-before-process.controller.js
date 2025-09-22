@@ -38,7 +38,6 @@
           } catch (err) {
             app.logger.crit('Failed to retrieve courts list: ', {
               auth: req.session.authentication,
-              jwt: req.session.authToken,
               error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
             });
             return res.render('_errors/generic', { err });
@@ -176,7 +175,6 @@
           } catch (err) {
             app.logger.crit('Failed to fetch the juror\'s current details', {
               auth: req.session.authentication,
-              token: req.session.authToken,
               jurorNumber: id,
               error: typeof err.error !== 'undefined' ? err.error : err.toString(),
             });
@@ -192,7 +190,6 @@
 
           app.logger.info('Fetched available pools for reassigning a juror', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               response,
               court,
@@ -232,7 +229,6 @@
         .catch((err) => {
           app.logger.crit('Failed to fetch available pools: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               locCode: req.session.receivingCourtLocCode,
             },
@@ -289,7 +285,6 @@
           () => {
             app.logger.crit('Failed to reassign the juror to a different pool', {
               auth: req.session.authentication,
-              jwt: req.session.authToken,
               data: {
                 juror: payload.jurorNumbers,
                 newPool: payload.receivingPoolNumber,
@@ -398,7 +393,6 @@
 
           app.logger.info('Retrieved excusal codes: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             jurorNumber: req.params['id'],
             type: req.params['type'],
             response: req.session.excusalReasons,
@@ -446,7 +440,6 @@
       } catch (err) {
         app.logger.crit('Failed to retrieve excusal: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           jurorNumber: req.params['id'],
           type: req.params['type'],
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
@@ -506,7 +499,6 @@
 
         app.logger.info('Excusal processed (reassign before process): ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: { body: payload, jurorNumber: req.params['id'] },
         });
 
@@ -532,7 +524,6 @@
       } catch (err) {
         app.logger.crit('Failed to process excusal (reassign before process): ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: { body: payload, jurorNumber: req.params['id'] },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });

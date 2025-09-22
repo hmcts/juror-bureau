@@ -34,7 +34,6 @@
         .then((data) => {
           app.logger.info('Fetched disqualification reasons: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: data,
           });
 
@@ -60,7 +59,6 @@
         }).catch((err) => {
           app.logger.crit('Failed to retrieve disqualification reasons', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             jurorNumber: req.params.id,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
@@ -90,7 +88,6 @@
         .then(() => {
           app.logger.info('Juror disqualified: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             jurorNumber: req.params.id,
             data: req.body,
           });
@@ -117,7 +114,6 @@
         }).catch((err) => {
           app.logger.crit('Failed to process juror disqualification', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             jurorNumber: req.params.id,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });

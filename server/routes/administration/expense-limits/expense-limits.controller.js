@@ -38,7 +38,6 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
       } catch (err) {
         app.logger.crit('Failed to fetch expense rates and limits', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
@@ -75,10 +74,6 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
 
           app.logger.crit('Failed to compare etags for when updating expense limits and rates: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: {
-              expenses: checkedJurors,
-            },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
@@ -110,7 +105,6 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
       } catch (err) {
         app.logger.crit('Failed to update expense rates and limits', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 

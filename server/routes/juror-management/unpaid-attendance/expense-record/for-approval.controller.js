@@ -86,7 +86,6 @@
       } catch (err) {
         app.logger.crit('Unable to view expenses', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: {
             jurorNumber,
             locCode,

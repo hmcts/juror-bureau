@@ -58,7 +58,6 @@
 
         app.logger.info('Fetched the list of juror documents: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
         });
         return res.redirect(urljoin(app.namedRoutes.build('documents.letters-list.get', {
           document: 'show-cause',
@@ -80,7 +79,6 @@
 
         app.logger.crit('Failed to fetch documents / jurors list: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: { ...req.body },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });

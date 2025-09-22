@@ -61,9 +61,6 @@ module.exports.getAzureCallback = function(app) {
       app.logger.crit('No email found in user data', {
         data: {
           displayName: response.data.displayName,
-          givenName: response.data.givenName,
-          surname: response.data.surname,
-          userPrincipalName: response.data.userPrincipalName, // this matches the mail field
         },
       });
 
@@ -74,9 +71,6 @@ module.exports.getAzureCallback = function(app) {
 
     app.logger.info('User authenticated', {
       email: response.data.mail.toLowerCase(),
-      displayName: response.data.displayName,
-      givenName: response.data.givenName,
-      surname: response.data.surname,
     });
 
     req.session.email = response.data.mail.toLowerCase();

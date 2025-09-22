@@ -52,10 +52,6 @@
 
         app.logger.info('Fetched expenses awaiting approval: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
-          data: {
-            data,
-          },
         });
 
         data = replaceAllObjKeys(_.cloneDeep(data), _.camelCase);
@@ -92,7 +88,6 @@
       } catch (err) {
         app.logger.crit('Unable to fetch approval expenses data', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
@@ -292,7 +287,6 @@
 
         app.logger.info('No financial numbers returned after approving expenses', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             currentTab,
             payload,
@@ -310,7 +304,6 @@
 
       app.logger.crit('Unable to approve selected expenses', {
         auth: req.session.authentication,
-        token: req.session.authToken,
         error: typeof err.error !== 'undefined' ? err.error : err.toString(),
       });
 

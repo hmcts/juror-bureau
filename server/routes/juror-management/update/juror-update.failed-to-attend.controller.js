@@ -162,7 +162,6 @@ function jurorStatusUpdateFailed(app, req, res, err, action) {
 
   app.logger.crit(`Failed to change the juror status to ‘${status[action]}’: `, {
     auth: req.session.authentication,
-    jwt: req.session.authToken,
     data: { jurorNumber },
     error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
   });

@@ -37,7 +37,7 @@
           app.logger.warn('User tried to edit their own details', {
             auth: req.session.authentication,
             data: {
-              user,
+              username,
             },
           });
 
@@ -47,7 +47,7 @@
         app.logger.info('Fetched user record', {
           auth: req.session.authentication,
           data: {
-            user: user,
+            username,
           },
         });
 
@@ -121,8 +121,7 @@
         app.logger.info('Updated user details', {
           auth: req.session.authentication,
           data: {
-            username: username,
-            data: payload,
+            username,
           },
         });
 
@@ -131,7 +130,7 @@
         app.logger.crit('Failed to update user details: ', {
           auth: req.session.authentication,
           data: {
-            payload,
+            username,
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
@@ -180,7 +179,8 @@
         app.logger.crit('Failed to edit existing users type: ', {
           auth: req.session.authentication,
           data: {
-            editPayload,
+            username,
+            userType: capitalise(user.userType),
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
@@ -193,7 +193,6 @@
           auth: req.session.authentication,
           data: {
             username,
-            editPayload,
           },
         });
 
@@ -204,7 +203,7 @@
         app.logger.crit('Failed to edit existing user: ', {
           auth: req.session.authentication,
           data: {
-            editPayload,
+            username,
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });

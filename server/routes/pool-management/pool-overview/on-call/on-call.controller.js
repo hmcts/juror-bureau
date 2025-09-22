@@ -106,7 +106,6 @@
       } catch (err) {
         app.logger.crit('Failed to place jurors on call: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: payload,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });

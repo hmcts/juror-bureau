@@ -23,10 +23,8 @@
 
           app.logger.info('Fetched the juror record details: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: req.params['jurorNumber'],
-              response: response.data,
             },
           });
 
@@ -62,7 +60,6 @@
 
           app.logger.crit('Failed to fetch juror record details: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: req.params['jurorNumber'],
               locationCode: req.session.locCode || req.session.authentication.locCode,
@@ -99,10 +96,8 @@
 
           app.logger.info('Fetched the juror record overview: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: req.params['jurorNumber'],
-              response: overview.data,
             },
           });
 
@@ -171,7 +166,6 @@
 
           app.logger.crit('Failed to fetch juror record details: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: req.params['jurorNumber'],
               locationCode: req.session.locCode || req.session.authentication.locCode,
@@ -217,10 +211,8 @@
 
           app.logger.info('Fetched the juror record summons reply info: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: req.params['jurorNumber'],
-              response: response.data,
             },
           });
 
@@ -250,7 +242,6 @@
 
           app.logger.crit('Failed to fetch the juror summons data: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: req.params['jurorNumber'],
               locationCode: req.session.locCode || req.session.authentication.locCode,
@@ -318,7 +309,6 @@
 
           app.logger.info('Fetched the juror record expenses info: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
           });
 
           const dailyExpenses = {
@@ -377,7 +367,6 @@
           }
           app.logger.crit('Failed to fetch the juror expenses data:', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber,
               locationCode: req.session.locCode || req.session.authentication.locCode,
@@ -394,7 +383,6 @@
 
         app.logger.crit('Failed to fetch the juror bank details or default expenses data:', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber,
             locationCode: req.session.locCode || req.session.authentication.locCode,
@@ -479,7 +467,6 @@
 
         app.logger.crit('Failed to fetch the juror attendance data:', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber,
             locationCode: req.session.locCode || req.session.authentication.locCode,
@@ -500,11 +487,8 @@
 
           app.logger.info('Fetched the juror notes and contact logs: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: req.params['jurorNumber'],
-              notes: response[0].data,
-              logs: response[1].data.length + ' contact logs',
             },
           });
 
@@ -549,7 +533,6 @@
 
           app.logger.crit('Failed to fetch the juror notes and logs: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: req.params['jurorNumber'],
             },
@@ -655,7 +638,6 @@
 
           app.logger.crit('Failed to fetch the juror notes: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: req.params['jurorNumber'],
             },
@@ -684,7 +666,6 @@
         if (jurorNumber != req.session.jurorCommonDetails?.jurorNumber) {
           app.logger.crit('Juror number does not match cached data', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: {
                 url: jurorNumber,
@@ -780,10 +761,8 @@
       const editSuccessCB = function() {
           app.logger.info('Updated the juror notes: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: req.params['jurorNumber'],
-              notes: req.body.notes,
             },
           });
 
@@ -795,10 +774,8 @@
 
           app.logger.warn('The juror notes have been modified: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: req.params['jurorNumber'],
-              notes: req.body.notes,
             },
           });
 
@@ -831,10 +808,8 @@
 
           app.logger.crit('Failed to update the jurors notes: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: req.params['jurorNumber'],
-              notes: req.body.notes,
             },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
@@ -930,7 +905,6 @@
 
         app.logger.info('Fetched the enquiry types: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             response: enquiryTypesResponse,
           },
@@ -940,7 +914,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch types of enquiry: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
@@ -1014,18 +987,16 @@
 
         app.logger.info('Posted a new contact log: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
-            body: payload,
+            jurorNumber: req.params['jurorNumber'],
           },
         });
       } catch (err) {
         app.logger.crit('Failed to add a new contact log: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber: req.params['jurorNumber'],
-            data: req.body,
+            data: body,
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
