@@ -4,8 +4,9 @@ const SENSITIVE_KEYS = [
   'authorization', 'token', 'jwt',
   'email', 'phone', 'mobile',
   'name',
-  'address', 'city', 'town', 'county',
-  'dob', 'dateofbirth', 
+  'address', 'city', 'town', 'county', 'postcode', 'zip',
+  'dob', 'dateofbirth',
+  'sortcode', 'accountnumber',
 ];
 const UNWRAPPED_KEYS = [
   'auth'
