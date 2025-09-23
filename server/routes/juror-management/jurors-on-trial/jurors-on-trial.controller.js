@@ -73,7 +73,7 @@ module.exports.getConfirmAttendance = function(app) {
 
       app.logger.info('Fetched the jurors on this trial', {
         auth: req.session.authentication,
-        data: { locCode, trialNumber, jurorsList },
+        data: { locCode, trialNumber },
       });
     } catch (err) {
       app.logger.crit('Failed to fetch the jurors on this trial', {
