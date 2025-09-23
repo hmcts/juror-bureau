@@ -68,29 +68,6 @@
         });
       }
 
-      console.log('\n\n');
-
-      app.logger.crit('Court Dashboard Data', {
-        auth: req.session.authentication,
-        data: {
-          firstName: 'fname',
-          lastName: 'lname',
-          addressOne: 'addr1',
-          addressTwo: 'addr2',
-          addressThree: 'addr3',
-          town: 'town',
-          county: 'county',
-          postcode: 'postcode',
-          'e-mail': 'email@email.com',
-          data2: {
-            phonenumber: 'phone',
-          },
-          simpleMessage: 'This is a simple message',
-        }
-      });
-
-      console.log('\n\n');
-
       res.render('homepage/court-dashboard/dashboard.njk', {
         notifications: notifications ? buildDashboardNotifications(app)(req, res)(notifications) : [],
         alerts: buildDashboardAlerts(app)(req, res),
