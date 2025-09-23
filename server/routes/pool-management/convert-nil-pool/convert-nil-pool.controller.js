@@ -244,7 +244,6 @@
 
           app.logger.crit('Failed to convert nil pool to active pool: ', {
             auth: req.session.authentication,
-            jwt: req.ession.authToken,
             data: {
               poolNumber: req.session.poolDetails.poolNumber,
             },
