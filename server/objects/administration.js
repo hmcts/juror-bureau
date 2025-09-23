@@ -65,7 +65,6 @@
 
   module.exports.courtroomsDAO = new DAO('moj/administration/court-rooms', {
     get: function(locCode) {
-      console.log(locCode);
       return { 
         uri: urljoin(this.resource, locCode),
         transform: (data) => { delete data['_headers']; return Object.values(data) }
