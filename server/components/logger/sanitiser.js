@@ -9,7 +9,7 @@ const SENSITIVE_KEYS = [
   'sortcode', 'accountnumber',
 ];
 const UNWRAPPED_KEYS = [
-  'auth'
+  'auth', 'username', 'courtname'
 ]
 const REDACTION_STRING = '[REDACTED]';
 
