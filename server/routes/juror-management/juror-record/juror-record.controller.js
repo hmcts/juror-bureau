@@ -25,6 +25,7 @@
             auth: req.session.authentication,
             data: {
               jurorNumber: req.params['jurorNumber'],
+              response: response.data,
             },
           });
 
@@ -98,6 +99,7 @@
             auth: req.session.authentication,
             data: {
               jurorNumber: req.params['jurorNumber'],
+              response: overview.data,
             },
           });
 
@@ -906,7 +908,7 @@
         app.logger.info('Fetched the enquiry types: ', {
           auth: req.session.authentication,
           data: {
-            response: enquiryTypesResponse,
+            jurorNumber,
           },
         });
 
@@ -996,7 +998,6 @@
           auth: req.session.authentication,
           data: {
             jurorNumber: req.params['jurorNumber'],
-            data: body,
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
