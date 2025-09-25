@@ -5,6 +5,7 @@
   const modUtils = require('../../lib/mod-utils');
   const validate = require('validate.js');
   const { panelListDAO, panelMemberStatusDAO} = require('../../objects/panel');
+  const { getReturnedJurors } = require('../../objects/reinstate-jury');
   const { trialDetailsObject, trialsListDAO } = require('../../objects/create-trial');
   const { endTrialObject } = require('../../objects/end-trial');
   const { dateFilter, capitalizeFully, makeDate, capitalise } = require('../../components/filters');
@@ -142,6 +143,11 @@
           req,
           trialNumber,
           locationCode
+        ),
+        getReturnedJurors.get(
+          req,
+          trialNumber,
+          locationCode
         ).catch(err => {
           app.logger.crit('Unable to fetch panel details, continuing to trial details', {
             auth: req.session.authentication,
@@ -155,7 +161,7 @@
           return {};
         })
       ])
-        .then(([trialData, panelData, addPanelStatus ]) => {
+        .then(([trialData, panelData, addPanelStatus, returnedJurors]) => {
 
           let canEmpanel = true;
 
@@ -178,7 +184,9 @@
           if (panelData) {
             trialData.panelledJurors = panelData;
             canEmpanel = panelData.filter((juror) => juror.juror_status === 'Panel').length > 0;
-          }
+          };
+
+          console.log('\n\nRETURNED JURORS', returnedJurors, '\n\n');
 
           return res.render('trial-management/trial-detail.njk', {
             trial: trialData,
@@ -187,6 +195,7 @@
             successBanner,
             errorBanner,
             addPanelStatus: addPanelStatus.data,
+            hasReturnedJurors: returnedJurors.length > 0,
             formActions: {
               returnUrl: app.namedRoutes.build('trial-management.trials.return.post', {
                 trialNumber: req.params.trialNumber,
