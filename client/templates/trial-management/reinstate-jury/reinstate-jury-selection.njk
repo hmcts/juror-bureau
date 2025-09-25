@@ -1,0 +1,103 @@
+{% extends "layouts/default-dashboard.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{%- from "govuk/components/table/macro.njk" import govukTable -%}
+
+
+{% set currentApp = "Trial management" %}
+
+{% block page_title %}{{ serviceName }} - Reinstate jury{% endblock %}
+{% block page_identifier %}Reinstate jury{% endblock %}
+
+{% block beforeContent %}
+    {% include "includes/back-link.njk" %}
+{% endblock %}
+
+{% set selectedJurorsError = undefined %}
+{% if errors.items["selectedJurors"] %}
+  {% set selectedJurorsError = errors.items["selectedJurors"][0].summary %}
+{% endif %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">
+        Reinstate jurors
+      </h1>
+      <p class="govuk-body">
+        You can reinstate jurors who were previously on this trial.
+      </p>
+      
+      <form method="post" action="{{ processUrl }}">
+
+        {% if validJurorsTable.rows.length > 0 %}
+          <div>
+            {% if errors.items["selectedJurors"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
+              <h2 class="govuk-heading-m">
+                Select jurors to reinstate
+              </h2>
+              {% if errors.items["selectedJurors"] %}<p class="govuk-error-message">{{ selectedJurorsError }}</p>{% endif %}
+              <div class="govuk-caption-m">
+                <span id="noCheckedJurors">0</span> of <span id="totalJurors">{{ validJurorsTable.rows.length }}</span> selected
+              </div>
+
+              {{ govukTable({
+                id: "validJurorsTable",
+                attributes: {
+                  "data-module": "moj-sortable-table"
+                },
+                caption: "Select jurors to reinstate",
+                captionClasses: "govuk-visually-hidden",
+                head: validJurorsTable.head,
+                rows: validJurorsTable.rows
+              }) }}
+            {% if errors.items["selectedJurors"] %}
+              </div>
+            {% endif %}
+
+          </div>
+        {% endif %}
+
+        {% if invalidJurorsTable.rows.length > 0 %}
+          <div class="govuk-!-margin-top-9">
+            <h2 class="govuk-heading-m">
+              The following jurors cannot be reinstated
+            </h2>
+            {{ govukTable({
+              id: "invalidJurorsTable",
+              attributes: {
+                "data-module": "moj-sortable-table"
+              },
+              caption: "The following jurors cannot be reinstated",
+              captionClasses: "govuk-visually-hidden",
+              head: invalidJurorsTable.head,
+              rows: invalidJurorsTable.rows
+            }) }}
+          </div>  
+        {% endif %}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Reinstate",
+            type: "submit",
+            attributes: {
+              id: "reinstateJuryButton"
+            },
+            disabled: validJurorsTable.rows.length === 0
+          }) }}
+          <a id="cancelLink" class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+  <script type="text/javascript" src="{{ assetPath }}js/reinstate-jurors.js"></script>
+{% endblock %}
