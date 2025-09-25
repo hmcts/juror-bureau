@@ -112,7 +112,14 @@
         summary: 'Date of birth must be in the past',
         details: 'Date of birth must be in the past',
       }];
+    } 
+    if (value !== '' && moment(dateInitial.dateAsDate).isBefore(moment().subtract(125, 'years'), 'day')) {
+      tmpErrors = [{
+        summary: 'Date of birth cannot be more than 125 years ago',
+        details: 'Date of birth cannot be more than 125 years ago',
+      }];
     };
+    
 
     return tmpErrors.length === 0
       ? null
