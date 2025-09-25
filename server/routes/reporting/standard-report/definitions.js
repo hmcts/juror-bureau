@@ -12,7 +12,7 @@ const { date } = require('../../../config/validation/report-search-by');
     viewMonthlyUtilisationDAO,
     generateMonthlyUtilisationDAO,
     yieldPerformanceDAO,
-    allCourtUtilisationDAO
+    allCourtUtilisationDAO,
     digitalSummonsReceivedReportDAO
   } = require('../../../objects/reports');
 
