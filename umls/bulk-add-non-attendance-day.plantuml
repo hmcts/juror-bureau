@@ -1,0 +1,61 @@
+@startuml bulk-add-non-attendance-day
+hide unlinked
+!include generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant PoolOverviewPage <</pool-management/pool-overview/:poolNumber>>
+participant AddNonAttendanceDayPage <</pool-management/:poolNumber/add-non-attendance-day>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant PoolOverviewController <<pool-overview.controller.js>>
+participant NonAttendanceDayController <<non-attendance-day.controller.js>>
+participant PoolMembersObject <<poolMembersDAO.post()>>
+participant BulkJurorNonAttendanceObject <<bulkJurorNonAttendanceDao.post()>>
+
+''' TEMPLATES
+participant PoolOverviewTemplate <<pool-management/pool-overview/{bureau/court}-pool-overview.njk>>
+participant AddNonAttendanceDayTemplate <<juror-management/non-attendance-day.njk>>
+participant ErrorTemplate <<_errors/generic.njk>>
+
+''' FILTERS AND VALIDATORS
+participant NonAttendanceDayValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+''' JOURNEY FLOW
+Actor -> PoolOverviewPage : User selects one or more jurors and clicks 'Add non-attendance day'
+PoolOverviewPage -> PoolOverviewController : call page controller
+
+alt User clicks 'Check all' checkbox
+  $genericAPICall(PoolOverviewController, PoolMembersObject, ErrorTemplate, "Failed to fetch pool members for bulk add non-attendance day")
+end
+
+alt no jurors selected
+ $renderErrorOnForm(PoolOverviewController, PoolOverviewTemplate, PoolOverviewPage)
+end
+
+PoolOverviewController -> NonAttendanceDayController : call page controller
+
+$renderTemplateToPage(NonAttendanceDayController, AddNonAttendanceDayTemplate, AddNonAttendanceDayPage)
+
+Actor -> AddNonAttendanceDayPage : User enters date and clicks 'Add non-attendance day'
+
+AddNonAttendanceDayPage -> NonAttendanceDayController : call page controller
+
+$validateInput(NonAttendanceDayController, NonAttendanceDayValidator, AddNonAttendanceDayTemplate, AddNonAttendanceDayPage)
+
+$callAPIRenderErrorOnForm(NonAttendanceDayController, BulkJurorNonAttendanceObject, ErrorTemplate, "Failed to add a non-attendance day for juror(s)", PoolOverviewTemplate, PoolOverviewPage, PoolOverviewController)
+
+PoolOverviewController <- NonAttendanceDayController : redirect to pool overview
+PoolOverviewPage <- PoolOverviewController : redirect to pool overview
+Actor <- PoolOverviewPage : render pool overview page with success banner
+
+@enduml

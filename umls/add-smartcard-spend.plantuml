@@ -1,4 +1,6 @@
 @startuml add-smartcard-spend
+hide unlinked
+!include generic-blocks.plantuml
 
 skinparam Style strictuml 
 skinparam SequenceMessageAlignment center
@@ -6,8 +8,8 @@ skinparam SequenceMessageAlignment center
 participant Actor
 
 ''' LOCAL ROUTING
-participant AddSmartcardSpendPage <<//juror-management/unpaid-attendance/expense-record/:jurorNumber/:poolNumber/add-smartcard-spend>>
 participant ExpenseRecordPage <</juror-management/unpaid-attendance/expense-record/:jurorNumber/:poolNumber>>
+participant AddSmartcardSpendPage <<//juror-management/unpaid-attendance/expense-record/:jurorNumber/:poolNumber/add-smartcard-spend>>
 ''' CONTROLLER AND REQUEST OBJECTS
 participant AddSmartcardSpendController <<add-smartcard-spend.controller.js>> #lightyellow
 participant AddSmartcardSpendObject <<addSmartcardSpend.patch()>> #lightyellow
@@ -16,7 +18,7 @@ participant AddSmartcardSpendObject <<addSmartcardSpend.patch()>> #lightyellow
 participant AddSmartcardSpendTemplate <<juror-management/expense-record/add-smartcard-spend.njk>> #lavender
 
 ''' FILTERS AND VALIDATORS
-participant smartcardSpendValidator
+participant SmartcardSpendValidator
 
 ''' BACKEND CONTROLLER
 participant BackendController
@@ -24,37 +26,17 @@ participant BackendController
 Actor -> ExpenseRecordPage : click add smartcard spend link
 ExpenseRecordPage -> AddSmartcardSpendController : call smartcard spend controller
 
-AddSmartcardSpendController -> AddSmartcardSpendTemplate : request and build template
-AddSmartcardSpendController <- AddSmartcardSpendTemplate : return HTML
-AddSmartcardSpendPage <- AddSmartcardSpendController : return HTML
-
-Actor <- AddSmartcardSpendPage : render HTML
+$renderTemplateToPage(AddSmartcardSpendController, AddSmartcardSpendTemplate, AddSmartcardSpendPage)
 
 Actor -> AddSmartcardSpendPage : enters valid expense values
 
 AddSmartcardSpendPage -> AddSmartcardSpendController : call page controller
 
-AddSmartcardSpendController -> smartcardSpendValidator : validate form
+$validateInput(AddSmartcardSpendController, SmartcardSpendValidator, AddSmartcardSpendTemplate, AddSmartcardSpendPage, "Invalid values entered")
 
-alt Invalid values entered
-  AddSmartcardSpendController <-- smartcardSpendValidator : data validation fails
-  AddSmartcardSpendController -> AddSmartcardSpendTemplate : request and build error message template
-  AddSmartcardSpendController <- AddSmartcardSpendTemplate : return HTML
-  AddSmartcardSpendPage <- AddSmartcardSpendController : return HTML
-  Actor <- AddSmartcardSpendPage : render error message
-end
+$genericAPICall(AddSmartcardSpendController, AddSmartcardSpendObject, AddSmartcardSpendTemplate, "Failed to update the smart card amount for all selected days")
 
-AddSmartcardSpendController <- smartcardSpendValidator : valid values entered
+AddSmartcardSpendController -> ExpenseRecordPage : redirect to expense record page
+Actor <- ExpenseRecordPage : render expense record page
 
-ddSmartcardSpendController -> AddSmartcardSpendObject : build request object
-AddSmartcardSpendObject -> BackendController : send backend request
-AddSmartcardSpendObject <- BackendController : ok response
-AddSmartcardSpendController <- AddSmartcardSpendObject : resolve request
-
-
-
-
-
-
-
-    
+@enduml

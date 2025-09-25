@@ -3,7 +3,7 @@
 
   const _ = require('lodash');
   const modUtils = require('../../lib/mod-utils');
-  const { isCourtUser, isBureauUser, isSuperUser } = require('../../components/auth/user-type');
+  const { isCourtUser, isBureauUser, isBureauManager, isSuperUser } = require('../../components/auth/user-type');
   const { courtWidgetDefinitions, bureauWidgetDefinitions, widgetTemplates } = require('./dashboard/definitions');
   const { courtDashboardDAO } = require('../../objects/court-dashboard');
   const { courtDetailsDAO } = require('../../objects/administration');
@@ -147,7 +147,7 @@
       res.render('homepage/bureau-dashboard/dashboard.njk', {
         notifications: notifications ? buildDashboardNotifications(app)(req, res)(notifications) : [],
         widgets,
-        headingName: 'Jury central summoning bureau',
+        headingName: 'Jury Central Summoning Bureau',
         pageUrls,
         courts: req.session.dashboardCourtsList ? modUtils.transformCourtNames(req.session.dashboardCourtsList) : [],
         poolList: poolsUnderResponded ? modUtils.transformPoolsUnderRespondedList(poolsUnderResponded.data) : []
@@ -273,13 +273,17 @@
               `;
             break;
           case 'fourWeeksSummonsReplies':
-            notificationHTML = `You have <b>${value}</b> 
-              <a class="govuk-link govuk-link--no-visited-state" href="${app.namedRoutes.build('inbox.todo.get')}">summons replies</a> 
-              with less than four weeks until service start date to process.
-            `;
-            break;  
+            if (isBureauManager(req)) {
+              notificationHTML = `You have <b>${value}</b> 
+                <a class="govuk-link govuk-link--no-visited-state" href="${app.namedRoutes.build('allocation.get')}">summons replies</a> 
+                with less than four weeks until service start date to process.
+              `;
+            }
+            break;
         }
-        notificationList.push(notificationHTML);
+        if (notificationHTML) {
+          notificationList.push(notificationHTML);
+        }
       }
     }
     return notificationList;

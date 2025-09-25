@@ -1,0 +1,72 @@
+@startuml summon-citizens
+hide unlinked
+!include generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant PoolOverviewPage <</pool-overview>>
+participant SummonCitizensPage <</pool-overview/:poolNumber/summon-citizens>>
+participant ChangeDeferralsPage <</pool/:poolNumber/summon-citizens/change-deferrals>>
+participant SelectCourtPage <</pool-overview/:poolNumber/summon-citizens/change-catchment-area>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant SummonCitizensController <<summon-citizens.controller.js>> #lightyellow
+participant SummonsFormObject <<summonsFormDAO.post()>> #lightyellow
+participant SummonCitizensObject <<summonCitizensDAO.post()>> #lightyellow
+participant PoolSummaryObject <<poolSummaryObject.get()>> #lightyellow
+participant FetchCourtsObject <<fetchCourtsDAO.get()>> #lightyellow
+
+''' TEMPLATES
+participant SummonCitizensTemplate <</pool-management/create-pool/summon-citizens/index.njk>>
+participant ChangeDeferralsTemplate <</pool-management/_common/change-deferrals.njk>>
+participant SelectCourtTemplate <</pool-management/_common/select-court.njk>>
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' VALIDATORS
+participant AdditionalSummonsValidator
+participant CourtNameOrLocationValidator
+participant DeferralsValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> PoolOverviewPage: click 'Summon jurors' button
+PoolOverviewPage -> SummonCitizensController: call page controller
+$genericAPICall(SummonCitizensController, PoolSummaryObject, ErrorTemplate, "Failed to fetch pool details for summoning citizens")
+$genericAPICall(SummonCitizensController, SummonsFormObject, ErrorTemplate, "Failed to fetch pool details for summoning citizens")
+$renderTemplateToPage(SummonCitizensController, SummonCitizensTemplate, SummonCitizensPage)
+
+alt user changes deferrals
+  Actor -> SummonCitizensPage: click 'Change deferrals' link
+  SummonCitizensPage -> SummonCitizensController: call page controller
+  $renderTemplateToPage(SummonCitizensController, ChangeDeferralsTemplate, ChangeDeferralsPage)
+  Actor -> ChangeDeferralsPage: enter number of deferrals and click continue
+  ChangeDeferralsPage -> SummonCitizensController: call page controller
+  $validateInput(SummonCitizensController, DeferralsValidator, ChangeDeferralsTemplate, ChangeDeferralsPage)
+  SummonCitizensPage <- SummonCitizensController: redirect to Summon Citizens Page with new details
+  Actor <- SummonCitizensPage: render HTML
+end
+
+alt user changes court catchment area
+  Actor -> SummonCitizensPage: click 'Change court' link
+  SummonCitizensPage -> SummonCitizensController: call page controller
+  $genericAPICall(SummonCitizensController, FetchCourtsObject, ErrorTemplate, "Failed to fetch list of courts")
+  $renderTemplateToPage(SummonCitizensController, SelectCourtTemplate, SelectCourtPage)
+  Actor -> SelectCourtPage: enter court name or location and click continue
+  SelectCourtPage -> SummonCitizensController: call page controller
+  $validateInput(SummonCitizensController, CourtNameOrLocationValidator, SelectCourtTemplate, SelectCourtPage)
+  SummonCitizensPage <- SummonCitizensController: redirect to Summon Citizens Page with new details
+  Actor <- SummonCitizensPage: render HTML
+end
+
+Actor -> SummonCitizensPage: enter number of summons and click 'Summon citizens' button
+SummonCitizensPage -> SummonCitizensController: call page controller
+$validateInput(SummonCitizensController, AdditionalSummonsValidator, SummonCitizensTemplate, SummonCitizensPage)
+$genericAPICall(SummonCitizensController, SummonCitizensObject, ErrorTemplate, "Failed to create pool and summon citizens")
+PoolOverviewPage <- SummonCitizensController: redirect to Pool Overview Page
+Actor <- PoolOverviewPage: render HTML

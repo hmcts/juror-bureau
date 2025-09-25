@@ -9,6 +9,7 @@
     attendanceDoughnut: 'homepage/court-dashboard/widgets/attendance/attendance-doughnut.njk',
     standardValue: 'homepage/court-dashboard/widgets/standard-value.njk',
     largeValues: 'homepage/court-dashboard/widgets/large-values.njk',
+    largeValuesBureau: 'homepage/bureau-dashboard/widgets/large-values.njk',
     summonsDoughnut: 'homepage/bureau-dashboard/widgets/summons-management/summons-doughnut.njk',
     placeholder: 'homepage/bureau-dashboard/widgets/placeholder.njk',
     poolsUnderResponded: 'homepage/bureau-dashboard/widgets/pools-under-responded.njk',
@@ -248,7 +249,7 @@
         widgets: {
           'not-yet-summoned': {
             mandatory: true,
-            widgetType: 'largeValues',
+            widgetType: 'largeValuesBureau',
             column: 1,
             values: [
               {
@@ -275,7 +276,7 @@
           },
           'deferred-jurors': {
             mandatory: true,
-            widgetType: 'largeValues',
+            widgetType: 'largeValuesBureau',
             column: 1,
             values: [
               {

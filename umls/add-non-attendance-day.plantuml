@@ -1,4 +1,6 @@
 @startuml add-non-attendance-day
+hide unlinked
+!include generic-blocks.plantuml
 
 skinparam Style strictuml 
 skinparam SequenceMessageAlignment center
@@ -29,85 +31,38 @@ participant NonAttendanceDayValidator
 ''' BACKEND CONTROLLER
 participant BackendController
 
-Actor -> JurorRecordAttendancePage : click add non-attendance day
-JurorRecordAttendancePage -> NonAttendanceDayController : call non-attendance day conrtoller
-
-alt Navigate from expense record
+group Navigate from juror record
+  Actor -> JurorRecordAttendancePage : click add non-attendance day
+  JurorRecordAttendancePage -> NonAttendanceDayController : call non-attendance day controller
+else Navigate from expense record
   Actor -> DraftExpenseRecordPage : click add non-attendance day
   DraftExpenseRecordPage -> NonAttendanceDayController : call non-attendance day conrtoller
 end
 
-NonAttendanceDayController -> NonAttendanceDayTemplate : request and build template
-NonAttendanceDayController <- NonAttendanceDayTemplate : return HTML
-AddNonAttendanceDayPage <- NonAttendanceDayController : return HTML
-Actor <- AddNonAttendanceDayPage : render HTML
+$renderTemplateToPage(NonAttendanceDayController, NonAttendanceDayTemplate, AddNonAttendanceDayPage)
 
 Actor -> AddNonAttendanceDayPage : enters a valid non-attendance day and clicks continue
 
-SelectPoolPage -> NonAttendanceDayController : call page conrtoller
+AddNonAttendanceDayPage -> NonAttendanceDayController : call page controller
 
-NonAttendanceDayController -> NonAttendanceDayValidator : validate form
-
-alt Invalid date entered
-  NonAttendanceDayController <-- NonAttendanceDayValidator : data validationfails
-  NonAttendanceDayController -> NonAttendanceDayTemplate : request and build error message template
-  NonAttendanceDayController <- NonAttendanceDayTemplate : return HTML
-  AddNonAttendanceDayPage <- NonAttendanceDayController : return HTML
-  Actor <- AddNonAttendanceDayPage : render error message
-end
-
-NonAttendanceDayController <- NonAttendanceDayValidator : validat date entered
+$validateInput(NonAttendanceDayController, NonAttendanceDayValidator, NonAttendanceDayTemplate, AddNonAttendanceDayPage, "Invalid date entered")
 
 NonAttendanceDayController -> NonAttendanceDayObject : build request object
 NonAttendanceDayObject -> BackendController : send backend request
+
+$APIErrorAlt(NonAttendanceDayController, NonAttendanceDayObject, errorTemplate, "Error 422 - Business Rule Violation", NonAttendanceDayTemplate, AddNonAttendanceDayPage)
+
+$APIErrorAlt(NonAttendanceDayController, NonAttendanceDayObject, ErrorTemplate, "Failed to add a non-attendance day for juror(s)")
+
 NonAttendanceDayObject <- BackendController : ok response
 NonAttendanceDayController <- NonAttendanceDayObject : resolve request
 
-alt Date already been recorded as an attendance day
-    NonAttendanceDayObject <-- BackendController : error response (422)
-    NonAttendanceDayController <-- NonAttendanceDayObject : reject requestObject
-    NonAttendanceDayController -> NonAttendanceDayTemplate : request and build error message template
-    NonAttendanceDayController <- NonAttendanceDayTemplate : return HTML
-    AddNonAttendanceDayPage <- NonAttendanceDayController : return HTML
-    Actor <- AddNonAttendanceDayPage : render error message
-end
-
-alt Date before jurors service start date
-    NonAttendanceDayObject <-- BackendController : error response (422)
-    NonAttendanceDayController <-- NonAttendanceDayObject : reject requestObject
-    NonAttendanceDayController -> NonAttendanceDayTemplate : request and build error message template
-    NonAttendanceDayController <- NonAttendanceDayTemplate : return HTML
-    AddNonAttendanceDayPage <- NonAttendanceDayController : return HTML
-    Actor <- AddNonAttendanceDayPage : render error message
-end
-
-alt Failed to add a non-attendance day for juror
-    NonAttendanceDayObject <-- BackendController : error response
-    NonAttendanceDayController <-- NonAttendanceDayObject : reject requestObject
-    NonAttendanceDayController -> ErrorTemplate : request and build template
-    NonAttendanceDayController <- ErrorTemplate : return HTML
-    GenericErrorPage <- NonAttendanceDayController : return HTML
-    Actor <- GenericErrorPage : render error page
-end
-
-NonAttendanceDayController -> JurorRecordController : call juror record controller controller
-JurorRecordController -> JurorRecordAttendanceTemplate : request and build template
-JurorRecordController <- JurorRecordAttendanceTemplate : return HTML
-JurorRecordAttendancePage <- JurorRecordController : return HTML
-Actor <- JurorRecordAttendancePage : render HTML
-
-alt Initally navigated from expense record
+group Initally navigated from juror record
+  NonAttendanceDayController -> JurorRecordController : call juror record controller controller
+  $renderTemplateToPage(JurorRecordController, JurorRecordAttendanceTemplate, JurorRecordAttendancePage)
+else Initally navigated from expense record
   NonAttendanceDayController -> ExpenseRecordController : call juror record controller controller
-  ExpenseRecordController -> DraftExpenseRecordTemplate : request and build template
-  ExpenseRecordController <- DraftExpenseRecordTemplate : return HTML
-  DraftExpenseRecordPage <- ExpenseRecordController : return HTML
-  Actor <- DraftExpenseRecordPage : render HTML
+  $renderTemplateToPage(ExpenseRecordController, DraftExpenseRecordTemplate, DraftExpenseRecordPage)
 end
 
-
-
-
-
-
-
-    
+@enduml    

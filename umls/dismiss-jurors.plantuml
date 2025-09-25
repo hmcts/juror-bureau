@@ -1,4 +1,6 @@
 @startuml dismiss-jurors
+hide unlinked
+!include generic-blocks.plantuml
 
 skinparam Style strictuml 
 skinparam SequenceMessageAlignment center
@@ -6,179 +8,86 @@ skinparam SequenceMessageAlignment center
 participant Actor
 
 ''' LOCAL ROUTING
-participant ManageJurorsPage <</juror-management/manage-jurors/in-waiting>>
-participant SelectPoolsPage <</juror-management/dismiss-jurors/pools>>
-participant SelectJurorsPage <</juror-management/dismiss-jurors/jurors>>
-participant CheckOutPage <</juror-management/dismiss-jurors/check-outl>>
-participant CompleteServicePage <</juror-management/dismiss-jurors/complete-service>>
+participant PoolManagementPage <</pool-management>>
+participant DismissJurorsPoolsPage <</pool-management/dismiss-jurors/pools>>
+participant DismissJurorsSelectPage <</pool-management/dismiss-jurors/jurors>>
+participant CheckOutJurorsPage <</pool-management/dismiss-jurors/check-out>>
+participant CompleteServicePage <</pool-management/dismiss-jurors/dismiss-complete-service>>
 participant GenericErrorPage <</error>>
 
 ''' CONTROLLER AND REQUEST OBJECTS
-participant DismissJurorsController <<dismiss-jurors.controller.js>> #lightyellow
-participant PoolsAtCourtObject <<fetchPoolsAtCourt.get()>> #lightyellow
-participant JurorsToDismissObject <<jurorsToDismiss.get()>> #lightyellow
-participant JurorAttendanceObject <<jurorAttendanceDao.get()>> #lightyellow
-participant UpdateJurorAttendanceObject <<jurorAttendanceDao.patch()>> #lightyellow
-participant DismissJurorsObject <<dismissJurorsObject.patch()>> #lightyellow
+participant PoolManagementController <<pool-management.controller.js>>
+participant DismissJurorsController <<dismiss-jurors.controller.js>>
+participant DismissablePoolsObject <<getDismissablePools.get()>>
+participant GetJurorsObject <<getJurorsObject.post()>>
+participant JurorAttendanceObject <<jurorAttendanceDao.post()>>
+participant UpdateJurorAttendanceObject <<updateJurorAttendanceDAO.patch()>>
+participant DismissJurorsObject <<dismissJurorsObject.patch()>>
+
 
 ''' TEMPLATES
-participant SelectPoolsTemplate <<trial-management/create-trial.njk>> #lavender
-participant SelectJurorsTemplate <<trial-management/create-trial.njk>> #lavender
-participant CheckOutTemplate <<trial-management/create-trial.njk>> #lavender
-participant CompleteServiceTemplate <<trial-management/create-trial.njk>> #lavender
-participant ErrorTemplate <<_errors/generic.njk>> #lavender
+participant PoolManagementTemplate <<pool-management/index.njk>>
+participant DismissJurorsPoolsTemplate <<pool-management/dismiss-jurors/pools-list.njk>>
+participant DismissJurorsSelectTemplate <<pool-management/dismiss-jurors/select-jurors.njk>>
+participant CheckOutJurorsTemplate <<pool-management/dismiss-jurors/check-out.njk>>
+participant CompleteServiceTemplate <<pool-management/dismiss-jurors/complete-service.njk>>
+participant ErrorTemplate <<_errors/generic.njk>>
 
 ''' FILTERS AND VALIDATORS
 participant JurorsToDismissValidator
-participant CompleteServiceValidator
 participant CheckOutTimeValidator
+participant CompleteServiceValidator
 
 ''' BACKEND CONTROLLER
 participant BackendController
 
-Actor -> ManageJurorsPage : Click 'Dismiss jurors button'
 
-ManageJurorsPage -> DismissJurorsController : call page controller
+''' JOURNEY FLOW
+Actor -> PoolManagementPage : Click 'Dismiss Jurors' tab
+PoolManagementPage -> DismissJurorsController : call page controller
 
-DismissJurorsController -> PoolsAtCourtObject : build request object
-PoolsAtCourtObject -> BackendController : send backend request
-PoolsAtCourtObject <- BackendController : ok response
-DismissJurorsController <- PoolsAtCourtObject : resolve request
+$genericAPICall(DismissJurorsController, DismissablePoolsObject, ErrorTemplate, "Failed to fetch pools to dismiss jurors from")
+$renderTemplateToPage(DismissJurorsController, DismissJurorsPoolsTemplate, DismissJurorsPoolsPage)
 
-alt Failed to fetch pools at court
-  PoolsAtCourtObject <-- BackendController : error response
-  DismissJurorsController <-- PoolsAtCourtObject : reject requestObject
-  DismissJurorsController -> ErrorTemplate : request and build template
-  DismissJurorsController <- ErrorTemplate : return HTML
-  GenericErrorPage <- DismissJurorsController : return HTML
-  Actor <- GenericErrorPage : render error page
+Actor -> DismissJurorsPoolsPage : Select juror types and pools, click 'Calculate available jurors'
+DismissJurorsPoolsPage -> DismissJurorsController : call page controller
+$genericAPICall(DismissJurorsController, DismissablePoolsObject, ErrorTemplate, "Failed to fetch pools to dismiss jurors from")
+$renderTemplateToPage(DismissJurorsController, DismissJurorsPoolsTemplate, DismissJurorsPoolsPage)
+
+Actor -> DismissJurorsPoolsPage : Enter number of jurors to dismiss and click 'Generate list...'
+DismissJurorsPoolsPage -> DismissJurorsController : call page controller
+$validateInput(DismissJurorsController, JurorsToDismissValidator, DismissJurorsPoolsTemplate, DismissJurorsPoolsPage)
+
+$genericAPICall(DismissJurorsController, GetJurorsObject, ErrorTemplate, "Failed to fetch jurors to dismiss")
+$renderTemplateToPage(DismissJurorsController, DismissJurorsSelectTemplate, DismissJurorsSelectPage)
+
+Actor -> DismissJurorsSelectPage : Select jurors to dismiss and click 'Dismiss selected jurors'
+DismissJurorsSelectPage -> DismissJurorsController : call page controller
+$validateInput(DismissJurorsController, JurorsToDismissValidator, DismissJurorsSelectTemplate, DismissJurorsSelectPage)
+
+$genericAPICall(DismissJurorsController, JurorAttendanceObject, ErrorTemplate, "Failed to fetch juror attendance")
+
+alt some jurors are not checked out
+  $renderTemplateToPage(DismissJurorsController, CheckOutJurorsTemplate, CheckOutJurorsPage)
+  Actor -> CheckOutJurorsPage : Enter check out time and click 'Continue'
+  CheckOutJurorsPage -> DismissJurorsController : call page controller
+  $validateInput(DismissJurorsController, CheckOutTimeValidator, CheckOutJurorsTemplate, CheckOutJurorsPage)
+  $callAPIRenderErrorOnForm(DismissJurorsController, UpdateJurorAttendanceObject, ErrorTemplate, "Failed to checkout the selected juror", CheckOutJurorsTemplate, CheckOutJurorsPage)
 end
 
-DismissJurorsController -> SelectPoolsTemplate : request and build template
-DismissJurorsController <- SelectPoolsTemplate : return HTML
-SelectPoolsPage <- DismissJurorsController : return HTML
-Actor <- SelectPoolsPage : render HTML
+$renderTemplateToPage(DismissJurorsController, CompleteServiceTemplate, CompleteServicePage)
 
-Actor -> SelectPoolsPage : Selects pools, whcih type of jurors to include, enters number to dismiss and clicks 'Generate list of jurors to dismiss'
+Actor -> CompleteServicePage : Enter completion date and click 'Complete service'
+$validateInput(DismissJurorsController, CompleteServiceValidator, CompleteServiceTemplate, CompleteServicePage)
 
-SelectPoolsPage -> DismissJurorsController : POST dismissal details
-
-alt user clicked 'Calculate available jurors'
-  DismissJurorsController -> SelectPoolsTemplate : request and build template
-  DismissJurorsController <- SelectPoolsTemplate : return HTML
-  SelectPoolsPage <- DismissJurorsController : return HTML
-  Actor <- SelectPoolsPage : render number available to dismiss
+alt entered date is before the latest service start date
+  $renderErrorOnForm(DismissJurorsController, CompleteServiceTemplate, CompleteServicePage)
 end
 
-DismissJurorsController -> JurorsToDismissValidator : validate dismissal details
+$callAPIRenderErrorOnForm(DismissJurorsController, DismissJurorsObject, ErrorTemplate, "Failed to dismiss the selected jurors", CompleteServiceTemplate, CompleteServicePage)
 
-alt invalid dismissal details entered
-  DismissJurorsController <- JurorsToDismissValidator : invalid details
-  DismissJurorsController -> SelectPoolsTemplate : request and build template
-  DismissJurorsController <- SelectPoolsTemplate : return HTML
-  SelectPoolsPage <- DismissJurorsController : return error HTML
-  Actor <- SelectPoolsPage : render error message
-end
-
-DismissJurorsController <- JurorsToDismissValidator : valid details entered
-
-DismissJurorsController -> JurorsToDismissObject : build request object
-JurorsToDismissObject -> BackendController : send backend request
-JurorsToDismissObject <- BackendController : ok response
-DismissJurorsController <- JurorsToDismissObject : resolve request
-
-alt Failed to fetch jurors to dismiss
-  JurorsToDismissObject <-- BackendController : error response
-  DismissJurorsController <-- JurorsToDismissObject : reject requestObject
-  DismissJurorsController -> ErrorTemplate : request and build template
-  DismissJurorsController <- ErrorTemplate : return HTML
-  GenericErrorPage <- DismissJurorsController : return HTML
-  Actor <- GenericErrorPage : render error page
-end
-
-DismissJurorsController -> SelectJurorsTemplate : request and build template
-DismissJurorsController <- SelectJurorsTemplate : return HTML
-SelectJurorsPage <- DismissJurorsController : return HTML
-Actor <- SelectJurorsPage : render HTML
-
-Actor -> SelectJurorsPage : Selects jurors to dismiss and clicks 'Dismiss selected jurors'
-
-SelectJurorsPage -> DismissJurorsController : POST selected jurors
-
-alt no jurors selected
-  DismissJurorsController -> SelectJurorsTemplate : request and build template
-  DismissJurorsController <- SelectJurorsTemplate : return HTML
-  SelectJurorsPage <- DismissJurorsController : return error HTML
-  Actor <- SelectJurorsPage : render error message
-end
-
-DismissJurorsController -> JurorAttendanceObject : build request object
-JurorAttendanceObject -> BackendController : send backend request
-JurorAttendanceObject <- BackendController : ok response - all jurors checked out
-DismissJurorsController <- JurorAttendanceObject : resolve request
-
-alt some jurors not checked out
-  DismissJurorsController -> CheckOutTemplate : request and build template
-  DismissJurorsController <- CheckOutTemplate : return HTML
-  CheckOutPage <- DismissJurorsController : return HTML
-  Actor <- CheckOutPage : render HTML
-
-  Actor -> CheckOutPage : Enter check out time and click 'Continue'
-
-  CheckOutPage -> DismissJurorsController : POST check out time
-  DismissJurorsController -> CheckOutTimeValidator : validate check out time
-
-  alt invalid check out time entered
-    DismissJurorsController <- CheckOutTimeValidator : invalid details
-    DismissJurorsController -> CheckOutTemplate : request and build template
-    DismissJurorsController <- CheckOutTemplate : return HTML
-    CheckOutPage <- DismissJurorsController : return error HTML
-    Actor <- CheckOutPage : render error message
-  end
-
-  DismissJurorsController <- CheckOutTimeValidator : valid details entered
-
-  DismissJurorsController -> UpdateJurorAttendanceObject : build request object
-  UpdateJurorAttendanceObject -> BackendController : send backend request
-  UpdateJurorAttendanceObject <- BackendController : ok response
-  DismissJurorsController <- UpdateJurorAttendanceObject : resolve request
-
-  alt Failed to checkout the selected jurors
-    UpdateJurorAttendanceObject <-- BackendController : error response
-    DismissJurorsController <-- UpdateJurorAttendanceObject : reject requestObject
-    DismissJurorsController -> CheckOutTemplate : request and build template
-    DismissJurorsController <- CheckOutTemplate : return HTML
-    CheckOutPage <- DismissJurorsController : return HTML
-    Actor <- CheckOutPage : render error message
-  end
-end
-
-DismissJurorsController -> CompleteServiceTemplate : request and build template
-DismissJurorsController <- CompleteServiceTemplate : return HTML
-CompleteServicePage <- DismissJurorsController : return HTML
-Actor <- CompleteServicePage : render HTML
-
-Actor -> CompleteServicePage : Enters a completion date and clicks 'Complete service'
-
-CompleteServicePage -> DismissJurorsController : POST dismissal details
-DismissJurorsController -> CompleteServiceValidator : validate completion date
-
-alt invalid completion date entered
-  DismissJurorsController <- CompleteServiceValidator : invalid details
-  DismissJurorsController -> CompleteServiceTemplate : request and build template
-  DismissJurorsController <- CompleteServiceTemplate : return HTML
-  CompleteServicePage <- DismissJurorsController : return error HTML
-  Actor <- CompleteServicePage : render error message
-end
-
-DismissJurorsController <- CompleteServiceValidator : valid completion date entered
-
-DismissJurorsController -> DismissJurorsObject : build request object
-DismissJurorsObject -> BackendController : send backend request
-DismissJurorsObject <- BackendController : ok response
-DismissJurorsController <- DismissJurorsObject : resolve request
-
-DismissJurorsController -> ManageJurorsPage : redirect to manage jurors page
-Actor <- ManageJurorsPage : render page and success banner message
+PoolManagementController <- DismissJurorsController : redirect to pool management
+PoolManagementPage <- PoolManagementController : redirect to pool management
+Actor <- PoolManagementPage : render pool management page with success banner
 
 @enduml

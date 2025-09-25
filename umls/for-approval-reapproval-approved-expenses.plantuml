@@ -1,0 +1,54 @@
+@startuml for-approval-reapproval-approved-expenses
+hide unlinked
+!include generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant UnpaidAttendancePage <</juror-management/unpaid-attendance>>
+participant ExpenseRecordPage <</juror-management/unpaid-attendance/expense-record/:jurorNumber/:poolNumber/:status>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant ExpenseRecordController <<expense-record.controller.js>> #lightyellow
+participant ForApprovalController <<for-approval.controller.js>> #lightyellow
+participant JurorOverviewObject <<jurorOverviewDAO.get()>> #lightyellow
+participant GetExpenseRecordsDAO <<getExpenseRecordsDAO.get()>> #lightyellow
+participant JurorRecordDetailsDAO <<jurorRecordDetailsDAO.post()>> #lightyellow
+
+''' TEMPLATES
+participant ExpenseRecordTemplate <<juror-management/expense-record/expense-record.njk>> #lavender
+participant GenericErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant ExpenseSelectionValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+''' JOURNEY FLOW
+Actor -> UnpaidAttendancePage : click record expenses link
+UnpaidAttendancePage -> ExpenseRecordController : call expense record controller
+
+$genericAPICall(ExpenseRecordController, JurorOverviewObject, GenericErrorTemplate, "Failed to fetch juror details")
+
+ExpenseRecordController -> ForApprovalController : call for approval controller
+
+$genericAPICall(ForApprovalController, GetExpenseRecordsDAO, GenericErrorTemplate, "Unable to view expenses")
+$genericAPICall(ForApprovalController, JurorRecordDetailsDAO, GenericErrorTemplate, "Unable to view expenses")
+
+$renderTemplateToPage(ExpenseRecordController, ExpenseRecordTemplate, ExpenseRecordPage)
+
+Actor -> ExpenseRecordPage : selects expenses and clicks edit button
+UnpaidAttendancePage -> ExpenseRecordController : call expense record controller
+ExpenseRecordController -> ForApprovalController : call for approval controller
+
+$validateInput(ForApprovalController, ExpenseSelectionValidator, ExpenseRecordTemplate, ExpenseRecordPage, "No expenses selected")
+
+Actor <- ForApprovalController : Redirect to edit approved expenses flow
+
+
+@enduml    

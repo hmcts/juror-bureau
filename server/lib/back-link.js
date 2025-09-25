@@ -27,6 +27,8 @@ const bypassUrls = [
   '/multiple-tabs',
   '/delete-juror-attendance',
   '/juror-management/approve-expenses/view-expenses/',
+  '/on-call/confirm',
+  '/on-call/validate',
 ];
 
 const assetUrls = [

@@ -1,4 +1,6 @@
 @startuml pool-history
+hide unlinked
+!include generic-blocks.plantuml
 
 skinparam Style strictuml 
 skinparam SequenceMessageAlignment center
@@ -6,16 +8,22 @@ skinparam SequenceMessageAlignment center
 participant Actor
 
 ''' LOCAL ROUTING
-participant PoolOverviewPage <</pool-overview>>
-participant PoolManagementPage <</pool-management>>
+participant PoolManagementPage <<pool-management>>
+participant PoolOverviewPage <</pool-management/pool-overview/:poolNumber>>
+participant PoolHistoryPage <</pool-management/pool-overview/:poolNumber/history>>
+participant GenericErrorPage <</error>>
 
 ''' CONTROLLER AND REQUEST OBJECTS
+participant PoolManagementController <<pool-management.controller.js>>
 participant PoolOverviewController <<pool-overview.controller.js>>
-participant PoolSummaryObject <<poolSummaryObject.get()>>
-participant PoolHistoryObject <<poolHistoryObject.get()>>
+participant PoolSummaryObject <<poolSummaryObj.get()>>
+participant PoolHistoryObject <<poolHistoryObj.get()>>
+
 
 ''' TEMPLATES
-participant IndexTemplate <<pool-management/pool-overview/index.njk>>
+participant PoolManagementTemplate <<pool-management/index.njk>>
+participant PoolOverviewTemplate <<pool-management/pool-overview/{bureau/court}-pool-overview.njk>>
+participant ErrorTemplate <<_errors/generic.njk>>
 
 ''' FILTERS AND VALIDATORS
 
@@ -23,41 +31,14 @@ participant IndexTemplate <<pool-management/pool-overview/index.njk>>
 participant BackendController
 
 
-
 ''' JOURNEY FLOW
-Actor -> PoolOverviewPage : pool history
-
+Actor -> PoolOverviewPage : Click 'history' tab on pool overview page
 PoolOverviewPage -> PoolOverviewController : call page controller
 
-PoolOverviewController -> PoolSummaryObject : build request object
-PoolSummaryObject -> BackendController : send backend request
-PoolSummaryObject <- BackendController : ok response
-PoolOverviewController <- PoolSummaryObject : resolve request
+$callAPIRenderErrorOnForm(PoolOverviewController, PoolSummaryObject, ErrorTemplate, "Failed to fetch pool summary", PoolManagementTemplate, PoolManagementPage)
 
-alt Failed to fetch pool summary
-    PoolSummaryObject <-- BackendController : error response
-    PoolOverviewController <-- PoolSummaryObject : reject requestObject
-    PoolManagementPage <-- PoolOverviewController : redirect to pool management page
-    Actor <-- PoolManagementPage : redirect to pool management page
-end
+$callAPIRenderErrorOnForm(PoolOverviewController, PoolHistoryObject, ErrorTemplate, "Failed to fetch pool history", PoolManagementTemplate, PoolManagementPage)
 
-PoolOverviewController -> PoolHistoryObject : build request object
-PoolHistoryObject -> BackendController : send backend request
-PoolHistoryObject <- BackendController : ok response
-PoolOverviewController <- PoolHistoryObject : resolve request
-
-PoolOverviewController -> IndexTemplate : request and build template
-PoolOverviewController <- IndexTemplate : return HTML
-PoolOverviewPage <- PoolOverviewController : return HTML
-
-Actor <- PoolOverviewPage : render pool history tab
-
-alt Failed to fetch pool history
-    PoolSummaryObject <-- BackendController : error response
-    PoolOverviewController <-- PoolSummaryObject : reject requestObject
-    PoolManagementPage <-- PoolOverviewController : redirect to pool management page
-    Actor <-- PoolManagementPage : redirect to pool management page
-end
-
+$renderTemplateToPage(PoolOverviewController, PoolOverviewTemplate, PoolHistoryPage)
 
 @enduml

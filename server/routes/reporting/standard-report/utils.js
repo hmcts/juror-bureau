@@ -51,6 +51,7 @@ const tableDataMappers = {
 const headingDataMappers = {
   String: (data) => capitalizeFully(data),
   LocalDate: (data) => dateFilter(data, 'YYYY-mm-dd', 'dddd D MMMM YYYY'),
+  LocalDateTime: (data) => dateFilter(data, null, 'dddd D MMMM YYYY [at] h:mm:ss a'),
   timeFromISO: (data) => dateFilter(data, 'YYYY-MM-DDTHH:mm:ss', 'h:mm:ss a'),
   Integer: (data) => data.toString(),
   Long: (data) => data.toString(),

@@ -1,4 +1,6 @@
 @startuml pool-search
+hide unlinked
+!include generic-blocks.plantuml
 
 skinparam Style strictuml 
 skinparam SequenceMessageAlignment center
@@ -6,53 +8,40 @@ skinparam SequenceMessageAlignment center
 participant Actor
 
 ''' LOCAL ROUTING
-participant Page <</search>>
+participant PoolManagementPage <<pool-management>>
+participant PoolSearchPage <<pool-management/search>>
 
 ''' CONTROLLER AND REQUEST OBJECTS
 participant PoolSearchController <<pool-search.controller.js>>
 participant PoolSearchObject <<PoolSearchObject.post()>>
+participant FetchCourtsObject <<FetchCourts.get()>>
 
 ''' TEMPLATES
-participant IndexTemplate <<pool-search/index.njk>>
+participant PoolSearchTemplate <<pool-management/pool-search/index.njk>>
 
 ''' FILTERS AND VALIDATORS
-participant DateValidator
+participant SearchValidator
 
 ''' BACKEND CONTROLLER
 participant BackendController
 
 
-
 ''' JOURNEY FLOW
-Actor -> Page : request page
+Actor -> PoolManagementPage : user clicks 'Search' tab
 
-Page -> PoolSearchController : call page controller
+PoolManagementPage -> PoolSearchController : call page controller
 
-PoolSearchController -> IndexTemplate : request and build template
-PoolSearchController <- IndexTemplate : return HTML
-Actor <- PoolSearchController : render HTML
+$genericAPICall(PoolSearchController, FetchCourtsObject, GenericErrorTemplate, "Could not fetch courts")
 
-alt Search Criteria has invalid date
-  PoolSearchController <-- DateValidator : error response
-  Page <-- PoolSearchController : error response
-  Actor <-- Page : render error message
-end
+$genericAPICall(PoolSearchController, PoolSearchObject, GenericErrorTemplate, "Failed to do a pool search")
 
-Page -> PoolSearchObject : search pools with criteria
-PoolSearchObject -> BackendController : send backend request
-PoolSearchObject <- BackendController : ok response
-PoolSearchController <- PoolSearchObject : resolve request
+$renderTemplateToPage(PoolSearchController, PoolSearchTemplate, PoolSearchPage)
 
-alt Backend returns an error
-  PoolSearchObject <-- BackendController : error response
-  PoolSearchController <-- PoolSearchObject : reject requestObject
-  Page <-- PoolSearchController : error response
-  Actor <-- Page : render error message
-end
+Actor -> PoolSearchPage : Enter search details and submit form
+PoolSearchPage -> PoolSearchController : call form controller
+$validateInput(PoolSearchController, SearchValidator, PoolSearchTemplate, PoolSearchPage)
+$genericAPICall(PoolSearchController, PoolSearchObject, GenericErrorTemplate, "Failed to do a pool search")
 
-PoolSearchController -> IndexTemplate : request and build template
-PoolSearchController <- IndexTemplate : return HTML
-
-Actor <- PoolSearchController : render HTML
+$renderTemplateToPage(PoolSearchController, PoolSearchTemplate, PoolSearchPage)
 
 @enduml

@@ -1,0 +1,157 @@
+@startuml edit-approval-expenses
+hide unlinked
+!include generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant ExpenseRecordPage <</juror-management/unpaid-attendance/expense-record/:jurorNumber/:locCode>>
+participant EditApprovalExpensesListPage <</juror-management/edit-expense/:jurorNumber/:locCode/:status>>
+participant EditExpensePage <</juror-management/edit-expense/:jurorNumber/:locCode/:status/edit>>
+participant LossOverLimitPage <</juror-management/expenses/:jurorNumber/:locCode/enter-expenses/loss-over-limit>>
+participant TravelOverLimitPage <</juror-management/expenses/:jurorNumber/:locCode/enter-expenses/travel-over-limit>>
+participant TotalLessThanZeroPage <</juror-management/expenses/:jurorNumber/:locCode/enter-expenses/total-less-zero>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLERS
+participant ExpenseRecordController <<expense-record.controller.js>> #lightyellow
+participant EnterExpensesController <<enter-expenses.controller.js>> #lightyellow
+participant EditApprovalExpensesController <<edit-approval-expenses.controller.js>> #lightyellow
+''' REQUEST OBJECTS
+participant getApprovalExpenseListDAO <<getApprovalExpenseListDAO.get()>> #lightyellow
+participant getEnteredExpensesDAO <<getEnteredExpensesDAO.get()>> #lightyellow
+participant postEditedExpensesDAO <<postEditedExpensesDAO.post()>> #lightyellow
+participant postRecalculateSummaryTotalsDAO <<postRecalculateSummaryTotalsDAO.post()>> #lightyellow
+participant defaultExpensesDAO <<defaultExpensesDAO.get()>> #lightyellow
+participant expenseRatesAndLimitsDAO <<expenseRatesAndLimitsDAO.get()>> #lightyellow
+participant getCourtLocationRates <<getCourtLocationRatesDAO.get()>> #lightyellow
+participant jurorRecordDetailsDAO <<jurorRecordDetailsDAO.get()>> #lightyellow
+
+''' TEMPLATES
+participant EditApprovalExpensesListTemplate <<expenses/edit/edit-approval-expenses-list.njk>> #lavender
+participant EnterAttendanceExpensesTemplate <<expenses/enter-expenses.njk>> #lavender
+participant EnterNonAttendanceExpensesTemplate <<expenses/enter-expenses-non-attendance.njk>> #lavender
+participant LossOverLimitTemplate <<expenses/loss-over-limit.njk>> #lavender
+participant TravelOverLimitTemplate <<expenses/travel-over-limit.njk>> #lavender
+participant TotalLessThanZeroTemplate <<expenses/total-less-than-zero.njk>> #lavender
+participant SummaryTemplate <<expenses/_partials/summary.njk>> #lavender
+participant RecalculateErrorTemplate <<expenses/_partials/recalculate-error-banner.njk>> #lavender
+participant GenericErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant ExpenseDetailsValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+== Displaying the edit approval expenses list to user ==
+
+Actor -> ExpenseRecordPage : select expenses to edit and click 'Edit expenses...'
+ExpenseRecordPage x-> EditApprovalExpensesController : call expense details controller
+
+$genericAPICall(EditApprovalExpensesController, postRecalculateSummaryTotalsDAO, GenericErrorTemplate, "Failed to bundle and fetch expenses to edit")
+$genericAPICall(EditApprovalExpensesController, defaultExpensesDAO, GenericErrorTemplate, "Failed to bundle and fetch expenses to edit")
+$genericAPICall(EditApprovalExpensesController, jurorRecordDetailsDAO, GenericErrorTemplate, "Failed to bundle and fetch expenses to edit")
+
+$renderTemplateToPage(EditApprovalExpensesController, EditApprovalExpensesListTemplate, EditApprovalExpensesListPage) 
+
+
+== Editing an individual expense record ==
+
+Actor -> EditApprovalExpensesListPage : click expense date link
+EditApprovalExpensesListPage o-> EditApprovalExpensesController : call expense details controller
+
+$genericAPICall(EditApprovalExpensesController, getEnteredExpensesDAO, GenericErrorTemplate, "Failed to fetch expense details to update'")
+$genericAPICall(EditApprovalExpensesController, jurorRecordDetailsDAO, GenericErrorTemplate, "Failed to fetch expense details to update'")
+
+$renderTemplateToPage(EditApprovalExpensesController, EnterAttendanceExpensesTemplate, EditExpensePage)
+
+alt Non-Attendance Day Expense
+  $renderTemplateToPage(EditApprovalExpensesController, EnterNonAttendanceExpensesTemplate, EditExpensePage)
+end
+
+Actor -> EditExpensePage : change any of the expense details and click 'Recalculate totals'
+EditExpensePage -> EditApprovalExpensesController : call enter expenses controller
+$callAPIRenderErrorOnForm(EditApprovalExpensesController, RecalculateSummaryTotalsObject, GenericErrorTemplate, "Failed to recalculate the summary totals", RecalculateErrorTemplate, EditExpensePage)
+$renderTemplateToPage(EditApprovalExpensesController, SummaryTemplate, EditExpensePage)
+
+Actor -> EditExpensePage : enter expense details and click 'Save and next'
+EditExpensePage -> EditApprovalExpensesController : call enter expenses controller
+
+$validateInput(EditApprovalExpensesController, ExpenseDetailsValidator, EnterAttendanceExpensesTemplate, EnterExpensesPage)
+
+$genericAPICall(EditApprovalExpensesController, getCourtLocationRates, GenericErrorTemplate, "Failed to check if travel is over the limit")
+
+alt Travel value over limit
+  EditApprovalExpensesController -> EnterExpensesController : pass control to enter expenses controller
+  $renderTemplateToPage(EnterExpensesController, TravelOverLimitTemplate, TravelOverLimitPage)
+  Actor -> TravelOverLimitPage : click 'Pay amount entered'
+  TravelOverLimitPage -> EditApprovalExpensesController : call edit expenses controller
+end
+
+EditApprovalExpensesController -> postRecalculateSummaryTotalsDAO : build request object
+postRecalculateSummaryTotalsDAO -> BackendController : send backend request
+$APIErrorAlt(EditApprovalExpensesController, postRecalculateSummaryTotalsDAO, GenericErrorTemplate, "Failed to recalculate the summary totals")
+$APIErrorAlt(EditApprovalExpensesController, postRecalculateSummaryTotalsDAO, GenericErrorTemplate, "Expense values reduced less than already paid to juror", EnterAttendanceExpensesTemplate, EditExpensePage)
+postRecalculateSummaryTotalsDAO <- BackendController : ok response
+EditApprovalExpensesController <- postRecalculateSummaryTotalsDAO : resolve request
+
+$genericAPICall(EditApprovalExpensesController, expenseRatesAndLimitsDAO, GenericErrorTemplate, "Failed to fetch default expenses to compare with")
+
+alt Financial loss over limit
+  EditApprovalExpensesController -> EnterExpensesController : pass control to enter expenses controller
+  $renderTemplateToPage(EnterExpensesController, LossOverLimitTemplate, LossOverLimitPage)
+  Actor -> LossOverLimitPage : click 'Continue'
+  LossOverLimitPage ->o EditApprovalExpensesController : call enter expenses controller and return to start of enter expenses flow for next available expense record
+end
+
+EditApprovalExpensesController ->o EditApprovalExpensesController : call edit expenses controller and return to start of edit expense record flow for next available expense record
+
+alt No more expense records or user clicks 'Save and back to all days'
+  EditApprovalExpensesController ->x EditApprovalExpensesController : call edit expenses controller and return to the edit expense list page
+end
+
+
+== Submitting edited expenses for approval/re-approval ==
+
+ExpenseRecordPage -> EditApprovalExpensesController : call expense details controller
+
+$genericAPICall(EditApprovalExpensesController, postRecalculateSummaryTotalsDAO, GenericErrorTemplate, "Failed to bundle and fetch expenses to edit")
+$genericAPICall(EditApprovalExpensesController, defaultExpensesDAO, GenericErrorTemplate, "Failed to bundle and fetch expenses to edit")
+$genericAPICall(EditApprovalExpensesController, jurorRecordDetailsDAO, GenericErrorTemplate, "Failed to bundle and fetch expenses to edit")
+$genericAPICall(EditApprovalExpensesController, getApprovalExpenseListDAO, GenericErrorTemplate, "Failed to bundle and fetch expenses to edit")
+
+$renderTemplateToPage(EditApprovalExpensesController, EditApprovalExpensesListTemplate, EditApprovalExpensesListPage)
+
+alt Apply default loss of earnings to all expenses
+  Actor -> EditApprovalExpensesListPage : click 'Apply default loss of earning'
+  EditApprovalExpensesListPage -> EditApprovalExpensesController : call expense details controller
+
+  $genericAPICall(EditApprovalExpensesController, defaultExpensesDAO, GenericErrorTemplate, "Failed to fetch default expenses to add to all days")
+  $genericAPICall(EditApprovalExpensesController, getEnteredExpensesDAO, GenericErrorTemplate, "Failed to update all days expenses")
+
+  alt Default financial loss less than originally paid
+    $renderErrorOnForm(EditApprovalExpensesController, EditApprovalExpensesListTemplate, EditApprovalExpensesListPage)
+  end
+
+  $callAPIRenderErrorOnForm(EditApprovalExpensesController, postRecalculateSummaryTotalsDAO, GenericErrorTemplate, "Failed to recalculate the totals for an updated expense", EditApprovalExpensesListTemplate, EditApprovalExpensesListPage)
+ 
+  $renderTemplateToPage(EditApprovalExpensesController, EditApprovalExpensesListTemplate, EditApprovalExpensesListPage)
+end
+
+Actor -> EditApprovalExpensesListPage : click 'Submit for approval'
+
+alt No expenses updated
+  $renderErrorOnForm(EditApprovalExpensesController, EditApprovalExpensesListTemplate, EditApprovalExpensesListPage)
+end
+
+$genericAPICall(EditApprovalExpensesController, postEditedExpensesDAO, GenericErrorTemplate, "Failed to update edited expenses'")
+
+EditApprovalExpensesController -> ExpenseRecordController : pass control to expense record controller
+ExpenseRecordController -> ExpenseRecordPage : redirect to expense record page
+Actor <- ExpenseRecordPage : render HTML
+
+@enduml

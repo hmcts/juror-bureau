@@ -17,6 +17,7 @@ const { financialAudit } = require('./audit.controller');
     require('./deferred-list')(app);
     require('./pool-ratio')(app);
     require('./yield-performance')(app);
+    require('./all-court-utilisation')(app);
     require('./standard-report/index')(app);
 
     app.get('/reports',

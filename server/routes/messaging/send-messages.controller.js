@@ -453,7 +453,7 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
         'pageLimit': modUtils.constants.PAGE_SIZE,
         'sortMethod': sortOrder === 'ascending' ? 'ASC' : (sortOrder === 'descending' ? 'DESC' : null),
         'sortField': capitalise(_.snakeCase(sortBy)) || null,
-        'includeAllJurorsOnTrial': message === 'sentencing-date',
+        'includeAllJurorsOnTrial': message === 'sentencing-date' || message === 'sentencing-invite',
       };
 
       try {
