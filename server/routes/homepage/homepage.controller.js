@@ -3,7 +3,7 @@
 
   const _ = require('lodash');
   const modUtils = require('../../lib/mod-utils');
-  const { isCourtUser, isBureauUser, isBureauManager, isSuperUser } = require('../../components/auth/user-type');
+  const { isCourtUser, isBureauUser, isBureauManager } = require('../../components/auth/user-type');
   const { courtWidgetDefinitions, bureauWidgetDefinitions, widgetTemplates } = require('./dashboard/definitions');
   const { courtDashboardDAO } = require('../../objects/court-dashboard');
   const { courtDetailsDAO } = require('../../objects/administration');
@@ -13,7 +13,7 @@
 
   module.exports.homepage = function(app) {
     return async function(req, res) {
-      if (isCourtUser(req) || (isBureauUser(req) && isSuperUser(req))) {
+      if (isCourtUser(req) || isBureauUser(req)) {
         return res.redirect(app.namedRoutes.build('homepage.dashboard.get'));
       }
 
