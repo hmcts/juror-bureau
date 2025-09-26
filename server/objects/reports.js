@@ -3,6 +3,7 @@
 
   const { DAO } = require('./dataAccessObject');
   const { mapCamelToSnake, mapSnakeToCamel } = require('../lib/mod-utils');
+  const urljoin = require('url-join');
 
   module.exports.standardReportDAO = new DAO('moj/reports/standard', {
     post: function(requestConfig) 
@@ -91,6 +92,14 @@
     post: function(body) {
       return {
         body,
+      }
+    }
+  });
+  
+   module.exports.digitalSummonsReceivedReportDAO = new DAO('moj/reports/digital-summons-replies-report', {
+    get: function(month) {
+      return {
+        uri: urljoin(this.resource, month),
         transform: mapSnakeToCamel,
       };
     },
