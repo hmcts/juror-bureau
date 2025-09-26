@@ -52,7 +52,6 @@ module.exports.getDismissJurorsPools = function(app) {
 
       app.logger.info('Fetched the pools to dismiss jurors from: ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
       });
 
       return res.render('pool-management/dismiss-jurors/pools-list.njk', {
@@ -71,7 +70,6 @@ module.exports.getDismissJurorsPools = function(app) {
     } catch (err) {
       app.logger.crit('Failed to fetch pools to dismiss jurors from: ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
@@ -138,7 +136,6 @@ module.exports.getJurorsList = function(app) {
 
         app.logger.info('Fetched the the list of jurors to dismiss: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: req.session.dismissJurors.jurors,
         });
       }
@@ -172,7 +169,6 @@ module.exports.getJurorsList = function(app) {
     } catch (err) {
       app.logger.crit('Failed to fetch jurors to dismiss: ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
@@ -300,7 +296,6 @@ module.exports.postCompleteService = function(app) {
 
       app.logger.info('Jurors dismissed and service completed: ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
       });
 
       req.session.bannerMessage = `${checkedJurors.length} jurors dismissed and service completed.`;
@@ -312,7 +307,6 @@ module.exports.postCompleteService = function(app) {
     } catch (err) {
       app.logger.crit('Failed to dismiss the selected jurors: ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
@@ -393,14 +387,12 @@ module.exports.postCheckOutJurors = function(app) {
 
       app.logger.info('Checked-out selected jurors: ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
       });
 
       return res.redirect(app.namedRoutes.build('pool-management.dismiss-jurors.complete-service.get'));
     } catch (err) {
       app.logger.crit('Failed to checkout the selected jurors: ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
@@ -432,7 +424,6 @@ module.exports.postCheckJuror = function(app) {
 
     app.logger.info('Checked or unchecked one or more jurors: ', {
       auth: req.session.authentication,
-      jwt: req.session.authToken,
       data: {
         jurorNumber,
       },
@@ -457,7 +448,6 @@ module.exports.postCheckPool = function(app) {
       } catch (err) {
         app.logger.crit('Failed to fetch pools to dismiss jurors when checking all pools: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
   
@@ -476,7 +466,6 @@ module.exports.postCheckPool = function(app) {
 
     app.logger.info('Checked or unchecked one or more pools: ', {
       auth: req.session.authentication,
-      jwt: req.session.authToken,
       data: {
         poolNumber,
       },
@@ -497,7 +486,6 @@ async function calculateTotalJurorsAvailable(app, req, res, selections, selected
     } catch (err) { 
       app.logger.crit('Failed to fetch pools to calculate available jurors to dismiss ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 

@@ -27,9 +27,7 @@
 
       app.logger.info('Fetched the deferrals available: ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         data: {
-          deferrals: data.deferrals.length,
           courtCode,
         },
       });
@@ -51,7 +49,6 @@
 
       app.logger.crit('Failed to fetch deferrals: ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         data: {
           courtCode: req.params['locationCode'],
         },
@@ -150,10 +147,6 @@
 
       app.logger.info('Filtering deferrals: ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
-        data: {
-          filters,
-        },
       });
 
       // TODO: refactor this gibberish
@@ -249,7 +242,6 @@
 
       app.logger.debug('Checked or unchecked a deferral', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         data: {
           deferral: juror.jurorNumber,
           checked: juror.isChecked,
@@ -288,7 +280,6 @@
 
         app.logger.info('Fetched available pools: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             pools: data.deferralPoolsSummary[0].deferralOptions,
             courtCode: req.params['locationCode'],
@@ -318,7 +309,6 @@
 
         app.logger.crit('Failed to fetch available pools: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             courtCode: req.params['locationCode'],
           },
@@ -363,7 +353,6 @@
 
         app.logger.info('Finished processing all selected deferrals: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             deferrals: deferralsToProcess,
             poolNumber: req.body.poolNumber,
@@ -387,7 +376,6 @@
             default:
               app.logger.crit('Failed to process the selected deferrals: ', {
                 auth: req.session.authentication,
-                jwt: req.session.authToken,
                 data: {
                   deferrals: deferralsToProcess,
                   poolNumber: req.body.poolNumber,
@@ -399,7 +387,6 @@
         } else {
           app.logger.crit('Failed to process the selected deferrals: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               deferrals: deferralsToProcess,
               poolNumber: req.body.poolNumber,
@@ -529,7 +516,6 @@
         } catch (err) {
           app.logger.crit('Failed to fetch courts list', {
             auth: req.session.authentication,
-            token: req.session.authToken,
             error: typeof err.error !== 'undefined' ? err.error : err.toString(),
           });
         }
@@ -607,7 +593,6 @@
 
         app.logger.info('Fetched available pools to move court: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             pools: data.deferralPoolsSummary[0].deferralOptions,
             courtCode: newLocationCode,
@@ -640,7 +625,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch available pools: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             courtCode: newLocationCode,
           },
@@ -700,7 +684,6 @@
       } catch(err) {
         app.logger.crit('Failed to move the selected deferrals to another court: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: payload,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });

@@ -99,7 +99,6 @@
       if (typeof req.session.authentication !== 'undefined' && !req.session.hasModAccess) {
         app.logger.warn('User with no access tried accessing modern features: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           path: req.url,
         });
 

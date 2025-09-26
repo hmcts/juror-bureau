@@ -176,7 +176,6 @@ function doLogin(req) {
     if (isSuperUser(req)) {
       app.logger.info('Logged in as super user', {
         auth: req.session.authentication,
-        token: req.session.authToken,
       });
     }
   };

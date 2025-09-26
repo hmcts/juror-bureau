@@ -44,7 +44,6 @@
       } catch (err) {
         app.logger.crit('Unable to fetch court details', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
       }
@@ -55,7 +54,6 @@
       } catch (err) {
         app.logger.crit('Unable to fetch notifications', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
       }
@@ -66,7 +64,6 @@
       } catch (err) {
         app.logger.crit('Unable to fetch widget definitions', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
       }
@@ -139,7 +136,6 @@
       } catch (err) {
         app.logger.crit('Unable to fetch widget definitions', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
       }
@@ -186,7 +182,6 @@
       } catch (err) {
         app.logger.crit(`Unable to fetch ${section} dashboard stats`, {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
         stats[section] = {};
@@ -228,7 +223,6 @@
         } catch (err) {
           app.logger.crit(`Error building widget '${key}' in section '${section}'`, {
             auth: req.session.authentication,
-            token: req.session.authToken,
             error: typeof err.error !== 'undefined' ? err.error : err.toString(),
           });
           delete widgets[key];

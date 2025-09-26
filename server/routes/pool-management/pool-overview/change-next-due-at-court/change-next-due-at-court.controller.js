@@ -187,7 +187,6 @@
       } catch (err) {
         app.logger.crit('Failed to change attendance dates for juror(s)', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
           data: payload,
         });

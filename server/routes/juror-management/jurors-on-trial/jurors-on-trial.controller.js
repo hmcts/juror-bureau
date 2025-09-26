@@ -10,7 +10,7 @@ const validate = require('validate.js');
 const { jurorsOnTrial: jurorsOnTrialValidator } = require('../../../config/validation/jurors-on-trial');
 const { changeAttendanceTimes } = require('../../../config/validation/change-attendance-times');
 
-module.exports.getJurorsOnTrial = function() {
+module.exports.getJurorsOnTrial = function(app) {
   return async function(req, res) {
     let { attendance_date: attendanceDate } = req.query;
     const locCode = req.session.authentication.locCode;
@@ -23,12 +23,12 @@ module.exports.getJurorsOnTrial = function() {
       ({ trials_list: trialsList } = await jurorsOnTrialDAO
         .get(req, locCode, dateFilter(attendanceDate, null, 'YYYY-MM-DD')));
 
-      Logger.instance.info('Fetched trials list', {
+      app.logger.info('Fetched trials list', {
         auth: req.session.authentication,
         data: { locCode, attendanceDate, trialsList },
       });
     } catch (err) {
-      Logger.instance.crit('Failed to fetch trials list', {
+      app.logger.crit('Failed to fetch trials list', {
         auth: req.session.authentication,
         data: { locCode, attendanceDate },
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
@@ -71,12 +71,12 @@ module.exports.getConfirmAttendance = function(app) {
     try {
       jurorsList = await panelListDAO.get(req, trialNumber, locCode, attendanceDate);
 
-      Logger.instance.info('Fetched the jurors on this trial', {
+      app.logger.info('Fetched the jurors on this trial', {
         auth: req.session.authentication,
-        data: { locCode, trialNumber, jurorsList },
+        data: { locCode, trialNumber },
       });
     } catch (err) {
-      Logger.instance.crit('Failed to fetch the jurors on this trial', {
+      app.logger.crit('Failed to fetch the jurors on this trial', {
         auth: req.session.authentication,
         data: { locCode, trialNumber },
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
@@ -138,12 +138,12 @@ module.exports.postConfirmAttendance = function(app) {
     try {
       await confirmAttendanceDAO.patch(req, payload);
 
-      Logger.instance.info('Successfully confirmed attendance', {
+      app.logger.info('Successfully confirmed attendance', {
         auth: req.session.authentication,
         data: { trialNumber, payload },
       });
     } catch (err) {
-      Logger.instance.crit('Failed to confirm the jurors in a trial', {
+      app.logger.crit('Failed to confirm the jurors in a trial', {
         auth: req.session.authentication,
         data: { trialNumber, payload },
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),

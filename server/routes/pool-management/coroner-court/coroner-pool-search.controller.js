@@ -29,7 +29,7 @@ module.exports.getSearchPools = function(app) {
 
       courts = transformCourtNames(_courts.courts);
     } catch (err) {
-      Logger.instance.crit('Failed to fetch courts list', {
+      app.logger.crit('Failed to fetch courts list', {
         auth: req.session.authentication,
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
@@ -52,7 +52,7 @@ module.exports.getSearchPools = function(app) {
           data: { results },
         });
       } catch (err) {
-        Logger.instance.crit('Failed to search coroner pools', {
+        app.logger.crit('Failed to search coroner pools', {
           auth: req.session.authentication,
           data: { payload },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),

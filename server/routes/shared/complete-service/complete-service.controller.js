@@ -180,7 +180,6 @@
     }, (err) => {
       app.logger.crit('Failed to complete juror(s) service: ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         data: {
           pool: req.params.poolNumber || req.session.jurorCommonDetails.poolNumber,
           completionDate: req.body.completionDate,

@@ -29,7 +29,6 @@
         .then(async (data) => {
           app.logger.info('Retrieved excusal codes: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: data,
           });
 
@@ -52,7 +51,6 @@
           } catch (err) {
             app.logger.crit('Failed to retrive juror details when changing deferral: ', {
               auth: req.session.authentication,
-              jwt: req.session.authToken,
               data: {
                 jurorNumber,
               }
@@ -129,7 +127,6 @@
         .catch((err) => {
           app.logger.crit('Failed to retrive excusal codes: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
           });
 
           return res.render('_errors/generic', { err });
@@ -171,12 +168,10 @@
           .then((data) => {
             app.logger.info('Changed deferral details: ', {
               auth: req.session.authentication,
-              jwt: req.session.authToken,
               jurorNumber,
               deferralDate: deferralDate,
               poolNumber: null,
               deferralReason: deferralReason,
-              data: data,
             });
 
             req.session.bannerMessage = {showUpdateOnly: true};
@@ -188,7 +183,6 @@
           .catch((err) => {
             app.logger.crit('Failed to change deferral details: ', {
               auth: req.session.authentication,
-              jwt: req.session.authToken,
               data: {
                 jurorNumber,
                 deferralDate: deferralDate,
@@ -220,7 +214,6 @@
           () => {
             app.logger.info('Deleted deferral: ', {
               auth: req.session.authentication,
-              jwt: req.session.authToken,
               jurorNumber,
             });
 
@@ -234,7 +227,6 @@
           (err) => {
             app.logger.crit('Failed to delete deferral: ', {
               auth: req.session.authentication,
-              jwt: req.session.authToken,
               data: {
                 jurorNumber,
               },
@@ -255,7 +247,6 @@
         .then((data) => {
           app.logger.info('Retrieved active pools: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             deferralDate: req.session.deferralDates,
             jurorNumber,
             data: data,
@@ -314,7 +305,6 @@
         .catch((err) => {
           app.logger.crit('Failed to fetch available pools: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber,
               deferralDates: req.session.deferralDates,
@@ -353,7 +343,6 @@
         .then(() => {
           app.logger.info('Changed deferral details: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             jurorNumber,
             deferralDate: newDeferralDate,
             poolNumber: newPoolNumber,
@@ -370,7 +359,6 @@
           if (err.statusCode === 422 && err.error?.code === 'CANNOT_DEFER_TO_EXISTING_POOL') {
             app.logger.crit('Failed to change deferral details - cannot add to existing pool: ', {
               auth: req.session.authentication,
-              jwt: req.session.authToken,
               data: req.body,
               error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
             });
@@ -383,7 +371,6 @@
           }
           app.logger.crit('Failed to change deferral details: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber,
               deferralDate: req.body.deferralDate,
@@ -405,7 +392,6 @@
         if (jurorNumber != req.session[`editJurorDetails-${jurorNumber}`]?.commonDetails?.jurorNumber) {
           app.logger.crit('Juror number does not match cached data', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: {
                 url: jurorNumber,
@@ -546,7 +532,6 @@
       } catch (err) {
         app.logger.crit('Failed to retrieve juror details: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber: req.params['jurorNumber'],
             locCode: req.session.locCode,
@@ -736,7 +721,6 @@
       } catch (err) {
         app.logger.crit('Failed to fix current name: ', {
           auth: req.session.authentication,
-          data: req.session[`editJurorDetails-${jurorNumber}`].fixedName,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
@@ -754,7 +738,7 @@
     } catch (err) {
       app.logger.crit('Failed to change juror details: ', {
         auth: req.session.authentication,
-        data: { jurorNumber: req.params['jurorNumber'], requestBody },
+        data: { jurorNumber: req.params['jurorNumber'] },
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
@@ -763,7 +747,7 @@
 
     app.logger.info('Changed juror details: ', {
       auth: req.session.authentication,
-      data: { jurorNumber: req.params['jurorNumber'], requestBody: requestBody },
+      data: { jurorNumber: req.params['jurorNumber'] },
     });
 
     delete req.session[`editJurorEtag-${jurorNumber}`];
@@ -815,9 +799,8 @@
         }
         app.logger.crit('Failed to retrieve court location from postcode: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
-            postcode: postcode,
+            partPostcode: postcode,
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
@@ -838,7 +821,6 @@
         if (jurorNumber != req.session[`editJurorDetails-${jurorNumber}`]?.commonDetails?.jurorNumber) {
           app.logger.crit('Juror number does not match cached data', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: {
                 url: jurorNumber,
@@ -988,7 +970,6 @@
         if (jurorNumber != req.session[`editJurorDetails-${jurorNumber}`]?.commonDetails?.jurorNumber) {
           app.logger.crit('Juror number does not match cached data', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: {
                 url: jurorNumber,
@@ -1072,10 +1053,8 @@
 
       app.logger.debug('New name added to current juror details', {
         authentication: req.session.authentication,
-        token: req.session.authToken,
         data: {
           jurorNumber,
-          ...req.body,
         },
       });
 
@@ -1102,7 +1081,6 @@
           } catch (err) {
             app.logger.crit('Failed to retrieve courts list: ', {
               auth: req.session.authentication,
-              jwt: req.session.authToken,
               error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
             });
             return res.render('_errors/generic');

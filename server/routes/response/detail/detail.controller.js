@@ -99,11 +99,9 @@
 
           app.logger.info('Fetched and parsed single response: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               responseId: req.params.id,
             },
-            response: data,
           });
 
           // clear out jurorDetails sessions and reload, this is for the check-can-accommodate page
@@ -203,7 +201,6 @@
             .then((opticReference) => {
               app.logger.info('Fetched the optic reference for the juror if available: ', {
                 auth: req.session.authentication,
-                jwt: req.session.authToken,
                 data: {
                   jurorNumber: req.params['id'],
                   opticReference: opticReference,
@@ -220,7 +217,6 @@
                   .then((catchmentResponse) => {
                     app.logger.info('Fetched the courts for new address: ', {
                       auth: req.session.authentication,
-                      jwt: req.session.authToken,
                       postcode: data.newJurorPostcode,
                       data: {
                         catchmentResponse,
@@ -270,7 +266,6 @@
                     if (err.statusCode === 404) {
                       app.logger.crit('No catchment area for juror\'s postcode: ', {
                         auth: req.session.authentication,
-                        jwt: req.session.authToken,
                         data: req.params['id'],
                         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
                       });
@@ -315,7 +310,6 @@
 
                     app.logger.crit('Failed when fetching the juror\'s catchement area: ', {
                       auth: req.session.authentication,
-                      jwt: req.session.authToken,
                       data: req.params['id'],
                       error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
                     });
@@ -382,7 +376,6 @@
         .catch((err) => {
           app.logger.crit('Failed to fetch and parse single response: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               responseId: req.params.id,
             },
@@ -635,7 +628,6 @@
       } catch (err) {
         app.logger.crit('Could not generate PDF document: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber: req.params.id,
           },
@@ -708,7 +700,6 @@
       const errorCB = (err) => {
         app.logger.crit('Could not update status of response: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber: req.params.id,
             status: 'CLOSED',
@@ -778,13 +769,11 @@
 
         app.logger.info('Updated status of response: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: req.params.id,
               status: 'CLOSED',
               version: req.body.version,
             },
-            response,
           });
 
           req.session.responseWasActioned = {
@@ -868,20 +857,17 @@
         const response =  updateStatusDAO.post(req, req.body.jurorNumber, payload)
         app.logger.info('Updated status of response: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber: req.params.id,
             status: req.body.status,
             version: req.body.version,
           },
-          response: response,
         });
 
         return res.redirect(app.namedRoutes.build('response.detail.get', {id: req.params.id}));
       } catch {err} {
         app.logger.crit('Could not update status of response: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber: req.params.id,
             status: req.body.status,

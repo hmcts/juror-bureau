@@ -130,7 +130,7 @@
       }
 
       if (origin === 'statusChanged') {
-        removeStatusChangedJurors(req);
+        removeStatusChangedJurors(app, req);
       }
 
       const validatorResult = validate(req.body, validator(req.session.documentsJurorsList.checkedJurors));
@@ -166,7 +166,7 @@
         if (jurorList && jurorList.length) {
           req.session.statusChangedList = jurorList;
 
-          Logger.instance.info('Found jurors with status changes', {
+          app.logger.info('Found jurors with status changes', {
             auth: req.session.authentication,
             data: { ...payload, ...jurorList },
           });
@@ -238,12 +238,12 @@
     };
   };
 
-  module.exports.getStatusChanged = function() {
+  module.exports.getStatusChanged = function(app) {
     return function(req, res) {
       const { document } = req.params;
       const jurorsList = req.session.statusChangedList;
 
-      Logger.instance.info('Status changed for jurors', {
+      app.logger.info('Status changed for jurors', {
         auth: req.session.authentication,
         data: { ...jurorsList },
       });
@@ -255,7 +255,7 @@
     };
   };
 
-  function removeStatusChangedJurors(req) {
+  function removeStatusChangedJurors(app, req) {
     const statusChangedList = req.session.statusChangedList.reduce((acc, juror) => {
       acc.push(juror.juror_number);
       return acc;
@@ -267,7 +267,7 @@
 
     delete req.session.statusChangedList;
 
-    Logger.instance.info('Sending letters to jurors without status changes', {
+    app.logger.info('Sending letters to jurors without status changes', {
       auth: req.session.authentication,
       data: { ...req.session.documentsJurorsList.checkedJurors, statusChangedList },
     });

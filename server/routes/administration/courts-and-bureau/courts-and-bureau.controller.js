@@ -31,7 +31,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch all courts', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 

@@ -72,8 +72,9 @@
 
       app.logger.info('The juror name change request has been approved', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
-        data: payload,
+        data: {
+          jurorNumber
+        },
       });
 
       return res.redirect(app.namedRoutes.build('juror-record.police-check.get', {
@@ -124,8 +125,9 @@
 
         app.logger.info('The juror name change request has been rejected', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
-          data: payload,
+          data: { 
+            jurorNumber
+          },
         });
 
         return res.redirect(app.namedRoutes.build('juror-record.details.get', {

@@ -31,7 +31,6 @@
 
         app.logger.info('Fetched pools at court location: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: pools,
         });
 
@@ -44,8 +43,9 @@
 
           app.logger.info('Fetched jurors pending approval: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: forApproval,
+            data: {
+              locCode: req.session.authentication.locCode || ''
+            },
           });
 
           return res.render('juror-management/manage-jurors.njk', {
@@ -59,7 +59,6 @@
         } catch (error) {
           app.logger.crit('Unable to fetch pending juror list', {
             auth: req.session.authentication,
-            token: req.session.authToken,
             data: {
               locationCode: req.session.authentication.locCode,
               status: 'QUEUED',
@@ -72,7 +71,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch pools at court location: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             locationCode: req.session.authentication.locCode,
           },
@@ -116,7 +114,6 @@
         .catch((err) => {
           app.logger.crit('Unable to fetch pending juror list', {
             auth: req.session.authentication,
-            token: req.session.authToken,
             data: {
               locationCode: req.session.authentication.locCode,
               status: 'QUEUED',
@@ -164,7 +161,6 @@
         .catch((err) => {
           app.logger.crit('Unable to fetch pending juror list', {
             auth: req.session.authentication,
-            token: req.session.authToken,
             data: {
               locationCode: req.session.authentication.locCode,
               status: status === 'pending' ? 'QUEUED' : '',
@@ -236,11 +232,8 @@
         .catch((err) => {
           app.logger.crit('Unable to process pending juror', {
             auth: req.session.authentication,
-            token: req.session.authToken,
             data: {
               jurorNumber: req.params.jurorNumber,
-              decision: req.body.approveReject,
-              comments: req.body.rejectComments,
             },
             error: typeof err.error !== 'undefined' ? err.error : err.toString(),
           });

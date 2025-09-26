@@ -38,9 +38,8 @@
 
         req.session.dailyAttendanceList.push(attendee);
 
-        Logger.instance.info('Successfully checked in juror', {
+        app.logger.info('Successfully checked in juror', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: { payload, response: attendee },
         });
 
@@ -62,9 +61,8 @@
           kind: 'checkIn',
         };
 
-        Logger.instance.crit('Failed to check in juror', {
+        app.logger.crit('Failed to check in juror', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: { payload },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
@@ -124,9 +122,8 @@
           }
         });
 
-        Logger.instance.info('Successfully checked out juror', {
+        app.logger.info('Successfully checked out juror', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: { payload },
         });
 
@@ -139,9 +136,8 @@
           return res.status(404).send('JUROR_NOT_FOUND');
         }
 
-        Logger.instance.crit('Failed to check out juror', {
+        app.logger.crit('Failed to check out juror', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: { payload },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
@@ -232,7 +228,6 @@
       } catch (err) {
         app.logger.crit('Failed when trying to check all jurors out', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: payload,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
@@ -280,7 +275,6 @@
       } catch (err) {
         app.logger.crit('Failed when trying to check all panelled jurors out', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: req.session.checkOutPanelled.payload,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
@@ -330,7 +324,6 @@
       } catch (err) {
         app.logger.crit('Unable to delete the jurors attendance', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: absencePayload,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });

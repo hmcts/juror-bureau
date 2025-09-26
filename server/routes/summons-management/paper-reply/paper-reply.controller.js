@@ -42,8 +42,6 @@
 
             app.logger.info('Fetched the juror record: ', {
               auth: req.session.authentication,
-              jwt: req.session.authToken,
-              data: response.data,
             });
 
             details = _.clone(response.data);
@@ -113,7 +111,6 @@
         , errorCB = function(err) {
           app.logger.crit('Failed to fetch juror record: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: req.params['id'],
             },
@@ -153,7 +150,6 @@
       let momentSst = moment();
 
       app.logger.debug('Adding a new paper summons: POST step-01 - juror details', {
-        data: req.body,
         jurorNumber: req.session.paperResponseDetails.jurorNumber,
       });
 
@@ -279,7 +275,6 @@
       mergeMentalHealthInfo(req.session.paperResponseDetails.eligibility);
 
       app.logger.debug('Adding a new paper summons: POST step-02 - eligibility', {
-        data: req.body,
         jurorNumber: req.session.paperResponseDetails.jurorNumber,
       });
 
@@ -324,8 +319,9 @@
 
           app.logger.info('Successfully disqualified juror: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: req.session.paperResponseDetails,
+            data: {
+              jurorNumber: req.session.paperResponseDetails.jurorNumber
+            }
           });
 
           const jurorName = [req.session.paperResponseDetails.title,
@@ -349,8 +345,9 @@
 
           app.logger.crit('Failed to disqualify juror: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: req.session.paperResponseDetails,
+            data: {
+              jurorNumber: req.session.paperResponseDetails.jurorNumber
+            },
             error: parseError(err),
           });
 
@@ -691,7 +688,6 @@
       } catch (err) {
         app.logger.crit('Failed to retrieve juror details: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber: req.params['jurorNumber'],
             locCode: req.session.locCode,
@@ -736,7 +732,6 @@
       }
 
       app.logger.debug('Adding a new paper summons: POST step-05 - reasonable adjustments', {
-        data: req.body,
         jurorNumber: req.session.paperResponseDetails.jurorNumber,
       });
 
@@ -790,11 +785,7 @@
 
           app.logger.info('Successfully added a new paper response: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: {
-              response: req.session.paperResponseDetails,
-              ...paperSummonsData,
-            },
+            jurorNumber: req.session.paperResponseDetails.jurorNumber,
           });
 
           let tmpDetails = {
@@ -813,7 +804,6 @@
 
             app.logger.debug('Processing paper-response straight-through: ', {
               auth: req.session.authentication,
-              jwt: req.session.authToken,
               data: {
                 response: req.params['id'],
               },
@@ -839,8 +829,7 @@
 
           app.logger.crit('Failed to add the paper response: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: req.session.paperResponseDetails,
+            jurorNumber: req.session.paperResponseDetails.jurorNumber,
             error: parseError(err),
           });
 
@@ -871,8 +860,7 @@
         } catch (err) {
           app.logger.crit('Failed to fix current name: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: req.session.paperResponseDetails.fixedName,
+            jurorNumber: req.session.paperResponseDetails.jurorNumber,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
@@ -913,7 +901,6 @@
       if (req.body.response !== req.params['id']) {
         app.logger.crit('Response id and url parameters do not match: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             urlResponseId: req.params['id'],
             formResponseId: req.body.response,
@@ -936,7 +923,6 @@
 
           app.logger.info('Successfully processed the response: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               response: req.params['id'],
             },
@@ -957,7 +943,6 @@
         .catch((err) => {
           app.logger.crit('Failed to process the response: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               response: req.params['id'],
             },

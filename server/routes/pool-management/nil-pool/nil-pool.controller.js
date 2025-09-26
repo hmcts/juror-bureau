@@ -75,7 +75,6 @@
 
           app.logger.info('Checked if nil pool can be created: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: req.body,
             response: data,
           });
@@ -99,7 +98,6 @@
 
           app.logger.crit('Could not check if nil pool can be created: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: req.body,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
@@ -278,7 +276,6 @@
 
           app.logger.info('Created a new nil pool: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: req.body,
           });
 
@@ -288,7 +285,6 @@
 
           app.logger.crit('Could not create nil pool: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: req.body,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });

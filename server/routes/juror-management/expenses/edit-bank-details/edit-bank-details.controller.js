@@ -17,7 +17,6 @@
         if (jurorNumber != req.session.jurorCommonDetails?.jurorNumber) {
           app.logger.crit('Juror number does not match cached data', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: {
                 url: jurorNumber,
@@ -58,8 +57,6 @@
 
       app.logger.info('Fetch juror\'s bank details:  ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
-        data: data,
       });
 
       const juror = _.mapKeys(data, (__, key) => _.camelCase(key));
@@ -141,7 +138,6 @@
 
           app.logger.crit('Failed to compare etags for when updating bank details: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber,
             },
@@ -174,8 +170,6 @@
 
         app.logger.info('Updated juror\'s bank details:  ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
-          data: payload,
         });
 
         delete req.session.bankDetails;
@@ -184,7 +178,6 @@
       } catch (err) {
         app.logger.crit('Failed to set jurors bank details', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 

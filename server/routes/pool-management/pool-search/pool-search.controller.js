@@ -131,7 +131,6 @@
 
               app.logger.crit('Failed to do a pool search: ', {
                 auth: req.session.authentication,
-                jwt: req.session.authToken,
                 error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
               });
 
@@ -171,7 +170,6 @@
         , errorCB = function(err) {
           app.logger.crit('Failed to do a pool search: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
@@ -254,7 +252,6 @@
 
       app.logger.info('Successfully fetched search query: ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         data: data,
       });
 

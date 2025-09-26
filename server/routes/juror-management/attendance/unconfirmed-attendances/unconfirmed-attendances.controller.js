@@ -37,7 +37,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch list of unconfirmed attendances court details', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: {
             locCode,
             date,
@@ -110,7 +109,6 @@
       } catch (err) {
         app.logger.crit('Failed to confirm juror\'s attendance', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: payload,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });

@@ -149,7 +149,6 @@
       } catch (err) {
         app.logger.crit('Unable to fetch the summons details', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: {
             id: req.params['id'],
           },
@@ -176,7 +175,6 @@
       const successCB = function(response) {
           app.logger.info('Fetched juror details: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: req.params.id,
             },
@@ -284,10 +282,8 @@
         , errorCB = function(err) {
           app.logger.crit('Could not fetch juror details: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: req.params.id,
-              body: req.body,
             },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
@@ -426,8 +422,7 @@
 
         app.logger.info('Successfully updated the summons juror details', {
           auth: req.session.authentication,
-          token: req.session.authToken,
-          data: payload,
+          jurorNumber: req.params['id'],
         });
 
         return res.redirect(app.namedRoutes.build(successPath, {
@@ -437,8 +432,7 @@
       } catch (err) {
         app.logger.crit('Unable to update the summons juror details', {
           auth: req.session.authentication,
-          token: req.session.authToken,
-          data: payload,
+          jurorNumber: req.params['id'],
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
@@ -521,8 +515,7 @@
 
         app.logger.info('Successfully updated the summons juror details', {
           auth: req.session.authentication,
-          token: req.session.authToken,
-          data: payload,
+          jurorNumber: req.params['id'],
         });
 
         return res.redirect(app.namedRoutes.build(successPath, {
@@ -532,8 +525,7 @@
       } catch (err) {
         app.logger.crit('Unable to update the summons juror details', {
           auth: req.session.authentication,
-          token: req.session.authToken,
-          data: payload,
+          jurorNumber: req.params['id'],
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 

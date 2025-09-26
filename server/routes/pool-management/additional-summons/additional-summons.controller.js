@@ -37,7 +37,6 @@
 
           app.logger.info('Fetched the pool summary and postcodes: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               poolNumber: req.params['poolNumber'],
               locationCode: req.params['poolNumber'].slice(0, 3),
@@ -53,7 +52,6 @@
 
               app.logger.info('Fetched the number of bureau deferrals: ', {
                 auth: req.session.authentication,
-                jwt: req.session.authToken,
                 data: {
                   poolNumber: response[0].poolDetails.locCode,
                 },
@@ -94,7 +92,6 @@
 
           app.logger.crit('Failed to fetch pool summary, postcodes or number of bureau deferrals: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               poolNumber: req.params['poolNumber'],
               locationCode: req.params['poolNumber'].slice(0, 3),
@@ -139,7 +136,6 @@
 
           app.logger.info('Successfully summoned additional citizens: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               body: req.body,
             },
@@ -153,7 +149,6 @@
 
           app.logger.crit('Failed to summon additional citizens: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               body: req.body,
             },

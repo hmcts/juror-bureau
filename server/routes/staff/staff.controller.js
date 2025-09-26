@@ -26,8 +26,6 @@
         , successCB = function(staffList) {
           app.logger.info('Fetched list of staff:  ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
-            response: staffList,
           });
 
           activeStaff = _.sortBy(staffList.activeStaff, 'name');
@@ -47,7 +45,6 @@
         , errorCB = function(err) {
           app.logger.crit('Failed to fetch list of staff members: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
@@ -105,7 +102,6 @@
         , errorCB = function(err) {
           app.logger.crit('Failed to fetch list of teams: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               login: req.params.login,
             },
@@ -132,9 +128,6 @@
         , successCB = function(resp) {
           app.logger.info('Created new staff member: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: postBody,
-            response: resp,
           });
 
           return res.redirect(app.namedRoutes.build('staff.get'));
@@ -142,8 +135,6 @@
         , failureCB = function(err) {
           app.logger.crit('Failed to create staff member: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: postBody,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
@@ -233,11 +224,9 @@
 
           app.logger.info('Fetched details of staff member: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               login: req.params.login,
             },
-            response: staffData,
           });
 
           // Add courts to array
@@ -278,7 +267,6 @@
         , errorCB = function(err) {
           app.logger.crit('Failed to fetch details of staff member: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               login: req.params.login,
             },
@@ -306,12 +294,9 @@
         , successCB = function(resp) {
           app.logger.info('Edited staff member', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               originalLogin: req.body['_login'],
-              updatedStaff: putBody,
             },
-            response: resp,
           });
 
           return res.redirect(app.namedRoutes.build('staff.get'));
@@ -319,10 +304,8 @@
         , failureCB = function(err) {
           app.logger.crit('Failed to update staff member: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               originalLogin: req.body['_login'],
-              updatedStaff: putBody,
             },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
@@ -397,11 +380,9 @@
         , successCB = function(response) {
           app.logger.info('Fetched list of staff and details of response: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               responseId: req.params.id,
             },
-            response: response,
           });
 
           tmpFields = _.cloneDeep(req.session.formFields);
@@ -431,7 +412,6 @@
 
           app.logger.crit('Failed to fetch list of staff and details of response: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               responseId: req.params.id,
             },
@@ -480,13 +460,11 @@
         , successCB = function(response) {
           app.logger.info('Reassigned response to staff member: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               responseJurorNumber: req.body.responseJurorNumber,
               assignTo: req.body.assignTo,
               version: req.body.version,
             },
-            response: response,
           });
 
           /*return res.status(201).json({
@@ -500,7 +478,6 @@
 
           app.logger.crit('Failed to reassign response to staff member: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               responseJurorNumber: req.body.responseJurorNumber,
               assignTo: req.body.assignTo,
@@ -559,11 +536,9 @@
         , successCB = function(response) {
           app.logger.info('Fetched list of staff and details of response: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               responseIdList: selectedJurorNumbers,
             },
-            response: response,
           });
 
           tmpFields = _.cloneDeep(req.session.formFields);
@@ -589,9 +564,7 @@
         , errorCB = function(err) {
           app.logger.crit('Failed to fetch list of staff and details of response: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
-              //responseIdList: req.params.jurorNumbers.split(','),
               responseIdList: selectedJurorNumbers,
             },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
@@ -668,12 +641,10 @@
             
           app.logger.info('Reassigned multiple responses to staff member: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               assignTo: req.body.assignTo,
               responses: req.body.responses
             },
-            response: response,
           });
 
           if (response.failures) {
@@ -697,7 +668,6 @@
 
           app.logger.crit('Failed to reassign multiple responses to staff member: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               assignTo: req.body.assignTo,
               responses: req.body.responses
@@ -787,7 +757,6 @@
       var successCB = function() {
           app.logger.info('Reallocated Users: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               pendingLogin: req.body.pendingLogin,
               staffToDeactivate: req.body.staffToDeactivate,
@@ -803,7 +772,6 @@
         , errorCB = function(err) {
           app.logger.crit('Failed to reassign: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               pendingLogin: req.body.pendingLogin,
               staffToDeactivate: req.body.staffToDeactivate,
@@ -832,8 +800,6 @@
 
           app.logger.info('Fetched list of staff and details of response: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
-            response: response,
           });
 
           staffList = response[0].filter(function(staffMember) {
@@ -857,7 +823,6 @@
         , errorCB = function(err) {
           app.logger.crit('Failed to fetch list of staff and details of response: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 
@@ -883,8 +848,6 @@
         , successCB = function(staffList) {
           app.logger.info('Filtered team members: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
-            response: staffList,
           });
 
           activeStaff = _.sortBy(staffList.activeStaff, 'name');
@@ -906,7 +869,6 @@
         , errorCB = function(err) {
           app.logger.crit('Failed to fetch list of staff members: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 

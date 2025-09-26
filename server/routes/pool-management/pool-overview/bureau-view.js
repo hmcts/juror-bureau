@@ -26,7 +26,6 @@ module.exports = function(app, req, res, pool, membersList, _errors, selectedJur
 
   app.logger.info('Fetched court members: ', {
     auth: req.session.authentication,
-    data: membersList,
   });
 
   if (req.session.bannerMessage) {

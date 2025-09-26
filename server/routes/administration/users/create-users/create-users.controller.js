@@ -273,10 +273,8 @@
 
         app.logger.info('Created new user', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             username,
-            payload,
           },
         });
 
@@ -286,9 +284,8 @@
       } catch (err) {
         app.logger.crit('Failed to create new user: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
-            payload,
+            username,
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });

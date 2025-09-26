@@ -57,7 +57,7 @@
         headers: {
           'Content-Type': 'application/json',
         },
-        transform: (data) => { console.log(data); delete data._headers; return data.data; }
+        transform: (data) => { delete data._headers; return data.data; }
       };
     }
   });

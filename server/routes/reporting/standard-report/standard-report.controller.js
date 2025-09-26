@@ -424,8 +424,6 @@
 
           const sortValue = numericTypes.includes(header.dataType) ? data[_.camelCase(header.id)] : output;
 
-          console.log(header.dataType, sortValue)
-
           return ({
             html: output ? output : '-',
             attributes: {
@@ -706,8 +704,6 @@
         data: { reportKey, isPrint, isExport },
         error: (typeof e.error !== 'undefined') ? e.error : e.toString,
       });
-
-      console.log(e);
     }
 
     return res.render('_errors/generic');

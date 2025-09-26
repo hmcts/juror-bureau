@@ -86,7 +86,6 @@
       } catch (err) {
         app.logger.crit('Unable to fetch pool list', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
@@ -357,7 +356,6 @@
       } catch (err) {
         app.logger.crit('Unable to fetch pool start date', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
@@ -526,9 +524,7 @@
         }
         app.logger.crit('Unable to check postcode', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
-          data: { postcode: tmpBody.addressPostcode },
         });
         return res.render('_errors/generic', { err });
 
@@ -809,9 +805,11 @@
       } catch (err) {
         app.logger.crit(`Unable to manually create a juror at the ${isBureauCreation(req, res) ? 'bureau' : 'court'}`, {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
-          data: buildCreationPayload(req.session.newJuror),
+          data: {
+            'poolNumber': jurorDetails?.poolNumber || '',
+            'courtCode': jurorDetails?.courtLocCode || '',
+          },
         });
 
         return res.render('_errors/generic', { err });

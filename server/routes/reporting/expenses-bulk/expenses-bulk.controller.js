@@ -29,7 +29,6 @@
 
         app.logger.info('Generated bulk financial audit report', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: {
             auditNumbers,
           },
@@ -40,7 +39,6 @@
       } catch (err) {
         app.logger.crit('Error generating bulk financial audit report', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
         

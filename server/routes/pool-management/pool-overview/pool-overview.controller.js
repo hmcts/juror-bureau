@@ -219,7 +219,7 @@ function coronerCourtPool(app) {
 
       app.logger.info('Fetched pool summary: ', {
         auth: req.session.authentication,
-        data: response,
+        ata: response,
       });
 
       req.session.coronerCourt = response;
@@ -281,7 +281,6 @@ function renderHistoryItems(app, req, res, data){
     .then(function(poolHistoryList) {
       app.logger.info('Fetched Pool Request history: ', {
         auth: req.session.authentication,
-        data: poolHistoryList,
       });
 
       poolHistoryList.poolHistoryEvents.forEach((item) => {
@@ -381,7 +380,6 @@ function courtView(app, req, res, pool, membersList, _errors, selectedJurors, se
 
     app.logger.info('Fetched court members: ', {
       auth: req.session.authentication,
-      data: membersList,
     });
 
     req.session.membersList = membersList.data;
@@ -577,7 +575,6 @@ function executeTransfer(app, req, res, transferedJurors) {
       data: {
         poolNumber,
         receivingCourt: receivingCourtLocCode,
-        data: data,
       },
     });
 

@@ -46,7 +46,6 @@ module.exports.getSearch = function(app) {
 
         app.logger.crit('Failed to search for juror records: ', {
           auth: req.session.authentication,
-          data: { payload },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 

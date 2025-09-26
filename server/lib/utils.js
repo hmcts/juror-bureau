@@ -191,9 +191,7 @@
         , successCB = function(response) {
           app.logger.info('Fetched and parsed search results', {
             userId: req.session.authentication.login,
-            jwt: req.session.authToken,
             searchParams: searchParams,
-            response: response,
           });
 
 
@@ -229,8 +227,6 @@
         , errorCB = function(err) {
           app.logger.crit('Failed to fetch and parse search result', {
             userId: req.session.authentication.login,
-            jwt: req.session.authToken,
-
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 

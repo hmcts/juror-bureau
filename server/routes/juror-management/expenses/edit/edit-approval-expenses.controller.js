@@ -131,12 +131,10 @@
       } catch (err) {
         app.logger.crit('Failed to bundle and fetch expenses to edit', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber,
             locCode,
             status,
-            expenseDates,
           },
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
@@ -209,7 +207,6 @@
       } catch (err) {
         app.logger.crit('Failed to update edited expenses', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber,
             locCode,
@@ -345,7 +342,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch expense details to update', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber,
             locCode,
@@ -411,7 +407,6 @@
         if (error) {
           app.logger.crit('Failed to check if travel is over the limit', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber,
               locCode,
@@ -491,7 +486,6 @@
 
         app.logger.crit('Failed to recalculate the totals for an updated expense', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber,
             data,
@@ -519,7 +513,6 @@
       if (error) {
         app.logger.crit('Failed to fetch default expenses to compare with', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: jurorNumber,
           error: typeof error.error !== 'undefined' ? error.error : error.toString(),
         });
@@ -581,7 +574,6 @@
         } catch (err) {
           app.logger.crit('Failed to fetch default expenses to add to all days', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: jurorNumber,
             error: typeof err.error !== 'undefined' ? err.error : err.toString(),
           });
@@ -761,7 +753,6 @@
         } catch (err) {
           app.logger.crit('Failed to recalculate the totals for an updated expense', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber,
               recalculatePayload,
@@ -808,7 +799,6 @@
       } catch (err) {
         app.logger.crit('Failed to update all days expenses', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: expensesData,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });

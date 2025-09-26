@@ -23,8 +23,6 @@
 
         app.logger.info('Fetched the list of juror exemption candidates: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
-          data: response,
         });
 
         const printUrl = urljoin(app.namedRoutes.build('documents.certificate-of-exemption-list.print', {
@@ -52,7 +50,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch exemption jurors list: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: { ...req.body },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
@@ -88,7 +85,6 @@
 
         app.logger.info('Generated documents for the selected jurors', {
           userId: req.session.authentication.login,
-          jwt: req.session.authToken,
         });
 
         res.contentType('application/pdf');
@@ -96,7 +92,6 @@
       } catch (err) {
         app.logger.crit('Unable to generate and print selected jurors', {
           userId: req.session.authentication.login,
-          jwt: req.session.authToken,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
@@ -131,7 +126,6 @@
 
       app.logger.info('Checked or unchecked one or more jurors: ', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         data: {
           jurorNumber,
         },

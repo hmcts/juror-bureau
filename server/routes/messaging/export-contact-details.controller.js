@@ -28,7 +28,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch all courts', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
@@ -291,8 +290,6 @@
 
         app.logger.info('Generated and downloded a csv with contact details', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
-          data: payload,
         });
 
         res.set('content-disposition', 'attachment; filename=juror_export_details.csv');
@@ -301,7 +298,6 @@
       } catch (err) {
         app.logger.crit('Failed to generate and download csv file with contact details', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: payload,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
@@ -373,7 +369,6 @@
 
       app.logger.info('Checked a juror to export contact details for', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
       });
 
       res.status(200).send(req.session.messaging.checkedJurors.length.toString());

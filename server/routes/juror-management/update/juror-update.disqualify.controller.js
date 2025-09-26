@@ -22,7 +22,7 @@ module.exports.getDisqualifyJurorRecord = function(app) {
 
       disqualifyReasons = response.disqualifyReasons;
     } catch (err) {
-      Logger.instance.crit('Failed to fetch the disqualification reasons', {
+      app.logger.crit('Failed to fetch the disqualification reasons', {
         auth: req.session.authentication,
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
@@ -69,13 +69,13 @@ module.exports.postDisqualifyJurorRecord = function(app) {
         type
       );
 
-      Logger.instance.info('Successfully disqualified the juror', {
+      app.logger.info('Successfully disqualified the juror', {
         auth: req.session.authentication,
         data: { jurorNumber, reason: req.body.disqualifyReason, replyMethod: type },
       });
 
     } catch (err) {
-      Logger.instance.crit('Failed to disqualify the juror', {
+      app.logger.crit('Failed to disqualify the juror', {
         auth: req.session.authentication,
         data: { jurorNumber, reason: req.body.disqualifyReason, replyMethod: type },
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),

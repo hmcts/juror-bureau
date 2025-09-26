@@ -10,8 +10,6 @@
       var successCB = function(response) {
           app.logger.info('Fetched and parsed list of completed responses: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
-            response: response,
           });
 
           req.session.sourceUrl = req.path;
@@ -29,7 +27,6 @@
         , errorCB = function(err) {
           app.logger.crit('Failed to fetch and parse list of completed responses: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 

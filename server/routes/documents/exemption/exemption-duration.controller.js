@@ -45,7 +45,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch judges list: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: { ...req.body },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });

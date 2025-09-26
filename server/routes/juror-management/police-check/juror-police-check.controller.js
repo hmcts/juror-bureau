@@ -27,7 +27,6 @@
         .then(() => {
           app.logger.info('Police check succesfully running: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: req.params.jurorNumber,
             },
@@ -40,7 +39,6 @@
         .catch((err) => {
           app.logger.crit('Failed to run police check: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               jurorNumber: req.params.jurorNumber,
             },

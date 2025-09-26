@@ -24,7 +24,6 @@ module.exports.checkOwner = function(app) {
       if (currentOwner !== req.session.authentication.locCode) {
         app.logger.crit('Current user does not have sufficient permission to process this summons reply: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
         });
 
         return res.status(403).render('_errors/403.njk');
@@ -37,7 +36,6 @@ module.exports.checkOwner = function(app) {
       if (typeof err.error !== 'undefined' && err.error.status === 403) {
         app.logger.crit('Current user does not have sufficient permission to process this summons reply: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
@@ -45,7 +43,6 @@ module.exports.checkOwner = function(app) {
       }
       app.logger.crit('Failed to fetch juror details', {
         auth: req.session.authentication,
-        token: req.session.authToken,
         error: typeof err.error !== 'undefined' ? err.error : err.toString(),
       });
 

@@ -39,7 +39,6 @@
 
         app.logger.crit('Juror number does not match cached data', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber: {
               url: jurorNumber,
@@ -124,7 +123,6 @@
       } catch (err) {
         app.logger.crit('Failed to add an attendance day for juror', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 

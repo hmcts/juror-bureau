@@ -43,7 +43,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch list of holidays and non sitting days', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
@@ -62,7 +61,6 @@
 
         app.logger.crit('Failed to add the non sitting day ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
@@ -97,7 +95,6 @@
       } catch (err) {
         app.logger.crit('Failed ', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
@@ -131,7 +128,6 @@
       } catch (err) {
         app.logger.crit('Failed to add non sitting day', {
           userId: req.session.authentication.login,
-          jwt: req.session.authToken,
           data: payload,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
@@ -169,7 +165,6 @@
       } catch (err) {
         app.logger.crit('Failed to delete non sitting day', {
           userId: req.session.authentication.login,
-          jwt: req.session.authToken,
           data: date,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });

@@ -15,8 +15,6 @@
 
           app.logger.info('Fetched and parsed list of todo responses: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
-            response: response,
           });
 
           response.items = utils.sortResponseData(response.items, 'rawReceivedAt', false);
@@ -57,7 +55,6 @@
         , errorCB = function(err) {
           app.logger.crit('Failed to fetch and parse list of to do responses: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
 

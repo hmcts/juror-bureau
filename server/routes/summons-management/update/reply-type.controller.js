@@ -52,7 +52,6 @@
       } catch (err) {
         app.logger.crit('Unable to fetch the summons details', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: {
             id: req.params['id'],
           },
@@ -94,8 +93,7 @@
 
         app.logger.info('Updated the summons reply type', {
           auth: req.session.authentication,
-          token: req.session.authToken,
-          data: payload,
+          jurorNumber: req.params['id'],
         });
 
         return res.redirect(app.namedRoutes.build('response.paper.details.get', {
@@ -105,7 +103,6 @@
       } catch (err) {
         app.logger.crit('Unable to update the summons reply type', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 

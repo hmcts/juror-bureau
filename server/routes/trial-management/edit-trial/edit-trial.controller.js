@@ -31,9 +31,7 @@
           app.logger.info('Fetched trial details, courtrooms and judges list', {
             auth: req.session.authentication,
             data: {
-              courtrooms,
-              judges,
-              trial,
+              trialNumber
             },
           });
 
@@ -207,7 +205,10 @@
 
       app.logger.info('Edited an existing trial', {
         auth: req.session.authentication,
-        data: payload,
+        data: {
+          trialNumber,
+          locationCode
+        },
         response: resp,
       });
 
@@ -224,7 +225,10 @@
     } catch (err) {
       app.logger.crit('Failed to edit an existing trial: ', {
         auth: req.session.authentication,
-        data: payload,
+        data: {
+          trialNumber,
+          locationCode
+        },
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 

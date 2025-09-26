@@ -27,7 +27,6 @@
 
           app.logger.info('Fetched the number of court deferrals when converting a nil pool: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               locationCode: req.session.poolDetails.courtCode,
               attendanceDate: req.session.poolDetails.attendanceDate,
@@ -51,7 +50,6 @@
 
           app.logger.crit('Failed to fetch the number of court deferrals when converting a nil pool: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               locationCode: req.session.poolDetails.courtCode,
               attendanceDate: req.session.poolDetails.attendanceDate,
@@ -70,7 +68,6 @@
         } catch (err) {
           app.logger.crit('Failed to fetch the pool details when converting a nil pool: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               poolNumber: req.params.poolNumber,
             },
@@ -84,7 +81,6 @@
         !req.session.poolDetails.poolDetails.is_nil_pool) {
         app.logger.crit('Failed to convert pool to active pool as the pool is not a nil pool: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             poolNumber: req.params.poolNumber,
           },
@@ -232,7 +228,6 @@
 
           app.logger.info('Converted a nil pool to an active pool: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               poolNumber: req.session.poolDetails.poolNumber,
             },
@@ -249,7 +244,6 @@
 
           app.logger.crit('Failed to convert nil pool to active pool: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               poolNumber: req.session.poolDetails.poolNumber,
             },

@@ -40,7 +40,6 @@
         if (!juror) {
           app.logger.crit('Failed to find a juror with that juror number', {
             userId: req.session.authentication.login,
-            jwt: req.session.authToken,
             error: 'The juror number in the url does not match the juror selected to change the times',
           });
 
@@ -113,7 +112,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch attendance records for given day and juror number', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
@@ -216,7 +214,6 @@
 
         app.logger.info('Updated juror\'s attendance times', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: {
             ...payload,
           },
@@ -226,7 +223,6 @@
       } catch (err) {
         app.logger.crit('Unable to update the juror attendance times', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: {
             ...payload,
           },

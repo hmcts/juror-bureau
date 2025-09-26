@@ -59,7 +59,6 @@
         .catch((err) => {
           app.logger.crit('Failed to fetch court details', {
             auth: req.session.authentication,
-            token: req.session.authToken,
             data: {
               locCode: req.params.locationCode,
             },
@@ -102,7 +101,6 @@
 
           app.logger.crit('Failed to compare etags for when updating court location details: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               locationCode,
             },
@@ -137,7 +135,6 @@
       } catch (err) {
         app.logger.crit('Failed to update court details', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: {
             locationCode,
             payload,

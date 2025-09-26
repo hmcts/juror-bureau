@@ -31,11 +31,7 @@
         const judges = activeJudges.concat(inactiveJudges);
 
         app.logger.info('Fetched list of judges: ', {
-          auth: req.session.authentication,
-          jwt: req.session.authToken,
-          data: {
-            judges,
-          },
+          auth: req.session.authentication
         });
 
         replaceAllObjKeys(judges, _.camelCase);
@@ -48,7 +44,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch judges: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             isActive: req.query.judgeType || 'active',
           },
@@ -73,11 +68,7 @@
         const judge = await judgeDetailsDAO.get(req, judgeId);
 
         app.logger.info('Fetched judges details: ', {
-          auth: req.session.authentication,
-          jwt: req.session.authToken,
-          data: {
-            judge,
-          },
+          auth: req.session.authentication
         });
 
         replaceAllObjKeys(judge, _.camelCase);
@@ -98,7 +89,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch judge\'s details: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             judgeId,
           },
@@ -133,7 +123,6 @@
 
         app.logger.info('Updated judges details: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             judgeId,
             payload,
@@ -146,7 +135,6 @@
       } catch (err) {
         app.logger.crit('Failed to update judge\'s details: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             judgeId,
           },
@@ -176,7 +164,6 @@
 
         app.logger.info('Fetched judges details: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             judge,
           },
@@ -199,7 +186,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch judge\'s details: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             judgeId,
           },
@@ -221,7 +207,6 @@
 
         app.logger.info('Deleted the unused judge: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             judgeId,
           },
@@ -233,7 +218,6 @@
       } catch (err) {
         app.logger.crit('Failed to delete judge: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             judgeId,
           },
@@ -297,7 +281,6 @@
 
         app.logger.info('Added new judge: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             payload,
           },
@@ -309,7 +292,6 @@
       } catch (err) {
         app.logger.crit('Failed to add new judge: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             payload,
           },

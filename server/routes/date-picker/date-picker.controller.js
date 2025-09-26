@@ -33,7 +33,6 @@
         } catch (err) {
           app.logger.crit('Failed to fetch bank holidays for datepicker', {
             auth: req.session.authentication,
-            token: req.session.authToken,
             error: typeof err.error !== 'undefined' ? err.error : err.toString(),
           });
         }

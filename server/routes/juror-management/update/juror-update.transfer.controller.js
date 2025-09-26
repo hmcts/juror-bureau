@@ -73,7 +73,6 @@
         errorCB = function(err) {
           app.logger.crit('Failed to fetch courts list: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             jurorNumber: req.params['jurorNumber'],
             error:
               typeof err.error !== 'undefined' ? err.error : err.toString(),
@@ -165,7 +164,6 @@
         .then(async (court) => {
           app.logger.info('Matched the selected court', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               matchedCourt: court,
             },
@@ -176,7 +174,7 @@
 
           validateMovementObj.validateMovement.put(req, {
             sourcePoolNumber: req.params.poolNumber || req.session.jurorUpdate.poolNumber,
-            sendingCourtLocCode: await resolveLocationCode(req),
+            sendingCourtLocCode: await resolveLocationCode(app, req),
             receivingCourtLocCode: modUtils.getLocCodeFromCourtNameOrLocation(req.body.courtNameOrLocation),
             targetServiceStartDate: dateFilter(req.body.attendanceDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
             jurorNumbers: req.body.selectedJurors,
@@ -199,7 +197,6 @@
             .catch((err) => {
               app.logger.crit('Failed to check transfer validity: ', {
                 auth: req.session.authentication,
-                jwt: req.session.authToken,
                 jurorNumber: req.params['jurorNumber'],
                 error:
                   typeof err.error !== 'undefined' ? err.error : err.toString(),
@@ -213,7 +210,6 @@
         .catch((err) => {
           app.logger.crit('Failed to match the selected court', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               selectedCourt: req.body.courtNameOrLocation,
             },
@@ -233,7 +229,7 @@
     };
   };
 
-  async function resolveLocationCode(req) {
+  async function resolveLocationCode(app,req) {
     if (typeof req.params.poolNumber === 'undefined') {
       return req.session.locCode;
     }
@@ -244,7 +240,7 @@
     try {
       poolSummary = await poolSummaryObject.get(req, poolNumber);
     } catch (err) {
-      Logger.instance.crit('Failed to fetch pool summary for juror transfer', {
+      app.logger.crit('Failed to fetch pool summary for juror transfer', {
         auth: req.session.authentication,
         data: { poolNumber },
         error: typeof err.error !== 'undefined' ? err.error : err.toString(),

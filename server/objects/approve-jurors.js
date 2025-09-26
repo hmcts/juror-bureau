@@ -6,7 +6,6 @@
 
   module.exports.jurorList = new DAO('moj/juror-record/pending-jurors', {
     get: function(locCode, status) {
-      console.log('locCode', locCode);
       let uri = urljoin(
         this.resource,
         locCode,

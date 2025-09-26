@@ -82,7 +82,6 @@
       };
 
       results.forEach(([juror, date]) => {
-        console.log(date);
         tmpErrors.push({
           ...message,
           // eslint-disable-next-line max-len

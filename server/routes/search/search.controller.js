@@ -58,7 +58,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch data for search page load: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
@@ -225,7 +224,6 @@
 
         app.logger.info('Fetched search results: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             params: req.session.searchParams,
           },
@@ -239,7 +237,6 @@
 
         app.logger.crit('Failed to fetch search results: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             params: req.session.searchParams,
           },

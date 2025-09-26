@@ -88,7 +88,6 @@
 
           app.logger.info('Retrieved preferred deferral dates: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: digitalDates,
           });
           // if there are deferral dates selected on digital reply, move straight to select pool screen
@@ -101,7 +100,6 @@
         } catch (err){
           app.logger.crit('Failed to retrive preferred deferral dates: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
           return res.render('_errors/generic', { err });
@@ -258,7 +256,6 @@
         , successCB = function(poolOptions) {
           app.logger.info('Fetch pool options:  ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: postBody,
             response: poolOptions,
           });
@@ -268,7 +265,6 @@
             .then((data) => {
               app.logger.info('Retrieved excusal codes: ', {
                 auth: req.session.authentication,
-                jwt: req.session.authToken,
                 data: data,
               });
 
@@ -343,7 +339,6 @@
             .catch((err) => {
               app.logger.crit('Failed to retrive excusal codes: ', {
                 auth: req.session.authentication,
-                jwt: req.session.authToken,
               });
 
               return res.render('_errors/generic', { err });
@@ -354,7 +349,6 @@
 
           app.logger.crit('Failed to fetch pool options: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
           return res.redirect(app.namedRoutes.build('process-deferral-dates.get', routeParameters));
@@ -399,7 +393,6 @@
 
           app.logger.info('Deferral processed: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: req.body,
           });
 
@@ -436,7 +429,6 @@
               default:
                 app.logger.crit('Failed to process Deferral: ', {
                   auth: req.session.authentication,
-                  jwt: req.session.authToken,
                   data: req.body,
                   error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
                 });
@@ -449,7 +441,6 @@
 
           app.logger.crit('Failed to process Deferral: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: req.body,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
@@ -562,10 +553,8 @@
 
           app.logger.info('Retrieved excusal codes: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             jurorNumber: req.params['id'],
             type: req.params['type'],
-            data: data,
           });
 
           tmpFields = req.session.formFields;
@@ -592,7 +581,6 @@
 
           app.logger.crit('Failed to retrive excusal: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             jurorNumber: req.params['id'],
             type: req.params['type'],
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
@@ -639,7 +627,6 @@
 
           app.logger.info('Excusal processed: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: req.body,
           });
 
@@ -660,7 +647,6 @@
         , errorCB = function(err) {
           app.logger.crit('Failed to process excusal: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: req.body,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
@@ -896,7 +882,6 @@
 
           app.logger.crit('Failed to fetch the paper response: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: req.params['id'],
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
@@ -915,7 +900,6 @@
   function getOpticReferenceSuccess(app, req, res, data) {
     app.logger.info('Fetched the optic reference for the juror if available: ', {
       auth: req.session.authentication,
-      jwt: req.session.authToken,
       data: {
         jurorNumber: req.params['id'],
         opticReference: data.opticReference,
@@ -939,8 +923,6 @@
           (catchmentResponse) => {
             app.logger.info('Fetched the courts for new address: ', {
               auth: req.session.authentication,
-              jwt: req.session.authToken,
-              postcode: data.responseClone.addressPostcode,
               data: {
                 catchmentResponse,
               },
@@ -975,7 +957,6 @@
           (err) => {
             app.logger.crit('Failed when fetching the juror\'s catchement area: ', {
               auth: req.session.authentication,
-              jwt: req.session.authToken,
               data: req.params['id'],
               error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
             });
@@ -984,7 +965,6 @@
             if (err.statusCode === 404) {
               app.logger.crit('No catchment area for juror\'s postcode: ', {
                 auth: req.session.authentication,
-                jwt: req.session.authToken,
                 data: req.params['id'],
                 error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
               });
@@ -1041,7 +1021,6 @@
 
     app.logger.crit('Failed when fetching the juror\'s optic reference: ', {
       auth: req.session.authentication,
-      jwt: req.session.authToken,
       data: req.params['id'],
       error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
     });
@@ -1080,7 +1059,6 @@
 
           app.logger.info('Posted a new Optic reference: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: req.body,
           });
 
@@ -1091,7 +1069,6 @@
 
           app.logger.crit('Something went wrong when adding the optic reference: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: req.body,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });

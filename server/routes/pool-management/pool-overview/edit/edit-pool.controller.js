@@ -36,10 +36,8 @@ const { SessionConfig } = require('../../../../lib/session-config');
 
           app.logger.info('Fetched pool summary: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               poolNumber: req.params['poolNumber'],
-              response: response,
             },
           });
 
@@ -64,7 +62,6 @@ const { SessionConfig } = require('../../../../lib/session-config');
 
           app.logger.crit('Failed to fetch pool summary: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               poolNumber: req.params['poolNumber'],
             },
@@ -92,7 +89,6 @@ const { SessionConfig } = require('../../../../lib/session-config');
 
           app.logger.info('Pool edited successfully: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               poolNumber: req.body.poolNumber,
               noOfJurors: req.body.noOfJurors,
@@ -111,7 +107,6 @@ const { SessionConfig } = require('../../../../lib/session-config');
 
           app.logger.crit('Failed to edit the pool: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               poolNumber: req.body.poolNumber,
               noOfJurors: req.body.noOfJurors,

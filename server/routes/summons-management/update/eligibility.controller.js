@@ -49,7 +49,6 @@
       } catch (err) {
         app.logger.crit('Unable to fetch the summons details', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           data: {
             id: req.params['id'],
           },
@@ -103,9 +102,7 @@
 
         app.logger.info('Successfully updated the juror eligibility: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
-            eligibility,
             summonsId: req.params['id'],
           },
         });
@@ -117,7 +114,6 @@
       } catch (err) {
         app.logger.crit('Could not update the summons eligibility details', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 

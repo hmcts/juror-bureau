@@ -41,11 +41,7 @@
 
           app.logger.info('Fetched trials list', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
-            data: {
-              isActive: isActive,
-              trials: data,
-            },
+            data: opts,
           });
 
           const queryTotal = data.total_items;
@@ -83,7 +79,6 @@
         .catch((err) => {
           app.logger.crit('Failed to fetch trials: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: opts,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
@@ -150,7 +145,6 @@
         ).catch(err => {
           app.logger.crit('Unable to fetch panel details, continuing to trial details', {
             auth: req.session.authentication,
-            token: req.session.authToken,
             error: typeof err.error !== 'undefined' ? err.error : err.toString(),
             data: {
               trialNumber,
@@ -218,7 +212,6 @@
         .catch((err) => {
           app.logger.crit('Failed to fetch trial details: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               trialNumber,
               locationCode,
@@ -307,7 +300,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch trial details: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             trialNumber: req.params.trialNumber,
             locationCode: req.params.locationCode,
@@ -361,7 +353,6 @@
       } catch (err) {
         app.logger.crit('Failed to end trial: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             trialNumber: req.params.trialNumber,
             locationCode: req.params.locationCode,

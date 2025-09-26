@@ -31,7 +31,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch available pools for reassigning a juror', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           locationCode: req.session.locCode,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
@@ -55,7 +54,6 @@
 
       app.logger.info('Fetched available pools for reassigning a juror', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         data: {
           response,
           court,
@@ -226,7 +224,6 @@
         .then((court) => {
           app.logger.info('Matched the selected court', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               matchedCourt: court,
             },
@@ -247,7 +244,6 @@
         .catch(() => {
           app.logger.crit('Failed to match the selected court', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: {
               selectedCourt: req.body.courtNameOrLocation,
             },
@@ -372,7 +368,6 @@
         .catch((err) => {
           app.logger.crit('Failed to check transfer validity: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             jurorNumber: req.session.poolJurorsReassign ?
               req.session.poolJurorsReassign.selectedJurors : [req.params['jurorNumber']],
             error:
@@ -472,7 +467,6 @@
       .catch((err) => {
         app.logger.crit('Failed to reassign the juror to a different pool', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             juror: req.session.poolJurorsReassign ?
               req.session.poolJurorsReassign.selectedJurors : [req.params['jurorNumber']],

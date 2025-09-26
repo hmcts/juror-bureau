@@ -136,7 +136,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch trials for reassigning panel: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: opts,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
@@ -148,9 +147,8 @@
 
       app.logger.info('Fetched list of all trials for reassigning panel', {
         auth: req.session.authentication,
-        jwt: req.session.authToken,
         data: {
-          trials: data,
+          ...opts,
         },
       });
 

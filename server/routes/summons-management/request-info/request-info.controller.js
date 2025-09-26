@@ -114,7 +114,6 @@
 
           app.logger.info('Successfully requested information from juror: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: req.session.letterInfoDto,
           });
 
@@ -137,7 +136,6 @@
 
           app.logger.crit('Failed to request information from juror: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: req.session.letterInfoDto,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
@@ -159,7 +157,6 @@
 
         app.logger.info('Letter to be manually sent to the juror: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: req.session.letterInfoDto,
         });
 

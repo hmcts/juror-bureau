@@ -78,7 +78,6 @@
         if (err.statusCode === 422) {
           app.logger.warn('Failed to generate a panel from with a BVR', {
             auth: req.session.authentication,
-            token: req.session.authToken,
             error: typeof err.error !== 'undefined' ? err.error : err.toString(),
           });
 
@@ -97,7 +96,6 @@
 
         app.logger.crit('Failed to generate a panel from all available jurors', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
@@ -143,7 +141,6 @@
       }, (err) => {
         app.logger.crit('Failed to fetch available jurors/pools', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
@@ -189,7 +186,6 @@
       }, (err) => {
         app.logger.crit('Failed to generate a panel of jurors from specific pools', {
           auth: req.session.authentication,
-          token: req.session.authToken,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 

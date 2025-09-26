@@ -25,7 +25,6 @@
 
         app.logger.crit('The juror number was tampered with: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber: {
               url: jurorNumber,
@@ -66,7 +65,6 @@
 
         app.logger.crit('Failed to fetch the juror attendance data:', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber,
             locationCode: req.session.locCode,
@@ -86,7 +84,6 @@
 
           app.logger.info('Updated attendance date: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: req.body,
           });
 
@@ -96,7 +93,6 @@
 
           app.logger.crit('Could not update attendance date: ', {
             auth: req.session.authentication,
-            jwt: req.session.authToken,
             data: req.body,
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
@@ -109,7 +105,6 @@
 
         app.logger.crit('The juror number was tampered with: ', {
           auth: req.session.authentication,
-          jwt: req.session.authToken,
           data: {
             jurorNumber: {
               url: jurorNumber,
