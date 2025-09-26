@@ -1801,6 +1801,7 @@ const { date } = require('../../../config/validation/report-search-by');
             req.params.filter,
           ),
         },
+        defaultSortColumn: 'date',
       }
     };
   };
