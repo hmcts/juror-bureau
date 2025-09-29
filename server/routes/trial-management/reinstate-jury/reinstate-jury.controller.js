@@ -75,36 +75,10 @@ const { error } = require('winston');
 
     const selectedJurors = !Array.isArray(req.body.selectedJurors) ? [req.body.selectedJurors] : req.body.selectedJurors;
 
+    // TO BE COFIRMED - is 12 the right number here?
     if (selectedJurors.length > 12) {
       req.session.errors = makeManualError('selectedJurors', 'You cannot select more than 12 jurors');
       return res.redirect(errorUrl);
-    }
-
-
-    try {
-      const panelMembers = await panelListDAO.get(
-        req,
-        trialNumber,
-        locationCode
-      );
-
-      if (panelMembers.length + selectedJurors.length > 12) {
-        return res.render('trial-management/reinstate-jury/cannot-reinstate-jury', {
-          cancelUrl: errorUrl,
-        });
-      }
-
-    } catch (err) {
-      app.logger.crit('Unable to fetch panel details', {
-        auth: req.session.authentication,
-        error: typeof err.error !== 'undefined' ? err.error : err.toString(),
-        data: {
-          trialNumber,
-          locationCode
-        }
-      });
-
-      return res.render('_errors/generic', { err });
     }
 
     const payload = {

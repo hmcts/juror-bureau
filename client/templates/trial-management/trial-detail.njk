@@ -142,7 +142,7 @@
     <div class="govuk-grid-column-one-half">
       <div class="govuk-button-group moj-button-group--inline mod-flex mod-justify-end">
         {% if trial.is_active %}
-          {% if hasReturnedJurors and not canEmpanel %}
+          {% if canReinstateJury %}
             {{ govukButton({
               text: "Reinstate jury",
               classes: "govuk-button--secondary",

@@ -186,8 +186,6 @@
             canEmpanel = panelData.filter((juror) => juror.juror_status === 'Panel').length > 0;
           };
 
-          console.log('\n\nRETURNED JURORS', returnedJurors, '\n\n');
-
           return res.render('trial-management/trial-detail.njk', {
             trial: trialData,
             canEmpanel,
@@ -196,6 +194,7 @@
             errorBanner,
             addPanelStatus: addPanelStatus.data,
             hasReturnedJurors: returnedJurors.length > 0,
+            canReinstateJury: returnedJurors.length > 0 && panelData.length === 0,
             formActions: {
               returnUrl: app.namedRoutes.build('trial-management.trials.return.post', {
                 trialNumber: req.params.trialNumber,
