@@ -1,6 +1,6 @@
 const secretsConfig = require('config');
 const { createClient } = require('redis');
-const { RedisStore } = require('connect-redis');
+const RedisStore = require('connect-redis').default;
 const expressSession = require('express-session');
 
 module.exports.SessionConfig = class SessionConfig {
