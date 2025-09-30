@@ -41,7 +41,7 @@
     };
   };
 
-  module.exports.deferralDateAndReason = (minDate, maxDate) => {
+  module.exports.deferralDateAndReason = (minDate, maxDate, isManager = false) => {
     return {
       deferralDate: {
         presence: {

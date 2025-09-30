@@ -1,3 +1,5 @@
+const { isManager } = require('../../components/auth/user-type');
+
 (function() {
   'use strict';
 
@@ -127,7 +129,7 @@
         jurorNumber: req.params['id'],
         jurorDetails: req.session.jurorDetails,
         minDate: dateFilter(moment(req.session.minDate).add(1, 'days'), null, 'DD/MM/YYYY'),
-        maxDate: dateFilter(moment(req.session.maxDate).subtract(1, 'days'), null, 'DD/MM/YYYY'),
+        maxDate: !isManager(req) ? dateFilter(moment(req.session.maxDate).subtract(1, 'days'), null, 'DD/MM/YYYY') : null,
         cancelUrl,
         backLinkUrl,
         processUrl,
@@ -184,7 +186,7 @@
       //Determine non-empty dates, validate these, if valid add to deferralDates array, if not show error
       if (req.body.deferredToDate1 !== ''){
         let validatorResult =
-            validate({dateToCheck: req.body.deferredToDate1}, deferralDatePickerValidator(minDate, maxDate));
+            validate({dateToCheck: req.body.deferredToDate1}, deferralDatePickerValidator(minDate, maxDate, isManager(req)));
 
         if (typeof validatorResult !== 'undefined') {
           tmpErrors.deferredToDate1 = validatorResult.dateToCheck;
@@ -195,7 +197,7 @@
 
       if (req.body.deferredToDate2 !== ''){
         let validatorResult =
-            validate({dateToCheck: req.body.deferredToDate2}, deferralDatePickerValidator(minDate, maxDate));
+            validate({dateToCheck: req.body.deferredToDate2}, deferralDatePickerValidator(minDate, maxDate, isManager(req)));
 
         if (typeof validatorResult !== 'undefined') {
           tmpErrors.deferredToDate2 = validatorResult.dateToCheck;
@@ -206,7 +208,7 @@
 
       if (req.body.deferredToDate3 !== ''){
         let validatorResult =
-            validate({dateToCheck: req.body.deferredToDate3}, deferralDatePickerValidator(minDate, maxDate));
+            validate({dateToCheck: req.body.deferredToDate3}, deferralDatePickerValidator(minDate, maxDate, isManager(req)));
 
         if (typeof validatorResult !== 'undefined') {
           tmpErrors.deferredToDate3 = validatorResult.dateToCheck;
@@ -329,7 +331,7 @@
                   items: tmpErrors,
                 },
                 minDate: dateFilter(moment(req.session.minDate).add(1, 'days'), null, 'DD/MM/YYYY'),
-                maxDate: dateFilter(moment(req.session.maxDate).subtract(1, 'days'), null, 'DD/MM/YYYY'),
+                maxDate: !isManager ? dateFilter(moment(req.session.maxDate).subtract(1, 'days'), null, 'DD/MM/YYYY') : null,
                 dateHint,
                 deferralSelections: tmpFields,
                 otherDateSearch: req.session.otherDateSearch,
@@ -454,7 +456,7 @@
       if (req.body.deferralOption === 'otherDate' && sentToDeferral === null) {
 
         validatorResult = validate({deferralDate: req.body.deferralDate, deferralReason: req.body.deferralReason}
-          , otherDeferralDateValidater(req.session.minDate, req.session.maxDate));
+          , otherDeferralDateValidater(req.session.minDate, req.session.maxDate, isManager(req)));
 
         if (typeof validatorResult !== 'undefined') {
           req.session.errors = validatorResult;
@@ -471,23 +473,48 @@
         return res.redirect(app.namedRoutes.build('process-deferral.get', routeParameters));
       }
 
-      validatorResult = validate(req.body, deferralJurorValidator());
+      if (req.body.allowLongDeferral !== "true") {
+        validatorResult = validate(req.body, deferralJurorValidator());
 
-      if (typeof validatorResult !== 'undefined' && sentToDeferral === null) {
-        req.session.errors = validatorResult;
-        req.session.deferralSelectedReason = req.body.deferralReason;
-        req.session.formFields = req.body;
-        return res.redirect(app.namedRoutes.build('process-deferral.get', routeParameters));
+        if (typeof validatorResult !== 'undefined' && sentToDeferral === null) {
+          req.session.errors = validatorResult;
+          req.session.deferralSelectedReason = req.body.deferralReason;
+          req.session.formFields = req.body;
+          return res.redirect(app.namedRoutes.build('process-deferral.get', routeParameters));
+        }
+
+        if (sentToDeferral !== null){
+          data.deferralDate = dateFilter(new Date(req.session.deferralDates[0]), null, 'yyyy-MM-DD');  // we should always get date
+          data.deferralReason = req.body.deferralReason;
+        } else {
+          optionSelected = req.body.deferralOption.split('_');
+          data.deferralDate = dateFilter(new Date(optionSelected[0]), null, 'yyyy-MM-DD');  // we should always get date
+          data.poolNumber = optionSelected[1] ? optionSelected[1] : null;
+          data.deferralReason = req.body.deferralReason;
+        }
+      } else {
+        data = req.body;
       }
 
-      if (sentToDeferral !== null){
-        data.deferralDate = new Date(req.session.deferralDates[0]);  // we should always get date
-        data.deferralReason = req.body.deferralReason;
-      } else {
-        optionSelected = req.body.deferralOption.split('_');
-        data.deferralDate = new Date(optionSelected[0]);  // we should always get date
-        data.poolNumber = optionSelected[1] ? optionSelected[1] : null;
-        data.deferralReason = req.body.deferralReason;
+      if (isManager(req) && req.body.allowLongDeferral !== "true") {
+        const pastMaxDate = moment(data.deferralDate).isAfter(moment(req.session.maxDate))
+        if (pastMaxDate) {
+          console.log('\n\nManager deferral - redirect to confirm\n\n');
+          app.logger.info('Showing confirm long deferral page for juror', {
+            auth: req.session.authentication,
+            data: {
+              routeParameters,
+              deferralReason: data.deferralReason,
+              deferralDate: data.deferralDate,
+            },
+          });
+
+          return res.render('juror-management/juror-record/confirm-long-deferral.njk', {
+            bodyData: data,
+            postUrl: app.namedRoutes.build('process-deferral.post', routeParameters),
+            cancelUrl: app.namedRoutes.build('process-deferral.get', routeParameters),
+          });
+        }
       }
 
       data.replyMethod = replyMethod ? replyMethod: routeParameters.type;

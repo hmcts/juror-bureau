@@ -68,7 +68,7 @@
     }
   };
 
-  module.exports.deferralDatePicker = (minDate, maxDate) => {
+  module.exports.deferralDatePicker = (minDate, maxDate, isManager = false) => {
     return {
       dateToCheck: {
         genericDatePicker: {
@@ -76,6 +76,7 @@
         deferralDatePicker: {
           minDate: minDate,
           maxDate: maxDate,
+          isManager: isManager,
         },
       },
     };
@@ -90,7 +91,7 @@
         summary: 'Date cannot be earlier than original summons date',
         details: 'Date cannot be earlier than original summons date',
       }];
-    } else if (options.maxDate && moment(dateInitial.dateAsDate).isAfter(options.maxDate)) {
+    } else if (!options.isManager &&options.maxDate && moment(dateInitial.dateAsDate).isAfter(options.maxDate)) {
       tmpErrors = [{
         summary: 'Date cannot be more than 12 months after the original summons date',
         details: 'Date cannot be more than 12 months after the original summons date',

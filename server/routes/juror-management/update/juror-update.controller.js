@@ -3,7 +3,7 @@
 
   const _ = require('lodash');
   const validate = require('validate.js');
-  const { isCourtUser } = require('../../../components/auth/user-type');
+  const { isCourtUser, isManager } = require('../../../components/auth/user-type');
   const jurorUpdateValidator = require('../../../config/validation/juror-record-update');
   const jurorRecordObject = require('../../../objects/juror-record');
   const deferralObject = require('../../../objects/deferral-mod').deferralObject;
@@ -195,7 +195,10 @@
           req.session.deferralReasons = data;
 
           let minDate = req.session.jurorCommonDetails.startDate;
-          const maxDate = moment(minDate, 'yyyy-MM-DD').add(1, 'y').format('YYYY-MM-DD');
+          let maxDate;
+          if (!isManager(req)) { 
+            maxDate = moment(minDate, 'yyyy-MM-DD').add(1, 'y').format('YYYY-MM-DD'); 
+          }
 
           return res.render('response/process/deferral.njk', {
             deferralDetails: tmpFields,
@@ -204,7 +207,7 @@
             processURL : processURL,
             cancelUrl : cancelUrl,
             hearingDate: dateFilter(minDate, null, 'DD/MM/YYYY'),
-            maxDate: dateFilter(maxDate, null, 'DD/MM/YYYY'),
+            maxDate: maxDate ? dateFilter(maxDate, null, 'DD/MM/YYYY') : null,
             errors: {
               message: '',
               count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -237,6 +240,7 @@
 
   module.exports.postDeferral = function(app) {
     return async function(req, res) {
+      const { jurorNumber } = req.params;
       let tmpReasons
       let deferralReason;
 
@@ -246,7 +250,7 @@
 
       const maxDate = moment(hearingDate, 'DD/MM/YYYY').add(1, 'y').add(1, 'd').format('YYYY-MM-DD');
 
-      const validatorResult = validate(req.body, deferralReasonAndDecision(req.body, dateFilter(hearingDate, 'DD/MM/YYYY', 'yyyy-MM-DD'), maxDate));
+      const validatorResult = validate(req.body, deferralReasonAndDecision(req.body, dateFilter(hearingDate, 'DD/MM/YYYY', 'yyyy-MM-DD'), maxDate, isManager(req)));
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
@@ -308,12 +312,39 @@
       deferralReason = tmpReasons
         .find(reason => reason.code === req.body.deferralReason).description.toLowerCase();
 
-      deferralObject.put(req, req.body, req.params.jurorNumber)
+      // NEED TO REDIRECT TO A NEW PAGE FOR MANAGERS TO CONFIRM THE DEFERRAL
+      if (isManager(req) && req.body.allowLongDeferral !== "true" && req.body.allow_multiple_deferral !== "true") {
+        const pastMaxDate = moment(req.body.deferralDate, 'DD/MM/YYYY').isAfter(moment(maxDate))
+        if (pastMaxDate) {
+          app.logger.info('Showing confirm deferral page for juror', {
+            auth: req.session.authentication,
+            data: {
+              jurorNumber,
+              deferralReason: req.body.deferralReason,
+              deferralDate: req.body.deferralDate,
+            },
+          });
+
+          return res.render('juror-management/juror-record/confirm-long-deferral.njk', {
+            bodyData: {
+              jurorNumber,
+              deferralReason: req.body.deferralReason,
+              deferralDate: req.body.deferralDate,
+              hearingDate: dateFilter(req.session.jurorCommonDetails.startDate, 'yyyy-MM-dd', 'DD/MM/YYYY'),
+              deferralDecision: 'GRANT',
+            },
+            postUrl: app.namedRoutes.build('juror.update.deferral.post', { jurorNumber }),
+            cancelUrl: app.namedRoutes.build('juror.update.get', { jurorNumber }),
+          });
+        }
+      }
+
+      deferralObject.put(req, req.body, jurorNumber)
         .then((data) => {
           app.logger.info('Deferral update processed: ', {
             auth: req.session.authentication,
             data: {
-              responseId: req.params.jurorNumber,
+              responseId: jurorNumber,
             },
             reasons: data,
           });
@@ -326,20 +357,20 @@
 
           if (res.locals.isCourtUser) {
             return res.redirect(app.namedRoutes.build('juror.update.deferral.letter.get', {
-              jurorNumber: req.params.jurorNumber,
+              jurorNumber: jurorNumber,
               letter: req.body.deferralDecision.toLowerCase(),
             }));
           }
 
           return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
-            jurorNumber: req.params.jurorNumber,
+            jurorNumber,
           }));
         })
         .catch((err) => {
           app.logger.crit('Failed to process deferral update: ', {
             auth: req.session.authentication,
             data: {
-              responseId: req.params.jurorNumber,
+              responseId: jurorNumber,
             },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
@@ -359,7 +390,7 @@
                   error: typeof err.error !== 'undefined' ? err.error : err.toString(),
                 });
                 return res.redirect(app.namedRoutes.build('juror.update.deferral.confirm.get', {
-                  jurorNumber: req.params.jurorNumber,
+                  jurorNumber,
                 }) + `?deferralReason=${req.body.deferralReason}&deferralDate=${req.body.deferralDate}`);
               case 'CANNOT_DEFER_JUROR_WITH_APPEARANCE':
                 req.session.errors = makeManualError('deferral', 'Juror cannot be deferred as they already have an appearance at court');
@@ -372,7 +403,7 @@
           req.session.formFields = req.body;
 
           return res.redirect(app.namedRoutes.build('juror.update.deferral.get', {
-            jurorNumber: req.params.jurorNumber,
+            jurorNumber,
           }));
         });
     };
@@ -488,7 +519,7 @@
       const { jurorNumber } = req.params;
       const { deferralReason, deferralDate } = req.query;
 
-      app.logger.info('Showing confirm deferral page for juror', {
+      app.logger.info('Showing confirm long deferral page for juror', {
         auth: req.session.authentication,
         data: {
           jurorNumber,
@@ -497,16 +528,13 @@
         },
       });
 
-      const postUrl = app.namedRoutes.build('juror.update.deferral.post', { jurorNumber });
-
-      const hearingDate = req.session.jurorCommonDetails.startDate;
-
       return res.render('juror-management/juror-record/confirm-deferral.njk', {
         jurorNumber,
         deferralReason,
         deferralDate,
-        postUrl,
-        hearingDate,
+        postUrl: app.namedRoutes.build('juror.update.deferral.post', { jurorNumber }),
+        cancelUrl: app.namedRoutes.build('juror.update.get', { jurorNumber }),
+        hearingDate: req.session.jurorCommonDetails.startDate,
       });
     }
   };
