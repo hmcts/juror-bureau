@@ -92,6 +92,7 @@
     post: function(body) {
       return {
         body,
+        transform: mapSnakeToCamel
       }
     }
   });
