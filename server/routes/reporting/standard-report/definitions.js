@@ -250,6 +250,7 @@ const { date } = require('../../../config/validation/report-search-by');
           'courtName',
           'totalPoolMembers',
           'numberOfJurorsAttended',
+          'numberOfJurorsSummoned'
         ],
         defaultSortColumn: 'lastName',
         printLandscape: true,
