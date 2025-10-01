@@ -15,7 +15,7 @@
           this.resource,
           `?${params.toString()}`,
         ),
-        transform: (data) => { delete data['_headers']; return replaceAllObjKeys(Object.values(data), _.camelCase); },
+        transform: (data) => { delete data['_headers']; return replaceAllObjKeys(data, _.camelCase); },
       }
     }
   });
