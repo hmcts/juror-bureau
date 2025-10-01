@@ -167,7 +167,7 @@
           return {};
         })
       ])
-        .then(([trialData, panelData, addPanelStatus, returnedJurors]) => {
+        .then(([trialData, panelData, addPanelStatus, returnedJurorsResponse]) => {
 
           let canEmpanel = true;
 
@@ -199,8 +199,7 @@
             successBanner,
             errorBanner,
             addPanelStatus: addPanelStatus.data,
-            hasReturnedJurors: returnedJurors.length > 0,
-            canReinstateJury: returnedJurors.length > 0 && panelData.length === 0,
+            canReinstateJury: returnedJurorsResponse.returnedJurors.length > 0 && panelData.length === 0,
             formActions: {
               returnUrl: app.namedRoutes.build('trial-management.trials.return.post', {
                 trialNumber: req.params.trialNumber,

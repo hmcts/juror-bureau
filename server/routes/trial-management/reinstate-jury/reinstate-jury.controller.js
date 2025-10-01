@@ -15,10 +15,11 @@ const { error } = require('winston');
 
     delete req.session.errors;
     delete req.session.formFields;
+    delete req.session[`${trialNumber}-${locationCode}-reinstateJury`];
     
-    let returnedJurors;
+    let response;
     try {
-      returnedJurors = await getReturnedJurors.get(req, trialNumber, locationCode);
+      response = await getReturnedJurors.get(req, trialNumber, locationCode);
     } catch (err) {
       app.logger.crit('Failed to get returned jurors: ', {
         auth: req.session.authentication,
@@ -32,7 +33,11 @@ const { error } = require('winston');
       return res.render('_errors/generic', { err });
     }
 
-    const { validJurorsTable, invalidJurorsTable } = buildReinstateJuryTables(app)(returnedJurors);
+    const { validJurorsTable, invalidJurorsTable } = buildReinstateJuryTables(app)(response.returnedJurors);
+
+    req.session[`${trialNumber}-${locationCode}-reinstateJury`] = {
+      originalJurorsCount: response.originalJurorsCount
+    }
 
     return res.render('trial-management/reinstate-jury/reinstate-jury-selection', {
       validJurorsTable,
@@ -66,7 +71,9 @@ const { error } = require('winston');
     const errorUrl = app.namedRoutes.build('trial-management.trials.reinstate-jury.get', {
         trialNumber,
         locationCode,
-      })
+      });
+
+    const originalJurorsCount = req.session[`${trialNumber}-${locationCode}-reinstateJury`]?.originalJurorsCount;
 
     if (!req.body.selectedJurors) {
       req.session.errors = makeManualError('selectedJurors', 'Select at least one juror to reinstate');
@@ -75,8 +82,7 @@ const { error } = require('winston');
 
     const selectedJurors = !Array.isArray(req.body.selectedJurors) ? [req.body.selectedJurors] : req.body.selectedJurors;
 
-    // TO BE COFIRMED - is 12 the right number here?
-    if (selectedJurors.length > 12) {
+    if (selectedJurors.length > (originalJurorsCount > 12 ? 12 : originalJurorsCount)) {
       req.session.errors = makeManualError('selectedJurors', 'You cannot select more than 12 jurors');
       return res.redirect(errorUrl);
     }
