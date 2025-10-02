@@ -1,5 +1,3 @@
-const { isManager } = require('../../components/auth/user-type');
-
 (function() {
   'use strict';
 
@@ -24,513 +22,493 @@ const { isManager } = require('../../components/auth/user-type');
     , { systemCodesDAO } = require('../../objects/administration');
   const { flowLetterPost, flowLetterGet } = require('../../lib/flowLetter');
   const { getEligibilityDetails } = require('./paper-reply/paper-reply.controller.js');
+  const { isManager } = require('../../components/auth/user-type');
 
   const dateHint = 'Use dd/mm/yyyy format. For example, 31/01/2024.';
 
-  module.exports.getDeferralDates = function(app) {
-    return async function(req, res) {
+  module.exports.getDeferralDates = (app) => async (req, res) => {
+    const tmpErrors = _.clone(req.session.errors);
+    const routeParameters = {
+      id: req.params['id'],
+      type: req.params['type'],
+    };
+    const datesEntered = {
+      firstChoiceDate: '',
+      secondChoiceDate: '',
+      thirdChoiceDate: '',
+    };
+    const errorsToDisplay = {
+      firstError: '',
+      secondError: '',
+      thirdError: '',
+    }
+    let cancelUrl;
+    let processUrl;
+    let backLinkUrl;
 
-      let tmpErrors = _.clone(req.session.errors)
-        , routeParameters = {
-          id: req.params['id'],
-          type: req.params['type'],
+    delete req.session.errors;
+    delete req.session.formFields;
+
+    let enteredDates = req.session.deferralDatesEntered;
+
+    delete req.session.deferralDatesEntered;
+
+    if (typeof enteredDates !== 'undefined') {
+      datesEntered.firstChoiceDate = enteredDates[0];
+      datesEntered.secondChoiceDate = enteredDates[1];
+      datesEntered.thirdChoiceDate = enteredDates[2];
+    }
+
+    // determine start date of juror and ensure user cannot enter before that
+    if (req.session.replyDetails.jurorStartDate) {
+      const _date = new Date(req.session.replyDetails.jurorStartDate.split('/').reverse());
+
+      req.session.minDate = _date;
+      req.session.maxDate = new Date(moment(_date).add(12, 'M'));
+    }
+
+    processUrl = app.namedRoutes.build('process-deferral-dates.post', routeParameters);
+
+    if (req.params['type'] === 'paper') {
+      cancelUrl = app.namedRoutes.build('response.paper.details.get', routeParameters);
+    } else {
+      cancelUrl = app.namedRoutes.build('response.detail.get', routeParameters);
+    }
+
+    backLinkUrl = app.namedRoutes.build('process-reply.get', routeParameters);
+
+    // Get preferred dates from backend if digital
+    if (routeParameters.type === 'digital') {
+      try {
+        const digitalDates = await preferredDatesObj.get(
+          req,
+          req.params['id'],
+        );
+
+        app.logger.info('Retrieved preferred deferral dates: ', {
+          auth: req.session.authentication,
+          data: digitalDates,
+        });
+        // if there are deferral dates selected on digital reply, move straight to select pool screen
+        if (digitalDates.length !== 0){
+          processUrl = app.namedRoutes.build('process-deferral.get', routeParameters);
+          req.session.deferralDates = digitalDates;
+          req.session.otherDateSearch = 'false';
+          return res.redirect(processUrl);
         }
-        , datesEntered = {
-          firstChoiceDate: '',
-          secondChoiceDate: '',
-          thirdChoiceDate: '',
-        }
-        , errorsToDisplay = {
-          firstError: '',
-          secondError: '',
-          thirdError: '',
-        }
-        , cancelUrl
-        , processUrl
-        , backLinkUrl;
-
-      delete req.session.errors;
-      delete req.session.formFields;
-
-      let enteredDates = req.session.deferralDatesEntered;
-
-      delete req.session.deferralDatesEntered;
-
-      if (typeof enteredDates !== 'undefined') {
-        datesEntered.firstChoiceDate = enteredDates[0];
-        datesEntered.secondChoiceDate = enteredDates[1];
-        datesEntered.thirdChoiceDate = enteredDates[2];
+      } catch (err){
+        app.logger.crit('Failed to retrive preferred deferral dates: ', {
+          auth: req.session.authentication,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+        return res.render('_errors/generic', { err });
       }
+    }
 
-      // determine start date of juror and ensure user cannot enter before that
-      if (req.session.replyDetails.jurorStartDate) {
-        const _date = new Date(req.session.replyDetails.jurorStartDate.split('/').reverse());
+    let errorCount = 0;
 
-        req.session.minDate = _date;
-        req.session.maxDate = new Date(moment(_date).add(12, 'M'));
+    if (typeof tmpErrors !== 'undefined') {
+      if (typeof tmpErrors.deferredToDate1 !== 'undefined' && tmpErrors.deferredToDate1 !== null){
+        errorsToDisplay.firstError = tmpErrors.deferredToDate1[0].summary;
+        errorCount++;
       }
+      if (typeof tmpErrors.deferredToDate2 !== 'undefined' && tmpErrors.deferredToDate2 !== null){
+        errorsToDisplay.secondError = tmpErrors.deferredToDate2[0].summary;
+        errorCount++;
+      }
+      if (typeof tmpErrors.deferredToDate3 !== 'undefined' && tmpErrors.deferredToDate3 !== null){
+        errorsToDisplay.thirdError = tmpErrors.deferredToDate3[0].summary;
+        errorCount++;
+      }
+    }
 
-      processUrl = app.namedRoutes.build('process-deferral-dates.post', routeParameters);
+    return res.render('summons-management/deferral-dates', {
+      jurorNumber: req.params['id'],
+      jurorDetails: req.session.jurorDetails,
+      minDate: dateFilter(moment(req.session.minDate).add(1, 'days'), null, 'DD/MM/YYYY'),
+      maxDate: !isManager(req) ? dateFilter(moment(req.session.maxDate).subtract(1, 'days'), null, 'DD/MM/YYYY') : null,
+      cancelUrl,
+      backLinkUrl,
+      processUrl,
+      datesEntered,
+      errorsToDisplay,
+      dateHint,
+      errors: {
+        title: 'Please check the form',
+        count: errorCount,
+        items: tmpErrors,
+      },
+    });
+  };
 
-      if (req.params['type'] === 'paper') {
-        cancelUrl = app.namedRoutes.build('response.paper.details.get', routeParameters);
+  module.exports.postDeferralDates = (app) => (req, res) => {
+    // validate if we have at least one date, and if so then on to getDeferral
+    const deferralDatesSelected = []
+    const tmpErrors = {
+      deferredToDate1: null,
+      deferredToDate2: null,
+      deferredToDate3: null,
+    };
+    const deferralDates = [];
+    const routeParameters = {
+      id: req.params['id'],
+      type: req.params['type'],
+    };
+    let minDate;
+    let maxDate;
+
+    delete req.session.errors;
+    delete req.session.formFields;
+
+
+    if (req.body.deferredToDate1 === '' && req.body.deferredToDate2 === '' && req.body.deferredToDate3 === '') {
+      req.session.errors = {
+        deferredToDate1: [{
+          summary: 'Enter at least one preferred start date for this juror',
+          details: 'Enter at least one preferred start date for this juror',
+        }],
+      };
+      return res.redirect(app.namedRoutes.build('process-deferral-dates.get', routeParameters));
+    }
+
+    deferralDatesSelected.push(req.body.deferredToDate1);
+    deferralDatesSelected.push(req.body.deferredToDate2);
+    deferralDatesSelected.push(req.body.deferredToDate3);
+
+    minDate = new Date(req.session.minDate);
+    maxDate = new Date(req.session.maxDate);
+
+    //Determine non-empty dates, validate these, if valid add to deferralDates array, if not show error
+    if (req.body.deferredToDate1 !== ''){
+      let validatorResult =
+          validate({dateToCheck: req.body.deferredToDate1}, deferralDatePickerValidator(minDate, maxDate, isManager(req)));
+
+      if (typeof validatorResult !== 'undefined') {
+        tmpErrors.deferredToDate1 = validatorResult.dateToCheck;
       } else {
-        cancelUrl = app.namedRoutes.build('response.detail.get', routeParameters);
+        deferralDates.push(createDeferralDate(req.body.deferredToDate1));
       }
+    }
 
-      backLinkUrl = app.namedRoutes.build('process-reply.get', routeParameters);
+    if (req.body.deferredToDate2 !== ''){
+      let validatorResult =
+          validate({dateToCheck: req.body.deferredToDate2}, deferralDatePickerValidator(minDate, maxDate, isManager(req)));
 
-      // Get preferred dates from backend if digital
-      if (routeParameters.type === 'digital') {
-        try {
-          const digitalDates = await preferredDatesObj.get(
-            req,
-            req.params['id'],
-          );
-
-          app.logger.info('Retrieved preferred deferral dates: ', {
-            auth: req.session.authentication,
-            data: digitalDates,
-          });
-          // if there are deferral dates selected on digital reply, move straight to select pool screen
-          if (digitalDates.length !== 0){
-            processUrl = app.namedRoutes.build('process-deferral.get', routeParameters);
-            req.session.deferralDates = digitalDates;
-            req.session.otherDateSearch = 'false';
-            return res.redirect(processUrl);
-          }
-        } catch (err){
-          app.logger.crit('Failed to retrive preferred deferral dates: ', {
-            auth: req.session.authentication,
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
-          return res.render('_errors/generic', { err });
-        }
+      if (typeof validatorResult !== 'undefined') {
+        tmpErrors.deferredToDate2 = validatorResult.dateToCheck;
+      } else {
+        deferralDates.push(createDeferralDate(req.body.deferredToDate2));
       }
+    }
 
-      let errorCount = 0;
+    if (req.body.deferredToDate3 !== ''){
+      let validatorResult =
+          validate({dateToCheck: req.body.deferredToDate3}, deferralDatePickerValidator(minDate, maxDate, isManager(req)));
 
-      if (typeof tmpErrors !== 'undefined') {
-        if (typeof tmpErrors.deferredToDate1 !== 'undefined' && tmpErrors.deferredToDate1 !== null){
-          errorsToDisplay.firstError = tmpErrors.deferredToDate1[0].summary;
-          errorCount++;
-        }
-        if (typeof tmpErrors.deferredToDate2 !== 'undefined' && tmpErrors.deferredToDate2 !== null){
-          errorsToDisplay.secondError = tmpErrors.deferredToDate2[0].summary;
-          errorCount++;
-        }
-        if (typeof tmpErrors.deferredToDate3 !== 'undefined' && tmpErrors.deferredToDate3 !== null){
-          errorsToDisplay.thirdError = tmpErrors.deferredToDate3[0].summary;
-          errorCount++;
-        }
+      if (typeof validatorResult !== 'undefined') {
+        tmpErrors.deferredToDate3 = validatorResult.dateToCheck;
+      } else {
+        deferralDates.push(createDeferralDate(req.body.deferredToDate3));
       }
-
-      return res.render('summons-management/deferral-dates', {
-        jurorNumber: req.params['id'],
-        jurorDetails: req.session.jurorDetails,
-        minDate: dateFilter(moment(req.session.minDate).add(1, 'days'), null, 'DD/MM/YYYY'),
-        maxDate: !isManager(req) ? dateFilter(moment(req.session.maxDate).subtract(1, 'days'), null, 'DD/MM/YYYY') : null,
-        cancelUrl,
-        backLinkUrl,
-        processUrl,
-        datesEntered,
-        errorsToDisplay,
-        dateHint,
-        errors: {
-          title: 'Please check the form',
-          count: errorCount,
-          items: tmpErrors,
-        },
-      });
-    };
-  };
-
-  module.exports.postDeferralDates = function(app) {
-    return function(req, res) {
-      // validate if we have at least one date, and if so then on to getDeferral
-      let deferralDatesSelected = []
-        , tmpErrors = {
-          deferredToDate1: null,
-          deferredToDate2: null,
-          deferredToDate3: null,
-        }
-        , deferralDates = []
-        , routeParameters = {
-          id: req.params['id'],
-          type: req.params['type'],
-        }
-        , minDate
-        , maxDate;
-
-      delete req.session.errors;
-      delete req.session.formFields;
+    }
 
 
-      if (req.body.deferredToDate1 === '' && req.body.deferredToDate2 === '' && req.body.deferredToDate3 === '') {
-        req.session.errors = {
-          deferredToDate1: [{
-            summary: 'Enter at least one preferred start date for this juror',
-            details: 'Enter at least one preferred start date for this juror',
-          }],
-        };
-        return res.redirect(app.namedRoutes.build('process-deferral-dates.get', routeParameters));
-      }
+    req.session.deferralDatesEntered = deferralDatesSelected;
 
-      deferralDatesSelected.push(req.body.deferredToDate1);
-      deferralDatesSelected.push(req.body.deferredToDate2);
-      deferralDatesSelected.push(req.body.deferredToDate3);
+    req.session.deferralDates = deferralDates;
 
-      minDate = new Date(req.session.minDate);
-      maxDate = new Date(req.session.maxDate);
+    if (tmpErrors.deferredToDate1 !== null || tmpErrors.deferredToDate2 !== null
+      || tmpErrors.deferredToDate3 !== null) {
+      req.session.errors = tmpErrors;
+      return res.redirect(app.namedRoutes.build('process-deferral-dates.get', routeParameters));
+    }
 
-      //Determine non-empty dates, validate these, if valid add to deferralDates array, if not show error
-      if (req.body.deferredToDate1 !== ''){
-        let validatorResult =
-            validate({dateToCheck: req.body.deferredToDate1}, deferralDatePickerValidator(minDate, maxDate, isManager(req)));
+    // save the dates for next screen
+    req.session.minDate = new Date(minDate);
+    req.session.maxDate = new Date(maxDate);
 
-        if (typeof validatorResult !== 'undefined') {
-          tmpErrors.deferredToDate1 = validatorResult.dateToCheck;
-        } else {
-          deferralDates.push(createDeferralDate(req.body.deferredToDate1));
-        }
-      }
+    req.session.otherDateSearch = 'false';
 
-      if (req.body.deferredToDate2 !== ''){
-        let validatorResult =
-            validate({dateToCheck: req.body.deferredToDate2}, deferralDatePickerValidator(minDate, maxDate, isManager(req)));
-
-        if (typeof validatorResult !== 'undefined') {
-          tmpErrors.deferredToDate2 = validatorResult.dateToCheck;
-        } else {
-          deferralDates.push(createDeferralDate(req.body.deferredToDate2));
-        }
-      }
-
-      if (req.body.deferredToDate3 !== ''){
-        let validatorResult =
-            validate({dateToCheck: req.body.deferredToDate3}, deferralDatePickerValidator(minDate, maxDate, isManager(req)));
-
-        if (typeof validatorResult !== 'undefined') {
-          tmpErrors.deferredToDate3 = validatorResult.dateToCheck;
-        } else {
-          deferralDates.push(createDeferralDate(req.body.deferredToDate3));
-        }
-      }
-
-
-      req.session.deferralDatesEntered = deferralDatesSelected;
-
-      req.session.deferralDates = deferralDates;
-
-      if (tmpErrors.deferredToDate1 !== null || tmpErrors.deferredToDate2 !== null
-       || tmpErrors.deferredToDate3 !== null) {
-        req.session.errors = tmpErrors;
-        return res.redirect(app.namedRoutes.build('process-deferral-dates.get', routeParameters));
-      }
-
-      // save the dates for next screen
-      req.session.minDate = new Date(minDate);
-      req.session.maxDate = new Date(maxDate);
-
-      req.session.otherDateSearch = 'false';
-
-      // redirect to deferral get
-      return res.redirect(app.namedRoutes.build('process-deferral.get', routeParameters));
-
-    };
+    // redirect to deferral get
+    return res.redirect(app.namedRoutes.build('process-deferral.get', routeParameters));
   };
 
 
-  module.exports.getDeferral = function(app) {
-    return function(req, res) {
+  module.exports.getDeferral = (app) => async (req, res) =>{
+    const tmpErrors = _.clone(req.session.errors);
+    const routeParameters = {
+      id: req.params['id'],
+      type: req.params['type'],
+    };
+    const tmpFields = !!req.session.formFields ? req.session.formFields : {};
+    let cancelUrl;
+    let postBody = {};
+    let backLinkUrl;
+    let processUrl;
+    let defaultDate = new Date();
 
-      let tmpErrors = _.clone(req.session.errors)
-        , routeParameters = {
-          id: req.params['id'],
-          type: req.params['type'],
-        }
-        , tmpFields = !!req.session.formFields ? req.session.formFields : {}
-        , cancelUrl
-        , postBody = {}
-        , backLinkUrl
-        , processUrl
-        , defaultDate = new Date()
-        , successCB = function(poolOptions) {
-          app.logger.info('Fetch pool options:  ', {
-            auth: req.session.authentication,
-            data: postBody,
-            response: poolOptions,
-          });
+    // get the available pools for these dates
+    postBody.deferralDates = req.session.deferralDates;
 
-          //GET DEFFERAL CODES FROM BACKEND
-          systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL')
-            .then((data) => {
-              app.logger.info('Retrieved excusal codes: ', {
-                auth: req.session.authentication,
-                data: data,
-              });
-
-              let trimmedReasons = data.filter((reasonObj) => {
-                return reasonObj.code !== 'D'
-                    && reasonObj.code !== 'P';
-              });
-
-              delete req.session.errors;
-              delete req.session.formFields;
-              delete req.session.deferralReasons;
-
-              if (req.params['type'] === 'paper') {
-                cancelUrl = app.namedRoutes.build('response.paper.details.get', routeParameters);
-                backLinkUrl = app.namedRoutes.build('process-deferral-dates.get', routeParameters);
-              } else {
-                cancelUrl = app.namedRoutes.build('response.detail.get', routeParameters);
-                backLinkUrl = app.namedRoutes.build('response.detail.get', routeParameters);
-              }
-              processUrl = app.namedRoutes.build('process-deferral.post', routeParameters);
-
-              let deferralSelectedReason = !!req.session.deferralSelectedReason
-                  ? req.session.deferralSelectedReason : ''
-                , noPools = 'false';
-
-              delete req.session.deferralSelectedReason;
-
-              req.session.deferralReasons = trimmedReasons;
-
-              //If searching for singular other date
-              if (req.session.otherDateSearch === 'true'){
-                if (req.params['type'] === 'paper') {
-                  backLinkUrl = app.namedRoutes.build('process-deferral.get', routeParameters);
-                } else {
-                  backLinkUrl = app.namedRoutes.build('process-deferral-dates.get', routeParameters);
-                }
-
-                if (poolOptions.deferralPoolsSummary.length !== 0
-                  && poolOptions.deferralPoolsSummary[0].deferralOptions[0].poolNumber === null
-                  && tmpFields.deferralOption === 'otherDate') {
-                  // we have a date with no pools
-                  noPools = 'true';
-                  req.session.otherDateSearch = 'false';
-                }
-              }
-
-              return res.render('summons-management/deferral', {
-                jurorNumber: routeParameters.id,
-                type: routeParameters.type,
-                deferralReasons: trimmedReasons,
-                jurorDetails: req.session.jurorDetails,
-                cancelUrl,
-                backLinkUrl,
-                defaultDate,
-                processUrl,
-                noPools,
-                deferralPoolsSummary: poolOptions.deferralPoolsSummary,
-                deferralSelectedReason,
-                errors: {
-                  title: 'Please check the form',
-                  count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-                  items: tmpErrors,
-                },
-                minDate: dateFilter(moment(req.session.minDate).add(1, 'days'), null, 'DD/MM/YYYY'),
-                maxDate: !isManager(req) ? dateFilter(moment(req.session.maxDate).subtract(1, 'days'), null, 'DD/MM/YYYY') : null,
-                dateHint,
-                deferralSelections: tmpFields,
-                otherDateSearch: req.session.otherDateSearch,
-              });
-
-            })
-            .catch((err) => {
-              app.logger.crit('Failed to retrive excusal codes: ', {
-                auth: req.session.authentication,
-              });
-
-              return res.render('_errors/generic', { err });
-            });
-
-        }
-        , errorCB = function(err) {
-
-          app.logger.crit('Failed to fetch pool options: ', {
-            auth: req.session.authentication,
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
-          return res.redirect(app.namedRoutes.build('process-deferral-dates.get', routeParameters));
-        };
-
-
-      // get the available pools for these dates
-      postBody.deferralDates = req.session.deferralDates;
-
-      deferralPoolsObj.post(
+    let poolOptions;
+    try {
+      poolOptions = await deferralPoolsObj.post(
         req,
         postBody,
         req.params['id'],
-      )
-        .then(successCB)
-        .catch(errorCB);
-    };
+      );
+    } catch (err) {
+      app.logger.crit('Failed to fetch pool options: ', {
+        auth: req.session.authentication,
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+      return res.redirect(app.namedRoutes.build('process-deferral-dates.get', routeParameters));
+    }
+
+    app.logger.info('Fetch pool options:  ', {
+      auth: req.session.authentication,
+      data: postBody,
+      response: poolOptions,
+    });
+
+    let excusalCodes;
+    try {
+      excusalCodes = await systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL');
+    } catch (err) {
+      app.logger.crit('Failed to retrive excusal codes: ', {
+        auth: req.session.authentication,
+      });
+
+      return res.render('_errors/generic', { err });
+    }
+
+    app.logger.info('Retrieved excusal codes: ', {
+      auth: req.session.authentication,
+      data: excusalCodes,
+    });
+
+    let trimmedReasons = excusalCodes.filter((reasonObj) => {
+      return reasonObj.code !== 'D'
+          && reasonObj.code !== 'P';
+    });
+
+    delete req.session.errors;
+    delete req.session.formFields;
+    delete req.session.deferralReasons;
+
+    if (req.params['type'] === 'paper') {
+      cancelUrl = app.namedRoutes.build('response.paper.details.get', routeParameters);
+      backLinkUrl = app.namedRoutes.build('process-deferral-dates.get', routeParameters);
+    } else {
+      cancelUrl = app.namedRoutes.build('response.detail.get', routeParameters);
+      backLinkUrl = app.namedRoutes.build('response.detail.get', routeParameters);
+    }
+    processUrl = app.namedRoutes.build('process-deferral.post', routeParameters);
+
+    let deferralSelectedReason = !!req.session.deferralSelectedReason
+        ? req.session.deferralSelectedReason : ''
+      , noPools = 'false';
+
+    delete req.session.deferralSelectedReason;
+
+    req.session.deferralReasons = trimmedReasons;
+
+    //If searching for singular other date
+    if (req.session.otherDateSearch === 'true'){
+      if (req.params['type'] === 'paper') {
+        backLinkUrl = app.namedRoutes.build('process-deferral.get', routeParameters);
+      } else {
+        backLinkUrl = app.namedRoutes.build('process-deferral-dates.get', routeParameters);
+      }
+
+      if (poolOptions.deferralPoolsSummary.length !== 0
+        && poolOptions.deferralPoolsSummary[0].deferralOptions[0].poolNumber === null
+        && tmpFields.deferralOption === 'otherDate') {
+        // we have a date with no pools
+        noPools = 'true';
+        req.session.otherDateSearch = 'false';
+      }
+    }
+
+    return res.render('summons-management/deferral', {
+      jurorNumber: routeParameters.id,
+      type: routeParameters.type,
+      deferralReasons: trimmedReasons,
+      jurorDetails: req.session.jurorDetails,
+      cancelUrl,
+      backLinkUrl,
+      defaultDate,
+      processUrl,
+      noPools,
+      deferralPoolsSummary: poolOptions.deferralPoolsSummary,
+      deferralSelectedReason,
+      errors: {
+        title: 'Please check the form',
+        count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+        items: tmpErrors,
+      },
+      minDate: dateFilter(moment(req.session.minDate).add(1, 'days'), null, 'DD/MM/YYYY'),
+      maxDate: !isManager(req) ? dateFilter(moment(req.session.maxDate).subtract(1, 'days'), null, 'DD/MM/YYYY') : null,
+      dateHint,
+      deferralSelections: tmpFields,
+      otherDateSearch: req.session.otherDateSearch,
+    });
   };
 
 
-  module.exports.postDeferral = function(app) {
-    return function(req, res) {
-      let validatorResult
-        , data = {}
-        , deferralDates = []
-        , optionSelected = []
-        , replyMethod = req.params['type']
-        , routeParameters = {
-          id: req.params['id'],
-          type: req.params['type'],
-        }
-        , sentToDeferral = req.body.sendToDeferralMaintence ? req.body.sendToDeferralMaintence : null
-        , successCB = function() {
+  module.exports.postDeferral = (app) => async (req, res) => {
+    let validatorResult;
+    let data = {};
+    let deferralDates = [];
+    let optionSelected = [];
+    const replyMethod = req.params['type'];
+    const routeParameters = {
+      id: req.params['id'],
+      type: req.params['type'],
+    };
+    const sentToDeferral = req.body.sendToDeferralMaintence ? req.body.sendToDeferralMaintence : null;
 
-          let codeMessage = (code) => req.session.deferralReasons.filter((el) => el.code === code)[0].description
-            , deferralMessage = 'Deferral granted (' + codeMessage(req.body.deferralReason).toLowerCase() + ')';
+    // if other date selected, redirect to get pool options using only this date.
+    if (req.body.deferralOption === 'otherDate' && sentToDeferral === null) {
 
-          req.session.responseWasActioned = {
-            jurorDetails: req.session.replyDetails,
-            type: deferralMessage,
-          };
+      validatorResult = validate({deferralDate: req.body.deferralDate, deferralReason: req.body.deferralReason}
+        , otherDeferralDateValidater(req.session.minDate, req.session.maxDate, isManager(req)));
 
-          app.logger.info('Deferral processed: ', {
-            auth: req.session.authentication,
-            data: req.body,
-          });
-
-          delete req.session.deferralDates;
-          delete req.session.minDate;
-          delete req.session.maxDate;
-          delete req.session.otherDateSearch;
-          delete req.session.deferralDatesEntered;
-          delete req.session.deferralReasons;
-
-          if (req.session.receivingCourtLocCode) {
-            req.session.locCode = _.clone(req.session.receivingCourtLocCode);
-          }
-          delete req.session.receivingCourtLocCode;
-
-          if (res.locals.isCourtUser) {
-            return res.redirect(app.namedRoutes.build('process-deferral.letter.get', routeParameters));
-          }
-
-          if (routeParameters.type === 'paper') {
-            return res.redirect(app.namedRoutes.build('response.paper.details.get', routeParameters));
-          }
-          return res.redirect(app.namedRoutes.build('response.detail.get', routeParameters));
-        }
-        , errorCB = function(err) {
-          if (err.statusCode === 422) {
-            switch (err.error?.code) {
-              case 'CANNOT_DEFER_TO_EXISTING_POOL':      
-                req.session.errors = modUtils.makeManualError('deferralDateSelection', 'You cannot defer into the juror\'s existing pool - please select a different pool or date');
-                break;
-              case 'JUROR_DATE_OF_BIRTH_REQUIRED':
-                req.session.errors = modUtils.makeManualError('deferralDateSelection', 'You cannot defer a juror without a date of birth - please add date of birth to the juror record');
-                break;
-              default:
-                app.logger.crit('Failed to process Deferral: ', {
-                  auth: req.session.authentication,
-                  data: req.body,
-                  error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-                });
-                req.session.errors = modUtils.makeManualError('deferralDateSelection', 'Something went wrong when trying to defer the juror');
-            }
-            
-            req.session.formFields = req.body;
-            return res.redirect(app.namedRoutes.build('process-deferral.get', routeParameters));
-          }
-
-          app.logger.crit('Failed to process Deferral: ', {
-            auth: req.session.authentication,
-            data: req.body,
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
-  
-          return res.render('_errors/generic', { err });
-          
-        };
-
-
-      // if other date selected, redirect to get pool options using only this date.
-      if (req.body.deferralOption === 'otherDate' && sentToDeferral === null) {
-
-        validatorResult = validate({deferralDate: req.body.deferralDate, deferralReason: req.body.deferralReason}
-          , otherDeferralDateValidater(req.session.minDate, req.session.maxDate, isManager(req)));
-
-        if (typeof validatorResult !== 'undefined') {
-          req.session.errors = validatorResult;
-          req.session.deferralSelectedReason = req.body.deferralReason;
-          req.session.formFields = req.body;
-          return res.redirect(app.namedRoutes.build('process-deferral.get', routeParameters));
-        }
-        deferralDates.push(createDeferralDate(req.body.deferralDate));
-        req.session.deferralDates = deferralDates;
+      if (typeof validatorResult !== 'undefined') {
+        req.session.errors = validatorResult;
         req.session.deferralSelectedReason = req.body.deferralReason;
         req.session.formFields = req.body;
-        req.session.otherDateSearch = 'true';
+        return res.redirect(app.namedRoutes.build('process-deferral.get', routeParameters));
+      }
+      deferralDates.push(createDeferralDate(req.body.deferralDate));
+      req.session.deferralDates = deferralDates;
+      req.session.deferralSelectedReason = req.body.deferralReason;
+      req.session.formFields = req.body;
+      req.session.otherDateSearch = 'true';
 
+      return res.redirect(app.namedRoutes.build('process-deferral.get', routeParameters));
+    }
+
+    if (req.body.allowLongDeferral !== "true") {
+      validatorResult = validate(req.body, deferralJurorValidator());
+
+      if (typeof validatorResult !== 'undefined' && sentToDeferral === null) {
+        req.session.errors = validatorResult;
+        req.session.deferralSelectedReason = req.body.deferralReason;
+        req.session.formFields = req.body;
         return res.redirect(app.namedRoutes.build('process-deferral.get', routeParameters));
       }
 
-      if (req.body.allowLongDeferral !== "true") {
-        validatorResult = validate(req.body, deferralJurorValidator());
-
-        if (typeof validatorResult !== 'undefined' && sentToDeferral === null) {
-          req.session.errors = validatorResult;
-          req.session.deferralSelectedReason = req.body.deferralReason;
-          req.session.formFields = req.body;
-          return res.redirect(app.namedRoutes.build('process-deferral.get', routeParameters));
-        }
-
-        if (sentToDeferral !== null){
-          data.deferralDate = dateFilter(new Date(req.session.deferralDates[0]), null, 'yyyy-MM-DD');  // we should always get date
-          data.deferralReason = req.body.deferralReason;
-        } else {
-          optionSelected = req.body.deferralOption.split('_');
-          data.deferralDate = dateFilter(new Date(optionSelected[0]), null, 'yyyy-MM-DD');  // we should always get date
-          data.poolNumber = optionSelected[1] ? optionSelected[1] : null;
-          data.deferralReason = req.body.deferralReason;
-        }
+      if (sentToDeferral !== null){
+        data.deferralDate = dateFilter(new Date(req.session.deferralDates[0]), null, 'yyyy-MM-DD');  // we should always get date
+        data.deferralReason = req.body.deferralReason;
       } else {
-        data = req.body;
+        optionSelected = req.body.deferralOption.split('_');
+        data.deferralDate = dateFilter(new Date(optionSelected[0]), null, 'yyyy-MM-DD');  // we should always get date
+        data.poolNumber = optionSelected[1] ? optionSelected[1] : null;
+        data.deferralReason = req.body.deferralReason;
       }
+    } else {
+      data = req.body;
+    }
 
-      if (isManager(req) && req.body.allowLongDeferral !== "true") {
-        const pastMaxDate = moment(data.deferralDate).isAfter(moment(req.session.maxDate))
-        if (pastMaxDate) {
-          console.log('\n\nManager deferral - redirect to confirm\n\n');
-          app.logger.info('Showing confirm long deferral page for juror', {
-            auth: req.session.authentication,
-            data: {
-              routeParameters,
-              deferralReason: data.deferralReason,
-              deferralDate: data.deferralDate,
-            },
-          });
+    if (isManager(req) && req.body.allowLongDeferral !== "true") {
+      const pastMaxDate = moment(data.deferralDate).isAfter(moment(req.session.maxDate))
+      if (pastMaxDate) {
+        console.log('\n\nManager deferral - redirect to confirm\n\n');
+        app.logger.info('Showing confirm long deferral page for juror', {
+          auth: req.session.authentication,
+          data: {
+            routeParameters,
+            deferralReason: data.deferralReason,
+            deferralDate: data.deferralDate,
+          },
+        });
 
-          return res.render('juror-management/juror-record/confirm-long-deferral.njk', {
-            bodyData: data,
-            postUrl: app.namedRoutes.build('process-deferral.post', routeParameters),
-            cancelUrl: app.namedRoutes.build('process-deferral.get', routeParameters),
-          });
-        }
+        return res.render('juror-management/juror-record/confirm-long-deferral.njk', {
+          bodyData: data,
+          postUrl: app.namedRoutes.build('process-deferral.post', routeParameters),
+          cancelUrl: app.namedRoutes.build('process-deferral.get', routeParameters),
+        });
       }
+    }
 
-      data.replyMethod = replyMethod ? replyMethod: routeParameters.type;
-      req.session.deferralReason = req.body.deferralReason;
+    data.replyMethod = replyMethod ? replyMethod: routeParameters.type;
+    req.session.deferralReason = req.body.deferralReason;
 
-      deferralObj.post(
+    try {
+      await deferralObj.post(
         req,
         routeParameters.id,
         data.poolNumber,
         data.deferralDate,
         data.deferralReason,
         data.replyMethod,
-      )
-        .then(successCB)
-        .catch(errorCB);
+      );
+    } catch (err) {
+      if (err.statusCode === 422) {
+        switch (err.error?.code) {
+          case 'CANNOT_DEFER_TO_EXISTING_POOL':      
+            req.session.errors = modUtils.makeManualError('deferralDateSelection', 'You cannot defer into the juror\'s existing pool - please select a different pool or date');
+            break;
+          case 'JUROR_DATE_OF_BIRTH_REQUIRED':
+            req.session.errors = modUtils.makeManualError('deferralDateSelection', 'You cannot defer a juror without a date of birth - please add date of birth to the juror record');
+            break;
+          default:
+            app.logger.crit('Failed to process Deferral: ', {
+              auth: req.session.authentication,
+              data: req.body,
+              error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+            });
+            req.session.errors = modUtils.makeManualError('deferralDateSelection', 'Something went wrong when trying to defer the juror');
+        }
+        
+        req.session.formFields = req.body;
+        return res.redirect(app.namedRoutes.build('process-deferral.get', routeParameters));
+      }
+
+      app.logger.crit('Failed to process Deferral: ', {
+        auth: req.session.authentication,
+        data: req.body,
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+
+      return res.render('_errors/generic', { err });
+    }
+
+    let codeMessage = (code) => req.session.deferralReasons.filter((el) => el.code === code)[0].description;
+    let deferralMessage = 'Deferral granted (' + codeMessage(req.body.deferralReason).toLowerCase() + ')';
+
+    req.session.responseWasActioned = {
+      jurorDetails: req.session.replyDetails,
+      type: deferralMessage,
     };
+
+    app.logger.info('Deferral processed: ', {
+      auth: req.session.authentication,
+      data: req.body,
+    });
+
+    delete req.session.deferralDates;
+    delete req.session.minDate;
+    delete req.session.maxDate;
+    delete req.session.otherDateSearch;
+    delete req.session.deferralDatesEntered;
+    delete req.session.deferralReasons;
+
+    if (req.session.receivingCourtLocCode) {
+      req.session.locCode = _.clone(req.session.receivingCourtLocCode);
+    }
+    delete req.session.receivingCourtLocCode;
+
+    if (res.locals.isCourtUser) {
+      return res.redirect(app.namedRoutes.build('process-deferral.letter.get', routeParameters));
+    }
+
+    if (routeParameters.type === 'paper') {
+      return res.redirect(app.namedRoutes.build('response.paper.details.get', routeParameters));
+    }
+    return res.redirect(app.namedRoutes.build('response.detail.get', routeParameters));
   };
 
   module.exports.getDeferralLetter = function(app) {
