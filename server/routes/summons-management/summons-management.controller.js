@@ -331,7 +331,7 @@ const { isManager } = require('../../components/auth/user-type');
                   items: tmpErrors,
                 },
                 minDate: dateFilter(moment(req.session.minDate).add(1, 'days'), null, 'DD/MM/YYYY'),
-                maxDate: !isManager ? dateFilter(moment(req.session.maxDate).subtract(1, 'days'), null, 'DD/MM/YYYY') : null,
+                maxDate: !isManager(req) ? dateFilter(moment(req.session.maxDate).subtract(1, 'days'), null, 'DD/MM/YYYY') : null,
                 dateHint,
                 deferralSelections: tmpFields,
                 otherDateSearch: req.session.otherDateSearch,

@@ -55,6 +55,7 @@
         deferralDatePicker: {
           minDate: minDate,
           maxDate: maxDate,
+          isManager: isManager,
         },
       },
       deferralReason: {
