@@ -2931,14 +2931,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express-rate-limit@npm:^8.1.0":
-  version: 8.1.0
-  resolution: "express-rate-limit@npm:8.1.0"
-  dependencies:
-    ip-address: 10.0.1
+"express-rate-limit@npm:^7.5.1":
+  version: 7.5.1
+  resolution: "express-rate-limit@npm:7.5.1"
   peerDependencies:
     express: ">= 4.11"
-  checksum: 3bbb2239b328969fe1e8d6171c675a62d403be7ec16d1f852878bf4dc383e83078a56145bfecb132cb2bb5a1f78c3802bb8a6d6349d9a03c5b380a5655b7f405
+  checksum: 544fdd576a846a7d3ed0203a011cec6d65ad8e5eab58dbe045a0bdefd119060c140c38b327e32713b56342cc901a3ca5c99f13cce4ceee08408e775ec4742c16
   languageName: node
   linkType: hard
 
@@ -3666,13 +3664,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ip-address@npm:10.0.1":
-  version: 10.0.1
-  resolution: "ip-address@npm:10.0.1"
-  checksum: 525d5391cfd31a91f80f5857e98487aeaa8474e860a6725a0b6461ac8e436c7f8c869774dece391c8f8e7486306a34a4d1c094778c4c583a3f1f2cd905e5ed50
-  languageName: node
-  linkType: hard
-
 "ip-address@npm:^9.0.5":
   version: 9.0.5
   resolution: "ip-address@npm:9.0.5"
@@ -4032,7 +4023,7 @@ __metadata:
     eslint: 9.36.0
     express: ^4.21.2
     express-nunjucks: ^3.1.2
-    express-rate-limit: ^8.1.0
+    express-rate-limit: ^7.5.1
     express-session: ^1.18.2
     fs-extra: 11.3.2
     govuk-frontend: ^5.12.0
