@@ -1,4 +1,6 @@
 @startuml mark-juror-deferred
+hide unlinked
+!include generic-blocks.plantuml
 
 skinparam Style strictuml 
 skinparam SequenceMessageAlignment center
@@ -22,6 +24,7 @@ participant DeferralObj <<deferralObj.post()>>
 ''' TEMPLATES
 participant DeferralDatesTemplate <<summons-management/deferral-dates.njk>>
 participant DeferralTemplate <<summons-management/deferral.njk>>
+participant ConfirmLongDeferralTemplate <<juror-management/juror-record/confirm-long-deferral.njk>>
 
 ''' FILTERS AND VALIDATORS
 participant DeferralDatePickerValidator
@@ -127,6 +130,12 @@ alt Invalid reason or option
     SummonsManagementController <-- DeferralTemplate : return HTML with error message
     DeferralPage <-- SummonsManagementController : return HTML with error message
     Actor <-- DeferralPage : render error message
+end
+
+alt Manager has requested deferral longer than 12 months
+    $renderTemplateToPage(SummonsManagementController, ConfirmLongDeferralTemplate, DeferralPage)
+    Actor -> DeferralPage : confirm long deferral
+    DeferralPage -> SummonsManagementController : post long deferral confirmation
 end
 
 SummonsManagementController -> DeferralObj : build request object

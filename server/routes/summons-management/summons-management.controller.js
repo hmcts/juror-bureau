@@ -415,7 +415,6 @@
     if (isManager(req) && req.body.allowLongDeferral !== "true") {
       const pastMaxDate = moment(data.deferralDate).isAfter(moment(req.session.maxDate))
       if (pastMaxDate) {
-        console.log('\n\nManager deferral - redirect to confirm\n\n');
         app.logger.info('Showing confirm long deferral page for juror', {
           auth: req.session.authentication,
           data: {
