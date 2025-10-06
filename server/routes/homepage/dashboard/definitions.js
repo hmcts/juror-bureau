@@ -114,7 +114,7 @@
                 value: stats?.attendance.reasonableAdjustments,
                 links: [
                   {
-                    href:  app.namedRoutes.build('reports.reasonable-adjustments.filter.get'),
+                    href:  app.namedRoutes.build('reports.reasonable-adjustment-and-cje.filter.get'),
                     text: 'Reasonable adjustments report',
                   },
                 ]
