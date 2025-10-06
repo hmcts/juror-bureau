@@ -249,6 +249,8 @@ const { date } = require('../../../config/validation/report-search-by');
           'serviceStartDate',
           'courtName',
           'totalPoolMembers',
+          'numberOfJurorsSummoned',
+          'numberOfJurorsAttended'
         ],
         defaultSortColumn: 'lastName',
         printLandscape: true,
