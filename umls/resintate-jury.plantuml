@@ -1,0 +1,50 @@
+@startuml reinstate-jury
+hide unlinked
+
+!include generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant TrialDetailsPage <</trial-management/trials/:trialNumber/:locationCode/detail>>
+participant ReinstateJuryPage <</trial-management/trials/:trialNumber/:locationCode/reinstate-jury>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant ReinstateJuryController <<reinstate-jury.controller.js>> #lightyellow
+participant ReturnedJurorsObject <<getReturnedJurors.get()>> #lightyellow
+participant ReinstateJurorsObject <<reinstateJurors.post()>> #lightyellow
+
+''' VALIDATORS
+participant ReinstateJuryValidator #gold
+
+''' TEMPLATES
+participant TrialDetailsTemplate <<trial-management/trial-detail.njk>> #lavender
+participant ReinstateJuryTemplate <<trial-management/reinstate-jury/reinstate-jury-selection>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+Actor -> TrialDetailsPage : Click "Reinstate jurors"
+TrialDetailsPage -> ReinstateJuryController : call page controller
+
+$genericAPICall(ReinstateJuryController, ReturnedJurorsObject, ErrorTemplate, "Failed to get returned jurors")
+
+$renderTemplateToPage(ReinstateJuryController, ReinstateJuryTemplate, ReinstateJuryPage)
+
+Actor -> ReinstateJuryPage : Select jurors and click "Continue"
+ReinstateJuryPage -> ReinstateJuryController : call page controller
+
+$validateInput(ReinstateJuryController, ReinstateJuryValidator, ReinstateJuryTemplate, ReinstateJuryPage, "No/Too many jurors selected")
+
+$genericAPICall(ReinstateJuryController, ReinstateJurorsObject, ErrorTemplate, "Failed to reinstate jurors")
+
+TrialDetailsPage <- ReinstateJuryController : redirect to updated trial details
+Actor <- TrialDetailsPage : view updated trial details
+
+@enduml
