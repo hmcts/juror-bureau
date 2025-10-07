@@ -1,12 +1,9 @@
-const { error } = require('winston');
-
 (() => {
   'use strict';
 
   const _ = require('lodash')
   const { makeManualError } = require('../../../lib/mod-utils');
   const { getReturnedJurors, reinstateJurors } = require('../../../objects/reinstate-jury');
-  const { panelListDAO } = require('../../../objects/panel');
 
   module.exports.getReinstateJury = (app) => async (req, res) => {
     const { trialNumber, locationCode } = req.params;
