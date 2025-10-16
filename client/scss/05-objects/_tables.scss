@@ -1,0 +1,233 @@
+[data-toggle-active] {
+  a {
+    color: $black;
+    text-decoration: none;
+  }
+}
+
+.table-striped {
+
+  margin-bottom: 40px;
+  position: relative;
+
+  caption {
+    font-size: $font-size-large;
+    margin-bottom: 10px;
+    margin-left: 44px;
+    text-align: left;
+  }
+
+  th,
+  td {
+    font-size: $font-size-xsmall;
+    padding-left: 5px;
+    padding-right: 15px;
+    position: relative;
+  }
+
+  th {
+    border: 0;
+    font-size: $font-size-xsmall;
+  }
+
+  td {
+    border-top: 0;
+    border-bottom: 1px solid $color-grey-border;
+    height: 45px;
+  }
+
+  .urgent-col-def,
+  .overdue-col-def {
+    width: 40px;
+  }
+
+  .checkbox-col-def {
+    width: 30px;
+  }
+
+  .urgent-col {
+    background-color: $white;
+    border-bottom: 0;
+    min-width: 26px;
+    padding: 5px 0 0;
+  }
+
+  .date-heading,
+  .date-col {
+    padding-left: 20px;
+    width: 130px;
+  }
+
+  .time-heading,
+  .time-col {
+    padding-left: 20px;
+    width: 130px;
+  }
+
+  .overdue-col {
+    padding-bottom: 0;
+    padding-top: 5px;
+  }
+
+  .juror-number-col {
+    width: 140px;
+  }
+
+  tr {
+
+    &.todo {
+      background-color: $color-table-todo-row;
+    }
+
+    &.urgent {
+      background-color: $color-table-urgent;
+    }
+
+    &.closed {
+
+      &:nth-child(even) {
+        background-color: $color-table-closed-row-odd;
+      }
+
+      &:nth-child(odd) {
+        background-color: $color-table-closed-row-even;
+      }
+    }
+
+    // All tables have the same .active and :hover states
+    &.urgent.active,
+    &.todo.active,
+    &.closed.active,
+    &.urgent:hover,
+    &.todo:hover,
+    &.closed:hover {
+      background-color: $color-table-row-highlight;
+      cursor: pointer;
+    }
+
+    // All tables share the same no-background rules
+    &.urgent.no-background,
+    &.todo.no-background,
+    &.closed.no-background,
+    &:hover.no-background {
+      background-color: transparent;
+      cursor: default;
+    }
+  }
+
+  thead {
+
+    tr {
+
+      &:nth-child(even),
+      &:nth-child(odd),
+      &:hover,
+      &.active {
+        background-color: transparent;
+        cursor: default;
+      }
+    }
+  }
+}
+
+.table-summary {
+
+  caption {
+    text-align: left;
+
+    h3 {
+      font-weight: normal;
+      margin-top: 7px;
+    }
+  }
+
+  col:first-child {
+    width: 240px;
+  }
+
+  .info {
+
+    th {
+      position: relative;
+    }
+
+    th::before {
+      background-color: $turquoise;
+      bottom: 0;
+      content: '';
+      left: -15px;
+      position: absolute;
+      top: 0;
+      width: 5px;
+
+    }
+  }
+
+  th,
+  td {
+    vertical-align: top;
+  }
+
+  .change {
+    font-size: $font-size-xsmall;
+    font-weight: bold;
+
+    &--new {
+      color: $button-colour;
+    }
+
+    &--old {
+      color: $mellow-red;
+    }
+
+    &--newCourt {
+      color: $govuk-blue;
+    }
+
+    &--changeCourt {
+      background-color: $govuk-blue;
+      color: #fff;
+      margin-top: 10px;
+      padding: 8px 35px;
+      position: relative;
+      display: inline-block;
+    }
+  }
+
+  @media (min-width: 641px) {
+    col:first-child {
+      width: 320px;
+    }
+
+    .change {
+      top: 4px;
+    }
+  }
+}
+
+
+.staff-list-table {
+  th {
+    border-bottom: 0;
+    font-size: $font-size-xsmall;
+
+    &:first-child {
+      padding-left: 21px;
+    }
+  }
+
+  td {
+    padding-bottom: 0;
+  }
+
+  .staff-state {
+    padding-left: 26px;
+    padding-right: 26px;
+    width: 102px;
+
+    img {
+      height: 50px;
+      width: 50px;
+    }
+  }
+}

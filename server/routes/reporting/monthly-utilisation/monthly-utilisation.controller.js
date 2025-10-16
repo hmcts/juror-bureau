@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const { makeManualError, generateReportSelectMonths } = require('../../../lib/mod-utils');
+  const { makeManualError } = require('../../../lib/mod-utils');
   const { dateFilter, capitalizeFully } = require('../../../components/filters');
   const { courtDetailsDAO } = require('../../../objects');
   const { monthlyUtilisationReportsDAO } = require('../../../objects/reports');
@@ -13,10 +13,8 @@
     delete req.session.errors;
     delete req.session.formFields;
 
-    return res.render('reporting/standard-reports/month-select', {
-      months: generateReportSelectMonths(),
-      reportName: 'Prepare monthly wastage and utilisation report',
-      selectMonthLabel: 'Select month to prepare report for',
+    return res.render('reporting/monthly-utilisation/prepare-select-month', {
+      months: generateSelectMonths(),
       processUrl: app.namedRoutes.build('reports.prepare-monthly-utilisation.filter.post'),
       cancelUrl: app.namedRoutes.build('reports.statistics.get'),
       tmpBody,
@@ -25,6 +23,7 @@
         count: typeof errors !== 'undefined' ? Object.keys(errors).length : 0,
         items: errors,
       },
+
     });
   };
 
@@ -84,11 +83,8 @@
         };
       });
 
-      return res.render('reporting/standard-reports/month-select', {
+      return res.render('reporting/monthly-utilisation/view-select-month', {
         months,
-        reportName: 'View monthly wastage and utilisation report',
-        selectMonthLabel: 'Select a reporting month',
-        showPreviousMonthsCheckbox: true,
         processUrl: app.namedRoutes.build('reports.view-monthly-utilisation.filter.post'),
         cancelUrl: app.namedRoutes.build('reports.statistics.get'),
         tmpBody,

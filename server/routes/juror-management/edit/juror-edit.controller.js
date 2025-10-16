@@ -600,7 +600,7 @@
         'years'
       );
 
-      if ((tmpAge < 18 || tmpAge > 75) && req.session[`editJurorDetails-${jurorNumber}`].commonDetails.jurorStatus !== 'Disqualified') {
+      if (tmpAge < 18 || tmpAge > 75) {
         req.session.jurorAge = tmpAge;
 
         return res.redirect(app.namedRoutes.build('juror-record.details-edit.ineligible-age.get', {

@@ -1,0 +1,121 @@
+.search-filters {
+  border-bottom: 1px solid $border-colour;
+  margin-top: 20px;
+
+  form label {
+    white-space: nowrap;
+  }
+
+  form input[type="text"], input[type="number"], form select {
+    border: 2px solid $text-colour;
+    width: 80%;
+
+    @media all and (min-width: 641px) {
+      width: 100%;
+    }
+  }
+}
+
+.search-results {
+  margin-top: 16px;
+  
+  th:not(:first-child):not(:last-child):not(:nth-last-child(2)) {
+    min-width: 100px;  
+  }
+}
+
+// Toggle button for additional filters
+.filter-toggle-switch span {
+  background-color: $panel-colour;
+  display: block;
+  font-size: $font-size-xsmall;
+  padding: 10px 0 9px 14px;
+}
+
+.additional-filter-items {
+  .urgent-filter {
+    background-color: $color-table-urgent;
+    padding: 17px 0 15px 14px;
+  }
+
+  .form-group:not(.urgent-filter) {
+    padding-left: 13px;
+
+    @media screen and (min-width: 641px) {
+      padding-left: 0;
+    }
+  }
+
+  label {
+    font-size: $font-size-xsmall;
+    position: relative;
+    top: -4px;
+  }
+
+  input[type="checkbox"] {
+    height: 20px;
+    width: 20px;
+  }
+
+  .form-group {
+    margin-bottom: 9px;
+  }
+}
+
+.form-controls {
+  margin-top: 16px;
+}
+
+#clearBtn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  display: inline-block;
+  font-size: $font-size-xsmall;
+  margin-left: 13px;
+  margin-top: 8px;
+  padding: 0;
+
+  &[disabled] {
+    cursor: default;
+  }
+}
+
+.search-content {
+  position: relative;
+  min-height: 30vh;
+
+  h2 {
+    margin: 29px 0 14px 0;
+  }
+
+  .main-text {
+    position: absolute;
+    text-align: center;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+  }
+
+  .additional-info-text {
+    margin-top: 15px;
+  }
+}
+
+// Assignment pop-up toggle area
+.response-assignment {
+  float: right;
+  margin-top: 30px;
+
+  #selectAllLink,
+  #deselectAllLink {
+    margin-right: 20px;
+    position: relative;
+    top: 7px;
+
+    &, &:hover, &:visited, &:active {
+      color: $link-colour;
+      text-decoration: none;
+    }
+  }
+}

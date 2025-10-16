@@ -43,46 +43,56 @@
   };
 
   const documentTableData = (data) => {
-    const pages = [];
+    const body=[];
+    const heights = [];
+    const tracker = [];
+    const pageBreakHeight = 120;
     const rowHeight = 200;
-    const cardsPerPage = 8; // 2 across x 4 down
 
-    // If no data, return one blank page
-    if (!data || data.length === 0) {
-      const body = [
-        [getEmptyTableCell(), getEmptyTableCell()],
-        [getEmptyTableCell(), getEmptyTableCell()],
-        [getEmptyTableCell(), getEmptyTableCell()],
-        [getEmptyTableCell(), getEmptyTableCell()],
-      ];
-      const heights = [rowHeight, rowHeight, rowHeight, rowHeight];
-      pages.push({ layout: 'noBorders', pageMargins: [25, 25, 25, 25], table: { widths: ['50%', '50%'], heights, body } });
-      return pages;
-    }
+    for (let i = 0; i < data.length; i = i + 2) {
+      const row = [];
 
-    for (let i = 0; i < data.length; i += cardsPerPage) {
-      const body = [];
-
-      // Build 4 rows per page, each row has two cards
-      for (let r = 0; r < 4; r++) {
-        const leftIndex = i + (r * 2);
-        const rightIndex = leftIndex + 1;
-
-        const leftCell = leftIndex < data.length ? getTableCell(data[leftIndex]) : getEmptyTableCell();
-        const rightCell = rightIndex < data.length ? getTableCell(data[rightIndex]) : getEmptyTableCell();
-
-        body.push([leftCell, rightCell]);
+      if (i !== 0 && i % 8 === 0){
+        heights.push(pageBreakHeight);
+        tracker.push(i);
+      } else {
+        heights.push(rowHeight);
+        tracker.push(i);
       }
 
-      const heights = [rowHeight, rowHeight, rowHeight, rowHeight];
+      row.push(getTableCell(data[i]));
 
-      const pageObj = { layout: 'noBorders', pageMargins: [25, 25, 25, 25], table: { widths: ['50%', '50%'], heights, body } };
-      if (i + cardsPerPage < data.length) pageObj.pageBreak = 'after';
+      if (i+1 < data.length){
+        row.push(getTableCell(data[i+1]));
+      } else{
+        row.push(getEmptyTableCell());
+      }
 
-      pages.push(pageObj);
+      body.push(row);
     }
 
-    return pages;
+    if (!data.length) {
+      body.push([getEmptyTableCell(), getEmptyTableCell()])
+      heights.push(rowHeight);
+    } else {
+      switch (data.length % 8) {
+        case 1:
+        case 3:
+        case 5:
+          body.push([getEmptyTableCell(), getEmptyTableCell()])
+          heights.push(rowHeight);
+      }
+    }
+
+    return {
+      layout: 'noBorders',
+      pageMargins: [25, 25, 25, 25],
+      table: {
+        widths: ['50%', '50%'],
+        heights,
+        body,
+      },
+    };
   };
 
   function defaultStyles() {
@@ -102,7 +112,9 @@
       const printer = new pdfMake(layout().fonts);
       const chunks = [];
 
-      const _documentContent = [ ...documentTableData(jurors) ];
+      const _documentContent = [
+        { ...documentTableData(jurors) }, // jurorData goes here when hardcoding stops
+      ];
 
       const pdfOptions = {
         ...defaultStyles().defaultStyles,
