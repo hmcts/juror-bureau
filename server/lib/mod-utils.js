@@ -1503,20 +1503,4 @@
     return firstWorkingDay.format('YYYY-MM-DD') === today.format('YYYY-MM-DD');
   };
 
-  module.exports.generateReportSelectMonths = (noMonths = 12) => {
-    const months = [];
-    let d = new Date();
-
-    d.setDate(1);
-    for (let i=0; i<noMonths; i++) {
-      months.push({
-        value: dateFilter(d, null, 'yyyy-MM-DD'),
-        text: dateFilter(d, null, 'MMMM yyyy'),
-      });
-      d.setMonth(d.getMonth() - 1);
-    }
-
-    return months;
-  };
-
 })();

@@ -1,0 +1,214 @@
+.detail-heading {
+  border-bottom: 1px solid $border-colour;
+
+  h1 {
+    display: inline-block;
+    font-size: $font-size-xlarge;
+    font-weight: bold;
+    line-height: 50px;
+    margin-bottom: 8px;
+  }
+
+  .status-flag {
+    color: $error-colour;
+    display: inline-block;
+    margin: 0 11px;
+
+    .icon {
+      margin-right: 5px;
+    }
+
+    .icon-gavel {
+      margin-right: 2px;
+    }
+
+    .label {
+      position: relative;
+      top: -5px;
+    }
+
+    a,
+    a:hover,
+    a:visited,
+    a:active {
+      color: $error-colour;
+    }
+  }
+}
+
+.detail-info {
+  margin-top: 13px;
+
+  .juror-number {
+    color: $govuk-blue;
+    font-weight: bold;
+    line-height: 39px;
+    margin-right: 20px;
+    margin-top: 2px;
+  }
+
+  .status {
+    color: $page-colour;
+    padding: 8px 35px;
+    position: relative;
+    top: -3px;
+
+    &--deferral {
+      background-color: $beta-colour;
+    }
+
+    &--excusal {
+      background-color: $error-colour;
+    }
+
+    &--thirdParty {
+      background-color: $turquoise;
+    }
+
+    &--deceased {
+      background-color: $error-colour;
+    }
+  }
+}
+
+.detail-summary {
+
+  .bold-small {
+    font-size: inherit;
+  }
+
+  span {
+    white-space: nowrap;
+  }
+
+  .item {
+    display: inline-block;
+    margin: 17px 25px 0 0;
+    width: 110px;
+
+    strong {
+      display: block;
+      margin-bottom: 10px;
+    }
+  }
+}
+
+.detail-tabs {
+  border-bottom: 1px solid $border-colour;
+  margin: 0 0 20px;
+  padding: 0;
+
+  li,
+  a,
+  a:active,
+  a:visited,
+  a:hover {
+    color: $text-colour;
+    text-decoration: none;
+  }
+
+  li {
+    background-color: $panel-colour;
+    border-bottom: 2px solid $page-colour;
+    display: inline-block;
+    height: 40px;
+    padding: 8px 31px;
+    position: relative;
+
+    &:not(.active) {
+      cursor: pointer;
+    }
+
+    &.info::before {
+      background-color: $turquoise;
+      content: '';
+      height: 36px;
+      left: 1px;
+      position: absolute;
+      top: 1px;
+      width: 5px;
+    }
+  }
+
+  .active {
+    background-color: $page-colour;
+    border-left: 1px solid $border-colour;
+    border-right: 1px solid $border-colour;
+    border-top: 1px solid $border-colour;
+    top: 2px;
+  }
+}
+
+.tab-content {
+  &:not(:last-child) {
+    margin-bottom: 40px;
+  }
+}
+
+.notes-area {
+  background-color: $color-grey-background;
+  border: 1px solid $color-grey-border;
+  color: $text-colour;
+  display: block;
+  margin-bottom: 24px;
+  padding: 18px 21px;
+  width: 100%;
+}
+
+.response-update-form {
+  h4,
+  label[for="processAction"] {
+    margin-bottom: 10px;
+  }
+
+  h4 {
+    font-size: $font-size-body;
+  }
+
+  .form-group {
+    margin: 5px 0 10px;
+  }
+
+  .processing-status-label {
+    background-color: $grey-4;
+    border: 2px solid $panel-colour;
+    display: block;
+    padding: 10px 20px 5px 20px;
+
+    &--green {
+      background-color: $page-colour;
+      border-color: $button-colour;
+      color: $button-colour;
+      font-weight: 600;
+    }
+  }
+
+  label[for="processAction"] {
+    display: block;
+  }
+
+  select[name="processAction"] {
+    -webkit-appearance: none;
+    -webkit-border-radius: 0px;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: $button-colour;
+    background-image: url('../img/arrow-down-dropdown.png');
+    background-position: 95% 14px;
+    background-repeat: no-repeat;
+    background-size: 12px 12px;
+    border: 0;
+    color: $page-colour;
+    display: block;
+    font-size: $font-size-body;
+    letter-spacing: 0.06em;
+    padding: 10px 20px 8px 20px;
+    position: relative;
+    width: 100%;
+
+    option {
+      background-color: $highlight-colour;
+      color: $black;
+    }
+  }
+}

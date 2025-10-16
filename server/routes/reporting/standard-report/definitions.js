@@ -1,5 +1,3 @@
-const { date } = require('../../../config/validation/report-search-by');
-
 (() => {
   'use strict';
 
@@ -12,8 +10,7 @@ const { date } = require('../../../config/validation/report-search-by');
     viewMonthlyUtilisationDAO,
     generateMonthlyUtilisationDAO,
     yieldPerformanceDAO,
-    allCourtUtilisationDAO,
-    digitalSummonsReceivedReportDAO
+    allCourtUtilisationDAO
   } = require('../../../objects/reports');
 
   const makeLink = (app) => {
@@ -249,8 +246,6 @@ const { date } = require('../../../config/validation/report-search-by');
           'serviceStartDate',
           'courtName',
           'totalPoolMembers',
-          'numberOfJurorsSummoned',
-          'numberOfJurorsAttended'
         ],
         defaultSortColumn: 'lastName',
         printLandscape: true,
@@ -1786,24 +1781,6 @@ const { date } = require('../../../config/validation/report-search-by');
         backUrl: req?.params.filter === 'all-courts' ? 
           app.namedRoutes.build('reports.all-court-utilisation.filter.select.get') :
           null,
-      },
-      'digital-summons-received': {
-        title: 'Digital summons received report',
-        search: 'month',
-        selectMonthLabel: 'Select month to view digital summons received for',
-        headings: [
-          'replyCount',
-          'reportDate',
-          '',
-          'reportTime',
-        ],
-        bespokeReport: {
-          dao: () => digitalSummonsReceivedReportDAO.get(
-            req,
-            req.params.filter,
-          ),
-        },
-        defaultSortColumn: 'date',
       }
     };
   };

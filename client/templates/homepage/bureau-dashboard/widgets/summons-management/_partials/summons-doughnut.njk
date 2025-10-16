@@ -53,7 +53,7 @@
 
   {% if params.id == "yourWorkStats" %} 
     <div class="govuk-body doughnut-page-link"><a href="{{params.values.yourWorkLink}}">Your work</a></div>
-  {% elif params.id == "assignRepliesStats" and params.isManager %} 
+  {% elif params.id == "assignRepliesStats" %}
     <div class="govuk-body doughnut-page-link"><a href="{{params.values.assignRepliesLink}}">Assign replies</a></div>
   {% endif %}
 
