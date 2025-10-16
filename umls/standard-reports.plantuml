@@ -1,0 +1,163 @@
+@startuml standard-reports
+hide unlinked
+
+!include generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+title Standard Reports
+
+participant Actor
+
+''' LOCAL ROUTING
+participant ReportsPage <</reports>>
+participant StatisticsPage <</reports/statistics>>
+participant ReportFilters <</reporting/:report>>
+participant StandardReportRenderer <</reporting/:report/report/:filters>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant StandardReportController <<standard-report.controller.js>> #lightyellow
+participant ReportDefinitions <<definitions.js>> #lightyellow
+
+participant PoolSearchObject <<poolSearchObject.post()>> #lightyellow
+participant JurorSearchObject <<searchJurorRecordDAO.post()>> #lightyellow
+participant CourtSearchObject <<fetchCourtsDAO.get()>> #lightyellow
+participant TrialSearchObject <<trialsListDAO.post()>> #lightyellow
+
+''' FILTERS AND VALIDATORS
+participant ReportSearchValidator #Gold
+
+''' TEMPLATES
+participant PoolFilterTemplate <<reporting/standard-reports/pool-search.njk>>
+participant JurorFilterTemplate <<reporting/standard-reports/juror-search.njk>>
+participant CourtFilterTemplate <<reporting/standard-reports/court-select.njk>>
+participant DateRangeFilterTemplate <<reporting/standard-reports/date-search.njk>>
+participant PoolFilterTemplate <<reporting/standard-reports/pool-search.njk>>
+participant TrialFilterTemplate <<reporting/standard-reports/trial-select.njk>>
+participant MonthFilterTemplate <<reporting/standard-reports/month-select.njk>>
+participant StandardReportTemplate <<reporting/standard-reports/standard-report.njk>>
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+alt
+  Actor -> ReportsPage : Click report name
+  ReportsPage -> StandardReportController : call page controller
+else
+  Actor -> StatisticsPage : Click report name
+  StatisticsPage -> StandardReportController : call page controller
+end
+
+ref over StandardReportController
+  Filter render start
+end ref
+StandardReportController o-> ReportDefinitions : fetch report rendering template
+StandardReportController <- ReportDefinitions : return report definition metadata
+
+group Report search type
+
+  alt Pool search
+    alt With search conditions
+      StandardReportController -> ReportSearchValidator : validate search details
+      StandardReportController <- ReportSearchValidator : validator response
+    end
+    alt Valid search criteria
+      StandardReportController -> PoolSearchObject : build request object
+      PoolSearchObject -> BackendController : send backend request
+      PoolSearchObject <- BackendController : ok response
+      StandardReportController <- PoolSearchObject : integrate search results
+    end
+    StandardReportController -> PoolFilterTemplate : request and build template
+    StandardReportController <- PoolFilterTemplate : return HTML
+    ReportFilters <- StandardReportController : return HTML
+    Actor <- ReportFilters : render HTML
+    
+  else Juror number search
+    alt With search conditions
+      StandardReportController -> ReportSearchValidator : validate search details
+      StandardReportController <- ReportSearchValidator : validator response
+    end
+    alt Valid search criteria
+      StandardReportController -> JurorSearchObject : build request object
+      JurorSearchObject -> BackendController : send backend request
+      JurorSearchObject <- BackendController : ok response
+      StandardReportController <- JurorSearchObject : integrate search results
+    end
+    StandardReportController -> JurorFilterTemplate : request and build template
+    StandardReportController <- JurorFilterTemplate : return HTML
+    ReportFilters <- StandardReportController : return HTML
+    Actor <- ReportFilters : render HTML
+
+  else Court search
+    StandardReportController -> CourtSearchObject : build request object
+    CourtSearchObject -> BackendController : send backend request
+    CourtSearchObject <- BackendController : ok response
+    StandardReportController <- CourtSearchObject : integrate search results
+    StandardReportController -> CourtFilterTemplate : request and build template
+    StandardReportController <- CourtFilterTemplate : return HTML
+    ReportFilters <- StandardReportController : return HTML
+    Actor <- ReportFilters : render HTML
+
+  else Date range search
+    alt With search conditions
+      StandardReportController -> ReportSearchValidator : validate search details
+      StandardReportController <- ReportSearchValidator : validator response
+    end
+    StandardReportController -> DateRangeFilterTemplate : request and build template
+    StandardReportController <- DateRangeFilterTemplate : return HTML
+    ReportFilters <- StandardReportController : return HTML
+    Actor <- ReportFilters : render HTML
+
+  else Trial search
+    alt With search conditions
+      StandardReportController -> ReportSearchValidator : validate search details
+      StandardReportController <- ReportSearchValidator : validator response
+    end
+    alt Valid search criteria
+      StandardReportController -> TrialSearchObject : build request object
+      TrialSearchObject -> BackendController : send backend request
+      TrialSearchObject <- BackendController : ok response
+      StandardReportController <- TrialSearchObject : integrate search results
+    end
+    StandardReportController -> TrialFilterTemplate : request and build template
+    StandardReportController <- TrialFilterTemplate : return HTML
+    ReportFilters <- StandardReportController : return HTML
+    Actor <- ReportFilters : render HTML
+
+  else Month select
+    alt With selection conditions
+      StandardReportController -> ReportSearchValidator : validate search details
+      StandardReportController <- ReportSearchValidator : validator response
+    end
+    StandardReportController -> MonthFilterTemplate : request and build template
+    StandardReportController <- MonthFilterTemplate : return HTML
+    ReportFilters <- StandardReportController : return HTML
+    Actor <- ReportFilters : render HTML
+
+  end
+end
+
+Actor -> ReportFilters : Submit search criteria
+
+alt Form submission is filter search
+  ReportFilters ->o StandardReportController : return to filter render start
+else Form submission is for a report render
+  ReportFilters -> StandardReportController : call page controller
+end
+
+StandardReportController -> ReportSearchValidator : validate search details
+alt Validation fails
+  StandardReportController o<- ReportSearchValidator : return to filter page with error messages
+end
+StandardReportController <- ReportSearchValidator : validator response ok
+
+StandardReportController -> StandardReportTemplate : request and build template
+StandardReportController <- StandardReportTemplate : return HTML
+StandardReportController -> ReportDefinitions : fetch bespoke report adjustments
+StandardReportController <- ReportDefinitions : inject bespoke report adjustments into html
+StandardReportRenderer <- StandardReportController : return HTML
+Actor <- StandardReportRenderer : render HTML report to user
+
+@enduml

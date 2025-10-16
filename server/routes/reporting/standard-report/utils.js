@@ -37,7 +37,7 @@ const tableDataMappers = {
     return '-';
   },
   Long: (data) => data ? data.toString() : '-',
-  Integer: (data) => data.toString(),
+  Integer: (data) => data ? data.toString() : '-',
   LocalTime: (data) => data ? moment(data, 'HH:mm:ss').format('hh:mma') : '-',
   BigDecimal: (data) => {
     return data < 0 
@@ -46,6 +46,8 @@ const tableDataMappers = {
   },
   Boolean: (data) => data ? 'Yes' : 'No',
   Double: (data) => data ? data.toFixed(2).toString() : '-',
+  Date: (data) => data ? dateFilter(data, 'YYYY-mm-dd', 'ddd D MMM YYYY') : '-',
+
 };
 
 const headingDataMappers = {
