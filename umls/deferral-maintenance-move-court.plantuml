@@ -1,0 +1,58 @@
+@startuml deferral-maintenance-move-court
+hide unlinked
+!include generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant DeferralMaintenancePage <</pool-management/deferral-maintenance/:locationCode>>
+participant SelectCourtPage <</pool-management/deferral-maintenance/location/:locationCode/move-court>>
+participant AvailablePoolsPage <</pool-management/deferral-maintenance/location/:locationCode/move-court/:newLocationCode/select-pool>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant DeferralMaintenanceController <<summons-management.controller.js>>
+participant FetchCourtsObj <<fetchCourtsDAO.get()>>
+participant AvailablePoolsObj <<deferralMaintenance.availablePools.get()>>
+participant MoveCourtObj <<moveCourt.post()>>
+
+''' TEMPLATES
+participant DeferralMaintenanceTemplate <</pool-management/deferral-maintenance/index.njk>>
+participant SelectCourtTemplate <</pool-management/_common/select-court.njk>>
+participant AvailablePoolsTemplate <</pool-management/deferral-maintenance/pools.njk>>
+participant GenericErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant DeferralMaintenanceValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+''' JOURNEY FLOW
+Actor -> DeferralMaintenancePage : select deferrals and click 'move court'
+DeferralMaintenancePage -> DeferralMaintenanceController : call controller with selected deferrals
+$validateInput(DeferralMaintenanceController, DeferralMaintenanceValidator, DeferralMaintenanceTemplate, DeferralMaintenancePage, "No jurors selected")
+
+$genericAPICall(DeferralMaintenanceController, FetchCourtsObj, GenericErrorTemplate, "Failed to fetch courts list")
+
+$renderTemplateToPage(DeferralMaintenanceController, SelectCourtTemplate, SelectCourtPage)
+
+Actor -> SelectCourtPage : select court and click 'continue'
+SelectCourtPage -> DeferralMaintenanceController : call controller with selected court
+$validateInput(DeferralMaintenanceController, DeferralMaintenanceValidator, SelectCourtTemplate, SelectCourtPage, "No court selected")
+
+$genericAPICall(DeferralMaintenanceController, AvailablePoolsObj, GenericErrorTemplate, "Failed to fetch available pools")
+$renderTemplateToPage(DeferralMaintenanceController, AvailablePoolsTemplate, AvailablePoolsPage)
+Actor -> AvailablePoolsPage : select pool and click 'confirm'
+AvailablePoolsPage -> DeferralMaintenanceController : call controller with selected pool
+$validateInput(DeferralMaintenanceController, DeferralMaintenanceValidator, AvailablePoolsTemplate, AvailablePoolsPage, "No pool selected")
+
+$genericAPICall(DeferralMaintenanceController, MoveCourtObj, GenericErrorTemplate, "Failed to move the selected deferrals to another court")
+
+DeferralMaintenanceController -> DeferralMaintenancePage : redirect to deferral maintenance page
+Actor <- DeferralMaintenancePage : render page
+
+@enduml

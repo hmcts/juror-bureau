@@ -284,9 +284,7 @@
       } catch (err) {
         app.logger.crit('Failed to create new user: ', {
           auth: req.session.authentication,
-          data: {
-            username,
-          },
+          data: payload,
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 

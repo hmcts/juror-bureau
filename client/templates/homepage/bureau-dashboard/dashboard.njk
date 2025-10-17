@@ -10,7 +10,10 @@
   <div id="court-dashboard-home" class="govuk-grid-row">
     <div class="govuk-grid-column-full">
 
-      {% include "./widgets/notifications.njk" %}
+      <div class="govuk-grid-row">
+        {% include "./widgets/quick-links.njk" %}
+        {% include "./widgets/notifications.njk" %}
+      </div>
 
       <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible govuk-!-margin-bottom-0">
 
