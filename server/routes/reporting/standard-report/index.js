@@ -71,7 +71,7 @@
     standardReportRoutes(app, 'voir-dire');
     standardReportRoutes(app, 'pool-analysis');
     // require('../pool-status')(app);
-    standardReportRoutes(app, 'reasonable-adjustments');
+    standardReportRoutes(app, 'reasonable-adjustment-and-cje');
     require('../persons-attending')(app);
     standardReportRoutes(app, 'persons-attending-summary');
     standardReportRoutes(app, 'persons-attending-detail');
