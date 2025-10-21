@@ -334,7 +334,7 @@ const { date } = require('../../../config/validation/report-search-by');
       },
       'reasonable-adjustment-and-cje': {
         title: 'Reasonable adjustment and CJE report',
-        apiKey: 'ReasonableAdjustmentAndCJEReport',
+        apiKey: 'ReasonableAdjustmentAndCjeReport',
         search: 'fixedDateRange',
         searchLabelMappers: {
           dateFrom: 'Service start date from',
