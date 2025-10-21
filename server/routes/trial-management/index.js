@@ -15,6 +15,7 @@
     require('./add-panel-members')(app);
     require('./reassign-panel')(app);
     require('./add-non-attendance-day')(app);
+    require('./reinstate-jury')(app);
 
     app.get('/trial-management/trials',
       'trial-management.trials.get',
