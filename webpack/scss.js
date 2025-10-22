@@ -25,6 +25,7 @@ module.exports = {
         {
           loader: 'sass-loader',
           options: {
+            api: 'legacy',
             sassOptions: {
               quietDeps: true,
             },
