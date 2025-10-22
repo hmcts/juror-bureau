@@ -2,7 +2,7 @@
   'use strict';
 
   const { DAO } = require('./dataAccessObject');
-  const urljoin = require('url-join')
+  const urljoin = require('url-join').default
   const { basicDataTransform } = require('../lib/utils')
 
   module.exports.object = new DAO('moj/deferral-maintenance/available-pools', {

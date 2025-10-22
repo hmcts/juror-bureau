@@ -1,6 +1,6 @@
 const { DAO } = require('./dataAccessObject');
 const { dateFilter } = require('../components/filters');
-const urljoin = require('url-join');
+const urljoin = require('url-join').default;
 
 module.exports.summonCitizensDAO = new DAO('moj/pool-create', {
   post: function(_body, endpoint) {

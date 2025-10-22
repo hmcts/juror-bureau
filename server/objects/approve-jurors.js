@@ -2,7 +2,7 @@
   'use strict';
   
   const { DAO } = require('./dataAccessObject');
-  const urljoin = require('url-join');
+  const urljoin = require('url-join').default;
 
   module.exports.jurorList = new DAO('moj/juror-record/pending-jurors', {
     get: function(locCode, status) {

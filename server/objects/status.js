@@ -1,6 +1,6 @@
 /* eslint-disable strict */
 
-const urljoin = require('url-join');
+const urljoin = require('url-join').default;
 const { DAO } = require('./dataAccessObject');
 
 module.exports.updateStatusDAO = new DAO('moj/juror-response/update-status', {
