@@ -3,7 +3,7 @@ const { mapSnakeToCamel } = require('../lib/mod-utils');
 (() => {
   'use strict';
 
-  const urljoin = require('url-join');
+  const urljoin = require('url-join').default;
   const { DAO } = require('./dataAccessObject');
 
   const jurorHistoryDAO = new DAO('moj/juror-record/', {

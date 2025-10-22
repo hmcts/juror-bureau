@@ -3,7 +3,7 @@
 
   const _ = require('lodash'),
     validate = require('validate.js'),
-    urljoin = require('url-join'),
+    urljoin = require('url-join').default,
     approveExpensesFilterValidation = require('../../../config/validation/approve-expenses'),
     { approveExpensesDAO } = require('../../../objects/expenses'),
     { dateFilter } = require('../../../components/filters'),

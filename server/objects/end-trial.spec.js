@@ -3,7 +3,7 @@
 
   const { endTrialObject } = require('./end-trial')
     , { dateFilter } = require('../components/filters')
-    , urljoin = require('url-join')
+    , urljoin = require('url-join').default
     , rpStub = function(options) {
       return options;
     }

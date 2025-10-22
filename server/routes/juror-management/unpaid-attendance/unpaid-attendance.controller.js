@@ -4,7 +4,7 @@
   const _ = require('lodash');
   const modUtils = require('../../../lib/mod-utils');
   const validate = require('validate.js');
-  const urljoin = require('url-join');
+  const urljoin = require('url-join').default;
   const fetchUnpaidExpenses = require('../../../objects/expenses').fetchUnpaidExpenses;
   const unpaidAttendanceFilterValidation = require('../../../config/validation/unpaid-attendance');
   const { dateFilter } = require('../../../components/filters');

@@ -4,7 +4,7 @@
   const _ = require('lodash');
   const { replaceAllObjKeys } = require('../lib/mod-utils');
   const { DAO } = require('./dataAccessObject')
-  const urljoin = require('url-join')
+  const urljoin = require('url-join').default
 
   module.exports.getReturnedJurors = new DAO('moj/trial/get-returned-jurors', {
     get: function(trialNumber, locCode) {

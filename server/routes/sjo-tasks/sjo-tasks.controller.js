@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const validate = require('validate.js');
-const urljoin = require('url-join');
+const urljoin = require('url-join').default;
 const uncompleteValidator = require('../../config/validation/uncomplete-service');
 const modUtils = require('../../lib/mod-utils');
 const { sjoTasksSearchDAO } = require('../../objects');

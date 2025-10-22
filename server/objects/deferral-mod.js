@@ -3,7 +3,7 @@
 
   const { DAO } = require('./dataAccessObject');
   const { basicDataTransform } = require('../lib/utils');
-  const urljoin = require('url-join');
+  const urljoin = require('url-join').default;
 
 
   module.exports.deferralObject = new DAO('moj/deferral-response/juror', {

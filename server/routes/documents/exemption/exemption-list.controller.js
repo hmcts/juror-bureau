@@ -2,7 +2,7 @@
   'use strict';
 
   const _ = require('lodash');
-  const urljoin = require('url-join');
+  const urljoin = require('url-join').default;
   const { certificateOfExemptionDAO } = require('../../../objects/documents');
   const letterTemplates = require('../pdf/letter-templates');
 

@@ -2,7 +2,7 @@
   'use strict';
 
   var jurorDeceasedObject = require('./juror-deceased').jurorDeceasedObject
-    , urljoin = require('url-join')
+    , urljoin = require('url-join').default
     , rpStub = function(options) {
       return options;
     }

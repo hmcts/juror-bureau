@@ -2,7 +2,7 @@
   'use strict';
   
   const { DAO } = require('./dataAccessObject');
-  const urljoin = require('url-join');
+  const urljoin = require('url-join').default;
   const utils = require('../lib/utils');
 
   module.exports.summoningProgressObject = new DAO('moj/manage-pool/summoning-progress', {

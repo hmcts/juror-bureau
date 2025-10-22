@@ -2,7 +2,7 @@
   'use strict';
 
   var editNoRequested = require('./edit-pool').editNoRequested
-    , urljoin = require('url-join')
+    , urljoin = require('url-join').default
     , rpStub = function(options) {
       return options;
     }

@@ -2,7 +2,7 @@
   'use strict';
 
   const { DAO } = require('./dataAccessObject');
-  const urljoin = require('url-join');
+  const urljoin = require('url-join').default;
   const utils = require('../lib/utils');
 
   module.exports.fetchCourts = new DAO('moj/pool-request/court-locations');
