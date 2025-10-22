@@ -4045,7 +4045,7 @@ __metadata:
     redis: "npm:^4.7.1"
     referrer-policy: "npm:^1.2.0"
     sass: "npm:^1.93.2"
-    sass-loader: "npm:^14.2.1"
+    sass-loader: "npm:^16.0.5"
     sinon: "npm:18.0.1"
     sinon-chai: "npm:^3.7.0"
     style-loader: "npm:^4.0.0"
@@ -5451,9 +5451,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sass-loader@npm:^14.2.1":
-  version: 14.2.1
-  resolution: "sass-loader@npm:14.2.1"
+"sass-loader@npm:^16.0.5":
+  version: 16.0.5
+  resolution: "sass-loader@npm:16.0.5"
   dependencies:
     neo-async: "npm:^2.6.2"
   peerDependencies:
@@ -5473,7 +5473,7 @@ __metadata:
       optional: true
     webpack:
       optional: true
-  checksum: 10/9cb864fd8d4c4f73d05f6cedae9ff4500f15fa742385e1f1cffcc0f994270810288fe99009f233ac6516fdc497570ce21f53c63f079c70e841c1e5bf994bc27d
+  checksum: 10/978b553900427c3fc24ed16b8258829d6a851bc5b0ab226cf43143fc08a0386e8cd07db367104d190a6cf0945af071805f70773525a970673c5b61fda4b7a59e
   languageName: node
   linkType: hard
 
