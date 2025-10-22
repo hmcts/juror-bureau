@@ -2,7 +2,7 @@
   'use strict';
 
   var summoningProgressObject = require('./summoning-progress').summoningProgressObject
-    , urljoin = require('url-join')
+    , urljoin = require('url-join').default
     , rpStub = function(options) {
       return options;
     }

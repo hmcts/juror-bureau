@@ -4,7 +4,7 @@ const dataStore = require('../stores/court-dashboard');
   'use strict';
 
   const { DAO } = require('./dataAccessObject');
-  const urljoin = require('url-join');
+  const urljoin = require('url-join').default;
   const { replaceAllObjKeys } = require('../lib/mod-utils');
   const _ = require('lodash');
 

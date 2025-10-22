@@ -2,7 +2,7 @@
   'use strict';
 
   var _ = require('lodash')
-    , urljoin = require('url-join')
+    , urljoin = require('url-join').default
     , validate = require('validate.js')
     , validator = require('../../../config/validation/request-pool')
     , modUtils = require('../../../lib/mod-utils')

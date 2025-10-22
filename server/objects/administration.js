@@ -2,7 +2,7 @@
   'use strict';
 
   const { DAO } = require('./dataAccessObject');
-  const urljoin = require('url-join');
+  const urljoin = require('url-join').default;
   const { extractDataAndHeadersFromResponse } = require('../lib/mod-utils');
 
   module.exports.systemCodesDAO = new DAO('moj/administration/codes', {

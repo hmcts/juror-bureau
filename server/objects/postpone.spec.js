@@ -2,7 +2,7 @@
   'use strict';
 
   var postpone = require('./postpone').postponeObject
-    , urljoin = require('url-join')
+    , urljoin = require('url-join').default
     , rpStub = function(options) {
       return options;
     }

@@ -2,7 +2,7 @@
   'use strict';
 
   const { DAO } = require('./dataAccessObject');
-  const urljoin = require('url-join');
+  const urljoin = require('url-join').default;
   const { basicDataTransform } = require('../lib/utils');
   const { toReplyMethod } = require('../lib/mod-utils');
 
