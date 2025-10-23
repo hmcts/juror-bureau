@@ -56,7 +56,6 @@
 
         app.logger.crit('Failed to fetch documents / jurors list: ', {
           auth: req.session.authentication,
-          data: { ...req.body },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
