@@ -10,7 +10,7 @@
 
     app.get('/homepage/dashboard', 'homepage.dashboard.get', auth.verify, controller.dashboard(app));
 
-    app.post('/homepage/dashboard', 'homepage.dashboard.post', auth.verify, isSuperUser, controller.filterPools(app));
+    app.post('/homepage/dashboard', 'homepage.dashboard.post', auth.verify, controller.filterPools(app));
   };
 
 })();
