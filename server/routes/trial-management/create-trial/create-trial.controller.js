@@ -36,7 +36,7 @@
                 displayName: court.court_location,
                 courtLocationName: court.court_location.replace(/[ .]/g, '_'),
                 courtrooms: court.court_rooms.map(room => room.description),
-              }
+              };
           });
 
           const judgesToDisplay = judges.judges.map(j => j.description);

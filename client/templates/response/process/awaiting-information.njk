@@ -42,7 +42,7 @@
         </p>
       {% endif %}
 
-      {% set postUrl = url('response.detail.awaiting.information.post', { id: jurorNumber }) %}
+      {% set postUrl = url('response.detail.awaiting.information.post', { id: jurorNumber, type: 'digital' }) %}
       {% if method === 'paper' %}
         {% set postUrl = url('response.detail.awaiting.information.post', { id: jurorNumber, type: 'paper' }) %}
       {% endif %}

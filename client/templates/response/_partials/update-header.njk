@@ -45,7 +45,7 @@
 
         {% set buttonMenuItems = buttonMenuItems.concat({
           text: "Mark as awaiting information",
-          href: url('response.detail.awaiting.information.get', { id: response.jurorNumber }) + ('/paper' if method === 'paper'),
+          href: url('response.detail.awaiting.information.get', { id: response.jurorNumber }) + ('/paper' if method === 'paper' else '/digital'),
           classes: "govuk-button--secondary"
         }) %}
         
