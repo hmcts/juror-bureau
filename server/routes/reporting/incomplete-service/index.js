@@ -16,7 +16,7 @@
       auth.verify,
       filterCutoffDatePost(app));
 
-    app.get('/reporting/incomplete-service/complete/:jurorNumber/:lastAttendanceDate?',
+    app.get('/reporting/incomplete-service/complete/:jurorNumber',
       'reports.incomplete-service.complete-redirect.get',
       auth.verify,
       getCompleteService(app));

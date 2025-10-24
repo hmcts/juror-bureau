@@ -444,7 +444,7 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
 
       const opts = {
         ...searchOptions,
-        'filters': [...filters.showOnly || [], ...filters.include || []],
+        'filters': [...(filters.showOnly || []), ...(filters.include || [])],
         'pageNumber': currentPage,
         'pageLimit': modUtils.constants.PAGE_SIZE,
         'sortMethod': sortOrder === 'ascending' ? 'ASC' : (sortOrder === 'descending' ? 'DESC' : null),
@@ -715,7 +715,7 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
             const searchOptions = _.clone(req.session.messaging.searchOptions);
             const opts = {
               ...searchOptions,
-              'filters': [...filters.showOnly || [], ...filters.include || []],
+              'filters': [...(filters.showOnly || []), ...(filters.include || [])],
               'pageNumber': '1',
               // 500 is the max results we will every show
               // May need to split this down into seperate calls dependant on performance
@@ -797,7 +797,7 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
 
       const noChecked = req.session.messaging.checkedJurors ? req.session.messaging.checkedJurors.length : 0;
 
-      return res.send(200, noChecked); ;
+      return res.status(200).send(noChecked); ;
     };
   };
 
