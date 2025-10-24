@@ -222,7 +222,7 @@ const { date } = require('../../../config/validation/report-search-by');
                 app.namedRoutes.build('reports.incomplete-service.complete-redirect.get', {
                   jurorNumber: data.jurorNumber,
                   lastAttendanceDate: data.lastAttendanceDate ? data.lastAttendanceDate : null,
-                })
+                }) + (data.lastAttendanceDate ? `&lastAttendanceDate=${data.lastAttendanceDate}` : '')
               }>Complete service</a>`};
             }],
           },

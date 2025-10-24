@@ -49,7 +49,8 @@ const { genericDatePicker } = require('../../../config/validation/date-picker');
   };
 
   module.exports.getCompleteService = (app) => async(req, res) => {
-    const { jurorNumber, lastAttendanceDate } = req.params;
+    const { jurorNumber } = req.params;
+    const { lastAttendanceDate } = req.query;
 
     if (lastAttendanceDate) {
       req.session.completeServiceLastDate = lastAttendanceDate;
