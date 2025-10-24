@@ -332,9 +332,9 @@ const { date } = require('../../../config/validation/report-search-by');
         },
         exportLabel: 'Export data',
       },
-      'reasonable-adjustments': {
-        title: 'Reasonable adjustments report',
-        apiKey: 'ReasonableAdjustmentsReport',
+      'reasonable-adjustment-and-cje': {
+        title: 'Reasonable adjustment and CJE report',
+        apiKey: 'ReasonableAdjustmentAndCjeReport',
         search: 'fixedDateRange',
         searchLabelMappers: {
           dateFrom: 'Service start date from',
