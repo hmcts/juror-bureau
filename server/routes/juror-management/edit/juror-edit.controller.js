@@ -344,7 +344,9 @@
 
       // Confirm if user wants to deferral past 12 months
       if (isManager(req) && req.body.allowLongDeferral !== "true") {
-        const pastMaxDate = moment(newDeferralDate).isAfter(moment(req.session.maxDate))
+        const minDate = _.clone(req.session.minDate);
+        const maxDate = moment(minDate).add(12, 'M');
+        const pastMaxDate = moment(newDeferralDate).isAfter(maxDate)
         if (pastMaxDate) {
           app.logger.info('Showing confirm long deferral page for editing deferral', {
             auth: req.session.authentication,
