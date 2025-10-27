@@ -4,7 +4,7 @@
   require('./custom-validation');
   require('./date-picker');
 
-  module.exports.deferralReasonAndDecision = function(body, minDate, maxDate) {
+  module.exports.deferralReasonAndDecision = function(body, minDate, maxDate, isManager = false) {
     return {
       deferralReason: {
         presence: {
@@ -45,13 +45,14 @@
           deferralDatePicker: {
             minDate: minDate,
             maxDate: maxDate,
+            isManager: isManager,
           },
         };
       },
     };
   };
 
-  module.exports.deferralDateAndReason = (minDate, maxDate) => {
+  module.exports.deferralDateAndReason = (minDate, maxDate, isManager = false) => {
     return {
       deferralDate: {
         presence: {
@@ -65,6 +66,7 @@
         deferralDatePicker: {
           minDate: minDate,
           maxDate: maxDate,
+          isManager: isManager,
         },
       },
       deferralReason: {

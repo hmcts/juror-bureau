@@ -6,7 +6,7 @@
   const validate = require('validate.js');
   const modUtils = require('../../../lib/mod-utils');
   const { dateFilter, makeDate } = require('../../../components/filters');
-  const { isCourtUser, isTeamLeader, isBureauUser } = require('../../../components/auth/user-type');
+  const { isCourtUser, isTeamLeader, isBureauUser, isManager } = require('../../../components/auth/user-type');
   const { deferralPoolsObject: activePoolsObj, changeDeferralObject, deleteDeferralObject } = require('../../../objects/deferral-mod');
   const { deferralDateAndReason: changeDeferralValidator, deferralDateAndPool: deferralPoolValidator } = require('../../../config/validation/deferral-mod');
   const { record: jurorRecordObject, editDetails: editJurorDetailsObject } = require('../../../objects/juror-record');
@@ -90,8 +90,11 @@
 
           delete req.session.formFields;
 
-          let minDate = new Date(makeDate(jurorOverview.data.commonDetails.startDate)),
+          let minDate = new Date(makeDate(jurorOverview.data.commonDetails.startDate));
+          let maxDate;
+          if (!isManager(req)) {
             maxDate = moment(minDate).add(12, 'M');
+          }
 
           req.session.minDate = minDate;
           req.session.maxDate = maxDate;
@@ -114,7 +117,7 @@
             selectedDeferralReason: selectedDeferralReason,
             selectedDeferralDate: selectedDeferralDate,
             minDate: dateFilter(moment(minDate).add(1, 'days'), null, 'DD/MM/YYYY'),
-            maxDate: dateFilter(maxDate, null, 'DD/MM/YYYY'),
+            maxDate: maxDate ? dateFilter(maxDate, null, 'DD/MM/YYYY') : null,
             errors: {
               title: 'Please check the form',
               count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -137,7 +140,7 @@
   module.exports.postEditDeferral = (app) => {
     return (req, res) => {
       const { jurorNumber } = req.params;
-      let validatorResult = validate(req.body, changeDeferralValidator(req.session.minDate, req.session.maxDate));
+      let validatorResult = validate(req.body, changeDeferralValidator(req.session.minDate, req.session.maxDate, isManager(req)));
 
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
@@ -339,6 +342,30 @@
           ? deferralSelection[1]
           : null;
 
+      // Confirm if user wants to deferral past 12 months
+      if (isManager(req) && req.body.allowLongDeferral !== "true") {
+        const minDate = _.clone(req.session.minDate);
+        const maxDate = moment(minDate).add(12, 'M');
+        const pastMaxDate = moment(newDeferralDate).isAfter(maxDate)
+        if (pastMaxDate) {
+          app.logger.info('Showing confirm long deferral page for editing deferral', {
+            auth: req.session.authentication,
+            data: {
+              newPoolNumber,
+              newDeferralDate,
+            },
+          });
+
+          return res.render('juror-management/juror-record/confirm-long-deferral.njk', {
+            bodyData: {
+              deferralDateAndPool: req.body.deferralDateAndPool,
+            },
+            postUrl: app.namedRoutes.build('juror-record.deferral-edit-confirm.post', { jurorNumber }),
+            cancelUrl: app.namedRoutes.build('juror-record.overview.get', { jurorNumber }),
+          });
+        }
+      }
+
       changeDeferralObject.post(req, jurorNumber, newDeferralDate, newPoolNumber, req.session.newDeferralReason)
         .then(() => {
           app.logger.info('Changed deferral details: ', {
@@ -350,6 +377,8 @@
           });
 
           req.session.bannerMessage = newPoolNumber ? 'Responded' : {showUpdateOnly: true};
+
+          delete req.session.maxDate;
 
           return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
             jurorNumber,

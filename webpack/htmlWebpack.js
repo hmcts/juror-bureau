@@ -23,6 +23,7 @@ const clientJs = [
   'print-sortable.js',
   'summoning-progress.js',
   'loading-spinner.js',
+  'reinstate-jurors.js',
 ];
 
 const copyClientCode = new CopyWebpackPlugin({
