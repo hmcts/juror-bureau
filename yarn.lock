@@ -350,15 +350,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fengyuanchen/datepicker@npm:^0.6.5":
-  version: 0.6.5
-  resolution: "@fengyuanchen/datepicker@npm:0.6.5"
-  peerDependencies:
-    jquery: ">= 1.9.1"
-  checksum: 10/014a9f3b05a1b67174f25e46ea3343ee731aa561e9ea3757a34c0fa8214c4fa52512a996fd27beb84e31fc2c5d2d2ce159cec085e087d3aebb5933d7b1f526b5
-  languageName: node
-  linkType: hard
-
 "@foliojs-fork/fontkit@npm:^1.9.2":
   version: 1.9.2
   resolution: "@foliojs-fork/fontkit@npm:1.9.2"
@@ -3968,7 +3959,6 @@ __metadata:
   resolution: "juror-bureau@workspace:."
   dependencies:
     "@azure/identity": "npm:^4.13.0"
-    "@fengyuanchen/datepicker": "npm:^0.6.5"
     "@hmcts/properties-volume": "npm:^1.2.0"
     "@hods/loading-spinner": "npm:^0.5.1"
     "@ministryofjustice/frontend": "npm:^5.2.1"
