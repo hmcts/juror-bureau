@@ -29,7 +29,7 @@
     "@hods/loading-spinner": "^0.5.1",
     "@ministryofjustice/frontend": "^5.2.1",
     "accessible-autocomplete": "^3.0.1",
-    "applicationinsights": "2.9.8",
+    "applicationinsights": "3.12.0",
     "axios": "^1.13.0",
     "basic-auth": "^2.0.1",
     "body-parser": "^2.2.0",
