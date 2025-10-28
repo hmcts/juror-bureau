@@ -25,7 +25,6 @@
   },
   "dependencies": {
     "@azure/identity": "^4.13.0",
-    "@fengyuanchen/datepicker": "^0.6.5",
     "@hmcts/properties-volume": "^1.2.0",
     "@hods/loading-spinner": "^0.5.1",
     "@ministryofjustice/frontend": "^5.2.1",
