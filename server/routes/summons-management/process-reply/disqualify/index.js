@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  const auth = require('../../../../components/auth')
+  const auth = require('../../../../components/auth');
   const controller = require('./process-reply-disqualify.controller');
 
   module.exports = function(app) {
