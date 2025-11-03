@@ -3,7 +3,7 @@
 
   const auth = require('../../../components/auth')
   const controller = require('./request-info.controller')
-  const isBureauUser = require('../../../components/auth/user-type').isBureauUser;
+  const { isBureauUser } = require('../../../components/auth/user-type');
 
   module.exports = function(app) {
     app.get('/summons-replies/response/:id/request-info/:type(paper|digital)',
