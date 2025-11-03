@@ -8,120 +8,95 @@
   const validator = require('../../../config/validation/paper-reply').cjsEmployment;
   const { hasBeenModified, generalError } = require('./summons-update-common');
 
-  module.exports.get = function(app) {
-    return async function(req, res) {
-      const { id } = req.params;
-      const postUrl = app.namedRoutes.build('summons.update-employment.post', {
-        id: req.params['id'],
-        type: req.params['type'],
+  module.exports.get = (app) => async (req, res) =>{
+    const { id, type } = req.params;
+    const postUrl = app.namedRoutes.build('summons.update-employment.post', { id, type });
+    const cancelUrl = app.namedRoutes.build('response.paper.details.get', { id, type: 'paper' });
+    const tmpErrors = _.clone(req.session.errors);
+
+    delete req.session.errors;
+
+    try {
+      const { headers, data } = await paperReplyObj.get(req, id);
+
+      req.session[`summonsUpdate-${id}`] = {
+        etag: headers['etag'],
+      };
+
+      const employments = resolveEmployments(data.cjsEmployment);
+
+      return res.render('summons-management/paper-reply/cjs-employment.njk', {
+        postUrl,
+        cancelUrl,
+        ...employments,
+        errors: {
+          title: 'Please check the form',
+          count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+          items: tmpErrors,
+        },
       });
-      const cancelUrl = app.namedRoutes.build('response.paper.details.get', {
-        id: req.params['id'],
-        type: 'paper',
+    } catch (err) {
+      app.logger.crit('Unable to fetch the summons details', {
+        auth: req.session.authentication,
+        data: {
+          id,
+        },
+        error: typeof err.error !== 'undefined' ? err.error : err.toString(),
       });
-      const tmpErrors = _.clone(req.session.errors);
 
-      delete req.session.errors;
-
-      try {
-        const { headers, data } = await paperReplyObj.get(
-          req,
-          req.params['id']
-        );
-
-        req.session[`summonsUpdate-${id}`] = {
-          etag: headers['etag'],
-        };
-
-        const employments = resolveEmployments(data.cjsEmployment);
-
-        return res.render('summons-management/paper-reply/cjs-employment.njk', {
-          postUrl,
-          cancelUrl,
-          ...employments,
-          errors: {
-            title: 'Please check the form',
-            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-            items: tmpErrors,
-          },
-        });
-      } catch (err) {
-        app.logger.crit('Unable to fetch the summons details', {
-          auth: req.session.authentication,
-          data: {
-            id: req.params['id'],
-          },
-          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
-        });
-
-        return res.render('_errors/generic', { err });
-      }
-    };
+      return res.render('_errors/generic', { err });
+    }
   };
 
-  module.exports.post = function(app) {
-    return async function(req, res) {
-      const { id } = req.params;
-      const payload = req.body.cjsEmploymentResponse === 'yes'
-        ? prepareEmployments(req.body) : null;
+  module.exports.post = (app) => async (req, res) => {
+    const { id, type } = req.params;
+    const payload = req.body.cjsEmploymentResponse === 'yes'
+      ? prepareEmployments(req.body) : null;
 
-      const validatorResult = validate(req.body, validator());
+    const validatorResult = validate(req.body, validator());
 
-      if (typeof validatorResult !== 'undefined') {
-        req.session.errors = validatorResult;
+    if (typeof validatorResult !== 'undefined') {
+      req.session.errors = validatorResult;
 
-        return res.redirect(app.namedRoutes.build('summons.update-employment.get', {
-          id: req.params['id'],
-          type: 'paper',
-        }));
+      return res.redirect(app.namedRoutes.build('summons.update-employment.get', { id, type: 'paper' }));
+    }
+
+    try {
+      const wasModified = await hasBeenModified(app, req);
+
+      if (wasModified) {
+        return res.redirect(app.namedRoutes.build('summons.update-employment.get', { id, type: 'paper' }));
       }
 
-      try {
-        const wasModified = await hasBeenModified(app, req);
+      await summonsUpdate.patch(
+        req,
+        id,
+        'CJS',
+        { cjsEmployment: payload }
+      );
 
-        if (wasModified) {
-          return res.redirect(app.namedRoutes.build('summons.update-employment.get', {
-            id: req.params['id'],
-            type: 'paper',
-          }));
-        }
+      delete req.session[`summonsUpdate-${id}`];
 
-        await summonsUpdate.patch(
-          req,
-          req.params['id'],
-          'CJS',
-          { cjsEmployment: payload }
-        );
+      app.logger.info('Updated the summons cjs employments', {
+        auth: req.session.authentication,
+        id,
+      });
 
-        delete req.session[`summonsUpdate-${id}`];
+      return res.redirect(app.namedRoutes.build('response.paper.details.get', { id, type: 'paper' }));
+    } catch (err) {
+      app.logger.crit('Unable to save the summons cjs employment', {
+        auth: req.session.authentication,
+        id,
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
 
-        app.logger.info('Updated the summons cjs employments', {
-          auth: req.session.authentication,
-          jurorNumber: req.params['id'],
-        });
+      generalError(req);
 
-        return res.redirect(app.namedRoutes.build('response.paper.details.get', {
-          id: req.params['id'],
-          type: 'paper',
-        }));
-      } catch (err) {
-        app.logger.crit('Unable to save the summons cjs employment', {
-          auth: req.session.authentication,
-          jurorNumber: req.params['id'],
-          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-        });
-
-        generalError(req);
-
-        return res.redirect(app.namedRoutes.build('summons.update-employment.get', {
-          id: req.params['id'],
-          type: 'paper',
-        }));
-      }
-    };
+      return res.redirect(app.namedRoutes.build('summons.update-employment.get', { id, type: 'paper' }));
+    }
   };
 
-  function prepareEmployments(body) {
+  const prepareEmployments = (body) => {
     return Object.keys(body).reduce((prev, emp) => {
       if (emp === '_csrf') return prev;
       if (body[emp] === '') return prev;
@@ -169,7 +144,7 @@
     }, []);
   }
 
-  function resolveEmployments(employments) {
+  const resolveEmployments = (employments) => {
     if (!employments) return {
       cjsEmploymentChecked: {
         value: 'no',
