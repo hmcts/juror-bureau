@@ -1,5 +1,3 @@
-const dataStore = require('../stores/court-dashboard');
-
 ;(function() {
   'use strict';
 
