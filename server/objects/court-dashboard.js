@@ -1,5 +1,3 @@
-const dataStore = require('../stores/court-dashboard');
-
 ;(function() {
   'use strict';
 
@@ -34,12 +32,5 @@ const dataStore = require('../stores/court-dashboard');
       };
     }
   })
-
-  module.exports.monthlyUtilisationStats = {
-    get: function(req, locCode) {
-      return dataStore.monthlyUtilisationStats;
-    },
-  }
-  
 
 })();
