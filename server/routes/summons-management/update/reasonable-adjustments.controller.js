@@ -10,146 +10,121 @@
   const { hasBeenModified, generalError } = require('./summons-update-common');
   const { reasonsArrToObj } = require('../../../lib/mod-utils');
 
-  module.exports.get = function(app) {
-    return async function(req, res) {
-      const { id } = req.params;
-      const postUrl = app.namedRoutes.build('summons.update-adjustments.post', {
-        id: req.params['id'],
-        type: req.params['type'],
-      });
-      const cancelUrl = app.namedRoutes.build('response.paper.details.get', {
-        id: req.params['id'],
-        type: 'paper',
-      });
-      const tmpErrors = _.clone(req.session.errors);
+  module.exports.get = (app) => async (req, res) => {
+    const { id, type } = req.params;
+    const postUrl = app.namedRoutes.build('summons.update-adjustments.post', { id, type });
+    const cancelUrl = app.namedRoutes.build('response.paper.details.get', { id, type: 'paper' });
+    const tmpErrors = _.clone(req.session.errors);
 
-      delete req.session.errors;
+    delete req.session.errors;
 
-      try {
-        const { headers, data } = await paperReplyObj.get(
-          req,
-          req.params['id']
-        );
+    try {
+      const { headers, data } = await paperReplyObj.get(req, id);
 
-        req.session[`summonsUpdate-${id}`] = {
-          etag: headers['etag'],
-        };
+      req.session[`summonsUpdate-${id}`] = {
+        etag: headers['etag'],
+      };
 
-        const adjustmentsResponse = {};
-        let assistanceTypeDetails = '';
+      const adjustmentsResponse = {};
+      let assistanceTypeDetails = '';
 
-        if (!data.specialNeeds) {
-          adjustmentsResponse['checked'] = true;
-          adjustmentsResponse['value'] = 'no';
-        } else {
-          adjustmentsResponse['checked'] = true;
-          adjustmentsResponse['value'] = 'yes';
-          assistanceTypeDetails = data.specialNeeds[0].assistanceTypeDetails;
-        }
-
-        const adjustmentReasons = reasonsArrToObj(await systemCodesDAO.get(req, 'REASONABLE_ADJUSTMENTS'));
-
-        const reasons = Object.keys(adjustmentReasons).reduce((prev, key) => {
-          prev.push({
-            value: key,
-            text: adjustmentReasons[key],
-            selected: (data.specialNeeds) ? key === data.specialNeeds[0].assistanceType : false,
-          });
-          return prev;
-        }, []);
-
-        return res.render('summons-management/paper-reply/adjustments.njk', {
-          postUrl,
-          cancelUrl,
-          adjustmentsResponse,
-          assistanceTypeDetails,
-          reasons,
-          errors: {
-            title: 'Please check the form',
-            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-            items: tmpErrors,
-          },
-        });
-      } catch (err) {
-        app.logger.crit('Unable to fetch the summons details', {
-          auth: req.session.authentication,
-          data: {
-            id: req.params['id'],
-          },
-          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
-        });
-
-        return res.render('_errors/generic', { err });
+      if (!data.specialNeeds) {
+        adjustmentsResponse['checked'] = true;
+        adjustmentsResponse['value'] = 'no';
+      } else {
+        adjustmentsResponse['checked'] = true;
+        adjustmentsResponse['value'] = 'yes';
+        assistanceTypeDetails = data.specialNeeds[0].assistanceTypeDetails;
       }
-    };
+
+      const adjustmentReasons = reasonsArrToObj(await systemCodesDAO.get(req, 'REASONABLE_ADJUSTMENTS'));
+
+      const reasons = Object.keys(adjustmentReasons).reduce((prev, key) => {
+        prev.push({
+          value: key,
+          text: adjustmentReasons[key],
+          selected: (data.specialNeeds) ? key === data.specialNeeds[0].assistanceType : false,
+        });
+        return prev;
+      }, []);
+
+      return res.render('summons-management/paper-reply/adjustments.njk', {
+        postUrl,
+        cancelUrl,
+        adjustmentsResponse,
+        assistanceTypeDetails,
+        reasons,
+        errors: {
+          title: 'Please check the form',
+          count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+          items: tmpErrors,
+        },
+      });
+    } catch (err) {
+      app.logger.crit('Unable to fetch the summons details', {
+        auth: req.session.authentication,
+        data: {
+          id,
+        },
+        error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+      });
+
+      return res.render('_errors/generic', { err });
+    }
   };
 
-  module.exports.post = function(app) {
-    return async function(req, res) {
-      const { id } = req.params;
-      const payload = { specialNeeds: [] };
+  module.exports.post = (app) => async (req, res) =>{
+    const { id, type } = req.params;
+    const payload = { specialNeeds: [] };
 
-      if (req.body.adjustmentsResponse === 'yes') {
-        payload.specialNeeds.push({
-          assistanceType: req.body.adjustmentsReason,
-          assistanceTypeDetails: req.body.assistanceTypeDetails,
-        });
+    if (req.body.adjustmentsResponse === 'yes') {
+      payload.specialNeeds.push({
+        assistanceType: req.body.adjustmentsReason,
+        assistanceTypeDetails: req.body.assistanceTypeDetails,
+      });
+    }
+
+    const validatorResult = validate(req.body, validator());
+
+    if (typeof validatorResult !== 'undefined') {
+      req.session.errors = validatorResult;
+
+      return res.redirect(app.namedRoutes.build('summons.update-adjustments.get', { id, type: 'paper' }));
+    }
+
+    try {
+      const wasModified = await hasBeenModified(app, req);
+
+      if (wasModified) {
+        return res.redirect(app.namedRoutes.build('summons.update-adjustments.get', { id, type: 'paper' }));
       }
 
-      const validatorResult = validate(req.body, validator());
+      await summonsUpdate.patch(
+        req,
+        id,
+        'ADJUSTMENTS',
+        payload
+      );
 
-      if (typeof validatorResult !== 'undefined') {
-        req.session.errors = validatorResult;
+      app.logger.info('Updated the summons reasonable adjustments', {
+        auth: req.session.authentication,
+        jurorNumber: id,
+      });
 
-        return res.redirect(app.namedRoutes.build('summons.update-adjustments.get', {
-          id: req.params['id'],
-          type: 'paper',
-        }));
-      }
+      delete req.session[`summonsUpdate-${id}`];
 
-      try {
-        const wasModified = await hasBeenModified(app, req);
+      return res.redirect(app.namedRoutes.build('response.paper.details.get', { id, type: 'paper' }));
+    } catch (err) {
+      app.logger.crit('Unable to update the summons reasonable adjustments', {
+        auth: req.session.authentication,
+        jurorNumber: id,
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
 
-        if (wasModified) {
-          return res.redirect(app.namedRoutes.build('summons.update-adjustments.get', {
-            id: req.params['id'],
-            type: 'paper',
-          }));
-        }
+      generalError(req);
 
-        await summonsUpdate.patch(
-          req,
-          req.params['id'],
-          'ADJUSTMENTS',
-          payload
-        );
-
-        app.logger.info('Updated the summons reasonable adjustments', {
-          auth: req.session.authentication,
-          jurorNumber: req.params['id'],
-        });
-
-        delete req.session[`summonsUpdate-${id}`];
-
-        return res.redirect(app.namedRoutes.build('response.paper.details.get', {
-          id: req.params['id'],
-          type: 'paper',
-        }));
-      } catch (err) {
-        app.logger.crit('Unable to update the summons reasonable adjustments', {
-          auth: req.session.authentication,
-          jurorNumber: req.params['id'],
-          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-        });
-
-        generalError(req);
-
-        return res.redirect(app.namedRoutes.build('summons.update-adjustments.get', {
-          id: req.params['id'],
-          type: 'paper',
-        }));
-      }
-    };
+      return res.redirect(app.namedRoutes.build('summons.update-adjustments.get', { id, type: 'paper' }));
+    }
   };
 
 })();
