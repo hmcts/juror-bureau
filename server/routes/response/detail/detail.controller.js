@@ -19,321 +19,247 @@
   const { resolveCatchmentResponse } = require('../../summons-management/summons-management.controller.js');
   const { updateStatusDAO } = require('../../../objects');
 
-  module.exports.index = function(app) {
-    return function(req, res) {
-      let promiseArr = [];
+  module.exports.index = (app) => async (req, res) => {
+    const { id } = req.params;
 
-      delete req.session[`catchmentWarning-${req.params.id}`];
-      delete req.session.requestInfo;
-      req.session.replyDetails = {};
-      req.session.editableReplyDetails = {};
+    delete req.session[`catchmentWarning-${id}`];
+    delete req.session.requestInfo;
+    req.session.replyDetails = {};
+    req.session.editableReplyDetails = {};
 
-      promiseArr.push(
-        responseDetailObj.get(
-          req,
-          req.params.id,
-          req.session.hasModAccess
-        )
-      );
-      promiseArr.push(
-        systemCodesDAO.get(req, 'REASONABLE_ADJUSTMENTS'));
-      promiseArr.push(
-        jurorRecordObject.record.get(
-          req,
-          'contact-log',
-          req.params['id'],
+    const promiseArr = [
+      responseDetailObj.get(req, id, req.session.hasModAccess),
+      systemCodesDAO.get(req, 'REASONABLE_ADJUSTMENTS'),
+      jurorRecordObject.record.get(req, 'contact-log', id),
+    ];
+
+    try {
+      const response = await executeAllPromises(promiseArr);
+
+      const data = response.results[0];
+      const nameDetails = getNameDetails(data);
+      const addressDetails = getAddressDetails(data);
+      const additionalChangeDetails = getAdditionalChangedDetails(data);
+      const eligibilityDetails = getEligibilityDetails(data);
+      const thirdPartyDetails = getThirdPartyDetails(data);
+      const canEdit = (
+          data.processingStatus !== 'CLOSED' && data.superUrgent !== true
+        );
+      let responseCompletedMesssage;
+
+      // Calculate which sub-nav items are highlighted for importance
+      const importantNavItems = {
+        jurorDetails: (
+          nameDetails.changed ||
+          addressDetails.changed ||
+          thirdPartyDetails.isThirdParty ||
+          additionalChangeDetails.ageIneligible === true ||
+          additionalChangeDetails.hasChange === true
         ),
-      );
 
-      executeAllPromises(promiseArr)
-        .then((response) => {
-          const data = response.results[0];
-          const nameDetails = getNameDetails(data);
-          const addressDetails = getAddressDetails(data);
-          const additionalChangeDetails = getAdditionalChangedDetails(data);
-          const eligibilityDetails = getEligibilityDetails(data);
-          const thirdPartyDetails = getThirdPartyDetails(data);
-          const canEdit = (
-              data.processingStatus !== 'CLOSED' && data.superUrgent !== true
+        eligibility: (
+          !eligibilityDetails.eligible &&
+          thirdPartyDetails.reason !== 'Deceased' &&
+          additionalChangeDetails.ageIneligible === false
+        ),
+        deferralExcusal: (
+          (data.deferralReason || data.excusalReason) &&
+          thirdPartyDetails.reason !== 'Deceased' &&
+          additionalChangeDetails.ageIneligible === false
+        ),
+        cjsEmployment: (
+          (data.cjsEmployments && data.cjsEmployments.length > 0) &&
+          thirdPartyDetails.reason !== 'Deceased' &&
+          additionalChangeDetails.ageIneligible === false
+        ),
+        adjustments: (
+          (data.specialNeedsArrangements || (data.specialNeeds && data.specialNeeds.length > 0)) &&
+          thirdPartyDetails.reason !== 'Deceased' &&
+          additionalChangeDetails.ageIneligible === false
+        ),
+      };
+
+      if (additionalChangeDetails.altPhone.current.length === 0 && data.processingStatus === 'CLOSED') {
+        additionalChangeDetails.altPhone.current = data.newAltPhoneNumber;
+      }
+
+      app.logger.info('Fetched and parsed single response: ', {
+        auth: req.session.authentication,
+        data: {
+          responseId: id,
+        },
+      });
+
+      // clear out jurorDetails sessions and reload, this is for the check-can-accommodate page
+      req.session.jurorDetails = {
+        name: nameDetails,
+        phone: {
+          current: additionalChangeDetails.phone.current,
+        },
+        email: {
+          current: additionalChangeDetails.email.current,
+        },
+        poolNumber: data.poolNumber,
+        replyType: 'digital',
+        specialNeeds: data.specialNeeds.length > 0 ? [{
+          assistanceType: modUtils.reasonsArrToObj(response.results[1])[data.specialNeeds[0].code],
+          assistanceTypeDetails: data.specialNeedsArrangements || data.specialNeeds[0].detail,
+        }] : [],
+      };
+
+      // store juror details in session
+      req.session.replyDetails = {
+        jurorNumber: data.jurorNumber,
+        jurorName: nameDetails.headerNameRender,
+        version: data.version,
+        jurorStartDate: data.poolDate,
+      };
+
+      // we get a unix timestamp with this journey... maybe it gets good when both records are merged into 1
+      data.isLateSummons = data.processingStatus != "CLOSED" && modUtils.isLateSummons(dateFilter(data.poolDate, 'DD/MM/YYYY', 'YYYY-MM-DD'));
+      req.session.replyDetails.isLateSummons = data.isLateSummons;
+
+      // too much... so maybe I should extract to a builder function
+      req.session.editableReplyDetails = {
+        title: data.title,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        address: {
+          part1: data.jurorAddress1,
+          part2: data.jurorAddress2,
+          part3: data.jurorAddress3,
+          part4: data.jurorAddress4,
+          part5: data.jurorAddress5,
+          part6: data.jurorAddress6,
+        },
+        postcode: data.jurorPostcode,
+        dateOfBirth: data.dateOfBirth,
+        primaryPhone: data.phoneNumber,
+        secondaryPhone: data.altPhoneNumber,
+        emailAddress: data.email,
+        thirdParty: {
+          relationship: data.thirdPartyRelationship,
+          reason: data.thirdPartyReason,
+        }
+      };
+
+      req.session.awaitingInformation = {
+        required: false,
+        cancelUrl: undefined
+      };
+
+      req.session.locCode = modUtils.getCurrentActiveCourt(req, {
+        poolNumber: data.poolNumber,
+        currentOwner: data.currentOwner,
+      });
+
+      // check POOL status against RESPONSE status
+      const poolStatus = data.status;
+      const processingStatus = data.processingStatus;
+      let renderPage = 'detail';
+
+      if (poolStatus && processingStatus === 'TODO'  && poolStatus === 11){
+        renderPage = 'awaiting-information';
+        req.session.awaitingInformation.required = true;
+        req.session.awaitingInformation.cancelUrl = req.session.sourceUrl;
+      };
+
+      if (renderPage === 'awaiting-information'){
+        return res.render('response/process/awaiting-information.njk', {
+          awaitingInformationDetails: undefined,
+          awaitingInformationUpdate: req.session.awaitingInformation,
+          replyDetails: req.session.replyDetails,
+          jurorNumber: id,
+          errors: {
+            message: '',
+            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+            items: undefined,
+          },
+        });
+      }          
+
+      data.phoneLogs = response.results[2].data.contactLogs;
+
+      try {
+        const opticReference = await opticReferenceObj.get(
+          req,
+          data.jurorNumber,
+          data.poolNumber,
+        )
+
+        app.logger.info('Fetched the optic reference for the juror if available: ', {
+          auth: req.session.authentication,
+          data: {
+            jurorNumber: id,
+            opticReference: opticReference,
+          },
+        });
+
+        if (data.newJurorPostcode !== data.jurorPostcode && data.processingStatus !== 'Closed') {
+          const postcode = modUtils.splitPostCode(data.newJurorPostcode);
+
+          try {
+            const catchmentResponse = await courtLocationsFromPostcodeObj.get(
+              req,
+              postcode
             );
-          let poolStatus;
-          let processingStatus;
-          let renderPage;
-          let responseCompletedMesssage;
 
-          // Calculate which sub-nav items are highlighted for importance
-          const importantNavItems = {
-            jurorDetails: (
-              nameDetails.changed ||
-              addressDetails.changed ||
-              thirdPartyDetails.isThirdParty ||
-              additionalChangeDetails.ageIneligible === true ||
-              additionalChangeDetails.hasChange === true
-            ),
-
-            eligibility: (
-              !eligibilityDetails.eligible &&
-              thirdPartyDetails.reason !== 'Deceased' &&
-              additionalChangeDetails.ageIneligible === false
-            ),
-            deferralExcusal: (
-              (data.deferralReason || data.excusalReason) &&
-              thirdPartyDetails.reason !== 'Deceased' &&
-              additionalChangeDetails.ageIneligible === false
-            ),
-            cjsEmployment: (
-              (data.cjsEmployments && data.cjsEmployments.length > 0) &&
-              thirdPartyDetails.reason !== 'Deceased' &&
-              additionalChangeDetails.ageIneligible === false
-            ),
-            adjustments: (
-              (data.specialNeedsArrangements || (data.specialNeeds && data.specialNeeds.length > 0)) &&
-              thirdPartyDetails.reason !== 'Deceased' &&
-              additionalChangeDetails.ageIneligible === false
-            ),
-          };
-
-          if (additionalChangeDetails.altPhone.current.length === 0 && data.processingStatus === 'CLOSED') {
-            additionalChangeDetails.altPhone.current = data.newAltPhoneNumber;
-          }
-
-          app.logger.info('Fetched and parsed single response: ', {
-            auth: req.session.authentication,
-            data: {
-              responseId: req.params.id,
-            },
-          });
-
-          // clear out jurorDetails sessions and reload, this is for the check-can-accommodate page
-          req.session.jurorDetails = {
-            name: nameDetails,
-            phone: {
-              current: additionalChangeDetails.phone.current,
-            },
-            email: {
-              current: additionalChangeDetails.email.current,
-            },
-            poolNumber: data.poolNumber,
-            replyType: 'digital',
-            specialNeeds: data.specialNeeds.length > 0 ? [{
-              assistanceType: modUtils.reasonsArrToObj(response.results[1])[data.specialNeeds[0].code],
-              assistanceTypeDetails: data.specialNeedsArrangements || data.specialNeeds[0].detail,
-            }] : [],
-          };
-
-          // store juror details in session
-          req.session.replyDetails = {};
-          req.session.replyDetails.jurorNumber = data.jurorNumber;
-          req.session.replyDetails.jurorName = nameDetails.headerNameRender;
-          req.session.replyDetails.version = data.version;
-          req.session.replyDetails.jurorStartDate = data.poolDate;
-
-          // we get a unix timestamp with this journey... maybe it gets good when both records are merged into 1
-          data.isLateSummons = data.processingStatus != "CLOSED" && modUtils.isLateSummons(dateFilter(data.poolDate, 'DD/MM/YYYY', 'YYYY-MM-DD'));
-          req.session.replyDetails.isLateSummons = data.isLateSummons;
-
-          // too much... so maybe I should extract to a builder function
-          req.session.editableReplyDetails = {};
-          req.session.editableReplyDetails.title = data.title;
-          req.session.editableReplyDetails.firstName = data.firstName;
-          req.session.editableReplyDetails.lastName = data.lastName;
-          req.session.editableReplyDetails.address = {
-            part1: data.jurorAddress1,
-            part2: data.jurorAddress2,
-            part3: data.jurorAddress3,
-            part4: data.jurorAddress4,
-            part5: data.jurorAddress5,
-            part6: data.jurorAddress6,
-          };
-          req.session.editableReplyDetails.postcode = data.jurorPostcode;
-          req.session.editableReplyDetails.dateOfBirth = data.dateOfBirth;
-          req.session.editableReplyDetails.primaryPhone = data.phoneNumber;
-          req.session.editableReplyDetails.secondaryPhone = data.altPhoneNumber;
-          req.session.editableReplyDetails.emailAddress = data.email;
-          req.session.editableReplyDetails.thirdParty = {
-            relationship: data.thirdPartyRelationship,
-            reason: data.thirdPartyReason,
-          };
-
-          req.session.awaitingInformation = {};
-          req.session.awaitingInformation.required = false;
-          req.session.awaitingInformation.cancelUrl = undefined;
-
-          req.session.locCode = modUtils.getCurrentActiveCourt(req, {
-            poolNumber: data.poolNumber,
-            currentOwner: data.currentOwner,
-          });
-
-          // check POOL status against RESPONSE status
-          poolStatus = data.status;
-          processingStatus = data.processingStatus;
-          renderPage = 'detail';
-
-          if (poolStatus && processingStatus === 'TODO'  && poolStatus === 11){
-            renderPage = 'awaiting-information';
-            req.session.awaitingInformation.required = true;
-            req.session.awaitingInformation.cancelUrl = req.session.sourceUrl;
-          };
-
-          if (renderPage === 'awaiting-information'){
-            return res.render('response/process/awaiting-information.njk', {
-              awaitingInformationDetails: undefined,
-              awaitingInformationUpdate: req.session.awaitingInformation,
-              replyDetails: req.session.replyDetails,
-              jurorNumber: req.params.id,
-              //updateRequired: true,
-              //cancelUrl: req.session.sourceUrl,
-              errors: {
-                message: '',
-                count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-                items: undefined,
+            app.logger.info('Fetched the courts for new address: ', {
+              auth: req.session.authentication,
+              postcode: data.newJurorPostcode,
+              data: {
+                catchmentResponse,
               },
             });
-          }          
 
-          data.phoneLogs = response.results[2].data.contactLogs;
+            req.session[`catchmentWarning-${id}`] = resolveCatchmentResponse(catchmentResponse, req.session.locCode);
 
-          return opticReferenceObj.get(
-            req,
-            data.jurorNumber,
-            data.poolNumber,
-          )
-            .then((opticReference) => {
-              app.logger.info('Fetched the optic reference for the juror if available: ', {
+            return res.render('response/detail.njk', {
+              response: data,
+              nameDetails: nameDetails,
+              addressDetails: addressDetails,
+              jurorDetails: additionalChangeDetails,
+              thirdPartyDetails: thirdPartyDetails,
+              logAttention: ((data.notes !== null && data.notes.length > 0) || data.phoneLogs.length > 0),
+              dateConfirmed: (!data.excusalReason && !data.deferralReason),
+              importantNavItems: importantNavItems,
+              eligibilityDetails: eligibilityDetails,
+              isDeceased: thirdPartyDetails.reason === 'Deceased',
+              adjustmentsHasFlag: data.specialNeeds.length > 0 && thirdPartyDetails.reason !== 'Deceased',
+              assignedSelf: !(
+                data.assignedStaffMember === null ||
+                  data.assignedStaffMember.login === null ||
+                  data.assignedStaffMember.login !== req.session.authentication.login
+              ),
+              nav: req.session.nav,
+              canEdit: canEdit,
+              poolStatus: data.status,
+              processingStatus: data.processingStatus,
+              processingStatusDisp: getProcessingStatusDisplay(data.processingStatus, req.session.hasModAccess),
+              displayProcessButtonMenu: (data.processingStatus !== 'CLOSED'),
+              displayActionsButtonMenu: true,
+              replyType: getReplyType(data, req.session.hasModAccess),
+              errors: {
+                count: typeof req.session.errors !== 'undefined' ? Object.keys(req.session.errors).length : 0,
+                items: req.session.errors,
+              },
+              opticReference,
+              processedBannerMessage: data.processedBannerMessage ? data.processedBannerMessage : null,
+              catchmentWarning: req.session[`catchmentWarning-${id}`],
+              backLinkUrl: 'inbox.todo.get',
+            });
+          } catch (err) {
+            // NO CATCHEMENT AREA FOR POSTCODE
+            if (err.statusCode === 404) {
+              app.logger.crit('No catchment area for juror\'s postcode: ', {
                 auth: req.session.authentication,
-                data: {
-                  jurorNumber: req.params['id'],
-                  opticReference: opticReference,
-                },
+                data: id,
+                error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
               });
 
-              if (data.newJurorPostcode !== data.jurorPostcode && data.processingStatus !== 'Closed') {
-                const postcode = modUtils.splitPostCode(data.newJurorPostcode);
+              req.session[`catchmentWarning-${id}`] = resolveCatchmentResponse([], req.session.locCode);
 
-                return courtLocationsFromPostcodeObj.get(
-                  req,
-                  postcode
-                )
-                  .then((catchmentResponse) => {
-                    app.logger.info('Fetched the courts for new address: ', {
-                      auth: req.session.authentication,
-                      postcode: data.newJurorPostcode,
-                      data: {
-                        catchmentResponse,
-                      },
-                    });
-
-                    req.session[`catchmentWarning-${req.params.id}`] = resolveCatchmentResponse(catchmentResponse,
-                      req.session.locCode);
-
-                    return res.render('response/detail.njk', {
-                      response: data,
-                      nameDetails: nameDetails,
-                      addressDetails: addressDetails,
-                      jurorDetails: additionalChangeDetails,
-                      thirdPartyDetails: thirdPartyDetails,
-                      logAttention: ((data.notes !== null && data.notes.length > 0) || data.phoneLogs.length > 0),
-                      dateConfirmed: (!data.excusalReason && !data.deferralReason),
-                      importantNavItems: importantNavItems,
-                      eligibilityDetails: eligibilityDetails,
-                      isDeceased: thirdPartyDetails.reason === 'Deceased',
-                      adjustmentsHasFlag: data.specialNeeds.length > 0 && thirdPartyDetails.reason !== 'Deceased',
-                      assignedSelf: !(
-                        data.assignedStaffMember === null ||
-                          data.assignedStaffMember.login === null ||
-                          data.assignedStaffMember.login !== req.session.authentication.login
-                      ),
-                      nav: req.session.nav,
-                      canEdit: canEdit,
-                      poolStatus: data.status,
-                      processingStatus: data.processingStatus,
-                      processingStatusDisp: getProcessingStatusDisplay(data.processingStatus, req.session.hasModAccess),
-                      displayProcessButtonMenu: (data.processingStatus !== 'CLOSED'),
-                      displayActionsButtonMenu: true,
-                      replyType: getReplyType(data, req.session.hasModAccess),
-                      errors: {
-                        count: typeof req.session.errors !== 'undefined' ? Object.keys(req.session.errors).length : 0,
-                        items: req.session.errors,
-                      },
-                      opticReference,
-                      processedBannerMessage: data.processedBannerMessage ? data.processedBannerMessage : null,
-                      catchmentWarning: req.session[`catchmentWarning-${req.params.id}`],
-                      backLinkUrl: 'inbox.todo.get',
-                    });
-                  })
-                  .catch((err) => {
-                    // NO CATCHEMENT AREA FOR POSTCODE
-                    if (err.statusCode === 404) {
-                      app.logger.crit('No catchment area for juror\'s postcode: ', {
-                        auth: req.session.authentication,
-                        data: req.params['id'],
-                        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-                      });
-
-                      req.session[`catchmentWarning-${req.params.id}`] = resolveCatchmentResponse([], req.session.locCode);
-
-                      return res.render('response/detail', {
-                        response: data,
-                        nameDetails: nameDetails,
-                        addressDetails: addressDetails,
-                        jurorDetails: additionalChangeDetails,
-                        thirdPartyDetails: thirdPartyDetails,
-                        logAttention: ((data.notes !== null && data.notes.length > 0) || data.phoneLogs.length > 0),
-                        dateConfirmed: (!data.excusalReason && !data.deferralReason),
-                        importantNavItems: importantNavItems,
-                        eligibilityDetails: eligibilityDetails,
-                        isDeceased: thirdPartyDetails.reason === 'Deceased',
-                        adjustmentsHasFlag: data.specialNeeds.length > 0 && thirdPartyDetails.reason !== 'Deceased',
-                        assignedSelf: !(
-                          data.assignedStaffMember === null ||
-                          data.assignedStaffMember.login === null ||
-                          data.assignedStaffMember.login !== req.session.authentication.login
-                        ),
-                        nav: req.session.nav,
-                        canEdit: canEdit,
-                        poolStatus: data.status,
-                        processingStatus: data.processingStatus,
-                        processingStatusDisp: getProcessingStatusDisplay(data.processingStatus, req.session.hasModAccess),
-                        displayProcessButtonMenu: (data.processingStatus !== 'CLOSED'),
-                        displayActionsButtonMenu: true,
-                        replyType: getReplyType(data, req.session.hasModAccess),
-                        errors: {
-                          count: typeof req.session.errors !== 'undefined' ? Object.keys(req.session.errors).length : 0,
-                          items: req.session.errors,
-                        },
-                        opticReference,
-                        processedBannerMessage: data.processedBannerMessage ? data.processedBannerMessage : null,
-                        catchmentWarning: req.session[`catchmentWarning-${req.params.id}`],
-                        backLinkUrl: 'inbox.todo.get',
-                      });
-                    }
-
-                    app.logger.crit('Failed when fetching the juror\'s catchement area: ', {
-                      auth: req.session.authentication,
-                      data: req.params['id'],
-                      error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-                    });
-
-                    return res.redirect(app.namedRoutes.build('homepage.get'));
-                  });
-
-              }
-
-              if (data.processingStatus === 'CLOSED') {
-                data.processedBannerMessage = modUtils.resolveProcessedBannerMessage(data.statusRender, {
-                  isExcusal: !!data.excusalReason,
-                  isDeceased: data.thirdPartyReason === 'deceased' || data.excusalReason === 'D',
-                });
-              }
-              
-              if (req.session.responseCompletedMesssage) {
-                responseCompletedMesssage = req.session.responseCompletedMesssage;
-                delete req.session.responseCompletedMesssage;
-              } else {
-                responseCompletedMesssage = null;
-              }
-              
-              return res.render('response/detail.njk', {
+              return res.render('response/detail', {
                 response: data,
                 nameDetails: nameDetails,
                 addressDetails: addressDetails,
@@ -350,7 +276,6 @@
                   data.assignedStaffMember.login === null ||
                   data.assignedStaffMember.login !== req.session.authentication.login
                 ),
-
                 nav: req.session.nav,
                 canEdit: canEdit,
                 poolStatus: data.status,
@@ -359,215 +284,274 @@
                 displayProcessButtonMenu: (data.processingStatus !== 'CLOSED'),
                 displayActionsButtonMenu: true,
                 replyType: getReplyType(data, req.session.hasModAccess),
-
                 errors: {
                   count: typeof req.session.errors !== 'undefined' ? Object.keys(req.session.errors).length : 0,
                   items: req.session.errors,
                 },
-
                 opticReference,
                 processedBannerMessage: data.processedBannerMessage ? data.processedBannerMessage : null,
-                responseCompletedMesssage: responseCompletedMesssage,
-                method: 'digital',
+                catchmentWarning: req.session[`catchmentWarning-${id}`],
                 backLinkUrl: 'inbox.todo.get',
               });
-            });
-        })
-        .catch((err) => {
-          app.logger.crit('Failed to fetch and parse single response: ', {
-            auth: req.session.authentication,
-            data: {
-              responseId: req.params.id,
-            },
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
+            }
 
-          return res.render('index.njk');
+            app.logger.crit('Failed when fetching the juror\'s catchement area: ', {
+              auth: req.session.authentication,
+              data: id,
+              error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+            });
+
+            return res.redirect(app.namedRoutes.build('homepage.get'));
+          }
+        }
+
+        if (data.processingStatus === 'CLOSED') {
+          data.processedBannerMessage = modUtils.resolveProcessedBannerMessage(data.statusRender, {
+            isExcusal: !!data.excusalReason,
+            isDeceased: data.thirdPartyReason === 'deceased' || data.excusalReason === 'D',
+          });
+        }
+        
+        if (req.session.responseCompletedMesssage) {
+          responseCompletedMesssage = req.session.responseCompletedMesssage;
+          delete req.session.responseCompletedMesssage;
+        } else {
+          responseCompletedMesssage = null;
+        }
+        
+        return res.render('response/detail.njk', {
+          response: data,
+          nameDetails: nameDetails,
+          addressDetails: addressDetails,
+          jurorDetails: additionalChangeDetails,
+          thirdPartyDetails: thirdPartyDetails,
+          logAttention: ((data.notes !== null && data.notes.length > 0) || data.phoneLogs.length > 0),
+          dateConfirmed: (!data.excusalReason && !data.deferralReason),
+          importantNavItems: importantNavItems,
+          eligibilityDetails: eligibilityDetails,
+          isDeceased: thirdPartyDetails.reason === 'Deceased',
+          adjustmentsHasFlag: data.specialNeeds.length > 0 && thirdPartyDetails.reason !== 'Deceased',
+          assignedSelf: !(
+            data.assignedStaffMember === null ||
+            data.assignedStaffMember.login === null ||
+            data.assignedStaffMember.login !== req.session.authentication.login
+          ),
+
+          nav: req.session.nav,
+          canEdit: canEdit,
+          poolStatus: data.status,
+          processingStatus: data.processingStatus,
+          processingStatusDisp: getProcessingStatusDisplay(data.processingStatus, req.session.hasModAccess),
+          displayProcessButtonMenu: (data.processingStatus !== 'CLOSED'),
+          displayActionsButtonMenu: true,
+          replyType: getReplyType(data, req.session.hasModAccess),
+
+          errors: {
+            count: typeof req.session.errors !== 'undefined' ? Object.keys(req.session.errors).length : 0,
+            items: req.session.errors,
+          },
+
+          opticReference,
+          processedBannerMessage: data.processedBannerMessage ? data.processedBannerMessage : null,
+          responseCompletedMesssage: responseCompletedMesssage,
+          method: 'digital',
+          backLinkUrl: 'inbox.todo.get',
         });
-    };
+      } catch (err) {
+        app.logger.error('Could not fetch OPTIC reference for response detail view: ', {
+          auth: req.session.authentication,
+          data: {
+            jurorNumber: data.jurorNumber,
+            poolNumber: data.poolNumber,
+          },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+        
+        return res.render('_errors/generic', { err });
+      }
+
+    } catch (err) {
+      app.logger.crit('Failed to fetch and parse single response: ', {
+        auth: req.session.authentication,
+        data: {
+          responseId: id,
+        },
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+
+      return res.render('index.njk');
+    }
   };
 
-  module.exports.getDownloadPDF = function(app) {
-    return async function(req, res) {
-      try {
-        const responseData = await responseDetailObj.get(req, req.params.id);
+  module.exports.getDownloadPDF = (app) => async (req, res) => {
+    const { id } = req.params;
 
-        let pdfDoc;
-        const fonts = {
-          OpenSans: {
-            normal: './client/assets/fonts/OpenSans-Regular.ttf',
-            bold: './client/assets/fonts/OpenSans-Bold.ttf',
-          },
-        };
-        let printer;
-        let jurorData = {};
-        let chunks = [];
-        let result;
-        let docDef;
-        let courtDate;
-        let jurorEligible = false;
-        let jurorIneligibleAge = false;
-        let jurorDeceased = false;
-        let jurorThirdParty = false
-        let deferralDate;;
-        let displayDates = {};
-        const thirdPartyReasonEN = {
-          nothere: 'The person isn\'t here',
-          assistance: 'The person is unable to reply by themselves',
-          deceased: 'The person has died',
-          other: 'Other',
-        };
-        const thirdPartyReasonCY = {
-          nothere: 'Nid yw\'r unigolyn yma',
-          assistance: 'Nid yw\'r unigolyn yn gallu ymateb dros ei hun',
-          deceased: 'Mae\'r unigolyn wedi marw',
-          other: 'Arall',
-        };
-        const assistanceEN = {
-          L: 'Limited mobility',
-          H: 'Hearing impairment',
-          I: 'Diabetes',
-          V: 'Severe sight impairment',
-          R: 'Learning disability',
-        };
-        const assistanceCY = {
-          L: 'Symudedd cyfyngedig',
-          H: 'Nam ar y clyw',
-          I: 'Clefyd siwgr',
-          V: 'Nam difrifol ar eich golwg',
-          R: 'Anabledd dysgu',
-        };
+    try {
+      const responseData = await responseDetailObj.get(req, id);
+      const fonts = {
+        OpenSans: {
+          normal: './client/assets/fonts/OpenSans-Regular.ttf',
+          bold: './client/assets/fonts/OpenSans-Bold.ttf',
+        },
+      };
+      let jurorDeceased = false;
+      let jurorThirdParty = false
+      let deferralDate;
+      let displayDates = {};
+      const thirdPartyReasonEN = {
+        nothere: 'The person isn\'t here',
+        assistance: 'The person is unable to reply by themselves',
+        deceased: 'The person has died',
+        other: 'Other',
+      };
+      const thirdPartyReasonCY = {
+        nothere: 'Nid yw\'r unigolyn yma',
+        assistance: 'Nid yw\'r unigolyn yn gallu ymateb dros ei hun',
+        deceased: 'Mae\'r unigolyn wedi marw',
+        other: 'Arall',
+      };
+      const assistanceEN = {
+        L: 'Limited mobility',
+        H: 'Hearing impairment',
+        I: 'Diabetes',
+        V: 'Severe sight impairment',
+        R: 'Learning disability',
+      };
+      const assistanceCY = {
+        L: 'Symudedd cyfyngedig',
+        H: 'Nam ar y clyw',
+        I: 'Clefyd siwgr',
+        V: 'Nam difrifol ar eich golwg',
+        R: 'Anabledd dysgu',
+      };
 
-        printer = new pdfMake(fonts);
+      const printer = new pdfMake(fonts);
 
-        // Map response data to PDF data
-        jurorData = {};
+      // Map response data to PDF data
+      let jurorData = {};
 
-        jurorData.addressRender = getAddressDetails(responseData).currentAddress;
+      jurorData.addressRender = getAddressDetails(responseData).currentAddress;
 
-        if (typeof (responseData.specialNeeds) != 'undefined' && responseData.specialNeeds.length > 0){
-          jurorData.assistanceNeeded = 'Yes';
-          jurorData.assistanceTypeOutput = responseData.specialNeeds
-            .filter(function(val) {
-              if (val.code !== 'O'){
-                return true;
-              }
-            })
-            .map(function(val){
-              switch (val.code) {
-              case 'L': case 'H': case 'I': case 'V': case 'R':
-                return (responseData.welsh === true ? assistanceCY[val.code] : assistanceEN[val.code]);
-                break;
-              default:
-                return val.description;
-              }
-            })
-            .join(',  ');
+      if (typeof (responseData.specialNeeds) != 'undefined' && responseData.specialNeeds.length > 0){
+        jurorData.assistanceNeeded = 'Yes';
+        jurorData.assistanceTypeOutput = responseData.specialNeeds
+          .filter(function(val) {
+            if (val.code !== 'O'){
+              return true;
+            }
+          })
+          .map(function(val){
+            switch (val.code) {
+            case 'L': case 'H': case 'I': case 'V': case 'R':
+              return (responseData.welsh === true ? assistanceCY[val.code] : assistanceEN[val.code]);
+              break;
+            default:
+              return val.description;
+            }
+          })
+          .join(',  ');
 
-          jurorData.assistanceTypeDetails = responseData.specialNeeds
-            .filter(function(val) {
-              if (val.code === 'O'){
-                return true;
-              }
-            })
-            .map(function(val){
-              return val.detail;
+        jurorData.assistanceTypeDetails = responseData.specialNeeds
+          .filter(function(val) {
+            if (val.code === 'O'){
+              return true;
+            }
+          })
+          .map(function(val){
+            return val.detail;
+          });
+
+      } else {
+        jurorData.assistanceNeeded = 'No';
+      }
+
+      jurorData.assistanceSpecialArrangements = responseData.specialNeedsArrangements;
+
+      if (typeof (responseData.cjsEmployments) != 'undefined' && responseData.cjsEmployments.length > 0){
+        jurorData.cjsEmployed = true;
+      } else {
+        jurorData.cjsEmployed = false;
+      }
+      jurorData.cjsPoliceDetails = getCJSEmploymentDetails(responseData.cjsEmployments, 'Police Force');
+      jurorData.cjsPrisonDetails = getCJSEmploymentDetails(responseData.cjsEmployments, 'HM Prison Service');
+      jurorData.cjsNca = getCJSEmploymentDetails(responseData.cjsEmployments, 'National Crime Agency');
+      jurorData.cjsEmployerDetails = getCJSEmploymentDetails(responseData.cjsEmployments, 'Other');
+
+      jurorData.courtAddress = [responseData.courtLocName, responseData.courtAddress1, responseData.courtAddress2, responseData.courtAddress3, responseData.courtAddress4, responseData.courtAddress5, responseData.courtAddress6, responseData.courtPostcode]
+        .filter(function(val) {
+          return val;
+        }).join('<br>');
+
+      jurorData.dateOfBirth = dateFilter(getAdditionalChangedDetails(responseData).dateOfBirth.current, 'DD/MM/YYYY', 'YYYY/MM/DD');
+      jurorData.emailAddress = responseData.newEmail;
+
+      if (responseData.deferralReason !== null){
+        if (responseData.deferralDate) {
+          responseData.deferralDate.split(',')
+            .forEach(function(dateStr, index) {
+              deferralDate = moment(dateStr, 'DD/MM/YYYY');
+              displayDates['date' + (index + 1)] = deferralDate.format('DD/MM/YYYY');
             });
-
-        } else {
-          jurorData.assistanceNeeded = 'No';
         }
+        jurorData.deferral = {reason: responseData.deferralReason, dates: responseData.deferralDate, displayDates};
+      } else {
+        jurorData.deferral = null;
+      }
 
-        jurorData.assistanceSpecialArrangements = responseData.specialNeedsArrangements;
+      if (responseData.excusalReason !== null){
+        jurorData.excusal = {reason: responseData.excusalReason};
+      } else {
+        jurorData.excusal = null;
+      }
 
+      if (jurorData.deferral === null && jurorData.excusal === null){
+        jurorData.confirmedDate = 'Yes';
+      } else {
+        jurorData.confirmedDate = 'No';
+      }
 
-        if (typeof (responseData.cjsEmployments) != 'undefined' && responseData.cjsEmployments.length > 0){
-          jurorData.cjsEmployed = true;
-        } else {
-          jurorData.cjsEmployed = false;
-        }
-        jurorData.cjsPoliceDetails = getCJSEmploymentDetails(responseData.cjsEmployments, 'Police Force');
-        jurorData.cjsPrisonDetails = getCJSEmploymentDetails(responseData.cjsEmployments, 'HM Prison Service');
-        jurorData.cjsNca = getCJSEmploymentDetails(responseData.cjsEmployments, 'National Crime Agency');
-        jurorData.cjsEmployerDetails = getCJSEmploymentDetails(responseData.cjsEmployments, 'Other');
+      let courtDate;
+      if (responseData.hearingDate === null){
+        courtDate = responseData.poolDate;
+      } else {
+        courtDate = responseData.hearingDate;
+      }
+      jurorData.hearingDateShort = moment(courtDate, 'DD/MM/YYYY');
+      jurorData.hearingTime = responseData.hearingTime;
 
-        jurorData.courtAddress = [responseData.courtLocName, responseData.courtAddress1, responseData.courtAddress2, responseData.courtAddress3, responseData.courtAddress4, responseData.courtAddress5, responseData.courtAddress6, responseData.courtPostcode]
+      if (getEligibilityDetails(responseData).eligible === false){
+        jurorData.ineligible = 'Yes';
+      } else {
+        jurorData.ineligible = 'No';
+      }
+      jurorData.jurorNumber = responseData.jurorNumber;
+
+      jurorData.nameRender = getNameDetails(responseData).currentName;
+
+      jurorData.primaryPhone = responseData.newPhoneNumber;
+      jurorData.secondaryPhone = responseData.newAltPhoneNumber;
+
+      jurorData.qualify = {
+        livedConsecutive: { details: responseData.residencyDetail },
+        mentalHealthSectioned: { details: getMentalHealthDetails(responseData).q1Details },
+        mentalHealthCapacity: { details: getMentalHealthDetails(responseData).q2Details },
+        onBail: { details: responseData.bailDetails },
+        convicted: { details: responseData.convictionsDetails },
+      };
+
+      jurorData.thirdPartyDetails = {
+        nameRender: [responseData.thirdPartyFirstName, responseData.thirdPartyLastName]
           .filter(function(val) {
             return val;
-          }).join('<br>');
+          }).join(' '),
+        relationship: responseData.thirdPartyRelationship,
+        mainPhone: responseData.thirdPartyMainPhoneNumber,
+        otherPhone: responseData.thirdPartyAlternatePhoneNumber,
+        emailAddress: responseData.thirdPartyEmailAddress,
+        reasonText: '',
+      };
 
-        jurorData.dateOfBirth = dateFilter(getAdditionalChangedDetails(responseData).dateOfBirth.current, 'DD/MM/YYYY', 'YYYY/MM/DD');
-        jurorData.emailAddress = responseData.newEmail;
-
-        if (responseData.deferralReason !== null){
-
-          if (responseData.deferralDate) {
-            responseData.deferralDate.split(',')
-              .forEach(function(dateStr, index) {
-                deferralDate = moment(dateStr, 'DD/MM/YYYY');
-                displayDates['date' + (index + 1)] = deferralDate.format('DD/MM/YYYY');
-              });
-          }
-
-          jurorData.deferral = {reason: responseData.deferralReason, dates: responseData.deferralDate, displayDates: displayDates};
-        } else {
-          jurorData.deferral = null;
-        }
-
-        if (responseData.excusalReason !== null){
-          jurorData.excusal = {reason: responseData.excusalReason};
-        } else {
-          jurorData.excusal = null;
-        }
-
-        if (jurorData.deferral === null && jurorData.excusal === null){
-          jurorData.confirmedDate = 'Yes';
-        } else {
-          jurorData.confirmedDate = 'No';
-        }
-
-        if (responseData.hearingDate === null){
-          courtDate = responseData.poolDate;
-        } else {
-          courtDate = responseData.hearingDate;
-        }
-        jurorData.hearingDateShort = moment(courtDate, 'DD/MM/YYYY');
-        jurorData.hearingTime = responseData.hearingTime;
-
-        jurorEligible = getEligibilityDetails(responseData).eligible;
-        if (jurorEligible === false){
-          jurorData.ineligible = 'Yes';
-        } else {
-          jurorData.ineligible = 'No';
-        }
-        jurorData.jurorNumber = responseData.jurorNumber;
-
-        jurorData.nameRender = getNameDetails(responseData).currentName;
-
-        jurorData.primaryPhone = responseData.newPhoneNumber;
-        jurorData.secondaryPhone = responseData.newAltPhoneNumber;
-
-        jurorData.qualify={
-          livedConsecutive:{details: responseData.residencyDetail},
-          mentalHealthSectioned:{details: getMentalHealthDetails(responseData).q1Details},
-          mentalHealthCapacity:{details: getMentalHealthDetails(responseData).q2Details},
-          onBail:{details: responseData.bailDetails},
-          convicted:{details: responseData.convictionsDetails},
-        };
-
-        jurorData.thirdPartyDetails = {
-          nameRender: [responseData.thirdPartyFirstName, responseData.thirdPartyLastName]
-            .filter(function(val) {
-              return val;
-            }).join(' '),
-          relationship: responseData.thirdPartyRelationship,
-          mainPhone: responseData.thirdPartyMainPhoneNumber,
-          otherPhone: responseData.thirdPartyAlternatePhoneNumber,
-          emailAddress: responseData.thirdPartyEmailAddress,
-          reasonText: '',
-        };
-
-        switch (responseData.thirdPartyReason) {
+      switch (responseData.thirdPartyReason) {
         // eslint-disable-next-line no-undefined
         case undefined:
           break;
@@ -583,315 +567,318 @@
           } else {
             jurorData.thirdPartyDetails.reasonText = thirdPartyReasonEN[responseData.thirdPartyReason];
           }
-        }
-
-        if (typeof(jurorData.thirdPartyDetails.reasonText) !== 'undefined' && jurorData.thirdPartyDetails.reasonText !== null){
-          jurorThirdParty = true;
-          jurorData.thirdParty = 'Yes';
-        } else {
-          jurorData.thirdParty = 'No';
-        }
-
-        // Do not show Juror contact details if using Third Party contact details
-        if (responseData.useJurorPhoneDetails === false){
-          jurorData.primaryPhone = null;
-          jurorData.secondaryPhone = null;
-        }
-        if (responseData.useJurorEmailDetails === false){
-          jurorData.emailAddress = null;
-        }
-
-        jurorIneligibleAge = getAdditionalChangedDetails(responseData).ageIneligible;
-
-        if (jurorDeceased) {
-          docDef = pdfExport.getPdfDocumentDescriptionDeceased(jurorData, (responseData.welsh === true ? welshLanguageText : englishLanguageText));
-        } else if (jurorIneligibleAge) {
-          docDef = pdfExport.getPdfDocumentDescriptionIneligibleAge(jurorData, (responseData.welsh === true ? welshLanguageText : englishLanguageText));
-        } else if (jurorThirdParty) {
-          docDef = pdfExport.getPdfDocumentDescriptionThirdParty(jurorData, (responseData.welsh === true ? welshLanguageText : englishLanguageText));
-        } else {
-          docDef = pdfExport.getPdfDocumentDescription(jurorData, (responseData.welsh === true ? welshLanguageText : englishLanguageText));
-        }
-
-        pdfDoc = printer.createPdfKitDocument(docDef);
-
-        pdfDoc.on('data', function(data) {
-          chunks.push(data);
-        });
-
-        pdfDoc.on('end', function() {
-          result = Buffer.concat(chunks);
-          res.contentType('application/pdf');
-          res.send(result);
-        });
-        pdfDoc.end();
-      } catch (err) {
-        app.logger.crit('Could not generate PDF document: ', {
-          auth: req.session.authentication,
-          data: {
-            jurorNumber: req.params.id,
-          },
-          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-        });
       }
-    };
+
+      if (typeof(jurorData.thirdPartyDetails.reasonText) !== 'undefined' && jurorData.thirdPartyDetails.reasonText !== null){
+        jurorThirdParty = true;
+        jurorData.thirdParty = 'Yes';
+      } else {
+        jurorData.thirdParty = 'No';
+      }
+
+      // Do not show Juror contact details if using Third Party contact details
+      if (responseData.useJurorPhoneDetails === false){
+        jurorData.primaryPhone = null;
+        jurorData.secondaryPhone = null;
+      }
+      if (responseData.useJurorEmailDetails === false){
+        jurorData.emailAddress = null;
+      }
+
+      const jurorIneligibleAge = getAdditionalChangedDetails(responseData).ageIneligible;
+
+      let docDef;
+      if (jurorDeceased) {
+        docDef = pdfExport.getPdfDocumentDescriptionDeceased(jurorData, (responseData.welsh === true ? welshLanguageText : englishLanguageText));
+      } else if (jurorIneligibleAge) {
+        docDef = pdfExport.getPdfDocumentDescriptionIneligibleAge(jurorData, (responseData.welsh === true ? welshLanguageText : englishLanguageText));
+      } else if (jurorThirdParty) {
+        docDef = pdfExport.getPdfDocumentDescriptionThirdParty(jurorData, (responseData.welsh === true ? welshLanguageText : englishLanguageText));
+      } else {
+        docDef = pdfExport.getPdfDocumentDescription(jurorData, (responseData.welsh === true ? welshLanguageText : englishLanguageText));
+      }
+
+      const pdfDoc = printer.createPdfKitDocument(docDef);
+
+      let chunks = [];
+      pdfDoc.on('data', function(data) {
+        chunks.push(data);
+      });
+
+      pdfDoc.on('end', function() {
+        const result = Buffer.concat(chunks);
+        res.contentType('application/pdf');
+        res.send(result);
+      });
+      pdfDoc.end();
+    } catch (err) {
+      app.logger.crit('Could not generate PDF document: ', {
+        auth: req.session.authentication,
+        data: {
+          jurorNumber: id,
+        },
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+    }
   };
 
-  module.exports.getResponded = function(app) {
-    return function(req, res) {
-      const tmpErrors = _.cloneDeep(req.session.errors);
-      const routeParameters = {
-        id: req.params['id'],
-      };
-      let postUrl = app.namedRoutes.build('response.detail.responded.get', routeParameters);
-      let cancelUrl = app.namedRoutes.build('response.detail.get', routeParameters);
-      let backUrl;
+  module.exports.getResponded = (app) => (req, res) =>{
+    const { id, type } = req.params;
+    const tmpErrors = _.cloneDeep(req.session.errors);
+    const routeParameters = {
+      id,
+    };
+    let postUrl = app.namedRoutes.build('response.detail.responded.get', routeParameters);
+    let cancelUrl = app.namedRoutes.build('response.detail.get', routeParameters);
+    let backUrl;
 
-      delete req.session.formFields;
-      delete req.session.errors;
+    delete req.session.formFields;
+    delete req.session.errors;
 
-      if (req.session.replyDetails.jurorNumber === req.params.id){
-
-        if (typeof req.session.hasModAccess !== 'undefined' && req.session.hasModAccess) {
-          if (req.params['type'] === 'paper') {
-            routeParameters.type = 'paper';
-          } else {
-            routeParameters.type = 'digital';
-          }
-
-          postUrl = app.namedRoutes.build('response.detail.responded.get', routeParameters);
-          backUrl = app.namedRoutes.build('process-reply.get', routeParameters);
-
-          if (req.params['type'] === 'paper') {
-            cancelUrl = app.namedRoutes.build('response.paper.details.get', routeParameters);
-          }
+    if (req.session.replyDetails.jurorNumber === id){
+      if (typeof req.session.hasModAccess !== 'undefined' && req.session.hasModAccess) {
+        if (type === 'paper') {
+          routeParameters.type = 'paper';
+        } else {
+          routeParameters.type = 'digital';
         }
 
-        return res.render('response/process/responded.njk', {
-          replyDetails: req.session.replyDetails,
-          jurorNumber: req.params.id,
-          postUrl: postUrl,
-          cancelUrl: cancelUrl,
-          backUrl: backUrl,
-          errors: {
-            message: '',
-            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-            items: tmpErrors,
-          },
-        });
+        postUrl = app.namedRoutes.build('response.detail.responded.get', routeParameters);
+        backUrl = app.namedRoutes.build('process-reply.get', routeParameters);
+
+        if (type === 'paper') {
+          cancelUrl = app.namedRoutes.build('response.paper.details.get', routeParameters);
+        }
       }
 
-      if (req.params['type'] === 'paper') {
-        return res.redirect(app.namedRoutes.build('response.paper.details.get', {
-          id: req.params.id,
-          type: 'paper',
-        }));
-      }
-      return res.redirect(app.namedRoutes.build('response.detail.get', {
-        id: req.params.id,
+      return res.render('response/process/responded.njk', {
+        replyDetails: req.session.replyDetails,
+        jurorNumber: id,
+        postUrl: postUrl,
+        cancelUrl: cancelUrl,
+        backUrl: backUrl,
+        errors: {
+          message: '',
+          count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+          items: tmpErrors,
+        },
+      });
+    }
+
+    if (type === 'paper') {
+      return res.redirect(app.namedRoutes.build('response.paper.details.get', {
+        id,
+        type: 'paper',
       }));
-    };
+    }
+    return res.redirect(app.namedRoutes.build('response.detail.get', { id }));
   };
 
-  module.exports.postResponded = function(app) {
-    return async function(req, res) {
-      let validatorResult;
+  module.exports.postResponded = (app) => async (req, res) => {
+    const { id, type } = req.params;
 
-      const errorCB = (err) => {
-        app.logger.crit('Could not update status of response: ', {
-          auth: req.session.authentication,
-          data: {
-            jurorNumber: req.params.id,
-            status: 'CLOSED',
-            version: req.body.version,
-          },
-          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-        });
+    const errorCB = (err) => {
+      app.logger.crit('Could not update status of response: ', {
+        auth: req.session.authentication,
+        data: {
+          jurorNumber: id,
+          status: 'CLOSED',
+          version: req.body.version,
+        },
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
 
-        if (err.statusCode === '409' || err.statusCode === 409) {
-          err.error.message = 'The summons reply has been updated by another user';
-        } else {
-          err.error.message = 'Could not update summons reply';
-        }
+      if (err.statusCode === '409' || err.statusCode === 409) {
+        err.error.message = 'The summons reply has been updated by another user';
+      } else {
+        err.error.message = 'Could not update summons reply';
+      }
 
-        req.session.formFields = req.body;
-        req.session.errors = {
-          '': [{'details': err.error.message}],
+      req.session.formFields = req.body;
+      req.session.errors = {
+        '': [{'details': err.error.message}],
+      };
+
+      if (type === 'paper'){
+        return res.redirect(app.namedRoutes.build('process-reply.get', { id, type: 'paper' }));
+      }
+      return res.redirect(app.namedRoutes.build('process-reply.get', { id }));
+    };
+
+    delete req.session.errors;
+    delete req.session.formFields;
+
+    const validatorResult = validate(req.body, require('../../../config/validation/responded.js')(req));
+    if (typeof validatorResult !== 'undefined') {
+      req.session.errors = validatorResult;
+      req.session.formFields = req.body;
+
+      if (type === 'paper'){
+        return res.redirect(app.namedRoutes.build('response.detail.responded.get', {id, type:'paper'}));
+      }
+      return res.redirect(app.namedRoutes.build('response.detail.responded.get', {id}));
+    }
+
+    if (type === 'paper') {
+      try {
+        await paperUpdateStatus.put(
+          req,
+          id,
+          'CLOSED'
+        );
+
+        req.session.responseWasActioned = {
+          jurorDetails: req.session.replyDetails,
+          type: 'Responded',
         };
 
-        if (req.params.type === 'paper'){
-          return res.redirect(app.namedRoutes.build('process-reply.get', { id: req.params.id, type: 'paper' }));
-        }
-        return res.redirect(app.namedRoutes.build('process-reply.get', { id: req.params.id }));
-      };
-
-      delete req.session.errors;
-      delete req.session.formFields;
-
-      validatorResult = validate(req.body, require('../../../config/validation/responded.js')(req));
-      if (typeof validatorResult !== 'undefined') {
-        req.session.errors = validatorResult;
-        req.session.formFields = req.body;
-
-        if (req.params.type === 'paper'){
-          return res.redirect(app.namedRoutes.build('response.detail.responded.get', {id: req.params.id, type:'paper'}));
-        }
-        return res.redirect(app.namedRoutes.build('response.detail.responded.get', {id: req.params.id}));
-      }
-
-      if (req.params['type'] === 'paper') {
-        try {
-          await paperUpdateStatus.put(
-            req,
-            req.params.id,
-            'CLOSED'
-          );
-
-          req.session.responseWasActioned = {
-            jurorDetails: req.session.replyDetails,
-            type: 'Responded',
-          };
-
-          return res.redirect(app.namedRoutes.build('response.paper.details.get', {id: req.params.id, type:'paper'}));
-        } catch (err) {
-          return errorCB(err);
-        }
-      }
-
-      const payload = {
-        jurorNumber: req.body.jurorNumber,
-        status: 'CLOSED',
-        version: req.body.version,
-      };
-
-      try {
-        const response = await updateStatusDAO.post(req, req.body.jurorNumber, payload);
-
-        app.logger.info('Updated status of response: ', {
-            auth: req.session.authentication,
-            data: {
-              jurorNumber: req.params.id,
-              status: 'CLOSED',
-              version: req.body.version,
-            },
-          });
-
-          req.session.responseWasActioned = {
-            jurorDetails: req.session.replyDetails,
-            type: 'Responded',
-          };
-
-          return res.redirect(app.namedRoutes.build('response.detail.get', {id: req.params.id}));
+        return res.redirect(app.namedRoutes.build('response.paper.details.get', {id, type:'paper'}));
       } catch (err) {
         return errorCB(err);
       }
+    }
+
+    const payload = {
+      jurorNumber: req.body.jurorNumber,
+      status: 'CLOSED',
+      version: req.body.version,
     };
-  };
 
-  module.exports.getAwaitingInformation = function() {
-    return function(req, res) {
-      const tmpErrors = _.cloneDeep(req.session.errors);
-      const tmpFields = _.cloneDeep(req.session.formFields);
+    try {
+      await updateStatusDAO.post(req, req.body.jurorNumber, payload);
 
-      delete req.session.formFields;
-      delete req.session.errors;
+      app.logger.info('Updated status of response: ', {
+        auth: req.session.authentication,
+        data: {
+          jurorNumber: id,
+          status: 'CLOSED',
+          version: req.body.version,
+        },
+      });
 
-      if (req.session.replyDetails.jurorNumber === req.params.id){
-        return res.render('response/process/awaiting-information.njk', {
-          awaitingInformationDetails: tmpFields,
-          awaitingInformationUpdate: req.session.awaitingInformation,
-          replyDetails: req.session.replyDetails,
-          jurorNumber: req.params.id,
-          errors: {
-            message: '',
-            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-            items: tmpErrors,
-          },
-          method: req.params['type'] || 'digital',
-        });
-      }
-      return res.redirect(app.namedRoutes.build('response.detail.get', {id: req.params.id}));
-    };
-  };
-
-  module.exports.postAwaitingInformation = function(app) {
-    return function(req, res) {
-      const routeParameters = {
-        id: req.params['id'],
+      req.session.responseWasActioned = {
+        jurorDetails: req.session.replyDetails,
+        type: 'Responded',
       };
 
-      if (req.session.hasModAccess && req.params['type'] === 'paper') {
-        routeParameters.type = 'paper';
-      }
+      return res.redirect(app.namedRoutes.build('response.detail.get', { id }));
+    } catch (err) {
+      return errorCB(err);
+    }
+  };
 
-      // Validate input
-      const validatorResult = validate(req.body, require('../../../config/validation/awaiting-information.js')(req));
-      if (typeof validatorResult !== 'undefined') {
-        req.session.errors = validatorResult;
-        req.session.formFields = req.body;
+  module.exports.getAwaitingInformation = (app) => (req, res) => {
+    const { id, type } = req.params;
+    const tmpErrors = _.cloneDeep(req.session.errors);
+    const tmpFields = _.cloneDeep(req.session.formFields);
 
-        return res.redirect(app.namedRoutes.build('response.detail.awaiting.information.get', routeParameters));
-      }
+    delete req.session.formFields;
+    delete req.session.errors;
 
-      // if a response is paper we process is through the paper response endpoint
-      if (req.session.hasModAccess && req.params['type'] === 'paper') {
-        return paperUpdateStatus.put(
-          req,
-          req.params.id,
-          req.body.awaitingInformation
-        ).then(function() {
-          res.redirect(app.namedRoutes.build('response.paper.details.get', {
-            id: req.params.id,
-            type: 'paper',
-          }));
-        });
-      }
+    if (req.session.replyDetails.jurorNumber === id){
+      return res.render('response/process/awaiting-information.njk', {
+        awaitingInformationDetails: tmpFields,
+        awaitingInformationUpdate: req.session.awaitingInformation,
+        replyDetails: req.session.replyDetails,
+        jurorNumber: id,
+        errors: {
+          message: '',
+          count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+          items: tmpErrors,
+        },
+        method: type || 'digital',
+      });
+    }
+    return res.redirect(app.namedRoutes.build('response.detail.get', { id }));
+  };
 
-      const payload = {
-        jurorNumber: req.body.jurorNumber,
-        status: req.body.awaitingInformation,
-        version: req.body.version,
-      };
+  module.exports.postAwaitingInformation = (app) => async (req, res) => {
+    const { id, type } = req.params;
+    const routeParameters = {
+      id,
+    };
 
+    if (type === 'paper') {
+      routeParameters.type = 'paper';
+    }
+
+    // Validate input
+    const validatorResult = validate(req.body, require('../../../config/validation/awaiting-information.js')(req));
+    if (typeof validatorResult !== 'undefined') {
+      req.session.errors = validatorResult;
+      req.session.formFields = req.body;
+
+      return res.redirect(app.namedRoutes.build('response.detail.awaiting.information.get', routeParameters));
+    }
+
+    // if a response is paper we process is through the paper response endpoint
+    if (type === 'paper') {
       try {
-        const response =  updateStatusDAO.post(req, req.body.jurorNumber, payload)
-        app.logger.info('Updated status of response: ', {
-          auth: req.session.authentication,
-          data: {
-            jurorNumber: req.params.id,
-            status: req.body.status,
-            version: req.body.version,
-          },
-        });
+        await paperUpdateStatus.put(
+          req,
+          id,
+          req.body.awaitingInformation
+        );
 
-        return res.redirect(app.namedRoutes.build('response.detail.get', {id: req.params.id}));
-      } catch {err} {
-        app.logger.crit('Could not update status of response: ', {
+        res.redirect(app.namedRoutes.build('response.paper.details.get', {
+          id,
+          type: 'paper',
+        }));
+      } catch (err) {
+        app.logger.crit('Could not update status of paper response: ', {
           auth: req.session.authentication,
           data: {
-            jurorNumber: req.params.id,
-            status: req.body.status,
-            version: req.body.version,
+            jurorNumber: id,
+            status: req.body.awaitingInformation,
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        if (err.statusCode === '500' || err.statusCode === 500) {
-          // eslint-disable-next-line
-          err.error.message = 'The summons reply has been updated by another user';
-        } else {
-          err.error.message = 'Could not update summons reply';
-        }
+        return res.render('_errors/generic', { err });
+      }
+    }
 
-        req.session.formFields = req.body;
-        req.session.errors = {
-          '': [{'details': err.error.message}],
-        };
+    const payload = {
+      jurorNumber: req.body.jurorNumber,
+      status: req.body.awaitingInformation,
+      version: req.body.version,
+    };
 
-        return res.redirect(app.namedRoutes.build('response.detail.awaiting.information.get', routeParameters));
+    try {
+      await updateStatusDAO.post(req, req.body.jurorNumber, payload);
+      app.logger.info('Updated status of response: ', {
+        auth: req.session.authentication,
+        data: {
+          jurorNumber: id,
+          status: req.body.status,
+          version: req.body.version,
+        },
+      });
+
+      return res.redirect(app.namedRoutes.build('response.detail.get', { id }));
+    } catch (err) {
+      app.logger.crit('Could not update status of response: ', {
+        auth: req.session.authentication,
+        data: {
+          jurorNumber: id,
+          status: req.body.status,
+          version: req.body.version,
+        },
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+
+      if (err.statusCode === '500' || err.statusCode === 500) {
+        // eslint-disable-next-line
+        err.error.message = 'The summons reply has been updated by another user';
+      } else {
+        err.error.message = 'Could not update summons reply';
       }
 
-    };
+      req.session.formFields = req.body;
+      req.session.errors = modUtils.makeManualError('details', err.error.message);
+
+      return res.redirect(app.namedRoutes.build('response.detail.awaiting.information.get', routeParameters));
+    }
   };
 
   // Utility functions
