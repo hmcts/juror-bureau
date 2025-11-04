@@ -79,8 +79,9 @@
 
     const selectedJurors = !Array.isArray(req.body.selectedJurors) ? [req.body.selectedJurors] : req.body.selectedJurors;
 
-    if (selectedJurors.length > (originalJurorsCount > 12 ? 12 : originalJurorsCount)) {
-      req.session.errors = makeManualError('selectedJurors', 'You cannot select more than 12 jurors');
+    const jurorsLimit = originalJurorsCount <= 12 ? 12 : originalJurorsCount;
+    if (selectedJurors.length > jurorsLimit) {
+      req.session.errors = makeManualError('selectedJurors', `You cannot select more than ${jurorsLimit} jurors`);
       return res.redirect(errorUrl);
     }
 
