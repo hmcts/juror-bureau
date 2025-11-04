@@ -54,9 +54,6 @@
     }
   };
 
-
-
-  // TODO: UPDATE CHECKS FOR CHANGES IN BACKLOG TO USE ETAG HEADERS RATHER THAN CHECKING THE TOTALS
   module.exports.post = (app) => async (req, res) => {
     let payload = { data: [] };
     let newTotals = {
