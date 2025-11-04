@@ -1,25 +1,25 @@
 (function() {
   'use strict';
 
-  var _ = require('lodash')
-    , moment = require('moment')
-    , isBureauUser = require('../../components/auth/user-type').isBureauUser
-    , paperReplyObj = require('../../objects/paper-reply').paperReplyObject
-    , excusalObj = require('../../objects/excusal-mod').excusalObject
-    , deferralObj = require('../../objects/deferral-mod').deferralObject
-    , preferredDatesObj = require('../../objects/deferral-preferred-dates').preferredDatesObj
-    , deferralPoolsObj = require('../../objects/deferral-available-pools').object
-    , validate = require('validate.js')
-    , filters = require('../../components/filters')
-    , dateFilter = require('../../components/filters').dateFilter
-    , modUtils = require('../../lib/mod-utils')
-    , opticReferenceObj = require('../../objects/juror-record').opticReferenceObject
-    , opticReferenceValidator = require('../../config/validation/optic-reference')
-    , deferralJurorValidator = require('../../config/validation/deferral-juror')
-    , deferralDatePickerValidator = require('../../config/validation/date-picker').deferralDatePicker
-    , otherDeferralDateValidater = require('../../config/validation/deferral-mod').deferralDateAndReason
-    , courtLocationsFromPostcodeObj = require('../../objects/court-location').courtLocationsFromPostcodeObj
-    , { systemCodesDAO } = require('../../objects/administration');
+  const _ = require('lodash');
+  const moment = require('moment');
+  const isBureauUser = require('../../components/auth/user-type').isBureauUser;
+  const paperReplyObj = require('../../objects/paper-reply').paperReplyObject;
+  const excusalObj = require('../../objects/excusal-mod').excusalObject;
+  const deferralObj = require('../../objects/deferral-mod').deferralObject;
+  const preferredDatesObj = require('../../objects/deferral-preferred-dates').preferredDatesObj;
+  const deferralPoolsObj = require('../../objects/deferral-available-pools').object;
+  const validate = require('validate.js');
+  const filters = require('../../components/filters');
+  const dateFilter = require('../../components/filters').dateFilter;
+  const modUtils = require('../../lib/mod-utils');
+  const opticReferenceObj = require('../../objects/juror-record').opticReferenceObject;
+  const opticReferenceValidator = require('../../config/validation/optic-reference');
+  const deferralJurorValidator = require('../../config/validation/deferral-juror');
+  const deferralDatePickerValidator = require('../../config/validation/date-picker').deferralDatePicker
+  const otherDeferralDateValidater = require('../../config/validation/deferral-mod').deferralDateAndReason;
+  const courtLocationsFromPostcodeObj = require('../../objects/court-location').courtLocationsFromPostcodeObj;
+  const { systemCodesDAO } = require('../../objects/administration');
   const { flowLetterPost, flowLetterGet } = require('../../lib/flowLetter');
   const { getEligibilityDetails } = require('./paper-reply/paper-reply.controller.js');
   const { isManager } = require('../../components/auth/user-type');
@@ -510,402 +510,371 @@
     return res.redirect(app.namedRoutes.build('response.detail.get', routeParameters));
   };
 
-  module.exports.getDeferralLetter = function(app) {
-    return function(req, res) {
-      return flowLetterGet(req, res, {
-        serviceTitle: 'send letter',
-        pageIdentifier: 'process - what to do',
-        currentApp: 'Summons replies',
-        letterMessage: 'a deferral granted',
-        letterType: 'deferral-granted',
-        postUrl: app.namedRoutes.build('process-deferral.letter.post', {
-          id: req.params.id,
-          type: req.params.type,
-        }),
-        cancelUrl: app.namedRoutes.build('inbox.todo.get'),
+  module.exports.getDeferralLetter = (app) => (req, res) => {
+    return flowLetterGet(req, res, {
+      serviceTitle: 'send letter',
+      pageIdentifier: 'process - what to do',
+      currentApp: 'Summons replies',
+      letterMessage: 'a deferral granted',
+      letterType: 'deferral-granted',
+      postUrl: app.namedRoutes.build('process-deferral.letter.post', {
+        id: req.params.id,
+        type: req.params.type,
+      }),
+      cancelUrl: app.namedRoutes.build('inbox.todo.get'),
+    });
+  };
+
+  module.exports.postDeferralLetter = (app) => (req, res) => {
+    return flowLetterPost(req, res, {
+      errorRoute: app.namedRoutes.build('process-deferral.letter.get', {
+        id: req.params.id,
+        type: req.params.type,
+      }),
+      pageIdentifier: 'process - what to do',
+      serviceTitle: 'send letter',
+      currentApp: 'Summons replies',
+      completeRoute: app.namedRoutes.build('inbox.todo.get'),
+    });
+  };
+
+  module.exports.getExcusal = (app) => async (req, res) => {
+    const { id, type } = req.params;
+    const tmpErrors = _.clone(req.session.errors);
+    const tmpFields = req.session.formFields;
+
+    const processUrl = app.namedRoutes.build('process-excusal.post', { id, type });
+    const backLinkUrl = {
+      built: true,
+      url: app.namedRoutes.build('process-reply.get', { id, type }),
+    };
+    
+    let cancelUrl;
+
+    if (type === 'paper') {
+      cancelUrl = app.namedRoutes.build('response.paper.details.get', { id, type });
+    } else {
+      cancelUrl = app.namedRoutes.build('response.detail.get', { id, type });
+    }
+
+    try {
+      const data = await systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL');
+
+      app.logger.info('Retrieved excusal codes: ', {
+        auth: req.session.authentication,
+        jurorNumber: id,
+        type,
       });
-    };
-  };
 
-  module.exports.postDeferralLetter = function(app) {
-    return function(req, res) {
-      return flowLetterPost(req, res, {
-        errorRoute: app.namedRoutes.build('process-deferral.letter.get', {
-          id: req.params.id,
-          type: req.params.type,
-        }),
-        pageIdentifier: 'process - what to do',
-        serviceTitle: 'send letter',
-        currentApp: 'Summons replies',
-        completeRoute: app.namedRoutes.build('inbox.todo.get'),
+      delete req.session.errors;
+      delete req.session.formFields;
+
+      req.session.excusalReasons = data;
+
+      return res.render('summons-management/excusal', {
+        processUrl: processUrl,
+        cancelUrl: cancelUrl,
+        backLinkUrl: backLinkUrl,
+        excusalDetails: tmpFields,
+        excusalReasons: data,
+        errors: {
+          title: 'Please check the form',
+          count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+          items: tmpErrors,
+        },
       });
-    };
+    } catch (err) {
+      app.logger.crit('Failed to retrive excusal: ', {
+        auth: req.session.authentication,
+        jurorNumber: id,
+        type,
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+
+      return res.redirect(app.namedRoutes.build('process-reply.get', { id, type }));
+    }
   };
 
-  module.exports.getExcusal = function(app) {
-    return function(req, res) {
-      var tmpErrors = _.clone(req.session.errors)
-        , tmpFields
-        , routeParameters = {
-          id: req.params['id'],
-          type: req.params['type'],
-        }
-        , processUrl
-        , cancelUrl
-        , backLinkUrl
-        , successCB = function(data) {
+  module.exports.postExcusal = (app) => async (req, res) => {
+    const { id, type } = req.params;
 
-          app.logger.info('Retrieved excusal codes: ', {
-            auth: req.session.authentication,
-            jurorNumber: req.params['id'],
-            type: req.params['type'],
-          });
+    const validatorResult = validate(req.body, require('../../config/validation/excusal-mod.js')());
+    if (typeof validatorResult !== 'undefined') {
+      req.session.errors = validatorResult;
+      req.session.formFields = req.body;
+      return res.redirect(app.namedRoutes.build('process-excusal.get', { id, type }));
+    }
 
-          tmpFields = req.session.formFields;
-
-          delete req.session.errors;
-          delete req.session.formFields;
-
-          req.session.excusalReasons = data;
-
-          return res.render('summons-management/excusal', {
-            processUrl: processUrl,
-            cancelUrl: cancelUrl,
-            backLinkUrl: backLinkUrl,
-            excusalDetails: tmpFields,
-            excusalReasons: data,
-            errors: {
-              title: 'Please check the form',
-              count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-              items: tmpErrors,
-            },
-          });
-        }
-        , errorCB = function(err) {
-
-          app.logger.crit('Failed to retrive excusal: ', {
-            auth: req.session.authentication,
-            jurorNumber: req.params['id'],
-            type: req.params['type'],
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
-
-          return res.redirect(app.namedRoutes.build('process-reply.get', routeParameters));
-        };
-
-      processUrl = app.namedRoutes.build('process-excusal.post', routeParameters);
-      backLinkUrl = {
-        built: true,
-        url: app.namedRoutes.build('process-reply.get', routeParameters),
-      };
-      if (req.params['type'] === 'paper') {
-        cancelUrl = app.namedRoutes.build('response.paper.details.get', routeParameters);
-      } else {
-        cancelUrl = app.namedRoutes.build('response.detail.get', routeParameters);
-      }
-
-      systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL')
-        .then(successCB)
-        .catch(errorCB);
-    };
-  };
-
-  module.exports.postExcusal = function(app) {
-    return function(req, res) {
-      var validatorResult
-        , routeParameters = {
-          id: req.params['id'],
-          type: req.params['type'],
-        }
-        , successCB = function() {
-          var codeMessage = (code) => req.session.excusalReasons.filter((el) => el.code === code)[0].description
-            , reason = {
-              REFUSE: 'Excusal refused (' + codeMessage(req.body.excusalCode).toLowerCase() + ')',
-              GRANT: 'Excusal granted (' + codeMessage(req.body.excusalCode).toLowerCase() + ')',
-            };
-
-          req.session.responseWasActioned = {
-            jurorDetails: req.session.replyDetails,
-            type: reason[req.body.excusalDecision],
-          };
-
-          app.logger.info('Excusal processed: ', {
-            auth: req.session.authentication,
-            data: req.body,
-          });
-
-          delete req.session.excusalReasons;
-
-          if (res.locals.isCourtUser) {
-            return res.redirect(app.namedRoutes.build('process-excusal.letter.get', {
-              ...routeParameters,
-              letter: req.body.excusalDecision.toLowerCase(),
-            }));
-          }
-
-          if (routeParameters.type === 'paper') {
-            return res.redirect(app.namedRoutes.build('response.paper.details.get', routeParameters));
-          }
-          return res.redirect(app.namedRoutes.build('response.detail.get', routeParameters));
-        }
-        , errorCB = function(err) {
-          app.logger.crit('Failed to process excusal: ', {
-            auth: req.session.authentication,
-            data: req.body,
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
-
-          req.session.errors = {
-            summary: [],
-          };
-
-          if (typeof err.error !== 'undefined' && err.error.message) {
-            req.session.errors.summary.push(err.error.message);
-          } else {
-            req.session.errors.summary.push('Something went wrong when trying to process this summons');
-          }
-
-          return res.redirect(app.namedRoutes.build('process-excusal.get', routeParameters));
-        };
-
-      validatorResult = validate(req.body, require('../../config/validation/excusal-mod.js')());
-      if (typeof validatorResult !== 'undefined') {
-        req.session.errors = validatorResult;
-        req.session.formFields = req.body;
-        return res.redirect(app.namedRoutes.build('process-excusal.get', routeParameters));
-      }
-
-      excusalObj.put(
+    try {
+      await excusalObj.put(
         req,
         req.body,
-        routeParameters.id,
-        routeParameters.type,
-      )
-        .then(successCB)
-        .catch(errorCB);
-    };
-  };
+        id,
+        type,
+      );
 
-  module.exports.getExcusalLetter = function(app) {
-    return function(req, res) {
-      const letterType = req.params.letter === 'grant' ? 'granted' : 'refused';
+      const codeMessage = (code) => req.session.excusalReasons.filter((el) => el.code === code)[0].description;
+      const reason = {
+        REFUSE: 'Excusal refused (' + codeMessage(req.body.excusalCode).toLowerCase() + ')',
+        GRANT: 'Excusal granted (' + codeMessage(req.body.excusalCode).toLowerCase() + ')',
+      };
 
-      return flowLetterGet(req, res, {
-        serviceTitle: 'send letter',
-        pageIdentifier: 'process - what to do',
-        currentApp: 'Summons replies',
-        letterMessage: `an excusal ${letterType} `,
-        letterType: `excusal-${letterType}`,
-        postUrl: app.namedRoutes.build('process-excusal.letter.post', {
-          id: req.params.id,
-          type: req.params.type,
-          letter: req.params.letter,
-        }),
-        cancelUrl: app.namedRoutes.build('inbox.todo.get'),
+      req.session.responseWasActioned = {
+        jurorDetails: req.session.replyDetails,
+        type: reason[req.body.excusalDecision],
+      };
+
+      app.logger.info('Excusal processed: ', {
+        auth: req.session.authentication,
+        data: req.body,
       });
-    };
-  };
 
-  module.exports.postExcusalLetter = function(app) {
-    return function(req, res) {
-      return flowLetterPost(req, res, {
-        errorRoute: app.namedRoutes.build('process-excusal.letter.get', {
-          id: req.params.id,
-          type: req.params.type,
-          letter: req.params.letter.toLowerCase(),
-        }),
-        pageIdentifier: 'process - what to do',
-        serviceTitle: 'send letter',
-        currentApp: 'Summons replies',
-        completeRoute: app.namedRoutes.build('inbox.todo.get'),
+      delete req.session.excusalReasons;
+
+      if (res.locals.isCourtUser) {
+        return res.redirect(app.namedRoutes.build('process-excusal.letter.get', {
+          id,
+          type,
+          letter: req.body.excusalDecision.toLowerCase(),
+        }));
+      }
+
+      if (type === 'paper') {
+        return res.redirect(app.namedRoutes.build('response.paper.details.get', { id, type }));
+      }
+
+      return res.redirect(app.namedRoutes.build('response.detail.get', { id, type }));
+    } catch (err) {
+      app.logger.crit('Failed to process excusal: ', {
+        auth: req.session.authentication,
+        data: req.body,
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
-    };
+
+      req.session.errors = {
+        summary: [],
+      };
+
+      if (typeof err.error !== 'undefined' && err.error.message) {
+        req.session.errors.summary.push(err.error.message);
+      } else {
+        req.session.errors.summary.push('Something went wrong when trying to process this summons');
+      }
+
+      return res.redirect(app.namedRoutes.build('process-excusal.get', { id, type }));
+    }
   };
 
-  module.exports.getPaperResponseDetails = function(app) {
-    return function(req, res) {
-      const { id } = req.params;
-      var promiseArr = []
-        , successCB = function(response) {
-          var responseClone = _.clone(response[0].data)
-            , nameDetails
-            , addressDetails
-            , jurorDetails
-            , importantNavItems
-            , eligibilityDetails
-            , thirdPartyDetails;
+  module.exports.getExcusalLetter = (app) => (req, res) => {
+    const letterType = req.params.letter === 'grant' ? 'granted' : 'refused';
 
-          nameDetails = resolveJurorName(responseClone);
-          addressDetails = resolveJurorAddress(responseClone);
-          thirdPartyDetails = resolveThirdParty(responseClone.thirdParty);
-
-          delete req.session.jurorDetails;
-          delete req.session.jurorName;
-          delete req.session.specialNeeds;
-          delete req.session[`catchmentWarning-${id}`];
-          delete req.session[`reassignExcusalPayload-${req.params.id}`];
-          delete req.session[`summonsUpdate-${id}`];
-
-          jurorDetails = {
-            name: nameDetails,
-            phone: {
-              current: responseClone.primaryPhone,
-            },
-            altPhone: {
-              current: responseClone.secondaryPhone,
-            },
-            email: resolveJurorEmail(responseClone),
-            dateOfBirth: resolveJurorDob(responseClone),
-            poolNumber: responseClone.poolNumber,
-            replyType: 'paper',
-          };
-
-          req.session.jurorDetails = jurorDetails;
-
-          responseClone.jurorDetailsComplete = isComplete({
-            name: nameDetails.currentName,
-            address: { addressLineOne: responseClone.addressLineOne, addressTown: responseClone.addressTown, addressPostcode: responseClone.addressPostcode },
-            dob: responseClone.dateOfBirth,
-          });
-
-          responseClone.thirdPartyComplete = thirdPartyDetails.isThirdParty ? isComplete({
-            relationship: thirdPartyDetails.relationship,
-            reason: thirdPartyDetails.reason,
-          }) : true;
-
-          req.session.jurorName = nameDetails.currentName;
-          req.session.specialNeeds = responseClone.specialNeeds;
-
-          responseClone.eligibilityComplete = isEligibilityComplete(responseClone.eligibility);
-
-          responseClone.cjsEmployments = response[0].data.cjsEmployment;
-
-          if (responseClone.specialNeeds) {
-            responseClone.specialNeeds[0].assistanceType =
-              modUtils.reasonsArrToObj(response[1])[responseClone.specialNeeds[0].assistanceType];
-
-            jurorDetails.specialNeeds = responseClone.specialNeeds;
-          }
-
-          responseClone.phoneLogs = responseClone.contactLog;
-          delete responseClone.contactLog;
-
-          eligibilityDetails = {
-            residency: responseClone.eligibility.livedConsecutive,
-            residencyDetails: responseClone.eligibility.livedConsecutiveDetails,
-            mentalHealthAct: responseClone.eligibility.mentalHealthAct,
-            mentalHealthActDetails: responseClone.eligibility.mentalHealthActDetails,
-            mentalHealthCapacity: responseClone.eligibility.mentalHealthCapacity,
-            bail: responseClone.eligibility.onBail,
-            bailDetails: responseClone.eligibility.onBailDetails,
-            convictions: responseClone.eligibility.convicted,
-            convictionsDetails: responseClone.eligibility.convictedDetails,
-          };
-
-          eligibilityDetails.eligible = (
-            response[0].data.eligibility.livedConsecutive &&
-            (!response[0].data.eligibility.mentalHealthAct && response[0].data.eligibility.mentalHealthAct !== null) &&
-            (!response[0].data.eligibility.mentalHealthCapacity &&
-              response[0].data.eligibility.mentalHealthCapacity !== null) &&
-            (!response[0].data.eligibility.onBail && response[0].data.eligibility.onBail !== null) &&
-            (!response[0].data.eligibility.convicted && response[0].data.eligibility.convicted !== null)
-          );
-
-          // calculate whether or not a left side nav will have a blue tick
-          importantNavItems = {
-            jurorDetails: (
-              nameDetails.changed ||
-              addressDetails.changed ||
-              addressDetails.currentAddress?.includes('mod-reply-section__required') ||
-              thirdPartyDetails.isThirdParty ||
-              jurorDetails.dateOfBirth.ageIneligible === true
-            ),
-            eligibility: (
-              !eligibilityDetails.eligible &&
-              !jurorDetails.dateOfBirth.ageIneligible &&
-              thirdPartyDetails.reason !== 'Deceased'
-            ),
-            deferralExcusal: (
-              (responseClone.deferral || responseClone.excusal) &&
-              thirdPartyDetails.reason !== 'Deceased' &&
-              jurorDetails.dateOfBirth.ageIneligible === false
-            ),
-            cjsEmployment: (
-              (responseClone.cjsEmployment && responseClone.cjsEmployment.length > 0) &&
-              thirdPartyDetails.reason !== 'Deceased' &&
-              jurorDetails.dateOfBirth.ageIneligible === false
-            ),
-            adjustments: (
-              (responseClone.specialNeeds && responseClone.specialNeeds.length > 0) &&
-              thirdPartyDetails.reason !== 'Deceased' &&
-              jurorDetails.dateOfBirth.ageIneligible === false
-            ),
-            signature: (
-              !response[0].data.signed &&
-              !jurorDetails.dateOfBirth.ageIneligible &&
-              !jurorDetails.dateOfBirth.ageIneligible
-            ),
-          };
-
-          responseClone.isLateSummons = responseClone.processingStatus != "Closed" && modUtils.isLateSummons(responseClone.serviceStartDate);
-          responseClone.completedAt = responseClone.completed_at;
-
-          req.session.replyDetails = {};
-          req.session.replyDetails.jurorNumber = response[0].data.jurorNumber;
-          req.session.replyDetails.jurorName = nameDetails.headerNameRender;
-          req.session.replyDetails.jurorStartDate = response[0].data.serviceStartDate;
-          req.session.replyDetails.isLateSummons = responseClone.isLateSummons;
-
-          // we need to store the location code because we need it to be able to visit the juror record page
-          req.session.locCode = modUtils.getCurrentActiveCourt(req, {
-            poolNumber: responseClone.poolNumber,
-            currentOwner: responseClone.current_owner,
-          });
-
-          responseClone.statusRender = response[0].data.jurorStatus;
-
-          return opticReferenceObj.get(
-            req,
-            req.params['id'],
-            jurorDetails.poolNumber,
-          )
-            .then((opticReference) => getOpticReferenceSuccess(app, req, res, {
-              responseClone,
-              nameDetails,
-              addressDetails,
-              jurorDetails,
-              eligibilityDetails,
-              importantNavItems,
-              thirdPartyDetails,
-              opticReference,
-              processingStatusDisp: resolveProcessingStatusDisplay(responseClone.processingStatus),
-            }))
-            .catch((err) => getOpticReferenceError(app, req, res, err));
-        }
-        , errorCB = function(err) {
-
-          app.logger.crit('Failed to fetch the paper response: ', {
-            auth: req.session.authentication,
-            data: req.params['id'],
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
-
-          return res.redirect(app.namedRoutes.build('homepage.get'));
-        };
-
-      promiseArr.push(paperReplyObj.get(req, req.params['id']));
-      promiseArr.push(systemCodesDAO.get(req, 'REASONABLE_ADJUSTMENTS'));
-      Promise.all(promiseArr)
-        .then(successCB)
-        .catch(errorCB);
-    };
+    return flowLetterGet(req, res, {
+      serviceTitle: 'send letter',
+      pageIdentifier: 'process - what to do',
+      currentApp: 'Summons replies',
+      letterMessage: `an excusal ${letterType} `,
+      letterType: `excusal-${letterType}`,
+      postUrl: app.namedRoutes.build('process-excusal.letter.post', {
+        id: req.params.id,
+        type: req.params.type,
+        letter: req.params.letter,
+      }),
+      cancelUrl: app.namedRoutes.build('inbox.todo.get'),
+    });
   };
 
-  function getOpticReferenceSuccess(app, req, res, data) {
+  module.exports.postExcusalLetter = (app) => (req, res) => {
+    return flowLetterPost(req, res, {
+      errorRoute: app.namedRoutes.build('process-excusal.letter.get', {
+        id: req.params.id,
+        type: req.params.type,
+        letter: req.params.letter.toLowerCase(),
+      }),
+      pageIdentifier: 'process - what to do',
+      serviceTitle: 'send letter',
+      currentApp: 'Summons replies',
+      completeRoute: app.namedRoutes.build('inbox.todo.get'),
+    });
+  };
+
+  module.exports.getPaperResponseDetails = (app) => async (req, res) => {
+    const { id } = req.params;
+
+    let response;
+    try {
+      response = await Promise.all([
+        paperReplyObj.get(req, id),
+        systemCodesDAO.get(req, 'REASONABLE_ADJUSTMENTS'),
+      ]);
+    } catch (err) {
+      app.logger.crit('Failed to fetch the paper response: ', {
+        auth: req.session.authentication,
+        data: { id },
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+
+      return res.redirect(app.namedRoutes.build('homepage.get'));
+    }
+
+    const responseClone = _.clone(response[0].data);
+    const nameDetails = resolveJurorName(responseClone);
+    const addressDetails = resolveJurorAddress(responseClone);
+    const thirdPartyDetails = resolveThirdParty(responseClone.thirdParty);
+
+    delete req.session.jurorDetails;
+    delete req.session.jurorName;
+    delete req.session.specialNeeds;
+    delete req.session[`catchmentWarning-${id}`];
+    delete req.session[`reassignExcusalPayload-${req.params.id}`];
+    delete req.session[`summonsUpdate-${id}`];
+
+    const jurorDetails = {
+      name: nameDetails,
+      phone: {
+        current: responseClone.primaryPhone,
+      },
+      altPhone: {
+        current: responseClone.secondaryPhone,
+      },
+      email: resolveJurorEmail(responseClone),
+      dateOfBirth: resolveJurorDob(responseClone),
+      poolNumber: responseClone.poolNumber,
+      replyType: 'paper',
+    };
+
+    req.session.jurorDetails = jurorDetails;
+
+    responseClone.jurorDetailsComplete = isComplete({
+      name: nameDetails.currentName,
+      address: { addressLineOne: responseClone.addressLineOne, addressTown: responseClone.addressTown, addressPostcode: responseClone.addressPostcode },
+      dob: responseClone.dateOfBirth,
+    });
+
+    responseClone.thirdPartyComplete = thirdPartyDetails.isThirdParty ? isComplete({
+      relationship: thirdPartyDetails.relationship,
+      reason: thirdPartyDetails.reason,
+    }) : true;
+
+    req.session.jurorName = nameDetails.currentName;
+    req.session.specialNeeds = responseClone.specialNeeds;
+
+    responseClone.eligibilityComplete = isEligibilityComplete(responseClone.eligibility);
+
+    responseClone.cjsEmployments = response[0].data.cjsEmployment;
+
+    if (responseClone.specialNeeds) {
+      responseClone.specialNeeds[0].assistanceType =
+        modUtils.reasonsArrToObj(response[1])[responseClone.specialNeeds[0].assistanceType];
+
+      jurorDetails.specialNeeds = responseClone.specialNeeds;
+    }
+
+    responseClone.phoneLogs = responseClone.contactLog;
+    delete responseClone.contactLog;
+
+    const eligibilityDetails = {
+      residency: responseClone.eligibility.livedConsecutive,
+      residencyDetails: responseClone.eligibility.livedConsecutiveDetails,
+      mentalHealthAct: responseClone.eligibility.mentalHealthAct,
+      mentalHealthActDetails: responseClone.eligibility.mentalHealthActDetails,
+      mentalHealthCapacity: responseClone.eligibility.mentalHealthCapacity,
+      bail: responseClone.eligibility.onBail,
+      bailDetails: responseClone.eligibility.onBailDetails,
+      convictions: responseClone.eligibility.convicted,
+      convictionsDetails: responseClone.eligibility.convictedDetails,
+    };
+
+    eligibilityDetails.eligible = (
+      response[0].data.eligibility.livedConsecutive &&
+      (!response[0].data.eligibility.mentalHealthAct && response[0].data.eligibility.mentalHealthAct !== null) &&
+      (!response[0].data.eligibility.mentalHealthCapacity &&
+        response[0].data.eligibility.mentalHealthCapacity !== null) &&
+      (!response[0].data.eligibility.onBail && response[0].data.eligibility.onBail !== null) &&
+      (!response[0].data.eligibility.convicted && response[0].data.eligibility.convicted !== null)
+    );
+
+    // calculate whether or not a left side nav will have a blue tick
+    const importantNavItems = {
+      jurorDetails: (
+        nameDetails.changed ||
+        addressDetails.changed ||
+        addressDetails.currentAddress?.includes('mod-reply-section__required') ||
+        thirdPartyDetails.isThirdParty ||
+        jurorDetails.dateOfBirth.ageIneligible === true
+      ),
+      eligibility: (
+        !eligibilityDetails.eligible &&
+        !jurorDetails.dateOfBirth.ageIneligible &&
+        thirdPartyDetails.reason !== 'Deceased'
+      ),
+      deferralExcusal: (
+        (responseClone.deferral || responseClone.excusal) &&
+        thirdPartyDetails.reason !== 'Deceased' &&
+        jurorDetails.dateOfBirth.ageIneligible === false
+      ),
+      cjsEmployment: (
+        (responseClone.cjsEmployment && responseClone.cjsEmployment.length > 0) &&
+        thirdPartyDetails.reason !== 'Deceased' &&
+        jurorDetails.dateOfBirth.ageIneligible === false
+      ),
+      adjustments: (
+        (responseClone.specialNeeds && responseClone.specialNeeds.length > 0) &&
+        thirdPartyDetails.reason !== 'Deceased' &&
+        jurorDetails.dateOfBirth.ageIneligible === false
+      ),
+      signature: (
+        !response[0].data.signed &&
+        !jurorDetails.dateOfBirth.ageIneligible &&
+        !jurorDetails.dateOfBirth.ageIneligible
+      ),
+    };
+
+    responseClone.isLateSummons = responseClone.processingStatus != "Closed" && modUtils.isLateSummons(responseClone.serviceStartDate);
+    responseClone.completedAt = responseClone.completed_at;
+
+    req.session.replyDetails = {};
+    req.session.replyDetails.jurorNumber = response[0].data.jurorNumber;
+    req.session.replyDetails.jurorName = nameDetails.headerNameRender;
+    req.session.replyDetails.jurorStartDate = response[0].data.serviceStartDate;
+    req.session.replyDetails.isLateSummons = responseClone.isLateSummons;
+
+    // we need to store the location code because we need it to be able to visit the juror record page
+    req.session.locCode = modUtils.getCurrentActiveCourt(req, {
+      poolNumber: responseClone.poolNumber,
+      currentOwner: responseClone.current_owner,
+    });
+
+    responseClone.statusRender = response[0].data.jurorStatus;
+
+    try {
+      const opticReference = await opticReferenceObj.get(
+        req,
+        id,
+        jurorDetails.poolNumber,
+      );
+
+      return getOpticReferenceSuccess(app)(req, res)({
+        responseClone,
+        nameDetails,
+        addressDetails,
+        jurorDetails,
+        eligibilityDetails,
+        importantNavItems,
+        thirdPartyDetails,
+        opticReference,
+        processingStatusDisp: resolveProcessingStatusDisplay(responseClone.processingStatus),
+      });
+    } catch (err) {
+      return getOpticReferenceError(app)(req, res)(err);
+    }
+  };
+
+  const getOpticReferenceSuccess = (app) => (req, res) => async (data) => {
+    const { id, type } = req.params;
     app.logger.info('Fetched the optic reference for the juror if available: ', {
       auth: req.session.authentication,
       data: {
-        jurorNumber: req.params['id'],
+        jurorNumber: id,
         opticReference: data.opticReference,
       },
     });
@@ -922,9 +891,11 @@
     if (data.addressDetails.changed &&
       (data.responseClone.existingAddressPostcode !== data.responseClone.addressPostcode &&
         data.responseClone.processingStatus !== 'Closed')) {
-      return courtLocationsFromPostcodeObj.get(req, postcode)
-        .then(
-          (catchmentResponse) => {
+
+
+          try {
+            const catchmentResponse = await courtLocationsFromPostcodeObj.get(req, postcode);
+
             app.logger.info('Fetched the courts for new address: ', {
               auth: req.session.authentication,
               data: {
@@ -932,11 +903,11 @@
               },
             });
 
-            req.session[`catchmentWarning-${req.params.id}`] = resolveCatchmentResponse(catchmentResponse,
+            req.session[`catchmentWarning-${id}`] = resolveCatchmentResponse(catchmentResponse,
               req.session.locCode);
 
             return res.render('response/detail', {
-              method: req.params['type'] || 'digital',
+              method: type || 'digital',
               displayActionsButtonMenu: true,
               replyType: resolveReplyType(data.responseClone),
               response: data.responseClone,
@@ -951,17 +922,13 @@
               processedBannerMessage: data.processedBannerMessage,
               isBureauUser: isBureauUser(req),
               isAddChangeVisible: data.responseClone.processingStatus !== 'Closed',
-              catchmentWarning: req.session[`catchmentWarning-${req.params.id}`],
+              catchmentWarning: req.session[`catchmentWarning-${id}`],
               backLinkUrl: 'inbox.todo.get',
             });
-
-          }
-        )
-        .catch(
-          (err) => {
+          } catch (err) {
             app.logger.crit('Failed when fetching the juror\'s catchement area: ', {
               auth: req.session.authentication,
-              data: req.params['id'],
+              data: { id },
               error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
             });
 
@@ -969,14 +936,14 @@
             if (err.statusCode === 404) {
               app.logger.crit('No catchment area for juror\'s postcode: ', {
                 auth: req.session.authentication,
-                data: req.params['id'],
+                data: { id },
                 error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
               });
 
-              req.session[`catchmentWarning-${req.params.id}`] = resolveCatchmentResponse([], req.session.locCode);
+              req.session[`catchmentWarning-${id}`] = resolveCatchmentResponse([], req.session.locCode);
 
               return res.render('response/detail', {
-                method: req.params['type'] || 'digital',
+                method: type || 'digital',
                 displayActionsButtonMenu: true,
                 replyType: resolveReplyType(data.responseClone),
                 response: data.responseClone,
@@ -991,14 +958,13 @@
                 processedBannerMessage: data.processedBannerMessage,
                 isBureauUser: isBureauUser(req),
                 isAddChangeVisible: data.responseClone.processingStatus !== 'Closed',
-                catchmentWarning: req.session[`catchmentWarning-${req.params.id}`],
+                catchmentWarning: req.session[`catchmentWarning-${id}`],
                 backLinkUrl: 'inbox.todo.get',
               });
             }
 
             return res.redirect(app.namedRoutes.build('homepage.get'));
           }
-        );
     }
 
     return res.render('response/detail', {
@@ -1021,8 +987,7 @@
     });
   }
 
-  function getOpticReferenceError(app, req, res, err) {
-
+  const getOpticReferenceError = (app) => (req, res) => async (err) => {
     app.logger.crit('Failed when fetching the juror\'s optic reference: ', {
       auth: req.session.authentication,
       data: req.params['id'],
@@ -1032,85 +997,70 @@
     return res.redirect(app.namedRoutes.build('homepage.get'));
   }
 
-  module.exports.getCheckCanAccommodate = function(app) {
-    return function(req, res) {
-      var tmpErrors = _.clone(req.session.errors)
-        , cancelUrl;
+  module.exports.getCheckCanAccommodate = (app) => (req, res) => {
+    const tmpErrors = _.clone(req.session.errors)
 
-      delete req.session.errors;
-      delete req.session.formFields;
+    delete req.session.errors;
+    delete req.session.formFields;
 
-      cancelUrl = modUtils
-        .opticReferenceRedirectUrl(req.params['id'], app.namedRoutes, req.session.jurorDetails.replyType);
-
-      return res.render('summons-management/_common/check-can-accommodate', {
-        jurorNumber: req.params['id'],
-        jurorDetails: req.session.jurorDetails,
-        cancelUrl,
-        errors: {
-          title: 'Please check the form',
-          count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-          items: tmpErrors,
-        },
-      });
-    };
+    return res.render('summons-management/_common/check-can-accommodate', {
+      jurorNumber: req.params['id'],
+      jurorDetails: req.session.jurorDetails,
+      cancelUrl: modUtils
+        .opticReferenceRedirectUrl(req.params['id'], app.namedRoutes, req.session.jurorDetails.replyType),
+      errors: {
+        title: 'Please check the form',
+        count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+        items: tmpErrors,
+      },
+    });
   };
 
-  module.exports.postCheckCanAccommodate = function(app) {
-    return function(req, res) {
-      var validatorResult
-        , successCB = function() {
+  module.exports.postCheckCanAccommodate = (app) => async (req, res) => {
+    const { id } = req.params;
 
-          app.logger.info('Posted a new Optic reference: ', {
-            auth: req.session.authentication,
-            data: req.body,
-          });
+    const validatorResult = validate(req.body, opticReferenceValidator.opticReferenceAdd());
 
-          return res.redirect(modUtils
-            .opticReferenceRedirectUrl(req.params['id'], app.namedRoutes, req.session.jurorDetails.replyType));
-        }
-        , errorCB = function(err) {
+    if (typeof validatorResult !== 'undefined') {
+      req.session.errors = validatorResult;
 
-          app.logger.crit('Something went wrong when adding the optic reference: ', {
-            auth: req.session.authentication,
-            data: req.body,
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
+      return res.redirect(app.namedRoutes.build('response.check-can-accommodate.get', { id }));
+    }
 
-          return res.redirect(app.namedRoutes.build('homepage.get'));
-        };
-
-      validatorResult = validate(req.body, opticReferenceValidator.opticReferenceAdd());
-
-      if (typeof validatorResult !== 'undefined') {
-        req.session.errors = validatorResult;
-
-        return res.redirect(app.namedRoutes.build('response.check-can-accommodate.get', {
-          id: req.params['id'],
-        }));
-      }
-
-      opticReferenceObj.post(
+    try {
+      await opticReferenceObj.post(
         req,
         req.body,
-        req.params['id'],
+        id,
         req.session.jurorDetails.poolNumber,
-      )
-        .then(successCB)
-        .catch(errorCB);
-    };
+      );
+
+      app.logger.info('Posted a new Optic reference: ', {
+        auth: req.session.authentication,
+        data: req.body,
+      });
+
+      return res.redirect(modUtils
+        .opticReferenceRedirectUrl(req.params['id'], app.namedRoutes, req.session.jurorDetails.replyType));
+    } catch (err) {
+      app.logger.crit('Something went wrong when adding the optic reference: ', {
+        auth: req.session.authentication,
+        data: req.body,
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+
+      return res.redirect(app.namedRoutes.build('homepage.get'));
+    }
   };
 
-  module.exports.getViewJurorRecord = function(app) {
-    return function(req, res) {
-      req.session.isJurorSearchResult = true;
-      return res.redirect(app.namedRoutes.build('juror-record.search.get') + `?jurorNumber=${req.params.id}`);
-    }
-  }
+  module.exports.getViewJurorRecord = (app) => (req, res) => {
+    req.session.isJurorSearchResult = true;
+    return res.redirect(app.namedRoutes.build('juror-record.search.get') + `?jurorNumber=${req.params.id}`);
+  };
 
   // Helper functions
-  function isComplete(elements) {
-    var el;
+  const isComplete = (elements) => {
+    let el;
     for (el in elements) {
       if (el === 'address') {
         const address = elements[el];
@@ -1126,17 +1076,16 @@
     return true;
   }
 
-  // taken from the original response -> detail.controller.js
-  function resolveJurorName(response) {
-    var newNameRender = [response.title, response.firstName, response.lastName]
+  const resolveJurorName = (response) => {
+    const newNameRender = [response.title, response.firstName, response.lastName]
         .filter(function(val) {
           return val;
-        }).join(' ')
-      , nameRender = [response.existingTitle, response.existingFirstName, response.existingLastName]
+        }).join(' ');
+    const nameRender = [response.existingTitle, response.existingFirstName, response.existingLastName]
         .filter(function(val) {
           return val;
-        }).join(' ')
-      , hasNewName = newNameRender !== nameRender;
+        }).join(' ');
+    const hasNewName = newNameRender !== nameRender;
 
     return {
       changed: (hasNewName === true),
@@ -1149,27 +1098,26 @@
     };
   }
 
-  // also taken from response -> detail.controller.js
-  function resolveJurorAddress(response) {
-    var newAddressRender = filters.buildSummonsAddress([
-        response.addressLineOne,
-        response.addressLineTwo,
-        response.addressLineThree,
-        response.addressTown,
-        response.addressCounty,
-        response.addressPostcode,
-        '',
-      ])
-      , addressRender = filters.buildSummonsAddress([
-        response.existingAddressLineOne,
-        response.existingAddressLineTwo,
-        response.existingAddressLineThree,
-        response.existingAddressTown,
-        response.existingAddressCounty,
-        response.existingAddressPostcode,
-        '',
-      ])
-      , hasNewAddress = newAddressRender !== addressRender;
+  const resolveJurorAddress = (response) => {
+    const newAddressRender = filters.buildSummonsAddress([
+      response.addressLineOne,
+      response.addressLineTwo,
+      response.addressLineThree,
+      response.addressTown,
+      response.addressCounty,
+      response.addressPostcode,
+      '',
+    ]);
+    const addressRender = filters.buildSummonsAddress([
+      response.existingAddressLineOne,
+      response.existingAddressLineTwo,
+      response.existingAddressLineThree,
+      response.existingAddressTown,
+      response.existingAddressCounty,
+      response.existingAddressPostcode,
+      '',
+    ]);
+    const hasNewAddress = newAddressRender !== addressRender;
 
     return {
       changed: (hasNewAddress === true),
@@ -1185,10 +1133,10 @@
     };
   }
 
-  function resolveJurorDob(response) {
-    var newDateOfBirth = response.dateOfBirth
-      , currentAge = moment(response.serviceStartDate, 'YYYY-MM-DD')
-        .diff(moment(response.dateOfBirth, 'YYYY-MM-DD'), 'years');
+  const resolveJurorDob = (response) => {
+    const newDateOfBirth = response.dateOfBirth;
+    const currentAge = moment(response.serviceStartDate, 'YYYY-MM-DD')
+      .diff(moment(response.dateOfBirth, 'YYYY-MM-DD'), 'years');
 
     return {
       changed: false,
@@ -1198,8 +1146,8 @@
     };
   }
 
-  function resolveJurorEmail(response) {
-    var newEmailAddress = response.emailAddress;
+  const resolveJurorEmail = (response) => {
+    const newEmailAddress = response.emailAddress;
 
     return {
       changed: false,
@@ -1207,7 +1155,7 @@
     };
   }
 
-  function resolveThirdParty(thirdParty) {
+  const resolveThirdParty = (thirdParty) => {
     const isThirdParty = !(thirdParty.relationship === '' || thirdParty.relationship === null)
       || !(thirdParty.thirdPartyReason === '' || thirdParty.thirdPartyReason === null)
       || !(thirdParty.thirdPartyFName === '' || thirdParty.thirdPartyFName === null)
@@ -1229,7 +1177,7 @@
     };
   }
 
-  function resolveReplyType(response) {
+  const resolveReplyType = (response) => {
     if (response.thirdParty.thirdPartyReason !== null) {
       if (response.processingStatus === 'CLOSED' && response.thirdParty.thirdPartyReason === 'Deceased') {
         return 'DECEASED';
@@ -1261,7 +1209,7 @@
     return 'NEEDS REVIEW';
   }
 
-  function resolveProcessingStatusDisplay(status) {
+  const resolveProcessingStatusDisplay = (status) => {
     let resolvedStatus = status;
 
     switch (status) {
@@ -1279,16 +1227,16 @@
     return resolvedStatus;
   }
 
-  function createDeferralDate(deferredToDate) {
-    let [day, month, year] = deferredToDate.split('/')
-      , intDay = parseInt(day), intMonth = parseInt(month), intYear = parseInt(year)
-      , date = new Date(intYear, intMonth - 1, intDay, 12, 0, 0);  // Date takes a 0-11 month range, set to midday
+  const createDeferralDate = (deferredToDate) => {
+    const [day, month, year] = deferredToDate.split('/')
+    const intDay = parseInt(day), intMonth = parseInt(month), intYear = parseInt(year)
+    const date = new Date(intYear, intMonth - 1, intDay, 12, 0, 0);  // Date takes a 0-11 month range, set to midday
 
     return date;
   }
 
-  function resolveCatchmentResponse(courtsInCatchment, currentLocationCode) {
-    let catchment = {
+  const resolveCatchmentResponse = (courtsInCatchment, currentLocationCode) => {
+    const catchment = {
       currentLocationCode: currentLocationCode,
       isOutwithCatchment: true,
       courts: [],
