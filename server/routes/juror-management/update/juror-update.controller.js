@@ -3,7 +3,7 @@
 
   const _ = require('lodash');
   const validate = require('validate.js');
-  const { isCourtUser } = require('../../../components/auth/user-type');
+  const { isCourtUser, isManager } = require('../../../components/auth/user-type');
   const jurorUpdateValidator = require('../../../config/validation/juror-record-update');
   const jurorRecordObject = require('../../../objects/juror-record');
   const deferralObject = require('../../../objects/deferral-mod').deferralObject;
@@ -171,211 +171,239 @@
     };
   };
 
-  module.exports.getDeferral = function(app) {
-    return function(req, res) {
-      const cancelUrl = app.namedRoutes.build('juror-record.overview.get', { jurorNumber: req.params['jurorNumber'] });
+  module.exports.getDeferral = (app) => async (req,res) => {
+    const cancelUrl = app.namedRoutes.build('juror-record.overview.get', { jurorNumber: req.params['jurorNumber'] });
 
-      systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL')
-        .then((data) => {
-          app.logger.info('Fetched list of deferral reasons: ', {
-            auth: req.session.authentication,
-            data: {
-              responseId: req.params.jurorNumber,
-              reasons: data,
-            },
-          });
+    let deferralReasons;
+    try {
+      deferralReasons = await systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL');
+      app.logger.info('Fetched list of deferral reasons: ', {
+        auth: req.session.authentication,
+        data: {
+          responseId: req.params.jurorNumber,
+          reasons: deferralReasons,
+        },
+      });
+    } catch (err) {
+      app.logger.crit('Failed to fetch list of deferral reasons: ', {
+        auth: req.session.authentication,
+        data: {
+          responseId: req.params.jurorNumber,
+        },
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
 
-          const tmpFields = _.cloneDeep(req.session.formFields);
-          const tmpErrors = _.cloneDeep(req.session.errors);
+      req.session.errors = {
+        deferralReasons: [{
+          summary: 'Failed to fetch list of deferral reasons',
+          details: 'Failed to fetch list of deferral reasons',
+        }],
+      };
 
-          delete req.session.formFields;
-          delete req.session.errors;
+      return res.redirect(app.namedRoutes.build(
+        'juror-record.overview.get',
+        { jurorNumber: req.params.jurorNumber },
+      ));
+    }
 
-          const processURL = app.namedRoutes.build('juror.update.deferral.post', { jurorNumber: req.params.jurorNumber });
-          req.session.deferralReasons = data;
+    const tmpFields = _.cloneDeep(req.session.formFields);
+    const tmpErrors = _.cloneDeep(req.session.errors);
 
-          let minDate = req.session.jurorCommonDetails.startDate;
-          const maxDate = moment(minDate, 'yyyy-MM-DD').add(1, 'y').format('YYYY-MM-DD');
+    delete req.session.formFields;
+    delete req.session.errors;
 
-          return res.render('response/process/deferral.njk', {
-            deferralDetails: tmpFields,
-            deferralReasons: data,
-            jurorNumber: req.params.jurorNumber,
-            processURL : processURL,
-            cancelUrl : cancelUrl,
-            hearingDate: dateFilter(minDate, null, 'DD/MM/YYYY'),
-            maxDate: dateFilter(maxDate, null, 'DD/MM/YYYY'),
-            errors: {
-              message: '',
-              count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
-              items: tmpErrors,
-            },
-          });
-        })
-        .catch((err) => {
-          app.logger.crit('Failed to fetch list of deferral reasons: ', {
-            auth: req.session.authentication,
-            data: {
-              responseId: req.params.jurorNumber,
-            },
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
+    const processURL = app.namedRoutes.build('juror.update.deferral.post', { jurorNumber: req.params.jurorNumber });
+    req.session.deferralReasons = deferralReasons;
 
-          req.session.errors = {
-            deferralReasons: [{
-              summary: 'Failed to fetch list of deferral reasons',
-              details: 'Failed to fetch list of deferral reasons',
-            }],
-          };
-          return res.redirect(app.namedRoutes.build(
-            'juror-record.overview.get',
-            { jurorNumber: req.params.jurorNumber },
-          ));
-        });
-    };
+    let minDate = req.session.jurorCommonDetails.startDate;
+    let maxDate;
+    if (!isManager(req)) { 
+      maxDate = moment(minDate, 'yyyy-MM-DD').add(1, 'y').format('YYYY-MM-DD'); 
+    }
+
+    return res.render('response/process/deferral.njk', {
+      deferralDetails: tmpFields,
+      deferralReasons,
+      jurorNumber: req.params.jurorNumber,
+      processURL : processURL,
+      cancelUrl : cancelUrl,
+      hearingDate: dateFilter(minDate, null, 'DD/MM/YYYY'),
+      maxDate: maxDate ? dateFilter(maxDate, null, 'DD/MM/YYYY') : null,
+      errors: {
+        message: '',
+        count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+        items: tmpErrors,
+      },
+    });
   };
 
-  module.exports.postDeferral = function(app) {
-    return async function(req, res) {
-      let tmpReasons
-      let deferralReason;
+  module.exports.postDeferral = (app) => async (req, res) => {
+    const { jurorNumber } = req.params;
+    let tmpReasons
+    let deferralReason;
 
-      tmpReasons = _.cloneDeep(req.session.deferralReasons);
+    tmpReasons = _.cloneDeep(req.session.deferralReasons);
 
-      const { hearingDate } = req.body;
+    const { hearingDate } = req.body;
 
-      const maxDate = moment(hearingDate, 'DD/MM/YYYY').add(1, 'y').add(1, 'd').format('YYYY-MM-DD');
+    const maxDate = moment(hearingDate, 'DD/MM/YYYY').add(1, 'y').add(1, 'd').format('YYYY-MM-DD');
 
-      const validatorResult = validate(req.body, deferralReasonAndDecision(req.body, dateFilter(hearingDate, 'DD/MM/YYYY', 'yyyy-MM-DD'), maxDate));
+    const validatorResult = validate(req.body, deferralReasonAndDecision(req.body, dateFilter(hearingDate, 'DD/MM/YYYY', 'yyyy-MM-DD'), maxDate, isManager(req)));
 
-      if (typeof validatorResult !== 'undefined') {
-        req.session.errors = validatorResult;
-        req.session.formFields = req.body;
+    if (typeof validatorResult !== 'undefined') {
+      req.session.errors = validatorResult;
+      req.session.formFields = req.body;
 
-        return res.redirect(app.namedRoutes.build('juror.update.deferral.get', {
+      return res.redirect(app.namedRoutes.build('juror.update.deferral.get', {
+        jurorNumber: req.params.jurorNumber,
+      }));
+    }
+
+    delete req.session.errors;
+    delete req.session.formFields;
+
+    if (req.body.deferralDecision === "GRANT") {
+      let pools;
+      try {
+        pools = await deferralPoolsObject.post(
+          req,
+          [dateFilter(req.body.deferralDate, 'DD/MM/YYYY', 'yyyy-MM-DD')],
+          req.params.jurorNumber
+        );
+      } catch (err) {
+        app.logger.crit('Failed to fetch deferral pools: ', {
+          auth: req.session.authentication,
+          data: {
+            jurorNumber: req.params.jurorNumber,
+            date: dateFilter(req.body.deferralDate, 'DD/MM/YYYY', 'yyyy-MM-DD')
+          },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic', { err });
+      }
+      
+      if (pools.deferralPoolsSummary[0].deferralOptions[0].poolNumber) {
+        req.session.deferralPools = pools.deferralPoolsSummary[0];
+        req.session.partialDeferralObj = req.body;
+
+        return res.redirect(app.namedRoutes.build('juror.update.deferral.pools.get', {
           jurorNumber: req.params.jurorNumber,
         }));
       }
+    }
 
-      delete req.session.errors;
-      delete req.session.formFields;
-
-      if (req.body.deferralDecision === "GRANT") {
-        let pools;
-        try {
-          pools = await deferralPoolsObject.post(
-            req,
-            [dateFilter(req.body.deferralDate, 'DD/MM/YYYY', 'yyyy-MM-DD')],
-            req.params.jurorNumber
-          );
-        } catch (err) {
-          app.logger.crit('Failed to fetch deferral pools: ', {
-            auth: req.session.authentication,
-            data: {
-              jurorNumber: req.params.jurorNumber,
-              date: dateFilter(req.body.deferralDate, 'DD/MM/YYYY', 'yyyy-MM-DD')
-            },
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
-
-          return res.render('_errors/generic', { err });
-        }
-        
-        if (pools.deferralPoolsSummary[0].deferralOptions[0].poolNumber) {
-          req.session.deferralPools = pools.deferralPoolsSummary[0];
-          req.session.partialDeferralObj = req.body;
-
-          return res.redirect(app.namedRoutes.build('juror.update.deferral.pools.get', {
-            jurorNumber: req.params.jurorNumber,
-          }));
-        }
-      }
-
-      if (!tmpReasons) {
-        try {
-          tmpReasons = await systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL');
-        } catch (err) {
-          app.logger.crit('Failed to fetch system codes: ', {
-            auth: req.session.authentication,
-            data: { codes: 'EXCUSAL_AND_DEFERRAL' },
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
-
-          return res.render('_errors/generic', { err });
-        }
-      }
-
-      deferralReason = tmpReasons
-        .find(reason => reason.code === req.body.deferralReason).description.toLowerCase();
-
-      deferralObject.put(req, req.body, req.params.jurorNumber)
-        .then((data) => {
-          app.logger.info('Deferral update processed: ', {
-            auth: req.session.authentication,
-            data: {
-              responseId: req.params.jurorNumber,
-            },
-            reasons: data,
-          });
-
-          if (req.body.deferralDecision === 'REFUSE') {
-            req.session.bannerMessage = 'Deferral refused (' + deferralReason + ')';
-          } else {
-            req.session.bannerMessage = 'Deferral granted (' + deferralReason + ')';
-          }
-
-          if (res.locals.isCourtUser) {
-            return res.redirect(app.namedRoutes.build('juror.update.deferral.letter.get', {
-              jurorNumber: req.params.jurorNumber,
-              letter: req.body.deferralDecision.toLowerCase(),
-            }));
-          }
-
-          return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
-            jurorNumber: req.params.jurorNumber,
-          }));
-        })
-        .catch((err) => {
-          app.logger.crit('Failed to process deferral update: ', {
-            auth: req.session.authentication,
-            data: {
-              responseId: req.params.jurorNumber,
-            },
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
-
-          if (err.statusCode === 422) {
-            switch (err.error?.code) {
-              case 'CANNOT_REFUSE_FIRST_DEFERRAL':
-                app.logger.warn('Failed to decline deferral for juror', {
-                  auth: req.session.authentication,
-                  error: typeof err.error !== 'undefined' ? err.error : err.toString(),
-                });
-                req.session.errors = makeManualError('deferral', 'Cannot refuse first deferral');
-                break;
-              case 'JUROR_HAS_BEEN_DEFERRED_BEFORE':
-                app.logger.warn('Failed to decline deferral for juror', {
-                  auth: req.session.authentication,
-                  error: typeof err.error !== 'undefined' ? err.error : err.toString(),
-                });
-                return res.redirect(app.namedRoutes.build('juror.update.deferral.confirm.get', {
-                  jurorNumber: req.params.jurorNumber,
-                }) + `?deferralReason=${req.body.deferralReason}&deferralDate=${req.body.deferralDate}`);
-              case 'CANNOT_DEFER_JUROR_WITH_APPEARANCE':
-                req.session.errors = makeManualError('deferral', 'Juror cannot be deferred as they already have an appearance at court');
-                break;
-              default:
-                req.session.errors = makeManualError('deferral', 'Something went wrong when trying to defer the juror');
-            }
-          }
-
-          req.session.formFields = req.body;
-
-          return res.redirect(app.namedRoutes.build('juror.update.deferral.get', {
-            jurorNumber: req.params.jurorNumber,
-          }));
+    if (!tmpReasons) {
+      try {
+        tmpReasons = await systemCodesDAO.get(req, 'EXCUSAL_AND_DEFERRAL');
+      } catch (err) {
+        app.logger.crit('Failed to fetch system codes: ', {
+          auth: req.session.authentication,
+          data: { codes: 'EXCUSAL_AND_DEFERRAL' },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
-    };
+
+        return res.render('_errors/generic', { err });
+      }
+    }
+
+    deferralReason = tmpReasons
+      .find(reason => reason.code === req.body.deferralReason).description.toLowerCase();
+
+    if (isManager(req) && req.body.allowLongDeferral !== "true" && req.body.allow_multiple_deferral !== "true") {
+      const pastMaxDate = moment(req.body.deferralDate, 'DD/MM/YYYY').isAfter(moment(maxDate))
+      if (pastMaxDate) {
+        app.logger.info('Showing confirm deferral page for juror', {
+          auth: req.session.authentication,
+          data: {
+            jurorNumber,
+            deferralReason: req.body.deferralReason,
+            deferralDate: req.body.deferralDate,
+          },
+        });
+
+        return res.render('juror-management/juror-record/confirm-long-deferral.njk', {
+          bodyData: {
+            jurorNumber,
+            deferralReason: req.body.deferralReason,
+            deferralDate: req.body.deferralDate,
+            hearingDate: dateFilter(req.session.jurorCommonDetails.startDate, 'yyyy-MM-dd', 'DD/MM/YYYY'),
+            deferralDecision: 'GRANT',
+          },
+          postUrl: app.namedRoutes.build('juror.update.deferral.post', { jurorNumber }),
+          cancelUrl: app.namedRoutes.build('juror.update.get', { jurorNumber }),
+        });
+      }
+    }
+
+    let data;
+    try {
+      data = await deferralObject.put(req, req.body, jurorNumber);
+    } catch (err) {
+      app.logger.crit('Failed to process deferral update: ', {
+        auth: req.session.authentication,
+        data: {
+          responseId: jurorNumber,
+        },
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+
+      if (err.statusCode === 422) {
+        switch (err.error?.code) {
+          case 'CANNOT_REFUSE_FIRST_DEFERRAL':
+            app.logger.warn('Failed to decline deferral for juror', {
+              auth: req.session.authentication,
+              error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+            });
+            req.session.errors = makeManualError('deferral', 'Cannot refuse first deferral');
+            break;
+          case 'JUROR_HAS_BEEN_DEFERRED_BEFORE':
+            app.logger.warn('Failed to decline deferral for juror', {
+              auth: req.session.authentication,
+              error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+            });
+            return res.redirect(app.namedRoutes.build('juror.update.deferral.confirm.get', {
+              jurorNumber,
+            }) + `?deferralReason=${req.body.deferralReason}&deferralDate=${req.body.deferralDate}`);
+          case 'CANNOT_DEFER_JUROR_WITH_APPEARANCE':
+            req.session.errors = makeManualError('deferral', 'Juror cannot be deferred as they already have an appearance at court');
+            break;
+          default:
+            req.session.errors = makeManualError('deferral', 'Something went wrong when trying to defer the juror');
+        }
+      }
+
+      req.session.formFields = req.body;
+
+      return res.redirect(app.namedRoutes.build('juror.update.deferral.get', {
+        jurorNumber,
+      }));
+    }
+
+    app.logger.info('Deferral update processed: ', {
+      auth: req.session.authentication,
+      data: {
+        responseId: jurorNumber,
+      },
+      reasons: data,
+    });
+
+    if (req.body.deferralDecision === 'REFUSE') {
+      req.session.bannerMessage = 'Deferral refused (' + deferralReason + ')';
+    } else {
+      req.session.bannerMessage = 'Deferral granted (' + deferralReason + ')';
+    }
+
+    if (res.locals.isCourtUser) {
+      return res.redirect(app.namedRoutes.build('juror.update.deferral.letter.get', {
+        jurorNumber: jurorNumber,
+        letter: req.body.deferralDecision.toLowerCase(),
+      }));
+    }
+
+    return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
+      jurorNumber,
+    }));
   };
 
   module.exports.getDeferralPools = (app) => (req, res) => {
@@ -488,7 +516,7 @@
       const { jurorNumber } = req.params;
       const { deferralReason, deferralDate } = req.query;
 
-      app.logger.info('Showing confirm deferral page for juror', {
+      app.logger.info('Showing confirm long deferral page for juror', {
         auth: req.session.authentication,
         data: {
           jurorNumber,
@@ -497,16 +525,13 @@
         },
       });
 
-      const postUrl = app.namedRoutes.build('juror.update.deferral.post', { jurorNumber });
-
-      const hearingDate = req.session.jurorCommonDetails.startDate;
-
       return res.render('juror-management/juror-record/confirm-deferral.njk', {
         jurorNumber,
         deferralReason,
         deferralDate,
-        postUrl,
-        hearingDate,
+        postUrl: app.namedRoutes.build('juror.update.deferral.post', { jurorNumber }),
+        cancelUrl: app.namedRoutes.build('juror.update.get', { jurorNumber }),
+        hearingDate: req.session.jurorCommonDetails.startDate,
       });
     }
   };
