@@ -2,7 +2,7 @@
   'use strict';
 
   const _ = require('lodash');
-  const urljoin = require('url-join');
+  const urljoin = require('url-join').default;
   const { reissueLetterDAO } = require('../../../objects/documents');
   const modUtils = require('../../../lib/mod-utils');
   const { isCourtUser } = require('../../../components/auth/user-type');
@@ -56,7 +56,6 @@
 
         app.logger.crit('Failed to fetch documents / jurors list: ', {
           auth: req.session.authentication,
-          data: { ...req.body },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 

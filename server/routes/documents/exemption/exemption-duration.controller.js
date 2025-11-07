@@ -2,7 +2,7 @@
   'use strict';
 
   const _ = require('lodash')
-    , urljoin = require('url-join')
+    , urljoin = require('url-join').default
     , validate = require('validate.js')
     , validator = require('../../../config/validation/document-exemption-duration'),
     { judgesObject } = require('../../../objects/create-trial');
@@ -45,7 +45,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch judges list: ', {
           auth: req.session.authentication,
-          data: { ...req.body },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 

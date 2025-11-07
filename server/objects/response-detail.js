@@ -4,7 +4,7 @@
   const { DAO } = require('./dataAccessObject');
   const _ = require('lodash');
   const moment = require('moment');
-  const urljoin = require('url-join');
+  const urljoin = require('url-join').default;
   const utils = require('../lib/utils');
   
   const processingStatusMapping = {

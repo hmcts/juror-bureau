@@ -2,10 +2,10 @@
   'use strict';
 
   const { DAO } = require('./dataAccessObject');
-  const urljoin = require('url-join');
   const config = require('../config/environment')();
+  const urlJoin = require('url-join').default;
 
-  module.exports.object = new DAO(urljoin('actuator/health'), {
+  module.exports.object = new DAO(urlJoin('actuator/health'), {
     get: function() {
       return {
         uri: this.resource,

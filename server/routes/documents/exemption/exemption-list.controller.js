@@ -2,7 +2,7 @@
   'use strict';
 
   const _ = require('lodash');
-  const urljoin = require('url-join');
+  const urljoin = require('url-join').default;
   const { certificateOfExemptionDAO } = require('../../../objects/documents');
   const letterTemplates = require('../pdf/letter-templates');
 
@@ -50,7 +50,6 @@
       } catch (err) {
         app.logger.crit('Failed to fetch exemption jurors list: ', {
           auth: req.session.authentication,
-          data: { ...req.body },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 

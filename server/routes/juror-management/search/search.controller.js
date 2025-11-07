@@ -1,7 +1,7 @@
 /* eslint-disable strict */
 
 const _ = require('lodash');
-const urljoin = require('url-join');
+const urljoin = require('url-join').default;
 const { searchJurorRecordDAO } = require('../../../objects');
 const { constants, paginationBuilder, makeManualError } = require('../../../lib/mod-utils');
 const { capitalizeFully } = require('../../../components/filters');

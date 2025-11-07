@@ -1,4 +1,4 @@
-const urljoin = require('url-join');
+const urljoin = require('url-join').default;
 const modUtils = require('../lib/mod-utils')
 const { DAO } = require('./dataAccessObject');
 

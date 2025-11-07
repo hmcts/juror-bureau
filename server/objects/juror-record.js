@@ -3,7 +3,7 @@
 
   const _ = require('lodash');
   const { DAO } = require('./dataAccessObject');
-  const urljoin = require('url-join');
+  const urljoin = require('url-join').default;
   const { extractDataAndHeadersFromResponse, mapCamelToSnake, replaceAllObjKeys } = require('../lib/mod-utils')
 
   module.exports.record = new DAO('moj/juror-record', {

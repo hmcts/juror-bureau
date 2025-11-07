@@ -62,7 +62,7 @@
       try {
         widgets = await buildDashboardWidgets(app)(req, res)({});
       } catch (err) {
-        app.logger.crit('Unable to fetch widget definitions', {
+        app.logger.crit('Unable to fetch court widget definitions', {
           auth: req.session.authentication,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
@@ -134,7 +134,7 @@
       try {
         widgets = await buildDashboardWidgets(app)(req, res)({});
       } catch (err) {
-        app.logger.crit('Unable to fetch widget definitions', {
+        app.logger.crit('Unable to fetch bureau widget definitions', {
           auth: req.session.authentication,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });

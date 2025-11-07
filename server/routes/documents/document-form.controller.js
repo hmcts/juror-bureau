@@ -2,7 +2,7 @@
   'use strict';
 
   const _ = require('lodash');
-  const urljoin = require('url-join');
+  const urljoin = require('url-join').default;
   const validate = require('validate.js');
   const validator = require('../../config/validation/document-form');
   const showCauseValidator = require('../../config/validation/show-cause');
