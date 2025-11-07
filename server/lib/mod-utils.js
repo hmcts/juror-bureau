@@ -1515,13 +1515,7 @@
 
   module.exports.checkRouteParam = (param, options, required = true) => (req, res, next) => {
 
-    console.log('\n\n--- checkRouteParam ---');
-    console.log(`Param: ${param}, Required: ${required}, Options: ${options}`);
-    console.log(`Req: ${req}, Res: ${res}, Next: ${next}`);
-
     if (required === true) {
-      console.log(`\n\nChecking required param: ${param}`);
-      console.log(`Value: ${req.params[param]}\n\n`);
       if ((typeof req.params[param] === 'undefined' || req.params[param] === '')) {
         return typeof next !== 'undefined' ? errors(req, res, 404) : false;
       }
@@ -1532,10 +1526,6 @@
         return typeof next !== 'undefined' ? errors(req, res, 404) : false;
       }
     }
-
-    console.log(`\n\nParam ${param} passed validation.\n\n`);
-    console.log('req.params:', req.params);
-    console.log('--- End checkRouteParam ---\n\n');
 
     return typeof next !== 'undefined' ? next() : true;
   };

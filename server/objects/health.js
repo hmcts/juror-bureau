@@ -5,7 +5,7 @@
   const config = require('../config/environment')();
   const urlJoin = require('url-join').default;
 
-  module.exports.object = new DAO(urlJoin('actuator/health', 'hello'), {
+  module.exports.object = new DAO(urlJoin('actuator/health'), {
     get: function() {
       return {
         uri: this.resource,
