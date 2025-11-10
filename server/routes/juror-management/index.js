@@ -22,7 +22,7 @@
     require('./approve-expenses/index')(app);
     require('./jurors-on-trial/index')(app);
 
-    app.get('/juror-management/attendance{/:status}',
+    app.get('/juror-management/attendance/:status',
       'juror-management.attendance.get',
       auth.verify,
       controller.getAttendance(app),

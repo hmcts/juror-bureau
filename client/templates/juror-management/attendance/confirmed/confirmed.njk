@@ -18,14 +18,16 @@
   label: "Sub navigation",
   items: [{
     text: "Attended",
-    href: url("juror-management.attendance.get") + "?date=" + selectedDate | dateFilter(null, "YYYY-MM-DD") + "&tab=attended",
+    href: url("juror-management.attendance.get", { status: "in-waiting" })
+      + "?date=" + selectedDate | dateFilter(null, "YYYY-MM-DD") + "&tab=attended",
     active: currentTab === "attended",
     attributes: {
       id: "attendedTab"
     }
   }, {
     text: "Absent",
-    href: url("juror-management.attendance.get") + "?date=" + selectedDate | dateFilter(null, "YYYY-MM-DD") + "&tab=absent",
+    href: url("juror-management.attendance.get", { status: "in-waiting" })
+      + "?date=" + selectedDate | dateFilter(null, "YYYY-MM-DD") + "&tab=absent",
     active: currentTab === "absent",
     attributes: {
       id: "absentTab"

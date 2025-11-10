@@ -37,7 +37,7 @@
           <ul class="govuk-body govuk-list govuk-list--spaced">
             <li><a href="{{ url('reports.prepare-monthly-utilisation.filter.get') }}" class="govuk-link govuk-!-font-weight-bold">Prepare monthly wastage and utilisation report</a></li>
             <li><a href="{{ url('reports.view-monthly-utilisation.filter.get') }}" class="govuk-link govuk-!-font-weight-bold">View monthly wastage and utilisation reports</a></li>
-            <li><a href="{{ url('juror-management.attendance.get') }}" class="govuk-link govuk-!-font-weight-bold">Record attendance</a></li>
+            <li><a href="{{ url('juror-management.attendance.get', { status: 'in-waiting' }) }}" class="govuk-link govuk-!-font-weight-bold">Record attendance</a></li>
             <li><a href="{{ url('trial-management.trials.get') }}" class="govuk-link govuk-!-font-weight-bold">Active trials</a></li>
             <li><a href="{{ url('reports.persons-attending-summary.filter.get') }}" class="govuk-link govuk-!-font-weight-bold">Persons attending report (Summary)</a></li>
           </ul>
