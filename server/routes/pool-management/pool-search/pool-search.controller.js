@@ -78,7 +78,7 @@
               courts: transformedCourtNames,
               advancedFields,
               query: {
-                locCode: req.body.courtNameOrLocation,
+                locCode: req.body?.courtNameOrLocation,
               },
             });
           } else if (req.session.poolSearch === 'valid') {
