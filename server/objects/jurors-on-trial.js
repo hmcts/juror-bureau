@@ -1,6 +1,6 @@
 /* eslint-disable strict */
 
-const urljoin = require('url-join').default;
+const urljoin = require('url-join');
 const { DAO } = require('./dataAccessObject');
 
 module.exports.jurorsOnTrialDAO = new DAO('moj/juror-management/jurors-on-trial', {

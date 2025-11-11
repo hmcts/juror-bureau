@@ -2,7 +2,7 @@
   'use strict';
 
   const { DAO } = require('./dataAccessObject');
-  const urljoin = require('url-join').default
+  const urljoin = require('url-join')
 
   module.exports.returnsObject = new DAO('moj/trial/return-', {
     post: function(type, trialNumber, locCode, body) {

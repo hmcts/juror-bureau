@@ -2,7 +2,7 @@
   'use strict';
 
   var responses = require('./responses')
-    , urljoin = require('url-join').default;
+    , urljoin = require('url-join');
 
   describe('Responses API Object:', function() {
 

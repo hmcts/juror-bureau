@@ -6,7 +6,7 @@ const { deleteDeferralObject } = require('./deferral-mod');
   var deferralObject = require('./deferral-mod').deferralObject
     , deferralPoolsObject = require('./deferral-mod').deferralPoolsObject
     , changeDeferralObject = require('./deferral-mod').changeDeferralObject
-    , urljoin = require('url-join').default
+    , urljoin = require('url-join')
     , rpStub = function(options) {
       return options;
     }

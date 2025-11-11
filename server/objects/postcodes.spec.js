@@ -2,7 +2,7 @@
   'use strict';
 
   var additionalSummonsObject = require('./postcodes').postCodesObject
-    , urljoin = require('url-join').default
+    , urljoin = require('url-join')
     , rpStub = function(options) {
       return options;
     }

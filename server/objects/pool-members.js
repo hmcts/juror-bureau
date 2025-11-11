@@ -1,7 +1,7 @@
 /* eslint-disable strict */
 const { DAO } = require('./dataAccessObject');
 const { constants, mapSnakeToCamel, mapCamelToSnake } = require('../lib/mod-utils');
-const urljoin = require('url-join').default;
+const urljoin = require('url-join');
 
 module.exports.poolMembersDAO = new DAO('moj/pool-create/members', {
   get: function(poolNumber) {

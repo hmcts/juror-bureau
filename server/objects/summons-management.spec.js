@@ -2,7 +2,7 @@
   'use strict';
 
   var summonsManagementObj = require('./summons-management')
-    , urljoin = require('url-join').default
+    , urljoin = require('url-join')
     , rpStub = function(options) {
       return options;
     }

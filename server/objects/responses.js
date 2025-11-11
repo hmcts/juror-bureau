@@ -3,7 +3,7 @@
 
   const { DAO } = require('./dataAccessObject');
   const moment = require('moment');
-  const urljoin = require('url-join').default;
+  const urljoin = require('url-join');
 
   const statusMapping = {
     TODO: function() {

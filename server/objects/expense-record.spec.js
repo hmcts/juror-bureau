@@ -2,7 +2,7 @@
   'use strict';
 
   var { postEditedExpensesDAO } = require('./expense-record')
-    , urljoin = require('url-join').default
+    , urljoin = require('url-join')
     , rpStub = function(options) {
       return options;
     }

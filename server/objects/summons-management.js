@@ -3,7 +3,7 @@
 
   const { DAO } = require('./dataAccessObject');
   const { basicDataTransform } = require('../lib/utils');
-  const urljoin = require('url-join').default;
+  const urljoin = require('url-join');
 
   module.exports.requestInfoObject = new DAO('moj/letter/request-information', {
     post: function(jurorNumber, data, replyMethod) {

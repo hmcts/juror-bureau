@@ -2,7 +2,7 @@
   'use strict';
 
   var _ = require('lodash')
-    , urljoin = require('url-join').default
+    , urljoin = require('url-join')
     , searchPoolObj = require('../../../objects/pool-search.js').poolSearchObject
     , fetchCourts = require('../../../objects/request-pool').fetchCourts
     , searchValidator = require('../../../config/validation/pool-search')

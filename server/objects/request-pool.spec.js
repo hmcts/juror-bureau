@@ -2,7 +2,7 @@
   'use strict';
 
   var poolRequestObject = require('./request-pool')
-    , urljoin = require('url-join').default
+    , urljoin = require('url-join')
     , rpStub = function(options) {
       return options;
     }

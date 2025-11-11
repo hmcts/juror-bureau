@@ -57,7 +57,7 @@
     "pdfmake": "^0.2.20",
     "redis": "^5.9.0",
     "referrer-policy": "^1.2.0",
-    "url-join": "^5.0.0",
+    "url-join": "4.0.1",
     "validate.js": "^0.13.1",
     "winston": "^2.4.7"
   },

@@ -2,7 +2,7 @@
   'use strict';
 
   const { getJurorsObject } = require('./dismiss-jurors');
-  const urljoin = require('url-join').default;
+  const urljoin = require('url-join');
   const rpStub = function(options) {
     return options;
   };

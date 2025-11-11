@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const urljoin = require('url-join').default;
+const urljoin = require('url-join');
 const { urlBuilder } = require('./sjo-tasks.controller');
 const { makeManualError } = require('../../lib/mod-utils');
 const { uncompleteJurorDAO } = require('../../objects');

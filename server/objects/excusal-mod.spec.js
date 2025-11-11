@@ -2,7 +2,7 @@
   'use strict';
 
   var excusalObject = require('./excusal-mod').excusalObject
-    , urljoin = require('url-join').default
+    , urljoin = require('url-join')
     , rpStub = function(options) {
       return options;
     }

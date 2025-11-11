@@ -2,7 +2,7 @@
   'use strict';
 
   var poolHistoryObject = require('./pool-history.js').poolHistoryObject
-    , urljoin = require('url-join').default
+    , urljoin = require('url-join')
     , rpStub = function(options) {
       return options;
     }

@@ -9,7 +9,7 @@
       judgesObject,
       createTrialObject,
     } = require('../objects/create-trial')
-    , urljoin = require('url-join').default
+    , urljoin = require('url-join')
     , rpStub = function(options) {
       return options;
     }

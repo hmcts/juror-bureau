@@ -2,7 +2,7 @@
   'use strict';
 
   const { DAO } = require('./dataAccessObject');
-  const urljoin = require('url-join').default;
+  const urljoin = require('url-join');
   const { basicDataTransform } = require('../lib/utils');
 
   module.exports.object = new DAO('bureau/juror/tocourt', {

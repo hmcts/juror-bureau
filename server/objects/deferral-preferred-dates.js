@@ -2,7 +2,7 @@
   'use strict';
 
   const { DAO } = require('./dataAccessObject');
-  const urljoin = require('url-join').default;
+  const urljoin = require('url-join');
 
   module.exports.preferredDatesObj = new DAO('moj/deferral-maintenance/deferral-dates', {
     get: function(jurorNumber) {

@@ -3,7 +3,7 @@
 
   const { axiosClient } = require('./axios-instance');
   const { DAO } = require('./dataAccessObject');
-  const urljoin = require('url-join').default;
+  const urljoin = require('url-join');
 
   module.exports.reissueLetterDAO = {
     getList: function(req, body) {

@@ -2,7 +2,7 @@
   'use strict';
 
   var poolMemebersObject = require('./pool-members.js').poolMemebersObject
-    , urljoin = require('url-join').default
+    , urljoin = require('url-join')
     , rpStub = function(options) {
       return options;
     }

@@ -2,7 +2,7 @@
   'use strict';
 
   const _ = require('lodash');
-  const urljoin = require('url-join').default;
+  const urljoin = require('url-join');
   const { DAO } = require('./dataAccessObject');
 
   module.exports.messageTemplateDAO = new DAO('moj/messages/view', {

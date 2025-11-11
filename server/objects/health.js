@@ -3,7 +3,7 @@
 
   const { DAO } = require('./dataAccessObject');
   const config = require('../config/environment')();
-  const urlJoin = require('url-join').default;
+  const urlJoin = require('url-join');
 
   module.exports.object = new DAO(urlJoin('actuator/health'), {
     get: function() {

@@ -2,7 +2,7 @@
   'use strict';
 
   const _ = require('lodash')
-    , urljoin = require('url-join').default
+    , urljoin = require('url-join')
     , validate = require('validate.js')
     , showCauseValidator = require('../../../config/validation/show-cause')
     , { reissueLetterDAO } = require('../../../objects/documents')

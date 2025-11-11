@@ -2,7 +2,7 @@
   'use strict';
 
   const courtLocationObject = require('./court-location'),
-    urljoin = require('url-join').default,
+    urljoin = require('url-join'),
     rpStub = function(options) {
       return options;
     },

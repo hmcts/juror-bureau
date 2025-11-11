@@ -1,7 +1,7 @@
 ;(function() {
   'use strict';
 
-  const urljoin = require('url-join').default;
+  const urljoin = require('url-join');
   const modUtils = require('../lib/mod-utils');
   const { DAO } = require('./dataAccessObject');
 

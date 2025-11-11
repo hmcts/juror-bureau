@@ -2,7 +2,7 @@
   'use strict';
 
   const _ = require('lodash')
-    , urljoin = require('url-join').default
+    , urljoin = require('url-join')
     , validate = require('validate.js')
     , validator = require('../../../config/validation/document-exemption-duration'),
     { judgesObject } = require('../../../objects/create-trial');

@@ -2,7 +2,7 @@
   'use strict';
 
   const _ = require('lodash');
-  const urljoin = require('url-join').default;
+  const urljoin = require('url-join');
   const { reissueLetterDAO } = require('../../../objects/documents');
   const modUtils = require('../../../lib/mod-utils');
   const { isCourtUser } = require('../../../components/auth/user-type');

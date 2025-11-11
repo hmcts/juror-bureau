@@ -2,7 +2,7 @@
   'use strict';
 
   const { manualPoliceCheck } = require('./police-check')
-    , urljoin = require('url-join').default
+    , urljoin = require('url-join')
     , rpStub = function(options) {
       return options;
     }

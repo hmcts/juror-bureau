@@ -2,7 +2,7 @@
   'use strict';
 
   var bureauDeferralsObject = require('./bureau-deferrals').bureauDeferralsObject
-    , urljoin = require('url-join').default
+    , urljoin = require('url-join')
     , rpStub = function(options) {
       return options;
     }

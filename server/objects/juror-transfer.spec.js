@@ -2,7 +2,7 @@
   'use strict';
 
   var jurorTransfer = require('./juror-transfer').jurorTransfer
-    , urljoin = require('url-join').default
+    , urljoin = require('url-join')
     , rpStub = function(options) {
       return options;
     }
