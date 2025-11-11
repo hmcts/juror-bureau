@@ -736,7 +736,7 @@
         if (req.params.type === 'paper'){
           return res.redirect(app.namedRoutes.build('response.detail.responded.get', {id: req.params.id, type:'paper'}));
         }
-        return res.redirect(app.namedRoutes.build('response.detail.responded.get', { id: req.params.id, type: 'digital' }));
+        return res.redirect(app.namedRoutes.build('response.detail.responded.get', {id: req.params.id}));
       }
 
       if (req.params['type'] === 'paper') {
@@ -818,8 +818,11 @@
     return function(req, res) {
       const routeParameters = {
         id: req.params['id'],
-        type: req.params['type'] === 'paper' ? 'paper' : 'digital',
       };
+
+      if (req.session.hasModAccess && req.params['type'] === 'paper') {
+        routeParameters.type = 'paper';
+      }
 
       // Validate input
       const validatorResult = validate(req.body, require('../../../config/validation/awaiting-information.js')(req));

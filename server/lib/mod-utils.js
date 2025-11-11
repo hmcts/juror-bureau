@@ -1513,21 +1513,4 @@
     return months;
   };
 
-  module.exports.checkRouteParam = (param, options, required = true) => (req, res, next) => {
-
-    if (required === true) {
-      if ((typeof req.params[param] === 'undefined' || req.params[param] === '')) {
-        return typeof next !== 'undefined' ? errors(req, res, 404) : false;
-      }
-    } 
-
-    if (typeof req.params[param] !== 'undefined' && req.params[param] !== '') {
-      if (options && options.length > 0 && !options.includes(req.params[param])) {
-        return typeof next !== 'undefined' ? errors(req, res, 404) : false;
-      }
-    }
-
-    return typeof next !== 'undefined' ? next() : true;
-  };
-
 })();

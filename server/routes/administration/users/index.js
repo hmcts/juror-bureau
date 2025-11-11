@@ -4,7 +4,6 @@
   const auth = require('../../../components/auth');
   const controller = require('./users.controller');
   const { isSystemAdministrator, isManager } = require('../../../components/auth/user-type');
-  const { checkRouteParam } = require('../../../lib/mod-utils');
 
   module.exports = function(app) {
     require('./create-users')(app);
@@ -18,10 +17,9 @@
       controller.getUsers(app),
     );
 
-    app.get('/administration/:location/users',
+    app.get('/administration/:location(court|bureau)/users',
       'administration.court-bureau.users.get',
       auth.verify,
-      checkRouteParam('location', ['court', 'bureau']),
       isManager,
       controller.getCourtBureauUsers(app),
     );

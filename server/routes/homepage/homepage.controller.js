@@ -302,7 +302,7 @@
     return function(req, res) {
       var queryParams = _.clone(req.query);
 
-      if (req.body.courtNameOrLocation === '' || typeof req.body.courtNameOrLocation === 'undefined') {
+      if (req.body?.courtNameOrLocation === '' || typeof req.body?.courtNameOrLocation === 'undefined') {
         // this piece will clear the filter but keep all other search params
         delete queryParams['location_code'];
         return res.redirect(urlBuilder(app, queryParams));
