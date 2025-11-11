@@ -45,14 +45,14 @@
 
         {% set buttonMenuItems = buttonMenuItems.concat({
           text: "Mark as awaiting information",
-          href: url('response.detail.awaiting.information.get', { id: response.jurorNumber, type: 'paper' if method === 'paper' else 'digital' }),
+          href: url('response.detail.awaiting.information.get', { id: response.jurorNumber }) + ('/paper' if method === 'paper' else '/digital'),
           classes: "govuk-button--secondary"
         }) %}
         
         {% if isBureauUser %}
           {% set buttonMenuItems = buttonMenuItems.concat({
             text: "Request juror info by post",
-            href: url('request-info.by-post.get', { id: response.jurorNumber, type: 'paper' if method === 'paper' else 'digital' }),
+            href: url('request-info.by-post.get', { id: response.jurorNumber, type: 'paper' if method === 'paper' else 'digital'}),
             classes: "govuk-button--secondary"
           }) %}
           {% if assignedStaffMember === authentication.login or isManager %}
