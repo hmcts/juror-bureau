@@ -70,13 +70,13 @@
         return errors(req, res, 200);
       });
 
-    app.route('/health/*splat')
+    app.route('/health/*')
       .get(function(req, res) {
         return errors(req, res, 200);
       });
 
     // All undefined asset or api routes should return a 404
-    app.route(['/api/*splat', '/auth/*splat', '/components/*splat', '/app/*splat', '/bower_components/*splat', '/assets/*splat'])
+    app.route('/:url(api|auth|components|app|bower_components|assets)/*')
       .get(function(req, res) {
         return errors(req, res, 404);
       });
@@ -84,7 +84,7 @@
   
 
     // Reaching this point implys to URL matches have been made, we can render standard 404.
-    app.route('/*splat')
+    app.route('/*')
       .get(function(req, res) {
         return errors(req, res, 404);
       });
