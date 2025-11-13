@@ -30,7 +30,9 @@
           unconfirmedJurors,
           backLinkUrl: {
             built: true,
-            url: app.namedRoutes.build('juror-management.attendance.get') + `${date ? `?date=${date}` : ''}`,
+            url: app.namedRoutes.build('juror-management.attendance.get', {
+              status: 'in-waiting'
+            }) + `${date ? `?date=${date}` : ''}`,
           },
           bannerMessage
         });

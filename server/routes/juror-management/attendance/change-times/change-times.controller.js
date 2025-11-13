@@ -64,7 +64,9 @@
           processUrl = app.namedRoutes.build('juror-management.attendance.change-times.post', {
             jurorNumber: juror.jurorNumber,
           });
-          cancelUrl = app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate;
+          cancelUrl = app.namedRoutes.build('juror-management.attendance.get', {
+            status: 'in-waiting'
+          }) + '?date=' + attendanceDate;
           deleteUrl = app.namedRoutes.build('juror-management.attendance.delete-attendance.get', {
             jurorNumber: juror.jurorNumber,
           });
@@ -147,7 +149,9 @@
         invalidUrl = app.namedRoutes.build('juror-management.attendance.change-times.get', {
           jurorNumber,
         }) + '?date=' + attendanceDate;
-        redirectUrl = app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate;
+        redirectUrl = app.namedRoutes.build('juror-management.attendance.get', {
+          status: 'in-waiting'
+        }) + '?date=' + attendanceDate;
       }
 
       let validatorResult = validate({

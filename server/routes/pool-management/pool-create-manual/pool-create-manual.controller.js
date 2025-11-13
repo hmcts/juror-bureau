@@ -28,11 +28,17 @@
       delete req.session.formFields;
 
       if (req.session.courtChange) {
-        req.body.courtNameOrLocation = req.session.courtChange;
+        req.body = {
+          courtNameOrLocation: req.session.courtChange,
+        };
       } else if (req.session.poolCreateFormFields.poolDetails) {
-        req.body.courtNameOrLocation = req.session.poolCreateFormFields.poolDetails.courtLocCode;
+        req.body = {
+          courtNameOrLocation: req.session.poolCreateFormFields.poolDetails.courtLocCode,
+        };
       } else {
-        req.body.courtNameOrLocation = req.session.authentication.locCode;
+        req.body = {
+          courtNameOrLocation: req.session.authentication.locCode,
+        };
       }
 
       if (createJurorMode) {

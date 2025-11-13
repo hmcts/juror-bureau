@@ -11,7 +11,7 @@
 
 {% block beforeContent %}
   {{ attendanceSubNav({
-    inWaitingUrl: url("juror-management.attendance.get"),
+    inWaitingUrl: url("juror-management.attendance.get", { status: "in-waiting" }),
     onTrialUrl: url("juror-management.jurors-on-trial.get"),
     canAccessJurorsOnTrial: true,
     currentView: "on-trial"

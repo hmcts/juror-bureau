@@ -47,7 +47,9 @@
 
       if (!canRecordAttendance && !moment(selectedDate).isBefore(attedancesLockedDate)) {
         const redirectDate = attedancesLockedDate.format('yyyy-MM-DD');
-        return res.redirect(app.namedRoutes.build('juror-management.attendance.get') + `?date=${redirectDate}`)
+        return res.redirect(app.namedRoutes.build('juror-management.attendance.get', {
+          status: 'in-waiting'
+        }) + `?date=${redirectDate}`)
       }
 
       const selectedDateString = dateFilter(selectedDate, null, 'YYYY-MM-DD');
@@ -85,8 +87,9 @@
 
         const attendanceConfirmed = moment(selectedDate).isBefore(attedancesLockedDate);
 
-        req.session.preReportRoute = app.namedRoutes.build('juror-management.attendance.get')
-          + `?date=${selectedDateString}`;
+        req.session.preReportRoute = app.namedRoutes.build('juror-management.attendance.get', {
+          status: 'in-waiting'
+        }) + `?date=${selectedDateString}`;
 
         let poolAttendaceAuditNumbers = [];
         try {
@@ -121,7 +124,7 @@
 
         return res.render('juror-management/attendance.njk', {
           nav: 'attendance',
-          status: status || 'in-waiting',
+          status: status,
           attendanceStatus: attendanceConfirmed ? 'Confirmed' : 'Unconfirmed',
           confirmedTab,
           selectedDate: dateFilter(selectedDate, null, dateFormat),

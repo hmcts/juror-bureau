@@ -121,7 +121,7 @@
       'response.contact-logs.add.get',
       auth.verify,
       getAddLogs(app, true));
-    app.post('/summons-replies/response/:id/:type(paper|digital)/contact-logs/add',
+    app.post('/summons-replies/response/:id/:type/contact-logs/add',
       'response.contact-logs.add.post',
       auth.verify,
       postAddLogs(app, true));

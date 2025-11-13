@@ -173,7 +173,10 @@
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
 
-        return res.redirect(app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate);
+        return res.redirect(
+          app.namedRoutes.build('juror-management.attendance.get', { status: 'in-waiting' })
+          + '?date=' + attendanceDate
+        );
       };
 
       req.body.time = req.body.checkOutTimeHour.concat(':', req.body.checkOutTimeMinute)
@@ -184,7 +187,10 @@
       if (latestStartTime >= checkOutTime) {
         req.session.formFields = req.body;
         req.session.errors = makeManualError('checkOutTimeHour', 'Check out time cannot be earlier than check in time')
-        return res.redirect(app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate);
+        return res.redirect(
+          app.namedRoutes.build('juror-management.attendance.get', { status: 'in-waiting' })
+          + '?date=' + attendanceDate
+        );
       }
 
       let panelledJurors = [];
@@ -224,7 +230,10 @@
           return res.redirect(app.namedRoutes.build('juror-management.check-out-panelled.get'));
         };
 
-        return res.redirect(app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate);
+        return res.redirect(
+          app.namedRoutes.build('juror-management.attendance.get', { status: 'in-waiting' })
+          + '?date=' + attendanceDate
+        );
       } catch (err) {
         app.logger.crit('Failed when trying to check all jurors out', {
           auth: req.session.authentication,
@@ -252,7 +261,8 @@
         panelledJurorNo: JSON.stringify(panelledJurorNo),
         time,
         processUrl: app.namedRoutes.build('juror-management.check-out-panelled.post'),
-        cancelUrl: app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate,
+        cancelUrl: app.namedRoutes.build('juror-management.attendance.get', { status: 'in-waiting' })
+          + '?date=' + attendanceDate,
       });
     };
   };
@@ -271,7 +281,10 @@
           payload,
         );
 
-        return res.redirect(app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate);
+        return res.redirect(
+          app.namedRoutes.build('juror-management.attendance.get', { status: 'in-waiting' })
+          + '?date=' + attendanceDate
+        );
       } catch (err) {
         app.logger.crit('Failed when trying to check all panelled jurors out', {
           auth: req.session.authentication,
@@ -292,7 +305,8 @@
       const processUrl = app.namedRoutes.build('juror-management.attendance.delete-attendance.post', {
         jurorNumber,
       });
-      const cancelUrl = app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate;
+      const cancelUrl = app.namedRoutes.build('juror-management.attendance.get', { status: 'in-waiting' })
+        + '?date=' + attendanceDate;
 
       // TODO: revise this way of getting the juror
       const selectedJuror = req.session.dailyAttendanceList.find(a => a.jurorNumber === jurorNumber);
@@ -320,7 +334,10 @@
 
         await modifyJurorAttendance.patch(req, mapCamelToSnake(absencePayload));
 
-        res.redirect(app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate);
+        res.redirect(
+          app.namedRoutes.build('juror-management.attendance.get', { status: 'in-waiting' })
+          + '?date=' + attendanceDate
+        );
       } catch (err) {
         app.logger.crit('Unable to delete the jurors attendance', {
           auth: req.session.authentication,

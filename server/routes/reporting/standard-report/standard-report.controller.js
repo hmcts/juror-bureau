@@ -429,9 +429,10 @@
             });
             return ({
               html: `${html}`,
+
               attributes: {
                 'data-sort-value': output.replace(/(<([^>]+)>)/g, ''),
-              },
+              }
             });
           }
 

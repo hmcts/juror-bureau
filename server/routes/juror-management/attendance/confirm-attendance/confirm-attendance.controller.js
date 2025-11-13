@@ -15,7 +15,9 @@
         , attendanceDate = req.session.attendanceListDate;
 
       processUrl = app.namedRoutes.build('juror-management.attendance.confirm-attendance.post');
-      cancelUrl = app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate;
+      cancelUrl = app.namedRoutes.build('juror-management.attendance.get', {
+        status: 'in-waiting'
+      }) + '?date=' + attendanceDate;
 
       try {
         const body = {
@@ -93,7 +95,9 @@
       try {
         await updateJurorAttendanceDAO.patch(req, payload);
 
-        return res.redirect(app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate);
+        return res.redirect(app.namedRoutes.build('juror-management.attendance.get', {
+          status: 'in-waiting'
+        }) + '?date=' + attendanceDate);
       } catch (err) {
         app.logger.crit('Failed to confirm the attendance for the jurors', {
           auth: req.session.authentication,
@@ -119,7 +123,9 @@
       delete req.session.formFields;
 
       processUrl = app.namedRoutes.build('juror-management.attendance.confirm-attendance.not-checked-out.post');
-      cancelUrl = app.namedRoutes.build('juror-management.attendance.get') + '?date=' + attendanceDate;
+      cancelUrl = app.namedRoutes.build('juror-management.attendance.get', {
+        status: 'in-waiting'
+      }) + '?date=' + attendanceDate;
 
       const checkOutTime = {
         hour: typeof tmpBody !== 'undefined' ? tmpBody.checkOutTimeHour : '',

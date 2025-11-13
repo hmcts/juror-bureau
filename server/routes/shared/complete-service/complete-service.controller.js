@@ -41,7 +41,7 @@
         app.logger.info('Fetched the juror\'s details for completing service:', {
           auth: req.session.authentication,
           data: {
-            selectedJurors: req.body.selectedJurors,
+            selectedJurors: req.params['jurorNumber'],
           },
         });
         
@@ -49,7 +49,7 @@
         app.logger.crit('Failed to fetch the juror\'s details for completing service: ', {
           auth: req.session.authentication,
           data: {
-            selectedJurors: req.body.selectedJurors,
+            selectedJurors: req.params['jurorNumber'],
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
