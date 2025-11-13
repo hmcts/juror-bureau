@@ -797,7 +797,7 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
 
       const noChecked = req.session.messaging.checkedJurors ? req.session.messaging.checkedJurors.length : 0;
 
-      return res.status(200).send(noChecked); ;
+      return res.status(200).send(noChecked.toString());
     };
   };
 
