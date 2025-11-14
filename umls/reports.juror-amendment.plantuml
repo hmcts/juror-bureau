@@ -1,0 +1,47 @@
+@startuml reports.juror-amendment
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant "Juror amendment form page" as JurorAmendmentFormPage <</reporting/juror-amendment>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant "Juror amendment controller" as JurorAmendmentController <<juror-amendment.controller.js>> #LightYellow
+participant "Juror amendment jurors list" as JurorAmendmentJurorsList <<jurors-list>> #LightYellow
+participant "Standard report controller" as StandardReportController <<standard-report.controller.js>> #LightYellow
+
+''' TEMPLATES
+participant "Standard report" as StandardReport <<reporting/standard-reports/standard-report.njk>> #lavender
+
+''' VALIDATORS
+participant "'Juror amendment' validator" as Validator
+
+''' SELECT PAGE
+Actor -> JurorAmendmentFormPage : fill form and submit
+JurorAmendmentFormPage -> JurorAmendmentController : call page controller
+JurorAmendmentController -> Validator : validate form data
+
+alt Invalid form data
+
+  JurorAmendmentController <- Validator : invalid form data
+  JurorAmendmentController -> JurorAmendmentFormPage : request and build template
+  JurorAmendmentController <- JurorAmendmentFormPage : return HTML
+  Actor <- JurorAmendmentController : return and render HTML with error messages
+
+end
+|||
+
+JurorAmendmentController <- Validator : valid form data
+
+JurorAmendmentController -> JurorAmendmentJurorsList : request and build template
+JurorAmendmentController <- JurorAmendmentJurorsList : return HTML
+JurorAmendmentJurorsList -> JurorAmendmentController : select juror from the list
+
+JurorAmendmentController -> StandardReportController : redirect to standard report controller
+
+StandardReportController -> StandardReport : request and build template
+StandardReportController <- StandardReport : return HTML
+Actor <- StandardReportController : report displayed by standard renderer

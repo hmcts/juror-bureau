@@ -1,0 +1,93 @@
+@startuml create-court-pool
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant PoolManagement as HomePage <</pool-management>>
+participant CreatePool <</pool-management/pool-create-select>>
+participant CreateCourtPool as FormPage <</pool-management/pool-create-court-only>>
+participant ConfirmationPage <</pool-management/pool-create-court-only/check-details>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant CreateManualCourtController as Controller <<pool-create-manual.controller.js>> #LightYellow
+participant CreatePoolDAO as SubmitDAO <<createCoronerPool.post()>> #LightYellow
+
+''' TEMPLATES
+participant CreatePoolPage <<pool-management/pool-create-select>> #lavender
+participant CreateCourtOnlyPoolPage as FormTemplate <<pool-management/pool-create-manual/index.njk>> #lavender
+participant CheckDetailsPage as ConfirmationTemplate <<pool-management/pool-create-manual/check-details.njk>> #lavender
+participant ErrorTemplate as Error <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant PoolCreateCourtOnly as Validator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+
+Actor -> HomePage : Click 'Create Pool'
+
+HomePage -> Controller : call page controller
+
+''' Pool type Interstitial 
+Controller -> CreatePoolPage : request and build template
+Controller <- CreatePoolPage : return HTML
+CreatePool <- Controller : return HTML
+Actor <- CreatePool : render HTML
+Actor -> CreatePool : Select 'Create pool for court use only'
+CreatePool -> Controller : call page controller
+''' End interstitial
+
+
+''' Form
+Controller -> FormTemplate : request and build template
+Controller <- FormTemplate : return HTML
+FormPage <- Controller : return HTML
+Actor <- FormPage : render HTML
+
+Actor -> FormPage : submit form details
+FormPage -> Controller : POST form
+Controller -> Validator : validate form submission
+
+alt Form missing selections
+  Controller <-- Validator : invalid form
+  Controller -> FormTemplate : request and build template
+  Controller <- FormTemplate : return HTML
+  FormPage <- Controller : return error HTML
+  Actor <- FormPage : render error message
+end
+|||
+
+Controller <- Validator : valid form submission
+
+
+''' Confirmation
+Controller -> ConfirmationTemplate : request and build template
+Controller <- ConfirmationTemplate : return HTML
+ConfirmationPage <- Controller : return HTML
+Actor <- ConfirmationPage : render HTML
+
+
+Actor -> ConfirmationPage : submit form details
+ConfirmationPage -> Controller : POST form
+Controller -> SubmitDAO : build request object
+SubmitDAO -> BackendController : send backend request
+
+alt API failure
+  SubmitDAO <-- BackendController : error response
+  Controller <-- SubmitDAO : reject requestObject
+  Controller -> Error : request and build template
+  Controller <- Error : return HTML
+  Error <- Controller : return HTML
+  Actor <- Error : render error page
+end
+|||
+
+SubmitDAO <- BackendController : ok response
+Controller <- SubmitDAO : resolve request
+HomePage <- Controller : redirect to trial details
+
+Actor <- HomePage : render HTML

@@ -1,0 +1,41 @@
+@startuml reports.deferred-list
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant "Deferred list form page" as DeferredListFormPage <</reporting/deferred-list>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant "Deferred list controller" as DeferredListController <<deferred-list.controller.js>> #LightYellow
+participant "Standard report controller" as StandardReportController <<standard-report.controller.js>> #LightYellow
+
+''' TEMPLATES
+participant "Standard report" as StandardReport <<reporting/standard-reports/standard-report.njk>> #lavender
+
+''' VALIDATORS
+participant "'Deferred list' validator" as Validator
+
+''' SELECT PAGE
+Actor -> DeferredListFormPage : fill form and submit
+DeferredListFormPage -> DeferredListController : call page controller
+DeferredListController -> Validator : validate form data
+
+alt Invalid form data
+
+  DeferredListController <- Validator : invalid form data
+  DeferredListController -> DeferredListFormPage : request and build template
+  DeferredListController <- DeferredListFormPage : return HTML
+  Actor <- DeferredListController : return and render HTML with error messages
+
+end
+|||
+
+DeferredListController <- Validator : valid form data
+DeferredListController -> StandardReportController : redirect to standard report controller
+
+StandardReportController -> StandardReport : request and build template
+StandardReportController <- StandardReport : return HTML
+Actor <- StandardReportController : report displayed by standard renderer
