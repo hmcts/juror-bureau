@@ -22,6 +22,8 @@ async function reportExport(app, req, res, reportKey, data) {
     return attendanceDataExport(req, res, data);
   case 'expense-payments':
     return standardReportExport(req, res, data, 'expense-payments', 'Expense Payments');
+  case 'outgoing-sms-messages':
+    return standardReportExport(req, res, data, 'outgoing_sms_messages', 'Outgoing SMS Messages');
   default:
     standardReportExport(req, res, data);
     return;
