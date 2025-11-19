@@ -13,7 +13,7 @@
 {% block page_title %}{{ serviceName }} - Reports - {{ title }} - search pool{% endblock %}
 {% block page_identifier %}Reports - {{ title }} - search pool{% endblock %}
 
-{% set currentApp = "Reports" %}
+{% set currentApp = "System administration" if isSystemAdministrator and isSuperUser else "Reports" %}
 
 {% block content %}
   {% include "includes/errors.njk" %}

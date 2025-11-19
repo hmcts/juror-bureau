@@ -8,7 +8,7 @@
 {% block page_title %}Reports - Postponed list{% endblock %}
 {% block page_identifier %}Reports - Postponed list{% endblock %}
 
-{% set currentApp = "Reports" %}
+{% set currentApp = "System administration" if isSystemAdministrator and isSuperUser else "Reports" %}
 
 {% block content %}
   {% include "includes/errors.njk" %}

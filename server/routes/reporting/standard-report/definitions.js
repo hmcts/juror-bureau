@@ -1,4 +1,5 @@
 const { date } = require('../../../config/validation/report-search-by');
+const { outgoingSmsMessagesStore } = require('../outgoing-sms-messages/stores');
 
 (() => {
   'use strict';
@@ -27,7 +28,7 @@ const { date } = require('../../../config/validation/report-search-by');
   // type IReportKey = {[key:string]: {
   //   title: string,
   //   apiKey: string,
-  //   search?: 'poolNumber' | 'dateRange', // etc only poolNumber is currently implemented
+  //   search?: 'poolNumber' | 'dateRange',
   //   searchLabelMappers: {
   //     dateFrom: string, // custom label for date from input 
   //     dateTo: string, // custom label for date to input 
@@ -1804,7 +1805,31 @@ const { date } = require('../../../config/validation/report-search-by');
           ),
         },
         defaultSortColumn: 'date',
-      }
+      },
+      'outgoing-sms-messages': {
+        title: 'Outgoing SMS messages report',
+        apiKey: 'OutgoingSmsMessagesReport',
+        search: 'courts',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+          'totalSmsSent'
+        ],
+        queryParams: {
+          fromDate: req?.query?.fromDate || '',
+          toDate: req?.query?.toDate || '',
+        },
+        filterBackLinkUrl: app.namedRoutes.build('reports.outgoing-sms-messages.filter.dates.get'),
+        defaultSortColumn: 'courtLocationName',
+        printLandscape: true,
+        fontSize: 8,
+        bespokeReport: {
+          dao: () => outgoingSmsMessagesStore
+        },
+        exportLabel: 'Export data',
+      },
     };
   };
 })();

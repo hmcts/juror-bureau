@@ -72,7 +72,7 @@
       <div class="moj-header__container">
 
         <div class="moj-header__logo">
-          <a class="moj-header__link" href="{{ url('homepage.get') if not isSystemAdministrator else '' }}">
+          <a class="moj-header__link" href="{{ url('homepage.get') if not isSystemAdministrator else url('administration.get') }}">
             <span class="moj-header__link--organisation-name">HMCTS</span>
             <span class="moj-header__link--service-name">Juror</span>
           </a>
