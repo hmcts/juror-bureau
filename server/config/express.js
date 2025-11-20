@@ -157,6 +157,17 @@ module.exports = async (app) => {
 
       resolveBackLink(req);
       res.locals.dynamicBackLink = req.session.historyStack[req.session.historyStack.length - 2];
+
+      // Used to display page history for debugging only
+      res.locals.dispHistoryStack = '';
+      if (req.session.historyStack) {
+        res.locals.dispHistoryStack = '<ul>';
+        req.session.historyStack.forEach((element) => {
+          res.locals.dispHistoryStack += `<li>${element}</li>`;
+        });
+        res.locals.dispHistoryStack += '</ul>';
+      }
+
     }
 
     res.locals.currentUrl = req.url;
