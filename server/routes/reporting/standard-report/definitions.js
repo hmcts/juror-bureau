@@ -1,4 +1,5 @@
 const { date } = require('../../../config/validation/report-search-by');
+const { expensePaymentDataStore } = require('../expense-payments/stores');
 
 (() => {
   'use strict';
@@ -1803,6 +1804,24 @@ const { date } = require('../../../config/validation/report-search-by');
           ),
         },
         defaultSortColumn: 'date',
+      },
+      'expense-payments': {
+        title: 'Expense payments',
+        apiKey: 'ExpensePaymentByTypeReport',
+        search: 'courts',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+        ],
+        queryParams: {
+          fromDate: req?.query?.fromDate || '',
+          toDate: req?.query?.toDate || '',
+        },
+        filterBackLinkUrl: app.namedRoutes.build('reports.expense-payments.filter.dates.get'),
+        printLandscape: true,
+        defaultSortColumn: 'courtLocationNameAndCodeEp',
       }
     };
   };
