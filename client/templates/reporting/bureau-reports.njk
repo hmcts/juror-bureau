@@ -44,6 +44,13 @@
         </ul>
       {% endif %}
 
+      {% if isSuperUser %}
+        <h2 class="govuk-heading-m">Service owner reports</h2>
+        <ul class="govuk-list">
+          <li><a class="govuk-link" href="{{ url('reports.expense-payments.filter.dates.get') }}">Expense payment by type</a></li>
+        </ul>
+      {% endif %}
+
     </div>
   </div>
 {% endblock %}
