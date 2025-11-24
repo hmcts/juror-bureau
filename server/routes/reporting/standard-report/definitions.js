@@ -1808,7 +1808,7 @@ const { outgoingSmsMessagesStore } = require('../outgoing-sms-messages/stores');
       },
       'outgoing-sms-messages': {
         title: 'Outgoing SMS messages report',
-        apiKey: 'OutgoingSmsMessagesReport',
+        apiKey: 'OutgoingSMSMessagesReport',
         search: 'courts',
         headings: [
           'dateFrom',
@@ -1825,9 +1825,6 @@ const { outgoingSmsMessagesStore } = require('../outgoing-sms-messages/stores');
         defaultSortColumn: 'courtLocationName',
         printLandscape: true,
         fontSize: 8,
-        bespokeReport: {
-          dao: () => outgoingSmsMessagesStore
-        },
         exportLabel: 'Export data',
       },
     };
