@@ -1823,7 +1823,7 @@
       },
       'outgoing-sms-messages': {
         title: 'Outgoing SMS messages report',
-        apiKey: 'OutgoingSmsMessagesReport',
+        apiKey: 'OutgoingSMSMessagesReport',
         search: 'courts',
         headings: [
           'dateFrom',
@@ -1840,9 +1840,6 @@
         defaultSortColumn: 'courtLocationName',
         printLandscape: true,
         fontSize: 8,
-        bespokeReport: {
-          dao: () => outgoingSmsMessagesStore
-        },
         exportLabel: 'Export data',
       },
     };
