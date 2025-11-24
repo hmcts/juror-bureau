@@ -1822,6 +1822,7 @@ const { expensePaymentDataStore } = require('../expense-payments/stores');
         filterBackLinkUrl: app.namedRoutes.build('reports.expense-payments.filter.dates.get'),
         printLandscape: true,
         defaultSortColumn: 'courtLocationNameAndCodeEp',
+        exportLabel: 'Export',
       }
     };
   };
