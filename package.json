@@ -33,7 +33,7 @@
     "applicationinsights": "2.9.8",
     "axios": "^1.12.2",
     "basic-auth": "^2.0.1",
-    "body-parser": "^1.20.3",
+    "body-parser": "^2.0.0",
     "chart.js": "^2.9.4",
     "compression": "1.8.1",
     "config": "^4.1.1",
