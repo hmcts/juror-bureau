@@ -10,7 +10,8 @@ const whitelistedUrls = [
   '/search',
   '/inbox',
   '/pending',
-  '/completed'
+  '/completed',
+  '/date-picker/bank-holidays',
 ];
 
 const bypassUrls = [
