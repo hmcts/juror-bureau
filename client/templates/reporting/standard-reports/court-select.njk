@@ -13,7 +13,7 @@
 {% block page_title %}{{ serviceName }} - Reports - {{ title }} - select court{% endblock %}
 {% block page_identifier %}Reports - {{ title }} - select court{% endblock %}
 
-{% set currentApp = "Reports" %}
+{% set currentApp = "System administration" if isSystemAdministrator and isSuperUser else "Reports" %}
 
 {% block beforeContent %}
   {% if backLinkUrl.url %}
