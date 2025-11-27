@@ -200,14 +200,13 @@
       if (req.body.courtNameOrLocation === '' || typeof req.body.courtNameOrLocation === 'undefined') {
         req.session.errors = {
           courtNameOrLocation: [{
-            ...isCourtUser(req)
-              ? {
+            ...(isCourtUser(req) ? {
                 summary: 'Select a court to reassign to',
                 details: 'Select a court to reassign to',
               } : {
                 summary: 'Enter a court name or location code',
                 details: 'Enter a court name or location code',
-              },
+              }),
           }],
         };
 

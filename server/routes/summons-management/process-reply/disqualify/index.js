@@ -1,8 +1,8 @@
 (function() {
   'use strict';
 
-  var auth = require('../../../../components/auth')
-    , controller = require('./process-reply-disqualify.controller');
+  const auth = require('../../../../components/auth')
+  const controller = require('./process-reply-disqualify.controller');
 
   module.exports = function(app) {
     app.get('/summons-replies/response/:id/:type(paper|digital)/disqualify',

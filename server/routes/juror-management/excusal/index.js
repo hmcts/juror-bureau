@@ -1,8 +1,8 @@
 (function() {
   'use strict';
 
-  const auth = require('../../../components/auth')
-    , controller = require('./excusal.controller');
+  const auth = require('../../../components/auth');
+  const controller = require('./excusal.controller');
 
   module.exports = function(app) {
     app.get('/juror-management/juror/:jurorNumber/update/excusal',

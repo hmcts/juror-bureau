@@ -44,7 +44,7 @@
     },
     {
       text: "Record attendance",
-      href: url("juror-management.attendance.get"),
+      href: url("juror-management.attendance.get", { status: "in-waiting" }),
       active: nav === "attendance",
       attributes: {
         id: "attendanceAnchor"

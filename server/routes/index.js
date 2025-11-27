@@ -33,7 +33,7 @@
     // because of the order that routes are registered we need to have a check before any new routes are visited
     // when a user tries to access any of the new features, this "middleware" will run and check if they have access
     // if NO they will be redirected to 404... if YES express will just run next()
-    app.route('/*')
+    app.route('/*splat')
       .get(launchDarklyHandler(app))
       .post(launchDarklyHandler(app));
 
@@ -81,6 +81,7 @@
         return errors(req, res, 404);
       });
 
+  
 
     // Reaching this point implys to URL matches have been made, we can render standard 404.
     app.route('/*')

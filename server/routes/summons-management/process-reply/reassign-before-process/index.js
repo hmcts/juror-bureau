@@ -1,8 +1,8 @@
 (function() {
   'use strict';
 
-  var auth = require('../../../../components/auth')
-    , controller = require('./reassign-before-process.controller');
+  const auth = require('../../../../components/auth');
+  const controller = require('./reassign-before-process.controller');
 
   module.exports = function(app) {
     app.get('/summons-replies/response/:id/:type(paper|digital)/process/:action',
@@ -27,7 +27,7 @@
       controller.postReassignBeforeProcessPools(app)
     );
 
-    app.get('/summons-replies/response/:id/:type(paper|digital)/process/:action/reassign/select-court',
+    app.get('/summons-replies/response/:id/:type/process/:action/reassign/select-court',
       'reassign-before-process.select-court.get',
       auth.verify,
       controller.getReassignBeforeProcessChangeCourt(app)

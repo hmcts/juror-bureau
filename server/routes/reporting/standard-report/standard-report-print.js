@@ -208,7 +208,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
 
     // Dynamically set column widths: fixed width for "Name" columns, '*' for others
     let defaultColumnWidths = tableHeaders.map((header) =>
-      header.text.includes('Name') ? `${(100 / tableHeaders.length)}%` : '*'
+      (header.text.includes('Name') || header.text === 'Contact Details') ? `${(100 / tableHeaders.length)}%` : '*'
     );
 
     const tables = [{

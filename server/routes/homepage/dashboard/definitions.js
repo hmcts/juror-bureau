@@ -135,7 +135,7 @@
                     text: 'Unconfirmed attendance report',
                   },
                   {
-                    href: app.namedRoutes.build('juror-management.attendance.get'),
+                    href: app.namedRoutes.build('juror-management.attendance.get', { status: 'in-waiting' }),
                     text: 'Record attendance',
                   }
                 ]

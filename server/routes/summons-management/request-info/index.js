@@ -1,9 +1,9 @@
 (function() {
   'use strict';
 
-  var auth = require('../../../components/auth')
-    , controller = require('./request-info.controller')
-    , isBureauUser = require('../../../components/auth/user-type').isBureauUser;
+  const auth = require('../../../components/auth')
+  const controller = require('./request-info.controller')
+  const isBureauUser = require('../../../components/auth/user-type').isBureauUser;
 
   module.exports = function(app) {
     app.get('/summons-replies/response/:id/request-info/:type(paper|digital)',

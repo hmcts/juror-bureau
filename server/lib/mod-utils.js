@@ -86,23 +86,21 @@
         classes: includeRadioButtons ? 'govuk-!-padding-left-6': '',
       },
       {
-        ...(status === 'created') ?
-          (tab === 'court') ?
-            {
-              id: 'poolCapacity',
-              value: 'Pool capacity',
-              sort: sortBy === 'poolCapacity' ? order : 'none',
-            } :
-            {
-              id: 'jurorsRequested',
-              value: 'Jurors requested',
-              sort: sortBy === 'jurorsRequested' ? order : 'none',
-            } :
+        ...((status === 'created') ? (tab === 'court') ?
           {
-            id: 'numberRequested',
+            id: 'poolCapacity',
+            value: 'Pool capacity',
+            sort: sortBy === 'poolCapacity' ? order : 'none',
+          } :
+          {
+            id: 'jurorsRequested',
             value: 'Jurors requested',
-            sort: sortBy === 'numberRequested' ? order : 'none',
-          },
+            sort: sortBy === 'jurorsRequested' ? order : 'none',
+          } : {
+          id: 'numberRequested',
+          value: 'Jurors requested',
+          sort: sortBy === 'numberRequested' ? order : 'none',
+        }),
       },
       {
         id: 'courtName',
@@ -123,17 +121,15 @@
     );
     if (status === 'created') {
       table.head.splice(2, 0, {
-        ...(tab === 'bureau') ?
-          {
-            id: 'jurorsConfirmed',
-            value: 'Jurors confirmed',
-            sort: sortBy === 'jurorsConfirmed' ? order : 'none',
-          } :
-          {
-            id: 'jurorsInPool',
-            value: 'Jurors in pool',
-            sort: sortBy === 'jurorsInPool' ? order : 'none',
-          },
+        ...((tab === 'bureau') ? {
+          id: 'jurorsConfirmed',
+          value: 'Jurors confirmed',
+          sort: sortBy === 'jurorsConfirmed' ? order : 'none',
+        } : {
+          id: 'jurorsInPool',
+          value: 'Jurors in pool',
+          sort: sortBy === 'jurorsInPool' ? order : 'none',
+        }),
       });
     }
 
@@ -152,32 +148,30 @@
 
       // build a row object (each row needs to be its own array)
       item.push(
-        { ...includeRadioButtons ? 
-          {
-            html:
-              '<div class="govuk-radios govuk-radios--small" data-module="govuk-radios">' +
-                '<div class="govuk-radios__item">' +
-                  '<input class="govuk-radios__input" id="' + pool.poolNumber + '" name="selectedPool" ' +
-                    'type="radio" value="' + pool.poolNumber + '">' +
-                  '<label class="govuk-label govuk-radios__label" for="' + pool.poolNumber + '">' +
-                    '<a href="/pool-management/pool-overview/' + pool.poolNumber + '" class="govuk-link">' +
-                      pool.poolNumber +
-                    '</a>' +
-                  '</label>' +
-                '</div>' +
-              '</div>',
-            attributes: {
-              'data-sort-value': pool.poolNumber,
-            },
-          } :
-          {
-            html: '<a href="/pool-management/pool-overview/' +
-                pool.poolNumber + '" class="govuk-link">' + pool.poolNumber + '</a>',
-            attributes: {
-              'data-sort-value': pool.poolNumber,
-            },
-            classes: 'jd-middle-align',
+        { ...(includeRadioButtons ? {
+          html:
+            '<div class="govuk-radios govuk-radios--small" data-module="govuk-radios">' +
+              '<div class="govuk-radios__item">' +
+                '<input class="govuk-radios__input" id="' + pool.poolNumber + '" name="selectedPool" ' +
+                  'type="radio" value="' + pool.poolNumber + '">' +
+                '<label class="govuk-label govuk-radios__label" for="' + pool.poolNumber + '">' +
+                  '<a href="/pool-management/pool-overview/' + pool.poolNumber + '" class="govuk-link">' +
+                    pool.poolNumber +
+                  '</a>' +
+                '</label>' +
+              '</div>' +
+            '</div>',
+          attributes: {
+            'data-sort-value': pool.poolNumber,
           },
+        } : {
+          html: '<a href="/pool-management/pool-overview/' +
+              pool.poolNumber + '" class="govuk-link">' + pool.poolNumber + '</a>',
+          attributes: {
+            'data-sort-value': pool.poolNumber,
+          },
+          classes: 'jd-middle-align',
+        }),
         },
         {
           text: getNumberRequested(),
