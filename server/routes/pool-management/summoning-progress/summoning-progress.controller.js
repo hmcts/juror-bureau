@@ -145,14 +145,18 @@
         req.session.summoningProgressRequestStatus = 'empty';
         req.session.isRequest = true;
 
-        if (Object.entries(req.body).length > 0) {
+        if (req.body && Object.entries(req.body).length > 0) {
           params = 'locCode=' + req.body.locCode + '&poolType=' + req.body.poolType;
-        } else if (Object.entries(req.query).length > 0) {
+        } else if (req.query && Object.entries(req.query).length > 0) {
           params = 'locCode=' + req.query.locCode + '&poolType=' + req.query.poolType;
         }
       } else {
         req.session.summoningProgressRequestStatus = 'invalid';
-        params = 'locCode=' + req.body.locCode + '&poolType=' + req.body.poolType;
+        if (req.body && Object.entries(req.body).length > 0) {
+          params = 'locCode=' + req.body.locCode + '&poolType=' + req.body.poolType;
+        } else if (req.query && Object.entries(req.query).length > 0) {
+          params = 'locCode=' + req.query.locCode + '&poolType=' + req.query.poolType;
+        }
       }
 
       return res.redirect(urljoin(redirectUrl, '?' + params));
@@ -172,10 +176,10 @@
 
       let locCode, params;
 
-      if (Object.entries(req.body).length > 0) {
+      if (req.body && Object.entries(req.body).length > 0) {
         params = 'locCode=' + req.body.locCode + '&poolType=' + req.body.poolType;
         locCode = req.body.locCode;
-      } else if (Object.entries(req.query).length > 0) {
+      } else if (req.query && Object.entries(req.query).length > 0) {
         params = 'locCode=' + req.query.locCode + '&poolType=' + req.query.poolType;
         locCode = req.query.locCode;
       }
