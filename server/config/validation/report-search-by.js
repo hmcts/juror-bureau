@@ -67,7 +67,7 @@
         details: 'Enter a date to search bulk-printing up until',
       }],
     },
-    reasonableAdjustments: {
+    reasonableAdjustmentAndCje: {
       dateRange: [{
         summary: 'Select which dates you want to search',
         details: 'Select which dates you want to search',
