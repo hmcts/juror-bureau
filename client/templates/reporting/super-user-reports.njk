@@ -1,0 +1,21 @@
+{% extends "layouts/default.njk" %}
+
+{% block page_title %}{{ serviceName }} - Reports{% endblock %}
+{% block page_identifier %}Reports{% endblock %}
+
+{% set currentApp = "System administration" %} 
+{% set nav ="reports" %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-xl">Reports</h1>
+      {% if isSuperUser %}
+        <h2 class="govuk-heading-m">Service owner reports</h2>
+        <ul class="govuk-list">
+          <li><a class="govuk-link" href="{{ url('reports.outgoing-sms-messages.filter.dates.get') }}">Outgoing SMS messages</a></li>
+        </ul>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
