@@ -3,5 +3,6 @@
     <ul class="govuk-list">
       <li><a class="govuk-link" href="{{ url('reports.expense-payments.filter.dates.get') }}">Expense payment by type</a></li>
       <li><a class="govuk-link" href="{{ url('reports.outgoing-sms-messages.filter.dates.get') }}">Outgoing SMS messages</a></li>
+      <li><a class="govuk-link" href="{{ url('reports.expense-limit-adjustments.report.get', { filter: 'all' }) }}">Manual adjustments to expense limits</a></li>
     </ul>
   {% endif %}

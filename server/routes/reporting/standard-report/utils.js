@@ -60,6 +60,7 @@ const headingDataMappers = {
 };
 
 const constructPageHeading = (headingType, data) => {
+  console.log('constructPageHeading', headingType, data);
   if (headingType === 'reportDate') {
     return { title: 'Report created', data: headingDataMappers.LocalDate(data.reportCreated.value) };
   } else if (headingType === 'reportTime') {

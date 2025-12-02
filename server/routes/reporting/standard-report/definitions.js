@@ -1842,6 +1842,120 @@
         fontSize: 8,
         exportLabel: 'Export data',
       },
+      'expense-limit-adjustments': {
+        title: 'Manual adjustments to expense limits',
+        apiKey: 'ExpenseLimitAdjustmentsReport',
+        defaultSortColumn: 'courtLocation',
+        bespokeReport: {
+          dao: () => { 
+            return { 
+              headings: {},
+              tableData: {
+                headings: [
+                  {
+                    id: 'court_location',
+                    name: 'Court',
+                    dataType: 'String',
+                    headings: null
+                  },
+                  {
+                    id: 'type',
+                    name: 'Type',
+                    dataType: 'String',
+                    headings: null
+                  },
+                  {
+                    id: 'old_limit',
+                    name: 'Old limit',
+                    dataType: 'BigDecimal',
+                    headings: null
+                  },
+                  {
+                    id: 'new_limit',
+                    name: 'New limit',
+                    dataType: 'BigDecimal',
+                    headings: null
+                  },
+                  {
+                    id: 'changed_by',
+                    name: 'Changed by',
+                    dataType: 'String',
+                    headings: null
+                  },
+                ],
+                data: [
+                  {
+                    courtLocation: 'CHESTER (415)',
+                    type: 'Taxi',
+                    oldLimit: 4.50,
+                    newLimit: 6.00,
+                    changedBy: 'sophia.brown',
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      'expense-limit-adjustments-audit': {
+        title: 'Expense payments using adjusted limits',
+        apiKey: 'ExpenseLimitAdjustmentsAuditReport',
+        defaultSortColumn: 'courtLocation',
+        parentReport: {
+          key: 'expense-limit-adjustments',
+          filterParam: 'all',
+        },
+        bespokeReport: {
+          dao: () => { 
+            return { 
+              headings: {},
+              tableData: {
+                headings: [
+                  {
+                    id: 'court_location',
+                    name: 'Court',
+                    dataType: 'String',
+                    headings: null
+                  },
+                  {
+                    id: 'type',
+                    name: 'Type',
+                    dataType: 'String',
+                    headings: null
+                  },
+                  {
+                    id: 'old_limit',
+                    name: 'Old limit',
+                    dataType: 'BigDecimal',
+                    headings: null
+                  },
+                  {
+                    id: 'new_limit',
+                    name: 'New limit',
+                    dataType: 'BigDecimal',
+                    headings: null
+                  },
+                  {
+                    id: 'changed_by',
+                    name: 'Changed by',
+                    dataType: 'String',
+                    headings: null
+                  },
+                ],
+                data: [
+                  {
+                    courtLocation: 'CHESTER (415)',
+                    type: 'Taxi',
+                    oldLimit: 4.50,
+                    newLimit: 6.00,
+                    changedBy: 'sophia.brown',
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
     };
   };
 })();
