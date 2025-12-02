@@ -1,5 +1,3 @@
-const { isSystemAdministrator } = require('../../../components/auth/user-type');
-
 (() => {
   'use strict';
 
@@ -30,6 +28,7 @@ const { isSystemAdministrator } = require('../../../components/auth/user-type');
   const moment = require('moment')
   const { dateFilter, capitalizeFully, capitalise, timeToDuration, toSentenceCase } = require('../../../components/filters');
   const { reportExport } = require('./report-export');
+  const { isSystemAdministrator } = require('../../../components/auth/user-type');
 
   const standardFilterGet = (app, reportKey) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
@@ -556,7 +555,6 @@ const { isSystemAdministrator } = require('../../../components/auth/user-type');
         }
       } else {
         tableRows = buildStandardTableRows(tableData, tableHeadings);
-        console.log('tableRows', tableRows);
       }
 
       return tableRows.length || groups.length ? [{
@@ -683,10 +681,6 @@ const { isSystemAdministrator } = require('../../../components/auth/user-type');
       const { headings, tableData } = await (reportType.bespokeReport?.dao
         ? reportType.bespokeReport.dao(req, config)
         : standardReportDAO.post(req, config));
-
-      console.log('\n\n');
-      console.log(headings, tableData);
-      console.log('\n\n');
 
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
       if (isExport) return reportExport(app, req, res, reportKey, { headings, tableData }) ;

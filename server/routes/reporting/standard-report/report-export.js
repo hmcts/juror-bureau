@@ -113,7 +113,7 @@ async function dailyUtilisationJurorsReportExport(req, res, data) {
 
 async function monthlyUtilisationReportExport(req, res, data) {
   const { tableData, headings } = data;
-  const reportDate = req.params.filter;k
+  const reportDate = req.params.filter;
   const tableHeaders = tableData.headings.map((heading) => heading.name);
   const tableBody = [];
 
