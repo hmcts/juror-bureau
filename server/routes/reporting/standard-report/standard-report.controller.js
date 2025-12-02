@@ -386,8 +386,11 @@
                   : output,
               });
             }
-            if (header.id === 'court_location' && reportKey === 'weekend-attendance') {
-              const courtLocCode = output.split('(')[1].split(')')[0];
+          }
+
+          if (header.id === 'court_location') {
+            const courtLocCode = output.split('(')[1].split(')')[0];
+            if (reportKey === 'weekend-attendance') {
               return ({
                 html: `<a href=${app.namedRoutes.build('reports.weekend-attendance-audit.report.get', {filter: courtLocCode})}>${
                   output
