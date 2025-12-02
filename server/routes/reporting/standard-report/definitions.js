@@ -1919,6 +1919,11 @@
           'courtName',
         ],
         defaultSortColumn: 'jurorNumber',
+        // backUrl: app.namedRoutes.build('reports.weekend-attendance.report.get', { filter: 'all' }),
+        parentReport: {
+          key: 'weekend-attendance',
+          filterParam: 'all',
+        },
         bespokeReport: {
           dao: () => { 
             return { 
