@@ -263,10 +263,11 @@ async function standardReportExport(req, res, data, filename = 'data', title) {
 
   tableData.data.forEach((data) => {
     const row = [];
-    for (const [key, value] of Object.entries(data)) {
-      const dataType = tableData.headings.find(heading => _.camelCase(heading.id) === key).dataType;
-      row.push(tableDataMappers[dataType](value) || '-');
-    }
+    tableData.headings.forEach((heading) => {
+      const key = _.camelCase(heading.id);
+      const value = data[key];
+      row.push(tableDataMappers[heading.dataType](value) || '-');
+    });
     csvResult.push(row);
   });
 
