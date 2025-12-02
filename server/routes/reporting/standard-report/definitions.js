@@ -1842,6 +1842,191 @@
         fontSize: 8,
         exportLabel: 'Export data',
       },
+      'weekend-attendance': {
+        title: 'Courts recording weekend attendance this month',
+        apiKey: 'WeekendAttendanceReport',
+        headings: [
+          'reportDate',
+          'reportTime',
+        ],
+        defaultSortColumn: 'courtName',
+        bespokeReport: {
+          dao: () => { 
+            return { 
+              headings: {
+                reportCreated: {
+                  displayName: null,
+                  dataType: 'LocalDateTime',
+                  value: '2025-11-18T11:10:47.230983'
+                },
+              },
+              tableData: {
+                headings: [
+                  {
+                    id: 'court_location',
+                    name: 'Court',
+                    dataType: 'String',
+                    headings: null
+                  },
+                  {
+                    id: 'saturday',
+                    name: 'Saturday',
+                    dataType: 'Long',
+                    headings: null
+                  },
+                  {
+                    id: 'sunday',
+                    name: 'Sunday',
+                    dataType: 'Long',
+                    headings: null
+                  },
+                  {
+                    id: 'bank_holiday',
+                    name: 'Bank holiday',
+                    dataType: 'Long',
+                    headings: null
+                  },
+                  {
+                    id: 'total_paid',
+                    name: 'Total paid',
+                    dataType: 'Double',
+                    headings: null
+                  },
+                ],
+                data: [
+                  {
+                    courtLocation: 'CHESTER (415)',
+                    saturday: 2,
+                    sunday: 3,
+                    bankHoliday: 1,
+                    totalPaid: 64.95,
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      'weekend-attendance-audit': {
+        title: 'Weekend attendance audit report',
+        apiKey: 'WeekendAttendanceAuditReport',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+          'total',
+          'courtName',
+        ],
+        defaultSortColumn: 'jurorNumber',
+        bespokeReport: {
+          dao: () => { 
+            return { 
+              headings: {
+                reportCreated: {
+                  displayName: null,
+                  dataType: 'LocalDateTime',
+                  value: '2025-11-18T11:10:47.230983'
+                },
+                dateTo: {
+                  displayName: 'Date to',
+                  dataType: 'LocalDate',
+                  value: '2026-11-30'
+                },
+                dateFrom: {
+                  displayName: 'Date from',
+                  dataType: 'LocalDate',
+                  value: '2023-11-06'
+                },
+                total: {
+                  displayName: 'Total',
+                  dataType: 'Long',
+                  value: 6
+                },
+                courtName: {
+                  displayName: 'Court name',
+                  dataType: 'String',
+                  value: 'Chester (415)'
+                }
+              },
+              tableData: {
+                headings: [
+                  {
+                    id: 'juror_number',
+                    name: 'Juror number',
+                    dataType: 'String',
+                    headings: null
+                  },
+                  {
+                    id: 'first_name',
+                    name: 'First name',
+                    dataType: 'String',
+                    headings: null
+                  },
+                  {
+                    id: 'last_name',
+                    name: 'Last name',
+                    dataType: 'String',
+                    headings: null
+                  },
+                  {
+                    id: 'attended',
+                    name: 'Attended',
+                    dataType: 'LocalDate',
+                    headings: null
+                  },
+                  {
+                    id: 'day',
+                    name: 'Day',
+                    dataType: 'String',
+                    headings: null
+                  },
+                  {
+                    id: 'paid',
+                    name: 'Paid',
+                    dataType: 'Double',
+                    headings: null
+                  },
+                  {
+                    id: 'pool_number',
+                    name: 'Pool number',
+                    dataType: 'String',
+                    headings: null
+                  },
+                  {
+                    id: 'trial_number',
+                    name: 'Trial number',
+                    dataType: 'String',
+                    headings: null
+                  }
+                ],
+                data: [
+                  {
+                    jurorNumber: '645200045',
+                    firstName: 'FName1',
+                    lastName: 'LName1',
+                    attended: '2025-11-28',
+                    day: 'Friday',
+                    paid: 64.95,
+                    poolNumber: '415160601',
+                    trialNumber: '456'
+                  },
+                  {
+                    jurorNumber: '645200046',
+                    firstName: 'FName2',
+                    lastName: 'LName2',
+                    attended: '2025-11-25',
+                    day: 'Tuesday',
+                    paid: 23.00,
+                    poolNumber: '415160601',
+                    trialNumber: '',
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
     };
   };
 })();

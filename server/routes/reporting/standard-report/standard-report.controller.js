@@ -328,6 +328,8 @@
 
           let output = tableDataMappers[header.dataType](data[_.camelCase(header.id)]);
 
+          console.log('output', output);
+
           if (header.id === 'juror_number' || header.id === 'juror_number_from_trial') {
             return ({
               html: `<a href=${
@@ -352,7 +354,7 @@
             });
           }
 
-          if (header.id.includes('trial_number') && output) {
+          if (header.id.includes('trial_number') && output && output !== '-') {
             return ({
               html: `<a href=${
                 app.namedRoutes.build('trial-management.trials.detail.get', {trialNumber: data[_.camelCase(header.id)], locationCode: req.session.authentication.locCode})
@@ -418,6 +420,15 @@
 
           if (header.id === 'UTILISATION') {
             output = output + '%'
+          }
+
+          if (header.id === 'court_location' && reportKey === 'weekend-attendance') {
+            const courtLocCode = output.split('(')[1].split(')')[0];
+            return ({
+              html: `<a href=${app.namedRoutes.build('reports.weekend-attendance-audit.report.get', {filter: courtLocCode})}>${
+                output
+              }</a>`,
+            });
           }
 
           if (header.dataType === 'List') {
@@ -547,6 +558,7 @@
         }
       } else {
         tableRows = buildStandardTableRows(tableData, tableHeadings);
+        console.log('tableRows', tableRows);
       }
 
       return tableRows.length || groups.length ? [{
