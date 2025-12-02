@@ -394,11 +394,18 @@
             }
           }
 
-          if (header.id === 'COURT_LOCATION_NAME_AND_CODE') {
+          if (header.id === 'COURT_LOCATION_NAME_AND_CODE' || header.id === 'court_location') {
             const courtLocCode = output.split('(')[1].split(')')[0];
             if (reportKey === 'weekend-attendance') {
               return ({
                 html: `<a href=${app.namedRoutes.build('reports.weekend-attendance-audit.report.get', {filter: courtLocCode})}>${
+                  output
+                }</a>`,
+              });
+            }
+            if (reportKey === 'expense-limit-adjustments') {
+              return ({
+                html: `<a href=${app.namedRoutes.build('reports.expense-limit-adjustments-audit.report.get', {filter: courtLocCode})}>${
                   output
                 }</a>`,
               });
