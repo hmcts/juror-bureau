@@ -396,7 +396,7 @@
             output = output ? output.toUpperCase() : '-';
           }
 
-          if (header.id === 'on_call') {
+          if (header.id === 'on_call' && header.dataType === 'String') {
             output = output === 'Yes' ? 'Yes' : '-';
           }
 
@@ -887,5 +887,6 @@
     standardFilterPost,
     standardReportGet,
     standardReportPost,
+    addURLQueryParams
   };
 })();

@@ -19,6 +19,7 @@ const { financialAudit } = require('./audit.controller');
     require('./yield-performance')(app);
     require('./all-court-utilisation')(app);
     require('./expense-payments')(app);
+    require('./outgoing-sms-messages')(app);
     require('./standard-report/index')(app);
 
     app.get('/reports',

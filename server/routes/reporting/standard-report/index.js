@@ -117,6 +117,7 @@
     standardReportRoutes(app, 'digital-summons-received');
     standardReportRoutes(app, 'all-court-utilisation');
     standardReportRoutes(app, 'expense-payments');
+    standardReportRoutes(app, 'outgoing-sms-messages');
   };
 
 })();
