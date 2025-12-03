@@ -27,7 +27,7 @@
     "@azure/identity": "^4.13.0",
     "@hmcts/properties-volume": "^1.2.0",
     "@hods/loading-spinner": "^0.5.1",
-    "@ministryofjustice/frontend": "^5.2.1",
+    "@ministryofjustice/frontend": "^7.0.0",
     "accessible-autocomplete": "^3.0.1",
     "applicationinsights": "^2.9.8",
     "axios": "^1.13.0",
