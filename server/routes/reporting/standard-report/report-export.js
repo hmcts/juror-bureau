@@ -20,8 +20,12 @@ async function reportExport(app, req, res, reportKey, data) {
     return poolStatisitcsExport(req, res, data);
   case 'attendance-data':
     return attendanceDataExport(req, res, data);
+  case 'expense-payments':
+    return standardReportExport(req, res, data, 'expense-payments', 'Expense Payments');
+  case 'outgoing-sms-messages':
+    return standardReportExport(req, res, data, 'outgoing_sms_messages', 'Outgoing SMS Messages');
   default:
-    // implement standardised report export if needed
+    standardReportExport(req, res, data);
     return;
   }
 }
@@ -219,6 +223,60 @@ async function attendanceDataExport(req, res, data) {
   });
 
   const filename = `attendance_data_${fromDate}_${toDate}.csv`;
+
+  res.set('content-disposition', 'attachment; filename=' + filename);
+  res.type('csv');
+  return res.send(csvResult.join('\n'));
+}
+
+async function standardReportExport(req, res, data, filename = 'data', title) {
+  const { tableData } = data;
+
+  let reportTitle;
+  if (title) {
+    reportTitle = [title];
+  }
+
+  const reportHeaders = []
+  if (req.query) {
+    for (const [key, value] of Object.entries(req.query)) {
+      if (key === 'fromDate' || key === 'toDate') {
+        reportHeaders.push([toSentenceCase(key), dateFilter(value, 'yyyy-MM-DD', 'DD/MM/YYYY')]);
+      }
+    }
+  }
+
+  let csvResult = [];
+  if (reportTitle.length) {
+    csvResult.push(reportTitle, []);
+  }
+  if (reportHeaders.length) {
+    csvResult.push(reportHeaders, []);
+  }
+
+  const tableHeadings = [];
+  tableData.headings.forEach((heading) => {
+    tableHeadings.push(heading.name);
+  });
+  csvResult.push(tableHeadings);
+
+
+  tableData.data.forEach((data) => {
+    const row = [];
+    tableData.headings.forEach((heading) => {
+      const key = _.camelCase(heading.id);
+      const value = data[key];
+      const formatted = tableDataMappers[heading.dataType](value) || '-'
+      if(['Long', 'Integer', 'BigDecimal', 'Double'].includes(heading.dataType) && formatted === '-') {
+        row.push('0');
+      } else {
+        row.push(formatted);
+      }
+    });
+    csvResult.push(row);
+  });
+
+  filename = `${filename}.csv`;
 
   res.set('content-disposition', 'attachment; filename=' + filename);
   res.type('csv');

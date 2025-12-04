@@ -52,7 +52,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
         if (header.id === 'juror_postcode' || header.id === 'document_code') {
           text = text.toUpperCase();
         }
-        if (header.id === 'on_call') {
+        if (header.id === 'on_call' && header.dataType === 'String') {
           text = text === 'Yes' ? 'Yes' : '-';
         }
 

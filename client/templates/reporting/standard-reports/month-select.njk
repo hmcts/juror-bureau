@@ -9,7 +9,7 @@
 {% block page_title %}{{ serviceName }} - Reports - {{ reportName }} - Select month{% endblock %}
 {% block page_identifier %}Reports - {{ reportName }} - Select month{% endblock %}
 
-{% set currentApp = "Reports" %}
+{% set currentApp = "System administration" if isSystemAdministrator and isSuperUser else "Reports" %}
 
 {% block content %}
   {% include "includes/errors.njk" %}

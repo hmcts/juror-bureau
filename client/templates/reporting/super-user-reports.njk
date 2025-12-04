@@ -1,0 +1,16 @@
+{% extends "layouts/default.njk" %}
+
+{% block page_title %}{{ serviceName }} - Reports{% endblock %}
+{% block page_identifier %}Reports{% endblock %}
+
+{% set currentApp = "System administration" %} 
+{% set nav ="reports" %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-xl">Reports</h1>
+      {% include "./_common/service-owner-report-list.njk" %}
+    </div>
+  </div>
+{% endblock %}

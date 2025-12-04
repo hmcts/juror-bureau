@@ -49,6 +49,9 @@
           <li><a class="govuk-link" href="{{ url('reports.manual-juror-report.filter.get') }}">Manually-created jurors report</a></li>
         </ul>
       {% endif %}
+
+       {% include "./_common/service-owner-report-list.njk" %}
+      
     </div>
   </div>
 {% endblock %}

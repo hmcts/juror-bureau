@@ -12,7 +12,7 @@
 {% block page_title %}{{ serviceName }} - Reports - {{ title }} - select trial{% endblock %}
 {% block page_identifier %}Reports - {{ title }} - select trial{% endblock %}
 
-{% set currentApp = "Reports" %}
+{% set currentApp = "System administration" if isSystemAdministrator and isSuperUser else "Reports" %}
 
 {% block content %}
   {% include "includes/errors.njk" %}  

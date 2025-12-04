@@ -25,7 +25,7 @@ client.interceptors.request.use(function(request) {
     delete request.customBaseUrl;
   }
 
-  Logger.instance.debug('Sending DAO request to API: ', {
+  Logger.instance.debug('Sending DAO request to API: ' + request.url, {
     baseUrl: request.baseURL,
     url: request.url,
     headers: request.headers,
