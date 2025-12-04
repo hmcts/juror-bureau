@@ -3,50 +3,44 @@
 
   const responsesObj = require('../../objects/responses').object;
   const utils = require('../../lib/utils');
-  const isCourtUser = require('../../components/auth/user-type').isCourtUser;
+  const { isCourtUser } = require('../../components/auth/user-type');
 
-  module.exports.index = function(app) {
-    return function(req, res) {
-      var successCB = function(response) {
-          app.logger.info('Fetched and parsed list of pending responses: ', {
-            auth: req.session.authentication,
-          });
+  module.exports.index = (app) => async (req, res) => {
+    let courtLocCode;
+    if (isCourtUser(req)){
+      courtLocCode = req.session.authentication.locCode;
+    }
 
-          response.items = utils.sortResponseData(response.items, 'rawReceivedAt', false);
+    try {
+      const responses = await responsesObj.query(req, 'pending', courtLocCode);
 
-          // set alert details
-          response.items.forEach(function(item) {
-            item.alert = utils.getResponseAlert(item);
-          });
+      app.logger.info('Fetched and parsed list of pending responses: ', {
+        auth: req.session.authentication,
+      });
 
-          req.session.sourceUrl = req.path;
+      responses.items = utils.sortResponseData(responses.items, 'rawReceivedAt', false);
 
-          res.locals.todoCount = response.counts.todo;
-          res.locals.workCount = response.counts.todo + response.counts.pending;
+      // set alert details
+      responses.items.forEach(function(item) {
+        item.alert = utils.getResponseAlert(item);
+      });
 
-          return res.render('pending.njk', {
-            responses: response,
-          });
-        }
+      req.session.sourceUrl = req.path;
 
-        , errorCB = function(err) {
-          app.logger.crit('Failed to fetch and parse list of pending responses: ', {
-            auth: req.session.authentication,
-            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
-          });
+      res.locals.todoCount = responses.counts.todo;
+      res.locals.workCount = responses.counts.todo + responses.counts.pending;
 
-          return res.render('index.njk');
-        }
+      return res.render('pending.njk', {
+        responses,
+      });
+    } catch (err) {
+      app.logger.crit('Failed to fetch and parse list of pending responses: ', {
+        auth: req.session.authentication,
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
 
-      let courtLocCode;
-
-      if (isCourtUser(req)){
-        courtLocCode = req.session.authentication.locCode;
-      }
-      responsesObj
-        .query(req, 'pending', courtLocCode)
-        .then(successCB)
-        .catch(errorCB);
-    };
+      return res.render('index.njk');
+    }
   };
+    
 })();
