@@ -709,7 +709,10 @@
         });
       }
 
-      const pageHeadings = reportType.headings.map(heading => constructPageHeading(heading, headings));
+      let pageHeadings;
+      if (!_.isEmpty(reportType.headings)) {
+        pageHeadings = reportType.headings.map(heading => constructPageHeading(heading, headings));
+      }
 
       return res.render('reporting/standard-reports/standard-report', {
         title: reportType.title,

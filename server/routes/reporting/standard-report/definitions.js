@@ -11,7 +11,8 @@
     generateMonthlyUtilisationDAO,
     yieldPerformanceDAO,
     allCourtUtilisationDAO,
-    digitalSummonsReceivedReportDAO
+    digitalSummonsReceivedReportDAO,
+    weekendAttendanceReportDAO
   } = require('../../../objects/reports');
 
   const makeLink = (app) => {
@@ -1845,67 +1846,10 @@
       'weekend-attendance': {
         title: 'Courts recording weekend attendance this month',
         apiKey: 'WeekendAttendanceReport',
-        headings: [
-          'reportDate',
-          'reportTime',
-        ],
         defaultSortColumn: 'courtName',
         bespokeReport: {
-          dao: () => { 
-            return { 
-              headings: {
-                reportCreated: {
-                  displayName: null,
-                  dataType: 'LocalDateTime',
-                  value: '2025-11-18T11:10:47.230983'
-                },
-              },
-              tableData: {
-                headings: [
-                  {
-                    id: 'court_location',
-                    name: 'Court',
-                    dataType: 'String',
-                    headings: null
-                  },
-                  {
-                    id: 'saturday',
-                    name: 'Saturday',
-                    dataType: 'Long',
-                    headings: null
-                  },
-                  {
-                    id: 'sunday',
-                    name: 'Sunday',
-                    dataType: 'Long',
-                    headings: null
-                  },
-                  {
-                    id: 'bank_holiday',
-                    name: 'Bank holiday',
-                    dataType: 'Long',
-                    headings: null
-                  },
-                  {
-                    id: 'total_paid',
-                    name: 'Total paid',
-                    dataType: 'Double',
-                    headings: null
-                  },
-                ],
-                data: [
-                  {
-                    courtLocation: 'CHESTER (415)',
-                    saturday: 2,
-                    sunday: 3,
-                    bankHoliday: 1,
-                    totalPaid: 64.95,
-                  }
-                ]
-              }
-            }
-          }
-        }
+          dao: async (req) => weekendAttendanceReportDAO.get(req)
+        },
       },
       'weekend-attendance-audit': {
         title: 'Weekend attendance audit report',

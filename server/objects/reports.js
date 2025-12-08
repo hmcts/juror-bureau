@@ -106,4 +106,12 @@
     },
   });
 
+  module.exports.weekendAttendanceReportDAO = new DAO('moj/reports/weekend-attendance', {
+    get: function() {
+      return {
+        transform: mapSnakeToCamel,
+      }
+    }
+  });
+
 })();
