@@ -8,6 +8,7 @@
   const { dateFilter } = require('../../../components/filters');
   const moment = require('moment');
   const { makeManualError } = require('../../../lib/mod-utils');
+  const { addURLQueryParams } = require('../standard-report/standard-report.controller.js');
 
   module.exports.getAttendanceDates = function(app) {
     return function(req, res) {

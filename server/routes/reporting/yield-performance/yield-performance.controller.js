@@ -9,6 +9,7 @@ const { makeManualError } = require('../../../lib/mod-utils');
   const validator = require('../../../config/validation/report-search-by');
   const { dateFilter } = require('../../../components/filters');
   const moment = require('moment');
+  const { addURLQueryParams } = require('../standard-report/standard-report.controller.js');
 
   module.exports.getAttendanceDates = function(app) {
     return function(req, res) {
