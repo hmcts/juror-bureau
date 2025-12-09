@@ -327,7 +327,7 @@
         let row = tableHeadings.map(header => {
           if (!header.name || header.name === '') return;
 
-          let output = tableDataMappers[header.dataType](data[_.camelCase(header.id)]);
+          let output = tableDataMappers[header.dataType](data[_.camelCase(header.id)]) || '-';
 
           // CREATING LINKS - SHOULD BE INACCESSIBLE BY ADMIN USERS AS THEY ARE NOT LOGGED IN TO ACTIVE COURT
           if (!isSystemAdministrator(req)) {
@@ -340,7 +340,7 @@
                 }</a>`,
               });
             }
-            if (header.id.includes('pool_number')) {
+            if (header.id.includes('pool_number') && output && output !== '-') {
               return ({
                 html: `<a href=${
                   app.namedRoutes.build('pool-overview.get', {poolNumber: output})
@@ -388,7 +388,7 @@
             }
           }
 
-          if (header.id === 'court_location') {
+          if (header.id === 'COURT_LOCATION_NAME_AND_CODE') {
             const courtLocCode = output.split('(')[1].split(')')[0];
             if (reportKey === 'weekend-attendance') {
               return ({
@@ -684,6 +684,8 @@
       const { headings, tableData } = await (reportType.bespokeReport?.dao
         ? reportType.bespokeReport.dao(req, config)
         : standardReportDAO.post(req, config));
+
+      console.log(headings, tableData);
 
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
       if (isExport) return reportExport(app, req, res, reportKey, { headings, tableData }) ;
