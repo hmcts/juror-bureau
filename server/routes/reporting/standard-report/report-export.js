@@ -266,7 +266,7 @@ async function standardReportExport(req, res, data, filename = 'data', title) {
     tableData.headings.forEach((heading) => {
       const key = _.camelCase(heading.id);
       const value = data[key];
-      const formatted = tableDataMappers[heading.dataType](value) || '-'
+      const formatted = tableDataMappers[heading.dataType](value, true) || '-'
       if(['Long', 'Integer', 'BigDecimal', 'Double'].includes(heading.dataType) && formatted === '-') {
         row.push('0');
       } else {
