@@ -327,7 +327,7 @@
         let row = tableHeadings.map(header => {
           if (!header.name || header.name === '') return;
 
-          let output = tableDataMappers[header.dataType](data[_.camelCase(header.id)]) || '-';
+          let output = tableDataMappers[header.dataType](data[_.camelCase(header.id)], header.id) || '-';
 
           // CREATING LINKS - SHOULD BE INACCESSIBLE BY ADMIN USERS AS THEY ARE NOT LOGGED IN TO ACTIVE COURT
           if (!isSystemAdministrator(req)) {
