@@ -30,7 +30,7 @@
     delete req.session.formFields;
 
     try {
-      const data = getDisqualificationReasons.get(req);
+      const data = await getDisqualificationReasons.get(req);
 
       app.logger.info('Fetched disqualification reasons: ', {
         auth: req.session.authentication,
