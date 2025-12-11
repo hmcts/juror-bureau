@@ -327,7 +327,13 @@
         let row = tableHeadings.map(header => {
           if (!header.name || header.name === '') return;
 
-          let output = tableDataMappers[header.dataType](data[_.camelCase(header.id)], header.id) || '-';
+          let output = '-';
+
+          if (reportType.tableColumnFormatting && reportType.tableColumnFormatting[_.camelCase(header.id)]) {
+            output = reportType.tableColumnFormatting[_.camelCase(header.id)](data[_.camelCase(header.id)]);
+          } else {
+            output = tableDataMappers[header.dataType](data[_.camelCase(header.id)]) || '-';
+          }
 
           // CREATING LINKS - SHOULD BE INACCESSIBLE BY ADMIN USERS AS THEY ARE NOT LOGGED IN TO ACTIVE COURT
           if (!isSystemAdministrator(req)) {
