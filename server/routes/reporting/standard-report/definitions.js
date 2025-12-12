@@ -1565,7 +1565,9 @@
       'jury-attendance-audit': {
         title: 'Jury attendance audit report',
         apiKey: 'JuryAttendanceAuditReport',
-        searchProperty: 'juryAuditNumber',
+        searchProperty: {
+          filter: 'juryAuditNumber',
+        },
         headings: [
           'attendanceDate',
           'reportDate',
@@ -1621,7 +1623,9 @@
       'pool-attendance-audit': {
         title: 'Pool attendance audit report',
         apiKey: 'PoolAttendanceAuditReport',
-        searchProperty: 'poolAuditNumber',
+        searchProperty: {
+          filter: 'poolAuditNumber',
+        },
         headings: [
           'attendanceDate',
           'reportDate',
@@ -1891,8 +1895,22 @@
       'expense-limit-adjustments-audit': {
         title: 'Expense payments using adjusted limits',
         apiKey: 'ExpensePaymentsUsingAdjustedLimitsReport',
+        headings: [
+          'transportType',
+          'reportDate',
+          'oldLimit',
+          'reportTime',
+          'newLimit',
+          'courtName',
+        ],
         defaultSortColumn: 'courtName',
-        searchProperty: 'locCode',
+        searchProperty: {
+          filter: 'transportType',
+          valueTransformer: (value) => capitalizeFully(toSentenceCase(value)),
+        },
+        configSessionVariables: {
+          courts: 'reportCourts',
+        },
         parentReport: {
           key: 'expense-limit-adjustments',
           filterParam: 'all',
