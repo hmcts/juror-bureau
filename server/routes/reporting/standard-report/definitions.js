@@ -1890,7 +1890,7 @@
             const date = makeDate(data.slice(0, 3));
             return dateFilter(date, null, 'DD MMM YYYY');
           },
-        }
+        },
       },
       'expense-limit-adjustments-audit': {
         title: 'Expense payments using adjusted limits',
