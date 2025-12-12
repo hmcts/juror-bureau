@@ -326,9 +326,8 @@
       const rows = tableData.map(data => {
         let row = tableHeadings.map(header => {
           if (!header.name || header.name === '') return;
-
+          
           let output = '-';
-
           if (reportType.tableColumnFormatting && reportType.tableColumnFormatting[_.camelCase(header.id)]) {
             output = reportType.tableColumnFormatting[_.camelCase(header.id)](data[_.camelCase(header.id)]);
           } else {
@@ -394,7 +393,7 @@
             }
           }
 
-          if (header.id === 'COURT_LOCATION_NAME_AND_CODE' || header.id === 'court_location') {
+          if (header.id === 'COURT_LOCATION_NAME_AND_CODE' || header.id === 'court_name') {
             const courtLocCode = output.split('(')[1].split(')')[0];
             if (reportKey === 'weekend-attendance') {
               return ({
@@ -697,6 +696,8 @@
       const { headings, tableData } = await (reportType.bespokeReport?.dao
         ? reportType.bespokeReport.dao(req, config)
         : standardReportDAO.post(req, config));
+
+      console.log('\nheadings', headings, 'tableData', tableData, '\n');
 
       if (isPrint) return standardReportPrint(app, req, res, reportKey, { headings, tableData });
       if (isExport) return reportExport(app, req, res, reportKey, { headings, tableData }) ;

@@ -3,7 +3,7 @@
 
   const _ = require('lodash');
   const { isCourtUser } = require('../../../components/auth/user-type');
-  const { dateFilter, capitalizeFully, toMoney, toSentenceCase } = require('../../../components/filters');
+  const { dateFilter, capitalizeFully, toMoney, toSentenceCase, makeDate } = require('../../../components/filters');
   const {
     dailyUtilisationDAO,
     dailyUtilisationJurorsDAO,
@@ -1878,117 +1878,25 @@
       },
       'expense-limit-adjustments': {
         title: 'Manual adjustments to expense limits',
-        apiKey: 'ExpenseLimitAdjustmentsReport',
-        defaultSortColumn: 'courtLocation',
-        bespokeReport: {
-          dao: () => { 
-            return { 
-              headings: {},
-              tableData: {
-                headings: [
-                  {
-                    id: 'court_location',
-                    name: 'Court',
-                    dataType: 'String',
-                    headings: null
-                  },
-                  {
-                    id: 'type',
-                    name: 'Type',
-                    dataType: 'String',
-                    headings: null
-                  },
-                  {
-                    id: 'old_limit',
-                    name: 'Old limit',
-                    dataType: 'BigDecimal',
-                    headings: null
-                  },
-                  {
-                    id: 'new_limit',
-                    name: 'New limit',
-                    dataType: 'BigDecimal',
-                    headings: null
-                  },
-                  {
-                    id: 'changed_by',
-                    name: 'Changed by',
-                    dataType: 'String',
-                    headings: null
-                  },
-                ],
-                data: [
-                  {
-                    courtLocation: 'CHESTER (415)',
-                    type: 'Taxi',
-                    oldLimit: 4.50,
-                    newLimit: 6.00,
-                    changedBy: 'sophia.brown',
-                  }
-                ]
-              }
-            }
-          }
+        apiKey: 'ManualAdjustmentsToExpenseLimitsReport',
+        defaultSortColumn: 'courtName',
+        tableColumnFormatting: {
+          changeDate: (data) => {
+            if (!data) return '-';
+            const date = makeDate(data.slice(0, 3));
+            return dateFilter(date, null, 'DD MMM YYYY');
+          },
         }
       },
       'expense-limit-adjustments-audit': {
         title: 'Expense payments using adjusted limits',
-        apiKey: 'ExpenseLimitAdjustmentsAuditReport',
-        defaultSortColumn: 'courtLocation',
+        apiKey: 'ExpensePaymentsUsingAdjustedLimitsReport',
+        defaultSortColumn: 'courtName',
+        searchProperty: 'locCode',
         parentReport: {
           key: 'expense-limit-adjustments',
           filterParam: 'all',
         },
-        bespokeReport: {
-          dao: () => { 
-            return { 
-              headings: {},
-              tableData: {
-                headings: [
-                  {
-                    id: 'court_location',
-                    name: 'Court',
-                    dataType: 'String',
-                    headings: null
-                  },
-                  {
-                    id: 'type',
-                    name: 'Type',
-                    dataType: 'String',
-                    headings: null
-                  },
-                  {
-                    id: 'old_limit',
-                    name: 'Old limit',
-                    dataType: 'BigDecimal',
-                    headings: null
-                  },
-                  {
-                    id: 'new_limit',
-                    name: 'New limit',
-                    dataType: 'BigDecimal',
-                    headings: null
-                  },
-                  {
-                    id: 'changed_by',
-                    name: 'Changed by',
-                    dataType: 'String',
-                    headings: null
-                  },
-                ],
-                data: [
-                  {
-                    courtLocation: 'CHESTER (415)',
-                    type: 'Taxi',
-                    oldLimit: 4.50,
-                    newLimit: 6.00,
-                    changedBy: 'sophia.brown',
-                  }
-                ]
-              }
-            }
-          }
-        }
       },
     };
   };
