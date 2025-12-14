@@ -311,7 +311,7 @@
 
   const standardReportGet = (app, reportKey, isPrint = false, isExport = false) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
-    const config = { reportType: reportType.apiKey, locCode: req.session.authentication.locCode };
+    const config = { reportType: reportType.apiKey, locCode: req.query?.courtLocCode || req.session.authentication.locCode };
     const filter = req.session.reportFilter;
     const bannerMessage = _.clone(req.session.bannerMessage);
     let preReportRoute = _.clone(req.session.preReportRoute)
@@ -393,7 +393,7 @@
             }
           }
 
-          if (header.id === 'COURT_LOCATION_NAME_AND_CODE' || header.id === 'court_name') {
+          if (header.id === 'COURT_LOCATION_NAME_AND_CODE' || header.id === 'court_name' || header.id === 'court_location_name_and_code_jp') {
             const courtLocCode = output.split('(')[1].split(')')[0];
             if (reportKey === 'weekend-attendance') {
               return ({
@@ -410,6 +410,16 @@
                     transportType: data.transportType ? _.camelCase(data.transportType) : '',
                   })
                 }>${
+                  output
+                }</a>`,
+              });
+            }
+            if (reportKey === 'courts-incomplete-service') {
+              return ({
+                html: `<a href=${
+                    app.namedRoutes.build('reports.incomplete-service.report.get', { filter: dateFilter(new Date(), null, 'yyyy-MM-DD') })
+                    + `?courtLocCode=${courtLocCode}`
+                  }>${
                   output
                 }</a>`,
               });

@@ -1918,6 +1918,12 @@
           filterParam: 'all',
         },
       },
+      'courts-incomplete-service': {
+        title: 'Courts with incomplete service',
+        apiKey: 'CourtsWithIncompleteServiceReport',
+        defaultSortColumn: 'courtLocationNameAndCodeJp',
+        searchProperty: 'date'
+      },
     };
   };
 })();
