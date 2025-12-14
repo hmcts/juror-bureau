@@ -820,7 +820,7 @@
           req.body.awaitingInformation
         );
 
-        res.redirect(app.namedRoutes.build('response.paper.details.get', {
+        return res.redirect(app.namedRoutes.build('response.paper.details.get', {
           id,
           type: 'paper',
         }));
