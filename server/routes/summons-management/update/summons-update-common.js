@@ -5,7 +5,7 @@
   const { makeManualError } = require('../../../lib/mod-utils');
 
   module.exports.hasBeenModified = (app, req, replyMethod) => {
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
       const { id } = req.params;
 
       if (replyMethod !== 'paper') {
@@ -13,7 +13,7 @@
       };
 
       try {
-        const { headers } = paperReplyObject.get(
+        const { headers } = await paperReplyObject.get(
           req,
           id
         );
@@ -21,10 +21,10 @@
         if (headers.etag !== req.session[`summonsUpdate-${id}`].etag) {
           req.session.errors = makeManualError('updated', 'This summons has been modified');
 
-          resolve(true);
+          return resolve(true);
         }
 
-        resolve(false);
+        return resolve(false);
       } catch (err) {
         app.logger.crit('Unable to verify if the summons has been modified', {
           auth: req.session.authentication,
