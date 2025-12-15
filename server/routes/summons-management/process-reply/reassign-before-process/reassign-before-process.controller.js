@@ -89,7 +89,7 @@
     }
   };
 
-  module.exports.postReassignBeforeProcess = (app) =>  (req, res) => {
+  module.exports.postReassignBeforeProcess = (app) =>  async (req, res) => {
     const { id, type, action } = req.params;
     let validatorResult = validate(req.body, reassignBeforeProcessValidator());
 
@@ -114,7 +114,7 @@
       : req.body.selectCourt;
 
     try {
-      const court = modUtils.matchUserCourt(req.session.courtsList, {
+      const court = await modUtils.matchUserCourt(req.session.courtsList, {
         courtNameOrLocation: courtNameOrLocation,
       })
 
@@ -291,7 +291,7 @@
     });
   };
 
-  module.exports.postReassignBeforeProcessChangeCourt = (app) => (req, res) => {
+  module.exports.postReassignBeforeProcessChangeCourt = (app) => async (req, res) => {
     const { id, type, action } = req.params;
     const courtNameOrLocation = req.body.courtNameOrLocation;
 
@@ -308,7 +308,7 @@
     }
 
     try {
-      const court = modUtils.matchUserCourt(req.session.courtsList, { courtNameOrLocation });
+      const court = await modUtils.matchUserCourt(req.session.courtsList, { courtNameOrLocation });
 
       req.session.receivingCourtLocCode = court.locationCode;
 
