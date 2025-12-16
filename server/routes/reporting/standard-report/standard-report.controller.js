@@ -621,7 +621,7 @@
       if (reportType.backUrl) {
         return reportType.backUrl;
       }
-      if (reportType.parentReport) {
+      if (reportType.parentReport && reportType.parentReport.useParentRoute && reportType.parentReport.useParentRoute(req)) {
         return app.namedRoutes.build(`reports.${reportType.parentReport.key}.report.get`, { filter: reportType.parentReport.filterParam });
       }
       if (reportType.search === 'trial') {

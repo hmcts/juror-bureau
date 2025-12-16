@@ -2,7 +2,7 @@
   'use strict';
 
   const _ = require('lodash');
-  const { isCourtUser } = require('../../../components/auth/user-type');
+  const { isCourtUser, isSystemAdministrator } = require('../../../components/auth/user-type');
   const { dateFilter, capitalizeFully, toMoney, toSentenceCase, makeDate } = require('../../../components/filters');
   const {
     dailyUtilisationDAO,
@@ -217,7 +217,7 @@
         bespokeReport: {
           insertColumns: {
             6: ['', (data, isPrint = false) => {
-              return isPrint ? {} : { html: `<a href=${
+              return (isPrint || isSystemAdministrator(req) ) ? {} : { html: `<a href=${
                 app.namedRoutes.build('reports.incomplete-service.complete-redirect.get', {
                   jurorNumber: data.jurorNumber,
                   lastAttendanceDate: data.lastAttendanceDate ? data.lastAttendanceDate : null,
@@ -235,6 +235,11 @@
           'courtName',
         ],
         defaultSortColumn: 'lastName',
+        parentReport: {
+          key: 'courts-incomplete-service',
+          filterParam: dateFilter(new Date(), null, 'yyyy-MM-DD'),
+          useParentRoute: (req) => isSystemAdministrator(req),
+        }
       },
       'current-pool-status': {
         title: 'Current pool status report',
