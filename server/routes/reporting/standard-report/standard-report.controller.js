@@ -326,9 +326,8 @@
       const rows = tableData.map(data => {
         let row = tableHeadings.map(header => {
           if (!header.name || header.name === '') return;
-
+          
           let output = '-';
-
           if (reportType.tableColumnFormatting && reportType.tableColumnFormatting[_.camelCase(header.id)]) {
             output = reportType.tableColumnFormatting[_.camelCase(header.id)](data[_.camelCase(header.id)]);
           } else {
@@ -394,11 +393,23 @@
             }
           }
 
-          if (header.id === 'COURT_LOCATION_NAME_AND_CODE') {
+          if (header.id === 'COURT_LOCATION_NAME_AND_CODE' || header.id === 'court_name') {
             const courtLocCode = output.split('(')[1].split(')')[0];
             if (reportKey === 'weekend-attendance') {
               return ({
                 html: `<a href=${app.namedRoutes.build('reports.weekend-attendance-audit.report.get', {filter: courtLocCode})}>${
+                  output
+                }</a>`,
+              });
+            }
+            if (reportKey === 'expense-limit-adjustments') {
+              return ({
+                html: `<a href=${
+                  app.namedRoutes.build('reports.expense-limit-adjustments-audit.redirect.get', {
+                    locCode: courtLocCode,
+                    transportType: data.transportType ? _.camelCase(data.transportType) : '',
+                  })
+                }>${
                   output
                 }</a>`,
               });
@@ -632,14 +643,13 @@
         config.trialNumber = req.params.filter;
         config.locCode = req.session.authentication.locCode;
       } else if (reportType.search === 'courts') {
-        // VERIFY FIELD NAME ONCE AN API AVAILABLE
         config.courts = _.clone(req.session.reportCourts)
       } else if (reportType.search === 'jurorNumber') {
-        // VERIFY FIELD NAME ONCE AN API AVAILABLE 
         config.jurorNumber = req.params.filter;
       }
-    } else if (reportType.searchProperty) {
-      config[reportType.searchProperty] = req.params.filter;
+    } else if (reportType.searchProperty && reportType.searchProperty.filter) {
+      config[reportType.searchProperty.filter] = 
+        reportType.searchProperty.valueTransformer ? reportType.searchProperty.valueTransformer(req.params.filter) : req.params.filter;
     }
 
     if (req.query.fromDate) {
@@ -662,6 +672,12 @@
     }
     if(req.query.filterOwnedDeferrals) {
       config.filterOwnedDeferrals = req.query.filterOwnedDeferrals;
+    }
+
+    if (reportType.configSessionVariables) {
+      for (const [key, value] of Object.entries(reportType.configSessionVariables)) {
+        config[key] = req.session[value] || '';
+      }
     }
 
     // Backlink routing needs saved for jurors report

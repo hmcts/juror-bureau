@@ -47,7 +47,13 @@ async function standardReportPrint(app, req, res, reportKey, data) {
   const buildStandardTableRows = function(rows, tableHeadings) {
     const tableRows = rows.map(rowData => {
       let row = tableHeadings.map(header => {
-        let text = tableDataMappers[header.dataType](rowData[_.camelCase(header.id)]);
+
+        let text;
+        if (reportData.tableColumnFormatting && reportData.tableColumnFormatting[_.camelCase(header.id)]) {
+          text = reportData.tableColumnFormatting[_.camelCase(header.id)](rowData[_.camelCase(header.id)]);
+        } else {
+          text = tableDataMappers[header.dataType](rowData[_.camelCase(header.id)]);
+        }
 
         if (header.id === 'juror_postcode' || header.id === 'document_code') {
           text = text.toUpperCase();

@@ -3,7 +3,7 @@
 
   const _ = require('lodash');
   const { isCourtUser } = require('../../../components/auth/user-type');
-  const { dateFilter, capitalizeFully, toMoney, toSentenceCase } = require('../../../components/filters');
+  const { dateFilter, capitalizeFully, toMoney, toSentenceCase, makeDate } = require('../../../components/filters');
   const {
     dailyUtilisationDAO,
     dailyUtilisationJurorsDAO,
@@ -1565,7 +1565,9 @@
       'jury-attendance-audit': {
         title: 'Jury attendance audit report',
         apiKey: 'JuryAttendanceAuditReport',
-        searchProperty: 'juryAuditNumber',
+        searchProperty: {
+          filter: 'juryAuditNumber',
+        },
         headings: [
           'attendanceDate',
           'reportDate',
@@ -1621,7 +1623,9 @@
       'pool-attendance-audit': {
         title: 'Pool attendance audit report',
         apiKey: 'PoolAttendanceAuditReport',
-        searchProperty: 'poolAuditNumber',
+        searchProperty: {
+          filter: 'poolAuditNumber',
+        },
         headings: [
           'attendanceDate',
           'reportDate',
@@ -1871,10 +1875,48 @@
           key: 'weekend-attendance',
           filterParam: 'all',
         },
-        searchProperty: 'locCode',
+        searchProperty: {
+          filter: 'locCode',
+        },
         tableColumnFormatting: {
           attendanceDate: (data) => data ? dateFilter(data, 'YYYY-mm-dd', 'DD MMM YYYY') : '-',
-        }
+        },
+      },
+      'expense-limit-adjustments': {
+        title: 'Manual adjustments to expense limits',
+        apiKey: 'ManualAdjustmentsToExpenseLimitsReport',
+        defaultSortColumn: 'courtName',
+        tableColumnFormatting: {
+          changeDate: (data) => {
+            if (!data) return '-';
+            const date = makeDate(data.slice(0, 3));
+            return dateFilter(date, null, 'DD MMM YYYY');
+          },
+        },
+      },
+      'expense-limit-adjustments-audit': {
+        title: 'Expense payments using adjusted limits',
+        apiKey: 'ExpensePaymentsUsingAdjustedLimitsReport',
+        headings: [
+          'transportType',
+          'reportDate',
+          'oldLimit',
+          'reportTime',
+          'newLimit',
+          'courtName',
+        ],
+        defaultSortColumn: 'courtName',
+        searchProperty: {
+          filter: 'transportType',
+          valueTransformer: (value) => capitalizeFully(toSentenceCase(value)),
+        },
+        configSessionVariables: {
+          courts: 'reportCourts',
+        },
+        parentReport: {
+          key: 'expense-limit-adjustments',
+          filterParam: 'all',
+        },
       },
     };
   };
