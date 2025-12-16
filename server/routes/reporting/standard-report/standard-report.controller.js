@@ -604,6 +604,9 @@
       if (req.query.fromDate) {
         url = url + '?fromDate=' + req.query.fromDate + '&toDate=' + req.query.toDate;
       }
+      if (req.query.courtLocCode) {
+        url = url + (url.includes('?') ? '&' : '?') + 'courtLocCode=' + req.query.courtLocCode;
+      }
       if (req.query.sortBy) {
         url = url + (url.includes('?') ? '&' : '?') + 'sortBy=' + req.query.sortBy;
       }
@@ -621,7 +624,7 @@
       if (reportType.backUrl) {
         return reportType.backUrl;
       }
-      if (reportType.parentReport && reportType.parentReport.useParentRoute && reportType.parentReport.useParentRoute(req)) {
+      if (reportType.parentReport && (!reportType.parentReport.useParentRoute || reportType.parentReport.useParentRoute(req))) {
         return app.namedRoutes.build(`reports.${reportType.parentReport.key}.report.get`, { filter: reportType.parentReport.filterParam });
       }
       if (reportType.search === 'trial') {

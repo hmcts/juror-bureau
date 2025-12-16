@@ -1927,7 +1927,9 @@
         title: 'Courts with incomplete service',
         apiKey: 'CourtsWithIncompleteServiceReport',
         defaultSortColumn: 'courtLocationNameAndCodeJp',
-        searchProperty: 'date'
+        searchProperty: {
+          filter: 'date'
+        },
       },
     };
   };
