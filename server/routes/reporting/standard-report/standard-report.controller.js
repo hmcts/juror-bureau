@@ -689,6 +689,12 @@
       }
     }
 
+    if (reportType.configSessionVariables) {
+      for (const [key, value] of Object.entries(reportType.configSessionVariables)) {
+        config[key] = req.session[value] || '';
+      }
+    }
+
     // Backlink routing needs saved for jurors report
     if (reportKey === 'daily-utilisation') {
       req.session.dailyUtilisation = {
