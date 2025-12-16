@@ -1875,7 +1875,9 @@
           key: 'weekend-attendance',
           filterParam: 'all',
         },
-        searchProperty: 'locCode',
+        searchProperty: {
+          filter: 'locCode',
+        },
         tableColumnFormatting: {
           attendanceDate: (data) => data ? dateFilter(data, 'YYYY-mm-dd', 'DD MMM YYYY') : '-',
         },
