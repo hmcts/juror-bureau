@@ -294,13 +294,18 @@ async function standardReportPrint(app, req, res, reportKey, data) {
   };
 
   try {
+    let metadata = {};
+    if (!_.isEmpty(reportData.headings)) {
+      metadata = {
+        left: [...buildReportHeadings(reportData.headings.filter((v, index) => index % 2 === 0)).filter(item => item)] || [],
+        right: [...buildReportHeadings(reportData.headings.filter((v, index) => index % 2 === 1)).filter(item => item)] || [],
+      }
+    }
+
     const document = await generateDocument({
       title: reportData.title,
       footerText: reportData.title,
-      metadata: {
-        left: [...buildReportHeadings(reportData.headings.filter((v, index) => index % 2 === 0)).filter(item => item)],
-        right: [...buildReportHeadings(reportData.headings.filter((v, index) => index % 2 === 1)).filter(item => item)],
-      },
+      metadata,
       largeTotals: buildLargeTotals(),
       tables: reportBody,
     }, {

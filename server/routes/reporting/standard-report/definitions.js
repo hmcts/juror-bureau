@@ -11,7 +11,8 @@
     generateMonthlyUtilisationDAO,
     yieldPerformanceDAO,
     allCourtUtilisationDAO,
-    digitalSummonsReceivedReportDAO
+    digitalSummonsReceivedReportDAO,
+    weekendAttendanceReportDAO
   } = require('../../../objects/reports');
 
   const makeLink = (app) => {
@@ -1841,6 +1842,39 @@
         printLandscape: true,
         fontSize: 8,
         exportLabel: 'Export data',
+      },
+      'weekend-attendance': {
+        title: 'Courts recording weekend attendance this month',
+        defaultSortColumn: 'courtName',
+        bespokeReport: {
+          dao: (req) => weekendAttendanceReportDAO.get(req)
+        },
+        tableColumnFormatting: {
+          totalPaid: (data) => data < 0 
+            ? `(£${(Math.round(Math.abs(data) * 100) / 100).toFixed(2).toString()})`
+            : `£${(Math.round(data * 100) / 100).toFixed(2).toString()}`
+        }
+      },
+      'weekend-attendance-audit': {
+        title: 'Weekend attendance audit report',
+        apiKey: 'WeekendAttendanceReport',
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+          'total',
+          'courtName',
+        ],
+        defaultSortColumn: 'jurorNumber',
+        parentReport: {
+          key: 'weekend-attendance',
+          filterParam: 'all',
+        },
+        searchProperty: 'locCode',
+        tableColumnFormatting: {
+          attendanceDate: (data) => data ? dateFilter(data, 'YYYY-mm-dd', 'DD MMM YYYY') : '-',
+        }
       },
     };
   };

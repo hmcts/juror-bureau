@@ -47,7 +47,7 @@ const tableDataMappers = {
   },
   Boolean: (data) => data ? 'Yes' : 'No',
   Double: (data) => data ? data.toFixed(2).toString() : '-',
-  Date: (data) => data ? dateFilter(data, 'YYYY-mm-dd', 'ddd D MMM YYYY') : '-',
+  Date: (data, headerId) => data ? dateFilter(data, 'YYYY-mm-dd', 'ddd D MMM YYYY') : '-',
 
 };
 

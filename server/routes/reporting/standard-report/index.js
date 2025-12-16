@@ -118,6 +118,8 @@
     standardReportRoutes(app, 'all-court-utilisation');
     standardReportRoutes(app, 'expense-payments');
     standardReportRoutes(app, 'outgoing-sms-messages');
+    standardReportRoutes(app, 'weekend-attendance');
+    standardReportRoutes(app, 'weekend-attendance-audit');
   };
 
 })();
