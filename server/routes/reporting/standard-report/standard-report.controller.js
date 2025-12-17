@@ -422,6 +422,16 @@
                 }</a>`,
               });
             }
+            if (reportKey === 'courts-incomplete-service') {
+              return ({
+                html: `<a href=${
+                    app.namedRoutes.build('reports.incomplete-service.report.get', { filter: dateFilter(new Date(), null, 'yyyy-MM-DD') })
+                    + `?courtLocCode=${courtLocCode}`
+                  }>${
+                  output
+                }</a>`,
+              });
+            }
           }
           
           if (header.id === 'trial_type') {
