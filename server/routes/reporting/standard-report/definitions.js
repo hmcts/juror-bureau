@@ -12,7 +12,8 @@
     yieldPerformanceDAO,
     allCourtUtilisationDAO,
     digitalSummonsReceivedReportDAO,
-    weekendAttendanceReportDAO
+    weekendAttendanceReportDAO,
+    overdueUtilisationReportDAO
   } = require('../../../objects/reports');
 
   const makeLink = (app) => {
@@ -1945,6 +1946,13 @@
           filter: 'date'
         },
       },
+      'overdue-utilisation-report': {
+        title: 'Overdue utilisation reports',
+        defaultSortColumn: 'courtName',
+        bespokeReport: {
+          dao: (req) => overdueUtilisationReportDAO.get(req)
+        },
+      }
     };
   };
 })();

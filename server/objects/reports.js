@@ -114,4 +114,12 @@
     }
   });
 
+  module.exports.overdueUtilisationReportDAO = new DAO('moj/reports/overdue-utilisation-report', {
+    get: function() {
+      return {
+        transform: mapSnakeToCamel,
+      }
+    }
+  });
+
 })();
