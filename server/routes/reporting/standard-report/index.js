@@ -122,6 +122,7 @@
     standardReportRoutes(app, 'weekend-attendance-audit');
     standardReportRoutes(app, 'expense-limit-adjustments');
     standardReportRoutes(app, 'expense-limit-adjustments-audit');
+    standardReportRoutes(app, 'courts-incomplete-service');
   };
 
 })();
