@@ -46,7 +46,7 @@
     "fs-extra": "11.3.2",
     "govuk-frontend": "^5.13.0",
     "helmet": "^8.1.0",
-    "jsonwebtoken": "^9.0.2",
+    "jsonwebtoken": "^9.0.3",
     "launchdarkly-node-server-sdk": "^7.0.4",
     "lodash": "^4.17.21",
     "method-override": "^3.0.0",
