@@ -1,0 +1,46 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{% set currentApp = "System administration" %}
+{% set nav = "managementDashboard" %}
+
+{% set currentPage = "homepage" %}
+
+{% block page_title %}Juror homepage{% endblock %}
+{% block page_identifier %}Homepage{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      {% for table in tables %}
+        <div class="govuk-grid-row govuk-!-margin-bottom-9">
+          <div class="govuk-grid-column-full">
+            {% if table.rows | length %}
+              {{ govukTable({
+                caption: table.caption,
+                captionClasses: "govuk-table__caption--m",
+                head: table.head,
+                rows: table.rows
+              }) }}
+            {% else %}
+              <h2 class="govuk-heading-m">{{ table.caption }}</h2>
+              {% if not table.staticLink %}
+                <p class="govuk-body">No records to show</p>
+              {% endif %}
+            {% endif %}
+            {% if table.staticLink %}
+              <a class="govuk-body govuk-link" href="{{ table.staticLink.link }}">{{ table.staticLink.text }}</a>
+            {% endif %}
+            {% if table.reportLink %}
+              <a class="govuk-body govuk-link" href="{{ table.reportLink }}">Show all</a>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+{% endblock %}

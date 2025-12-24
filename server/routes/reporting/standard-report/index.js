@@ -48,6 +48,8 @@
     }
   };
 
+  module.exports.standardReportRoutes = standardReportRoutes;
+
   // Add standard report keys to this object, the function will populate them
   module.exports = function(app) {
     standardReportRoutes(app, 'amendment-juror');
