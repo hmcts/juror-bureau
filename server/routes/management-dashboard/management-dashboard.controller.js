@@ -11,10 +11,11 @@ const { link } = require("fs-extra");
     let tables = [];
     try {
       for (const [key, value] of Object.entries(tableDefinitions(app)(req, res))) {
-        let tableData = {};
+        let rawData = {};
         if (value.apiKey) {
           try {
-            tableData = await managementDashboardDAO.get(req, value.apiKey);
+            rawData = await managementDashboardDAO.get(req, value.apiKey);
+            console.log(`\n\nFetched data for ${value.apiKey}:`, rawData, '\n\n');
           } catch (err) {
             app.logger.crit(`Unable to fetch management dashboard data for ${value.apiKey}`, {
               auth: req.session.authentication,
@@ -23,8 +24,15 @@ const { link } = require("fs-extra");
             return res.render('_errors/generic', { err });
           }
         }
-        console.log(`Building table for ${key} with definition:`, value, 'and data:', tableData);
-        const table = buildTable(app)(value, tableData);
+        // console.log(`Building table for ${key} with definition:`, value, 'and data:', rawData);
+        const table = buildTable(app)(value, rawData);
+        if (value.chart) {
+          table.chart = {
+            template: value.chart.template,
+            data: value.chart.chartData(rawData),
+          }
+        }
+        console.log(`\n\nBuilt table for ${key}:`, table, '\n\n');
         tables.push(table);
       }
     } catch (err) {
@@ -45,6 +53,7 @@ const { link } = require("fs-extra");
       head: [],
       rows: [],
       caption: tableDefinition.caption,
+      subCaption: tableDefinition.subCaption || null,
       staticLink: tableDefinition.staticLink || null,
     };
 
@@ -149,14 +158,30 @@ const { link } = require("fs-extra");
       },
       outgoingSmsMessages: {
         caption: 'Outgoing SMS messages',
+        subCaption: `Sent since 1st April ${getLastAprilFirst().getFullYear()}.`,
         headers: [
-          { id: 'court', text: 'Court', dataFormating: (data) => capitalizeFully(data) },
-          { id: 'smsSent', text: 'SMS sent' },
+          { id: 'courtLocationNameAndCode', text: 'Court', dataFormating: (data) => capitalizeFully(data) },
+          { id: 'messagesSent', text: 'SMS sent' },
         ],
         reportLink: app.namedRoutes.build('reports.outgoing-sms-messages.filter.dates.get'),
-        // apiKey: 'outgoing-sms-messages',
+        apiKey: 'sms-messages',
+        chart: {
+          template: 'sms-doughnut',
+          chartData: (data) => ({
+            used: data.totalMessagesSent,
+            remaining: 40000 - data.totalMessagesSent,
+          }),
+        }
       }
     };
+  }
+
+  function getLastAprilFirst() {
+    const today = new Date();
+    const year = today.getMonth() < 3 || (today.getMonth() === 3 && today.getDate() < 1)
+      ? today.getFullYear() - 1
+      : today.getFullYear();
+    return new Date(year, 3, 1);
   }
 
 })();
