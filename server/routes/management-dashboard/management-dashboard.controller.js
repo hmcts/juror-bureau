@@ -1,47 +1,39 @@
 (() => {
   'use strict';
 
-  const _ = require("lodash");
   const { toSentenceCase, makeDate, dateFilter, capitalizeFully } = require("../../components/filters");
   const { managementDashboardDAO } = require("../../objects/management-dashboard");
 
   module.exports.getManagementDashboard = (app) => async (req, res) => {
     let tables = [];
     try {
-      for (const [key, value] of Object.entries(tableDefinitions(app)(req, res))) {
+      const defs = tableDefinitions(app)(req, res);
+      for (const [key, definition] of Object.entries(defs)) {
         let rawData = {};
-        if (value.apiKey) {
+        if (definition.apiKey) {
           try {
-            rawData = await managementDashboardDAO.get(req, value.apiKey);
+            rawData = await managementDashboardDAO.get(req, definition.apiKey);
           } catch (err) {
-            app.logger.crit(`Unable to fetch management dashboard data for ${value.apiKey}`, {
-              auth: req.session.authentication,
-              error: typeof err.error !== 'undefined' ? err.error : err.toString(),
-            });
-            return res.render('_errors/generic', { err });
+            return renderError(app, res, `Unable to fetch management dashboard data for ${definition.apiKey}`, err, req);
           }
         }
-        const table = buildTable(app)(value, rawData);
-        if (value.chart) {
+        const table = buildTable(app)(definition, rawData);
+        if (definition.chart) {
           table.chart = {
-            template: value.chart.template,
-            data: value.chart.chartData(rawData),
-          }
+            template: definition.chart.template,
+            data: definition.chart.chartData(rawData),
+          };
         }
         tables.push(table);
       }
-    } catch (err) {
-      app.logger.crit('Unable to build management dashboard data', {
-        auth: req.session.authentication,
-        error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+      return res.render('management-dashboard/management-dashboard', {
+        headingName: 'Management dashboard',
+        tables,
       });
-      return res.render('_errors/generic', { err });
+    } catch (err) {
+      return renderError(app, res, 'Unable to build management dashboard data', err, req);
     }
-    return res.render('management-dashboard/management-dashboard', {
-      headingName: 'Management dashboard',
-      tables,
-    });
-  }
+  };
 
   const buildTable = (app) => (tableDefinition, data) => {
     const table = {
@@ -52,16 +44,14 @@
       staticLink: tableDefinition.staticLink || null,
       exportReportLink: tableDefinition.exportReportLink || null,
     };
-
     if (!data.records || data.records.length === 0) {
       return table;
     } else {
-      table.reportLink = data.records.length >= 10 ? tableDefinition.reportLink : null,
-      tableDefinition.headers.forEach((header) => {
+      table.reportLink = data.records.length >= 10 ? tableDefinition.reportLink : null;
+      tableDefinition.headers?.forEach((header) => {
         table.head.push({ text: header.text });
       });
     }
-
     data.records.forEach((record) => {
       let item = [];
       tableDefinition.headers.forEach((header) => {
@@ -76,19 +66,20 @@
       });
       table.rows.push(item);
     });
-
     return table;
-  }
+  };
 
   const tableDefinitions = (app) => (req, res) => {
+    const getLocCode = data => data['courtLocationNameAndCode']?.split('(')[1]?.split(')')[0];
+    const getYear = () => getLastAprilFirst().getFullYear();
     return {
       overdueUtilisation: {
         caption: 'Overdue utilisation reports',
         headers: [
-          { text: 'Court', id: 'court', dataFormating: (data) => capitalizeFully(data) },
-          { text: 'Report last run', id: 'reportLastRun', dataFormating: (data) => dateFilter(makeDate(data), null, 'DD/MM/YYYY') },
+          { text: 'Court', id: 'court', dataFormating: capitalizeFully },
+          { text: 'Report last run', id: 'reportLastRun', dataFormating: d => dateFilter(makeDate(d), null, 'DD/MM/YYYY') },
           { text: 'Days elapsed', id: 'daysElapsed' },
-          { text: 'Utilisation from previoud report', id: 'utilisation', dataFormating: (data) => `${data.toFixed(2)}%` },
+          { text: 'Utilisation from previoud report', id: 'utilisation', dataFormating: d => `${d.toFixed(2)}%` },
         ],
         reportLink: app.namedRoutes.build('reports.overdue-utilisation-report.report.get', { filter: 'all' }),
         apiKey: 'overdue-utilisation',
@@ -96,8 +87,8 @@
       incompleteService: {
         caption: 'Courts with incomplete service',
         headers: [
-          { id: 'court', text: 'Court', dataFormating: (data) => capitalizeFully(data) },
-          { id: 'numberOfIncompleteServices', text: 'Incomplete jurors', dataFormating: (data) => data.toString() },
+          { id: 'court', text: 'Court', dataFormating: capitalizeFully },
+          { id: 'numberOfIncompleteServices', text: 'Incomplete jurors', dataFormating: d => d.toString() },
         ],
         reportLink: app.namedRoutes.build('reports.courts-incomplete-service.report.get', { filter: dateFilter(new Date(), null, 'yyyy-MM-DD') }),
         apiKey: 'incomplete-service',
@@ -105,19 +96,16 @@
       weekendAttendance: {
         caption: 'Courts recording weekend attendance this month',
         headers: [
-          { 
+          {
             id: 'courtLocationNameAndCode',
             text: 'Court',
-            dataFormating: (data) => capitalizeFully(data),
-            link: (app) => (data) => {
-              const locCode = data['courtLocationNameAndCode'].split('(')[1].split(')')[0];
-              return app.namedRoutes.build('reports.weekend-attendance-audit.report.get', { filter: locCode });
-            },
+            dataFormating: capitalizeFully,
+            link: app => data => app.namedRoutes.build('reports.weekend-attendance-audit.report.get', { filter: getLocCode(data) }),
           },
-          { id: 'saturdayTotal', text: 'Saturday', dataFormating: (data) => data && data > 0 ? data.toString() : '-' },
-          { id: 'sundayTotal', text: 'Sunday', dataFormating: (data) => data && data > 0 ? data.toString() : '-' },
-          { id: 'holidayTotal', text: 'Bank Holiday', dataFormating: (data) => data && data > 0 ? data.toString() : '-' },
-          { id: 'totalPaid', text: 'Total paid', dataFormating: (data) => `£${data.toFixed(2)}` },
+          { id: 'saturdayTotal', text: 'Saturday', dataFormating: d => d && d > 0 ? d.toString() : '-' },
+          { id: 'sundayTotal', text: 'Sunday', dataFormating: d => d && d > 0 ? d.toString() : '-' },
+          { id: 'holidayTotal', text: 'Bank Holiday', dataFormating: d => d && d > 0 ? d.toString() : '-' },
+          { id: 'totalPaid', text: 'Total paid', dataFormating: d => `£${d.toFixed(2)}` },
         ],
         reportLink: app.namedRoutes.build('reports.weekend-attendance.report.get', { filter: 'all' }),
         apiKey: 'weekend-attendance',
@@ -132,47 +120,46 @@
       expenseLimits: {
         caption: 'Manual adjustments to expense limits',
         headers: [
-          { 
+          {
             id: 'courtLocationNameAndCode',
             text: 'Court',
-            dataFormating: (data) => capitalizeFully(data),
-            link: (app) => (data) => {
-              const locCode = data['courtLocationNameAndCode'].split('(')[1].split(')')[0];
-              return app.namedRoutes.build('reports.expense-limit-adjustments-audit.redirect.get', {
-                locCode,
-                transportType: data['type'],
-              });
-            },
+            dataFormating: capitalizeFully,
+            link: app => data => app.namedRoutes.build('reports.expense-limit-adjustments-audit.redirect.get', {
+              locCode: getLocCode(data),
+              transportType: data['type'],
+            }),
           },
-          { id: 'type', text: 'Type', dataFormating: (data) => toSentenceCase(data) },
-          { id: 'oldLimit', text: 'Old limit', dataFormating: (data) => `£${data.toFixed(2)}` },
-          { id: 'newLimit', text: 'New limit', dataFormating: (data) => `£${data.toFixed(2)}` },
-          { id: 'changedBy', text: 'Changed by', dataFormating: (data) => capitalizeFully(data) },
+          { id: 'type', text: 'Type', dataFormating: toSentenceCase },
+          { id: 'oldLimit', text: 'Old limit', dataFormating: d => `£${d.toFixed(2)}` },
+          { id: 'newLimit', text: 'New limit', dataFormating: d => `£${d.toFixed(2)}` },
+          { id: 'changedBy', text: 'Changed by', dataFormating: capitalizeFully },
         ],
         reportLink: app.namedRoutes.build('reports.expense-limit-adjustments.report.get', { filter: 'all' }),
         apiKey: 'expense-limits',
       },
       outgoingSmsMessages: {
         caption: 'Outgoing SMS messages',
-        subCaption: `Sent since 1st April ${getLastAprilFirst().getFullYear()}.`,
+        subCaption: `Sent since 1st April ${getYear()}.`,
         headers: [
-          { id: 'courtLocationNameAndCode', text: 'Court', dataFormating: (data) => capitalizeFully(data) },
+          { id: 'courtLocationNameAndCode', text: 'Court', dataFormating: capitalizeFully },
           { id: 'messagesSent', text: 'SMS sent' },
         ],
         reportLink: app.namedRoutes.build('reports.outgoing-sms-messages.filter.dates.get'),
         apiKey: 'sms-messages',
         chart: {
           template: 'sms-doughnut',
-          chartData: (data) => ({
-            used: data.totalMessagesSent,
-            remaining: 40000 - data.totalMessagesSent,
+          chartData: data => ({
+            used: data.totalMessagesSent || 0,
+            remaining: 40000 - (data.totalMessagesSent || 0),
           }),
         },
-        exportReportLink: app.namedRoutes.build('management-dashboard.outgoing-sms-messages.report.export')
-          + `?fromDate=${dateFilter(getLastAprilFirst(), null, 'yyyy-MM-DD')}&toDate=${dateFilter(new Date(), null, 'yyyy-MM-DD')}`,
-      }
+        exportReportLink:
+          app.namedRoutes.build('management-dashboard.outgoing-sms-messages.report.export') +
+          `?fromDate=${dateFilter(getLastAprilFirst(), null, 'yyyy-MM-DD')}` +
+          `&toDate=${dateFilter(new Date(), null, 'yyyy-MM-DD')}`,
+      },
     };
-  }
+  };
 
   function getLastAprilFirst() {
     const today = new Date();
@@ -180,6 +167,14 @@
       ? today.getFullYear() - 1
       : today.getFullYear();
     return new Date(year, 3, 1);
+  }
+
+  function renderError(app, res, msg, err, req) {
+    app.logger.crit(msg, {
+      auth: req?.session?.authentication,
+      error: err?.error ?? err?.toString(),
+    });
+    return res.render('_errors/generic', { err });
   }
 
 })();
