@@ -5,10 +5,9 @@
   const { managementDashboardDAO } = require("../../objects/management-dashboard");
 
   module.exports.getManagementDashboard = (app) => async (req, res) => {
-    let tables = [];
+    let sections = [];
     try {
-      const defs = tableDefinitions(app)(req, res);
-      for (const [key, definition] of Object.entries(defs)) {
+      for (const [key, definition] of Object.entries(tableDefinitions(app)(req, res))) {
         let rawData = {};
         if (definition.apiKey) {
           try {
@@ -17,46 +16,48 @@
             return renderError(app, res, `Unable to fetch management dashboard data for ${definition.apiKey}`, err, req);
           }
         }
-        const table = buildTable(app)(definition, rawData);
+        const section = buildSection(app)(definition, rawData);
         if (definition.chart) {
-          table.chart = {
+          section.chart = {
             template: definition.chart.template,
             data: definition.chart.chartData(rawData),
           };
         }
-        tables.push(table);
+        sections.push(section);
       }
       return res.render('management-dashboard/management-dashboard', {
         headingName: 'Management dashboard',
-        tables,
+        sections,
       });
     } catch (err) {
       return renderError(app, res, 'Unable to build management dashboard data', err, req);
     }
   };
 
-  const buildTable = (app) => (tableDefinition, data) => {
-    const table = {
-      head: [],
-      rows: [],
-      caption: tableDefinition.caption,
-      subCaption: tableDefinition.subCaption || null,
+  const buildSection = (app) => (tableDefinition, data) => {
+    const section = {
+      table: {
+        head: [],
+        rows: [],
+      },
+      heading: tableDefinition.heading,
+      subHeading: tableDefinition.subHeading || null,
       staticLink: tableDefinition.staticLink || null,
       exportReportLink: tableDefinition.exportReportLink || null,
     };
     if (!data.records || data.records.length === 0) {
-      return table;
+      return section;
     } else {
-      table.reportLink = data.records.length >= 10 ? tableDefinition.reportLink : null;
+      section.reportLink = data.records.length >= 10 ? tableDefinition.reportLink : null;
       tableDefinition.headers?.forEach((header) => {
-        table.head.push({ text: header.text });
+        section.table.head.push({ text: header.text });
       });
     }
     data.records.forEach((record) => {
       let item = [];
       tableDefinition.headers.forEach((header) => {
         const rawData = record[header.id];
-        const formattedData = header.dataFormating ? header.dataFormating(rawData) : rawData;
+        const formattedData = header.dataFormatting ? header.dataFormatting(rawData) : rawData;
         if (header.link) {
           const linkUrl = header.link(app)(record);
           item.push({ html: `<a href="${linkUrl}">${formattedData}</a>` });
@@ -64,9 +65,9 @@
           item.push({ text: formattedData });
         }
       });
-      table.rows.push(item);
+      section.table.rows.push(item);
     });
-    return table;
+    return section;
   };
 
   const tableDefinitions = (app) => (req, res) => {
@@ -74,74 +75,74 @@
     const getYear = () => getLastAprilFirst().getFullYear();
     return {
       overdueUtilisation: {
-        caption: 'Overdue utilisation reports',
+        heading: 'Overdue utilisation reports',
         headers: [
-          { text: 'Court', id: 'court', dataFormating: capitalizeFully },
-          { text: 'Report last run', id: 'reportLastRun', dataFormating: d => dateFilter(makeDate(d), null, 'DD/MM/YYYY') },
+          { text: 'Court', id: 'court', dataFormatting: capitalizeFully },
+          { text: 'Report last run', id: 'reportLastRun', dataFormatting: d => dateFilter(makeDate(d), null, 'DD/MM/YYYY') },
           { text: 'Days elapsed', id: 'daysElapsed' },
-          { text: 'Utilisation from previoud report', id: 'utilisation', dataFormating: d => `${d.toFixed(2)}%` },
+          { text: 'Utilisation from previoud report', id: 'utilisation', dataFormatting: d => `${d.toFixed(2)}%` },
         ],
         reportLink: app.namedRoutes.build('reports.overdue-utilisation-report.report.get', { filter: 'all' }),
         apiKey: 'overdue-utilisation',
       },
       incompleteService: {
-        caption: 'Courts with incomplete service',
+        heading: 'Courts with incomplete service',
         headers: [
-          { id: 'court', text: 'Court', dataFormating: capitalizeFully },
-          { id: 'numberOfIncompleteServices', text: 'Incomplete jurors', dataFormating: d => d.toString() },
+          { id: 'court', text: 'Court', dataFormatting: capitalizeFully },
+          { id: 'numberOfIncompleteServices', text: 'Incomplete jurors', dataFormatting: d => d.toString() },
         ],
         reportLink: app.namedRoutes.build('reports.courts-incomplete-service.report.get', { filter: dateFilter(new Date(), null, 'yyyy-MM-DD') }),
         apiKey: 'incomplete-service',
       },
       weekendAttendance: {
-        caption: 'Courts recording weekend attendance this month',
+        heading: 'Courts recording weekend attendance this month',
         headers: [
           {
             id: 'courtLocationNameAndCode',
             text: 'Court',
-            dataFormating: capitalizeFully,
+            dataFormatting: capitalizeFully,
             link: app => data => app.namedRoutes.build('reports.weekend-attendance-audit.report.get', { filter: getLocCode(data) }),
           },
-          { id: 'saturdayTotal', text: 'Saturday', dataFormating: d => d && d > 0 ? d.toString() : '-' },
-          { id: 'sundayTotal', text: 'Sunday', dataFormating: d => d && d > 0 ? d.toString() : '-' },
-          { id: 'holidayTotal', text: 'Bank Holiday', dataFormating: d => d && d > 0 ? d.toString() : '-' },
-          { id: 'totalPaid', text: 'Total paid', dataFormating: d => `£${d.toFixed(2)}` },
+          { id: 'saturdayTotal', text: 'Saturday', dataFormatting: d => d && d > 0 ? d.toString() : '-' },
+          { id: 'sundayTotal', text: 'Sunday', dataFormatting: d => d && d > 0 ? d.toString() : '-' },
+          { id: 'holidayTotal', text: 'Bank Holiday', dataFormatting: d => d && d > 0 ? d.toString() : '-' },
+          { id: 'totalPaid', text: 'Total paid', dataFormatting: d => `£${d.toFixed(2)}` },
         ],
         reportLink: app.namedRoutes.build('reports.weekend-attendance.report.get', { filter: 'all' }),
         apiKey: 'weekend-attendance',
       },
       expensePayments: {
-        caption: 'Expense payments',
+        heading: 'Expense payments',
         staticLink: {
           text: 'Court expense payments report',
           link: app.namedRoutes.build('reports.expense-payments.filter.dates.get'),
         },
       },
       expenseLimits: {
-        caption: 'Manual adjustments to expense limits',
+        heading: 'Manual adjustments to expense limits',
         headers: [
           {
             id: 'courtLocationNameAndCode',
             text: 'Court',
-            dataFormating: capitalizeFully,
+            dataFormatting: capitalizeFully,
             link: app => data => app.namedRoutes.build('reports.expense-limit-adjustments-audit.redirect.get', {
               locCode: getLocCode(data),
               transportType: data['type'],
             }),
           },
-          { id: 'type', text: 'Type', dataFormating: toSentenceCase },
-          { id: 'oldLimit', text: 'Old limit', dataFormating: d => `£${d.toFixed(2)}` },
-          { id: 'newLimit', text: 'New limit', dataFormating: d => `£${d.toFixed(2)}` },
-          { id: 'changedBy', text: 'Changed by', dataFormating: capitalizeFully },
+          { id: 'type', text: 'Type', dataFormatting: toSentenceCase },
+          { id: 'oldLimit', text: 'Old limit', dataFormatting: d => `£${d.toFixed(2)}` },
+          { id: 'newLimit', text: 'New limit', dataFormatting: d => `£${d.toFixed(2)}` },
+          { id: 'changedBy', text: 'Changed by', dataFormatting: capitalizeFully },
         ],
         reportLink: app.namedRoutes.build('reports.expense-limit-adjustments.report.get', { filter: 'all' }),
         apiKey: 'expense-limits',
       },
       outgoingSmsMessages: {
-        caption: 'Outgoing SMS messages',
-        subCaption: `Sent since 1st April ${getYear()}.`,
+        heading: 'Outgoing SMS messages',
+        subHeading: `Sent since 1st April ${getYear()}.`,
         headers: [
-          { id: 'courtLocationNameAndCode', text: 'Court', dataFormating: capitalizeFully },
+          { id: 'courtLocationNameAndCode', text: 'Court', dataFormatting: capitalizeFully },
           { id: 'messagesSent', text: 'SMS sent' },
         ],
         reportLink: app.namedRoutes.build('reports.outgoing-sms-messages.filter.dates.get'),

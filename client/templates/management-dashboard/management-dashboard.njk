@@ -16,20 +16,20 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
 
-      {% for table in tables %}
+      {% for section in sections %}
 
         <div class="govuk-grid-row">
-          <div class="govuk-grid-column-{% if table.exportReportLink %}two-thirds{% else %}full{% endif %}">
-            <h2 class="govuk-heading-m {% if table.subCaption %} govuk-!-margin-bottom-0 {% endif %}">{{ table.caption }}</h2>
-            {% if table.subCaption %}
-              <span class="govuk-caption-m govuk-!-margin-bottom-3">{{ table.subCaption }}</span>
+          <div class="govuk-grid-column-{% if section.exportReportLink %}two-thirds{% else %}full{% endif %}">
+            <h2 class="govuk-heading-m {% if section.subHeading %} govuk-!-margin-bottom-0 {% endif %}">{{ section.heading }}</h2>
+            {% if section.subHeading %}
+              <span class="govuk-caption-m govuk-!-margin-bottom-3">{{ section.subHeading }}</span>
             {% endif %}
           </div>
-          {% if table.exportReportLink %}
+          {% if section.exportReportLink %}
             <div class="govuk-grid-column-one-third moj-button-group--inline mod-flex mod-justify-end">
               {{ govukButton({
                 text: "Export report",
-                href: table.exportReportLink,
+                href: section.exportReportLink,
                 classes: "govuk-button--secondary"
               }) }}
             </div>
@@ -38,24 +38,24 @@
 
         <div class="govuk-grid-row govuk-!-margin-bottom-9">
           <div class="govuk-grid-column-full">
-            {% if table.chart %}
-              {% include "management-dashboard/_partials/" + table.chart.template + ".njk" %}
+            {% if section.chart %}
+              {% include "management-dashboard/_partials/" + section.chart.template + ".njk" %}
             {% endif %}
-            {% if table.rows | length %}
+            {% if section.table.rows | length %}
               {{ govukTable({
-                head: table.head,
-                rows: table.rows
+                head: section.table.head,
+                rows: section.table.rows
               }) }}
             {% else %}
-              {% if not table.staticLink %}
+              {% if not section.staticLink %}
                 <p class="govuk-body">No records to show</p>
               {% endif %}
             {% endif %}
-            {% if table.staticLink %}
-              <a class="govuk-body govuk-link" href="{{ table.staticLink.link }}">{{ table.staticLink.text }}</a>
+            {% if section.staticLink %}
+              <a class="govuk-body govuk-link" href="{{ section.staticLink.link }}">{{ section.staticLink.text }}</a>
             {% endif %}
-            {% if table.reportLink %}
-              <a class="govuk-body govuk-link" href="{{ table.reportLink }}">Show all</a>
+            {% if section.reportLink %}
+              <a class="govuk-body govuk-link" href="{{ section.reportLink }}">Show all</a>
             {% endif %}
           </div>
         </div>
