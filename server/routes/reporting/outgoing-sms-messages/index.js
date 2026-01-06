@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const { getAttendanceDates, postAttendanceDates } = require('./outgoing-sms-messages.controller');
+  const { getAttendanceDates, postAttendanceDates, getDashboardExportRedirect } = require('./outgoing-sms-messages.controller');
   const auth = require('../../../components/auth');
 
   module.exports = function(app) {
@@ -13,5 +13,10 @@
       'reports.outgoing-sms-messages.filter.dates.post',
       auth.verify,
       postAttendanceDates(app));
+
+    app.get('/management-dashboard/outgoing-sms-messages/export',
+      'management-dashboard.outgoing-sms-messages.report.export',
+      auth.verify,
+      getDashboardExportRedirect(app));
   };
 })();

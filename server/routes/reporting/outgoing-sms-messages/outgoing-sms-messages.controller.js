@@ -9,6 +9,7 @@
   const moment = require('moment');
   const { makeManualError } = require('../../../lib/mod-utils');
   const { addURLQueryParams } = require('../standard-report/standard-report.controller.js');
+  const { fetchAllCourtsDAO } = require('../../../objects/request-pool.js');
 
   module.exports.getAttendanceDates = function(app) {
     return function(req, res) {
@@ -61,5 +62,27 @@
       );
     };
   };
+
+  module.exports.getDashboardExportRedirect = function(app) {
+    return async function(req, res) {
+      const { fromDate, toDate } = req.query;
+      try {
+        const courtsData = await fetchAllCourtsDAO.get(req);
+        const locCodes = courtsData.courts.map((court) => court.locationCode);
+        req.session.reportCourts = locCodes;
+
+        return res.redirect(app.namedRoutes.build('reports.outgoing-sms-messages.report.export', {
+          filter: 'courts',
+        }) + `?fromDate=${fromDate}&toDate=${toDate}`);
+      } catch (err) {
+        app.logger.crit('Failed to fetch courts list for sms management dashboard export: ', {
+          auth: req.session.authentication,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic', { err });
+      }
+    };
+  }
 
 })();

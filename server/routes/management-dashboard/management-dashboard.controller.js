@@ -1,5 +1,3 @@
-const { link } = require("fs-extra");
-
 (() => {
   'use strict';
 
@@ -15,7 +13,6 @@ const { link } = require("fs-extra");
         if (value.apiKey) {
           try {
             rawData = await managementDashboardDAO.get(req, value.apiKey);
-            console.log(`\n\nFetched data for ${value.apiKey}:`, rawData, '\n\n');
           } catch (err) {
             app.logger.crit(`Unable to fetch management dashboard data for ${value.apiKey}`, {
               auth: req.session.authentication,
@@ -24,7 +21,6 @@ const { link } = require("fs-extra");
             return res.render('_errors/generic', { err });
           }
         }
-        // console.log(`Building table for ${key} with definition:`, value, 'and data:', rawData);
         const table = buildTable(app)(value, rawData);
         if (value.chart) {
           table.chart = {
@@ -32,7 +28,6 @@ const { link } = require("fs-extra");
             data: value.chart.chartData(rawData),
           }
         }
-        console.log(`\n\nBuilt table for ${key}:`, table, '\n\n');
         tables.push(table);
       }
     } catch (err) {
@@ -55,6 +50,7 @@ const { link } = require("fs-extra");
       caption: tableDefinition.caption,
       subCaption: tableDefinition.subCaption || null,
       staticLink: tableDefinition.staticLink || null,
+      exportReportLink: tableDefinition.exportReportLink || null,
     };
 
     if (!data.records || data.records.length === 0) {
@@ -171,7 +167,9 @@ const { link } = require("fs-extra");
             used: data.totalMessagesSent,
             remaining: 40000 - data.totalMessagesSent,
           }),
-        }
+        },
+        exportReportLink: app.namedRoutes.build('management-dashboard.outgoing-sms-messages.report.export')
+          + `?fromDate=${dateFilter(getLastAprilFirst(), null, 'yyyy-MM-DD')}&toDate=${dateFilter(new Date(), null, 'yyyy-MM-DD')}`,
       }
     };
   }
