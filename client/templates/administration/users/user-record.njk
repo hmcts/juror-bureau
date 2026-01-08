@@ -114,29 +114,6 @@
   </div>
 
   {% if user.userType === "COURT" %}
-
-    {% set courtsTableData = [] %}
-    {% for court in user.courts %}
-      {% set satelliteCourtsData = [] %}
-      {% for satellite in court.satelliteCourts %}
-        {% set satelliteCourtsData = (satelliteCourtsData.push(satellite.name + ' (' + satellite.locCode + ')'), satelliteCourtsData) %}
-      {% endfor %}
-      {% set courtsTableData = (courtsTableData.push([
-        {
-          text: (court.primaryCourt.name + ' (' + court.primaryCourt.locCode + ')') | capitalizeFully
-        },
-        {
-          text: satelliteCourtsData | join(", ") | capitalizeFully if satelliteCourtsData | length else "-"
-        },
-        {
-          html: "<a class='govuk-link govuk-link--no-visited-state' href='"
-            + url('administration.users.remove-court.get', { username: user.username, locCode: court.primaryCourt.locCode })
-            + "'>Remove</a>",
-          format: "numeric"
-        }
-      ]), courtsTableData) %}
-    {% endfor %}
-
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
         <div class="mod-juror-record__title">
