@@ -914,8 +914,8 @@
 
     req.session.responseWasActioned = {
       jurorDetails: {
-        jurorNumber: req.session.straightThroughData.jurorDetails.jurorNumber,
-        jurorName: nameReducer(req.session.straightThroughData.jurorDetails.jurorName),
+        jurorNumber: req.session.straightThroughData?.jurorDetails.jurorNumber,
+        jurorName: nameReducer(req.session.straightThroughData?.jurorDetails.jurorName),
       },
       type: 'Responded',
     };

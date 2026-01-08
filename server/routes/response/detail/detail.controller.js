@@ -702,7 +702,7 @@
       if (type === 'paper'){
         return res.redirect(app.namedRoutes.build('process-reply.get', { id, type: 'paper' }));
       }
-      return res.redirect(app.namedRoutes.build('process-reply.get', { id }));
+      return res.redirect(app.namedRoutes.build('process-reply.get', { id, type: 'digital' }));
     };
 
     delete req.session.errors;
