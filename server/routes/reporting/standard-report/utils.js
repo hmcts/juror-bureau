@@ -4,7 +4,12 @@ const moment = require('moment');
 const { snakeToCamel } = require('../../../lib/mod-utils');
 
 const tableDataMappers = {
-  String: (data) => isNaN(data) ? capitalizeFully(data) : (data?.toString() || '-' ),
+  String: (data) => {
+    if (isNaN(data)) {
+      return data === 'null' ? '-' : capitalizeFully(data);
+    }
+    return data?.toString() || '-';
+  },
   LocalDate: (data) => data ? dateFilter(data, 'YYYY-mm-dd', 'ddd D MMM YYYY') : '-',
   LocalDateTime: (data) => data ? moment(data).tz('Europe/London').format('D MMM YYYY [at] HH:mm a') : '-',
   List: (data) => {

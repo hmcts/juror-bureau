@@ -1898,29 +1898,35 @@
             return dateFilter(date, null, 'DD MMM YYYY');
           },
         },
+        bespokeReport: {
+          printWidths: ['*', '*', 'auto', 'auto', '*', '*'],
+        },
       },
       'expense-limit-adjustments-audit': {
         title: 'Expense payments using adjusted limits',
         apiKey: 'ExpensePaymentsUsingAdjustedLimitsReport',
         headings: [
           'transportType',
-          'reportDate',
+          // 'reportDate',
           'oldLimit',
-          'reportTime',
+          // 'reportTime',
           'newLimit',
           'courtName',
+          'revisionNumber',
         ],
         defaultSortColumn: 'courtName',
-        searchProperty: {
-          filter: 'transportType',
-          valueTransformer: (value) => capitalizeFully(toSentenceCase(value)),
-        },
-        configSessionVariables: {
-          courts: 'reportCourts',
-        },
         parentReport: {
           key: 'expense-limit-adjustments',
           filterParam: 'all',
+        },
+        queryParams: {
+          transportType: req?.query?.transportType || '',
+          revisionNumber: req?.query?.revisionNumber || '',
+        },
+        requestBodyConfig: {
+          transportType: capitalizeFully(toSentenceCase(req?.query?.transportType || '')),
+          revisionNumber: req?.query?.revisionNumber || '',
+          locCode: req?.params?.filter || '',
         },
       },
       'courts-incomplete-service': {
