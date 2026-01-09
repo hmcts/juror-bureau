@@ -269,6 +269,7 @@
 
         return res.render('administration/users/user-record.njk', {
           user,
+          courtsTableData: buildAssignedCourtsTableData(app)(user),
           successBanner,
           roles,
           editUserUrl: app.namedRoutes.build('administration.users.edit.get', {
@@ -428,5 +429,30 @@
 
     };
   };
+
+  const buildAssignedCourtsTableData = (app) => (user) => {
+    return user.courts.map((court) => {
+      const satelliteCourtsData = court.satelliteCourts.map((satCourt) => {
+        return capitalizeFully(satCourt.name + ' (' + satCourt.locCode + ')');
+      })
+      return [
+        {
+          text: capitalizeFully(court.primaryCourt.name + ' (' + court.primaryCourt.locCode + ')')
+        },
+        {
+          text: satelliteCourtsData.length ? satelliteCourtsData.join(", ") : "-"
+        },
+        {
+          html: `<a class="govuk-link govuk-link--no-visited-state" href="${
+            app.namedRoutes.build('administration.users.remove-court.get', {
+              username: user.username,
+              locCode: court.primaryCourt.locCode
+            })
+            }">Remove</a>`,
+          format: "numeric"
+        }
+      ]
+    });
+  }
 
 })();
