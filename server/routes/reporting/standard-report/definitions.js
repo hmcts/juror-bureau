@@ -1907,9 +1907,9 @@
         apiKey: 'ExpensePaymentsUsingAdjustedLimitsReport',
         headings: [
           'transportType',
-          // 'reportDate',
+          'reportDate',
           'oldLimit',
-          // 'reportTime',
+          'reportTime',
           'newLimit',
           'courtName',
           'revisionNumber',
