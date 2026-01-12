@@ -1,6 +1,7 @@
 (() => {
   'use strict';
 
+  const _ = require('lodash');
   const { toSentenceCase, makeDate, dateFilter, capitalizeFully } = require("../../components/filters");
   const { managementDashboardDAO } = require("../../objects/management-dashboard");
 
@@ -134,10 +135,10 @@
             id: 'courtLocationNameAndCode',
             text: 'Court',
             dataFormatting: capitalizeFully,
-            link: app => data => app.namedRoutes.build('reports.expense-limit-adjustments-audit.redirect.get', {
-              locCode: getLocCode(data),
-              transportType: data['type'],
-            }),
+            link: app => data => app.namedRoutes.build('reports.expense-limit-adjustments-audit.report.get', {
+                filter: getLocCode(data)
+              }) + `?transportType=${_.camelCase(data.transportType)}`
+              + `&revisionNumber=${data.revisionNumber}`,
           },
           { id: 'type', text: 'Type', dataFormatting: toSentenceCase },
           { id: 'oldLimit', text: 'Old limit', dataFormatting: d => `£${d.toFixed(2)}` },
