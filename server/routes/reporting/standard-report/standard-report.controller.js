@@ -422,6 +422,16 @@
                 }</a>`,
               });
             }
+            if (reportKey === 'courts-incomplete-service') {
+              return ({
+                html: `<a href=${
+                    app.namedRoutes.build('reports.incomplete-service.report.get', { filter: dateFilter(new Date(), null, 'yyyy-MM-DD') })
+                    + `?courtLocCode=${courtLocCode}`
+                  }>${
+                  output
+                }</a>`,
+              });
+            }
           }
           
           if (header.id === 'trial_type') {
@@ -686,6 +696,12 @@
     if(reportType.requestBodyConfig) {
       for (const [key, value] of Object.entries(reportType.requestBodyConfig)) {
         config[key] = value;
+      }
+    }
+
+    if (reportType.configSessionVariables) {
+      for (const [key, value] of Object.entries(reportType.configSessionVariables)) {
+        config[key] = req.session[value] || '';
       }
     }
 

@@ -12,7 +12,8 @@
     yieldPerformanceDAO,
     allCourtUtilisationDAO,
     digitalSummonsReceivedReportDAO,
-    weekendAttendanceReportDAO
+    weekendAttendanceReportDAO,
+    overdueUtilisationReportDAO
   } = require('../../../objects/reports');
 
   const makeLink = (app) => {
@@ -23,61 +24,73 @@
     }
   }
 
-  // type IReportKey = {[key:string]: {
-  //   title: string,
-  //   apiKey: string,
-  //   search?: 'poolNumber' | 'dateRange',
-  //   searchLabelMappers: {
-  //     dateFrom: string, // custom label for date from input 
-  //     dateTo: string, // custom label for date to input 
-  //   },
-  //   fixedDateRangeValues?: [string]  // list of values to be used in fixed date range,
-  //   queryParams?: { // any mandatory query params neederd throughout report journey 
-  //     key: value,
-  //   },
-  //   bespokeReport?: {
-  //     dao?: (req) => Promise<any>,                                 // custom data access function
-  //     insertColumns?: {[key: number]: [string, (data, isPrint) => string]}, // column header, body
-  //     printInsertColumns?: boolean, // should insertColumns be included in pdf print (logic added to insertColumns)
-  //     insertRows?: {[key: number]: (data, isPrint) => [object]}, // row to be added within each table, 
-  //                                                                // key specifies position ('last' will append to end of each table)
-  //     printInsertRows?: boolean, // should insertRows be included in pdf print (logic added to insertRows)
-  //     insertTables?: {[key: number]: (data, isPrint) => [object]}, // table to be added to report,
-  //                                                                  // key specifies position ('last' will append to end of the report)
-  //     printInsertRows?: boolean, // should insertRows be included in pdf print (logic added to insertRows)
-  //     printWidths?: [string], // custom widths for pdf printing tables
-  //     body?: boolean, // fully bespoke report body
-  //     file?: string, // bespoke nunjucks file route to handle body
-  //     tableHeadClasses?: [string], // classes to be added to each table header in order i.e. size classes
-  //     sortReload?: boolean, // reload the page on sort
-  //   },
-  //   headings: string[], // corresponds to the ids provided for the headings in the API
-  //                       // (except report created dateTime)
-  //   unsortable?: boolean, // prevents report table from being sorted
-  //   exportLabel?: string, // label for export button if required
-  //   multiTable?: {  // include if there is multiple standard tables within one report
-  //     sectionHeadings?: boolean, // show section headings provided by DTO
-  //   },
-  //   grouped?: {
-  //     headings: {
-  //       transformer?: (data: string, isPrint: boolean) => string, // transform the group header
+  // type IReportKey = {
+  //   [key: string]: {
+  //     title: string, // Display title of the report
+  //     apiKey?: string, // API key to fetch report data
+  //     search?: 'poolNumber' | 'dateRange' | 'date' | 'trial' | 'fixedDateRange' | 'courts' | 'month', // Type of search/filter for the report
+  //     searchLabelMappers?: { // Custom labels for search fields
+  //       dateFrom?: string, // Label for 'from' date input
+  //       dateTo?: string,   // Label for 'to' date input
+  //       [key: string]: string, // Any additional custom labels
   //     },
-  //     groupHeader?: boolean, // display the group header or not.. in some reports we dont have to
-  //     totals?: boolean, // same on this one.. some reports dont need the totals
-  //     emptyDataGroup?: (colSpan, isPrint) => [object],  // returns table to display if a group has no data
-  //     sortGroups?: 'ascending' or 'descending',  // orders each group by group header,
-  //   },
-  //   printLandscape?: boolean, // force report printing to landscape
-  //   largeTotals?: {
-  //     values: (data) => {label: string, value: string}[], // large totals for the report
-  //     printWidths?: [string], // optional widths for the individual tags when printing, if left empty will stretch across page
-  //   },
-  //   fontSize?: number,
-  //   totalsRow?: (data, isPrint) => [object], // custom totals row for the report
-  //   columnWidths?: [string | number], // custom widths for the main table columns
-  //   filterBackLinkUrl?: string,  // backlink url for the inital filter page
-  //   defaultSortColumn?: string, // default sort column
-  // }};
+  //     fixedDateRangeValues?: string[], // Allowed fixed date range values
+  //     selectMonthLabel?: string, // Label for month selection
+  //     queryParams?: { [key: string]: any }, // Extra query params to send with API requests
+  //     requestBodyConfig?: { [key: string]: any }, // Extra config for POST request bodies
+  //     bespokeReport?: { // Custom/bespoke report rendering and data logic
+  //       dao?: (req: any, config?: any) => Promise<any>, // Custom data access function
+  //       insertColumns?: { [key: number | 'last']: [string, (data: any, isPrint?: boolean) => any] }, // Custom columns to insert
+  //       printInsertColumns?: boolean, // Include insertColumns in print
+  //       insertRows?: { [key: number | 'last']: (data: any, isPrint?: boolean) => any[] }, // Custom rows to insert
+  //       printInsertRows?: boolean, // Include insertRows in print
+  //       insertTables?: { [key: number | 'last']: (data: any, isPrint?: boolean) => any[] }, // Custom tables to insert
+  //       printInsertTables?: boolean, // Include insertTables in print
+  //       printWidths?: string[], // Custom column widths for print
+  //       body?: boolean, // Use bespoke report body rendering
+  //       file?: string, // Path to custom nunjucks template
+  //       tableHeadClasses?: string[], // CSS classes for table headers
+  //       sortReload?: boolean, // Reload page on sort
+  //       printSorting?: { dataSet: string }, // Print sorting config
+  //       defaultSortColumn?: string, // Default sort column for bespoke report
+  //     },
+  //     headings?: string[], // Table column headings (API field names)
+  //     unsortable?: boolean, // Prevent sorting of report table
+  //     exportLabel?: string, // Custom label for export button
+  //     exportOnly?: boolean, // If true, report is only available for export
+  //     multiTable?: { // Multi-table report options
+  //       sectionHeadings?: boolean, // Show section headings for each table
+  //     } | null,
+  //     grouped?: { // Grouped table options
+  //       headings?: {
+  //         transformer?: (data: string, isPrint: boolean) => string, // Transform group header
+  //       },
+  //       groupHeader?: boolean, // Show group header
+  //       totals?: boolean, // Show group totals
+  //       emptyDataGroup?: (colSpan: number, isPrint?: boolean) => any[], // Table to display if group has no data
+  //       sortGroups?: 'ascending' | 'descending', // Order of groups
+  //     },
+  //     printLandscape?: boolean, // Print report in landscape orientation
+  //     largeTotals?: { // Large totals row config
+  //       values: (data: any) => { label: string, value: string | number }[], // Function to get totals
+  //       printWidths?: string[], // Widths for totals in print
+  //     },
+  //     fontSize?: number, // Font size for report
+  //     totalsRow?: (data: any, isPrint?: boolean) => any[], // Custom totals row
+  //     columnWidths?: (string | number)[], // Custom column widths
+  //     filterBackLinkUrl?: string, // Backlink URL for filter page
+  //     backUrl?: string, // Backlink URL for report page
+  //     defaultSortColumn?: string, // Default column to sort by
+  //     parentReport?: { // Parent report config for navigation
+  //       key: string, // Parent report key
+  //       filterParam: string, // Filter param for parent
+  //       useParentRoute?: (req: any) => boolean, // Use parent route conditionally
+  //     },
+  //     cellTransformer?: (data: any, key: string, output: any, isPrint?: boolean) => any, // Transform cell output
+  //     tableColumnFormatting?: { [key: string]: (data: any) => any }, // Custom formatting for table columns
+  //     searchProperty?: { filter: string }, // Custom search property for report
+  //   }
+  // };
   module.exports.reportKeys = (app, req = null) => {
     const courtUser = req ? isCourtUser(req) : false;
 
@@ -1937,6 +1950,21 @@
           filter: 'date'
         },
       },
+      'courts-incomplete-service': {
+        title: 'Courts with incomplete service',
+        apiKey: 'CourtsWithIncompleteServiceReport',
+        defaultSortColumn: 'courtLocationNameAndCodeJp',
+        searchProperty: {
+          filter: 'date'
+        },
+      },
+      'overdue-utilisation-report': {
+        title: 'Overdue utilisation reports',
+        defaultSortColumn: 'courtName',
+        bespokeReport: {
+          dao: (req) => overdueUtilisationReportDAO.get(req)
+        },
+      }
     };
   };
 })();

@@ -1,0 +1,67 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set currentApp = "System administration" %}
+{% set nav = "managementDashboard" %}
+
+{% set currentPage = "homepage" %}
+
+{% block page_title %}Juror homepage{% endblock %}
+{% block page_identifier %}Homepage{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      {% for section in sections %}
+
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-{% if section.exportReportLink %}two-thirds{% else %}full{% endif %}">
+            <h2 class="govuk-heading-m {% if section.subHeading %} govuk-!-margin-bottom-0 {% endif %}">{{ section.heading }}</h2>
+            {% if section.subHeading %}
+              <span class="govuk-caption-m govuk-!-margin-bottom-3">{{ section.subHeading }}</span>
+            {% endif %}
+          </div>
+          {% if section.exportReportLink %}
+            <div class="govuk-grid-column-one-third moj-button-group--inline mod-flex mod-justify-end">
+              {{ govukButton({
+                text: "Export report",
+                href: section.exportReportLink,
+                classes: "govuk-button--secondary"
+              }) }}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="govuk-grid-row govuk-!-margin-bottom-9">
+          <div class="govuk-grid-column-full">
+            {% if section.chart %}
+              {% include "management-dashboard/_partials/" + section.chart.template + ".njk" %}
+            {% endif %}
+            {% if section.table.rows | length %}
+              {{ govukTable({
+                head: section.table.head,
+                rows: section.table.rows
+              }) }}
+            {% else %}
+              {% if not section.staticLink %}
+                <p class="govuk-body">No records to show</p>
+              {% endif %}
+            {% endif %}
+            {% if section.staticLink %}
+              <a class="govuk-body govuk-link" href="{{ section.staticLink.link }}">{{ section.staticLink.text }}</a>
+            {% endif %}
+            {% if section.reportLink %}
+              <a class="govuk-body govuk-link" href="{{ section.reportLink }}">Show all</a>
+            {% endif %}
+          </div>
+        </div>
+        
+      {% endfor %}
+    </div>
+  </div>
+
+{% endblock %}

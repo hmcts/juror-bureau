@@ -33,6 +33,9 @@
     
           .number {
             font-size: 2rem;
+            &__small {
+              font-size: 1.5rem;
+            }
           }
           .legend {
             @include govuk-font($size: 14);
