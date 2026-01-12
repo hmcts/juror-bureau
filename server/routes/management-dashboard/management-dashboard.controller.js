@@ -14,7 +14,10 @@
           try {
             rawData = await managementDashboardDAO.get(req, definition.apiKey);
           } catch (err) {
-            return renderError(app, res, `Unable to fetch management dashboard data for ${definition.apiKey}`, err, req);
+            app.logger.crit(`Unable to fetch management dashboard data for ${definition.apiKey}`, {
+              auth: req?.session?.authentication,
+              error: err?.error ?? err?.toString(),
+            });
           }
         }
         const section = buildSection(app)(definition, rawData);
@@ -31,7 +34,10 @@
         sections,
       });
     } catch (err) {
-      return renderError(app, res, 'Unable to build management dashboard data', err, req);
+      app.logger.crit('Unable to build management dashboard data', {
+        auth: req?.session?.authentication,
+        error: err?.error ?? err?.toString(),
+      });
     }
   };
 
@@ -90,10 +96,10 @@
           },
           { text: 'Report last run', id: 'reportLastRun', dataFormatting: d => dateFilter(makeDate(d), null, 'DD/MM/YYYY') },
           { text: 'Days elapsed', id: 'daysElapsed' },
-          { text: 'Utilisation from previoud report', id: 'utilisation', dataFormatting: d => `${d.toFixed(2)}%` },
+          { text: 'Utilisation from previous report', id: 'utilisation', dataFormatting: d => `${d.toFixed(2)}%` },
         ],
         reportLink: app.namedRoutes.build('reports.overdue-utilisation-report.report.get', { filter: 'all' }),
-        apiKey: 'overdue-utilisation',
+        apiKey: 'overdue-utilisations',
       },
       incompleteService: {
         heading: 'Courts with incomplete service',
@@ -179,20 +185,12 @@
     };
   };
 
-  function getLastAprilFirst() {
+  const getLastAprilFirst = () => {
     const today = new Date();
     const year = today.getMonth() < 3 || (today.getMonth() === 3 && today.getDate() < 1)
       ? today.getFullYear() - 1
       : today.getFullYear();
     return new Date(year, 3, 1);
-  }
-
-  function renderError(app, res, msg, err, req) {
-    app.logger.crit(msg, {
-      auth: req?.session?.authentication,
-      error: err?.error ?? err?.toString(),
-    });
-    return res.render('_errors/generic', { err });
   }
 
 })();
