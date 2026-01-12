@@ -71,13 +71,22 @@
   };
 
   const tableDefinitions = (app) => (req, res) => {
-    const getLocCode = data => data['courtLocationNameAndCode']?.split('(')[1]?.split(')')[0];
+    const getLocCode = (data, id = 'courtLocationNameAndCode') => {
+      return data[id]?.split('(')[1]?.split(')')[0];
+    };
     const getYear = () => getLastAprilFirst().getFullYear();
     return {
       overdueUtilisation: {
         heading: 'Overdue utilisation reports',
         headers: [
-          { text: 'Court', id: 'court', dataFormatting: capitalizeFully },
+          { 
+            text: 'Court',
+            id: 'court',
+            dataFormatting: capitalizeFully,
+            link: app => data => app.namedRoutes.build('authentication.select-court.get', {
+              locCode: getLocCode(data, 'court'),
+            }),
+          },
           { text: 'Report last run', id: 'reportLastRun', dataFormatting: d => dateFilter(makeDate(d), null, 'DD/MM/YYYY') },
           { text: 'Days elapsed', id: 'daysElapsed' },
           { text: 'Utilisation from previoud report', id: 'utilisation', dataFormatting: d => `${d.toFixed(2)}%` },
@@ -142,7 +151,14 @@
         heading: 'Outgoing SMS messages',
         subHeading: `Sent since 1st April ${getYear()}.`,
         headers: [
-          { id: 'courtLocationNameAndCode', text: 'Court', dataFormatting: capitalizeFully },
+          {
+            id: 'courtLocationNameAndCode',
+            text: 'Court',
+            dataFormatting: capitalizeFully,
+            link: app => data => app.namedRoutes.build('authentication.select-court.get', {
+              locCode: getLocCode(data),
+            }),
+          },
           { id: 'messagesSent', text: 'SMS sent' },
         ],
         reportLink: app.namedRoutes.build('reports.outgoing-sms-messages.filter.dates.get'),
