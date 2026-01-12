@@ -20,7 +20,6 @@ const { financialAudit } = require('./audit.controller');
     require('./all-court-utilisation')(app);
     require('./expense-payments')(app);
     require('./outgoing-sms-messages')(app);
-    require('./expense-limit-adjustments-audit')(app);
     require('./standard-report/index')(app);
 
     app.get('/reports',
