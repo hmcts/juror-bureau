@@ -137,7 +137,7 @@
             dataFormatting: capitalizeFully,
             link: app => data => app.namedRoutes.build('reports.expense-limit-adjustments-audit.report.get', {
                 filter: getLocCode(data)
-              }) + `?transportType=${_.camelCase(data.transportType)}`
+              }) + `?transportType=${_.camelCase(data.type)}`
               + `&revisionNumber=${data.revisionNumber}`,
           },
           { id: 'type', text: 'Type', dataFormatting: toSentenceCase },

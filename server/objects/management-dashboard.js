@@ -8,7 +8,6 @@
 
   module.exports.managementDashboardDAO = new DAO('moj/management-dashboard', {
     get: function(section) {
-      console.log(this.resource, section);
       return {
         uri: urljoin(this.resource, section),
         transform: (data) => { delete data['_headers']; return replaceAllObjKeys(data, _.camelCase) },
