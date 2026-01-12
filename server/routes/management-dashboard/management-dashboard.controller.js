@@ -99,12 +99,19 @@
           { text: 'Utilisation from previous report', id: 'utilisation', dataFormatting: d => `${d.toFixed(2)}%` },
         ],
         reportLink: app.namedRoutes.build('reports.overdue-utilisation-report.report.get', { filter: 'all' }),
-        apiKey: 'overdue-utilisations',
+        apiKey: 'overdue-utilisation',
       },
       incompleteService: {
         heading: 'Courts with incomplete service',
         headers: [
-          { id: 'court', text: 'Court', dataFormatting: capitalizeFully },
+          { 
+            id: 'court',
+            text: 'Court',
+            dataFormatting: capitalizeFully,
+            link: app => data => app.namedRoutes.build('reports.incomplete-service.report.get', {
+              filter: dateFilter(new Date(), null, 'yyyy-MM-DD')
+            }) + `?courtLocCode=${getLocCode(data, 'court')}`,
+          },
           { id: 'numberOfIncompleteServices', text: 'Incomplete jurors', dataFormatting: d => d.toString() },
         ],
         reportLink: app.namedRoutes.build('reports.courts-incomplete-service.report.get', { filter: dateFilter(new Date(), null, 'yyyy-MM-DD') }),
