@@ -4,7 +4,7 @@ const { dateFilter, capitalizeFully, toSentenceCase } = require('../../../compon
 const { snakeToCamel } = require('../../../lib/mod-utils');
 const { tableDataMappers } = require('./utils');
 
-async function reportExport(app, req, res, reportKey, data) {
+async function reportExport(app, req, res, reportKey, data, reportTitle) {
   switch (reportKey) {
   case 'pool-status':
     return poolStatusReportExport(req, res, data);
@@ -25,7 +25,7 @@ async function reportExport(app, req, res, reportKey, data) {
   case 'outgoing-sms-messages':
     return standardReportExport(req, res, data, 'outgoing_sms_messages', 'Outgoing SMS Messages');
   default:
-    standardReportExport(req, res, data);
+    standardReportExport(req, res, data, _.snakeCase(reportKey), reportTitle);
     return;
   }
 }

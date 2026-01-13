@@ -124,6 +124,7 @@
     standardReportRoutes(app, 'expense-limit-adjustments-audit');
     standardReportRoutes(app, 'courts-incomplete-service');
     standardReportRoutes(app, 'overdue-utilisation-report');
+    standardReportRoutes(app, 'digital-responses-completed');
   };
 
 })();
