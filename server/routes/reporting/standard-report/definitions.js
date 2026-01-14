@@ -13,7 +13,8 @@
     allCourtUtilisationDAO,
     digitalSummonsReceivedReportDAO,
     weekendAttendanceReportDAO,
-    overdueUtilisationReportDAO
+    overdueUtilisationReportDAO,
+    digitalResponsesCompletedReportDAO
   } = require('../../../objects/reports');
 
   const makeLink = (app) => {
@@ -1970,60 +1971,17 @@
         search: 'month',
         headings: [
           'reportDate',
-          'month',
+          'responsesProcessed',
           'reportTime',
-          'digitalSummonsProcessed'
         ],
         bespokeReport: {
-          dao: () => { 
-            return {
-              headings: {
-                reportCreated: {
-                  displayName: null,
-                  dataType: 'LocalDateTime',
-                  value: '2026-01-13T09:44:10.756848'
-                },
-                digitalSummonsProcessed: { displayName: 'Total Summons Processed', dataType: 'Integer', value: 3 },
-                month: { displayName: 'Month', dataType: 'String', value: 'February 2025' }
-              },
-              tableData: {
-                headings: [
-                  {
-                    id: 'name',
-                    name: 'Name',
-                    dataType: 'String',
-                    headings: null
-                  },
-                  ...createDayObjectsForMonth(2025, 2, 'headers'),
-                  {
-                    id: 'total',
-                    name: 'Total',
-                    dataType: 'Integer',
-                    headings: null
-                  }
-                ],
-                data: [
-                  {
-                    name: 'Name One',
-                    dailyTotals: createDayObjectsForMonth(2025, 2, 'data'),
-                    total: 101
-                  },
-                  {
-                    name: 'Name Two',
-                    dailyTotals: createDayObjectsForMonth(2025, 2, 'data'),
-                    total: 102
-                  },
-                  {
-                    name: 'Name Three',
-                    dailyTotals: createDayObjectsForMonth(2025, 2, 'data'),
-                    total: 103
-                  }
-                ]
-              }
-            }
-          },
+          dao: () => digitalResponsesCompletedReportDAO.get(
+            req,
+            req.params.filter,
+          ),
           manipualteApiTableData: (tableData) => {
-            const dateHeadings = tableData.headings.filter(heading => heading.id !== 'name' && heading.id !== 'total');
+            tableData.headings.map(heading => heading.id = heading.name === 'Total' ? 'staffTotal' : _.camelCase(heading.name));
+            const dateHeadings = tableData.headings.filter(heading => heading.id !== 'staffName' && heading.id !== 'staffTotal');
             tableData.data.forEach((row) => {
               for (const [key, value] of Object.entries(row)) {
                 if (key === 'dailyTotals') {
@@ -2037,61 +1995,11 @@
             return tableData;
           },
         },
-        defaultSortColumn: 'name',
+        defaultSortColumn: 'staffName',
         printLandscape: true,
         exportLabel: 'Export data',
       },
     };
   };
 
-  /**
- * Generates an array of objects for each day in the given month and year.
- * Each object has the structure:
- * {
- *   id: '01-Dec-2025',
- *   name: '1st December',
- *   dataType: 'Integer',
- *   headings: null
- * }
- * @param {number} year - The year (e.g., 2025)
- * @param {number} month - The month (1-12)
- * @returns {Array<Object>} Array of day objects
- */
-const createDayObjectsForMonth = (year, month, type = 'headers') => {
-  const monthShortNames = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-  ];
-  const daysInMonth = new Date(year, month, 0).getDate();
-  if (type === 'headers') {
-    const headers = []
-    for (let day = 1; day <= daysInMonth; day++) {
-      const id = `${day.toString().padStart(2, '0')}-${monthShortNames[month - 1]}`;
-      const name = `${day}${ordinalSuffix(day)} ${monthShortNames[month - 1]}`;
-      headers.push({
-        id,
-        name,
-        dataType: 'Integer',
-        headings: null
-      });
-    }
-    return headers;
-  }
-  const dailyTotals = [];
-  for (let day = 1; day <= daysInMonth; day++) {
-    dailyTotals.push(Math.floor(Math.random() * 10));
-  }
-  return dailyTotals;
-}
-
-// Helper to get ordinal suffix for a day (1st, 2nd, 3rd, etc.)
-function ordinalSuffix(n) {
-  if (n > 3 && n < 21) return 'th';
-  switch (n % 10) {
-    case 1: return 'st';
-    case 2: return 'nd';
-    case 3: return 'rd';
-    default: return 'th';
-  }
-}
 })();
