@@ -955,9 +955,20 @@
       };
 
       if (req.session.editedExpenses[date] && req.session.editedExpenses[date].formData) {
-        req.session.editedExpenses[date].formData['financial_loss']['loss_of_earnings'] = lossLimit;
-        req.session.editedExpenses[date].formData['financial_loss']['extra_care_cost'] = 0;
-        req.session.editedExpenses[date].formData['financial_loss']['other_cost'] = 0;
+        if (req.session.editedExpenses[date].formData['financial_loss']['loss_of_earnings'] > lossLimit) {
+          req.session.editedExpenses[date].formData['financial_loss']['loss_of_earnings'] = lossLimit;
+          req.session.editedExpenses[date].formData['financial_loss']['extra_care_cost'] = 0;
+          req.session.editedExpenses[date].formData['financial_loss']['other_cost'] = 0;
+        } else {
+          const remainingLoss = lossLimit - req.session.editedExpenses[date].formData['financial_loss']['loss_of_earnings'];
+          if (req.session.editedExpenses[date].formData['financial_loss']['extra_care_cost'] >= remainingLoss) {
+            req.session.editedExpenses[date].formData['financial_loss']['extra_care_cost'] = remainingLoss;
+            req.session.editedExpenses[date].formData['financial_loss']['other_cost'] = 0;
+          } else {
+            const remainingLossAfterCare = remainingLoss - req.session.editedExpenses[date].formData['financial_loss']['extra_care_cost'];
+            req.session.editedExpenses[date].formData['financial_loss']['other_cost'] = remainingLossAfterCare;
+          }
+        }
       }
 
       req.session.financialLossWarning = showLossOverLimit;
