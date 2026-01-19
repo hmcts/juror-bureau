@@ -1980,7 +1980,10 @@
             req.params.filter,
           ),
           manipualteApiTableData: (tableData) => {
-            tableData.headings.map(heading => heading.id = heading.name === 'Total' ? 'staffTotal' : _.camelCase(heading.name));
+            tableData.headings.map(heading => {
+              heading.id = heading.name === 'Total' ? 'staffTotal' : _.camelCase(heading.name);
+              heading.name = (heading.name !== 'Total' && heading.name !== 'Staff Name') ? dateFilter(heading.name, 'yyyy-MM-DD', 'D MMM') : heading.name;
+            });
             const dateHeadings = tableData.headings.filter(heading => heading.id !== 'staffName' && heading.id !== 'staffTotal');
             tableData.data.forEach((row) => {
               for (const [key, value] of Object.entries(row)) {
@@ -1998,6 +2001,7 @@
         defaultSortColumn: 'staffName',
         printLandscape: true,
         exportLabel: 'Export data',
+        fontSize: 8,
       },
     };
   };
