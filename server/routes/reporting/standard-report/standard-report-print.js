@@ -114,7 +114,7 @@ async function standardReportPrint(app, req, res, reportKey, data) {
         }
 
         return ({
-          text: text ? text : '-',
+          text: text && text !== 'null' ? text : '-',
         });
       });
 
