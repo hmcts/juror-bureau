@@ -453,7 +453,6 @@
       let response;
 
       try {
-        console.log(`\n\nSubmitting data for recalculation:\n ${JSON.stringify(data, null, 2)}\n\n`);
         response = await postRecalculateSummaryTotalsDAO.post(req, locCode, jurorNumber, {
           'expense_list': [data],
         });
@@ -475,7 +474,6 @@
           delete req.session.editedExpenses[date];
         }
       } catch (err) {
-        console.log(`\n\nerr:\n ${JSON.stringify(err, null, 2)}\n\n`);
         if (err.error.code === 'EXPENSE_VALUES_REDUCED_LESS_THAN_PAID' && err.error.meta_data) {
           req.session.errors = buildCalculatedExpenseErrors(err.error.meta_data);
 
@@ -957,7 +955,7 @@
       };
 
       if (req.session.editedExpenses[date] && req.session.editedExpenses[date].formData) {
-        const fin = req.session.editedExpenses[date].formData['financial_loss'];
+        const fin = _.clone(req.session.editedExpenses[date].formData['financial_loss']);
         let effectiveLossOfEarnings = Number(fin['loss_of_earnings']) || 0;
         let effectiveExtraCareCost = Number(fin['extra_care_cost']) || 0;
         let effectiveOtherCost = Number(fin['other_cost']) || 0;
