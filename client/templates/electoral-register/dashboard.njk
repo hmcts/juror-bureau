@@ -14,6 +14,19 @@
 {% block page_title %}{{ serviceName }} - Electoral register management{% endblock %}
 {% block page_identifier %}Electoral register management{% endblock %}
 
+{% block beforeContent %}
+  {% if bannerMessage %}
+    <div class="govuk-!-margin-top-6">
+      {{ mojAlert({
+        variant: "success",
+        text: bannerMessage,
+        iconFallbackText: "Success",
+        dismissible: true
+      }) }}
+    </div>
+  {% endif %}
+{% endblock %}
+
 {% block content %}
 
   {% include "includes/errors.njk" %} 

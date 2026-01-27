@@ -11,8 +11,10 @@
     const { localAuthorityFilter, status } = req.query;
 
     const tmpErrors = _.clone(req.session.errors);
+    const bannerMessage = _.clone(req.session.bannerMessage);
 
     delete req.session.errors;
+    delete req.session.bannerMessage;
 
     let allLocalAuthorities = [];
     try {
@@ -62,6 +64,7 @@
       notUploaded: dashboardData.notUploaded,
       uploaded: dashboardData.uploaded,
       localAuthorities: buildLocalAuthoritiesTable(dashboardData.localAuthorities),
+      bannerMessage,
       errors: {
         title: 'Please check the form',
         count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
