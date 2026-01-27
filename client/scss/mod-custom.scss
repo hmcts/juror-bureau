@@ -770,3 +770,9 @@ dt.govuk-summary-list-mod {
     color: govuk-colour("blue");
   }
 }
+
+.mod-section-break {
+  &__blue {
+    border-bottom: 1px solid govuk-colour("blue");
+  }
+}

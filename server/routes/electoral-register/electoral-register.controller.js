@@ -1,11 +1,11 @@
-const { electoralRegisterDashboardDAO, localAuthoritiesDAO } = require('../../objects/electoral-register');
-
 (() => {
   'use strict';
 
   const _ = require('lodash');
+  const moment = require('moment');
   const { dateFilter } = require('../../components/filters');
   const { makeManualError } = require('../../lib/mod-utils');
+  const { electoralRegisterDashboardDAO, localAuthoritiesDAO } = require('../../objects/electoral-register');
 
   module.exports.getDashboard = (app) => async (req, res) => {
     const { localAuthorityFilter, status } = req.query;
@@ -16,7 +16,7 @@ const { electoralRegisterDashboardDAO, localAuthoritiesDAO } = require('../../ob
 
     let allLocalAuthorities = [];
     try {
-      allLocalAuthorities = (await localAuthoritiesDAO.get()).localAuthorities;
+      allLocalAuthorities = (await localAuthoritiesDAO.get(req)).localAuthorities;
     } catch (err) {
       app.logger.crit('Error fetching all local authorities', {
         auth: req.session.authentication,
@@ -26,7 +26,8 @@ const { electoralRegisterDashboardDAO, localAuthoritiesDAO } = require('../../ob
 
     let dashboardData = {};
     try {
-      dashboardData = await electoralRegisterDashboardDAO.get(req, { localAuthorityFilter, status: status || 'not-uploaded' });
+      const payload = { localAuthorityFilter, status: status || 'all' };
+      dashboardData = await electoralRegisterDashboardDAO.get(req, payload);
     } catch (err) {
       app.logger.crit('Error fetching electoral register dashboard data', {
         auth: req.session.authentication,
@@ -34,13 +35,26 @@ const { electoralRegisterDashboardDAO, localAuthoritiesDAO } = require('../../ob
       });
     }
 
+    const deadlineDiff = moment(new Date(dashboardData.deadline)).diff(moment(new Date()), 'days');
+
     return res.render('electoral-register/dashboard.njk', {
       postRoutes: {
-        filter: app.namedRoutes.build('electoral-register.filter.post') + `?status=${status || 'not-uploaded'}`,
+        filter: app.namedRoutes.build('electoral-register.filter.post') 
+          + buildQueryParams(status, localAuthorityFilter),
+        sendReminder: app.namedRoutes.build('electoral-register.post') 
+          + buildQueryParams(status, localAuthorityFilter, 'send-reminder'),
+        markEmailDelivered: app.namedRoutes.build('electoral-register.post') 
+          + buildQueryParams(status, localAuthorityFilter, 'mark-email-delivered'),
       },
+      // TODO: ADD FLOWS TO THESE LINKS
+      actionRoutes: {
+        changeDeadline: '#',
+        downloadEmails: '#',
+      },
+      showDeadlineWarrning: deadlineDiff <= 28,
       localAuthorityFilter,
-      status: status || 'not-uploaded',
-      laNames: allLocalAuthorities
+      status: status || 'all',
+      laAutoCompleteNames: allLocalAuthorities
         .sort((la1, la2) => la1.id - la2.id)
         .map((la) => la.authorityName),
       deadline: dateFilter(dashboardData.deadline, 'yyyy-MM-DD', 'DD MMMM yyyy'),
@@ -59,36 +73,40 @@ const { electoralRegisterDashboardDAO, localAuthoritiesDAO } = require('../../ob
   module.exports.postLocalAuthorityFilter = (app) => (req, res) => {
     const { status }  = req.query;
     return res.redirect(
-      app.namedRoutes.build('electoral-register.get')
-      + `?status=${status || 'not-uploaded'}`
-      + `${req.body.localAuthorityFilter ? `&localAuthorityFilter=${encodeURIComponent(req.body.localAuthorityFilter)}` : ''}`
+      app.namedRoutes.build('electoral-register.get') + buildQueryParams(status, req.body.localAuthorityFilter)
     );
   };
 
-  module.exports.postLocalAuthorities = (app) => (req, res) => {
-    const { action } = req.query;
+  module.exports.postSelectedLocalAuthorities = (app) => (req, res) => {
+    const { action, status, localAuthorityFilter } = req.query;
+    
 
     if (!req.body.selectedAuthorities || req.body.selectedAuthorities.length === 0) {
       req.session.errors = makeManualError('selectedAuthorities', 'At least one authority must be selected');
       return res.redirect(
-        app.namedRoutes.build('electoral-register.get')
+        app.namedRoutes.build('electoral-register.get') + buildQueryParams(status, localAuthorityFilter)
       );
     }
 
+    req.body.selectedAuthorities = Array.isArray(req.body.selectedAuthorities)
+      ? req.body.selectedAuthorities
+      : [req.body.selectedAuthorities];
+
     // TODO: Implement actual action handling logic for each option
+    // LOCAL AUTHORITY IDs ARE STORED IN A LIST AT REQ.BODY.SELECTEDAUTHORITIES 
     switch (action) {
       case 'send-reminder':
-        console.log(`\n\n--- Sending reminder emails to: ${JSON.stringify(req.body)} ---\n\n`);
+        console.log(`\n\n--- Sending reminder emails to: ${req.body.selectedAuthorities} ---\n\n`);
         break;
       case 'mark-email-delivered':
-        console.log(`\n\n--- Marking data request email as delivered for: ${JSON.stringify(req.body)} ---\n\n`);
+        console.log(`\n\n--- Marking data request email as delivered for: ${req.body.selectedAuthorities} ---\n\n`);
         break;
       default:
-        console.log(`\n\n--- No action specified for: ${JSON.stringify(req.body)} ---\n\n`);
+        console.log(`\n\n--- No action specified for: ${req.body.selectedAuthorities} ---\n\n`);
     }
 
     return res.redirect(
-      app.namedRoutes.build('electoral-register.get')
+      app.namedRoutes.build('electoral-register.get') + buildQueryParams(status, localAuthorityFilter)
     );
 
   };
@@ -148,7 +166,8 @@ const { electoralRegisterDashboardDAO, localAuthoritiesDAO } = require('../../ob
 
         },
         {
-          text: localAuthority.authorityName,
+          // TODO: Add link to authority details page
+          html: `<a class='govuk-body govuk-link' href='#'>${localAuthority.authorityName}</a>`,
           classes: 'jd-middle-align',
         },
         {
@@ -169,5 +188,19 @@ const { electoralRegisterDashboardDAO, localAuthoritiesDAO } = require('../../ob
 
     return table;
   };
+
+  const buildQueryParams = (status, localAuthorityFilter, action) => {
+    let queryParams = '';
+    if (action) {
+      queryParams += `?action=${action}`;
+    }
+    if (localAuthorityFilter) {
+      queryParams += (queryParams.length ? '&' : '?') + `localAuthorityFilter=${localAuthorityFilter}`;
+    }
+    if (status) {
+      queryParams += (queryParams.length ? '&' : '?') + `status=${status}`;
+    }
+    return queryParams;
+  }
 
 })();
