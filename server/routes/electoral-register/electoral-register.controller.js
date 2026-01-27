@@ -1,3 +1,5 @@
+const { electoralRegisterDashboardDAO, localAuthoritiesDAO } = require('../../objects/electoral-register');
+
 (() => {
   'use strict';
 
@@ -5,38 +7,47 @@
   const { dateFilter } = require('../../components/filters');
   const { makeManualError } = require('../../lib/mod-utils');
 
-  module.exports.getDashboard = (app) => (req, res) => {
+  module.exports.getDashboard = (app) => async (req, res) => {
+    const { localAuthorityFilter, status } = req.query;
+
     const tmpErrors = _.clone(req.session.errors);
 
     delete req.session.errors;
 
+    let allLocalAuthorities = [];
+    try {
+      allLocalAuthorities = (await localAuthoritiesDAO.get()).localAuthorities;
+    } catch (err) {
+      app.logger.crit('Error fetching all local authorities', {
+        auth: req.session.authentication,
+        error: err.message,
+      });
+    }
+
+    let dashboardData = {};
+    try {
+      dashboardData = await electoralRegisterDashboardDAO.get(req, { localAuthorityFilter, status: status || 'not-uploaded' });
+    } catch (err) {
+      app.logger.crit('Error fetching electoral register dashboard data', {
+        auth: req.session.authentication,
+        error: err.message,
+      });
+    }
+
     return res.render('electoral-register/dashboard.njk', {
-      localAuthorities: buildLocalAuthoritiesTable([
-        {
-          id: '001',
-          authorityName: 'Springfield City Council',
-          status: 'Not uploaded',
-          lastDataUpload: '2024-03-23'
-        },
-        {
-          id: '002',
-          authorityName: 'Shelbyville Borough Council',
-          status: 'Uploaded',
-          lastDataUpload: '2024-06-10'
-        },
-        {
-          id: '003',
-          authorityName: 'Ogdenville District Council',
-          status: 'Uploaded',
-          lastDataUpload: '2024-06-12'
-        },
-        {
-          id: '004',
-          authorityName: 'North Haverbrook Council',
-          status: 'Not uploaded',
-          lastDataUpload: '2024-02-15'
-        }
-      ]),
+      postRoutes: {
+        filter: app.namedRoutes.build('electoral-register.filter.post') + `?status=${status || 'not-uploaded'}`,
+      },
+      localAuthorityFilter,
+      status: status || 'not-uploaded',
+      laNames: allLocalAuthorities
+        .sort((la1, la2) => la1.id - la2.id)
+        .map((la) => la.authorityName),
+      deadline: dateFilter(dashboardData.deadline, 'yyyy-MM-DD', 'DD MMMM yyyy'),
+      daysRemaining: dashboardData.daysRemaining,
+      notUploaded: dashboardData.notUploaded,
+      uploaded: dashboardData.uploaded,
+      localAuthorities: buildLocalAuthoritiesTable(dashboardData.localAuthorities),
       errors: {
         title: 'Please check the form',
         count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -45,14 +56,13 @@
     });
   };
 
-  module.exports.postLocalAuthorityFilter = function(app) {
-    return async function(req, res) {
-
-      return res.redirect(
-        app.namedRoutes.build('electoral-register.get')
-        + `?localAuthority=${encodeURIComponent(req.body.localAuthorityFilter || '')}`
-      );
-    };
+  module.exports.postLocalAuthorityFilter = (app) => (req, res) => {
+    const { status }  = req.query;
+    return res.redirect(
+      app.namedRoutes.build('electoral-register.get')
+      + `?status=${status || 'not-uploaded'}`
+      + `${req.body.localAuthorityFilter ? `&localAuthorityFilter=${encodeURIComponent(req.body.localAuthorityFilter)}` : ''}`
+    );
   };
 
   module.exports.postLocalAuthorities = (app) => (req, res) => {
@@ -96,11 +106,13 @@
             + '<label class="govuk-label govuk-checkboxes__label" for="selectAllCheckbox">'
             + '<span class="govuk-visually-hidden">Select All</span>'
             + '</label>'
-            + '</div>'
+            + '</div>',
+        classes: 'jd-middle-align',
       },
       {
         id: 'authorityName',
         text: 'Authority name',
+        classes: 'jd-middle-align',
         attributes: {
           'aria-sort': 'ascending'
         }
@@ -108,6 +120,7 @@
       {
         id: 'status',
         text: 'Status',
+        classes: 'jd-middle-align',
         attributes: {
           'aria-sort': 'none'
         }
@@ -115,6 +128,7 @@
       {
         id: 'lastDataUpload',
         text: 'Last data upload',
+        classes: 'jd-middle-align',
         attributes: {
           'aria-sort': 'none'
         }
@@ -129,19 +143,23 @@
             + `<label class="govuk-label govuk-checkboxes__label" for="select-${localAuthority.id}">`
             + `<span class="govuk-visually-hidden">Select ${localAuthority.id}</span>`
             + '</label>'
-            + '</div>'
+            + '</div>',
+          classes: 'jd-middle-align',
 
         },
         {
           text: localAuthority.authorityName,
+          classes: 'jd-middle-align',
         },
         {
           html: `<strong class="govuk-tag ${localAuthority.status === 'Not uploaded' ? 'govuk-tag--grey' : ''}">`
               + `${localAuthority.status}`
-              + '</strong>'
+              + '</strong>',
+          classes: 'jd-middle-align',
         },
         {
           text: dateFilter(localAuthority.lastDataUpload, 'yyyy-MM-DD', 'DD MMMM yyyy'),
+          classes: 'jd-middle-align',
           attributes: {
             'data-sort-value': dateFilter(localAuthority.lastDataUpload, 'yyyy-MM-DD', 'yyyyMMDD')
           },

@@ -33,3 +33,12 @@ function checkSet() {
     allChecked = false;
   }
 }
+
+$(document).ready(() => {
+  $('[name="status"]').on('change', function() {
+    const localAuthorityFilter = $('#localAuthorityFilter').val() || '';
+
+    window.location.href = '/electoral-register?status=' + $(this).val()
+    + `${localAuthorityFilter ? `&localAuthorityFilter=${encodeURIComponent(localAuthorityFilter)}` : ''}`;
+  });
+});
