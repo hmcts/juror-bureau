@@ -1,0 +1,59 @@
+{% macro uploadedDoughnut(params) %}
+
+  {% set notUploadedColour = '#B1B4B6' %}
+  {% set uploadedColour = '#1D70B8' %}
+
+  <div class="doughnut-chart">
+    <div class="doughnut-chart__chart-canvas">
+      <div class="total">
+        <span class="number">{{ params.values.uploaded + params.values.notUploaded }}</span>
+        <span class="legend">Required</span>
+      </div>
+      <canvas id="{{params.id}}Chart" name="{{params.id}}Chart" width="170" height="170"></canvas>
+    </div>
+
+    <div class="doughnut-chart__legend">
+      <div class="legend">
+        <div class="bullet bullet__blue"></div>Uploaded <span class="amount">{{ params.values.uploaded }}</span>
+      </div>
+      <div class="legend">
+        <div class="bullet bullet__mid-grey"></div>Not uploaded <span class="amount">{{ params.values.notUploaded }}</span>
+      </div>
+    </div>
+  </div>
+
+  <script nonce="{{ params.nonce }}">
+
+    var statsObject = {
+      uploaded: {{ params.values.uploaded }},
+      notUploaded: {{ params.values.notUploaded }},
+    }
+
+    var valueArr = Object.values(statsObject);
+    var ctx = document
+      .getElementById('{{params.id}}Chart')
+      .getContext('2d');
+
+    var dbChart = new Chart(ctx, {
+      type: 'doughnut',
+      options: {
+        tooltips: {
+          enabled: false
+        },
+        cutoutPercentage: '70'
+      },
+      data: {
+        datasets: [
+          {
+            data: valueArr,
+            backgroundColor: [
+              '{{uploadedColour}}', '{{notUploadedColour}}'
+            ],
+            borderWidth: 0,
+          }
+        ]
+      }
+    });
+  </script>
+
+{% endmacro %}

@@ -1,10 +1,218 @@
 {% extends "layouts/default.njk" %}
 
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
+{%- from "govuk/components/table/macro.njk" import govukTable -%}
+
+
+{% from "custom-components/autocomplete/macro.njk" import modAutocomplete %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
 {% set currentApp = "Electoral register management" %}
 
 {% block page_title %}{{ serviceName }} - Electoral register management{% endblock %}
 {% block page_identifier %}Electoral register management{% endblock %}
 
 {% block content %}
+
+  {% include "includes/errors.njk" %} 
+
+  {# HEADER #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <h1 class="govuk-heading-xl">Dashboard</h1>
+
+      {{ govukNotificationBanner({
+        titleText: "Deadline",
+        text: "31 March 2026"
+      }) }}
+
+    </div>
+  </div>
+
+  {# SUMMARY INFO #}
+  <div class="govuk-grid-row">
+    {# LARGE VALUES #}
+    <div class="govuk-grid-column-one-third">
+      <div class="mod-dashboard__large-values">
+        <div class="mod-dashboard__large-values">
+          <div class="mod-dashboard__large-values__value" aria-label="Days remaining value">
+            <span class="govuk-!-font-size-80 govuk-!-font-weight-bold" aria-label="Days remaining value">
+              42
+            </span>
+            <span class="label">
+              <span class="govuk-body govuk-!-font-weight-bold">Days remaining</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="mod-dashboard__large-values">
+          <div class="mod-dashboard__large-values__value" aria-label="Not uploaded value">
+            <span class="govuk-!-font-size-80 govuk-!-font-weight-bold" aria-label="Not uploaded value">
+              56
+            </span>
+            <span class="label">
+              <span class="govuk-body govuk-!-font-weight-bold">Not uploaded</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# DONUT CHART #}
+    <div class="govuk-grid-column-one-third">
+      {% include "./_partials/uploaded-doughnut.njk" %}
+    </div>
+
+    {# ACTIONS #}
+    <div class="govuk-grid-column-one-third">
+      <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-4">
+      <h3 class="govuk-heading-s">Actions</h3>
+      <p class="govuk-body">
+        <a href="#" class="govuk-link govuk-link--no-visited-state">Change deadline for local authorities</a>
+      </p>
+      <p class="govuk-body">
+        <a href="#" class="govuk-link govuk-link--no-visited-state">Download all authority emails</a>
+      </p>
+    </div>
+  </div>
+
+  {# SECTION BREAK #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6">
+    </div>
+  </div>
+
+  {# TABLE OF LOCAL AUTHORITIES #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h2 class="govuk-heading-m">Current status</h2>
+   </div>
+  </div>
+
+  <form method="post" action="{{ url('electoral-register.filter.post') }}" id="localAuthorityFilterForm">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <div class="mod-flex mod-gap-x-2 mod-flex-end">
+          {{ modAutocomplete({
+            label: {
+              text: "Filter by local authority",
+              class: "govuk-!-font-weight-bold"
+            },
+            name: "localAuthorityFilter",
+            id: "localAuthorityFilter",
+            data: localAuthorities,
+            errorMessage: localAuthorityFilterError,
+            class: "govuk-!-width-two-thirds",
+            nonce: nonce
+          }) }}
+          {{ govukButton({
+            type: "submit",
+            text: "Filter",
+            classes: "govuk-button--secondary mod-justify-end"
+          }) }}
+        </div>
+      </div>
+    </div>
+    {{ csrfProtection(csrftoken) }}
+  </form>
+  
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ govukRadios({
+        classes: "govuk-radios--inline",
+        name: "showType",
+        fieldset: {
+          legend: {
+            text: "Show",
+            classes: "govuk-fieldset__legend--s"
+          }
+        },
+        items: [
+          {
+            value: "not-uploaded",
+            text: "Not uploaded"
+          },
+          {
+            value: "uploaded",
+            text: "Uploaded"
+          },
+          {
+            value: "all-statuses",
+            text: "All statuses"
+          }
+        ]
+      }) }}
+    </div>
+  </div>
+
+  <form method="post" id="authoritiesForm">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Send reminder",
+            classes: "govuk-button--secondary",
+            type: "submit",
+            attributes: {
+              id: "sendReminderButton",
+              formAction: url('electoral-register.post') + "?action=send-reminder"
+            }
+          }) }}
+
+          {{ govukButton({
+            text: "Mark data request email as delivered",
+            classes: "govuk-button--secondary",
+            type: "submit",
+            attributes: {
+              id: "markEmailDeliveredButton",
+              formAction: url('electoral-register.post') + "?action=mark-email-delivered"
+            }
+          }) }}
+        </div>
+
+        {% if errors.items["selectedAuthorities"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
+
+        {% if errors.items["selectedAuthorities"] %}
+          <div class="error-allocation">
+            <p class="govuk-error-message">{{ errors.items['selectedAuthorities'][0].details }}</p>
+          </div>
+        {% endif %}
+
+        <div class="govuk-body govuk-!-margin-bottom-0"> <span id="checkedAuthorities"></span> of <span id="totalAuthorities"></span> selected</div>
+
+        {{ govukTable({
+          attributes: {
+            id: "authoritiesTable",
+            name: "authorities",
+            "data-module": "moj-sortable-table",
+            "data-multi-select-checkbox": "#select-all"
+          },
+          caption: "Local authorities",
+          captionClasses: "govuk-visually-hidden",
+          head: localAuthorities.head,
+          rows: localAuthorities.rows
+        }) }}
+
+        {% if errors.items["selectedAuthorities"] %}</div>{% endif %}
+
+      </div>
+    </div>
+    {{ csrfProtection(csrftoken) }}
+  </form>
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script src="{{ assetPath if assetPath else '/' }}js/accessible-autocomplete.min.js"></script>
+  <script src="{{ assetPath }}js/electoral-register.js"></script>
 
 {% endblock %}

@@ -24,6 +24,7 @@ const clientJs = [
   'summoning-progress.js',
   'loading-spinner.js',
   'reinstate-jurors.js',
+  'electoral-register.js',
 ];
 
 const copyClientCode = new CopyWebpackPlugin({

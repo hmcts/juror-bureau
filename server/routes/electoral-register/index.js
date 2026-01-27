@@ -13,6 +13,23 @@
       isBureauUser,
       controller.getDashboard(app)
     );
+
+    app.post(
+      '/electoral-register/filter',
+      'electoral-register.filter.post',
+      auth.verify,
+      isBureauUser,
+      controller.postLocalAuthorityFilter(app)
+    );
+
+    app.post(
+      '/electoral-register',
+      'electoral-register.post',
+      auth.verify,
+      isBureauUser,
+      controller.postLocalAuthorities(app)
+    );
+
   };
 
 })();
