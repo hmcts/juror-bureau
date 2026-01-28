@@ -127,6 +127,7 @@
   }
 
   function isSystemAdministrator(req, res, next) {
+    const { Logger } = require('../../components/logger');
     if (
       req.session.hasOwnProperty('authentication') === true &&
       req.session.authentication.hasOwnProperty('activeUserType') === true &&
@@ -140,6 +141,14 @@
     }
 
     if (typeof next !== 'undefined') {
+      Logger.instance.crit('Unauthorized access attempt to system administrator route', {
+        auth: {
+          email: req.session.authentication.email,
+          userType: req.session.authentication.userType,
+          activeUserType: req.session.authentication.activeUserType,
+          locCode: req.session.authentication.locCode,
+        },
+      });
       return errors(req, res, 403);
     }
 

@@ -22,6 +22,11 @@
           });
         }
 
+        app.logger.info('Fetched all courts admin court selection screen', {
+          auth: req.session.authentication,
+          filter: filter || '',
+        });
+
         return res.render('administration/courts-and-bureau.njk', {
           courts,
           filter,
