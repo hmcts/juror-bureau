@@ -760,7 +760,13 @@
         });
       }
 
-      let pageHeadings;
+      let pageHeadings = [];
+      if (reportType.bespokeReport && reportType.bespokeReport.addPageHeadings) {
+        for (const [key, value] of Object.entries(reportType.bespokeReport.addPageHeadings())) {
+          reportType.headings.push(key);
+          headings[key] = value;
+        }
+      }
       if (!_.isEmpty(reportType.headings)) {
         pageHeadings = reportType.headings.map(heading => constructPageHeading(heading, headings));
       }

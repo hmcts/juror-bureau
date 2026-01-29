@@ -1982,7 +1982,7 @@
           manipualteApiTableData: (tableData) => {
             tableData.headings.map(heading => {
               heading.id = heading.name === 'Total' ? 'staffTotal' : _.camelCase(heading.name);
-              heading.name = (heading.name !== 'Total' && heading.name !== 'Staff Name') ? dateFilter(heading.name, 'yyyy-MM-DD', 'D MMM') : heading.name;
+              heading.name = (heading.name !== 'Total' && heading.name !== 'Staff Name') ? dateFilter(heading.name, 'yyyy-MM-DD', 'Do') : heading.name;
             });
             const dateHeadings = tableData.headings.filter(heading => heading.id !== 'staffName' && heading.id !== 'staffTotal');
             tableData.data.forEach((row) => {
@@ -1997,6 +1997,15 @@
             });
             return tableData;
           },
+          addPageHeadings: () => {
+            return {
+              month: {
+                displayName: 'Month',
+                dataType: 'String',
+                value: dateFilter(req.params.filter, 'yyyy-MM-DD', 'MMMM yyyy')
+              }
+            };
+          }
         },
         defaultSortColumn: 'staffName',
         printLandscape: true,
