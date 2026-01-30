@@ -121,5 +121,14 @@
       }
     }
   });
+  
+  module.exports.digitalResponsesCompletedReportDAO = new DAO('moj/reports/responses-completed', {
+    get: function(month) {
+      return {
+        uri: urljoin(this.resource, month),
+        transform: mapSnakeToCamel,
+      }
+    }
+  });
 
 })();

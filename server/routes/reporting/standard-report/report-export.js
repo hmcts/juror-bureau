@@ -4,7 +4,7 @@ const { dateFilter, capitalizeFully, toSentenceCase } = require('../../../compon
 const { snakeToCamel } = require('../../../lib/mod-utils');
 const { tableDataMappers } = require('./utils');
 
-async function reportExport(app, req, res, reportKey, data) {
+async function reportExport(app, req, res, reportKey, data, reportTitle) {
   switch (reportKey) {
   case 'pool-status':
     return poolStatusReportExport(req, res, data);
@@ -21,11 +21,11 @@ async function reportExport(app, req, res, reportKey, data) {
   case 'attendance-data':
     return attendanceDataExport(req, res, data);
   case 'expense-payments':
-    return standardReportExport(req, res, data, 'expense-payments', 'Expense Payments');
+    return standardReportExport(req, res, reportKey, data, 'expense-payments', 'Expense Payments');
   case 'outgoing-sms-messages':
-    return standardReportExport(req, res, data, 'outgoing_sms_messages', 'Outgoing SMS Messages');
+    return standardReportExport(req, res, reportKey, data, 'outgoing_sms_messages', 'Outgoing SMS Messages');
   default:
-    standardReportExport(req, res, data);
+    standardReportExport(req, res, reportKey, data, _.snakeCase(reportKey), reportTitle);
     return;
   }
 }
@@ -229,7 +229,7 @@ async function attendanceDataExport(req, res, data) {
   return res.send(csvResult.join('\n'));
 }
 
-async function standardReportExport(req, res, data, filename = 'data', title) {
+async function standardReportExport(req, res, reportKey, data, filename = 'data', title) {
   const { tableData } = data;
 
   let reportTitle;
@@ -244,6 +244,9 @@ async function standardReportExport(req, res, data, filename = 'data', title) {
         reportHeaders.push([toSentenceCase(key), dateFilter(value, 'yyyy-MM-DD', 'DD/MM/YYYY')]);
       }
     }
+  }
+  if (reportKey === 'digital-responses-completed') {
+    reportHeaders.push('Month', dateFilter(req.params.filter, 'yyyy-MM-DD', 'MMMM yyyy'));
   }
 
   let csvResult = [];

@@ -13,7 +13,8 @@
     allCourtUtilisationDAO,
     digitalSummonsReceivedReportDAO,
     weekendAttendanceReportDAO,
-    overdueUtilisationReportDAO
+    overdueUtilisationReportDAO,
+    digitalResponsesCompletedReportDAO
   } = require('../../../objects/reports');
 
   const makeLink = (app) => {
@@ -1964,7 +1965,54 @@
         bespokeReport: {
           dao: (req) => overdueUtilisationReportDAO.get(req)
         },
-      }
+      },
+      'digital-responses-completed': {
+        title: 'Digital responses completed',
+        search: 'month',
+        headings: [
+          'reportDate',
+          'responsesProcessed',
+          'reportTime',
+        ],
+        bespokeReport: {
+          dao: () => digitalResponsesCompletedReportDAO.get(
+            req,
+            req.params.filter,
+          ),
+          manipualteApiTableData: (tableData) => {
+            tableData.headings.map(heading => {
+              heading.id = heading.name === 'Total' ? 'staffTotal' : _.camelCase(heading.name);
+              heading.name = (heading.name !== 'Total' && heading.name !== 'Staff Name') ? dateFilter(heading.name, 'yyyy-MM-DD', 'Do') : heading.name;
+            });
+            const dateHeadings = tableData.headings.filter(heading => heading.id !== 'staffName' && heading.id !== 'staffTotal');
+            tableData.data.forEach((row) => {
+              for (const [key, value] of Object.entries(row)) {
+                if (key === 'dailyTotals') {
+                  for (let i = 0; i < dateHeadings.length; i++) {
+                    row[_.camelCase(dateHeadings[i].id)] = value[i];
+                  }
+                }
+              }
+              delete row.dailyTotals;
+            });
+            return tableData;
+          },
+          addPageHeadings: () => {
+            return {
+              month: {
+                displayName: 'Month',
+                dataType: 'String',
+                value: dateFilter(req.params.filter, 'yyyy-MM-DD', 'MMMM yyyy')
+              }
+            };
+          }
+        },
+        defaultSortColumn: 'staffName',
+        printLandscape: true,
+        exportLabel: 'Export data',
+        fontSize: 8,
+      },
     };
   };
+
 })();

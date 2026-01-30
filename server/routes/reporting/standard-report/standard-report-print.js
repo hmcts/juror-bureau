@@ -301,6 +301,12 @@ async function standardReportPrint(app, req, res, reportKey, data) {
 
   try {
     let metadata = {};
+    if (reportData.bespokeReport && reportData.bespokeReport.addPageHeadings) {
+        for (const [key, value] of Object.entries(reportData.bespokeReport.addPageHeadings())) {
+          reportData.headings.push(key);
+          headings[key] = value;
+        }
+      }
     if (!_.isEmpty(reportData.headings)) {
       metadata = {
         left: [...buildReportHeadings(reportData.headings.filter((v, index) => index % 2 === 0)).filter(item => item)] || [],
