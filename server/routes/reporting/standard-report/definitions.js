@@ -2011,7 +2011,7 @@
             return rowData.staffName === 'Total Responses' ? 'bottom' : null;
           },
           printSorting: {
-            sortFuntction: (rows) => (_sortBy, sortDirection) => {
+            sortFunction: (rows) => (_sortBy, sortDirection) => {
               const totalRow = rows.find(row => row.staffName === 'Total Responses');
               const otherRows = rows.filter(row => row.staffName !== 'Total Responses');
               otherRows.sort(sort(_sortBy, sortDirection));
