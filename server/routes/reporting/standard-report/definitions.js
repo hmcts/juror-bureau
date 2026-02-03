@@ -4,6 +4,7 @@
   const _ = require('lodash');
   const { isCourtUser, isSystemAdministrator } = require('../../../components/auth/user-type');
   const { dateFilter, capitalizeFully, toMoney, toSentenceCase, makeDate } = require('../../../components/filters');
+  const { sort } = require('./utils');
   const {
     dailyUtilisationDAO,
     dailyUtilisationJurorsDAO,
@@ -2005,6 +2006,17 @@
                 value: dateFilter(req.params.filter, 'yyyy-MM-DD', 'MMMM yyyy')
               }
             };
+          },
+          fixRow: (rowData) => {
+            return rowData.staffName === 'Total Responses' ? 'bottom' : null;
+          },
+          printSorting: {
+            sortFuntction: (rows) => (_sortBy, sortDirection) => {
+              const totalRow = rows.find(row => row.staffName === 'Total Responses');
+              const otherRows = rows.filter(row => row.staffName !== 'Total Responses');
+              otherRows.sort(sort(_sortBy, sortDirection));
+              return [...otherRows, totalRow];
+            },
           }
         },
         defaultSortColumn: 'staffName',

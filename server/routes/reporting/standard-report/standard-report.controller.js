@@ -490,15 +490,31 @@
 
           const sortValue = numericTypes.includes(header.dataType) ? data[_.camelCase(header.id)] : output;
 
-          return ({
+          let dataFixedIndex;
+          if (reportType.bespokeReport && reportType.bespokeReport.fixRow) {
+            switch (reportType.bespokeReport.fixRow(data)) {
+              case 'top':
+                dataFixedIndex = 0;
+                break;
+              case 'bottom':
+                dataFixedIndex = tableData.length - 1;
+                break;
+            }
+          }
+
+          const cell = {
             html: output ? output : '-',
             attributes: {
               'data-sort-value': sortValue && sortValue !== '-' 
                 ? ((header.dataType === 'LocalDate' || header.dataType === 'Date') ? dateFilter(data[_.camelCase(header.id)], null, 'yyyy-MM-DD') : sortValue) 
-                : (numericTypes.includes(header.dataType) ? '0' : '-')
+                : (numericTypes.includes(header.dataType) ? '0' : '-'),
             },
             format: header.dataType === 'BigDecimal' ? 'numeric' : '',
-          });
+          }
+
+          if (dataFixedIndex) cell.attributes['data-fixed-index'] = dataFixedIndex;
+
+          return cell;
         });
 
         if (reportType.bespokeReport && reportType.bespokeReport.insertColumns) {
