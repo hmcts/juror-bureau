@@ -51,7 +51,7 @@
         localAuthorityCode: localAuthorityFilter,
         uploadStatus: !status || status === 'all'
           ? ['UPLOADED', 'NOT_UPLOADED']
-          : [status]
+          : [_.snakeCase(status).toUpperCase()]
       };
       localAuthorityStatus = await erLocalAuthorityStatusDAO.post(req, payload);
     } catch (err) {
@@ -200,16 +200,16 @@
             classes: 'jd-middle-align',
           },
           {
-            html: `<strong class="govuk-tag ${localAuthority.status === 'NOT_UPLOADED' ? 'govuk-tag--grey' : ''}">`
+            html: `<strong class="govuk-tag ${localAuthority.uploadStatus === 'NOT_UPLOADED' ? 'govuk-tag--grey' : ''}">`
                 + `${toSentenceCase(localAuthority.uploadStatus)}`
                 + '</strong>',
             classes: 'jd-middle-align',
           },
           {
-            text: dateFilter(localAuthority.lastUploadDate, 'yyyy-MM-DD', 'DD MMMM yyyy'),
+            text: localAuthority.lastUploadDate ? dateFilter(localAuthority.lastUploadDate, 'yyyy-MM-DD', 'DD MMMM yyyy') : '-',
             classes: 'jd-middle-align',
             attributes: {
-              'data-sort-value': dateFilter(localAuthority.lastDataUpload, 'yyyy-MM-DD', 'yyyyMMDD')
+              'data-sort-value': localAuthority.lastUploadDate ? dateFilter(localAuthority.lastUploadDate, 'yyyy-MM-DD', 'yyyyMMDD') : ''
             },
           }
         ]);

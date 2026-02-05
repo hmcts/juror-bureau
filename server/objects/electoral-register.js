@@ -1,7 +1,6 @@
 (function() {
   'use strict';
 
-  const { dashboardData, allLocalAuthorities } = require('../routes/electoral-register/dummy-data');
   const { DAO } = require('./dataAccessObject');
   const { basicDataTransform } = require('../lib/utils');
 
