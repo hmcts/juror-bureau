@@ -5,16 +5,18 @@
   const { DAO } = require('./dataAccessObject');
   const { basicDataTransform } = require('../lib/utils');
 
-  module.exports.electoralRegisterDashboardDAO = {
-    get: (req, payload) => {
-      return dashboardData(payload);
+  module.exports.erLocalAuthorityStatusDAO = new DAO('moj/er-dashboard/local-authority-status', {
+    post: function(body) {
+      return {
+        uri: this.resource,
+        transform: basicDataTransform,
+        body,
+      }
     }
-  };
+  })
 
-  module.exports.localAuthoritiesDAO = {
-    get: () => {
-      return allLocalAuthorities;
-    }
-  };
+  module.exports.erUploadStats = new DAO('moj/er-dashboard/upload-stats')
+
+  module.exports.localAuthoritiesDAO = new DAO('moj/er-dashboard/local-authorities')
 
 })();
