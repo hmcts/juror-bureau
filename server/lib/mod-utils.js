@@ -786,7 +786,8 @@
   module.exports.constants = {
     PAGE_SIZE: 25,
     MAX_CORONER_JURORS: 250,
-    PHONE_REGEX: /^[04(+][0-9\s-()]{8,14}$/,
+    PHONE_REGEX_OLD: /^[04(+][0-9\s-()]{8,14}$/,
+    PHONE_REGEX: /^$|^(0[012345689][0-9]{8,9})$|(07[0-9]{9})$/,
     // eslint-disable-next-line max-len
     POSTCODE_REGEX: /^$|(([gG][iI][rR] {0,}0[aA]{2})|((([a-pr-uwyzA-PR-UWYZ][a-hk-yA-HK-Y]?[0-9][0-9]?)|(([a-pr-uwyzA-PR-UWYZ][0-9][a-hjkstuwA-HJKSTUW])|([a-pr-uwyzA-PR-UWYZ][a-hk-yA-HK-Y][0-9][abehmnprv-yABEHMNPRV-Y]))) {0,}[0-9][abd-hjlnp-uw-zABD-HJLNP-UW-Z]{2}))$/,
   };

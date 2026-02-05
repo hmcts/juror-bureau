@@ -449,9 +449,9 @@
     } else if ((stripPrefixes(value).slice(0, 2) === '07' || stripPrefixes(value).slice(0, 1) === '7') && stripPrefixes(value).length !== 11) {
       message.summary = 'UK mobile number can only contain 11 digits';
       message.details.push('UK mobile number can only contain 11 digits');
-    } else if (stripPrefixes(value).length < 11 || stripPrefixes(value).length > 13) {
-      message.summary = 'UK telephone number must contain 11 to 13 digits';
-      message.details.push('UK telephone number must contain 11 to 13 digits');
+    } else if (stripPrefixes(value).length < 10 || stripPrefixes(value).length > 13) {
+      message.summary = 'UK telephone number must contain 10 to 13 digits';
+      message.details.push('UK telephone number must contain 10 to 13 digits');
     } else if (!phoneRegex.test(value)) {
       message.fields.push(key);
       message.summary = options.messageMap[key];
