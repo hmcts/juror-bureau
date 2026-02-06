@@ -46,7 +46,7 @@
             </li>
             {% if isBureauUser %}
               <li>
-                <a href="{{ url('electoral-register.get') }}" class="govuk-link govuk-!-font-weight-bold">
+                <a href="{{ url('electoral-register.filter-status.get') + '?status=all' }}" class="govuk-link govuk-!-font-weight-bold">
                   Electoral register
                 </a>
               <li>

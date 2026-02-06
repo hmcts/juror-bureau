@@ -29,6 +29,22 @@
       isBureauUser,
       controller.postLocalAuthorityFilter(app)
     );
+
+    app.get(
+      '/electoral-register/filter-status',
+      'electoral-register.filter-status.get',
+      auth.verify,
+      isBureauUser,
+      controller.getFilterUploadStatus(app)
+    );
+
+    app.post(
+      '/electoral-register/check-la',
+      'electoral-register.check-la.post',
+      auth.verify,
+      isBureauUser,
+      controller.postCheckLocalAuthority(app)
+    )
   };
 
 })();

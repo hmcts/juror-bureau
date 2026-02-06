@@ -1,49 +1,66 @@
-let allChecked = false;
-let chkbxs = document.getElementsByName('selectedAuthorities');
+const checkAllLa = $('#selectAllCheckbox');
+const laRows = $('input[aria-label^=select]');
+const checkedAuthorities = $('#checkedAuthorities');
+const totalAuthorities = $('#totalAuthorities');
+const csrfToken = $('#csrfToken');
 
-if (chkbxs.length > 0) {
-  document.getElementById("totalAuthorities").innerHTML = chkbxs.length || 0;
-  document.getElementById("checkedAuthorities").innerHTML = 0;
+// checking jurors logic
+if (checkAllLa && checkAllLa.length) {
+  checkAllLa[0].addEventListener('change', function() {
+    const isCheckingAll = this.checked;
 
-
-  document.getElementById('selectAllCheckbox').addEventListener('change', selectAll);
-  document.getElementsByName('selectedAuthorities').forEach((checkbox) => {
-    checkbox.addEventListener('change', checkSet);
+    checkRequest(this.id, isCheckingAll).then(function(noSelected) {
+      laRows.each(function(_, element) {
+        element.checked = isCheckingAll;
+      });
+      checkedAuthorities.text(isCheckingAll ? noSelected : '0');
+    });
   });
+}
 
-  function selectAll() {
-    if (allChecked) {
-      allChecked = false;
-      for(var i = 0; i < chkbxs.length; i++){
-        if (chkbxs[i].type=='checkbox')
-        chkbxs[i].checked = false;   
-      }
-      document.getElementById("checkedAuthorities").innerHTML = $('input:checkbox:checked').length;
-    } else {
-      allChecked = true;
-      for(var i = 0; i < chkbxs.length; i++){
-        if (chkbxs[i].type=='checkbox')
-        chkbxs[i].checked = true;  
-      }
-      document.getElementById("checkedAuthorities").innerHTML = $('input:checkbox:checked').length - 1;
-    }
-  };
+if (laRows && laRows.length) {
+  laRows.each(function(_, element) {
+    element.addEventListener('change', async function() {
+      const laCode = this.id.split('-')[1];
+      const isCheckingLa = this.checked;
 
-  function checkSet() {
-    document.getElementById("checkedAuthorities").innerHTML = $('input:checkbox:checked').length;
-    if (chkbxs.length > document.getElementsByName('selectedAuthorities:checked').length) {
-      document.getElementsByName('selectAllCheckbox')[0].checked = false;
-      allChecked = false;
+      checkRequest(laCode, isCheckingLa).then(function(noSelected) {
+        checkedAuthorities.text(noSelected || '0');
+        updatecheckAllLaCheckbox(isCheckingLa);
+      });
+    });
+  });
+}
+
+function updatecheckAllLaCheckbox(checking) {
+  if (checking) {
+    if (checkedAuthorities.text() === totalAuthorities.text()) {
+      checkAllLa[0].checked = true;
     }
+  } else {
+    checkAllLa[0].checked = false;
   }
 }
 
+function checkRequest(laCode, isChecking) {
+  const action = isChecking ? 'check' : 'uncheck';
+
+  return $.ajax({
+    url: `/electoral-register/check-la?laCode=${laCode}&action=${action}`,
+    method: 'POST',
+    data: {
+      _csrf: csrfToken.val(),
+    },
+  });
+}
+
+
 $(document).ready(() => {
   $('[name="status"]').on('change', function() {
-    var urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(window.location.search);
     const localAuthorityFilter = urlParams.get('localAuthorityFilter') || '';
 
-    window.location.href = '/electoral-register?status=' + $(this).val()
+    window.location.href = '/electoral-register/filter-status?status=' + $(this).val()
     + `${localAuthorityFilter ? `&localAuthorityFilter=${encodeURIComponent(localAuthorityFilter)}` : ''}`;
   });
 });
