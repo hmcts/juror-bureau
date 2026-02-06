@@ -120,6 +120,7 @@
       },
       // TODO: ADD FLOWS TO THESE LINKS
       actionRoutes: {
+        setDeadline: '#',
         changeDeadline: '#',
         downloadEmails: '#',
       },
