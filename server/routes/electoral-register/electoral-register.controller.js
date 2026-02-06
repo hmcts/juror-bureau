@@ -175,7 +175,7 @@
             localAuthorityFilter,
             sortBy,
             sortOrder,
-            "mark-email-delivered",
+            'mark-email-delivered',
           ),
       },
       // TODO: ADD FLOWS TO THESE LINKS
