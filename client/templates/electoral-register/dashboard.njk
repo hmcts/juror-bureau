@@ -7,6 +7,7 @@
 {% from "moj/components/alert/macro.njk" import mojAlert %}
 
 {% from "custom-components/autocomplete/macro.njk" import modAutocomplete %}
+{% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
 {% from "includes/csrf.njk" import csrfProtection %}
 
 {% set currentApp = "Electoral register management" %}
@@ -213,7 +214,7 @@
 
           <div class="govuk-body govuk-!-margin-bottom-0"> <span id="checkedAuthorities"></span> of <span id="totalAuthorities"></span> selected</div>
 
-          {{ govukTable({
+          {# {{ govukTable({
             attributes: {
               id: "authoritiesTable",
               name: "authorities",
@@ -224,6 +225,15 @@
             captionClasses: "govuk-visually-hidden",
             head: localAuthorities.head,
             rows: localAuthorities.rows
+          }) }} #}
+
+          {{ modSortableTable({
+            id: "localAuthoritiesTable",
+            caption: "Local authorities",
+            captionClasses: "govuk-visually-hidden",
+            head: localAuthorities.head,
+            rows: localAuthorities.rows,
+            url: sortUrl
           }) }}
 
           {% if errors.items["selectedAuthorities"] %}</div>{% endif %}

@@ -3,7 +3,7 @@
 
   const _ = require("lodash");
   const moment = require("moment");
-  const { dateFilter, toSentenceCase } = require("../../components/filters");
+  const { dateFilter, toSentenceCase, makeDate } = require("../../components/filters");
   const { makeManualError } = require("../../lib/mod-utils");
   const {
     erLocalAuthorityStatusDAO,
@@ -12,7 +12,7 @@
   } = require("../../objects/electoral-register");
 
   module.exports.getDashboard = (app) => async (req, res) => {
-    const { localAuthorityFilter, status } = req.query;
+    const { localAuthorityFilter, status, sortBy, sortOrder } = req.query;
 
     const tmpErrors = _.clone(req.session.errors);
     const bannerMessage = _.clone(req.session.bannerMessage);
@@ -66,6 +66,12 @@
       });
     }
 
+    const localAuthorityData = sortLocalAuthorities(
+      sortBy,
+      sortOrder,
+      localAuthorityStatus.localAuthorityStatuses,
+    );
+
     const deadlineDiff = moment(new Date(uploadStats.deadlineDate)).diff(
       moment(new Date()),
       "days",
@@ -75,7 +81,7 @@
       postRoutes: {
         filter:
           app.namedRoutes.build("electoral-register.filter.post") +
-          buildQueryParams(status, localAuthorityFilter),
+          buildQueryParams(status, localAuthorityFilter, sortBy, sortOrder),
         sendReminder:
           app.namedRoutes.build("electoral-register.post") +
           buildQueryParams(status, localAuthorityFilter, "send-reminder"),
@@ -108,8 +114,11 @@
       notUploaded: uploadStats.notUploadedCount,
       uploaded: uploadStats.uploadedCount,
       localAuthorities: buildLocalAuthoritiesTable(
-        localAuthorityStatus.localAuthorityStatuses,
+        localAuthorityData,
+        sortBy,
+        sortOrder,
       ),
+      sortUrl: buildQueryParams(status, localAuthorityFilter),
       bannerMessage,
       errors: {
         title: "Please check the form",
@@ -121,13 +130,13 @@
   };
 
   module.exports.postLocalAuthorityFilter = (app) => (req, res) => {
-    const { status } = req.query;
+    const { status, sortBy, sortOrder } = req.query;
     const localAuthorityCode = req.session.localAuthorities.find(
       (la) => la.localAuthorityName === req.body.localAuthorityFilter,
     )?.localAuthorityCode;
     return res.redirect(
       app.namedRoutes.build("electoral-register.get") +
-        buildQueryParams(status, localAuthorityCode),
+        buildQueryParams(status, localAuthorityCode, sortBy, sortOrder),
     );
   };
 
@@ -177,7 +186,34 @@
     );
   };
 
-  const buildLocalAuthoritiesTable = (localAuthorities) => {
+  const sortLocalAuthorities = (sortBy, sortDirection, tableData) => {
+    if (sortBy) {
+      return tableData.sort((a, b) => {
+        let _a;
+        let _b;
+        if (sortBy === "lastUploadDate") {
+          _a = a[sortBy]
+            ? dateFilter(a[sortBy], null, "yyyyMMDD")
+            : "-";
+          _b = b[sortBy]
+            ? dateFilter(b[sortBy], null, "yyyyMMDD")
+            : "-";
+        } else {
+          _a = a[sortBy] ? a[sortBy] : "-";
+          _b = b[sortBy] ? b[sortBy] : "-";
+        }
+
+        if (sortDirection === "ascending") {
+          return _a.localeCompare(_b);
+        }
+
+        return _b.localeCompare(_a);
+      });
+    }
+    return tableData;
+  };
+
+  const buildLocalAuthoritiesTable = (localAuthorities, sortBy, sortOrder) => {
     const table = {
       head: [],
       rows: [],
@@ -193,30 +229,25 @@
           "</label>" +
           "</div>",
         classes: "jd-middle-align",
+        sortable: false,
       },
       {
-        id: "authorityName",
-        text: "Authority name",
+        id: "localAuthorityName",
+        value: "Authority name",
         classes: "jd-middle-align",
-        attributes: {
-          "aria-sort": "ascending",
-        },
+        sort: sortBy === "localAuthorityName" ? sortOrder : "none",
       },
       {
-        id: "status",
-        text: "Status",
+        id: "uploadStatus",
+        value: "Status",
         classes: "jd-middle-align",
-        attributes: {
-          "aria-sort": "none",
-        },
+        sort: sortBy === "uploadStatus" ? sortOrder : "none",
       },
       {
-        id: "lastDataUpload",
-        text: "Last data upload",
+        id: "lastUploadDate",
+        value: "Last data upload",
         classes: "jd-middle-align",
-        attributes: {
-          "aria-sort": "none",
-        },
+        sort: sortBy === "lastUploadDate" ? sortOrder : "none",
       },
     ];
 
@@ -271,7 +302,7 @@
     return table;
   };
 
-  const buildQueryParams = (status, localAuthorityFilter, action) => {
+  const buildQueryParams = (status, localAuthorityFilter, sortBy, sortOrder, action) => {
     let queryParams = "";
     if (action) {
       queryParams += `?action=${action}`;
@@ -283,6 +314,13 @@
     }
     if (status) {
       queryParams += (queryParams.length ? "&" : "?") + `status=${status}`;
+    }
+    if (sortBy) {
+      queryParams += (queryParams.length ? "&" : "?") + `sortBy=${sortBy}`;
+    }
+    if (sortOrder) {
+      queryParams +=
+        (queryParams.length ? "&" : "?") + `sortOrder=${sortOrder}`;
     }
     return queryParams;
   };
