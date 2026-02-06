@@ -188,6 +188,10 @@
   flex-grow: 1;
 }
 
+.mod-flex-end {
+  align-items: flex-end;
+}
+
 .mod-items-start {
   align-items: start;
 }
@@ -764,5 +768,11 @@ dt.govuk-summary-list-mod {
   &__subtitle {
     margin-top: govuk-spacing(2);
     color: govuk-colour("blue");
+  }
+}
+
+.mod-section-break {
+  &__blue {
+    border-bottom: 1px solid govuk-colour("blue");
   }
 }

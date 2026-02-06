@@ -44,6 +44,13 @@
             <li>
               <a href="{{ url('messaging.export-contacts.get') if isBureauUser else url('messaging.send.get') }}" class="govuk-link govuk-!-font-weight-bold">Messaging</a>
             </li>
+            {% if isBureauUser %}
+              <li>
+                <a href="{{ url('electoral-register.filter-status.get') + '?status=all' }}" class="govuk-link govuk-!-font-weight-bold">
+                  Electoral register
+                </a>
+              <li>
+            {% endif %}
             {% if isCourtManager %}
               <li>
                 <a href="{{ url('administration.court-bureau.users.get', { location: 'court' }) }}" class="govuk-link govuk-!-font-weight-bold">

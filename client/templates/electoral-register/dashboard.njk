@@ -1,0 +1,274 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
+
+{% from "custom-components/autocomplete/macro.njk" import modAutocomplete %}
+{% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% set currentApp = "Electoral register management" %}
+
+{% block page_title %}{{ serviceName }} - Electoral register management{% endblock %}
+{% block page_identifier %}Electoral register management{% endblock %}
+
+{% block beforeContent %}
+  {% if bannerMessage %}
+    <div class="govuk-!-margin-top-6">
+      {{ mojAlert({
+        variant: "success",
+        text: bannerMessage,
+        iconFallbackText: "Success",
+        dismissible: true
+      }) }}
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %} 
+
+  {# HEADER #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Dashboard</h1>
+
+      {{ govukNotificationBanner({
+        titleText: "Deadline",
+        text: deadline,
+        classes: "govuk-!-margin-bottom-6"
+      }) }}
+
+      {% if showDeadlineWarrning %}
+        {{ mojAlert({
+          variant: "warning",
+          title: "Urgent",
+          showTitleAsHeading: true,
+          dismissible: false,
+          html: notUploaded + " local authorities have not uploaded their electoral register data.",
+          classes: "govuk-!-margin-bottom-6"
+        }) }}
+      {% endif %}
+
+      {# DEADLINE PASSED BANNER #}
+      {# WITH LINK TO SET DEADLINE FLOW #}
+
+    </div>
+  </div>
+
+  {# SUMMARY INFO #}
+  <div class="govuk-grid-row">
+    {# LARGE VALUES #}
+    <div class="govuk-grid-column-one-third">
+      <div class="mod-dashboard__large-values">
+        <div class="mod-dashboard__large-values">
+          <div class="mod-dashboard__large-values__value" aria-label="Days remaining value">
+            <span class="govuk-!-font-size-80 govuk-!-font-weight-bold" aria-label="Days remaining value">
+              {{ daysRemaining }}
+            </span>
+            <span class="label">
+              <span class="govuk-body">Days remaining</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="mod-dashboard__large-values">
+          <div class="mod-dashboard__large-values__value" aria-label="Not uploaded value">
+            <span class="govuk-!-font-size-80 govuk-!-font-weight-bold" aria-label="Not uploaded value">
+              {{ notUploaded }}
+            </span>
+            <span class="label">
+              <span class="govuk-body">Not uploaded</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# DONUT CHART #}
+    <div class="govuk-grid-column-one-third">
+      {% include "./_partials/uploaded-doughnut.njk" %}
+    </div>
+
+    {# ACTIONS #}
+    <div class="govuk-grid-column-one-third">
+      <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-4 mod-section-break__blue">
+      <h3 class="govuk-heading-s">Actions</h3>
+      <p class="govuk-body">
+        <a href="{{ actionRoutes.changeDeadline }}" class="govuk-link govuk-link--no-visited-state">Change deadline for local authorities</a>
+      </p>
+      <p class="govuk-body">
+        <a href="{{ actionRoutes.downloadEmails }}" class="govuk-link govuk-link--no-visited-state">Download all authority emails</a>
+      </p>
+    </div>
+  </div>
+
+  {# SECTION BREAK #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6">
+    </div>
+  </div>
+
+  {# TABLE OF LOCAL AUTHORITIES #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h2 class="govuk-heading-m">Current status</h2>
+   </div>
+  </div>
+
+  <form method="post" action="{{ postRoutes.filter }}" id="localAuthorityFilterForm">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <div class="mod-flex mod-gap-x-2 mod-flex-end">
+          {{ modAutocomplete({
+            label: {
+              text: "Filter by local authority",
+              class: "govuk-!-font-weight-bold"
+            },
+            name: "localAuthorityFilter",
+            id: "localAuthorityFilter",
+            data: laAutoCompleteNames,
+            errorMessage: localAuthorityFilterError,
+            class: "govuk-!-width-two-thirds",
+            value: selectedLocalAuthority,
+            nonce: nonce
+          }) }}
+          {{ govukButton({
+            type: "submit",
+            text: "Filter",
+            classes: "govuk-button--secondary mod-justify-end"
+          }) }}
+        </div>
+      </div>
+    </div>
+    {{ csrfProtection(csrftoken) }}
+  </form>
+  
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ govukRadios({
+        classes: "govuk-radios--inline",
+        name: "status",
+        fieldset: {
+          legend: {
+            text: "Show",
+            classes: "govuk-fieldset__legend--s"
+          }
+        },
+        items: [
+          {
+            value: "not-uploaded",
+            text: "Not uploaded"
+          },
+          {
+            value: "uploaded",
+            text: "Uploaded"
+          },
+          {
+            value: "all",
+            text: "All statuses"
+          }
+        ],
+        value: status
+      }) }}
+    </div>
+  </div>
+
+  {% if localAuthorities.rows | length %}
+    <form method="post" id="authoritiesForm">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+
+          <div class="govuk-button-group">
+            {{ govukButton({
+              text: "Send reminder",
+              classes: "govuk-button--secondary",
+              type: "submit",
+              attributes: {
+                id: "sendReminderButton",
+                formAction: postRoutes.sendReminder
+              }
+            }) }}
+
+            {{ govukButton({
+              text: "Mark data request email as delivered",
+              classes: "govuk-button--secondary",
+              type: "submit",
+              attributes: {
+                id: "markEmailDeliveredButton",
+                formAction: postRoutes.markEmailDelivered
+              }
+            }) }}
+          </div>
+
+          {% if errors.items["selectedAuthorities"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}
+
+          {% if errors.items["selectedAuthorities"] %}
+            <div class="error-allocation">
+              <p class="govuk-error-message">{{ errors.items['selectedAuthorities'][0].details }}</p>
+            </div>
+          {% endif %}
+
+          <div class="govuk-body govuk-!-margin-bottom-0"> <span id="checkedAuthorities">{{ checkedLocalAuthorities }}</span> of <span id="totalAuthorities">{{ totalLocalAuthorities }}</span> selected</div>
+
+          {# {{ govukTable({
+            attributes: {
+              id: "authoritiesTable",
+              name: "authorities",
+              "data-module": "moj-sortable-table",
+              "data-multi-select-checkbox": "#select-all"
+            },
+            caption: "Local authorities",
+            captionClasses: "govuk-visually-hidden",
+            head: localAuthorities.head,
+            rows: localAuthorities.rows
+          }) }} #}
+
+          {{ modSortableTable({
+            id: "localAuthoritiesTable",
+            caption: "Local authorities",
+            captionClasses: "govuk-visually-hidden",
+            head: localAuthorities.head,
+            rows: localAuthorities.rows,
+            url: sortUrl
+          }) }}
+
+          {% if errors.items["selectedAuthorities"] %}</div>{% endif %}
+
+          {{ govukPagination({
+            previous: {
+              href: pagination.prev
+            },
+            next: {
+              href: pagination.next
+            },
+            items: pagination.items
+          }) }}
+
+        </div>
+      </div>
+      {{ csrfProtection(csrftoken) }}
+    </form>
+  {% else %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <p class="govuk-body">No local authorities found.</p>
+      </div>
+    </div>
+  {% endif %}
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+
+  <script src="{{ assetPath if assetPath else '/' }}js/accessible-autocomplete.min.js"></script>
+  <script src="{{ assetPath }}js/electoral-register.js"></script>
+
+{% endblock %}
