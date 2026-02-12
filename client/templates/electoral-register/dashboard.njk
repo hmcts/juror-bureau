@@ -5,6 +5,7 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 {% from "moj/components/alert/macro.njk" import mojAlert %}
+{%- from "moj/components/alert/macro.njk" import mojAlert -%}
 
 {% from "custom-components/autocomplete/macro.njk" import modAutocomplete %}
 {% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
@@ -31,6 +32,13 @@
 
   {% include "includes/errors.njk" %} 
 
+    {{ mojAlert({
+      variant: "success",
+      title: "Deadline updated.",
+      dismissible: true
+    }) }}
+    
+
   {# HEADER #}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
@@ -56,7 +64,19 @@
 
       {# DEADLINE PASSED BANNER #}
       {# WITH LINK TO SET DEADLINE FLOW #}
-
+      {%- from "moj/components/interruption-card/macro.njk" import interruptionCard -%}
+    
+    {% call interruptionCard({
+      heading: "Update window is now closed",
+      primaryAction: {
+        text: "Set a new deadline",
+        href: "/electoral-register/set-deadline"
+      }
+      }) -%}
+      <p>The annual upload window for electoral register data has now closed. Local authorities can no longer upload electoral data.</p>
+      <p>To allow uploads, set a new deadline date.</p>
+    {%- endcall %}
+    
     </div>
   </div>
 

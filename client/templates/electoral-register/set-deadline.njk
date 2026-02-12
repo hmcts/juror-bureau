@@ -1,0 +1,71 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% set currentApp = "Electoral register management" %}
+
+{% block page_title %}{{ serviceName }} - Electoral register management{% endblock %}
+{% block page_identifier %}Electoral register management{% endblock %}
+
+{% block beforeContent %}
+  {% if bannerMessage %}
+    <div class="govuk-!-margin-top-6">
+      {{ mojAlert({
+        variant: "success",
+        text: bannerMessage,
+        iconFallbackText: "Success",
+        dismissible: true
+      }) }}
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %} 
+
+  {# HEADER #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Set deadline for local authorities</h1>
+    </div>
+  </div>
+
+    {% from "custom-components/date-picker/macro.njk" import datePicker %}
+    {{ datePicker({
+        id: "deferredTo",
+        label: {
+            text: "Date deadline",
+            classes: "govuk-label--s"
+        },
+        hint: "Use dd/mm/yyyy format. For example, 31/01/2024.",
+        dateValue: data.filters.deferredTo
+    }) }}
+
+    <form method="post" action="{{ postUrl }}">
+        <div class="govuk-button-group govuk-!-margin-top-4">
+        {{ govukButton({
+            text: "Save",
+            type: "submit",
+            attributes: {
+            id: "saveButton"
+            }
+        }) }}
+        <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+    </form>
+
+    <input type="hidden" id="csrftoken" name="_csrf" value="{{ csrftoken }}"/>
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+  {% include "includes/datepicker.njk" %}
+  <script src="{{ assetPath if assetPath else '/' }}js/accessible-autocomplete.min.js"></script>
+  <script src="{{ assetPath }}js/electoral-register.js"></script>
+
+{% endblock %}

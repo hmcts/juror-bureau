@@ -2,6 +2,7 @@
   'use strict';
 
   const controller = require('./electoral-register.controller');
+  const deadlineController = require('./set-deadline-controller');
   const auth = require('../../components/auth');
   const { isBureauUser } = require('../../components/auth/user-type');
 
@@ -48,7 +49,23 @@
       auth.verify,
       isBureauUser,
       controller.postCheckLocalAuthority(app)
-    )
+    );
+
+    app.get(
+      '/electoral-register/set-deadline',
+      'electoral-register.set-deadline.get',
+      auth.verify,
+      isBureauUser,
+      deadlineController.getSetDeadline(app)
+    );
+
+    app.post(
+      '/electoral-register/set-deadline',
+      'electoral-register.set-deadline.post',
+      auth.verify,
+      isBureauUser,
+      deadlineController.postSetDeadline(app)
+    );
   };
 
 })();
