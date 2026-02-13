@@ -137,6 +137,7 @@
       try {
         mnt = moment(date, inputFormat).tz("Europe/London");
       } catch (err) {
+        // Collect error for logging below, but do not expose details to the end user.
         errs.push(err);
       }
       if (mnt) {
@@ -147,12 +148,16 @@
             result = mnt.format(outputFormat);
           }
         } catch (err) {
+          // Collect error for logging below, but do not expose details to the end user.
           errs.push(err);
         }
       }
 
       if (errs.length) {
-        return errs.join('\n');
+        // Log detailed errors on the server for debugging, but return a generic value
+        // so that stack traces or internal error messages are not exposed to users.
+        console.error('dateFilter encountered error(s):', errs);
+        return '';
       }
       return result;
     },
