@@ -60,7 +60,7 @@ $(document).ready(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const localAuthorityFilter = urlParams.get('localAuthorityFilter') || '';
 
-    window.location.href = '/electoral-register/filter-status?status=' + $(this).val()
+    window.location.href = '/electoral-register/filter-status?status=' + encodeURIComponent($(this).val())
     + `${localAuthorityFilter ? `&localAuthorityFilter=${encodeURIComponent(localAuthorityFilter)}` : ''}`;
   });
 });
