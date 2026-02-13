@@ -50,6 +50,7 @@
     require('./quick-links')(app);
     require('./date-picker')(app);
     require('./management-dashboard')(app);
+    require('./electoral-register')(app);
 
     app.route('/multiple-tabs')
       .get(auth.verify, (req, res) => {
