@@ -228,10 +228,7 @@
     // LOCAL AUTHORITY IDs ARE STORED IN A LIST AT req.session.checkedLaCodes
     switch (action) {
       case 'send-reminder':
-        console.log(
-          `\n\n--- Sending reminder emails to: ${req.session.checkedLaCodes} ---\n\n`,
-        );
-        break;
+        return res.redirect(app.namedRoutes.build('electoral-register.send-reminder.get'));
       case 'mark-email-delivered':
         console.log(
           `\n\n--- Marking data request email as delivered for: ${req.session.checkedLaCodes} ---\n\n`,

@@ -47,9 +47,9 @@
       bannerMessage,
       actionRoutes: {
         changeNotes: '#',
-        sendReminder: '#',
         markInactive: app.namedRoutes.build('electoral-register.local-authority.deactivate.get', { laCode }),
         markActive: app.namedRoutes.build('electoral-register.local-authority.activate.get', { laCode }),
+        sendReminder: app.namedRoutes.build('electoral-register.local-authority.send-reminder.get', { laCode }),
       },
       backLinkUrl: {
         built: true,

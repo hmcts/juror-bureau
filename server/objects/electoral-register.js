@@ -60,6 +60,15 @@
       }
     }
   });
+  
+  module.exports.sendReminderDAO = new DAO('moj/notification/send-la-reminder', {
+    post: function(body) {
+      return {
+        uri: this.resource,
+        body: replaceAllObjKeys(body, _.snakeCase),
+      }
+    }
+  });
 
   // module.exports.activateLocalAuthorityDAO = new DAO('moj/er-administration/activate-la', {
   //   put: function(body) {
