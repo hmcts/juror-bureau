@@ -16,14 +16,13 @@
     {% include "includes/back-link.njk" %}
   {% endif %}
   {% if bannerMessage %}
-    <div class="govuk-!-margin-top-6">
-      {{ mojAlert({
-        variant: "success",
-        text: bannerMessage,
-        iconFallbackText: "Success",
-        dismissible: true
-      }) }}
-    </div>
+    {{ mojAlert({
+      variant: "success",
+      text: bannerMessage,
+      iconFallbackText: "Success",
+      dismissible: true,
+      classes: "govuk-!-margin-top-6 govuk-!-margin-bottom-0"
+    }) }}
   {% endif %}
 {% endblock %}
 
