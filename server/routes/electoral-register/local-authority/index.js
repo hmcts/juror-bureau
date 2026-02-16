@@ -11,7 +11,7 @@
       'electoral-register.local-authority.get',
       auth.verify,
       isBureauUser,
-      controller.getDashboard(app)
+      controller.getLocalAuthorityInfo(app)
     );
   };
 

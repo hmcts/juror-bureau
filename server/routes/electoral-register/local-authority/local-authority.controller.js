@@ -5,7 +5,7 @@
   const moment = require('moment');
   const { localAuthorityInfoDAO, erUploadStats } = require('../../../objects/electoral-register');
 
-  module.exports.getDashboard = (app) => async (req, res) => {
+  module.exports.getLocalAuthorityInfo = (app) => async (req, res) => {
     const { laCode } = req.params;
 
     let localAuthorityInfo;
