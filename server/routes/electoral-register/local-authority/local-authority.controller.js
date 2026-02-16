@@ -8,6 +8,9 @@
   module.exports.getLocalAuthorityInfo = (app) => async (req, res) => {
     const { laCode } = req.params;
 
+    const bannerMessage = _.clone(req.session.bannerMessage);
+    delete req.session.bannerMessage;
+
     let localAuthorityInfo;
     try {
       localAuthorityInfo = await localAuthorityInfoDAO.get(req, laCode);
@@ -41,6 +44,7 @@
       localAuthorityInfo,
       daysToDeadline: deadlineDiff + 1,
       showDeadlineWarrning: deadlineDiff <= 28,
+      bannerMessage,
       actionRoutes: {
         changeNotes: '#',
         sendReminder: '#',
