@@ -60,6 +60,9 @@
             : [_.snakeCase(status).toUpperCase()],
       };
       localAuthorityStatus = await erLocalAuthorityStatusDAO.post(req, payload);
+      app.logger.info('Fetched electoral register local authority uploads', {
+        auth: req.session.authentication,
+      })
     } catch (err) {
       app.logger.crit('Error fetching electoral register dashboard data', {
         auth: req.session.authentication,
@@ -131,14 +134,14 @@
       laAutoCompleteNames: allLocalAuthorities
         .sort((la1, la2) => la1.id - la2.id)
         .map((la) => la.localAuthorityName),
-      deadline: dateFilter(
+      deadline: uploadStats.deadlineDate ? dateFilter(
         uploadStats.deadlineDate,
         'yyyy-MM-DD',
         'DD MMMM yyyy',
-      ),
-      daysRemaining: uploadStats.daysRemaining,
-      notUploaded: uploadStats.notUploadedCount,
-      uploaded: uploadStats.uploadedCount,
+      ) : 'No deadline set',
+      daysRemaining: uploadStats.daysRemaining || 0,
+      notUploaded: uploadStats.notUploadedCount || 0,
+      uploaded: uploadStats.uploadedCount || 0,
       localAuthorities: buildLocalAuthoritiesTable(
         req,
         localAuthorityData,
