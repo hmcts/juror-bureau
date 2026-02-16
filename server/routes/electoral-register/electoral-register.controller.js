@@ -62,7 +62,7 @@
       localAuthorityStatus = await erLocalAuthorityStatusDAO.post(req, payload);
       app.logger.info('Fetched electoral register local authority uploads', {
         auth: req.session.authentication,
-      })
+      });
     } catch (err) {
       app.logger.crit('Error fetching electoral register dashboard data', {
         auth: req.session.authentication,
