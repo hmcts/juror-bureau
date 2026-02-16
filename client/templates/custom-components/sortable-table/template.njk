@@ -19,9 +19,9 @@
   {% set sortOrder = "ascending" if head.sort === "none" or head.sort === "descending" else "descending" %}
 
   {% if params.url %}
-    {% set url = params.url + "&sortBy=" + head.id + "&sortOrder=" + sortOrder %}
+    {% set url = params.url + "&sortBy=" + head.id + "&sortOrder=" + sortOrder + "#" + head.id %}
   {% else %}
-    {% set url = "?sortBy=" + head.id + "&sortOrder=" + sortOrder %}
+    {% set url = "?sortBy=" + head.id + "&sortOrder=" + sortOrder + "#" + head.id %}
   {% endif %}
 
   {% if head.sortable === false %}
