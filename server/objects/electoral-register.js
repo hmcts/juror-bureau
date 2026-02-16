@@ -11,12 +11,19 @@
       return {
         uri: this.resource,
         transform: (data) => replaceAllObjKeys(basicDataTransform(data), _.camelCase),
-        body,
+        body: replaceAllObjKeys(body, _.snakeCase),
       }
     }
   });
 
-  module.exports.erUploadStats = new DAO('moj/er-dashboard/upload-stats');
+  module.exports.erUploadStats = new DAO('moj/er-dashboard/upload-stats', {
+    get: function() {
+      return {
+        uri: this.resource,
+        transform: (data) => replaceAllObjKeys(basicDataTransform(data), _.camelCase),
+      }
+    }
+  });
 
   module.exports.localAuthoritiesDAO = new DAO('moj/er-dashboard/local-authorities', {
     get: function() {
