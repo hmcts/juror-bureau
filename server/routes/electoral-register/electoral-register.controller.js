@@ -177,11 +177,11 @@
   };
 
   module.exports.getFilterUploadStatus = (app) => async (req, res) => {
-    const { localAuthorityCode, status } = req.query;
+    const { localAuthorityFilter, status } = req.query;
     delete req.session.erDashboardData;
     return res.redirect(
       app.namedRoutes.build('electoral-register.get') +
-        buildQueryParams(status, localAuthorityCode),
+        buildQueryParams(status, localAuthorityFilter),
     );
   };
 
