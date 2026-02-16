@@ -21,6 +21,7 @@
     delete req.session.errors;
     delete req.session.bannerMessage;
     delete req.session.localAuthorities; // Clear local authorities from session to ensure fresh data is fetched
+    delete req.session.checkedLaCodes;
 
     let allLocalAuthorities = [];
     try {
@@ -208,22 +209,24 @@
 
     delete req.session.erDashboardData;
 
+    req.session.checkedLaCodes = selectedAuthorities; // Store selected local authority codes in session for use in subsequent flows
+
     // TODO: Implement actual action handling logic for each option
-    // LOCAL AUTHORITY IDs ARE STORED IN A LIST AT selectedAuthorities
+    // LOCAL AUTHORITY IDs ARE STORED IN A LIST AT req.session.checkedLaCodes
     switch (action) {
       case 'send-reminder':
         console.log(
-          `\n\n--- Sending reminder emails to: ${selectedAuthorities} ---\n\n`,
+          `\n\n--- Sending reminder emails to: ${req.session.checkedLaCodes} ---\n\n`,
         );
         break;
       case 'mark-email-delivered':
         console.log(
-          `\n\n--- Marking data request email as delivered for: ${selectedAuthorities} ---\n\n`,
+          `\n\n--- Marking data request email as delivered for: ${req.session.checkedLaCodes} ---\n\n`,
         );
         break;
       default:
         console.log(
-          `\n\n--- No action specified for: ${selectedAuthorities} ---\n\n`,
+          `\n\n--- No action specified for: ${req.session.checkedLaCodes} ---\n\n`,
         );
     }
 
