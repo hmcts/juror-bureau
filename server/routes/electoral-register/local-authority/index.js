@@ -6,6 +6,9 @@
   const { isBureauUser } = require('../../../components/auth/user-type');
 
   module.exports = function(app) {
+    require('./deactivate-la')(app);
+    require('./activate-la')(app);
+
     app.get(
       '/electoral-register/local-authority/:laCode',
       'electoral-register.local-authority.get',

@@ -40,6 +40,8 @@
       'days',
     );
 
+    console.log('\n\n', localAuthorityInfo, '\n\n');
+
     return res.render('electoral-register/local-authority.njk', {
       localAuthorityInfo,
       daysToDeadline: deadlineDiff + 1,
@@ -48,7 +50,8 @@
       actionRoutes: {
         changeNotes: '#',
         sendReminder: '#',
-        markInactive: '#',
+        markInactive: app.namedRoutes.build('electoral-register.local-authority.deactivate.get', { laCode }),
+        markActive: app.namedRoutes.build('electoral-register.local-authority.activate.get', { laCode }),
       },
       backLinkUrl: {
         built: true,
