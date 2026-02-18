@@ -2,7 +2,7 @@
 
 const controller = require('./authentication.controller');
 const azureController = require('./azure.controller');
-const { isSystemAdministrator } = require('../../components/auth/user-type');
+const errors = require('../../components/errors');
 
 module.exports = function(app) {
 
@@ -31,7 +31,7 @@ module.exports = function(app) {
   // this would be used to auth as an admin from the admin page
   app.get('/auth/court/:locCode',
     'authentication.select-court.get',
-    isSystemAdministrator,
+    systemAdminAuth,
     controller.getSelectCourt(app),
   );
 
@@ -51,5 +51,27 @@ module.exports = function(app) {
 
     return res.status(401).send();
   }
+
+  const systemAdminAuth = (req, res, next) => {
+  if (
+    req.session.hasOwnProperty('authentication') === true &&
+    req.session.authentication.hasOwnProperty('activeUserType') === true &&
+    (req.session.authentication.activeUserType === 'ADMINISTRATOR' 
+      || (req.session.authentication.userType === 'ADMINISTRATOR' && req.session.authentication.activeUserType === 'COURT')
+    )
+  ) {
+    if (typeof next !== 'undefined') {
+      return next();
+    }
+
+    return true;
+  }
+
+  if (typeof next !== 'undefined') {
+    return errors(req, res, 403);
+  }
+
+  return false;
+}
 
 };
