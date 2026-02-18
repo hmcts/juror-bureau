@@ -71,6 +71,19 @@
       });
     }
 
+    if (status === 'all' && localAuthorityFilter && localAuthorityStatus.localAuthorityStatuses.length === 0) {
+      app.logger.info('Redirecting to inactive local authority information page', {
+        auth: req.session.authentication,
+        laCode: localAuthorityFilter,
+      });
+
+      return res.redirect(
+        app.namedRoutes.build('electoral-register.local-authority.get', {
+          laCode: localAuthorityFilter
+        }),
+      );
+    }
+
     let localAuthorityData = sortLocalAuthorities(
       sortBy,
       sortOrder,
@@ -173,7 +186,7 @@
 
     return res.redirect(
       app.namedRoutes.build('electoral-register.get') +
-        buildQueryParams(status, localAuthorityCode, sortBy, sortOrder),
+        buildQueryParams('all', localAuthorityCode, sortBy, sortOrder),
     );
   };
 
