@@ -27,8 +27,14 @@
   {% if not localAuthorityInfo.isActive %}
     {% set inactiveBannerHtml %}
       <p class="govuk-notification-banner__heading">Authority marked as inactive</p>
-      <p class="govuk-body"><span class="govuk-!-font-weight-bold">Actioned:</span> 7 January 2026 by Sarah Johnson</p>
-      <p class="govuk-body"><span class="govuk-!-font-weight-bold">Reason:</span> This authority merged with another local authority</p>
+      <p class="govuk-body">
+        <span class="govuk-!-font-weight-bold">Actioned:</span>
+        {{ localAuthorityInfo.inactiveInfo.madeInactiveAt | makeDate | dateFilter (null, "DD MMMM yyyy") }} by {{ localAuthorityInfo.inactiveInfo.madeInactiveBy }}
+      </p>
+      <p class="govuk-body">
+        <span class="govuk-!-font-weight-bold">Reason:</span>
+        {{ localAuthorityInfo.inactiveInfo.inactiveReason }}
+      </p>
     {% endset %}
     {{ govukNotificationBanner({
       title: "Authority marked as inactive",
