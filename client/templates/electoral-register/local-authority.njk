@@ -28,7 +28,7 @@
 
 {% block content %}
 
-  {% include "includes/errors.njk" %} 
+  {% include "includes/errors.njk" %}
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
@@ -127,17 +127,17 @@
           </h2>
         </div>
         <div class="govuk-summary-card__content">
-            <dl class="govuk-summary-list">
-              {% for user in localAuthorityInfo.emailAddresses %}
-                <div class="govuk-summary-list__row">
-                  <dd class="govuk-summary-list__value">
-                    <a class="govuk-body govuk-link govuk-link--no-visited-state" href="#">
-                      {{ user }}
-                    </a>
-                  </dd>
-                </div>
-              {% endfor %}
-            </dl>
+          <dl class="govuk-summary-list">
+            {% for user in localAuthorityInfo.emailAddresses %}
+              <div class="govuk-summary-list__row">
+                <dd class="govuk-summary-list__value">
+                  <a class="govuk-body govuk-link govuk-link--no-visited-state" href="#">
+                    {{ user }}
+                  </a>
+                </dd>
+              </div>
+            {% endfor %}
+          </dl>
         </div>
       </div>
 
@@ -153,45 +153,43 @@
           </ul>
         </div>
         <div class="govuk-summary-card__content">
-            <dl class="govuk-summary-list">
-              <div class="govuk-summary-list__row">
-                <dd class="govuk-summary-list__value">
-                  <p class="govuk-body">
-                    {{ localAuthorityInfo.notes }}
-                  </a>
-                </dd>
-              </div>
-            </dl>
+          <dl class="govuk-summary-list">
+            <div class="govuk-summary-list__row">
+              <dd class="govuk-summary-list__value">
+                <p class="govuk-body">
+                  {{ localAuthorityInfo.notes }}
+                </a>
+              </dd>
+            </div>
+          </dl>
         </div>
       </div>
 
       {% set reminderHistoryTimeline %}
 
-        {% set items = [] %}
-        {% for historyEvent in localAuthorityInfo.reminderHistory %}
-          {% set items = (items.push(
-            {
-              label: {
-                text: "Reminder sent"
-              },
-              datetime: {
-                timestamp: historyEvent.timeSent | makeDate,
-                type: "datetime"
-              },
-              byline: {
-                text: historyEvent.sentBy
-              }
-            }
-          ), items) %}
-        {% endfor %}
+      {% set items = [] %}
+      {% for historyEvent in localAuthorityInfo.reminderHistory %}
+        {% set items = (items.push({
+          label: {
+            text: "Reminder sent"
+          },
+          datetime: {
+            timestamp: historyEvent.timeSent | makeDate,
+            type: "datetime"
+          },
+          byline: {
+            text: historyEvent.sentBy
+          }
+        }), items) %}
+      {% endfor %}
 
-        {% if items | length %}
-          {{ mojTimeline({
+      {% if items | length %}
+        {{ mojTimeline({
             items: items
           }) }}
-        {% else %}
-          <p class="govuk-body">No reminders sent</p>
-        {% endif %}
+      {% else %}
+        <p class="govuk-body">No reminders sent</p>
+      {% endif %}
       {% endset %}
 
       {{ govukDetails({
@@ -200,7 +198,6 @@
       }) }}
 
     </div>
-    
 
     <div class="govuk-grid-column-one-third">
       <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-4 mod-section-break__blue">
