@@ -421,13 +421,13 @@ __metadata:
   linkType: hard
 
 "@hods/loading-spinner@npm:^0.5.1":
-  version: 0.5.1
-  resolution: "@hods/loading-spinner@npm:0.5.1"
+  version: 0.5.2
+  resolution: "@hods/loading-spinner@npm:0.5.2"
   dependencies:
-    "@hods/sass-base": "npm:^0.5.1"
-    "@not-govuk/component-helpers": "npm:^0.15.2"
+    "@hods/sass-base": "npm:^0.5.2"
+    "@not-govuk/component-helpers": "npm:^0.15.8"
   peerDependencies:
-    "@not-govuk/docs-components": ^0.15.2
+    "@not-govuk/docs-components": ^0.15.8
     "@storybook/addon-docs": ^6.5.16
     react: ^18.0.0
   peerDependenciesMeta:
@@ -435,16 +435,16 @@ __metadata:
       optional: true
     "@storybook/addon-docs":
       optional: true
-  checksum: 10/c12bb2f7960a3775f7f4c67a9819ef062226d4b3d928645e23b6e6ec758ebb27a69f518d823230e4193cbe414711f497cb0976ab78ac5e3c0c0942c5e726365a
+  checksum: 10/2a76b2d2982356fe82798792b77979b43492b532d517a69874c8d11622fe6072c3e775948dbd5bf080769de3bf83368317cbb57524e2c69dcd5135d78d63d3b1
   languageName: node
   linkType: hard
 
-"@hods/sass-base@npm:^0.5.1":
-  version: 0.5.1
-  resolution: "@hods/sass-base@npm:0.5.1"
+"@hods/sass-base@npm:^0.5.2":
+  version: 0.5.2
+  resolution: "@hods/sass-base@npm:0.5.2"
   dependencies:
-    "@not-govuk/sass-base": "npm:^0.15.2"
-  checksum: 10/8ef0941014b45d4dae930702006c40e475247326b8866bb936885572a1693f92a92b7ee7c288f148a6acc835fc6aa543ec9ea97a7e28b3da10ffc890b509c3ff
+    "@not-govuk/sass-base": "npm:^0.15.8"
+  checksum: 10/b1bc6f9568816288f36a9f6d8b467136ad89d82b943f8924e7370e2265656d2fd26c480474c699815331e6a656a0917db4b47f60fa9766b9d4a727f369beb0ea
   languageName: node
   linkType: hard
 
@@ -549,14 +549,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@not-govuk/component-helpers@npm:^0.15.2":
+"@not-govuk/component-helpers@npm:^0.15.8":
   version: 0.15.14
   resolution: "@not-govuk/component-helpers@npm:0.15.14"
   checksum: 10/b0e87de42714a9563939664571ad6b0507965306ca5797709d18826c39b538d3b815ae900d9c3003789b3c02eb9aaab641c332053d6b78334914b9b2ff050565
   languageName: node
   linkType: hard
 
-"@not-govuk/sass-base@npm:^0.15.2":
+"@not-govuk/sass-base@npm:^0.15.8":
   version: 0.15.14
   resolution: "@not-govuk/sass-base@npm:0.15.14"
   dependencies:
