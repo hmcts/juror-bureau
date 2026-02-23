@@ -10,19 +10,6 @@
 {% block page_title %}{{ serviceName }} - Electoral register management{% endblock %}
 {% block page_identifier %}Electoral register management{% endblock %}
 
-{% block beforeContent %}
-  {% if bannerMessage %}
-    <div class="govuk-!-margin-top-6">
-      {{ mojAlert({
-        variant: "success",
-        text: bannerMessage,
-        iconFallbackText: "Success",
-        dismissible: true
-      }) }}
-    </div>
-  {% endif %}
-{% endblock %}
-
 {% block content %}
 
   {% include "includes/errors.njk" %} 
@@ -30,36 +17,37 @@
   {# HEADER #}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-
       <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Set deadline for local authorities</h1>
     </div>
   </div>
 
-    {% from "custom-components/date-picker/macro.njk" import datePicker %}
+  <form method="post" action="{{ postUrl }}">
     {{ datePicker({
-        id: "deferredTo",
+        id: "setDeadline",
+        name: "setDeadline",
         label: {
-            text: "Date deadline",
+            text: "Date of deadline",
             classes: "govuk-label--s"
         },
-        hint: "Use dd/mm/yyyy format. For example, 31/01/2024.",
-        dateValue: data.filters.deferredTo
+        dateValue: data.filters.setDeadline,
+        dateMin: minDate,
+        dateFormat: "DMY"
     }) }}
 
-    <form method="post" action="{{ postUrl }}">
-        <div class="govuk-button-group govuk-!-margin-top-4">
-        {{ govukButton({
-            text: "Save",
-            type: "submit",
-            attributes: {
-            id: "saveButton"
-            }
-        }) }}
-        <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
-        </div>
-    </form>
-
     <input type="hidden" id="csrftoken" name="_csrf" value="{{ csrftoken }}"/>
+
+    <div class="govuk-button-group govuk-!-margin-top-4">
+      {{ govukButton({
+          text: "Save changes",
+          type: "submit",
+          attributes: {
+            id: "saveButton"
+          }
+        }) }}
+      <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+    </div>
+  </form>
+
 {% endblock %}
 
 {% block body_end %}
@@ -67,5 +55,4 @@
   {% include "includes/datepicker.njk" %}
   <script src="{{ assetPath if assetPath else '/' }}js/accessible-autocomplete.min.js"></script>
   <script src="{{ assetPath }}js/electoral-register.js"></script>
-
 {% endblock %}

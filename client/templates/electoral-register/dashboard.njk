@@ -30,21 +30,17 @@
 
 {% block content %}
 
-  {% include "includes/errors.njk" %} 
+  {% include "includes/errors.njk" %}
 
-    {{ mojAlert({
-      variant: "success",
-      title: "Deadline updated.",
-      dismissible: true
-    }) }}
-    
+{# HEADER #}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
 
-  {# HEADER #}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Dashboard</h1>
 
-      <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Dashboard</h1>
+    {%- from "moj/components/interruption-card/macro.njk" import interruptionCard -%}
 
+    {% if not deadlinePassed %}
       {{ govukNotificationBanner({
         titleText: "Deadline",
         text: deadline,
@@ -62,23 +58,23 @@
         }) }}
       {% endif %}
 
+    {% else %}
       {# DEADLINE PASSED BANNER #}
-      {# WITH LINK TO SET DEADLINE FLOW #}
-      {%- from "moj/components/interruption-card/macro.njk" import interruptionCard -%}
-    
-    {% call interruptionCard({
-      heading: "Update window is now closed",
-      primaryAction: {
-        text: "Set a new deadline",
-        href: "/electoral-register/set-deadline"
-      }
+      {% call interruptionCard({
+        heading: "Update window is now closed",
+        primaryAction: {
+          text: "Set a new deadline",
+          href: "/electoral-register/set-deadline"
+        }
       }) -%}
-      <p>The annual upload window for electoral register data has now closed. Local authorities can no longer upload electoral data.</p>
-      <p>To allow uploads, set a new deadline date.</p>
-    {%- endcall %}
-    
-    </div>
+        <p>The annual upload window for electoral register data has now closed. Local authorities can no longer upload electoral data.</p>
+        <p>To allow uploads, set a new deadline date.</p>
+      {%- endcall %}
+    {% endif %}
+
   </div>
+</div>
+
 
   {# SUMMARY INFO #}
   <div class="govuk-grid-row">

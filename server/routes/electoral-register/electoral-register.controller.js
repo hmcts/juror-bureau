@@ -60,6 +60,7 @@
             ? ['UPLOADED', 'NOT_UPLOADED']
             : [_.snakeCase(status).toUpperCase()],
       };
+      console.log(payload);
       localAuthorityStatus = await erLocalAuthorityStatusDAO.post(req, payload);
       app.logger.info('Fetched electoral register local authority uploads', {
         auth: req.session.authentication,
@@ -89,7 +90,7 @@
       sortOrder,
       localAuthorityStatus.localAuthorityStatuses,
     );
-
+    console.log(localAuthorityData);
     const totalLocalAuthorities = localAuthorityData.length;
 
     if (!req.session.erDashboardData) {
@@ -112,10 +113,33 @@
       pagination = paginationBuilder(totalLocalAuthorities, parseInt(req.query.page) || 1, req.url);
     }
 
-    const deadlineDiff = moment(new Date(uploadStats.deadlineDate)).diff(
+    const now = moment();
+    let deadlinePassed = false;
+    let deadlineDiff = moment(new Date(uploadStats.deadlineDate)).diff(
       moment(new Date()),
       'days',
     );
+
+    if (deadlineDiff <= 0) {
+      deadlinePassed = true;
+    }
+    
+    let computedDaysRemaining = null;
+
+    if (uploadStats && uploadStats.deadlineDate) {
+      const deadlineMoment = moment(uploadStats.deadlineDate);
+
+      if (deadlineMoment.isValid()) {
+        deadlineDiff = deadlineMoment.diff(now, 'days');
+
+        computedDaysRemaining = deadlineDiff >= 0 ? Math.floor(deadlineDiff) : 0;
+      }
+    }
+
+    const effectiveDaysRemaining =
+      typeof uploadStats?.daysRemaining !== 'undefined'
+        ? uploadStats.daysRemaining
+        : computedDaysRemaining;
 
     return res.render('electoral-register/dashboard.njk', {
       postRoutes: {
@@ -142,6 +166,7 @@
         downloadEmails: app.namedRoutes.build('electoral-register.download-emails.get'),
       },
       showDeadlineWarrning: deadlineDiff <= 28,
+      deadlinePassed,
       localAuthorityFilter,
       selectedLocalAuthority,
       status: status || 'all',

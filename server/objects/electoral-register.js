@@ -86,4 +86,14 @@
     }
   }
 
+  module.exports.erDeadlineDAO = new DAO('moj/er-administration/deadline', {
+    put: function(body) {
+      return {
+        uri: this.resource,
+        transform: (data) => replaceAllObjKeys(basicDataTransform(data), _.camelCase),
+        body: replaceAllObjKeys(body, _.snakeCase),
+      };
+    }
+  });
+
 })();
