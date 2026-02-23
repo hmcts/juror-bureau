@@ -18,7 +18,7 @@
         });
       } else {
         const csvResult = [];
-        const filename = `local-authority-emails${laCode ? `-${laCode}` : ''}-${dateFilter(new Date(), null, 'DD-MM-YYYY')}.csv`;
+        const filename = `local-authority-emails-${dateFilter(new Date(), null, 'DD-MM-YYYY')}.csv`;
 
 
         csvResult.push(['Local authority', 'Email address']);
