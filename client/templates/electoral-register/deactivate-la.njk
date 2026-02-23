@@ -1,0 +1,56 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% set currentApp = "Electoral register management" %}
+
+{% block page_title %}{{ serviceName }} - Electoral register management{% endblock %}
+{% block page_identifier %}Electoral register management{% endblock %}
+
+{% if errors.items["inactiveReason"] %}
+  {% set inactiveReasonError = {"text": errors.items['inactiveReason'][0].details} %}
+{% endif %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %} 
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-xl">{{ localAuthorityInfo.localAuthorityName }}</span>
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Mark authority as inactive</h1>
+
+      <p class="govuk-body">Inactive authorities will not be required to upload data in future cycles.</p>
+
+      <form action="{{ postUrl }}" method="post" id="deactivateLaForm">
+
+        {{ govukCharacterCount({
+          name: "inactiveReason",
+          id: "inactiveReason",
+          maxlength: 2000,
+          label: {
+            text: "Why are you marking this authority as inactive?",
+            classes: "govuk-label--s"
+          },
+          value: tmpBody.inactiveReason,
+          errorMessage: inactiveReasonError
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Mark as inactive",
+            type: "submit"
+          }) }}
+
+          <a class="govuk-link govuk-link--no-visited-state" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+        {{ csrfProtection(csrftoken) }}
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}
