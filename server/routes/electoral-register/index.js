@@ -8,6 +8,7 @@
   module.exports = function(app) {
     require('./local-authority')(app);
     require('./download-emails')(app);
+    require('./send-reminder')(app);
 
     app.get(
       '/electoral-register',
