@@ -1,0 +1,40 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% set currentApp = "Electoral register management" %}
+
+{% block page_title %}{{ serviceName }} - Electoral register management{% endblock %}
+{% block page_identifier %}Electoral register management{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %} 
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if indivdualLaFlow %}
+        <span class="govuk-caption-xl">{{ localAuthorityInfo.localAuthorityName }}</span>
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Are you sure you want to send an email reminder?</h1>
+      {% else %}
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Are you sure you want to send a reminder to {{ noLocalAuthorities }} local {{ "authorities" if noLocalAuthorities > 1 else "authority" }}?</h1>
+      {% endif %}
+
+      <form action="{{ postUrl }}" method="post" id="laSendReminderForm">
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Yes - send reminder" + ("s" if not indivdualLaFlow else ""),
+            type: "submit"
+          }) }}
+
+          <a class="govuk-link govuk-link--no-visited-state" href="{{ cancelUrl }}">No - cancel</a>
+        </div>
+
+        {{ csrfProtection(csrftoken) }}
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}
