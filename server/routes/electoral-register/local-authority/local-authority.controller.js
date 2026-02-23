@@ -8,6 +8,9 @@
   module.exports.getLocalAuthorityInfo = (app) => async (req, res) => {
     const { laCode } = req.params;
 
+    const tmpErrors = _.clone(req.session.errors);
+    delete req.session.errors;
+
     const bannerMessage = _.clone(req.session.bannerMessage);
     delete req.session.bannerMessage;
 
@@ -54,6 +57,11 @@
       backLinkUrl: {
         built: true,
         url: app.namedRoutes.build('electoral-register.get'),
+      },
+      errors: {
+        title: 'Please check the form',
+        count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+        items: tmpErrors,
       }
     });
   };

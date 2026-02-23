@@ -53,8 +53,10 @@
     
     delete req.session.checkedLaCodes; // Clear checked LA codes from session after use
 
+    let response;
     try {
-      await sendReminderDAO.post(req, { laCodes });
+      response = await sendReminderDAO.post(req, { laCodes });
+      console.log('\n\nSend reminder response:', response, '\n\n');
     } catch (err) {
       app.logger.crit('Failed to send reminder email to local authority', {
         auth: req.session.authentication,
@@ -70,13 +72,53 @@
       laCodes,
     });
 
+    if (response.failedNotifications?.length) {
+      const failedLaErrors = {};
+      if (indivdualLaFlow) {
+        response.failedNotifications.forEach(failure => {
+          failedLaErrors[`${failure.laCode}${failure.emailAddress ? `-${failure.emailAddress}` : ''}`] = [{
+            summary: errorMessageMapping(failure, true),
+            details: errorMessageMapping(failure, true),
+          }];
+        });
+      } else {
+        // Only show one error per LA in the bulk flow
+        response.failedNotifications.forEach(failure => {
+          if (!failedLaErrors[failure.laCode]) {
+            failedLaErrors[failure.laCode] = [{
+            summary: errorMessageMapping(failure),
+            details: errorMessageMapping(failure),
+          }];
+          }
+        });
+      }
+      req.session.errors = failedLaErrors;
+    }
+
     if (indivdualLaFlow) {
-      req.session.bannerMessage = 'Email reminder sent.';
+      if (!response.failedNotifications?.length) {
+        req.session.bannerMessage = 'Email reminder sent.';
+      }
       return res.redirect(app.namedRoutes.build('electoral-register.local-authority.get', { laCode }));
     }
 
-    req.session.bannerMessage = `Reminders sent to ${laCodes.length} local ${laCodes.length > 1 ? 'authorities' : 'authority'}.`;
+    if (!response.failedNotifications?.length) {
+      req.session.bannerMessage = `Reminders sent to ${response.successfulNotificationsSent} 
+        local ${response.successfulNotificationsSent > 1 ? 'authorities' : 'authority'}.`;
+    }
     return res.redirect(app.namedRoutes.build('electoral-register.get'));
+  };
+
+  const errorMessageMapping = (failure, indivdualLaFlow = false) => {
+    const mappings = {
+      NOTIFY_API_ERROR: `Failed to send reminder email to ${indivdualLaFlow ? failure.emailAddress : failure.laName}: Email failed to send via GOV.UK Notify`,
+      LA_NOT_FOUND: `Failed to send reminder email to ${failure.laCode}: Local authority not found`,
+      NO_USERS_FOR_LA: `Failed to send reminder email to ${failure.laName}: Local authority exists but has no users`,
+      EMAIL_ADDRESS_BLANK: `Failed to send reminder email to ${failure.laName}: User has no email address`,
+      USER_INACTIVE: `Failed to send reminder email to ${indivdualLaFlow ? failure.emailAddress : failure.laName}: User is inactive`,
+      UNEXPECTED_ERROR: `Failed to send reminder email to ${indivdualLaFlow ? failure.emailAddress : failure.laName}: An unexpected error occurred`
+    }
+    return mappings[failure.failureReason] || "An unknown error occurred";
   };
 
 })();

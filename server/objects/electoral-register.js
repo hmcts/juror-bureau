@@ -66,6 +66,7 @@
       return {
         uri: this.resource,
         body: replaceAllObjKeys(body, _.snakeCase),
+        transform: (data) => replaceAllObjKeys(basicDataTransform(data), _.camelCase),
       }
     }
   });
