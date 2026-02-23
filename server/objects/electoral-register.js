@@ -51,5 +51,29 @@
       }
     }
   });
+  
+  module.exports.deactivateLocalAuthorityDAO = new DAO('moj/er-administration/deactivate-la', {
+    put: function(body) {
+      return {
+        uri: this.resource,
+        body: replaceAllObjKeys(body, _.snakeCase),
+      }
+    }
+  });
+
+  // module.exports.activateLocalAuthorityDAO = new DAO('moj/er-administration/activate-la', {
+  //   put: function(body) {
+  //     return {
+  //       uri: this.resource,
+  //       body: replaceAllObjKeys(body, _.snakeCase),
+  //     }
+  //   }
+  // });
+
+  module.exports.activateLocalAuthorityDAO = {
+    put: function(body) {
+      return true;
+    }
+  }
 
 })();

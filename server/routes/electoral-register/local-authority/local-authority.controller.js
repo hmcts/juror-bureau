@@ -48,7 +48,8 @@
       actionRoutes: {
         changeNotes: '#',
         sendReminder: '#',
-        markInactive: '#',
+        markInactive: app.namedRoutes.build('electoral-register.local-authority.deactivate.get', { laCode }),
+        markActive: app.namedRoutes.build('electoral-register.local-authority.activate.get', { laCode }),
       },
       backLinkUrl: {
         built: true,

@@ -24,6 +24,24 @@
       classes: "govuk-!-margin-top-6 govuk-!-margin-bottom-0"
     }) }}
   {% endif %}
+  {% if not localAuthorityInfo.isActive %}
+    {% set inactiveBannerHtml %}
+      <p class="govuk-notification-banner__heading">Authority marked as inactive</p>
+      <p class="govuk-body">
+        <span class="govuk-!-font-weight-bold">Actioned:</span>
+        {{ localAuthorityInfo.inactiveInfo.madeInactiveAt | makeDate | dateFilter (null, "DD MMMM yyyy") }} by {{ localAuthorityInfo.inactiveInfo.madeInactiveBy }}
+      </p>
+      <p class="govuk-body">
+        <span class="govuk-!-font-weight-bold">Reason:</span>
+        {{ localAuthorityInfo.inactiveInfo.inactiveReason }}
+      </p>
+    {% endset %}
+    {{ govukNotificationBanner({
+      title: "Authority marked as inactive",
+      html: inactiveBannerHtml,
+      classes: "govuk-!-margin-top-6 govuk-!-margin-bottom-0"
+    }) }}
+  {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -91,34 +109,36 @@
         {% set emailRequestTagColour = "red" %}
       {% endif %}
 
-      {{ govukSummaryList({
-        card: {
-          title: {
-            text: "Communication"
-          }
-        },
-        rows: [
-          {
-            key: {
-              text: "Email request status"
-            },
-            value: {
-              html: '<strong class="govuk-tag govuk-tag--' + emailRequestTagColour + '">'
-                + ((localAuthorityInfo.emailRequestStatus | toSentenceCase) if localAuthorityInfo.emailRequestStatus else "Not sent")
-                + '</strong>'
+      {% if localAuthorityInfo.isActive %}
+        {{ govukSummaryList({
+          card: {
+            title: {
+              text: "Communication"
             }
           },
-          {
-            key: {
-              text: "Date email sent"
+          rows: [
+            {
+              key: {
+                text: "Email request status"
+              },
+              value: {
+                html: '<strong class="govuk-tag govuk-tag--' + emailRequestTagColour + '">'
+                  + ((localAuthorityInfo.emailRequestStatus | toSentenceCase) if localAuthorityInfo.emailRequestStatus else "Not sent")
+                  + '</strong>'
+              }
             },
-            value: {
-              text: (localAuthorityInfo.dateEmailRequestSent | dateFilter(null, "DD MMMM yyyy")) 
-                if localAuthorityInfo.dateEmailRequestSent else "-"
+            {
+              key: {
+                text: "Date email sent"
+              },
+              value: {
+                text: (localAuthorityInfo.dateEmailRequestSent | dateFilter(null, "DD MMMM yyyy")) 
+                  if localAuthorityInfo.dateEmailRequestSent else "-"
+              }
             }
-          }
-        ]
-      }) }}
+          ]
+        }) }}
+      {% endif %}
 
       <div class="govuk-summary-card">
         <div class="govuk-summary-card__title-wrapper">
@@ -165,49 +185,58 @@
         </div>
       </div>
 
-      {% set reminderHistoryTimeline %}
+      {% if localAuthorityInfo.isActive %}
+        {% set reminderHistoryTimeline %}
+          {% set items = [] %}
+          {% for historyEvent in localAuthorityInfo.reminderHistory %}
+            {% set items = (items.push(
+              {
+                label: {
+                  text: "Reminder sent"
+                },
+                datetime: {
+                  timestamp: historyEvent.timeSent | makeDate,
+                  type: "datetime"
+                },
+                byline: {
+                  text: historyEvent.sentBy
+                }
+              }
+            ), items) %}
+          {% endfor %}
 
-      {% set items = [] %}
-      {% for historyEvent in localAuthorityInfo.reminderHistory %}
-        {% set items = (items.push({
-          label: {
-            text: "Reminder sent"
-          },
-          datetime: {
-            timestamp: historyEvent.timeSent | makeDate,
-            type: "datetime"
-          },
-          byline: {
-            text: historyEvent.sentBy
-          }
-        }), items) %}
-      {% endfor %}
+          {% if items | length %}
+            {{ mojTimeline({
+              items: items
+            }) }}
+          {% else %}
+            <p class="govuk-body">No reminders sent</p>
+          {% endif %}
+        {% endset %}
 
-      {% if items | length %}
-        {{ mojTimeline({
-            items: items
-          }) }}
-      {% else %}
-        <p class="govuk-body">No reminders sent</p>
+        {{ govukDetails({
+          summaryText: "Reminder history",
+          html: reminderHistoryTimeline
+        }) }}
       {% endif %}
-      {% endset %}
-
-      {{ govukDetails({
-        summaryText: "Reminder history",
-        html: reminderHistoryTimeline
-      }) }}
 
     </div>
 
     <div class="govuk-grid-column-one-third">
       <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-4 mod-section-break__blue">
       <h3 class="govuk-heading-s">Actions</h3>
-      <p class="govuk-body">
-        <a href="{{ actionRoutes.sendReminder }}" class="govuk-link govuk-link--no-visited-state">Send email reminder</a>
-      </p>
-      <p class="govuk-body">
-        <a href="{{ actionRoutes.markInactive }}" class="govuk-link govuk-link--no-visited-state">Mark as inactive</a>
-      </p>
+      {% if localAuthorityInfo.isActive %}
+        <p class="govuk-body">
+          <a href="{{ actionRoutes.sendReminder }}" class="govuk-link govuk-link--no-visited-state">Send email reminder</a>
+        </p>
+        <p class="govuk-body">
+          <a href="{{ actionRoutes.markInactive }}" class="govuk-link govuk-link--no-visited-state">Mark as inactive</a>
+        </p>
+      {% else %}
+        <p class="govuk-body">
+          <a href="{{ actionRoutes.markActive }}" class="govuk-link govuk-link--no-visited-state">Mark as active</a>
+        </p>
+      {% endif %}
     </div>
   </div>
 
