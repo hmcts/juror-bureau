@@ -35,7 +35,7 @@
           hint: {
             text: "Only visible to summoning officers."
           },
-          value: tmpBody.notes,
+          value: tmpBody.notes if tmpBody.notes else localAuthorityInfo.notes,
           errorMessage: notesError
         }) }}
 

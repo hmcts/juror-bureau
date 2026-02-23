@@ -61,8 +61,8 @@
       
       app.logger.info('Edited local authority notes', {
         auth: req.session.authentication,
-        laCode
-      })
+        laCode,
+      });
     } catch (err) {
       app.logger.crit('Error editing local authority notes', {
         auth: req.session.authentication,

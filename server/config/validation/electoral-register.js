@@ -47,9 +47,9 @@
             details: 'The notes must be 200 characters or fewer',
           },
         },
-      }
-    }
-  }
+      },
+    };
+  };
 
   validate.validators.setDeadlineDatePicker = function(value, options, key, attributes) {
     const dateRegex = /[^0-9\/]+/;
