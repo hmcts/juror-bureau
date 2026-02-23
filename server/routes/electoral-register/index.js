@@ -6,6 +6,8 @@
   const { isBureauUser } = require('../../components/auth/user-type');
 
   module.exports = function(app) {
+    require('./local-authority')(app);
+
     app.get(
       '/electoral-register',
       'electoral-register.get',

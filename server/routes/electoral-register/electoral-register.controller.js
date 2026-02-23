@@ -31,7 +31,7 @@
     } catch (err) {
       app.logger.crit('Error fetching all local authorities', {
         auth: req.session.authentication,
-        error: err.message,
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
     }
 
@@ -47,7 +47,7 @@
     } catch (err) {
       app.logger.crit('Error fetching electoral register upload stats', {
         auth: req.session.authentication,
-        error: err.message,
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
     }
 
@@ -67,7 +67,7 @@
     } catch (err) {
       app.logger.crit('Error fetching electoral register dashboard data', {
         auth: req.session.authentication,
-        error: err.message,
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
     }
 
@@ -143,7 +143,7 @@
       daysRemaining: uploadStats.daysRemaining || 0,
       notUploaded: uploadStats.notUploadedCount || 0,
       uploaded: uploadStats.uploadedCount || 0,
-      localAuthorities: buildLocalAuthoritiesTable(
+      localAuthorities: buildLocalAuthoritiesTable(app)(
         req,
         localAuthorityData,
         sortBy,
@@ -313,7 +313,7 @@
     return(authorities.slice(start, end));
   }
 
-  const buildLocalAuthoritiesTable = (req, localAuthorities, sortBy, sortOrder) => {
+  const buildLocalAuthoritiesTable = (app) => (req, localAuthorities, sortBy, sortOrder) => {
     const table = {
       head: [],
       rows: [],
@@ -375,7 +375,10 @@
           },
           {
             // TODO: Add link to authority details page
-            html: `<a class='govuk-body govuk-link' href='#'>${localAuthority.localAuthorityName}</a>`,
+            html: `<a class='govuk-body govuk-link'`
+              + ` href='${app.namedRoutes.build('electoral-register.local-authority.get', { laCode: localAuthority.localAuthorityCode })}'>`
+              + `${localAuthority.localAuthorityName}`
+              + `</a>`,
             classes: 'jd-middle-align',
           },
           {

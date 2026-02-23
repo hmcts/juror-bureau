@@ -34,4 +34,13 @@
     }
   });
 
+  module.exports.localAuthorityInfoDAO = new DAO('moj/er-dashboard/local-authority-info/{laCode}', {
+    get: function(laCode) {
+      return {
+        uri: this.resource.replace('{laCode}', laCode),
+        transform: (data) => replaceAllObjKeys(basicDataTransform(data), _.camelCase),
+      }
+    }
+  });
+
 })();

@@ -1,0 +1,214 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "moj/components/timeline/macro.njk" import mojTimeline %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
+
+{% set currentApp = "Electoral register management" %}
+
+{% block page_title %}{{ serviceName }} - Electoral register management{% endblock %}
+{% block page_identifier %}Electoral register management{% endblock %}
+
+{% block beforeContent %}
+  {% if backLinkUrl %}
+    {% include "includes/back-link.njk" %}
+  {% endif %}
+  {% if bannerMessage %}
+    {{ mojAlert({
+      variant: "success",
+      text: bannerMessage,
+      iconFallbackText: "Success",
+      dismissible: true,
+      classes: "govuk-!-margin-top-6 govuk-!-margin-bottom-0"
+    }) }}
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      {% if showDeadlineWarrning %}
+        {{ mojAlert({
+          variant: "warning",
+          dismissible: false,
+          html: "This authority has " + daysToDeadline + " days until the deadline and has not uploaded data.",
+          classes: "govuk-!-margin-bottom-6"
+        }) }}
+      {% endif %}
+
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">{{ localAuthorityInfo.localAuthorityName }}</h1>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ govukSummaryList({
+        card: {
+          title: {
+            text: "Upload status"
+          }
+        },
+        rows: [
+          {
+            key: {
+              text: "Status"
+            },
+            value: {
+              html: '<strong class="govuk-tag govuk-tag--' + ('blue' if localAuthorityInfo.uploadStatus === 'UPLOADED' else 'red') + '">'
+                + localAuthorityInfo.uploadStatus | toSentenceCase
+                + '</strong>'
+            }
+          },
+          {
+            key: {
+              text: "Last upload"
+            },
+            value: {
+              text: (localAuthorityInfo.lastUploadDate | dateFilter(null, "DD MMMM yyyy")) if localAuthorityInfo.lastUploadDate else "-"
+            }
+          },
+          {
+            key: {
+              text: "Last logged in"
+            },
+            value: {
+              text: (localAuthorityInfo.lastLoggedInDate | dateFilter(null, "DD MMMM yyyy")) if localAuthorityInfo.lastLoggedInDate else "-"
+            }
+          }
+        ]
+      }) }}
+
+      {% set emailRequestTagColour = "grey" %}
+      {% if localAuthorityInfo.emailRequestStatus === 'SENT' %}
+        {% set emailRequestTagColour = "blue" %}
+      {% elif localAuthorityInfo.emailRequestStatus === 'UNDELIVERED' %}
+        {% set emailRequestTagColour = "red" %}
+      {% endif %}
+
+      {{ govukSummaryList({
+        card: {
+          title: {
+            text: "Communication"
+          }
+        },
+        rows: [
+          {
+            key: {
+              text: "Email request status"
+            },
+            value: {
+              html: '<strong class="govuk-tag govuk-tag--' + emailRequestTagColour + '">'
+                + ((localAuthorityInfo.emailRequestStatus | toSentenceCase) if localAuthorityInfo.emailRequestStatus else "Not sent")
+                + '</strong>'
+            }
+          },
+          {
+            key: {
+              text: "Date email sent"
+            },
+            value: {
+              text: (localAuthorityInfo.dateEmailRequestSent | dateFilter(null, "DD MMMM yyyy")) 
+                if localAuthorityInfo.dateEmailRequestSent else "-"
+            }
+          }
+        ]
+      }) }}
+
+      <div class="govuk-summary-card">
+        <div class="govuk-summary-card__title-wrapper">
+          <h2 class="govuk-summary-card__title">
+            Users with portal access
+          </h2>
+        </div>
+        <div class="govuk-summary-card__content">
+          <dl class="govuk-summary-list">
+            {% for user in localAuthorityInfo.emailAddresses %}
+              <div class="govuk-summary-list__row">
+                <dd class="govuk-summary-list__value">
+                  <a class="govuk-body govuk-link govuk-link--no-visited-state" href="#">
+                    {{ user }}
+                  </a>
+                </dd>
+              </div>
+            {% endfor %}
+          </dl>
+        </div>
+      </div>
+
+      <div class="govuk-summary-card">
+        <div class="govuk-summary-card__title-wrapper">
+          <h2 class="govuk-summary-card__title">
+            Notes
+          </h2>
+          <ul class="govuk-summary-card__actions">
+            <li class="govuk-summary-card__action">
+              <a class="govuk-link" href="{{ actionRoutes.changeNotes }}">Change</a>
+            </li>
+          </ul>
+        </div>
+        <div class="govuk-summary-card__content">
+          <dl class="govuk-summary-list">
+            <div class="govuk-summary-list__row">
+              <dd class="govuk-summary-list__value">
+                <p class="govuk-body">
+                  {{ localAuthorityInfo.notes }}
+                </a>
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      {% set reminderHistoryTimeline %}
+
+      {% set items = [] %}
+      {% for historyEvent in localAuthorityInfo.reminderHistory %}
+        {% set items = (items.push({
+          label: {
+            text: "Reminder sent"
+          },
+          datetime: {
+            timestamp: historyEvent.timeSent | makeDate,
+            type: "datetime"
+          },
+          byline: {
+            text: historyEvent.sentBy
+          }
+        }), items) %}
+      {% endfor %}
+
+      {% if items | length %}
+        {{ mojTimeline({
+            items: items
+          }) }}
+      {% else %}
+        <p class="govuk-body">No reminders sent</p>
+      {% endif %}
+      {% endset %}
+
+      {{ govukDetails({
+        summaryText: "Reminder history",
+        html: reminderHistoryTimeline
+      }) }}
+
+    </div>
+
+    <div class="govuk-grid-column-one-third">
+      <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-4 mod-section-break__blue">
+      <h3 class="govuk-heading-s">Actions</h3>
+      <p class="govuk-body">
+        <a href="{{ actionRoutes.sendReminder }}" class="govuk-link govuk-link--no-visited-state">Send email reminder</a>
+      </p>
+      <p class="govuk-body">
+        <a href="{{ actionRoutes.markInactive }}" class="govuk-link govuk-link--no-visited-state">Mark as inactive</a>
+      </p>
+    </div>
+  </div>
+
+{% endblock %}
