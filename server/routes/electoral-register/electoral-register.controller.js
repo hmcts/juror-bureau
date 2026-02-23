@@ -126,7 +126,7 @@
       actionRoutes: {
         setDeadline: '#',
         changeDeadline: '#',
-        downloadEmails: '#',
+        downloadEmails: app.namedRoutes.build('electoral-register.download-emails.get'),
       },
       showDeadlineWarrning: deadlineDiff <= 28,
       localAuthorityFilter,
