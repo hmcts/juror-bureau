@@ -10,6 +10,10 @@
 {% block page_title %}{{ serviceName }} - Electoral register management{% endblock %}
 {% block page_identifier %}Electoral register management{% endblock %}
 
+{% if errors.items["setDeadline"] %}
+  {% set setDeadlineError = errors.items['setDeadline'][0].details %}
+{% endif %}
+
 {% block content %}
 
   {% include "includes/errors.njk" %} 
@@ -29,9 +33,10 @@
             text: "Date of deadline",
             classes: "govuk-label--s"
         },
-        dateValue: data.filters.setDeadline,
+        dateValue: tmpBody.setDeadline or data.filters.setDeadline,
         dateMin: minDate,
-        dateFormat: "DMY"
+        dateFormat: "DMY",
+        dateError: setDeadlineError
     }) }}
 
     <input type="hidden" id="csrftoken" name="_csrf" value="{{ csrftoken }}"/>

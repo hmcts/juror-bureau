@@ -120,7 +120,7 @@
       'days',
     );
 
-    if (deadlineDiff <= 0) {
+    if (deadlineDiff < 0) {
       deadlinePassed = true;
     }
     

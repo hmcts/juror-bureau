@@ -1,6 +1,16 @@
 ;(function(){
   'use strict';
 
+  const { genericDatePicker } = require('./date-picker');
+ 
+  module.exports.setDeadlineDate = () => {
+    return {
+      setDeadline: {
+        genericDatePicker: genericDatePicker,
+      },
+    };
+  };
+
   module.exports.deactivateLa = () => {
     return {
       inactiveReason: {

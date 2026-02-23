@@ -1,6 +1,7 @@
 (() => {
   'use strict';
 
+  const { validate } = require('validate.js');
   const _ = require('lodash');
   const moment = require('moment');
   const { dateFilter, toSentenceCase } = require('../../components/filters');
@@ -12,8 +13,14 @@
     erDeadlineDAO
   } = require('../../objects/electoral-register');
   const PAGE_SIZE = 20;
+  const validator = require('../../config/validation/electoral-register.js');
 
   module.exports.getSetDeadline = (app) => (req, res) => {
+    const tmpErrors = _.clone(req.session.errors);
+    const tmpBody = _.clone(req.session.formFields);
+    delete req.session.errors;
+    delete req.session.formFields;
+
     const today = new Date();
     let tomorrow = new Date();
     tomorrow.setDate(today.getDate() + 1);
@@ -22,7 +29,13 @@
       pageTitle: 'Set deadline',
       postUrl: app.namedRoutes.build('electoral-register.set-deadline.post'),
       minDate: dateFilter(tomorrow, null, 'DD/MM/YYYY'),
-      cancelUrl: app.namedRoutes.build('electoral-register.get')
+      cancelUrl: app.namedRoutes.build('electoral-register.get'),
+      tmpBody,
+      errors: {
+        title: 'Please check the form',
+        count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+        items: tmpErrors,
+      }
     });
   };
 
@@ -30,22 +43,24 @@
     console.log('Post working for button', 'Form body:', req.body);
 
     const { setDeadline } = req.body;
-
-    if (!setDeadline) {
-      req.session.bannerMessage = { type: 'error', message: 'Please select a date.' };
-      return res.redirect(app.namedRoutes.build('electoral-register.get'));
+    const validatorResult = validate(req.body, validator.setDeadlineDate());
+ 
+    if (typeof validatorResult !== 'undefined') {
+      req.session.errors = validatorResult;
+      req.session.formFields = req.body;
+      return res.redirect(app.namedRoutes.build('electoral-register.set-deadline.get'));
     }
 
-    // Accept DD/MM/YYYY or YYYY-MM-DD and normalise to 'YYYY-MM-DD'
-    const parseDate = (d) => {
-      const m = moment(d, ['DD/MM/YYYY'], true);
-      return m.isValid() ? m.format('YYYY-MM-DD') : null;
-    };
+    const deadlineDate = dateFilter(setDeadline, 'DD/MM/YYYY', 'YYYY-MM-DD');
 
-    const deadlineDate = parseDate(setDeadline);
-    if (!deadlineDate) {
-      req.session.bannerMessage = { type: 'error', message: 'Invalid date format.' };
-      return res.redirect(app.namedRoutes.build('electoral-register.get'));
+    console.log(setDeadline);
+    console.log(moment(setDeadline, 'yyyy-MM-DD'));
+    console.log(moment(new Date()));
+
+    if (moment(deadlineDate, 'yyyy-MM-DD').isSameOrBefore(moment(new Date()))) {
+      req.session.errors = makeManualError('setDeadline', "Date must be in the future");
+      req.session.formFields = req.body;
+      return res.redirect(app.namedRoutes.build('electoral-register.set-deadline.get'));
     }
 
     const payloadCamel = { deadlineDate };
