@@ -40,8 +40,6 @@
       'days',
     );
 
-    console.log('\n\n', localAuthorityInfo, '\n\n');
-
     return res.render('electoral-register/local-authority.njk', {
       localAuthorityInfo,
       daysToDeadline: deadlineDiff + 1,
