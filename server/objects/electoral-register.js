@@ -84,7 +84,13 @@
     put: function(body) {
       return true;
     }
-  }
+  };
+
+  module.exports.editLocalauthorityNotesDAO = {
+    put: function(body) {
+      return true;
+    }
+  };
 
   module.exports.erDeadlineDAO = new DAO('moj/er-administration/deadline', {
     put: function(body) {

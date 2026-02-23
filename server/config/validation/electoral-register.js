@@ -34,6 +34,23 @@
     };
   };
 
+  module.exports.editNotes = () => {
+    return {
+      notes: {
+        presence: {
+          allowEmpty: true,
+        },
+        length: {
+          maximum: 200,
+          message: {
+            summary: 'The notes must be 200 characters or fewer',
+            details: 'The notes must be 200 characters or fewer',
+          },
+        },
+      }
+    }
+  }
+
   validate.validators.setDeadlineDatePicker = function(value, options, key, attributes) {
     const dateRegex = /[^0-9\/]+/;
     const tmpErrors = [];
