@@ -2,6 +2,7 @@
   'use strict';
 
   const controller = require('./electoral-register.controller');
+  const deadlineController = require('./set-deadline-controller');
   const auth = require('../../components/auth');
   const { isBureauUser } = require('../../components/auth/user-type');
 

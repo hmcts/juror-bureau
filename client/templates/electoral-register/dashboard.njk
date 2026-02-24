@@ -32,11 +32,11 @@
 
   {% include "includes/errors.njk" %}
 
-  {# HEADER #}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
+{# HEADER #}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
 
-      <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Dashboard</h1>
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Dashboard</h1>
 
       {% if not deadlinePassed %}
         {{ govukNotificationBanner({
@@ -68,8 +68,9 @@
         {%- endcall %}
       {% endif %}
 
-    </div>
   </div>
+</div>
+
 
   {# SUMMARY INFO #}
   <div class="govuk-grid-row">

@@ -49,6 +49,7 @@
         localAuthorityCode: localAuthorityFilter,
         uploadStatus: !status || status === 'all' ? ['UPLOADED', 'NOT_UPLOADED'] : [_.snakeCase(status).toUpperCase()],
       };
+      console.log(payload);
       localAuthorityStatus = await erLocalAuthorityStatusDAO.post(req, payload);
       app.logger.info('Fetched electoral register local authority uploads', {
         auth: req.session.authentication,
