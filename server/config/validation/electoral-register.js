@@ -1,12 +1,14 @@
 ;(function(){
   'use strict';
+  const moment = require('moment');
+  const { validate } = require('validate.js');
+  const datePicker = require('./date-picker');
+  const validateDateInitial = datePicker.parseDate;
 
-  const { genericDatePicker } = require('./date-picker');
- 
   module.exports.setDeadlineDate = () => {
     return {
       setDeadline: {
-        genericDatePicker: genericDatePicker,
+        setDeadlineDatePicker: {},
       },
     };
   };
@@ -30,6 +32,38 @@
         },
       },
     };
+  };
+
+  validate.validators.setDeadlineDatePicker = function(value, options, key, attributes) {
+    const dateRegex = /[^0-9\/]+/;
+    const tmpErrors = [];
+    const dateInitial = validateDateInitial(value);
+
+    if (value !== '' || !value) {
+      if (dateRegex.test(value)) {
+        tmpErrors.push({
+          summary: 'Deadline date must only include numbers and forward slashes',
+          details: 'Deadline date must only include numbers and forward slashes',
+        });
+      } else if (!moment(dateInitial.dateAsDate).isValid() || value.length > 10) {
+        tmpErrors.push({
+          summary: 'Enter a deadline date in the correct format, for example, 31/01/2023',
+          details: 'Enter a deadline date in the correct format, for example, 31/01/2023',
+        });
+      } else if (!dateInitial.isMonthAndDayValid) {
+        tmpErrors.push({
+          summary: 'Enter a deadline date in the correct format, for example, 31/01/2023',
+          details: 'Enter a deadline date in the correct format, for example, 31/01/2023',
+        });
+      } else if (moment(value, 'DD/MM/YYYY').isSameOrBefore(moment(), 'day')) {
+        tmpErrors.push({
+          summary: 'Deadline date must be in the future',
+          details: 'Deadline date must be in the future',
+        });
+      }
+    }
+
+    return tmpErrors.length === 0 ? null : tmpErrors;
   };
 
 })();

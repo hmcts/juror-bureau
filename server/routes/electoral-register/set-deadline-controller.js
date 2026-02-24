@@ -24,7 +24,6 @@
     const today = new Date();
     let tomorrow = new Date();
     tomorrow.setDate(today.getDate() + 1);
-    console.log("Get request working for route");
     return res.render('electoral-register/set-deadline', {
       pageTitle: 'Set deadline',
       postUrl: app.namedRoutes.build('electoral-register.set-deadline.post'),
@@ -40,8 +39,6 @@
   };
 
   module.exports.postSetDeadline = (app) => async (req, res, next) => {
-    console.log('Post working for button', 'Form body:', req.body);
-
     const { setDeadline } = req.body;
     const validatorResult = validate(req.body, validator.setDeadlineDate());
  
@@ -53,19 +50,17 @@
 
     const deadlineDate = dateFilter(setDeadline, 'DD/MM/YYYY', 'YYYY-MM-DD');
 
-    console.log(setDeadline);
-    console.log(moment(setDeadline, 'yyyy-MM-DD'));
-    console.log(moment(new Date()));
-
-    if (moment(deadlineDate, 'yyyy-MM-DD').isSameOrBefore(moment(new Date()))) {
-      req.session.errors = makeManualError('setDeadline', "Date must be in the future");
-      req.session.formFields = req.body;
-      return res.redirect(app.namedRoutes.build('electoral-register.set-deadline.get'));
-    }
-
     const payloadCamel = { deadlineDate };
 
-    const apiResponse = await erDeadlineDAO.put(req, payloadCamel);
+    try {
+      await erDeadlineDAO.put(req, payloadCamel);
+    } catch (err) {
+      app.logger.crit('Error setting deadline', {
+        auth: req.session.authentication,
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+      return res.render('_errors/generic', {err})
+    };
 
     req.session.bannerMessage = 'Deadline updated.';
     return res.redirect(app.namedRoutes.build('electoral-register.get'));
