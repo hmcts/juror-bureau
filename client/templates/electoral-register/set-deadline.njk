@@ -18,7 +18,6 @@
 
   {% include "includes/errors.njk" %} 
 
-  {# HEADER #}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Set deadline for local authorities</h1>
@@ -27,28 +26,28 @@
 
   <form method="post" action="{{ postUrl }}">
     {{ datePicker({
-        id: "setDeadline",
-        name: "setDeadline",
-        label: {
-            text: "Date of deadline",
-            classes: "govuk-label--s"
-        },
-        dateValue: tmpBody.setDeadline or data.filters.setDeadline,
-        dateMin: minDate,
-        dateFormat: "DMY",
-        dateError: setDeadlineError
+      id: "setDeadline",
+      name: "setDeadline",
+      label: {
+          text: "Date of deadline",
+          classes: "govuk-label--s"
+      },
+      dateValue: tmpBody.setDeadline or data.filters.setDeadline,
+      dateMin: minDate,
+      dateFormat: "DMY",
+      dateError: setDeadlineError
     }) }}
 
     <input type="hidden" id="csrftoken" name="_csrf" value="{{ csrftoken }}"/>
 
     <div class="govuk-button-group govuk-!-margin-top-4">
       {{ govukButton({
-          text: "Save changes",
-          type: "submit",
-          attributes: {
-            id: "saveButton"
-          }
-        }) }}
+        text: "Save changes",
+        type: "submit",
+        attributes: {
+          id: "saveButton"
+        }
+      }) }}
       <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
     </div>
   </form>
@@ -58,6 +57,4 @@
 {% block body_end %}
   {{ super() }}
   {% include "includes/datepicker.njk" %}
-  <script src="{{ assetPath if assetPath else '/' }}js/accessible-autocomplete.min.js"></script>
-  <script src="{{ assetPath }}js/electoral-register.js"></script>
 {% endblock %}
