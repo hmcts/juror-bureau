@@ -1,0 +1,63 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
+{% from "custom-components/date-picker/macro.njk" import datePicker %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% set currentApp = "Electoral register management" %}
+
+{% block page_title %}{{ serviceName }} - Electoral register management{% endblock %}
+{% block page_identifier %}Electoral register management{% endblock %}
+
+{% if errors.items["setDeadline"] %}
+  {% set setDeadlineError = errors.items['setDeadline'][0].details %}
+{% endif %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %} 
+
+  {# HEADER #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Set deadline for local authorities</h1>
+    </div>
+  </div>
+
+  <form method="post" action="{{ postUrl }}">
+    {{ datePicker({
+        id: "setDeadline",
+        name: "setDeadline",
+        label: {
+            text: "Date of deadline",
+            classes: "govuk-label--s"
+        },
+        dateValue: tmpBody.setDeadline or data.filters.setDeadline,
+        dateMin: minDate,
+        dateFormat: "DMY",
+        dateError: setDeadlineError
+    }) }}
+
+    <input type="hidden" id="csrftoken" name="_csrf" value="{{ csrftoken }}"/>
+
+    <div class="govuk-button-group govuk-!-margin-top-4">
+      {{ govukButton({
+          text: "Save changes",
+          type: "submit",
+          attributes: {
+            id: "saveButton"
+          }
+        }) }}
+      <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+    </div>
+  </form>
+
+{% endblock %}
+
+{% block body_end %}
+  {{ super() }}
+  {% include "includes/datepicker.njk" %}
+  <script src="{{ assetPath if assetPath else '/' }}js/accessible-autocomplete.min.js"></script>
+  <script src="{{ assetPath }}js/electoral-register.js"></script>
+{% endblock %}
