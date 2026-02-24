@@ -1,15 +1,15 @@
 (() => {
-  'use strict';
+  "use strict";
 
-  const _ = require('lodash');
-  const moment = require('moment');
-  const { dateFilter, toSentenceCase } = require('../../components/filters');
-  const { makeManualError, paginationBuilder } = require('../../lib/mod-utils');
+  const _ = require("lodash");
+  const moment = require("moment");
+  const { dateFilter, toSentenceCase } = require("../../components/filters");
+  const { makeManualError, paginationBuilder } = require("../../lib/mod-utils");
   const {
     erLocalAuthorityStatusDAO,
     localAuthoritiesDAO,
     erUploadStats,
-  } = require('../../objects/electoral-register');
+  } = require("../../objects/electoral-register");
   const PAGE_SIZE = 20;
 
   module.exports.getDashboard = (app) => async (req, res) => {
@@ -29,9 +29,9 @@
         .localAuthorities;
       req.session.localAuthorities = allLocalAuthorities; // Store in session for later use if needed
     } catch (err) {
-      app.logger.crit('Error fetching all local authorities', {
+      app.logger.crit("Error fetching all local authorities", {
         auth: req.session.authentication,
-        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        error: typeof err.error !== "undefined" ? err.error : err.toString(),
       });
     }
 
@@ -45,9 +45,9 @@
     try {
       uploadStats = await erUploadStats.get(req);
     } catch (err) {
-      app.logger.crit('Error fetching electoral register upload stats', {
+      app.logger.crit("Error fetching electoral register upload stats", {
         auth: req.session.authentication,
-        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        error: typeof err.error !== "undefined" ? err.error : err.toString(),
       });
     }
 
@@ -56,31 +56,37 @@
       const payload = {
         localAuthorityCode: localAuthorityFilter,
         uploadStatus:
-          !status || status === 'all'
-            ? ['UPLOADED', 'NOT_UPLOADED']
+          !status || status === "all"
+            ? ["UPLOADED", "NOT_UPLOADED"]
             : [_.snakeCase(status).toUpperCase()],
       };
-      console.log(payload);
       localAuthorityStatus = await erLocalAuthorityStatusDAO.post(req, payload);
-      app.logger.info('Fetched electoral register local authority uploads', {
+      app.logger.info("Fetched electoral register local authority uploads", {
         auth: req.session.authentication,
       });
     } catch (err) {
-      app.logger.crit('Error fetching electoral register dashboard data', {
+      app.logger.crit("Error fetching electoral register dashboard data", {
         auth: req.session.authentication,
-        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        error: typeof err.error !== "undefined" ? err.error : err.toString(),
       });
     }
 
-    if (status === 'all' && localAuthorityFilter && localAuthorityStatus.localAuthorityStatuses.length === 0) {
-      app.logger.info('Redirecting to inactive local authority information page', {
-        auth: req.session.authentication,
-        laCode: localAuthorityFilter,
-      });
+    if (
+      status === "all" &&
+      localAuthorityFilter &&
+      localAuthorityStatus.localAuthorityStatuses.length === 0
+    ) {
+      app.logger.info(
+        "Redirecting to inactive local authority information page",
+        {
+          auth: req.session.authentication,
+          laCode: localAuthorityFilter,
+        },
+      );
 
       return res.redirect(
-        app.namedRoutes.build('electoral-register.local-authority.get', {
-          laCode: localAuthorityFilter
+        app.namedRoutes.build("electoral-register.local-authority.get", {
+          laCode: localAuthorityFilter,
         }),
       );
     }
@@ -90,17 +96,19 @@
       sortOrder,
       localAuthorityStatus.localAuthorityStatuses,
     );
-    console.log(localAuthorityData);
     const totalLocalAuthorities = localAuthorityData.length;
 
     if (!req.session.erDashboardData) {
       req.session.erDashboardData = {
         totalLocalAuthorities,
-        allLocalAuthorityCodes: localAuthorityData.map((la) => la.localAuthorityCode)
+        allLocalAuthorityCodes: localAuthorityData.map(
+          (la) => la.localAuthorityCode,
+        ),
       };
     } else {
       req.session.erDashboardData.totalLocalAuthorities = totalLocalAuthorities;
-      req.session.erDashboardData.allLocalAuthorityCodes = localAuthorityData.map((la) => la.localAuthorityCode);
+      req.session.erDashboardData.allLocalAuthorityCodes =
+        localAuthorityData.map((la) => la.localAuthorityCode);
     }
 
     localAuthorityData = paginateLocalAuthorities(
@@ -110,74 +118,85 @@
 
     let pagination = {};
     if (totalLocalAuthorities > PAGE_SIZE) {
-      pagination = paginationBuilder(totalLocalAuthorities, parseInt(req.query.page) || 1, req.url);
+      pagination = paginationBuilder(
+        totalLocalAuthorities,
+        parseInt(req.query.page) || 1,
+        req.url,
+      );
     }
 
     const now = moment();
     let deadlinePassed = false;
     let deadlineDiff = moment(new Date(uploadStats.deadlineDate)).diff(
       moment(new Date()),
-      'days',
+      "days",
     );
 
     if (deadlineDiff < 0) {
       deadlinePassed = true;
     }
-    
+
     let computedDaysRemaining = null;
 
     if (uploadStats && uploadStats.deadlineDate) {
       const deadlineMoment = moment(uploadStats.deadlineDate);
 
       if (deadlineMoment.isValid()) {
-        deadlineDiff = deadlineMoment.diff(now, 'days');
+        deadlineDiff = deadlineMoment.diff(now, "days");
 
-        computedDaysRemaining = deadlineDiff >= 0 ? Math.floor(deadlineDiff) : 0;
+        computedDaysRemaining =
+          deadlineDiff >= 0 ? Math.floor(deadlineDiff) : 0;
       }
     }
 
     const effectiveDaysRemaining =
-      typeof uploadStats?.daysRemaining !== 'undefined'
+      typeof uploadStats?.daysRemaining !== "undefined"
         ? uploadStats.daysRemaining
         : computedDaysRemaining;
 
-    return res.render('electoral-register/dashboard.njk', {
+    return res.render("electoral-register/dashboard.njk", {
       postRoutes: {
         filter:
-          app.namedRoutes.build('electoral-register.filter.post') +
+          app.namedRoutes.build("electoral-register.filter.post") +
           buildQueryParams(status, localAuthorityFilter, sortBy, sortOrder),
         sendReminder:
-          app.namedRoutes.build('electoral-register.post') +
-          buildQueryParams(status, localAuthorityFilter, sortBy, sortOrder, 'send-reminder'),
-        markEmailDelivered:
-          app.namedRoutes.build('electoral-register.post') +
+          app.namedRoutes.build("electoral-register.post") +
           buildQueryParams(
             status,
             localAuthorityFilter,
             sortBy,
             sortOrder,
-            'mark-email-delivered',
+            "send-reminder",
+          ),
+        markEmailDelivered:
+          app.namedRoutes.build("electoral-register.post") +
+          buildQueryParams(
+            status,
+            localAuthorityFilter,
+            sortBy,
+            sortOrder,
+            "mark-email-delivered",
           ),
       },
       // TODO: ADD FLOWS TO THESE LINKS
       actionRoutes: {
-        setDeadline: '#',
-        changeDeadline: '#',
-        downloadEmails: app.namedRoutes.build('electoral-register.download-emails.get'),
+        setDeadline: "#",
+        changeDeadline: "#",
+        downloadEmails: app.namedRoutes.build(
+          "electoral-register.download-emails.get",
+        ),
       },
       showDeadlineWarrning: deadlineDiff <= 28,
       deadlinePassed,
       localAuthorityFilter,
       selectedLocalAuthority,
-      status: status || 'all',
+      status: status || "all",
       laAutoCompleteNames: allLocalAuthorities
         .sort((la1, la2) => la1.id - la2.id)
         .map((la) => la.localAuthorityName),
-      deadline: uploadStats.deadlineDate ? dateFilter(
-        uploadStats.deadlineDate,
-        'yyyy-MM-DD',
-        'DD MMMM yyyy',
-      ) : 'No deadline set',
+      deadline: uploadStats.deadlineDate
+        ? dateFilter(uploadStats.deadlineDate, "yyyy-MM-DD", "DD MMMM yyyy")
+        : "No deadline set",
       daysRemaining: uploadStats.daysRemaining || 0,
       notUploaded: uploadStats.notUploadedCount || 0,
       uploaded: uploadStats.uploadedCount || 0,
@@ -187,15 +206,16 @@
         sortBy,
         sortOrder,
       ),
-      checkedLocalAuthorities: req.session.erDashboardData?.checkedLocalAuthorities?.length || 0,
+      checkedLocalAuthorities:
+        req.session.erDashboardData?.checkedLocalAuthorities?.length || 0,
       totalLocalAuthorities: req.session.erDashboardData.totalLocalAuthorities,
       sortUrl: buildQueryParams(status, localAuthorityFilter),
       pagination,
       bannerMessage,
       errors: {
-        title: 'Please check the form',
+        title: "Please check the form",
         count:
-          typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+          typeof tmpErrors !== "undefined" ? Object.keys(tmpErrors).length : 0,
         items: tmpErrors,
       },
     });
@@ -210,8 +230,8 @@
     delete req.session.erDashboardData;
 
     return res.redirect(
-      app.namedRoutes.build('electoral-register.get') +
-        buildQueryParams('all', localAuthorityCode, sortBy, sortOrder),
+      app.namedRoutes.build("electoral-register.get") +
+        buildQueryParams("all", localAuthorityCode, sortBy, sortOrder),
     );
   };
 
@@ -219,7 +239,7 @@
     const { localAuthorityFilter, status } = req.query;
     delete req.session.erDashboardData;
     return res.redirect(
-      app.namedRoutes.build('electoral-register.get') +
+      app.namedRoutes.build("electoral-register.get") +
         buildQueryParams(status, localAuthorityFilter),
     );
   };
@@ -232,16 +252,18 @@
       req.session.erDashboardData?.checkedLocalAuthorities.length === 0
     ) {
       req.session.errors = makeManualError(
-        'selectedAuthorities',
-        'At least one authority must be selected',
+        "selectedAuthorities",
+        "At least one authority must be selected",
       );
       return res.redirect(
-        app.namedRoutes.build('electoral-register.get') +
+        app.namedRoutes.build("electoral-register.get") +
           buildQueryParams(status, localAuthorityFilter),
       );
     }
 
-    const selectedAuthorities = Array.isArray(req.session.erDashboardData.checkedLocalAuthorities)
+    const selectedAuthorities = Array.isArray(
+      req.session.erDashboardData.checkedLocalAuthorities,
+    )
       ? req.session.erDashboardData.checkedLocalAuthorities
       : [req.session.erDashboardData.checkedLocalAuthorities];
 
@@ -252,21 +274,14 @@
     // TODO: Implement actual action handling logic for each option
     // LOCAL AUTHORITY IDs ARE STORED IN A LIST AT req.session.checkedLaCodes
     switch (action) {
-      case 'send-reminder':
-        return res.redirect(app.namedRoutes.build('electoral-register.send-reminder.get'));
-      case 'mark-email-delivered':
-        console.log(
-          `\n\n--- Marking data request email as delivered for: ${req.session.checkedLaCodes} ---\n\n`,
-        );
-        break;
-      default:
-        console.log(
-          `\n\n--- No action specified for: ${req.session.checkedLaCodes} ---\n\n`,
+      case "send-reminder":
+        return res.redirect(
+          app.namedRoutes.build("electoral-register.send-reminder.get"),
         );
     }
 
     return res.redirect(
-      app.namedRoutes.build('electoral-register.get') +
+      app.namedRoutes.build("electoral-register.get") +
         buildQueryParams(status, localAuthorityFilter),
     );
   };
@@ -278,31 +293,35 @@
       req.session.erDashboardData.checkedLocalAuthorities = [];
     }
 
-    if (laCode === 'selectAllCheckbox') {
-      if (action === 'check') {
-        req.session.erDashboardData.checkedLocalAuthorities = req.session.erDashboardData.allLocalAuthorityCodes;
-      } else if (action === 'uncheck') {
+    if (laCode === "selectAllCheckbox") {
+      if (action === "check") {
+        req.session.erDashboardData.checkedLocalAuthorities =
+          req.session.erDashboardData.allLocalAuthorityCodes;
+      } else if (action === "uncheck") {
         delete req.session.erDashboardData.checkedLocalAuthorities;
       }
     } else {
       // If already checked -> uncheck
-      if (action === 'uncheck') {
-        req.session.erDashboardData.checkedLocalAuthorities = req.session.erDashboardData.checkedLocalAuthorities.filter((la) => {
-          return la !== laCode;
-        });
+      if (action === "uncheck") {
+        req.session.erDashboardData.checkedLocalAuthorities =
+          req.session.erDashboardData.checkedLocalAuthorities.filter((la) => {
+            return la !== laCode;
+          });
       } else {
         req.session.erDashboardData.checkedLocalAuthorities.push(laCode);
       }
     }
 
-    app.logger.info('Checked or unchecked one or more local authorities: ', {
+    app.logger.info("Checked or unchecked one or more local authorities: ", {
       auth: req.session.authentication,
       data: {
         laCode,
       },
     });
 
-    const noChecked = req.session.erDashboardData.checkedLocalAuthorities ? req.session.erDashboardData.checkedLocalAuthorities.length : 0;
+    const noChecked = req.session.erDashboardData.checkedLocalAuthorities
+      ? req.session.erDashboardData.checkedLocalAuthorities.length
+      : 0;
 
     return res.status(200).send(noChecked.toString());
   };
@@ -312,19 +331,15 @@
       return tableData.sort((a, b) => {
         let _a;
         let _b;
-        if (sortBy === 'lastUploadDate') {
-          _a = a[sortBy]
-            ? dateFilter(a[sortBy], null, 'yyyyMMDD')
-            : '-';
-          _b = b[sortBy]
-            ? dateFilter(b[sortBy], null, 'yyyyMMDD')
-            : '-';
+        if (sortBy === "lastUploadDate") {
+          _a = a[sortBy] ? dateFilter(a[sortBy], null, "yyyyMMDD") : "-";
+          _b = b[sortBy] ? dateFilter(b[sortBy], null, "yyyyMMDD") : "-";
         } else {
-          _a = a[sortBy] ? a[sortBy] : '-';
-          _b = b[sortBy] ? b[sortBy] : '-';
+          _a = a[sortBy] ? a[sortBy] : "-";
+          _b = b[sortBy] ? b[sortBy] : "-";
         }
 
-        if (sortDirection === 'ascending') {
+        if (sortDirection === "ascending") {
           return _a.localeCompare(_b);
         }
 
@@ -345,131 +360,144 @@
       end = start + PAGE_SIZE;
     }
 
-    return(authorities.slice(start, end));
-  }
-
-  const buildLocalAuthoritiesTable = (app) => (req, localAuthorities, sortBy, sortOrder) => {
-    const table = {
-      head: [],
-      rows: [],
-    };
-
-    const allChecked = req.session.erDashboardData?.checkedLocalAuthorities
-      && req.session.erDashboardData.checkedLocalAuthorities.length === req.session.erDashboardData.totalLocalAuthorities
-        ? 'checked'
-        : '';
-
-    table.head = [
-      {
-        html:
-          '<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox mod-center-items">' +
-          `<input type='checkbox' ${allChecked} class='govuk-checkboxes__input select-check authority-select-check' id='selectAllCheckbox' name='selectAllCheckbox'/>` +
-          '<label class="govuk-label govuk-checkboxes__label" for="selectAllCheckbox">' +
-          '<span class="govuk-visually-hidden">Select All</span>' +
-          '</label>' +
-          '</div>',
-        classes: 'jd-middle-align',
-        sortable: false,
-      },
-      {
-        id: 'localAuthorityName',
-        value: 'Authority name',
-        classes: 'jd-middle-align',
-        sort: sortBy === 'localAuthorityName' ? sortOrder : 'none',
-      },
-      {
-        id: 'uploadStatus',
-        value: 'Status',
-        classes: 'jd-middle-align',
-        sort: sortBy === 'uploadStatus' ? sortOrder : 'none',
-      },
-      {
-        id: 'lastUploadDate',
-        value: 'Last data upload',
-        classes: 'jd-middle-align',
-        sort: sortBy === 'lastUploadDate' ? sortOrder : 'none',
-      },
-    ];
-
-    if (localAuthorities && localAuthorities.length) {
-      localAuthorities.forEach(function (localAuthority) {
-        const checked = req.session.erDashboardData?.checkedLocalAuthorities
-          && req.session.erDashboardData.checkedLocalAuthorities.includes(localAuthority.localAuthorityCode) 
-          ? 'checked' : '';
-        
-        table.rows.push([
-          {
-            html:
-              '<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox mod-center-items" >' +
-              `<input type='checkbox' ${checked} class='govuk-checkboxes__input select-check authority-select-check' id='select-${localAuthority.localAuthorityCode}' aria-label='select-${localAuthority.localAuthorityCode}' name='selectedAuthorities' value='${localAuthority.id}'>` +
-              `<label class='govuk-label govuk-checkboxes__label' for='select-${localAuthority.localAuthorityCode}'>` +
-              `<span class='govuk-visually-hidden'>Select ${localAuthority.localAuthorityCode}</span>` +
-              '</label>' +
-              '</div>',
-            classes: 'jd-middle-align',
-          },
-          {
-            // TODO: Add link to authority details page
-            html: `<a class='govuk-body govuk-link'`
-              + ` href='${app.namedRoutes.build('electoral-register.local-authority.get', { laCode: localAuthority.localAuthorityCode })}'>`
-              + `${localAuthority.localAuthorityName}`
-              + `</a>`,
-            classes: 'jd-middle-align',
-          },
-          {
-            html:
-              `<strong class='govuk-tag ${localAuthority.uploadStatus === 'NOT_UPLOADED' ? 'govuk-tag--grey' : ''}'>` +
-              `${toSentenceCase(localAuthority.uploadStatus)}` +
-              '</strong>',
-            classes: 'jd-middle-align',
-          },
-          {
-            text: localAuthority.lastUploadDate
-              ? dateFilter(
-                  localAuthority.lastUploadDate,
-                  'yyyy-MM-DD',
-                  'DD MMMM yyyy',
-                )
-              : '-',
-            classes: 'jd-middle-align',
-            attributes: {
-              'data-sort-value': localAuthority.lastUploadDate
-                ? dateFilter(
-                    localAuthority.lastUploadDate,
-                    'yyyy-MM-DD',
-                    'yyyyMMDD',
-                  )
-                : '',
-            },
-          },
-        ]);
-      });
-    }
-
-    return table;
+    return authorities.slice(start, end);
   };
 
-  const buildQueryParams = (status, localAuthorityFilter, sortBy, sortOrder, action) => {
-    let queryParams = '';
+  const buildLocalAuthoritiesTable =
+    (app) => (req, localAuthorities, sortBy, sortOrder) => {
+      const table = {
+        head: [],
+        rows: [],
+      };
+
+      const allChecked =
+        req.session.erDashboardData?.checkedLocalAuthorities &&
+        req.session.erDashboardData.checkedLocalAuthorities.length ===
+          req.session.erDashboardData.totalLocalAuthorities
+          ? "checked"
+          : "";
+
+      table.head = [
+        {
+          html:
+            '<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox mod-center-items">' +
+            `<input type='checkbox' ${allChecked} class='govuk-checkboxes__input select-check authority-select-check' id='selectAllCheckbox' name='selectAllCheckbox'/>` +
+            '<label class="govuk-label govuk-checkboxes__label" for="selectAllCheckbox">' +
+            '<span class="govuk-visually-hidden">Select All</span>' +
+            "</label>" +
+            "</div>",
+          classes: "jd-middle-align",
+          sortable: false,
+        },
+        {
+          id: "localAuthorityName",
+          value: "Authority name",
+          classes: "jd-middle-align",
+          sort: sortBy === "localAuthorityName" ? sortOrder : "none",
+        },
+        {
+          id: "uploadStatus",
+          value: "Status",
+          classes: "jd-middle-align",
+          sort: sortBy === "uploadStatus" ? sortOrder : "none",
+        },
+        {
+          id: "lastUploadDate",
+          value: "Last data upload",
+          classes: "jd-middle-align",
+          sort: sortBy === "lastUploadDate" ? sortOrder : "none",
+        },
+      ];
+
+      if (localAuthorities && localAuthorities.length) {
+        localAuthorities.forEach(function (localAuthority) {
+          const checked =
+            req.session.erDashboardData?.checkedLocalAuthorities &&
+            req.session.erDashboardData.checkedLocalAuthorities.includes(
+              localAuthority.localAuthorityCode,
+            )
+              ? "checked"
+              : "";
+
+          table.rows.push([
+            {
+              html:
+                '<div class="govuk-checkboxes__item govuk-checkboxes--small moj-multi-select__checkbox mod-center-items" >' +
+                `<input type='checkbox' ${checked} class='govuk-checkboxes__input select-check authority-select-check' id='select-${localAuthority.localAuthorityCode}' aria-label='select-${localAuthority.localAuthorityCode}' name='selectedAuthorities' value='${localAuthority.id}'>` +
+                `<label class='govuk-label govuk-checkboxes__label' for='select-${localAuthority.localAuthorityCode}'>` +
+                `<span class='govuk-visually-hidden'>Select ${localAuthority.localAuthorityCode}</span>` +
+                "</label>" +
+                "</div>",
+              classes: "jd-middle-align",
+            },
+            {
+              // TODO: Add link to authority details page
+              html:
+                `<a class='govuk-body govuk-link'` +
+                ` href='${app.namedRoutes.build("electoral-register.local-authority.get", { laCode: localAuthority.localAuthorityCode })}'>` +
+                `${localAuthority.localAuthorityName}` +
+                `</a>`,
+              classes: "jd-middle-align",
+            },
+            {
+              html:
+                `<strong class='govuk-tag ${localAuthority.uploadStatus === "NOT_UPLOADED" ? "govuk-tag--grey" : ""}'>` +
+                `${toSentenceCase(localAuthority.uploadStatus)}` +
+                "</strong>",
+              classes: "jd-middle-align",
+            },
+            {
+              text: localAuthority.lastUploadDate
+                ? dateFilter(
+                    localAuthority.lastUploadDate,
+                    "yyyy-MM-DD",
+                    "DD MMMM yyyy",
+                  )
+                : "-",
+              classes: "jd-middle-align",
+              attributes: {
+                "data-sort-value": localAuthority.lastUploadDate
+                  ? dateFilter(
+                      localAuthority.lastUploadDate,
+                      "yyyy-MM-DD",
+                      "yyyyMMDD",
+                    )
+                  : "",
+              },
+            },
+          ]);
+        });
+      }
+
+      return table;
+    };
+
+  const buildQueryParams = (
+    status,
+    localAuthorityFilter,
+    sortBy,
+    sortOrder,
+    action,
+  ) => {
+    let queryParams = "";
     if (action) {
       queryParams += `?action=${action}`;
     }
     if (localAuthorityFilter) {
       queryParams +=
-        (queryParams.length ? '&' : '?') +
+        (queryParams.length ? "&" : "?") +
         `localAuthorityFilter=${localAuthorityFilter}`;
     }
     if (status) {
-      queryParams += (queryParams.length ? '&' : '?') + `status=${status}`;
+      queryParams += (queryParams.length ? "&" : "?") + `status=${status}`;
     }
     if (sortBy) {
-      queryParams += (queryParams.length ? '&' : '?') + `sortBy=${sortBy}`;
+      queryParams += (queryParams.length ? "&" : "?") + `sortBy=${sortBy}`;
     }
     if (sortOrder) {
       queryParams +=
-        (queryParams.length ? '&' : '?') + `sortOrder=${sortOrder}`;
+        (queryParams.length ? "&" : "?") + `sortOrder=${sortOrder}`;
     }
     return queryParams;
   };
-
 })();

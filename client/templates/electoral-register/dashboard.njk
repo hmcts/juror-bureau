@@ -5,7 +5,7 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 {% from "moj/components/alert/macro.njk" import mojAlert %}
-{%- from "moj/components/alert/macro.njk" import mojAlert -%}
+{% from "moj/components/interruption-card/macro.njk" import interruptionCard %}
 
 {% from "custom-components/autocomplete/macro.njk" import modAutocomplete %}
 {% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
@@ -32,49 +32,44 @@
 
   {% include "includes/errors.njk" %}
 
-{# HEADER #}
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
+  {# HEADER #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
 
-    <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Dashboard</h1>
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Dashboard</h1>
 
-    {%- from "moj/components/interruption-card/macro.njk" import interruptionCard -%}
-
-    {% if not deadlinePassed %}
-      {{ govukNotificationBanner({
-        titleText: "Deadline",
-        text: deadline,
-        classes: "govuk-!-margin-bottom-6"
-      }) }}
-
-      {% if showDeadlineWarrning %}
-        {{ mojAlert({
-          variant: "warning",
-          title: "Urgent",
-          showTitleAsHeading: true,
-          dismissible: false,
-          html: notUploaded + " local authorities have not uploaded their electoral register data.",
+      {% if not deadlinePassed %}
+        {{ govukNotificationBanner({
+          titleText: "Deadline",
+          text: deadline,
           classes: "govuk-!-margin-bottom-6"
         }) }}
+
+        {% if showDeadlineWarrning %}
+          {{ mojAlert({
+            variant: "warning",
+            title: "Urgent",
+            showTitleAsHeading: true,
+            dismissible: false,
+            html: notUploaded + " local authorities have not uploaded their electoral register data.",
+            classes: "govuk-!-margin-bottom-6"
+          }) }}
+        {% endif %}
+      {% else %}
+        {% call interruptionCard({
+          heading: "Update window is now closed",
+          primaryAction: {
+            text: "Set a new deadline",
+            href: "/electoral-register/set-deadline"
+          }
+        })%}
+          <p class="govuk-body">The annual upload window for electoral register data has now closed. Local authorities can no longer upload electoral data.</p>
+          <p class="govuk-body">To allow uploads, set a new deadline date.</p>
+        {%- endcall %}
       {% endif %}
 
-    {% else %}
-      {# DEADLINE PASSED BANNER #}
-      {% call interruptionCard({
-        heading: "Update window is now closed",
-        primaryAction: {
-          text: "Set a new deadline",
-          href: "/electoral-register/set-deadline"
-        }
-      }) -%}
-        <p>The annual upload window for electoral register data has now closed. Local authorities can no longer upload electoral data.</p>
-        <p>To allow uploads, set a new deadline date.</p>
-      {%- endcall %}
-    {% endif %}
-
+    </div>
   </div>
-</div>
-
 
   {# SUMMARY INFO #}
   <div class="govuk-grid-row">
@@ -208,16 +203,6 @@
               attributes: {
                 id: "sendReminderButton",
                 formAction: postRoutes.sendReminder
-              }
-            }) }}
-
-            {{ govukButton({
-              text: "Mark data request email as delivered",
-              classes: "govuk-button--secondary",
-              type: "submit",
-              attributes: {
-                id: "markEmailDeliveredButton",
-                formAction: postRoutes.markEmailDelivered
               }
             }) }}
           </div>
