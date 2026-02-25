@@ -1,19 +1,10 @@
 (() => {
-  "use strict";
+  'use strict';
 
-  const _ = require("lodash");
-  const {
-    isCourtUser,
-    isSystemAdministrator,
-  } = require("../../../components/auth/user-type");
-  const {
-    dateFilter,
-    capitalizeFully,
-    toMoney,
-    toSentenceCase,
-    makeDate,
-  } = require("../../../components/filters");
-  const { sort } = require("./utils");
+  const _ = require('lodash');
+  const { isCourtUser, isSystemAdministrator } = require('../../../components/auth/user-type');
+  const { dateFilter, capitalizeFully, toMoney, toSentenceCase, makeDate } = require('../../../components/filters');
+  const { sort } = require('./utils');
   const {
     dailyUtilisationDAO,
     dailyUtilisationJurorsDAO,
@@ -25,12 +16,12 @@
     weekendAttendanceReportDAO,
     overdueUtilisationReportDAO,
     digitalResponsesCompletedReportDAO,
-  } = require("../../../objects/reports");
+  } = require('../../../objects/reports');
 
-  const makeLink = (app) => {
+  const makeLink = app => {
     return {
-      poolNumber: (poolNumber) => {
-        return `<a class='govuk-link govuk-link--no-visited-state' href='${app.namedRoutes.build("pool-overview.get", { poolNumber: poolNumber })}'>Pool ${poolNumber}</a>`;
+      poolNumber: poolNumber => {
+        return `<a class='govuk-link govuk-link--no-visited-state' href='${app.namedRoutes.build('pool-overview.get', { poolNumber: poolNumber })}'>Pool ${poolNumber}</a>`;
       },
     };
   };
@@ -106,335 +97,260 @@
     const courtUser = req ? isCourtUser(req) : false;
 
     return {
-      "next-due": {
-        title: "Next attendance date report",
-        apiKey: "NextAttendanceDayReport",
-        search: "poolNumber",
-        headings: [
-          "poolNumber",
-          "reportDate",
-          "poolType",
-          "reportTime",
-          "serviceStartDate",
-          "courtName",
-        ],
-        defaultSortColumn: "lastName",
+      'next-due': {
+        title: 'Next attendance date report',
+        apiKey: 'NextAttendanceDayReport',
+        search: 'poolNumber',
+        headings: ['poolNumber', 'reportDate', 'poolType', 'reportTime', 'serviceStartDate', 'courtName'],
+        defaultSortColumn: 'lastName',
       },
       undelivered: {
-        title: "Undelivered list",
-        apiKey: "UndeliverableListReport",
-        search: "poolNumber",
+        title: 'Undelivered list',
+        apiKey: 'UndeliverableListReport',
+        search: 'poolNumber',
         headings: [
-          "poolNumber",
-          "reportDate",
-          "poolType",
-          "reportTime",
-          "serviceStartDate",
-          "courtName",
-          "totalUndelivered",
+          'poolNumber',
+          'reportDate',
+          'poolType',
+          'reportTime',
+          'serviceStartDate',
+          'courtName',
+          'totalUndelivered',
         ],
-        defaultSortColumn: "lastName",
+        defaultSortColumn: 'lastName',
       },
-      "non-responded": {
-        title: "Non-responded list",
-        apiKey: "NonRespondedReport",
-        search: "poolNumber",
+      'non-responded': {
+        title: 'Non-responded list',
+        apiKey: 'NonRespondedReport',
+        search: 'poolNumber',
         headings: [
-          "poolNumber",
-          "reportDate",
-          "poolType",
-          "reportTime",
-          "serviceStartDate",
-          "courtName",
-          "totalNonResponded",
+          'poolNumber',
+          'reportDate',
+          'poolType',
+          'reportTime',
+          'serviceStartDate',
+          'courtName',
+          'totalNonResponded',
         ],
-        defaultSortColumn: "lastName",
+        defaultSortColumn: 'lastName',
       },
-      "postponed-pool": {
-        title: "Postponed list (by pool)",
-        apiKey: "PostponedListByPoolReport",
-        search: "poolNumber",
+      'postponed-pool': {
+        title: 'Postponed list (by pool)',
+        apiKey: 'PostponedListByPoolReport',
+        search: 'poolNumber',
         headings: [
-          "poolNumber",
-          "reportDate",
-          "poolType",
-          "reportTime",
-          "serviceStartDate",
-          "courtName",
-          "totalPostponed",
+          'poolNumber',
+          'reportDate',
+          'poolType',
+          'reportTime',
+          'serviceStartDate',
+          'courtName',
+          'totalPostponed',
         ],
-        defaultSortColumn: "lastName",
-        backUrl: app.namedRoutes.build("reports.postponed.search.get"),
+        defaultSortColumn: 'lastName',
+        backUrl: app.namedRoutes.build('reports.postponed.search.get'),
       },
-      "postponed-date": {
-        title: "Postponed list (by date)",
-        apiKey: "PostponedListByDateReport",
-        headings: [
-          "dateFrom",
-          "reportDate",
-          "dateTo",
-          "reportTime",
-          "totalPostponed",
-        ].concat(courtUser ? ["courtName"] : []),
-        defaultSortColumn: "lastName",
+      'postponed-date': {
+        title: 'Postponed list (by date)',
+        apiKey: 'PostponedListByDateReport',
+        headings: ['dateFrom', 'reportDate', 'dateTo', 'reportTime', 'totalPostponed'].concat(
+          courtUser ? ['courtName'] : []
+        ),
+        defaultSortColumn: 'lastName',
         grouped: {
           headings: {
             transformer: (data, isPrint) => {
               if (isPrint) {
                 return `Pool ${data}`;
               }
-              return makeLink(app)["poolNumber"](data);
+              return makeLink(app)['poolNumber'](data);
             },
           },
           groupHeader: true,
           totals: true,
         },
-        backUrl: app.namedRoutes.build("reports.postponed.search.get"),
+        backUrl: app.namedRoutes.build('reports.postponed.search.get'),
       },
-      "amendment-juror": {
-        title: "Juror amendment report (by juror)",
-        apiKey: "JurorAmendmentByJurorReport",
+      'amendment-juror': {
+        title: 'Juror amendment report (by juror)',
+        apiKey: 'JurorAmendmentByJurorReport',
         printLandscape: true,
-        search: "jurorNumber",
-        headings: ["jurorNumber", "reportDate", "jurorName", "reportTime"],
-        defaultSortColumn: "changedOnDate",
-        backUrl: app.namedRoutes.build("reports.juror-amendment.search.get"),
+        search: 'jurorNumber',
+        headings: ['jurorNumber', 'reportDate', 'jurorName', 'reportTime'],
+        defaultSortColumn: 'changedOnDate',
+        backUrl: app.namedRoutes.build('reports.juror-amendment.search.get'),
       },
-      "amendment-pool": {
-        title: "Juror amendment report (by pool)",
-        apiKey: "JurorAmendmentByPoolReport",
-        search: "poolNumber",
+      'amendment-pool': {
+        title: 'Juror amendment report (by pool)',
+        apiKey: 'JurorAmendmentByPoolReport',
+        search: 'poolNumber',
         printLandscape: true,
-        headings: [
-          "poolNumber",
-          "reportDate",
-          "poolType",
-          "reportTime",
-          "serviceStartDate",
-          "courtName",
-        ],
-        defaultSortColumn: "jurorNumber",
-        backUrl: app.namedRoutes.build("reports.juror-amendment.search.get"),
+        headings: ['poolNumber', 'reportDate', 'poolType', 'reportTime', 'serviceStartDate', 'courtName'],
+        defaultSortColumn: 'jurorNumber',
+        backUrl: app.namedRoutes.build('reports.juror-amendment.search.get'),
       },
-      "amendment-date": {
-        title: "Juror amendment report (by date)",
-        apiKey: "JurorAmendmentByDateReport",
+      'amendment-date': {
+        title: 'Juror amendment report (by date)',
+        apiKey: 'JurorAmendmentByDateReport',
         printLandscape: true,
-        headings: ["dateFrom", "reportDate", "dateTo", "reportTime"].concat(
-          courtUser ? ["courtName"] : [],
-        ),
-        defaultSortColumn: "jurorNumber",
-        backUrl: app.namedRoutes.build("reports.juror-amendment.search.get"),
+        headings: ['dateFrom', 'reportDate', 'dateTo', 'reportTime'].concat(courtUser ? ['courtName'] : []),
+        defaultSortColumn: 'jurorNumber',
+        backUrl: app.namedRoutes.build('reports.juror-amendment.search.get'),
       },
-      "incomplete-service": {
-        title: "Incomplete service",
-        apiKey: "IncompleteServiceReport",
-        search: "date",
+      'incomplete-service': {
+        title: 'Incomplete service',
+        apiKey: 'IncompleteServiceReport',
+        search: 'date',
         bespokeReport: {
           insertColumns: {
             6: [
-              "",
+              '',
               (data, isPrint = false) => {
                 return isPrint || isSystemAdministrator(req)
                   ? {}
                   : {
-                      html: `<a href=${app.namedRoutes.build(
-                        "reports.incomplete-service.complete-redirect.get",
-                        {
-                          jurorNumber: data.jurorNumber,
-                          lastAttendanceDate: data.lastAttendanceDate
-                            ? data.lastAttendanceDate
-                            : null,
-                        },
-                      )}>Complete service</a>`,
+                      html: `<a href=${app.namedRoutes.build('reports.incomplete-service.complete-redirect.get', {
+                        jurorNumber: data.jurorNumber,
+                        lastAttendanceDate: data.lastAttendanceDate ? data.lastAttendanceDate : null,
+                      })}>Complete service</a>`,
                     };
               },
             ],
           },
         },
-        headings: [
-          "cutOffDate",
-          "reportDate",
-          "totalIncompleteService",
-          "reportTime",
-          "",
-          "courtName",
-        ],
-        defaultSortColumn: "lastName",
+        headings: ['cutOffDate', 'reportDate', 'totalIncompleteService', 'reportTime', '', 'courtName'],
+        defaultSortColumn: 'lastName',
         parentReport: {
-          key: "courts-incomplete-service",
-          filterParam: dateFilter(new Date(), null, "yyyy-MM-DD"),
-          useParentRoute: (req) => isSystemAdministrator(req),
+          key: 'courts-incomplete-service',
+          filterParam: dateFilter(new Date(), null, 'yyyy-MM-DD'),
+          useParentRoute: req => isSystemAdministrator(req),
         },
       },
-      "current-pool-status": {
-        title: "Current pool status report",
-        apiKey: "CurrentPoolStatusReport",
-        search: "poolNumber",
+      'current-pool-status': {
+        title: 'Current pool status report',
+        apiKey: 'CurrentPoolStatusReport',
+        search: 'poolNumber',
         headings: [
-          "poolNumber",
-          "reportDate",
-          "poolType",
-          "reportTime",
-          "serviceStartDate",
-          "courtName",
-          "totalPoolMembers",
-          "numberOfJurorsSummoned",
-          "numberOfJurorsAttended",
+          'poolNumber',
+          'reportDate',
+          'poolType',
+          'reportTime',
+          'serviceStartDate',
+          'courtName',
+          'totalPoolMembers',
+          'numberOfJurorsSummoned',
+          'numberOfJurorsAttended',
         ],
-        defaultSortColumn: "lastName",
+        defaultSortColumn: 'lastName',
         printLandscape: true,
-        columnWidths: [80, 100, 100, 80, 60, 60, "*", 120],
+        columnWidths: [80, 100, 100, 80, 60, 60, '*', 120],
       },
-      "panel-summary": {
-        title: "Panel list (summary)",
-        apiKey: "PanelSummaryReport",
-        search: "trial",
+      'panel-summary': {
+        title: 'Panel list (summary)',
+        apiKey: 'PanelSummaryReport',
+        search: 'trial',
+        headings: ['trialNumber', 'reportDate', 'names', 'reportTime', 'courtRoom', 'courtName', 'judge'],
+        defaultSortColumn: 'lastName',
+      },
+      'bulk-print-audit': {
+        title: 'Bulk-print audit report',
+        apiKey: 'AbaccusReport',
+        search: 'dateRange',
+        headings: ['dateFrom', 'reportDate', 'dateTo', 'reportTime'],
+        defaultSortColumn: 'dateSent',
+      },
+      'panel-detail': {
+        title: 'Panel list (Detail)',
+        apiKey: 'PanelListDetailedReport',
+        search: 'trial',
+        headings: ['trialNumber', 'reportDate', 'names', 'reportTime', 'courtRoom', 'courtName', 'judge'],
+        defaultSortColumn: 'lastName',
+      },
+      'jury-list': {
+        title: 'Jury list',
+        apiKey: 'JuryListReport',
+        search: 'trial',
         headings: [
-          "trialNumber",
-          "reportDate",
-          "names",
-          "reportTime",
-          "courtRoom",
-          "courtName",
-          "judge",
+          'trialNumber',
+          'reportDate',
+          'names',
+          'reportTime',
+          'trialStartDate',
+          'courtName',
+          'courtRoom',
+          '',
+          'judge',
         ],
-        defaultSortColumn: "lastName",
+        defaultSortColumn: 'lastName',
       },
-      "bulk-print-audit": {
-        title: "Bulk-print audit report",
-        apiKey: "AbaccusReport",
-        search: "dateRange",
-        headings: ["dateFrom", "reportDate", "dateTo", "reportTime"],
-        defaultSortColumn: "dateSent",
-      },
-      "panel-detail": {
-        title: "Panel list (Detail)",
-        apiKey: "PanelListDetailedReport",
-        search: "trial",
-        headings: [
-          "trialNumber",
-          "reportDate",
-          "names",
-          "reportTime",
-          "courtRoom",
-          "courtName",
-          "judge",
-        ],
-        defaultSortColumn: "lastName",
-      },
-      "jury-list": {
-        title: "Jury list",
-        apiKey: "JuryListReport",
-        search: "trial",
-        headings: [
-          "trialNumber",
-          "reportDate",
-          "names",
-          "reportTime",
-          "trialStartDate",
-          "courtName",
-          "courtRoom",
-          "",
-          "judge",
-        ],
-        defaultSortColumn: "lastName",
-      },
-      "pool-status": {
-        title: "Pool status report",
-        apiKey: "PoolStatusReport",
-        search: "poolNumber",
-        headings: [
-          "poolNumber",
-          "reportDate",
-          "totalPoolMembers",
-          "reportTime",
-          "totalRequestedByCourt",
-        ],
+      'pool-status': {
+        title: 'Pool status report',
+        apiKey: 'PoolStatusReport',
+        search: 'poolNumber',
+        headings: ['poolNumber', 'reportDate', 'totalPoolMembers', 'reportTime', 'totalRequestedByCourt'],
         bespokeReport: {
           body: true,
-          file: "./bespoke-report-body/pool-status.njk",
+          file: './bespoke-report-body/pool-status.njk',
         },
-        exportLabel: "Export data",
+        exportLabel: 'Export data',
       },
-      "reasonable-adjustment-and-cje": {
-        title: "Reasonable adjustment and CJE report",
-        apiKey: "ReasonableAdjustmentAndCjeReport",
-        search: "fixedDateRange",
+      'reasonable-adjustment-and-cje': {
+        title: 'Reasonable adjustment and CJE report',
+        apiKey: 'ReasonableAdjustmentAndCjeReport',
+        search: 'fixedDateRange',
         searchLabelMappers: {
-          dateFrom: "Service start date from",
-          dateTo: "Service start date from",
+          dateFrom: 'Service start date from',
+          dateTo: 'Service start date from',
         },
-        fixedDateRangeValues: ["NEXT_31_DAYS", "CUSTOM_RANGE"],
-        headings: [
-          "totalReasonableAdjustments",
-          "reportDate",
-          "",
-          "reportTime",
-          "",
-          "courtName",
-        ],
-        defaultSortColumn: "lastName",
+        fixedDateRangeValues: ['NEXT_31_DAYS', 'CUSTOM_RANGE'],
+        headings: ['totalReasonableAdjustments', 'reportDate', '', 'reportTime', '', 'courtName'],
+        defaultSortColumn: 'lastName',
         grouped: {
           groupHeader: !courtUser,
           totals: !courtUser,
         },
         printLandscape: true,
       },
-      "persons-attending-summary": {
-        title: "Persons attending (summary)",
-        apiKey: "PersonAttendingSummaryReport",
-        search: "date",
+      'persons-attending-summary': {
+        title: 'Persons attending (summary)',
+        apiKey: 'PersonAttendingSummaryReport',
+        search: 'date',
         queryParams: {
           includeSummoned: req?.query?.includeSummoned || false,
           includePanelMembers: req?.query?.includePanelMembers || false,
         },
-        headings: [
-          "attendanceDate",
-          "reportDate",
-          "totalDue",
-          "reportTime",
-          "",
-          "courtName",
-        ],
-        defaultSortColumn: "lastName",
+        headings: ['attendanceDate', 'reportDate', 'totalDue', 'reportTime', '', 'courtName'],
+        defaultSortColumn: 'lastName',
         grouped: {
           headings: {
             transformer: (data, isPrint) => {
               if (isPrint) {
                 return `Pool ${data}`;
               }
-              return makeLink(app)["poolNumber"](data);
+              return makeLink(app)['poolNumber'](data);
             },
           },
           groupHeader: true,
           totals: true,
         },
       },
-      "persons-attending-detail": {
-        title: "Persons attending (detailed)",
-        apiKey: "PersonAttendingDetailReport",
-        search: "date",
+      'persons-attending-detail': {
+        title: 'Persons attending (detailed)',
+        apiKey: 'PersonAttendingDetailReport',
+        search: 'date',
         queryParams: {
           includeSummoned: req?.query?.includeSummoned || false,
           includePanelMembers: req?.query?.includePanelMembers || false,
         },
-        headings: [
-          "attendanceDate",
-          "reportDate",
-          "totalDue",
-          "reportTime",
-          "",
-          "courtName",
-        ],
-        defaultSortColumn: "lastName",
+        headings: ['attendanceDate', 'reportDate', 'totalDue', 'reportTime', '', 'courtName'],
+        defaultSortColumn: 'lastName',
         grouped: {
           headings: {
             transformer: (data, isPrint) => {
               if (isPrint) {
                 return `Pool ${data}`;
               }
-              return makeLink(app)["poolNumber"](data);
+              return makeLink(app)['poolNumber'](data);
             },
           },
           groupHeader: true,
@@ -443,90 +359,62 @@
         bespokeReport: {
           insertColumns: {
             5: [
-              "",
+              '',
               (data, isPrint = false) => {
                 return isPrint
-                  ? { text: `*${data.jurorNumber}*`, style: "barcode" }
-                  : { text: `*${data.jurorNumber}*`, classes: "mod-barcode" };
+                  ? { text: `*${data.jurorNumber}*`, style: 'barcode' }
+                  : { text: `*${data.jurorNumber}*`, classes: 'mod-barcode' };
               },
             ],
           },
           printInsertColumns: true,
-          printWidths: ["10%", "12%", "12%", "15%", "23%", "auto"],
+          printWidths: ['10%', '12%', '12%', '15%', '23%', 'auto'],
         },
       },
-      "daily-utilisation": {
-        title: "Daily wastage and utilisation report",
-        apiKey: "DailyUtilisationReport",
-        search: "dateRange",
-        headings: [
-          "dateFrom",
-          "reportDate",
-          "dateTo",
-          "reportTime",
-          "",
-          "courtName",
-        ],
+      'daily-utilisation': {
+        title: 'Daily wastage and utilisation report',
+        apiKey: 'DailyUtilisationReport',
+        search: 'dateRange',
+        headings: ['dateFrom', 'reportDate', 'dateTo', 'reportTime', '', 'courtName'],
         bespokeReport: {
           dao: () =>
-            dailyUtilisationDAO.get(
-              req,
-              req.session.authentication.locCode,
-              req.query.fromDate,
-              req.query.toDate,
-            ),
+            dailyUtilisationDAO.get(req, req.session.authentication.locCode, req.query.fromDate, req.query.toDate),
           body: true,
           sortReload: true,
         },
-        defaultSortColumn: "date",
-        exportLabel: "Export raw data",
+        defaultSortColumn: 'date',
+        exportLabel: 'Export raw data',
       },
-      "daily-utilisation-jurors": {
-        title: "Daily wastage and utilisation report - jurors",
+      'daily-utilisation-jurors': {
+        title: 'Daily wastage and utilisation report - jurors',
         bespokeReport: {
-          dao: () =>
-            dailyUtilisationJurorsDAO.get(
-              req,
-              req.session.authentication.locCode,
-              req.params.filter,
-            ),
+          dao: () => dailyUtilisationJurorsDAO.get(req, req.session.authentication.locCode, req.params.filter),
           body: true,
           printSorting: {
-            dataSet: "jurors",
+            dataSet: 'jurors',
           },
         },
-        headings: ["date", "reportDate", "", "reportTime", "", "courtName"],
-        exportLabel: "Export raw data",
+        headings: ['date', 'reportDate', '', 'reportTime', '', 'courtName'],
+        exportLabel: 'Export raw data',
       },
-      "voir-dire": {
-        title: "Panel result report (by trial)",
-        apiKey: "PanelResultReport",
-        search: "dateRange",
-        headings: ["dateFrom", "reportDate", "dateTo", "reportTime"],
-        defaultSortColumn: "trialNumber",
+      'voir-dire': {
+        title: 'Panel result report (by trial)',
+        apiKey: 'PanelResultReport',
+        search: 'dateRange',
+        headings: ['dateFrom', 'reportDate', 'dateTo', 'reportTime'],
+        defaultSortColumn: 'trialNumber',
       },
-      "unconfirmed-attendance": {
-        title: "Unconfirmed attendance report",
-        apiKey: "UnconfirmedAttendanceReport",
-        search: "dateRange",
-        headings: [
-          "totalUnconfirmedAttendances",
-          "reportDate",
-          "",
-          "reportTime",
-          "",
-          "courtName",
-        ],
-        defaultSortColumn: "lastName",
+      'unconfirmed-attendance': {
+        title: 'Unconfirmed attendance report',
+        apiKey: 'UnconfirmedAttendanceReport',
+        search: 'dateRange',
+        headings: ['totalUnconfirmedAttendances', 'reportDate', '', 'reportTime', '', 'courtName'],
+        defaultSortColumn: 'lastName',
         grouped: {
           headings: {
             transformer: (data, isPrint) => {
-              const [attendanceDate, poolType] = data.split(",");
-              const formattedAttendanceDate = dateFilter(
-                attendanceDate,
-                "YYYY-mm-dd",
-                "dddd D MMMM YYYY",
-              );
+              const [attendanceDate, poolType] = data.split(',');
+              const formattedAttendanceDate = dateFilter(attendanceDate, 'YYYY-mm-dd', 'dddd D MMMM YYYY');
 
               if (isPrint) {
                 return formattedAttendanceDate;
@@ -539,195 +427,152 @@
           totals: true,
         },
       },
-      "manual-juror-report": {
-        title: "Manually-created jurors report",
-        apiKey: "ManuallyCreatedJurorsReport",
-        search: "dateRange",
+      'manual-juror-report': {
+        title: 'Manually-created jurors report',
+        apiKey: 'ManuallyCreatedJurorsReport',
+        search: 'dateRange',
         printLandscape: true,
-        headings: [
-          "dateFrom",
-          "reportDate",
-          "dateTo",
-          "reportTime",
-          "totalManuallyCreatedJurors",
-          "courtName",
-        ],
-        defaultSortColumn: "lastName",
+        headings: ['dateFrom', 'reportDate', 'dateTo', 'reportTime', 'totalManuallyCreatedJurors', 'courtName'],
+        defaultSortColumn: 'lastName',
       },
-      "panel-members-status": {
-        title: "Panel members status report",
-        apiKey: "PanelMembersStatusReport",
-        search: "trial",
-        headings: [
-          "trialNumber",
-          "reportDate",
-          "names",
-          "reportTime",
-          "courtRoom",
-          "courtName",
-          "judge",
-        ],
-        defaultSortColumn: "jurorNumber",
+      'panel-members-status': {
+        title: 'Panel members status report',
+        apiKey: 'PanelMembersStatusReport',
+        search: 'trial',
+        headings: ['trialNumber', 'reportDate', 'names', 'reportTime', 'courtRoom', 'courtName', 'judge'],
+        defaultSortColumn: 'jurorNumber',
         largeTotals: {
-          values: (data) => {
+          values: data => {
             return [
-              { label: "Panelled", value: data.length },
+              { label: 'Panelled', value: data.length },
               {
-                label: "Empanelled",
-                value: data.filter((juror) => juror.panelStatus === "Juror")
+                label: 'Empanelled',
+                value: data.filter(juror => juror.panelStatus === 'Juror').length,
+              },
+              {
+                label: 'Not used',
+                value: data.filter(juror => juror.panelStatus === 'Not Used' || juror.panelStatus === 'Returned')
                   .length,
               },
               {
-                label: "Not used",
-                value: data.filter(
-                  (juror) =>
-                    juror.panelStatus === "Not Used" ||
-                    juror.panelStatus === "Returned",
-                ).length,
+                label: 'Challenged',
+                value: data.filter(juror => juror.panelStatus === 'Challenged').length,
               },
               {
-                label: "Challenged",
-                value: data.filter(
-                  (juror) => juror.panelStatus === "Challenged",
-                ).length,
-              },
-              {
-                label: "Returned jurors",
-                value: data.filter(
-                  (juror) => juror.panelStatus === "Returned Juror",
-                ).length,
+                label: 'Returned jurors',
+                value: data.filter(juror => juror.panelStatus === 'Returned Juror').length,
               },
             ];
           },
         },
       },
-      "prepare-monthly-utilisation": {
-        title: "Monthly wastage and utilisation report",
-        headings: [
-          "dateFrom",
-          "reportDate",
-          "dateTo",
-          "reportTime",
-          "",
-          "courtName",
-        ],
+      'prepare-monthly-utilisation': {
+        title: 'Monthly wastage and utilisation report',
+        headings: ['dateFrom', 'reportDate', 'dateTo', 'reportTime', '', 'courtName'],
         bespokeReport: {
-          dao: (req) =>
-            generateMonthlyUtilisationDAO.get(
-              req,
-              req.session.authentication.locCode,
-              req.params.filter,
-            ),
+          dao: req => generateMonthlyUtilisationDAO.get(req, req.session.authentication.locCode, req.params.filter),
           body: true,
         },
         unsortable: true,
-        exportLabel: "Export raw data",
+        exportLabel: 'Export raw data',
       },
-      "view-monthly-utilisation": {
-        title: "View monthly wastage and utilisation report",
+      'view-monthly-utilisation': {
+        title: 'View monthly wastage and utilisation report',
         queryParams: {
           previousMonths: req?.query?.previousMonths || false,
         },
-        headings: ["courtName", "reportDate", "", "reportTime"],
+        headings: ['courtName', 'reportDate', '', 'reportTime'],
         bespokeReport: {
-          dao: (req) =>
+          dao: req =>
             viewMonthlyUtilisationDAO.get(
               req,
               req.session.authentication.locCode,
               req.params.filter,
-              req.query.previousMonths,
+              req.query.previousMonths
             ),
           body: true,
           printSorting: {
-            dataSet: "months",
+            dataSet: 'months',
           },
         },
-        defaultSortColumn: "month",
-        exportLabel: "Export raw data",
+        defaultSortColumn: 'month',
+        exportLabel: 'Export raw data',
       },
       // this one may be unsortable
-      "jury-expenditure-high-level": {
-        title: "Juror expenditure report (high-level)",
-        apiKey: "JurorExpenditureReportHighLevelReport",
-        search: "dateRange",
+      'jury-expenditure-high-level': {
+        title: 'Juror expenditure report (high-level)',
+        apiKey: 'JurorExpenditureReportHighLevelReport',
+        search: 'dateRange',
         searchLabelMappers: {
-          dateFrom: "Date expenses approved from",
-          dateTo: "Date expenses approved to",
+          dateFrom: 'Date expenses approved from',
+          dateTo: 'Date expenses approved to',
         },
-        headings: [
-          "approvedFrom",
-          "reportDate",
-          "approvedTo",
-          "reportTime",
-          "",
-          "courtName",
-        ],
+        headings: ['approvedFrom', 'reportDate', 'approvedTo', 'reportTime', '', 'courtName'],
         bespokeReport: {
           body: true,
         },
       },
       // this maybe unsortable too
-      "jury-expenditure-mid-level": {
-        title: "Juror expenditure report (mid-level)",
-        apiKey: "JurorExpenditureReportMidLevelReport",
-        search: "dateRange",
+      'jury-expenditure-mid-level': {
+        title: 'Juror expenditure report (mid-level)',
+        apiKey: 'JurorExpenditureReportMidLevelReport',
+        search: 'dateRange',
         searchLabelMappers: {
-          dateFrom: "Date expenses approved from",
-          dateTo: "Date expenses approved to",
+          dateFrom: 'Date expenses approved from',
+          dateTo: 'Date expenses approved to',
         },
         headings: [
-          "approvedFrom",
-          "reportDate",
-          "approvedTo",
-          "reportTime",
-          "totalBacsAndCheque",
-          "courtName",
-          "totalCash",
-          "",
-          "overallTotal",
+          'approvedFrom',
+          'reportDate',
+          'approvedTo',
+          'reportTime',
+          'totalBacsAndCheque',
+          'courtName',
+          'totalCash',
+          '',
+          'overallTotal',
         ],
         bespokeReport: {
           body: true,
         },
       },
-      "jury-expenditure-low-level": {
-        title: "Juror expenditure report (low-level)",
-        apiKey: "JurorExpenditureReportLowLevelReport",
-        search: "dateRange",
+      'jury-expenditure-low-level': {
+        title: 'Juror expenditure report (low-level)',
+        apiKey: 'JurorExpenditureReportLowLevelReport',
+        search: 'dateRange',
         searchLabelMappers: {
-          dateFrom: "Date expenses approved from",
-          dateTo: "Date expenses approved to",
+          dateFrom: 'Date expenses approved from',
+          dateTo: 'Date expenses approved to',
         },
         headings: [
-          "approvedFrom",
-          "reportDate",
-          "approvedTo",
-          "reportTime",
-          "totalApprovals",
-          "courtName",
-          "totalBacsAndCheque",
-          "",
-          "totalCash",
-          "",
-          "overallTotal",
+          'approvedFrom',
+          'reportDate',
+          'approvedTo',
+          'reportTime',
+          'totalApprovals',
+          'courtName',
+          'totalBacsAndCheque',
+          '',
+          'totalCash',
+          '',
+          'overallTotal',
         ],
-        defaultSortColumn: "lastName",
+        defaultSortColumn: 'lastName',
         multiTable: {
           sectionHeadings: true,
         },
         grouped: {
           groupHeader: true,
           headings: {
-            transformer: (data) =>
-              dateFilter(data, "yyyy-MM-DD", "dddd D MMM YYYY"),
+            transformer: data => dateFilter(data, 'yyyy-MM-DD', 'dddd D MMM YYYY'),
           },
           emptyDataGroup: (colspan, isPrint = false) => {
             if (isPrint) {
               const group = [
                 [
                   {
-                    text: "No payments authorised",
-                    color: "#505A5F",
+                    text: 'No payments authorised',
+                    color: '#505A5F',
                     colSpan: colspan,
                   },
                 ],
@@ -740,8 +585,8 @@
             return [
               [
                 {
-                  text: "No payments authorised",
-                  classes: "govuk-hint mod-table-no-border",
+                  text: 'No payments authorised',
+                  classes: 'govuk-hint mod-table-no-border',
                   colspan: colspan,
                 },
               ],
@@ -750,15 +595,15 @@
         },
         bespokeReport: {
           tableHeadClasses: [
-            "mod-!-width-one-eighth",
-            "mod-!-width-one-eighth",
-            "mod-!-width-one-eighth",
-            "mod-!-width-one-eighth",
-            "mod-!-width-one-eighth",
-            "mod-!-width-one-eighth",
-            "mod-!-width-three-twentyfifths",
-            "mod-!-width-three-twentyfifths",
-            "mod-!-width-three-twentyfifths",
+            'mod-!-width-one-eighth',
+            'mod-!-width-one-eighth',
+            'mod-!-width-one-eighth',
+            'mod-!-width-one-eighth',
+            'mod-!-width-one-eighth',
+            'mod-!-width-one-eighth',
+            'mod-!-width-three-twentyfifths',
+            'mod-!-width-three-twentyfifths',
+            'mod-!-width-three-twentyfifths',
           ],
           insertRows: {
             last: (data, isPrint = false) => {
@@ -767,16 +612,16 @@
                 return [];
               }
 
-              data.forEach((juror) => {
+              data.forEach(juror => {
                 total += juror.totalApprovedSum;
               });
               return isPrint
                 ? [
                     {
-                      text: "Daily sub total",
+                      text: 'Daily sub total',
                       colSpan: 8,
                       bold: true,
-                      fillColor: "#F3F2F1",
+                      fillColor: '#F3F2F1',
                     },
                     {},
                     {},
@@ -788,26 +633,24 @@
                     {
                       text: toMoney(total),
                       bold: true,
-                      fillColor: "#F3F2F1",
+                      fillColor: '#F3F2F1',
                     },
                   ]
                 : [
                     {
-                      text: "Daily sub total",
+                      text: 'Daily sub total',
                       colspan: 8,
-                      classes:
-                        "govuk-!-padding-left-2 govuk-!-font-weight-bold mod-highlight-table-data__grey",
+                      classes: 'govuk-!-padding-left-2 govuk-!-font-weight-bold mod-highlight-table-data__grey',
                       attributes: {
-                        "data-fixed-index": data.length,
+                        'data-fixed-index': data.length,
                       },
                     },
                     {
                       text: toMoney(total),
-                      classes:
-                        "govuk-!-padding-right-2 govuk-!-font-weight-bold mod-highlight-table-data__grey",
-                      format: "numeric",
+                      classes: 'govuk-!-padding-right-2 govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                      format: 'numeric',
                       attributes: {
-                        "data-fixed-index": data.length,
+                        'data-fixed-index': data.length,
                       },
                     },
                   ];
@@ -832,7 +675,7 @@
                 let total = 0;
 
                 for (const [day, jurors] of Object.entries(date)) {
-                  jurors.forEach((juror) => {
+                  jurors.forEach(juror => {
                     lossOfEarningsTotal += juror.totalLossOfEarningsApprovedSum;
                     foodAndDrinkTotal += juror.totalSubsistenceApprovedSum;
                     smartcardTotal += juror.totalSmartcardApprovedSum;
@@ -852,38 +695,32 @@
                     {
                       text: type,
                       colspan: 4,
-                      classes:
-                        "govuk-!-padding-left-2 govuk-!-font-weight-bold mod-highlight-table-data__grey",
+                      classes: 'govuk-!-padding-left-2 govuk-!-font-weight-bold mod-highlight-table-data__grey',
                     },
                     {
                       text: toMoney(lossOfEarningsTotal),
-                      classes:
-                        "govuk-!-font-weight-bold mod-highlight-table-data__grey",
-                      format: "numeric",
+                      classes: 'govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                      format: 'numeric',
                     },
                     {
                       text: toMoney(foodAndDrinkTotal),
-                      classes:
-                        "govuk-!-font-weight-bold mod-highlight-table-data__grey",
-                      format: "numeric",
+                      classes: 'govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                      format: 'numeric',
                     },
                     {
                       text: toMoney(smartcardTotal),
-                      classes:
-                        "govuk-!-font-weight-bold mod-highlight-table-data__grey",
-                      format: "numeric",
+                      classes: 'govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                      format: 'numeric',
                     },
                     {
                       text: toMoney(travelTotal),
-                      classes:
-                        "govuk-!-font-weight-bold mod-highlight-table-data__grey",
-                      format: "numeric",
+                      classes: 'govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                      format: 'numeric',
                     },
                     {
                       text: toMoney(total),
-                      classes:
-                        "govuk-!-padding-right-2 govuk-!-font-weight-bold mod-highlight-table-data__grey",
-                      format: "numeric",
+                      classes: 'govuk-!-padding-right-2 govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                      format: 'numeric',
                     },
                   ]);
                 } else {
@@ -892,7 +729,7 @@
                       text: type,
                       colspan: 4,
                       bold: true,
-                      fillColor: "#F3F2F1",
+                      fillColor: '#F3F2F1',
                     },
                     {},
                     {},
@@ -900,32 +737,32 @@
                     {
                       text: toMoney(lossOfEarningsTotal),
                       bold: true,
-                      fillColor: "#F3F2F1",
-                      alignment: "right",
+                      fillColor: '#F3F2F1',
+                      alignment: 'right',
                     },
                     {
                       text: toMoney(foodAndDrinkTotal),
                       bold: true,
-                      fillColor: "#F3F2F1",
-                      alignment: "right",
+                      fillColor: '#F3F2F1',
+                      alignment: 'right',
                     },
                     {
                       text: toMoney(smartcardTotal),
                       bold: true,
-                      fillColor: "#F3F2F1",
-                      alignment: "right",
+                      fillColor: '#F3F2F1',
+                      alignment: 'right',
                     },
                     {
                       text: toMoney(travelTotal),
                       bold: true,
-                      fillColor: "#F3F2F1",
-                      alignment: "right",
+                      fillColor: '#F3F2F1',
+                      alignment: 'right',
                     },
                     {
                       text: toMoney(total),
                       bold: true,
-                      fillColor: "#F3F2F1",
-                      alignment: "right",
+                      fillColor: '#F3F2F1',
+                      alignment: 'right',
                     },
                   ]);
                 }
@@ -935,52 +772,48 @@
                 if (!isPrint) {
                   rows.push([
                     {
-                      text: "Overall total",
+                      text: 'Overall total',
                       colspan: 4,
                       classes:
-                        "govuk-!-padding-left-2 govuk-!-width-one-half govuk-!-font-weight-bold mod-highlight-table-data__blue",
+                        'govuk-!-padding-left-2 govuk-!-width-one-half govuk-!-font-weight-bold mod-highlight-table-data__blue',
                     },
                     {
                       text: toMoney(overallLossOfEarningsTotal),
-                      classes:
-                        "mod-!-width-one-eighth govuk-!-font-weight-bold mod-highlight-table-data__blue",
-                      format: "numeric",
+                      classes: 'mod-!-width-one-eighth govuk-!-font-weight-bold mod-highlight-table-data__blue',
+                      format: 'numeric',
                     },
                     {
                       text: toMoney(overallFoodAndDrinkTotal),
-                      classes:
-                        "mod-!-width-one-eighth govuk-!-font-weight-bold mod-highlight-table-data__blue",
-                      format: "numeric",
+                      classes: 'mod-!-width-one-eighth govuk-!-font-weight-bold mod-highlight-table-data__blue',
+                      format: 'numeric',
                     },
                     {
                       text: toMoney(overallSmartcardTotal),
-                      classes:
-                        "mod-!-width-three-twentyfifths govuk-!-font-weight-bold mod-highlight-table-data__blue",
-                      format: "numeric",
+                      classes: 'mod-!-width-three-twentyfifths govuk-!-font-weight-bold mod-highlight-table-data__blue',
+                      format: 'numeric',
                     },
                     {
                       text: toMoney(overallTravelTotal),
-                      classes:
-                        "mod-!-width-three-twentyfifths govuk-!-font-weight-bold mod-highlight-table-data__blue",
-                      format: "numeric",
+                      classes: 'mod-!-width-three-twentyfifths govuk-!-font-weight-bold mod-highlight-table-data__blue',
+                      format: 'numeric',
                     },
                     {
                       text: toMoney(overallTotal),
                       classes:
-                        "mod-!-width-three-twentyfifths govuk-!-padding-right-2 govuk-!-font-weight-bold mod-highlight-table-data__blue",
-                      format: "numeric",
+                        'mod-!-width-three-twentyfifths govuk-!-padding-right-2 govuk-!-font-weight-bold mod-highlight-table-data__blue',
+                      format: 'numeric',
                     },
                   ]);
                 } else {
                   rows.push([
                     {
-                      text: "Overall total",
+                      text: 'Overall total',
                       colspan: 4,
                       classes:
-                        "govuk-!-padding-left-2 govuk-!-width-one-half govuk-!-font-weight-bold mod-highlight-table-data__blue",
+                        'govuk-!-padding-left-2 govuk-!-width-one-half govuk-!-font-weight-bold mod-highlight-table-data__blue',
                       bold: true,
-                      fillColor: "#0b0c0c",
-                      color: "#ffffff",
+                      fillColor: '#0b0c0c',
+                      color: '#ffffff',
                     },
                     {},
                     {},
@@ -988,37 +821,37 @@
                     {
                       text: toMoney(overallLossOfEarningsTotal),
                       bold: true,
-                      fillColor: "#0b0c0c",
-                      color: "#ffffff",
-                      alignment: "right",
+                      fillColor: '#0b0c0c',
+                      color: '#ffffff',
+                      alignment: 'right',
                     },
                     {
                       text: toMoney(overallFoodAndDrinkTotal),
                       bold: true,
-                      fillColor: "#0b0c0c",
-                      color: "#ffffff",
-                      alignment: "right",
+                      fillColor: '#0b0c0c',
+                      color: '#ffffff',
+                      alignment: 'right',
                     },
                     {
                       text: toMoney(overallSmartcardTotal),
                       bold: true,
-                      fillColor: "#0b0c0c",
-                      color: "#ffffff",
-                      alignment: "right",
+                      fillColor: '#0b0c0c',
+                      color: '#ffffff',
+                      alignment: 'right',
                     },
                     {
                       text: toMoney(overallTravelTotal),
                       bold: true,
-                      fillColor: "#0b0c0c",
-                      color: "#ffffff",
-                      alignment: "right",
+                      fillColor: '#0b0c0c',
+                      color: '#ffffff',
+                      alignment: 'right',
                     },
                     {
                       text: toMoney(overallTotal),
                       bold: true,
-                      fillColor: "#0b0c0c",
-                      color: "#ffffff",
-                      alignment: "right",
+                      fillColor: '#0b0c0c',
+                      color: '#ffffff',
+                      alignment: 'right',
                     },
                   ]);
                 }
@@ -1028,34 +861,34 @@
                         body: [
                           [
                             {
-                              text: "Totals approved for this period",
-                              style: "largeSectionHeading",
+                              text: 'Totals approved for this period',
+                              style: 'largeSectionHeading',
                             },
                           ],
                         ],
-                        widths: ["100%"],
-                        layout: { hLineColor: "#0b0c0c" },
+                        widths: ['100%'],
+                        layout: { hLineColor: '#0b0c0c' },
                         margin: [0, 10, 0, 0],
                       },
                       {
                         body: rows,
                         widths: [
-                          "50%",
-                          "0%",
-                          "0%",
-                          "0%",
-                          "12.5%",
-                          "12.5%",
-                          "8.33333333333%",
-                          "8.33333333333%",
-                          "8.33333333333%",
+                          '50%',
+                          '0%',
+                          '0%',
+                          '0%',
+                          '12.5%',
+                          '12.5%',
+                          '8.33333333333%',
+                          '8.33333333333%',
+                          '8.33333333333%',
                         ],
                         margin: [0, 0, 0, 0],
                       },
                     ]
                   : [
                       {
-                        title: "Totals approved for this period",
+                        title: 'Totals approved for this period',
                         headers: [],
                         rows: rows,
                       },
@@ -1065,131 +898,109 @@
             },
           },
           printInsertTables: true,
-          defaultSortColumn: "lastName",
+          defaultSortColumn: 'lastName',
         },
       },
       absences: {
-        title: "Absences report",
-        apiKey: "AbsencesReport",
-        search: "dateRange",
+        title: 'Absences report',
+        apiKey: 'AbsencesReport',
+        search: 'dateRange',
         grouped: {
           headings: {
             transformer: (data, isPrint) => {
-              const [poolNumber, poolType] = data.split(",");
+              const [poolNumber, poolType] = data.split(',');
               if (isPrint) {
                 return [
                   `Pool ${poolNumber} `,
                   {
                     text: capitalizeFully(poolType),
-                    color: "#505A5F",
+                    color: '#505A5F',
                     fontSize: 10,
                     bold: false,
                   },
                 ];
               }
-              return `${makeLink(app)["poolNumber"](poolNumber)} <span class="grouped-display-inline">${capitalizeFully(poolType)}</span>`;
+              return `${makeLink(app)['poolNumber'](poolNumber)} <span class="grouped-display-inline">${capitalizeFully(poolType)}</span>`;
             },
           },
           totals: true,
           groupHeader: true,
         },
-        headings: [
-          "dateFrom",
-          "reportDate",
-          "dateTo",
-          "reportTime",
-          "totalAbsences",
-          "courtName",
-        ],
-        defaultSortColumn: "lastName",
+        headings: ['dateFrom', 'reportDate', 'dateTo', 'reportTime', 'totalAbsences', 'courtName'],
+        defaultSortColumn: 'lastName',
       },
-      "summoned-responded": {
-        title: "Summoned and responded pool members report",
-        apiKey: "SummonedRespondedReport",
-        search: "poolNumber",
-        headings: ["poolNumber", "reportDate", "", "reportTime"],
-        defaultSortColumn: "lastName",
-        columnWidths: [80, "*", "*", "*", 60, 60],
+      'summoned-responded': {
+        title: 'Summoned and responded pool members report',
+        apiKey: 'SummonedRespondedReport',
+        search: 'poolNumber',
+        headings: ['poolNumber', 'reportDate', '', 'reportTime'],
+        defaultSortColumn: 'lastName',
+        columnWidths: [80, '*', '*', '*', 60, 60],
       },
-      "trial-statistics": {
-        title: "Trial statistics",
-        apiKey: "TrialStatisticsReport",
-        search: "dateRange",
-        headings: ["dateFrom", "reportDate", "dateTo", "reportTime"],
-        defaultSortColumn: "trialNumber",
+      'trial-statistics': {
+        title: 'Trial statistics',
+        apiKey: 'TrialStatisticsReport',
+        search: 'dateRange',
+        headings: ['dateFrom', 'reportDate', 'dateTo', 'reportTime'],
+        defaultSortColumn: 'trialNumber',
         largeTotals: {
-          values: (data) => {
-            const criminalTrials = data.filter(
-              (trial) => trial.trialType === "CRI",
-            );
-            const civilTrials = data.filter(
-              (trial) => trial.trialType === "CIV",
-            );
-            const calculateAverage = (trials) => {
-              const days = trials.map((t) => t.numberOfDays);
+          values: data => {
+            const criminalTrials = data.filter(trial => trial.trialType === 'CRI');
+            const civilTrials = data.filter(trial => trial.trialType === 'CIV');
+            const calculateAverage = trials => {
+              const days = trials.map(t => t.numberOfDays);
               const sum = days.reduce((a, b) => a + b, 0);
               const avg = sum / trials.length || 0;
               return `${avg} days`;
             };
             return [
               {
-                label: "Criminal trials average length",
+                label: 'Criminal trials average length',
                 value: calculateAverage(criminalTrials),
-                classes:
-                  "govuk-!-margin-bottom-1 mod-large-tag__grey mod-!-width-one-eighth",
+                classes: 'govuk-!-margin-bottom-1 mod-large-tag__grey mod-!-width-one-eighth',
               },
               {
-                label: "Civil trials average length",
+                label: 'Civil trials average length',
                 value: calculateAverage(civilTrials),
-                classes:
-                  "govuk-!-margin-bottom-1 mod-large-tag__grey mod-!-width-one-eighth",
+                classes: 'govuk-!-margin-bottom-1 mod-large-tag__grey mod-!-width-one-eighth',
               },
             ];
           },
-          printWidths: ["20%", "20%"],
+          printWidths: ['20%', '20%'],
         },
       },
-      "available-list-pool": {
-        title: "Available list (by pool)",
-        apiKey: "AvailableListByPoolReport",
-        search: "poolNumber",
+      'available-list-pool': {
+        title: 'Available list (by pool)',
+        apiKey: 'AvailableListByPoolReport',
+        search: 'poolNumber',
         queryParams: {
           includeJurorsOnCall: req?.query?.includeJurorsOnCall || false,
           respondedJurorsOnly: req?.query?.respondedJurorsOnly || false,
           includePanelMembers: req?.query?.includePanelMembers || false,
         },
         headings: [
-          "poolNumber",
-          "reportDate",
-          "poolType",
-          "reportTime",
-          "serviceStartDate",
-          "courtName",
-          "totalAvailablePoolMembers",
+          'poolNumber',
+          'reportDate',
+          'poolType',
+          'reportTime',
+          'serviceStartDate',
+          'courtName',
+          'totalAvailablePoolMembers',
         ],
-        defaultSortColumn: "lastName",
+        defaultSortColumn: 'lastName',
       },
-      "available-list-date": {
-        title: "Available list (by date)",
-        apiKey: courtUser
-          ? "AvailableListByDateReportCourt"
-          : "AvailableListByDateReportBureau",
-        search: "date",
+      'available-list-date': {
+        title: 'Available list (by date)',
+        apiKey: courtUser ? 'AvailableListByDateReportCourt' : 'AvailableListByDateReportBureau',
+        search: 'date',
         queryParams: {
           includeJurorsOnCall: req?.query?.includeJurorsOnCall || false,
           respondedJurorsOnly: req?.query?.respondedJurorsOnly || false,
           includePanelMembers: req?.query?.includePanelMembers || false,
         },
-        backUrl: app.namedRoutes.build("reports.available-list.filter.get"),
-        headings: [
-          "attendanceDate",
-          "reportDate",
-          "totalAvailablePoolMembers",
-          "reportTime",
-          "",
-          "courtName",
-        ],
-        defaultSortColumn: "lastName",
+        backUrl: app.namedRoutes.build('reports.available-list.filter.get'),
+        headings: ['attendanceDate', 'reportDate', 'totalAvailablePoolMembers', 'reportTime', '', 'courtName'],
+        defaultSortColumn: 'lastName',
         multiTable: !courtUser
           ? {
               sectionHeadings: true,
@@ -1200,36 +1011,29 @@
           totals: true,
           headings: {
             transformer: (data, isPrint) => {
-              const [poolNumber, poolType] = data.split(",");
+              const [poolNumber, poolType] = data.split(',');
               if (isPrint) {
                 return [
                   `Pool ${poolNumber} `,
                   {
                     text: capitalizeFully(poolType),
-                    color: "#505A5F",
+                    color: '#505A5F',
                     fontSize: 10,
                     bold: false,
                   },
                 ];
               }
-              return `${makeLink(app)["poolNumber"](poolNumber)} <span class="grouped-display-inline">${capitalizeFully(poolType)}</span>`;
+              return `${makeLink(app)['poolNumber'](poolNumber)} <span class="grouped-display-inline">${capitalizeFully(poolType)}</span>`;
             },
           },
         },
       },
-      "pool-analysis": {
-        title: "Pool analysis report",
-        apiKey: "PoolAnalysisReport",
-        search: "dateRange",
-        headings: [
-          "dateFrom",
-          "reportDate",
-          "dateTo",
-          "reportTime",
-          "",
-          "courtName",
-        ],
-        defaultSortColumn: "poolNumberByJp",
+      'pool-analysis': {
+        title: 'Pool analysis report',
+        apiKey: 'PoolAnalysisReport',
+        search: 'dateRange',
+        headings: ['dateFrom', 'reportDate', 'dateTo', 'reportTime', '', 'courtName'],
+        defaultSortColumn: 'poolNumberByJp',
         cellTransformer: (data, key, output, isPrint) => {
           const percentageKey = _.camelCase(`${key}_percentage`);
 
@@ -1243,8 +1047,7 @@
         printLandscape: true,
         fontSize: 8,
         totalsRow: (data, isPrint = false) => {
-          const calculatePercentage = (value, total) =>
-            Math.round((value / total) * 100);
+          const calculatePercentage = (value, total) => Math.round((value / total) * 100);
           const totals = {
             jurorsSummonedTotal: 0,
             respondedTotal: 0,
@@ -1260,15 +1063,14 @@
             failedToAttendTotal: 0,
           };
 
-          data.forEach((row) => {
-            Object.keys(totals).forEach((key) => {
+          data.forEach(row => {
+            Object.keys(totals).forEach(key => {
               totals[key] += row[key];
             });
           });
 
-          const htmlTemplate = (total) => {
-            if (isPrint)
-              return `${total} (${calculatePercentage(total, totals.jurorsSummonedTotal)}%)`;
+          const htmlTemplate = total => {
+            if (isPrint) return `${total} (${calculatePercentage(total, totals.jurorsSummonedTotal)}%)`;
 
             return `<span class="mod-flex mod-gap-x-1">
               ${total}<span class="govuk-caption-m">(${calculatePercentage(total, totals.jurorsSummonedTotal)}%)</span>
@@ -1276,126 +1078,115 @@
           };
 
           return [
-            { text: "", fillColor: "#F3F2F1" },
-            { text: "", fillColor: "#F3F2F1" },
+            { text: '', fillColor: '#F3F2F1' },
+            { text: '', fillColor: '#F3F2F1' },
             {
               text: totals.jurorsSummonedTotal,
               bold: true,
-              fillColor: "#F3F2F1",
+              fillColor: '#F3F2F1',
             },
             {
               text: htmlTemplate(totals.respondedTotal),
               bold: true,
-              fillColor: "#F3F2F1",
+              fillColor: '#F3F2F1',
             },
             {
               text: htmlTemplate(totals.attendedTotal),
               bold: true,
-              fillColor: "#F3F2F1",
+              fillColor: '#F3F2F1',
             },
             {
               text: htmlTemplate(totals.panelTotal),
               bold: true,
-              fillColor: "#F3F2F1",
+              fillColor: '#F3F2F1',
             },
             {
               text: htmlTemplate(totals.jurorTotal),
               bold: true,
-              fillColor: "#F3F2F1",
+              fillColor: '#F3F2F1',
             },
             {
               text: htmlTemplate(totals.excusedTotal),
               bold: true,
-              fillColor: "#F3F2F1",
+              fillColor: '#F3F2F1',
             },
             {
               text: htmlTemplate(totals.disqualifiedTotal),
               bold: true,
-              fillColor: "#F3F2F1",
+              fillColor: '#F3F2F1',
             },
             {
               text: htmlTemplate(totals.deferredTotal),
               bold: true,
-              fillColor: "#F3F2F1",
+              fillColor: '#F3F2F1',
             },
             {
               text: htmlTemplate(totals.reassignedTotal),
               bold: true,
-              fillColor: "#F3F2F1",
+              fillColor: '#F3F2F1',
             },
             {
               text: htmlTemplate(totals.undeliverableTotal),
               bold: true,
-              fillColor: "#F3F2F1",
+              fillColor: '#F3F2F1',
             },
             {
               text: htmlTemplate(totals.transferredTotal),
               bold: true,
-              fillColor: "#F3F2F1",
+              fillColor: '#F3F2F1',
             },
             {
               text: htmlTemplate(totals.failedToAttendTotal),
               bold: true,
-              fillColor: "#F3F2F1",
+              fillColor: '#F3F2F1',
             },
           ];
         },
       },
-      "on-call": {
-        title: "On call list",
-        apiKey: "OnCallReport",
-        search: "poolNumber",
+      'on-call': {
+        title: 'On call list',
+        apiKey: 'OnCallReport',
+        search: 'poolNumber',
         headings: [
-          "poolNumber",
-          "reportDate",
-          "poolType",
-          "reportTime",
-          "serviceStartDate",
-          "courtName",
-          "totalOnCall",
+          'poolNumber',
+          'reportDate',
+          'poolType',
+          'reportTime',
+          'serviceStartDate',
+          'courtName',
+          'totalOnCall',
         ],
-        defaultSortColumn: "lastName",
+        defaultSortColumn: 'lastName',
       },
-      "trial-attendance": {
-        title: "Trial attendance report",
-        apiKey: "TrialAttendanceReport",
-        search: "trial",
+      'trial-attendance': {
+        title: 'Trial attendance report',
+        apiKey: 'TrialAttendanceReport',
+        search: 'trial',
         headings: [
-          "trialNumber",
-          "reportDate",
-          "names",
-          "reportTime",
-          "trialType",
-          "courtName",
-          "trialStartDate",
-          "",
-          "courtroom",
-          "",
-          "judge",
+          'trialNumber',
+          'reportDate',
+          'names',
+          'reportTime',
+          'trialType',
+          'courtName',
+          'trialStartDate',
+          '',
+          'courtroom',
+          '',
+          'judge',
         ],
-        defaultSortColumn: "lastName",
+        defaultSortColumn: 'lastName',
         grouped: {
           headings: {
             transformer: (data, isPrint) => {
-              return dateFilter(data, "yyyy-MM-DD", "dddd D MMM YYYY");
+              return dateFilter(data, 'yyyy-MM-DD', 'dddd D MMM YYYY');
             },
           },
           groupHeader: true,
         },
         unsortable: true,
         bespokeReport: {
-          tableHeadClasses: [
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "mod-!-width-one-fifteenth",
-            "mod-!-width-one-fifteenth",
-          ],
+          tableHeadClasses: ['', '', '', '', '', '', '', '', 'mod-!-width-one-fifteenth', 'mod-!-width-one-fifteenth'],
           insertRows: {
             last: (data, isPrint = false) => {
               let totalDue = 0;
@@ -1404,7 +1195,7 @@
                 return [];
               }
 
-              data.forEach((trial) => {
+              data.forEach(trial => {
                 totalDue += trial.totalDue;
                 totalPaid += trial.totalPaid;
               });
@@ -1433,13 +1224,13 @@
                     },
                     {
                       text: toMoney(totalDue),
-                      classes: "govuk-!-font-weight-bold",
-                      format: "numeric",
+                      classes: 'govuk-!-font-weight-bold',
+                      format: 'numeric',
                     },
                     {
                       text: toMoney(totalPaid),
-                      classes: "govuk-!-font-weight-bold",
-                      format: "numeric",
+                      classes: 'govuk-!-font-weight-bold',
+                      format: 'numeric',
                     },
                   ];
             },
@@ -1454,7 +1245,7 @@
 
               if (Object.entries(tableData.data).length) {
                 for (const [date, trials] of Object.entries(tableData.data)) {
-                  trials.forEach((trial) => {
+                  trials.forEach(trial => {
                     totalDue += trial.totalDue;
                     totalPaid += trial.totalPaid;
                   });
@@ -1463,40 +1254,38 @@
                   rows.push([
                     {
                       colspan: 8,
-                      classes: "mod-highlight-table-data__grey",
+                      classes: 'mod-highlight-table-data__grey',
                     },
                     {
                       text: toMoney(totalDue),
-                      classes:
-                        "mod-!-width-one-fifteenth govuk-!-font-weight-bold mod-highlight-table-data__grey",
-                      format: "numeric",
+                      classes: 'mod-!-width-one-fifteenth govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                      format: 'numeric',
                     },
                     {
                       text: toMoney(totalPaid),
-                      classes:
-                        "mod-!-width-one-fifteenth govuk-!-font-weight-bold mod-highlight-table-data__grey",
-                      format: "numeric",
+                      classes: 'mod-!-width-one-fifteenth govuk-!-font-weight-bold mod-highlight-table-data__grey',
+                      format: 'numeric',
                     },
                   ]);
                 } else {
                   rows.push([
-                    { text: "", fillColor: "#F3F2F1" },
-                    { text: "", fillColor: "#F3F2F1" },
-                    { text: "", fillColor: "#F3F2F1" },
-                    { text: "", fillColor: "#F3F2F1" },
-                    { text: "", fillColor: "#F3F2F1" },
-                    { text: "", fillColor: "#F3F2F1" },
-                    { text: "", fillColor: "#F3F2F1" },
-                    { text: "", fillColor: "#F3F2F1" },
+                    { text: '', fillColor: '#F3F2F1' },
+                    { text: '', fillColor: '#F3F2F1' },
+                    { text: '', fillColor: '#F3F2F1' },
+                    { text: '', fillColor: '#F3F2F1' },
+                    { text: '', fillColor: '#F3F2F1' },
+                    { text: '', fillColor: '#F3F2F1' },
+                    { text: '', fillColor: '#F3F2F1' },
+                    { text: '', fillColor: '#F3F2F1' },
                     {
                       text: toMoney(totalDue),
                       bold: true,
-                      fillColor: "#F3F2F1",
+                      fillColor: '#F3F2F1',
                     },
                     {
                       text: toMoney(totalPaid),
                       bold: true,
-                      fillColor: "#F3F2F1",
+                      fillColor: '#F3F2F1',
                     },
                   ]);
                 }
@@ -1506,73 +1295,51 @@
                         body: [
                           [
                             {
-                              text: "Total expenses",
-                              style: "largeSectionHeading",
+                              text: 'Total expenses',
+                              style: 'largeSectionHeading',
                             },
                           ],
                         ],
-                        widths: ["100%"],
-                        layout: { hLineColor: "#0b0c0c" },
+                        widths: ['100%'],
+                        layout: { hLineColor: '#0b0c0c' },
                         margin: [0, 10, 0, 0],
                       },
                       {
                         body: rows,
-                        widths: [
-                          "*",
-                          "*",
-                          "*",
-                          "*",
-                          "*",
-                          "*",
-                          "*",
-                          "*",
-                          "6.667%",
-                          "6.667%",
-                        ],
+                        widths: ['*', '*', '*', '*', '*', '*', '*', '*', '6.667%', '6.667%'],
                         margin: [0, 0, 0, 0],
                       },
                     ]
-                  : [{ title: "Totals expenses", headers: [], rows: rows }];
+                  : [{ title: 'Totals expenses', headers: [], rows: rows }];
               }
               return [];
             },
           },
           printInsertTables: true,
-          printWidths: [
-            "*",
-            "*",
-            "*",
-            "*",
-            "*",
-            "*",
-            "*",
-            "*",
-            "6.667%",
-            "6.667%",
-          ],
+          printWidths: ['*', '*', '*', '*', '*', '*', '*', '*', '6.667%', '6.667%'],
         },
         printLandscape: true,
       },
-      "jury-cost-bill": {
-        title: "Jury cost bill",
-        apiKey: "JuryCostBill",
-        search: "trial",
+      'jury-cost-bill': {
+        title: 'Jury cost bill',
+        apiKey: 'JuryCostBill',
+        search: 'trial',
         headings: [
-          "trialNumber",
-          "reportDate",
-          "names",
-          "reportTime",
-          "trialType",
-          "courtName",
-          "trialStartDate",
-          "",
-          "courtroom",
-          "",
-          "judge",
+          'trialNumber',
+          'reportDate',
+          'names',
+          'reportTime',
+          'trialType',
+          'courtName',
+          'trialStartDate',
+          '',
+          'courtroom',
+          '',
+          'judge',
         ],
-        defaultSortColumn: "attendanceDate",
+        defaultSortColumn: 'attendanceDate',
         cellTransformer: (data, key, output, isPrint) => {
-          if (key === "total_paid_sum") {
+          if (key === 'total_paid_sum') {
             if (isPrint) return output;
             return `<b>${output}</b>`;
           }
@@ -1589,57 +1356,57 @@
             totalPaidSum: 0,
           };
 
-          data.forEach((row) => {
-            Object.keys(totals).forEach((key) => {
+          data.forEach(row => {
+            Object.keys(totals).forEach(key => {
               totals[key] += row[key];
             });
           });
 
-          const htmlTemplate = (total) => {
+          const htmlTemplate = total => {
             if (isPrint) return toMoney(total);
             return `<b class="jd-right-align">${toMoney(total)}</b>`;
           };
 
           return [
-            { text: "", fillColor: "#F3F2F1" },
+            { text: '', fillColor: '#F3F2F1' },
             {
               text: htmlTemplate(totals.financialLossDueSum),
               bold: true,
-              fillColor: "#F3F2F1",
+              fillColor: '#F3F2F1',
             },
             {
               text: htmlTemplate(totals.travelDueSum),
               bold: true,
-              fillColor: "#F3F2F1",
+              fillColor: '#F3F2F1',
             },
             {
               text: htmlTemplate(totals.subsistenceDueSum),
               bold: true,
-              fillColor: "#F3F2F1",
+              fillColor: '#F3F2F1',
             },
             {
               text: htmlTemplate(totals.smartcardDueSum),
               bold: true,
-              fillColor: "#F3F2F1",
+              fillColor: '#F3F2F1',
             },
             {
               text: htmlTemplate(totals.totalDueSum),
               bold: true,
-              fillColor: "#F3F2F1",
+              fillColor: '#F3F2F1',
             },
             {
               text: htmlTemplate(totals.totalPaidSum),
               bold: true,
-              fillColor: "#F3F2F1",
+              fillColor: '#F3F2F1',
             },
           ];
         },
       },
-      "payment-status-report": {
-        title: "Payment status report ",
-        apiKey: "PaymentStatusReport",
-        headings: ["reportDate", "", "reportTime", "", "courtName"],
-        defaultSortColumn: "creationDate",
+      'payment-status-report': {
+        title: 'Payment status report ',
+        apiKey: 'PaymentStatusReport',
+        headings: ['reportDate', '', 'reportTime', '', 'courtName'],
+        defaultSortColumn: 'creationDate',
         grouped: {
           headings: {
             transformer: (data, isPrint) => {
@@ -1648,99 +1415,84 @@
           },
           groupHeader: true,
           totals: true,
-          sortGroups: "ascending",
+          sortGroups: 'ascending',
         },
       },
-      "unpaid-attendance": {
-        title: "Unpaid attendance report (summary)",
-        apiKey: "UnpaidAttendanceSummaryReport",
-        search: "dateRange",
-        headings: [
-          "dateFrom",
-          "reportDate",
-          "dateTo",
-          "reportTime",
-          "totalUnpaidAttendances",
-          "courtName",
-        ],
-        defaultSortColumn: "lastName",
+      'unpaid-attendance': {
+        title: 'Unpaid attendance report (summary)',
+        apiKey: 'UnpaidAttendanceSummaryReport',
+        search: 'dateRange',
+        headings: ['dateFrom', 'reportDate', 'dateTo', 'reportTime', 'totalUnpaidAttendances', 'courtName'],
+        defaultSortColumn: 'lastName',
         grouped: {
           headings: {
-            transformer: (data) =>
-              dateFilter(data, "YYYY-mm-dd", "dddd D MMMM YYYY"),
+            transformer: data => dateFilter(data, 'YYYY-mm-dd', 'dddd D MMMM YYYY'),
           },
           groupHeader: true,
           totals: true,
         },
       },
-      "unpaid-attendance-detailed": {
-        title: "Unpaid attendance report (detailed)",
-        apiKey: "UnpaidAttendanceReportDetailedReport",
-        search: "dateRange",
-        headings: [
-          "dateFrom",
-          "reportDate",
-          "dateTo",
-          "reportTime",
-          "totalUnpaidAttendances",
-          "courtName",
-        ],
-        defaultSortColumn: "lastName",
+      'unpaid-attendance-detailed': {
+        title: 'Unpaid attendance report (detailed)',
+        apiKey: 'UnpaidAttendanceReportDetailedReport',
+        search: 'dateRange',
+        headings: ['dateFrom', 'reportDate', 'dateTo', 'reportTime', 'totalUnpaidAttendances', 'courtName'],
+        defaultSortColumn: 'lastName',
         bespokeReport: {
           body: true,
           sortReload: true,
         },
-        defaultSortColumn: "lastName",
+        defaultSortColumn: 'lastName',
       },
-      "deferred-list-date": {
-        title: "Deferred list (by date)",
-        apiKey: "DeferredListByDateReport",
-        headings: ["totalDeferred", "reportDate", "", "reportTime"],
-        defaultSortColumn: "deferredTo",
-        backUrl: app.namedRoutes.build("reports.deferred-list.filter.get"),
+      'deferred-list-date': {
+        title: 'Deferred list (by date)',
+        apiKey: 'DeferredListByDateReport',
+        headings: ['totalDeferred', 'reportDate', '', 'reportTime'],
+        defaultSortColumn: 'deferredTo',
+        backUrl: app.namedRoutes.build('reports.deferred-list.filter.get'),
         queryParams: {
           filterOwnedDeferrals: req?.query?.filterOwnedDeferrals || false,
         },
       },
-      "deferred-list-court": {
-        title: "Deferred list (by court name)",
-        apiKey: "DeferredListByCourtReport",
-        headings: ["totalDeferred", "reportDate", "", "reportTime"],
-        defaultSortColumn: "deferredTo",
+      'deferred-list-court': {
+        title: 'Deferred list (by court name)',
+        apiKey: 'DeferredListByCourtReport',
+        headings: ['totalDeferred', 'reportDate', '', 'reportTime'],
+        defaultSortColumn: 'deferredTo',
         grouped: {
           groupHeader: true,
           totals: true,
         },
-        backUrl: app.namedRoutes.build("reports.deferred-list.filter.get"),
+        backUrl: app.namedRoutes.build('reports.deferred-list.filter.get'),
         queryParams: {
           filterOwnedDeferrals: req?.query?.filterOwnedDeferrals || false,
         },
       },
-      "excused-disqualified": {
-        title: "Excused and disqualified list",
-        apiKey: "ExcusedAndDisqualifiedListReport",
-        search: "poolNumber",
+      'excused-disqualified': {
+        title: 'Excused and disqualified list',
+        apiKey: 'ExcusedAndDisqualifiedListReport',
+        search: 'poolNumber',
         headings: [
-          "poolNumber",
-          "reportDate",
-          "poolType",
-          "reportTime",
-          "serviceStartDate",
-          "courtName",
-          "totalExcusedAndDisqualified",
+          'poolNumber',
+          'reportDate',
+          'poolType',
+          'reportTime',
+          'serviceStartDate',
+          'courtName',
+          'totalExcusedAndDisqualified',
         ],
-        defaultSortColumn: "lastName",
+        defaultSortColumn: 'lastName',
         grouped: {
           groupHeader: true,
           totals: true,
         },
       },
-      "electronic-police-check": {
-        title: "Electronic police check report",
-        apiKey: "ElectronicPoliceCheckReport",
-        search: "dateRange",
-        headings: ["dateFrom", "reportDate", "dateTo", "reportTime"],
-        defaultSortColumn: "poolNumberJp",
+      'electronic-police-check': {
+        title: 'Electronic police check report',
+        apiKey: 'ElectronicPoliceCheckReport',
+        search: 'dateRange',
+        headings: ['dateFrom', 'reportDate', 'dateTo', 'reportTime'],
+        defaultSortColumn: 'poolNumberJp',
         totalsRow: (data, isPrint = false) => {
           const totals = {
             policeCheckResponded: 0,
@@ -1750,219 +1502,176 @@
             policeCheckDisqualified: 0,
           };
 
-          data.forEach((row) => {
-            Object.keys(totals).forEach((key) => {
+          data.forEach(row => {
+            Object.keys(totals).forEach(key => {
               totals[key] += row[key];
             });
           });
 
-          const htmlTemplate = (total) => {
+          const htmlTemplate = total => {
             if (isPrint) return total;
 
             return `<b>${total}</b>`;
           };
 
           return [
-            { text: "", fillColor: "#F3F2F1" },
+            { text: '', fillColor: '#F3F2F1' },
             {
               text: htmlTemplate(totals.policeCheckResponded),
               bold: true,
-              fillColor: "#F3F2F1",
+              fillColor: '#F3F2F1',
             },
             {
               text: htmlTemplate(totals.policeCheckSubmitted),
               bold: true,
-              fillColor: "#F3F2F1",
+              fillColor: '#F3F2F1',
             },
             {
               text: htmlTemplate(totals.policeCheckComplete),
               bold: true,
-              fillColor: "#F3F2F1",
+              fillColor: '#F3F2F1',
             },
             {
               text: htmlTemplate(totals.policeCheckTimedOut),
               bold: true,
-              fillColor: "#F3F2F1",
+              fillColor: '#F3F2F1',
             },
             {
               text: htmlTemplate(totals.policeCheckDisqualified),
               bold: true,
-              fillColor: "#F3F2F1",
+              fillColor: '#F3F2F1',
             },
           ];
         },
       },
-      "pool-statistics": {
-        title: "Pool statistics",
-        apiKey: "PoolStatisticsReport",
-        search: "dateRange",
+      'pool-statistics': {
+        title: 'Pool statistics',
+        apiKey: 'PoolStatisticsReport',
+        search: 'dateRange',
         exportOnly: true,
       },
-      "attendance-data": {
-        title: "Attendance data",
-        apiKey: "AttendanceGraphReport",
-        search: "dateRange",
+      'attendance-data': {
+        title: 'Attendance data',
+        apiKey: 'AttendanceGraphReport',
+        search: 'dateRange',
         searchLabelMappers: {
-          dateFrom: "Attendances from",
-          dateTo: "Attendances to",
+          dateFrom: 'Attendances from',
+          dateTo: 'Attendances to',
         },
         exportOnly: true,
       },
-      "jury-attendance-audit": {
-        title: "Jury attendance audit report",
-        apiKey: "JuryAttendanceAuditReport",
+      'jury-attendance-audit': {
+        title: 'Jury attendance audit report',
+        apiKey: 'JuryAttendanceAuditReport',
         searchProperty: {
-          filter: "juryAuditNumber",
+          filter: 'juryAuditNumber',
         },
-        headings: [
-          "attendanceDate",
-          "reportDate",
-          "auditNumber",
-          "reportTime",
-          "trialNumber",
-          "courtName",
-          "total",
-        ],
-        defaultSortColumn: "lastName",
+        headings: ['attendanceDate', 'reportDate', 'auditNumber', 'reportTime', 'trialNumber', 'courtName', 'total'],
+        defaultSortColumn: 'lastName',
       },
-      "pool-ratio": {
-        title: "Pool ratio report",
-        apiKey: "PoolRatioReport",
-        search: "courts",
-        headings: ["dateFrom", "reportDate", "dateTo", "reportTime"],
+      'pool-ratio': {
+        title: 'Pool ratio report',
+        apiKey: 'PoolRatioReport',
+        search: 'courts',
+        headings: ['dateFrom', 'reportDate', 'dateTo', 'reportTime'],
         queryParams: {
-          fromDate: req?.query?.fromDate || "",
-          toDate: req?.query?.toDate || "",
+          fromDate: req?.query?.fromDate || '',
+          toDate: req?.query?.toDate || '',
         },
-        filterBackLinkUrl: app.namedRoutes.build(
-          "reports.pool-ratio.filter.dates.get",
-        ),
+        filterBackLinkUrl: app.namedRoutes.build('reports.pool-ratio.filter.dates.get'),
         tableHeaderTransformer: (data, isPrint = false) => {
           const template = (name, hintValue) => {
             return !isPrint
               ? `${name} <br> <span class='govuk-hint'>${hintValue}</span>`
-              : [
-                  name,
-                  "\n",
-                  { text: hintValue, color: "#505A5F", bold: false },
-                ];
+              : [name, '\n', { text: hintValue, color: '#505A5F', bold: false }];
           };
 
           switch (data.id) {
-            case "total_requested":
-              return template(data.name, "(1)");
-            case "total_deferred":
-              return template(data.name, "(2)");
-            case "total_summoned":
-              return template(data.name, "(3)");
-            case "total_supplied":
-              return template(data.name, "(4)");
-            case "ratio_1":
-              return template(data.name, "(3-2)/(1-2)");
-            case "ratio_2":
-              return template(data.name, "(3-2)/(4-2)");
+            case 'total_requested':
+              return template(data.name, '(1)');
+            case 'total_deferred':
+              return template(data.name, '(2)');
+            case 'total_summoned':
+              return template(data.name, '(3)');
+            case 'total_supplied':
+              return template(data.name, '(4)');
+            case 'ratio_1':
+              return template(data.name, '(3-2)/(1-2)');
+            case 'ratio_2':
+              return template(data.name, '(3-2)/(4-2)');
             default:
               return data.name;
           }
         },
-        defaultSortColumn: "courtLocationNameAndCodeJp",
+        defaultSortColumn: 'courtLocationNameAndCodeJp',
       },
-      "pool-attendance-audit": {
-        title: "Pool attendance audit report",
-        apiKey: "PoolAttendanceAuditReport",
+      'pool-attendance-audit': {
+        title: 'Pool attendance audit report',
+        apiKey: 'PoolAttendanceAuditReport',
         searchProperty: {
-          filter: "poolAuditNumber",
+          filter: 'poolAuditNumber',
         },
-        headings: [
-          "attendanceDate",
-          "reportDate",
-          "auditNumber",
-          "reportTime",
-          "total",
-          "courtName",
-        ],
-        defaultSortColumn: "lastName",
-        columnWidths: [68, "*", "*", 50, 60, 60, "*"],
+        headings: ['attendanceDate', 'reportDate', 'auditNumber', 'reportTime', 'total', 'courtName'],
+        defaultSortColumn: 'lastName',
+        columnWidths: [68, '*', '*', 50, 60, 60, '*'],
       },
-      "pool-selection": {
-        title: "Pool selection list",
-        apiKey: "PoolSelectionListReport",
-        search: "poolNumber",
-        headings: [
-          "poolNumber",
-          "reportDate",
-          "poolType",
-          "reportTime",
-          "serviceStartDate",
-          "courtName",
-        ],
-        defaultSortColumn: "lastName",
+      'pool-selection': {
+        title: 'Pool selection list',
+        apiKey: 'PoolSelectionListReport',
+        search: 'poolNumber',
+        headings: ['poolNumber', 'reportDate', 'poolType', 'reportTime', 'serviceStartDate', 'courtName'],
+        defaultSortColumn: 'lastName',
       },
-      "completion-of-service": {
-        title: "Completion of service report",
-        apiKey: "CompletionOfServiceReport",
-        search: "fixedDateRange",
-        fixedDateRangeValues: ["LAST_31_DAYS", "CUSTOM_RANGE"],
-        headings: [
-          "dateFrom",
-          "reportDate",
-          "dateTo",
-          "reportTime",
-          "totalPoolMembersCompleted",
-          "courtName",
-        ],
-        defaultSortColumn: "lastName",
+      'completion-of-service': {
+        title: 'Completion of service report',
+        apiKey: 'CompletionOfServiceReport',
+        search: 'fixedDateRange',
+        fixedDateRangeValues: ['LAST_31_DAYS', 'CUSTOM_RANGE'],
+        headings: ['dateFrom', 'reportDate', 'dateTo', 'reportTime', 'totalPoolMembersCompleted', 'courtName'],
+        defaultSortColumn: 'lastName',
         grouped: {
           headings: {
             transformer: (data, isPrint) => {
-              const [poolNumber, poolType] = data.split(",");
+              const [poolNumber, poolType] = data.split(',');
               if (isPrint) {
                 return [
                   `Pool ${poolNumber} `,
                   {
                     text: capitalizeFully(poolType),
-                    color: "#505A5F",
+                    color: '#505A5F',
                     fontSize: 10,
                     bold: false,
                   },
                 ];
               }
-              return `${makeLink(app)["poolNumber"](poolNumber)} <span class="grouped-display-inline">${capitalizeFully(poolType)}</span>`;
+              return `${makeLink(app)['poolNumber'](poolNumber)} <span class="grouped-display-inline">${capitalizeFully(poolType)}</span>`;
             },
           },
           totals: true,
           groupHeader: true,
         },
       },
-      "jury-summoning-monitor-pool": {
-        title: "Jury summoning monitor report (by pool)",
-        apiKey: "JurySummoningMonitorReport",
-        search: "poolNumber",
-        headings: [
-          "court",
-          "reportDate",
-          "poolNumber",
-          "reportTime",
-          "poolType",
-          "",
-          "serviceStartDate",
-        ],
+      'jury-summoning-monitor-pool': {
+        title: 'Jury summoning monitor report (by pool)',
+        apiKey: 'JurySummoningMonitorReport',
+        search: 'poolNumber',
+        headings: ['court', 'reportDate', 'poolNumber', 'reportTime', 'poolType', '', 'serviceStartDate'],
       },
-      "jury-summoning-monitor-court": {
-        title: "Jury summoning monitor report (by court)",
-        apiKey: "JurySummoningMonitorReport",
-        search: "courts",
-        headings: ["courts", "reportDate", "dateFrom", "reportTime", "dateTo"],
+      'jury-summoning-monitor-court': {
+        title: 'Jury summoning monitor report (by court)',
+        apiKey: 'JurySummoningMonitorReport',
+        search: 'courts',
+        headings: ['courts', 'reportDate', 'dateFrom', 'reportTime', 'dateTo'],
       },
-      "yield-performance": {
-        title: "Yield performance report",
-        apiKey: "YieldPerformanceReport",
-        search: "courts",
+      'yield-performance': {
+        title: 'Yield performance report',
+        apiKey: 'YieldPerformanceReport',
+        search: 'courts',
         searchLabelMappers: {
-          dateRange: "Enter attendance dates to search",
+          dateRange: 'Enter attendance dates to search',
         },
-        headings: ["dateFrom", "reportDate", "dateTo", "reportTime"],
-        defaultSortColumn: "courtName",
+        headings: ['dateFrom', 'reportDate', 'dateTo', 'reportTime'],
+        defaultSortColumn: 'courtName',
         bespokeReport: {
           dao: (req, config) =>
             yieldPerformanceDAO.post(req, {
@@ -1971,12 +1680,12 @@
               from_date: config.fromDate,
               to_date: config.toDate,
             }),
-          printWidths: ["*", "*", "*", "*", "*", "25%"],
+          printWidths: ['*', '*', '*', '*', '*', '25%'],
         },
         cellTransformer: (data, key, output, isPrint) => {
-          if (key === "balance" || key === "difference") {
+          if (key === 'balance' || key === 'difference') {
             let text;
-            if (key === "difference") {
+            if (key === 'difference') {
               const percentage = Math.round(data[key] * 100) / 100;
               text = `${percentage > 0 ? `+${percentage}` : percentage}%`;
             } else {
@@ -1994,219 +1703,176 @@
           return output;
         },
         queryParams: {
-          fromDate: req?.query?.fromDate || "",
-          toDate: req?.query?.toDate || "",
+          fromDate: req?.query?.fromDate || '',
+          toDate: req?.query?.toDate || '',
         },
-        filterBackLinkUrl: app.namedRoutes.build(
-          "reports.yield-performance.filter.dates.get",
-        ),
+        filterBackLinkUrl: app.namedRoutes.build('reports.yield-performance.filter.dates.get'),
       },
-      "all-court-utilisation": {
-        title: "All court utilisation stats report",
-        apiKey: "AllCourtUtilisationReport",
-        search: "courts",
+      'all-court-utilisation': {
+        title: 'All court utilisation stats report',
+        apiKey: 'AllCourtUtilisationReport',
+        search: 'courts',
         searchAllCourts: true,
         bespokeReport: {
-          dao: (req) =>
+          dao: req =>
             allCourtUtilisationDAO.post(req, {
-              court_loc_codes:
-                req.params.filter !== "all-courts"
-                  ? req.session.reportCourts
-                  : [],
-              all_courts: req.params.filter === "all-courts",
+              court_loc_codes: req.params.filter !== 'all-courts' ? req.session.reportCourts : [],
+              all_courts: req.params.filter === 'all-courts',
             }),
         },
-        headings: ["reportDate", "reportTime", "courtName"],
-        defaultSortColumn: "courtName",
-        filterBackLinkUrl: app.namedRoutes.build(
-          "reports.all-court-utilisation.filter.select.get",
-        ),
+        headings: ['reportDate', 'reportTime', 'courtName'],
+        defaultSortColumn: 'courtName',
+        filterBackLinkUrl: app.namedRoutes.build('reports.all-court-utilisation.filter.select.get'),
         backUrl:
-          req?.params.filter === "all-courts"
-            ? app.namedRoutes.build(
-                "reports.all-court-utilisation.filter.select.get",
-              )
+          req?.params.filter === 'all-courts'
+            ? app.namedRoutes.build('reports.all-court-utilisation.filter.select.get')
             : null,
       },
-      "digital-summons-received": {
-        title: "Digital summons received report",
-        search: "month",
-        selectMonthLabel: "Select month to view digital summons received for",
-        headings: ["replyCount", "reportDate", "", "reportTime"],
+      'digital-summons-received': {
+        title: 'Digital summons received report',
+        search: 'month',
+        selectMonthLabel: 'Select month to view digital summons received for',
+        headings: ['replyCount', 'reportDate', '', 'reportTime'],
         bespokeReport: {
-          dao: () =>
-            digitalSummonsReceivedReportDAO.get(req, req.params.filter),
+          dao: () => digitalSummonsReceivedReportDAO.get(req, req.params.filter),
         },
-        defaultSortColumn: "date",
+        defaultSortColumn: 'date',
       },
-      "expense-payments": {
-        title: "Expense payments",
-        apiKey: "ExpensePaymentByTypeReport",
-        search: "courts",
-        headings: ["dateFrom", "reportDate", "dateTo", "reportTime"],
+      'expense-payments': {
+        title: 'Expense payments',
+        apiKey: 'ExpensePaymentByTypeReport',
+        search: 'courts',
+        headings: ['dateFrom', 'reportDate', 'dateTo', 'reportTime'],
         queryParams: {
-          fromDate: req?.query?.fromDate || "",
-          toDate: req?.query?.toDate || "",
+          fromDate: req?.query?.fromDate || '',
+          toDate: req?.query?.toDate || '',
         },
-        filterBackLinkUrl: app.namedRoutes.build(
-          "reports.expense-payments.filter.dates.get",
-        ),
+        filterBackLinkUrl: app.namedRoutes.build('reports.expense-payments.filter.dates.get'),
         printLandscape: true,
-        defaultSortColumn: "courtLocationNameAndCodeEp",
-        exportLabel: "Export",
+        defaultSortColumn: 'courtLocationNameAndCodeEp',
+        exportLabel: 'Export',
       },
-      "outgoing-sms-messages": {
-        title: "Outgoing SMS messages report",
-        apiKey: "OutgoingSMSMessagesReport",
-        search: "courts",
-        headings: [
-          "dateFrom",
-          "reportDate",
-          "dateTo",
-          "reportTime",
-          "totalSmsSent",
-        ],
+      'outgoing-sms-messages': {
+        title: 'Outgoing SMS messages report',
+        apiKey: 'OutgoingSMSMessagesReport',
+        search: 'courts',
+        headings: ['dateFrom', 'reportDate', 'dateTo', 'reportTime', 'totalSmsSent'],
         queryParams: {
-          fromDate: req?.query?.fromDate || "",
-          toDate: req?.query?.toDate || "",
+          fromDate: req?.query?.fromDate || '',
+          toDate: req?.query?.toDate || '',
         },
-        filterBackLinkUrl: app.namedRoutes.build(
-          "reports.outgoing-sms-messages.filter.dates.get",
-        ),
-        defaultSortColumn: "courtLocationName",
+        filterBackLinkUrl: app.namedRoutes.build('reports.outgoing-sms-messages.filter.dates.get'),
+        defaultSortColumn: 'courtLocationName',
         printLandscape: true,
         fontSize: 8,
-        exportLabel: "Export data",
+        exportLabel: 'Export data',
       },
-      "weekend-attendance": {
-        title: "Courts recording weekend attendance this month",
-        defaultSortColumn: "courtName",
+      'weekend-attendance': {
+        title: 'Courts recording weekend attendance this month',
+        defaultSortColumn: 'courtName',
         bespokeReport: {
-          dao: (req) => weekendAttendanceReportDAO.get(req),
+          dao: req => weekendAttendanceReportDAO.get(req),
         },
         tableColumnFormatting: {
-          totalPaid: (data) =>
+          totalPaid: data =>
             data < 0
               ? `(£${(Math.round(Math.abs(data) * 100) / 100).toFixed(2).toString()})`
               : `£${(Math.round(data * 100) / 100).toFixed(2).toString()}`,
         },
       },
-      "weekend-attendance-audit": {
-        title: "Weekend attendance audit report",
-        apiKey: "WeekendAttendanceReport",
-        headings: [
-          "dateFrom",
-          "reportDate",
-          "dateTo",
-          "reportTime",
-          "total",
-          "courtName",
-        ],
-        defaultSortColumn: "jurorNumber",
+      'weekend-attendance-audit': {
+        title: 'Weekend attendance audit report',
+        apiKey: 'WeekendAttendanceReport',
+        headings: ['dateFrom', 'reportDate', 'dateTo', 'reportTime', 'total', 'courtName'],
+        defaultSortColumn: 'jurorNumber',
         parentReport: {
-          key: "weekend-attendance",
-          filterParam: "all",
+          key: 'weekend-attendance',
+          filterParam: 'all',
         },
         searchProperty: {
-          filter: "locCode",
+          filter: 'locCode',
         },
         tableColumnFormatting: {
-          attendanceDate: (data) =>
-            data ? dateFilter(data, "YYYY-mm-dd", "DD MMM YYYY") : "-",
+          attendanceDate: data => (data ? dateFilter(data, 'YYYY-mm-dd', 'DD MMM YYYY') : '-'),
         },
       },
-      "expense-limit-adjustments": {
-        title: "Manual adjustments to expense limits",
-        apiKey: "ManualAdjustmentsToExpenseLimitsReport",
-        defaultSortColumn: "courtName",
+      'expense-limit-adjustments': {
+        title: 'Manual adjustments to expense limits',
+        apiKey: 'ManualAdjustmentsToExpenseLimitsReport',
+        defaultSortColumn: 'courtName',
         tableColumnFormatting: {
-          changeDate: (data) => {
-            if (!data) return "-";
+          changeDate: data => {
+            if (!data) return '-';
             const date = makeDate(data.slice(0, 3));
-            return dateFilter(date, null, "DD MMM YYYY");
+            return dateFilter(date, null, 'DD MMM YYYY');
           },
         },
         bespokeReport: {
-          printWidths: ["*", "*", "auto", "auto", "*", "*"],
+          printWidths: ['*', '*', 'auto', 'auto', '*', '*'],
         },
       },
-      "expense-limit-adjustments-audit": {
-        title: "Expense payments using adjusted limits",
-        apiKey: "ExpensePaymentsUsingAdjustedLimitsReport",
-        headings: [
-          "transportType",
-          "reportDate",
-          "oldLimit",
-          "reportTime",
-          "newLimit",
-          "courtName",
-          "revisionNumber",
-        ],
-        defaultSortColumn: "courtName",
+      'expense-limit-adjustments-audit': {
+        title: 'Expense payments using adjusted limits',
+        apiKey: 'ExpensePaymentsUsingAdjustedLimitsReport',
+        headings: ['transportType', 'reportDate', 'oldLimit', 'reportTime', 'newLimit', 'courtName', 'revisionNumber'],
+        defaultSortColumn: 'courtName',
         parentReport: {
-          key: "expense-limit-adjustments",
-          filterParam: "all",
+          key: 'expense-limit-adjustments',
+          filterParam: 'all',
         },
         queryParams: {
-          transportType: req?.query?.transportType || "",
-          revisionNumber: req?.query?.revisionNumber || "",
+          transportType: req?.query?.transportType || '',
+          revisionNumber: req?.query?.revisionNumber || '',
         },
         requestBodyConfig: {
-          transportType: capitalizeFully(
-            toSentenceCase(req?.query?.transportType || ""),
-          ),
-          revisionNumber: req?.query?.revisionNumber || "",
-          locCode: req?.params?.filter || "",
+          transportType: capitalizeFully(toSentenceCase(req?.query?.transportType || '')),
+          revisionNumber: req?.query?.revisionNumber || '',
+          locCode: req?.params?.filter || '',
         },
       },
-      "courts-incomplete-service": {
-        title: "Courts with incomplete service",
-        apiKey: "CourtsWithIncompleteServiceReport",
-        defaultSortColumn: "courtLocationNameAndCodeJp",
+      'courts-incomplete-service': {
+        title: 'Courts with incomplete service',
+        apiKey: 'CourtsWithIncompleteServiceReport',
+        defaultSortColumn: 'courtLocationNameAndCodeJp',
         searchProperty: {
-          filter: "date",
+          filter: 'date',
         },
       },
-      "courts-incomplete-service": {
-        title: "Courts with incomplete service",
-        apiKey: "CourtsWithIncompleteServiceReport",
-        defaultSortColumn: "courtLocationNameAndCodeJp",
+      'courts-incomplete-service': {
+        title: 'Courts with incomplete service',
+        apiKey: 'CourtsWithIncompleteServiceReport',
+        defaultSortColumn: 'courtLocationNameAndCodeJp',
         searchProperty: {
-          filter: "date",
+          filter: 'date',
         },
       },
-      "overdue-utilisation-report": {
-        title: "Overdue utilisation reports",
-        defaultSortColumn: "courtName",
+      'overdue-utilisation-report': {
+        title: 'Overdue utilisation reports',
+        defaultSortColumn: 'courtName',
         bespokeReport: {
-          dao: (req) => overdueUtilisationReportDAO.get(req),
+          dao: req => overdueUtilisationReportDAO.get(req),
         },
       },
-      "digital-responses-completed": {
-        title: "Digital responses completed",
-        search: "month",
-        headings: ["reportDate", "responsesProcessed", "reportTime"],
+      'digital-responses-completed': {
+        title: 'Digital responses completed',
+        search: 'month',
+        headings: ['reportDate', 'responsesProcessed', 'reportTime'],
         bespokeReport: {
-          dao: () =>
-            digitalResponsesCompletedReportDAO.get(req, req.params.filter),
-          manipualteApiTableData: (tableData) => {
-            tableData.headings.map((heading) => {
-              heading.id =
-                heading.name === "Total"
-                  ? "staffTotal"
-                  : _.camelCase(heading.name);
+          dao: () => digitalResponsesCompletedReportDAO.get(req, req.params.filter),
+          manipualteApiTableData: tableData => {
+            tableData.headings.map(heading => {
+              heading.id = heading.name === 'Total' ? 'staffTotal' : _.camelCase(heading.name);
               heading.name =
-                heading.name !== "Total" && heading.name !== "Staff Name"
-                  ? dateFilter(heading.name, "yyyy-MM-DD", "Do")
+                heading.name !== 'Total' && heading.name !== 'Staff Name'
+                  ? dateFilter(heading.name, 'yyyy-MM-DD', 'Do')
                   : heading.name;
             });
             const dateHeadings = tableData.headings.filter(
-              (heading) =>
-                heading.id !== "staffName" && heading.id !== "staffTotal",
+              heading => heading.id !== 'staffName' && heading.id !== 'staffTotal'
             );
-            tableData.data.forEach((row) => {
+            tableData.data.forEach(row => {
               for (const [key, value] of Object.entries(row)) {
-                if (key === "dailyTotals") {
+                if (key === 'dailyTotals') {
                   for (let i = 0; i < dateHeadings.length; i++) {
                     row[_.camelCase(dateHeadings[i].id)] = value[i];
                   }
@@ -2219,31 +1885,27 @@
           addPageHeadings: () => {
             return {
               month: {
-                displayName: "Month",
-                dataType: "String",
-                value: dateFilter(req.params.filter, "yyyy-MM-DD", "MMMM yyyy"),
+                displayName: 'Month',
+                dataType: 'String',
+                value: dateFilter(req.params.filter, 'yyyy-MM-DD', 'MMMM yyyy'),
               },
             };
           },
-          fixRow: (rowData) => {
-            return rowData.staffName === "Total Responses" ? "bottom" : null;
+          fixRow: rowData => {
+            return rowData.staffName === 'Total Responses' ? 'bottom' : null;
           },
           printSorting: {
-            sortFunction: (rows) => (_sortBy, sortDirection) => {
-              const totalRow = rows.find(
-                (row) => row.staffName === "Total Responses",
-              );
-              const otherRows = rows.filter(
-                (row) => row.staffName !== "Total Responses",
-              );
+            sortFunction: rows => (_sortBy, sortDirection) => {
+              const totalRow = rows.find(row => row.staffName === 'Total Responses');
+              const otherRows = rows.filter(row => row.staffName !== 'Total Responses');
               otherRows.sort(sort(_sortBy, sortDirection));
               return [...otherRows, totalRow];
             },
           },
         },
-        defaultSortColumn: "staffName",
+        defaultSortColumn: 'staffName',
         printLandscape: true,
-        exportLabel: "Export data",
+        exportLabel: 'Export data',
         fontSize: 8,
       },
     };
