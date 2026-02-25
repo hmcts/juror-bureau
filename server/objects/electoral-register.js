@@ -71,10 +71,10 @@
     }
   });
   
-  module.exports.deactivateLocalAuthorityDAO = new DAO('moj/er-administration/deactivate-la', {
-    put: function(body) {
+  module.exports.changeLaActiveStatus = new DAO('moj/er-administration/{status}-la', {
+    put: function(body, status) {
       return {
-        uri: this.resource,
+        uri: this.resource.replace('{status}', status),
         body: replaceAllObjKeys(body, _.snakeCase),
       }
     }
@@ -89,21 +89,6 @@
       }
     }
   });
-
-  // module.exports.activateLocalAuthorityDAO = new DAO('moj/er-administration/activate-la', {
-  //   put: function(body) {
-  //     return {
-  //       uri: this.resource,
-  //       body: replaceAllObjKeys(body, _.snakeCase),
-  //     }
-  //   }
-  // });
-
-  module.exports.activateLocalAuthorityDAO = {
-    put: function(body) {
-      return true;
-    }
-  };
 
   module.exports.editLocalauthorityNotesDAO = new DAO('moj/er-dashboard/notes', {
     put: function(body) {
