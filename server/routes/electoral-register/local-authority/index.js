@@ -8,6 +8,7 @@
   module.exports = function(app) {
     require('./deactivate-la')(app);
     require('./activate-la')(app);
+    require('./edit-notes')(app);
 
     app.get(
       '/electoral-register/local-authority/:laCode',

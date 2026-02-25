@@ -1,0 +1,57 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% set currentApp = "Electoral register management" %}
+
+{% block page_title %}{{ serviceName }} - Electoral register management - Local authority - edit notes{% endblock %}
+{% block page_identifier %}Electoral register management - Local authority - edit notes{% endblock %}
+
+{% if errors.items["notes"] %}
+  {% set notesError = {"text": errors.items['notes'][0].details} %}
+{% endif %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %} 
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-l">{{ localAuthorityInfo.localAuthorityName }}</span>
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-6">Add or edit notes</h1>
+
+      <form action="{{ postUrl }}" method="post" id="editLaNotesForm">
+
+        {{ govukCharacterCount({
+          name: "notes",
+          id: "notes",
+          maxlength: 200,
+          label: {
+            text: "Enter notes",
+            classes: "govuk-label--s"
+          },
+          hint: {
+            text: "Only visible to summoning officers."
+          },
+          value: tmpBody.notes if tmpBody.notes else localAuthorityInfo.notes,
+          errorMessage: notesError
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Save changes",
+            type: "submit"
+          }) }}
+
+          <a class="govuk-link govuk-link--no-visited-state" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+        {{ csrfProtection(csrftoken) }}
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}
