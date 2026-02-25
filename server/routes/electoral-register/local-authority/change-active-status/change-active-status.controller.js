@@ -1,15 +1,13 @@
-const { validate } = require('validate.js');
-
 (() => {
   'use strict';
 
   const _ = require('lodash');
-  const moment = require('moment');
-  const { localAuthorityInfoDAO, deactivateLocalAuthorityDAO } = require('../../../../objects/electoral-register');
+  const { validate } = require('validate.js');
+  const { localAuthorityInfoDAO, changeLaActiveStatus } = require('../../../../objects/electoral-register');
   const validator = require('../../../../config/validation/electoral-register');
 
-  module.exports.getDeactivateLa = (app) => async (req, res) => {
-    const { laCode } = req.params;
+  module.exports.getChangeActiveStatus = (app) => async (req, res) => {
+    const { laCode, status } = req.params;
 
     const tmpErrors = _.clone(req.session.errors);
     const tmpBody = _.clone(req.session.formFields);
@@ -19,20 +17,20 @@ const { validate } = require('validate.js');
     let localAuthorityInfo;
     try {
       localAuthorityInfo = await localAuthorityInfoDAO.get(req, laCode);
-      app.logger.info('Fetched local authoirty information for deactivating LA', {
+      app.logger.info(`Fetched local authority information to ${status} LA`, {
         auth: req.session.authentication,
         laCode
       })
     } catch (err) {
-      app.logger.crit('Error fetching local authority information for deactivating LA', {
+      app.logger.crit(`Error fetching local authority information to ${status} LA`, {
         auth: req.session.authentication,
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
     }
 
-    return res.render('electoral-register/deactivate-la.njk', {
+    return res.render(`electoral-register/${status}-la.njk`, {
       localAuthorityInfo,
-      postUrl: app.namedRoutes.build('electoral-register.local-authority.deactivate.post', { laCode }),
+      postUrl: app.namedRoutes.build('electoral-register.local-authority.change-active-status.get', { laCode, status }),
       cancelUrl: app.namedRoutes.build('electoral-register.local-authority.get', { laCode }),
       tmpBody,
       errors: {
@@ -43,15 +41,19 @@ const { validate } = require('validate.js');
     });
   };
 
-  module.exports.postDeactivateLa = (app) => async (req, res) => {
-    const { laCode } = req.params;
+  module.exports.postChangeActiveStatus = (app) => async (req, res) => {
+    const { laCode, status } = req.params;
 
-    const validatorResult = validate(req.body, validator.deactivateLa());
+    if (status === 'deactivate') {
+      const validatorResult = validate(req.body, validator.deactivateLa());
 
-    if (typeof validatorResult !== 'undefined') {
-      req.session.errors = validatorResult;
-      req.session.formFields = req.body;
-      return res.redirect(app.namedRoutes.build('electoral-register.local-authority.deactivate.get', { laCode }));
+      if (typeof validatorResult !== 'undefined') {
+        req.session.errors = validatorResult;
+        req.session.formFields = req.body;
+        return res.redirect(app.namedRoutes.build('electoral-register.local-authority.change-active-status.get', {
+          laCode, status 
+        }));
+      }
     }
 
     try {
@@ -60,14 +62,14 @@ const { validate } = require('validate.js');
         reason: req.body.inactiveReason,
       }
 
-      await deactivateLocalAuthorityDAO.put(req, payload);
+      await changeLaActiveStatus.put(req, payload, status);
       
-      app.logger.info('Marked local authority as inactive', {
+      app.logger.info(`Marked local authority as ${status === 'activate' ? 'active' : 'inactive'}`, {
         auth: req.session.authentication,
         laCode
       })
     } catch (err) {
-      app.logger.crit('Error marking local authority as inactive', {
+      app.logger.crit(`Error marking local authority as ${status === 'activate' ? 'active' : 'inactive'}`, {
         auth: req.session.authentication,
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });

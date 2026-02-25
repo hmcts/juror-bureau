@@ -49,8 +49,14 @@
       showDeadlineWarrning: deadlineDiff <= 28,
       bannerMessage,
       actionRoutes: {
-        markInactive: app.namedRoutes.build('electoral-register.local-authority.deactivate.get', { laCode }),
-        markActive: app.namedRoutes.build('electoral-register.local-authority.activate.get', { laCode }),
+        markInactive: app.namedRoutes.build('electoral-register.local-authority.change-active-status.get', {
+          laCode,
+          status: 'deactivate'
+        }),
+        markActive: app.namedRoutes.build('electoral-register.local-authority.change-active-status.get', {
+          laCode,
+          status: 'activate'
+        }),
         sendReminder: app.namedRoutes.build('electoral-register.local-authority.send-reminder.get', { laCode }),
         editNotes: app.namedRoutes.build('electoral-register.local-authority.edit-notes.get', { laCode }),
       },

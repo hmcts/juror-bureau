@@ -6,8 +6,7 @@
   const { isBureauUser } = require('../../../components/auth/user-type');
 
   module.exports = function(app) {
-    require('./deactivate-la')(app);
-    require('./activate-la')(app);
+    require('./change-active-status')(app);
     require('./edit-notes')(app);
 
     app.get(
