@@ -178,10 +178,13 @@
             'mark-email-delivered',
           ),
       },
-      // TODO: ADD FLOWS TO THESE LINKS
       actionRoutes: {
-        setDeadline: "#",
-        changeDeadline: "#",
+        setDeadline: app.namedRoutes.build(
+          "electoral-register.set-deadline.get",
+        ),
+        changeDeadline: app.namedRoutes.build(
+          "electoral-register.change-deadline.get",
+        ),
         downloadEmails: app.namedRoutes.build(
           "electoral-register.download-emails.get",
         ),

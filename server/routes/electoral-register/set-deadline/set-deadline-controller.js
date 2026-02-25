@@ -3,9 +3,9 @@
 
   const { validate } = require("validate.js");
   const _ = require("lodash");
-  const { dateFilter } = require("../../components/filters");
-  const { erDeadlineDAO } = require("../../objects/electoral-register");
-  const validator = require("../../config/validation/electoral-register.js");
+  const { dateFilter } = require("../../../components/filters");
+  const { erDeadlineDAO } = require("../../../objects/electoral-register");
+  const validator = require("../../../config/validation/electoral-register.js");
 
   module.exports.getSetDeadline = (app) => (req, res) => {
     const tmpErrors = _.clone(req.session.errors);
