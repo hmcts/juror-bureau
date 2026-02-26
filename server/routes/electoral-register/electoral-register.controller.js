@@ -1,5 +1,5 @@
 (() => {
-  "use strict";
+  'use strict';
 
   const _ = require('lodash');
   const { dateFilter, toSentenceCase } = require('../../components/filters');
@@ -23,7 +23,7 @@
       allLocalAuthorities = (await localAuthoritiesDAO.get(req)).localAuthorities;
       req.session.localAuthorities = allLocalAuthorities; // Store in session for later use if needed
     } catch (err) {
-      app.logger.crit("Error fetching all local authorities", {
+      app.logger.crit('Error fetching all local authorities', {
         auth: req.session.authentication,
         error: typeof err.error !== 'undefined' ? err.error : err.toString(),
       });
@@ -37,7 +37,7 @@
     try {
       uploadStats = await erUploadStats.get(req);
     } catch (err) {
-      app.logger.crit("Error fetching electoral register upload stats", {
+      app.logger.crit('Error fetching electoral register upload stats', {
         auth: req.session.authentication,
         error: typeof err.error !== 'undefined' ? err.error : err.toString(),
       });
@@ -50,28 +50,21 @@
         uploadStatus: !status || status === 'all' ? ['UPLOADED', 'NOT_UPLOADED'] : [_.snakeCase(status).toUpperCase()],
       };
       localAuthorityStatus = await erLocalAuthorityStatusDAO.post(req, payload);
-      app.logger.info("Fetched electoral register local authority uploads", {
+      app.logger.info('Fetched electoral register local authority uploads', {
         auth: req.session.authentication,
       });
     } catch (err) {
-      app.logger.crit("Error fetching electoral register dashboard data", {
+      app.logger.crit('Error fetching electoral register dashboard data', {
         auth: req.session.authentication,
         error: typeof err.error !== 'undefined' ? err.error : err.toString(),
       });
     }
 
-    if (
-      status === "all" &&
-      localAuthorityFilter &&
-      localAuthorityStatus.localAuthorityStatuses.length === 0
-    ) {
-      app.logger.info(
-        "Redirecting to inactive local authority information page",
-        {
-          auth: req.session.authentication,
-          laCode: localAuthorityFilter,
-        },
-      );
+    if (status === 'all' && localAuthorityFilter && localAuthorityStatus.localAuthorityStatuses.length === 0) {
+      app.logger.info('Redirecting to inactive local authority information page', {
+        auth: req.session.authentication,
+        laCode: localAuthorityFilter,
+      });
 
       return res.redirect(
         app.namedRoutes.build('electoral-register.local-authority.get', {
@@ -97,17 +90,13 @@
 
     let pagination = {};
     if (totalLocalAuthorities > PAGE_SIZE) {
-      pagination = paginationBuilder(
-        totalLocalAuthorities,
-        parseInt(req.query.page) || 1,
-        req.url,
-      );
+      pagination = paginationBuilder(totalLocalAuthorities, parseInt(req.query.page) || 1, req.url);
     }
 
     return res.render('electoral-register/dashboard.njk', {
       postRoutes: {
         filter:
-          app.namedRoutes.build("electoral-register.filter.post") +
+          app.namedRoutes.build('electoral-register.filter.post') +
           buildQueryParams(status, localAuthorityFilter, sortBy, sortOrder),
         sendReminder:
           app.namedRoutes.build('electoral-register.post') +
@@ -182,9 +171,7 @@
       );
     }
 
-    const selectedAuthorities = Array.isArray(
-      req.session.erDashboardData.checkedLocalAuthorities,
-    )
+    const selectedAuthorities = Array.isArray(req.session.erDashboardData.checkedLocalAuthorities)
       ? req.session.erDashboardData.checkedLocalAuthorities
       : [req.session.erDashboardData.checkedLocalAuthorities];
 
@@ -211,11 +198,10 @@
       req.session.erDashboardData.checkedLocalAuthorities = [];
     }
 
-    if (laCode === "selectAllCheckbox") {
-      if (action === "check") {
-        req.session.erDashboardData.checkedLocalAuthorities =
-          req.session.erDashboardData.allLocalAuthorityCodes;
-      } else if (action === "uncheck") {
+    if (laCode === 'selectAllCheckbox') {
+      if (action === 'check') {
+        req.session.erDashboardData.checkedLocalAuthorities = req.session.erDashboardData.allLocalAuthorityCodes;
+      } else if (action === 'uncheck') {
         delete req.session.erDashboardData.checkedLocalAuthorities;
       }
     } else {
@@ -230,7 +216,7 @@
       }
     }
 
-    app.logger.info("Checked or unchecked one or more local authorities: ", {
+    app.logger.info('Checked or unchecked one or more local authorities: ', {
       auth: req.session.authentication,
       data: {
         laCode,
@@ -253,11 +239,11 @@
           _a = a[sortBy] ? dateFilter(a[sortBy], null, 'yyyyMMDD') : '-';
           _b = b[sortBy] ? dateFilter(b[sortBy], null, 'yyyyMMDD') : '-';
         } else {
-          _a = a[sortBy] ? a[sortBy] : "-";
-          _b = b[sortBy] ? b[sortBy] : "-";
+          _a = a[sortBy] ? a[sortBy] : '-';
+          _b = b[sortBy] ? b[sortBy] : '-';
         }
 
-        if (sortDirection === "ascending") {
+        if (sortDirection === 'ascending') {
           return _a.localeCompare(_b);
         }
 
@@ -393,10 +379,10 @@
       queryParams += (queryParams.length ? '&' : '?') + `localAuthorityFilter=${localAuthorityFilter}`;
     }
     if (status) {
-      queryParams += (queryParams.length ? "&" : "?") + `status=${status}`;
+      queryParams += (queryParams.length ? '&' : '?') + `status=${status}`;
     }
     if (sortBy) {
-      queryParams += (queryParams.length ? "&" : "?") + `sortBy=${sortBy}`;
+      queryParams += (queryParams.length ? '&' : '?') + `sortBy=${sortBy}`;
     }
     if (sortOrder) {
       queryParams += (queryParams.length ? '&' : '?') + `sortOrder=${sortOrder}`;
