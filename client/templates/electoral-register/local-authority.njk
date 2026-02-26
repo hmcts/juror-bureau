@@ -189,6 +189,11 @@
         {% set reminderHistoryTimeline %}
           {% set items = [] %}
           {% for historyEvent in localAuthorityInfo.reminderHistory %}
+            {% set sentToHtml %}
+              <span class="govuk-body-s">
+                Sent to: <span class="govuk-!-font-weight-bold">{{ historyEvent.sentTo }}</span>
+              </span>
+            {% endset %}
             {% set items = (items.push(
               {
                 label: {
@@ -198,9 +203,11 @@
                   timestamp: historyEvent.timeSent | makeDate,
                   type: "datetime"
                 },
+                html: sentToHtml,
                 byline: {
                   text: historyEvent.sentBy
-                }
+                },
+                classes: "govuk-!-margin-bottom-0"
               }
             ), items) %}
           {% endfor %}
