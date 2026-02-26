@@ -60,7 +60,7 @@
           heading: "Update window is now closed",
           primaryAction: {
             text: "Set a new deadline",
-            href: "/electoral-register/set-deadline"
+            href: actionRoutes.setDeadline
           }
         })%}
           <p class="govuk-body">The annual upload window for electoral register data has now closed. Local authorities can no longer upload electoral data.</p>
@@ -109,9 +109,11 @@
     <div class="govuk-grid-column-one-third">
       <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-4 mod-section-break__blue">
       <h3 class="govuk-heading-s">Actions</h3>
+      {% if not deadlinePassed %}
       <p class="govuk-body">
         <a href="{{ actionRoutes.changeDeadline }}" class="govuk-link govuk-link--no-visited-state">Change deadline for local authorities</a>
       </p>
+      {% endif %}
       <p class="govuk-body">
         <a href="{{ actionRoutes.downloadEmails }}" class="govuk-link govuk-link--no-visited-state">Download all authority emails</a>
       </p>

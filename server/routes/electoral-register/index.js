@@ -2,13 +2,14 @@
   'use strict';
 
   const controller = require('./electoral-register.controller');
-  const deadlineController = require('./set-deadline-controller');
   const auth = require('../../components/auth');
   const { isBureauUser } = require('../../components/auth/user-type');
 
   module.exports = function(app) {
     require('./local-authority')(app);
     require('./download-emails')(app);
+    require('./change-deadline')(app);
+    require('./set-deadline')(app);
     require('./send-reminder')(app);
 
     app.get(
@@ -49,22 +50,6 @@
       auth.verify,
       isBureauUser,
       controller.postCheckLocalAuthority(app)
-    );
-
-    app.get(
-      '/electoral-register/set-deadline',
-      'electoral-register.set-deadline.get',
-      auth.verify,
-      isBureauUser,
-      deadlineController.getSetDeadline(app)
-    );
-
-    app.post(
-      '/electoral-register/set-deadline',
-      'electoral-register.set-deadline.post',
-      auth.verify,
-      isBureauUser,
-      deadlineController.postSetDeadline(app)
     );
   };
 
