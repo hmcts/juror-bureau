@@ -2,7 +2,6 @@
   'use strict';
 
   const _ = require('lodash');
-  const moment = require('moment');
   const { dateFilter, toSentenceCase } = require('../../components/filters');
   const { makeManualError, paginationBuilder } = require('../../lib/mod-utils');
   const { erLocalAuthorityStatusDAO, localAuthoritiesDAO, erUploadStats } = require('../../objects/electoral-register');
@@ -94,29 +93,6 @@
       pagination = paginationBuilder(totalLocalAuthorities, parseInt(req.query.page) || 1, req.url);
     }
 
-    const now = moment();
-    let deadlinePassed = false;
-    let deadlineDiff = moment(new Date(uploadStats.deadlineDate)).diff(moment(new Date()), 'days');
-
-    if (deadlineDiff < 0) {
-      deadlinePassed = true;
-    }
-
-    let computedDaysRemaining = null;
-
-    if (uploadStats && uploadStats.deadlineDate) {
-      const deadlineMoment = moment(uploadStats.deadlineDate);
-
-      if (deadlineMoment.isValid()) {
-        deadlineDiff = deadlineMoment.diff(now, 'days');
-
-        computedDaysRemaining = deadlineDiff >= 0 ? Math.floor(deadlineDiff) : 0;
-      }
-    }
-
-    const effectiveDaysRemaining =
-      typeof uploadStats?.daysRemaining !== 'undefined' ? uploadStats.daysRemaining : computedDaysRemaining;
-
     return res.render('electoral-register/dashboard.njk', {
       postRoutes: {
         filter:
@@ -134,8 +110,8 @@
         changeDeadline: app.namedRoutes.build('electoral-register.change-deadline.get'),
         downloadEmails: app.namedRoutes.build('electoral-register.download-emails.get'),
       },
-      showDeadlineWarrning: deadlineDiff <= 28,
-      deadlinePassed,
+      showDeadlineWarrning: uploadStats.daysRemaining <= 28,
+      deadlinePassed: uploadStats.daysRemaining < 0,
       localAuthorityFilter,
       selectedLocalAuthority,
       status: status || 'all',
@@ -143,7 +119,7 @@
       deadline: uploadStats.deadlineDate
         ? dateFilter(uploadStats.deadlineDate, 'yyyy-MM-DD', 'DD MMMM yyyy')
         : 'No deadline set',
-      daysRemaining: uploadStats.daysRemaining || 0,
+      daysRemaining: uploadStats.daysRemaining >= 0 ? uploadStats.daysRemaining : 0,
       notUploaded: uploadStats.notUploadedCount || 0,
       uploaded: uploadStats.uploadedCount || 0,
       localAuthorities: buildLocalAuthoritiesTable(app)(req, localAuthorityData, sortBy, sortOrder),
