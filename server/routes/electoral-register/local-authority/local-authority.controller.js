@@ -46,7 +46,7 @@
     return res.render('electoral-register/local-authority.njk', {
       localAuthorityInfo,
       daysToDeadline: deadlineDiff + 1,
-      showDeadlineWarrning: deadlineDiff <= 28,
+      showDeadlineWarrning: deadlineDiff <= 28 && localAuthorityInfo.uploadStatus !== 'UPLOADED',
       bannerMessage,
       actionRoutes: {
         markInactive: app.namedRoutes.build('electoral-register.local-authority.change-active-status.get', {

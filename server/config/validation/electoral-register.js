@@ -41,10 +41,10 @@
           allowEmpty: true,
         },
         length: {
-          maximum: 200,
+          maximum: 2000,
           message: {
-            summary: 'The notes must be 200 characters or fewer',
-            details: 'The notes must be 200 characters or fewer',
+            summary: 'The notes must be 2000 characters or fewer',
+            details: 'The notes must be 2000 characters or fewer',
           },
         },
       },
