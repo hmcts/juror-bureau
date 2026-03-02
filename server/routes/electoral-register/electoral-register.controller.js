@@ -108,7 +108,8 @@
       actionRoutes: {
         setDeadline: app.namedRoutes.build('electoral-register.set-deadline.get'),
         changeDeadline: app.namedRoutes.build('electoral-register.change-deadline.get'),
-        downloadEmails: app.namedRoutes.build('electoral-register.download-emails.get'),
+        downloadAllEmails: app.namedRoutes.build('electoral-register.download-emails.get', { status: 'all' }),
+        downloadActiveEmails: app.namedRoutes.build('electoral-register.download-emails.get', { status: 'active' }),
       },
       showDeadlineWarrning: uploadStats.daysRemaining <= 28,
       deadlinePassed: uploadStats.daysRemaining < 0,

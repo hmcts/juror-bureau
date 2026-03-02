@@ -7,7 +7,7 @@
 
   module.exports = function(app) {
     app.get(
-      '/electoral-register/download-emails',
+      '/electoral-register/download-emails/:status(active|all)',
       'electoral-register.download-emails.get',
       auth.verify,
       isBureauUser,

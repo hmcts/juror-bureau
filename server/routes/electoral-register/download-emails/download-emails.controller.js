@@ -5,8 +5,10 @@
   const { localAuthorityEmailsDAO } = require('../../../objects/electoral-register');
 
   module.exports.getDownloadLaEmails = (app) => async (req, res) => {
+    const { status } = req.params;
+
     try {
-      const laEmailData = (await localAuthorityEmailsDAO.get(req)).localAuthorities;
+      const laEmailData = (await localAuthorityEmailsDAO.get(req, status)).localAuthorities;
 
       app.logger.info('Fetched local authority email data', {
         auth: req.session.authentication
@@ -18,7 +20,7 @@
         });
       } else {
         const csvResult = [];
-        const filename = `local-authority-emails-${dateFilter(new Date(), null, 'DD-MM-YYYY')}.csv`;
+        const filename = `${status}-local-authority-emails-${dateFilter(new Date(), null, 'DD-MM-YYYY')}.csv`;
 
 
         csvResult.push(['Local authority', 'Email address']);

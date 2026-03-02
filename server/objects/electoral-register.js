@@ -44,9 +44,9 @@
   });
 
   module.exports.localAuthorityEmailsDAO = new DAO('moj/LaExport/email-addresses', {
-    get: function() {
+    get: function(status) {
       return {
-        uri: this.resource,
+        uri: this.resource + (status === 'active' ? '?active_only=true' : ''),
         transform: (data) => replaceAllObjKeys(basicDataTransform(data), _.camelCase),
       }
     }
