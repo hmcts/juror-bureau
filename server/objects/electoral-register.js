@@ -118,4 +118,13 @@
     }
   });
 
+  module.exports.markEmailDeliveredDAO = new DAO('moj/er-administration/mark-delivered', {
+    put: function(body) {
+      return {
+        uri: this.resource,
+        body: replaceAllObjKeys(body, _.snakeCase),
+      }
+    }
+  });
+
 })();
