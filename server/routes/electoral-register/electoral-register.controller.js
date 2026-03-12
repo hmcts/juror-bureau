@@ -364,13 +364,7 @@
     return table;
   };
 
-  const buildQueryParams = (
-    status,
-    localAuthorityFilter,
-    sortBy,
-    sortOrder,
-    action,
-  ) => {
+  const buildQueryParams = (status, localAuthorityFilter, sortBy, sortOrder, action) => {
     let queryParams = "";
     if (action) {
       queryParams += `?action=${action}`;

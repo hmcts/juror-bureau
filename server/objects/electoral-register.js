@@ -70,34 +70,6 @@
       }
     }
   });
-  
-  module.exports.changeLaActiveStatus = new DAO('moj/er-administration/{status}-la', {
-    put: function(body, status) {
-      return {
-        uri: this.resource.replace('{status}', status),
-        body: replaceAllObjKeys(body, _.snakeCase),
-      }
-    }
-  });
-  
-  module.exports.sendReminderDAO = new DAO('moj/notification/send-la-reminder', {
-    post: function(body) {
-      return {
-        uri: this.resource,
-        body: replaceAllObjKeys(body, _.snakeCase),
-        transform: (data) => replaceAllObjKeys(basicDataTransform(data), _.camelCase),
-      }
-    }
-  });
-
-  module.exports.editLocalauthorityNotesDAO = new DAO('moj/er-dashboard/notes', {
-    put: function(body) {
-      return {
-        uri: this.resource,
-        body: replaceAllObjKeys(body, _.snakeCase),
-      }
-    }
-  });
 
   module.exports.editLocalauthorityNotesDAO = new DAO('moj/er-dashboard/notes', {
     put: function(body) {
