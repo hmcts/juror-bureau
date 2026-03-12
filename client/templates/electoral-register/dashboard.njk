@@ -210,6 +210,15 @@
                 formAction: postRoutes.sendReminder
               }
             }) }}
+            {{ govukButton({
+              text: "Mark data request email as delivered",
+              classes: "govuk-button--secondary",
+              type: "submit",
+              attributes: {
+                id: "markEmailDeliveredButton",
+                formAction: postRoutes.markEmailDelivered
+              }
+            }) }}
           </div>
 
           {% if errors.items["selectedAuthorities"] %}<div class="govuk-form-group govuk-form-group--error">{% endif %}

@@ -1,0 +1,39 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% set currentApp = "Electoral register management" %}
+
+{% block page_title %}{{ serviceName }} - Electoral register management - Mark email delivered{% endblock %}
+{% block page_identifier %}Electoral register management - Mark email delivered{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %} 
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">
+        Are you sure you want to mark data request email as delivered for {{ noLocalAuthorities }} 
+        local {{ "authorities" if noLocalAuthorities > 1 else "authority" }}?
+      </h1>
+
+      <form action="{{ postUrl }}" method="post" id="markEmailDeliveredForm">
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Yes - mark as delivered",
+            type: "submit"
+          }) }}
+
+          <a class="govuk-link govuk-link--no-visited-state" href="{{ cancelUrl }}">No - cancel</a>
+        </div>
+
+        {{ csrfProtection(csrftoken) }}
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

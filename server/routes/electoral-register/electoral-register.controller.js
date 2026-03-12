@@ -179,16 +179,16 @@
 
     req.session.checkedLaCodes = selectedAuthorities; // Store selected local authority codes in session for use in subsequent flows
 
-    // TODO: Implement actual action handling logic for each option
-    // LOCAL AUTHORITY IDs ARE STORED IN A LIST AT req.session.checkedLaCodes
     switch (action) {
       case 'send-reminder':
         return res.redirect(app.namedRoutes.build('electoral-register.send-reminder.get'));
+      case 'mark-email-delivered':
+        return res.redirect(app.namedRoutes.build('electoral-register.mark-email-delivered.get'));
+      default:
+        return res.redirect(
+          app.namedRoutes.build('electoral-register.get') + buildQueryParams(status, localAuthorityFilter)
+        );
     }
-
-    return res.redirect(
-      app.namedRoutes.build('electoral-register.get') + buildQueryParams(status, localAuthorityFilter)
-    );
   };
 
   module.exports.postCheckLocalAuthority = app => (req, res) => {

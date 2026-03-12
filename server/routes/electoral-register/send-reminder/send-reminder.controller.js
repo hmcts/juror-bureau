@@ -56,7 +56,6 @@
     let response;
     try {
       response = await sendReminderDAO.post(req, { laCodes });
-      console.log('\n\nSend reminder response:', response, '\n\n');
     } catch (err) {
       app.logger.crit('Failed to send reminder email to local authority', {
         auth: req.session.authentication,
