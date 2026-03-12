@@ -53,16 +53,4 @@
     return res.redirect(app.namedRoutes.build('electoral-register.get'));
   };
 
-  const errorMessageMapping = (failure) => {
-    const mappings = {
-      NOTIFY_API_ERROR: `Failed to send reminder email to ${failure.emailAddress}: Email failed to send via GOV.UK Notify`,
-      LA_NOT_FOUND: `Failed to send reminder email to ${failure.laCode}: Local authority not found`,
-      NO_USERS_FOR_LA: `Failed to send reminder email to ${failure.laName}: Local authority exists but has no users`,
-      EMAIL_ADDRESS_BLANK: `Failed to send reminder email to ${failure.laName}: User has no email address`,
-      USER_INACTIVE: `Failed to send reminder email to ${failure.emailAddress}: User is inactive`,
-      UNEXPECTED_ERROR: `Failed to send reminder email to ${failure.emailAddress}: An unexpected error occurred`
-    }
-    return mappings[failure.failureReason] || "An unknown error occurred";
-  };
-
 })();
