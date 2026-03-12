@@ -365,7 +365,7 @@
   };
 
   const buildQueryParams = (status, localAuthorityFilter, sortBy, sortOrder, action) => {
-    let queryParams = "";
+    let queryParams = '';
     if (action) {
       queryParams += `?action=${action}`;
     }
