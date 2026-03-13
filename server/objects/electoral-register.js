@@ -98,5 +98,14 @@
       }
     }
   });
+  
+  module.exports.changeEmailRequestStatus = new DAO('moj/er-administration/email-sent', {
+    put: function(body) {
+      return {
+        uri: this.resource,
+        body: replaceAllObjKeys(body, _.snakeCase),
+      }
+    }
+  });
 
 })();

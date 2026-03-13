@@ -51,6 +51,20 @@
     };
   };
 
+  module.exports.changeEmailRequestStatus = () => {
+    return {
+      status: {
+        presence: {
+          allowEmpty: false,
+          message: {
+            summary: 'Select a status for the email request',
+            details: 'Select a status for the email request',
+          },
+        },
+      },
+    };
+  };
+
   validate.validators.setDeadlineDatePicker = function(value, options, key, attributes) {
     const dateRegex = /[^0-9\/]+/;
     const tmpErrors = [];

@@ -114,6 +114,14 @@
           card: {
             title: {
               text: "Communication"
+            },
+            actions: {
+              items: [
+                {
+                  href: actionRoutes.changeEmailRequestStatus,
+                  text: "Change"
+                }
+              ]
             }
           },
           rows: [
@@ -151,7 +159,7 @@
             {% for user in localAuthorityInfo.emailAddresses %}
               <div class="govuk-summary-list__row">
                 <dd class="govuk-summary-list__value">
-                  <a class="govuk-body govuk-link govuk-link--no-visited-state" href="#">
+                  <a class="govuk-body govuk-link govuk-link--no-visited-state" href="mailto:{{ user }}">
                     {{ user }}
                   </a>
                 </dd>
