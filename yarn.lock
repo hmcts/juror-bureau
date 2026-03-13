@@ -3134,14 +3134,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-extra@npm:11.3.2":
-  version: 11.3.2
-  resolution: "fs-extra@npm:11.3.2"
+"fs-extra@npm:11.3.4":
+  version: 11.3.4
+  resolution: "fs-extra@npm:11.3.4"
   dependencies:
     graceful-fs: "npm:^4.2.0"
     jsonfile: "npm:^6.0.1"
     universalify: "npm:^2.0.0"
-  checksum: 10/d559545c73fda69c75aa786f345c2f738b623b42aea850200b1582e006a35278f63787179e3194ba19413c26a280441758952b0c7e88dd96762d497e365a6c3e
+  checksum: 10/1b8deea9c540a2efe63c750bc9e1ba6238115579d1571d67fe8fb58e3fb6df19aba29fd4ebb81217cf0bf5bce0df30ca68dbc3e06f6652b856edd385ce0ff649
   languageName: node
   linkType: hard
 
@@ -3951,7 +3951,7 @@ __metadata:
     express-nunjucks: "npm:^3.1.2"
     express-rate-limit: "npm:^7.5.1"
     express-session: "npm:^1.18.2"
-    fs-extra: "npm:11.3.2"
+    fs-extra: "npm:11.3.4"
     govuk-frontend: "npm:^5.13.0"
     helmet: "npm:^8.1.0"
     html-webpack-plugin: "npm:^5.6.4"
