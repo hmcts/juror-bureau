@@ -1,0 +1,56 @@
+{% extends "layouts/default.njk" %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% set currentApp = "Electoral register management" %}
+
+{% block page_title %}{{ serviceName }} - Electoral register management - Local authority - Change email request status{% endblock %}
+{% block page_identifier %}Electoral register management - Local authority - Change email request status{% endblock %}
+
+{% if errors.items["status"] %}
+  {% set statusError = {"text": errors.items['status'][0].details} %}
+{% endif %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %} 
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-xl">{{ localAuthorityInfo.localAuthorityName }}</span>
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Change email request status</h1>
+
+      <form action="{{ postUrl }}" method="post" id="changeEmailRequestStatusForm">
+
+        {{ govukRadios({
+          name: "status",
+          items: [
+            {
+              value: "SENT",
+              text: "Sent"
+            },
+            {
+              value: "UNDELIVERED",
+              text: "Undelivered"
+            }
+          ]
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Change status",
+            type: "submit"
+          }) }}
+
+          <a class="govuk-link govuk-link--no-visited-state" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+        {{ csrfProtection(csrftoken) }}
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}

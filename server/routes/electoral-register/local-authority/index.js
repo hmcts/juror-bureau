@@ -8,6 +8,7 @@
   module.exports = function(app) {
     require('./change-active-status')(app);
     require('./edit-notes')(app);
+    require('./change-email-request-status')(app);
 
     app.get(
       '/electoral-register/local-authority/:laCode',

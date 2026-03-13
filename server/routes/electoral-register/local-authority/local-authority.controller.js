@@ -59,6 +59,7 @@
         }),
         sendReminder: app.namedRoutes.build('electoral-register.local-authority.send-reminder.get', { laCode }),
         editNotes: app.namedRoutes.build('electoral-register.local-authority.edit-notes.get', { laCode }),
+        changeEmailRequestStatus: app.namedRoutes.build('electoral-register.local-authority.change-email-request-status.get', { laCode }),
       },
       backLinkUrl: {
         built: true,
