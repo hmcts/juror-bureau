@@ -474,6 +474,24 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
+        if (err.statusCode === 422 && err.error?.code === 'UNCONFIRMED_ATTENDANCES') {
+          req.session.errors = modUtils.makeManualError('poolNumber', 'Cannot reassign juror with unconfirmed attendance. Check the jurors attendance');
+
+          if (req.session.poolJurorsReassign) {
+            return res.redirect(app.namedRoutes.build('pool-management.reassign.get', {
+              poolNumber: req.params['poolNumber'],
+            }));
+          } else if (req.url.includes('details/edit/reassign/select-pool')) {
+            return res.redirect(app.namedRoutes.build('juror-record.details-edit.reassign.select-pool.get', {
+              jurorNumber: req.params['jurorNumber'],
+            }));
+          } else {
+            return res.redirect(app.namedRoutes.build('juror-management.reassign.get', {
+              jurorNumber: req.params['jurorNumber'],
+            }));
+          }
+        };
+
         return res.render('_errors/generic', { err });
       });
   }
