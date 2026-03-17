@@ -50,6 +50,8 @@
       laCodes,
     });
 
+    req.session.bannerMessage = `Email request marked as delivered for ${laCodes.length} local authorit${laCodes.length > 1 ? 'ies' : 'y'}.`;
+
     return res.redirect(app.namedRoutes.build('electoral-register.get'));
   };
 
