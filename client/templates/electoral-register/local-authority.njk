@@ -120,7 +120,7 @@
                 {
                   href: actionRoutes.changeEmailRequestStatus,
                   text: "Change"
-                }
+                } if localAuthorityInfo.emailRequestStatus and localAuthorityInfo.emailRequestStatus !== "NOT_SENT" 
               ]
             }
           },
