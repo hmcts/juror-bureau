@@ -474,10 +474,11 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        if (err.statusCode === 422 && err.error?.code === 'UNCONFIRMED_ATTENDANCES') {
+        if (err.statusCode === 422 && err.error?.code === 'UNCONFIRMED_ATTENDANCE_EXISTS') {
           req.session.errors = modUtils.makeManualError('poolNumber', 'Cannot reassign juror with unconfirmed attendance. Check the jurors attendance');
 
           if (req.session.poolJurorsReassign) {
+            req.session.errors = modUtils.makeManualError('poolNumber', 'Cannot reassign one or more jurors with unconfirmed attendance. Check the jurors attendance');
             return res.redirect(app.namedRoutes.build('pool-management.reassign.get', {
               poolNumber: req.params['poolNumber'],
             }));
