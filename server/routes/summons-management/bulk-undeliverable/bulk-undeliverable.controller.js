@@ -63,6 +63,18 @@ module.exports.postFindJuror = (app) => async (req, res) => {
 
   try {
     jurorDetails = await jurorRecordDetailsDAO.post(req, [payload]);
+    const juror = jurorDetails?.[0];
+    const status = juror?.active_pool?.status;
+
+    if (status !== 'Summoned') {
+      return res.status(422).render('summons-management/bulk-undeliverable/table-row.njk', {
+        rowData: {
+          jurorNumber,
+        },
+        isFail: true,
+      });
+    }
+
   } catch (err) {
     app.logger.crit('Failed to find juror', {
       auth: req.session.authentication,
@@ -94,6 +106,6 @@ module.exports.postFindJuror = (app) => async (req, res) => {
       name: jurorDetails[0].name,
       postcode: jurorDetails[0].address.postcode,
       court: jurorDetails[0].active_pool.court_name,
-    },
+    }
   });
 };

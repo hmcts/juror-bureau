@@ -92,6 +92,13 @@ function apiCall(jurorNumber) {
         tableWrapper.classList.remove('js-hidden');
         tableBody.append(newRow[0]);
       }
+      if (error.status === 422) {
+        addError("Juror must be in Summoned status to be marked as undeliverable");
+        const newRow = $(error.responseText);
+
+        tableWrapper.classList.remove('js-hidden');
+        tableBody.append(newRow[0]);
+      }
     });
 }
 
