@@ -3,7 +3,7 @@
 
   const controller = require('./electoral-register.controller');
   const auth = require('../../components/auth');
-  const { isBureauUser } = require('../../components/auth/user-type');
+  const { isBureauManager } = require('../../components/auth/user-type');
 
   module.exports = function(app) {
     require('./local-authority')(app);
@@ -17,7 +17,7 @@
       '/electoral-register',
       'electoral-register.get',
       auth.verify,
-      isBureauUser,
+      isBureauManager,
       controller.getDashboard(app)
     );
 
@@ -25,7 +25,7 @@
       '/electoral-register',
       'electoral-register.post',
       auth.verify,
-      isBureauUser,
+      isBureauManager,
       controller.postSelectedLocalAuthorities(app)
     );
 
@@ -33,7 +33,7 @@
       '/electoral-register/filter',
       'electoral-register.filter.post',
       auth.verify,
-      isBureauUser,
+      isBureauManager,
       controller.postLocalAuthorityFilter(app)
     );
 
@@ -41,7 +41,7 @@
       '/electoral-register/filter-status',
       'electoral-register.filter-status.get',
       auth.verify,
-      isBureauUser,
+      isBureauManager,
       controller.getFilterUploadStatus(app)
     );
 
@@ -49,7 +49,7 @@
       '/electoral-register/check-la',
       'electoral-register.check-la.post',
       auth.verify,
-      isBureauUser,
+      isBureauManager,
       controller.postCheckLocalAuthority(app)
     );
   };
