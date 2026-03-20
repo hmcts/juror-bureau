@@ -3,7 +3,7 @@
 
   const controller = require('./local-authority.controller');
   const auth = require('../../../components/auth');
-  const { isBureauUser } = require('../../../components/auth/user-type');
+  const { isBureauManager } = require('../../../components/auth/user-type');
 
   module.exports = function(app) {
     require('./change-active-status')(app);
@@ -14,7 +14,7 @@
       '/electoral-register/local-authority/:laCode',
       'electoral-register.local-authority.get',
       auth.verify,
-      isBureauUser,
+      isBureauManager,
       controller.getLocalAuthorityInfo(app)
     );
   };

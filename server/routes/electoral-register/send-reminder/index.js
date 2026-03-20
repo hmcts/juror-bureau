@@ -3,14 +3,14 @@
 
   const controller = require('./send-reminder.controller');
   const auth = require('../../../components/auth');
-  const { isBureauUser } = require('../../../components/auth/user-type');
+  const { isBureauManager } = require('../../../components/auth/user-type');
 
   module.exports = function(app) {
     app.get(
       '/electoral-register/local-authority/:laCode/send-reminder',
       'electoral-register.local-authority.send-reminder.get',
       auth.verify,
-      isBureauUser,
+      isBureauManager,
       controller.getSendReminder(app)
     );
 
@@ -18,7 +18,7 @@
       '/electoral-register/local-authority/:laCode/send-reminder',
       'electoral-register.local-authority.send-reminder.post',
       auth.verify,
-      isBureauUser,
+      isBureauManager,
       controller.postSendReminder(app)
     );
 
@@ -26,7 +26,7 @@
       '/electoral-register/send-reminder',
       'electoral-register.send-reminder.get',
       auth.verify,
-      isBureauUser,
+      isBureauManager,
       controller.getSendReminder(app)
     );
 
@@ -34,7 +34,7 @@
       '/electoral-register/send-reminder',
       'electoral-register.send-reminder.post',
       auth.verify,
-      isBureauUser,
+      isBureauManager,
       controller.postSendReminder(app)
     );
   };

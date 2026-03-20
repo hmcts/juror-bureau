@@ -3,14 +3,14 @@
 
   const controller = require('./set-deadline-controller');
   const auth = require('../../../components/auth');
-  const { isBureauUser } = require('../../../components/auth/user-type');
+  const { isBureauManager } = require('../../../components/auth/user-type');
 
   module.exports = function(app) {
     app.get(
       '/electoral-register/set-deadline',
       'electoral-register.set-deadline.get',
       auth.verify,
-      isBureauUser,
+      isBureauManager,
       controller.getSetDeadline(app)
     );
 
@@ -18,7 +18,7 @@
       '/electoral-register/set-deadline',
       'electoral-register.set-deadline.post',
       auth.verify,
-      isBureauUser,
+      isBureauManager,
       controller.postSetDeadline(app)
     );
   };
