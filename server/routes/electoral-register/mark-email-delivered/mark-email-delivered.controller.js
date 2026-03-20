@@ -3,6 +3,7 @@
 
   const _ = require('lodash');
   const { markEmailDeliveredDAO } = require('../../../objects/electoral-register');
+  const { makeManualError } = require('../../../lib/mod-utils');
 
   module.exports.getMarkEmailDelivered = (app) => async (req, res) => {
     const { laCode } = req.params;
@@ -36,7 +37,7 @@
     try {
       response = await markEmailDeliveredDAO.put(req, { laCodes });
     } catch (err) {
-      app.logger.crit('Failed to mark email as delivered for local authority', {
+      app.logger.crit('Failed to mark email as delivered for all local authorities', {
         auth: req.session.authentication,
         laCodes,
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
@@ -45,12 +46,28 @@
       return res.render('_errors/generic', { err });
     }
 
-    app.logger.info('Marked email as delivered for local authorities', {
-      auth: req.session.authentication,
-      laCodes,
-    });
+    if (response.updated?.length > 0) {
+      app.logger.info('Marked email as delivered for local authorities', {
+        auth: req.session.authentication,
+        laCodes: response.updated,
+      });
+      req.session.bannerMessage = `Email request marked as delivered for ${response.updated.length} local authorit${response.updated.length > 1 ? 'ies' : 'y'}.`;
+    }
 
-    req.session.bannerMessage = `Email request marked as delivered for ${laCodes.length} local authorit${laCodes.length > 1 ? 'ies' : 'y'}.`;
+    if (response.alreadySent?.length > 0) {
+      const alreadySentMessage = `Email request already marked as delivered for ${response.alreadySent.length} local authorit${response.alreadySent.length > 1 ? 'ies' : 'y'}.`;
+      req.session.bannerMessage = req.session.bannerMessage 
+        ? `${req.session.bannerMessage}<br> ${alreadySentMessage}` 
+        : alreadySentMessage;
+    }
+
+    if (response.errors?.length > 0) {
+      app.logger.crit('Failed to mark email as delivered for some local authorities', {
+        auth: req.session.authentication,
+        laCodes: response.errors,
+      });
+      req.session.errors = makeManualError('laCodes', `Failed to mark email as delivered for ${response.errors.length} local authorit${response.errors.length > 1 ? 'ies' : 'y'}.`);
+    }
 
     return res.redirect(app.namedRoutes.build('electoral-register.get'));
   };
