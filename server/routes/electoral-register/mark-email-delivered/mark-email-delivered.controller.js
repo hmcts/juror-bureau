@@ -54,6 +54,13 @@
       req.session.bannerMessage = `Email request marked as delivered for ${response.updated.length} local authorit${response.updated.length > 1 ? 'ies' : 'y'}.`;
     }
 
+    if (response.alreadySent?.length > 0) {
+      const alreadySentMessage = `Email request already marked as delivered for ${response.alreadySent.length} local authorit${response.alreadySent.length > 1 ? 'ies' : 'y'}.`;
+      req.session.bannerMessage = req.session.bannerMessage 
+        ? `${req.session.bannerMessage}<br> ${alreadySentMessage}` 
+        : alreadySentMessage;
+    }
+
     if (response.errors?.length > 0) {
       app.logger.crit('Failed to mark email as delivered for some local authorities', {
         auth: req.session.authentication,
