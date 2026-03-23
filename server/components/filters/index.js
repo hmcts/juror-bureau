@@ -271,8 +271,11 @@
       }
 
       // If string like YYYY-MM-DD or other ISO, let Date parse it
-      if (typeof date === 'string' && dateRegex.test(date)) {
-        return new Date(date);
+      if (typeof date === 'string') {
+        if (dateRegex.test(date)) {
+          return new Date(date);
+        }
+        return new Date();
       }
 
       // Fallback: try constructing a Date, otherwise return now
