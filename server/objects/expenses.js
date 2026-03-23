@@ -59,13 +59,13 @@
       return { 
         uri: this.resource.replace('{jurorNumber}', jurorNumber),
         headers,
-        transform: modUtils.extractDataAndHeadersFromResponse(),
+        transform: modUtils.replaceAllObjKeys(modUtils.extractDataAndHeadersFromResponse(), _.camelCase),
       };
     },
     patch: function(body){
       return {
         uri: 'moj/juror-record/update-bank-details',
-        body,
+        body: modUtils.replaceAllObjKeys(body, _.snakeCase),
       };
     }
   });
