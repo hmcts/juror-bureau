@@ -720,7 +720,7 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
               // 500 is the max results we will every show
               // May need to split this down into seperate calls dependant on performance
               'pageLimit': '500',
-              'includeAllJurorsOnTrial': message === 'sentencing-date',
+              'includeAllJurorsOnTrial': message === 'sentencing-date' || message === 'sentencing-invite',
             };
 
             let jurorsData = await jurorSearchDAO.post(
