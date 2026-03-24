@@ -71,8 +71,6 @@
           auth: req.session.authentication
         });
 
-        replaceAllObjKeys(judge, _.camelCase);
-
         return res.render('administration/judges/edit-judge.njk', {
           judge,
           processUrl: app.namedRoutes.build('administration.judges.edit.post', {
@@ -115,7 +113,7 @@
       }
 
       try {
-        const payload = replaceAllObjKeys(req.body, _.snakeCase);
+        const payload = req.body;
 
         delete payload._csrf;
 
@@ -168,8 +166,6 @@
             judge,
           },
         });
-
-        replaceAllObjKeys(judge, _.camelCase);
 
         return res.render('administration/judges/delete-judge.njk', {
           judge,
@@ -272,7 +268,7 @@
         return res.redirect(app.namedRoutes.build('administration.judges.add.get'));
       }
 
-      const payload = replaceAllObjKeys(req.body, _.snakeCase);
+      const payload = req.body;
 
       delete payload._csrf;
 

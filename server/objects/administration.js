@@ -1,15 +1,20 @@
 ;(function() {
   'use strict';
 
+  const _ = require('lodash');
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
-  const { extractDataAndHeadersFromResponse } = require('../lib/mod-utils');
+  const { extractDataAndHeadersFromResponse, replaceAllObjKeys } = require('../lib/mod-utils');
+  const { basicDataTransform2 } = require('../lib/utils');
 
   module.exports.systemCodesDAO = new DAO('moj/administration/codes', {
     get: function(codeType) {
       return {
         uri: this.resource + `/${codeType}`,
-        transform: (data) => { delete data['_headers']; return Object.values(data) },
+        transform: (data) => {
+          delete data['_headers'];
+          return replaceAllObjKeys(Object.values(data), _.camelCase);
+        },
       };
     }
   })
@@ -98,14 +103,23 @@
     get: function(isActive) {
       return { 
         uri: this.resource + `?is_active=${isActive}`,
-        transform: (data) => { delete data['_headers']; return Object.values(data) } 
+        transform: (data) => { 
+          delete data['_headers']; 
+          return replaceAllObjKeys(Object.values(data), _.camelCase)
+        } 
       };
     },
     put: function(judgeId, body) {
-      return { uri: this.resource + `/${judgeId}`, body };
+      return { 
+        uri: this.resource + `/${judgeId}`,
+        body: replaceAllObjKeys(body, _.snakeCase),
+      };
     },
     post: function(body) {
-      return { uri: this.resource, body };
+      return {
+        uri: this.resource,
+        body: replaceAllObjKeys(body, _.snakeCase),
+     };
     },
     delete: function(judgeId) {
       return { uri: this.resource + `/${judgeId}` };
@@ -114,13 +128,22 @@
 
   module.exports.judgeDetailsDAO = new DAO('moj/administration/judges/{judgeId}', {
     get: function(judgeId) {
-      return { uri: this.resource.replace('{judgeId}', judgeId)};
+      return { 
+        uri: this.resource.replace('{judgeId}', judgeId),
+        transform: basicDataTransform2,
+      };
     }
   });
 
   module.exports.bankHolidaysDAO = new DAO('moj/administration/bank-holidays', {
     get: function() {
-      return { uri: this.resource, transform: (data) => { delete data['_headers']; return data} };
+      return {
+        uri: this.resource,
+        transform: (data) => {
+          delete data['_headers'];
+          return replaceAllObjKeys(data, _.camelCase)
+        }
+      };
     },
   })
 
@@ -128,11 +151,17 @@
     get: function(locCode) {
       return { 
         uri: this.resource.replace('{locCode}', locCode),
-        transform: (data) => { delete data['_headers']; return Object.values(data) }
+        transform: (data) => {
+          delete data['_headers'];
+          return replaceAllObjKeys(Object.values(data), _.camelCase)
+        }
       };
     },
     post: function(locCode, body) {
-      return { uri: this.resource.replace('{locCode}', locCode), body };
+      return { 
+        uri: this.resource.replace('{locCode}', locCode),
+        body: replaceAllObjKeys(body, _.snakeCase),
+      };
     },
     delete: function(locCode, date) {
       return { uri: this.resource.replace('{locCode}', locCode) + `/${date}` };
