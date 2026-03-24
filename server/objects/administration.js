@@ -128,6 +128,7 @@
 
   module.exports.judgeDetailsDAO = new DAO('moj/administration/judges/{judgeId}', {
     get: function(judgeId) {
+      console.log('Getting judge details for judgeId: ', judgeId);
       return { 
         uri: this.resource.replace('{judgeId}', judgeId),
         transform: basicDataTransform2,

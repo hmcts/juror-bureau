@@ -1,10 +1,10 @@
 ;(function() {
   'use strict';
 
-  var fse = require('fs-extra')
-    , _ = require('lodash')
-    , searchObj = require('../objects/search').searchResponsesDAO;
-
+  const fse = require('fs-extra');
+  const _ = require('lodash');
+  const searchObj = require('../objects/search').searchResponsesDAO;
+  const { replaceAllObjKeys } = require('./mod-utils');
 
   /// Will require HTTP basic auth username and password
   module.exports.basicAuth = function(logger, username, password, basicAuthObj) {
