@@ -52,6 +52,10 @@
           return res.status(404).send('juror not found');
         }
 
+        if (err.statusCode === 422 && err.error?.code === 'ATTENDANCE_RECORD_ALREADY_EXISTS') {
+          return res.status(422).send(err.error.code);
+        }
+
         const attendee = {
           jurorNumber,
           firstName: '-',
