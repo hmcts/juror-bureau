@@ -109,6 +109,25 @@
           }
         }
 
+        if (err.status === 422) {
+          const errorMessages = {
+            'ATTENDANCE_RECORD_ALREADY_EXISTS': 'The juror already has an attendance record for today. Check the juror attendance',
+          };
+          addError([{
+            message: errorMessages[err.responseText] || 'Something went wrong when trying to check in this juror',
+            field: 'checkInJurorNumber',
+          }]);
+
+          // eslint-disable-next-line newline-after-var, vars-on-top
+          var badRow = $('#' + jn + '-row');
+          badRow.remove();
+          jurorNumber.val(jn);
+
+          if (!$(attendeesTable.children()[1]).children().length) {
+            attendeesTable.addClass('js-hidden');
+          }
+        }
+
         jurorNumber.val('');
         jurorNumber.focus();
       });
