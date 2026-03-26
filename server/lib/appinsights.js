@@ -7,6 +7,9 @@ module.exports.AppInsights = class AppInsights {
   constructor() {
     const appInsightsString = secretsConfig.get('secrets.juror.app-insights-connection-string');
 
+    // Prevent duplicate logging in app insights
+    process.env['APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL'] = true;
+
     if (appInsightsString) {
       console.log('Starting Appinsights');
 
