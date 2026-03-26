@@ -40,7 +40,7 @@
 
   const header = (jurorDetails, dateFrom, dateTo, auditType) => ({
     stack: [
-      { text: auditTypeMap[auditType], fontSize: 12, color: '#505A5F' },
+      { text: auditTypeMap[auditType] + ' - Official Sensitive', fontSize: 12, color: '#505A5F' },
       {
         columns: [
           {

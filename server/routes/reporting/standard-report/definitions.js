@@ -1583,7 +1583,7 @@
         exportOnly: true,
       },
       'jury-attendance-audit': {
-        title: 'Jury attendance audit report',
+        title: 'Jury attendance audit report - Official Sensitive',
         apiKey: 'JuryAttendanceAuditReport',
         searchProperty: {
           filter: 'juryAuditNumber',
