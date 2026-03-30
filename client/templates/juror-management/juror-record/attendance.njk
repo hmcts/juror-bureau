@@ -72,7 +72,7 @@
                   }
                 }
               ]
-            } if isCourtUser and juror.commonDetails.jurorStatus === "Responded" and juror.commonDetails.loc_code === authentication.locCode
+            } if isCourtUser and juror.commonDetails.jurorStatus === "Responded" and juror.commonDetails.locCode === authentication.locCode
           } if juror.commonDetails.jurorStatus !== "Deferred",
           {
             key: {
@@ -103,7 +103,7 @@
     </div>
   </div>
   <span>
-    {% if juror.commonDetails.loc_code === authentication.locCode and (juror.commonDetails.jurorStatus == 'Responded' or juror.commonDetails.jurorStatus == 'Panel' or juror.commonDetails.jurorStatus == 'Juror' or juror.commonDetails.jurorStatus == 'Completed') %}
+    {% if juror.commonDetails.locCode === authentication.locCode and (juror.commonDetails.jurorStatus == 'Responded' or juror.commonDetails.jurorStatus == 'Panel' or juror.commonDetails.jurorStatus == 'Juror' or juror.commonDetails.jurorStatus == 'Completed') %}
       {{ govukButton({
         text: "Add attendance day",
         href: url('juror-record.attendance.add-attendance-date.get', {
