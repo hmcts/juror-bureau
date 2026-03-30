@@ -1,7 +1,6 @@
 ;(function() {
   'use strict';
 
-  const _ = require('lodash');
   const urljoin = require('url-join');
   const modUtils = require('../lib/mod-utils');
   const { DAO } = require('./dataAccessObject');
