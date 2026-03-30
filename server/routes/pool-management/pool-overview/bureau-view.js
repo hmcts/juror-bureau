@@ -8,6 +8,8 @@ module.exports = function(app, req, res, pool, membersList, _errors, selectedJur
   const { poolNumber } = req.params;
   const { status } = req.query;
 
+  console.log('\n\n', pool, membersList, '\n\n');
+
   let assignUrl = app.namedRoutes.build('pool-overview.reassign.post', { poolNumber });
   let transferUrl = app.namedRoutes.build('pool-overview.transfer.post', { poolNumber });
   let completeServiceUrl = app.namedRoutes.build('pool-overview.complete-service.post', { poolNumber });
@@ -48,7 +50,7 @@ module.exports = function(app, req, res, pool, membersList, _errors, selectedJur
   const totalJurors = membersList.totalItems;
   const totalCheckedJurors = selectAll ? membersList.totalItems : selectedJurors.length || 0;
 
-  let jurors = paginateJurorsList(membersList.data, sortBy, order, false, selectedJurors, selectAll, (pool.poolDetails.current_owner !== '400'));
+  let jurors = paginateJurorsList(membersList.data, sortBy, order, false, selectedJurors, selectAll, (pool.poolDetails.currentOwner !== '400'));
 
   // eslint-disable-next-line no-param-reassign
   selectedJurors = selectedJurors.filter(item => !membersList.data.find(juror => juror.jurorNumber === item));
@@ -106,9 +108,9 @@ module.exports = function(app, req, res, pool, membersList, _errors, selectedJur
     bureauSummoning: pool.bureauSummoning,
     poolSummary: pool.poolSummary,
     additionalStatistics: pool.additionalStatistics,
-    isNil: pool.poolDetails.is_nil_pool,
+    isNil: pool.poolDetails.isNilPool,
     isActive: pool.poolDetails.isActive,
-    currentOwner: pool.poolDetails.current_owner,
+    currentOwner: pool.poolDetails.currentOwner,
     currentTab: 'jurors',
     postUrls: { assignUrl, transferUrl, completeServiceUrl, postponeUrl },
     navData: _.clone(req.session.poolManagementNav),
