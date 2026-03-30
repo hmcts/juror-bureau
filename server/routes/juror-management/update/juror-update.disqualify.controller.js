@@ -62,11 +62,15 @@ module.exports.postDisqualifyJurorRecord = function(app) {
     const type = req.session.replyMethod || 'NONE';
 
     try {
+      const payload = {
+        code: req.body.disqualifyReason,
+        replyMethod: type.toUpperCase(),
+      }
+
       await disqualifyJuror.patch(
         req,
         jurorNumber,
-        req.body.disqualifyReason,
-        type
+        payload
       );
 
       app.logger.info('Successfully disqualified the juror', {

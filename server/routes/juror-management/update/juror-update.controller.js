@@ -676,7 +676,7 @@
   }
 
   function postUndeliverable(req, res, app) {
-    markAsUndeliverableDAO.patch(req, { 'juror_numbers': [req.params.jurorNumber] })
+    markAsUndeliverableDAO.patch(req, { 'jurorNumbers': [req.params.jurorNumber] })
       .then((data) => {
         app.logger.info('Juror processed as undeliverable: ', {
           auth: req.session.authentication,

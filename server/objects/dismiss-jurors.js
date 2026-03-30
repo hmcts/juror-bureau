@@ -1,8 +1,10 @@
 /* eslint-disable strict */
 'use strict';
 
+const _ = require('lodash');
 const { DAO } = require('./dataAccessObject');
 const utils = require('../lib/utils');
+const { replaceAllObjKeys } = require('../lib/mod-utils');
 
 module.exports.getDismissablePools = new DAO('moj/pool-request/active-pools-by-court', {
   get: function(locCode) {
@@ -37,4 +39,12 @@ module.exports.getJurorsObject = new DAO('moj/juror-management/jurors-to-dismiss
   }
 });
 
-module.exports.dismissJurorsObject = new DAO('moj/complete-service/dismissal');
+module.exports.dismissJurorsObject = new DAO('moj/complete-service/dismissal', {
+  patch: function(payload) {
+    return {
+      uri: this.resource,
+      body: replaceAllObjKeys(payload, _.snakeCase),
+      transform: utils.basicDataTransform2,
+    }
+  }
+});
