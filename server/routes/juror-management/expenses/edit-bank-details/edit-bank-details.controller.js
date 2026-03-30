@@ -59,7 +59,7 @@
         auth: req.session.authentication,
       });
 
-      const juror = data;
+      const juror = _.mapKeys(data, (__, key) => _.camelCase(key));
 
       req.session.bankDetails = {};
       req.session.bankDetails.etag = headers.etag;
@@ -163,6 +163,8 @@
           sortCode: sortCode,
           accountHolderName: req.body.accountHolderName,
         };
+
+        const payload = _.mapKeys(body, (__, key) => _.snakeCase(key));
 
         await jurorBankDetailsDAO.patch(req, payload);
 

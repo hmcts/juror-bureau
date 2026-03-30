@@ -1,10 +1,9 @@
 ;(function(){
   'use strict';
 
-  const _ = require('lodash');
+  const { axiosInstance } = require('./axios-instance');
   const { axiosClient } = require('./axios-instance');
-  const { replaceAllObjKeys } = require('../lib/mod-utils');
-  const { basicDataTransform2 } = require('../lib/utils');  
+
 
   const dashboardStats = {
     resource: 'bureau/dashboard/statistics',
@@ -13,12 +12,11 @@
       let url = this.resource;
       let options = {};
 
-      options.body = replaceAllObjKeys(dashboardParams, _.snakeCase);
+      options.body = dashboardParams;
       options.headers = {
         'Content-type': 'application/vnd.api+json',
         'Accept': 'application/json'
       }
-      options.transform = basicDataTransform2;
 
       return axiosClient('post', url , jwtToken, options);
     },

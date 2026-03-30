@@ -8,7 +8,7 @@
     get: function(){
       return {
         uri: this.resource,
-        transform: utils.basicDataTransform2,
+        transform: utils.basicDataTransform,
       };
     }
   });

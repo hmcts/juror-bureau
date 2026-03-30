@@ -1,15 +1,17 @@
 ;(function(){
   'use strict';
 
-  const _ = require('lodash');
+  const { dateFilter } = require('../components/filters')
   const { DAO } = require('./dataAccessObject');
-  const { replaceAllObjKeys } = require('../lib/mod-utils');
 
   module.exports.completeService = new DAO('moj/complete-service', {
-    patch: function(pool, payload) {
+    patch: function({pool, completionDate, selectedJurors}) {
       return {
         uri: `${this.resource}/${pool}/complete`,
-        body: replaceAllObjKeys(payload, _.snakeCase),
+        body: {
+          'completion_date': dateFilter(completionDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
+          'juror_numbers': selectedJurors,
+        },
       }
     }
   });

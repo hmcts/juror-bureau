@@ -1,24 +1,21 @@
-
 ;(function(){
   'use strict';
 
-  const _ = require('lodash');
   const { DAO } = require('./dataAccessObject');
-  const { basicDataTransform2 } = require('../lib/utils')
-  const { replaceAllObjKeys } = require('../lib/mod-utils');
+  const { basicDataTransform } = require('../lib/utils')
 
   module.exports.object = new DAO('bureau/allocate/replies', {
     get: function() {
       return {
         uri: this.resource,
-        transform: basicDataTransform2
+        transform: basicDataTransform
       }
     },
     post: function(payload) {
       return {
         uri: 'bureau/backlogAllocate/replies',
-        body: replaceAllObjKeys(payload, _.snakeCase),
-        transform: basicDataTransform2
+        body: payload,
+        transform: basicDataTransform
       }
     }
   });

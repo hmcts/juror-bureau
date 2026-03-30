@@ -55,6 +55,8 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
           req.session.authentication.locCode,
         );
 
+        templateData = modUtils.replaceAllObjKeys(templateData, _.camelCase);
+
         // If either of sentencing messages we need to force a trial number
         // Maybe find a way of making this generic too - if so would need a new flag from API
         if (message === 'sentencing-date' || message === 'sentencing-invite') {
@@ -457,6 +459,8 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
           opts
         );
 
+        jurorsData = modUtils.replaceAllObjKeys(jurorsData, _.camelCase);
+
         app.logger.info('Fetched list of jurors', {
           auth: req.session.authentication,
           opts: opts,
@@ -586,6 +590,8 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
           req.session.authentication.locCode,
           req.session.messaging.placeholderValues || {}
         );
+
+        messageData = modUtils.replaceAllObjKeys(messageData, _.camelCase);
 
         const checkedJurors = _.clone(req.session.messaging.checkedJurors);
 
@@ -723,6 +729,8 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
               opts,
               true
             );
+
+            jurorsData = modUtils.replaceAllObjKeys(jurorsData, _.camelCase);
 
             // Removing null values from juror objects
             let jurors = [];

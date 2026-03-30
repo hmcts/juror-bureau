@@ -65,8 +65,8 @@ module.exports.postConfirmIdentity = function(app) {
     }
 
     const payload = {
-      'jurorNumber': jurorNumber,
-      'confirmCode': req.body.idType,
+      'juror_number': jurorNumber,
+      'confirm_code': req.body.idType,
     };
 
     try {

@@ -9,7 +9,7 @@
     get: function(staffLogin) {
       return {
         uri: staffLogin ? urljoin(this.resource, staffLogin) : this.resource,
-        transform: utils.basicDataTransform2,
+        transform: utils.basicDataTransform,
       }
     },
     post: function(postBody) {
