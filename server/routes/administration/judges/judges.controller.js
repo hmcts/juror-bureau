@@ -3,6 +3,7 @@
 
   const _ = require('lodash');
   const { judgesDAO, judgeDetailsDAO } = require('../../../objects/administration');
+  const { replaceAllObjKeys } = require('../../../lib/mod-utils');
   const { makeManualError } = require('../../../lib/mod-utils');
   const { validate } = require('validate.js');
   const editJudgeValidator = require('../../../config/validation/edit-judge');
@@ -32,6 +33,8 @@
         app.logger.info('Fetched list of judges: ', {
           auth: req.session.authentication
         });
+
+        replaceAllObjKeys(judges, _.camelCase);
 
         return res.render('administration/judges/judges.njk', {
           bannerMessage,
@@ -67,6 +70,8 @@
         app.logger.info('Fetched judges details: ', {
           auth: req.session.authentication
         });
+
+        replaceAllObjKeys(judge, _.camelCase);
 
         return res.render('administration/judges/edit-judge.njk', {
           judge,
@@ -110,7 +115,7 @@
       }
 
       try {
-        const payload = req.body;
+        const payload = replaceAllObjKeys(req.body, _.snakeCase);
 
         delete payload._csrf;
 
@@ -163,6 +168,8 @@
             judge,
           },
         });
+
+        replaceAllObjKeys(judge, _.camelCase);
 
         return res.render('administration/judges/delete-judge.njk', {
           judge,
@@ -265,7 +272,7 @@
         return res.redirect(app.namedRoutes.build('administration.judges.add.get'));
       }
 
-      const payload = req.body;
+      const payload = replaceAllObjKeys(req.body, _.snakeCase);
 
       delete payload._csrf;
 
