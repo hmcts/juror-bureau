@@ -151,7 +151,7 @@
             currentTab: 'overview',
             jurorStatus,
             canRunPoliceCheck,
-            policeCheck: resolvePoliceCheckStatus(req, overview.data.commonDetails.policeCheck),
+            policeCheck: resolvePoliceCheckStatus(req, overview.data.commonDetails.police_check),
             bannerMessage: bannerMessage,
             availableMessage: availableMessage,
             poolDetails,
