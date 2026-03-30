@@ -52,7 +52,7 @@
         details.firstName = details.commonDetails.firstName;
         details.lastName = details.commonDetails.lastName;
         details.startDate = details.commonDetails.startDate;
-        details.isWelshCourt = details.commonDetails.is_welsh_court;
+        details.isWelshCourt = details.commonDetails.isWelshCourt;
         details.dateOfBirth = details.dateOfBirth
           ? dateFilter(new Date(details.dateOfBirth), null, 'DD/MM/YYYY')
           : '';
