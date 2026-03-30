@@ -37,7 +37,7 @@
     get: function(locationCode, attendanceDate) {
       return {
         uri: `${this.resource}?locationCode=${locationCode}&attendanceDate=${attendanceDate}`,
-        transform: utils.basicDataTransform2,
+        transform: utils.basicDataTransform,
       }
     }
   });
