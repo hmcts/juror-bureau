@@ -1,10 +1,10 @@
 ;(function() {
   'use strict';
 
-  const fse = require('fs-extra');
-  const _ = require('lodash');
-  const searchObj = require('../objects/search').searchResponsesDAO;
-  const { replaceAllObjKeys } = require('./mod-utils');
+  var fse = require('fs-extra')
+    , _ = require('lodash')
+    , searchObj = require('../objects/search').searchResponsesDAO;
+
 
   /// Will require HTTP basic auth username and password
   module.exports.basicAuth = function(logger, username, password, basicAuthObj) {
@@ -151,22 +151,6 @@
     return object;
   };
 
-  module.exports.basicDataTransform2 = function(object, key) {
-    var activeKey = key;
-
-    // Ensure key has a default value
-    if (typeof activeKey !== 'string') {
-      activeKey = 'data';
-    }
-
-    // If object has key then return the given key
-    if (typeof object === 'object' && Object.prototype.hasOwnProperty.call(object, activeKey)) {
-      return replaceAllObjKeys(object[activeKey], _.camelCase);
-    }
-
-    // Otherwise return the object as-is.
-    return replaceAllObjKeys(object, _.camelCase);
-  };
 
   module.exports.searchResponses = function(req, app, searchValues) {
     return new Promise(function(resolve, reject) {

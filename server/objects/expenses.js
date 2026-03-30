@@ -1,7 +1,6 @@
 ;(function() {
   'use strict';
 
-  const _ = require('lodash');
   const urljoin = require('url-join');
   const modUtils = require('../lib/mod-utils');
   const { DAO } = require('./dataAccessObject');
@@ -60,13 +59,13 @@
       return { 
         uri: this.resource.replace('{jurorNumber}', jurorNumber),
         headers,
-        transform: modUtils.replaceAllObjKeys(modUtils.extractDataAndHeadersFromResponse(), _.camelCase),
+        transform: modUtils.extractDataAndHeadersFromResponse(),
       };
     },
     patch: function(body){
       return {
         uri: 'moj/juror-record/update-bank-details',
-        body: modUtils.replaceAllObjKeys(body, _.snakeCase),
+        body,
       };
     }
   });

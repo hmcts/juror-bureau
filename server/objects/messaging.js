@@ -4,16 +4,10 @@
   const _ = require('lodash');
   const urljoin = require('url-join');
   const { DAO } = require('./dataAccessObject');
-  const { basicDataTransform2 } = require('../lib/utils');
-  const { replaceAllObjKeys } = require('../lib/mod-utils');
-
 
   module.exports.messageTemplateDAO = new DAO('moj/messages/view', {
     get: function(messageType, locCode) {
-      return { 
-        uri: urljoin(this.resource, messageType, locCode),
-        transform: basicDataTransform2
-      };
+      return { uri: urljoin(this.resource, messageType, locCode) };
     }
   });
 
@@ -21,9 +15,8 @@
     post: function(messageType, locCode, body) {
       return {
         uri: this.resource.replace('{messageType}', messageType).replace('{locCode}', locCode),
-        body: replaceAllObjKeys(body, _.snakeCase),
-        transform: basicDataTransform2
-      };
+        body,
+      }
     }
   });
 
@@ -41,11 +34,9 @@
         uri = urljoin(uri, '?simple_response=true');
       }
 
-      return { 
-        uri,
-        body: replaceAllObjKeys(_body, _.snakeCase),
-        transform: basicDataTransform2
-      };
+      const body = _.mapKeys(_body, (__, key) => _.snakeCase(key));
+
+      return { uri, body };
     }
   });
 

@@ -58,8 +58,8 @@ module.exports.postConfirmUncomplete = function(app) {
       req.session.uncompleteService.selectedJurors.forEach(j => {
         payload.push(
           {
-            'jurorNumber': j.juror_number,
-            'poolNumber': j.pool_number,
+            'juror_number': j.juror_number,
+            'pool_number': j.pool_number,
           });
       });
 

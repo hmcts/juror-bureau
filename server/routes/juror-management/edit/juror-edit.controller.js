@@ -63,7 +63,7 @@
 
           const jurorStatus = resolveJurorStatus(jurorOverview.data.commonDetails);
 
-          let selectedDeferralReason = jurorOverview.data.commonDetails.deferralCode;
+          let selectedDeferralReason = jurorOverview.data.commonDetails.deferral_code;
 
           let selectedDeferralDate = dateFilter(
               makeDate(jurorOverview.data.commonDetails.deferralDate), null, 'DD/MM/YYYY'

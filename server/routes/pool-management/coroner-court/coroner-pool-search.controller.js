@@ -42,7 +42,7 @@ module.exports.getSearchPools = function(app) {
         results = await searchCoronerPoolsDAO.post(req, payload);
         urlPrefix = '?' + buildQueryParams(req.query).join('&');
 
-        pagination = paginationBuilder(results.totalItems, req.query.page || 1, req.url);
+        pagination = paginationBuilder(results.total_items, req.query.page || 1, req.url);
 
         // delete the headers
         delete results._headers;
