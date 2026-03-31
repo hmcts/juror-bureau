@@ -1,0 +1,51 @@
+@startuml edit-notes
+hide unlinked
+!include ../generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant LocalAuthorityInfoPage <</electoral-register/local-authority/:laCode>>
+participant EditNotesPage <</electoral-register/local-authority/:laCode/edit-notes>>
+''' ERROR PAGES
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant LocalAuthorityInfoController <<local-authority-info.controller.js>> #lightyellow
+participant EditNotesController <<edit-notes.controller.js>> #lightyellow
+participant LocalAuthorityInfoDAO <<localAuthorityInfo.get()>> #lightyellow
+participant EditNotesDAO <<editLocalAuthorityNotesDAO.put()>> #lightyellow
+
+''' TEMPLATES
+participant EditNotesTemplate <<electoral-register/edit-notes.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' VALIDATORS
+participant EditNotesValidator #lightblue
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> LocalAuthorityInfoPage : Click "Edit notes" link
+LocalAuthorityInfoPage -> EditNotesController : call edit notes controller with LA code as request param
+
+$genericAPICall(EditNotesController, LocalAuthorityInfoDAO, ErrorTemplate, "Error fetching local authority information")
+
+$renderTemplateToPage(EditNotesController, EditNotesTemplate, EditNotesPage)
+
+Actor -> EditNotesPage : Enter notes and click "Save" button
+
+EditNotesPage -> EditNotesController : call edit notes controller
+
+$validateInput(EditNotesController, EditNotesValidator, EditNotesTemplate, EditNotesPage)
+
+$genericAPICall(EditNotesController, EditNotesDAO, ErrorTemplate, "Error saving notes")
+
+localAuthorityInfoController <- EditNotesController : pass control back to local authority info controller
+LocalAuthorityInfoPage <- localAuthorityInfoController : pass control back to local authority info page
+Actor <- LocalAuthorityInfoPage : render local authority info page with success message
+
+@enduml    

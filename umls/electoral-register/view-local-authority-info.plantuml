@@ -1,0 +1,42 @@
+@startuml view-local-authority-info
+hide unlinked
+!include ../generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant ElectoralRegisterDashPage <</electoral-register>>
+participant LocalAuthorityInfoPage <</electoral-register/local-authority/:laCode>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant ElectoralRegisterController <<electoral-register.controller.js>> #lightyellow
+participant LocalAuthorityController <<local-authority.controller.js>> #lightyellow
+participant LocalAuthorityInfoDAO <<localAuthorityInfoDAO.get()>> #lightyellow
+participant UploadStatsDAO <<erUploadStats.get()>> #lightyellow
+
+''' TEMPLATES
+participant LocalAuthorityInfoTemplate <<electoral-register/local-authority.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> ElectoralRegisterDashPage : Select an LA from the list to view more details
+ElectoralRegisterDashPage -> LocalAuthorityController : call local authority controller with LA code as request param
+
+alt Search for inactive LA
+  Actor -> ElectoralRegisterDashPage : Search for an inactive LA by name and click filter
+  ElectoralRegisterDashPage -> ElectoralRegisterController : call page controller - with la code as query param
+  ElectoralRegisterController -> LocalAuthorityController : call local authority controller with LA code as request param
+end
+
+$genericAPICall(LocalAuthorityController, LocalAuthorityInfoDAO, ErrorTemplate, "Error fetching local authority information")
+$genericAPICall(LocalAuthorityController, UploadStatsDAO, ErrorTemplate, "Error fetching local authority deadline information")
+
+$renderTemplateToPage(LocalAuthorityController, LocalAuthorityInfoTemplate, LocalAuthorityInfoPage)
+
+@enduml    

@@ -1,0 +1,51 @@
+@startuml change-la-active-status
+hide unlinked
+!include ../generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant LocalAuthorityInfoPage <</electoral-register/local-authority/:laCode>>
+participant ChangeLaActiveStatusPage <</electoral-register/local-authority/:laCode/:status(activate|deactivate)>>
+''' ERROR PAGES
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant LocalAuthorityInfoController <<local-authority-info.controller.js>> #lightyellow
+participant ChangeLaActiveStatusController <<change-active-status.controller.js>> #lightyellow
+participant LocalAuthorityInfoDAO <<localAuthorityInfo.get()>> #lightyellow
+participant ChangeLaActiveStatusDAO <<changeLaActiveStatus.put()>> #lightyellow
+
+''' TEMPLATES
+participant ChangeActiveStatusTemplate <<electoral-register/${status}-la.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' VALIDATORS
+participant ChangeLaActiveStatusValidator #lightblue
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> LocalAuthorityInfoPage : Click "Mark as active/inactive" link
+LocalAuthorityInfoPage -> ChangeLaActiveStatusController : call change active status controller with LA code as request param
+
+$genericAPICall(ChangeLaActiveStatusController, LocalAuthorityInfoDAO, ErrorTemplate, "Error fetching local authority information")
+
+$renderTemplateToPage(ChangeLaActiveStatusController, ChangeActiveStatusTemplate, ChangeLaActiveStatusPage)
+
+Actor -> ChangeLaActiveStatusPage : Enter information and click "Mark as active/inactive" button
+
+ChangeLaActiveStatusPage -> ChangeLaActiveStatusController : call change active status controller
+
+$validateInput(ChangeLaActiveStatusController, ChangeLaActiveStatusValidator, ChangeActiveStatusTemplate, ChangeLaActiveStatusPage)
+
+$genericAPICall(ChangeLaActiveStatusController, ChangeLaActiveStatusDAO, ErrorTemplate, "Error marking local authority as active/inactive")
+
+localAuthorityInfoController <- ChangeLaActiveStatusController : pass control back to local authority info controller
+LocalAuthorityInfoPage <- localAuthorityInfoController : pass control back to local authority info page
+Actor <- LocalAuthorityInfoPage : render local authority info page with success message
+
+@enduml    

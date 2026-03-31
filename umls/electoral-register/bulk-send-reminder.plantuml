@@ -1,0 +1,49 @@
+@startuml bulk-send-reminder
+hide unlinked
+!include ../generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant HomePage <</>>
+participant ElectoralRegisterDashPage <</electoral-register>>
+participant SendReminderPage <</electoral-register/send-reminder>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant ElectoralRegisterController <<electoral-register.controller.js>> #lightyellow
+participant SendReminderController <<send-reminder.controller.js>> #lightyellow
+participant SendReminderDAO <<sendReminderDAO.post()>> #lightyellow
+
+''' TEMPLATES
+participant ElectoralRegisterDashTemplate <<electoral-register/dashboard.njk>> #lavender
+participant SendReminderTemplate <<electoral-register/send-reminder.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> ElectoralRegisterDashPage : Select multiple LA's and click "Send reminder" link
+ElectoralRegisterDashPage -> ElectoralRegisterController : call electoral register controller
+
+alt No LA's selected
+  $renderErrorOnForm(ElectoralRegisterController, ElectoralRegisterDashTemplate, ElectoralRegisterDashPage)
+end
+
+ElectoralRegisterController -> SendReminderController : pass selected LA's to send reminder controller
+
+$renderTemplateToPage(SendReminderController, SendReminderTemplate, SendReminderPage)
+
+Actor -> SendReminderPage : Click "Yes - send reminders" button
+
+SendReminderPage -> SendReminderController : call send reminder controller
+
+$genericAPICall(SendReminderController, SendReminderDAO, ErrorTemplate, "Failed to send reminder email to local authority")
+
+ElectoralRegisterController <- SendReminderController : return to dashboard page
+$renderTemplateToPage(ElectoralRegisterController, ElectoralRegisterDashTemplate, ElectoralRegisterDashPage)
+
+@enduml    

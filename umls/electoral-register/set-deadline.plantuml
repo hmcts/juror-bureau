@@ -1,0 +1,44 @@
+@startuml set-deadline
+hide unlinked
+!include ../generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant HomePage <</>>
+participant ElectoralRegisterDashPage <</electoral-register>>
+participant SetDeadlinePage <</electoral-register/set-deadline>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant SetDeadlineController <<set-deadline.controller.js>> #lightyellow
+participant ErDeadlineDAO <<erDeadlineDAO.put()>> #lightyellow
+
+''' FILTERS AND VALIDATORS
+participant NonAttendanceDayValidator as Validator
+
+''' TEMPLATES
+participant SetDeadlineTemplate <<electoral-register/set-deadline.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> ElectoralRegisterDashPage : Click "Set deadline" link
+ElectoralRegisterDashPage -> SetDeadlineController : call page controller
+
+$renderTemplateToPage(SetDeadlineController, SetDeadlineTemplate, SetDeadlinePage)
+
+Actor -> SetDeadlinePage : Select a date and click "Set deadline" button
+
+$validateInput(SetDeadlineController, Validator, SetDeadlineTemplate, SetDeadlinePage, "Invalid input")
+
+$genericAPICall(SetDeadlineController, ErDeadlineDAO, ErrorTemplate, "Error setting deadline")
+
+ElectoralRegisterDashPage <- SetDeadlineController : redirect to dashboard page
+Actor <- ElectoralRegisterDashPage : view updated deadline on dashboard
+
+@enduml    

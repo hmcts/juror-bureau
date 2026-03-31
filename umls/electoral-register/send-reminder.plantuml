@@ -1,0 +1,46 @@
+@startuml send-reminder
+hide unlinked
+!include ../generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant LocalAuthorityInfoPage <</electoral-register/local-authority/:laCode>>
+participant SendReminderPage <</electoral-register/local-authority/:laCode/send-reminder>>
+''' ERROR PAGES
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant LocalAuthorityInfoController <<local-authority-info.controller.js>> #lightyellow
+participant SendReminderController <<send-reminder.controller.js>> #lightyellow
+participant LocalAuthorityInfoDAO <<localAuthorityInfo.get()>> #lightyellow
+participant SendReminderDAO <<sendReminderDAO.post()>> #lightyellow
+
+''' TEMPLATES
+participant SendReminderTemplate <<electoral-register/send-reminder.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> LocalAuthorityInfoPage : Click "Send email reminder" link
+LocalAuthorityInfoPage -> SendReminderController : call send reminder controller with LA code as request param
+
+$genericAPICall(SendReminderController, LocalAuthorityInfoDAO, ErrorTemplate, "Error fetching local authority information")
+
+$renderTemplateToPage(SendReminderController, SendReminderTemplate, SendReminderPage)
+
+Actor -> SendReminderPage : Click "Yes - send reminder" button
+
+SendReminderPage -> SendReminderController : call send reminder controller
+
+$genericAPICall(SendReminderController, SendReminderDAO, ErrorTemplate, "Failed to send reminder email to local authority in individual LA flow")
+
+localAuthorityInfoController <- SendReminderController : pass control back to local authority info controller
+LocalAuthorityInfoPage <- localAuthorityInfoController : pass control back to local authority info page
+Actor <- LocalAuthorityInfoPage : render local authority info page with success message
+
+@enduml    

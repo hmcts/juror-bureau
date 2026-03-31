@@ -1,0 +1,51 @@
+@startuml change-email-request-status
+hide unlinked
+!include ../generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant LocalAuthorityInfoPage <</electoral-register/local-authority/:laCode>>
+participant ChangeEmailRequestStatusPage <</electoral-register/local-authority/:laCode/change-email-request-status>>
+''' ERROR PAGES
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant LocalAuthorityInfoController <<local-authority-info.controller.js>> #lightyellow
+participant ChangeEmailRequestStatusController <<change-email-request-status.controller.js>> #lightyellow
+participant LocalAuthorityInfoDAO <<localAuthorityInfo.get()>> #lightyellow
+participant ChangeEmailRequestStatusDAO <<changeEmailRequestStatus.put()>> #lightyellow
+
+''' TEMPLATES
+participant ChangeEmailRequestStatusTemplate <<electoral-register/change-email-request-status.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' VALIDATORS
+participant ChangeEmailRequestStatusValidator #lightblue
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> LocalAuthorityInfoPage : Click "Change email request status" link
+LocalAuthorityInfoPage -> ChangeEmailRequestStatusController : call change email request status controller with LA code as request param
+
+$genericAPICall(ChangeEmailRequestStatusController, LocalAuthorityInfoDAO, ErrorTemplate, "Error fetching local authority information")
+
+$renderTemplateToPage(ChangeEmailRequestStatusController, ChangeEmailRequestStatusTemplate, ChangeEmailRequestStatusPage)
+
+Actor -> ChangeEmailRequestStatusPage : Select status and click "Change status" button
+
+ChangeEmailRequestStatusPage -> ChangeEmailRequestStatusController : call change email request status controller
+
+$validateInput(ChangeEmailRequestStatusController, ChangeEmailRequestStatusValidator, ChangeEmailRequestStatusTemplate, ChangeEmailRequestStatusPage)
+
+$genericAPICall(ChangeEmailRequestStatusController, ChangeEmailRequestStatusDAO, ErrorTemplate, "Error changing email request status")
+
+localAuthorityInfoController <- ChangeEmailRequestStatusController : pass control back to local authority info controller
+LocalAuthorityInfoPage <- localAuthorityInfoController : pass control back to local authority info page
+Actor <- LocalAuthorityInfoPage : render local authority info page with success message
+
+@enduml    

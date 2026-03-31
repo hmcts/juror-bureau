@@ -1,0 +1,49 @@
+@startuml mark-email-delivered
+hide unlinked
+!include ../generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant HomePage <</>>
+participant ElectoralRegisterDashPage <</electoral-register>>
+participant MarkEmailDeliveredPage <</electoral-register/mark-email-delivered>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant ElectoralRegisterController <<electoral-register.controller.js>> #lightyellow
+participant MarkEmailDeliveredController <<mark-email-delivered.controller.js>> #lightyellow
+participant MarkEmailDeliveredDAO <<markEmailDeliveredDAO.put()>> #lightyellow
+
+''' TEMPLATES
+participant ElectoralRegisterDashTemplate <<electoral-register/dashboard.njk>> #lavender
+participant MarkEmailDeliveredTemplate <<electoral-register/mark-email-delivered.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> ElectoralRegisterDashPage : Select multiple LA's and click "Mark email delivered" link
+ElectoralRegisterDashPage -> ElectoralRegisterController : call electoral register controller
+
+alt No LA's selected
+  $renderErrorOnForm(ElectoralRegisterController, ElectoralRegisterDashTemplate, ElectoralRegisterDashPage)
+end
+
+ElectoralRegisterController -> MarkEmailDeliveredController : pass selectec LA's to mark email delivered controller
+
+$renderTemplateToPage(MarkEmailDeliveredController, MarkEmailDeliveredTemplate, MarkEmailDeliveredPage)
+
+Actor -> MarkEmailDeliveredPage : Click "Yes - mark as delivered" button
+
+MarkEmailDeliveredPage -> MarkEmailDeliveredController : call mark email delivered controller
+
+$genericAPICall(MarkEmailDeliveredController, MarkEmailDeliveredDAO, ErrorTemplate, "Failed to mark email as delivered for all local authorities")
+
+ElectoralRegisterController <- MarkEmailDeliveredController : return to dashboard page
+$renderTemplateToPage(ElectoralRegisterController, ElectoralRegisterDashTemplate, ElectoralRegisterDashPage)
+
+@enduml    

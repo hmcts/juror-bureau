@@ -1,0 +1,32 @@
+@startuml download-la-emails
+hide unlinked
+!include ../generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant HomePage <</>>
+participant ElectoralRegisterDashPage <</electoral-register>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant DownloadEmailsController <<download-emails.controller.js>> #lightyellow
+participant LocalAuthorityEmailsDAO <<localAuthorityEmailsDAO.get()>> #lightyellow
+
+''' TEMPLATES
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> ElectoralRegisterDashPage : Click either of the 'Download emails' buttons
+ElectoralRegisterDashPage -> DownloadEmailsController : call page controller - with status as request param
+
+$genericAPICall(DownloadEmailsController, LocalAuthorityEmailsDAO, ErrorTemplate, "Error generating local authority email csv")
+
+Actor <- DownloadEmailsController : return csv file for download
+
+@enduml    

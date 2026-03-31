@@ -1,0 +1,55 @@
+@startuml electoral-register-dashboard
+hide unlinked
+!include ../generic-blocks.plantuml
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant HomePage <</>>
+participant ElectoralRegisterDashPage <</electoral-register>>
+participant GenericErrorPage <</error>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant ElectoralRegisterController <<electoral-register.controller.js>> #lightyellow
+participant LocalAuthoritiesDAO <<localAuthoritiesDAO.get()>> #lightyellow
+participant UploadStatsDAO <<erUploadStats.get()>> #lightyellow
+participant LocalAuthorityStatusDAO <<erLocalAuthorityStatusDAO.post()>> #lightyellow
+
+''' TEMPLATES
+participant ElectoralRegisterDashTemplate <<electoral-register/dashboard.njk>> #lavender
+participant ErrorTemplate <<_errors/generic.njk>> #lavender
+
+''' FILTERS AND VALIDATORS
+participant DefaultExpensesValidator
+
+''' BACKEND CONTROLLER
+participant BackendController
+
+Actor -> HomePage : open apps drawer and select 'Electoral Register'
+HomePage -> ElectoralRegisterController : call electoral register controller
+
+$genericAPICall(ElectoralRegisterController, LocalAuthoritiesDAO, ErrorTemplate, "Error fetching all local authorities")
+$genericAPICall(ElectoralRegisterController, UploadStatsDAO, ErrorTemplate, "Error fetching electoral register upload stats")
+$genericAPICall(ElectoralRegisterController, LocalAuthorityStatusDAO, ErrorTemplate, "Error fetching electoral register dashboard data")
+
+$renderTemplateToPage(DefaultExpensesController, ElectoralRegisterDashTemplate, ElectoralRegisterDashPage)
+
+
+alt User selects a status of LA to view (e.g. 'Not uploaded')
+  Actor -> ElectoralRegisterDashPage : select a status of LA to view (e.g. 'Not uploaded')
+  ElectoralRegisterDashPage -> ElectoralRegisterController : call page controller - with status as query param
+  ElectoralRegisterController -[#blue,dashed]-> ElectoralRegisterController : repeat API calls and render as above
+  note right: See first API call and render sequence for details
+end
+
+alt User searches for a specific LA by name
+  Actor -> ElectoralRegisterDashPage : Enter LA name in search box and click filter
+  ElectoralRegisterDashPage -> ElectoralRegisterController : call page controller - with la code as query param
+  ElectoralRegisterController -[#blue,dashed]-> ElectoralRegisterController : repeat API calls and render as above
+  note right: See first API call and render sequence for details
+end
+
+@enduml    
