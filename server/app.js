@@ -26,6 +26,7 @@ console.info('\n\n');
 
 console.info('app name: ' + pkg.name);
 console.info('app version: ' + pkg.version);
+console.info('node version: ' + process.version);
 
 // Start server
 function startServer () {
