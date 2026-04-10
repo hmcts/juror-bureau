@@ -112,7 +112,8 @@
         text: "Check court can accommodate",
         classes: "govuk-button--secondary",
         href: url('response.check-can-accommodate.get', {
-          id: response.jurorNumber
+          id: response.jurorNumber,
+          type: method or 'digital'
         })
       }) }}
     {% endif %}

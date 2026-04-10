@@ -96,12 +96,12 @@
       auth.verify,
       controller.getPaperResponseDetails(app));
 
-    app.get('/summons-replies/response/:id/check-can-accommodate',
+    app.get('/summons-replies/response/:id/:type(paper|digital)/check-can-accommodate',
       'response.check-can-accommodate.get',
       auth.verify,
       processController.checkOwner(app),
       controller.getCheckCanAccommodate(app));
-    app.post('/summons-replies/response/:id/check-can-accomodate',
+    app.post('/summons-replies/response/:id/:type(paper|digital)/check-can-accommodate',
       'response.check-can-accommodate.post',
       auth.verify,
       processController.checkOwner(app),

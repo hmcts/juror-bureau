@@ -62,7 +62,7 @@
       <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
       <h2 class="govuk-heading-s">Optic ticket number</h2>
 
-      <form action="{{ url('response.check-can-accommodate.post', { id: jurorNumber }) }}" method="POST" id="processCreateOpticReference">
+      <form action="{{ url('response.check-can-accommodate.post', { id: jurorNumber, type: type }) }}" method="POST" id="processCreateOpticReference">
 
         {% set opticReferenceError = undefined %}
         {% if errors.items["opticReference"] %}
