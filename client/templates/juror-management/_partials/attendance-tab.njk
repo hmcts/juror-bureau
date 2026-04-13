@@ -52,8 +52,8 @@
             {% for item in history.paymentDays %}
               <tr class="govuk-table__row">
                 <td class="govuk-table__cell" data-sort-value="{{item.attendanceDate | dateFilter('yyyy-MM-dd', 'YYYYMMDD')}}">{{ item.attendanceDate | dateFilter('yyyy-MM-DD', 'ddd DD MMM yyyy') }}</td>
-                <td class="govuk-table__cell">{{ item.attendanceAudit | historyAuditLinkify(juror.commonDetails.loc_code, isCourtUser, false) | safe }}</td>
-                <td class="govuk-table__cell">{{ (item.paymentAudit | historyAuditLinkify(juror.commonDetails.loc_code, isCourtUser, false) | safe) if item.paymentAudit else '-' }}</td>
+                <td class="govuk-table__cell">{{ item.attendanceAudit | historyAuditLinkify(juror.commonDetails.locCode, isCourtUser, false) | safe }}</td>
+                <td class="govuk-table__cell">{{ (item.paymentAudit | historyAuditLinkify(juror.commonDetails.locCode, isCourtUser, false) | safe) if item.paymentAudit else '-' }}</td>
                 <td class="govuk-table__cell" data-sort-value="{{item.datePaid | dateFilter('yyyy-MM-dd', 'YYYYMMDD')}}"> {{ (item.datePaid | dateFilter('yyyy-MM-DD', 'ddd DD MMM yyyy')) if item.datePaid else '-' }}</td>
                 <td class="govuk-table__cell"> {{ (item.datePaid | convertDateTimeToTime | convert24to12) if item.datePaid else '-' }}</td>
                 <td class="govuk-table__cell">{{ (item.travel | toMoney) if (item.travel or item.paymentAudit) else '-' }}</td>
