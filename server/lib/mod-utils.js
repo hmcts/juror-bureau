@@ -1480,6 +1480,16 @@
     }; 
   }
 
+  module.exports.extractDataAndHeadersFromResponse2 = (responseName = 'response') => (data) => { 
+    const headers = data._headers;
+    delete data._headers
+
+    return {
+      headers,
+      [responseName]: replaceAllObjKeys(data, _.camelCase),
+    }; 
+  }
+
     /**
    * Checks if today is the first working day of the month
    * @returns {boolean} true if today is the first working day, false otherwise

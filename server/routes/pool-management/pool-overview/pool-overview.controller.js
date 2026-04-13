@@ -70,6 +70,7 @@ module.exports.getJurors = function(app) {
 
     try {
       pool = await poolSummaryObj.get(req, poolNumber);
+      console.log('\n\n\n\n\n\n\n\n\n pool: ', pool);
     } catch (err) {
       const errorMessage = `Failed to fetch pool summary for ${isCourtUser(req, res) ? 'court' : 'bureau'} user:`;
 
@@ -436,9 +437,9 @@ function courtView(app, req, res, pool, membersList, _errors, selectedJurors, se
       availableSuccessMessage: availableSuccessMessage,
       successBanner: successBanner,
       poolDetails: pool.poolDetails,
-      isNil: pool.poolDetails.is_nil_pool,
+      isNil: pool.poolDetails.isNilPool,
       isActive: pool.poolDetails.isActive,
-      currentOwner: pool.poolDetails.current_owner,
+      currentOwner: pool.poolDetails.currentOwner,
       currentTab: 'jurors',
       postUrls: { assignUrl, transferUrl, completeServiceUrl, changeServiceDateUrl, postponeUrl, onCallUrl, nonAttendanceDayUrl },
       navData: _.clone(req.session.poolManagementNav),
