@@ -3,8 +3,9 @@
 
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
-  const { basicDataTransform } = require('../lib/utils');
-  const { extractDataAndHeadersFromResponse } = require('../lib/mod-utils');
+  const _ = require('lodash');
+  const { basicDataTransform2 } = require('../lib/utils');
+  const { extractDataAndHeadersFromResponse, replaceAllObjKeys } = require('../lib/mod-utils');
 
   module.exports.paperReplyObject = new DAO('moj/juror-paper-response/response', {
     post: function(pr) {
@@ -51,14 +52,14 @@
 
       return {
         uri: this.resource,
-        body,
-        transform: basicDataTransform,
+        body: replaceAllObjKeys(body, _.snakeCase),
+        transform: basicDataTransform2,
       }
     },
     get: function(jurorNumber) {
       return {
         uri: urljoin('moj/juror-paper-response/juror', jurorNumber),
-        transform: extractDataAndHeadersFromResponse('data'),
+        transform: replaceAllObjKeys(extractDataAndHeadersFromResponse('data'), _.camelCase),
       }
     }
   });

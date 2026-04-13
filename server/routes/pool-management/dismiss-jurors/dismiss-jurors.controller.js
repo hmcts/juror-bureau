@@ -288,8 +288,8 @@ module.exports.postCompleteService = function(app) {
       const checkedJurors = req.session.dismissJurors.jurors.filter(juror => juror.checked);
 
       const payload = {
-        'juror_numbers': checkedJurors.map((juror) => juror.juror_number),
-        'completion_date': dateFilter(req.body.completionDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
+        'jurorNumbers': checkedJurors.map((juror) => juror.juror_number),
+        'completionDate': dateFilter(req.body.completionDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
       };
 
       await dismissJurorsObject.patch(req, payload);

@@ -1,14 +1,16 @@
 /* eslint-disable strict */
 
+const _ = require('lodash');
 const urljoin = require('url-join');
 const { DAO } = require('./dataAccessObject');
+const { replaceAllObjKeys } = require('../lib/mod-utils');
 
 module.exports.updateStatusDAO = new DAO('moj/juror-response/update-status', {
   post: function(jurorNumber, body) {
-
-    const uri = urljoin(this.resource, jurorNumber);
-
-    return { uri, body };
+    return { 
+      uri: urljoin(this.resource, jurorNumber),
+      body: replaceAllObjKeys(body, _.snakeCase)
+    };
   },
 });
 

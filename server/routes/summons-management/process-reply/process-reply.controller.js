@@ -18,7 +18,7 @@ module.exports.checkOwner = (app) => async (req, res, next) =>{
     );
 
     const currentOwner = type === 'paper' 
-      ? response.data.current_owner : response.current_owner;
+      ? response.data.currentOwner : response.current_owner;
 
     if (currentOwner !== req.session.authentication.locCode) {
       app.logger.crit('Current user does not have sufficient permission to process this summons reply: ', {

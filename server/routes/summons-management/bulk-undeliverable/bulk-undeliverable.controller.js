@@ -32,7 +32,7 @@ module.exports.postBulkUndeliverable = (app) => async (req, res) => {
   const jurorNumbers = Array.isArray(undeliverableJurors) ? undeliverableJurors : [undeliverableJurors];
 
   try {
-    await markAsUndeliverableDAO.patch(req, { 'juror_numbers': jurorNumbers });
+    await markAsUndeliverableDAO.patch(req, { 'jurorNumbers': jurorNumbers });
   } catch (err) {
     app.logger.crit('Failed to mark jurors as undeliverable', {
       auth: req.session.authentication,

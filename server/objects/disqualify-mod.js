@@ -1,22 +1,21 @@
 ; (function() {
   'use strict';
 
+  const _ = require('lodash');
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
-  const { basicDataTransform } = require('../lib/utils');
+  const { basicDataTransform2 } = require('../lib/utils');
+  const { replaceAllObjKeys } = require('../lib/mod-utils');
 
 
   module.exports.getDisqualificationReasons = new DAO('moj/disqualify/reasons');
 
   module.exports.disqualifyJuror = new DAO('moj/disqualify/juror', {
-    patch: function(jurorNumber, disqualifyCode, replyMethod) {
+    patch: function(jurorNumber, payload) {
       return {
         uri: urljoin(this.resource, jurorNumber),
-        body: {
-          code: disqualifyCode,
-          replyMethod: replyMethod.toUpperCase(),
-        },
-        transform: basicDataTransform,
+        body: replaceAllObjKeys(payload, _.snakeCase),
+        transform: basicDataTransform2,
       }
     }
   });

@@ -83,7 +83,12 @@
     }
 
     try {
-      await disqualifyJuror.patch(req, req.params.id, req.body.disqualifyReason, req.params.type);
+      const payload = {
+        code: req.body.disqualifyReason,
+        replyMethod: req.params.type,
+      };
+
+      await disqualifyJuror.patch(req, req.params.id, payload);
 
       app.logger.info('Juror disqualified: ', {
         auth: req.session.authentication,

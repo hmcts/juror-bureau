@@ -1,7 +1,10 @@
 ;(function() {
   'use strict';
 
+  const _ = require('lodash');
   const { DAO } = require('./dataAccessObject');
+  const { basicDataTransform2 } = require('../lib/utils');
+  const { replaceAllObjKeys } = require('../lib/mod-utils');
 
   module.exports.poolSearchObject = new DAO('moj/pool-search', {
     post: function(searchParams) {
@@ -57,7 +60,8 @@
 
         return {
           uri: this.resource,
-          body: tmpBody,
+          body: replaceAllObjKeys(tmpBody, _.snakeCase),
+          transform: basicDataTransform2
         }
     }
   });
