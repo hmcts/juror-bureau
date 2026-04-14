@@ -1780,10 +1780,10 @@
           dao: (req, config) => yieldPerformanceDAO.post(
             req,
             {
-              'court_loc_codes': config.courts,
-              'all_courts': false,
-              'from_date': config.fromDate,
-              'to_date': config.toDate,
+              'courtLocCodes': config.courts,
+              'allCourts': false,
+              'fromDate': config.fromDate,
+              'toDate': config.toDate,
             },
           ),
           printWidths: ['*', '*', '*', '*', '*', '25%'],
@@ -1823,8 +1823,8 @@
           dao: (req) => allCourtUtilisationDAO.post(
             req,
             {
-              "court_loc_codes": req.params.filter !== 'all-courts' ? req.session.reportCourts : [],
-              "all_courts": req.params.filter === 'all-courts',
+              "courtLocCodes": req.params.filter !== 'all-courts' ? req.session.reportCourts : [],
+              "allCourts": req.params.filter === 'all-courts',
             },
           ),
         },
