@@ -48,8 +48,7 @@
       delete req.session.tmpBody;
 
       try {
-        const data = await defaultExpensesDAO.get(req, req.session.authentication.locCode, jurorNumber);
-        const defaultExpenses = modUtils.replaceAllObjKeys(_.cloneDeep(data), _.camelCase);
+        const defaultExpenses = await defaultExpensesDAO.get(req, req.session.authentication.locCode, jurorNumber);
 
         defaultExpenses['travelTime-hour'] = defaultExpenses.travelTime
           ? defaultExpenses.travelTime.split(':')[0] : '';

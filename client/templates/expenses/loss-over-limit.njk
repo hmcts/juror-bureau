@@ -28,12 +28,12 @@
                 text: "Juror's loss:"
               },
               value: {
-                text: "£" + jurorLossData.juror_loss
+                text: "£" + jurorLossData.jurorLoss
               }
             },
             {
               key: {
-                text: "Daily limit (Full day):" if jurorLossData.attendance_type === "FULL_DAY" else "Daily limit (Half day):"
+                text: "Daily limit (Full day):" if jurorLossData.attendanceType === "FULL_DAY" else "Daily limit (Half day):"
               },
               value: {
                 text: "£" + jurorLossData.limit | toFixed(2)

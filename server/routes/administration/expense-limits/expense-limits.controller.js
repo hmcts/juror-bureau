@@ -22,8 +22,6 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
 
         req.session.expenseRatesEtag = headers.etag;
 
-        replaceAllObjKeys(expenseLimits, _.camelCase);
-
         return res.render('administration/expense-limits.njk', {
           expenseLimits,
           processUrl: app.namedRoutes.build('administration.expense-limits.post'),

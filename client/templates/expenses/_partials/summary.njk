@@ -2,7 +2,7 @@
 {% from "custom-components/mod-large-tag/macro.njk" import modLargeTag %}
 
 <div class="govuk-grid-column-one-half govuk-!-padding-left-0">
-  {% if expenseData.attendance_type === 'NON_ATTENDANCE' %}
+  {% if expenseData.attendanceType === 'NON_ATTENDANCE' %}
     {{ govukSummaryList({
       attributes: {
         id: 'totalsSummaryTable'
@@ -13,7 +13,7 @@
             text: "Pay attendance"
           },
           value: {
-            text: "Full day" if expenseData.pay_attendance === "FULL_DAY" else "Half day"
+            text: "Full day" if expenseData.payAttendance === "FULL_DAY" else "Half day"
           }
         },
         {
@@ -21,7 +21,7 @@
             text: "Financial loss (capped)"
           },
           value: {
-            text: "£" + (expenseData.loss_of_earnings + expenseData.other + expenseData.extra_care) | toFixed(2)
+            text: "£" + (expenseData.lossOfEarnings + expenseData.other + expenseData.extraCare) | toFixed(2)
           }
         }
       ]
@@ -37,7 +37,7 @@
             text: "Pay attendance"
           },
           value: {
-            text: "Full day" if expenseData.pay_attendance === "FULL_DAY" else "Half day"
+            text: "Full day" if expenseData.payAttendance === "FULL_DAY" else "Half day"
           }
         },
         {
@@ -45,7 +45,7 @@
             text: "Financial loss (capped)"
           },
           value: {
-            text: "£" + (expenseData.loss_of_earnings + expenseData.other + expenseData.extra_care) | toFixed(2)
+            text: "£" + (expenseData.lossOfEarnings + expenseData.other + expenseData.extraCare) | toFixed(2)
           }
         },
         {
@@ -53,7 +53,7 @@
             text: "Travel expenses"
           },
           value: {
-            text: "£" + expenseData.total_travel_expenses | toFixed(2)
+            text: "£" + expenseData.totalTravelExpenses | toFixed(2)
           }
         },
         {
@@ -61,7 +61,7 @@
             text: "Food and drink claim"
           },
           value: {
-            text: "£" + expenseData.food_and_drink | toFixed(2)
+            text: "£" + expenseData.foodAndDrink | toFixed(2)
           }
         },
         {
@@ -69,7 +69,7 @@
             text: "Smartcard spend"
           },
           value: {
-            text: "(£" + expenseData.smart_card | toFixed(2) + ")"
+            text: "(£" + expenseData.smartCard | toFixed(2) + ")"
           }
         }
       ]
@@ -91,7 +91,7 @@
             text: "Total due"
           },
           value: {
-            text: "£" + expenseData.total_due | toFixed(2)
+            text: "£" + expenseData.totalDue | toFixed(2)
           }
         },
         {
@@ -99,7 +99,7 @@
             text: "Total paid to date"
           },
           value: {
-            text: "£" + expenseData.total_paid | toFixed(2)
+            text: "£" + expenseData.totalPaid | toFixed(2)
           }
         }
       ]
@@ -109,14 +109,14 @@
       id: "totalDueTag",
       classes: "govuk-!-margin-bottom-1",
       label: "Balance to pay",
-      value: "£" + expenseData.total_outstanding | toFixed(2)
+      value: "£" + expenseData.totalOutstanding | toFixed(2)
     })}}
   {% else %}
     {{ modLargeTag({
       id: "totalDueTag",
       classes: "govuk-!-margin-bottom-1",
       label: "Total due",
-      value: "£" + expenseData.total_due | toFixed(2)
+      value: "£" + expenseData.totalDue | toFixed(2)
     })}}
   {% endif %}
 </div>

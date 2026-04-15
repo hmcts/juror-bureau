@@ -4,8 +4,8 @@
   const _ = require('lodash');
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
-  const { extractDataAndHeadersFromResponse, replaceAllObjKeys } = require('../lib/mod-utils');
   const { basicDataTransform2 } = require('../lib/utils');
+  const { extractDataAndHeadersFromResponse, extractDataAndHeadersFromResponse2, replaceAllObjKeys } = require('../lib/mod-utils');
 
   module.exports.systemCodesDAO = new DAO('moj/administration/codes', {
     get: function (codeType) {
@@ -38,7 +38,7 @@
       return {
         uri: this.resource,
         headers,
-        transform: extractDataAndHeadersFromResponse(),
+        transform: extractDataAndHeadersFromResponse2(),
       };
     },
   });

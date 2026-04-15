@@ -36,6 +36,8 @@
       getDraftExpensesDAO.get(req, jurorNumber, locCode)
         .then(async function({ response: expenseData, headers }) {
 
+          console.log('\nDraft expenses data: ', expenseData, '\n');
+
           req.session.draftExpensesEtag = headers.etag;
 
           app.logger.info('Fetched draft expenses for juror: ', {
@@ -45,12 +47,12 @@
             },
           });
 
-          const totalExpenses = req.expensesCount.total_draft;
+          const totalExpenses = req.expensesCount.totalDraft;
 
           req.session.expensesData = {
             total: totalExpenses,
-            dates: expenseData.expense_details.reduce((prev, expense) => {
-              prev.push(expense.attendance_date);
+            dates: expenseData.expenseDetails.reduce((prev, expense) => {
+              prev.push(expense.attendanceDate);
               return prev;
             }, []),
           };
@@ -74,7 +76,7 @@
             nav: 'unpaid-attendance',
             status,
             jurorStatus: req.jurorDetails.active_pool.status,
-            expenseData: expenseData,
+            expenseData,
             jurorDetails: req.jurorDetails,
             jurorNumber,
             poolNumber: req.jurorDetails.active_pool.pool_number,
