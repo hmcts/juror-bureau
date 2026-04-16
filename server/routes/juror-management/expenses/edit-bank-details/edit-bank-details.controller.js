@@ -164,7 +164,7 @@
           accountHolderName: req.body.accountHolderName,
         };
 
-        await jurorBankDetailsDAO.patch(req, payload);
+        await jurorBankDetailsDAO.patch(req, body);
 
         app.logger.info('Updated juror\'s bank details:  ', {
           auth: req.session.authentication,

@@ -60,7 +60,7 @@
       return { 
         uri: this.resource.replace('{jurorNumber}', jurorNumber),
         headers,
-        transform: modUtils.replaceAllObjKeys(modUtils.extractDataAndHeadersFromResponse(), _.camelCase),
+        transform: modUtils.extractDataAndHeadersFromResponse2(),
       };
     },
     patch: function(body){
