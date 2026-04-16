@@ -17,7 +17,7 @@
     post: function(payload) {
       return {
         uri: 'bureau/backlogAllocate/replies',
-        body: replaceAllObjKeys(payload, _.snakeCase),
+        body: _.mapKeys(payload, (value, key) => _.snakeCase(key)),
         transform: basicDataTransform2
       }
     }

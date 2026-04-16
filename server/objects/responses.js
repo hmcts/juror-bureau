@@ -4,6 +4,7 @@
   const { DAO } = require('./dataAccessObject');
   const moment = require('moment');
   const urljoin = require('url-join');
+  const { mapSnakeToCamel } = require('../lib/mod-utils');
 
   const statusMapping = {
     TODO: function() {
@@ -70,6 +71,7 @@
 
   const getAllTransform = function() {
     return function(body) {
+      body = mapSnakeToCamel(body);
       var responseData = {
         items: [],
         counts: {

@@ -20,7 +20,7 @@
 
       return {
         uri: urljoin(this.resource, jurorNumber),
-        body: replaceAllObjKeys(tmpBody, _.snakeCase),
+        body: tmpBody,
         transform: basicDataTransform2,
       }
     }
