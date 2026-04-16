@@ -5,7 +5,7 @@
   const urljoin = require('url-join');
   const { DAO } = require('./dataAccessObject');
   const { basicDataTransform2 } = require('../lib/utils');
-  const { replaceAllObjKeys } = require('../lib/mod-utils');
+  const { replaceAllObjKeys, mapSnakeToCamel, mapCamelToSnake } = require('../lib/mod-utils');
 
 
   module.exports.messageTemplateDAO = new DAO('moj/messages/view', {
@@ -21,7 +21,7 @@
     post: function(messageType, locCode, body) {
       return {
         uri: this.resource.replace('{messageType}', messageType).replace('{locCode}', locCode),
-        body: replaceAllObjKeys(body, _.snakeCase),
+        body: mapCamelToSnake(body),
         transform: basicDataTransform2
       };
     }
@@ -43,8 +43,8 @@
 
       return { 
         uri,
-        body: replaceAllObjKeys(_body, _.snakeCase),
-        transform: basicDataTransform2
+        body: _.mapKeys(_body, (__, key) => _.snakeCase(key)),
+        transform: mapSnakeToCamel
       };
     }
   });
