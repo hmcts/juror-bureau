@@ -30,7 +30,7 @@
     "@ministryofjustice/frontend": "^5.2.1",
     "accessible-autocomplete": "^3.0.1",
     "applicationinsights": "^2.9.8",
-    "axios": "^1.13.6",
+    "axios": "^1.15.0",
     "basic-auth": "^2.0.1",
     "body-parser": "^2.2.2",
     "chart.js": "^2.9.4",
