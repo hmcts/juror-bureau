@@ -165,7 +165,7 @@
     const pool = req.params.poolNumber || req.session.jurorCommonDetails.poolNumber;
     const payload = {
       completionDate: dateFilter(req.body.completionDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
-      selectedJurors: req.body.selectedJurors,
+      jurorNumbers: req.body.selectedJurors,
     };
     
     completeService.patch(req, pool, payload).then(() => {
