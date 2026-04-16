@@ -50,11 +50,9 @@
         body.lastName = pr.pendingLastName;
       }
 
-      console.log('\n\n', replaceAllObjKeys(body, _.snakeCase), '\n\n');
-
       return {
         uri: this.resource,
-        body: replaceAllObjKeys(body, _.snakeCase),
+        body,
         transform: basicDataTransform2,
       }
     },
