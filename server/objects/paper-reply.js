@@ -5,7 +5,7 @@
   const urljoin = require('url-join');
   const _ = require('lodash');
   const { basicDataTransform2 } = require('../lib/utils');
-  const { extractDataAndHeadersFromResponse, replaceAllObjKeys } = require('../lib/mod-utils');
+  const { extractDataAndHeadersFromResponse, replaceAllObjKeys, extractDataAndHeadersFromResponse2 } = require('../lib/mod-utils');
 
   module.exports.paperReplyObject = new DAO('moj/juror-paper-response/response', {
     post: function(pr) {
@@ -59,7 +59,7 @@
     get: function(jurorNumber) {
       return {
         uri: urljoin('moj/juror-paper-response/juror', jurorNumber),
-        transform: replaceAllObjKeys(extractDataAndHeadersFromResponse('data'), _.camelCase),
+        transform: extractDataAndHeadersFromResponse2('data'),
       }
     }
   });

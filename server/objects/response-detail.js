@@ -4,6 +4,7 @@
   const { DAO } = require('./dataAccessObject');
   const moment = require('moment');
   const urljoin = require('url-join');
+  const { mapSnakeToCamel } = require('../lib/mod-utils');
   
   const processingStatusMapping = {
     TODO: 'To do',
@@ -41,9 +42,12 @@
 
   const getSingleTransform = function(body, hasModAccess) {
     const { dateFilter } = require('../components/filters');
+
+    body = mapSnakeToCamel(body);
+
     var newObj = body;
 
-    newObj.currentOwner = body.current_owner;
+    newObj.currentOwner = body.currentOwner;
     newObj.read = (newObj.processingStatus !== 'unread');
     newObj.dateReceived = moment(newObj.dateReceived).format('DD/MM/YYYY');
     newObj.hearingDate = newObj.hearingDate !== null
