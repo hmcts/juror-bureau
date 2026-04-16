@@ -9,7 +9,7 @@
   module.exports.searchResponsesDAO = new DAO('moj/juror-response/retrieve', {
     post: (payload) => {
       return {
-        uri: this.resource,
+        uri: 'moj/juror-response/retrieve',
         body: replaceAllObjKeys(payload, _.snakeCase),
         transform: basicDataTransform2,
       };
