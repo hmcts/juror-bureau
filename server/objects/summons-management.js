@@ -54,7 +54,7 @@
         patch: function(body) {
           return {
             uri: uri,
-            body: replaceAllObjKeys(body, _.snakeCase),
+            body,
             transform: basicDataTransform2,
           };
         },
