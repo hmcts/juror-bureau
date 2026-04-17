@@ -38,7 +38,7 @@
             }
           }
           .legend {
-            @include govuk-font($size: 14);
+            @include govuk-font($size: 16);
             font-weight: bold;
           }
         }
@@ -51,7 +51,7 @@
         display: grid;
         align-content: space-around;
         gap: 5px;
-        @include govuk-font($size: 14);
+        @include govuk-font($size: 16);
         font-weight: bold;
     
         div.legend {
