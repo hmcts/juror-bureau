@@ -85,7 +85,7 @@
     try {
       const payload = {
         code: req.body.disqualifyReason,
-        replyMethod: req.params.type,
+        replyMethod: req.params.type.toUpperCase(),
       };
 
       await disqualifyJuror.patch(req, req.params.id, payload);

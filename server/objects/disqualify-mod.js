@@ -14,7 +14,7 @@
     patch: function(jurorNumber, payload) {
       return {
         uri: urljoin(this.resource, jurorNumber),
-        body: replaceAllObjKeys(payload, _.snakeCase),
+        body: payload,
         transform: basicDataTransform2,
       }
     }
