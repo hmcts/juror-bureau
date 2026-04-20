@@ -841,7 +841,7 @@
     // we need to store the location code because we need it to be able to visit the juror record page
     req.session.locCode = modUtils.getCurrentActiveCourt(req, {
       poolNumber: responseClone.poolNumber,
-      currentOwner: responseClone.current_owner,
+      currentOwner: responseClone.currentOwner,
     });
 
     responseClone.statusRender = response[0].data.jurorStatus;
