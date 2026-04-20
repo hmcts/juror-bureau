@@ -299,8 +299,8 @@ function renderHistoryItems(app, req, res, data){
         bureauSummoning: data.bureauSummoning,
         poolSummary: data.poolSummary,
         additionalStatistics: data.additionalStatistics,
-        isNil: data.poolDetails.is_nil_pool,
-        currentOwner: data.poolDetails.current_owner,
+        isNil: data.poolDetails.isNilPool,
+        currentOwner: data.poolDetails.currentOwner,
         currentTab: 'history',
         navData: _.clone(req.session.poolManagementNav),
       });
