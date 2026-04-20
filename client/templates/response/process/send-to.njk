@@ -88,7 +88,7 @@
           <ul class="govuk-list">
             {% if source == "search" %}
               {% for response in responses %}
-                <li>{{ response.jurorNameDisplay }}</li>
+                <li>{{ response.jurorName }}</li>
               {% endfor %}
             {% else %}
               {% for responseName in responseNames %}
