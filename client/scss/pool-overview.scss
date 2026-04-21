@@ -106,13 +106,13 @@
     
     &__chart {
       padding: 0 92px;
-      border-right: solid 1px $govuk-border-colour;
+      border-right: solid 1px govuk-functional-colour(border);
     }
 
     &__jurors-required {
       padding: 0 50px 0 0;
       margin: 0 50px 0 0;
-      border-right: solid 1px $govuk-border-colour;
+      border-right: solid 1px govuk-functional-colour(border);
     }
   }
 }

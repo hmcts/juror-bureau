@@ -122,8 +122,8 @@ $navbar-height: 50px;
       }
 
       @include focus-and-focus-visible {
-        background: $govuk-focus-colour;
-        color: $govuk-text-colour;
+        background: govuk-functional-colour(focus);
+        color: govuk-functional-colour(text);
 
         &:after {
           background: govuk-colour("black");
@@ -131,9 +131,9 @@ $navbar-height: 50px;
 
         .moj-header__navigation-toggle-button-inner {
           @include button-pipes(1px solid $button-pipe-colour, 1px solid $button-pipe-colour);
-          border-color: $govuk-focus-colour;
+          border-color: govuk-functional-colour(focus);
           &:before {
-            @include chevron($govuk-text-colour);
+            @include chevron(govuk-functional-colour(text));
           }
         }
       }
@@ -143,15 +143,15 @@ $navbar-height: 50px;
         background: none;
 
         &:hover:not(.moj-header__navigation-open-button):not(:focus-visible) {
-          color: $govuk-border-colour;
+          color: govuk-functional-colour(border);
           
           &:after {
-            background: $govuk-border-colour;
+            background: govuk-functional-colour(border);
           }
           
           .moj-header__navigation-toggle-button-inner {
             &:before {
-              @include chevron($govuk-border-colour);
+              @include chevron(govuk-functional-colour(border));
             }
           }
         }
@@ -198,7 +198,7 @@ $navbar-height: 50px;
       }
 
       &:hover {
-        color: $govuk-border-colour;
+        color: govuk-functional-colour(border);
       }
 
       @include focus-not-focus-visible {
@@ -207,39 +207,39 @@ $navbar-height: 50px;
       }
 
       @include focus-and-focus-visible {
-        background: $govuk-focus-colour;
-        color: $govuk-text-colour;
+        background: govuk-functional-colour(focus);
+        color: govuk-functional-colour(text);
       }
     }
 
     &-open-button {
       @include focus-not-focus-visible {
         background-color: $colour-light-grey;
-        color: $govuk-link-colour;
+        color: govuk-functional-colour(link);
         
         .moj-header__navigation-toggle-button-inner {
           &:before {
-            @include chevron($govuk-link-colour);
+            @include chevron(govuk-functional-colour(link));
             @include prefixed-transform($rotate: 225deg, $translateY: 1px);
           }
           
-          color: $govuk-link-colour;
+          color: govuk-functional-colour(link);
           border-color: $colour-light-grey;
         }
         
         &:after {
-          background: $govuk-link-colour;
+          background: govuk-functional-colour(link);
         }
       }
       
       @include focus-and-focus-visible {
         .moj-header__navigation-toggle-button-inner {
-          color: $govuk-text-colour;
+          color: govuk-functional-colour(text);
           &:before {
             @include prefixed-transform($rotate: 225deg, $translateY: 1px);
           }
           
-          border-color: $govuk-focus-colour;
+          border-color: govuk-functional-colour(focus);
         }
       }
 
@@ -254,7 +254,7 @@ $navbar-height: 50px;
       right: 0;
       width: 100%;
       height: auto;
-      color: $govuk-text-colour;
+      color: govuk-functional-colour(text);
       background-color: $colour-light-grey;
 
       ul {
