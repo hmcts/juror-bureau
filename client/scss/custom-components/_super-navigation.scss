@@ -214,7 +214,7 @@ $navbar-height: 50px;
 
     &-open-button {
       @include focus-not-focus-visible {
-        background-color: govuk-colour("light-grey");
+        background-color: $colour-light-grey;
         color: $govuk-link-colour;
         
         .moj-header__navigation-toggle-button-inner {
@@ -224,7 +224,7 @@ $navbar-height: 50px;
           }
           
           color: $govuk-link-colour;
-          border-color: govuk-colour("light-grey");
+          border-color: $colour-light-grey;
         }
         
         &:after {
@@ -244,7 +244,7 @@ $navbar-height: 50px;
       }
 
       .moj-header__navigation-toggle-button-inner {
-        border-color: govuk-colour("light-grey");
+        border-color: $colour-light-grey;
       }
     }
 
@@ -255,7 +255,7 @@ $navbar-height: 50px;
       width: 100%;
       height: auto;
       color: $govuk-text-colour;
-      background-color: govuk-colour("light-grey");
+      background-color: $colour-light-grey;
 
       ul {
         @include govuk-media-query($until: desktop) {

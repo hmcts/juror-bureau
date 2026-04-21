@@ -14,7 +14,7 @@ const stylings = {
   heading: { fontSize: 14, bold: true },
   noBorders: { border: [false, false, false, false] },
   blackBg: { fontSize: 10, fillColor: '#0b0c0c', color: '#ffffff' },
-  grayBg: { fontSize: 10, fillColor: '#f3f2f1' },
+  grayBg: { fontSize: 10, fillColor: '#F3F3F3' },
   whiteBg: { fontSize: 10, fillColor: '#ffffff' },
   leftCol: { bold: true, width: '80%' },
   borderLeft: { border: [true, false, false, false], borderColor },

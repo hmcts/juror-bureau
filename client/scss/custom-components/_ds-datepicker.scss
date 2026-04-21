@@ -148,8 +148,8 @@
 
 .ds_button:focus {
   background-color: $govuk-focus-colour;
-  box-shadow: 0 3px  govuk-colour("dark-grey");
-  color:  govuk-colour("dark-grey");
+  box-shadow: 0 3px  $colour-dark-grey;
+  color:  $colour-dark-grey;
   outline: 0;
   // transition-duration: 0s
 }
@@ -205,7 +205,7 @@
   clear: both;
   display: none;
   padding: 8px;
-  outline: 1px solid govuk-colour("mid-grey");
+  outline: 1px solid $colour-mid-grey;
   outline-offset: -1px;
   position: static;
   top: 0;
@@ -248,7 +248,7 @@
 
 .ds_datepicker__dialog__navbuttons button {
   background-color: transparent;
-  color: govuk-colour("dark-grey")!important;
+  color: $colour-dark-grey!important;
   font-weight: 400;
   min-height: 40px;
   margin: 0;
@@ -263,8 +263,8 @@
 
 .ds_datepicker__dialog__navbuttons button:focus {
   background-color: $govuk-focus-colour;
-  box-shadow: inset 0 -3px govuk-colour("dark-grey"),inset 0 -3px govuk-colour("dark-grey");
-  color: govuk-colour("dark-grey");
+  box-shadow: inset 0 -3px $colour-dark-grey,inset 0 -3px $colour-dark-grey;
+  color: $colour-dark-grey;
 }
 
 @media screen and (forced-colors:active) and (prefers-contrast:more) {
@@ -338,8 +338,8 @@
 
 .ds_datepicker__dialog__table button:focus {
   background-color: $govuk-focus-colour;
-  box-shadow: inset 0 -3px govuk-colour("dark-grey"),inset 0 -3px govuk-colour("dark-grey");
-  color: govuk-colour("dark-grey")
+  box-shadow: inset 0 -3px $colour-dark-grey,inset 0 -3px $colour-dark-grey;
+  color: $colour-dark-grey
 }
 
 @media screen and (forced-colors:active) and (prefers-contrast:more) {
@@ -355,17 +355,17 @@
 }
 
 .ds_datepicker__dialog__table button[disabled=true] {
-  background-color: govuk-colour("light-grey");
-  color: govuk-colour("dark-grey")
+  background-color: $colour-light-grey;
+  color: $colour-dark-grey
 }
 
 .ds_datepicker__dialog__table button.ds_datepicker__current {
-  outline: 2px solid govuk-colour("dark-grey")!important;
+  outline: 2px solid $colour-dark-grey!important;
   outline-offset: -2px
 }
 
 .ds_datepicker__dialog__table button.ds_datepicker__current[tabindex="-1"] {
-  background: govuk-colour("light-grey");
+  background: $colour-light-grey;
   color: currentColor
 }
 
@@ -386,7 +386,7 @@
 }
 
 .ds_datepicker__dialog__table button.ds_selected:not(:focus) {
-  background-color: govuk-colour("dark-grey");
+  background-color: $colour-dark-grey;
   color: govuk-colour("white")
 }
 

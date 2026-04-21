@@ -69,7 +69,7 @@
         div.divider {
           width: 100%;
           height: 1px;
-          background-color: #B1B4B6;
+          background-color: $colour-mid-grey;
         }
     
         .bullet {
@@ -82,25 +82,25 @@
           border-radius: 100%;
 
           &__mid-grey {
-            background-color: govuk-colour("mid-grey");
+            background-color: $colour-mid-grey;
           }
           &__blue {
             background-color: govuk-colour("blue");
           }
           &__pink {
-            background-color: govuk-colour("pink");
+            background-color: govuk-colour("magenta", $variant: "primary");
           }
           &__brown {
             background-color: govuk-colour("brown");
           }
           &__bright-purple {
-            background-color: govuk-colour("bright-purple");
+            background-color: govuk-colour("magenta", $variant: "shade-25");
           }
           &__orange {
             background-color: govuk-colour("orange");
           }
           &__unresolved {
-            background: linear-gradient(-45deg,  govuk-colour("mid-grey") 0%,govuk-colour("mid-grey") 50%, govuk-colour("light-grey") 50%, govuk-colour("light-grey") 100%);
+            background: linear-gradient(-45deg,  $colour-mid-grey 0%, $colour-mid-grey 50%, $colour-light-grey 50%, $colour-light-grey 100%);
           }
         }
       }

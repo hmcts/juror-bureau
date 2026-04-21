@@ -10,6 +10,11 @@ $moj-page-width: 1500px !default;
 @import "node_modules/govuk-frontend/dist/govuk/index.scss";
 @import "node_modules/@ministryofjustice/frontend/moj/all.scss";
 
+$colour-turquoise: govuk-colour("teal", $variant: "primary");
+$colour-dark-grey: govuk-colour("black", $variant: "tint-25");
+$colour-mid-grey: govuk-colour("black", $variant: "tint-80");
+$colour-light-grey: govuk-colour("black", $variant: "tint-95");
+
 @import "dashboard.scss";
 @import "jd-custom.scss";
 @import "mod-custom.scss";

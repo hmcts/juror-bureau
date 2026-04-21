@@ -127,7 +127,7 @@ const bespokeReportTablePrint = {
         }
         poolTrial.push({
           body: [[
-            {text: 'Total unpaid attendances for ' + key + ': ' + counter, style: 'label', fillColor: '#F3F2F1'},
+            {text: 'Total unpaid attendances for ' + key + ': ' + counter, style: 'label', fillColor: '#F3F2#F3F3F3F1'},
           ]],
           widths:['100%'],
           margin: [0, 0, 0, 0],
@@ -170,24 +170,24 @@ const bespokeReportTablePrint = {
       });
       rows.push([
         {
-          text: 'Weekly total', bold: true, fillColor: '#F3F2F1',
+          text: 'Weekly total', bold: true, fillColor: '#F3F3F3',
         },
         {
-          text: week.weeklyTotalJurorWorkingDays.toString(), bold: true, fillColor: '#F3F2F1',
+          text: week.weeklyTotalJurorWorkingDays.toString(), bold: true, fillColor: '#F3F3F3',
         },
         {
-          text: week.weeklyTotalSittingDays.toString(), bold: true, fillColor: '#F3F2F1',
+          text: week.weeklyTotalSittingDays.toString(), bold: true, fillColor: '#F3F3F3',
         },
         {
-          text: week.weeklyTotalAttendanceDays.toString(), bold: true, fillColor: '#F3F2F1',
+          text: week.weeklyTotalAttendanceDays.toString(), bold: true, fillColor: '#F3F3F3',
         },
         {
-          text: week.weeklyTotalNonAttendanceDays.toString(), bold: true, fillColor: '#F3F2F1',
+          text: week.weeklyTotalNonAttendanceDays.toString(), bold: true, fillColor: '#F3F3F3',
         },
         {
           text: `${(Math.round(week.weeklyTotalUtilisation * 100) / 100).toString()}%`,
           bold: true,
-          fillColor: '#F3F2F1',
+          fillColor: '#F3F3F3',
         },
       ]);
     });
@@ -467,18 +467,18 @@ const bespokeReportTablePrint = {
           {
             text: 'Daily sub total',
             bold: true,
-            fillColor: '#F3F2F1'
+            fillColor: '#F3F3F3'
           },
           {
             text: tableDataMappers['BigDecimal'](data['totalApprovedSum']),
             bold: true,
-            fillColor: '#F3F2F1',
+            fillColor: '#F3F3F3',
             alignment: 'right',
           }
         ] : [
           {
             text: 'No payments authorised',
-            color: '#505A5F',
+            color: '#484949',
             colspan: 2
           },
           {}
@@ -521,16 +521,16 @@ const bespokeReportTablePrint = {
       },
       {
         body: [[
-          { text: 'Bacs and cheque', bold: true, fillColor: '#F3F2F1' },
-          { text: toMoney(bacsTotal), bold: true, alignment: 'right', fillColor: '#F3F2F1' },
+          { text: 'Bacs and cheque', bold: true, fillColor: '#F3F3F3' },
+          { text: toMoney(bacsTotal), bold: true, alignment: 'right', fillColor: '#F3F3F3' },
         ]],
         widths:['50%', '50%'],
         margin: [0, 0, 0, 0],
       },
       {
         body: [[
-          { text: 'Cash', bold: true, fillColor: '#F3F2F1' },
-          { text: toMoney(cashTotal), bold: true, alignment: 'right', fillColor: '#F3F2F1' },
+          { text: 'Cash', bold: true, fillColor: '#F3F3F3' },
+          { text: toMoney(cashTotal), bold: true, alignment: 'right', fillColor: '#F3F3F3' },
         ]],
         widths:['50%', '50%'],
         margin: [0, 0, 0, 0],

@@ -71,7 +71,7 @@
 
 .jd-assign-replies-urgent {
   display: inline-block;
-  color: #912b88;
+  color: govuk-colour("magenta", $variant: "shade-25");
   margin-right: 30px;
   min-width: 150px;
 }
@@ -86,7 +86,7 @@
   width: 175px;
   min-width: 120px;
   margin-right: 20px;
-  background-color: #f3f2f1;
+  background-color: $colour-light-grey;
   vertical-align: middle;
   padding-top: 9px;
   padding-left: 10px;
@@ -99,7 +99,7 @@
 }
 
 .jd-assign-replies-border-urgent {
-  border-left: 7px solid #912b88;
+  border-left: 7px solid govuk-colour("magenta", $variant: "shade-25");
 }
 
 .jd-assign-replies-border-standard {
@@ -501,7 +501,7 @@ textarea.modal-textarea {
 
 .datepicker-noselect {
   background-color: white;
-  color: #b1b4b6;
+  color: $colour-mid-grey;
 }
 
 div#bn_prev {
