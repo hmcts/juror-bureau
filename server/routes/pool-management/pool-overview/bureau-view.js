@@ -8,6 +8,8 @@ module.exports = function(app, req, res, pool, membersList, _errors, selectedJur
   const { poolNumber } = req.params;
   const { status } = req.query;
 
+  console.log('\n\n', pool, membersList, '\n\n');
+
   let assignUrl = app.namedRoutes.build('pool-overview.reassign.post', { poolNumber });
   let transferUrl = app.namedRoutes.build('pool-overview.transfer.post', { poolNumber });
   let completeServiceUrl = app.namedRoutes.build('pool-overview.complete-service.post', { poolNumber });
