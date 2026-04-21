@@ -9,7 +9,7 @@
 {% block page_title %}{{ serviceName }} - {{ subServiceName }}{% endblock %}
 {% block page_identifier %}{{ pageIdentifier }}{% endblock %}
 
-{% block beforeContent %}
+{% block containerStart %}
   {{ govukBackLink({
     text: "Back",
     href: backLinkUrl,

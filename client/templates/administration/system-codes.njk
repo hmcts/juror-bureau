@@ -10,7 +10,7 @@
 {% set currentApp = "Court administration" if isCourtUser else ("Bureau administration" if isBureauUser else "System administration") %} 
 {% set nav = "systemCodes" %}
 
-{% block beforeContent %}
+{% block containerStart %}
   {% include "includes/back-link.njk" %}
 {% endblock %}
 

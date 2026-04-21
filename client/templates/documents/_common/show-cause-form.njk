@@ -12,7 +12,7 @@
 {% block page_title %}{{ serviceName }} - Documents - {{pageIdentifier}}{% endblock %}
 {% block page_identifier %}Documents - {{pageIdentifier}}{% endblock %}
 
-{% block beforeContent %}
+{% block containerStart %}
   {% if urlParams.jurorNumber === undefined %}
   {{ govukBackLink({
     text: "Back to all documents",

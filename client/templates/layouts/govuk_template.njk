@@ -126,12 +126,15 @@
     {# main content #}
     <div class="govuk-width-container ">
 
-      {% block beforeContent %}{% endblock %}
+      {% block containerStart %}{% endblock %}
+      {% block container %}
       <main class="govuk-main-wrapper " id="main-content" role="main">
 
         {% include "includes/password_feedback.njk" %}
         {% block content %}{% endblock %}
       </main>
+      {% endblock %}
+      {% block containerEnd %}{% endblock %}
     </div>
 
     {# footer #}
