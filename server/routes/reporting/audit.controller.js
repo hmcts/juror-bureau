@@ -49,7 +49,7 @@ const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../object
     const jurorBank = await jurorBankDetailsDAO.get(
       req,
       req.params.jurorNumber
-    ).response;
+    );
     const jurorDefault = mapSnakeToCamel(await defaultExpensesDAO.get(
       req,
       req.params.locCode,
