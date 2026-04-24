@@ -425,8 +425,6 @@
         R: 'Anabledd dysgu',
       };
 
-      const printer = new pdfMake(fonts);
-
       // Map response data to PDF data
       let jurorData = {};
 
@@ -598,19 +596,12 @@
         docDef = pdfExport.getPdfDocumentDescription(jurorData, (responseData.welsh === true ? welshLanguageText : englishLanguageText));
       }
 
-      const pdfDoc = printer.createPdfKitDocument(docDef);
+      pdfMake.addFonts(fonts);
 
-      let chunks = [];
-      pdfDoc.on('data', function(data) {
-        chunks.push(data);
-      });
-
-      pdfDoc.on('end', function() {
-        const result = Buffer.concat(chunks);
+      pdfMake.createPdf(docDef).getBuffer().then((buffer) => {
         res.contentType('application/pdf');
-        res.send(result);
+        res.send(buffer);
       });
-      pdfDoc.end();
     } catch (err) {
       app.logger.crit('Could not generate PDF document: ', {
         auth: req.session.authentication,
