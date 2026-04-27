@@ -88,7 +88,7 @@
     "csurf/cookie": "0.7.0",
     "lodash": "4.17.23",
     "qs": "6.14.2",
-    "tar": "7.5.9"
+    "tar": "7.5.11"
   },
   "packageManager": "yarn@4.10.3"
 }
