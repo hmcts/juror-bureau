@@ -1,0 +1,63 @@
+@startuml postponed-list-report
+
+skinparam Style strictuml 
+skinparam SequenceMessageAlignment center
+
+participant Actor
+
+''' LOCAL ROUTING
+participant "Statistics page" as HomePage <</statistics>>
+participant "Postponed list report" as SelectPage <</reporting/postponed/search>>
+participant "Standard report renderer (by date)" as ReportDatePage <</reporting/postponed-date/report/dateRange>>
+participant "Standard report renderer (by pool)" as ReportPoolPage <</reporting/postponed-pool/report/{poolNumber}>>
+participant "Postponed list (by pool)" as PoolPage <</reporting/postponed-pool>>
+
+''' CONTROLLER AND REQUEST OBJECTS
+participant "Incomplete service controller" as Controller <<postponed.controller.js>> #LightYellow
+
+''' TEMPLATES
+participant "Incomplete service template" as Template <<reporting/standard-reports/search-by/postponed.njk>> #lavender
+
+participant "'Report Search By' Validator" as Validator
+
+
+Actor -> HomePage : Click 'Postponed list'
+
+' Select renderer
+HomePage -> Controller : call page controller
+Controller -> Template : request and build template
+Controller <- Template : return HTML
+SelectPage <- Controller : return HTML
+Actor <- Controller : return and render HTML
+|||
+
+Actor -> SelectPage : Submit form details
+SelectPage -> Controller : call page controller
+Controller -> Validator : validation form
+
+alt Invalid form data
+  Controller <-- Validator : invalid form data
+  Controller -> Template : request and build template
+  Controller <- Template : return HTML
+  SelectPage <- Controller : return HTML
+  Actor <- Controller : return and render HTML with error message
+end
+|||
+
+Controller <- Validator : valid form data
+
+alt Date range selected
+  ReportDatePage <- Controller : invoke standard report renderer
+
+  Actor <-- ReportDatePage : report displayed by standard renderer
+else Pool number selected
+  PoolPage <- Controller : invoker standard report filter renderer
+  activate PoolPage
+
+  ReportPoolPage <-- PoolPage : standard renderer flow
+  deactivate PoolPage
+  activate ReportPoolPage
+
+  Actor <-- ReportPoolPage : report displayed by standard renderer
+  deactivate ReportPoolPage
+end
