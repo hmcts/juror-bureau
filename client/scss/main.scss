@@ -1,3 +1,8 @@
+
+
+@import "node_modules/govuk-frontend/dist/govuk/index.scss";
+@import "node_modules/@ministryofjustice/frontend/moj/all.scss";
+
 // override font family
 $govuk-font-family: helvetica, arial, sans-serif;
 
@@ -7,8 +12,11 @@ $govuk-page-width: 1500px;
 // override moj toolkit page width
 $moj-page-width: 1500px !default;
 
-@import "node_modules/govuk-frontend/dist/govuk/index.scss";
-@import "node_modules/@ministryofjustice/frontend/moj/all.scss";
+// overriding moj notification badge to blue
+.moj-notification-badge {
+  margin-right: 4px;
+  outline: 4px solid #1D70B8;
+}
 
 $colour-turquoise: govuk-colour("teal", $variant: "primary");
 $colour-dark-grey: govuk-colour("black", $variant: "tint-25");
