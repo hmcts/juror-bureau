@@ -133,8 +133,8 @@
       'traveledByCar': isCarChecked,
       'traveledByMotorcycle': isMotorcycleChecked,
       'traveledByBicycle': isBicycleChecked,
-      'jurorsTakenByCar': parseFloatOrZero(carPassengers),
-      'jurorsTakenByMotorcycle': parseFloatOrZero(motoPassengers),
+      'jurorsTakenCar': parseFloatOrZero(carPassengers),
+      'jurorsTakenMotorcycle': parseFloatOrZero(motoPassengers),
       'milesTraveled': parseFloatOrZero(milesTravelled),
       parking: parseFloatOrZero(parking),
       'publicTransport': parseFloatOrZero(publicTransport),
@@ -158,7 +158,7 @@
     var otherCosts = $('#otherCosts').val();
 
     data['financialLoss'] = {
-      'lossOfEarnings': parseFloatOrZero(lossOfEarnings),
+      'lossOfEarningsOrBenefits': parseFloatOrZero(lossOfEarnings),
       'extraCareCost': parseFloatOrZero(extraCareCosts),
       'otherCost': parseFloatOrZero(otherCosts),
     };

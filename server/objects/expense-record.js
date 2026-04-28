@@ -50,6 +50,7 @@ const { basicDataTransform2 } = require('../lib/utils');
 
   module.exports.postEditedExpensesDAO = new DAO(endpoint, {
     put: function(locCode, jurorNumber, expenseType, body) {
+      console.log('Submitting edited expenses with body', body);
       return { 
         uri: urljoin(this.resource.replace('{locCode}', locCode), jurorNumber, expenseType, 'edit'),
         body: mapCamelToSnake(body),

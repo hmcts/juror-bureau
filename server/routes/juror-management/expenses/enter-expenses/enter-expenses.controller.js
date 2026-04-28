@@ -241,6 +241,8 @@
           'expenseList': [{ ...data }],
         };
 
+        console.log('Payload to recalculate summary totals', JSON.stringify(payload, null, 2));
+
         await postRecalculateSummaryTotalsDAO.post(req, locCode, jurorNumber, payload);
       } catch (err) {
         if (err.error && err.error.code === 'EXPENSES_CANNOT_BE_LESS_THAN_ZERO') {
@@ -535,8 +537,8 @@
           payAttendance: body.payAttendance,
         },
         financialLoss: {
-          lossOfEarnings: body.lossOfEarnings,
-          extraCareCosts: body.extraCareCosts,
+          lossOfEarningsOrBenefits: body.lossOfEarnings,
+          extraCareCost: body.extraCareCosts,
           otherCosts: body.otherCosts,
           otherCostsDescription: body.otherCostsDescription,
         },
@@ -553,8 +555,8 @@
           traveledByCar: false,
           traveledByMotorcycle: false,
           traveledByBicycle: false,
-          jurorsTakenByCar: body.carPassengers,
-          jurorsTakenByMotorcycle: body.motoPassengers,
+          jurorsTakenCar: body.carPassengers,
+          jurorsTakenMotorcycle: body.motoPassengers,
           milesTraveled: body.milesTravelled,
           parking: body.parking,
           publicTransport: body.publicTransport,
@@ -565,8 +567,8 @@
           smartCardAmount: body.smartcardSpend,
         },
         financialLoss: {
-          lossOfEarnings: body.lossOfEarnings,
-          extraCareCosts: body.extraCareCosts,
+          lossOfEarningsOrBenefits: body.lossOfEarnings,
+          extraCareCost: body.extraCareCosts,
           otherCosts: body.otherCosts,
           otherCostsDescription: body.otherCostsDescription,
         },
@@ -588,8 +590,8 @@
     if (data.attendanceType === 'NON_ATTENDANCE') {
       formData = {
         payAttendance: data.time.payAttendance,
-        lossOfEarnings: data.financialLoss.lossOfEarnings,
-        extraCareCosts: data.financialLoss.extraCareCosts,
+        lossOfEarnings: data.financialLoss.lossOfEarningsOrBenefits,
+        extraCareCosts: data.financialLoss.extraCareCost,
         otherCosts: data.financialLoss.otherCosts,
         otherCostsDescription: data.financialLoss.otherCostsDescription,
       };
@@ -601,14 +603,14 @@
         'totalTravelTime-minute': totalTravelTimeMinute,
         payAttendance: data.time.payAttendance,
         travelType: data.travelType,
-        carPassengers: data.travel.jurorsTakenByCar,
-        motoPassengers: data.travel.jurorsTakenByMotorcycle,
+        carPassengers: data.travel.jurorsTakenCar,
+        motoPassengers: data.travel.jurorsTakenMotorcycle,
         milesTravelled: data.travel.milesTraveled,
         parking: data.travel.parking,
         publicTransport: data.travel.publicTransport,
         taxi: data.travel.taxi,
-        lossOfEarnings: data.financialLoss.lossOfEarnings,
-        extraCareCosts: data.financialLoss.extraCareCosts,
+        lossOfEarnings: data.financialLoss.lossOfEarningsOrBenefits,
+        extraCareCosts: data.financialLoss.extraCareCost,
         otherCosts: data.financialLoss.otherCosts,
         otherCostsDescription: data.financialLoss.otherCostsDescription,
         smartcardSpend: data.foodAndDrink.smartCardAmount,
