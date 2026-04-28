@@ -241,8 +241,6 @@
           'expenseList': [{ ...data }],
         };
 
-        console.log('Payload to recalculate summary totals', JSON.stringify(payload, null, 2));
-
         await postRecalculateSummaryTotalsDAO.post(req, locCode, jurorNumber, payload);
       } catch (err) {
         if (err.error && err.error.code === 'EXPENSES_CANNOT_BE_LESS_THAN_ZERO') {

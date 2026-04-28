@@ -36,8 +36,6 @@
       getDraftExpensesDAO.get(req, jurorNumber, locCode)
         .then(async function({ response: expenseData, headers }) {
 
-          console.log('\nDraft expenses data: ', expenseData, '\n');
-
           req.session.draftExpensesEtag = headers.etag;
 
           app.logger.info('Fetched draft expenses for juror: ', {
