@@ -1,28 +1,15 @@
-
-
-@import "node_modules/govuk-frontend/dist/govuk/index.scss";
-@import "node_modules/@ministryofjustice/frontend/moj/all.scss";
-
-// override font family
-$govuk-font-family: helvetica, arial, sans-serif;
-
 // override gds toolkit page width
 $govuk-page-width: 1500px;
 
 // override moj toolkit page width
 $moj-page-width: 1500px !default;
 
-// overriding moj notification badge to blue
-.moj-notification-badge {
-  margin-right: 4px;
-  outline: 4px solid #1D70B8;
-}
 
-$colour-turquoise: govuk-colour("teal", $variant: "primary");
-$colour-dark-grey: govuk-colour("black", $variant: "tint-25");
-$colour-mid-grey: govuk-colour("black", $variant: "tint-80");
-$colour-light-grey: govuk-colour("black", $variant: "tint-95");
+@import "node_modules/govuk-frontend/dist/govuk/index.scss";
+@import "node_modules/@ministryofjustice/frontend/moj/all.scss";
 
+@import "gds-override.scss";
+@import "moj-override.scss";
 @import "dashboard.scss";
 @import "jd-custom.scss";
 @import "mod-custom.scss";
