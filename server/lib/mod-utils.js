@@ -131,6 +131,13 @@
           sort: sortBy === 'jurorsInPool' ? order : 'none',
         }),
       });
+      if (tab === 'court') {
+        table.head.splice(3, 0, {
+          id: 'respondedJurors',
+          value: 'Responded jurors',
+          sort: sortBy === 'respondedJurors' ? order : 'none',
+        });
+      }
     }
 
     // prepare the table rows
@@ -144,6 +151,9 @@
         }
         , getNumberConfirmed = function() {
           return (tab === 'bureau') ? pool.confirmedJurors : pool.jurorsInPool;
+        }
+        , getNumberResponded = function() {
+          return (pool.respondedJurors !== undefined) ? pool.respondedJurors : pool.responded_jurors || 0;
         };
 
       // build a row object (each row needs to be its own array)
@@ -211,6 +221,15 @@
           },
           classes: 'jd-middle-align',
         });
+      if (tab === 'court') {
+        item.splice(3, 0, {
+          text: getNumberResponded(),
+          attributes: {
+            'data-sort-value': getNumberResponded(),
+          },
+          classes: 'jd-middle-align',
+        });
+        }
       }
 
       table.rows.push(item);
