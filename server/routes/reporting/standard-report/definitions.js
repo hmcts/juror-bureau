@@ -17,24 +17,7 @@
     overdueUtilisationReportDAO,
     digitalResponsesCompletedReportDAO
   } = require('../../../objects/reports');
-
-  const makeLink = (app) => {
-    return {
-      poolNumber: (poolNumber) => {
-        return `<a class='govuk-link govuk-link--no-visited-state' href='${app.namedRoutes.build('pool-overview.get', {poolNumber: poolNumber})}'>Pool ${poolNumber}</a>`
-      }
-    }
-  }
-
-  const addTrialJurorSelectionHeader = (req = null) => {
-    return {
-      jurorSelection: {
-        displayName: 'Juror selection',
-        dataType: 'String',
-        value: req?.query?.currentTrialJurors === 'true' ? 'Current jurors' : 'All jurors',
-      }
-    };
-  };
+  const { makeLink, addTrialJurorSelectionHeader, splitPoolNumberHeading } = require('./utils');
 
   // type IReportKey = {
   //   [key: string]: {
@@ -542,7 +525,8 @@
         grouped: {
           headings: {
             transformer: (data, isPrint) => {
-              const [attendanceDate, poolType] = data.split(',');
+              const [attendanceDate, poolType] = splitPoolNumberHeading(data);
+
               const formattedAttendanceDate = dateFilter(attendanceDate, 'YYYY-mm-dd', 'dddd D MMMM YYYY');
 
               if (isPrint) {
@@ -1002,7 +986,7 @@
         grouped: {
           headings: {
             transformer: (data, isPrint) => {
-              const [poolNumber, poolType] = data.split(',');
+              const [poolNumber, poolType] = splitPoolNumberHeading(data);
               if (isPrint) {
                 return [
                   `Pool ${poolNumber} `,
@@ -1011,8 +995,10 @@
                     color: '#484949',
                     fontSize: 10,
                     bold: false
-                  }];
+                  }
+                ];
               }
+
               return `${makeLink(app)['poolNumber'](poolNumber)} <span class="grouped-display-inline">${capitalizeFully(poolType)}</span>`;
             },
           },
@@ -1126,7 +1112,7 @@
           totals: true,
           headings: {
             transformer: (data, isPrint) => {
-              const [poolNumber, poolType] = data.split(',');
+              const [poolNumber, poolType] = splitPoolNumberHeading(data);
               if (isPrint) {
                 return [
                   `Pool ${poolNumber} `,
@@ -1718,7 +1704,7 @@
         grouped: {
           headings: {
             transformer: (data, isPrint) => {
-              const [poolNumber, poolType] = data.split(',');
+              const [poolNumber, poolType] = splitPoolNumberHeading(data);
               if (isPrint) {
                 return [
                   `Pool ${poolNumber} `,
