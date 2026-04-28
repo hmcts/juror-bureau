@@ -108,14 +108,10 @@ module.exports = async (app) => {
   // Serve all static files
   app.use(express.static(app.get('appPath')));
 
-  app.use(validateContentType);
-
   app.use(compression());
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
   app.use(methodOverride());
-
-  app.use(detectHtmlContent);
 
   app.set('trust proxy', 1);
   new SessionConfig().start(app);
@@ -186,6 +182,10 @@ module.exports = async (app) => {
     res.setHeader('X-Robots-Tag', 'noindex');
     next();
   });
+
+  // Custom middleware to detect invalid content type and html content
+  app.use(validateContentType);
+  app.use(detectHtmlContent);
 
   // interceptor to block legacy access to court users
   // if a court user logs in and tries to visit a juror-digital path they will be redirected to the homepage
