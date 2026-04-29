@@ -64,6 +64,7 @@ module.exports.verify = function(req, res, next) {
       res.locals.canCreateBureauJuror = canCreateBureauJuror(req, res);
       res.locals.isSuperUser = isSuperUser(req, res);
       res.locals.selectedCourt = req.session.selectedCourt;
+      res.locals.changeCourtAvailable = req.session.changeCourtAvailable;
 
       return next();
     });

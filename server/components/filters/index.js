@@ -518,7 +518,10 @@
       return hours;
     },
 
-    transformCourtName: function(courtObj) {
+    transformCourtName: function(courtObj, authenticationFlow = false) {
+      if (authenticationFlow) {
+        return _.startCase(_.toLower(courtObj.name)).trim().replace(',', '') + ' (' + courtObj.locCode + ')';
+      }
       return _.startCase(_.toLower(courtObj.locationName)).trim().replace(',', '') + ' (' + courtObj.locationCode + ')';
     },
 
