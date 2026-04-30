@@ -83,8 +83,7 @@
       try {
         const payload = buildPayload(req);
 
-        payload.document = document;
-        payload['letter_type'] = modUtils.LetterType[document];
+        payload.letterType = modUtils.LetterType[document];
 
         delete payload._csrf;
 
@@ -92,7 +91,7 @@
 
         if (isCourtUser(req, res)) {
           response = await reissueLetterDAO.getListCourt(req, payload);
-          response.data_types.push('hidden');
+          response.dataTypes.push('hidden');
           response.headings.push('Row Id');
           response.data.forEach((juror, i) => {
             juror.id = i;
@@ -107,7 +106,7 @@
 
         app.logger.info('Fetched the list of juror documents: ', {
           auth: req.session.authentication,
-          data: { ...payload },
+          data: { document, ...payload },
         });
         return res.redirect(urljoin(app.namedRoutes.build('documents.letters-list.get', {
           document: document,
@@ -117,7 +116,7 @@
         if (err.statusCode === 404) {
           req.session.documentsJurorsList = {
             headings: [],
-            'data_types': [],
+            dataTypes: [],
             data: [],
           };
 
@@ -185,22 +184,22 @@
     let payload = {};
 
     if (req.body.documentSearchBy === 'pool') {
-      payload['pool_number'] = req.body.poolDetails;
+      payload.poolNumber = req.body.poolDetails;
     }
-    if (req.body.documentSearchBy === 'juror_number') {
-      payload['juror_number'] = req.body.jurorNumber;
+    if (req.body.documentSearchBy === 'jurorNumber') {
+      payload.jurorNumber = req.body.jurorNumber;
     }
-    if (req.body.documentSearchBy === 'juror_name') {
-      payload['juror_name'] = req.body.jurorName;
+    if (req.body.documentSearchBy === 'jurorName') {
+      payload.jurorName = req.body.jurorName;
     }
     if (req.body.documentSearchBy === 'postcode') {
-      payload['juror_postcode'] = req.body.postcode;
+      payload.jurorPostcode = req.body.postcode;
     }
     if (req.body.documentSearchBy === 'allLetters') {
-      payload['show_all_queued'] = true;
+      payload.showAllQueued = true;
     }
     if (req.body.includePrinted === 'includePrinted') {
-      payload['include_printed'] = true;
+      payload.includePrinted = true;
     }
 
     return payload;

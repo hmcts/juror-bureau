@@ -17,7 +17,7 @@
       },
 
       jurorNumber: () => {
-        if (!body.documentSearchBy || body.documentSearchBy !== 'juror_number') return null;
+        if (!body.documentSearchBy || body.documentSearchBy !== 'jurorNumber') return null;
 
         return {
           presence: {
@@ -45,7 +45,7 @@
       },
 
       jurorName: () => {
-        if (!body.documentSearchBy || body.documentSearchBy !== 'juror_name') return null;
+        if (!body.documentSearchBy || body.documentSearchBy !== 'jurorName') return null;
 
         return {
           presence: {
