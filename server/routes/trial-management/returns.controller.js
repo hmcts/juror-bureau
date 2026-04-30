@@ -29,7 +29,7 @@
       return res.render('_errors/generic', { err });
     }
 
-    const isJuryEmpanelled = (await fetchTrialDetails(app)(req, res))['is_jury_empanelled'];
+    const isJuryEmpanelled = (await fetchTrialDetails(app)(req, res)).isJuryEmpanelled;
 
     let validatorResult;
 
@@ -53,12 +53,18 @@
 
     // setup the payload to be sent to api - needs names and status
     panelData.forEach(juror => {
-      if (juror['juror_status'] === 'Juror') {
-        juror['empanel_status'] = 'JUROR';
+      if (juror.jurorStatus === 'Juror') {
+        juror.result = 'JUROR';
       }
-      delete juror['juror_status'];
     });
-    req.session[`${trialNumber}-${locationCode}-returnJurors`] = panelData.filter(juror => req.body.selectedJurors.includes(juror['juror_number']));
+    req.session[`${trialNumber}-${locationCode}-returnJurors`] = panelData
+      .filter(juror => req.body.selectedJurors.includes(juror.jurorNumber))
+      .map((juror) => ({
+        jurorNumber: juror.jurorNumber,
+        firstName: juror.firstName,
+        lastName: juror.lastName,
+        result: juror.result,
+      }));
 
     if (!isJuryEmpanelled) {
       // Panel route
@@ -143,7 +149,7 @@
         attendanceDate: dateFilter(new Date(), null, 'YYYY-MM-DD'),
         locationCode,
       },
-      juror: req.session[`${trialNumber}-${locationCode}-returnJurors`].map(juror => juror['juror_number']),
+      juror: req.session[`${trialNumber}-${locationCode}-returnJurors`].map(juror => juror.jurorNumber),
     };
 
     jurorAttendanceDao.post(req, body)
@@ -288,7 +294,7 @@
 
     let backUrl;
 
-    const isPanel = !(await fetchTrialDetails(app)(req, res))['is_jury_empanelled']
+    const isPanel = !(await fetchTrialDetails(app)(req, res)).isJuryEmpanelled
 
     if (isPanel) {
       backUrl = app.namedRoutes.build('trial-management.trials.detail.get', {
@@ -344,7 +350,7 @@
     const selectedJurors = req.session[`${trialNumber}-${locationCode}-returnJurors`];
     const completeService = req.session[`${trialNumber}-${locationCode}-handleAttendance`] === 'complete' ? 'true' : 'false';
 
-    const panelType = (await fetchTrialDetails(app)(req, res))['is_jury_empanelled'] ? 'jury' : 'panel';
+    const panelType = (await fetchTrialDetails(app)(req, res)).isJuryEmpanelled ? 'jury' : 'panel';
 
     if (req.session[`${trialNumber}-${locationCode}-handleAttendance`] === 'return') {
       let validatorResult = validate({
@@ -379,9 +385,9 @@
       payload = selectedJurors;
     } else {
       payload = {
-        'check_in': checkInTime,
-        'check_out': checkOutTime,
-        completed: completeService,
+        checkIn: checkInTime,
+        checkOut: checkOutTime,
+        completed: completeService === 'true',
         jurors: selectedJurors,
       };
     }

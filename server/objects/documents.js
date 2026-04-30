@@ -4,6 +4,7 @@
   const { axiosClient } = require('./axios-instance');
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
+  const { mapCamelToSnake, mapSnakeToCamel } = require('../lib/mod-utils');
 
   module.exports.reissueLetterDAO = {
     getList: function(req, body) {
@@ -11,7 +12,16 @@
     },
 
     getListCourt: function(req, body) {
-      return axiosClient('post', 'moj/letter/court-letter-list', req.session.authToken, { body });
+      const dao = new DAO('moj/letter/court-letter-list', {
+        post: function(body) {
+          return {
+            uri: this.resource,
+            body: mapCamelToSnake(body),
+          };
+        },
+      });
+
+      return dao.post(req, body);
     },
 
     getDuringServiceList: function(req, letterType, includePrinted) {
@@ -27,7 +37,7 @@
         post: function(body) {
           return {
             uri: this.resource,
-            body,
+            body: mapCamelToSnake(body),
             transform: (data) => { delete data['_headers']; return Object.values(data) },
           };
         },
@@ -51,7 +61,7 @@
         get: function(courtLocationCode) {
           return {
             uri: `${this.resource}?court_location=${courtLocationCode}`,
-            transform: (data) => { delete data['_headers']; return Object.values(data) },
+            transform: (data) => { delete data['_headers']; return mapSnakeToCamel(Object.values(data)); },
           };
         },
       });
@@ -75,7 +85,7 @@
         post: function(body) {
           return {
             uri: this.resource,
-            body,
+            body: mapCamelToSnake(body),
             transform: (data) => { delete data['_headers']; return Object.values(data) },
           };
         },

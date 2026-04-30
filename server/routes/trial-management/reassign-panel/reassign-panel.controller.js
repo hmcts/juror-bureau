@@ -55,19 +55,19 @@
       return res.render('_errors/generic', { err });
     }
 
-    const selectedJurorsData = panelData.filter(juror => selectedJurors.includes(juror['juror_number']));
+    const selectedJurorsData = panelData.filter(juror => selectedJurors.includes(juror.jurorNumber));
     
     const invalidJurors = [];
     req.session[`${trialNumber}-${locationCode}-reassignPanel`].invalidJurors = []
     selectedJurorsData.forEach(juror => {
-      if (juror['juror_status'] === 'Juror') {
+      if (juror.jurorStatus === 'Juror') {
         invalidJurors.push({
-            jurorNumber: juror['juror_number'],
-            firstName: juror['first_name'],
-            lastname: juror['last_name'],
-            failureReason: `Invalid Status: ${juror['juror_status']}`,
+            jurorNumber: juror.jurorNumber,
+            firstName: juror.firstName,
+            lastname: juror.lastName,
+            failureReason: `Invalid Status: ${juror.jurorStatus}`,
         });
-        req.session[`${trialNumber}-${locationCode}-reassignPanel`].invalidJurors.push(juror['juror_number']);
+        req.session[`${trialNumber}-${locationCode}-reassignPanel`].invalidJurors.push(juror.jurorNumber);
       }
     });
 
@@ -119,7 +119,7 @@
       const sortOrder = req.query['sortOrder'] || 'ascending';
       let pagination;
       const opts = {
-        active: true,
+        isActive: true,
         pageNumber: currentPage,
         pageLimit: modUtils.constants.PAGE_SIZE,
         sortField: capitalise(modUtils.camelToSnake(sortBy)),
@@ -132,7 +132,7 @@
 
       let data;
       try {
-        data = await trialsListDAO.post(req, modUtils.mapCamelToSnake(opts));
+        data = await trialsListDAO.post(req, opts);
       } catch (err) {
         app.logger.crit('Failed to fetch trials for reassigning panel: ', {
           auth: req.session.authentication,
@@ -143,8 +143,6 @@
         return res.render('_errors/generic', { err });
       }
 
-      data = modUtils.replaceAllObjKeys(data, _.camelCase);
-
       app.logger.info('Fetched list of all trials for reassigning panel', {
         auth: req.session.authentication,
         data: {
@@ -153,7 +151,7 @@
       });
 
       // REMOVE CURRENT TRIAL FROM LIST
-      data.data = data.data.filter(trial => !(trial.trialNumber === trialNumber && trial.courtLocation === locationCode));
+      data.data = data.data.filter(trial => !(trial.trialNumber === trialNumber && trial.courtLocationCode === locationCode));
 
       const queryTotal = data.totalItems;
 
@@ -259,7 +257,7 @@
         return res.render('_errors/generic', { err });
       }
 
-      const jurors = panelMembers.filter(juror => selectedJurors.includes(juror['juror_number']));
+      const jurors = panelMembers.filter(juror => selectedJurors.includes(juror.jurorNumber));
 
       return res.render('trial-management/reassign-panel/confirm-reassign', {
         jurors,
@@ -291,20 +289,20 @@
       try {
         await reassignPanelDAO.post(req, {
           jurors: selectedJurors,
-          source_trial_number: trialNumber,
-          source_trial_loc_code: locationCode,
-          target_trial_number: newTrialNumber,
-          target_trial_loc_code: newLocationCode,
+          sourceTrialNumber: trialNumber,
+          sourceTrialLocCode: locationCode,
+          targetTrialNumber: newTrialNumber,
+          targetTrialLocCode: newLocationCode,
         });
       } catch (err) {
         app.logger.crit('Failed to reassign panel members: ', {
           auth: req.session.authentication,
           data: {
             jurors: selectedJurors,
-            source_trial_number: trialNumber,
-            source_trial_loc_code: locationCode,
-            target_trial_number: newTrialNumber,
-            target_trial_loc_code: newLocationCode,
+            sourceTrialNumber: trialNumber,
+            sourceTrialLocCode: locationCode,
+            targetTrialNumber: newTrialNumber,
+            targetTrialLocCode: newLocationCode,
           },
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });

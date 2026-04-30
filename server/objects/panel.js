@@ -3,8 +3,16 @@
 
   const urljoin = require('url-join');
   const { DAO } = require('./dataAccessObject');
+  const { mapCamelToSnake, mapSnakeToCamel } = require('../lib/mod-utils');
 
-  module.exports.generatePanelDAO = new DAO('moj/trial/panel/create-panel');
+  module.exports.generatePanelDAO = new DAO('moj/trial/panel/create-panel', {
+    post: function(body) {
+      return {
+        body: mapCamelToSnake(body),
+        transform: mapSnakeToCamel,
+      };
+    },
+  });
 
   module.exports.panelMemberStatusDAO = new DAO('moj/trial/panel/status', {
     get: function(trialNumber, courtLocationCode) {
@@ -17,7 +25,10 @@
 
   module.exports.addPanelMembersDAO = new DAO('moj/trial/panel/add-panel-members', {
     post: function(body) {
-      return { body };
+      return {
+        body: mapCamelToSnake(body),
+        transform: mapSnakeToCamel,
+      };
     },
   });
 
@@ -28,12 +39,12 @@
 
       return { 
         uri,
-        transform: (data) => { delete data._headers; return Object.values(data); }
+        transform: (data) => { delete data._headers; return mapSnakeToCamel(Object.values(data)); }
       };
     }
   });
 
-  module.exports.requestPanelDAO = new DAO('moj/trial/panel/list', {
+  module.exports.requestPanelDAO = new DAO('moj/trial/panel/request-empanel', {
     get: function(trialNumber, courtLocationCode, numberRequested) {
       const params = new URLSearchParams({
         'trial_number': trialNumber,
@@ -44,18 +55,25 @@
 
       return { 
         uri,
-        transform: (data) => { delete data._headers; return Object.values(data); }
+        transform: (data) => { delete data._headers; return mapSnakeToCamel(data); }
       };
     }
   })
 
-  module.exports.empanelJurorsDAO = new DAO('moj/trial/panel/process-empanelled');
+  module.exports.empanelJurorsDAO = new DAO('moj/trial/panel/process-empanelled', {
+    post: function(body) {
+      return {
+        body: mapCamelToSnake(body),
+        transform: mapSnakeToCamel,
+      };
+    }
+  });
 
   module.exports.availableJurorsDAO = new DAO('moj/trial/panel/available-jurors', {
     get: function(courtLocationCode) {
       return{
         uri: `${this.resource}?court_location_code=${courtLocationCode}`,
-        transform: (data) => { delete data._headers; return Object.values(data); }
+        transform: (data) => { delete data._headers; return mapSnakeToCamel(Object.values(data)); }
       }
     }
   });

@@ -60,10 +60,10 @@
       }
 
       return addPanelMembersDAO.post(req, {
-        'trial_number': trialNumber,
-        'number_requested': +req.body.noJurors,
-        'pool_numbers': [],
-        'court_location_code': locationCode,
+        trialNumber,
+        numberRequested: +req.body.noJurors,
+        poolNumbers: [],
+        courtLocationCode: locationCode,
       }).then(() => {
         return res.redirect(app.namedRoutes.build('trial-management.trials.detail.get', {
           trialNumber,
@@ -166,10 +166,10 @@
         selectedPools = req.body.selectedPools;
       }
       return addPanelMembersDAO.post(req, {
-        'trial_number': trialNumber,
-        'number_requested': +req.session[`${trialNumber}-${locationCode}-noPanelJurors`],
-        'pool_numbers': selectedPools,
-        'court_location_code': locationCode,
+        trialNumber,
+        numberRequested: +req.session[`${trialNumber}-${locationCode}-noPanelJurors`],
+        poolNumbers: selectedPools,
+        courtLocationCode: locationCode,
       }).then(() => {
         delete req.session[`${trialNumber}-${locationCode}-noPanelJurors`];
 

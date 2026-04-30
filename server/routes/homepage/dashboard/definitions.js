@@ -175,8 +175,8 @@
                 ariaLabel: 'Oldest unpaid attendance',
                 links: [
                     {
-                      href: stats?.admin.oldestUnpaidJuror ? app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
-                        jurorNumber: stats?.admin.oldestUnpaidJuror,
+                      href: stats?.admin.oldestUnpaidJurorNumber ? app.namedRoutes.build('juror-management.unpaid-attendance.expense-record.get', {
+                        jurorNumber: stats?.admin.oldestUnpaidJurorNumber,
                         locCode: req.session.authentication.locCode,
                         status: 'draft',
                       }) : '',

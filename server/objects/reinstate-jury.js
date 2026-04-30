@@ -1,8 +1,7 @@
 (function() {
   'use strict';
 
-  const _ = require('lodash');
-  const { replaceAllObjKeys } = require('../lib/mod-utils');
+  const { mapCamelToSnake, mapSnakeToCamel } = require('../lib/mod-utils');
   const { DAO } = require('./dataAccessObject')
   const urljoin = require('url-join')
 
@@ -15,7 +14,7 @@
           this.resource,
           `?${params.toString()}`,
         ),
-        transform: (data) => { delete data['_headers']; return replaceAllObjKeys(data, _.camelCase); },
+        transform: (data) => { delete data['_headers']; return mapSnakeToCamel(data); },
       }
     }
   });
@@ -24,7 +23,7 @@
     post: function(payload) {
       return {
         uri: this.resource,
-        body: replaceAllObjKeys(payload, _.snakeCase),
+        body: mapCamelToSnake(payload),
       }
     }
   });

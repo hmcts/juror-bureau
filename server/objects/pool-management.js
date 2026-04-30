@@ -3,6 +3,7 @@
 
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
+  const { mapCamelToSnake, mapSnakeToCamel } = require('../lib/mod-utils');
 
 
   module.exports.deferralMaintenance = {
@@ -39,11 +40,39 @@
     availableCourtOwnedPools: {
       get: availablePools.bind({ resource: 'moj/manage-pool/available-pools-court-owned/{}' }),
     },
-    reassignJuror: new DAO('moj/manage-pool/reassign-jurors'),
+    reassignJuror: new DAO('moj/manage-pool/reassign-jurors', {
+      put: function(body) {
+        const normalisedBody = Object.assign({}, body);
+
+        if (normalisedBody.targetServiceStartDate) {
+          normalisedBody.serviceStartDate = normalisedBody.targetServiceStartDate;
+          delete normalisedBody.targetServiceStartDate;
+        }
+
+        return {
+          body: mapCamelToSnake(normalisedBody),
+          transform: mapSnakeToCamel,
+        };
+      }
+    }),
   };
 
   module.exports.validateMovement = {
-    validateMovement: new DAO('moj/manage-pool/movement/validation')
+    validateMovement: new DAO('moj/manage-pool/movement/validation', {
+      put: function(body) {
+        const normalisedBody = Object.assign({}, body);
+
+        if (normalisedBody.targetServiceStartDate) {
+          normalisedBody.serviceStartDate = normalisedBody.targetServiceStartDate;
+          delete normalisedBody.targetServiceStartDate;
+        }
+
+        return {
+          body: mapCamelToSnake(normalisedBody),
+          transform: mapSnakeToCamel,
+        };
+      }
+    })
   };
 
   async function availablePools(req, locationCode, deferralDates) {
