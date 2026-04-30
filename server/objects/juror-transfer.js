@@ -2,6 +2,7 @@
   'use strict';
 
   const { DAO } = require('./dataAccessObject');
+  const { mapCamelToSnake } = require('../lib/mod-utils');
 
   module.exports.jurorTransfer = new DAO('moj/manage-pool/transfer', {
     put: function(jurorNumbers, receivingCourtLocCode, newServiceStartDate, sourcePoolNumber) {
@@ -17,13 +18,13 @@
       sourceLocCode = sourcePoolNumber.slice(0, 3);
 
       return {
-        body: {
+        body: mapCamelToSnake({
           jurorNumbers: jurorsArr,
           receivingCourtLocCode: receivingCourtLocCode,
-          targetServiceStartDate: newServiceStartDate,
+          serviceStartDate: newServiceStartDate,
           sendingCourtLocCode: sourceLocCode,
           sourcePoolNumber: sourcePoolNumber,
-        }
+        })
       }
     }
   })

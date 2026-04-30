@@ -3,6 +3,7 @@
 
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join')
+  const { mapCamelToSnake } = require('../lib/mod-utils');
 
   module.exports.returnsObject = new DAO('moj/trial/return-', {
     post: function(type, trialNumber, locCode, body) {
@@ -13,7 +14,7 @@
           this.resource + type,
           `?${params.toString()}`,
         ),
-        body
+        body: mapCamelToSnake(body)
       }
     }
   });

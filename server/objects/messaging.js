@@ -30,9 +30,10 @@
   module.exports.jurorSearchDAO = new DAO('moj/messages/search', {
     post: function(locCode, _body, simpleResponse) {
       let _locCode = locCode;
+      const body = _.cloneDeep(_body);
 
-      if (_body.court_name) {
-        _locCode = _body.court_name.match(/\d+/g)[0];
+      if (body.court_name) {
+        _locCode = body.court_name.match(/\d+/g)[0];
       }
 
       let uri = urljoin(this.resource, _locCode);
@@ -41,9 +42,19 @@
         uri = urljoin(uri, '?simple_response=true');
       }
 
+      if (body.nextDueAtCourtDate) {
+        body.nextDueAtCourt = body.nextDueAtCourtDate;
+        delete body.nextDueAtCourtDate;
+      }
+
+      if (body.next_due_at_court_date) {
+        body.next_due_at_court = body.next_due_at_court_date;
+        delete body.next_due_at_court_date;
+      }
+
       return { 
         uri,
-        body: _.mapKeys(_body, (__, key) => _.snakeCase(key)),
+        body: _.mapKeys(body, (__, key) => _.snakeCase(key)),
         transform: mapSnakeToCamel
       };
     }
@@ -60,9 +71,21 @@
 
   module.exports.downloadCSVDAO = new DAO('moj/messages/csv', {
     post: function(locCode, body) {
+      const payload = _.cloneDeep(body);
+
+      if (payload.nextDueAtCourtDate) {
+        payload.nextDueAtCourt = payload.nextDueAtCourtDate;
+        delete payload.nextDueAtCourtDate;
+      }
+
+      if (payload.next_due_at_court_date) {
+        payload.next_due_at_court = payload.next_due_at_court_date;
+        delete payload.next_due_at_court_date;
+      }
+
       return {
         uri: urljoin(this.resource, locCode),
-        body,
+        body: payload,
         headers: {
           'Content-Type': 'application/json',
         },

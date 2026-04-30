@@ -5,6 +5,7 @@
   const { DAO } = require('./dataAccessObject');
   const { mapCamelToSnake, mapSnakeToCamel } = require('../lib/mod-utils');
   const urljoin = require('url-join');
+  const { mapCamelToSnake, mapSnakeToCamel } = require('../lib/mod-utils');
 
   module.exports.reissueLetterDAO = {
     getList: function(req, body) {
@@ -113,7 +114,7 @@
         get: function(courtLocationCode) {
           return {
             uri: `${this.resource}?court_location=${courtLocationCode}`,
-            transform: (data) => { delete data['_headers']; return Object.values(data) },
+            transform: (data) => { delete data['_headers']; return mapSnakeToCamel(Object.values(data)); },
           };
         },
       });

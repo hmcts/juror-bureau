@@ -29,7 +29,7 @@
       delete req.session.errors;
 
       const opts = {
-        active: isActive,
+        isActive,
         pageNumber: currentPage,
         pageLimit: modUtils.constants.PAGE_SIZE,
         sortField: capitalise(modUtils.camelToSnake(sortBy)),
@@ -37,7 +37,7 @@
         trialNumber,
       };
 
-      trialsListDAO.post(req, modUtils.mapCamelToSnake(opts))
+      trialsListDAO.post(req, opts)
         .then((data) => {
 
           app.logger.info('Fetched trials list', {
@@ -45,17 +45,17 @@
             data: opts,
           });
 
-          const queryTotal = data.total_items;
+          const queryTotal = data.totalItems;
 
           if (queryTotal > modUtils.constants.PAGE_SIZE) {
             pagination = modUtils.paginationBuilder(queryTotal, currentPage, req.url);
           }
 
           if (queryTotal === 1 && trialNumber) {
-            if (data.data[0].trial_number === trialNumber) {
+            if (data.data[0].trialNumber === trialNumber) {
               return res.redirect(app.namedRoutes.build('trial-management.trials.detail.get', {
-                trialNumber: data.data[0].trial_number,
-                locationCode: data.data[0].court_location,
+                trialNumber: data.data[0].trialNumber,
+                locationCode: data.data[0].courtLocationCode,
               }));
             }
           }
@@ -169,8 +169,8 @@
 
           if (typeof tmpFields === 'undefined') {
             tmpFields = _.clone(trialData);
-            tmpFields.defendants = trialData.trial_type === 'criminal' ? trialData.defendants : '';
-            tmpFields.respondents = trialData.trial_type === 'civil' ? trialData.defendants : '';
+            tmpFields.defendants = trialData.trialType === 'criminal' ? trialData.defendants : '';
+            tmpFields.respondents = trialData.trialType === 'civil' ? trialData.defendants : '';
           }
 
           if (req.session.bannerMessage) {
@@ -185,7 +185,7 @@
 
           if (panelData) {
             trialData.panelledJurors = panelData;
-            canEmpanel = panelData.filter((juror) => juror.juror_status === 'Panel').length > 0;
+            canEmpanel = panelData.filter((juror) => juror.jurorStatus === 'Panel').length > 0;
           };
 
           req.session.preTrialReportRoute = 'trial-detail';
@@ -197,7 +197,7 @@
             successBanner,
             errorBanner,
             addPanelStatus: addPanelStatus.data,
-            canReinstateJury: returnedJurorsResponse.returnedJurors.length > 0 && panelData.length === 0,
+            canReinstateJury: (returnedJurorsResponse.returnedJurors?.length || 0) > 0 && panelData.length === 0,
             formActions: {
               returnUrl: app.namedRoutes.build('trial-management.trials.return.post', {
                 trialNumber: req.params.trialNumber,
@@ -282,7 +282,7 @@
 
         if (panelData.length > 0 && typeof req.session[`${trialNumber}-${locationCode}-continueToEndTrial`] === 'undefined') {
           return res.render('trial-management/end-trial/cannot-end-trial.njk', {
-            isJuryEmpanelled: trialData['is_jury_empanelled'],
+            isJuryEmpanelled: trialData.isJuryEmpanelled,
             cancelUrl: app.namedRoutes.build('trial-management.trials.detail.get', {
               trialNumber: req.params.trialNumber,
               locationCode: req.params.locationCode,
@@ -331,7 +331,7 @@
           req.params.trialNumber,
           req.params.locationCode,
         );
-        const validateEndTrialDate = validate(req.body, endTrialDateValidator(makeDate(trialDetails.start_date)));
+        const validateEndTrialDate = validate(req.body, endTrialDateValidator(makeDate(trialDetails.trialStartDate)));
 
         if (typeof validateEndTrialDate !== 'undefined') {
           req.session.errors = validateEndTrialDate;
@@ -346,9 +346,9 @@
         if (req.body.endTrial === 'true') {
 
           let payload = {
-            'trial_end_date': dateFilter(req.body.endTrialDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
-            'trial_number': req.params.trialNumber,
-            'location_code': req.params.locationCode,
+            trialEndDate: dateFilter(req.body.endTrialDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
+            trialNumber: req.params.trialNumber,
+            locationCode: req.params.locationCode,
           };
 
           await endTrialObject.patch(req, payload);
@@ -437,28 +437,28 @@
       item.push(
         {
           html: '<a href="/trial-management/trials/' +
-          encodeURIComponent(trial.trial_number) + '/' +
-              trial.court_location + '/detail" class="govuk-link">' + trial.trial_number + '</a>',
+          encodeURIComponent(trial.trialNumber) + '/' +
+              trial.courtLocationCode + '/detail" class="govuk-link">' + trial.trialNumber + '</a>',
           attributes: {
-            'data-sort-value': trial.trial_number,
+            'data-sort-value': trial.trialNumber,
           },
         },
         {
-          text: trial.parties,
+          text: trial.defendants,
           attributes: {
-            'data-sort-value': trial.parties,
+            'data-sort-value': trial.defendants,
           },
         },
         {
-          text: capitalizeFully(trial.trial_type),
+          text: capitalizeFully(trial.trialType),
           attributes: {
-            'data-sort-value': trial.trial_type,
+            'data-sort-value': trial.trialType,
           },
         },
         {
-          text: capitalizeFully(trial.court),
+          text: capitalizeFully(trial.courtLocationName),
           attributes: {
-            'data-sort-value': trial.court,
+            'data-sort-value': trial.courtLocationName,
           },
         },
         {
@@ -474,9 +474,9 @@
           },
         },
         {
-          text: dateFilter(makeDate(trial.start_date), 'YYYY,MM,DD', 'ddd DD MMM YYYY'),
+          text: dateFilter(makeDate(trial.startDate), 'YYYY,MM,DD', 'ddd DD MMM YYYY'),
           attributes: {
-            'data-sort-value': makeDate(trial.start_date),
+            'data-sort-value': makeDate(trial.startDate),
           },
         },
       );
