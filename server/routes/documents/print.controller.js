@@ -14,7 +14,7 @@
       // bit of a problem here... when a pdf is renedered, clicking download seems to resend a request to download
       // so clearing the list here would break that... but would also break in case of the user pressing F5
       const jurorNumbers = req.session.documentsJurorsList?.checkedJurors?.reduce((numbers, juror) => {
-        numbers.push(juror.juror_number);
+        numbers.push(juror.jurorNumber);
         return numbers;
       }, []);
 
@@ -29,25 +29,25 @@
       }
 
       const payload = {
-        'letter_type': LetterType[document],
-        'juror_numbers': jurorNumbers,
+        letterType: LetterType[document],
+        jurorNumbers,
       };
 
       if (document === 'show-cause'){
-        payload['show_cause_date'] = dateFilter(req.query.hearingDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
-        payload['show_cause_time'] = req.query.hearingTime;
+        payload.showCauseDate = dateFilter(req.query.hearingDate, 'DD/MM/YYYY', 'YYYY-MM-DD');
+        payload.showCauseTime = req.query.hearingTime;
 
         if (req.query.showCauseDate) {
-          payload['details_per_letter'] = [{
-            'juror_number': jurorNumbers[0],
-            'letter_date': dateFilter(req.query.showCauseDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
+          payload.detailsPerLetter = [{
+            jurorNumber: jurorNumbers[0],
+            letterDate: dateFilter(req.query.showCauseDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
           }];
         } else {
-          payload['details_per_letter'] = FTAPayloadBuilder(jurorNumbers, req.session.documentsJurorsList.data);
+          payload.detailsPerLetter = FTAPayloadBuilder(jurorNumbers, req.session.documentsJurorsList.data);
         }
       } else if (document === 'failed-to-attend'){
 
-        payload['details_per_letter'] = FTAPayloadBuilder(jurorNumbers, req.session.documentsJurorsList.data);
+        payload.detailsPerLetter = FTAPayloadBuilder(jurorNumbers, req.session.documentsJurorsList.data);
       }
 
       try {
@@ -80,7 +80,7 @@
 
             content.documentType = document;
 
-            juror.attendance_data_list.forEach((expense) => {
+            juror.attendanceDataList.forEach((expense) => {
               let row = [];
 
               row.push(formatLetterDate(expense.attendanceDate, 'dddd, DD MMMM, YYYY', juror.welsh));
@@ -160,8 +160,8 @@
       const isWelsh = juror.welsh;
 
       juror.content = letterTemplates('deferral-granted', {
-        serviceDate: juror.deferred_to_date,
-        serviceTime: juror.attend_time,
+        serviceDate: juror.deferredToDate,
+        serviceTime: juror.attendTime,
         welsh: isWelsh,
       });
 
@@ -178,14 +178,14 @@
       const isWelsh = juror.welsh;
 
       const courtAddress = [
-        juror.court_name,
-        juror.court_address_line1,
-        juror.court_address_line2,
-        juror.court_address_line3,
-        juror.court_address_line4,
-        juror.court_address_line5,
-        juror.court_address_line6,
-        juror.court_post_code,
+        juror.courtName,
+        juror.courtAddressLine1,
+        juror.courtAddressLine2,
+        juror.courtAddressLine3,
+        juror.courtAddressLine4,
+        juror.courtAddressLine5,
+        juror.courtAddressLine6,
+        juror.courtPostCode,
       ];
 
       juror.content = letterTemplates('deferral-refused', {
@@ -222,14 +222,14 @@
       const isWelsh = juror.welsh;
 
       const courtAddress = [
-        juror.court_name,
-        juror.court_address_line1,
-        juror.court_address_line2,
-        juror.court_address_line3,
-        juror.court_address_line4,
-        juror.court_address_line5,
-        juror.court_address_line6,
-        juror.court_post_code,
+        juror.courtName,
+        juror.courtAddressLine1,
+        juror.courtAddressLine2,
+        juror.courtAddressLine3,
+        juror.courtAddressLine4,
+        juror.courtAddressLine5,
+        juror.courtAddressLine6,
+        juror.courtPostCode,
       ];
 
       juror.content = letterTemplates('excusal-refused', {
@@ -250,8 +250,8 @@
       const isWelsh = juror.welsh;
 
       juror.content = letterTemplates('postponement', {
-        serviceDate: juror.postponed_to_date,
-        serviceTime: juror.attend_time,
+        serviceDate: juror.postponedToDate,
+        serviceTime: juror.attendTime,
         welsh: isWelsh,
       });
 
@@ -285,10 +285,10 @@
 
       juror.content = letterTemplates('show-cause', {
         welsh: isWelsh,
-        attendanceDate: dateFilter(juror.attendance_date, 'DD MMMM YYYY', 'dddd, DD MMMM, YYYY'),
-        noShowDate: dateFilter(juror.no_show_date, 'DD MMMM YYYY', 'dddd, DD MMMM, YYYY'),
-        noShowTime: convert24to12(juror.no_show_time),
-        courtName: juror.court_name,
+        attendanceDate: dateFilter(juror.attendanceDate, 'DD MMMM YYYY', 'dddd, DD MMMM, YYYY'),
+        noShowDate: dateFilter(juror.noShowDate, 'DD MMMM YYYY', 'dddd, DD MMMM, YYYY'),
+        noShowTime: convert24to12(juror.noShowTime),
+        courtName: juror.courtName,
       });
 
       juror.title = isWelsh ? 'GWASANAETH RHEITHGOR' : 'JURY SERVICE';
@@ -305,8 +305,8 @@
 
       juror.content = letterTemplates('certificate-attendance', {
         welsh: isWelsh,
-        firstName: juror.juror_first_name,
-        lastName: juror.juror_last_name,
+        firstName: juror.jurorFirstName,
+        lastName: juror.jurorLastName,
         signature: juror.signature,
       });
 
@@ -324,8 +324,8 @@
 
       juror.content = letterTemplates('failed-to-attend', {
         welsh: isWelsh,
-        attendanceDate: dateFilter(juror.attendance_date, 'DD MMMM YYYY', 'dddd, DD MMMM, YYYY'),
-        replyByDate: dateFilter(juror.reply_by_date, 'DD MMMM YYYY', 'dddd, DD MMMM, YYYY'),
+        attendanceDate: dateFilter(juror.attendanceDate, 'DD MMMM YYYY', 'dddd, DD MMMM, YYYY'),
+        replyByDate: dateFilter(juror.replyByDate, 'DD MMMM YYYY', 'dddd, DD MMMM, YYYY'),
       });
 
       juror.title = isWelsh ? 'GWASANAETH RHEITHGOR' : 'JURY SERVICE';
@@ -340,14 +340,14 @@
     let letterPayload = [];
 
     jurorData.forEach(function(juror){
-      if (jurorNumbers.find((jurorNumber) => jurorNumber === juror.juror_number)) {
+      if (jurorNumbers.find((jurorNumber) => jurorNumber === juror.jurorNumber)) {
         let tmpJuror = {
-          'juror_number': juror.juror_number,
-          'letter_date': juror.absent_date,
+          jurorNumber: juror.jurorNumber,
+          letterDate: juror.absentDate,
         };
 
         if (!(letterPayload.find((jurorObj) =>
-          (jurorObj.juror_number === tmpJuror.juror_number && jurorObj.letter_date === tmpJuror.letter_date)))){
+          (jurorObj.jurorNumber === tmpJuror.jurorNumber && jurorObj.letterDate === tmpJuror.letterDate)))){
           letterPayload.push(
             tmpJuror,
           );
