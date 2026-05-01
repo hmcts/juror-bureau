@@ -7,6 +7,8 @@
     standardFilterPost,
     standardReportGet,
     standardReportPost,
+    standardReportJurorSelectGet,
+    standardReportJurorSelectPost,
   } = require('./standard-report.controller');
   const { reportKeys } = require('./definitions');
 
@@ -46,6 +48,18 @@
         auth.verify,
         standardReportGet(app, key, false, true));
     }
+
+    // juror selection routes for trial reports
+    app.get(`/reporting/${key}/juror-select/:filter`,
+        `reports.${key}.juror-select.get`,
+        auth.verify,
+        standardReportJurorSelectGet(app, key));
+
+    app.post(`/reporting/${key}/juror-select/:filter/`,
+        `reports.${key}.juror-select.post`,
+        auth.verify,
+        standardReportJurorSelectPost(app, key));
+
   };
 
   // Add standard report keys to this object, the function will populate them
@@ -125,6 +139,8 @@
     standardReportRoutes(app, 'courts-incomplete-service');
     standardReportRoutes(app, 'overdue-utilisation-report');
     standardReportRoutes(app, 'digital-responses-completed');
+
+    
   };
 
 })();

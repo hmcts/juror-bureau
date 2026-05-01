@@ -314,6 +314,7 @@
     const config = { reportType: reportType.apiKey, locCode: req.query?.courtLocCode || req.session.authentication.locCode };
     const filter = req.session.reportFilter;
     const bannerMessage = _.clone(req.session.bannerMessage);
+    const jurorSelection = req.query['jurorSelection'] || null;
     let preReportRoute = _.clone(req.session.preReportRoute)
 
     delete req.session.preReportRoute
@@ -637,6 +638,9 @@
       if (req.query.sortDirection) {
         url = url + (url.includes('?') ? '&' : '?') + 'sortDirection=' + req.query.sortDirection;
       }
+      if (req.query.jurorSelection) {
+        url = url + (url.includes('?') ? '&' : '?') + 'jurorSelection=' + req.query.jurorSelection;
+      }
 
       return addURLQueryParams(reportType,  url);
     };
@@ -679,6 +683,7 @@
       } else if (reportType.search === 'trial') {
         config.trialNumber = req.params.filter;
         config.locCode = req.session.authentication.locCode;
+        if (req.query['jurorSelection']){config.jurorSelection = req.query['jurorSelection']};
       } else if (reportType.search === 'courts') {
         config.courts = _.clone(req.session.reportCourts)
       } else if (reportType.search === 'jurorNumber') {
@@ -955,6 +960,36 @@
     }
   };
 
+  const standardReportJurorSelectGet = (app, reportKey) => async(req, res) => {
+    const reportType = reportKeys(app, req)[reportKey];
+    const trialNo = req.params.filter;
+    const locCode = req.session.authentication.locCode;
+    const cancelUrl = '/trial-management/trials/' + trialNo + '/' + locCode + '/detail';
+    
+    return res.render('reporting/standard-reports/juror-select.njk', {
+      reportKey,
+      reportName: reportType.title,
+      trialNo: trialNo,
+      locCode: locCode,
+      processUrl: app.namedRoutes.build(`reports.${reportKey}.juror-select.post`, {
+        filter: trialNo,
+      }),
+      cancelUrl: cancelUrl,
+    });
+  }
+
+  const standardReportJurorSelectPost = (app, reportKey) => async(req, res) => {
+    const reportType = reportKeys(app, req)[reportKey];
+    const trialNo = req.params.filter;
+    const jurorSelection = req.body.jurorSelection;
+    const locCode = req.session.authentication.locCode;
+    
+    return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, {
+      filter: trialNo
+    }) + `?jurorSelection=${jurorSelection}`);
+    
+  }
+
   function addURLQueryParams(reportType, url){
     let queryParams = _.clone(reportType.queryParams);
     if(url.includes('?')) {
@@ -977,6 +1012,8 @@
     standardFilterPost,
     standardReportGet,
     standardReportPost,
+    standardReportJurorSelectGet,
+    standardReportJurorSelectPost,
     addURLQueryParams
   };
 })();

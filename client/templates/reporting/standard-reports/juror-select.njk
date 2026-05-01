@@ -1,0 +1,71 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "includes/csrf.njk" import csrfProtection %}
+
+{% block page_title %}{{ serviceName }} - Reports - {{ reportName }} - Juror selection{% endblock %}
+{% block page_identifier %}Reports - {{ reportName }} - Juror selection{% endblock %}
+
+{% set currentApp = "System administration" if isSystemAdministrator and isSuperUser else "Reports" %}
+
+{% block content %}
+  {% include "includes/errors.njk" %}
+
+  {% set selectMonthError = undefined %}
+  {% if errors.items["selectMonth"] %}
+    {% set selectMonthError = {text: errors.items["selectMonth"][0].details} %}
+  {% endif %}
+
+  <form action="{{ processUrl }}" method="post" id="jurorsSelectForm">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">{{ reportName }}</h1>
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+
+        {{ govukRadios({
+          id: "jurorSelection",
+          name: "jurorSelection",
+          fieldset: {
+            legend: {
+              text: "Select which jurors to include in the report",
+              isPageHeading: true,
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          items: [
+            {
+              value: "ALL",
+              text: "All",
+              hint: {
+                text: "Include all jurors that have been on the trial"
+              },
+              checked: true
+            },
+            {
+              value: "CURRENT",
+              text: "Current",
+              hint: {
+                text: "Include only the jurors currently on the trial"
+              }
+            }
+          ]
+        }) }}
+
+        {{ csrfProtection(csrftoken) }}
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            type: "submit"
+          }) }}
+          <a href="{{ cancelUrl }}" class="govuk-link" id="cancelAnchor">Cancel</a>
+        </div>
+
+      </div>
+    </div>
+  </form>
+
+{% endblock %}
