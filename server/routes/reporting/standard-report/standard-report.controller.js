@@ -683,7 +683,9 @@
       } else if (reportType.search === 'trial') {
         config.trialNumber = req.params.filter;
         config.locCode = req.session.authentication.locCode;
-        if (req.query['jurorSelection']){config.jurorSelection = req.query['jurorSelection']};
+        if (req.query['jurorSelection']){
+          config.currentJurorsOnly = req.query['jurorSelection'] === 'CURRENT' ? true : false;
+        };
       } else if (reportType.search === 'courts') {
         config.courts = _.clone(req.session.reportCourts)
       } else if (reportType.search === 'jurorNumber') {
