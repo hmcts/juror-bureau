@@ -316,7 +316,7 @@
     const config = { reportType: reportType.apiKey, locCode: req.query?.courtLocCode || req.session.authentication.locCode };
     const filter = req.session.reportFilter;
     const bannerMessage = _.clone(req.session.bannerMessage);
-    const trialJurorSelection = req.query['trialJurorSelection'] || null;
+    const currentTrialJurors = req.query['currentTrialJurors'] || null;
     let preReportRoute = _.clone(req.session.preReportRoute)
 
     delete req.session.preReportRoute
@@ -640,8 +640,8 @@
       if (req.query.sortDirection) {
         url = url + (url.includes('?') ? '&' : '?') + 'sortDirection=' + req.query.sortDirection;
       }
-      if (req.query.trialJurorSelection) {
-        url = url + (url.includes('?') ? '&' : '?') + 'trialJurorSelection=' + req.query.trialJurorSelection;
+      if (req.query.currentTrialJurors) {
+        url = url + (url.includes('?') ? '&' : '?') + 'currentTrialJurors=' + req.query.currentTrialJurors;
       }
 
       return addURLQueryParams(reportType,  url);
@@ -658,13 +658,10 @@
         return app.namedRoutes.build(`reports.${reportType.parentReport.key}.report.get`, { filter: reportType.parentReport.filterParam });
       }
       if (reportType.search === 'trial') {
-        // if (reportKey === 'trial-attendance') {
-        //   return app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : '')
-        // }
         if (reportType.selectTrialJurors) {
           return app.namedRoutes.build(`reports.${reportKey}.trial-juror-select.get`, { filter: req.params.filter });
         }
-        if (reportKey === 'jury-cost-bill') {
+        if (reportKey === 'jury-cost-bill' || reportKey === 'trial-attendance') {
           return app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : '')
         }
         return app.namedRoutes.build('trial-management.trials.detail.get', {
@@ -691,8 +688,8 @@
       } else if (reportType.search === 'trial') {
         config.trialNumber = req.params.filter;
         config.locCode = req.session.authentication.locCode;
-        if (req.query['trialJurorSelection']){
-          config.currentJurorsOnly = req.query['trialJurorSelection'] === 'CURRENT' ? true : false;
+        if (req.query['currentTrialJurors']){
+          config.currentJurorsOnly = req.query['currentTrialJurors'] === 'true';
         };
       } else if (reportType.search === 'courts') {
         config.courts = _.clone(req.session.reportCourts)
@@ -979,11 +976,17 @@
     const reportType = reportKeys(app, req)[reportKey];
     const trialNumber = req.params.filter;
     const locCode = req.session.authentication.locCode;
-    let cancelUrl = app.namedRoutes.build('trial-management.trials.detail.get', {
-      trialNumber, locationCode: locCode
-    });
+    let cancelUrl;
+    let backLinkUrl;
 
-
+    if (req.session.preTrialReportRoute && req.session.preTrialReportRoute === 'trial-detail') {
+      cancelUrl = app.namedRoutes.build('trial-management.trials.detail.get', {
+        trialNumber, locationCode: locCode
+      });
+    } else {
+      cancelUrl = app.namedRoutes.build('reports.reports.get');
+      backLinkUrl = app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (req.params.filter ? '?filter=' + req.params.filter : '');
+    }
     
     return res.render('reporting/standard-reports/trial-juror-select.njk', {
       reportKey,
@@ -993,19 +996,23 @@
       processUrl: app.namedRoutes.build(`reports.${reportKey}.trial-juror-select.post`, {
         filter: trialNumber,
       }),
-      cancelUrl: cancelUrl,
+      cancelUrl,
+      backLinkUrl: {
+        built: true,
+        url: backLinkUrl,
+      }
     });
   }
 
   const standardReportTrialJurorSelectPost = (app, reportKey) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
     const trialNo = req.params.filter;
-    const trialJurorSelection = req.body.trialJurorSelection;
+    const currentTrialJurors = req.body.currentTrialJurors;
     const locCode = req.session.authentication.locCode;
     
     return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, {
       filter: trialNo
-    }) + `?trialJurorSelection=${trialJurorSelection}`);
+    }) + `?currentTrialJurors=${currentTrialJurors}`);
     
   }
 
