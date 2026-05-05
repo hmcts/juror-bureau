@@ -962,25 +962,25 @@
     }
   };
 
-  const standardReportJurorSelectGet = (app, reportKey) => async(req, res) => {
+  const standardReportTrialJurorSelectGet = (app, reportKey) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
     const trialNo = req.params.filter;
     const locCode = req.session.authentication.locCode;
     const cancelUrl = '/trial-management/trials/' + trialNo + '/' + locCode + '/detail';
     
-    return res.render('reporting/standard-reports/juror-select.njk', {
+    return res.render('reporting/standard-reports/trial-juror-select.njk', {
       reportKey,
       reportName: reportType.title,
       trialNo: trialNo,
       locCode: locCode,
-      processUrl: app.namedRoutes.build(`reports.${reportKey}.juror-select.post`, {
+      processUrl: app.namedRoutes.build(`reports.${reportKey}.trial-juror-select.post`, {
         filter: trialNo,
       }),
       cancelUrl: cancelUrl,
     });
   }
 
-  const standardReportJurorSelectPost = (app, reportKey) => async(req, res) => {
+  const standardReportTrialJurorSelectPost = (app, reportKey) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
     const trialNo = req.params.filter;
     const jurorSelection = req.body.jurorSelection;
@@ -1014,8 +1014,8 @@
     standardFilterPost,
     standardReportGet,
     standardReportPost,
-    standardReportJurorSelectGet,
-    standardReportJurorSelectPost,
+    standardReportTrialJurorSelectGet,
+    standardReportTrialJurorSelectPost,
     addURLQueryParams
   };
 })();

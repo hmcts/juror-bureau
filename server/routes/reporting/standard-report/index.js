@@ -50,15 +50,15 @@
     }
 
     // juror selection routes for trial reports
-    app.get(`/reporting/${key}/juror-select/:filter`,
-        `reports.${key}.juror-select.get`,
+    app.get(`/reporting/${key}/trial-juror-select/:filter`,
+        `reports.${key}.trial-juror-select.get`,
         auth.verify,
-        standardReportJurorSelectGet(app, key));
+        standardReportTrialJurorSelectGet(app, key));
 
-    app.post(`/reporting/${key}/juror-select/:filter/`,
-        `reports.${key}.juror-select.post`,
+    app.post(`/reporting/${key}/trial-juror-select/:filter/`,
+        `reports.${key}.trial-juror-select.post`,
         auth.verify,
-        standardReportJurorSelectPost(app, key));
+        standardReportTrialJurorSelectPost(app, key));
 
   };
 
@@ -139,8 +139,6 @@
     standardReportRoutes(app, 'courts-incomplete-service');
     standardReportRoutes(app, 'overdue-utilisation-report');
     standardReportRoutes(app, 'digital-responses-completed');
-
-    
   };
 
 })();
