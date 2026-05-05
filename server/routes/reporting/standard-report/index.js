@@ -7,8 +7,8 @@
     standardFilterPost,
     standardReportGet,
     standardReportPost,
-    standardReportJurorSelectGet,
-    standardReportJurorSelectPost,
+    standardReportTrialJurorSelectGet,
+    standardReportTrialJurorSelectPost,
   } = require('./standard-report.controller');
   const { reportKeys } = require('./definitions');
 

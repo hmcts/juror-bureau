@@ -45,6 +45,9 @@
       const tmpBody = _.clone(req.session.formFields);
       const tmpErrors = _.clone(req.session.errors);
 
+      delete req.session.formFields;
+      delete req.session.errors;
+
       switch (reportType.search) {
       case 'poolNumber':
         let poolList = [];
@@ -230,8 +233,7 @@
           let paginationObject;
           if (data.totalItems > constants.PAGE_SIZE) {
             paginationObject = paginationBuilder(data.totalItems, page || 1, req.url);
-          }
-  
+          }  
           return res.render('reporting/standard-reports/trial-select', {
             errors: {
               title: 'Please check your search',
@@ -656,7 +658,13 @@
         return app.namedRoutes.build(`reports.${reportType.parentReport.key}.report.get`, { filter: reportType.parentReport.filterParam });
       }
       if (reportType.search === 'trial') {
-        if (reportKey === 'trial-attendance') {
+        // if (reportKey === 'trial-attendance') {
+        //   return app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : '')
+        // }
+        if (reportType.selectTrialJurors) {
+          return app.namedRoutes.build(`reports.${reportKey}.trial-juror-select.get`, { filter: req.params.filter });
+        }
+        if (reportKey === 'jury-cost-bill') {
           return app.namedRoutes.build(`reports.${reportKey}.filter.get`) + (filter ? '?filter=' + filter : '')
         }
         return app.namedRoutes.build('trial-management.trials.detail.get', {
@@ -945,6 +953,11 @@
         req.session.formFields = req.body;
         return res.redirect(app.namedRoutes.build(`reports.${reportKey}.filter.get`));
       }
+      if (reportType.selectTrialJurors) {
+        return res.redirect(
+          app.namedRoutes.build(`reports.${reportKey}.trial-juror-select.get`, { filter: req.body.selectedTrial })
+        );
+      }
       return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, { filter: req.body.selectedTrial }))
     }
     if (reportType.search === 'month') {
@@ -964,17 +977,21 @@
 
   const standardReportTrialJurorSelectGet = (app, reportKey) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
-    const trialNo = req.params.filter;
+    const trialNumber = req.params.filter;
     const locCode = req.session.authentication.locCode;
-    const cancelUrl = '/trial-management/trials/' + trialNo + '/' + locCode + '/detail';
+    let cancelUrl = app.namedRoutes.build('trial-management.trials.detail.get', {
+      trialNumber, locationCode: locCode
+    });
+
+
     
     return res.render('reporting/standard-reports/trial-juror-select.njk', {
       reportKey,
       reportName: reportType.title,
-      trialNo: trialNo,
+      trialNumber: trialNumber,
       locCode: locCode,
       processUrl: app.namedRoutes.build(`reports.${reportKey}.trial-juror-select.post`, {
-        filter: trialNo,
+        filter: trialNumber,
       }),
       cancelUrl: cancelUrl,
     });
