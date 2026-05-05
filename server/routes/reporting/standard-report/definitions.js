@@ -26,6 +26,16 @@
     }
   }
 
+  const addTrialJurorSelectionHeader = (req = null) => {
+    return {
+      jurorSelection: {
+        displayName: 'Juror selection',
+        dataType: 'String',
+        value: req?.query?.currentTrialJurors === 'true' ? 'Current jurors' : 'All jurors',
+      }
+    };
+  };
+
   // type IReportKey = {
   //   [key: string]: {
   //     title: string, // Display title of the report
@@ -289,6 +299,10 @@
           'judge',
         ],
         defaultSortColumn: 'lastName',
+        selectTrialJurors: true,
+        bespokeReport: {
+          addPageHeadings: addTrialJurorSelectionHeader,
+        },
       },
       'bulk-print-audit': {
         title: 'Bulk-print audit report',
@@ -316,6 +330,10 @@
           'judge',
         ],
         defaultSortColumn: 'lastName',
+        selectTrialJurors: true,
+        bespokeReport: {
+          addPageHeadings: addTrialJurorSelectionHeader,
+        },
       },
       'jury-list': {
         title: 'Jury list',
@@ -333,6 +351,10 @@
           'judge',
         ],
         defaultSortColumn: 'lastName',
+        selectTrialJurors: true,
+        bespokeReport: {
+          addPageHeadings: addTrialJurorSelectionHeader,
+        },
       },
       'pool-status': {
         title: 'Pool status report',
@@ -576,6 +598,10 @@
               { label: 'Returned jurors', value: data.filter(juror => juror.panelStatus === 'Returned Juror').length },
             ];
           },
+        },
+        selectTrialJurors: true,
+        bespokeReport: {
+          addPageHeadings: addTrialJurorSelectionHeader,
         },
       },
       'prepare-monthly-utilisation': {
@@ -1350,6 +1376,10 @@
           printWidths: ['*', '*', '*', '*', '*', '*', '*', '*', '6.667%', '6.667%']
         },
         printLandscape: true,
+        selectTrialJurors: true,
+        bespokeReport: {
+          addPageHeadings: addTrialJurorSelectionHeader,
+        },
       },
       'jury-cost-bill': {
         title: 'Jury cost bill',

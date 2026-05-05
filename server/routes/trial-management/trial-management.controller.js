@@ -128,6 +128,8 @@
       delete req.session[`${trialNumber}-${locationCode}-checkInTime`];
       delete req.session[`${trialNumber}-${locationCode}-checkOutTime`];
 
+      delete req.session.preTrialReportRoute;
+
       Promise.all([
         trialDetailsObject.get(
           req,
@@ -185,6 +187,8 @@
             trialData.panelledJurors = panelData;
             canEmpanel = panelData.filter((juror) => juror.juror_status === 'Panel').length > 0;
           };
+
+          req.session.preTrialReportRoute = 'trial-detail';
 
           return res.render('trial-management/trial-detail.njk', {
             trial: trialData,

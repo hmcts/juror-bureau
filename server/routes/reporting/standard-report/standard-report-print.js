@@ -301,12 +301,15 @@ async function standardReportPrint(app, req, res, reportKey, data) {
 
   try {
     let metadata = {};
+
+    console.log('reportData.headings', reportData.headings);
+    
     if (reportData.bespokeReport && reportData.bespokeReport.addPageHeadings) {
-        for (const [key, value] of Object.entries(reportData.bespokeReport.addPageHeadings())) {
-          reportData.headings.push(key);
-          headings[key] = value;
-        }
+      for (const [key, value] of Object.entries(reportData.bespokeReport.addPageHeadings(req))) {
+        reportData.headings.push(key);
+        headings[key] = value;
       }
+    }
     if (!_.isEmpty(reportData.headings)) {
       metadata = {
         left: [...buildReportHeadings(reportData.headings.filter((v, index) => index % 2 === 0)).filter(item => item)] || [],
