@@ -790,7 +790,7 @@
 
       let pageHeadings = [];
       if (reportType.bespokeReport && reportType.bespokeReport.addPageHeadings) {
-        for (const [key, value] of Object.entries(reportType.bespokeReport.addPageHeadings())) {
+        for (const [key, value] of Object.entries(reportType.bespokeReport.addPageHeadings(req))) {
           reportType.headings.push(key);
           headings[key] = value;
         }

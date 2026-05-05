@@ -26,6 +26,16 @@
     }
   }
 
+  const addTrialJurorSelectionHeader = (req = null) => {
+    return {
+      jurorSelection: {
+        displayName: 'Juror selection',
+        dataType: 'String',
+        value: req?.query?.currentTrialJurors === 'true' ? 'Current jurors' : 'All jurors',
+      }
+    };
+  };
+
   // type IReportKey = {
   //   [key: string]: {
   //     title: string, // Display title of the report
@@ -290,6 +300,9 @@
         ],
         defaultSortColumn: 'lastName',
         selectTrialJurors: true,
+        bespokeReport: {
+          addPageHeadings: addTrialJurorSelectionHeader,
+        },
       },
       'bulk-print-audit': {
         title: 'Bulk-print audit report',
@@ -318,6 +331,9 @@
         ],
         defaultSortColumn: 'lastName',
         selectTrialJurors: true,
+        bespokeReport: {
+          addPageHeadings: addTrialJurorSelectionHeader,
+        },
       },
       'jury-list': {
         title: 'Jury list',
@@ -336,6 +352,9 @@
         ],
         defaultSortColumn: 'lastName',
         selectTrialJurors: true,
+        bespokeReport: {
+          addPageHeadings: addTrialJurorSelectionHeader,
+        },
       },
       'pool-status': {
         title: 'Pool status report',
@@ -581,6 +600,9 @@
           },
         },
         selectTrialJurors: true,
+        bespokeReport: {
+          addPageHeadings: addTrialJurorSelectionHeader,
+        },
       },
       'prepare-monthly-utilisation': {
         title: 'Monthly wastage and utilisation report',
@@ -1355,6 +1377,9 @@
         },
         printLandscape: true,
         selectTrialJurors: true,
+        bespokeReport: {
+          addPageHeadings: addTrialJurorSelectionHeader,
+        },
       },
       'jury-cost-bill': {
         title: 'Jury cost bill',
