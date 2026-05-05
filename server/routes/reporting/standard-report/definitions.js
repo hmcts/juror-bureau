@@ -289,6 +289,7 @@
           'judge',
         ],
         defaultSortColumn: 'lastName',
+        selectTrialJurors: true,
       },
       'bulk-print-audit': {
         title: 'Bulk-print audit report',
@@ -316,6 +317,7 @@
           'judge',
         ],
         defaultSortColumn: 'lastName',
+        selectTrialJurors: true,
       },
       'jury-list': {
         title: 'Jury list',
@@ -333,6 +335,7 @@
           'judge',
         ],
         defaultSortColumn: 'lastName',
+        selectTrialJurors: true,
       },
       'pool-status': {
         title: 'Pool status report',
@@ -577,6 +580,7 @@
             ];
           },
         },
+        selectTrialJurors: true,
       },
       'prepare-monthly-utilisation': {
         title: 'Monthly wastage and utilisation report',
@@ -1350,6 +1354,7 @@
           printWidths: ['*', '*', '*', '*', '*', '*', '*', '*', '6.667%', '6.667%']
         },
         printLandscape: true,
+        selectTrialJurors: true,
       },
       'jury-cost-bill': {
         title: 'Jury cost bill',

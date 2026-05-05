@@ -17,7 +17,7 @@
     {% set selectMonthError = {text: errors.items["selectMonth"][0].details} %}
   {% endif %}
 
-  <form action="{{ processUrl }}" method="post" id="jurorsSelectForm">
+  <form action="{{ processUrl }}" method="post" id="trialJurorsSelectForm">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-xl">{{ reportName }}</h1>
@@ -27,8 +27,8 @@
       <div class="govuk-grid-column-two-thirds">
 
         {{ govukRadios({
-          id: "jurorSelection",
-          name: "jurorSelection",
+          id: "trialJurorSelection",
+          name: "trialJurorSelection",
           fieldset: {
             legend: {
               text: "Select which jurors to include in the report",

@@ -314,7 +314,7 @@
     const config = { reportType: reportType.apiKey, locCode: req.query?.courtLocCode || req.session.authentication.locCode };
     const filter = req.session.reportFilter;
     const bannerMessage = _.clone(req.session.bannerMessage);
-    const jurorSelection = req.query['jurorSelection'] || null;
+    const trialJurorSelection = req.query['trialJurorSelection'] || null;
     let preReportRoute = _.clone(req.session.preReportRoute)
 
     delete req.session.preReportRoute
@@ -638,8 +638,8 @@
       if (req.query.sortDirection) {
         url = url + (url.includes('?') ? '&' : '?') + 'sortDirection=' + req.query.sortDirection;
       }
-      if (req.query.jurorSelection) {
-        url = url + (url.includes('?') ? '&' : '?') + 'jurorSelection=' + req.query.jurorSelection;
+      if (req.query.trialJurorSelection) {
+        url = url + (url.includes('?') ? '&' : '?') + 'trialJurorSelection=' + req.query.trialJurorSelection;
       }
 
       return addURLQueryParams(reportType,  url);
@@ -683,8 +683,8 @@
       } else if (reportType.search === 'trial') {
         config.trialNumber = req.params.filter;
         config.locCode = req.session.authentication.locCode;
-        if (req.query['jurorSelection']){
-          config.currentJurorsOnly = req.query['jurorSelection'] === 'CURRENT' ? true : false;
+        if (req.query['trialJurorSelection']){
+          config.currentJurorsOnly = req.query['trialJurorSelection'] === 'CURRENT' ? true : false;
         };
       } else if (reportType.search === 'courts') {
         config.courts = _.clone(req.session.reportCourts)
@@ -983,12 +983,12 @@
   const standardReportTrialJurorSelectPost = (app, reportKey) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
     const trialNo = req.params.filter;
-    const jurorSelection = req.body.jurorSelection;
+    const trialJurorSelection = req.body.trialJurorSelection;
     const locCode = req.session.authentication.locCode;
     
     return res.redirect(app.namedRoutes.build(`reports.${reportKey}.report.get`, {
       filter: trialNo
-    }) + `?jurorSelection=${jurorSelection}`);
+    }) + `?trialJurorSelection=${trialJurorSelection}`);
     
   }
 
