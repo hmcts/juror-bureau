@@ -37,7 +37,7 @@
           {% set tagLabel = pool.utilisation + " JURORS " + pool.utilisationDescription %}
           {{ govukTag({
             text: tagLabel | toSentenceCase,
-            classes: ("govuk-tag--pink" if pool.utilisationDescription === "SURPLUS" else "govuk-tag--blue") + " mod-tag--full-width"
+            classes: ("govuk-tag--magenta" if pool.utilisationDescription === "SURPLUS" else "govuk-tag--blue") + " mod-tag--full-width"
           }) }}
         </td>
         <td id="{{ pool.poolNumber}}-startDate" class="govuk-table__cell govuk-table__cell--numeric jd-middle-align">

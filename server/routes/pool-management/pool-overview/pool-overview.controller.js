@@ -70,6 +70,7 @@ module.exports.getJurors = function(app) {
 
     try {
       pool = await poolSummaryObj.get(req, poolNumber);
+      console.log('\n\n\n\n\n\n\n\n\n pool: ', pool);
     } catch (err) {
       const errorMessage = `Failed to fetch pool summary for ${isCourtUser(req, res) ? 'court' : 'bureau'} user:`;
 
