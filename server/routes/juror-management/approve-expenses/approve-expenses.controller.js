@@ -257,7 +257,7 @@
         poolNumber: j.poolNumber,
         approvalType: j.expenseType,
         isCashPayment: currentTab === 'CASH',
-        revisions: j.revisions,
+        revisions: j.dateToRevisions,
       });
     });
 
