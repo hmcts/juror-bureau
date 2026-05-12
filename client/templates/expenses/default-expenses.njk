@@ -100,11 +100,11 @@
         label: {
           text: "Miles travelled by car, motorcycle or bicycle per day"
         },
-        value: tmpBody.mileage if tmpBody.mileage else defaultExpenses.mileage,
+        value: tmpBody.distanceTraveledMiles if tmpBody.distanceTraveledMiles else defaultExpenses.distanceTraveledMiles,
         errorMessage: mileageError,
         classes: "govuk-input--width-5",
-        id: "mileage",
-        name: "mileage",
+        id: "distanceTraveledMiles",
+        name: "distanceTraveledMiles",
         suffix: {
           text: "miles"
         },
@@ -142,11 +142,11 @@
         label: {
           text: "Smartcard Number"
         },
-        value: tmpBody.smartCard if tmpBody.smartCard else defaultExpenses.smartCard,
+        value: tmpBody.smartCardNumber if tmpBody.smartCardNumber else defaultExpenses.smartCardNumber,
         errorMessage: smartCardError,
         classes: "govuk-input--width-20",
-        id: "smartCard",
-        name: "smartCard"
+        id: "smartCardNumber",
+        name: "smartCardNumber"
       }) }}
 
       <div class="mod-juror-record__title govuk-!-margin-bottom-5">

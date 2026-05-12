@@ -100,7 +100,7 @@
                   text: "Loss of earnings or benefits per day"
                 },
                 value: {
-                  text: ("£" + defaultExpenses.financial_loss | toFixed(2)) if defaultExpenses.financial_loss else "-"
+                  text: ("£" + defaultExpenses.financialLoss | toFixed(2)) if defaultExpenses.financialLoss else "-"
                 }
               },
               {
@@ -108,7 +108,7 @@
                   text: "Travel time"
                 },
                 value: {
-                  text: defaultExpenses.travel_time | hoursStringToHoursAndMinutes if defaultExpenses.travel_time else "-"
+                  text: defaultExpenses.travelTime | hoursStringToHoursAndMinutes if defaultExpenses.travelTime else "-"
                 }
               },
               {
@@ -116,7 +116,7 @@
                   text: "Miles travelled"
                 },
                 value: {
-                  text: (defaultExpenses.mileage + " miles") if defaultExpenses.mileage else "-"
+                  text: (defaultExpenses.distanceTraveledMiles + " miles") if defaultExpenses.distanceTraveledMiles else "-"
                 }
               },
               {
@@ -124,7 +124,7 @@
                   text: "Smartcard number"
                 },
                 value: {
-                  text: defaultExpenses.smart_card if defaultExpenses.smart_card else "-"
+                  text: defaultExpenses.smartCardNumber if defaultExpenses.smartCardNumber else "-"
                 }
               }
             ]

@@ -14,7 +14,18 @@
       for (let auditNumber of auditNumbers.split(',')) {
         requests.push(() => financialAuditDAO.get(req, auditNumber));
       }
-      let expenses = await Promise.all(requests.map((r) => r()));
+      
+      let expenses;
+      try {
+        expenses = await Promise.all(requests.map((r) => r()));
+      } catch (err) {
+        app.logger.crit('Error retrieving financial audit data for bulk report', {
+          auth: req.session.authentication,
+          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+        });
+        
+        return res.render('_errors/generic', { err });
+      }
 
       const bulkData = [];
 

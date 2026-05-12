@@ -314,9 +314,9 @@
           });
 
           const dailyExpenses = {
-            totalDraft: expensesSummary.total_draft,
-            totalForApproval: expensesSummary.total_for_approval,
-            totalApproved: expensesSummary.total_approved,
+            totalDraft: expensesSummary.totalDraft,
+            totalForApproval: expensesSummary.totalForApproval,
+            totalApproved: expensesSummary.totalApproved,
           };
 
           return res.render('juror-management/juror-record/expenses', {
@@ -1284,7 +1284,6 @@
   }
 
   function canEnterSummons(req, commonDetails) {
-    console.log(commonDetails);
     const jurorStatus = resolveJurorStatus(commonDetails);
 
     if (commonDetails.owner !== req.session.authentication.owner) {

@@ -32,43 +32,43 @@
       <tbody class="govuk-table__body">
         {% for expense in expenseData.expenses%}
 
-        {% set attendanceType = "Full day" if expense.attendance_type else "Half day" %}
+        {% set attendanceType = "Full day" if expense.attendanceType else "Half day" %}
         {% if loop.index > 10 or page > 1%}
           {% set attendanceType = attendanceType + " (>10 days)"%}
         {% endif %}
 
         <tr class="govuk-table__row">
-          <td class="govuk-table__cell"><a href="#" class="govuk-body govuk-link" id="expenseDateLink">{{expense.appearance_date | dateFilter("YYYY-MM-DD", "ddd DD MMM YYYY")}}</a></td>
+          <td class="govuk-table__cell"><a href="#" class="govuk-body govuk-link" id="expenseDateLink">{{expense.appearanceDate | dateFilter("YYYY-MM-DD", "ddd DD MMM YYYY")}}</a></td>
           <td class="govuk-table__cell">{{attendanceType}}</td>
-          <td class="govuk-table__cell">£{{expense.public_transport}}</td>
+          <td class="govuk-table__cell">£{{expense.publicTransport}}</td>
           <td class="govuk-table__cell">£{{expense.taxi}}</td>
           <td class="govuk-table__cell">£{{expense.motorcycle}}</td>
           <td class="govuk-table__cell">£{{expense.car}}</td>
           <td class="govuk-table__cell">£{{expense.bicycle}}</td>
           <td class="govuk-table__cell">£{{expense.parking}}</td>
-          <td class="govuk-table__cell">£{{expense.food_and_drink}}</td>
-          <td class="govuk-table__cell">£{{expense.loss_of_earnings}}</td>
-          <td class="govuk-table__cell">£{{expense.extra_care}}</td>
+          <td class="govuk-table__cell">£{{expense.foodAndDrink}}</td>
+          <td class="govuk-table__cell">£{{expense.lossOfEarnings}}</td>
+          <td class="govuk-table__cell">£{{expense.extraCare}}</td>
           <td class="govuk-table__cell">£{{expense.other}}</td>
-          <td class="govuk-table__cell">(£{{expense.smart_card}})</td>
-          <td class="govuk-table__cell">{{expense.payment_method}}</td>
+          <td class="govuk-table__cell">(£{{expense.smartCard}})</td>
+          <td class="govuk-table__cell">{{expense.paymentMethod}}</td>
           <td class="govuk-table__cell mod-highlight-table-data__grey mod-center-table-data">£{{expense.total}}</td>
         </tr>
         {% endfor %}
         <tr class="govuk-table__row mod-highlight-table-row__grey">
           <td class="govuk-table__cell">Totals</td>
-          <td class="govuk-table__cell">{{expenseData.totals.total_days}}</td>
-          <td class="govuk-table__cell">£{{expenseData.totals.public_transport}}</td>
+          <td class="govuk-table__cell">{{expenseData.totals.totalDays}}</td>
+          <td class="govuk-table__cell">£{{expenseData.totals.publicTransport}}</td>
           <td class="govuk-table__cell">£{{expenseData.totals.taxi}}</td>
           <td class="govuk-table__cell">£{{expenseData.totals.motorcycle}}</td>
           <td class="govuk-table__cell">£{{expenseData.totals.car}}</td>
           <td class="govuk-table__cell">£{{expenseData.totals.bicycle}}</td>
           <td class="govuk-table__cell">£{{expenseData.totals.parking}}</td>
-          <td class="govuk-table__cell">£{{expenseData.totals.food_and_drink}}</td>
-          <td class="govuk-table__cell">£{{expenseData.totals.loss_of_earnings}}</td>
-          <td class="govuk-table__cell">£{{expenseData.totals.extra_care}}</td>
+          <td class="govuk-table__cell">£{{expenseData.totals.foodAndDrink}}</td>
+          <td class="govuk-table__cell">£{{expenseData.totals.lossOfEarnings}}</td>
+          <td class="govuk-table__cell">£{{expenseData.totals.extraCare}}</td>
           <td class="govuk-table__cell">£{{expenseData.totals.other}}</td>
-          <td class="govuk-table__cell">(£{{expenseData.totals.smart_card}})</td>
+          <td class="govuk-table__cell">(£{{expenseData.totals.smartCard}})</td>
           <td class="govuk-table__cell"></td>
           <td class="govuk-table__cell mod-center-table-data">£{{expenseData.totals.total}}</td>
         </tr>

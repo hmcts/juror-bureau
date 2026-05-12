@@ -94,20 +94,20 @@
       id: "forApprovalTotalTag",
       colour: "blue",
       label: "Total for approval",
-      value: ("£" + (data.total.total_due | toFixed(2)))
+      value: ("£" + (data.total.totalDue | toFixed(2)))
     })}}
   {% elif status === "for-reapproval" %}
     {{ modLargeTag({
       id: "forReapprovalTotalTag",
       colour: "orange",
       label: "Total for reapproval",
-      value: ("£" + (data.total.balance_to_pay | toFixed(2)))
+      value: ("£" + (data.total.balanceToPay | toFixed(2)))
     })}}
   {% elif status === "approved" %}
     {{ modLargeTag({
       id: "approvedTotalTag",
       label: "Total approved",
-      value: ("£" + (data.total.total_paid | toFixed(2)))
+      value: ("£" + (data.total.totalPaid | toFixed(2)))
     })}}
   {% endif %}
 

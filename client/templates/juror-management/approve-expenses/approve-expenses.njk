@@ -145,7 +145,7 @@
     document.getElementById("checkedJurors").innerHTML = 0;
 
     document.getElementById('selectAllCheckbox').addEventListener('change', selectAll);
-    document.getElementsByName('selectedCourts').forEach((checkbox) => {
+    document.getElementsByName('selectedJurors').forEach((checkbox) => {
       checkbox.addEventListener('change', checkSet);
     });
 

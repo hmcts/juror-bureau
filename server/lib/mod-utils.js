@@ -490,46 +490,46 @@
       item.push(
         {
           html: '<a href="/juror-management/record/' +
-            unpaid.juror_number + '/expenses" class="govuk-link">' + unpaid.juror_number + '</a>',
+            unpaid.jurorNumber + '/expenses" class="govuk-link">' + unpaid.jurorNumber + '</a>',
           attributes: {
-            'data-sort-value': unpaid.juror_number,
+            'data-sort-value': unpaid.jurorNumber,
           },
         },
         {
-          text: unpaid.pool_number,
+          text: unpaid.poolNumber,
           attributes: {
-            'data-sort-value': unpaid.pool_number,
+            'data-sort-value': unpaid.poolNumber,
           },
         },
         {
-          text: unpaid.first_name,
+          text: unpaid.firstName,
           attributes: {
-            'data-sort-value': unpaid.first_name,
+            'data-sort-value': unpaid.firstName,
           },
         },
         {
-          text: unpaid.last_name,
+          text: unpaid.lastName,
           attributes: {
-            'data-sort-value': unpaid.last_name,
+            'data-sort-value': unpaid.lastName,
           },
         },
         {
-          text: '£' + parseFloat(unpaid.total_unapproved).toFixed(2),
+          text: '£' + parseFloat(unpaid.totalUnapproved).toFixed(2),
           attributes: {
-            'data-sort-value': unpaid.total_unapproved,
+            'data-sort-value': unpaid.totalUnapproved,
           },
         },
         {
-          text: dateFilter(makeDate(unpaid.last_attendance_date), 'YYYY,MM,DD', 'ddd DD MMM YYYY'),
+          text: dateFilter(makeDate(unpaid.lastAttendanceDate), 'YYYY,MM,DD', 'ddd DD MMM YYYY'),
           attributes: {
-            'data-sort-value': makeDate(unpaid.last_attendance_date),
+            'data-sort-value': makeDate(unpaid.lastAttendanceDate),
           },
         },
         {
           html: '<a href="/juror-management/unpaid-attendance/expense-record/' +
-            unpaid.juror_number + '/' + locCode + '/draft" class="govuk-link">' + 'View expenses' + '</a>',
+            unpaid.jurorNumber + '/' + locCode + '/draft" class="govuk-link">' + 'View expenses' + '</a>',
           attributes: {
-            'data-sort-value': unpaid.total_unapproved,
+            'data-sort-value': unpaid.totalUnapproved,
           },
         }
       );
@@ -1380,7 +1380,7 @@
 
   const camelToSnake = (item) => item.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
 
-  const mapCamelToSnake = (object) => replaceAllObjKeys(object, camelToSnake);
+  const mapCamelToSnake = (object) => replaceAllObjKeys(_.cloneDeep(object), camelToSnake);
 
   module.exports.camelToSnake = camelToSnake;
   module.exports.mapCamelToSnake = mapCamelToSnake;
