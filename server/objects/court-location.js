@@ -2,7 +2,7 @@
   'use strict';
 
   const { DAO } = require('./dataAccessObject');
-  const { basicDataTransform } = require('../lib/utils')
+  const { basicDataTransform, basicDataTransform2 } = require('../lib/utils')
 
   module.exports.courtLocationsFromPostcodeObj = new DAO('moj/court-location/catchment-areas', {
     get: function(postcode) {
@@ -17,7 +17,7 @@
     get: function(locCode) {
       return {
         uri: this.resource.replace('{loc_code}', locCode),
-        transform: basicDataTransform,
+        transform: basicDataTransform2,
       }
     }
   });

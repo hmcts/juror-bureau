@@ -623,7 +623,7 @@
 
     try {
       const { publicTransport, taxi } = req.body;
-      const response = await getCourtLocationRates.get(req, req.session.authentication.owner);
+      const response = await getCourtLocationRates.get(req, req.session.authentication.locCode);
 
       const publicTransportLimit = response.publicTransportSoftLimit;
       const taxiLimit = response.taxiSoftLimit;
