@@ -58,8 +58,8 @@
           ? defaultExpenses.financialLoss.toString() : '';
         defaultExpenses.amountSpent = defaultExpenses.amountSpent
           ? defaultExpenses.amountSpent.toString() : '';
-        defaultExpenses.mileage = defaultExpenses.mileage
-          ? defaultExpenses.mileage.toString() : '';
+        defaultExpenses.distanceTraveledMiles = defaultExpenses.distanceTraveledMiles
+          ? defaultExpenses.distanceTraveledMiles.toString() : '';
         defaultExpenses.claimingSubsistenceAllowance = defaultExpenses.claimingSubsistenceAllowance
           ? 'true' : 'false';
 

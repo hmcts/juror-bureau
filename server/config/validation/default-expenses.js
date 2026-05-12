@@ -17,7 +17,7 @@
           },
         },
       },
-      mileage: {
+      distanceTraveledMiles: {
         defaultMileage: {},
       },
       travelTime: {
