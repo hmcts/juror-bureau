@@ -1284,7 +1284,6 @@
   }
 
   function canEnterSummons(req, commonDetails) {
-    console.log(commonDetails);
     const jurorStatus = resolveJurorStatus(commonDetails);
 
     if (commonDetails.owner !== req.session.authentication.owner) {
