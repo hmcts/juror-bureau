@@ -602,14 +602,14 @@
 
       if (req.body.applyToAllDays.includes('lossOfEarnings')) {
         applyToAllPayload['financialLoss'] = {
-          'lossOfEarnings': req.body.lossOfEarnings,
+          'lossOfEarningsOrBenefits': req.body.lossOfEarnings,
         };
       }
 
       if (req.body.applyToAllDays.includes('extraCareCosts')) {
         applyToAllPayload['financialLoss'] = {
           ...applyToAllPayload['financialLoss'],
-          'extraCareCosts': req.body.extraCareCosts,
+          'extraCareCost': req.body.extraCareCosts,
         };
       }
 
@@ -642,9 +642,9 @@
 
           for (const expense of expensesData) {
             if (req.body.applyToAllDays.includes('lossOfEarnings') && applyToAllPayload.financialLoss) {
-              if (applyToAllPayload.financialLoss.lossOfEarnings
+              if (applyToAllPayload.financialLoss.lossOfEarningsOrBenefits
                 // eslint-disable-next-line max-len
-                && parseFloat(applyToAllPayload.financialLoss.lossOfEarnings) < expense.financialLoss.lossOfEarningsOrBenefits) {
+                && parseFloat(applyToAllPayload.financialLoss.lossOfEarningsOrBenefits) < expense.financialLoss.lossOfEarningsOrBenefits) {
                 errors.lossOfEarnings = [{
                   summary: 'The new financial loss cannot be less than originally paid in the selected expenses',
                   details: 'The new financial loss cannot be less than originally paid in the selected expenses',
@@ -653,9 +653,9 @@
             }
 
             if (req.body.applyToAllDays.includes('extraCareCosts') && applyToAllPayload.financialLoss) {
-              if (applyToAllPayload.financialLoss.extraCareCosts
+              if (applyToAllPayload.financialLoss.extraCareCost
                 // eslint-disable-next-line max-len
-                && parseFloat(applyToAllPayload.financialLoss.extraCareCosts) < expense.financialLoss.extraCareCost) {
+                && parseFloat(applyToAllPayload.financialLoss.extraCareCost) < expense.financialLoss.extraCareCost) {
                 errors.extraCareCosts = [{
                   summary: 'The new extra care costs cannot be less than originally paid in the selected expenses',
                   details: 'The new extra care costs cannot be less than originally paid in the selected expenses',
@@ -738,8 +738,12 @@
           const expenseDate = expense.dateOfExpense;
           let editedExpense = req.session.editedExpenses[expenseDate];
           if (!editedExpense) {
+            expense.financialLoss.lossOfEarningsOrBenefits = expense.financialLoss.lossOfEarnings;
+            delete expense.financialLoss.lossOfEarnings;
             recalculatePayload.push({ ..._.merge(expense, applyToAllPayload) });
           } else {
+            editedExpense.formData.financialLoss.lossOfEarningsOrBenefits = editedExpense.formData.financialLoss.lossOfEarnings;
+            delete editedExpense.formData.financialLoss.lossOfEarnings;
             recalculatePayload.push({ ..._.merge(editedExpense.formData, applyToAllPayload) });
           }
         }

@@ -107,7 +107,7 @@
 
   <div class="govuk-body">
     <b>Mileage</b>
-    <span class="govuk-!-margin-left-3">{{ defaultExpense.mileage + " miles" if defaultExpense.mileage else "-" }}</span>
+    <span class="govuk-!-margin-left-3">{{ defaultExpense.distanceTraveledMiles + " miles" if defaultExpense.distanceTraveledMiles else "-" }}</span>
   </div>
 
   {% include "./expenses-table.njk" %}

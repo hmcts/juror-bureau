@@ -1380,7 +1380,7 @@
 
   const camelToSnake = (item) => item.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
 
-  const mapCamelToSnake = (object) => replaceAllObjKeys(object, camelToSnake);
+  const mapCamelToSnake = (object) => replaceAllObjKeys(_.cloneDeep(object), camelToSnake);
 
   module.exports.camelToSnake = camelToSnake;
   module.exports.mapCamelToSnake = mapCamelToSnake;
