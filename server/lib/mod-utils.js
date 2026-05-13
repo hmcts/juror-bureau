@@ -1373,14 +1373,14 @@
 
   const snakeToCamel = (item) => item.split('_').reduce((prev, curr) => prev + curr[0].toUpperCase() + curr.slice(1));
 
-  const mapSnakeToCamel = (object) => replaceAllObjKeys(object, _.camelCase);
+  const mapSnakeToCamel = (object) => replaceAllObjKeys(object, snakeToCamel);
 
   module.exports.snakeToCamel = snakeToCamel;
   module.exports.mapSnakeToCamel = mapSnakeToCamel;
 
   const camelToSnake = (item) => item.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
 
-  const mapCamelToSnake = (object) => replaceAllObjKeys(_.cloneDeep(object), _.snakeCase);
+  const mapCamelToSnake = (object) => replaceAllObjKeys(_.cloneDeep(object), camelToSnake);
 
   module.exports.camelToSnake = camelToSnake;
   module.exports.mapCamelToSnake = mapCamelToSnake;
