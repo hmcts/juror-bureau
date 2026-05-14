@@ -8,7 +8,7 @@
 
   const dashboardStats = {
     resource: 'bureau/dashboard/statistics',
-    post: function(jwtToken, dashboardParams) {
+    post: async function(jwtToken, dashboardParams) {
 
       let url = this.resource;
       let options = {};
@@ -18,9 +18,8 @@
         'Content-type': 'application/vnd.api+json',
         'Accept': 'application/json'
       }
-      options.transform = basicDataTransform2;
 
-      return axiosClient('post', url , jwtToken, options);
+      return basicDataTransform2(await axiosClient('post', url , jwtToken, options));
     },
   };
 

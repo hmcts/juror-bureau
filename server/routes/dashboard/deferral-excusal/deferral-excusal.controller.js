@@ -126,7 +126,7 @@
         console.log('Calling deferral-excusal API - excuse codes');
 
         excusalObj
-          .get(req)
+          .get(jwtToken)
           .then(reasonsSuccessCB)
           .catch(reasonsErrorCB);
 
