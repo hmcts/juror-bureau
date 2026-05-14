@@ -160,7 +160,7 @@
     data['financialLoss'] = {
       'lossOfEarningsOrBenefits': parseFloatOrZero(lossOfEarnings),
       'extraCareCost': parseFloatOrZero(extraCareCosts),
-      'otherCost': parseFloatOrZero(otherCosts),
+      'otherCosts': parseFloatOrZero(otherCosts),
     };
   }
 
