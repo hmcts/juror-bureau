@@ -50,7 +50,7 @@
           ),
           cancelUrl: app.namedRoutes.build('juror-record.attendance.get', { jurorNumber: juror.jurorNumber }),
           juror,
-          minDate: dateFilter(attendance.next_date ?? new Date(), null, 'DD/MM/YYYY'),
+          minDate: dateFilter(new Date(), null, 'DD/MM/YYYY'),
           errors: {
             title: 'Please check the form',
             count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,

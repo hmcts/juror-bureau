@@ -71,9 +71,6 @@
       delete req.session.formFields;
 
       const today = new Date();
-      let tomorrow = new Date();
-
-      tomorrow.setDate(today.getDate() + 1);
 
       return res.render('pool-management/change-next-due-at-court/change-next-due-at-court', {
         processUrl: app.namedRoutes.build('pool-overview.change-next-due-at-court.continue.post', {
@@ -82,7 +79,7 @@
         cancelUrl: app.namedRoutes.build('pool-overview.get', {
           poolNumber,
         }),
-        minDate: dateFilter(tomorrow, null, 'DD/MM/YYYY'),
+        minDate: dateFilter(today, null, 'DD/MM/YYYY'),
         errors: {
           title: 'Please check the form',
           count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
@@ -90,7 +87,7 @@
         },
         formDetails: typeof tmpBody !== 'undefined'
           ? tmpBody
-          : { attendanceDate: dateFilter(tomorrow, null, 'DD/MM/YYYY') },
+          : { attendanceDate: dateFilter(today, null, 'DD/MM/YYYY') },
       });
     };
   };
