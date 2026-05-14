@@ -1,16 +1,21 @@
-
 ;(function(){
   'use strict';
 
-  const { DAO } = require('./dataAccessObject');
   const { basicDataTransform2 } = require('../lib/utils');
+  const { axiosClient } = require('./axios-instance');
 
-  module.exports.object = new DAO('bureau/juror/excuse', {
-    get: function() {
-      return {
-        uri: this.resource,
-        transform: basicDataTransform2,
+  module.exports.object = {
+    get: async function(jwtToken) {
+
+      let url = 'bureau/juror/excuse';
+      let options = {};
+
+      options.headers = {
+        'Content-type': 'application/vnd.api+json',
+        'Accept': 'application/json'
       };
+
+      return basicDataTransform2( await axiosClient('get', url , jwtToken, options));
     }
-  });
+  };
 })();
