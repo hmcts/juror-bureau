@@ -12,7 +12,7 @@
 
 {% set currentApp = "Jurors" %}
 
-{% block beforeContent %}
+{% block containerStart %}
     <a href="{{ backLinkUrl }}" class="govuk-back-link">Back</a>
 {% endblock %}
 
@@ -28,7 +28,7 @@
   <div class="after-header">
     <div>
       <span class="govuk-caption-l">Expenses audit number</span>
-      <h1 class="govuk-heading-l govuk-!-margin-bottom-3">{{expenseData.audit_number}}</h1>
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-3">{{expenseData.auditNumber}}</h1>
         {{ govukTag({
           text: "For approval" if status === 'forApproval' else "Approved",
           classes: "govuk-tag--blue" if status === 'forApproval' else "govuk-tag"
@@ -147,7 +147,7 @@
               text: "Submitted by"
             },
             value: {
-              text: expenseData.submitted_by
+              text: expenseData.submittedBy
             }
           },
           {
@@ -155,7 +155,7 @@
               text: "Date submitted"
             },
             value: {
-              text: expenseData.submitted_on | dateFilter(null, "ddd D MMM YYYY")
+              text: expenseData.submittedOn | dateFilter(null, "ddd D MMM YYYY")
             }
           },
           {
@@ -163,7 +163,7 @@
               text: "Approved by"
             },
             value: {
-              text: expenseData.approved_by
+              text: expenseData.approvedBy
             }
           } if status === "approved",
           {
@@ -171,7 +171,7 @@
               text: "Date approved"
             },
             value: {
-              text: expenseData.approved_on | dateFilter(null, "ddd D MMM YYYY")
+              text: expenseData.approvedOn | dateFilter(null, "ddd D MMM YYYY")
             }
           } if status === "approved",
           {
@@ -179,7 +179,7 @@
               text: "Time approved"
             },
             value: {
-              text: expenseData.approved_on | dateFilter(null, "hh:mm") | convert24to12
+              text: expenseData.approvedOn | dateFilter(null, "hh:mm") | convert24to12
             }
           } if status === "approved"
         ]
@@ -192,7 +192,7 @@
     colour: "blue" if status === "forApproval",
     layout: "inline",
     label: "Total for approval" if status === "forApproval" else "Total approved",
-    value: "£" + expenseData.totals.total_amount
+    value: "£" + expenseData.totals.totalAmount
   })}}
 
   <div class="govuk-grid-row">
@@ -224,7 +224,7 @@
                 text: "Total amount"
               },
               value: {
-                text: "£" + expenseData.totals.total_amount,
+                text: "£" + expenseData.totals.totalAmount,
                 classes: "mod-summary-list-align__right"
               }
             },
@@ -233,7 +233,7 @@
                 text: "Balance to pay"
               },
               value: {
-                text: "£" + expenseData.totals.balance_to_pay,
+                text: "£" + expenseData.totals.balanceToPay,
                 classes: "mod-summary-list-align__right"
               }
             }

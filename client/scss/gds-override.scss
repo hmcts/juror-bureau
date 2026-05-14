@@ -1,0 +1,8 @@
+// override font family
+$govuk-font-family: helvetica, arial, sans-serif;
+
+// override colours to fit gds
+$colour-turquoise: govuk-colour("teal", $variant: "primary");
+$colour-dark-grey: govuk-colour("black", $variant: "tint-25");
+$colour-mid-grey: govuk-colour("black", $variant: "tint-80");
+$colour-light-grey: govuk-colour("black", $variant: "tint-95");

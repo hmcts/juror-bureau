@@ -9,7 +9,7 @@
 
 {% set currentApp = "Jurors" %}
 
-{% block beforeContent %}
+{% block containerStart %}
   {{ attendanceSubNav({
     inWaitingUrl: url("juror-management.attendance.get", { status: "in-waiting" }),
     onTrialUrl: url("juror-management.jurors-on-trial.get"),

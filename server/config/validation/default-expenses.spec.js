@@ -9,9 +9,9 @@
     it('should validate all default expenses fields - expecting no errors', function() {
       const mockRequest = {
         financialLoss: '1',
-        mileage: '10',
+        distanceTraveledMiles: '10',
         foodAndDrink: 'no',
-        smartCard: '71817',
+        smartCardNumber: '71817',
         travelTime: {
           hour: '1',
           minute: '25',
@@ -26,9 +26,9 @@
     it('should validate an invalid input for finanical loss', function() {
       const mockRequest = {
         financialLoss: 'a',
-        mileage: '10',
+        distanceTraveledMiles: '10',
         foodAndDrink: 'no',
-        smartCard: '71817',
+        smartCardNumber: '71817',
         travelTime: {
           hour: '1',
           minute: '25',
@@ -51,9 +51,9 @@
     it('should validate an invalid input for smartcard number', function() {
       const mockRequest = {
         financialLoss: '1',
-        mileage: '10',
+        distanceTraveledMiles: '10',
         foodAndDrink: 'no',
-        smartCard: '11111111111111111111111111',
+        smartCardNumber: '11111111111111111111111111',
         travelTime: {
           hour: '1',
           minute: '25',
@@ -63,22 +63,22 @@
       const validatorResult = validate(mockRequest, expensesValidator());
 
       expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownProperty('smartCard');
-      expect(validatorResult.smartCard[0]).to.have.ownProperty('summary');
-      expect(validatorResult.smartCard[0]).to.have.ownProperty('details');
+      expect(validatorResult).to.have.ownProperty('smartCardNumber');
+      expect(validatorResult.smartCardNumber[0]).to.have.ownProperty('summary');
+      expect(validatorResult.smartCardNumber[0]).to.have.ownProperty('details');
       // eslint-disable-next-line
-      expect(validatorResult.smartCard[0].summary).to.be.equal('Smartcard number must be 20 characters or fewer');
+      expect(validatorResult.smartCardNumber[0].summary).to.be.equal('Smartcard number must be 20 characters or fewer');
       // eslint-disable-next-line
-      expect(validatorResult.smartCard[0].details).to.be.equal('Smartcard number must be 20 characters or fewer');
+      expect(validatorResult.smartCardNumber[0].details).to.be.equal('Smartcard number must be 20 characters or fewer');
 
     });
 
     it('should validate an invalid input for miles - can only include numbers', function() {
       const mockRequest = {
         financialLoss: '1',
-        mileage: 'a',
+        distanceTraveledMiles: 'a',
         foodAndDrink: 'no',
-        smartCard: '71817',
+        smartCardNumber: '71817',
         travelTime: {
           hour: '1',
           minute: '25',
@@ -88,22 +88,22 @@
       const validatorResult = validate(mockRequest, expensesValidator());
 
       expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownProperty('mileage');
-      expect(validatorResult.mileage[0]).to.have.ownProperty('summary');
-      expect(validatorResult.mileage[0]).to.have.ownProperty('details');
+      expect(validatorResult).to.have.ownProperty('distanceTraveledMiles');
+      expect(validatorResult.distanceTraveledMiles[0]).to.have.ownProperty('summary');
+      expect(validatorResult.distanceTraveledMiles[0]).to.have.ownProperty('details');
       // eslint-disable-next-line
-      expect(validatorResult.mileage[0].summary).to.be.equal('Miles travelled can only include numbers');
+      expect(validatorResult.distanceTraveledMiles[0].summary).to.be.equal('Miles travelled can only include numbers');
       // eslint-disable-next-line
-      expect(validatorResult.mileage[0].details[0]).to.be.equal('Miles travelled can only include numbers');
+      expect(validatorResult.distanceTraveledMiles[0].details[0]).to.be.equal('Miles travelled can only include numbers');
 
     });
 
     it('should validate an invalid input for miles - should not include decimals', function() {
       const mockRequest = {
         financialLoss: '1',
-        mileage: '1.5',
+        distanceTraveledMiles: '1.5',
         foodAndDrink: 'no',
-        smartCard: '71817',
+        smartCardNumber: '71817',
         travelTime: {
           hour: '1',
           minute: '25',
@@ -113,22 +113,22 @@
       const validatorResult = validate(mockRequest, expensesValidator());
 
       expect(validatorResult).to.be.an('object');
-      expect(validatorResult).to.have.ownProperty('mileage');
-      expect(validatorResult.mileage[0]).to.have.ownProperty('summary');
-      expect(validatorResult.mileage[0]).to.have.ownProperty('details');
+      expect(validatorResult).to.have.ownProperty('distanceTraveledMiles');
+      expect(validatorResult.distanceTraveledMiles[0]).to.have.ownProperty('summary');
+      expect(validatorResult.distanceTraveledMiles[0]).to.have.ownProperty('details');
       // eslint-disable-next-line
-      expect(validatorResult.mileage[0].summary).to.be.equal('Miles travelled must be a whole number');
+      expect(validatorResult.distanceTraveledMiles[0].summary).to.be.equal('Miles travelled must be a whole number');
       // eslint-disable-next-line
-      expect(validatorResult.mileage[0].details[0]).to.be.equal('Miles travelled must be a whole number');
+      expect(validatorResult.distanceTraveledMiles[0].details[0]).to.be.equal('Miles travelled must be a whole number');
 
     });
 
     it('should validate an invalid input time - hours can only include numbers', function() {
       const mockRequest = {
         financialLoss: '1',
-        mileage: '1.5',
+        distanceTraveledMiles: '1.5',
         foodAndDrink: 'no',
-        smartCard: '71817',
+        smartCardNumber: '71817',
         travelTime: {
           hour: 'a',
           minute: '25',
@@ -151,9 +151,9 @@
     it('should validate an invalid input time - hours can only include positive numbers', function() {
       const mockRequest = {
         financialLoss: '1',
-        mileage: '1.5',
+        distanceTraveledMiles: '1.5',
         foodAndDrink: 'no',
-        smartCard: '71817',
+        smartCardNumber: '71817',
         travelTime: {
           hour: '-1',
           minute: '25',
@@ -176,9 +176,9 @@
     it('should validate an invalid input time - minutes can only include numbers', function() {
       const mockRequest = {
         financialLoss: '1',
-        mileage: '1.5',
+        distanceTraveledMiles: '1.5',
         foodAndDrink: 'no',
-        smartCard: '71817',
+        smartCardNumber: '71817',
         smartcardSpend: '1',
         travelTime: {
           hour: '1',
@@ -202,9 +202,9 @@
     it('should validate an invalid input time - minutes should be between 0 and 59', function() {
       const mockRequest = {
         financialLoss: '1',
-        mileage: '1.5',
+        distanceTraveledMiles: '1.5',
         foodAndDrink: 'no',
-        smartCard: '71817',
+        smartCardNumber: '71817',
         smartcardSpend: '1',
         travelTime: {
           hour: '1',

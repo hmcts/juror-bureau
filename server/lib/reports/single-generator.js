@@ -213,7 +213,7 @@
   module.exports.generateDocument = (data, options = {}) => {
     return new Promise((resolve, reject) => {
       const _defaultStyles = layout(options.pageOrientation).defaultStyles;
-      const printer = new pdfMake(layout().fonts);
+      pdfMake.addFonts(layout().fonts);
       const _documentContent = [];
       const chunks = [];
 
@@ -248,21 +248,11 @@
 
       finalContent.footer = documentFooter(finalContent.content);
 
-      const document = printer.createPdfKitDocument(finalContent);
-
-      document.on('data', function(data) {
-        chunks.push(data);
+      pdfMake.createPdf(finalContent).getBuffer().then((buffer) => {
+        return resolve(buffer);
+      }, err => {
+        return reject(err);
       });
-
-      document.on('end', function() {
-        return resolve(Buffer.concat(chunks));
-      });
-
-      document.on('error', function(error) {
-        return reject(error);
-      });
-
-      document.end();
     });
   };
 

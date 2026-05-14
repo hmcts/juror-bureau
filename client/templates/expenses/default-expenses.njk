@@ -16,16 +16,16 @@
 {% block content %}
 {% include "includes/errors.njk" %}
  {% set smartCardError = undefined %}
-  {% if errors.items["smartCard"] %}
-    {% set smartCardError = { text: errors.items["smartCard"][0].details } %}
+  {% if errors.items["smartCardNumber"] %}
+    {% set smartCardError = { text: errors.items["smartCardNumber"][0].details } %}
   {% endif %}
 {% set financialLossError = undefined %}
   {% if errors.items["financialLoss"] %}
     {% set financialLossError = { text: errors.items["financialLoss"][0].details } %}
   {% endif %}
 {% set mileageError = undefined %}
-  {% if errors.items["mileage"] %}
-    {% set mileageError = { text: errors.items["mileage"][0].details } %}
+  {% if errors.items["distanceTraveledMiles"] %}
+    {% set mileageError = { text: errors.items["distanceTraveledMiles"][0].details } %}
   {% endif %}
 {% set travelTimeError = undefined %}
   {% if errors.items["travelTime"] %}
@@ -100,11 +100,11 @@
         label: {
           text: "Miles travelled by car, motorcycle or bicycle per day"
         },
-        value: tmpBody.mileage if tmpBody.mileage else defaultExpenses.mileage,
+        value: tmpBody.distanceTraveledMiles if tmpBody.distanceTraveledMiles else defaultExpenses.distanceTraveledMiles,
         errorMessage: mileageError,
         classes: "govuk-input--width-5",
-        id: "mileage",
-        name: "mileage",
+        id: "distanceTraveledMiles",
+        name: "distanceTraveledMiles",
         suffix: {
           text: "miles"
         },
@@ -142,11 +142,11 @@
         label: {
           text: "Smartcard Number"
         },
-        value: tmpBody.smartCard if tmpBody.smartCard else defaultExpenses.smartCard,
+        value: tmpBody.smartCardNumber if tmpBody.smartCardNumber else defaultExpenses.smartCardNumber,
         errorMessage: smartCardError,
         classes: "govuk-input--width-20",
-        id: "smartCard",
-        name: "smartCard"
+        id: "smartCardNumber",
+        name: "smartCardNumber"
       }) }}
 
       <div class="mod-juror-record__title govuk-!-margin-bottom-5">

@@ -232,7 +232,6 @@
 
   module.exports.generateDocument = (content) => {
     return new Promise((resolve, reject) => {
-      const printer = new pdfMake(defaultStyles().fonts);
       const chunks = [];
       const _documentContent = [];
 
@@ -253,24 +252,16 @@
 
       documentPages.footer = documentFooter(documentPages.content);
 
-      const document = printer.createPdfKitDocument({
+      pdfMake.addFonts(layout().fonts);
+
+      pdfMake.createPdf({
         ...defaultStyles().defaultStyles,
         ...documentPages,
+      }).getBuffer().then((buffer) => {
+        return resolve(buffer);
+      }, err => {
+        return reject(err);
       });
-
-      document.on('data', function(data) {
-        chunks.push(data);
-      });
-
-      document.on('end', function() {
-        return resolve(Buffer.concat(chunks));
-      });
-
-      document.on('error', function(error) {
-        return reject(error);
-      });
-
-      document.end();
     });
   };
 

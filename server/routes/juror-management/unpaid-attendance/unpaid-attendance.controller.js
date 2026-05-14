@@ -33,7 +33,7 @@
           };
           req.session.unpaidAttendanceTotal = 0;
         } else {
-          req.session.unpaidAttendanceTotal = data.total_items;
+          req.session.unpaidAttendanceTotal = data.totalItems;
         }
 
         if (req.session.unpaidAttendanceTotal > modUtils.constants.PAGE_SIZE) {

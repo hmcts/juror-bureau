@@ -163,22 +163,22 @@ function buildPayload (req, { courts, totalCourts }) {
   const { fromDate, toDate } = req.query;
 
   const body = {
-    'search_by': type.toUpperCase(),
+    'searchBy': type.toUpperCase(),
   };
 
   if (type === 'pool') {
-    body['pool_number'] = filter;
+    body['poolNumber'] = filter;
   }
 
   if (type === 'court') {
     if (courts.length === totalCourts) {
-      body['all_courts'] = true;
+      body['allCourts'] = true;
     } else {
-      body['court_loc_codes'] = courts;
+      body['courtLocCodes'] = courts;
     }
 
-    body['from_date'] = fromDate;
-    body['to_date'] = toDate;
+    body['fromDate'] = fromDate;
+    body['toDate'] = toDate;
   }
 
   return body;

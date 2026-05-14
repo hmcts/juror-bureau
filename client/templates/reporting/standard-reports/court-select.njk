@@ -15,7 +15,7 @@
 
 {% set currentApp = "System administration" if isSystemAdministrator and isSuperUser else "Reports" %}
 
-{% block beforeContent %}
+{% block containerStart %}
   {% if backLinkUrl.url %}
     {% include "includes/back-link.njk" %}
   {% endif %}

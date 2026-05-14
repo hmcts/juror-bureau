@@ -11,19 +11,19 @@
 
 {% set draftTabHtml %}
   <span id="draftTab">
-    Draft {{ countPill(counts.total_draft) }}
+    Draft {{ countPill(counts.totalDraft) }}
   </span>
 {% endset %}
 
 {% set approvalTabHtml %}
   <span id="approvalTab">
-    For approval {{ countPill(counts.total_for_approval) }}
+    For approval {{ countPill(counts.totalForApproval) }}
   </span>
 {% endset %}
 
 {% set reapprovalTabHtml %}
   <span id="forReapprovalTab">
-    For reapproval {{ countPill(counts.total_for_reapproval) }}
+    For reapproval {{ countPill(counts.totalForReapproval) }}
   </span>
 {% endset %}
 

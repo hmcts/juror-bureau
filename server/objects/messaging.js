@@ -21,7 +21,7 @@
     post: function(messageType, locCode, body) {
       return {
         uri: this.resource.replace('{messageType}', messageType).replace('{locCode}', locCode),
-        body: mapCamelToSnake(body),
+        body,
         transform: basicDataTransform2
       };
     }

@@ -4,7 +4,7 @@
   const _ = require('lodash');
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
-  const { mapCamelToSnake, replaceAllObjKeys, extractDataAndHeadersFromResponse2 } = require('../lib/mod-utils')
+  const { extractDataAndHeadersFromResponse2, mapCamelToSnake, mapSnakeToCamel, replaceAllObjKeys } = require('../lib/mod-utils')
 
   module.exports.record = new DAO('moj/juror-record', {
     get: function(tab, jurorNumber, locCode, etag) {
@@ -126,7 +126,10 @@
 
   module.exports.expensesSummaryDAO = new DAO('moj/expenses/{locCode}/{jurorNumber}/summary/totals', {
     get: function(jurorNumber, locCode) {
-      return { uri: urljoin(this.resource.replace('{locCode}', locCode).replace('{jurorNumber}', jurorNumber)) };
+      return { 
+        uri: urljoin(this.resource.replace('{locCode}', locCode).replace('{jurorNumber}', jurorNumber)),
+        transform: mapSnakeToCamel,
+      };
     },
   });
 

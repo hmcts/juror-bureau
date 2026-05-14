@@ -54,8 +54,6 @@
           auth: req.session.authentication,
         });
 
-        data = replaceAllObjKeys(_.cloneDeep(data), _.camelCase);
-
         const jurors = data.pendingApproval;
 
         const tabHeaders = {
@@ -259,15 +257,13 @@
         poolNumber: j.poolNumber,
         approvalType: j.expenseType,
         isCashPayment: currentTab === 'CASH',
-        revisions: j.revisions,
+        revisions: j.dateToRevisions,
       });
     });
 
-    replaceAllObjKeys(payload, _.snakeCase);
-
     try {
       const response = await approveExpensesDAO.post(req, locCode, currentTab, payload);
-      delete response._headers;
+      delete response.headers;
 
       const financialNumbers = Object.values(response).map((financialNumber) => financialNumber).join(',');
 
