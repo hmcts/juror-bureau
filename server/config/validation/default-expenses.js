@@ -8,7 +8,7 @@
       financialLoss: {
         deafultFinancialLoss: {},
       },
-      smartCard: {
+      smartCardNumber: {
         length: {
           maximum: 20,
           message: {

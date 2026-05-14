@@ -16,16 +16,16 @@
 {% block content %}
 {% include "includes/errors.njk" %}
  {% set smartCardError = undefined %}
-  {% if errors.items["smartCard"] %}
-    {% set smartCardError = { text: errors.items["smartCard"][0].details } %}
+  {% if errors.items["smartCardNumber"] %}
+    {% set smartCardError = { text: errors.items["smartCardNumber"][0].details } %}
   {% endif %}
 {% set financialLossError = undefined %}
   {% if errors.items["financialLoss"] %}
     {% set financialLossError = { text: errors.items["financialLoss"][0].details } %}
   {% endif %}
 {% set mileageError = undefined %}
-  {% if errors.items["mileage"] %}
-    {% set mileageError = { text: errors.items["mileage"][0].details } %}
+  {% if errors.items["distanceTraveledMiles"] %}
+    {% set mileageError = { text: errors.items["distanceTraveledMiles"][0].details } %}
   {% endif %}
 {% set travelTimeError = undefined %}
   {% if errors.items["travelTime"] %}
