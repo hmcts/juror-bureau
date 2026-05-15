@@ -199,7 +199,7 @@
           { 
             text: `${dateFilter(expense.attendanceDate, 'yyyy-MM-dd', 'ddd DD MMM YYYY')}`,
             margin: [0, 5, 0, 0],
-            fillColor: '##F3F3F3'
+            fillColor: '#F3F3F3'
           },
           makeEntry(`${attendanceType(expense.attendanceType)}`,`${attendanceType(expense.original.attendanceType)}`),
           makeEntry(toMoney(expense.lossOfEarnings),toMoney(expense.original.lossOfEarnings)),
@@ -246,7 +246,7 @@
         { text: toMoney(expense.foodAndDrink) },
         { text: toMoney(expense.smartCard) },
         { text: `${expense.paymentMethod}` },
-        { text: toMoney(expense.total), alignment: 'center', fillColor: '##F3F3F3' },
+        { text: toMoney(expense.total), alignment: 'center', fillColor: '#F3F3F3' },
       ]
     });
     
@@ -304,7 +304,7 @@
           { style: 'label', text: 'Food and drink' },
           { style: 'label', text: '(Smart card)' },
           { style: 'label', text: 'Method' },
-          { style: 'label', text: 'Total', alignment: 'center', fillColor: '##F3F3F3' },
+          { style: 'label', text: 'Total', alignment: 'center', fillColor: '#F3F3F3' },
         ],
         body: tableBody,
         widths,

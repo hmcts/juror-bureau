@@ -127,7 +127,7 @@ const bespokeReportTablePrint = {
         }
         poolTrial.push({
           body: [[
-            {text: 'Total unpaid attendances for ' + key + ': ' + counter, style: 'label', fillColor: '#F3F2#F3F3F3F1'},
+            {text: 'Total unpaid attendances for ' + key + ': ' + counter, style: 'label', fillColor: '#F3F3F3'},
           ]],
           widths:['100%'],
           margin: [0, 0, 0, 0],
