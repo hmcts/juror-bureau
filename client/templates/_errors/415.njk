@@ -1,0 +1,13 @@
+{% extends "../layouts/default.njk" %}
+
+{% block page_title %}415 Unsupported Media Type{% endblock %}
+
+{% set homeLink = "/administration" if isSystemAdministrator else "/" %}
+
+{% block content %}
+<div class="container-small">
+  <h1 class="heading-xlarge">415 Unsupported Media Type</h1>
+  <p>The request could not be processed because the data format is not supported.</p>
+  <p>You can <a href="{{ homeLink }}">return to the homepage</a>.</p>
+</div>
+{% endblock %}
