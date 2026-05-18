@@ -231,6 +231,9 @@ function doLogin(req) {
       };
     } else {
       if (!req.session.authCourtsList || !Array.isArray(req.session.authCourtsList)) {
+        app.logger.info('No courts list in session when trying to login, fetching from API', {
+          data: { body, locCode },
+        });
         req.session.authCourtsList = await fetchAuthCourtsList(req.session.noKeyAuthToken, body);
       }
 
