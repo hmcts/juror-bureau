@@ -43,7 +43,7 @@
     "express-nunjucks": "^3.1.2",
     "express-rate-limit": "^8.3.2",
     "express-session": "^1.19.0",
-    "fs-extra": "11.3.4",
+    "fs-extra": "11.3.5",
     "govuk-frontend": "^6.1.0",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
