@@ -32,7 +32,7 @@
 
         res.set('content-disposition', 'attachment; filename=' + filename);
         res.type('csv');
-        res.send(csvResult.join('\n'));
+        res.send(csvResult.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n'));
       }
     } catch (err) {
       app.logger.crit('Error generating local authority email csv', {
