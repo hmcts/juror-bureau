@@ -85,7 +85,7 @@
     "jackspeak": "2.1.1",
     "csurf/cookie": "0.7.2",
     "fast-uri": "3.1.2",
-    "socks/ip-address": "^10.2.0",
+    "ip-address": "^10.2.0",
     "express/path-to-regexp": "^0.1.13",
     "anymatch/picomatch": "^2.3.2",
     "readdirp/picomatch": "^2.3.2",
