@@ -641,7 +641,7 @@
           app.logger.crit('Failed to fetch the juror notes: ', {
             auth: req.session.authentication,
             data: {
-              jurorNumber: req.params['jurorNumber'],
+              jurorNumber: (req.params['jurorNumber'] || req.params.id),
             },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
@@ -1317,7 +1317,7 @@
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
-      return res.render('_errors/generic');
+      throw err;
     };
   };
 
