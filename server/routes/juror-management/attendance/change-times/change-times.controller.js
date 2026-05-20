@@ -233,7 +233,7 @@
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
-        if (err.statusCode === 422 && err.error.code === 'CANNOT_UPDATE_CONFIRMED_ATTENDANCE') {
+        if (err.statusCode === 422 && err.error?.code === 'CANNOT_UPDATE_CONFIRMED_ATTENDANCE') {
           req.session.errors = makeManualError('invalidAttendance', 'You cannot update a confirmed attendance, please make any changes to this attendance from the juror record');
           req.session.formFields = req.body;
           return res.redirect(invalidUrl);
@@ -256,6 +256,3 @@
 
 
 })();
-
-
-

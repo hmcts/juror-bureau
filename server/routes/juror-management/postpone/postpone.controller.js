@@ -669,14 +669,14 @@
         let errorRedirect;
         if (typeof req.session.poolJurorsPostpone !== 'undefined') {
           jurorNumber = req.session.poolJurorsPostpone.selectedJurors;
-          if (err.statusCode === 422 && err.error.code === 'CANNOT_DEFER_JUROR_WITH_APPEARANCE') {
+          if (err.statusCode === 422 && err.error?.code === 'CANNOT_DEFER_JUROR_WITH_APPEARANCE') {
             errorRedirect = app.namedRoutes.build('juror.update-bulk-postpone.available-pools.get', {
               poolNumber: req.params.poolNumber,
             });
             req.session.errors = modUtils.makeManualError('postpone', 'One or more jurors cannot be postponed as they already have an appearance at court');
             req.session.formFields = req.body;
           }
-          if (err.statusCode === 422 && err.error.code === 'JUROR_DATE_OF_BIRTH_REQUIRED') {
+          if (err.statusCode === 422 && err.error?.code === 'JUROR_DATE_OF_BIRTH_REQUIRED') {
             errorRedirect = app.namedRoutes.build('juror.update-bulk-postpone.available-pools.get', {
               poolNumber: req.params.poolNumber,
             });
@@ -685,7 +685,7 @@
           }
         } else {
           jurorNumber = req.params.jurorNumber;
-          if (err.statusCode === 422 && err.error.code === 'CANNOT_DEFER_JUROR_WITH_APPEARANCE') {
+          if (err.statusCode === 422 && err.error?.code === 'CANNOT_DEFER_JUROR_WITH_APPEARANCE') {
             errorRedirect = app.namedRoutes.build('juror.update.available-pools.get', {
               jurorNumber: req.params.jurorNumber,
             });

@@ -655,8 +655,8 @@
         summary: [],
       };
 
-      if (typeof err.error !== 'undefined' && err.error.message) {
-        req.session.errors.summary.push(err.error.message);
+      if (err.error?.message) {
+        req.session.errors.summary.push(err.error?.message);
       } else {
         req.session.errors.summary.push('Something went wrong when trying to process this summons');
       }

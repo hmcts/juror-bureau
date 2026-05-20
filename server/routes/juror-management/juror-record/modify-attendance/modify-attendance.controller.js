@@ -186,7 +186,7 @@
 
       if (err.statusCode === 422){
         req.session.errors =
-          makeManualError('', err.error.message);
+          makeManualError('', err.error?.message || 'Could not update attendance date');
       } else  {
         req.session.errors =
           makeManualError('', 'Something went wrong when trying to modify the juror\'s attendance');
