@@ -53,7 +53,22 @@
           status: status ? status : 'draft',
         });
 
-      const { response: data, headers } = await jurorBankDetailsDAO.get(req, jurorNumber);
+      let data;
+      let headers;
+
+      try {
+        ({ response: data, headers } = await jurorBankDetailsDAO.get(req, jurorNumber));
+      } catch (err) {
+        app.logger.crit('Failed to fetch juror bank details: ', {
+          auth: req.session.authentication,
+          data: {
+            jurorNumber,
+          },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic', { err });
+      }
 
       app.logger.info('Fetch juror\'s bank details:  ', {
         auth: req.session.authentication,

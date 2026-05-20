@@ -19,9 +19,20 @@
           ? req.session.locCode : req.session.receivingCourtLocCode;
 
       if (typeof req.session.courtsList === 'undefined') {
-        let { courts } = await requestCourtsObj.get(req);
+        let courts;
+        try {
+          ({ courts } = await requestCourtsObj.get(req));
 
-        req.session.courtsList = courts;
+          req.session.courtsList = courts;
+        } catch (err) {
+          app.logger.crit('Failed to fetch courts for reassigning a juror', {
+            auth: req.session.authentication,
+            locationCode: req.session.locCode,
+            error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+          });
+
+          return res.render('_errors/generic', { err });
+        }
       }
 
       let response;
