@@ -40,7 +40,7 @@
 
         <p class="govuk-body">
           <span class="govuk-heading-s">Jurors confirmed</span>
-          {{ poolDetails.bureauSummoning.confirmed }}
+          {{ poolDetails.bureauSummoning.confirmedFromBureau }}
         </p>
 
         {{ summaryItem({
@@ -62,7 +62,7 @@
 
         <p class="govuk-body">
           <span class="govuk-heading-s">Jurors required to complete the request</span>
-          {% set jurorsRequiredToCompleteRequest = poolDetails.bureauSummoning.required - poolDetails.bureauSummoning.confirmed %}
+          {% set jurorsRequiredToCompleteRequest = poolDetails.bureauSummoning.requestedFromBureau - poolDetails.bureauSummoning.confirmedFromBureau %}
           {{ jurorsRequiredToCompleteRequest if jurorsRequiredToCompleteRequest > 0 else "0" }}
         </p>
 
@@ -129,7 +129,7 @@
         </div>
         {% set previousJurorCount = poolDetails.additionalStatistics.totalJurorsInPool %}
 
-        <input type="hidden" name="noRequested" id="noRequested" value="{{ poolDetails.bureauSummoning.required }}"/>
+        <input type="hidden" name="noRequested" id="noRequested" value="{{ poolDetails.bureauSummoning.requestedFromBureau }}"/>
         <input type="hidden" name="poolNumber" id="poolNumber" value="{{ poolDetails.poolDetails.poolNumber }}"/>
         <input type="hidden" name="bureauDeferrals" id="bureauDeferrals" value="10"/>
         <input type="hidden" name="citizensSummoned" id="citizensSummoned" value="{{ poolDetails.bureauSummoning.totalSummoned }}"/>

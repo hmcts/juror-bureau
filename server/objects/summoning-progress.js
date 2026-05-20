@@ -3,13 +3,13 @@
   
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
-  const utils = require('../lib/utils');
+  const { basicDataTransform2 } = require('../lib/utils');
 
   module.exports.summoningProgressObject = new DAO('moj/manage-pool/summoning-progress', {
     get: function(query) {
       return {
         uri: urljoin(this.resource, query.locCode, query.poolType),
-        transform: utils.basicDataTransform,
+        transform: basicDataTransform2,
       }
     }
   });
