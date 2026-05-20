@@ -26,13 +26,13 @@
         csvResult.push(['Local authority', 'Email address']);
         laEmailData.forEach(la => {
           la.emailAddresses.forEach(email => {
-            csvResult.push([la.laName, email.username]);
+            csvResult.push([`"${la.laName}"`, `"${email.username}"`]);
           });
         });
 
         res.set('content-disposition', 'attachment; filename=' + filename);
         res.type('csv');
-        res.send(csvResult.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n'));
+        res.send(csvResult.join('\n'));
       }
     } catch (err) {
       app.logger.crit('Error generating local authority email csv', {
