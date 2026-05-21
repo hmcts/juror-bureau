@@ -4,13 +4,13 @@ function containsHtml(value) {
   if (typeof value!== 'string') return false;
 
   // truncate value to max allowed input length
-  value = value.substring(0, Math.min(2020, value.length));
+  checkValue = value.substring(0, Math.min(2020, value.length));
 
-  return /<\/?[^>]+>/g.test(value);
+  return /<\/?[^>]+>/g.test(checkValue);
 }
 
 function htmlScan(value, path, scanResults) {
-  if (typeof value === "string") {
+  if (typeof value === 'string') {
     if (containsHtml(value)) {
       scanResults.push({ path, value });
     }
@@ -20,7 +20,7 @@ function htmlScan(value, path, scanResults) {
     value.forEach((item, index) => htmlScan(item, `${path}[${index}]`, scanResults));
     return;
   }
-  if (value && typeof value === "object") {
+  if (value && typeof value === 'object') {
     Object.entries(value).forEach(([key, child]) => {
       const nextPath = path ? `${path}.${key}` : key;
       htmlScan(child, nextPath, scanResults);
@@ -35,9 +35,9 @@ module.exports.detectHtmlContent = function (req, res, next) {
   }
   const scanResults = [];
 
-  htmlScan(req.body, "body", scanResults);
-  htmlScan(req.query, "query", scanResults);
-  htmlScan(req.params, "params", scanResults);
+  htmlScan(req.body, 'body', scanResults);
+  htmlScan(req.query, 'query', scanResults);
+  htmlScan(req.params, 'params', scanResults);
   
   if (scanResults.length > 0) {
     Logger.instance.crit(`XSS detected in ${req.method} ${req.originalUrl} -> ${scanResults[0].path}: ${scanResults[0].value}`);
