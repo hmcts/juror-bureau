@@ -1,16 +1,10 @@
-//const filterXSS = require("xss");
 const { Logger } = require('../logger');
 
 function containsHtml(value) {
   if (typeof value!== 'string') return false;
 
-  /*
-  const sanitisedValue= filterXSS(value, {
-    whitelist: {}, // empty whitelist, means remove all tags
-    stripIgnoreTag: true,
-    stripIgnoreTagBody: ['script'] // remove content of script tags
-  });
-  */
+  // truncate value length to max allowed input length
+  value = value.substring(0, Math.min(2020, value.length));
 
   const sanitisedValue = value.replace(/<\/?[^>]+>/g, '');
 
