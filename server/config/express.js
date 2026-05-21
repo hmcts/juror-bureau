@@ -17,6 +17,8 @@ const modUtils = require('../lib/mod-utils');
 const isCourtUser = require('../components/auth/user-type').isCourtUser;
 const rateLimit = require('express-rate-limit');
 const { resolveBackLink } = require('../lib/back-link');
+const validateContentType = require('../components/middleware/content-type').validateContentType;
+const detectHtmlContent = require('../components/middleware/content-html').detectHtmlContent;
 
 // Grab environment variables to enable/disable certain services
 const pkg = require(__dirname + '/../../package.json');
@@ -180,6 +182,10 @@ module.exports = async (app) => {
     res.setHeader('X-Robots-Tag', 'noindex');
     next();
   });
+
+  // Custom middleware to detect invalid content type and html content
+  app.use(validateContentType);
+  app.use(detectHtmlContent);
 
   // interceptor to block legacy access to court users
   // if a court user logs in and tries to visit a juror-digital path they will be redirected to the homepage
