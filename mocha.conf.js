@@ -1,7 +1,7 @@
+import chai from 'chai';
+
 ;(function(){
   'use strict';
-
-  var chai = require('chai');
 
   // Load Chai assertions
   global.expect = chai.expect;

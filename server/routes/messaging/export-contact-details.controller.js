@@ -170,8 +170,8 @@
 
         formatedList = modUtils.replaceAllObjKeys(jurorsList.data, _.camelCase);
 
-        if (jurorsList.total_items > modUtils.constants.PAGE_SIZE) {
-          pagination = modUtils.paginationBuilder(jurorsList.total_items, currentPage, req.url);
+        if (jurorsList.totalItems > modUtils.constants.PAGE_SIZE) {
+          pagination = modUtils.paginationBuilder(jurorsList.totalItems, currentPage, req.url);
         }
       } catch (err) {
         app.logger.crit('Something went wrong searching for jurors to export contact details for', {
@@ -190,7 +190,7 @@
         return renderView(_totalJurors, [], null, err.error?.meta_data);
       }
 
-      return renderView(jurorsList.total_items, formatedList, pagination);
+      return renderView(jurorsList.totalItems, formatedList, pagination);
     };
   };
 
@@ -337,8 +337,8 @@
 
             jurorsData.data.forEach(juror => {
               req.session.messaging.checkedJurors.push({
-                jurorNumber: juror.juror_number,
-                poolNumber: juror.pool_number,
+                jurorNumber: juror.jurorNumber,
+                poolNumber: juror.poolNumber,
               });
             });
 

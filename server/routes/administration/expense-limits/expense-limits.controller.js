@@ -1,5 +1,3 @@
-const { replaceAllObjKeys } = require('../../../lib/mod-utils');
-
 (function() {
   'use strict';
 
@@ -21,8 +19,6 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
         const { response: expenseLimits, headers } = await expenseRatesAndLimitsDAO.get(req);
 
         req.session.expenseRatesEtag = headers.etag;
-
-        replaceAllObjKeys(expenseLimits, _.camelCase);
 
         return res.render('administration/expense-limits.njk', {
           expenseLimits,
@@ -85,18 +81,18 @@ const { replaceAllObjKeys } = require('../../../lib/mod-utils');
 
       try {
         const body = {
-          'car_mileage_rate_per_mile0_passengers': req.body.carMileageRatePerMile0Passengers,
-          'car_mileage_rate_per_mile1_passengers': req.body.carMileageRatePerMile1Passengers,
-          'car_mileage_rate_per_mile2_or_more_passengers': req.body.carMileageRatePerMile2OrMorePassengers,
-          'motorcycle_mileage_rate_per_mile0_passengers': req.body.motorcycleMileageRatePerMile0Passengers,
-          'motorcycle_mileage_rate_per_mile1_passengers': req.body.motorcycleMileageRatePerMile1Passengers,
-          'bike_rate': req.body.bikeRate,
-          'limit_financial_loss_half_day': req.body.limitFinancialLossHalfDay,
-          'limit_financial_loss_full_day': req.body.limitFinancialLossFullDay,
-          'limit_financial_loss_half_day_long_trial': req.body.limitFinancialLossHalfDayLongTrial,
-          'limit_financial_loss_full_day_long_trial': req.body.limitFinancialLossFullDayLongTrial,
-          'subsistence_rate_standard': req.body.subsistenceRateStandard,
-          'subsistence_rate_long_day': req.body.subsistenceRateLongDay,
+          'carMileageRatePerMile0_Passengers': req.body.carMileageRatePerMile0Passengers,
+          'carMileageRatePerMile1_Passengers': req.body.carMileageRatePerMile1Passengers,
+          'carMileageRatePerMile2_Or_More_Passengers': req.body.carMileageRatePerMile2OrMorePassengers,
+          'motorcycleMileageRatePerMile0_Passengers': req.body.motorcycleMileageRatePerMile0Passengers,
+          'motorcycleMileageRatePerMile1_Passengers': req.body.motorcycleMileageRatePerMile1Passengers,
+          'bikeRate': req.body.bikeRate,
+          'limitFinancialLossHalfDay': req.body.limitFinancialLossHalfDay,
+          'limitFinancialLossFullDay': req.body.limitFinancialLossFullDay,
+          'limitFinancialLossHalfDayLongTrial': req.body.limitFinancialLossHalfDayLongTrial,
+          'limitFinancialLossFullDayLongTrial': req.body.limitFinancialLossFullDayLongTrial,
+          'subsistenceRateStandard': req.body.subsistenceRateStandard,
+          'subsistenceRateLongDay': req.body.subsistenceRateLongDay,
         };
 
         await expenseRatesAndLimitsDAO.put(req, body);

@@ -23,7 +23,7 @@
 {% set currentApp = "Jurors" %}
 {% set nav = "approve-expenses" %}
 
-{% block beforeContent %}
+{% block containerStart %}
   {% if bannerMessage %}
     <div class="govuk-!-margin-top-5">
       {{ mojAlert({
@@ -145,7 +145,7 @@
     document.getElementById("checkedJurors").innerHTML = 0;
 
     document.getElementById('selectAllCheckbox').addEventListener('change', selectAll);
-    document.getElementsByName('selectedCourts').forEach((checkbox) => {
+    document.getElementsByName('selectedJurors').forEach((checkbox) => {
       checkbox.addEventListener('change', checkSet);
     });
 

@@ -1,4 +1,4 @@
-const launchDarklySdk = require('launchdarkly-node-server-sdk');
+const launchDarklySdk = require('@launchdarkly/node-server-sdk');
 const secretsConfig = require('config');
 
 module.exports.LaunchDarkly = class LaunchDarkly {

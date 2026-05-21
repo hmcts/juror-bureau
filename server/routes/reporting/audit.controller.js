@@ -50,11 +50,11 @@ const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../object
       req,
       req.params.jurorNumber
     )).response;
-    const jurorDefault = mapSnakeToCamel(await defaultExpensesDAO.get(
+    const jurorDefault = await defaultExpensesDAO.get(
       req,
       req.params.locCode,
       req.params.jurorNumber
-    ));
+    );
 
     if (!jurorDetails || !jurorBank || !jurorDefault) {
       app.logger.crit('Failed to build and render financial audit preview: essential data is missing', {
@@ -108,7 +108,7 @@ const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../object
           county: jurorBank.addressLine5,
           postcode: jurorBank.postcode,
         },
-        mileage: jurorDefault.mileage,
+        mileage: jurorDefault.distanceTraveledMiles,
       },
       expenses: {
         expenseDetails,
@@ -156,12 +156,12 @@ const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../object
     try {
       const expenseDates = mapSnakeToCamel(req.session.editApprovalDates);
       const editedExpenses = mapSnakeToCamel(req.session.editedExpenses);
-      const originalExpenses = mapSnakeToCamel(await getApprovalExpenseListDAO.post(
+      const originalExpenses = await getApprovalExpenseListDAO.post(
         req,
         req.params.locCode,
         req.params.jurorNumber,
         expenseDates,
-      ));
+      );
 
       const expenseDetails = expenseDates.map(date => {
         const original = originalExpenses.expenseDetails.find(item => item.attendanceDate === date);
@@ -219,7 +219,7 @@ const { getDraftExpensesDAO, getApprovalExpenseListDAO } = require('../../object
 
   const getDraftAudit = (app) => async(req, res) => {
     try {
-      const expenses = mapSnakeToCamel(await getDraftExpensesDAO.get(
+      const expenses = (await getDraftExpensesDAO.get(
         req,
         req.params.jurorNumber,
         req.params.locCode,

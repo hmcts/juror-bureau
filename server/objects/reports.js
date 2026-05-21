@@ -73,7 +73,7 @@
   module.exports.jurySummoningMonitorDAO = new DAO('moj/reports/jury-summoning-monitor', {
     post: function(body) {
       return {
-        body,
+        body: mapCamelToSnake(body),
         transform: mapSnakeToCamel,
       };
     },
@@ -82,7 +82,7 @@
   module.exports.yieldPerformanceDAO = new DAO('moj/reports/yield-performance', {
     post: function(body) {
       return {
-        body,
+        body: mapCamelToSnake(body),
         transform: mapSnakeToCamel,
       };
     },
@@ -91,7 +91,7 @@
   module.exports.allCourtUtilisationDAO = new DAO('moj/reports/court-utilisation-stats-report', {
     post: function(body) {
       return {
-        body,
+        body: mapCamelToSnake(body),
         transform: mapSnakeToCamel
       }
     }

@@ -62,10 +62,10 @@
             details: 'Enter a real date',
           }];
         } else if (moment(attributes.attendanceDate, 'DD/MM/YYYY')
-          .isSameOrBefore(moment(attributes.originalNextDate, 'YYYY, MM, DD'))) {
+          .isBefore(moment(attributes.originalNextDate, 'YYYY, MM, DD'))) {
           tmpErrors = [{
-            summary: 'Date must be in the future',
-            details: 'Date must be in the future',
+            summary: 'Date cannot be in the past',
+            details: 'Date cannot be in the past',
           }];
         };
       } else if (options.bulk) {

@@ -4,12 +4,12 @@ const controller = require('./authentication.controller');
 const azureController = require('./azure.controller');
 const errors = require('../../components/errors');
 
-const systemAdminAuth = (req, res, next) => {
+const courtSelectionAuth = (req, res, next) => {
   if (
     req.session.hasOwnProperty('authentication') === true &&
     req.session.authentication.hasOwnProperty('activeUserType') === true &&
-    (req.session.authentication.activeUserType === 'ADMINISTRATOR' 
-      || (req.session.authentication.userType === 'ADMINISTRATOR' && req.session.authentication.activeUserType === 'COURT')
+    (req.session.authentication.activeUserType === 'ADMINISTRATOR'
+      || req.session.authentication.activeUserType === 'COURT'
     )
   ) {
     if (typeof next !== 'undefined') {
@@ -50,10 +50,20 @@ module.exports = function(app) {
     controller.postCourtsList(app),
   );
 
+  app.get('/auth/change-court',
+    'authentication.change-court.get',
+    controller.getChangeCourt(app),
+  );
+
+  app.post('/auth/change-court/filter',
+    'authentication.change-court.filter',
+    controller.postFilterChangeCourts(app),
+  );
+
   // this would be used to auth as an admin from the admin page
   app.get('/auth/court/:locCode',
     'authentication.select-court.get',
-    systemAdminAuth,
+    courtSelectionAuth,
     controller.getSelectCourt(app),
   );
 
