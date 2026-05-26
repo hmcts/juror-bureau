@@ -1041,15 +1041,15 @@ var moment = require('moment');
             lineWidth: 1,
             lineColor: juror.assistanceSpecialArrangements ? '#ccc' : '#fff'
           }],
-          marginBottom: 20,
-          pageBreak: 'after'
+          marginBottom: 20
         },
         //////////////////////////////////////////////////////
         // Section 4
         //////////////////////////////////////////////////////
         {
           text: texts.sharedText.getReadyHeader,
-          style: 'bigBold'
+          style: 'bigBold',
+          pageBreak: 'before'
         },
         {
           canvas: [{
@@ -2338,8 +2338,7 @@ var moment = require('moment');
             lineWidth: 1,
             lineColor: juror.assistanceSpecialArrangements ? '#ccc' : '#fff'
           }],
-          marginBottom: 20,
-          pageBreak: 'after'
+          marginBottom: 20
         },
 
 
@@ -2348,7 +2347,8 @@ var moment = require('moment');
         //////////////////////////////////////////////////////
         {
           text: texts.sharedText.getReadyHeader,
-          style: 'bigBold'
+          style: 'bigBold',
+          pageBreak: 'before'
         },
         {
           canvas: [{
