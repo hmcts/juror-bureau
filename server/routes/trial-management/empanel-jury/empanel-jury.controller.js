@@ -198,10 +198,10 @@
         });
 
         if (err.statusCode === 422) {
-          if (err.error.code === 'JUROR_MUST_BE_CHECKED_IN') {
+          if (err.error?.code === 'JUROR_MUST_BE_CHECKED_IN') {
             req.session.errors = makeManualError('empanel error', '1 or more jurors have not been checked in today');
           } else {
-            req.session.errors = makeManualError('empanel error', err.error.message);
+            req.session.errors = makeManualError('empanel error', err.error?.message || 'Unable to empanel jurors');
           }
 
           return res.redirect(app.namedRoutes.build('trial-management.empanel.select.get', {

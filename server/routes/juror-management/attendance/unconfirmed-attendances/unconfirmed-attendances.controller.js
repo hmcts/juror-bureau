@@ -115,8 +115,8 @@
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
-        if (err.statusCode === 422 && err.error.statusCode === 'code=INVALID_JUROR_STATUS') {
-          req.session.errors = makeManualError('status', err.error.message);
+        if (err.statusCode === 422 && err.error?.statusCode === 'code=INVALID_JUROR_STATUS') {
+          req.session.errors = makeManualError('status', err.error?.message || 'Invalid juror status');
           req.session.formFields = req.body;
           return res.redirect(app.namedRoutes.build('juror-management.attendance.unconfirmed-attendances.update.get', { jurorNumber }) + `${date ? `?date=${date}` : ''}`);
         }

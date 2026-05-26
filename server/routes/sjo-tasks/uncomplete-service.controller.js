@@ -75,8 +75,12 @@ module.exports.postConfirmUncomplete = function(app) {
         error: typeof err.error !== 'undefined' ? err.error : err.toString(),
       });
 
-      if (err.statusCode === 400 && err.error.message.includes('size must be between 1 and')){
-        req.session.errors = makeManualError('jurors', `You cannot select more than ${err.error.message.split(" ").splice(-1)} jurors to uncomplete service for`);
+      const errorMessage = err.error?.message || '';
+
+      if (err.statusCode === 400 && errorMessage.includes('size must be between 1 and')){
+        const maximumJurors = errorMessage.split(' ').splice(-1);
+
+        req.session.errors = makeManualError('jurors', `You cannot select more than ${maximumJurors} jurors to uncomplete service for`);
         return res.redirect(app.namedRoutes.build('sjo-tasks.uncomplete-service.confirm.get'));
       }
 

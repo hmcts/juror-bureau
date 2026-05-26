@@ -82,7 +82,13 @@ module.exports.postDismissJurorsPools = function(app) {
   return async function(req, res) {
     const { action } = req.query;
     const calculateAvailableJurors = 'calculate_available_jurors';
-    const jurorsAvailable = await calculateTotalJurorsAvailable(app, req, res, req.body, _.clone(req.session.selectedDismissalPools));
+    let jurorsAvailable;
+
+    try {
+      jurorsAvailable = await calculateTotalJurorsAvailable(app, req, req.body, _.clone(req.session.selectedDismissalPools));
+    } catch (err) {
+      return res.render('_errors/generic', { err });
+    }
 
     req.session.dismissJurors = req.body;
     req.session.dismissJurors['checked-pools'] =_.clone(req.session.selectedDismissalPools);
@@ -208,8 +214,23 @@ module.exports.postJurorsList = function(app) {
       },
       juror: selectedJurorNo,
     };
-    const response = await jurorAttendanceDao.post(req, payload);
-    const notCheckedOut = response.details.filter((juror) => selectedJurorNo.includes(juror.juror_number));
+    let notCheckedOut;
+
+    try {
+      const response = await jurorAttendanceDao.post(req, payload);
+
+      notCheckedOut = response.details.filter((juror) => selectedJurorNo.includes(juror.juror_number));
+    } catch (err) {
+      app.logger.crit('Failed to check attendance records for selected jurors to dismiss: ', {
+        auth: req.session.authentication,
+        data: {
+          jurorNumbers: selectedJurorNo,
+        },
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+
+      return res.render('_errors/generic', { err });
+    }
 
     if (notCheckedOut.length) {
       req.session.dismissJurors.notCheckedOut = notCheckedOut;
@@ -475,7 +496,7 @@ module.exports.postCheckPool = function(app) {
   };
 };
 
-async function calculateTotalJurorsAvailable(app, req, res, selections, selectedPools){
+async function calculateTotalJurorsAvailable(app, req, selections, selectedPools){
   if (selectedPools){
     let pools;
     try {
@@ -489,7 +510,7 @@ async function calculateTotalJurorsAvailable(app, req, res, selections, selected
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
-      return res.render('_errors/generic', { err });
+      throw err;
     }
 
     let totalAvailable = 0;

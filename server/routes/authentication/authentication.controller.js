@@ -51,8 +51,8 @@ module.exports.getCourtsList = function(app) {
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
-      if (err.error && err.error.message) {
-        req.session.errors = makeManualError('email', err.error.message);
+      if (err.error?.message) {
+        req.session.errors = makeManualError('email', err.error?.message);
       }
 
       return res.redirect(app.namedRoutes.build('login.get'));
@@ -171,8 +171,8 @@ module.exports.getChangeCourt = (app) => async (req, res) => {
       error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
     });
 
-    if (err.error && err.error.message) {
-      req.session.errors = makeManualError('email', err.error.message);
+    if (err.error?.message) {
+      req.session.errors = makeManualError('email', err.error?.message);
     }
 
     return res.redirect(app.namedRoutes.build('login.get'));

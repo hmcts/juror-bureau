@@ -111,7 +111,7 @@
         });
 
         let errorMessage = `Failed to place ${jurors.length} juror${jurors.length > 1 ? 's' : ''} on call`
-        if (err.statusCode === 400 && err.error.message === 'Juror status is already on call') {
+        if (err.statusCode === 400 && err.error?.message === 'Juror status is already on call') {
           errorMessage += ` - ${jurors.length > 1 ? 'One or more s' : 'S'}elected juror${jurors.length > 1 ? 's are' : ' is'} already on call`
         }
         req.session.errors = makeManualError('onCall', errorMessage);

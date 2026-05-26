@@ -288,7 +288,7 @@
           error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
-        if (err.error.code === 'EMAIL_IN_USE') {
+        if (err.error?.code === 'EMAIL_IN_USE') {
 
           req.session.errors = {
             email: [

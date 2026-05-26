@@ -239,22 +239,21 @@
         'YYYY-MM-DD',
       );
 
-      const poolNumber = await generatePoolNumber.get(
-        req,
-        req.session.poolCreateFormFields.poolDetails.courtLocCode,
-        attendanceDate,
-      );
+      try {
+        const poolNumber = await generatePoolNumber.get(
+          req,
+          req.session.poolCreateFormFields.poolDetails.courtLocCode,
+          attendanceDate,
+        );
 
-      requestPoolObj.createPoolRequest.post(
-        req,
-        {
+        await requestPoolObj.createPoolRequest.post(req, {
           attendanceDate,
           courtCode: req.session.poolCreateFormFields.poolDetails.courtLocCode,
           courtOnly: true,
           poolNumber,
           poolType: req.session.poolCreateFormFields.poolDetails.poolType,
-        }
-      ).then(() => {
+        });
+
         const newPoolCreated = {
           html: 'New pool <a href="'+ app.namedRoutes.build('pool-overview.get', {
             poolNumber: poolNumber,
@@ -266,14 +265,14 @@
         delete req.session.poolCreateFormFields;
 
         return res.redirect(app.namedRoutes.build('pool-management.get') + '?status=created&tab=court');
-      }).catch(err => {
+      } catch (err) {
         app.logger.crit('Unable to manually create court-only pool', {
           auth: req.session.authentication,
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
         return res.render('_errors/generic', { err });
-      });
+      }
     };
   };
 })();

@@ -340,7 +340,7 @@
 
         } catch (err){
           if (err.statusCode === 404) {
-            if (err.error.message.includes('No appearances found for juror')) {
+            if (err.error?.message?.includes('No appearances found for juror')) {
               const dailyExpenses = {
                 totalDraft: 0,
                 totalForApproval: 0,

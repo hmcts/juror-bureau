@@ -211,7 +211,7 @@
         });
 
         if (err.error?.message) {
-          req.session.errors = makeManualError('createTrial', err.error.message);
+          req.session.errors = makeManualError('createTrial', err.error?.message);
           req.session.formFields = req.body;
 
           return res.redirect(app.namedRoutes.build('trial-management.create-trial.get'));

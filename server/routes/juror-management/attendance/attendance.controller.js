@@ -53,7 +53,7 @@
         }
 
         if (err.statusCode === 422 && err.error?.code === 'ATTENDANCE_RECORD_ALREADY_EXISTS') {
-          return res.status(422).send(err.error.code);
+          return res.status(422).send(err.error?.code);
         }
 
         const attendee = {
@@ -380,6 +380,3 @@
   };
 
 })();
-
-
-

@@ -50,8 +50,8 @@ module.exports.getSearch = function(app) {
         });
 
         if (err.statusCode === 422) {
-          if (err.error.code === 'MAX_ITEMS_EXCEEDED') {
-            bvr = err.error.code;
+          if (err.error?.code === 'MAX_ITEMS_EXCEEDED') {
+            bvr = err.error?.code;
           }
         }
       }

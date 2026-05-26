@@ -679,15 +679,13 @@
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
-      if (err.statusCode === '409' || err.statusCode === 409) {
-        err.error.message = 'The summons reply has been updated by another user';
-      } else {
-        err.error.message = 'Could not update summons reply';
-      }
+      const errorMessage = (err.statusCode === '409' || err.statusCode === 409)
+        ? 'The summons reply has been updated by another user'
+        : 'Could not update summons reply';
 
       req.session.formFields = req.body;
       req.session.errors = {
-        '': [{'details': err.error.message}],
+        '': [{'details': errorMessage}],
       };
 
       if (type === 'paper'){
@@ -858,15 +856,12 @@
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
-      if (err.statusCode === '500' || err.statusCode === 500) {
-        // eslint-disable-next-line
-        err.error.message = 'The summons reply has been updated by another user';
-      } else {
-        err.error.message = 'Could not update summons reply';
-      }
+      const errorMessage = (err.statusCode === '500' || err.statusCode === 500)
+        ? 'The summons reply has been updated by another user'
+        : 'Could not update summons reply';
 
       req.session.formFields = req.body;
-      req.session.errors = modUtils.makeManualError('details', err.error.message);
+      req.session.errors = modUtils.makeManualError('details', errorMessage);
 
       return res.redirect(app.namedRoutes.build('response.detail.awaiting.information.get', routeParameters));
     }
