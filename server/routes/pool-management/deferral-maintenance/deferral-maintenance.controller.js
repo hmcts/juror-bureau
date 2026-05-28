@@ -424,19 +424,38 @@
   };
 
   module.exports.getProcessIneligibleAge = (app) => async (req, res) => {
-    const { locationCode } = req.params;
+    const { locationCode, newLocationCode } = req.params;
+
+    const mergeIneligibleJurorDetails = (ineligibleJurors, jurorDetails) => {
+      const jurorDetailsByNumber = new Map(
+        jurorDetails.map(juror => [juror.jurorNumber, juror]),
+      );
+
+      return ineligibleJurors.map((juror) => {
+        const jurorDetails = {
+          ...juror,
+          ...jurorDetailsByNumber.get(juror.jurorNumber),
+        };
+
+        return {
+          ...jurorDetails,
+          ageOnNewDate: moment(jurorDetails.newDate, 'DD/MM/YYYY').diff(moment(jurorDetails.dob, 'DD/MM/YYYY'), 'years'),
+        };
+      });
+    };
 
     const ineligibleJurors = _.clone(req.session.ineligibleDeferrals);
+
     let jurorDetails;
     try {
-      jurorDetails = await jurorRecordDetailsDAO.post(req, ineligibleJurors.map(juror => ({
-        'juror_number': juror.jurorNumber,
+      const payload = ineligibleJurors.map(({ jurorNumber }) => ({
+        'juror_number': jurorNumber,
         'juror_version': null,
-        'include': ['NAME_DETAILS', 'ACTIVE_POOL'],
-      })));
+        include: ['NAME_DETAILS', 'ACTIVE_POOL'],
+      }));
 
-      delete jurorDetails['_headers']; 
-      jurorDetails = modUtils.replaceAllObjKeys(Object.values(jurorDetails), _.camelCase);
+      jurorDetails = await jurorRecordDetailsDAO.post(req, payload);
+      jurorDetails = modUtils.replaceAllObjKeys(Object.values(_.omit(jurorDetails, '_headers')), _.camelCase);
     } catch {
       app.logger.crit('Failed to fetch juror details for ineligible age jurors: ', {
         auth: req.session.authentication,
@@ -444,45 +463,22 @@
           jurors: ineligibleJurors.map(juror => juror.jurorNumber),
         },
       });
+
+      return [];
     }
 
-    const byJurorNumber = new Map(
-      jurorDetails.map(item => [item.jurorNumber, item])
+    const processUrl = app.namedRoutes.build(
+      req.url.includes('move-court')
+        ? 'pool-management.deferral-maintenance.move-court.ineligible-age.post'
+        : 'pool-management.deferral-maintenance.process.ineligible-age.post',
+      req.url.includes('move-court') ? { locationCode, newLocationCode } : { locationCode },
     );
-
-    let merged = ineligibleJurors.map(juror => ({
-      ...juror,
-      ...byJurorNumber.get(juror.jurorNumber),
-    }));
-
-    function getAgeOnDate(dob, newDate) {
-      return moment(newDate, 'DD/MM/YYYY').diff(
-        moment(dob, 'DD/MM/YYYY'),
-        'years'
-      );
-    }
-
-    let mergedWithNewAge = merged.map(juror => ({
-      ...juror,
-      ageOnNewDate: getAgeOnDate(juror.dob, juror.newDate),
-    }));
-
-    let processUrl = app.namedRoutes.build('pool-management.deferral-maintenance.process.ineligible-age.post', {
-        locationCode
-      });
-    if (req.url.includes('move-court')) {
-      processUrl = app.namedRoutes.build('pool-management.deferral-maintenance.move-court.ineligible-age.post', {
-        locationCode,
-        newLocationCode: req.params.newLocationCode,
-      });
-    }
-
 
     return res.render('pool-management/_common/ineligible-age-jurors.njk', {
       action: 'deferred',
-      ineligibleJurors: mergedWithNewAge,
+      ineligibleJurors: mergeIneligibleJurorDetails(ineligibleJurors, jurorDetails),
       bannerMessage: _.clone(req.session.bannerMessage),
-      cancelUrl: app.namedRoutes.build('pool-management.deferral-maintenance.filter.get', {
+      cancelUrl: app.namedRoutes.build('pool-management.deferral-maintenance.process.ineligible-age.cancel.get', {
         locationCode,
       }),
       processUrl,
@@ -523,6 +519,16 @@
       }));
     }
 
+    delete req.session.deferralMaintenance;
+
+    return requestObj
+      .deferrals.get(req, locationCode)
+      .then((data) => successCB(data, locationCode)(app, req, res))
+      .catch((err) => errorCB(err)(app, req, res));
+  };
+
+  module.exports.getCancelIneligibleAge = (app) => async (req, res) => {
+    const { locationCode } = req.params;
     delete req.session.deferralMaintenance;
 
     return requestObj

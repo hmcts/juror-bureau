@@ -47,6 +47,10 @@
       'pool-management.deferral-maintenance.process.ineligible-age.post',
       auth.verify,
       controller.postProcessIneligibleAge(app));
+    app.get('/pool-management/deferral-maintenance/location/:locationCode/process/ineligible-age/cancel',
+      'pool-management.deferral-maintenance.process.ineligible-age.cancel.get',
+      auth.verify,
+      controller.getCancelIneligibleAge(app));
 
     // ajax style route... updates the juror record and returns OK
     app.get('/pool-management/deferral-maintenance/check/:jurorNumber',
