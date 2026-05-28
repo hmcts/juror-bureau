@@ -661,10 +661,19 @@
       return res.render('_errors/generic', { err });
     }
 
-    return res.render('juror-management/_common/ineligible-age.njk', {
-      cancelUrl: app.namedRoutes.build('juror.update.deferral.get', {
+    let cancelUrl;
+    if (req.url.includes('deferral/edit')) {
+      cancelUrl = app.namedRoutes.build('juror-record.deferral-edit.get', {
         jurorNumber,
-      }),
+      })
+    } else {
+      cancelUrl = app.namedRoutes.build('juror.update.deferral.get', {
+        jurorNumber,
+      })
+    }
+
+    return res.render('juror-management/_common/ineligible-age.njk', {
+      cancelUrl,
       postUrl: app.namedRoutes.build('juror.update.disqualify.post', {
         jurorNumber,
       }),

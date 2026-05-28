@@ -55,7 +55,7 @@
           poolNumber,
           excusalReasonCode,
         },
-        transform: basicDataTransform,
+        transform: basicDataTransform2,
       }
     }
   });

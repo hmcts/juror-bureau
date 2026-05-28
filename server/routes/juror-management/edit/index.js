@@ -2,6 +2,7 @@
   'use strict';
 
   const controller = require('./juror-edit.controller');
+  const jurorUpdateController = require('../update/juror-update.controller');
   const reassignController = require('../reassign/reassign.controller');
   const auth = require('../../../components/auth/');
   const { isBureauUser } = require('../../../components/auth/user-type');
@@ -47,6 +48,11 @@
       'juror-record.deferral-edit-confirm.post',
       auth.verify,
       controller.postEditDeferralConfirm(app));
+    
+    app.get('/juror-management/record/:jurorNumber/deferral/edit/ineligible-age',
+      'juror-record.deferral-edit.ineligible-age.get',
+      auth.verify,
+      jurorUpdateController.getIneligibleAge(app));
 
     app.get('/juror-management/record/:jurorNumber/details/edit-name',
       'juror-record.details-edit.name.get',
