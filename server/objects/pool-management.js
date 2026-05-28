@@ -3,7 +3,7 @@
 
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
-
+  const { basicDataTransform2 } = require('../lib/utils');
 
   module.exports.deferralMaintenance = {
     deferrals: new DAO('moj/deferral-maintenance/deferrals', {
@@ -20,7 +20,8 @@
           body: {
             poolNumber: poolNumber,
             jurors: jurors,
-          }
+          },
+          transform: basicDataTransform2
         }
       }
     }),
@@ -28,7 +29,15 @@
       get: availablePools.bind({ resource: 'moj/deferral-maintenance/available-pools/{}' }),
       post: availablePools.bind({ resource: 'moj/deferral-maintenance/available-pools/{}', method: 'POST' }),
     },
-    moveCourt: new DAO('moj/deferral-maintenance/juror/move-deferred'),
+    moveCourt: new DAO('moj/deferral-maintenance/juror/move-deferred', {
+      post: function(payload) {
+        return {
+          uri: this.resource,
+          body: payload,
+          transform: basicDataTransform2
+        }
+      }
+    }),
   };
 
 

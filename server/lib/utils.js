@@ -159,6 +159,8 @@
       activeKey = 'data';
     }
 
+    delete object['_headers'];
+
     // If object has key then return the given key
     if (typeof object === 'object' && Object.prototype.hasOwnProperty.call(object, activeKey)) {
       return replaceAllObjKeys(object[activeKey], _.camelCase);

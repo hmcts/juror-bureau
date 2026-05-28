@@ -336,12 +336,15 @@
       }
     }
 
-    let data;
+    let response;
     try {
-      throw { statusCode: 422, error: { code: 'JUROR_TOO_OLD' } };
-
-      data = await deferralObject.put(req, req.body, jurorNumber);
-
+      response = await deferralObject.put(req, req.body, jurorNumber);
+      if (response.ageDisqualified?.length > 0) {
+        return res.redirect(app.namedRoutes.build('juror.update.deferral.ineligible-age.get', {
+          jurorNumber,
+          newDate: dateFilter(req.body.deferralDate, 'DD/MM/YYYY', 'yyyy-MM-DD'),
+        }));
+      }
     } catch (err) {
       app.logger.crit('Failed to process deferral update: ', {
         auth: req.session.authentication,
@@ -371,11 +374,6 @@
           case 'CANNOT_DEFER_JUROR_WITH_APPEARANCE':
             req.session.errors = makeManualError('deferral', 'Juror cannot be deferred as they already have an appearance at court');
             break;
-          case 'JUROR_TOO_OLD':
-            return res.redirect(app.namedRoutes.build('juror.update.deferral.ineligible-age.get', {
-              jurorNumber,
-              newDate: dateFilter(req.body.deferralDate, 'DD/MM/YYYY', 'yyyy-MM-DD'),
-            }));
           default:
             req.session.errors = makeManualError('deferral', 'Something went wrong when trying to defer the juror');
         }
@@ -393,7 +391,6 @@
       data: {
         responseId: jurorNumber,
       },
-      reasons: data,
     });
 
     if (req.body.deferralDecision === 'REFUSE') {
@@ -455,11 +452,9 @@
 
     const deferReason = req.session.partialDeferralObj.deferralReason;
 
+    let response;
     try {
-
-      throw { statusCode: 422, error: { code: 'JUROR_TOO_OLD' } };
-
-      await deferralObject.post(
+      response = await deferralObject.post(
         req,
         req.params.jurorNumber,
         req.body.deferralDateAndPool.split("_")[1],
@@ -469,6 +464,13 @@
 
       delete req.session.deferralPools;
       delete req.session.partialDeferralObj;
+
+      if (response.ageDisqualified?.length > 0) {
+        return res.redirect(app.namedRoutes.build('juror.update.deferral.ineligible-age.get', {
+          jurorNumber: req.params.jurorNumber,
+          newDate: req.body.deferralDateAndPool.split("_")[0],
+        }));
+      }
 
       const reason = req.session.deferralReasons.filter(item => item.code === deferReason);
 
@@ -499,11 +501,6 @@
           case 'JUROR_DATE_OF_BIRTH_REQUIRED':
             req.session.errors = makeManualError('defer', 'You cannot defer a juror without a date of birth - please add date of birth to the juror record');
             break;
-          case 'JUROR_TOO_OLD':
-            return res.redirect(app.namedRoutes.build('juror.update.deferral.ineligible-age.get', {
-              jurorNumber: req.params.jurorNumber,
-              newDate: req.body.deferralDateAndPool.split("_")[0],
-            }));
           default:
             req.session.errors = makeManualError('defer', 'Something went wrong when trying to defer the juror');
             break;

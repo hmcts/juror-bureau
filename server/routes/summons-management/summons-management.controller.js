@@ -436,11 +436,9 @@
     data.replyMethod = replyMethod ? replyMethod: routeParameters.type;
     req.session.deferralReason = req.body.deferralReason;
 
+    let response;
     try {
-
-      throw { statusCode: 422, error: { code: 'JUROR_TOO_OLD' } };
-
-      await deferralObj.post(
+      response = await deferralObj.post(
         req,
         routeParameters.id,
         data.poolNumber,
@@ -457,12 +455,6 @@
           case 'JUROR_DATE_OF_BIRTH_REQUIRED':
             req.session.errors = modUtils.makeManualError('deferralDateSelection', 'You cannot defer a juror without a date of birth - please add date of birth to the juror record');
             break;
-          case 'JUROR_TOO_OLD':
-            return res.redirect(app.namedRoutes.build('process-deferral.ineligible-age.get', {
-              id: routeParameters.id,
-              type: routeParameters.type,
-              deferralDate: data.deferralDate,
-            }));
           default:
             app.logger.crit('Failed to process Deferral: ', {
               auth: req.session.authentication,
@@ -483,6 +475,14 @@
       });
 
       return res.render('_errors/generic', { err });
+    }
+
+    if (response?.ageDisqualified?.length > 0) {
+      return res.redirect(app.namedRoutes.build('process-deferral.ineligible-age.get', {
+        id: routeParameters.id,
+        type: routeParameters.type,
+        deferralDate: data.deferralDate,
+      }));
     }
 
     let codeMessage = (code) => req.session.deferralReasons.filter((el) => el.code === code)[0].description;
@@ -523,7 +523,6 @@
   module.exports.getDeferralIneligibleAge = (app) => async (req, res) => {
     const { id, type, deferralDate } = req.params;
 
-    // const jurorDetails = req.session.jurorDetails;
     let jurorDetails;
     try {
       jurorDetails = type === 'paper'
@@ -541,7 +540,10 @@
       return res.render('_errors/generic', { err });
     }
 
-    console.log('\n\njurorDetails', jurorDetails, '\n\n'); // --- IGNORE --- --- IGNORE ---
+    let dateOfBirth = jurorDetails.newDateOfBirth ?? jurorDetails.dateOfBirth;
+    if (type === 'paper') {
+      dateOfBirth = dateFilter(jurorDetails.data.newDateOfBirth ?? jurorDetails.data.dateOfBirth, 'yyyy-mm-DD', 'DD/MM/YYYY');
+    }
 
     return res.render('juror-management/_common/ineligible-age.njk', {
       cancelUrl: app.namedRoutes.build('process-deferral.get', {
@@ -553,8 +555,8 @@
         type,
       }),
       newServiceStartDate: dateFilter(deferralDate, 'yyyy-mm-DD', 'DD/MM/YYYY'),
-      dob: jurorDetails.newDateOfBirth ?? jurorDetails.dateOfBirth,
-      yearsOld: moment(deferralDate, 'yyyy-mm-DD').diff(moment(jurorDetails.newDateOfBirth ?? jurorDetails.dateOfBirth, 'DD/MM/YYYY'), 'years'),
+      dob: dateOfBirth,
+      yearsOld: moment(deferralDate, 'yyyy-mm-DD').diff(moment(dateOfBirth, 'DD/MM/YYYY'), 'years'),
     });
   };
 
