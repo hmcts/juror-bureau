@@ -80,7 +80,7 @@
         </div>
         {% endif %}
 
-        {# {% if problemList.ageIneligible|length%}
+        {% if problemList.ageIneligible|length%}
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
                 <h2 class="govuk-heading-m">Ineligible due to age</h2>
@@ -106,7 +106,7 @@
                 </div>
             </div>
         </div>
-        {% endif %} #}
+        {% endif %}
 
         {% if problemList.invalidStatus|length%}
         {% set validStatusesString = "responded or summoned" %}
