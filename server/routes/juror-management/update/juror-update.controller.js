@@ -666,6 +666,10 @@
       cancelUrl = app.namedRoutes.build('juror-record.deferral-edit.get', {
         jurorNumber,
       })
+    } else if (req.url.includes('update/postpone')) {
+      cancelUrl = app.namedRoutes.build('juror.update.postpone-date.get', {
+        jurorNumber,
+      })
     } else {
       cancelUrl = app.namedRoutes.build('juror.update.deferral.get', {
         jurorNumber,

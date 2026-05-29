@@ -119,7 +119,7 @@
             classes: "govuk-button--warning"
           }) }}
 
-          <a class="govuk-link" href="{{ cancelUrl }}">Cancel and return to {{ "deferral maintenance" if action == "deferred" else "pool overview" }}</a>
+          <a class="govuk-link" href="{{ cancelUrl }}">{{ cancelText or "Cancel and return to deferral maintenance" }}</a>
         </div>
 
         <input type="hidden" name="_csrf" id="_csrf" value="{{ csrftoken }}">

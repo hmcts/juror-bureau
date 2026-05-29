@@ -87,6 +87,14 @@
       'pool-management.deferral-maintenance.postpone.movement.post',
       auth.verify,
       postponeController.postPostponeMovementDeferralMaintenance(app));
+    app.get('/pool-management/deferral-maintenance/location/:locationCode/postpone/ineligible-age',
+      'pool-management.deferral-maintenance.postpone.ineligible-age.get',
+      auth.verify,
+      postponeController.getBulkPostponeIneligibleAge(app));
+    app.post('/pool-management/deferral-maintenance/location/:locationCode/postpone/ineligible-age',
+      'pool-management.deferral-maintenance.postpone.ineligible-age.post',
+      auth.verify,
+      postponeController.postBulkPostponeIneligibleAge(app));
 
     // bulk move court
     app.get('/pool-management/deferral-maintenance/location/:locationCode/move-court',
