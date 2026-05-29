@@ -15,7 +15,7 @@
     bulkDisqualifyByAge,
     fetchAndMergeIneligibleJurorDetails,
     removeAgeDisqualifiedJurorsFromMovementData,
-  } = require('../../../lib/age-disqualification');
+  } = require('../../../lib/age-disqualification-functions');
 
   module.exports.getPostponeDate = function(app) {
     return function(req, res) {

@@ -13,7 +13,7 @@
   const {
     bulkDisqualifyByAge,
     fetchAndMergeIneligibleJurorDetails,
-  } = require('../../../lib/age-disqualification');
+  } = require('../../../lib/age-disqualification-functions');
 
   function successCB(data, courtCode) {
     return function(app, req, res) {

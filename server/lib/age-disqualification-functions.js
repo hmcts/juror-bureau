@@ -3,9 +3,7 @@
 
   const _ = require('lodash');
   const moment = require('moment');
-  const modUtils = require('./mod-utils');
-
-  const AGE_FAILURE_REASON = 'maximum age';
+  const { replaceAllObjKeys } = require('./mod-utils');
 
   async function fetchIneligibleJurorDetails (req, ineligibleJurors) {
     const { jurorRecordDetailsDAO } = require('../objects/juror-record');
@@ -17,7 +15,7 @@
 
     const jurorDetails = await jurorRecordDetailsDAO.post(req, payload);
 
-    return modUtils.replaceAllObjKeys(Object.values(_.omit(jurorDetails, '_headers')), _.camelCase);
+    return replaceAllObjKeys(Object.values(_.omit(jurorDetails, '_headers')), _.camelCase);
   }
 
   async function fetchAndMergeIneligibleJurorDetails (req, ineligibleJurors) {
@@ -55,7 +53,7 @@
     }
 
     const movedJurors = movementData.unavailableForMove
-      .filter(juror => juror.failureReason?.includes(AGE_FAILURE_REASON))
+      .filter(juror => juror.failureReason?.includes('maximum age'))
       .map(juror => juror.jurorNumber);
 
     movementData.availableForMove = Array.from(new Set([
@@ -63,7 +61,7 @@
       ...movedJurors,
     ]));
     movementData.unavailableForMove = movementData.unavailableForMove.filter(
-      juror => !juror.failureReason?.includes(AGE_FAILURE_REASON),
+      juror => !juror.failureReason?.includes('maximum age'),
     );
 
     return movementData;
