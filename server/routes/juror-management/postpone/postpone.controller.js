@@ -418,14 +418,7 @@
           typeof req.session.poolJurorsPostpone !== 'undefined' ? req.session.poolJurorsPostpone.payload =
             payload : req.session.jurorCommonDetails.payload = payload;
 
-          const movedJurors = data.unavailableForMove
-            .filter(j => j.failureReason.includes('maximum age'))
-            .map(j => j.jurorNumber);
-
-          data.availableForMove = Array.from(new Set([...data.availableForMove, ...movedJurors]));
-          data.unavailableForMove = data.unavailableForMove.filter(
-            j => !j.failureReason.includes('maximum age')
-          );
+          removeAgeDisqualifiedJurorsFromMovementData(data);
 
           if (data.unavailableForMove !== null && data.unavailableForMove.length > 0) {
             //eslint-disable-next-line
@@ -505,7 +498,7 @@
         req.session.postponeDeferralMaintenancePayload = payload;
 
         let combinedData = {
-          availableforMove: data.reduce((prev, curr) => [...prev, ...curr.availableForMove], []),
+          availableForMove: data.reduce((prev, curr) => [...prev, ...curr.availableForMove], []),
           unavailableForMove: data.reduce((prev, curr) => {
             if (curr.unavailableForMove) {
               return [...prev, ...curr.unavailableForMove];
@@ -515,17 +508,10 @@
           }, []),
         };
 
-        const movedJurors = combinedData.unavailableForMove
-          .filter(j => j.failureReason.includes('maximum age'))
-          .map(j => j.jurorNumber);
-
-        combinedData.availableforMove = Array.from(new Set([...combinedData.availableforMove, ...movedJurors]));
-        combinedData.unavailableForMove = combinedData.unavailableForMove.filter(
-          j => !j.failureReason.includes('maximum age')
-        );
+        removeAgeDisqualifiedJurorsFromMovementData(combinedData);
         
         if (combinedData.unavailableForMove.length !== 0) {
-          payload['juror_numbers'] = combinedData.availableforMove;
+          payload['juror_numbers'] = combinedData.availableForMove;
           req.session.movementData = combinedData;
 
           return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.postpone.movement.get', {
@@ -967,5 +953,16 @@
     delete payload._csrf;
     delete payload.deferralPoolSelect;
     return payload;
+  }
+
+  const removeAgeDisqualifiedJurorsFromMovementData = (movementData) => {
+    const movedJurors = movementData.unavailableForMove
+      .filter(j => j.failureReason.includes('maximum age'))
+      .map(j => j.jurorNumber);
+
+    movementData.availableForMove = Array.from(new Set([...movementData.availableForMove, ...movedJurors]));
+    movementData.unavailableForMove = movementData.unavailableForMove.filter(
+      j => !j.failureReason.includes('maximum age')
+    );
   }
 })();
