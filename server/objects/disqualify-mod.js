@@ -19,4 +19,15 @@
       }
     }
   });
+
+  module.exports.bulkDisqualifyJurorsDAO = new DAO('moj/deferral-maintenance/deferrals/bulk-disqualify-age', {
+    post: function(payload) {
+      return {
+        uri: this.resource,
+        body: payload,
+        transform: basicDataTransform2,
+      }
+    }
+  });
+  
 })();

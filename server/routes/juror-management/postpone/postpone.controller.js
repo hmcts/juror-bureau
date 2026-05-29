@@ -11,6 +11,11 @@
   const modUtils = require('../../../lib/mod-utils');
   const { dateFilter } = require('../../../components/filters');
   const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
+  const {
+    bulkDisqualifyByAge,
+    fetchAndMergeIneligibleJurorDetails,
+    removeAgeDisqualifiedJurorsFromMovementData,
+  } = require('../../../lib/age-disqualification-functions');
 
   module.exports.getPostponeDate = function(app) {
     return function(req, res) {
@@ -416,7 +421,9 @@
           typeof req.session.poolJurorsPostpone !== 'undefined' ? req.session.poolJurorsPostpone.payload =
             payload : req.session.jurorCommonDetails.payload = payload;
 
-          if (data.unavailableForMove !== null) {
+          removeAgeDisqualifiedJurorsFromMovementData(data);
+
+          if (data.unavailableForMove !== null && data.unavailableForMove.length > 0) {
             //eslint-disable-next-line
             payload.juror_numbers = data.availableForMove;
             req.session.movementData = data;
@@ -493,8 +500,8 @@
 
         req.session.postponeDeferralMaintenancePayload = payload;
 
-        const combinedData = {
-          availableforMove: data.reduce((prev, curr) => [...prev, ...curr.availableForMove], []),
+        let combinedData = {
+          availableForMove: data.reduce((prev, curr) => [...prev, ...curr.availableForMove], []),
           unavailableForMove: data.reduce((prev, curr) => {
             if (curr.unavailableForMove) {
               return [...prev, ...curr.unavailableForMove];
@@ -504,8 +511,10 @@
           }, []),
         };
 
+        removeAgeDisqualifiedJurorsFromMovementData(combinedData);
+        
         if (combinedData.unavailableForMove.length !== 0) {
-          payload['juror_numbers'] = combinedData.availableforMove;
+          payload['juror_numbers'] = combinedData.availableForMove;
           req.session.movementData = combinedData;
 
           return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.postpone.movement.get', {
@@ -611,29 +620,30 @@
   };
 
   function sendPostponeRequest(app, req, res, payload){
-    var successCB = function() {
+    var successCB = function(response) {
         let receivingPoolNumberDate = typeof req.session.poolJurorsPostpone !== 'undefined' ?
           req.session.poolJurorsPostpone.deferralDateAndPool : req.session.jurorCommonDetails.deferralDateAndPool;
         let jurorNumber;
         let deferralUrl = app.namedRoutes.build('pool-management.deferral-maintenance.get');
-        let selectedJurors = payload.juror_numbers;
-        let jurorString = selectedJurors.length > 1 ? selectedJurors.length + ' jurors' : '1 juror';
+        let jurorString = response.eligible > 1 ? response.eligible + ' jurors' : '1 juror';
 
-        if (receivingPoolNumberDate.length === 10 && typeof req.session.poolJurorsPostpone !== 'undefined') {
-          req.session.bannerMessage = jurorString
-          + ' postponed to <a class="govuk-link" href='+ deferralUrl +'>deferral maintenance</a> for '
-          + moment(req.session.poolJurorsPostpone.deferralDateAndPool).format('dddd DD MMMM YYYY');
-        }  else if (receivingPoolNumberDate.length > 10 && typeof req.session.poolJurorsPostpone !== 'undefined') {
-          let [__, pn] = receivingPoolNumberDate.split('_');
-          let poolUrl = app.namedRoutes.build('pool-overview.get', {
-            poolNumber: pn,
-          });
+        if (response.eligible > 0) {
+          if (receivingPoolNumberDate.length === 10 && typeof req.session.poolJurorsPostpone !== 'undefined') {
+            req.session.bannerMessage = jurorString
+            + ' postponed to <a class="govuk-link" href='+ deferralUrl +'>deferral maintenance</a> for '
+            + moment(req.session.poolJurorsPostpone.deferralDateAndPool).format('dddd DD MMMM YYYY');
+          }  else if (receivingPoolNumberDate.length > 10 && typeof req.session.poolJurorsPostpone !== 'undefined') {
+            let [__, pn] = receivingPoolNumberDate.split('_');
+            let poolUrl = app.namedRoutes.build('pool-overview.get', {
+              poolNumber: pn,
+            });
 
-          req.session.bannerMessage = jurorString
-          + ' postponed to Pool <a class="govuk-link" href='+ poolUrl +'>' + pn + '</a>';
+            req.session.bannerMessage = jurorString
+            + ' postponed to Pool <a class="govuk-link" href='+ poolUrl +'>' + pn + '</a>';
+          }
         }
 
-        app.logger.info('Juror succesfully transferred: ', {
+        app.logger.info('Juror succesfully postponed: ', {
           auth: req.session.authentication,
           data: {
             jurorNumber: jurorNumber,
@@ -646,22 +656,56 @@
         if (typeof req.session.poolJurorsPostpone !== 'undefined') {
           jurorNumber = req.session.poolJurorsPostpone.selectedJurors;
 
+          if (response.ageDisqualified?.length > 0) {
+            const ageDisqualifiedJurors = response?.ageDisqualified || [];
+
+            app.logger.warn('Some selected postponements were not processed: ', {
+              auth: req.session.authentication,
+              data: {
+                notProcessed: ageDisqualifiedJurors.map((juror) => juror.jurorNumber),
+              },
+            });
+            
+            req.session.ineligiblePostponements = ageDisqualifiedJurors;
+
+            return res.redirect(app.namedRoutes.build('juror.update-bulk-postpone.ineligible-age.get', {
+              poolNumber: req.params.poolNumber,
+            }));
+          }
+
           return res.redirect(app.namedRoutes.build('pool-overview.get', {
-            poolNumber: req.params['poolNumber'],
+            poolNumber: req.params.poolNumber,
           }));
         }
 
         jurorNumber = req.params.jurorNumber;
+
+        if (response.ageDisqualified?.length > 0) {
+          const ageDisqualifiedJurors = response?.ageDisqualified || [];
+
+          app.logger.warn('Juror cant be postponed due to age ineligibility: ', {
+            auth: req.session.authentication,
+            data: {
+              jurorNumber,
+            },
+          });
+          
+          return res.redirect(app.namedRoutes.build('juror.update.postpone.ineligible-age.get', {
+            jurorNumber,
+            newDate: dateFilter(ageDisqualifiedJurors[0].newDate, 'DD/MM/YYYY', 'yyyy-MM-DD'),
+          }));
+        }
+
         req.session.bannerMessage = 'Postponed';
 
         if (res.locals.isCourtUser) {
           return res.redirect(app.namedRoutes.build('juror-update.postpone.letter.get', {
-            jurorNumber: req.params.jurorNumber,
+            jurorNumber,
           }));
         }
 
         return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
-          jurorNumber: req.params.jurorNumber,
+          jurorNumber,
         }));
       }
       , errorCB = function(err) {
@@ -721,26 +765,43 @@
     postponeObj.post(
       req,
       payload)
-      .then((resp) => {
+      .then((response) => {
         let receivingPoolNumberDate = req.body.deferralDateAndPool;
-        let selectedJurors = payload.juror_numbers;
-        let jurorString = selectedJurors.length > 1 ? selectedJurors.length + ' jurors' : '1 juror';
+        let jurorString = response.eligible > 1 ? response.eligible + ' jurors' : '1 juror';
 
-        if (!payload.poolNumber) {
-          req.session.bannerMessage = jurorString
-          + ' postponed to deferral maintenance for '
-          + moment(receivingPoolNumberDate).format('dddd DD MMMM YYYY');
-        }  else {
-          let poolNumber = receivingPoolNumberDate.split('_')[1];
-          let poolUrl = app.namedRoutes.build('pool-overview.get', {
-            poolNumber: poolNumber,
-          });
-
-          req.session.bannerMessage = jurorString
-          + ' postponed to Pool <a class="govuk-link" href='+ poolUrl +'>' + poolNumber + '</a>';
+        if (response.eligible > 0) {
+          if (!payload.poolNumber) {
+              req.session.bannerMessage = jurorString
+              + ' postponed to deferral maintenance for '
+              + moment(receivingPoolNumberDate).format('dddd DD MMMM YYYY');
+          }  else {
+            let poolNumber = receivingPoolNumberDate.split('_')[1];
+            let poolUrl = app.namedRoutes.build('pool-overview.get', {
+              poolNumber: poolNumber,
+            });
+              req.session.bannerMessage = jurorString
+              + ' postponed to Pool <a class="govuk-link" href='+ poolUrl +'>' + poolNumber + '</a>';
+          }
         }
 
         delete req.session.processLateSummons;
+
+        if (response.ageDisqualified?.length > 0) {
+          const ageDisqualifiedJurors = response?.ageDisqualified || [];
+
+          app.logger.warn('Some selected deferrals were not processed: ', {
+            auth: req.session.authentication,
+            data: {
+              notProcessed: ageDisqualifiedJurors.map((juror) => juror.jurorNumber),
+            },
+          });
+          
+          req.session.ineligiblePostponements = ageDisqualifiedJurors;
+
+          return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.postpone.ineligible-age.get', {
+            locationCode: req.params.locationCode,
+          }));
+        }
 
         return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.get', {
           courtLocation: req.params.courtLocation,
@@ -765,6 +826,99 @@
         return res.render('_errors/generic', { err });
       });
   }
+
+  module.exports.getBulkPostponeIneligibleAge = (app) => async (req, res) => {
+    const { locationCode } = req.params;
+    const ineligibleJurors = _.clone(req.session.ineligiblePostponements);
+
+    let ineligibleJurorsWithDetails;
+    try {
+      ineligibleJurorsWithDetails = await fetchAndMergeIneligibleJurorDetails(req, ineligibleJurors);
+    } catch {
+      app.logger.crit('Failed to fetch juror details for ineligible age jurors: ', {
+        auth: req.session.authentication,
+        data: {
+          jurors: ineligibleJurors.map(juror => juror.jurorNumber),
+        },
+      });
+
+      return [];
+    }
+
+    let processUrl;
+    let cancelUrl;
+    let cancelText;
+    if (req.url.includes('/juror-management/pool')) {
+      processUrl = app.namedRoutes.build('juror.update-bulk-postpone.ineligible-age.post', {
+        poolNumber: req.params.poolNumber,
+      });
+      cancelUrl = app.namedRoutes.build('pool-overview.get', {
+        poolNumber: req.params.poolNumber,
+      });
+      cancelText = 'Cancel and return to pool overview';
+    } else {
+      processUrl = app.namedRoutes.build('pool-management.deferral-maintenance.postpone.ineligible-age.post', {
+        locationCode
+      });
+      cancelUrl = app.namedRoutes.build('pool-management.deferral-maintenance.filter.get', {
+        locationCode,
+      });
+      cancelText = 'Cancel and return to deferral maintenance';
+    }
+
+    return res.render('pool-management/_common/ineligible-age-jurors.njk', {
+      action: 'postponed',
+      cancelText,
+      ineligibleJurors: ineligibleJurorsWithDetails,
+      bannerMessage: _.clone(req.session.bannerMessage),
+      cancelUrl,
+      processUrl,
+    });
+  };
+
+  module.exports.postBulkPostponeIneligibleAge = (app) => async (req, res) => {
+    const { locationCode, poolNumber } = req.params;
+    let { jurorNumbers } = req.body;
+
+    jurorNumbers = Array.isArray(jurorNumbers) ? jurorNumbers : [jurorNumbers];;
+    delete req.session.ineligiblePostponements;
+
+    let returnUrl;
+    if (req.url.includes('/juror-management/pool')) {
+      returnUrl = app.namedRoutes.build('pool-overview.get', {
+        poolNumber,
+      });
+    } else {
+      returnUrl = app.namedRoutes.build('pool-management.deferral-maintenance.get', {
+        courtLocation: locationCode,
+      });
+    }
+
+    try {
+      await bulkDisqualifyByAge(req, jurorNumbers);
+
+      app.logger.info('Successfully disqualified jurors by age during postponement flow: ', {
+        auth: req.session.authentication,
+        data: {
+          jurorNumbers,
+        },
+      });
+      const message = `${jurorNumbers.length} juror${jurorNumbers.length !== 1 ? 's' : ''} disqualified due to age.`;
+      req.session.bannerMessage = req.session.bannerMessage ? `${req.session.bannerMessage}. ${message}` : message;
+    } catch (err) {
+      app.logger.crit('Failed to disqualify jurors by age during postponement flow: ', {
+        auth: req.session.authentication,
+        data: {
+          jurorNumbers,
+        },
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+      req.session.errors = modUtils.makeManualError('jurors', 'Failed to disqualify jurors by age');
+      return res.redirect(returnUrl);
+    }
+
+    return res.redirect(returnUrl);
+  };
 
   function buildPayload(body, req, jurorNumbers) {
     const payload = _.clone(body);

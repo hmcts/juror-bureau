@@ -10,6 +10,10 @@
   const dateFilter = require('../../../components/filters').dateFilter;
   const courtNameOrLocationValidator = require('../../../config/validation/request-pool.js').courtNameOrLocation;
   const { transformCourtName } = require('../../../components/filters');
+  const {
+    bulkDisqualifyByAge,
+    fetchAndMergeIneligibleJurorDetails,
+  } = require('../../../lib/age-disqualification-functions');
 
   function successCB(data, courtCode) {
     return function(app, req, res) {
@@ -331,7 +335,7 @@
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
 
-        return res.redirect(app.namedRoutes.build('pool-management.deferral-maintencance.process.get', {
+        return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.process.get', {
           locationCode: req.params['locationCode'],
         }));
       }
@@ -339,17 +343,17 @@
       deferralsToProcess = extractDeferralsToProcess(req.session.deferralMaintenance.deferrals);
 
       try {
-        await requestObj.allocateJurors.post(req, deferralsToProcess, req.body.poolNumber);
+        const response = await requestObj.allocateJurors.post(req, deferralsToProcess, req.body.poolNumber);
 
         const courtCode = req.params['locationCode'];
         const poolUrl = app.namedRoutes.build('pool-overview.get', {
           poolNumber: req.body.poolNumber,
         });
 
-        delete req.session.deferralMaintenance;
-
-        req.session.bannerMessage
-          = `Selected jurors added to pool <a href="${poolUrl}" class="govuk-link">${req.body.poolNumber}</a>`;
+        if (response.eligible > 0) {
+          req.session.bannerMessage
+            = `${response.eligible} juror${response.eligible !== 1 ? 's' : ''} added to pool <a href="${poolUrl}" class="govuk-link">${req.body.poolNumber}</a>`;
+        }
 
         app.logger.info('Finished processing all selected deferrals: ', {
           auth: req.session.authentication,
@@ -358,6 +362,25 @@
             poolNumber: req.body.poolNumber,
           },
         });
+
+        if (response.ageDisqualified?.length > 0) {
+          const ageDisqualifiedJurors = response.ageDisqualified;
+
+          app.logger.warn('Some selected deferrals were not processed: ', {
+            auth: req.session.authentication,
+            data: {
+              ageDisqualified: ageDisqualifiedJurors.map((juror) => juror.jurorNumber),
+            },
+          });
+          
+          req.session.ineligibleDeferrals = ageDisqualifiedJurors;
+
+          return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.process.ineligible-age.get', {
+            locationCode: courtCode,
+          }));
+        }
+
+        delete req.session.deferralMaintenance;
 
         return requestObj
           .deferrals.get(req, courtCode)
@@ -395,12 +418,100 @@
           });
           req.session.errors = modUtils.makeManualError('deferrals', 'Failed to process the selected deferrals');
         }
-        return res.redirect(app.namedRoutes.build('pool-management.deferral-maintencance.process.get', {
+        return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.process.get', {
           locationCode: req.params['locationCode'],
         }));
 
       }
     };
+  };
+
+  module.exports.getProcessIneligibleAge = (app) => async (req, res) => {
+    const { locationCode, newLocationCode } = req.params;
+    const ineligibleJurors = _.clone(req.session.ineligibleDeferrals);
+
+    let ineligibleJurorsWithDetails;
+    try {
+      ineligibleJurorsWithDetails = await fetchAndMergeIneligibleJurorDetails(req, ineligibleJurors);
+    } catch {
+      app.logger.crit('Failed to fetch juror details for ineligible age jurors: ', {
+        auth: req.session.authentication,
+        data: {
+          jurors: ineligibleJurors.map(juror => juror.jurorNumber),
+        },
+      });
+
+      return [];
+    }
+
+    const processUrl = app.namedRoutes.build(
+      req.url.includes('move-court')
+        ? 'pool-management.deferral-maintenance.move-court.ineligible-age.post'
+        : 'pool-management.deferral-maintenance.process.ineligible-age.post',
+      req.url.includes('move-court') ? { locationCode, newLocationCode } : { locationCode },
+    );
+
+    return res.render('pool-management/_common/ineligible-age-jurors.njk', {
+      action: 'deferred',
+      ineligibleJurors: ineligibleJurorsWithDetails,
+      bannerMessage: _.clone(req.session.bannerMessage),
+      cancelUrl: app.namedRoutes.build('pool-management.deferral-maintenance.process.ineligible-age.cancel.get', {
+        locationCode,
+      }),
+      processUrl,
+    });
+  };
+
+  module.exports.postProcessIneligibleAge = (app) => async (req, res) => {
+    const { locationCode } = req.params;
+    let { jurorNumbers } = req.body;
+
+    jurorNumbers = Array.isArray(jurorNumbers) ? jurorNumbers : [jurorNumbers];
+    
+    delete req.session.ineligibleDeferrals;
+
+    try {
+      await bulkDisqualifyByAge(req, jurorNumbers);
+
+      app.logger.info('Successfully disqualified jurors by age from deferral maintenance: ', {
+        auth: req.session.authentication,
+        data: {
+          jurorNumbers,
+        },
+      });
+      const message = `${jurorNumbers.length} juror${jurorNumbers.length !== 1 ? 's' : ''} disqualified due to age.`;
+      req.session.bannerMessage = req.session.bannerMessage 
+        ? `${req.session.bannerMessage}. ${message}`
+        : message;
+        
+    } catch (err) {
+      app.logger.crit('Failed to disqualify jurors by age from deferral maintenance: ', {
+        auth: req.session.authentication,
+        data: jurorNumbers,
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+      req.session.errors = modUtils.makeManualError('jurors', 'Failed to disqualify jurors by age');
+      return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.filter.get', {
+        locationCode,
+      }));
+    }
+
+    delete req.session.deferralMaintenance;
+
+    return requestObj
+      .deferrals.get(req, locationCode)
+      .then((data) => successCB(data, locationCode)(app, req, res))
+      .catch((err) => errorCB(err)(app, req, res));
+  };
+
+  module.exports.getCancelIneligibleAge = (app) => async (req, res) => {
+    const { locationCode } = req.params;
+    delete req.session.deferralMaintenance;
+
+    return requestObj
+      .deferrals.get(req, locationCode)
+      .then((data) => successCB(data, locationCode)(app, req, res))
+      .catch((err) => errorCB(err)(app, req, res));
   };
 
   function render(app, data, isFiltered = false) {
@@ -679,8 +790,10 @@
         jurorNumbers,
       }
 
+      let response;
+
       try {
-        await requestObj.moveCourt.post(req, payload);
+        response = await requestObj.moveCourt.post(req, payload);    
       } catch(err) {
         app.logger.crit('Failed to move the selected deferrals to another court: ', {
           auth: req.session.authentication,
@@ -691,10 +804,28 @@
         return res.render('_errors/generic', { err });
       }
 
-      req.session.bannerMessage
-          = `${jurorNumbers.length} Juror${jurorNumbers.length > 1 ? 's' : ''} successfully moved to
-           <span class="govuk-!-font-weight-bold">${transformCourtName(courtData)}</span>
-           and remain deferred`;
+      if (response.eligible > 0) {
+        req.session.bannerMessage = `${response.eligible} juror${response.eligible !== 1 ? 's' : ''} successfully moved to
+          <span class="govuk-!-font-weight-bold">${transformCourtName(courtData)}</span>`;
+      }
+
+      if (response.ageDisqualified?.length > 0) {
+        const ageDisqualifiedJurors = response.ageDisqualified;
+
+        app.logger.warn('Some selected deferrals were not processed: ', {
+          auth: req.session.authentication,
+          data: {
+            ageDisqualified: ageDisqualifiedJurors.map((juror) => juror.jurorNumber),
+          },
+        });
+        
+        req.session.ineligibleDeferrals = ageDisqualifiedJurors;
+
+        return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.move-court.ineligible-age.get', {
+          locationCode,
+          newLocationCode,
+        }));
+      }
 
       delete req.session.deferralMaintenance
 
