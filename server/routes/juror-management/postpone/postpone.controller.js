@@ -5,14 +5,17 @@
   const validate = require('validate.js');
   const postponeObj = require('../../../objects/postpone').postponeObject;
   const availablePoolsObj = require('../../../objects/pool-management').deferralMaintenance.availablePools;
-  const { jurorRecordDetailsDAO } = require('../../../objects/juror-record');
-  const { bulkDisqualifyJurorsDAO } = require('../../../objects/disqualify-mod');
   const postponeValidator = require('../../../config/validation/postpone');
   const validateMovementObj = require('../../../objects/pool-management').validateMovement;
   const moment = require('moment');
   const modUtils = require('../../../lib/mod-utils');
   const { dateFilter } = require('../../../components/filters');
   const { flowLetterGet, flowLetterPost } = require('../../../lib/flowLetter');
+  const {
+    bulkDisqualifyByAge,
+    fetchAndMergeIneligibleJurorDetails,
+    removeAgeDisqualifiedJurorsFromMovementData,
+  } = require('../../../lib/age-disqualification');
 
   module.exports.getPostponeDate = function(app) {
     return function(req, res) {
@@ -654,14 +657,16 @@
           jurorNumber = req.session.poolJurorsPostpone.selectedJurors;
 
           if (response.ageDisqualified?.length > 0) {
+            const ageDisqualifiedJurors = response?.ageDisqualified || [];
+
             app.logger.warn('Some selected postponements were not processed: ', {
               auth: req.session.authentication,
               data: {
-                notProcessed: response.ageDisqualified.map((juror) => juror.jurorNumber),
+                notProcessed: ageDisqualifiedJurors.map((juror) => juror.jurorNumber),
               },
             });
             
-            req.session.ineligiblePostponements = response.ageDisqualified;
+            req.session.ineligiblePostponements = ageDisqualifiedJurors;
 
             return res.redirect(app.namedRoutes.build('juror.update-bulk-postpone.ineligible-age.get', {
               poolNumber: req.params.poolNumber,
@@ -676,6 +681,8 @@
         jurorNumber = req.params.jurorNumber;
 
         if (response.ageDisqualified?.length > 0) {
+          const ageDisqualifiedJurors = response?.ageDisqualified || [];
+
           app.logger.warn('Juror cant be postponed due to age ineligibility: ', {
             auth: req.session.authentication,
             data: {
@@ -685,7 +692,7 @@
           
           return res.redirect(app.namedRoutes.build('juror.update.postpone.ineligible-age.get', {
             jurorNumber,
-            newDate: dateFilter(response.ageDisqualified[0].newDate, 'DD/MM/YYYY', 'yyyy-MM-DD'),
+            newDate: dateFilter(ageDisqualifiedJurors[0].newDate, 'DD/MM/YYYY', 'yyyy-MM-DD'),
           }));
         }
 
@@ -780,14 +787,16 @@
         delete req.session.processLateSummons;
 
         if (response.ageDisqualified?.length > 0) {
+          const ageDisqualifiedJurors = response?.ageDisqualified || [];
+
           app.logger.warn('Some selected deferrals were not processed: ', {
             auth: req.session.authentication,
             data: {
-              notProcessed: response.ageDisqualified.map((juror) => juror.jurorNumber),
+              notProcessed: ageDisqualifiedJurors.map((juror) => juror.jurorNumber),
             },
           });
           
-          req.session.ineligiblePostponements = response.ageDisqualified;
+          req.session.ineligiblePostponements = ageDisqualifiedJurors;
 
           return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.postpone.ineligible-age.get', {
             locationCode: req.params.locationCode,
@@ -820,37 +829,11 @@
 
   module.exports.getBulkPostponeIneligibleAge = (app) => async (req, res) => {
     const { locationCode } = req.params;
-
-    const mergeIneligibleJurorDetails = (ineligibleJurors, jurorDetails) => {
-      const jurorDetailsByNumber = new Map(
-        jurorDetails.map(juror => [juror.jurorNumber, juror]),
-      );
-
-      return ineligibleJurors.map((juror) => {
-        const jurorDetails = {
-          ...juror,
-          ...jurorDetailsByNumber.get(juror.jurorNumber),
-        };
-
-        return {
-          ...jurorDetails,
-          ageOnNewDate: moment(jurorDetails.newDate, 'DD/MM/YYYY').diff(moment(jurorDetails.dob, 'DD/MM/YYYY'), 'years'),
-        };
-      });
-    };
-
     const ineligibleJurors = _.clone(req.session.ineligiblePostponements);
 
-    let jurorDetails;
+    let ineligibleJurorsWithDetails;
     try {
-      const payload = ineligibleJurors.map(({ jurorNumber }) => ({
-        'juror_number': jurorNumber,
-        'juror_version': null,
-        include: ['NAME_DETAILS', 'ACTIVE_POOL'],
-      }));
-
-      jurorDetails = await jurorRecordDetailsDAO.post(req, payload);
-      jurorDetails = modUtils.replaceAllObjKeys(Object.values(_.omit(jurorDetails, '_headers')), _.camelCase);
+      ineligibleJurorsWithDetails = await fetchAndMergeIneligibleJurorDetails(req, ineligibleJurors);
     } catch {
       app.logger.crit('Failed to fetch juror details for ineligible age jurors: ', {
         auth: req.session.authentication,
@@ -886,7 +869,7 @@
     return res.render('pool-management/_common/ineligible-age-jurors.njk', {
       action: 'postponed',
       cancelText,
-      ineligibleJurors: mergeIneligibleJurorDetails(ineligibleJurors, jurorDetails),
+      ineligibleJurors: ineligibleJurorsWithDetails,
       bannerMessage: _.clone(req.session.bannerMessage),
       cancelUrl,
       processUrl,
@@ -897,7 +880,7 @@
     const { locationCode, poolNumber } = req.params;
     let { jurorNumbers } = req.body;
 
-    jurorNumbers = Array.isArray(jurorNumbers) ? jurorNumbers : [jurorNumbers];
+    jurorNumbers = Array.isArray(jurorNumbers) ? jurorNumbers : [jurorNumbers];;
     delete req.session.ineligiblePostponements;
 
     let returnUrl;
@@ -912,7 +895,7 @@
     }
 
     try {
-      await bulkDisqualifyJurorsDAO.post(req, { jurorNumbers });
+      await bulkDisqualifyByAge(req, jurorNumbers);
 
       app.logger.info('Successfully disqualified jurors by age during postponement flow: ', {
         auth: req.session.authentication,
@@ -920,8 +903,8 @@
           jurorNumbers,
         },
       });
-      const disqualifyMessage = jurorNumbers.length === 1 ? '1 juror disqualified due to age.' : `${jurorNumbers.length} jurors disqualified due to age.`;
-      req.session.bannerMessage = req.session.bannerMessage ? `${req.session.bannerMessage}. ${disqualifyMessage}` : disqualifyMessage;
+      const message = `${jurorNumbers.length} juror${jurorNumbers.length !== 1 ? 's' : ''} disqualified due to age.`;
+      req.session.bannerMessage = req.session.bannerMessage ? `${req.session.bannerMessage}. ${message}` : message;
     } catch (err) {
       app.logger.crit('Failed to disqualify jurors by age during postponement flow: ', {
         auth: req.session.authentication,
@@ -953,16 +936,5 @@
     delete payload._csrf;
     delete payload.deferralPoolSelect;
     return payload;
-  }
-
-  const removeAgeDisqualifiedJurorsFromMovementData = (movementData) => {
-    const movedJurors = movementData.unavailableForMove
-      .filter(j => j.failureReason.includes('maximum age'))
-      .map(j => j.jurorNumber);
-
-    movementData.availableForMove = Array.from(new Set([...movementData.availableForMove, ...movedJurors]));
-    movementData.unavailableForMove = movementData.unavailableForMove.filter(
-      j => !j.failureReason.includes('maximum age')
-    );
   }
 })();

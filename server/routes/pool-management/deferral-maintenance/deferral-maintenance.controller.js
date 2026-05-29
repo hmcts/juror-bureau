@@ -2,17 +2,18 @@
   'use strict';
 
   const _ = require('lodash');
-  const moment = require('moment');
   const { isBureauUser, isCourtUser } = require('../../../components/auth/user-type');
   const modUtils = require('../../../lib/mod-utils');
   const validator = require('../../../config/validation/pool-management').deferralMaintenance;
   const validate = require('validate.js');
   const requestObj = require('../../../objects/pool-management').deferralMaintenance;
-  const { jurorRecordDetailsDAO } = require('../../../objects/juror-record');
-  const { bulkDisqualifyJurorsDAO } = require('../../../objects/disqualify-mod.js');
   const dateFilter = require('../../../components/filters').dateFilter;
   const courtNameOrLocationValidator = require('../../../config/validation/request-pool.js').courtNameOrLocation;
   const { transformCourtName } = require('../../../components/filters');
+  const {
+    bulkDisqualifyByAge,
+    fetchAndMergeIneligibleJurorDetails,
+  } = require('../../../lib/age-disqualification');
 
   function successCB(data, courtCode) {
     return function(app, req, res) {
@@ -362,15 +363,17 @@
           },
         });
 
-        if (response.ageDisqualified?.length) {
+        if (response.ageDisqualified?.length > 0) {
+          const ageDisqualifiedJurors = response.ageDisqualified;
+
           app.logger.warn('Some selected deferrals were not processed: ', {
             auth: req.session.authentication,
             data: {
-              ageDisqualified: response.ageDisqualified.map((juror) => juror.jurorNumber),
+              ageDisqualified: ageDisqualifiedJurors.map((juror) => juror.jurorNumber),
             },
           });
           
-          req.session.ineligibleDeferrals = response.ageDisqualified;
+          req.session.ineligibleDeferrals = ageDisqualifiedJurors;
 
           return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.process.ineligible-age.get', {
             locationCode: courtCode,
@@ -425,37 +428,11 @@
 
   module.exports.getProcessIneligibleAge = (app) => async (req, res) => {
     const { locationCode, newLocationCode } = req.params;
-
-    const mergeIneligibleJurorDetails = (ineligibleJurors, jurorDetails) => {
-      const jurorDetailsByNumber = new Map(
-        jurorDetails.map(juror => [juror.jurorNumber, juror]),
-      );
-
-      return ineligibleJurors.map((juror) => {
-        const jurorDetails = {
-          ...juror,
-          ...jurorDetailsByNumber.get(juror.jurorNumber),
-        };
-
-        return {
-          ...jurorDetails,
-          ageOnNewDate: moment(jurorDetails.newDate, 'DD/MM/YYYY').diff(moment(jurorDetails.dob, 'DD/MM/YYYY'), 'years'),
-        };
-      });
-    };
-
     const ineligibleJurors = _.clone(req.session.ineligibleDeferrals);
 
-    let jurorDetails;
+    let ineligibleJurorsWithDetails;
     try {
-      const payload = ineligibleJurors.map(({ jurorNumber }) => ({
-        'juror_number': jurorNumber,
-        'juror_version': null,
-        include: ['NAME_DETAILS', 'ACTIVE_POOL'],
-      }));
-
-      jurorDetails = await jurorRecordDetailsDAO.post(req, payload);
-      jurorDetails = modUtils.replaceAllObjKeys(Object.values(_.omit(jurorDetails, '_headers')), _.camelCase);
+      ineligibleJurorsWithDetails = await fetchAndMergeIneligibleJurorDetails(req, ineligibleJurors);
     } catch {
       app.logger.crit('Failed to fetch juror details for ineligible age jurors: ', {
         auth: req.session.authentication,
@@ -476,7 +453,7 @@
 
     return res.render('pool-management/_common/ineligible-age-jurors.njk', {
       action: 'deferred',
-      ineligibleJurors: mergeIneligibleJurorDetails(ineligibleJurors, jurorDetails),
+      ineligibleJurors: ineligibleJurorsWithDetails,
       bannerMessage: _.clone(req.session.bannerMessage),
       cancelUrl: app.namedRoutes.build('pool-management.deferral-maintenance.process.ineligible-age.cancel.get', {
         locationCode,
@@ -494,7 +471,7 @@
     delete req.session.ineligibleDeferrals;
 
     try {
-      await bulkDisqualifyJurorsDAO.post(req, { jurorNumbers });
+      await bulkDisqualifyByAge(req, jurorNumbers);
 
       app.logger.info('Successfully disqualified jurors by age from deferral maintenance: ', {
         auth: req.session.authentication,
@@ -832,15 +809,17 @@
           <span class="govuk-!-font-weight-bold">${transformCourtName(courtData)}</span>`;
       }
 
-      if (response.ageDisqualified?.length) {
+      if (response.ageDisqualified?.length > 0) {
+        const ageDisqualifiedJurors = response.ageDisqualified;
+
         app.logger.warn('Some selected deferrals were not processed: ', {
           auth: req.session.authentication,
           data: {
-            ageDisqualified: response.ageDisqualified.map((juror) => juror.jurorNumber),
+            ageDisqualified: ageDisqualifiedJurors.map((juror) => juror.jurorNumber),
           },
         });
         
-        req.session.ineligibleDeferrals = response.ageDisqualified;
+        req.session.ineligibleDeferrals = ageDisqualifiedJurors;
 
         return res.redirect(app.namedRoutes.build('pool-management.deferral-maintenance.move-court.ineligible-age.get', {
           locationCode,

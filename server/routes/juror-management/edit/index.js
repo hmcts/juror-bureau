@@ -49,7 +49,7 @@
       auth.verify,
       controller.postEditDeferralConfirm(app));
     
-    app.get('/juror-management/record/:jurorNumber/deferral/edit/ineligible-age',
+    app.get('/juror-management/record/:jurorNumber/deferral/edit/ineligible-age/:newDate',
       'juror-record.deferral-edit.ineligible-age.get',
       auth.verify,
       jurorUpdateController.getIneligibleAge(app));

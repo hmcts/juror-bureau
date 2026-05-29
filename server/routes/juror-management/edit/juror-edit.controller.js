@@ -367,11 +367,11 @@
       }
 
       changeDeferralObject.post(req, jurorNumber, newDeferralDate, newPoolNumber, req.session.newDeferralReason)
-        .then((response) => {          
+        .then((response) => {
           if (response.ageDisqualified?.length > 0) {
             return res.redirect(app.namedRoutes.build('juror-record.deferral-edit.ineligible-age.get', {
               jurorNumber,
-              newDate: dateFilter(req.body.deferralDate, 'DD/MM/YYYY', 'yyyy-MM-DD'),
+              newDate: newDeferralDate,
             }));
           }
 
