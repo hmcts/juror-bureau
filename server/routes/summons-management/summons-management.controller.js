@@ -10,6 +10,7 @@
   const deferralObj = require('../../objects/deferral-mod').deferralObject;
   const preferredDatesObj = require('../../objects/deferral-preferred-dates').preferredDatesObj;
   const deferralPoolsObj = require('../../objects/deferral-available-pools').object;
+  const responseDetailObj = require('../../objects/response-detail.js').object;
   const validate = require('validate.js');
   const filters = require('../../components/filters');
   const dateFilter = require('../../components/filters').dateFilter;
@@ -645,14 +646,72 @@
     }
   };
 
+  module.exports.getExcusalAddress = (app) => async (req, res) => {
+    const { id, type } = req.params;
+    const tmpErrors = _.clone(req.session.errors);
+    const tmpFields = req.session.formFields;
+
+    const processUrl = app.namedRoutes.build('process-excusal.post', { id, type });
+    const backLinkUrl = {
+      built: true,
+      url: app.namedRoutes.build('process-excusal.get', { id, type }),
+    };
+    
+    let cancelUrl;
+
+    if (type === 'paper') {
+      cancelUrl = app.namedRoutes.build('response.paper.details.get', { id, type });
+    } else {
+      cancelUrl = app.namedRoutes.build('response.detail.get', { id, type });
+    }
+
+    const addressDetails = req.session[`excusalRefusal-${id}`]?.addressDetails || {};
+    const excusalCode = req.session[`excusalRefusal-${id}`]?.excusalCode;
+
+    return res.render('summons-management/process-reply/excusal-refusal-address', {
+      processUrl,
+      cancelUrl,
+      backLinkUrl,
+      addressDetails,
+      excusalCode,
+    });
+  };
+
   module.exports.postExcusal = (app) => async (req, res) => {
     const { id, type } = req.params;
+
+    delete req.session[`excusalRefusal-${id}`];
 
     const validatorResult = validate(req.body, require('../../config/validation/excusal-mod.js')());
     if (typeof validatorResult !== 'undefined') {
       req.session.errors = validatorResult;
       req.session.formFields = req.body;
       return res.redirect(app.namedRoutes.build('process-excusal.get', { id, type }));
+    }
+    if (req.body.excusalDecision === 'REFUSE') {
+      try {
+        const response = type === 'paper' ? (await paperReplyObj.get(req, id)).data : (await responseDetailObj.get(req, id));
+        console.log(`\n\n${JSON.stringify(response, null, 2)}\n\n`);
+        const addressDetails = type === 'paper' ? resolveJurorAddress(response) : getDigitalAddressDetails(response);
+        console.log(`\n\n${JSON.stringify(addressDetails, null, 2)}\n\n`);
+
+        if (addressDetails.changed && !req.body.addressDecision) {
+          req.session[`excusalRefusal-${id}`] = {
+            addressDetails,
+            excusalCode: req.body.excusalCode,
+          }
+          return res.redirect(app.namedRoutes.build('process-excusal.address.get', { id, type }));
+        }
+
+      } catch (err) {
+        app.logger.crit('Failed to fetch response details when selecting excusal refusal address: ', {
+          auth: req.session.authentication,
+          data: { id },
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.redirect(app.namedRoutes.build('homepage.get'));
+      } 
     }
 
     try {
@@ -1336,5 +1395,48 @@
 
     return true;
   };
+
+  const getDigitalAddressDetails = (data) => {
+    const newAddressRender = [
+      data.newJurorAddress1,
+      data.newJurorAddress2,
+      data.newJurorAddress3,
+      data.newJurorAddress4,
+      data.newJurorAddress5,
+      data.newJurorAddress6,
+      data.newJurorPostcode,
+    ].filter(function(val) {
+      return typeof val !== 'undefined' && val !== null && val.length > 0;
+    }).join('<br>');
+
+    const addressRender = [
+      data.jurorAddress1,
+      data.jurorAddress2,
+      data.jurorAddress3,
+      data.jurorAddress4,
+      data.jurorAddress5,
+      data.jurorAddress6,
+      data.jurorPostcode,
+    ].filter(function(val) {
+      return typeof val !== 'undefined' && val !== null && val.length > 0;
+    }).join('<br>');
+
+    const hasNewAddress = newAddressRender !== addressRender;
+
+    return {
+      changed: (hasNewAddress === true),
+      currentAddress: (hasNewAddress) ? newAddressRender : addressRender,
+      oldAddress: (hasNewAddress) ? addressRender : null,
+      address1: (hasNewAddress) ? data.newJurorAddress1 : data.jurorAddress1,
+      address2: (hasNewAddress) ? data.newJurorAddress2 : data.jurorAddress2,
+      address3: (hasNewAddress) ? data.newJurorAddress3 : data.jurorAddress3,
+      address4: (hasNewAddress) ? data.newJurorAddress4 : data.jurorAddress4,
+      address5: (hasNewAddress) ? data.newJurorAddress5 : data.jurorAddress5,
+      address6: (hasNewAddress) ? data.newJurorAddress6 : data.jurorAddress6,
+      postcode: (hasNewAddress) ? data.newJurorPostcode : data.jurorPostcode,
+    };
+  }
+
+  module.exports.getDigitalAddressDetails = getDigitalAddressDetails;
 
 })();

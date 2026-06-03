@@ -1,0 +1,79 @@
+{% extends "../../layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
+{% block page_title %}{{ serviceName }} - Process response{% endblock %}
+{% block page_identifier %}Process - what to do{% endblock %}
+
+{% set currentApp = "Summons replies" %}
+
+{% block containerStart %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLinkUrl.url,
+    attributes: {
+      id: "backLinkAnchor"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+    {{ govukWarningText({
+      text: "Addresses do not match. The juror sent a letter before the summons reply was processed.",
+      iconFallbackText: "Warning"
+    }) }}
+
+    <h1 class="govuk-heading-l">Where should the refusal letter be sent?</h1>
+  
+  <form action="{{ processUrl }}" method="POST" id="excusalRefusalAddressForm">
+
+    {% set summonsAddressHtml %}
+      <div class="jd-label-blue">New</div>
+      <p class="govuk-body govuk-!-font-weight-bold">Summons reply address</p>
+      <p class="govuk-caption-m">Use the address currently held on the juror record.</p>
+      <p class="govuk-body">{{ addressDetails.currentAddress | safe }}</p>
+    {% endset %}
+    {% set jurorRecordAddressHtml %}
+      <p class="govuk-body govuk-!-font-weight-bold">Juror record address</p>
+      <p class="govuk-caption-m">Use the address provided by the juror on the summons reply.</p>
+      <p class="govuk-body">{{ addressDetails.oldAddress | safe }}</p>
+    {% endset %}
+
+    {{ govukRadios({
+      id: "addressDecision",
+      name: "addressDecision",
+      items: [
+        {
+          value: "summons",
+          html: summonsAddressHtml,
+          checked: true
+        },
+        {
+          value: "juror",
+          html: jurorRecordAddressHtml
+        }
+      ]
+    }) }}
+
+    <input type="hidden" name="excusalDecision" value="REFUSE">
+    <input type="hidden" name="excusalCode" value="{{ excusalCode }}">
+
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Continue",
+        type: "submit",
+        attributes: {
+          id: "continueButton"
+        }
+      }) }}
+      <a href="{{ cancelUrl }}" class="govuk-link" id="cancelAnchor">Cancel</a>
+    </div>
+
+    <input type="hidden" name="_csrf" id="csrfToken" value="{{ csrftoken }}">
+  </form>
+
+{% endblock %}

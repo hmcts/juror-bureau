@@ -16,7 +16,7 @@
   const { dateFilter } = require('../../../components/filters');
   const jurorRecordObject = require('../../../objects/juror-record');
   const { courtLocationsFromPostcodeObj } = require('../../../objects/court-location.js');
-  const { resolveCatchmentResponse } = require('../../summons-management/summons-management.controller.js');
+  const { resolveCatchmentResponse, getDigitalAddressDetails } = require('../../summons-management/summons-management.controller.js');
   const { updateStatusDAO } = require('../../../objects');
 
   module.exports.index = (app) => async (req, res) => {
@@ -38,7 +38,7 @@
 
       const data = response.results[0];
       const nameDetails = getNameDetails(data);
-      const addressDetails = getAddressDetails(data);
+      const addressDetails = getDigitalAddressDetails(data);
       const additionalChangeDetails = getAdditionalChangedDetails(data);
       const eligibilityDetails = getEligibilityDetails(data);
       const thirdPartyDetails = getThirdPartyDetails(data);
@@ -428,7 +428,7 @@
       // Map response data to PDF data
       let jurorData = {};
 
-      jurorData.addressRender = getAddressDetails(responseData).currentAddress;
+      jurorData.addressRender = getDigitalAddressDetails(responseData).currentAddress;
 
       if (typeof (responseData.specialNeeds) != 'undefined' && responseData.specialNeeds.length > 0){
         jurorData.assistanceNeeded = 'Yes';
@@ -892,47 +892,6 @@
       title: (hasNewName) ? data.newTitle : data.title,
       firstName: (hasNewName) ? data.newFirstName : data.firstName,
       lastName: (hasNewName) ? data.newLastName : data.lastName,
-    };
-  }
-
-  const getAddressDetails = (data) => {
-    const newAddressRender = [
-      data.newJurorAddress1,
-      data.newJurorAddress2,
-      data.newJurorAddress3,
-      data.newJurorAddress4,
-      data.newJurorAddress5,
-      data.newJurorAddress6,
-      data.newJurorPostcode,
-    ].filter(function(val) {
-      return typeof val !== 'undefined' && val !== null && val.length > 0;
-    }).join('<br>');
-
-    const addressRender = [
-      data.jurorAddress1,
-      data.jurorAddress2,
-      data.jurorAddress3,
-      data.jurorAddress4,
-      data.jurorAddress5,
-      data.jurorAddress6,
-      data.jurorPostcode,
-    ].filter(function(val) {
-      return typeof val !== 'undefined' && val !== null && val.length > 0;
-    }).join('<br>');
-
-    const hasNewAddress = newAddressRender !== addressRender;
-
-    return {
-      changed: (hasNewAddress === true),
-      currentAddress: (hasNewAddress) ? newAddressRender : addressRender,
-      oldAddress: (hasNewAddress) ? addressRender : null,
-      address1: (hasNewAddress) ? data.newJurorAddress1 : data.jurorAddress1,
-      address2: (hasNewAddress) ? data.newJurorAddress2 : data.jurorAddress2,
-      address3: (hasNewAddress) ? data.newJurorAddress3 : data.jurorAddress3,
-      address4: (hasNewAddress) ? data.newJurorAddress4 : data.jurorAddress4,
-      address5: (hasNewAddress) ? data.newJurorAddress5 : data.jurorAddress5,
-      address6: (hasNewAddress) ? data.newJurorAddress6 : data.jurorAddress6,
-      postcode: (hasNewAddress) ? data.newJurorPostcode : data.jurorPostcode,
     };
   }
 

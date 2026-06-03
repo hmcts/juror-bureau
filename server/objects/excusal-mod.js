@@ -14,6 +14,10 @@
         excusalReasonCode: body.excusalCode,
       }
 
+      if (body.addressDecision) {
+        tmpBody.addressDecision = body.addressDecision;
+      }
+
       if (replyMethod) {
         tmpBody.replyMethod = toReplyMethod(replyMethod);
       }
