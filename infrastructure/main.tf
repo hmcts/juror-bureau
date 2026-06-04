@@ -80,7 +80,7 @@ module "managed_redis" {
   location    = var.location
   common_tags = var.common_tags
 
-  sku_name = "Balanced_B0"
+  sku_name = var.managed_redis_sku
 
   public_network_access   = "Disabled"
   create_private_endpoint = true
@@ -90,6 +90,7 @@ module "managed_redis" {
   ]
 
   access_keys_authentication_enabled = true
+  persistence_rdb_backup_frequency   = var.managed_redis_persistence_rdb_frequency
 }
 
 resource "azurerm_key_vault_secret" "managed_redis_connection_string" {

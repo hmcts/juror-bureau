@@ -55,3 +55,15 @@ variable "private_dns_subscription_id" {
   type        = string
   default     = "1baf5470-1c3e-40d3-a6f7-74bfbce4b348"
 }
+
+variable "managed_redis_sku" {
+  description = "Managed Redis SKU. Default suits non-prod. Override per environment in <env>.tfvars (e.g. prod uses Balanced_B1 to match the existing Premium P1 6GB classic cache)."
+  type        = string
+  default     = "Balanced_B0"
+}
+
+variable "managed_redis_persistence_rdb_frequency" {
+  description = "RDB backup frequency for Managed Redis (1h, 6h, 12h). null = no persistence. Override per environment in <env>.tfvars (prod mirrors the classic cache's rdb_backup_enabled = true with 6h)."
+  type        = string
+  default     = null
+}
