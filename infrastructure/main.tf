@@ -59,6 +59,46 @@ resource "azurerm_monitor_diagnostic_setting" "cache-ds" {
   }
 }
 
+# region: Azure Managed Redis (DTSPO-32018)
+# Provisioned alongside the existing classic cache during migration.
+# The classic cache is intentionally NOT removed by this PR — cutover happens
+# via cnp-flux-config, with this resource decommissioned in a follow-up PR
+# once all environments have soaked successfully.
+
+data "azurerm_subnet" "redis_private_endpoint" {
+  name                 = "core-infra-subnet-2-${var.env}"
+  resource_group_name  = "core-infra-${var.env}"
+  virtual_network_name = "core-infra-vnet-${var.env}"
+}
+
+module "managed_redis" {
+  source = "git@github.com:hmcts/terraform-module-azure-managed-redis?ref=main"
+
+  product     = var.product
+  component   = var.component
+  env         = var.env
+  location    = var.location
+  common_tags = var.common_tags
+
+  sku_name = "Balanced_B0"
+
+  public_network_access   = "Disabled"
+  create_private_endpoint = true
+  subnet_id               = data.azurerm_subnet.redis_private_endpoint.id
+  private_dns_zone_ids = [
+    "/subscriptions/${var.private_dns_subscription_id}/resourceGroups/core-infra-intsvc-rg/providers/Microsoft.Network/privateDnsZones/privatelink.redis.azure.net"
+  ]
+
+  access_keys_authentication_enabled = true
+}
+
+resource "azurerm_key_vault_secret" "managed_redis_connection_string" {
+  name         = "azure-managed-redis-connection-string"
+  value        = "rediss://default:${urlencode(module.managed_redis.primary_access_key)}@${module.managed_redis.hostname}:${module.managed_redis.port}"
+  key_vault_id = data.azurerm_key_vault.juror.id
+}
+# endregion
+
 module "log_analytics_workspace" {
   source      = "git@github.com:hmcts/terraform-module-log-analytics-workspace-id.git?ref=master"
   environment = var.env

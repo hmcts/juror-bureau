@@ -49,3 +49,9 @@ variable "capacity" {
   default     = "1"
   description = "The size of the Redis cache to deploy. Valid values are 1, 2, 3, 4, 5"
 }
+
+variable "private_dns_subscription_id" {
+  description = "Subscription ID hosting the privatelink.redis.azure.net private DNS zone (core-infra-intsvc-rg). Used by the Azure Managed Redis private endpoint."
+  type        = string
+  default     = "1baf5470-1c3e-40d3-a6f7-74bfbce4b348"
+}
