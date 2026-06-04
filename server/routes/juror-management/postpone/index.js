@@ -1,8 +1,9 @@
 (function() {
   'use strict';
 
-  var auth = require('../../../components/auth')
-    , controller = require('./postpone.controller');
+  const auth = require('../../../components/auth');
+  const controller = require('./postpone.controller');
+  const jurorUpdateController = require('../update/juror-update.controller');
 
   module.exports = function(app) {
     app.get('/juror-management/juror/:jurorNumber/update/postpone-date',
@@ -54,6 +55,20 @@
       'juror.update-bulk-postpone.movement-check.get',
       auth.verify,
       controller.getMovementCheck(app));
+
+    app.get('/juror-management/juror/:jurorNumber/update/postpone/ineligible-age/:newDate',
+      'juror.update.postpone.ineligible-age.get',
+      auth.verify,
+      jurorUpdateController.getIneligibleAge(app));
+
+    app.get('/juror-management/pool/:poolNumber/update/postpone/ineligible-age',
+      'juror.update-bulk-postpone.ineligible-age.get',
+      auth.verify,
+      controller.getBulkPostponeIneligibleAge(app));
+    app.post('/juror-management/pool/:poolNumber/update/postpone/ineligible-age',
+      'juror.update-bulk-postpone.ineligible-age.post',
+      auth.verify,
+      controller.postBulkPostponeIneligibleAge(app));
 
     // Routing for deferral maintenance bulk postpone is at routes/pool-management/deferral-maintenance
   };

@@ -76,6 +76,8 @@
         }));
       }, (err) => {
         if (err.statusCode === 422) {
+          const errorMessage = err.error?.message || 'Unable to generate panel';
+
           app.logger.warn('Failed to generate a panel from with a BVR', {
             auth: req.session.authentication,
             error: typeof err.error !== 'undefined' ? err.error : err.toString(),
@@ -83,8 +85,8 @@
 
           req.session.errors = {
             generatePanelError: [{
-              details: err.error.message,
-              summary: err.error.message,
+              details: errorMessage,
+              summary: errorMessage,
             }],
           };
 
@@ -189,7 +191,10 @@
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
-        req.session.errors = makeManualError('Pool selection', err.error.message);
+        req.session.errors = makeManualError(
+          'Pool selection',
+          err.error?.message || 'Unable to generate panel from selected pools'
+        );
 
         return res.redirect(app.namedRoutes.build('trial-management.generate-panel.select-pools.get', {
           trialNumber,
@@ -199,4 +204,3 @@
     };
   };
 })();
-

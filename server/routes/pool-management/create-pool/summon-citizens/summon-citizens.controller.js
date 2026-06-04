@@ -132,7 +132,7 @@
               .makeManualError('citizensToSummon', 'The number of citizens summoned is too high and exceeds the yield');
           } else if (err.error?.code === 'DATA_IS_OUT_OF_DATE') {
             req.session.errors = modUtils
-              .makeManualError('citizensToSummon', err.error.message ?? 'Data is out of date');
+              .makeManualError('citizensToSummon', err.error?.message ?? 'Data is out of date');
           } else {
             req.session.errors = modUtils.
               makeManualError('citizensToSummon', 'Something went wrong while trying to summon jurors');

@@ -38,15 +38,10 @@ module.exports.getCourtsList = function(app) {
     }
 
     try {
-      const courtsResponse = await axiosClient('post', '/auth/moj/courts', authToken, { body });
-
-      // delete headers if they exist
-      delete courtsResponse._headers;
-
-      courtsList = Object.values(replaceAllObjKeys(courtsResponse, _.camelCase));
+      courtsList = await fetchAuthCourtsList(authToken, body);
 
       // keep it only during this request lifetime
-      req.session.courtsList = courtsList;
+      req.session.authCourtsList = courtsList;
       req.session.noKeyAuthToken = authToken;
 
       req.session.changeCourtAvailable = courtsList.length > 1;
@@ -56,8 +51,8 @@ module.exports.getCourtsList = function(app) {
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
-      if (err.error && err.error.message) {
-        req.session.errors = makeManualError('email', err.error.message);
+      if (err.error?.message) {
+        req.session.errors = makeManualError('email', err.error?.message);
       }
 
       return res.redirect(app.namedRoutes.build('login.get'));
@@ -162,18 +157,10 @@ module.exports.getChangeCourt = (app) => async (req, res) => {
   }
 
   try {
-    const courtsResponse = await axiosClient(
-      'post',
-      '/auth/moj/courts',
-      authToken,
-      { body }
-    );
-
-    delete courtsResponse._headers; 
-    courtsList = Object.values(replaceAllObjKeys(courtsResponse, _.camelCase));
+    courtsList = await fetchAuthCourtsList(authToken, body);
     
     // keep it only during this request lifetime
-    req.session.courtsList = courtsList;
+    req.session.authCourtsList = courtsList;
     req.session.noKeyAuthToken = authToken;
 
     res.locals.changeCourtAvailable = courtsList.length > 1;
@@ -184,8 +171,8 @@ module.exports.getChangeCourt = (app) => async (req, res) => {
       error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
     });
 
-    if (err.error && err.error.message) {
-      req.session.errors = makeManualError('email', err.error.message);
+    if (err.error?.message) {
+      req.session.errors = makeManualError('email', err.error?.message);
     }
 
     return res.redirect(app.namedRoutes.build('login.get'));
@@ -219,7 +206,7 @@ module.exports.postFilterChangeCourts = function(app) {
     if (req.body.courtSearch === '') {
       return res.redirect(app.namedRoutes.build('authentication.change-court.get'));
     }
-    return res.redirect(app.namedRoutes.build('authentication.change-court.filter') + '?filter=' + req.body.courtSearch);
+    return res.redirect(app.namedRoutes.build('authentication.change-court.get') + '?filter=' + req.body.courtSearch);
   };
 };
 
@@ -243,13 +230,20 @@ function doLogin(req) {
         locCode: courtsResponse.courtCode,
       };
     } else {
-      req.session.selectedCourt = req.session.courtsList.find(court => court.locCode === locCode);
+      if (!req.session.authCourtsList || !Array.isArray(req.session.authCourtsList)) {
+        app.logger.info('No courts list in session when trying to login, fetching from API', {
+          data: { body, locCode },
+        });
+        req.session.authCourtsList = await fetchAuthCourtsList(req.session.noKeyAuthToken, body);
+      }
+
+      req.session.selectedCourt = req.session.authCourtsList.find(court => court.locCode === locCode);
     }
 
     req.session.authentication = jwt.decode(req.session.authToken);
 
     // delete unwanted cached on successful login
-    delete req.session.courtsList;
+    delete req.session.authCourtsList;
     delete req.session.email;
     delete req.session.noKeyAuthToken;
 
@@ -293,4 +287,12 @@ async function loginSingleCourt(req, res, { app, courtsList, body }) {
 
 function resolveCancelUrl(app, req) {
   return req.session.authentication ? app.namedRoutes.build('homepage.get') : app.namedRoutes.build('login.get');
+}
+
+async function fetchAuthCourtsList (authToken, body) {
+  const courtsResponse = await axiosClient('post', '/auth/moj/courts', authToken, { body });
+
+  delete courtsResponse._headers;
+
+  return Object.values(replaceAllObjKeys(courtsResponse, _.camelCase));
 }

@@ -71,6 +71,8 @@
         }));
       }, (err) => {
         if (err.statusCode === 422) {
+          const errorMessage = err.error?.message || 'Unable to add panel members';
+
           app.logger.warn('Failed to generate a panel from with a BVR', {
             auth: req.session.authentication,
             error: typeof err.error !== 'undefined' ? err.error : err.toString(),
@@ -78,8 +80,8 @@
 
           req.session.errors = {
             generatePanelError: [{
-              details: err.error.message,
-              summary: err.error.message,
+              details: errorMessage,
+              summary: errorMessage,
             }],
           };
 
@@ -189,7 +191,10 @@
             error: typeof err.error !== 'undefined' ? err.error : err.toString(),
           });
 
-          req.session.errors = makeManualError('generatePanelError', err.error.message);
+          req.session.errors = makeManualError(
+            'generatePanelError',
+            err.error?.message || 'Unable to add jurors from selected pools'
+          );
           req.session.formFields = req.body;
           return res.redirect(app.namedRoutes.build('trial-management.add-panel-members.select-pools.get', {
             trialNumber,

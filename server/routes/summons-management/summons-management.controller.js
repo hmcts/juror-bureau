@@ -5,6 +5,7 @@
   const moment = require('moment');
   const isBureauUser = require('../../components/auth/user-type').isBureauUser;
   const paperReplyObj = require('../../objects/paper-reply').paperReplyObject;
+  const responseDetailObj = require('../../objects/response-detail').object;
   const excusalObj = require('../../objects/excusal-mod').excusalObject;
   const deferralObj = require('../../objects/deferral-mod').deferralObject;
   const preferredDatesObj = require('../../objects/deferral-preferred-dates').preferredDatesObj;
@@ -435,8 +436,9 @@
     data.replyMethod = replyMethod ? replyMethod: routeParameters.type;
     req.session.deferralReason = req.body.deferralReason;
 
+    let response;
     try {
-      await deferralObj.post(
+      response = await deferralObj.post(
         req,
         routeParameters.id,
         data.poolNumber,
@@ -475,6 +477,14 @@
       return res.render('_errors/generic', { err });
     }
 
+    if (response?.ageDisqualified?.length > 0) {
+      return res.redirect(app.namedRoutes.build('process-deferral.ineligible-age.get', {
+        id: routeParameters.id,
+        type: routeParameters.type,
+        deferralDate: data.deferralDate,
+      }));
+    }
+
     let codeMessage = (code) => req.session.deferralReasons.filter((el) => el.code === code)[0].description;
     let deferralMessage = 'Deferral granted (' + codeMessage(req.body.deferralReason).toLowerCase() + ')';
 
@@ -508,6 +518,46 @@
       return res.redirect(app.namedRoutes.build('response.paper.details.get', routeParameters));
     }
     return res.redirect(app.namedRoutes.build('response.detail.get', routeParameters));
+  };
+
+  module.exports.getDeferralIneligibleAge = (app) => async (req, res) => {
+    const { id, type, deferralDate } = req.params;
+
+    let jurorDetails;
+    try {
+      jurorDetails = type === 'paper'
+        ? await paperReplyObj.get(req, id)
+        : await responseDetailObj.get(req, id);
+    } catch (err) {
+      app.logger.crit('Failed to retrieve juror response details for ineligible age page: ', {
+        auth: req.session.authentication,
+        data: {
+          id,
+          type,
+        },
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+      return res.render('_errors/generic', { err });
+    }
+
+    let dateOfBirth = jurorDetails.newDateOfBirth ?? jurorDetails.dateOfBirth;
+    if (type === 'paper') {
+      dateOfBirth = dateFilter(jurorDetails.data.newDateOfBirth ?? jurorDetails.data.dateOfBirth, 'yyyy-mm-DD', 'DD/MM/YYYY');
+    }
+
+    return res.render('juror-management/_common/ineligible-age.njk', {
+      cancelUrl: app.namedRoutes.build('process-deferral.get', {
+        id,
+        type,
+      }),
+      postUrl: app.namedRoutes.build('process-disqualify.post', {
+        id,
+        type,
+      }),
+      newServiceStartDate: dateFilter(deferralDate, 'yyyy-mm-DD', 'DD/MM/YYYY'),
+      dob: dateOfBirth,
+      yearsOld: moment(deferralDate, 'yyyy-mm-DD').diff(moment(dateOfBirth, 'DD/MM/YYYY'), 'years'),
+    });
   };
 
   module.exports.getDeferralLetter = (app) => (req, res) => {
@@ -655,8 +705,8 @@
         summary: [],
       };
 
-      if (typeof err.error !== 'undefined' && err.error.message) {
-        req.session.errors.summary.push(err.error.message);
+      if (err.error?.message) {
+        req.session.errors.summary.push(err.error?.message);
       } else {
         req.session.errors.summary.push('Something went wrong when trying to process this summons');
       }

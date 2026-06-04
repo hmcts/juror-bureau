@@ -86,7 +86,7 @@ module.exports.postResponded = function(app) {
       if (err.statusCode === 409) {
         req.session.errors = makeManualError('jurorNumber', 'Juror record has been updated by another user');
       } else if (err.statusCode === 422) {
-        switch (err.error.code) {
+        switch (err.error?.code) {
           case 'JUROR_DATE_OF_BIRTH_REQUIRED':
             req.session.errors = makeManualError('jurorNumber', 'Juror date of birth is required to mark as responded');
             break;

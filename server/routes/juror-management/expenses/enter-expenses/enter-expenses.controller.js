@@ -243,7 +243,7 @@
 
         await postRecalculateSummaryTotalsDAO.post(req, locCode, jurorNumber, payload);
       } catch (err) {
-        if (err.error && err.error.code === 'EXPENSES_CANNOT_BE_LESS_THAN_ZERO') {
+        if (err.error?.code === 'EXPENSES_CANNOT_BE_LESS_THAN_ZERO') {
           req.session.tmpBody = {
             ...req.body,
             date,
@@ -487,8 +487,8 @@
         });
 
         return res.render('expenses/_partials/recalculate-error-banner.njk', {
-          isLessThanPaid: err.error && err.error.code === 'EXPENSE_VALUES_REDUCED_LESS_THAN_PAID',
-          isLessThanZero: err.error && err.error.code === 'EXPENSES_CANNOT_BE_LESS_THAN_ZERO'
+          isLessThanPaid: err.error?.code === 'EXPENSE_VALUES_REDUCED_LESS_THAN_PAID',
+          isLessThanZero: err.error?.code === 'EXPENSES_CANNOT_BE_LESS_THAN_ZERO'
         });
       }
     };

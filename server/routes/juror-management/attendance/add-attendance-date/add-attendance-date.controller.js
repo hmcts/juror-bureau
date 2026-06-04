@@ -126,7 +126,7 @@
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
-        if (err.statusCode === 422 && err.error.code === 'INVALID_JUROR_POOL_LOCATION') {
+        if (err.statusCode === 422 && err.error?.code === 'INVALID_JUROR_POOL_LOCATION') {
           req.session.errors = makeManualError(
             'invalidData', 
             'This juror belongs to either the primary or satellite court in your area.'
@@ -134,7 +134,10 @@
             + ' Please log back in as the correct court to add this attendance'
           )
         } else {
-          req.session.errors = makeManualError('invalidData', err.error.message ? err.error.message : 'Could not add attendance date');
+          req.session.errors = makeManualError(
+            'invalidData',
+            err.error?.message ? err.error?.message : 'Could not add attendance date'
+          );
         }
 
         req.session.formFields = req.body;
@@ -148,6 +151,4 @@
   };
 
 })();
-
-
 

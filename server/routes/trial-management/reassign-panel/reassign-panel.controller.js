@@ -312,7 +312,7 @@
         const standardErrorMessage = `Failed to reassign ${selectedJurors.length} panel member${selectedJurors.length ? 's' : ''} to trial ${newTrialNumber}`;
 
         if (err.statusCode === 422) {
-          switch (err.error.code) {
+          switch (err.error?.code) {
             case 'CANNOT_RE_ADD_JUROR_TO_PANEL':
               req.session.errors = modUtils.makeManualError(
                 'invalidData',
@@ -334,7 +334,7 @@
             default:
               req.session.errors = modUtils.makeManualError(
                 'invalidData',
-                err.error.message ? err.error.message : standardErrorMessage,
+                err.error?.message ? err.error?.message : standardErrorMessage,
               );
           }
         } else  {

@@ -3,7 +3,7 @@
   <p id="event-name-error" class="govuk-error-message">
     {{ params.errorMessage.text }}
   </p>
-  <div id="ac-{{ params.id }}" class="{{ params.classes }}" name="ac-{{ params.name }}" data-content="{{ params.data }}"></div>
+  <div id="ac-{{ params.id }}" class="{{ params.classes }}" name="ac-{{ params.name }}" data-content="{{ params.data | console }}"></div>
 </div>
 
 <script src="{{ assetPath if assetPath else '/' }}js/accessible-autocomplete.min.js"></script>
@@ -12,12 +12,24 @@
     var el = $('#ac-{{ params.id }}')
 
     if (typeof el[0] !== 'undefined') {
+      var source = el.attr('data-content')
+
+      try {
+        source = JSON.parse(source)
+      } catch (error) {
+        source = source.split(',')
+      }
+
+      if (typeof source === 'string') {
+        source = source.split(',')
+      }
+
       accessibleAutocomplete({
         element: el[0],
         id: '{{ params.id }}',
         name: '{{ params.name }}',
         displayMenu: 'overlay',
-        source: el.data('content').split(','),
+        source: source,
         defaultValue: '{{ params.value }}'
       });
     }

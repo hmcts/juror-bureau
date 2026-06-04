@@ -340,7 +340,7 @@
 
         } catch (err){
           if (err.statusCode === 404) {
-            if (err.error.message.includes('No appearances found for juror')) {
+            if (err.error?.message?.includes('No appearances found for juror')) {
               const dailyExpenses = {
                 totalDraft: 0,
                 totalForApproval: 0,
@@ -641,7 +641,7 @@
           app.logger.crit('Failed to fetch the juror notes: ', {
             auth: req.session.authentication,
             data: {
-              jurorNumber: req.params['jurorNumber'],
+              jurorNumber: (req.params['jurorNumber'] || req.params.id),
             },
             error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
           });
@@ -1317,7 +1317,7 @@
         error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
       });
 
-      return res.render('_errors/generic');
+      throw err;
     };
   };
 

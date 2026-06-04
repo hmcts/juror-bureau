@@ -708,11 +708,20 @@
       let newPoolNumber;
 
       if (poolNumber === 'new-pool') {
-        newPoolNumber = await generatePoolNumber.get(
-          req,
-          req.session.poolCreateFormFields.poolDetails.courtLocCode,
-          dateFilter(req.session.poolCreateFormFields.poolDetails.serviceStartDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
-        );
+        try {
+          newPoolNumber = await generatePoolNumber.get(
+            req,
+            req.session.poolCreateFormFields.poolDetails.courtLocCode,
+            dateFilter(req.session.poolCreateFormFields.poolDetails.serviceStartDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
+          );
+        } catch (err) {
+          app.logger.crit('Unable to generate a pool number for manually creating a juror', {
+            auth: req.session.authentication,
+            error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+          });
+
+          return res.render('_errors/generic', { err });
+        }
       }
 
       const addressParts = [
@@ -775,20 +784,22 @@
   module.exports.postSummary = function(app) {
     return async function(req, res) {
       const { poolNumber } = req.params;
+      const jurorDetails = req.session.newJuror;
+
       try {
         if (isBureauCreation(req, res)) {
-          await bureauCreateJuror.post(req, buildCreationPayload(req.session.newJuror));
+          await bureauCreateJuror.post(req, buildCreationPayload(jurorDetails));
         } else {
-          await jurorCreateObject.post(req, buildCreationPayload(req.session.newJuror))
+          await jurorCreateObject.post(req, buildCreationPayload(jurorDetails))
         }
 
         const jurorName = {
-          firstName: req.session.newJuror.jurorName.firstName,
-          lastName:  req.session.newJuror.jurorName.lastName,
+          firstName: jurorDetails.jurorName.firstName,
+          lastName:  jurorDetails.jurorName.lastName,
         };
         const constructedName = constructName(jurorName);
         const bannerMessage = isBureauCreation(req, res)
-          ? `Juror record created for ${constructedName} and summoned to pool ${req.session.newJuror.poolNumber}`
+          ? `Juror record created for ${constructedName} and summoned to pool ${jurorDetails.poolNumber}`
           : `Draft juror record created for ${constructedName} - senior jury officer will need to approve this`;
 
         req.session.bannerMessage = bannerMessage;

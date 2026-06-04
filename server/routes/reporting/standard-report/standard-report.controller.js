@@ -64,7 +64,19 @@
             errors = {...validate({poolNumber: filter}, {poolNumber: {poolNumberSearched: {}}})};
 
             if (Object.keys(errors).length === 0) {
-              const api = await poolSearchObject.post(req, { poolNumber: filter });
+              let api;
+
+              try {
+                api = await poolSearchObject.post(req, { poolNumber: filter });
+              } catch (err) {
+                app.logger.crit('Failed to search pools for report generation: ', {
+                  auth: req.session.authentication,
+                  data: { reportKey, poolNumber: filter },
+                  error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+                });
+
+                return res.render('_errors/generic', { err });
+              }
 
               poolList = api.poolRequests;
               resultsCount = api.resultsCount;
@@ -117,7 +129,19 @@
         }
 
         if (typeof _errors === 'undefined') {
-          const data = await searchJurorRecordDAO.post(req, payload);
+          let data;
+
+          try {
+            data = await searchJurorRecordDAO.post(req, payload);
+          } catch (err) {
+            app.logger.crit('Failed to search jurors for report generation: ', {
+              auth: req.session.authentication,
+              data: { reportKey, jurorNumber: filter },
+              error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+            });
+
+            return res.render('_errors/generic', { err });
+          }
           
           jurorList = data.data;
           _resultsCount = data.total_items;

@@ -58,6 +58,11 @@
       processController.checkOwner(app),
       controller.postDeferral(app));
 
+    app.get('/summons-replies/response/:id/:type(paper|digital)/deferral/ineligible-age/:deferralDate',
+      'process-deferral.ineligible-age.get',
+      auth.verify,
+      controller.getDeferralIneligibleAge(app));
+
     app.get('/summons-replies/response/:id/:type(paper|digital)/deferral/letter',
       'process-deferral.letter.get',
       auth.verify,

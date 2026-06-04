@@ -26,7 +26,7 @@
         csvResult.push(['Local authority', 'Email address']);
         laEmailData.forEach(la => {
           la.emailAddresses.forEach(email => {
-            csvResult.push([la.laName, email.username]);
+            csvResult.push([`"${la.laName}"`, `"${email.username}"`]);
           });
         });
 

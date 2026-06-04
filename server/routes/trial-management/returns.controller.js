@@ -29,7 +29,15 @@
       return res.render('_errors/generic', { err });
     }
 
-    const isJuryEmpanelled = (await fetchTrialDetails(app)(req, res))['is_jury_empanelled'];
+    let trialDetails;
+
+    try {
+      trialDetails = await fetchTrialDetails(app)(req);
+    } catch (err) {
+      return res.render('_errors/generic', { err });
+    }
+
+    const isJuryEmpanelled = trialDetails['is_jury_empanelled'];
 
     let validatorResult;
 
@@ -288,7 +296,15 @@
 
     let backUrl;
 
-    const isPanel = !(await fetchTrialDetails(app)(req, res))['is_jury_empanelled']
+    let trialDetails;
+
+    try {
+      trialDetails = await fetchTrialDetails(app)(req);
+    } catch (err) {
+      return res.render('_errors/generic', { err });
+    }
+
+    const isPanel = !trialDetails['is_jury_empanelled']
 
     if (isPanel) {
       backUrl = app.namedRoutes.build('trial-management.trials.detail.get', {
@@ -344,7 +360,15 @@
     const selectedJurors = req.session[`${trialNumber}-${locationCode}-returnJurors`];
     const completeService = req.session[`${trialNumber}-${locationCode}-handleAttendance`] === 'complete' ? 'true' : 'false';
 
-    const panelType = (await fetchTrialDetails(app)(req, res))['is_jury_empanelled'] ? 'jury' : 'panel';
+    let trialDetails;
+
+    try {
+      trialDetails = await fetchTrialDetails(app)(req);
+    } catch (err) {
+      return res.render('_errors/generic', { err });
+    }
+
+    const panelType = trialDetails['is_jury_empanelled'] ? 'jury' : 'panel';
 
     if (req.session[`${trialNumber}-${locationCode}-handleAttendance`] === 'return') {
       let validatorResult = validate({
@@ -414,7 +438,7 @@
       });
   };
 
-  const fetchTrialDetails = (app) => async (req, res) => {
+  const fetchTrialDetails = (app) => async (req) => {
     const { trialNumber, locationCode } = req.params;
     try {
       return await trialDetailsObject.get(
@@ -431,7 +455,7 @@
           locationCode
         }
       });
-      return res.render('_errors/generic', { err });
+      throw err;
     }
   };
 

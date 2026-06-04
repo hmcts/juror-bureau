@@ -195,7 +195,10 @@
         })
         .catch((err) => {
           if (err.statusCode === 422) {
-            req.session.errors = makeManualError('Submit for approval', err.error.message);
+            req.session.errors = makeManualError(
+              'Submit for approval',
+              err.error?.message || 'Could not submit expenses for approval'
+            );
 
             app.logger.crit('Failed to submit draft expenses for approval: ', {
               auth: req.session.authentication,

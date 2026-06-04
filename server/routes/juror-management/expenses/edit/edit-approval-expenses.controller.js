@@ -138,7 +138,7 @@
           error: typeof err.error !== 'undefined' ? err.error : err.toString(),
         });
 
-        if (err.statusCode === 422 && err.error.code === 'EXPENSE_VALUES_REDUCED_LESS_THAN_PAID'){
+        if (err.statusCode === 422 && err.error?.code === 'EXPENSE_VALUES_REDUCED_LESS_THAN_PAID'){
           delete req.session.editedExpenses;
           req.session.errors = {
             noEditedExpenses: [{
@@ -473,7 +473,7 @@
           delete req.session.editedExpenses[date];
         }
       } catch (err) {
-        if (err.error.code === 'EXPENSE_VALUES_REDUCED_LESS_THAN_PAID' && err.error.metaData) {
+        if (err.error?.code === 'EXPENSE_VALUES_REDUCED_LESS_THAN_PAID' && err.error?.metaData) {
           req.session.errors = buildCalculatedExpenseErrors(err.error.metaData);
 
           return res.redirect(app.namedRoutes.build('juror-management.edit-expense.edit.get', {
