@@ -806,7 +806,7 @@
 
       if (response.eligible > 0) {
         req.session.bannerMessage = `${response.eligible} juror${response.eligible !== 1 ? 's' : ''} successfully moved to
-          <span class="govuk-!-font-weight-bold">${transformCourtName(courtData)}</span>`;
+          <span class="govuk-!-font-weight-bold">${transformCourtName(courtData)}</span> and remain deferred`;
       }
 
       if (response.ageDisqualified?.length > 0) {
