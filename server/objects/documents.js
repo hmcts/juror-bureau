@@ -4,7 +4,6 @@
   const _ = require('lodash');
   const { DAO } = require('./dataAccessObject');
   const { mapCamelToSnake, mapSnakeToCamel } = require('../lib/mod-utils');
-  const { basicDataTransform2 } = require('../lib/utils');
   const urljoin = require('url-join');
 
   module.exports.reissueLetterDAO = {
@@ -13,7 +12,10 @@
         post: function(body) {
           return {
             body: mapCamelToSnake(_.cloneDeep(body)),
-            transform: basicDataTransform2,
+            transform: (data) => {
+              delete data['_headers'];
+              return mapSnakeToCamel(data);
+            },
           };
         },
       });
@@ -26,7 +28,10 @@
         post: function(body) {
           return {
             body: mapCamelToSnake(_.cloneDeep(body)),
-            transform: basicDataTransform2,
+            transform: (data) => {
+              delete data['_headers'];
+              return mapSnakeToCamel(data);
+            },
           };
         },
       });
@@ -39,7 +44,10 @@
         get: function(letterType, includePrinted) {
           return {
             uri: urljoin(this.resource, letterType, includePrinted),
-            transform: basicDataTransform2,
+            transform: (data) => {
+              delete data['_headers'];
+              return mapSnakeToCamel(data);
+            },
           };
         },
       });
@@ -52,7 +60,10 @@
         post: function(body) {
           return {
             body: _.cloneDeep(body),
-            transform: basicDataTransform2,
+            transform: (data) => {
+              delete data['_headers'];
+              return mapSnakeToCamel(data);
+            },
           };
         },
       });
