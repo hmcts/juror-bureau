@@ -10,16 +10,16 @@
   {% for juror in jurorsList %}
     {% set tableRows = (tableRows.push([
       {
-        text: juror.juror_number
+        text: juror.jurorNumber
       },
       {
-        text: juror.first_name
+        text: juror.firstName
       },
       {
-        text: juror.last_name
+        text: juror.lastName
       },
       {
-        text: juror.juror_status.statusDesc
+        text: juror.jurorStatus.statusDesc
       }
     ]), tableRows) %}
   {% endfor %}
