@@ -402,7 +402,7 @@
         payload['date_deferred_to'] = query.dateDeferredTo;
       }
       if (query.nextDueAtCourtDate) {
-        payload['next_due_at_court_date'] = query.nextDueAtCourtDate;
+        payload['next_due_at_court'] = query.nextDueAtCourtDate;
       }
       break;
     case 'postcode':

@@ -42,16 +42,6 @@
         uri = urljoin(uri, '?simple_response=true');
       }
 
-      if (body.nextDueAtCourtDate) {
-        body.nextDueAtCourt = body.nextDueAtCourtDate;
-        delete body.nextDueAtCourtDate;
-      }
-
-      if (body.next_due_at_court_date) {
-        body.next_due_at_court = body.next_due_at_court_date;
-        delete body.next_due_at_court_date;
-      }
-
       return { 
         uri,
         body: _.mapKeys(body, (__, key) => _.snakeCase(key)),
@@ -72,16 +62,6 @@
   module.exports.downloadCSVDAO = new DAO('moj/messages/csv', {
     post: function(locCode, body) {
       const payload = _.cloneDeep(body);
-
-      if (payload.nextDueAtCourtDate) {
-        payload.nextDueAtCourt = payload.nextDueAtCourtDate;
-        delete payload.nextDueAtCourtDate;
-      }
-
-      if (payload.next_due_at_court_date) {
-        payload.next_due_at_court = payload.next_due_at_court_date;
-        delete payload.next_due_at_court_date;
-      }
 
       return {
         uri: urljoin(this.resource, locCode),

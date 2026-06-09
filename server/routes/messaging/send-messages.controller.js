@@ -213,7 +213,7 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
             'jurorNumber': req.body.jurorNumberSearch ? req.body.jurorNumberSearch : null,
           } : null,
           'poolNumber': req.body.poolSearch ? req.body.poolSearch : null,
-          'nextDueAtCourtDate': req.body.nextDueAtCourtDate
+          'nextDueAtCourt': req.body.nextDueAtCourtDate
             ? dateFilter(req.body.nextDueAtCourtDate, 'DD/MM/YYYY', 'yyyy-MM-DD') : null,
           'dateDeferredTo': req.body.deferralDate
             ? dateFilter(req.body.deferralDate, 'DD/MM/YYYY', 'yyyy-MM-DD') : null,
@@ -240,7 +240,7 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
             'jurorNumber': req.body.searchBy === 'jurorNumber' ? req.body.jurorNumberSearch : null,
           } : null,
           'poolNumber': req.body.searchBy === 'pool' ? req.body.poolSearch : null,
-          'nextDueAtCourtDate': req.body.searchBy === 'nextDueAtCourt'
+          'nextDueAtCourt': req.body.searchBy === 'nextDueAtCourt'
             ? dateFilter(req.body.nextDueAtCourtDate, 'DD/MM/YYYY', 'yyyy-MM-DD') : null,
           'dateDeferredTo': req.body.searchBy === 'deferral'
             ? dateFilter(req.body.deferralDate, 'DD/MM/YYYY', 'yyyy-MM-DD') : null,
@@ -388,7 +388,7 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
       const searchOptions = {
         'jurorSearch': null,
         'poolNumber': null,
-        'nextDueAtCourtDate': null,
+        'nextDueAtCourt': null,
         'dateDeferredTo': null,
         'trialNumber': req.body.selectedTrial,
       };
@@ -915,7 +915,7 @@ const { poolRequestsDAO } = require('../../objects/pool-list');
       const searchOptions = {
         'jurorSearch': null,
         'poolNumber': req.body.selectedPool,
-        'nextDueAtCourtDate': null,
+        'nextDueAtCourt': null,
         'dateDeferredTo': null,
         'trialNumber': null,
       };
