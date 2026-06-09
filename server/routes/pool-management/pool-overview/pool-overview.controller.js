@@ -400,7 +400,7 @@ function courtView(app, req, res, pool, membersList, _errors, selectedJurors, se
     // eslint-disable-next-line no-param-reassign, eqeqeq
     selectedJurors = selectedJurors.filter(item => !membersList.data.find(data => data.jurorNumber == item));
 
-    req.session.locCode = pool.poolDetails.locCode; // set the loc code for navigating to juror record
+    req.session.locCode = pool.poolDetails.courtLocationCode; // set the loc code for navigating to juror record
 
     const pageItems = modUtils.paginationBuilder(
       membersList.totalItems,

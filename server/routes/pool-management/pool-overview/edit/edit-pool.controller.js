@@ -45,7 +45,7 @@ const { SessionConfig } = require('../../../../lib/session-config');
             poolNumber: req.params['poolNumber'],
             noRequired: response.poolSummary.requiredPoolSize,
             noRequested: (typeof noRequested !== 'undefined')
-              ? noRequested : response.bureauSummoning.required,
+              ? noRequested : response.bureauSummoning.requestedFromBureau,
             totalRequired: (typeof totalRequired !== 'undefined')
               ? totalRequired : response.poolSummary.requiredPoolSize,
             reasonForChange: (typeof reasonForChange !== 'undefined')

@@ -196,7 +196,7 @@
 
       let staff;
       let responses = {
-        'juror_response': [],
+        jurorResponse: [],
       };
       let resultsStr;
 
@@ -212,7 +212,7 @@
           login: "AUTO",
           name: "AUTO"
         });
-        responses.juror_response.forEach(responsesListIterator(staff));
+        responses.jurorResponse.forEach(responsesListIterator(staff));
         resultsStr = buildSearchString(payload);
 
         req.session.searchResponse = {
@@ -294,18 +294,18 @@
 
   function responsesListIterator(staff) {
     return function(r) {
-      r['juror_name'] = r.first_name + ' ' + r.last_name;
-      r['date_received'] = dateFilter(r.date_received, null, 'YYYY-MM-DD');
+      r.jurorName = r.firstName + ' ' + r.lastName;
+      r.dateReceived = dateFilter(r.dateReceived, null, 'YYYY-MM-DD');
 
-      const staffAssigned = staff.find((s) => s.login === r.officer_assigned);
+      const staffAssigned = staff.find((s) => s.login === r.officerAssigned);
 
       if (staffAssigned) {
-        r['officer_assigned'] = staffAssigned.name;
+        r.officerAssigned = staffAssigned.name;
       } else {
-        r['officer_assigned'] = '-';
+        r.officerAssigned = '-';
       }
 
-      r['reply_status'] = resolveProcessingStatus(r.reply_status);
+      r.replyStatus = resolveProcessingStatus(r.replyStatus);
     };
   }
 
@@ -322,4 +322,3 @@
   }
 
 })();
-

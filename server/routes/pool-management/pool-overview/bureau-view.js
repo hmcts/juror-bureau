@@ -72,7 +72,7 @@ module.exports = function(app, req, res, pool, membersList, _errors, selectedJur
   delete req.session.bannerMessage;
 
   // set the loc code for navigating to juror record
-  req.session.locCode = pool.poolDetails.locCode;
+  req.session.locCode = pool.poolDetails.courtLocationCode;
 
   const searchParams = req.url.split('?')[1];
   if (searchParams) {
