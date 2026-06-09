@@ -44,16 +44,16 @@
     {% endset %}
 
     {{ govukRadios({
-      id: "addressDecision",
-      name: "addressDecision",
+      id: "useSummonsAddress",
+      name: "useSummonsAddress",
       items: [
         {
-          value: "summons",
+          value: "true",
           html: summonsAddressHtml,
           checked: true
         },
         {
-          value: "juror",
+          value: "false",
           html: jurorRecordAddressHtml
         }
       ]

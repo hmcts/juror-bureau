@@ -10,7 +10,6 @@
   const deferralObj = require('../../objects/deferral-mod').deferralObject;
   const preferredDatesObj = require('../../objects/deferral-preferred-dates').preferredDatesObj;
   const deferralPoolsObj = require('../../objects/deferral-available-pools').object;
-  const responseDetailObj = require('../../objects/response-detail.js').object;
   const validate = require('validate.js');
   const filters = require('../../components/filters');
   const dateFilter = require('../../components/filters').dateFilter;
@@ -691,11 +690,9 @@
     if (req.body.excusalDecision === 'REFUSE') {
       try {
         const response = type === 'paper' ? (await paperReplyObj.get(req, id)).data : (await responseDetailObj.get(req, id));
-        console.log(`\n\n${JSON.stringify(response, null, 2)}\n\n`);
         const addressDetails = type === 'paper' ? resolveJurorAddress(response) : getDigitalAddressDetails(response);
-        console.log(`\n\n${JSON.stringify(addressDetails, null, 2)}\n\n`);
 
-        if (addressDetails.changed && !req.body.addressDecision) {
+        if (addressDetails.changed && !req.body.useSummonsAddress) {
           req.session[`excusalRefusal-${id}`] = {
             addressDetails,
             excusalCode: req.body.excusalCode,
