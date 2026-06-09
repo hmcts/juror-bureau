@@ -35,10 +35,12 @@
     it('Should call the correct endpoint to process the disqualification for a juror',
       function() {
         let jurorNumber = '123456789'
-          , disqualifyCode = 'A'
-          , replyMethod = 'paper'
+          , payload = {
+            code: 'A',
+            replyMethod: 'PAPER',
+          }
           , testObj = disqualifyObject.disqualifyJuror.patch(rpStub, appStub, 'test-token',
-            jurorNumber, disqualifyCode, replyMethod)
+            jurorNumber, payload)
           , realUri = urljoin(
             'http://localhost:8080/api/v1',
             'moj/disqualify/juror/' + jurorNumber
@@ -50,8 +52,8 @@
         expect(testObj.body.hasOwnProperty('code')).to.equal(true);
         expect(testObj.body.code).to.equal('A');
 
-        expect(testObj.body.hasOwnProperty('replyMethod')).to.equal(true);
-        expect(testObj.body.replyMethod).to.equal('PAPER');
+        expect(testObj.body.hasOwnProperty('reply_method')).to.equal(true);
+        expect(testObj.body.reply_method).to.equal('PAPER');
       });
 
   });

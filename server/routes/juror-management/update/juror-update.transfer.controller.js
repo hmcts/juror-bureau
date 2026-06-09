@@ -247,6 +247,6 @@
       });
     }
 
-    return poolSummary.poolDetails.locCode;
+    return poolSummary.poolDetails.courtLocationCode;
   }
 })();

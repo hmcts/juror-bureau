@@ -2,11 +2,13 @@
   'use strict';
 
   const { DAO } = require('./dataAccessObject');
+  const { basicDataTransform2 } = require('../lib/utils');
 
   module.exports.postCodesObject = new DAO('moj/pool-create/postcodes', {
     get: function(areaCode, isCoronersPool = false) {
       return {
-        uri: `${this.resource}?areaCode=${areaCode}&isCoronersPool=${isCoronersPool}`
+        uri: `${this.resource}?areaCode=${areaCode}&isCoronersPool=${isCoronersPool}`,
+        transform: basicDataTransform2,
       }
     }
   });

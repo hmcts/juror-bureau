@@ -24,8 +24,8 @@
         , successCB = function(data) {
           var transformedPostCodes;
 
-          if (data.hasOwnProperty('courtCatchmentItems')) {
-            transformedPostCodes = modUtils.transformPostcodes(data.courtCatchmentItems);
+          if (data.hasOwnProperty('courtCatchmentSummaryItems')) {
+            transformedPostCodes = modUtils.transformPostcodes(data.courtCatchmentSummaryItems);
           }
 
           app.logger.info('Fetched pool details for summoning citizens: ', {

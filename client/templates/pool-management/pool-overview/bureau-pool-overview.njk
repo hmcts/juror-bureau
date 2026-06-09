@@ -57,11 +57,11 @@
     </div>
     <div class="additional-stats__row">
       <span class="govuk-!-font-weight-bold">Requested from bureau</span>
-      <span>{{ bureauSummoning.required }}</span>
+      <span>{{ bureauSummoning.requestedFromBureau }}</span>
     </div>
     <div class="additional-stats__row">
       <span class="govuk-!-font-weight-bold">Bureau supply {{ formError.message.summary }}</span>
-      <span>{{ bureauSummoning.confirmed }}</span>
+      <span>{{ bureauSummoning.confirmedFromBureau }}</span>
     </div>
   </div>
   {% endset %}
@@ -143,7 +143,7 @@
         {% endif %}
         {% if (authentication.owner === "400" and poolDetails.isActive) or poolDetails.isActive === false %}
           {{ govukButton({
-            text: "Delete pool" if (poolDetails.isActive or bureauSummoning.required === 0) else "Delete pool request",
+            text: "Delete pool" if (poolDetails.isActive or bureauSummoning.requestedFromBureau === 0) else "Delete pool request",
             href: url('pool-management.delete-pool.get', { poolNumber: poolDetails.poolNumber }),
             classes: "govuk-button--secondary govuk-!-margin-bottom-0",
             attributes: {
@@ -165,7 +165,7 @@
           </div>
           <div class="column">
             <span class="govuk-!-font-weight-bold">Court location code</span>
-            <span>{{ poolDetails.locCode }}</span>
+            <span>{{ poolDetails.courtLocationCode }}</span>
           </div>
           <div class="column">
             <span class="govuk-!-font-weight-bold">Court start date</span>
