@@ -22,6 +22,8 @@
     trace: 5,
   };
   const { sanitiseLog } = require('./sanitiser');
+  const env = process.env.NODE_ENV || 'development';
+  const sanitiseLogs = !!process.env.SANITISE_LOGS || true;
 
   module.exports.Logger = class Logger {
     constructor(config) {
@@ -58,11 +60,13 @@
       }
 
       // attempt to attach sanitiser wrapper to app.logger and Logger.instance
-      try {
-        sanitiseLog(Logger.instance, levels, app);
-        sanitiseLog(Logger.instance, levels);
-      } catch (e) {
-        console.error('Logger sanitisation not applied:', e && e.message ? e.message : e);
+      if (sanitiseLogs && env !== 'development') {
+        try {
+          sanitiseLog(Logger.instance, levels, app);
+          sanitiseLog(Logger.instance, levels);
+        } catch (e) {
+          console.error('Logger sanitisation not applied:', e && e.message ? e.message : e);
+        }
       }
     }
   };
