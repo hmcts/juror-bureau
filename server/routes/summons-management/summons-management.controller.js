@@ -833,6 +833,7 @@
     delete req.session[`catchmentWarning-${id}`];
     delete req.session[`reassignExcusalPayload-${req.params.id}`];
     delete req.session[`summonsUpdate-${id}`];
+    delete req.session[`excusalRefusal-${id}`];
 
     const jurorDetails = {
       name: nameDetails,

@@ -24,6 +24,7 @@
 
     delete req.session[`catchmentWarning-${id}`];
     delete req.session.requestInfo;
+    delete req.session[`excusalRefusal-${id}`];
     req.session.replyDetails = {};
     req.session.editableReplyDetails = {};
 
