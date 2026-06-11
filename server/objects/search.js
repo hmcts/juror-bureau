@@ -4,14 +4,17 @@
   const _ = require('lodash');
   const { DAO } = require('./dataAccessObject');
   const { replaceAllObjKeys } = require('../lib/mod-utils');
-  const { basicDataTransform2 } = require('../lib/utils');
+  const { mapSnakeToCamel } = require('../lib/mod-utils');
 
   module.exports.searchResponsesDAO = new DAO('moj/juror-response/retrieve', {
     post: (payload) => {
       return {
         uri: 'moj/juror-response/retrieve',
         body: replaceAllObjKeys(payload, _.snakeCase),
-        transform: basicDataTransform2,
+        transform: (response) => {
+          delete response._headers;
+          return mapSnakeToCamel(response);
+        },
       };
     }
   });
