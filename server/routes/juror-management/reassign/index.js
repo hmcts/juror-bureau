@@ -17,6 +17,14 @@
       'juror-management.reassign.confirm.post',
       auth.verify,
       controller.postConfirmReassignJuror(app));
+    app.get('/juror-management/juror/:jurorNumber/update/reassign/ineligible-age',
+      'juror-management.reassign.ineligible-age.get',
+      auth.verify,
+      controller.getReassignIneligibleAge(app));
+    app.post('/juror-management/juror/:jurorNumber/update/reassign/ineligible-age',
+      'juror-management.reassign.ineligible-age.post',
+      auth.verify,
+      controller.postReassignIneligibleAge(app));
 
     app.get('/juror-management/juror/:jurorNumber/update/reassign/select-court',
       'juror-management.reassign.select-court.get',
