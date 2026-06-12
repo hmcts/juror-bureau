@@ -1,8 +1,9 @@
 (function() {
   'use strict';
 
-  var auth = require('../../../components/auth')
-    , controller = require('./reassign.controller');
+  const auth = require('../../../components/auth');
+  const controller = require('./reassign.controller');
+  const jurorUpdateController = require('../update/juror-update.controller');
 
   module.exports = function(app) {
     app.get('/juror-management/juror/:jurorNumber/update/reassign',
@@ -17,14 +18,10 @@
       'juror-management.reassign.confirm.post',
       auth.verify,
       controller.postConfirmReassignJuror(app));
-    app.get('/juror-management/juror/:jurorNumber/update/reassign/ineligible-age',
+    app.get('/juror-management/juror/:jurorNumber/update/reassign/ineligible-age/:newDate',
       'juror-management.reassign.ineligible-age.get',
       auth.verify,
-      controller.getReassignIneligibleAge(app));
-    app.post('/juror-management/juror/:jurorNumber/update/reassign/ineligible-age',
-      'juror-management.reassign.ineligible-age.post',
-      auth.verify,
-      controller.postReassignIneligibleAge(app));
+      jurorUpdateController.getIneligibleAge(app));
 
     app.get('/juror-management/juror/:jurorNumber/update/reassign/select-court',
       'juror-management.reassign.select-court.get',

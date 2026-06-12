@@ -661,7 +661,9 @@
       return res.render('_errors/generic', { err });
     }
 
-    let cancelUrl;
+    let cancelUrl = app.namedRoutes.build('juror.update.deferral.get', {
+        jurorNumber,
+      });
     if (req.url.includes('deferral/edit')) {
       cancelUrl = app.namedRoutes.build('juror-record.deferral-edit.get', {
         jurorNumber,
@@ -670,10 +672,14 @@
       cancelUrl = app.namedRoutes.build('juror.update.postpone-date.get', {
         jurorNumber,
       })
-    } else {
-      cancelUrl = app.namedRoutes.build('juror.update.deferral.get', {
+    } else if (req.url.includes('details/edit/reassign')){
+      cancelUrl = app.namedRoutes.build('juror-record.details-edit.reassign.select-pool.get', {
         jurorNumber,
-      })
+      });
+    } else if (req.url.includes('/update/reassign')) {
+      cancelUrl = app.namedRoutes.build('juror-management.reassign.get', {
+        jurorNumber,
+      });
     }
 
     return res.render('juror-management/_common/ineligible-age.njk', {
@@ -681,12 +687,6 @@
       postUrl: app.namedRoutes.build('juror.update.disqualify.post', {
         jurorNumber,
       }),
-      backLinkUrl: {
-        built: true,
-        url: app.namedRoutes.build('juror.update.deferral.get', {
-          jurorNumber,
-        }),
-      },
       newServiceStartDate: dateFilter(newDate, 'YYYY-MM-DD', 'DD/MM/YYYY'),
       dob:  dateFilter(jurorDetails.dateOfBirth, 'yyyy-MM-dd', 'DD/MM/YYYY'),
       yearsOld: moment(newDate, 'YYYY-MM-DD').diff(moment(jurorDetails.dateOfBirth, 'YYYY-MM-DD'), 'years'),

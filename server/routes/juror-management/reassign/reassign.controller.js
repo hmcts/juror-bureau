@@ -519,7 +519,7 @@
             delete req.session.poolJurorsReassign;
           }
 
-          return res.redirect(getReassignIneligibleAgeGetUrl(app, req));
+          return res.redirect(getReassignIneligibleAgeGetUrl(app, req, data));
         }
         
         if (req.session.poolJurorsReassign) {
@@ -654,7 +654,7 @@
     });
   }
 
-  function getReassignIneligibleAgeGetUrl(app, req) {
+  function getReassignIneligibleAgeGetUrl(app, req, data) {
     if (req.session.poolJurorsReassign || req.params.poolNumber) {
       return app.namedRoutes.build('pool-management.reassign.ineligible-age.get', {
         poolNumber: req.params.poolNumber,
@@ -664,11 +664,13 @@
     if (req.url.includes('details/edit/reassign/select-pool')) {
       return app.namedRoutes.build('juror-record.details-edit.reassign.ineligible-age.get', {
         jurorNumber: req.params.jurorNumber,
+        newDate: dateFilter(data?.ageDisqualified[0].newDate, 'DD/MM/YYYY', 'yyyy-MM-DD'),
       });
     }
 
     return app.namedRoutes.build('juror-management.reassign.ineligible-age.get', {
       jurorNumber: req.params.jurorNumber,
+      newDate: dateFilter(data?.ageDisqualified[0].newDate, 'DD/MM/YYYY', 'yyyy-MM-DD'),
     });
   }
 
