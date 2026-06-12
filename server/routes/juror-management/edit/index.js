@@ -97,5 +97,9 @@
       auth.verify,
       isBureauUser,
       reassignController.postConfirmReassignJuror(app));
+    app.get('/juror-management/record/:jurorNumber/details/edit/reassign/ineligible-age/:newDate',
+      'juror-record.details-edit.reassign.ineligible-age.get',
+      auth.verify,
+      jurorUpdateController.getIneligibleAge(app));
   };
 })();
