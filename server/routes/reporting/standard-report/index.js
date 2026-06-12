@@ -138,7 +138,6 @@
     standardReportRoutes(app, 'expense-limit-adjustments-audit');
     standardReportRoutes(app, 'courts-incomplete-service');
     standardReportRoutes(app, 'overdue-utilisation-report');
-    standardReportRoutes(app, 'sitting-days');
     standardReportRoutes(app, 'digital-responses-completed');
   };
 
