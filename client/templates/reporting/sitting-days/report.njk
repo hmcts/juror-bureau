@@ -1,0 +1,80 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{% block page_title %}{{ serviceName }} - Reports - {{ title }}{% endblock %}
+{% block page_identifier %}Reports - {{ title }}{% endblock %}
+
+{% set currentApp = "System administration" if isSystemAdministrator and isSuperUser else "Reports" %}
+
+{% block containerStart %}
+  {% if backLinkUrl.url %}
+    {% include "includes/back-link.njk" %}
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  <div class="mod-flex mod-space-between">
+    <h1 class="govuk-heading-l">{{ title }}</h1>
+
+    {% if printUrl or exportUrl %}
+      <div class="govuk-button-group">
+        {% if printUrl %}
+          {{ govukButton({
+            text: "Print",
+            href: printUrl,
+            classes: "govuk-button--secondary",
+            attributes: {
+              target: "_blank",
+              id: "print-button"
+            }
+          }) }}
+        {% endif %}
+        {% if exportUrl %}
+          {{ govukButton({
+            text: "Export",
+            href: exportUrl,
+            classes: "govuk-button--secondary",
+            attributes: {
+              target: "_blank"
+            }
+          }) }}
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="report-headings">
+    {% for heading in pageHeadings %}
+      <div class="heading-element">
+        <div class="title">{{ heading.title }}</div>
+        <div class="value">{{ heading.data }}</div>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if not hasRows %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <hr class="govuk-section-break govuk-section-break--visible">
+        <h2 class="govuk-heading-m govuk-!-margin-top-4">No results found</h2>
+        <a class="govuk-body govuk-link govuk-link--no-visited-state" href="{{ changeDatesUrl }}">Check your dates and try again.</a>
+      </div>
+    </div>
+  {% else %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full mod-overflow-auto">
+        {{ govukTable({
+          attributes: {
+            "data-module": "mod-sortable-table"
+          },
+          caption: "Sitting days report data",
+          captionClasses: "govuk-visually-hidden",
+          head: tableHeaders,
+          rows: tableRows
+        }) }}
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

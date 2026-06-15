@@ -96,6 +96,15 @@
       }
     }
   });
+
+  module.exports.sittingDaysStatsReportDAO = new DAO('moj/reports/sitting-days-stats', {
+    post: function(body) {
+      return {
+        body: mapCamelToSnake(body),
+        transform: mapSnakeToCamel,
+      };
+    },
+  });
   
    module.exports.digitalSummonsReceivedReportDAO = new DAO('moj/reports/digital-summons-replies-report', {
     get: function(month) {

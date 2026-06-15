@@ -1983,6 +1983,29 @@
           dao: (req) => overdueUtilisationReportDAO.get(req)
         },
       },
+      'sitting-days':{
+        title: 'Sitting days report',
+        apiKey: 'SittingDaysReport',
+        search: 'courts',
+        searchLabelMappers: {
+          dateRange: 'Enter attendance dates to search',
+        },
+        headings: [
+          'dateFrom',
+          'reportDate',
+          'dateTo',
+          'reportTime',
+          'courts',
+          'noSittingDays',
+          'noJurors',
+        ],
+        defaultSortColumn: 'courtName',
+        queryParams: {
+          fromDate: req?.query?.fromDate || '',
+          toDate: req?.query?.toDate || '',
+        },
+        exportLabel: 'Export data'
+      },
       'digital-responses-completed': {
         title: 'Digital responses completed',
         search: 'month',
