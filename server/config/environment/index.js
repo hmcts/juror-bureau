@@ -54,8 +54,8 @@ const all = {
   
   //rate limiting - defaults to 1 mil requests per minute
   rateLimit: {
-    time: process.env.RATE_LIMIT_TIME || (1 * 60 * 1000), // time window in milliseconds
-    max: process.env.RATE_LIMIT_MAX || 1000000, // max number of requests per time (in ms above)
+    time: process.env.RATE_LIMIT_TIME ? parseInt(process.env.RATE_LIMIT_TIME) : (1 * 60 * 1000), // time window in milliseconds
+    max: process.env.RATE_LIMIT_MAX ? parseInt(process.env.RATE_LIMIT_MAX) : 1000000, // max number of requests per time (in ms above)
     message: 'Too many requests, please try again later. Thank you.',
   },
 };
