@@ -44,6 +44,8 @@ module.exports = async (app) => {
   env = env.toLowerCase();
   useAuth = useAuth.toLowerCase();
 
+  console.log(`\n\n${JSON.stringify(config.rateLimit, null, 2)}\n\n`);
+
   // rate limiting
   const limiter = rateLimit({
     windowMs: config.rateLimit.time,
