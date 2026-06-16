@@ -44,6 +44,9 @@ module.exports = async (app) => {
   env = env.toLowerCase();
   useAuth = useAuth.toLowerCase();
 
+  console.log(`\n\nRATE LIMIT TIME:${process.env.RATE_LIMIT_TIME}\n\n`);
+  console.log(`\n\nRATE LIMIT MAX:${process.env.RATE_LIMIT_MAX}\n\n`);
+
   console.log(`\n\n${JSON.stringify(config.rateLimit, null, 2)}\n\n`);
 
   // rate limiting
