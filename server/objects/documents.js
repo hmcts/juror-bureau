@@ -5,7 +5,6 @@
   const { DAO } = require('./dataAccessObject');
   const { mapCamelToSnake, mapSnakeToCamel } = require('../lib/mod-utils');
   const urljoin = require('url-join');
-  const { mapCamelToSnake, mapSnakeToCamel } = require('../lib/mod-utils');
 
   module.exports.reissueLetterDAO = {
     getList: function(req, body) {
