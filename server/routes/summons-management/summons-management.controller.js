@@ -1208,16 +1208,13 @@
   }
 
   const resolveThirdParty = (thirdParty) => {
-    console.log('thirdParty', thirdParty);
     const isThirdParty = !(thirdParty.relationship === '' || thirdParty.relationship === null)
       || !(thirdParty.thirdPartyReason === '' || thirdParty.thirdPartyReason === null)
       || !(thirdParty.thirdPartyFName === '' || thirdParty.thirdPartyFName === null)
       || !(thirdParty.thirdPartyLName === '' || thirdParty.thirdPartyLName === null)
-      || !(thirdParty.thirdPartyPhone === '' || thirdParty.thirdPartyPhone === null)
-      || !(thirdParty.thirdPartyEmail === '' || thirdParty.thirdPartyEmail === null)
+      || !(thirdParty.mainPhone === '' || thirdParty.mainPhone === null)
+      || !(thirdParty.emailAddress === '' || thirdParty.emailAddress === null)
       || !(thirdParty.otherPhone === '' || thirdParty.otherPhone === null);
-
-    console.log('isThirdParty', isThirdParty);
     
     return {
       isThirdParty: isThirdParty,
@@ -1226,9 +1223,9 @@
       name: thirdParty.thirdPartyFName ? `${thirdParty.thirdPartyFName}${thirdParty.thirdPartyLName ? ` ${thirdParty.thirdPartyLName}` : ''}` : null,
       useJurorEmailDetails: thirdParty.useJurorEmailDetails,
       useJurorPhoneDetails: thirdParty.useJurorPhoneDetails,
-      mainPhone: thirdParty.thirdPartyPhone,
+      mainPhone: thirdParty.mainPhone,
       otherPhone: thirdParty.otherPhone,
-      email: thirdParty.thirdPartyEmail,
+      email: thirdParty.emailAddress,
     };
   }
 

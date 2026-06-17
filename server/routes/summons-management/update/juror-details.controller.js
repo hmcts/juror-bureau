@@ -102,8 +102,8 @@
           || !(details.thirdParty.thirdPartyReason === '' || details.thirdParty.thirdPartyReason === null)
           || !(details.thirdParty.thirdPartyFName === '' || details.thirdParty.thirdPartyFName === null)
           || !(details.thirdParty.thirdPartyLName === '' || details.thirdParty.thirdPartyLName === null)
-          || !(details.thirdParty.thirdPartyPhone === '' || details.thirdParty.thirdPartyPhone === null)
-          || !(details.thirdParty.thirdPartyEmail === '' || details.thirdParty.thirdPartyEmail === null)
+          || !(details.thirdParty.mainPhone === '' || details.thirdParty.mainPhone === null)
+          || !(details.thirdParty.emailAddress === '' || details.thirdParty.emailAddress === null)
           || !(details.thirdParty.otherPhone === '' || details.thirdParty.otherPhone === null);
 
         const thirdPartyReasons = [
@@ -330,9 +330,9 @@
       payload.thirdParty.thirdPartyReason = getReason();
       payload.thirdParty.thirdPartyFName = req.body.thirdPartyFName;
       payload.thirdParty.thirdPartyLName = req.body.thirdPartyLName;
-      payload.thirdParty.thirdPartyPhone = req.body.thirdPartyMainPhone;
+      payload.thirdParty.mainPhone = req.body.thirdPartyMainPhone;
       payload.thirdParty.otherPhone = req.body.thirdPartyOtherPhone;
-      payload.thirdParty.thirdPartyEmail = req.body.thirdPartyEmailAddress;
+      payload.thirdParty.emailAddress = req.body.thirdPartyEmailAddress;
       payload.thirdParty.useJurorEmailDetails = req.body.thirdPartyContactPreferences?.includes('useJurorEmailDetails') ? true : false;
       payload.thirdParty.useJurorPhoneDetails = req.body.thirdPartyContactPreferences?.includes('useJurorPhoneDetails') ? true : false;
     }

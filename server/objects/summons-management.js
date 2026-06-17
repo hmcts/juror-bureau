@@ -5,7 +5,6 @@
   const { DAO } = require('./dataAccessObject');
   const { basicDataTransform, basicDataTransform2 } = require('../lib/utils');
   const urljoin = require('url-join');
-  const { replaceAllObjKeys } = require('../lib/mod-utils');
   const _ = require('lodash');
 
   module.exports.requestInfoObject = new DAO('moj/letter/request-information', {
@@ -43,11 +42,22 @@
     },
     patch: function(req, id, part, payload) {
       let uri;
+      const body = _.cloneDeep(payload);
 
       if (part === 'PERSONAL') {
         uri = urljoin(this.resource['PERSONAL'].replace('{}', id));
       } else {
         uri = urljoin(this.resource['BASE'].replace('{}', id), this.resource[part]);
+      }
+
+      if (body.thirdParty) {
+        body.thirdParty = {
+          ...body.thirdParty,
+          thirdPartyPhone: body.thirdParty.mainPhone,
+          thirdPartyEmail: body.thirdParty.emailAddress,
+        };
+        delete body.thirdParty.mainPhone;
+        delete body.thirdParty.emailAddress;
       }
 
       const dao = new DAO(uri, {
@@ -60,7 +70,7 @@
         },
       });
 
-      return dao.patch(req, payload);
+      return dao.patch(req, body);
     }
   };
 
