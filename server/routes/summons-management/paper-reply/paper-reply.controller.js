@@ -80,9 +80,9 @@
       if (req.session.paperResponseDetails.thirdParty) {
         isThirdPartyResponse = typeof req.session.paperResponseDetails.thirdParty.thirdPartyFName !== 'undefined'
           || typeof req.session.paperResponseDetails.thirdParty.thirdPartyLName !== 'undefined'
-          || typeof req.session.paperResponseDetails.thirdParty.thirdPartyPhone !== 'undefined'
+          || typeof req.session.paperResponseDetails.thirdParty.mainPhone !== 'undefined'
           || typeof req.session.paperResponseDetails.thirdParty.otherPhone !== 'undefined'
-          || typeof req.session.paperResponseDetails.thirdParty.thirdPartyEmail !== 'undefined'
+          || typeof req.session.paperResponseDetails.thirdParty.emailAddress !== 'undefined'
           || typeof req.session.paperResponseDetails.thirdParty.relationship !== 'undefined'
           || typeof req.session.paperResponseDetails.thirdParty.thirdPartyReason !== 'undefined';
       }
@@ -178,9 +178,9 @@
       }
       tempThirdParty.thirdPartyFName = req.body.thirdPartyFName;
       tempThirdParty.thirdPartyLName = req.body.thirdPartyLName;
-      tempThirdParty.thirdPartyPhone = req.body.thirdPartyMainPhone;
+      tempThirdParty.mainPhone = req.body.thirdPartyMainPhone;
       tempThirdParty.otherPhone = req.body.thirdPartyOtherPhone;
-      tempThirdParty.thirdPartyEmail = req.body.thirdPartyEmailAddress;
+      tempThirdParty.emailAddress = req.body.thirdPartyEmailAddress;
       tempThirdParty.useJurorEmailDetails = req.body.thirdPartyContactPreferences?.includes('useJurorEmailDetails') ? true : false;
       tempThirdParty.useJurorPhoneDetails = req.body.thirdPartyContactPreferences?.includes('useJurorPhoneDetails') ? true : false;
     } else  {
