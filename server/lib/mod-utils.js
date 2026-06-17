@@ -349,19 +349,19 @@
             html:
               '<div class="govuk-radios govuk-radios--small" data-module="govuk-radios">' +
                 '<div class="govuk-radios__item">' +
-                  '<input class="govuk-radios__input" id="' + trial.case_number + '" name="exemptionCaseNumber" ' +
-                    'type="radio" value="' + trial.case_number + '">' +
-                  '<label class="govuk-label govuk-radios__label" for="' + trial.case_number + '">' + trial.case_number + '</label>' +
+                  '<input class="govuk-radios__input" id="' + trial.trialNumber + '" name="exemptionCaseNumber" ' +
+                    'type="radio" value="' + trial.trialNumber + '">' +
+                  '<label class="govuk-label govuk-radios__label" for="' + trial.trialNumber + '">' + trial.trialNumber + '</label>' +
                 '</div>' +
               '</div>',
             attributes: {
-              'data-sort-value': trial.case_number,
+              'data-sort-value': trial.trialNumber,
             },
           },
           {
-            text: trial.parties,
+            text: trial.defendants,
             attributes: {
-              'data-sort-value': trial.parties,
+              'data-sort-value': trial.defendants,
             },
             classes: 'jd-middle-align',
           },
@@ -373,16 +373,16 @@
             classes: 'jd-middle-align',
           },
           {
-            text: dateFilter(trial.start_date, 'YYYY,MM,DD', 'ddd DD MMM YYYY'),
+            text: dateFilter(trial.startDate, 'YYYY,MM,DD', 'ddd DD MMM YYYY'),
             attributes: {
-              'data-sort-value': makeDate(trial.start_date),
+              'data-sort-value': makeDate(trial.startDate),
             },
             classes: 'jd-middle-align',
           },
           {
-            text: trial.end_date ? dateFilter(trial.end_date, 'YYYY,MM,DD', 'ddd DD MMM YYYY') : '-',
+            text: trial.endDate ? dateFilter(trial.endDate, 'YYYY,MM,DD', 'ddd DD MMM YYYY') : '-',
             attributes: {
-              'data-sort-value': trial.end_date ? trial.end_date : '-',
+              'data-sort-value': trial.endDate ? trial.endDate : '-',
             },
             classes: 'jd-middle-align',
           },
@@ -699,10 +699,10 @@
             '<div class="govuk-radios govuk-radios--small" data-module="govuk-radios">' +
               '<div class="govuk-radios__item">' +
                 '<input class="govuk-radios__input" id="' + trial.trialNumber + '" name="selectedTrial" ' +
-                  'type="radio" value="' + trial.trialNumber + (includeLocCodeValue ? `-${trial.courtLocation}` : '') + '">' +
+                  'type="radio" value="' + trial.trialNumber + (includeLocCodeValue ? `-${trial.courtLocationCode}` : '') + '">' +
                 '<label class="govuk-label govuk-radios__label">' +
                   '<a href="/trial-management/trials/' + encodeURIComponent(trial.trialNumber) + '/'
-                  + trial.courtLocation + '/detail'+ '" ' +
+                  + trial.courtLocationCode + '/detail'+ '" ' +
                   'class="govuk-link">' + trial.trialNumber + '</a></label>' +
               '</div>' +
             '</div>',
@@ -711,9 +711,9 @@
           },
         },
         {
-          text: trial.parties,
+          text: trial.defendants,
           attributes: {
-            'data-sort-value': trial.parties,
+            'data-sort-value': trial.defendants,
           },
           classes: 'jd-middle-align',
         },
@@ -725,9 +725,9 @@
           classes: 'jd-middle-align',
         },
         {
-          text: capitalizeFully(trial.court),
+          text: capitalizeFully(trial.courtLocationName),
           attributes: {
-            'data-sort-value': trial.court,
+            'data-sort-value': trial.courtLocationName,
           },
           classes: 'jd-middle-align',
         },

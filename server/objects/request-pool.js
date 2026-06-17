@@ -4,6 +4,7 @@
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
   const utils = require('../lib/utils');
+  const { mapCamelToSnake } = require('../lib/mod-utils');
 
   module.exports.fetchCourts = new DAO('moj/pool-request/court-locations');
 
@@ -25,10 +26,12 @@
       }
 
       body.numberRequested = body.numberRequested || 0;
+      body.locationCode = body.courtCode;
+      delete body.courtCode;
 
       return {
         uri: this.resource,
-        body,
+        body: mapCamelToSnake(body),
       }
     }
   });

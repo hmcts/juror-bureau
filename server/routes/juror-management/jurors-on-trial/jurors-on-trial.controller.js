@@ -20,7 +20,7 @@ module.exports.getJurorsOnTrial = function(app) {
     let trialsList;
 
     try {
-      ({ trials_list: trialsList } = await jurorsOnTrialDAO
+      ({ trialsList } = await jurorsOnTrialDAO
         .get(req, locCode, dateFilter(attendanceDate, null, 'YYYY-MM-DD')));
 
       app.logger.info('Fetched trials list', {
@@ -194,7 +194,7 @@ function buildConfirmAttendancePayload(req) {
 
   payload.juror = Array.isArray(body.selectedJurors) ? body.selectedJurors : [body.selectedJurors];
   payload.commonData = commonData;
-  payload['trial_number'] = body.trialNumber;
+  payload.trialNumber = body.trialNumber;
 
   return payload;
 }
