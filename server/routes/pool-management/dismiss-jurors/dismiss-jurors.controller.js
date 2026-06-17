@@ -138,7 +138,7 @@ module.exports.getJurorsList = function(app) {
             req.session.authentication.owner
           );
 
-        req.session.dismissJurors.jurors = jurorList.jurorsToDismissRequestData;
+        req.session.dismissJurors.jurors = jurorList.data;
 
         app.logger.info('Fetched the the list of jurors to dismiss: ', {
           auth: req.session.authentication,

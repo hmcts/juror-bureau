@@ -43,13 +43,9 @@ module.exports.getJurorsObject = new DAO('moj/juror-management/jurors-to-dismiss
       uri: this.resource,
       body: mapCamelToSnake(body),
       transform: (data) => {
-        const jurorsToDismissRequestData = data.data || [];
 
         delete data._headers;
-        return {
-          ...mapSnakeToCamel(data),
-          jurorsToDismissRequestData: mapSnakeToCamel(jurorsToDismissRequestData),
-        };
+        return mapSnakeToCamel(data);
       },
     }
   }
