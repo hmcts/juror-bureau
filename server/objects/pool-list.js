@@ -11,7 +11,8 @@ const SORT_KEYS = {
   serviceStartDate: 'SERVICE_START_DATE',
   jurorsInPool: 'JURORS_IN_POOL',
   totalNumberRequested: 'TOTAL_NUMBER_REQUESTED',
-  confirmedFromBureau: 'CONFIRMED_FROM_BUREAU',
+  requestedFromBureau: 'TOTAL_NUMBER_REQUESTED',
+  confirmedFromBureau: 'JURORS_CONFIRMED',
   poolCapacity: 'POOL_CAPACITY',
 }
 
