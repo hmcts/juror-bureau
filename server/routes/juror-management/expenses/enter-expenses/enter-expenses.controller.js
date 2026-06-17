@@ -57,9 +57,9 @@
 
 
         const _jurorDetails = jurorRecordDetailsDAO.post(req, [{
-          'juror_number': jurorNumber,
-          'juror_version': null,
-          'include': ['NAME_DETAILS'],
+          jurorNumber,
+          jurorVersion: null,
+          include: ['NAME_DETAILS'],
         }]);
 
         responses = await Promise.all([_expensesData, _jurorDetails]);

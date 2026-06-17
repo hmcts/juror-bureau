@@ -64,7 +64,7 @@
       };
     },
     put: function (locCode, body) {
-      return { uri: `moj/administration/courts/${locCode}/rates`, body };
+      return { uri: `moj/administration/courts/${locCode}/rates`, body: mapCamelToSnake(body) };
     },
   });
 

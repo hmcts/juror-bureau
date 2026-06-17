@@ -13,10 +13,10 @@
   {% set jurors = [] %}
   {% for juror in notCheckedOut %}
     {% set jurors = (jurors.push([
-      { html: '<a href="' + url('juror-record.overview.get', { jurorNumber: juror.juror_number }) + '">' + juror.juror_number + "</a>" },
-      { text: juror.first_name },
-      { text: juror.last_name },
-      { text: juror.check_in_time | timeArrayToString or "-" }
+      { html: '<a href="' + url('juror-record.overview.get', { jurorNumber: juror.jurorNumber }) + '">' + juror.jurorNumber + "</a>" },
+      { text: juror.firstName },
+      { text: juror.lastName },
+      { text: juror.checkInTime | timeArrayToString or "-" }
     ]), jurors) %}
   {% endfor %}
 

@@ -68,7 +68,10 @@
 
   module.exports.search = new DAO('moj/juror-record/single-search', {
     get: function(jurorNumber) {
-      return { uri: urljoin(this.resource, '?jurorNumber=' + jurorNumber) };
+      return {
+        uri: urljoin(this.resource, '?jurorNumber=' + jurorNumber),
+        transform: mapSnakeToCamel,
+      };
     }
   });
 
@@ -114,7 +117,10 @@
 
   module.exports.jurorOverviewDAO = new DAO('moj/juror-record/overview', {
     get: function(jurorNumber, loc) {
-      return { uri: urljoin(this.resource, jurorNumber, loc)};
+      return {
+        uri: urljoin(this.resource, jurorNumber, loc),
+        transform: mapSnakeToCamel,
+      };
     },
   });;
 
@@ -133,9 +139,28 @@
     },
   });
 
-  module.exports.searchJurorRecordDAO = new DAO('moj/juror-record/search');
+  module.exports.searchJurorRecordDAO = new DAO('moj/juror-record/search', {
+    post: function(body) {
+      return {
+        body: mapCamelToSnake(body),
+        transform: mapSnakeToCamel,
+      };
+    },
+  });
 
-  module.exports.jurorRecordDetailsDAO = new DAO('moj/juror-record/details');
+  module.exports.jurorRecordDetailsDAO = new DAO('moj/juror-record/details', {
+    get: function() {
+      return {
+        transform: mapSnakeToCamel,
+      };
+    },
+    post: function(body) {
+      return {
+        body: mapCamelToSnake(body),
+        transform: mapSnakeToCamel,
+      };
+    },
+  });
 
   module.exports.jurorRecordSimpleDetailsDAO = new DAO('moj/juror-record/simple-details', {
     post: function(jurorNumbers, locCode) {

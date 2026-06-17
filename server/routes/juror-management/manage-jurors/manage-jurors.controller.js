@@ -53,7 +53,7 @@
             pendingApprovalCount: forApproval.pending_jurors_response_data.length,
             currentTab: 'pools',
             bannerMessage,
-            pools: pools.pools_at_court_location,
+            pools: pools.poolsAtCourtLocation,
           });
 
         } catch (error) {

@@ -1272,6 +1272,8 @@
       || !(thirdParty.thirdPartyPhone === '' || thirdParty.thirdPartyPhone === null)
       || !(thirdParty.thirdPartyEmail === '' || thirdParty.thirdPartyEmail === null)
       || !(thirdParty.otherPhone === '' || thirdParty.otherPhone === null);
+
+    console.log('isThirdParty', isThirdParty);
     
     return {
       isThirdParty: isThirdParty,

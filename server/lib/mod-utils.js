@@ -93,9 +93,9 @@
             sort: sortBy === 'poolCapacity' ? order : 'none',
           } :
           {
-            id: 'jurorsRequested',
+            id: 'requestedFromBureau',
             value: 'Jurors requested',
-            sort: sortBy === 'jurorsRequested' ? order : 'none',
+            sort: sortBy === 'requestedFromBureau' ? order : 'none',
           } : {
           id: 'numberRequested',
           value: 'Jurors requested',
@@ -122,9 +122,9 @@
     if (status === 'created') {
       table.head.splice(2, 0, {
         ...((tab === 'bureau') ? {
-          id: 'jurorsConfirmed',
+          id: 'confirmedFromBureau',
           value: 'Jurors confirmed',
-          sort: sortBy === 'jurorsConfirmed' ? order : 'none',
+          sort: sortBy === 'confirmedFromBureau' ? order : 'none',
         } : {
           id: 'jurorsInPool',
           value: 'Jurors in pool',
@@ -147,10 +147,12 @@
           if (tab === 'court') {
             return pool.poolCapacity;
           }
-          return (pool.numberRequested !== undefined) ? pool.numberRequested : pool.jurorsRequested;
+          return (pool.numberRequested !== undefined)
+            ? pool.numberRequested
+            : pool.requestedFromBureau;
         }
         , getNumberConfirmed = function() {
-          return (tab === 'bureau') ? pool.confirmedJurors : pool.jurorsInPool;
+          return (tab === 'bureau') ? pool.confirmedFromBureau : pool.jurorsInPool;
         }
         , getNumberResponded = function() {
           return (pool.respondedJurors !== undefined) ? pool.respondedJurors : pool.responded_jurors || 0;
@@ -260,15 +262,15 @@
         sortable: false,
       },
       {
-        id: 'jurorsRequested',
+        id: 'requestedFromBureau',
         value: 'Requested',
-        sort: sortBy === 'jurorsRequested' ? order : 'none',
+        sort: sortBy === 'requestedFromBureau' ? order : 'none',
         sortable: false,
       },
       {
-        id: 'confirmedJurors',
+        id: 'confirmedFromBureau',
         value: 'Confirmed',
-        sort: sortBy === 'confirmedJurors' ? order : 'none',
+        sort: sortBy === 'confirmedFromBureau' ? order : 'none',
         sortable: false,
       },
       {
@@ -284,10 +286,10 @@
     pools.forEach(function(pool) {
       var item = []
         , getNumberRequested = function() {
-          return (pool.jurorsRequested !== undefined) ? pool.jurorsRequested : 0;
+          return (pool.requestedFromBureau !== undefined) ? pool.requestedFromBureau : 0;
         }
         , getNumberConfirmed = function() {
-          return (pool.confirmedJurors !== undefined) ? pool.confirmedJurors : 0;
+          return (pool.confirmedFromBureau !== undefined) ? pool.confirmedFromBureau : 0;
         }
          , getNumberRequired = function() {
           return (pool.required !== undefined) ? pool.required : 0;

@@ -404,7 +404,7 @@
         sendingCourtLocCode,
         receivingPoolNumber: pn,
         receivingCourtLocCode,
-        targetServiceStartDate: dateFilter(req.session.postponeToDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
+        serviceStartDate: dateFilter(req.session.postponeToDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
         jurorNumbers,
       };
 
@@ -483,7 +483,7 @@
               sendingCourtLocCode: req.params.locationCode,
               receivingPoolNumber: req.body.deferralDateAndPool.split('_')[1],
               receivingCourtLocCode: req.params.locationCode,
-              targetServiceStartDate: dateFilter(req.session.postponeToDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
+              serviceStartDate: dateFilter(req.session.postponeToDate, 'DD/MM/YYYY', 'YYYY-MM-DD'),
               jurorNumbers: req.session.selectedDeferralJurors.reduce((prev, curr) => {
                 if (curr.poolNumber === poolNumber) {
                   return [...prev, curr.jurorNumber];
@@ -491,7 +491,7 @@
 
                 return prev;
               }, []),
-              'deferral_maintenance': true,
+              deferralMaintenance: true,
             }
           );
         })

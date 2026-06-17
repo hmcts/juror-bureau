@@ -157,8 +157,8 @@ const { capitalise, toSentenceCase } = require('../components/filters');
           {
             attendanceDate: '2023-01-01',
             courtName: 'COURT NAME',
-            jurorsRequested: 100,
-            confirmedJurors: 50,
+            requestedFromBureau: 100,
+            confirmedFromBureau: 50,
             poolNumber: '415230101',
             poolType: 'CROWN COURT',
           },

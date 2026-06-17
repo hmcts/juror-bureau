@@ -4,11 +4,29 @@
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
   const utils = require('../lib/utils');
-  const { mapCamelToSnake } = require('../lib/mod-utils');
+  const { mapCamelToSnake, mapSnakeToCamel } = require('../lib/mod-utils');
 
-  module.exports.fetchCourts = new DAO('moj/pool-request/court-locations');
+  const courtLocationsTransform = (data) => {
+    const courts = data.data || [];
 
-  module.exports.fetchAllCourts = new DAO('moj/court-location/all-court-locations');
+    delete data._headers;
+    return {
+      ...mapSnakeToCamel(data),
+      courts: mapSnakeToCamel(courts),
+    };
+  };
+
+  module.exports.fetchCourts = new DAO('moj/pool-request/court-locations', {
+    get: function() {
+      return { transform: courtLocationsTransform };
+    },
+  });
+
+  module.exports.fetchAllCourts = new DAO('moj/court-location/all-court-locations', {
+    get: function() {
+      return { transform: courtLocationsTransform };
+    },
+  });
 
   module.exports.generatePoolNumber = new DAO('moj/pool-request/generate-pool-number', {
     get: function(locationCode, attendanceDate) {
@@ -69,14 +87,30 @@
     get: function(locCode) {
       return { 
         uri: `${this.resource}?locCode=${locCode}`,
-        transform: utils.basicDataTransform,
+        transform: (data) => {
+          const poolsAtCourtLocation = data.data || [];
+
+          delete data._headers;
+          return {
+            ...mapSnakeToCamel(data),
+            poolsAtCourtLocation: mapSnakeToCamel(poolsAtCourtLocation),
+          };
+        },
       };
     }
   });
 
-  module.exports.fetchCourtsDAO = new DAO('moj/pool-request/court-locations');
+  module.exports.fetchCourtsDAO = new DAO('moj/pool-request/court-locations', {
+    get: function() {
+      return { transform: courtLocationsTransform };
+    },
+  });
 
-  module.exports.fetchAllCourtsDAO = new DAO('moj/court-location/all-court-locations');
+  module.exports.fetchAllCourtsDAO = new DAO('moj/court-location/all-court-locations', {
+    get: function() {
+      return { transform: courtLocationsTransform };
+    },
+  });
 
   module.exports.createCoronerPoolDAO = new DAO('moj/pool-create/create-coroner-pool', {
     post: function(body) {
@@ -93,7 +127,14 @@
         headers['If-None-Match'] = `${etag}`;
       }
 
-      return { uri, headers };
+      return {
+        uri,
+        headers,
+        transform: (data) => {
+          delete data._headers;
+          return mapSnakeToCamel(data);
+        },
+      };
     },
   });
 

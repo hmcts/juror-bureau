@@ -11,6 +11,7 @@
       get: function(locationCode) {
         return {
           uri: urljoin(this.resource, locationCode.toString()),
+          transform: mapSnakeToCamel,
         }
       }
     }),
@@ -51,15 +52,8 @@
     },
     reassignJuror: new DAO('moj/manage-pool/reassign-jurors', {
       put: function(body) {
-        const normalisedBody = Object.assign({}, body);
-
-        if (normalisedBody.targetServiceStartDate) {
-          normalisedBody.serviceStartDate = normalisedBody.targetServiceStartDate;
-          delete normalisedBody.targetServiceStartDate;
-        }
-
         return {
-          body: mapCamelToSnake(normalisedBody),
+          body: mapCamelToSnake(body),
           transform: mapSnakeToCamel,
         };
       }
@@ -69,15 +63,8 @@
   module.exports.validateMovement = {
     validateMovement: new DAO('moj/manage-pool/movement/validation', {
       put: function(body) {
-        const normalisedBody = Object.assign({}, body);
-
-        if (normalisedBody.targetServiceStartDate) {
-          normalisedBody.serviceStartDate = normalisedBody.targetServiceStartDate;
-          delete normalisedBody.targetServiceStartDate;
-        }
-
         return {
-          body: mapCamelToSnake(normalisedBody),
+          body: mapCamelToSnake(body),
           transform: mapSnakeToCamel,
         };
       }
@@ -94,7 +81,20 @@
       };
     }
 
-    const dao = new DAO(uri);
+    const dao = new DAO(uri, {
+      get: function(body) {
+        return {
+          body,
+          transform: mapSnakeToCamel,
+        };
+      },
+      post: function(body) {
+        return {
+          body,
+          transform: mapSnakeToCamel,
+        };
+      },
+    });
 
     if (this.method === 'POST') {
       return await dao.post(req, body);

@@ -1156,7 +1156,7 @@
       if (commonDetails.excusalCode) {
         title = 'Excusal refused';
       }
-      if (commonDetails.deferral_code) {
+      if (commonDetails.deferralCode) {
         title = 'Deferral refused';
       }
 

@@ -255,14 +255,16 @@
         data: data,
       });
 
+      const poolRequests = data.data || [];
+
       // If only 1 result, redirect to that pool
-      if (data.poolRequests.length === 1) {
+      if (poolRequests.length === 1) {
         return res.redirect(app.namedRoutes.build('pool-overview.get', {
-          poolNumber: data.poolRequests[0].poolNumber,
+          poolNumber: poolRequests[0].poolNumber,
         }));
       }
 
-      req.session.searchPoolList = modUtils.transformSearchPoolList(data.poolRequests);
+      req.session.searchPoolList = modUtils.transformSearchPoolList(poolRequests);
 
       req.session.poolSearchResults = {
         searchPoolList: req.session.searchPoolList,

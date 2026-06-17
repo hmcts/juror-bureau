@@ -20,8 +20,8 @@
           var transformedPostCodes
             , tmpErrors;
 
-          if (typeof response[1] !== 'undefined' && response[1].hasOwnProperty('courtCatchmentItems')) {
-            transformedPostCodes = modUtils.transformPostcodes(response[1].courtCatchmentItems);
+          if (typeof response[1] !== 'undefined' && response[1].hasOwnProperty('courtCatchmentSummaryItems')) {
+            transformedPostCodes = modUtils.transformPostcodes(response[1].courtCatchmentSummaryItems);
           }
 
           tmpErrors = _.clone(req.session.errors);
