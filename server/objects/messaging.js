@@ -30,9 +30,10 @@
   module.exports.jurorSearchDAO = new DAO('moj/messages/search', {
     post: function(locCode, _body, simpleResponse) {
       let _locCode = locCode;
+      const body = _.cloneDeep(_body);
 
-      if (_body.court_name) {
-        _locCode = _body.court_name.match(/\d+/g)[0];
+      if (body.court_name) {
+        _locCode = body.court_name.match(/\d+/g)[0];
       }
 
       let uri = urljoin(this.resource, _locCode);
@@ -43,7 +44,7 @@
 
       return { 
         uri,
-        body: _.mapKeys(_body, (__, key) => _.snakeCase(key)),
+        body: _.mapKeys(body, (__, key) => _.snakeCase(key)),
         transform: mapSnakeToCamel
       };
     }
@@ -60,9 +61,11 @@
 
   module.exports.downloadCSVDAO = new DAO('moj/messages/csv', {
     post: function(locCode, body) {
+      const payload = _.cloneDeep(body);
+
       return {
         uri: urljoin(this.resource, locCode),
-        body,
+        body: payload,
         headers: {
           'Content-Type': 'application/json',
         },

@@ -199,10 +199,10 @@
       // check to see if user has selected courtroom from provided list
       if (attributes.court) {
         courtroomsDetails = options.courtsList.find(c => {
-          return c.court_location === attributes.court;
-        }).court_rooms;
+          return c.courtLocation === attributes.court;
+        }).courtRooms;
       } else {
-        courtroomsDetails = options.courtsList[0].court_rooms;
+        courtroomsDetails = options.courtsList[0].courtRooms;
       }
       if (!courtroomsDetails.find(cr => {
         return cr.description === value;

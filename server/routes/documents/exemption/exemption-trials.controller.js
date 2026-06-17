@@ -66,7 +66,7 @@
 
         return res.redirect(app.namedRoutes.build('documents.certificate-of-exemption.get'));
       }
-      const selectedTrial = req.session.exemptionLetter.trials.find((t) => t.case_number === exemptionCaseNumber);
+      const selectedTrial = req.session.exemptionLetter.trials.find((t) => t.trialNumber === exemptionCaseNumber);
 
       req.session.exemptionLetter.originalJudge = selectedTrial.judge;
 
