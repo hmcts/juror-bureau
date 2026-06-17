@@ -34,9 +34,9 @@
           jurorNumber,
         ));
         promiseArr.push(jurorRecordDetailsDAO.post(req, [{
-          'juror_number': jurorNumber,
-          'juror_version': null,
-          'include': ['ACTIVE_POOL'],
+          jurorNumber,
+          jurorVersion: null,
+          include: ['ACTIVE_POOL'],
         }]));
 
         const [data, jurorDetails] = await Promise.all(promiseArr);
@@ -73,7 +73,7 @@
           data,
           jurorNumber,
           locCode,
-          poolNumber: jurorDetails['0'].active_pool.pool_number,
+          poolNumber: jurorDetails['0'].activePool.poolNumber,
           counts: req.expensesCount,
           jurorDetails: req.jurorDetails,
           bannerMessage,

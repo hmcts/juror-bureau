@@ -310,14 +310,14 @@
           req.session.poolJurorsReassign.poolNumber : req.session.jurorCommonDetails.poolNumber,
         sendingCourtLocCode: req.session.locCode,
         receivingCourtLocCode: req.session.receivingCourtLocCode || req.session.authentication.locCode,
-        targetServiceStartDate: dateFilter(new Date(), null, 'YYYY-MM-DD'),
+        serviceStartDate: dateFilter(new Date(), null, 'YYYY-MM-DD'),
         jurorNumbers: req.session.poolJurorsReassign ?
           req.session.poolJurorsReassign.selectedJurors : [req.params['jurorNumber']],
       };
 
       if (req.body.poolNumber !== 'new-pool'){
         validationPayload.receivingPoolNumber = req.body.poolNumber;
-        validationPayload.targetServiceStartDate = dateFilter(req.body.startDate, 'ddd DD MMM YYYY', 'YYYY-MM-DD');
+        validationPayload.serviceStartDate = dateFilter(req.body.startDate, 'ddd DD MMM YYYY', 'YYYY-MM-DD');
         validationPayload.receivingCourtLocCode = req.body.poolNumber.substring(0, 3);
       }
 
@@ -369,7 +369,7 @@
           if (req.body.poolNumber !== 'new-pool'){
             reassignPayload.receivingPoolNumber = validationPayload.receivingPoolNumber;
           } else {
-            reassignPayload.targetServiceStartDate = dateFilter(new Date(), null, 'YYYY-MM-DD');
+            reassignPayload.serviceStartDate = dateFilter(new Date(), null, 'YYYY-MM-DD');
             reassignPayload.sendingCourtLocationCode = validationPayload.sendingCourtLocCode;
           }
 
@@ -408,7 +408,7 @@
       if (req.body.poolNumber !== 'new-pool'){
         reassignPayload.receivingPoolNumber = validationPayload.receivingPoolNumber;
       } else {
-        reassignPayload.targetServiceStartDate = dateFilter(new Date(), null, 'YYYY-MM-DD');
+        reassignPayload.serviceStartDate = dateFilter(new Date(), null, 'YYYY-MM-DD');
         reassignPayload.sendingCourtLocationCode = validationPayload.sendingCourtLocCode;
       }
 

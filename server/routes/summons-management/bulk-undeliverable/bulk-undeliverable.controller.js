@@ -53,7 +53,7 @@ module.exports.postFindJuror = (app) => async (req, res) => {
   let jurorDetails;
 
   const payload = {
-    'juror_number': jurorNumber,
+    jurorNumber,
     include: [
       'NAME_DETAILS',
       'ADDRESS_DETAILS',
@@ -64,7 +64,7 @@ module.exports.postFindJuror = (app) => async (req, res) => {
   try {
     jurorDetails = await jurorRecordDetailsDAO.post(req, [payload]);
     const juror = jurorDetails?.[0];
-    const status = juror?.active_pool?.status;
+    const status = juror?.activePool?.status;
 
     if (status !== 'Summoned') {
       return res.status(422).render('summons-management/bulk-undeliverable/table-row.njk', {
@@ -105,7 +105,7 @@ module.exports.postFindJuror = (app) => async (req, res) => {
       address,
       name: jurorDetails[0].name,
       postcode: jurorDetails[0].address.postcode,
-      court: jurorDetails[0].active_pool.court_name,
+      court: jurorDetails[0].activePool.courtName,
     }
   });
 };

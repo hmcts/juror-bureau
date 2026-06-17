@@ -3,39 +3,39 @@
 {% for pool in pools %}
   {% set poolRows = (poolRows.push([
     {
-      html: '<a href=' + url("pool-overview.get", { poolNumber: pool.pool_number }) + ' class="govuk-link">' + pool.pool_number + '</a>',
+      html: '<a href=' + url("pool-overview.get", { poolNumber: pool.poolNumber }) + ' class="govuk-link">' + pool.poolNumber + '</a>',
       attributes: {
-        "data-sort-value": pool.pool_number
+        "data-sort-value": pool.poolNumber
       }
     },
     {
-      text: pool.jurors_on_trials,
+      text: pool.jurorsOnTrials,
       attributes: {
-        "data-sort-value": pool.jurors_on_trials
+        "data-sort-value": pool.jurorsOnTrials
       }
     },
     {
-      text: pool.jurors_in_attendance,
+      text: pool.jurorsInAttendance,
       attributes: {
-        "data-sort-value": pool.jurors_in_attendance
+        "data-sort-value": pool.jurorsInAttendance
       }
     },
     {
-      text: pool.jurors_on_call,
+      text: pool.jurorsOnCall,
       attributes: {
-        "data-sort-value": pool.jurors_on_call
+        "data-sort-value": pool.jurorsOnCall
       }
     },
     {
-      text: pool.pool_type | fullCourtType,
+      text: pool.poolType | fullCourtType,
       attributes: {
-        "data-sort-value": pool.pool_type | fullCourtType
+        "data-sort-value": pool.poolType | fullCourtType
       }
     },
     {
-      text: pool.service_start_date | dateFilter('yyyy-MM-DD', 'ddd DD MMM yyyy'),
+      text: pool.serviceStartDate | dateFilter('yyyy-MM-DD', 'ddd DD MMM yyyy'),
       attributes: {
-        "data-sort-value": pool.service_start_date
+        "data-sort-value": pool.serviceStartDate
       }
     }
   ]), poolRows) %}

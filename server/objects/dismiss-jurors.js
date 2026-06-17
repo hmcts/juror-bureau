@@ -4,13 +4,21 @@
 const _ = require('lodash');
 const { DAO } = require('./dataAccessObject');
 const utils = require('../lib/utils');
-const { replaceAllObjKeys } = require('../lib/mod-utils');
+const { mapCamelToSnake, mapSnakeToCamel, replaceAllObjKeys } = require('../lib/mod-utils');
 
 module.exports.getDismissablePools = new DAO('moj/pool-request/active-pools-by-court', {
   get: function(locCode) {
     return {
       uri: this.resource + '?locCode=' + locCode,
-      transform: utils.basicDataTransform
+      transform: (data) => {
+        const poolsAtCourtLocation = data.data || [];
+
+        delete data._headers;
+        return {
+          ...mapSnakeToCamel(data),
+          poolsAtCourtLocation: mapSnakeToCamel(poolsAtCourtLocation),
+        };
+      }
     }
   }
 });
@@ -22,19 +30,27 @@ module.exports.getJurorsObject = new DAO('moj/juror-management/jurors-to-dismiss
       : [params['jurors-to-include']];
 
     const body = {
-      'pool_numbers': params['checked-pools'] instanceof Array
+      poolNumbers: params['checked-pools'] instanceof Array
         ? params['checked-pools']
         : [params['checked-pools']],
-      'location_code': locCode,
-      'number_of_jurors_to_dismiss': params['jurorsToDismiss'],
-      'include_jurors_on_call': jurorsToInclude.includes('on-call') ? true : false,
-      'include_jurors_not_in_attendance': jurorsToInclude.includes('not-in-attendance') ? true : false,
+      locationCode: locCode,
+      numberOfJurorsToDismiss: params['jurorsToDismiss'],
+      includeJurorsOnCall: jurorsToInclude.includes('on-call') ? true : false,
+      includeJurorsNotInAttendance: jurorsToInclude.includes('not-in-attendance') ? true : false,
     }
 
     return {
       uri: this.resource,
-      body,
-      transform: utils.basicDataTransform,
+      body: mapCamelToSnake(body),
+      transform: (data) => {
+        const jurorsToDismissRequestData = data.data || [];
+
+        delete data._headers;
+        return {
+          ...mapSnakeToCamel(data),
+          jurorsToDismissRequestData: mapSnakeToCamel(jurorsToDismissRequestData),
+        };
+      },
     }
   }
 });

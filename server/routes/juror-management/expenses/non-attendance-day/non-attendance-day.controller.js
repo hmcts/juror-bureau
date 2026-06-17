@@ -114,9 +114,9 @@
         try {
           const jurorNumbers = req.session[`${trialNumber}-${locCode}-nonAttendanceDay`]?.selectedJurors;
           const jurorDetailsPayload = jurorNumbers.map((jurorNumber) => ({
-            'juror_number': jurorNumber,
-            'juror_version': null,
-            'include': ['ACTIVE_POOL'],
+            jurorNumber,
+            jurorVersion: null,
+            include: ['ACTIVE_POOL'],
           }));
       
           let jurorDetails = await jurorRecordDetailsDAO.post(req, jurorDetailsPayload);
@@ -124,10 +124,10 @@
           jurorDetails = Object.values(jurorDetails);
 
           nonAttendancePayload = jurorDetails.map((juror) => ({
-            'juror_number': juror.juror_number,
+            'juror_number': juror.jurorNumber,
             'location_code': locCode,
             'non_attendance_date': nonAttendanceDate,
-            'pool_number': juror.active_pool.pool_number,
+            'pool_number': juror.activePool.poolNumber,
           }));
         } catch (err) {
           app.logger.crit('Failed to get juror details', { auth: req.session.authentication, error: err.toString() });
