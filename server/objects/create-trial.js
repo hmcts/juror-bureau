@@ -5,13 +5,27 @@
   const urljoin = require('url-join')
   const { mapCamelToSnake, mapSnakeToCamel } = require('../lib/mod-utils');
 
+  function mapTrialSummaryResponse(data) {
+    const trial = mapSnakeToCamel(data);
+
+    if (typeof trial.courtroom !== 'undefined' && typeof trial.courtroomsDto === 'undefined') {
+      trial.courtroomsDto = trial.courtroom;
+    }
+
+    if (typeof trial.protected !== 'undefined' && typeof trial.protectedTrial === 'undefined') {
+      trial.protectedTrial = trial.protected;
+    }
+
+    return trial;
+  }
+
   module.exports.trialDetailsObject = new DAO('moj/trial/summary', {
     get: function(trialNumber, locationCode) {
       const params = new URLSearchParams({ 'trial_number': trialNumber, 'location_code': locationCode });
 
       return {
         uri: urljoin(this.resource, `?${params.toString()}`),
-        transform: mapSnakeToCamel,
+        transform: mapTrialSummaryResponse,
       }
     }
   });
@@ -38,7 +52,7 @@
     post: function(body) {
       return {
         body: mapCamelToSnake(body),
-        transform: mapSnakeToCamel,
+        transform: mapTrialSummaryResponse,
       };
     }
   });
@@ -47,7 +61,7 @@
     patch: function(body) {
       return {
         body: mapCamelToSnake(body),
-        transform: mapSnakeToCamel,
+        transform: mapTrialSummaryResponse,
       };
     }
   });
