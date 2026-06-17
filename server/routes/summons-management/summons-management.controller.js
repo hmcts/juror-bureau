@@ -1208,6 +1208,7 @@
   }
 
   const resolveThirdParty = (thirdParty) => {
+    console.log('thirdParty', thirdParty);
     const isThirdParty = !(thirdParty.relationship === '' || thirdParty.relationship === null)
       || !(thirdParty.thirdPartyReason === '' || thirdParty.thirdPartyReason === null)
       || !(thirdParty.thirdPartyFName === '' || thirdParty.thirdPartyFName === null)
