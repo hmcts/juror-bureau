@@ -3,7 +3,7 @@
 
   const { DAO } = require('./dataAccessObject');
   const _ = require('lodash');
-  const { replaceAllObjKeys } = require('../lib/mod-utils');
+  const { replaceAllObjKeys, mapCamelToSnake } = require('../lib/mod-utils');
 
   module.exports.jurorsAttending = new DAO('moj/juror-management/appearance', {
     get: function(locationCode, attendanceDate, group) {
@@ -19,9 +19,21 @@
 
   module.exports.changeNextDueAtCourtDAO = new DAO('moj/juror-management/attendance/attendance-date');
 
-  module.exports.jurorNonAttendanceDao = new DAO('moj/juror-management/non-attendance');
+  module.exports.jurorNonAttendanceDao = new DAO('moj/juror-management/non-attendance', {
+    post: function(body) {
+      return {
+        body: mapCamelToSnake(body),
+      };
+    }
+  });
 
-  module.exports.bulkJurorNonAttendanceDao = new DAO('moj/trial/non-attendance');
+  module.exports.bulkJurorNonAttendanceDao = new DAO('moj/trial/non-attendance', {
+    post: function(body) {
+      return {
+        body: mapCamelToSnake(body),
+      };
+    }
+  });
 
   module.exports.jurorAddAttendanceDao = new DAO('moj/juror-management/add-attendance-day');
 
