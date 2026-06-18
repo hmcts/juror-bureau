@@ -71,10 +71,10 @@
       }
 
       const payload = {
-        'location_code': locCode,
-        'non_attendance_date': formatNonAttendanceDate(req.body.nonAttendanceDay),
-        'juror_number': jurorNumber,
-        'pool_number': poolNumber,
+        locationCode: locCode,
+        nonAttendanceDate: formatNonAttendanceDate(req.body.nonAttendanceDay),
+        jurorNumber,
+        poolNumber,
       };
 
       try {
@@ -120,14 +120,15 @@
           }));
       
           let jurorDetails = await jurorRecordDetailsDAO.post(req, jurorDetailsPayload);
-          delete jurorDetails['_headers'];
+          delete jurorDetails.Headers;
           jurorDetails = Object.values(jurorDetails);
+          console.log('jurorDetails', jurorDetails);
 
           nonAttendancePayload = jurorDetails.map((juror) => ({
-            'juror_number': juror.jurorNumber,
-            'location_code': locCode,
-            'non_attendance_date': nonAttendanceDate,
-            'pool_number': juror.activePool.poolNumber,
+            'jurorNumber': juror.jurorNumber,
+            'locationCode': locCode,
+            nonAttendanceDate,
+            'poolNumber': juror.activePool.poolNumber,
           }));
         } catch (err) {
           app.logger.crit('Failed to get juror details', { auth: req.session.authentication, error: err.toString() });
@@ -136,10 +137,10 @@
       } else {
         const jurorNumbers = req.session[`${poolNumber}-nonAttendanceDay`]?.selectedJurors;
         nonAttendancePayload = jurorNumbers.map((jurorNumber) => ({
-          'juror_number': jurorNumber,
-          'location_code': locCode,
-          'non_attendance_date': nonAttendanceDate,
-          'pool_number': poolNumber,
+          jurorNumber,
+          'locationCode': locCode,
+          nonAttendanceDate,
+          poolNumber,
         }));
       }
 
