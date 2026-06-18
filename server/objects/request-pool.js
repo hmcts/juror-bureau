@@ -131,8 +131,12 @@
         uri,
         headers,
         transform: (data) => {
+          const headers = data._headers || {};
           delete data._headers;
-          return mapSnakeToCamel(data);
+          return {
+            _headers: headers,
+            ...mapSnakeToCamel(data),
+          };
         },
       };
     },
