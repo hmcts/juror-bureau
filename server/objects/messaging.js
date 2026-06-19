@@ -45,6 +45,7 @@
       return { 
         uri,
         body: mapCamelToSnake(body),
+        body: _.mapKeys(body, (value, key) => _.snakeCase(key)),
         transform: mapSnakeToCamel
       };
     }
