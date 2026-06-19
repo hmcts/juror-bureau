@@ -366,6 +366,10 @@
             sourcePoolNumber: validationPayload.sourcePoolNumber,
           };
 
+          if (req.session.processLateSummons) {
+            reassignPayload['from_summons_reply'] = true;
+          }
+
           if (req.body.poolNumber !== 'new-pool'){
             reassignPayload.receivingPoolNumber = validationPayload.receivingPoolNumber;
           } else {
