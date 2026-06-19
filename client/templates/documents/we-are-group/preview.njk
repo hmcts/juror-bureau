@@ -1,0 +1,75 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "messaging/_common/juror-record-url.macro.njk" import jurorRecordUrl %}
+
+{% set currentApp = "Documents" %}
+
+{% block page_title %}{{ serviceName }} - Documents - {{ messageTitle }}{% endblock %}
+{% block page_identifier %}Documents - {{ messageTitle }}{% endblock %}
+
+{% block containerStart %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLinkUrl,
+    attributes: {
+      id: "backLinkAnchor"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-xl">{{ messageTitle }}</span>
+      <h1 class="govuk-heading-xl">Check message details</h1>
+
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              text: "Juror number"
+            },
+            value: {
+              html: jurorRecordUrl({
+                url: url,
+                jurorNumber: juror.jurorNumber,
+                locCode: juror.locCode
+              })
+            }
+          },
+          {
+            key: {
+              text: "Contact details"
+            },
+            value: {
+              html: "Email: " ~ (juror.email | lower if juror.email else "-") ~ "<br>Mobile: " ~ (juror.phone if juror.phone else "-")
+            }
+          }
+        ]
+      }) }}
+
+      <h2 class="govuk-heading-m">{{ messageTitle }}</h2>
+
+      <div class="govuk-inset-text">
+        {% include messageContentTemplate %}
+      </div>
+
+      <form action="{{ postUrl }}" method="post" id="weAreGroupPreviewForm">
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Send message",
+            type: "submit"
+          }) }}
+          <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+    </div>
+  </div>
+
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "messaging/_common/juror-record-url.macro.njk" import jurorRecordUrl %}
+
+{% set currentApp = "Documents" %}
+
+{% block page_title %}{{ serviceName }} - Documents - {{ messageTitle }}{% endblock %}
+{% block page_identifier %}Documents - {{ messageTitle }}{% endblock %}
+
+{% block containerStart %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLinkUrl,
+    attributes: {
+      id: "backLinkAnchor"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <span class="govuk-caption-xl">{{ messageTitle }}</span>
+      <h1 class="govuk-heading-xl">Select a juror</h1>
+
+      <form action="{{ postUrl }}" method="post" id="weAreGroupResultsForm">
+        {% set rows = [] %}
+        {% for juror in jurors %}
+          {% set rows = (rows.push([
+            {
+              html:
+                '<div class="govuk-radios govuk-radios--small" data-module="govuk-radios">' +
+                  '<div class="govuk-radios__item">' +
+                    '<input class="govuk-radios__input" id="selectedJuror-' + juror.jurorNumber + '" name="selectedJuror" type="radio" value="' + juror.jurorNumber + '">' +
+                    '<label class="govuk-label govuk-radios__label" for="selectedJuror-' + juror.jurorNumber + '"><span class="govuk-visually-hidden">Select ' + juror.jurorNumber + '</span></label>' +
+                  '</div>' +
+                '</div>'
+            },
+            {
+              text: (juror.firstName | capitalizeFully) ~ " " ~ (juror.lastName | capitalizeFully)
+            },
+            {
+              html: jurorRecordUrl({
+                url: url,
+                jurorNumber: juror.jurorNumber,
+                locCode: juror.locCode
+              })
+            },
+            {
+              html: '<a class="govuk-link govuk-link--no-visited-state" href="' + url("pool-overview.get", { poolNumber: juror.poolNumber }) + '">' + juror.poolNumber + '</a>'
+            },
+            {
+              text: juror.status | toSentenceCase
+            },
+            {
+              html: ("Email: " ~ (juror.email | lower if juror.email else "-") ~ "<br>Mobile: " ~ (juror.phone if juror.phone else "-")) | safe
+            }
+          ]), rows) %}
+        {% endfor %}
+
+        {{ govukTable({
+          caption: "Jurors",
+          captionClasses: "govuk-table__caption--m",
+          firstCellIsHeader: false,
+          head: [
+            {
+              text: "Select"
+            },
+            {
+              text: "Juror name"
+            },
+            {
+              text: "Juror number"
+            },
+            {
+              text: "Pool number"
+            },
+            {
+              text: "Status"
+            },
+            {
+              text: "Contact details"
+            }
+          ],
+          rows: rows
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            type: "submit"
+          }) }}
+          <a class="govuk-link" href="{{ searchAgainUrl }}">Search again</a>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+    </div>
+  </div>
+
+{% endblock %}
