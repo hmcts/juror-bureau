@@ -222,7 +222,7 @@
           singleJuror: false,
         },
         juror: notCheckedOutJNs,
-        juror_in_waiting: true
+        jurorInWaiting: true
       };
 
       promiseArray.push(updateJurorAttendanceDAO.patch(req, payload));
