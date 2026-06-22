@@ -21,10 +21,9 @@
       group
     );
 
-    console.log('attendees', attendees);
     attendees = attendees.map((attendee) => {
-        attendee['jurorStatus'] = getJurorStatus(attendee['jurorStatus']);
-        return _.mapKeys(attendee, (__, key) => _.camelCase(key));
+      attendee['jurorStatus'] = getJurorStatus(attendee['jurorStatus']);
+      return _.mapKeys(attendee, (__, key) => _.camelCase(key));
     });
 
     return typeof attendees !== 'undefined' ? attendees : [];

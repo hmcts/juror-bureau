@@ -60,7 +60,6 @@
         locationCode,
         req.body.numberOfJurors
       ).then(resp => {
-        console.log('empanel-jury.controller.js: postEmpanelAmount: resp', resp);
         const noOfJurors = resp.empanelList.length;
         const validatorResult = validate(req.body, validator.numberOfJurors(noOfJurors));
 

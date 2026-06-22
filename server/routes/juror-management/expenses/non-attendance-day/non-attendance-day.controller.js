@@ -122,7 +122,6 @@
           let jurorDetails = await jurorRecordDetailsDAO.post(req, jurorDetailsPayload);
           delete jurorDetails.Headers;
           jurorDetails = Object.values(jurorDetails);
-          console.log('jurorDetails', jurorDetails);
 
           nonAttendancePayload = jurorDetails.map((juror) => ({
             'jurorNumber': juror.jurorNumber,

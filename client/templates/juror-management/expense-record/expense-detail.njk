@@ -23,7 +23,7 @@
     {% set jurorName = jurorDetails.name.title + ' ' + jurorDetails.name.firstName + ' ' + jurorDetails.name.lastName %}
   {% endif %}
 
-  {% set jurorAddressHTML = jurorDetails.address.line_one + '<br>' + jurorDetails.address.town + '<br>' + jurorDetails.address.postcode %}
+  {% set jurorAddressHTML = jurorDetails.address.lineOne + '<br>' + jurorDetails.address.town + '<br>' + jurorDetails.address.postcode %}
 
   <div class="after-header">
     <div>
@@ -101,7 +101,7 @@
               text: "Sort code"
             },
             value: {
-              text: jurorDetails.payment_details.sortCode
+              text: jurorDetails.paymentDetails.sortCode
             }
           },
           {
@@ -109,7 +109,7 @@
               text: "Account number"
             },
             value: {
-              text: jurorDetails.payment_details.bankAccountNumber
+              text: jurorDetails.paymentDetails.bankAccountNumber
             }
           },
           {
@@ -117,7 +117,7 @@
               text: "Account holder's name"
             },
             value: {
-              text: jurorDetails.payment_details.bankAccountName
+              text: jurorDetails.paymentDetails.bankAccountName
             }
           },
           {
@@ -125,7 +125,7 @@
               text: "Method of payment"
             },
             value: {
-              text: jurorDetails.payment_details.paymentMethod
+              text: jurorDetails.paymentDetails.paymentMethod
             }
           } if status === "approved"
         ]
