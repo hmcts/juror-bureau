@@ -14,14 +14,16 @@
 
   async function getAppearances(app, req, locCode, attendanceDate) {
     const group = 'IN_WAITING';
-    let { 'juror_appearance_response_data': attendees } = await jurorsAttending.get(
+    let { 'jurorAppearanceResponseData': attendees } = await jurorsAttending.get(
       req,
       locCode,
       attendanceDate,
       group
     );
+
+    console.log('attendees', attendees);
     attendees = attendees.map((attendee) => {
-        attendee['juror_status'] = getJurorStatus(attendee['juror_status']);
+        attendee['jurorStatus'] = getJurorStatus(attendee['jurorStatus']);
         return _.mapKeys(attendee, (__, key) => _.camelCase(key));
     });
 
