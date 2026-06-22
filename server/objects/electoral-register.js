@@ -4,13 +4,13 @@
   const _ = require('lodash')
   const { replaceAllObjKeys } = require('../lib/mod-utils');
   const { DAO } = require('./dataAccessObject');
-  const { basicDataTransform2 } = require('../lib/utils');
+  const { basicDataTransform } = require('../lib/utils');
 
   module.exports.erLocalAuthorityStatusDAO = new DAO('moj/er-dashboard/local-authority-status', {
     post: function(body) {
       return {
         uri: this.resource,
-        transform: basicDataTransform2,
+        transform: basicDataTransform,
         body: replaceAllObjKeys(body, _.snakeCase),
       }
     }
@@ -20,7 +20,7 @@
     get: function() {
       return {
         uri: this.resource,
-        transform: basicDataTransform2,
+        transform: basicDataTransform,
       }
     }
   });
@@ -29,7 +29,7 @@
     get: function() {
       return {
         uri: this.resource,
-        transform: basicDataTransform2,
+        transform: basicDataTransform,
       }
     }
   });
@@ -38,7 +38,7 @@
     get: function(laCode) {
       return {
         uri: this.resource.replace('{laCode}', laCode),
-        transform: basicDataTransform2,
+        transform: basicDataTransform,
       }
     }
   });
@@ -47,7 +47,7 @@
     get: function(status) {
       return {
         uri: this.resource + (status === 'active' ? '?active_only=true' : ''),
-        transform: basicDataTransform2,
+        transform: basicDataTransform,
       }
     }
   });
@@ -66,7 +66,7 @@
       return {
         uri: this.resource,
         body: replaceAllObjKeys(body, _.snakeCase),
-        transform: basicDataTransform2,
+        transform: basicDataTransform,
       }
     }
   });
@@ -84,7 +84,7 @@
     put: function(body) {
       return {
         uri: this.resource,
-        transform: basicDataTransform2,
+        transform: basicDataTransform,
         body: replaceAllObjKeys(body, _.snakeCase),
       };
     }
@@ -95,7 +95,7 @@
       return {
         uri: this.resource,
         body: replaceAllObjKeys(body, _.snakeCase),
-        transform: basicDataTransform2,
+        transform: basicDataTransform,
       }
     }
   });

@@ -4,7 +4,7 @@
   const _ = require('lodash');
   const { axiosClient } = require('./axios-instance');
   const { replaceAllObjKeys } = require('../lib/mod-utils');
-  const { basicDataTransform2 } = require('../lib/utils');  
+  const { basicDataTransform } = require('../lib/utils');  
 
   const dashboardStats = {
     resource: 'bureau/dashboard/statistics',
@@ -19,7 +19,7 @@
         'Accept': 'application/json'
       }
 
-      return basicDataTransform2(await axiosClient('post', url , jwtToken, options));
+      return basicDataTransform(await axiosClient('post', url , jwtToken, options));
     },
   };
 

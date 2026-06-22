@@ -1497,16 +1497,6 @@
 
     return {
       headers,
-      [responseName]: data,
-    }; 
-  }
-
-  module.exports.extractDataAndHeadersFromResponse2 = (responseName = 'response') => (data) => { 
-    const headers = data._headers;
-    delete data._headers
-
-    return {
-      headers,
       [responseName]: replaceAllObjKeys(data, _.camelCase),
     }; 
   }

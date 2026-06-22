@@ -1,5 +1,5 @@
 const { transform } = require('lodash');
-const { basicDataTransform2 } = require('../lib/utils');
+const { basicDataTransform } = require('../lib/utils');
 
 ;(function() {
   'use strict';
@@ -65,7 +65,7 @@ const { basicDataTransform2 } = require('../lib/utils');
       return { 
         uri: this.resource.replace('{jurorNumber}', jurorNumber),
         headers,
-        transform: modUtils.extractDataAndHeadersFromResponse2(),
+        transform: modUtils.extractDataAndHeadersFromResponse(),
       };
     },
     patch: function(body){
@@ -95,7 +95,7 @@ const { basicDataTransform2 } = require('../lib/utils');
       return {
         uri,
         body: modUtils.mapCamelToSnake(body),
-        transform: basicDataTransform2,
+        transform: basicDataTransform,
       };
     },
   });

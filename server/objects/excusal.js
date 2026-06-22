@@ -1,7 +1,7 @@
 ;(function(){
   'use strict';
 
-  const { basicDataTransform2 } = require('../lib/utils');
+  const { basicDataTransform } = require('../lib/utils');
   const { axiosClient } = require('./axios-instance');
 
   module.exports.object = {
@@ -15,7 +15,7 @@
         'Accept': 'application/json'
       };
 
-      return basicDataTransform2( await axiosClient('get', url , jwtToken, options));
+      return basicDataTransform( await axiosClient('get', url , jwtToken, options));
     }
   };
 })();

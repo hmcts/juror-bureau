@@ -3,8 +3,8 @@
 
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
-  const { basicDataTransform2 } = require('../lib/utils');
-  const { extractDataAndHeadersFromResponse2 } = require('../lib/mod-utils');
+  const { basicDataTransform } = require('../lib/utils');
+  const { extractDataAndHeadersFromResponse } = require('../lib/mod-utils');
 
   function normaliseThirdPartyForFe(response) {
     const details = response.data || response.response || response;
@@ -94,13 +94,13 @@
       return {
         uri: this.resource,
         body,
-        transform: basicDataTransform2,
+        transform: basicDataTransform,
       }
     },
     get: function(jurorNumber) {
       return {
         uri: urljoin('moj/juror-paper-response/juror', jurorNumber),
-        transform: (data) => normaliseThirdPartyForFe(extractDataAndHeadersFromResponse2('data')(data)),
+        transform: (data) => normaliseThirdPartyForFe(extractDataAndHeadersFromResponse('data')(data)),
       }
     }
   });

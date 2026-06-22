@@ -2,7 +2,7 @@
 
 const _ = require('lodash');
 const { replaceAllObjKeys } = require('../lib/mod-utils');
-const { basicDataTransform2 } = require('../lib/utils');
+const { basicDataTransform } = require('../lib/utils');
 const { DAO } = require('./dataAccessObject');
 
 module.exports.searchCoronerPoolsDAO = new DAO('moj/pool-search/coroner-pools', {
@@ -10,7 +10,7 @@ module.exports.searchCoronerPoolsDAO = new DAO('moj/pool-search/coroner-pools', 
     return {
       uri: this.resource,
       body: replaceAllObjKeys(payload, _.snakeCase),
-      transform: basicDataTransform2
+      transform: basicDataTransform
     }
   }
 

@@ -4,7 +4,7 @@
   const _ = require('lodash');
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
-  const { extractDataAndHeadersFromResponse2, mapCamelToSnake, mapSnakeToCamel, replaceAllObjKeys } = require('../lib/mod-utils')
+  const { extractDataAndHeadersFromResponse, mapCamelToSnake, mapSnakeToCamel, replaceAllObjKeys } = require('../lib/mod-utils')
 
   module.exports.record = new DAO('moj/juror-record', {
     get: function(tab, jurorNumber, locCode, etag) {
@@ -25,7 +25,7 @@
       return { 
         uri,
         headers,
-        transform: extractDataAndHeadersFromResponse2('data')
+        transform: extractDataAndHeadersFromResponse('data')
       };
     }
   });

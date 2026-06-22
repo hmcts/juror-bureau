@@ -3,7 +3,7 @@
 
   const _ = require('lodash');
   const { DAO } = require('./dataAccessObject');
-  const { basicDataTransform2 } = require('../lib/utils')
+  const { basicDataTransform } = require('../lib/utils')
   const { replaceAllObjKeys } = require('../lib/mod-utils');
 
   module.exports.object = new DAO('bureau/staff/assignments-multi', {
@@ -13,7 +13,7 @@
         body: replaceAllObjKeys({
           jurorNumbers,
         }, _.snakeCase),
-        transform: basicDataTransform2
+        transform: basicDataTransform
       }
     }
   });

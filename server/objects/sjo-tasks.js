@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const { replaceAllObjKeys } = require('../lib/mod-utils');
 const { DAO } = require('./dataAccessObject');
-const { basicDataTransform2 } = require('../lib/utils');
+const { basicDataTransform } = require('../lib/utils');
 
 module.exports.sjoTasksSearchDAO = new DAO('moj/sjo-tasks/juror/search', {
   post: function(body) {

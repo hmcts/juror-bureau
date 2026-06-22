@@ -4,8 +4,8 @@
   const _ = require('lodash');
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
-  const { basicDataTransform2 } = require('../lib/utils');
-  const { extractDataAndHeadersFromResponse2, replaceAllObjKeys, mapCamelToSnake } = require('../lib/mod-utils');
+  const { basicDataTransform } = require('../lib/utils');
+  const { extractDataAndHeadersFromResponse, replaceAllObjKeys, mapCamelToSnake } = require('../lib/mod-utils');
 
   module.exports.systemCodesDAO = new DAO('moj/administration/codes', {
     get: function (codeType) {
@@ -38,7 +38,7 @@
       return {
         uri: this.resource,
         headers,
-        transform: extractDataAndHeadersFromResponse2(),
+        transform: extractDataAndHeadersFromResponse(),
       };
     },
     put: function (body) {
@@ -60,7 +60,7 @@
       return {
         uri: this.resource.replace('{locCode}', locCode),
         headers,
-        transform: extractDataAndHeadersFromResponse2(),
+        transform: extractDataAndHeadersFromResponse(),
       };
     },
     put: function (locCode, body) {
@@ -108,7 +108,7 @@
       return {
         uri: this.resource.replace('{locCode}', locCode).replace('{id}', id),
         headers,
-        transform: extractDataAndHeadersFromResponse2(),
+        transform: extractDataAndHeadersFromResponse(),
       };
     },
   });
@@ -144,7 +144,7 @@
     get: function (judgeId) {
       return {
         uri: this.resource.replace('{judgeId}', judgeId),
-        transform: basicDataTransform2,
+        transform: basicDataTransform,
       };
     },
   });
@@ -193,7 +193,7 @@
       return {
         uri: this.resource.replace('{locCode}', locCode),
         headers,
-        transform: extractDataAndHeadersFromResponse2(),
+        transform: extractDataAndHeadersFromResponse(),
       };
     },
     put: function (locCode, body) {

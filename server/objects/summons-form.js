@@ -1,7 +1,7 @@
 const { DAO } = require('./dataAccessObject');
 const { dateFilter } = require('../components/filters');
 const { mapCamelToSnake } = require('../lib/mod-utils');
-const { basicDataTransform2 } = require('../lib/utils');
+const { basicDataTransform } = require('../lib/utils');
 
 module.exports.summonsFormDAO = new DAO('moj/pool-create/summons-form', {
   post: function(pd, catchmentArea) {
@@ -17,7 +17,7 @@ module.exports.summonsFormDAO = new DAO('moj/pool-create/summons-form', {
 
     return {
       body: mapCamelToSnake(body),
-      transform: basicDataTransform2,
+      transform: basicDataTransform,
     };
   },
 });
