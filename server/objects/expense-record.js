@@ -3,7 +3,7 @@
 
   const urljoin = require('url-join');
   const { DAO } = require('./dataAccessObject');
-  const { extractDataAndHeadersFromResponse, mapSnakeToCamel, extractDataAndHeadersFromResponse2, mapCamelToSnake } = require('../lib/mod-utils');
+  const { mapSnakeToCamel, extractDataAndHeadersFromResponse2, mapCamelToSnake } = require('../lib/mod-utils');
   const { transform } = require('lodash');
   const { basicDataTransform2 } = require('../lib/utils');
 

@@ -4,13 +4,13 @@
   const _ = require('lodash')
   const { replaceAllObjKeys } = require('../lib/mod-utils');
   const { DAO } = require('./dataAccessObject');
-  const { basicDataTransform } = require('../lib/utils');
+  const { basicDataTransform2 } = require('../lib/utils');
 
   module.exports.erLocalAuthorityStatusDAO = new DAO('moj/er-dashboard/local-authority-status', {
     post: function(body) {
       return {
         uri: this.resource,
-        transform: (data) => replaceAllObjKeys(basicDataTransform(data), _.camelCase),
+        transform: basicDataTransform2,
         body: replaceAllObjKeys(body, _.snakeCase),
       }
     }
@@ -20,7 +20,7 @@
     get: function() {
       return {
         uri: this.resource,
-        transform: (data) => replaceAllObjKeys(basicDataTransform(data), _.camelCase),
+        transform: basicDataTransform2,
       }
     }
   });
@@ -29,7 +29,7 @@
     get: function() {
       return {
         uri: this.resource,
-        transform: (data) => replaceAllObjKeys(basicDataTransform(data), _.camelCase),
+        transform: basicDataTransform2,
       }
     }
   });
@@ -38,7 +38,7 @@
     get: function(laCode) {
       return {
         uri: this.resource.replace('{laCode}', laCode),
-        transform: (data) => replaceAllObjKeys(basicDataTransform(data), _.camelCase),
+        transform: basicDataTransform2,
       }
     }
   });
@@ -47,7 +47,7 @@
     get: function(status) {
       return {
         uri: this.resource + (status === 'active' ? '?active_only=true' : ''),
-        transform: (data) => replaceAllObjKeys(basicDataTransform(data), _.camelCase),
+        transform: basicDataTransform2,
       }
     }
   });
@@ -66,7 +66,7 @@
       return {
         uri: this.resource,
         body: replaceAllObjKeys(body, _.snakeCase),
-        transform: (data) => replaceAllObjKeys(basicDataTransform(data), _.camelCase),
+        transform: basicDataTransform2,
       }
     }
   });
@@ -84,7 +84,7 @@
     put: function(body) {
       return {
         uri: this.resource,
-        transform: (data) => replaceAllObjKeys(basicDataTransform(data), _.camelCase),
+        transform: basicDataTransform2,
         body: replaceAllObjKeys(body, _.snakeCase),
       };
     }
@@ -95,7 +95,7 @@
       return {
         uri: this.resource,
         body: replaceAllObjKeys(body, _.snakeCase),
-        transform: (data) => replaceAllObjKeys(basicDataTransform(data), _.camelCase),
+        transform: basicDataTransform2,
       }
     }
   });

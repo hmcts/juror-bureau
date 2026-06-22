@@ -2,7 +2,7 @@
   'use strict';
 
   const { DAO } = require('./dataAccessObject');
-  const { basicDataTransform } = require('../lib/utils');
+  const { basicDataTransform2 } = require('../lib/utils');
   const { mapCamelToSnake } = require('../lib/mod-utils');
 
   module.exports.nilPoolCheck = new DAO('moj/pool-create/nil-pool-check', {
@@ -16,7 +16,7 @@
 
       return {
         uri: this.resource,
-        transform: basicDataTransform,
+        transform: basicDataTransform2,
         body,
       }
     }

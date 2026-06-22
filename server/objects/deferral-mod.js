@@ -2,7 +2,7 @@
   'use strict';
 
   const { DAO } = require('./dataAccessObject');
-  const { basicDataTransform, basicDataTransform2 } = require('../lib/utils');
+  const { basicDataTransform2 } = require('../lib/utils');
   const urljoin = require('url-join');
 
 
@@ -67,7 +67,7 @@
         body: {
           deferralDates,
         },
-        transform: basicDataTransform,
+        transform: basicDataTransform2,
       }
     }
   });
@@ -76,7 +76,7 @@
     delete: function(jurorNumber) {
       return {
         uri: urljoin(this.resource, jurorNumber),
-        transform: basicDataTransform,
+        transform: basicDataTransform2,
       }
     }
   });

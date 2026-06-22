@@ -32,7 +32,7 @@
     get: function(locationCode, attendanceDate) {
       return {
         uri: `${this.resource}?locationCode=${locationCode}&attendanceDate=${attendanceDate}`,
-        transform: utils.basicDataTransform,
+        transform: utils.basicDataTransform2,
       }
     }
   });
@@ -67,7 +67,7 @@
     get: function(locationCode, attendanceDate) {
       return {
         uri: `${this.resource}?locationCode=${locationCode}&deferredTo=${attendanceDate}`,
-        transform: utils.basicDataTransform,
+        transform: utils.basicDataTransform2,
       }
     }
   });
@@ -76,7 +76,7 @@
     get: function(poolNumberPrefix) {
       return {
         uri: `${this.resource}?poolNumberPrefix=${poolNumberPrefix}`,
-        transform: utils.basicDataTransform,
+        transform: utils.basicDataTransform2,
       }
     }
   });

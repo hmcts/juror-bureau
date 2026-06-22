@@ -2,7 +2,7 @@
   'use strict';
 
   const { DAO } = require('./dataAccessObject');
-  const { basicDataTransform } = require('../lib/utils');
+  const { basicDataTransform2 } = require('../lib/utils');
 
   module.exports.editNoRequested = new DAO('moj/manage-pool/edit-pool', {
     put: function(body, owner) {
@@ -12,7 +12,7 @@
 
       return {
         uri: this.resource,
-        transform: basicDataTransform,
+        transform: basicDataTransform2,
         body,
       }
     }

@@ -16,14 +16,14 @@
       return {
         uri: this.resource,
         body: postBody,
-        transform: utils.basicDataTransform,
+        transform: utils.basicDataTransform2,
       }
     },
     put: function(staffLogin, putBody) {
       return {
         uri: urljoin(this.resource, staffLogin),
         body: putBody,
-        transform: utils.basicDataTransform,
+        transform: utils.basicDataTransform2,
       }
     },
   });

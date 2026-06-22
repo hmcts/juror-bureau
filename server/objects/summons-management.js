@@ -3,7 +3,7 @@
   'use strict';
 
   const { DAO } = require('./dataAccessObject');
-  const { basicDataTransform, basicDataTransform2 } = require('../lib/utils');
+  const { basicDataTransform2 } = require('../lib/utils');
   const urljoin = require('url-join');
   const _ = require('lodash');
 
@@ -16,7 +16,7 @@
           jurorNumber: jurorNumber,
           replyMethod: replyMethod,
         },
-        transform: basicDataTransform,
+        transform: basicDataTransform2,
       };
     },
   });

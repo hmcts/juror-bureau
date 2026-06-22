@@ -5,7 +5,7 @@
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
   const { basicDataTransform2 } = require('../lib/utils');
-  const { extractDataAndHeadersFromResponse, extractDataAndHeadersFromResponse2, replaceAllObjKeys, mapCamelToSnake } = require('../lib/mod-utils');
+  const { extractDataAndHeadersFromResponse2, replaceAllObjKeys, mapCamelToSnake } = require('../lib/mod-utils');
 
   module.exports.systemCodesDAO = new DAO('moj/administration/codes', {
     get: function (codeType) {
@@ -60,7 +60,7 @@
       return {
         uri: this.resource.replace('{locCode}', locCode),
         headers,
-        transform: extractDataAndHeadersFromResponse(),
+        transform: extractDataAndHeadersFromResponse2(),
       };
     },
     put: function (locCode, body) {
@@ -108,7 +108,7 @@
       return {
         uri: this.resource.replace('{locCode}', locCode).replace('{id}', id),
         headers,
-        transform: extractDataAndHeadersFromResponse(),
+        transform: extractDataAndHeadersFromResponse2(),
       };
     },
   });
@@ -193,7 +193,7 @@
       return {
         uri: this.resource.replace('{locCode}', locCode),
         headers,
-        transform: extractDataAndHeadersFromResponse(),
+        transform: extractDataAndHeadersFromResponse2(),
       };
     },
     put: function (locCode, body) {

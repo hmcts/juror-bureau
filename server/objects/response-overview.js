@@ -3,13 +3,13 @@
 
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
-  const { basicDataTransform } = require('../lib/utils');
+  const { basicDataTransform2 } = require('../lib/utils');
 
   module.exports.object = new DAO('bureau/responses/overview', {
     get: function(login) {
       return {
         uri: urljoin(this.resource, login),
-        transform: basicDataTransform,
+        transform: basicDataTransform2,
       }
     }
   });

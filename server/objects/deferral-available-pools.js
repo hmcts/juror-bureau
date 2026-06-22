@@ -3,7 +3,7 @@
 
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join')
-  const { basicDataTransform } = require('../lib/utils')
+  const { basicDataTransform2 } = require('../lib/utils')
 
   module.exports.object = new DAO('moj/deferral-maintenance/available-pools', {
     post: function(deferralDates, jurorNumber, courtLocCode) {
@@ -16,7 +16,7 @@
       return {
         uri,
         body: deferralDates,
-        transform: basicDataTransform,
+        transform: basicDataTransform2,
       }
     }
   });

@@ -2,7 +2,7 @@
   'use strict';
 
   const { DAO } = require('./dataAccessObject');
-  const { basicDataTransform } = require('../lib/utils')
+  const { basicDataTransform2 } = require('../lib/utils')
 
   module.exports.object = new DAO('bureau/responses/reassign', {
     post: function(staffToDeactivate, assignPending, assignTodo, assignUrgents) {
@@ -14,7 +14,7 @@
           todoLogin: assignTodo,
           urgentsLogin: assignUrgents,
         },
-        transform: basicDataTransform
+        transform: basicDataTransform2
       }
     }
   });
