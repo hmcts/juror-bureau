@@ -3,9 +3,9 @@
 
   const urljoin = require('url-join');
   const { DAO } = require('./dataAccessObject');
-  const { extractDataAndHeadersFromResponse, mapSnakeToCamel, extractDataAndHeadersFromResponse2, mapCamelToSnake } = require('../lib/mod-utils');
+  const { mapSnakeToCamel, extractDataAndHeadersFromResponse, mapCamelToSnake } = require('../lib/mod-utils');
   const { transform } = require('lodash');
-  const { basicDataTransform2 } = require('../lib/utils');
+  const { basicDataTransform } = require('../lib/utils');
 
   const endpoint = '/moj/expenses/{locCode}';
 
@@ -20,7 +20,7 @@
       return { 
         uri: urljoin(this.resource.replace('{locCode}', locCode), jurorNumber, 'DRAFT/view'),
         headers,
-        transform: extractDataAndHeadersFromResponse2(),
+        transform: extractDataAndHeadersFromResponse(),
       };
     }
   })
@@ -32,7 +32,7 @@
         body: mapCamelToSnake({
           dates: attendanceDates,
         }),
-        transform: basicDataTransform2,
+        transform: basicDataTransform,
       };
     },
   });
@@ -52,7 +52,7 @@
       return { 
         uri: urljoin(this.resource.replace('{locCode}', locCode), jurorNumber, expenseType, 'edit'),
         body: mapCamelToSnake(body),
-        transform: basicDataTransform2,
+        transform: basicDataTransform,
       };
     },
   });
@@ -71,7 +71,7 @@
       return { 
         uri: urljoin(this.resource.replace('{locCode}', locCode), jurorNumber, 'calculate/totals'),
         body: mapCamelToSnake(body),
-        transform: basicDataTransform2,
+        transform: basicDataTransform,
       };
     }
   });
@@ -119,7 +119,7 @@
       return { 
         uri: urljoin(this.resource.replace('{locCode}', locCode), jurorNumber, 'view'),
         body: mapCamelToSnake(body),
-        transform: basicDataTransform2,
+        transform: basicDataTransform,
       };
     }
   });
@@ -129,7 +129,7 @@
       return { 
         uri: urljoin(this.resource.replace('{locCode}', locCode), jurorNumber, 'edit', type),
         body: mapCamelToSnake(body),
-        transform: basicDataTransform2,
+        transform: basicDataTransform,
       }
     }
   });

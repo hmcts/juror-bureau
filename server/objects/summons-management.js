@@ -3,7 +3,7 @@
   'use strict';
 
   const { DAO } = require('./dataAccessObject');
-  const { basicDataTransform, basicDataTransform2 } = require('../lib/utils');
+  const { basicDataTransform } = require('../lib/utils');
   const urljoin = require('url-join');
   const _ = require('lodash');
 
@@ -25,7 +25,7 @@
     put: function(jurorNumber, key) {
       return {
         uri: urljoin(this.resource, jurorNumber, key),
-        transform: basicDataTransform2,
+        transform: basicDataTransform,
       };
     },
   });
@@ -65,7 +65,7 @@
           return {
             uri: uri,
             body,
-            transform: basicDataTransform2,
+            transform: basicDataTransform,
           };
         },
       });

@@ -56,7 +56,7 @@ module.exports.dismissJurorsObject = new DAO('moj/complete-service/dismissal', {
     return {
       uri: this.resource,
       body: replaceAllObjKeys(payload, _.snakeCase),
-      transform: utils.basicDataTransform2,
+      transform: utils.basicDataTransform,
     }
   }
 });

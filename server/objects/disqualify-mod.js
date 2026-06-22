@@ -3,14 +3,14 @@
 
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
-  const { basicDataTransform2 } = require('../lib/utils');
+  const { basicDataTransform } = require('../lib/utils');
   const { mapCamelToSnake } = require('../lib/mod-utils');
 
 
   module.exports.getDisqualificationReasons = new DAO('moj/disqualify/reasons', {
     get: function() {
       return {
-        transform: basicDataTransform2,
+        transform: basicDataTransform,
       };
     },
   });
@@ -20,7 +20,7 @@
       return {
         uri: urljoin(this.resource, jurorNumber),
         body: mapCamelToSnake(payload),
-        transform: basicDataTransform2,
+        transform: basicDataTransform,
       }
     }
   });
@@ -30,7 +30,7 @@
       return {
         uri: this.resource,
         body: payload,
-        transform: basicDataTransform2,
+        transform: basicDataTransform,
       }
     }
   });

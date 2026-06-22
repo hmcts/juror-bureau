@@ -4,7 +4,7 @@
   const _ = require('lodash');
   const urljoin = require('url-join');
   const { DAO } = require('./dataAccessObject');
-  const { basicDataTransform2 } = require('../lib/utils');
+  const { basicDataTransform } = require('../lib/utils');
   const { replaceAllObjKeys, mapSnakeToCamel, mapCamelToSnake } = require('../lib/mod-utils');
 
 
@@ -12,7 +12,7 @@
     get: function(messageType, locCode) {
       return { 
         uri: urljoin(this.resource, messageType, locCode),
-        transform: basicDataTransform2
+        transform: basicDataTransform
       };
     }
   });
@@ -22,7 +22,7 @@
       return {
         uri: this.resource.replace('{messageType}', messageType).replace('{locCode}', locCode),
         body,
-        transform: basicDataTransform2
+        transform: basicDataTransform
       };
     }
   });

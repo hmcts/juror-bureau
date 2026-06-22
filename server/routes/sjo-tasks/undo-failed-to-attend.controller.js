@@ -44,7 +44,7 @@ module.exports.postConfirmUndoFailedToAttend = (app) => {
   return async (req, res) => {
 
     const payload = {
-      'jurorNumbers': req.session.undoFailedToAttend.selectedJurors.map(j => j.juror_number),
+      jurorNumbers: req.session.undoFailedToAttend.selectedJurors.map(j => j.jurorNumber),
     };
 
     try {

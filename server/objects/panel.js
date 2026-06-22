@@ -19,7 +19,7 @@
       const params = new URLSearchParams({ 'trial_number': trialNumber, 'court_location_code': courtLocationCode });
       const uri = urljoin(this.resource, `?${params.toString()}`);
 
-      return { uri };
+      return { uri, transform: mapSnakeToCamel };
     },
   });
 

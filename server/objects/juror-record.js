@@ -4,7 +4,7 @@
   const _ = require('lodash');
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
-  const { extractDataAndHeadersFromResponse2, mapCamelToSnake, mapSnakeToCamel, replaceAllObjKeys } = require('../lib/mod-utils')
+  const { extractDataAndHeadersFromResponse, mapCamelToSnake, mapSnakeToCamel, replaceAllObjKeys } = require('../lib/mod-utils')
 
   module.exports.record = new DAO('moj/juror-record', {
     get: function(tab, jurorNumber, locCode, etag) {
@@ -25,18 +25,25 @@
       return { 
         uri,
         headers,
-        transform: extractDataAndHeadersFromResponse2('data')
+        transform: extractDataAndHeadersFromResponse('data')
       };
     }
   });
 
   module.exports.attendanceDetails = new DAO('moj/juror-record/attendance-detail', {
     get: function(jurorNumber) {
-      return { uri: urljoin(this.resource, jurorNumber) };
+      return { uri: urljoin(this.resource, jurorNumber), transform: mapSnakeToCamel };
     }
   });
 
-  module.exports.changeDate = new DAO('moj/juror-record/update-attendance');
+  module.exports.changeDate = new DAO('moj/juror-record/update-attendance', {
+    patch: function(body) {
+      return {
+        body,
+        transform: mapSnakeToCamel,
+      };
+    },
+  });
 
   module.exports.editDetails = new DAO('moj/juror-record/edit-juror', {
     patch: function(body, jurorNumber, etag) {
@@ -51,6 +58,7 @@
       return {
         uri: urljoin(this.resource, jurorNumber),
         body,
+        transform: mapSnakeToCamel,
       }
     }
   });
@@ -64,7 +72,14 @@
     }
   });
 
-  module.exports.contactLog = new DAO('moj/juror-record/create/contact-log');
+  module.exports.contactLog = new DAO('moj/juror-record/create/contact-log', {
+    post: function(body) {
+      return {
+        body,
+        transform: mapSnakeToCamel,
+      };
+    },
+  });
 
   module.exports.search = new DAO('moj/juror-record/single-search', {
     get: function(jurorNumber) {
@@ -79,7 +94,7 @@
     get: function(jurorNumber, poolNumber) {
       return { 
         uri: urljoin(this.resource, jurorNumber, poolNumber),
-        transform: (data) => { return data.data },
+        transform: (data) => { return mapSnakeToCamel(data.data) },
       };
     },
     post: function(body, jurorNumber, poolNumber) {
@@ -87,7 +102,8 @@
       body.poolNumber = poolNumber;
       return {
         uri: urljoin('moj/juror-record/create/optic-reference', ),
-        body
+        body,
+        transform: mapSnakeToCamel,
       }
     }
   });
@@ -96,7 +112,8 @@
     patch: function(jurorNumber, part, body) {
       return { 
         uri: this.resource.replace('{part}', part).replace('{jurorNumber}', jurorNumber),
-        body
+        body,
+        transform: mapSnakeToCamel,
       };
     },
   });
@@ -111,7 +128,7 @@
 
       if (undo) uri += '/undo';
 
-      return { uri, body };
+      return { uri, body, transform: mapSnakeToCamel };
     }
   });
 
@@ -126,7 +143,7 @@
 
   module.exports.disqualifyAgeDAO = new DAO('moj/disqualify/juror/{jurorNumber}/age', {
     patch: function(jurorNumber) {
-      return { uri: this.resource.replace('{jurorNumber}', jurorNumber) };
+      return { uri: this.resource.replace('{jurorNumber}', jurorNumber), transform: mapSnakeToCamel };
     },
   })
 
