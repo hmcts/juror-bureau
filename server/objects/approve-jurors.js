@@ -3,6 +3,7 @@
   
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
+  const { mapSnakeToCamel } = require('../lib/mod-utils');
 
   module.exports.jurorList = new DAO('moj/juror-record/pending-jurors', {
     get: function(locCode, status) {
@@ -13,7 +14,7 @@
       if (typeof status !== 'undefined') {
         uri = urljoin(uri, '?status=' + status);
       }
-      return { uri };
+      return { uri, transform: mapSnakeToCamel };
     }
   });
   module.exports.processPendingJuror = new DAO('moj/juror-record/process-pending-juror', {
@@ -25,6 +26,7 @@
           decision,
           comments,
         },
+        transform: mapSnakeToCamel,
       }
     }
   });

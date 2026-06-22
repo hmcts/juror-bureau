@@ -165,8 +165,8 @@
         let earliestCheckInTime;
 
         attendanceRecords.details.forEach((juror) => {
-          const checkInTime = juror['check_in_time'][0].toString()
-          + juror['check_in_time'][1].toString().padStart(2, '0');
+          const checkInTime = juror.checkInTime[0].toString()
+          + juror.checkInTime[1].toString().padStart(2, '0');
 
           earliestCheckInTime = checkInTime < earliestCheckInTime
             || !earliestCheckInTime ? checkInTime : earliestCheckInTime;

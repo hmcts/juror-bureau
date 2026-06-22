@@ -101,7 +101,14 @@
     },
 
     getJurorInfo: function(req, body) {
-      const dao = new DAO('moj/letter/request-information');
+      const dao = new DAO('moj/letter/request-information', {
+        post: function(body) {
+          return {
+            body,
+            transform: mapSnakeToCamel,
+          };
+        },
+      });
 
       return dao.post(req, body);
     },

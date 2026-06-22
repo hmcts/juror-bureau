@@ -182,7 +182,7 @@ module.exports.getSearchResults = function(app, { task, backLinkRoute, title, po
       const completedJurorsData = await sjoTasksSearchDAO.post(req, payload);
 
       req.session.membersList = completedJurorsData.data;
-      let totalItems = completedJurorsData.total_items;
+      let totalItems = completedJurorsData.totalItems;
 
       app.logger.info('Fetched the the list of jurors to uncomplete: ', {
         auth: req.session.authentication,
@@ -301,8 +301,8 @@ module.exports.postCheckJuror = function(app) {
 
           req.session.checkedJurors = completedJurorsData.data.map((j) => {
             return {
-              'juror_number': j['juror_number'],
-              'pool_number': j['pool_number'],
+              jurorNumber: j.jurorNumber,
+              poolNumber: j.poolNumber,
             };
           });
 
@@ -319,14 +319,14 @@ module.exports.postCheckJuror = function(app) {
         req.session.checkedJurors = [];
       }
     } else if (action === 'uncheck') {
-      req.session.checkedJurors = req.session.checkedJurors.filter((j) => j['juror_number'] !== jurorNumber);
+      req.session.checkedJurors = req.session.checkedJurors.filter((j) => j.jurorNumber !== jurorNumber);
     } else {
-      const juror = req.session.membersList.find(j => j['juror_number'] === jurorNumber);
+      const juror = req.session.membersList.find(j => j.jurorNumber === jurorNumber);
 
       req.session.checkedJurors.push(
         {
-          'juror_number': juror['juror_number'],
-          'pool_number': juror['pool_number'],
+          jurorNumber: juror.jurorNumber,
+          poolNumber: juror.poolNumber,
         }
       );
     }

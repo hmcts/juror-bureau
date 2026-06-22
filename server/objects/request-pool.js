@@ -50,6 +50,7 @@
       return {
         uri: this.resource,
         body: mapCamelToSnake(body),
+        transform: mapSnakeToCamel,
       }
     }
   });
@@ -81,7 +82,14 @@
     }
   });
 
-  module.exports.addCoronerCitizens = new DAO('moj/pool-create/add-citizens');
+  module.exports.addCoronerCitizens = new DAO('moj/pool-create/add-citizens', {
+    post: function(body) {
+      return {
+        body,
+        transform: mapSnakeToCamel,
+      };
+    },
+  });
 
   module.exports.fetchPoolsAtCourt = new DAO('moj/pool-request/pools-at-court', {
     get: function(locCode) {
@@ -114,7 +122,7 @@
 
   module.exports.createCoronerPoolDAO = new DAO('moj/pool-create/create-coroner-pool', {
     post: function(body) {
-      return { body };
+      return { body, transform: mapSnakeToCamel };
     },
   });
 

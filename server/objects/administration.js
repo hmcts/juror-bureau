@@ -5,7 +5,7 @@
   const { DAO } = require('./dataAccessObject');
   const urljoin = require('url-join');
   const { basicDataTransform } = require('../lib/utils');
-  const { extractDataAndHeadersFromResponse, replaceAllObjKeys, mapCamelToSnake } = require('../lib/mod-utils');
+  const { extractDataAndHeadersFromResponse, replaceAllObjKeys, mapCamelToSnake, mapSnakeToCamel } = require('../lib/mod-utils');
 
   module.exports.systemCodesDAO = new DAO('moj/administration/codes', {
     get: function (codeType) {
@@ -23,6 +23,7 @@
     delete: function (poolNumber) {
       return {
         uri: this.resource + `?poolNumber=${poolNumber}`,
+        transform: mapSnakeToCamel,
       };
     },
   });
@@ -45,6 +46,7 @@
       return { 
         uri: this.resource,
         body: mapCamelToSnake(body),
+        transform: mapSnakeToCamel,
       };
     }
   });
@@ -64,7 +66,7 @@
       };
     },
     put: function (locCode, body) {
-      return { uri: `moj/administration/courts/${locCode}/rates`, body: mapCamelToSnake(body) };
+      return { uri: `moj/administration/courts/${locCode}/rates`, body: mapCamelToSnake(body), transform: mapSnakeToCamel };
     },
   });
 
@@ -73,7 +75,7 @@
       return {
         transform: data => {
           delete data['_headers'];
-          return Object.values(data);
+          return mapSnakeToCamel(Object.values(data));
         },
       };
     },
@@ -85,15 +87,15 @@
         uri: urljoin(this.resource, locCode),
         transform: data => {
           delete data['_headers'];
-          return Object.values(data);
+          return mapSnakeToCamel(Object.values(data));
         },
       };
     },
     put: function (locCode, id, body) {
-      return { uri: urljoin(this.resource, locCode, id), body };
+      return { uri: urljoin(this.resource, locCode, id), body, transform: mapSnakeToCamel };
     },
     post: function (locCode, body) {
-      return { uri: urljoin(this.resource, locCode), body };
+      return { uri: urljoin(this.resource, locCode), body, transform: mapSnakeToCamel };
     },
   });
 
@@ -127,16 +129,18 @@
       return {
         uri: this.resource + `/${judgeId}`,
         body: replaceAllObjKeys(body, _.snakeCase),
+        transform: mapSnakeToCamel,
       };
     },
     post: function (body) {
       return {
         uri: this.resource,
         body: replaceAllObjKeys(body, _.snakeCase),
+        transform: mapSnakeToCamel,
       };
     },
     delete: function (judgeId) {
-      return { uri: this.resource + `/${judgeId}` };
+      return { uri: this.resource + `/${judgeId}`, transform: mapSnakeToCamel };
     },
   });
 
@@ -175,10 +179,11 @@
       return {
         uri: this.resource.replace('{locCode}', locCode),
         body: replaceAllObjKeys(body, _.snakeCase),
+        transform: mapSnakeToCamel,
       };
     },
     delete: function (locCode, date) {
-      return { uri: this.resource.replace('{locCode}', locCode) + `/${date}` };
+      return { uri: this.resource.replace('{locCode}', locCode) + `/${date}`, transform: mapSnakeToCamel };
     },
   });
 
@@ -197,7 +202,7 @@
       };
     },
     put: function (locCode, body) {
-      return { uri: this.resource.replace('{locCode}', locCode), body };
+      return { uri: this.resource.replace('{locCode}', locCode), body, transform: mapSnakeToCamel };
     },
   });
 })();

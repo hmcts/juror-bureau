@@ -19,21 +19,21 @@
 
       <tbody class="govuk-table__body">
 
-        {% for day in attendance["juror_attendance_response_data"] %}
-          {% set attendanceDate = day["attendance_date"] | makeDate %}
+        {% for day in attendance.jurorAttendanceResponseData %}
+          {% set attendanceDate = day.attendanceDate | makeDate %}
 
           {% set checkInTime = "-" %}
           {% set checkOutTime = "-" %}
           {% set hours = "-" %}
           {% set travelTime = "-" %}
-          {% if day["attendance_type"] !== "ABSENT" and day["attendance_type"] !== "NON_ATTENDANCE" and day["attendance_type"] !== "NON_ATTENDANCE_LONG_TRIAL" and day["attendance_type"] !== "NON_ATT_EXTRA_LONG_TRIAL" %}
-            {% set checkInTime = (day["check_in_time"] | timeArrayToString | convert24to12) if day["check_in_time"] else "-" %}
-            {% set checkOutTime = (day["check_out_time"] | timeArrayToString | convert24to12) if day["check_out_time"] else "-" %}
-            {% set hours = day["hours"] %}
-            {% set travelTime = (day["travel_time"] | timeArrayToString | convert24toHours) if day["travel_time"] else "-" %}
+          {% if day.attendanceType !== "ABSENT" and day.attendanceType !== "NON_ATTENDANCE" and day.attendanceType !== "NON_ATTENDANCE_LONG_TRIAL" and day.attendanceType !== "NON_ATT_EXTRA_LONG_TRIAL" %}
+            {% set checkInTime = (day.checkInTime | timeArrayToString | convert24to12) if day.checkInTime else "-" %}
+            {% set checkOutTime = (day.checkOutTime | timeArrayToString | convert24to12) if day.checkOutTime else "-" %}
+            {% set hours = day.hours %}
+            {% set travelTime = (day.travelTime | timeArrayToString | convert24toHours) if day.travelTime else "-" %}
           {% endif %}
 
-          <tr class="govuk-table__row {% if day['attendance_type'] === 'ABSENT' %}mod-highlight-table-row__grey{% endif %}">
+          <tr class="govuk-table__row {% if day.attendanceType === 'ABSENT' %}mod-highlight-table-row__grey{% endif %}">
             <td class="govuk-table__cell" data-sort-value="{{ attendanceDate | dateFilter(null, "YYYYMMDD") }}">
               {{ attendanceDate | dateFilter(null, "ddd D MMM YYYY") }}
             </td>
@@ -50,16 +50,16 @@
               {{ travelTime }}
             </td>
             <td class="govuk-table__cell govuk-table__cell--numeric">
-              {{ day["attendance_type"] | attendanceType }}
+              {{ day.attendanceType | attendanceType }}
             </td>
             <td class="govuk-table__cell">
-              {% if day["attendance_type"] === "ABSENT" %}
+              {% if day.attendanceType === "ABSENT" %}
                 <a href="{{ url('printing.failed-to-attend.get', { document: 'failed-to-attend'}) + '?jurorNumber=' + juror.commonDetails.jurorNumber + '&singleFTAdate=' +   attendanceDate | dateFilter(null, 'YYYY-MM-DD') }}" class="govuk-link">Print FTA letter</a>
               {% endif %}
             </td>
             <td class="govuk-table__cell govuk-table__cell--numeric">
-               {% if day["editable"] %}
-              <a class="govuk-link govuk-link--no-visited-state" aria-label="Change juror attendance times" href="{{ url('juror-record.attendance.modify-juror-attendance.get', { jurorNumber:  juror.commonDetails.jurorNumber, poolNumber: juror.commonDetails.poolNumber }) }}?date={{ day['attendance_date'] | dateFilter("null", "YYYY-MM-DD") }}">
+               {% if day.editable %}
+              <a class="govuk-link govuk-link--no-visited-state" aria-label="Change juror attendance times" href="{{ url('juror-record.attendance.modify-juror-attendance.get', { jurorNumber:  juror.commonDetails.jurorNumber, poolNumber: juror.commonDetails.poolNumber }) }}?date={{ day.attendanceDate | dateFilter("null", "YYYY-MM-DD") }}">
                 Change
                 <span class="govuk-visually-hidden"> the juror attendance times</span>
               </a>

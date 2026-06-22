@@ -37,7 +37,14 @@ const { basicDataTransform } = require('../lib/utils');
     },
   })
 
-  module.exports.jurorDetailsDAO = new DAO('moj/juror-record/details');
+  module.exports.jurorDetailsDAO = new DAO('moj/juror-record/details', {
+    post: function(body) {
+      return {
+        body,
+        transform: modUtils.mapSnakeToCamel,
+      };
+    },
+  });
 
   module.exports.defaultExpensesDAO = new DAO('moj/expenses/{locCode}/{jurorNumber}/default-expenses', {
     get: function(locCode, jurorNumber) {
@@ -50,6 +57,7 @@ const { basicDataTransform } = require('../lib/utils');
       return {
         uri: urljoin(this.resource.replace('{locCode}', locCode).replace('{jurorNumber}', jurorNumber)),
         body: modUtils.mapCamelToSnake(body),
+        transform: modUtils.mapSnakeToCamel,
       }
     }
   });
@@ -72,6 +80,7 @@ const { basicDataTransform } = require('../lib/utils');
       return {
         uri: 'moj/juror-record/update-bank-details',
         body: modUtils.replaceAllObjKeys(body, _.snakeCase),
+        transform: modUtils.mapSnakeToCamel,
       };
     }
   });

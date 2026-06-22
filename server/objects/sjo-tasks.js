@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const { replaceAllObjKeys } = require('../lib/mod-utils');
+const { replaceAllObjKeys, mapSnakeToCamel } = require('../lib/mod-utils');
 const { DAO } = require('./dataAccessObject');
 const { basicDataTransform } = require('../lib/utils');
 
@@ -10,6 +10,7 @@ module.exports.sjoTasksSearchDAO = new DAO('moj/sjo-tasks/juror/search', {
     return {
       uri: this.resource,
       body: replaceAllObjKeys(body, _.snakeCase),
+      transform: mapSnakeToCamel,
     }
   },
 });
@@ -19,6 +20,7 @@ module.exports.undoFailedToAttendDAO = new DAO('moj/sjo-tasks/failed-to-attend/u
     return {
       uri: this.resource,
       body: replaceAllObjKeys(payload, _.snakeCase),
+      transform: mapSnakeToCamel,
     }
   }
 });
@@ -28,6 +30,7 @@ module.exports.uncompleteJurorDAO = new DAO('moj/complete-service/uncomplete', {
     return {
       uri: this.resource,
       body: replaceAllObjKeys(payload, _.snakeCase),
+      transform: mapSnakeToCamel,
     }
   }
 });
