@@ -3,121 +3,169 @@
 
   const _ = require('lodash');
   const validate = require('validate.js');
-  const validator = require('../../../config/validation/we-are-group-contact');
-  const { jurorSearchDAO, sendMessage } = require('../../../objects/messaging');
+  const validator = require('../../../config/validation/messaging');
+  const { jurorSearchDAO, sendBureauMessage } = require('../../../objects/messaging');
+  const jurorRecordObject = require('../../../objects/juror-record');
   const { capitalise } = require('../../../components/filters');
   const modUtils = require('../../../lib/mod-utils');
-
-  const PAGE_SIZE = 500;
-  const TEST_JUROR_NUMBER = '999999999';
-  const TEST_JUROR = {
-    jurorNumber: TEST_JUROR_NUMBER,
-    poolNumber: '415230101',
-    firstName: 'Jane',
-    lastName: 'Summons',
-    status: 'Responded',
-    email: 'jane.summons@example.com',
-    phone: '07123456789',
-    locCode: '400',
-    isTestJuror: true,
-  };
-  const INCLUDE_ALL_BUREAU_STATUSES = [
-    'INCLUDE_DEFERRED',
-    'INCLUDE_DISQUALIFIED_AND_EXCUSED',
-  ];
 
   module.exports.getSearch = function (app, message) {
     return function (req, res) {
       const tmpErrors = _.clone(req.session.errors);
-      const formFields = _.clone(req.session.formFields);
+      const tmpBody = _.clone(req.session.formFields);
 
       delete req.session.errors;
       delete req.session.formFields;
       delete req.session.weAreGroup;
 
-      return res.render('documents/we-are-group/search.njk', {
+      return res.render('messaging/find-jurors.njk', {
         messageTitle: message.title,
-        postUrl: buildRoute(app, message, 'post'),
-        backLinkUrl: app.namedRoutes.build('documents.get'),
-        formFields,
-        errors: errorPayload(tmpErrors),
+        bureauMessageSearch: true,
+        submitUrl: app.namedRoutes.build(`${message.routeName}.post`),
+        backLinkUrl: {
+          built: true,
+          url: app.namedRoutes.build('documents.get'),
+        },
+        cancelUrl: app.namedRoutes.build('messaging.send.get'),
+        tmpBody,
+        errors: {
+          title: 'Please check the form',
+          count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+          items: tmpErrors,
+        },
       });
     };
   };
 
-  module.exports.postSearch = function (app, message) {
-    return async function (req, res) {
-      const validatorResult = validate(req.body, validator.searchJurors(req.body));
+  module.exports.postSearch = function(app, message) {
+    return function(req, res) {
+      let searchOptions;
 
       delete req.session.errors;
       delete req.session.formFields;
 
+      const validatorResult = validate(req.body, validator.findJurors());
+
       if (typeof validatorResult !== 'undefined') {
         req.session.errors = validatorResult;
         req.session.formFields = req.body;
+        return res.redirect(app.namedRoutes.build(`${message.routeName}.get`));
+      };
 
-        return res.redirect(buildRoute(app, message, 'get'));
+      req.session.weAreGroup = req.session.weAreGroup || {};
+      req.session.weAreGroup.searchBy = req.body.searchBy;
+
+      searchOptions = {
+        'jurorSearch': req.body.searchBy === 'jurorName' || req.body.searchBy === 'jurorNumber' ? {
+          'jurorName': req.body.searchBy === 'jurorName' ? req.body.jurorNameSearch : null,
+          'jurorNumber': req.body.searchBy === 'jurorNumber' ? req.body.jurorNumberSearch : null,
+        } : null,
+      };
+
+      req.session.weAreGroup.searchOptions = searchOptions;
+
+      return res.redirect(app.namedRoutes.build(`${message.routeName}.results.get`));
+    };
+  };
+
+  module.exports.getResults = function (app, message) {
+    return async function(req, res) {
+      const tmpErrors = _.clone(req.session.errors);
+      const tmpBody = _.clone(req.session.formFields);
+      const currentPage = req.query['page'] || 1
+      const sortBy = req.query['sortBy'] || ''
+      const sortOrder = req.query['sortOrder'] || ''
+      let pagination;
+
+      delete req.session.errors;
+      delete req.session.formFields;
+
+      if (!req.session.weAreGroup) {
+        return res.redirect(app.namedRoutes.build('messaging.send.get'));
       }
 
-      const payload = buildSearchPayload(req.body);
+      const backLinkUrl = app.namedRoutes.build(`${message.routeName}.get`);
 
-      if (isTestJurorSearch(req.body)) {
-        req.session.weAreGroup = {
-          messageKey: message.key,
-          jurors: [TEST_JUROR],
-          search: {
-            searchBy: req.body.searchBy,
-            jurorNumber: req.body.jurorNumber,
-          },
-        };
+      const searchOptions = _.clone(req.session.weAreGroup.searchOptions);
 
-        return res.redirect(buildRoute(app, message, 'results.get'));
-      }
+      const opts = {
+        ...searchOptions,
+        pageNumber: currentPage,
+        pageLimit: modUtils.constants.PAGE_SIZE,
+        sortMethod: sortOrder === 'ascending' ? 'ASC' : (sortOrder === 'descending' ? 'DESC' : null),
+        sortField: capitalise(_.snakeCase(sortBy)) || null,
+      };
 
       try {
-        let jurorsData = await jurorSearchDAO.post(req, getLocationCode(req), payload, true);
-        let jurors = modUtils.replaceAllObjKeys(jurorsData.data || [], _.camelCase);
+        let jurorsData = await jurorSearchDAO.post(
+          req,
+          '400',
+          opts
+        );
 
-        if (req.body.searchBy === 'jurorName') {
-          jurors = filterExactNameMatches(jurors, req.body.firstName, req.body.lastName);
-        }
-
-        if (!jurors.length) {
-          req.session.errors = buildNoMatchError(req.body.searchBy);
-          req.session.formFields = req.body;
-
-          return res.redirect(buildRoute(app, message, 'get'));
-        }
-
-        req.session.weAreGroup = {
-          messageKey: message.key,
-          jurors,
-          search: {
-            searchBy: req.body.searchBy,
-            jurorNumber: req.body.jurorNumber,
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-          },
-        };
-
-        app.logger.info(`Fetched jurors for ${message.logName} message`, {
+        app.logger.info('Fetched list of jurors', {
           auth: req.session.authentication,
-          data: payload,
+          opts: opts,
         });
 
-        return res.redirect(buildRoute(app, message, 'results.get'));
-      } catch (err) {
-        if (err.statusCode === 404) {
-          req.session.errors = buildNoMatchError(req.body.searchBy);
-          req.session.formFields = req.body;
+        const queryTotal = jurorsData.totalItems;
 
-          return res.redirect(buildRoute(app, message, 'get'));
+        if (queryTotal > modUtils.constants.PAGE_SIZE) {
+          pagination = modUtils.paginationBuilder(queryTotal, currentPage, req.url);
         }
 
-        app.logger.crit(`Failed to search jurors for ${message.logName} message`, {
+        return res.render('documents/we-are-group/results.njk', {
+          message,
+          messageTitle: message.title,
+          submitUrl: app.namedRoutes.build(`${message.routeName}.results.post`),
+          backLinkUrl: {
+            built: true,
+            url: backLinkUrl,
+          },
+          jurors: jurorsData.data,
+          searchBy: req.session.weAreGroup.searchBy,
+          searchOptions,
+          sortBy,
+          sortOrder,
+          pagination,
+          totalJurors: queryTotal,
+          tmpBody,
+          errors: {
+            title: 'Please check the form',
+            count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+            items: tmpErrors,
+          },
+        });
+      } catch (err) {
+        // No jurors found or over 500 jurors found
+        if (err.statusCode === 404 || err.statusCode === 422) {
+          app.logger.info('Fetched list of jurors', {
+            auth: req.session.authentication,
+            opts: opts,
+          });
+
+          return res.render('documents/we-are-group/results.njk', {
+            messageTitle: message.title,
+            backLinkUrl: {
+              built: true,
+              url: backLinkUrl,
+            },
+            totalJurors: err.error?.code === 'MAX_ITEMS_EXCEEDED' ? 'MAX_ITEMS_EXCEEDED' : 0,
+            errorMetadata: err.error?.meta_data,
+            searchBy: req.session.weAreGroup.searchBy,
+            searchOptions,
+            tmpBody,
+            errors: {
+              title: 'Please check the form',
+              count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+              items: tmpErrors,
+            },
+          });
+        }
+
+        app.logger.crit('Failed to fetch list of jurors: ', {
           auth: req.session.authentication,
-          data: payload,
-          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
         return res.render('_errors/generic', { err });
@@ -125,36 +173,13 @@
     };
   };
 
-  module.exports.getResults = function (app, message) {
-    return function (req, res) {
-      const tmpErrors = _.clone(req.session.errors);
-      const flow = getFlow(req, message);
-
-      delete req.session.errors;
-
-      if (!flow?.jurors) {
-        return res.redirect(buildRoute(app, message, 'get'));
-      }
-
-      return res.render('documents/we-are-group/results.njk', {
-        messageTitle: message.title,
-        jurors: flow.jurors,
-        postUrl: buildRoute(app, message, 'results.post'),
-        searchAgainUrl: buildRoute(app, message, 'get'),
-        backLinkUrl: buildRoute(app, message, 'get'),
-        errors: errorPayload(tmpErrors),
-      });
-    };
-  };
-
   module.exports.postResults = function (app, message) {
     return function (req, res) {
-      const selectedJurorNumber = req.body.selectedJuror;
-      const flow = getFlow(req, message);
+      const { selectedJuror } = req.body;
 
       delete req.session.errors;
 
-      if (!selectedJurorNumber) {
+      if (!selectedJuror) {
         req.session.errors = {
           selectedJuror: [{
             details: 'Select a juror',
@@ -162,189 +187,186 @@
           }],
         };
 
-        return res.redirect(buildRoute(app, message, 'results.get'));
+        return res.redirect(app.namedRoutes.build(`${message.routeName}.results.get`));
       }
 
-      const selectedJuror = flow?.jurors
-        ?.find(juror => juror.jurorNumber === selectedJurorNumber);
+      const [locCode, jurorNumber] = selectedJuror.split('-');
 
-      if (!selectedJuror) {
-        return res.redirect(buildRoute(app, message, 'get'));
-      }
-
-      if (!selectedJuror.email) {
-        req.session.errors = {
-          selectedJuror: [{
-            details: 'Juror must have an email address to send this message',
-            summary: 'Juror must have an email address to send this message',
-          }],
-        };
-
-        return res.redirect(buildRoute(app, message, 'results.get'));
-      }
-
-      flow.selectedJuror = selectedJuror;
-
-      return res.redirect(buildRoute(app, message, 'preview.get'));
+      return res.redirect(app.namedRoutes.build(`${message.routeName}.preview.get`, { locCode, jurorNumber }));
     };
   };
 
   module.exports.getPreview = function (app, message) {
-    return function (req, res) {
-      const selectedJuror = getFlow(req, message)?.selectedJuror;
+    return async function (req, res) {
+      const { locCode, jurorNumber } = req.params;
 
-      if (!selectedJuror) {
-        return res.redirect(buildRoute(app, message, 'results.get'));
+      let jurorDetails;
+      try {
+        jurorDetails = await jurorRecordObject.record.get(
+          req,
+          'detail',
+          jurorNumber,
+          locCode,
+        );
+      } catch (err) {
+        app.logger.crit('Failed to fetch juror details when previewing bureau message: ', {
+          auth: req.session.authentication,
+          jurorNumber,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+
+        return res.render('_errors/generic', { err });
+      }
+
+      console.log('jurorDetails', jurorDetails?.data?.emailAddress);
+
+      if (!jurorDetails?.data?.emailAddress || jurorDetails?.data?.emailAddress === '') {
+        req.session.errors = {
+          emailAddress: [{
+            details: 'Selected juror must have an email address',
+            summary: 'Selected juror must have an email address',
+          }],
+        };
+
+        return res.redirect(app.namedRoutes.build(`${message.routeName}.results.get`));
       }
 
       return res.render('documents/we-are-group/preview.njk', {
         messageTitle: message.title,
-        messageContentTemplate: message.contentTemplate,
-        juror: selectedJuror,
-        postUrl: buildRoute(app, message, 'preview.post'),
+        messageContent: message.messageContent,
+        jurorNumber,
+        locCode,
+        juror: jurorDetails.data,
+        postUrl: app.namedRoutes.build(`${message.routeName}.preview.post`, { locCode, jurorNumber }),
         cancelUrl: app.namedRoutes.build('documents.get'),
-        backLinkUrl: buildRoute(app, message, 'results.get'),
+        backLinkUrl: app.namedRoutes.build(`${message.routeName}.results.get`),
       });
     };
   };
 
   module.exports.postPreview = function (app, message) {
     return async function (req, res) {
-      const selectedJuror = getFlow(req, message)?.selectedJuror;
+      const { locCode, jurorNumber } = req.params;
 
-      if (!selectedJuror) {
-        return res.redirect(buildRoute(app, message, 'get'));
+      if (!locCode || !jurorNumber) {
+        return res.redirect(app.namedRoutes.build(`${message.routeName}.get`));
       }
 
-      const payload = {
-        jurors: [{
-          jurorNumber: selectedJuror.jurorNumber,
-          poolNumber: selectedJuror.poolNumber,
-          type: 'EMAIL',
-        }],
-        placeholderValues: {},
-      };
+      return res.redirect(app.namedRoutes.build(`${message.routeName}.confirm.get`, { locCode, jurorNumber }));
+    };
+  };
 
+  module.exports.getConfirm = function (app, message) {
+    return async function (req, res) {
+      const { locCode, jurorNumber } = req.params;
+      
+      const tmpErrors = _.clone(req.session.errors);
+      delete req.session.errors;
+
+      let jurorDetails;
       try {
-        if (selectedJuror.isTestJuror) {
-          req.session.documentsJurorsList = {
-            successMessage: `The message has been sent to ${selectedJuror.email} using GOV.UK Notify.`,
-          };
-
-          delete req.session.weAreGroup;
-
-          return res.redirect(app.namedRoutes.build('documents.get'));
-        }
-
-        await sendMessage.post(req, message.code, getLocationCode(req), payload);
-
-        req.session.documentsJurorsList = {
-          successMessage: `The message has been sent to ${selectedJuror.email} using GOV.UK Notify.`,
-        };
-
-        delete req.session.weAreGroup;
-
-        app.logger.info(`Sent ${message.logName} message`, {
-          auth: req.session.authentication,
-          data: {
-            jurorNumber: selectedJuror.jurorNumber,
-            poolNumber: selectedJuror.poolNumber,
-          },
-        });
-
-        return res.redirect(app.namedRoutes.build('documents.get'));
+        jurorDetails = await jurorRecordObject.record.get(
+          req,
+          'detail',
+          jurorNumber,
+          locCode,
+        );
       } catch (err) {
-        app.logger.crit(`Failed to send ${message.logName} message`, {
+        app.logger.crit('Failed to fetch juror details when sending bureau message: ', {
           auth: req.session.authentication,
-          data: payload,
-          error: typeof err.error !== 'undefined' ? err.error : err.toString(),
+          jurorNumber,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
         });
 
         return res.render('_errors/generic', { err });
       }
+
+      return res.render('documents/we-are-group/confirm.njk', {
+        messageTitle: message.title,
+        messageContent: message.messageContent,
+        jurorNumber,
+        locCode,
+        juror: jurorDetails.data,
+        postUrl: app.namedRoutes.build(`${message.routeName}.confirm.post`, { locCode, jurorNumber }),
+        cancelUrl: app.namedRoutes.build('documents.get'),
+        backLinkUrl: app.namedRoutes.build(`${message.routeName}.preview.get`, { locCode, jurorNumber }),
+        errors: {
+          title: 'Please check the form',
+          count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
+          items: tmpErrors,
+        },
+      });
     };
   };
 
-  function buildSearchPayload (body) {
-    const payload = {
-      pageNumber: 1,
-      pageLimit: PAGE_SIZE,
-      filters: INCLUDE_ALL_BUREAU_STATUSES,
-      sortMethod: 'ASC',
-      sortField: capitalise(_.snakeCase('jurorNumber')),
-    };
+  module.exports.postConfirm = function (app, message) {
+    return async function (req, res) {
+      const { locCode, jurorNumber } = req.params;
+      const { email } = req.body;
 
-    if (body.searchBy === 'jurorNumber') {
-      payload.jurorSearch = {
-        jurorNumber: body.jurorNumber,
+      if (!locCode || !jurorNumber) {
+        return res.redirect(app.namedRoutes.build(`${message.routeName}.get`));
+      }
+
+      if (!email) {
+        req.session.errors = {
+          emailAddress: [{
+            details: 'Email address is required',
+            summary: 'Email address is required',
+          }],
+        };
+
+        return res.redirect(app.namedRoutes.build(`${message.routeName}.confirm.get`, { locCode, jurorNumber }));
+      }
+
+      const payload = {
+        jurorEmails: [
+          { 
+            jurorNumber,
+            email,
+            emailTemplateName: message.code,
+          }
+        ],
       };
-    }
 
-    if (body.searchBy === 'jurorName') {
-      payload.jurorSearch = {
-        jurorName: `${body.firstName} ${body.lastName}`,
-      };
-    }
+      try {
+        const response = await sendBureauMessage.post(req, payload);
 
-    return payload;
-  }
+        if (response.failedNotifications && response.failedNotifications.length > 0) {
+          app.logger.warn('Failed to send bureau message: ', {
+            auth: req.session.authentication,
+            payload,
+            response,
+          });
 
-  function buildNoMatchError (searchBy) {
-    if (searchBy === 'jurorNumber') {
-      return {
-        jurorNumber: [{
-          details: 'Enter a valid juror number',
-          summary: 'Enter a valid juror number',
-        }],
-      };
-    }
+          req.session.errors = {
+            emailAddress: [{
+              details: 'Failed to send message to juror',
+              summary: 'Failed to send message to juror',
+            }],
+          };
 
-    return {
-      firstName: [{
-        details: 'There is not an exact match in the system',
-        summary: 'There is not an exact match in the system',
-        summaryLink: 'firstName',
-      }],
+          return res.redirect(app.namedRoutes.build(`${message.routeName}.confirm.get`, { locCode, jurorNumber }));
+        }
+
+        app.logger.info('Successfully sent bureau message', {
+          auth: req.session.authentication,
+          payload,
+          response,
+        });
+
+        req.session.bannerMessage = `The message has been sent to ${jurorNumber} using GOV.UK Notify.`;
+
+        return res.redirect(app.namedRoutes.build('documents.get'));
+      } catch (err) {
+        app.logger.crit('Failed to send bureau message: ', {
+          auth: req.session.authentication,
+          payload,
+          error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+        });
+        return res.render('_errors/generic', { err });
+      }
     };
-  }
-
-  function errorPayload (errors) {
-    return {
-      title: 'There is a problem',
-      message: '',
-      count: typeof errors !== 'undefined' ? Object.keys(errors).length : 0,
-      items: errors,
-    };
-  }
-
-  function filterExactNameMatches (jurors, firstName, lastName) {
-    const normalisedFirstName = normaliseName(firstName);
-    const normalisedLastName = normaliseName(lastName);
-
-    return jurors.filter(juror => normaliseName(juror.firstName) === normalisedFirstName
-      && normaliseName(juror.lastName) === normalisedLastName);
-  }
-
-  function getLocationCode (req) {
-    return req.session.authentication.locCode || req.session.authentication.owner;
-  }
-
-  function getFlow (req, message) {
-    const flow = req.session.weAreGroup;
-
-    return flow?.messageKey === message.key ? flow : null;
-  }
-
-  function buildRoute (app, message, route) {
-    return app.namedRoutes.build(`${message.routeName}.${route}`);
-  }
-
-  function isTestJurorSearch (body) {
-    return body.searchBy === 'jurorNumber' && body.jurorNumber === TEST_JUROR_NUMBER;
-  }
-
-  function normaliseName (name) {
-    return (name || '').trim().toLowerCase();
-  }
+  };
 
 })();

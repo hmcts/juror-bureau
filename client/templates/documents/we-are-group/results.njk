@@ -1,23 +1,17 @@
 {% extends "layouts/default-no-nav.njk" %}
 
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/table/macro.njk" import govukTable %}
-{% from "messaging/_common/juror-record-url.macro.njk" import jurorRecordUrl %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "custom-components/sortable-table/macro.njk" import modSortableTable %}
+{% from "../../messaging/_common/juror-record-url.macro.njk" import jurorRecordUrl %}
 
 {% set currentApp = "Documents" %}
 
 {% block page_title %}{{ serviceName }} - Documents - {{ messageTitle }}{% endblock %}
-{% block page_identifier %}Documents - {{ messageTitle }}{% endblock %}
+{% block page_identifier %}Documents{% endblock %}
 
 {% block containerStart %}
-  {{ govukBackLink({
-    text: "Back",
-    href: backLinkUrl,
-    attributes: {
-      id: "backLinkAnchor"
-    }
-  }) }}
+  {% include "includes/back-link.njk" %}
 {% endblock %}
 
 {% block content %}
@@ -26,81 +20,137 @@
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <span class="govuk-caption-xl">{{ messageTitle }}</span>
-      <h1 class="govuk-heading-xl">Select a juror</h1>
+      <span class="govuk-caption-xl">{{ messageTitle | capitalize }}</span>
+      <span id="messageKey" class="govuk-visually-hidden">{{ message }}</span>
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Select a juror to send the message to</h1>
 
-      <form action="{{ postUrl }}" method="post" id="weAreGroupResultsForm">
-        {% set rows = [] %}
-        {% for juror in jurors %}
-          {% set rows = (rows.push([
-            {
-              html:
-                '<div class="govuk-radios govuk-radios--small" data-module="govuk-radios">' +
-                  '<div class="govuk-radios__item">' +
-                    '<input class="govuk-radios__input" id="selectedJuror-' + juror.jurorNumber + '" name="selectedJuror" type="radio" value="' + juror.jurorNumber + '">' +
-                    '<label class="govuk-label govuk-radios__label" for="selectedJuror-' + juror.jurorNumber + '"><span class="govuk-visually-hidden">Select ' + juror.jurorNumber + '</span></label>' +
-                  '</div>' +
-                '</div>'
-            },
-            {
-              text: (juror.firstName | capitalizeFully) ~ " " ~ (juror.lastName | capitalizeFully)
-            },
-            {
-              html: jurorRecordUrl({
-                url: url,
-                jurorNumber: juror.jurorNumber,
-                locCode: juror.locCode
-              })
-            },
-            {
-              html: '<a class="govuk-link govuk-link--no-visited-state" href="' + url("pool-overview.get", { poolNumber: juror.poolNumber }) + '">' + juror.poolNumber + '</a>'
-            },
-            {
-              text: juror.status | toSentenceCase
-            },
-            {
-              html: ("Email: " ~ (juror.email | lower if juror.email else "-") ~ "<br>Mobile: " ~ (juror.phone if juror.phone else "-")) | safe
-            }
-          ]), rows) %}
-        {% endfor %}
+      {% if totalJurors === 0 %}
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-6">No matching results</h2>
+      {% elif totalJurors === "MAX_ITEMS_EXCEEDED" %}
+        {% set maxItems = 500 %}
+        {% if errorMetadata and errorMetadata.max_items %}
+          {% set maxItems = errorMetadata.max_items %}
+        {% endif %}
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-6">There are more than {{ maxItems }} results. Refine your search.</h2>
+      {% else %}
+        <div class="govuk-grid-row">
+          <form id="jurorSelectionForm" method="POST">
 
-        {{ govukTable({
-          caption: "Jurors",
-          captionClasses: "govuk-table__caption--m",
-          firstCellIsHeader: false,
-          head: [
-            {
-              text: "Select"
-            },
-            {
-              text: "Juror name"
-            },
-            {
-              text: "Juror number"
-            },
-            {
-              text: "Pool number"
-            },
-            {
-              text: "Status"
-            },
-            {
-              text: "Contact details"
-            }
-          ],
-          rows: rows
-        }) }}
+            {% set jurorRows = [] %}
+            {% for juror in jurors %}
+              {% set jurorRows = (jurorRows.push(
+                [
+                  {
+                    html: '<div class="govuk-radios govuk-radios--small" data-module="govuk-radios">' +
+                      '<div class="govuk-radios__item">' +
+                        '<input class="govuk-radios__input" id="selectedJuror' + juror['jurorNumber'] + '" name="selectedJuror" type="radio" value="' + juror['locCode'] + "-" + juror['jurorNumber'] + '">' +
+                        '<label class="govuk-label govuk-radios__label" for="selectedJuror' + juror['jurorNumber'] + '">' +
+                          jurorRecordUrl({
+                            url: url,
+                            jurorNumber: juror['jurorNumber'],
+                            locCode: juror['locCode']
+                          }) +
+                        '</label>' +
+                      '</div>' +
+                    '</div>',
+                    classes: "jd-middle-align"
+                  },
+                  {
+                    text: juror['firstName'] | capitalizeFully,
+                    classes: "jd-middle-align"
+                  },
+                  {
+                    text: juror['lastName'] | capitalizeFully,
+                    classes: "jd-middle-align"
+                  },
+                  {
+                    text: juror['poolNumber'],
+                    classes: "jd-middle-align"
+                  },
+                  {
+                    text: juror['status'] | toSentenceCase,
+                    classes: "jd-middle-align"
+                  },
+                  {
+                    html: ((('<p class="govuk-body govuk-!-margin-0">' + juror['email'] | lower + '</p>') if juror['email'] else '')
+                      + (('<p class="govuk-body govuk-!-margin-0">' + juror['phone'] + '</p>') if juror['phone'] else '')) if juror['email'] or juror['phone'] else "",
+                    classes: "jd-middle-align"
+                  }
+                ]
+              ), jurorRows) %}
+            {% endfor %}
 
-        <div class="govuk-button-group">
-          {{ govukButton({
-            text: "Continue",
-            type: "submit"
-          }) }}
-          <a class="govuk-link" href="{{ searchAgainUrl }}">Search again</a>
+            <div id="messaging-jurors-table-wrapper" class="govuk-grid-column-full govuk-body">
+
+              {{ modSortableTable({
+                id: "messageJurorsTable",
+                caption: "Jurors",
+                captionClasses: "govuk-visually-hidden",
+                classes: "mod-horizontal-scroll-table",
+                head: [
+                  {
+                    id: 'jurorNumber',
+                    value: 'Juror number',
+                    sort: sortOrder if sortBy === 'jurorNumber' else 'none'
+                  },
+                  {
+                    id: 'firstName',
+                    value: 'First name',
+                    sort: sortOrder if sortBy === 'firstName' else 'none'
+                  }
+                  ,
+                  {
+                    id: 'lastName',
+                    value: 'Last name',
+                    sort: sortOrder if sortBy === 'lastName' else 'none'
+                  },
+                  {
+                    id: 'poolNumber',
+                    value: 'Pool number',
+                    sort: sortOrder if sortBy === 'poolNumber' else 'none'
+                  },
+                  {
+                    id: 'status',
+                    value: 'Status',
+                    sort: sortOrder if sortBy === 'status' else 'none'
+                  },
+                  {
+                    id: 'email',
+                    value: 'Contact',
+                    sort: sortOrder if sortBy === 'email' else 'none'
+                  }
+                ],
+                rows: jurorRows,
+                url: urlPrefix
+              }) }}
+
+              {{ govukPagination({
+                previous: {
+                  href: pagination.prev
+                },
+                next: {
+                  href: pagination.next
+                },
+                items: pagination.items
+              }) }}
+
+            </div>
+
+            <input type="hidden" id="csrfToken" name="_csrf" value="{{ csrftoken }}"/>
+          </form>
         </div>
+        <div class="govuk-button-group govuk-!-margin-bottom-0">
+          {{ govukButton({
+            text:  "Send message",
+            attributes: {
+              id: "sendMessageButton",
+              form: "jurorSelectionForm",
+              formAction: submitUrl
+            }
+          }) }}
+        </div>
+      {% endif %}
 
-        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
-      </form>
     </div>
   </div>
 

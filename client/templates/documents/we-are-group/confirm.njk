@@ -4,6 +4,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 {% from "messaging/_common/juror-record-url.macro.njk" import jurorRecordUrl %}
 
 {% set currentApp = "Documents" %}
@@ -23,13 +24,23 @@
 
 {% block content %}
 
+  {% include "includes/errors.njk" %}
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <span class="govuk-caption-xl">{{ messageTitle }}</span>
-      <h1 class="govuk-heading-xl">Send message to {{ (juror.commonDetails.firstName + ' ' + juror.commonDetails.lastName) | capitalizeFully }}</h1>
+      <h1 class="govuk-heading-xl">Check message before sending</h1>
 
       {{ govukSummaryList({
         rows: [
+          {
+            key: {
+              text: "Juror"
+            },
+            value: {
+              text: (juror.commonDetails.firstName + ' ' + juror.commonDetails.lastName) | capitalizeFully
+            }
+          },
           {
             key: {
               text: "Juror number"
@@ -44,40 +55,53 @@
           },
           {
             key: {
-              text: "Contact"
+              text: "Sent by"
             },
             value: {
-              html: (juror.emailAddress | lower if juror.emailAddress else "-") + "<br>" + (juror.primaryPhone if juror.primaryPhone else "-")
+              text: "GOV.UK Notify"
+            }
+          },
+          {
+            key: {
+              text: "Mobile number"
+            },
+            value: {
+              text: juror.primaryPhone if juror.primaryPhone else "-"
+            }
+          },
+          {
+            key: {
+              text: "Email address"
+            },
+            value: {
+              text: juror.emailAddress | lower if juror.emailAddress else "-"
+            }
+          },
+          {
+            key: {
+              text: "Message"
+            },
+            value: {
+              html: messageContent | replace("\n", "<br>")
             }
           }
         ]
       }) }}
 
-      <h2 class="govuk-heading-m">Message template</h2>
-      <p class="govuk-body">{{ messageTitle }}</p>
+      {% call govukInsetText() %}
+        The message will be recorded on the juror record when it is sent.
+      {% endcall %}
 
-      {{ govukTextarea({
-        name: "messageContent",
-        id: "more-detail",
-        label: {
-          text: "Message",
-          classes: "govuk-label--m"
-        },
-        hint: {
-          text: "This will be sent using GOV.UK Notify."
-        },
-        value: messageContent,
-        disabled: true
-      }) }}
-
-      <form action="{{ postUrl }}" method="post" id="weAreGroupPreviewForm">
+      <form action="{{ postUrl }}" method="post" id="weAreGroupConfirmForm">
         <div class="govuk-button-group">
           {{ govukButton({
-            text: "Continue",
+            text: "Send message",
             type: "submit"
           }) }}
           <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
         </div>
+
+        <input type="hidden" name="email" value="{{ juror.emailAddress }}">
 
         <input type="hidden" name="_csrf" value="{{ csrftoken }}">
       </form>
