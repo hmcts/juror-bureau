@@ -34,12 +34,12 @@
     {% set summonsAddressHtml %}
       <div class="jd-label-blue">New</div>
       <p class="govuk-body govuk-!-font-weight-bold">Summons reply address</p>
-      <p class="govuk-caption-m">Use the address currently held on the juror record.</p>
+      <p class="govuk-caption-m">Use the address provided by the juror on the summons reply.</p>
       <p class="govuk-body">{{ addressDetails.currentAddress | safe }}</p>
     {% endset %}
     {% set jurorRecordAddressHtml %}
       <p class="govuk-body govuk-!-font-weight-bold">Juror record address</p>
-      <p class="govuk-caption-m">Use the address provided by the juror on the summons reply.</p>
+      <p class="govuk-caption-m">Use the address currently held on the juror record.</p>
       <p class="govuk-body">{{ addressDetails.oldAddress | safe }}</p>
     {% endset %}
 
