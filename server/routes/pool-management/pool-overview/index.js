@@ -52,6 +52,14 @@
       'pool-management.reassign.confirm.post',
       auth.verify,
       reassignController.postConfirmReassignJuror(app));
+    app.get('/pool-management/reassign/:poolNumber/ineligible-age',
+      'pool-management.reassign.ineligible-age.get',
+      auth.verify,
+      reassignController.getReassignIneligibleAge(app));
+    app.post('/pool-management/reassign/:poolNumber/ineligible-age',
+      'pool-management.reassign.ineligible-age.post',
+      auth.verify,
+      reassignController.postReassignIneligibleAge(app));
 
     // Bulk transfer
     app.post('/pool-management/:poolNumber/transfer/',

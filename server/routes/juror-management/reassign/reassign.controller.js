@@ -10,7 +10,12 @@
     , requestCourtsObj = require('../../../objects/request-pool').fetchCourts
     , validateMovementObj = require('../../../objects/pool-management').validateMovement
     , isCourtUser = require('../../../components/auth/user-type').isCourtUser
-    , { dateFilter } = require('../../../components/filters');
+    , { dateFilter } = require('../../../components/filters')
+    , {
+      bulkDisqualifyByAge,
+      fetchAndMergeIneligibleJurorDetails,
+      removeAgeDisqualifiedJurorsFromMovementData,
+    } = require('../../../lib/age-disqualification-functions');
 
   module.exports.getReassignJuror = function(app) {
     return async function(req, res) {
@@ -348,30 +353,21 @@
         validationPayload
       )
         .then((data) => {
-          if (data.unavailableForMove !== null) {
+          removeAgeDisqualifiedJurorsFromMovementData(data);
+
+          if (data.unavailableForMove?.length > 0) {
             req.session.availableForMove = data.availableForMove;
             req.session.reassignValidationPayload = validationPayload;
 
             return res.render('pool-management/movement/bulk-validate', {
               cancelUrl: cancelUrl,
+              eligibleJurorLength: data.availableForMove.length,
               continueUrl: continueUrl,
               problems: modUtils.buildMovementProblems(data),
             });
           }
 
-          const reassignPayload = {
-            jurorNumbers: validationPayload.jurorNumbers,
-            receivingCourtLocCode: validationPayload.receivingCourtLocCode,
-            sourceCourtLocCode: validationPayload.sendingCourtLocCode,
-            sourcePoolNumber: validationPayload.sourcePoolNumber,
-          };
-
-          if (req.body.poolNumber !== 'new-pool'){
-            reassignPayload.receivingPoolNumber = validationPayload.receivingPoolNumber;
-          } else {
-            reassignPayload.targetServiceStartDate = dateFilter(new Date(), null, 'YYYY-MM-DD');
-            reassignPayload.sendingCourtLocationCode = validationPayload.sendingCourtLocCode;
-          }
+          const reassignPayload = buildReassignPayload(validationPayload, validationPayload.jurorNumbers);
 
           return sendReassignRequest(app, req, res, reassignPayload);
         })
@@ -398,19 +394,7 @@
 
       delete req.session.availableForMove;
 
-      const reassignPayload = {
-        jurorNumbers: validationPayload.jurorNumbers,
-        receivingCourtLocCode: validationPayload.receivingCourtLocCode,
-        sourceCourtLocCode: validationPayload.sendingCourtLocCode,
-        sourcePoolNumber: validationPayload.sourcePoolNumber,
-      };
-
-      if (req.body.poolNumber !== 'new-pool'){
-        reassignPayload.receivingPoolNumber = validationPayload.receivingPoolNumber;
-      } else {
-        reassignPayload.targetServiceStartDate = dateFilter(new Date(), null, 'YYYY-MM-DD');
-        reassignPayload.sendingCourtLocationCode = validationPayload.sendingCourtLocCode;
-      }
+      const reassignPayload = buildReassignPayload(validationPayload, jurorNumbers);
 
       // TODO: handle better
       // if continuing after validation would leave with no jurors to reassign, redirect without reassigning
@@ -431,48 +415,118 @@
     };
   };
 
+  module.exports.getReassignIneligibleAge = (app) => async (req, res) => {
+    const ineligibleReassignments = _.clone(req.session.ineligibleReassignments);
+    const ineligibleJurors = ineligibleReassignments?.jurors || [];
+
+    if (!ineligibleJurors.length) {
+      return res.redirect(getCancelReassignReturnUrl(app, req));
+    }
+
+    let ineligibleJurorsWithDetails;
+    try {
+      ineligibleJurorsWithDetails = await fetchAndMergeIneligibleJurorDetails(req, ineligibleJurors);
+    } catch {
+      app.logger.crit('Failed to fetch juror details for ineligible age jurors during reassignment flow: ', {
+        auth: req.session.authentication,
+        data: {
+          jurors: ineligibleJurors.map(juror => juror.jurorNumber),
+        },
+      });
+
+      return res.render('_errors/generic');
+    }
+
+    return res.render('pool-management/_common/ineligible-age-jurors.njk', {
+      action: 'reassigned',
+      cancelText: ineligibleReassignments.cancelText,
+      ineligibleJurors: ineligibleJurorsWithDetails,
+      bannerMessage: _.clone(req.session.bannerMessage),
+      cancelUrl: ineligibleReassignments.returnUrl || getCancelReassignReturnUrl(app, req),
+      processUrl: getReassignIneligibleAgePostUrl(app, req),
+    });
+  };
+
+  module.exports.postReassignIneligibleAge = (app) => async (req, res) => {
+    const ineligibleReassignments = _.clone(req.session.ineligibleReassignments);
+    let { jurorNumbers } = req.body;
+
+    jurorNumbers = Array.isArray(jurorNumbers) ? jurorNumbers : [jurorNumbers];
+
+    const returnUrl = ineligibleReassignments?.returnUrl || getCancelReassignReturnUrl(app, req);
+
+    delete req.session.ineligibleReassignments;
+    delete req.session.poolJurorsReassign;
+
+    try {
+      await bulkDisqualifyByAge(req, jurorNumbers);
+
+      app.logger.info('Successfully disqualified jurors by age during reassignment flow: ', {
+        auth: req.session.authentication,
+        data: {
+          jurorNumbers,
+        },
+      });
+
+      const message = `${jurorNumbers.length} juror${jurorNumbers.length !== 1 ? 's' : ''} disqualified due to age.`;
+
+      req.session.bannerMessage = req.session.bannerMessage ? `${req.session.bannerMessage}. ${message}` : message;
+    } catch (err) {
+      app.logger.crit('Failed to disqualify jurors by age during reassignment flow: ', {
+        auth: req.session.authentication,
+        data: {
+          jurorNumbers,
+        },
+        error: (typeof err.error !== 'undefined') ? err.error : err.toString(),
+      });
+
+      req.session.errors = modUtils.makeManualError('jurors', 'Failed to disqualify jurors by age');
+    }
+
+    return res.redirect(returnUrl);
+  };
+
   function sendReassignRequest(app, req, res, payload) {
     return requestObj.reassignJuror
       .put(req, payload)
       .then((data) => {
         modUtils.replaceAllObjKeys(data, _.camelCase);
         const tmpLocCode = req.session.receivingCourtLocCode;
+        const returnUrl = getReassignReturnUrl(app, req, payload, tmpLocCode);
 
         delete req.session.receivingCourtLocCode;
         delete req.session.processLateSummons;
 
-        const poolUrl = app.namedRoutes.build('pool-overview.get', {
-          poolNumber: data.newPoolNumber,
-        });
+        setReassignBannerMessage(app, req, payload, data, tmpLocCode);
 
-        req.session.bannerMessage = `Reassigned to pool <a class="govuk-link" href="${poolUrl}">${data.newPoolNumber}</a>`;
-        if (req.session.poolJurorsReassign) {
-          req.session.bannerMessage = `${data.numberReassigned} jurors reassigned to pool <a class="govuk-link" href="${poolUrl}">${data.newPoolNumber}</a>`;
-        } else if (req.url.includes('details/edit/reassign/select-pool')) {
-          const jurorUrl = app.namedRoutes.build('juror-record.overview.get', {
-            jurorNumber: req.params['jurorNumber'],
-          }) + '?loc_code=' + tmpLocCode;
-          const newCourt = req.session.courtsList.find(elem => elem.locationCode === payload.receivingCourtLocCode);
-          newCourt.formattedName = modUtils.transformCourtName(newCourt);
-          req.session.bannerMessage = `Juror <a class="govuk-link" href="${jurorUrl}">${req.params['jurorNumber']}</a> 
-            has been reassigned to <a class="govuk-link" href="${poolUrl}">${data.newPoolNumber}</a> 
-            at ${newCourt.formattedName}
-          `;
+        if (data.ageDisqualified?.length > 0) {
+          const ageDisqualifiedJurors = data.ageDisqualified;
+
+          app.logger.warn('Some selected reassignment jurors were not processed: ', {
+            auth: req.session.authentication,
+            data: {
+              notProcessed: ageDisqualifiedJurors.map((juror) => juror.jurorNumber),
+            },
+          });
+
+          req.session.ineligibleReassignments = {
+            jurors: ageDisqualifiedJurors,
+            returnUrl: getReassignReturnUrl(app, req, payload),
+            cancelText: getReassignIneligibleAgeCancelText(req),
+          };
+
+          if (req.session.poolJurorsReassign) {
+            delete req.session.poolJurorsReassign;
+          }
+
+          return res.redirect(getReassignIneligibleAgeGetUrl(app, req, data));
         }
         
         if (req.session.poolJurorsReassign) {
           delete req.session.poolJurorsReassign;
-          return res.redirect(app.namedRoutes.build('pool-overview.get', {
-            poolNumber: payload.sourcePoolNumber,
-          }));
-        } else if (req.url.includes('details/edit/reassign/select-pool')) {
-          return res.redirect(app.namedRoutes.build('juror-record.details.get', {
-            jurorNumber: req.params['jurorNumber'],
-          }) + '?loc_code=' + tmpLocCode);
         }
-        return res.redirect(app.namedRoutes.build('juror-record.overview.get', {
-          jurorNumber: req.params['jurorNumber'],
-        }) + '?loc_code=' + tmpLocCode);
+
+        return res.redirect(returnUrl);
       })
       .catch((err) => {
         app.logger.crit('Failed to reassign the juror to a different pool', {
@@ -506,6 +560,144 @@
 
         return res.render('_errors/generic', { err });
       });
+  }
+
+  function buildReassignPayload(validationPayload, jurorNumbers) {
+    const reassignPayload = {
+      jurorNumbers,
+      receivingCourtLocCode: validationPayload.receivingCourtLocCode,
+      sourceCourtLocCode: validationPayload.sendingCourtLocCode,
+      sourcePoolNumber: validationPayload.sourcePoolNumber,
+    };
+
+    if (validationPayload.receivingPoolNumber) {
+      reassignPayload.receivingPoolNumber = validationPayload.receivingPoolNumber;
+    } else {
+      reassignPayload.targetServiceStartDate = dateFilter(new Date(), null, 'YYYY-MM-DD');
+      reassignPayload.sendingCourtLocationCode = validationPayload.sendingCourtLocCode;
+    }
+
+    return reassignPayload;
+  }
+
+  function setReassignBannerMessage(app, req, payload, data, tmpLocCode) {
+    if (!data.newPoolNumber) {
+      return;
+    }
+
+    const poolUrl = app.namedRoutes.build('pool-overview.get', {
+      poolNumber: data.newPoolNumber,
+    });
+    const numberReassigned = data.numberReassigned ?? payload.jurorNumbers.length;
+
+    if (numberReassigned <= 0) {
+      return;
+    }
+
+    req.session.bannerMessage = `Reassigned to pool <a class="govuk-link" href="${poolUrl}">${data.newPoolNumber}</a>`;
+
+    if (req.session.poolJurorsReassign) {
+      const jurorString = numberReassigned > 1 ? numberReassigned + ' jurors' : '1 juror';
+
+      req.session.bannerMessage = `${jurorString} reassigned to pool <a class="govuk-link" href="${poolUrl}">${data.newPoolNumber}</a>`;
+    } else if (req.url.includes('details/edit/reassign/select-pool')) {
+      const jurorUrl = app.namedRoutes.build('juror-record.overview.get', {
+        jurorNumber: req.params['jurorNumber'],
+      }) + '?loc_code=' + tmpLocCode;
+      const newCourt = req.session.courtsList.find(elem => elem.locationCode === payload.receivingCourtLocCode);
+
+      newCourt.formattedName = modUtils.transformCourtName(newCourt);
+      req.session.bannerMessage = `Juror <a class="govuk-link" href="${jurorUrl}">${req.params['jurorNumber']}</a>
+        has been reassigned to <a class="govuk-link" href="${poolUrl}">${data.newPoolNumber}</a>
+        at ${newCourt.formattedName}
+      `;
+    }
+  }
+
+  function getReassignReturnUrl(app, req, payload, tmpLocCode) {
+    if (req.session.poolJurorsReassign || req.params.poolNumber) {
+      return app.namedRoutes.build('pool-overview.get', {
+        poolNumber: payload.sourcePoolNumber || req.params.poolNumber,
+      });
+    }
+
+    if (req.url.includes('details/edit/reassign/select-pool') || req.url.includes('details/edit/reassign/ineligible-age')) {
+      let url = app.namedRoutes.build('juror-record.details.get', {
+        jurorNumber: req.params['jurorNumber'],
+      });
+
+      return tmpLocCode ? url + '?loc_code=' + tmpLocCode : url;
+    }
+
+    let url = app.namedRoutes.build('juror-record.overview.get', {
+      jurorNumber: req.params['jurorNumber'],
+    });
+
+    return tmpLocCode ? url + '?loc_code=' + tmpLocCode : url;
+  }
+
+  function getCancelReassignReturnUrl(app, req) {
+    if (req.params.poolNumber) {
+      return app.namedRoutes.build('pool-overview.get', {
+        poolNumber: req.params.poolNumber,
+      });
+    }
+
+    if (req.url.includes('details/edit/reassign/ineligible-age')) {
+      return app.namedRoutes.build('juror-record.details.get', {
+        jurorNumber: req.params.jurorNumber,
+      });
+    }
+
+    return app.namedRoutes.build('juror-record.overview.get', {
+      jurorNumber: req.params.jurorNumber,
+    });
+  }
+
+  function getReassignIneligibleAgeGetUrl(app, req, data) {
+    if (req.session.poolJurorsReassign || req.params.poolNumber) {
+      return app.namedRoutes.build('pool-management.reassign.ineligible-age.get', {
+        poolNumber: req.params.poolNumber,
+      });
+    }
+
+    if (req.url.includes('details/edit/reassign/select-pool')) {
+      return app.namedRoutes.build('juror-record.details-edit.reassign.ineligible-age.get', {
+        jurorNumber: req.params.jurorNumber,
+        newDate: dateFilter(data?.ageDisqualified[0].newDate, 'DD/MM/YYYY', 'yyyy-MM-DD'),
+      });
+    }
+
+    return app.namedRoutes.build('juror-management.reassign.ineligible-age.get', {
+      jurorNumber: req.params.jurorNumber,
+      newDate: dateFilter(data?.ageDisqualified[0].newDate, 'DD/MM/YYYY', 'yyyy-MM-DD'),
+    });
+  }
+
+  function getReassignIneligibleAgePostUrl(app, req) {
+    if (req.params.poolNumber) {
+      return app.namedRoutes.build('pool-management.reassign.ineligible-age.post', {
+        poolNumber: req.params.poolNumber,
+      });
+    }
+
+    if (req.url.includes('details/edit/reassign/ineligible-age')) {
+      return app.namedRoutes.build('juror-record.details-edit.reassign.ineligible-age.post', {
+        jurorNumber: req.params.jurorNumber,
+      });
+    }
+
+    return app.namedRoutes.build('juror-management.reassign.ineligible-age.post', {
+      jurorNumber: req.params.jurorNumber,
+    });
+  }
+
+  function getReassignIneligibleAgeCancelText(req) {
+    if (req.session.poolJurorsReassign || req.params.poolNumber) {
+      return 'Cancel and return to pool overview';
+    }
+
+    return 'Cancel and return to juror record';
   }
 
 })();

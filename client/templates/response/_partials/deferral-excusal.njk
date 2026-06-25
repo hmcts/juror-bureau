@@ -1,3 +1,5 @@
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+
 <section class="detail-section {% if hasModAccess %}mod-reply-section{% endif %}" id="deferral-excusal-section">
 
   <div class="govuk-grid-row govuk-body">
@@ -130,6 +132,18 @@
         {% endif %}
       {% endif %}
     </dl>
+
+    {% if (response.excusal or response.excusalReason) and addressDetails.changed %}
+      {% set insetTextHtml %}
+        <p class="govuk-body govuk-!-font-weight-bold">Letter received before this reply was processed</p>
+        <p class="govuk-body">
+          The juror record address and the summons reply address are different. If the excusal is refused, the officer will choose where the refusal letter is sent.
+        </p>
+      {% endset %}
+      {{ govukInsetText({
+        html: insetTextHtml
+      }) }}
+    {% endif %}
   </div>
 
   <div class="edit-section" id="edit-deferral-excusal">

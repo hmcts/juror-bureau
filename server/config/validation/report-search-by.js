@@ -187,6 +187,16 @@
         details: 'Enter a date to search attendances up until',
       }],
     },
+    sittingDays: {
+      dateFrom: [{
+        summary: 'Enter a date to search sitting days from',
+        details: 'Enter a date to search sitting days from',
+      }],
+      dateTo: [{
+        summary: 'Enter a date to search sitting days up until',
+        details: 'Enter a date to search sitting days up until',
+      }],
+    },
     unconfirmedAttendance: {
       dateFrom: [{
         summary: 'Enter a date to search unconfirmed attendances from',
