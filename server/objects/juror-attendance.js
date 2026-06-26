@@ -82,7 +82,7 @@
     get: function(date) {
       return {
         uri: this.resource.replace('{date}', date),
-        transform: (data) => { delete data['_headers']; return mapSnakeToCamel(Object.values(data))},
+        transform: (data) => { delete data['_headers']; return Object.values(mapSnakeToCamel(data)); },
       };
     },
   });

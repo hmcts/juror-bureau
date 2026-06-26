@@ -120,7 +120,7 @@
           }));
       
           let jurorDetails = await jurorRecordDetailsDAO.post(req, jurorDetailsPayload);
-          delete jurorDetails.Headers;
+          delete jurorDetails._headers;
           jurorDetails = Object.values(jurorDetails);
 
           nonAttendancePayload = jurorDetails.map((juror) => ({

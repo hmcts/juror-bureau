@@ -34,7 +34,7 @@
     get: function() {
       return {
         uri: this.resource,
-        transform: (data) => { delete data._headers; return mapSnakeToCamel(Object.values(data)); },
+        transform: (data) => { delete data._headers; return Object.values(mapSnakeToCamel(data)); },
       };
     }
   });

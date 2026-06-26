@@ -75,7 +75,7 @@
       return {
         transform: data => {
           delete data['_headers'];
-          return mapSnakeToCamel(Object.values(data));
+          return Object.values(mapSnakeToCamel(data));
         },
       };
     },
@@ -87,7 +87,7 @@
         uri: urljoin(this.resource, locCode),
         transform: data => {
           delete data['_headers'];
-          return mapSnakeToCamel(Object.values(data));
+          return Object.values(mapSnakeToCamel(data));
         },
       };
     },

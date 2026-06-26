@@ -9,7 +9,7 @@
     get: function(jurorNumber) {
       return {
         uri: urljoin(this.resource, jurorNumber),
-        transform: (data) => { delete data._headers; return mapSnakeToCamel(Object.values(data)); },
+        transform: (data) => { delete data._headers; return Object.values(mapSnakeToCamel(data)); },
       }
     }
   });

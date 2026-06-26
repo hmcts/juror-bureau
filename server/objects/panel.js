@@ -39,7 +39,7 @@
 
       return { 
         uri,
-        transform: (data) => { delete data._headers; return mapSnakeToCamel(Object.values(data)); }
+        transform: (data) => { delete data._headers; return Object.values(mapSnakeToCamel(data)); }
       };
     }
   });
@@ -73,7 +73,7 @@
     get: function(courtLocationCode) {
       return{
         uri: `${this.resource}?court_location_code=${courtLocationCode}`,
-        transform: (data) => { delete data._headers; return mapSnakeToCamel(Object.values(data)); }
+        transform: (data) => { delete data._headers; return Object.values(mapSnakeToCamel(data)); }
       }
     }
   });

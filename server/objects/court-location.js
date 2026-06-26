@@ -11,7 +11,7 @@
         uri: this.resource + '?postcode=' + postcode,
         transform: (data) => {
           delete data._headers;
-          return mapSnakeToCamel(Object.values(data));
+          return Object.values(mapSnakeToCamel(data));
         },
       }
     }

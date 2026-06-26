@@ -79,7 +79,7 @@
             body: mapCamelToSnake(_.cloneDeep(body)),
             transform: (data) => {
               delete data['_headers'];
-              return mapSnakeToCamel(Object.values(data));
+              return Object.values(mapSnakeToCamel(data));
             },
           };
         },
@@ -120,7 +120,7 @@
         get: function(courtLocationCode) {
           return {
             uri: `${this.resource}?court_location=${courtLocationCode}`,
-            transform: (data) => { delete data['_headers']; return mapSnakeToCamel(Object.values(data)); },
+            transform: (data) => { delete data['_headers']; return Object.values(mapSnakeToCamel(data)); },
           };
         },
       });
@@ -134,7 +134,7 @@
             uri: `${this.resource}?case_number=${caseNumber}&court_location=${courtLocationCode}`,
             transform: (data) => {
               delete data['_headers'];
-              return mapSnakeToCamel(Object.values(data));
+              return Object.values(mapSnakeToCamel(data));
             },
           };
         },
@@ -150,7 +150,7 @@
             body: mapCamelToSnake(_.cloneDeep(body)),
             transform: (data) => {
               delete data['_headers'];
-              return mapSnakeToCamel(Object.values(data));
+              return Object.values(mapSnakeToCamel(data));
             },
           };
         },

@@ -183,6 +183,7 @@
             delete req.session.bannerError;
           }
 
+          console.log('panelData', panelData);
           if (panelData) {
             trialData.panelledJurors = panelData;
             canEmpanel = panelData.filter((juror) => juror.jurorStatus === 'Panel').length > 0;

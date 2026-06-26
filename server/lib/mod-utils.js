@@ -1378,6 +1378,7 @@
   const mapSnakeToCamel = (object) => {
     const headers = object['_headers'];
     const transformed = replaceAllObjKeys(object, snakeToCamel);
+    const transformed = replaceAllObjKeys(_.omit(object, ['_headers']), snakeToCamel);
     if (headers) {
       return {
         '_headers': headers,
