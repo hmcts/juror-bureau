@@ -367,7 +367,7 @@
             });
           }
 
-          const reassignPayload = buildReassignPayload(validationPayload, validationPayload.jurorNumbers);
+          const reassignPayload = buildReassignPayload(validationPayload, validationPayload.jurorNumbers, typeof req.session.processLateSummons !== 'undefined');
 
           return sendReassignRequest(app, req, res, reassignPayload);
         })
@@ -394,7 +394,7 @@
 
       delete req.session.availableForMove;
 
-      const reassignPayload = buildReassignPayload(validationPayload, jurorNumbers);
+      const reassignPayload = buildReassignPayload(validationPayload, jurorNumbers, typeof req.session.processLateSummons !== 'undefined');
 
       // TODO: handle better
       // if continuing after validation would leave with no jurors to reassign, redirect without reassigning
@@ -562,12 +562,13 @@
       });
   }
 
-  function buildReassignPayload(validationPayload, jurorNumbers) {
+  function buildReassignPayload(validationPayload, jurorNumbers, fromSummonsReply = false) {
     const reassignPayload = {
       jurorNumbers,
       receivingCourtLocCode: validationPayload.receivingCourtLocCode,
       sourceCourtLocCode: validationPayload.sendingCourtLocCode,
       sourcePoolNumber: validationPayload.sourcePoolNumber,
+      'from_summons_reply': fromSummonsReply,
     };
 
     if (validationPayload.receivingPoolNumber) {
