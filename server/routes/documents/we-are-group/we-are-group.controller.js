@@ -26,7 +26,7 @@
           built: true,
           url: app.namedRoutes.build('documents.get'),
         },
-        cancelUrl: app.namedRoutes.build('messaging.send.get'),
+        cancelUrl: app.namedRoutes.build('documents.get'),
         tmpBody,
         errors: {
           title: 'Please check the form',
@@ -218,7 +218,17 @@
         return res.render('_errors/generic', { err });
       }
 
-      console.log('jurorDetails', jurorDetails?.data?.emailAddress);
+      if (jurorDetails?.data.commonDetails.jurorStatus !== 'Summoned') {
+        req.session.errors = {
+          emailAddress: [{
+            details: 'Selected juror must be in summoned status',
+            summary: 'Selected juror must be in summoned status',
+          }],
+        };
+
+        return res.redirect(app.namedRoutes.build(`${message.routeName}.results.get`));
+      }
+
 
       if (!jurorDetails?.data?.emailAddress || jurorDetails?.data?.emailAddress === '') {
         req.session.errors = {
@@ -333,7 +343,7 @@
         const response = await sendBureauMessage.post(req, payload);
 
         if (response.failedNotifications && response.failedNotifications.length > 0) {
-          app.logger.warn('Failed to send bureau message: ', {
+          app.logger.crit('Failed to send bureau message: ', {
             auth: req.session.authentication,
             payload,
             response,
@@ -355,7 +365,8 @@
           response,
         });
 
-        req.session.bannerMessage = `The message has been sent to ${jurorNumber} using GOV.UK Notify.`;
+        req.session.bannerMessage =
+          `The message has been sent to <a href="${app.namedRoutes.build('juror-record.overview.get', { jurorNumber })}" class="govuk-link">${jurorNumber}</a> using GOV.UK Notify.`;
 
         return res.redirect(app.namedRoutes.build('documents.get'));
       } catch (err) {
