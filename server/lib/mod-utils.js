@@ -1376,6 +1376,9 @@
   const snakeToCamel = (item) => item.split('_').reduce((prev, curr) => prev + curr[0].toUpperCase() + curr.slice(1));
 
   const mapSnakeToCamel = (object) => {
+    if (typeof object !== 'object' || object === null) {
+      return object;
+    }
     const headers = object['_headers'];
     const transformed = replaceAllObjKeys(_.omit(object, ['_headers']), snakeToCamel);
     if (headers) {
