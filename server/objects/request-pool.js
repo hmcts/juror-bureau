@@ -6,25 +6,15 @@
   const utils = require('../lib/utils');
   const { mapCamelToSnake, mapSnakeToCamel } = require('../lib/mod-utils');
 
-  const courtLocationsTransform = (data) => {
-    const courts = data.data || [];
-
-    delete data._headers;
-    return {
-      ...mapSnakeToCamel(data),
-      courts: mapSnakeToCamel(courts),
-    };
-  };
-
   module.exports.fetchCourts = new DAO('moj/pool-request/court-locations', {
     get: function() {
-      return { transform: courtLocationsTransform };
+      return { transform: mapSnakeToCamel };
     },
   });
 
   module.exports.fetchAllCourts = new DAO('moj/court-location/all-court-locations', {
     get: function() {
-      return { transform: courtLocationsTransform };
+      return { transform: mapSnakeToCamel };
     },
   });
 
@@ -110,13 +100,13 @@
 
   module.exports.fetchCourtsDAO = new DAO('moj/pool-request/court-locations', {
     get: function() {
-      return { transform: courtLocationsTransform };
+      return { transform: mapSnakeToCamel };
     },
   });
 
   module.exports.fetchAllCourtsDAO = new DAO('moj/court-location/all-court-locations', {
     get: function() {
-      return { transform: courtLocationsTransform };
+      return { transform: mapSnakeToCamel };
     },
   });
 
