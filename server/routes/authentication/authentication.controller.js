@@ -24,14 +24,11 @@ module.exports.postDevEmailAuth = function(app) {
 
 module.exports.getCourtsList = function(app) {
   return async function(req, res) {
-    const signingKey = secretsConfig.get('secrets.juror.bureau-jwtNoAuthKey');
-    const expiresIn = secretsConfig.get('secrets.juror.bureau-jwtTTL');
-
-    const authToken = jwt.sign({}, signingKey, { expiresIn });
+    const authToken = getNoKeyAuthToken(req);
     const body = { email: req.session.email || req.session.authentication?.email };
     let courtsList;
 
-    if (!body) {
+    if (!body.email) {
       req.session.errors = makeManualError('email', 'Email is required for courts list');
       
       return res.redirect(app.namedRoutes.build('login.get'));
@@ -83,7 +80,7 @@ module.exports.getCourtsList = function(app) {
 module.exports.postCourtsList = function(app) {
   return async function(req, res) {
     const locCode = req.body.court;
-    const body = { email: req.session.email || req.session.authentication.email };
+    const body = { email: req.session.email || req.session.authentication?.email };
 
     if (!locCode) {
       req.session.errors = makeManualError('select-court', 'Select the court you want to manage');
@@ -111,12 +108,15 @@ module.exports.postCourtsList = function(app) {
 module.exports.getSelectCourt = function(app) {
   return async function(req, res) {
     const { locCode } = req.params;
-    const body = { email: req.session.authentication.email };
+    const body = { email: req.session.authentication?.email };
 
-    const signingKey = secretsConfig.get('secrets.juror.bureau-jwtNoAuthKey');
-    const expiresIn = secretsConfig.get('secrets.juror.bureau-jwtTTL');
+    if (!body.email) {
+      app.logger.crit('Missing authenticated email when selecting a court', {
+        data: { locCode },
+      });
 
-    req.session.noKeyAuthToken = jwt.sign({}, signingKey, { expiresIn });
+      return res.redirect(app.namedRoutes.build('homepage.get'));
+    }
 
     try {
       await doLogin(req)(app, locCode, body);
@@ -142,15 +142,12 @@ module.exports.getSelectCourt = function(app) {
 };
 
 module.exports.getChangeCourt = (app) => async (req, res) => {
-  const signingKey = secretsConfig.get('secrets.juror.bureau-jwtNoAuthKey');
-  const expiresIn = secretsConfig.get('secrets.juror.bureau-jwtTTL');
-
-  const authToken = jwt.sign({}, signingKey, { expiresIn });
+  const authToken = getNoKeyAuthToken(req);
   const body = { email: req.session.email || req.session.authentication?.email };
   let courtsList;
   let { filter } = req.query;
 
-  if (!body) {
+  if (!body.email) {
     req.session.errors = makeManualError('email', 'Email is required for courts list');
     
     return res.redirect(app.namedRoutes.build('login.get'));
@@ -212,7 +209,8 @@ module.exports.postFilterChangeCourts = function(app) {
 
 function doLogin(req) {
   return async function(app, locCode, body) {
-    const jwtResponse = await axiosClient('post', `/auth/moj/jwt/${locCode}`, req.session.noKeyAuthToken, { body });
+    const noKeyAuthToken = getNoKeyAuthToken(req);
+    const jwtResponse = await axiosClient('post', `/auth/moj/jwt/${locCode}`, noKeyAuthToken, { body });
 
     // delete headers if they exist
     delete jwtResponse._headers;
@@ -234,7 +232,7 @@ function doLogin(req) {
         app.logger.info('No courts list in session when trying to login, fetching from API', {
           data: { body, locCode },
         });
-        req.session.authCourtsList = await fetchAuthCourtsList(req.session.noKeyAuthToken, body);
+        req.session.authCourtsList = await fetchAuthCourtsList(noKeyAuthToken, body);
       }
 
       req.session.selectedCourt = req.session.authCourtsList.find(court => court.locCode === locCode);
@@ -295,4 +293,17 @@ async function fetchAuthCourtsList (authToken, body) {
   delete courtsResponse._headers;
 
   return Object.values(replaceAllObjKeys(courtsResponse, _.camelCase));
+}
+
+const getNoKeyAuthToken = (req) => {
+  if (req.session.noKeyAuthToken) {
+    return req.session.noKeyAuthToken;
+  }
+
+  const signingKey = secretsConfig.get('secrets.juror.bureau-jwtNoAuthKey');
+  const expiresIn = secretsConfig.get('secrets.juror.bureau-jwtTTL');
+
+  req.session.noKeyAuthToken = jwt.sign({}, signingKey, { expiresIn });
+
+  return req.session.noKeyAuthToken;
 }
