@@ -3,7 +3,7 @@ module.exports = [
     key: 'contactInformation',
     path: 'we-are-group-contact-information',
     routeName: 'documents.we-are-group-contact',
-    title: 'We are Group Contact Information',
+    title: 'We Are Group Contact Information',
     code: 'CONTACT_INFORMATION',
     messageContent: 'Thank you for contacting HM Courts & Tribunals Service (HMCTS) Jury Central Summoning Bureau.'
       + '\n\nAs discussed today, if you would like support to complete your online form, you can contact our partner organisation We Are Group who can help. They do not provide legal advice.'
