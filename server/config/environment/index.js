@@ -43,6 +43,9 @@ const all = {
   // If true, logs will be output in terminal as well as saved to file
   logConsole: 'debug',
 
+  // If true, log sanitisation is disabled and raw fields will be logged
+  logSanitisationDisabled: process.env.LOG_SANITISATION_DISABLED === 'true' || process.env.NODE_ENV === 'development',
+
   // auth config
   auth: {
     authUrl: (tenantId) => `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0`,
