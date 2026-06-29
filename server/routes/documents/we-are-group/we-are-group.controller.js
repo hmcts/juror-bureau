@@ -218,18 +218,6 @@
         return res.render('_errors/generic', { err });
       }
 
-      if (jurorDetails?.data.commonDetails.jurorStatus !== 'Summoned') {
-        req.session.errors = {
-          emailAddress: [{
-            details: 'Selected juror must be in summoned status',
-            summary: 'Selected juror must be in summoned status',
-          }],
-        };
-
-        return res.redirect(app.namedRoutes.build(`${message.routeName}.results.get`));
-      }
-
-
       if (!jurorDetails?.data?.emailAddress || jurorDetails?.data?.emailAddress === '') {
         req.session.errors = {
           emailAddress: [{
