@@ -1,0 +1,87 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "messaging/_common/juror-record-url.macro.njk" import jurorRecordUrl %}
+
+{% set currentApp = "Documents" %}
+
+{% block page_title %}{{ serviceName }} - Documents - {{ messageTitle }}{% endblock %}
+{% block page_identifier %}Documents - {{ messageTitle }}{% endblock %}
+
+{% block containerStart %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLinkUrl,
+    attributes: {
+      id: "backLinkAnchor"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-xl">{{ messageTitle }}</span>
+      <h1 class="govuk-heading-xl">Send message to {{ (juror.commonDetails.firstName + ' ' + juror.commonDetails.lastName) | capitalizeFully }}</h1>
+
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              text: "Juror number"
+            },
+            value: {
+              html: jurorRecordUrl({
+                url: url,
+                jurorNumber: jurorNumber,
+                locCode: locCode
+              })
+            }
+          },
+          {
+            key: {
+              text: "Contact"
+            },
+            value: {
+              html: (juror.emailAddress | lower if juror.emailAddress else "-") + "<br>" + (juror.primaryPhone if juror.primaryPhone else "-")
+            }
+          }
+        ]
+      }) }}
+
+      <h2 class="govuk-heading-m">Message template</h2>
+      <p class="govuk-body">{{ messageTitle }}</p>
+
+      {{ govukTextarea({
+        name: "messageContent",
+        id: "more-detail",
+        label: {
+          text: "Message",
+          classes: "govuk-label--m"
+        },
+        hint: {
+          text: "This will be sent using GOV.UK Notify."
+        },
+        value: messageContent,
+        disabled: true
+      }) }}
+
+      <form action="{{ postUrl }}" method="post" id="weAreGroupPreviewForm">
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            type: "submit"
+          }) }}
+          <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+    </div>
+  </div>
+
+{% endblock %}

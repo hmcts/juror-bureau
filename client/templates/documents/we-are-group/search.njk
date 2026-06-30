@@ -1,0 +1,129 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{% set currentApp = "Documents" %}
+
+{% block page_title %}{{ serviceName }} - Documents - {{ messageTitle }}{% endblock %}
+{% block page_identifier %}Documents - {{ messageTitle }}{% endblock %}
+
+{% block containerStart %}
+  {{ govukBackLink({
+    text: "Back to all documents",
+    href: backLinkUrl,
+    attributes: {
+      id: "backLinkAnchor"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  {% set searchByError = undefined %}
+  {% if errors.items["searchBy"] %}
+    {% set searchByError = { text: errors.items["searchBy"][0].details } %}
+  {% endif %}
+
+  {% set jurorNumberError = undefined %}
+  {% if errors.items["jurorNumber"] %}
+    {% set jurorNumberError = { text: errors.items["jurorNumber"][0].details } %}
+  {% endif %}
+
+  {% set firstNameError = undefined %}
+  {% if errors.items["firstName"] %}
+    {% set firstNameError = { text: errors.items["firstName"][0].details } %}
+  {% endif %}
+
+  {% set lastNameError = undefined %}
+  {% if errors.items["lastName"] %}
+    {% set lastNameError = { text: errors.items["lastName"][0].details } %}
+  {% endif %}
+
+  {% set jurorNumberHtml %}
+    {{ govukInput({
+      label: {
+        text: "Enter juror number"
+      },
+      classes: "govuk-input--width-10",
+      id: "jurorNumber",
+      name: "jurorNumber",
+      value: formFields.jurorNumber,
+      errorMessage: jurorNumberError
+    }) }}
+  {% endset %}
+
+  {% set jurorNameHtml %}
+    {{ govukInput({
+      label: {
+        text: "First name"
+      },
+      classes: "govuk-input--width-20",
+      id: "firstName",
+      name: "firstName",
+      value: formFields.firstName,
+      errorMessage: firstNameError
+    }) }}
+    {{ govukInput({
+      label: {
+        text: "Last name"
+      },
+      classes: "govuk-input--width-20",
+      id: "lastName",
+      name: "lastName",
+      value: formFields.lastName,
+      errorMessage: lastNameError
+    }) }}
+  {% endset %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-xl">Documents</span>
+      <h1 class="govuk-heading-xl">{{ messageTitle }}</h1>
+
+      <form action="{{ postUrl }}" method="post" id="weAreGroupSearchForm">
+        {{ govukRadios({
+          name: "searchBy",
+          value: formFields.searchBy,
+          errorMessage: searchByError,
+          fieldset: {
+            legend: {
+              text: "Search by",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          items: [
+            {
+              value: "jurorNumber",
+              text: "Juror number",
+              conditional: {
+                html: jurorNumberHtml
+              }
+            },
+            {
+              value: "jurorName",
+              text: "Juror name",
+              conditional: {
+                html: jurorNameHtml
+              }
+            }
+          ]
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Continue",
+            type: "submit"
+          }) }}
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+    </div>
+  </div>
+
+{% endblock %}
