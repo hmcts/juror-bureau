@@ -74,4 +74,14 @@
     }
   });
 
+  module.exports.sendBureauMessage = new DAO('moj/messages/bureau/send', {
+    post: function(body) {
+      return {
+        uri: this.resource,
+        body: mapCamelToSnake(body),
+        transform: (data) => basicDataTransform2(data),
+      };
+    }
+  });
+
 })();

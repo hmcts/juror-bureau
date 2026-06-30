@@ -1,0 +1,111 @@
+{% extends "layouts/default-no-nav.njk" %}
+
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "messaging/_common/juror-record-url.macro.njk" import jurorRecordUrl %}
+
+{% set currentApp = "Documents" %}
+
+{% block page_title %}{{ serviceName }} - Documents - {{ messageTitle }}{% endblock %}
+{% block page_identifier %}Documents - {{ messageTitle }}{% endblock %}
+
+{% block containerStart %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLinkUrl,
+    attributes: {
+      id: "backLinkAnchor"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+  {% include "includes/errors.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-xl">{{ messageTitle }}</span>
+      <h1 class="govuk-heading-xl">Check message before sending</h1>
+
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              text: "Juror"
+            },
+            value: {
+              text: (juror.commonDetails.firstName + ' ' + juror.commonDetails.lastName) | capitalizeFully
+            }
+          },
+          {
+            key: {
+              text: "Juror number"
+            },
+            value: {
+              html: jurorRecordUrl({
+                url: url,
+                jurorNumber: jurorNumber,
+                locCode: locCode
+              })
+            }
+          },
+          {
+            key: {
+              text: "Sent by"
+            },
+            value: {
+              text: "GOV.UK Notify"
+            }
+          },
+          {
+            key: {
+              text: "Mobile number"
+            },
+            value: {
+              text: juror.primaryPhone if juror.primaryPhone else "-"
+            }
+          },
+          {
+            key: {
+              text: "Email address"
+            },
+            value: {
+              text: juror.emailAddress | lower if juror.emailAddress else "-"
+            }
+          },
+          {
+            key: {
+              text: "Message"
+            },
+            value: {
+              html: messageContent | replace("\n", "<br>")
+            }
+          }
+        ]
+      }) }}
+
+      {% call govukInsetText() %}
+        The message will be recorded on the juror record when it is sent.
+      {% endcall %}
+
+      <form action="{{ postUrl }}" method="post" id="weAreGroupConfirmForm">
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Send message",
+            type: "submit"
+          }) }}
+          <a class="govuk-link" href="{{ cancelUrl }}">Cancel</a>
+        </div>
+
+        <input type="hidden" name="email" value="{{ juror.emailAddress }}">
+
+        <input type="hidden" name="_csrf" value="{{ csrftoken }}">
+      </form>
+    </div>
+  </div>
+
+{% endblock %}

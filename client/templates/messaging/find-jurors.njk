@@ -7,8 +7,8 @@
 
 {% set currentApp = "Messaging" %}
 
-{% block page_title %}{{ serviceName }} - Messaging - {{ messageTitle }}{% endblock %}
-{% block page_identifier %}Messaging{% endblock %}
+{% block page_title %}{{ serviceName }} - {{"Messaging" if not bureauMessageSearch else "Documents"}} - {{ messageTitle }}{% endblock %}
+{% block page_identifier %}{{ "Messaging" if not bureauMessageSearch else "Documents" }}{% endblock %}
 
 {% block containerStart %}
   {% include "includes/back-link.njk" %}
@@ -140,7 +140,7 @@
               conditional: {
                 html: jurorNameHtml
               }
-            },
+            }].concat([
             {
               value: "pool",
               text: "Pool",
@@ -166,7 +166,7 @@
                 html: dateDeferredToHtml
               }
             }
-          ]
+          ] if not bureauMessageSearch else []) 
         }) }}
 
         <div class="govuk-button-group">

@@ -18,7 +18,7 @@
   {% if printingMessage %}
     {{ mojAlert({
       variant: "success",
-      text: printingMessage,
+      html: printingMessage,
       iconFallbackText: "Success"
     }) }}
   {% endif %}
@@ -38,6 +38,8 @@
         <li><a class="govuk-link" href="{{ buildUrl('postponement') }}">Postponement letters</a></li>
         <li><a class="govuk-link" href="{{ buildUrl('withdrawal') }}">Withdrawal letters</a></li>
         <li><a class="govuk-link" href="{{ buildUrl('confirmation') }}">Confirmation letters</a></li>
+        <li><a class="govuk-link" href="{{ url('documents.we-are-group-contact.get') }}">We are Group Contact Information</a></li>
+        <li><a class="govuk-link" href="{{ url('documents.we-are-group-referral-confirmed.get') }}">We Are Group Referral Confirmed</a></li>
       </ul>
 
     </div>

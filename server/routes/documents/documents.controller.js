@@ -9,10 +9,13 @@
 
       if (req.session.documentsJurorsList && req.session.documentsJurorsList.successMessage) {
         printingMessage = req.session.documentsJurorsList.successMessage;
+      } else if (req.session.bannerMessage) {
+        printingMessage = req.session.bannerMessage;
       }
 
       delete req.session.documentsJurorsList;
       delete req.session.exemptionLetter;
+      delete req.session.bannerMessage;
 
       if (isCourtUser(req, res)) {
         return res.render('documents/index-court.njk');
