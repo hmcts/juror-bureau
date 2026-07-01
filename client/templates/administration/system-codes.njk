@@ -1,7 +1,6 @@
 {% extends "layouts/default.njk" %}
 
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
 
 {% block page_title %}{{ serviceName }} - Administration - System codes - {{ title }}{% endblock %}
@@ -62,12 +61,6 @@
           } if showActiveColumn
         ],
         rows: codeRows
-      }) }}
-    </div>
-    <div class="govuk-grid-column-one-third mod-flex mod-justify-end">
-      {{ govukButton({
-        text: "Print",
-        classes: "govuk-button--secondary govuk-!-margin-top-1"
       }) }}
     </div>
   </div>
