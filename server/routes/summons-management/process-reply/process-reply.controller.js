@@ -6,6 +6,7 @@ const summonsValidator = require('../../../config/validation/summons-management'
 const digitalResponseObj = require('../../../objects/response-detail').object;
 const paperResponseObj = require('../../../objects/paper-reply').paperReplyObject;
 const validate = require('validate.js');
+const moment = require('moment');
 
 module.exports.checkOwner = (app) => async (req, res, next) =>{
   const { id, type } = req.params;
@@ -64,11 +65,16 @@ module.exports.getProcessReply = (app) => (req, res) =>{
     cancelUrl = app.namedRoutes.build('response.detail.get', routeParameters);
   }
 
+  const canRespondLateJuror = moment().startOf('day').diff(
+      moment(req.session.replyDetails.jurorStartDate, 'YYYY-MM-DD'
+    ), 'days') <= 2;
+ 
   return res.render('summons-management/process-reply', {
     jurorNumber: req.params['id'],
     processUrl: app.namedRoutes.build('process-reply.post', routeParameters),
     cancelUrl,
     isLateSummons: req.session.replyDetails.isLateSummons,
+    canRespondLateJuror,
     errors: {
       title: 'Please check the form',
       count: typeof tmpErrors !== 'undefined' ? Object.keys(tmpErrors).length : 0,
