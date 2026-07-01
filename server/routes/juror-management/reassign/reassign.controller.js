@@ -573,8 +573,8 @@
     if (validationPayload.receivingPoolNumber) {
       reassignPayload.receivingPoolNumber = validationPayload.receivingPoolNumber;
     } else {
-      reassignPayload.targetServiceStartDate = dateFilter(new Date(), null, 'YYYY-MM-DD');
-      reassignPayload.sendingCourtLocationCode = validationPayload.sendingCourtLocCode;
+      reassignPayload.serviceStartDate = dateFilter(new Date(), null, 'YYYY-MM-DD');
+      reassignPayload.sendingCourtLocCode = validationPayload.sendingCourtLocCode;
     }
 
     return reassignPayload;
