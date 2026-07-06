@@ -28,7 +28,19 @@
   const moment = require('moment')
   const { dateFilter, capitalizeFully, capitalise, timeToDuration, toSentenceCase } = require('../../../components/filters');
   const { reportExport } = require('./report-export');
-  const { isSystemAdministrator } = require('../../../components/auth/user-type');
+  const { isSystemAdministrator, isBureauUser } = require('../../../components/auth/user-type');
+
+  const canAccessJurorRecord = (req) => {
+    if (isSystemAdministrator(req)) {
+      return false;
+    }
+    if (!isBureauUser(req) && 
+      (req.query.courtLocCode && req.query.courtLocCode !== req.session.authentication.locCode)
+    ) {
+      return false;
+    }
+    return true;
+  }
 
   const standardFilterGet = (app, reportKey) => async(req, res) => {
     const reportType = reportKeys(app, req)[reportKey];
@@ -363,10 +375,11 @@
 
           // CREATING LINKS - SHOULD BE INACCESSIBLE BY ADMIN USERS AS THEY ARE NOT LOGGED IN TO ACTIVE COURT
           if (!isSystemAdministrator(req)) {
-            if (header.id === 'juror_number' || header.id === 'juror_number_from_trial') {
+            if ((header.id === 'juror_number' || header.id === 'juror_number_from_trial') && canAccessJurorRecord(req)) {
               return ({
                 html: `<a href=${
                   app.namedRoutes.build('juror-record.overview.get', {jurorNumber: output})
+                    + (req.query.courtLocCode ? `?loc_code=${req.query.courtLocCode}` : '')
                 }>${
                   output
                 }</a>`,
@@ -437,16 +450,6 @@
                   }) + `?transportType=${data.transportType ? _.camelCase(data.transportType) : ''}`
                   + `&revisionNumber=${data.revisionNumber ? data.revisionNumber.toString() : ''}`
                 }>${output}</a>`,
-              });
-            }
-            if (reportKey === 'courts-incomplete-service') {
-              return ({
-                html: `<a href=${
-                    app.namedRoutes.build('reports.incomplete-service.report.get', { filter: dateFilter(new Date(), null, 'yyyy-MM-DD') })
-                    + `?courtLocCode=${courtLocCode}`
-                  }>${
-                  output
-                }</a>`,
               });
             }
             if (reportKey === 'courts-incomplete-service') {
