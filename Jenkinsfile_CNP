@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure")
+@Library("Infrastructure@2.4.2") _
 
 String type = "nodejs"
 String product = "juror"
